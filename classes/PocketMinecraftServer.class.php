@@ -32,7 +32,7 @@ class PocketMinecraftServer{
 		$this->version = (int) $version;
 		$this->username = $username;
 		$this->cnt = 1;
-		$this->serverID = Utils::readDouble(substr(Utils::generateKey(), 0, 8));
+		$this->serverID = substr(Utils::generateKey(), 0, 8);
 		$this->events = array("disabled" => array());
 		$this->protocol = (int) $protocol;
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true);		
@@ -65,26 +65,20 @@ class PocketMinecraftServer{
 				$this->send(0x06, array(
 					MAGIC,
 					$this->serverID,
-					$this->version,
-					$size,
+					0,
+					strlen($packet["raw"]),
 				), false, $packet["ip"], $packet["port"]);
 				break;
 			case 0x07:
-				$bytes = $data[1];
 				$port = $data[2];
-				$size = $data[3];
-				$x = $data[4];
-				$sess = $data[5];
+				$MTU = $data[3];
+				$clientID = $data[4];
 				//console("[DEBUG] ".$packet["ip"].":".$packet["port"]." v".$version." response (".$size.")", true, true, 2);
 				$sess2 = Utils::readInt(substr(Utils::generateKey(), 0, 4));
 				$this->send(0x08, array(
 					MAGIC,
-					$x,
-					$sess2,
-					$bytes,
-					$packet["port"],
-					$size,
-					0x00
+					$clientID,
+					$data[1],
 				), false, $packet["ip"], $packet["port"]);
 				break;
 		}
@@ -102,8 +96,9 @@ class PocketMinecraftServer{
 			if($packet !== false){
 				$this->trigger("onReceivedPacket", $packet);
 				$this->trigger($packet["pid"], $packet);
-			}
-			usleep(10000);
+			}else{
+				usleep(10000);
+			}			
 		}
 	}
 	

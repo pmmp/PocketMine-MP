@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 $pstruct = array(
 	0x02 => array(
-		"double",
+		8,
 		"magic",
 	),
 	
@@ -39,7 +39,7 @@ $pstruct = array(
 	
 	0x06 => array(
 		"magic",
-		"double",
+		8,
 		"byte",
 		"short",
 	),
@@ -49,42 +49,38 @@ $pstruct = array(
 		5,
 		"short",
 		"short",
-		"int",
-		"int",
+		8,
 	),
 	
 	0x08 => array(
 		"magic",
-		"int",
-		"int",
+		8,
 		5,
-		"short",
-		"short",
+	),
+	
+	0x09 => array(
+		8,
+		8,
 		"byte",
 	),
 	
+	0x10 => array(
+	
+	
+	),
+	
 	0x1c => array(
-		"double",
-		"double",
+		8,
+		8,
 		"magic",
 		"string",
 	),
 	
 	0x1d => array(
-		"double",
-		"double",
+		8,
+		8,
 		"magic",
 		"string",
-	),
-	
-	0x84 => array(
-		"byte",
-		9,
-		"int",
-		"int",
-		5,
-		3,
-		"byte",
 	),
 
 );

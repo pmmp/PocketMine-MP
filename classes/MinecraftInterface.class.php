@@ -71,8 +71,11 @@ class MinecraftInterface{
 		if($data[3] === false){
 			return false;
 		}
-		$pid = $data[0]{0};
-		$pid = ord($pid);
+		$pid = ord($data[0]);
+		if($pid === 0x84){
+			$data[0] = substr($data[0], 10);
+			$pid = ord($data[0]);
+		}
 		$struct = $this->getStruct($pid);
 		if($struct === false){
 			$p = "[".microtime(true)."] [SERVER->CLIENT]: Error, bad packet id 0x".Utils::strToHex(chr($pid)).PHP_EOL;
