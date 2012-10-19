@@ -2,7 +2,6 @@
 *.ini
 test.php
 *.bat
-raknet/*
 
 #################
 ## Eclipse
