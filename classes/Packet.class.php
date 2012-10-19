@@ -60,6 +60,7 @@ class Packet{
 				case "special1":
 					switch($this->pid){
 						case 0x05:
+						case 0x84:
 							$this->addRaw($this->data[$field]);
 							break;
 					}
@@ -138,6 +139,7 @@ class Packet{
 				case "special1":
 					switch($this->pid){
 						case 0x05:
+						case 0x84:
 							$this->data[] = $this->get(true);
 							break;				
 					}
@@ -152,7 +154,7 @@ class Packet{
 					}
 					break;
 				case "string":
-					$this->data[] = $this->get(Utils::readShort($this->get(2)) << 1);
+					$this->data[] = $this->get(Utils::readShort($this->get(2)));
 					break;
 				case "long":
 					$this->data[] = Utils::readLong($this->get(8));

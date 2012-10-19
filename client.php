@@ -25,15 +25,19 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-$packetName = array(
-	0x02 => "ID_UNCONNECTED_PING_OPEN_CONNECTIONS",
-	0x05 => "ID_OPEN_CONNECTION_REQUEST_1",
-	0x06 => "ID_OPEN_CONNECTION_REPLY_1",
-	0x07 => "ID_OPEN_CONNECTION_REQUEST_2",
-	0x08 => "ID_OPEN_CONNECTION_REPLY_2",
-	0x09 => "ID_CONNECTION_REQUEST",
-	0x1c => "ID_UNCONNECTED_PONG",
-	0x1d => "ID_ADVERTISE_SYSTEM",
-	0x84 => "Unknown",
-	0xc0 => "Unknown",
-);
+require_once("common/dependencies.php");
+require_once("classes/PocketMinecraftClient.class.php");
+file_put_contents("packets.log", "");
+
+$client = new PocketMinecraftClient("shoghicp");
+$list = $client->getServerList();
+foreach($list as $i => $info){
+	console("[Server] #".$i." ".$info["ip"]." ".$info["username"]);
+}
+console("[Select Server] #", false, false);
+$i = (int) trim(fgets(STDIN));
+if(isset($list[$i])){
+	$client->start($list[$i]["ip"]);
+}else{
+	console("[Error] Unknown ID");
+}

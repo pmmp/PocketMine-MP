@@ -34,17 +34,37 @@ class PocketMinecraftServer{
 		$this->cnt = 1;
 		$this->serverID = substr(Utils::generateKey(), 0, 8);
 		$this->events = array("disabled" => array());
+		$this->actions = array();
 		$this->protocol = (int) $protocol;
-		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true);		
+		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true, false);		
 		console("[INFO] Creating Minecraft Server");
 		console("[INFO] Username: ".$this->username);
 		console("[INFO] Protocol: ".$this->protocol);
 		$this->stop = false;
 	}
 	
+	public function action($microseconds, $code){
+		$this->actions[] = array($microseconds / 1000000, microtime(true), $code);
+		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
+	}
+	
 	public function start(){
+		declare(ticks=15);
+		register_tick_function(array($this, "tickerFunction"));
+		$this->action(50000, '$this->trigger("onTick", $time);');
 		$this->event("onReceivedPacket", "packetHandler", true);
 		$this->process();
+	}
+	
+	public function tickerFunction(){
+		//actions that repeat every x time will go here
+		$time = microtime(true);
+		foreach($this->actions as $id => $action){
+			if($action[1] <= ($time - $action[0])){
+				$this->actions[$id][1] = $time;
+				eval($action[2]);
+			}
+		}
 	}
 	
 	public function packetHandler($packet, $event){
@@ -77,9 +97,18 @@ class PocketMinecraftServer{
 				$sess2 = Utils::readInt(substr(Utils::generateKey(), 0, 4));
 				$this->send(0x08, array(
 					MAGIC,
-					$clientID,
+					$this->serverID,
 					$data[1],
 				), false, $packet["ip"], $packet["port"]);
+				break;
+			case 0x84:
+				$bytes = $data[0];
+				$clientID = $data[1];
+				$time = $data[2];
+				$b = $data[3];
+				$this->send(0xc0, array(
+					"\x00\x01\x01\x00\x00\x00",				
+				));
 				break;
 		}
 	}

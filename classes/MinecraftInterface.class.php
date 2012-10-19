@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class MinecraftInterface{
 	var $pstruct, $name, $server, $protocol;
 	
-	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false){
+	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
 		$this->server = new Socket($server, $port, (bool) $listen);
 		$this->protocol = (int) $protocol;
 		require("pstruct/RakNet.php");
@@ -50,7 +50,7 @@ class MinecraftInterface{
 	
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
 		if(LOG === true and DEBUG >= 2){
-			$p = "[".microtime(true)."] [".($origin === "client" ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
+			$p = "[".microtime(true)."] [".((($origin === "client" and $client === true) or ($origin === "server" and $client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
 			$p .= hexdump($raw, false, false, true);
 			if(is_array($data)){
 				foreach($data as $i => $d){
@@ -72,16 +72,16 @@ class MinecraftInterface{
 			return false;
 		}
 		$pid = ord($data[0]);
-		if($pid === 0x84){
+		/*if($pid === 0x84){
 			$data[0] = substr($data[0], 10);
 			$pid = ord($data[0]);
-		}
+		}*/
 		$struct = $this->getStruct($pid);
 		if($struct === false){
 			$p = "[".microtime(true)."] [SERVER->CLIENT]: Error, bad packet id 0x".Utils::strToHex(chr($pid)).PHP_EOL;
 			$p .= hexdump($data[0], false, false, true);
-			$p .= PHP_EOL . "--------------- (1024 byte max extract) ----------" .PHP_EOL;
-			logg($p, "packets", true, 3);
+			$p .= PHP_EOL;
+			logg($p, "packets", true, 2);
 			
 			$this->buffer = "";
 			//$this->server->recieve("\xff".Utils::writeString('Bad packet id '.$pid.''));
