@@ -26,14 +26,14 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 $packetName = array(
-	0x02 => "ID_UNCONNECTED_PING_OPEN_CONNECTIONS",
-	0x05 => "ID_OPEN_CONNECTION_REQUEST_1",
-	0x06 => "ID_OPEN_CONNECTION_REPLY_1",
-	0x07 => "ID_OPEN_CONNECTION_REQUEST_2",
-	0x08 => "ID_OPEN_CONNECTION_REPLY_2",
-	0x09 => "ID_CONNECTION_REQUEST",
-	0x1c => "ID_UNCONNECTED_PONG",
-	0x1d => "ID_ADVERTISE_SYSTEM",
-	0x84 => "Unknown",
-	0xc0 => "Unknown",
+	0x02 => "ID_UNCONNECTED_PING_OPEN_CONNECTIONS", //RakNet
+	0x05 => "ID_OPEN_CONNECTION_REQUEST_1", //RakNet
+	0x06 => "ID_OPEN_CONNECTION_REPLY_1", //RakNet
+	0x07 => "ID_OPEN_CONNECTION_REQUEST_2", //RakNet
+	0x08 => "ID_OPEN_CONNECTION_REPLY_2", //RakNet
+	0x1a => "ID_INCOMPATIBLE_PROTOCOL_VERSION", //RakNet
+	0x1c => "ID_UNCONNECTED_PONG", //RakNet
+	0x1d => "ID_ADVERTISE_SYSTEM", //RakNet
+	0x84 => "ID_RESERVED_7", //Minecraft Implementation
+	0xc0 => "Unknown", //Minecraft Implementation
 );

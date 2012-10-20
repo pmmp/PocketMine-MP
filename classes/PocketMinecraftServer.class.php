@@ -81,24 +81,34 @@ class PocketMinecraftServer{
 			case 0x05:
 				$version = $data[1];
 				$size = strlen($data[2]);
-				console("[DEBUG] ".$packet["ip"].":".$packet["port"]." v".$version." handshake (".$size.")", true, true, 2);
-				$this->send(0x06, array(
-					MAGIC,
-					$this->serverID,
-					0,
-					strlen($packet["raw"]),
-				), false, $packet["ip"], $packet["port"]);
+				console("[DEBUG] ".$packet["ip"].":".$packet["port"]." v".$version." MTU Sizing ".$size, true, true, 2);
+				if($version != 5){
+					$this->send(0x1a, array(
+						5,
+						MAGIC,
+						$this->serverID,
+					), false, $packet["ip"], $packet["port"]);
+				}else{
+					$this->send(0x06, array(
+						MAGIC,
+						$this->serverID,
+						0,
+						strlen($packet["raw"]),
+					), false, $packet["ip"], $packet["port"]);
+				}
 				break;
 			case 0x07:
 				$port = $data[2];
 				$MTU = $data[3];
 				$clientID = $data[4];
 				//console("[DEBUG] ".$packet["ip"].":".$packet["port"]." v".$version." response (".$size.")", true, true, 2);
-				$sess2 = Utils::readInt(substr(Utils::generateKey(), 0, 4));
+				//$sess2 = Utils::readInt(substr(Utils::generateKey(), 0, 4));
 				$this->send(0x08, array(
 					MAGIC,
 					$this->serverID,
-					$data[1],
+					$packet["port"],
+					$MTU,
+					0,
 				), false, $packet["ip"], $packet["port"]);
 				break;
 			case 0x84:

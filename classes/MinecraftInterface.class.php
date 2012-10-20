@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $server, $protocol;
+	var $pstruct, $name, $server, $protocol, $client;
 	
 	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
 		$this->server = new Socket($server, $port, (bool) $listen);
@@ -35,6 +35,7 @@ class MinecraftInterface{
 		require("pstruct/packetName.php");
 		$this->pstruct = $pstruct;
 		$this->name = $packetName;
+		$this->client = (bool) $client;
 	}
 	
 	public function close(){
@@ -50,11 +51,11 @@ class MinecraftInterface{
 	
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
 		if(LOG === true and DEBUG >= 2){
-			$p = "[".microtime(true)."] [".((($origin === "client" and $client === true) or ($origin === "server" and $client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
+			$p = "[".microtime(true)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
 			$p .= hexdump($raw, false, false, true);
 			if(is_array($data)){
 				foreach($data as $i => $d){
-					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special") ? Utils::strToHex($d):$d).")":$this->pstruct[$pid][$i]."(***)").PHP_EOL;
+					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special" or is_int($this->pstruct[$pid][$i])) ? Utils::strToHex($d):$d).")":$this->pstruct[$pid][$i]."(***)").PHP_EOL;
 				}
 			}
 			$p .= PHP_EOL;
