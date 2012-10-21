@@ -26,10 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PocketMinecraftClient{
-	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clientID, $connected, $serverID;
+	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clientID, $connected, $serverID, $start;
 	var $serverList = array();
 	function __construct($username, $protocol = CURRENT_PROTOCOL, $version = CURRENT_VERSION){
 		//$this->player = new Player($username);
+		$this->start = microtime(true);
 		$this->version = (int) $version;
 		$this->username = $username;
 		$this->connected = false;
@@ -77,7 +78,7 @@ class PocketMinecraftClient{
 	}
 	
 	public function getServerList(){
-		$this->action(1000000, '$this->send(0x02, array((microtime(true) * 1000)));');
+		$this->action(1000000, '$this->send(0x02, array(((microtime(true) - $this->start) * 1000)));');
 		$this->action(5000000, '$this->actions = array();$this->stop = true;');
 		$this->process();
 		$list = array();
@@ -111,7 +112,8 @@ class PocketMinecraftClient{
 			case 0x08:
 				$serverID = $data[1];
 				$this->send(0x84, array(
-					"\x00\x00\x00\x40\x00\x90\x00\x00\x00\x09".$this->serverID.Utils::writeDouble(microtime(true) * 1000).chr(0x00),
+					0,
+					"\x00\x00\x40\x00\x90\x00\x00\x00\x09".$this->serverID.Utils::writeDouble((microtime(true) - $this->start) * 1000).chr(0x00),
 					/*"\x00\x00\x00\x40\x00\x90\x00\x00\x00\x09",
 					$this->serverID,
 					(microtime(true) * 1000),

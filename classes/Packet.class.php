@@ -36,7 +36,7 @@ class Packet{
 		$this->offset = 1;
 		$this->raw = $data;
 		$this->data = array();
-		if($pid !== false){
+		if($data === ""){
 			$this->addRaw(chr($pid));
 		}
 		$this->struct = $struct;
@@ -61,6 +61,7 @@ class Packet{
 					switch($this->pid){
 						case 0x05:
 						case 0x84:
+						case 0x8c:
 							$this->addRaw($this->data[$field]);
 							break;
 					}
@@ -140,6 +141,7 @@ class Packet{
 					switch($this->pid){
 						case 0x05:
 						case 0x84:
+						case 0x8c:
 							$this->data[] = $this->get(true);
 							break;				
 					}

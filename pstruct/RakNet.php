@@ -81,11 +81,17 @@ $pstruct = array(
 	),
 	
 	0x84 => array(
+		"ubyte",
 		"special1",
 		/*10,
 		8,
 		"double",
 		"byte",	*/
+	),
+	
+	0x8c => array(
+		"ubyte",
+		"special1",
 	),
 	
 	0xc0 => array(

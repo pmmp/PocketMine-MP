@@ -35,5 +35,6 @@ $packetName = array(
 	0x1c => "ID_UNCONNECTED_PONG", //RakNet
 	0x1d => "ID_ADVERTISE_SYSTEM", //RakNet
 	0x84 => "ID_RESERVED_7", //Minecraft Implementation
+	0x8c => "Unknown", //Minecraft Implementation
 	0xc0 => "Unknown", //Minecraft Implementation
 );
