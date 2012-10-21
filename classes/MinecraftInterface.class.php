@@ -106,7 +106,7 @@ class MinecraftInterface{
 			$packet->data = $data;
 			$packet->create();
 			$write = $this->server->write($packet->raw, $dest, $port);
-			$this->writeDump($pid, $packet->raw, $data, "client");
+			$this->writeDump($pid, $packet->raw, $data, "client", $dest, $port);
 		}else{
 			$write = $this->server->write($data, $dest, $port);
 			$this->writeDump($pid, $data, false, "client", $dest, $port);

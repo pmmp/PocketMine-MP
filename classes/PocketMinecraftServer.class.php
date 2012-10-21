@@ -25,8 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+require_once("classes/Session.class.php");
+
 class PocketMinecraftServer{
-	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version;
+	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clients;
 	function __construct($username, $protocol = CURRENT_PROTOCOL, $version = CURRENT_VERSION){
 		//$this->player = new Player($username);
 		$this->version = (int) $version;
@@ -35,6 +37,7 @@ class PocketMinecraftServer{
 		$this->serverID = substr(Utils::generateKey(), 0, 8);
 		$this->events = array("disabled" => array());
 		$this->actions = array();
+		$this->clients = array();
 		$this->protocol = (int) $protocol;
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true, false);		
 		console("[INFO] Creating Minecraft Server");
@@ -67,8 +70,16 @@ class PocketMinecraftServer{
 		}
 	}
 	
+	public function clientID($ip, $port){
+		return md5($pi . $port, true);
+	}
+	
 	public function packetHandler($packet, $event){
 		$data =& $packet["data"];
+		$CID = $this->clientID($packet["ip"], $packet["port"]);
+		if(isset($this->clients[$CID])){
+			$this->clients[$CID]->handle($packet["pid"], $data);
+		}
 		switch($packet["pid"]){
 			case 0x02:
 				$this->send(0x1c, array(
@@ -81,7 +92,6 @@ class PocketMinecraftServer{
 			case 0x05:
 				$version = $data[1];
 				$size = strlen($data[2]);
-				console("[DEBUG] ".$packet["ip"].":".$packet["port"]." v".$version." MTU Sizing ".$size, true, true, 2);
 				if($version != 5){
 					$this->send(0x1a, array(
 						5,
@@ -101,24 +111,8 @@ class PocketMinecraftServer{
 				$port = $data[2];
 				$MTU = $data[3];
 				$clientID = $data[4];
-				//console("[DEBUG] ".$packet["ip"].":".$packet["port"]." v".$version." response (".$size.")", true, true, 2);
-				//$sess2 = Utils::readInt(substr(Utils::generateKey(), 0, 4));
-				$this->send(0x08, array(
-					MAGIC,
-					$this->serverID,
-					$packet["port"],
-					$MTU,
-					0,
-				), false, $packet["ip"], $packet["port"]);
-				break;
-			case 0x84:
-				$bytes = $data[0];
-				$clientID = $data[1];
-				$time = $data[2];
-				$b = $data[3];
-				$this->send(0xc0, array(
-					"\x00\x01\x01\x00\x00\x00",				
-				));
+				$this->clients[$CID] = new Session($this, $clientID, $packet["ip"], $packet["port"]);
+				$this->clients[$CID]->handle(0x07, $data);
 				break;
 		}
 	}
