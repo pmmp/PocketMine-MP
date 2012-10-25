@@ -79,7 +79,8 @@ class MinecraftInterface{
 		}*/
 		$struct = $this->getStruct($pid);
 		if($struct === false){
-			$p = "[".microtime(true)."] [SERVER->CLIENT]: Error, bad packet id 0x".Utils::strToHex(chr($pid)).PHP_EOL;
+			console("[ERROR] Bad packet id 0x".Utils::strTohex(chr($pid)), true, true, 0);
+			$p = "[".microtime(true)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strTohex(chr($pid))." [lenght ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($data[0]);
 			$p .= PHP_EOL;
 			logg($p, "packets", true, 2);

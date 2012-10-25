@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Session{
-	protected $server, $serverID;
+	protected $server, $serverID, $timeout, $eventID, $connected;
 	var $clientID, $ip, $port;
 	function __construct($server, $clientID, $ip, $port){
 		$this->server = $server;
@@ -35,26 +35,46 @@ class Session{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->serverID =& $this->server->serverID;
+		$this->eventID = $this->server->event("onTick", array($this, "checkTimeout"));
 		console("[DEBUG] New Session started with ".$ip.":".$port, true, true, 2);
+		$this->connected = true;
+	}
+	
+	public function checkTimeout($time){
+		if($time > $this->timeout){
+			$this->close();
+		}
+	}
+	
+	public function close(){
+		$this->server->deleteEvent("onTick", $this->eventID);
+		$this->connected = false;
+		console("[DEBUG] Session with ".$this->ip.":".$this->port." closed due to timeout", true, true, 2);
 	}
 	
 	public function handle($pid, &$data){
-		switch($pid){
-			case 0x07:
-				$this->send(0x08, array(
-					MAGIC,
-					$this->serverID,
-					$this->port,
-					$data[3],
-					0,
-				));
-				break;
-			case 0x84:
-				$counter = $data[0];
-				$this->send(0xc0, array(
-					"\x00\x01\x01\x00\x00\x00",				
-				));
-				break;				
+		if($this->connected === true){
+			$this->timeout = microtime(true) + 25;
+			switch($pid){
+				case 0x07:
+					$this->send(0x08, array(
+						MAGIC,
+						$this->serverID,
+						$this->port,
+						$data[3],
+						0,
+					));
+					break;
+				case 0x84:
+					$counter = $data[0];
+					/*$this->send(0xc0, array(
+						"\x00\x01\x01\x00\x00\x00",				
+					));*/
+					break;
+				case 0x8c:
+					$counter = $data[0];
+					break;
+			}
 		}
 	}
 	

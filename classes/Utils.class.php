@@ -94,7 +94,7 @@ class Utils{
 			$c = (string) $c;
 			for($i = 0; $i < 4; ++$i){
 				$value ^= md5($i . $c . microtime(true), true);
-				$value ^= substr(sha1($i . $c . microtime(true), true),$i,16);
+				$value ^= substr(sha1($i . $c . microtime(true), true), $i,16);
 			}			
 		}
 		return $value;
