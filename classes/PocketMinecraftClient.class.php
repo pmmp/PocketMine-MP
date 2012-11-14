@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PocketMinecraftClient{
 	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clientID, $connected, $serverID, $start;
-	var $serverList = array();
+	var $serverList = array(), $counter;
 	function __construct($username, $protocol = CURRENT_PROTOCOL, $version = CURRENT_VERSION){
 		//$this->player = new Player($username);
 		$this->start = microtime(true);
@@ -44,6 +44,7 @@ class PocketMinecraftClient{
 		console("[INFO] Version: ".$this->version);
 		$this->event("onReceivedPacket", "packetHandler", true);
 		$this->stop = false;
+		$this->counter = array(0,0);
 		declare(ticks=15);
 		register_tick_function(array($this, "tickerFunction"));
 	}
@@ -112,18 +113,23 @@ class PocketMinecraftClient{
 			case 0x08:
 				$serverID = $data[1];
 				$this->send(0x84, array(
-					0,
-					"\x00\x00\x40\x00\x90\x00\x00\x00\x09".$this->serverID.Utils::writeDouble((microtime(true) - $this->start) * 1000).chr(0x00),
-					/*"\x00\x00\x00\x40\x00\x90\x00\x00\x00\x09",
-					$this->serverID,
-					(microtime(true) * 1000),
-					0,*/
+					$this->counter[0],
+					0x400090,
+					array(
+						"clientID" => $this->clientID,
+						"session" => "\x00\x0c\x98\x00",
+					),
 				));
+				++$this->counter[0];
 				break;
-			case 0xc0:
-				$this->send(0xc0, array(
-					$data[0],
-				));
+			case 0x84:
+				$this->counter[1] = $data[0];
+				$this->send(0xc0, array(1, true, $data[0]));
+				switch($custom->name){
+					case "serverHandshake":
+
+						break;
+					}		
 				break;
 		}
 	}

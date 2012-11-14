@@ -79,25 +79,43 @@ $pstruct = array(
 		"magic",
 		"string", //Data
 	),
+
+	0x80 => array(
+		"triad",
+		"triad",
+		"customData",
+	),
 	
 	0x84 => array(
-		"ubyte",
-		"ubyte",
-		"special1",
+		"triad",
+		"triad",
+		"customData",
+	),
+	
+	0x88 => array(
+		"triad",
+		"triad",
+		"customData",
 	),
 	
 	0x8c => array(
-		"ubyte",
-		"ubyte",
-		"special1",
+		"triad",
+		"triad",
+		"customData",
 	),
 	
 	0xa0 => array(
-		6,
+		"short",
+		"bool",
+		"triad",
+		"special1",
 	),
 	
 	0xc0 => array(
-		6,
+		"short",
+		"bool",
+		"triad",
+		"special1",
 	),
 
 );

@@ -72,6 +72,7 @@ if($errors > 0){
 require_once("classes/Utils.class.php");
 require_once("classes/Socket.class.php");
 require_once("classes/Packet.class.php");
+require_once("classes/CustomPacketHandler.class.php");
 require_once("classes/MinecraftInterface.class.php");
 
 ?>

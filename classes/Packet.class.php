@@ -59,18 +59,29 @@ class Packet{
 			switch($type){
 				case "special1":
 					switch($this->pid){
+						case 0xc0:
+						case 0xa0:
+							if($this->data[1] === false){
+								$this->addRaw($this->data[$field]);
+							}
+							break;
 						case 0x05:
-						case 0x84:
-						case 0x8c:
 							$this->addRaw($this->data[$field]);
 							break;
 					}
+					break;
+				case "customData":
+					$reply = new CustomPacketHandler($this->data[1], "", $this->data[$field], true);
+					$this->addRaw($reply->raw);					
 					break;
 				case "magic":
 					$this->addRaw(MAGIC);
 					break;
 				case "float":
 					$this->addRaw(Utils::writeFloat($this->data[$field]));
+					break;
+				case "triad":
+					$this->addRaw(Utils::writeTriad($this->data[$field]));
 					break;
 				case "int":
 					$this->addRaw(Utils::writeInt($this->data[$field]));
@@ -139,21 +150,30 @@ class Packet{
 			switch($type){
 				case "special1":
 					switch($this->pid){
+						case 0xc0:
+						case 0xa0:
+							if($this->data[1] === false){
+								$this->data[] = $this->get(3);
+							}
+							break;
 						case 0x05:
-						case 0x84:
-						case 0x8c:
 							$this->data[] = $this->get(true);
-							break;				
+							break;
 					}
+					break;
+				case "customData":
+					$d = new CustomPacketHandler($this->data[1], $this->get(true));
+					$d->data["packetName"] = $d->name;
+					$this->data[] = $d->data;
 					break;
 				case "magic":
 					$this->data[] = $this->get(16);
 					break;
+				case "triad":
+					$this->data[] = Utils::readTriad($this->get(3));
+					break;				
 				case "int":
 					$this->data[] = Utils::readInt($this->get(4));
-					if($field === 5 and $this->pid === "17" and $this->data[$field] === 0){
-						$continue = false;
-					}
 					break;
 				case "string":
 					$this->data[] = $this->get(Utils::readShort($this->get(2)));

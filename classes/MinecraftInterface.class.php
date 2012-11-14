@@ -55,7 +55,7 @@ class MinecraftInterface{
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
 				foreach($data as $i => $d){
-					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special" or is_int($this->pstruct[$pid][$i])) ? Utils::strToHex($d):$d).")":$this->pstruct[$pid][$i]."(***)").PHP_EOL;
+					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special" or is_int($this->pstruct[$pid][$i])) ? Utils::strToHex($d):$d).")":$this->pstruct[$pid][$i]."(\"".serialize($d)."\")").PHP_EOL;
 				}
 			}
 			$p .= PHP_EOL;

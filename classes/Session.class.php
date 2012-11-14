@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Session{
 	protected $server, $serverID, $timeout, $eventID, $connected;
-	var $clientID, $ip, $port;
+	var $clientID, $ip, $port, $counter;
 	function __construct($server, $clientID, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
@@ -38,6 +38,7 @@ class Session{
 		$this->eventID = $this->server->event("onTick", array($this, "checkTimeout"));
 		console("[DEBUG] New Session started with ".$ip.":".$port, true, true, 2);
 		$this->connected = true;
+		$this->counter = array(0, 0);
 	}
 	
 	public function checkTimeout($time){
@@ -66,10 +67,20 @@ class Session{
 					));
 					break;
 				case 0x84:
-					$counter = $data[0];
-					/*$this->send(0xc0, array(
-						"\x00\x01\x01\x00\x00\x00",				
-					));*/
+					$this->counter[1] = $data[0];
+					$this->send(0xc0, array(1, true, $data[0]));
+					switch($data[2]["packetName"]){
+						case "clientHandshake":
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x600300,
+								array(
+									"port" => $this->port,
+								),
+							));
+							++$this->counter[0];
+							break;
+					}
 					break;
 				case 0x8c:
 					$counter = $data[0];

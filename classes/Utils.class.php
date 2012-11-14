@@ -271,6 +271,27 @@ class Utils{
 		return pack("n", $value);
 	}
 
+	public static function readTriad($str){
+		list(,$unpacked) = unpack("N", "\x00".$str);
+		return (int) $unpacked;
+	}
+
+	public static function writeTriad($value){
+		return substr(pack("N", $value), 1);
+	}
+	
+	public static function readDataArray($str, $len = 10){
+		$data = array();
+		$offset = 0;
+		for($i = 1; $i <= $len; ++$i){
+			$l = Utils::readTriad(substr($str, $offset, 3));
+			$offset += 3;
+			$data[] = substr($str, $offset, $l);
+			$offset += $l;
+		}
+		return $data;
+	}
+	
 	public static function readInt($str){
 		list(,$unpacked) = unpack("N", $str);
 		return (int) $unpacked;
