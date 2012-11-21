@@ -30,6 +30,7 @@ require_once("classes/PocketMinecraftClient.class.php");
 file_put_contents("packets.log", "");
 
 $client = new PocketMinecraftClient("shoghicp");
+console("[INFO] Searching servers...");
 $list = $client->getServerList();
 foreach($list as $i => $info){
 	console("[Server] #".$i." ".$info["ip"]." ".$info["username"]);

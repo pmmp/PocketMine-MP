@@ -280,7 +280,7 @@ class Utils{
 		return substr(pack("N", $value), 1);
 	}
 	
-	public static function readDataArray($str, $len = 10){
+	public static function readDataArray($str, $len = 10, &$offset = null){
 		$data = array();
 		$offset = 0;
 		for($i = 1; $i <= $len; ++$i){
@@ -290,6 +290,15 @@ class Utils{
 			$offset += $l;
 		}
 		return $data;
+	}
+	
+	public static function writeDataArray($data){
+		$raw = "";
+		foreach($data as $v){
+			$raw .= Utils::writeTriad(strlen($v));
+			$raw .= $v;
+		}
+		return $raw;
 	}
 	
 	public static function readInt($str){

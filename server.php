@@ -30,4 +30,5 @@ require_once("classes/PocketMinecraftServer.class.php");
 file_put_contents("packets.log", "");
 
 $server = new PocketMinecraftServer("shoghicp");
+$server->setType("minecon");
 $server->start();

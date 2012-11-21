@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $server, $protocol, $client;
+	var $pstruct, $name, $server, $protocol, $client, $buffer;
 	
 	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
 		$this->server = new Socket($server, $port, (bool) $listen);
@@ -35,7 +35,9 @@ class MinecraftInterface{
 		require("pstruct/packetName.php");
 		$this->pstruct = $pstruct;
 		$this->name = $packetName;
+		$this->buffer = array();
 		$this->client = (bool) $client;
+		$this->start = microtime(true);
 	}
 	
 	public function close(){
@@ -51,7 +53,7 @@ class MinecraftInterface{
 	
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
 		if(LOG === true and DEBUG >= 2){
-			$p = "[".microtime(true)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
+			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
 				foreach($data as $i => $d){
@@ -64,7 +66,11 @@ class MinecraftInterface{
 	
 	}
 	
-	public function readPacket($port = false){
+	public function readPacket(){
+		$p = $this->popPacket();
+		if($p !== false){
+			return $p;
+		}
 		if($this->server->connected === false){
 			//return array("pid" => "ff", "data" => array(0 => 'Connection error'));
 		}
@@ -80,7 +86,7 @@ class MinecraftInterface{
 		$struct = $this->getStruct($pid);
 		if($struct === false){
 			console("[ERROR] Bad packet id 0x".Utils::strTohex(chr($pid)), true, true, 0);
-			$p = "[".microtime(true)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strTohex(chr($pid))." [lenght ".strlen($raw)."]".PHP_EOL;
+			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strTohex(chr($pid))." [lenght ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($data[0]);
 			$p .= PHP_EOL;
 			logg($p, "packets", true, 2);
@@ -94,9 +100,25 @@ class MinecraftInterface{
 		
 		$packet = new Packet($pid, $struct, $data[0]);
 		$packet->protocol = $this->protocol;
-		$packet->parse();		
-		$this->writeDump($pid, $data[0], $packet->data, "server", $data[1], $data[2]);
-		return array("pid" => $pid, "data" => $packet->data, "raw" => $data[0], "ip" => $data[1], "port" => $data[2]);
+		$packet->parse();
+		$this->data[] = array($pid, $packet->data, $data[0], $data[1], $data[2]);
+		if(isset($packet->data["packets"]) and is_array($packet->data["packets"])){
+			foreach($packet->data["packets"] as $p){
+				$this->data[] = array($pid, $p[1], $p[2], $data[1], $data[2]);
+			}
+		}
+		return $this->popPacket();
+	}
+	
+	public function popPacket(){
+		if(count($this->data) > 0){
+			$p = array_shift($this->data);
+			$c = (isset($p[1]["id"]) ? true:false);
+			$p[2] = $c ? chr($p[1]["id"]).$p[2]:$p[2];
+			$this->writeDump(($c ? $p[1]["id"]:$p[0]), $p[2], $p[1], "server", $p[3], $p[4]);
+			return array("pid" => $p[0], "data" => $p[1], "raw" => $p[2], "ip" => $p[3], "port" => $p[4]);
+		}
+		return false;
 	}
 	
 	public function writePacket($pid, $data = array(), $raw = false, $dest = false, $port = false){

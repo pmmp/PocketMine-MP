@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Session{
 	protected $server, $serverID, $timeout, $eventID, $connected;
-	var $clientID, $ip, $port, $counter;
+	var $clientID, $ip, $port, $counter, $username;
 	function __construct($server, $clientID, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
@@ -67,18 +67,27 @@ class Session{
 					));
 					break;
 				case 0x84:
-					$this->counter[1] = $data[0];
-					$this->send(0xc0, array(1, true, $data[0]));
-					switch($data[2]["packetName"]){
-						case "clientHandshake":
+					if(isset($data[0])){
+						$this->counter[1] = $data[0];
+						$this->send(0xc0, array(1, true, $data[0]));
+					}
+					switch($data["id"]){
+						case 0x09:
 							$this->send(0x84, array(
 								$this->counter[0],
-								0x600300,
+								0x40,
 								array(
+									"id" => 0x10,
+									"count" => 0,
 									"port" => $this->port,
+									"session" => $data[2]["session"],
 								),
 							));
 							++$this->counter[0];
+							break;
+						case 0x82:
+							$this->username = $data["username"];
+							console("[INFO] User ".$this->username." connected from ".$this->ip.":".$this->port);
 							break;
 					}
 					break;

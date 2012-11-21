@@ -71,7 +71,10 @@ class Packet{
 					}
 					break;
 				case "customData":
-					$reply = new CustomPacketHandler($this->data[1], "", $this->data[$field], true);
+					$reply = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
+					$this->addRaw(Utils::writeShort(strlen($reply->raw) << 3));
+					$this->addRaw(Utils::writeTriad($this->data[$field]["count"]));
+					$this->addRaw(chr($this->data[$field]["id"]));
 					$this->addRaw($reply->raw);					
 					break;
 				case "magic":
@@ -162,9 +165,13 @@ class Packet{
 					}
 					break;
 				case "customData":
-					$d = new CustomPacketHandler($this->data[1], $this->get(true));
+					$d = new CustomPacketHandler($this->data[1], $this->get(Utils::readShort($this->get(2), false) >> 3));
 					$d->data["packetName"] = $d->name;
-					$this->data[] = $d->data;
+					if(isset($d->data["packets"])){
+						$this->data["packets"] = $d->data["packets"];
+					}else{
+						$this->data[] = $d->data;
+					}
 					break;
 				case "magic":
 					$this->data[] = $this->get(16);

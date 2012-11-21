@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer{
-	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clients;
+	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clients, $serverType;
 	function __construct($username, $protocol = CURRENT_PROTOCOL, $version = CURRENT_VERSION){
 		//$this->player = new Player($username);
 		$this->version = (int) $version;
@@ -39,11 +39,24 @@ class PocketMinecraftServer{
 		$this->actions = array();
 		$this->clients = array();
 		$this->protocol = (int) $protocol;
+		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true, false);		
 		console("[INFO] Creating Minecraft Server");
 		console("[INFO] Username: ".$this->username);
 		console("[INFO] Protocol: ".$this->protocol);
 		$this->stop = false;
+	}
+	
+	public function setType($type = "demo"){
+		switch($type){
+			case "normal":
+				$this->serverType = "MCCPP;Demo;";
+				break;
+			case "minecon":
+				$this->serverType = "MCCPP;MINECON;";
+				break;
+		}
+		
 	}
 	
 	public function action($microseconds, $code){
@@ -86,7 +99,7 @@ class PocketMinecraftServer{
 					$data[0],
 					$this->serverID,
 					MAGIC,
-					"MCCPP;Demo;". $this->username,
+					$this->serverType. $this->username,
 				), false, $packet["ip"], $packet["port"]);
 				break;
 			case 0x05:

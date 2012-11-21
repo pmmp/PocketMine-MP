@@ -114,8 +114,9 @@ class PocketMinecraftClient{
 				$serverID = $data[1];
 				$this->send(0x84, array(
 					$this->counter[0],
-					0x400090,
+					0x40,
 					array(
+						"id" => 0x09,
 						"clientID" => $this->clientID,
 						"session" => "\x00\x0c\x98\x00",
 					),
@@ -123,13 +124,33 @@ class PocketMinecraftClient{
 				++$this->counter[0];
 				break;
 			case 0x84:
-				$this->counter[1] = $data[0];
-				$this->send(0xc0, array(1, true, $data[0]));
-				switch($custom->name){
-					case "serverHandshake":
-
+				if(isset($data[0])){
+					$this->counter[1] = $data[0];
+					$this->send(0xc0, array(1, true, $data[0]));
+				}
+				switch($data["id"]){
+					case 0x10:
+						$this->send(0x84, array(
+							$this->counter[0],
+							0x40,
+							array(
+								"id" => 0x13,
+								"port" => 19132,
+								"dataArray" => $data["dataArray"],
+							),
+						));
+						++$this->counter[0];
+						$this->send(0x84, array(
+							$this->counter[0],
+							0x40,
+							array(
+								"id" => 0x82,
+								"username" => $this->username,
+							),
+						));
+						++$this->counter[0];
 						break;
-					}		
+					}
 				break;
 		}
 	}

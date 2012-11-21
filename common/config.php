@@ -34,6 +34,6 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH . PATH_SEPARATO
 ini_set("memory_limit", "512M");
 define("CURRENT_PROTOCOL", 1);
 define("CURRENT_VERSION", 5);
-define("DEBUG", 3);
+define("DEBUG", 2);
 define("LOG", true);
 define("MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
