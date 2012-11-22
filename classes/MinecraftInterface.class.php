@@ -102,17 +102,17 @@ class MinecraftInterface{
 		$packet->protocol = $this->protocol;
 		$packet->parse();
 		$this->data[] = array($pid, $packet->data, $data[0], $data[1], $data[2]);
-		if(isset($packet->data["packets"]) and is_array($packet->data["packets"])){
-			foreach($packet->data["packets"] as $p){
-				$this->data[] = array($pid, $p[1], $p[2], $data[1], $data[2]);
-			}
-		}
 		return $this->popPacket();
 	}
 	
 	public function popPacket(){
 		if(count($this->data) > 0){
 			$p = array_shift($this->data);
+			if(isset($p[1]["packets"]) and is_array($p[1]["packets"])){
+				foreach($p[1]["packets"] as $d){
+					$this->data[] = array($p[0], $d[1], $d[2], $p[3], $p[4]);
+				}
+			}
 			$c = (isset($p[1]["id"]) ? true:false);
 			$p[2] = $c ? chr($p[1]["id"]).$p[2]:$p[2];
 			$this->writeDump(($c ? $p[1]["id"]:$p[0]), $p[2], $p[1], "server", $p[3], $p[4]);

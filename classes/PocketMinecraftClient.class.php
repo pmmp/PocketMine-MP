@@ -137,6 +137,7 @@ class PocketMinecraftClient{
 								"id" => 0x13,
 								"port" => 19132,
 								"dataArray" => $data["dataArray"],
+								"session" => $data["session"],
 							),
 						));
 						++$this->counter[0];
@@ -149,6 +150,9 @@ class PocketMinecraftClient{
 							),
 						));
 						++$this->counter[0];
+						break;
+					case 0x86:
+						console("[DEBUG] Time: ".$data["time"], true, true, 3);
 						break;
 					}
 				break;

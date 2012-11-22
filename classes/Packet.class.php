@@ -165,7 +165,7 @@ class Packet{
 					}
 					break;
 				case "customData":
-					$d = new CustomPacketHandler($this->data[1], $this->get(Utils::readShort($this->get(2), false) >> 3));
+					$d = new CustomPacketHandler($this->data[1], $this->get(true));
 					$d->data["packetName"] = $d->name;
 					if(isset($d->data["packets"])){
 						$this->data["packets"] = $d->data["packets"];
