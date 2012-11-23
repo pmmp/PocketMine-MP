@@ -101,12 +101,12 @@ class PocketMinecraftClient{
 				break;
 			case 0x06:
 				$serverID = $data[1];
-				$lenght = $data[3];
+				$length = $data[3];
 				$this->send(0x07, array(
 					MAGIC,
 					"\x04\x3f\x57\xfe\xfd",
 					19132,
-					$lenght,
+					$length,
 					$this->clientID,
 				));
 				break;

@@ -66,7 +66,7 @@ class CustomPacketHandler{
 						$id = ord($this->get(1));
 						$raw = $this->get($len - 1);
 						$pk = new CustomPacketHandler($id, $raw);
-						$pk->data["lenght"] = $len;
+						$pk->data["length"] = $len;
 						$pk->data["id"] = $id;
 						$pk->data["counter"] = $c;
 						$pk->data["packetName"] = $pk->name;
