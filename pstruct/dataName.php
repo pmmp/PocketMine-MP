@@ -36,4 +36,8 @@ $dataName = array(
 	0x84 => "Ready",
 	0x85 => "Message",
 	0x66 => "SetTime",
+	
+	0x93 => "MoveEntity_PosRot",
+	
+	0xa4 => "SetEntityMotion",
 );

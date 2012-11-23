@@ -49,45 +49,21 @@ class CustomPacketHandler{
 		$this->offset = 0;
 		$this->c = (bool) $create;
 		switch($pid){
-			case 0x60:
-			case 0x40:
-				if($this->c === false){
-					$this->data["packets"] = array();
-					$i = 0;
-					while($this->offset < strlen($this->raw)){
-						if($i > 0){
-							$pid = ord($this->get(1));
-						}
-						$len = Utils::readShort($this->get(2), false) >> 3;
-						$c = Utils::readTriad($this->get(3));
-						if($pid === 0x60 and $i === 0){
-							$this->data["unknown1"] = $this->get(4);
-						}
-						$id = ord($this->get(1));
-						$raw = $this->get($len - 1);
-						$pk = new CustomPacketHandler($id, $raw);
-						$pk->data["length"] = $len;
-						$pk->data["id"] = $id;
-						$pk->data["counter"] = $c;
-						$pk->data["packetName"] = $pk->name;
-						$this->data["packets"][] = array($pid, $pk->data, $raw);
-						if($pid === 0x60 and $i === 0){
-							$l = $this->get(3);
-							if(strlen($l) === 3){
-								$this->data["unknown2"] = $this->get(Utils::readTriad($l));
-							}
-						}
-						++$i;
-					}
-				}
-				break;
 			case 0x82:
 				if($this->c === false){	
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
-					$this->data["unknown1"] = $this->get(8);
+					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["unknown2"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
 					$this->raw .= "\x00\x00\x00\x07\x00\x00\x00\x07";
+				}
+				break;
+			case 0x85:
+				if($this->c === false){	
+					$this->data["message"] = $this->get(ord($this->get(1)));
+				}else{
+					$this->raw .= chr(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
 			case 0x86:

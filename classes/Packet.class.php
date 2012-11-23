@@ -165,8 +165,7 @@ class Packet{
 					}
 					break;
 				case "customData":
-					$d = new CustomPacketHandler($this->data[1], $this->get(true));
-					$d->data["packetName"] = $d->name;
+					$d = new SerializedPacketHandler($this->data[1], $this->get(true));
 					if(isset($d->data["packets"])){
 						$this->data["packets"] = $d->data["packets"];
 					}else{
