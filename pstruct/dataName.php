@@ -31,5 +31,9 @@ $dataName = array(
 	0x10 => "ServerHandshake",
 	0x13 => "ClientConnect",
 	0x15 => "ClientDisconnect",
-	0x82 => "LoginPacket",
+	0x82 => "Login",
+	0x83 => "LoginStatus",
+	0x84 => "Ready",
+	0x85 => "Message",
+	0x66 => "SetTime",
 );
