@@ -72,7 +72,7 @@ class Packet{
 					break;
 				case "customData":
 					$reply = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
-					$this->addRaw(Utils::writeShort(strlen($reply->raw) << 3));
+					$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
 					$this->addRaw(Utils::writeTriad($this->data[$field]["count"]));
 					$this->addRaw(chr($this->data[$field]["id"]));
 					$this->addRaw($reply->raw);					
