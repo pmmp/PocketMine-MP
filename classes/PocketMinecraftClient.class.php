@@ -152,7 +152,7 @@ class PocketMinecraftClient{
 						++$this->counter[0];
 						break;
 					case 0x86:
-						console("[DEBUG] Time: ".$data["time"], true, true, 3);
+						console("[DEBUG] Time: ".$data["time"], true, true, 2);
 						break;
 					}
 				break;

@@ -161,6 +161,16 @@ class CustomPacketHandler{
 					$this->raw .= "\x00\xae\x21\x4e";
 				}
 				break;
+			case 0x15:
+				//null
+				break;
+			case 0x00:
+				if($this->c === false){
+					$this->data["payload"] = $this->get(8);
+				}else{
+					$this->raw .= $this->data["payload"];
+				}				
+				break;
 		}
 	}
 

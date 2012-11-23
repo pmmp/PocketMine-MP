@@ -26,15 +26,17 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $server, $protocol, $client, $buffer;
+	var $pstruct, $name, $server, $protocol, $client, $buffer, $dataName;
 	
 	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
 		$this->server = new Socket($server, $port, (bool) $listen);
 		$this->protocol = (int) $protocol;
 		require("pstruct/RakNet.php");
 		require("pstruct/packetName.php");
+		require("pstruct/dataName.php");
 		$this->pstruct = $pstruct;
 		$this->name = $packetName;
+		$this->dataName = $dataName;
 		$this->buffer = array();
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
@@ -53,7 +55,7 @@ class MinecraftInterface{
 	
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
 		if(LOG === true and DEBUG >= 2){
-			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".$this->name[$pid]." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
+			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".(isset($data["id"]) ? "DATA ".$this->dataName[$pid]:$this->name[$pid])." (0x".Utils::strTohex(chr($pid)).") [lenght ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
 				foreach($data as $i => $d){

@@ -47,10 +47,10 @@ class Session{
 		}
 	}
 	
-	public function close(){
+	public function close($reason = "timeout"){
 		$this->server->deleteEvent("onTick", $this->eventID);
 		$this->connected = false;
-		console("[DEBUG] Session with ".$this->ip.":".$this->port." closed due to timeout", true, true, 2);
+		console("[DEBUG] Session with ".$this->ip.":".$this->port." closed due to ".$reason, true, true, 2);
 	}
 	
 	public function handle($pid, &$data){
@@ -72,6 +72,19 @@ class Session{
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
+						/*case 0x00:
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x40,
+								array(
+									"payload" => $data["payload"],
+								),
+							));
+							++$this->counter[0];						
+							break;*/
+						case 0x15:
+							$this->close("client disconnect");
+							break;
 						case 0x09:
 							$this->send(0x84, array(
 								$this->counter[0],
