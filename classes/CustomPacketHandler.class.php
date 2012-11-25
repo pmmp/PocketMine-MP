@@ -59,6 +59,13 @@ class CustomPacketHandler{
 					$this->raw .= "\x00\x00\x00\x07\x00\x00\x00\x07";
 				}
 				break;
+			case 0x83:
+				if($this->c === false){	
+					$this->data["unknown1"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["unknown1"]);
+				}				
+				break;
 			case 0x85:
 				if($this->c === false){	
 					$this->data["message"] = $this->get(ord($this->get(1)));
