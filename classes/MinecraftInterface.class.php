@@ -29,7 +29,7 @@ class MinecraftInterface{
 	var $pstruct, $name, $server, $protocol, $client, $buffer, $dataName;
 	
 	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
-		$this->server = new Socket($server, $port, (bool) $listen);
+		$this->server = new UDPSocket($server, $port, (bool) $listen);
 		$this->protocol = (int) $protocol;
 		require("pstruct/RakNet.php");
 		require("pstruct/packetName.php");
@@ -59,7 +59,7 @@ class MinecraftInterface{
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
 				foreach($data as $i => $d){
-					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special" or is_int($this->pstruct[$pid][$i])) ? Utils::strToHex($d):$d).")":$this->pstruct[$pid][$i]."(\"".serialize($d)."\")").PHP_EOL;
+					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special" or is_int($this->pstruct[$pid][$i])) ? Utils::strToHex($d):Utils::printable($d)).")":$this->pstruct[$pid][$i]."(\"".serialize(array_map("Utils::printable", $d))."\")").PHP_EOL;
 				}
 			}
 			$p .= PHP_EOL;

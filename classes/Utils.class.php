@@ -143,6 +143,10 @@ class Utils{
 		return $output;
 	}
 	
+	public static function printable($str){
+		return preg_replace('#([^\x20-\x7E])#', '.', $str);
+	}
+	
 	public static function microtime(){
 		return microtime(true);
 	}

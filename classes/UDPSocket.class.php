@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 
-class Socket{
+class UDPSocket{
 	private $encrypt;
 	var $buffer, $connected, $errors, $sock, $server;
 

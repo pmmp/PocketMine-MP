@@ -72,17 +72,17 @@ class SerializedPacketHandler{
 						$pk = new CustomPacketHandler($id, $raw);
 						$pk->data["length"] = $len;
 						$pk->data["id"] = $id;
-						if($pid !== 0x00 and $i === 0){
+						if($pid !== 0x00){
 							$pk->data["counter"] = $c;
 						}
 						$pk->data["packetName"] = $pk->name;
 						$this->data["packets"][] = array($pid, $pk->data, $raw);
-						if($pid === 0x60 and $i === 0){
+						/*if($pid === 0x60 and $i === 0){
 							$l = $this->get(3);
 							if(strlen($l) === 3){
 								$this->data["unknown2"] = $this->get(Utils::readTriad($l));
 							}
-						}
+						}*/
 						++$i;
 					}
 				}
