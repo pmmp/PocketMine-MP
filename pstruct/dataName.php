@@ -35,7 +35,8 @@ $dataName = array(
 	0x83 => "LoginStatus",
 	0x84 => "Ready",
 	0x85 => "Message",
-	0x66 => "SetTime",
+	0x86 => "SetTime",
+	0x87 => "StartGame",
 	
 	0x93 => "MoveEntity_PosRot",
 	

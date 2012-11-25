@@ -78,7 +78,24 @@ class CustomPacketHandler{
 					$this->data["time"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["time"]);
-				}		
+				}
+				break;
+			case 0x87:
+				if($this->c === false){	
+					$this->data["seed"] = $this->get(8);
+					$this->data["unknown1"] = $this->get(4);
+					$this->data["unknown2"] = $this->get(4);
+					$this->data["spawnX"] = Utils::readFloat($this->get(4));
+					$this->data["spawnY"] = Utils::readFloat($this->get(4));
+					$this->data["spawnZ"] = Utils::readFloat($this->get(4));
+				}else{
+					$this->raw .= $this->data["seed"];
+					$this->raw .= "\x00\x00\x00\x01\x00\x00\x00\x05";
+					$this->raw .= "\x43\x00\x80\x00\x42\x82\x00\x00\x43\x00\x80\x00";
+					/*$this->raw .= Utils::writeFloat($this->data["spawnX"]);
+					$this->raw .= Utils::writeFloat($this->data["spawnY"]);
+					$this->raw .= Utils::writeFloat($this->data["spawnZ"]);*/
+				}			
 				break;
 			case 0x09:
 				if($this->c === false){	

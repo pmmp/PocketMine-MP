@@ -77,12 +77,6 @@ class SerializedPacketHandler{
 						}
 						$pk->data["packetName"] = $pk->name;
 						$this->data["packets"][] = array($pid, $pk->data, $raw);
-						/*if($pid === 0x60 and $i === 0){
-							$l = $this->get(3);
-							if(strlen($l) === 3){
-								$this->data["unknown2"] = $this->get(Utils::readTriad($l));
-							}
-						}*/
 						++$i;
 					}
 				}

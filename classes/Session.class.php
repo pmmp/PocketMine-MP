@@ -86,9 +86,9 @@ class Session{
 							$this->close("client disconnect");
 							break;
 						case 0x09:
-							$this->send(0x84, array(
+							$this->send(0x88, array(
 								$this->counter[0],
-								0x40,
+								0x00,
 								array(
 									"id" => 0x10,
 									"count" => 0,
@@ -98,10 +98,24 @@ class Session{
 							));
 							++$this->counter[0];
 							break;
+							
 						case 0x82:
 							$this->username = $data["username"];
 							console("[INFO] User ".$this->username." connected from ".$this->ip.":".$this->port);
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => 0x87,
+									"seed" => $this->server->seed,
+									"spawnX" => 0,
+									"spawnY" => 100,
+									"spawnZ" => 0,
+								),
+							));
+							++$this->counter[0];
 							break;
+							
 					}
 					break;
 				case 0x8c:

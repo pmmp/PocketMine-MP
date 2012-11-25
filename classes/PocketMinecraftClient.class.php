@@ -114,7 +114,7 @@ class PocketMinecraftClient{
 				$serverID = $data[1];
 				$this->send(0x84, array(
 					$this->counter[0],
-					0x40,
+					0x00,
 					array(
 						"id" => 0x09,
 						"clientID" => $this->clientID,
@@ -132,7 +132,7 @@ class PocketMinecraftClient{
 					case 0x00:
 						$this->send(0x84, array(
 							$this->counter[0],
-							0x40,
+							0x00,
 							array(
 								"id" => 0x00,
 								"payload" => $data["payload"],
@@ -143,7 +143,7 @@ class PocketMinecraftClient{
 					case 0x10:
 						$this->send(0x84, array(
 							$this->counter[0],
-							0x40,
+							0x00,
 							array(
 								"id" => 0x13,
 								"port" => 19132,
@@ -154,7 +154,7 @@ class PocketMinecraftClient{
 						++$this->counter[0];
 						$this->send(0x84, array(
 							$this->counter[0],
-							0x40,
+							0x00,
 							array(
 								"id" => 0x82,
 								"username" => $this->username,

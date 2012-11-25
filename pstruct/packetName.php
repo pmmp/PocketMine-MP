@@ -34,10 +34,10 @@ $packetName = array(
 	0x1a => "ID_INCOMPATIBLE_PROTOCOL_VERSION", //RakNet
 	0x1c => "ID_UNCONNECTED_PONG", //RakNet
 	0x1d => "ID_ADVERTISE_SYSTEM", //RakNet
-	0x80 => "Unknown", //Minecraft Implementation
-	0x84 => "Data Packet", //Minecraft Implementation
-	0x88 => "Unknown", //Minecraft Implementation
-	0x8c => "Unknown", //Minecraft Implementation
+	0x80 => "Custom Packet", //Minecraft Implementation
+	0x84 => "Custom Packet", //Minecraft Implementation
+	0x88 => "Custom Packet", //Minecraft Implementation
+	0x8c => "Custom Packet", //Minecraft Implementation
 	0xa0 => "Unknown", //Minecraft Implementation
 	0xc0 => "ACK", //Minecraft Implementation
 );
