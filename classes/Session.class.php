@@ -86,7 +86,7 @@ class Session{
 							$this->close("client disconnect");
 							break;
 						case 0x09:
-							$this->send(0x88, array(
+							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
 								array(

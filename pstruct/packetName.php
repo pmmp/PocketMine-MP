@@ -38,6 +38,6 @@ $packetName = array(
 	0x84 => "Custom Packet", //Minecraft Implementation
 	0x88 => "Custom Packet", //Minecraft Implementation
 	0x8c => "Custom Packet", //Minecraft Implementation
-	0xa0 => "Unknown", //Minecraft Implementation
+	0xa0 => "NACK", //Minecraft Implementation
 	0xc0 => "ACK", //Minecraft Implementation
 );
