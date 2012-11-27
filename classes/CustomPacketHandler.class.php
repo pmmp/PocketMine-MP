@@ -82,19 +82,21 @@ class CustomPacketHandler{
 				break;
 			case 0x87:
 				if($this->c === false){	
-					$this->data["seed"] = $this->get(8);
-					$this->data["unknown1"] = $this->get(4);
-					$this->data["unknown2"] = $this->get(4);
-					$this->data["spawnX"] = Utils::readFloat($this->get(4));
-					$this->data["spawnY"] = Utils::readFloat($this->get(4));
-					$this->data["spawnZ"] = Utils::readFloat($this->get(4));
+					$this->data["seed"] = $this->get(4);
+					$this->data["spawnX"] = Utils::readInt($this->get(4));
+					$this->data["spawnY"] = Utils::readInt($this->get(4));
+					$this->data["spawnZ"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
 				}else{
 					$this->raw .= $this->data["seed"];
-					$this->raw .= "\x00\x00\x00\x01\x00\x00\x00\x05";
-					$this->raw .= "\x43\x00\x80\x00\x42\x82\x00\x00\x43\x00\x80\x00";
-					/*$this->raw .= Utils::writeFloat($this->data["spawnX"]);
-					$this->raw .= Utils::writeFloat($this->data["spawnY"]);
-					$this->raw .= Utils::writeFloat($this->data["spawnZ"]);*/
+					$this->raw .= Utils::writeInt($this->data["spawnX"]);
+					$this->raw .= Utils::writeInt($this->data["spawnY"]);
+					$this->raw .= Utils::writeInt($this->data["spawnZ"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}			
 				break;
 			case 0x09:

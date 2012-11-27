@@ -108,6 +108,9 @@ class Session{
 								array(
 									"id" => 0x87,
 									"seed" => $this->server->seed,
+									"x" => 0,
+									"y" => 100,
+									"z" => 0,
 									"spawnX" => 0,
 									"spawnY" => 100,
 									"spawnZ" => 0,

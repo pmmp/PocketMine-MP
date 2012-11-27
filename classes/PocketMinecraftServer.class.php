@@ -36,7 +36,7 @@ class PocketMinecraftServer{
 		$this->username = $username;
 		$this->cnt = 1;
 		$this->serverID = substr(Utils::generateKey(), 0, 8);
-		$this->seed = "\x4f\xf0\x2d\x84\x00\x00\x00\x00";
+		$this->seed = "\x4f\xf0\x2d\x84";
 		$this->events = array("disabled" => array());
 		$this->actions = array();
 		$this->clients = array();
