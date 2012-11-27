@@ -129,17 +129,6 @@ class PocketMinecraftClient{
 					$this->send(0xc0, array(1, true, $data[0]));
 				}
 				switch($data["id"]){
-					case 0x00:
-						$this->send(0x84, array(
-							$this->counter[0],
-							0x00,
-							array(
-								"id" => 0x00,
-								"payload" => $data["payload"],
-							),
-						));
-						++$this->counter[0];
-						break;
 					case 0x10:
 						$this->send(0x84, array(
 							$this->counter[0],
@@ -158,6 +147,15 @@ class PocketMinecraftClient{
 							array(
 								"id" => 0x82,
 								"username" => $this->username,
+							),
+						));
+						++$this->counter[0];
+						$this->send(0x84, array(
+							$this->counter[0],
+							0x00,
+							array(
+								"id" => 0xb1,
+								"message" => $this->username,
 							),
 						));
 						++$this->counter[0];

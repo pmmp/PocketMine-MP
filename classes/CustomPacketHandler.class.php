@@ -68,9 +68,9 @@ class CustomPacketHandler{
 				break;
 			case 0x85:
 				if($this->c === false){	
-					$this->data["message"] = $this->get(ord($this->get(1)));
+					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
-					$this->raw .= chr(strlen($this->data["message"])).$this->data["message"];
+					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
 			case 0x86:
@@ -98,6 +98,13 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}			
+				break;
+			case 0xb1:
+				if($this->c === false){	
+					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
+				}else{
+					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
+				}
 				break;
 			case 0x09:
 				if($this->c === false){	
