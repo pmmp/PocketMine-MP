@@ -35,7 +35,7 @@ class PocketMinecraftClient{
 		$this->username = $username;
 		$this->connected = false;
 		$this->cnt = 1;
-		$this->clientID = substr(Utils::generateKey(), 0, 8);
+		$this->clientID = Utils::getRandomBytes(8);
 		$this->events = array("disabled" => array());
 		$this->actions = array();
 		$this->interface = new MinecraftInterface("255.255.255.255", $protocol, 19132);		
@@ -118,7 +118,7 @@ class PocketMinecraftClient{
 					array(
 						"id" => 0x09,
 						"clientID" => $this->clientID,
-						"session" => "\x00\x0c\x98\x00",
+						"session" => Utils::getRandomBytes(2),
 					),
 				));
 				++$this->counter[0];
@@ -138,6 +138,15 @@ class PocketMinecraftClient{
 								"port" => 19132,
 								"dataArray" => $data["dataArray"],
 								"session" => $data["session"],
+							),
+						));
+						++$this->counter[0];
+						$this->send(0x84, array(
+							$this->counter[0],
+							0x00,
+							array(
+								"id" => 0x00,
+								"payload" => "\x00\x00\x00\x00\x00".$data["session"]."\x5e",
 							),
 						));
 						++$this->counter[0];

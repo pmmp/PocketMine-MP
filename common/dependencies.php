@@ -48,13 +48,6 @@ if(php_sapi_name()!=="cli"){
 	++$errors;
 }
 
-if(!extension_loaded("gmp")){
-	console("[NOTICE] Enable GMP extension to increase performance", true, true, 0);
-	define("GMPEXT", false);
-}else{
-	define("GMPEXT", true);
-}
-
 if(!function_exists("gzinflate")){
 	console("[ERROR] Unable to find Zlib extension", true, true, 0);
 	++$errors;
@@ -75,5 +68,6 @@ require_once("classes/Packet.class.php");
 require_once("classes/SerializedPacketHandler.class.php");
 require_once("classes/CustomPacketHandler.class.php");
 require_once("classes/MinecraftInterface.class.php");
+require_once("classes/BigInteger.class.php");
 
 ?>
