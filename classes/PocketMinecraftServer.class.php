@@ -144,7 +144,7 @@ class PocketMinecraftServer{
 					}
 					$ln = 15;
 					$txt = substr($this->description, $this->custom["times_".$CID], $ln);
-					$txt .= substr($this->descriptiont, 0, $ln - strlen($txt));
+					$txt .= substr($this->description, 0, $ln - strlen($txt));
 					$this->send(0x1c, array(
 						$data[0],
 						$this->serverID,
