@@ -33,6 +33,7 @@ class MinecraftInterface{
 		$this->protocol = (int) $protocol;
 		require("pstruct/RakNet.php");
 		require("pstruct/packetName.php");
+		require("pstruct/".$this->protocol.".php");
 		require("pstruct/dataName.php");
 		$this->pstruct = $pstruct;
 		$this->name = $packetName;

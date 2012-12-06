@@ -25,15 +25,17 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-set_time_limit(0);
-error_reporting(E_ALL ^ E_NOTICE);
-ini_set("display_errors", 1);
-ini_set('default_charset', 'utf-8');
-define("FILE_PATH", dirname(__FILE__)."/../");
-set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH . PATH_SEPARATOR . FILE_PATH . "/classes/");
-ini_set("memory_limit", "512M");
-define("CURRENT_PROTOCOL", 5);
-define("CURRENT_VERSION", 1);
-define("DEBUG", 2);
-define("LOG", true);
-define("MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
+//Protocol Version: 5
+
+
+define("MC_KEEP_ALIVE", 0x00);
+define("MC_CLIENT_HANDSHAKE", 0x09);
+define("MC_SERVER_HANDSHAKE", 0x10);
+define("MC_CLIENT_CONNECT", 0x13);
+define("MC_CLIENT_DISCONNECT", 0x15);
+define("MC_LOGIN", 0x82);
+define("MC_LOGIN_STATUS", 0x83);
+define("MC_READY", 0x84);
+define("MC_CHAT", 0x85);
+define("MC_SET_TIME", 0x86);
+define("MC_START_GAME", 0x87);

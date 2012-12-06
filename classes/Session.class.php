@@ -55,16 +55,6 @@ class Session{
 		foreach($this->evid as $ev){
 			$this->server->deleteEvent($ev[0], $ev[1]);
 		}
-		if($this->reason === "server stop"){
-			$this->send(0x84, array(
-				$this->counter[0],
-				0x00,
-				array(
-					"id" => 0x15,
-				),
-			));
-			++$this->counter[0];		
-		}
 		$this->connected = false;
 		$this->server->trigger("onChat", $this->username." left the game");
 		console("[DEBUG] Session with ".$this->ip.":".$this->port." closed due to ".$reason, true, true, 2);
@@ -78,7 +68,7 @@ class Session{
 					$this->counter[0],
 					0x00,
 					array(
-						"id" => 0x86,
+						"id" => MC_SET_TIME,
 						"time" => $data,
 					),
 				));
@@ -89,7 +79,7 @@ class Session{
 					$this->counter[0],
 					0x00,
 					array(
-						"id" => 0x85,
+						"id" => MC_CHAT,
 						"message" => $data,
 					),
 				));
@@ -110,22 +100,25 @@ class Session{
 						$data[3],
 						0,
 					));
-					break;
+					break;					
+				case 0x80:
 				case 0x84:
+				case 0x88:
+				case 0x8c:
 					if(isset($data[0])){
 						$this->counter[1] = $data[0];
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
-						case 0x15:
+						case MC_CLIENT_DISCONNECT:
 							$this->close("client disconnect");
 							break;
-						case 0x09:
+						case MC_CLIENT_HANDSHAKE:
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
 								array(
-									"id" => 0x10,
+									"id" => MC_SERVER_HANDSHAKE,
 									"port" => $this->port,
 									"session" => $data["session"],
 									"session2" => Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9"),
@@ -134,7 +127,7 @@ class Session{
 							++$this->counter[0];
 							break;
 							
-						case 0x82:
+						case MC_LOGIN:
 							$this->username = $data["username"];
 							console("[INFO] ".$this->username." connected from ".$this->ip.":".$this->port);
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
@@ -143,7 +136,7 @@ class Session{
 								$this->counter[0],
 								0x00,
 								array(
-									"id" => 0x83,
+									"id" => MC_LOGIN_STATUS,
 									"status" => 0,
 								),
 							));
@@ -152,7 +145,7 @@ class Session{
 								$this->counter[0],
 								0x00,
 								array(
-									"id" => 0x87,
+									"id" => MC_START_GAME,
 									"seed" => $this->server->seed,
 									"x" => 128,
 									"y" => 100,
@@ -171,9 +164,6 @@ class Session{
 							break;
 							
 					}
-					break;
-				case 0x8c:
-					$counter = $data[0];
 					break;
 			}
 		}

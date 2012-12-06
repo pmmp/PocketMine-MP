@@ -26,23 +26,23 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 $dataName = array(
-	0x00 => "KeepAlive",
+	MC_KEEP_ALIVE => "KeepAlive",
 	
-	0x09 => "ClientHandshake",
-	0x10 => "ServerHandshake",
+	MC_CLIENT_HANDSHAKE => "ClientHandshake",
+	MC_SERVER_HANDSHAKE => "ServerHandshake",
 	
-	0x13 => "ClientConnect",
+	MC_CLIENT_CONNECT => "ClientConnect",
 	
-	0x15 => "ClientDisconnect",
+	MC_CLIENT_DISCONNECT => "ClientDisconnect",
 	
-	0x18 => "ServerDisconnect",
+	0x18 => "Unknown",
 	
-	0x82 => "Login",
-	0x83 => "LoginStatus",
-	0x84 => "Ready",
-	0x85 => "Message",
-	0x86 => "SetTime",
-	0x87 => "StartGame",
+	MC_LOGIN => "Login",
+	MC_LOGIN_STATUS => "LoginStatus",
+	MC_READY => "Ready",
+	MC_CHAT => "Chat",
+	MC_SET_TIME => "SetTime",
+	MC_START_GAME => "StartGame",
 	
 	0x93 => "MoveEntity_PosRot",
 	0x94 => "MovePlayer",
@@ -59,4 +59,6 @@ $dataName = array(
 	0xa5 => "SetHealth",
 	
 	0xa7 => "Animate",
+	
+	0xb1 => "ClientMessage"
 );

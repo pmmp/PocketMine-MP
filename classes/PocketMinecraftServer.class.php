@@ -30,7 +30,7 @@ require_once("classes/Session.class.php");
 class PocketMinecraftServer{
 	var $seed, $protocol, $gamemode, $name, $maxClients, $clients;
 	protected $interface, $entities, $player, $cnt, $events, $version, $serverType;
-	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $protocol = CURRENT_PROTOCOL, $serverID = false, $version = CURRENT_VERSION){
+	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->gamemode = (int) $gamemode;
 		$this->port = (int) $port;
 		$this->version = (int) $version;
@@ -55,6 +55,7 @@ class PocketMinecraftServer{
 		$this->action(1000000 * 5 * 60, '$this->chat(false, "Check it at http://bit.ly/RE7uaW");');
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
+		console("[INFO] Protocol Version: ".$this->protocol);
 		console("[INFO] Seed: ".$this->seed);
 		console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
 		console("[INFO] Max Clients: ".$this->maxClients);
@@ -143,7 +144,7 @@ class PocketMinecraftServer{
 			case 0x05:
 				$version = $data[1];
 				$size = strlen($data[2]);
-				if($version != 5){
+				if($version !== $this->protocol){
 					$this->send(0x1a, array(
 						5,
 						MAGIC,

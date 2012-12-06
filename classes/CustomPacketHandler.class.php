@@ -49,14 +49,14 @@ class CustomPacketHandler{
 		$this->offset = 0;
 		$this->c = (bool) $create;
 		switch($pid){
-			case 0x00:
+			case MC_KEEP_ALIVE:
 				if($this->c === false){
 					$this->data["payload"] = Utils::readLong($this->get(8));
 				}else{
 					$this->raw .= Utils::writeLong($this->data["payload"]);
 				}				
 				break;
-			case 0x09:
+			case MC_CLIENT_HANDSHAKE:
 				if($this->c === false){	
 					$this->data["clientID"] = Utils::readLong($this->get(8));
 					$this->data["session"] = Utils::readLong($this->get(8));
@@ -67,7 +67,7 @@ class CustomPacketHandler{
 					$this->raw .= "\x00";
 				}
 				break;
-			case 0x10:
+			case MC_SERVER_HANDSHAKE:
 				if($this->c === false){
 					$this->data["cookie"] = $this->get(4); // 043f57fe
 					$this->data["security"] = $this->get(1);
@@ -98,7 +98,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeLong($this->data["session2"]);
 				}		
 				break;
-			case 0x13:
+			case MC_CLIENT_CONNECT:
 				if($this->c === false){
 					$this->data["cookie"] = $this->get(4); // 043f57fe
 					$this->data["security"] = $this->get(1);
@@ -121,13 +121,13 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeLong($this->data["session"]);
 				}
 				break;
-			case 0x15:
+			case MC_CLIENT_DISCONNECT:
 				//null
 				break;
 			case 0x18:
 				//null
 				break;
-			case 0x82:
+			case MC_LOGIN:
 				if($this->c === false){	
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
 					$this->data["unknown1"] = Utils::readInt($this->get(4));
@@ -137,21 +137,21 @@ class CustomPacketHandler{
 					$this->raw .= "\x00\x00\x00\x07\x00\x00\x00\x07";
 				}
 				break;
-			case 0x83:
+			case MC_LOGIN_STATUS:
 				if($this->c === false){	
 					$this->data["status"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["status"]);
 				}
 				break;
-			case 0x84:
+			case MC_READY:
 				if($this->c === false){	
 					$this->data["status"] = ord($this->get(1));
 				}else{
 					$this->raw .= chr($this->data["status"]);
 				}				
 				break;
-			case 0x85:
+			case MC_CHAT:
 				if($this->c === false){	
 					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
