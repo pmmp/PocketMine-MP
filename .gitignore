@@ -1,6 +1,8 @@
 *.log
 *.bat
 server.properties
+white-list.txt
+banned-ips.txt
 
 #################
 ## Eclipse

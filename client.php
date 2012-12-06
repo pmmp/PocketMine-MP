@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("common/dependencies.php");
 require_once("classes/PocketMinecraftClient.class.php");
 file_put_contents("packets.log", "");
+define("DEBUG", 2);
 
 $client = new PocketMinecraftClient("shoghicp");
 console("[INFO] Searching servers...");

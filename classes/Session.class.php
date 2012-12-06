@@ -52,13 +52,15 @@ class Session{
 		}
 	}
 	
-	public function close($reason = "server stop"){
+	public function close($reason = "server stop", $msg = true){
 		foreach($this->evid as $ev){
 			$this->server->deleteEvent($ev[0], $ev[1]);
 		}
 		$this->connected = false;
-		$this->server->trigger("onChat", $this->username." left the game");
-		console("[DEBUG] Session with ".$this->ip.":".$this->port." closed due to ".$reason, true, true, 2);
+		if($msg === true){
+			$this->server->trigger("onChat", $this->username." left the game");
+		}
+		console("[INFO] Session with ".$this->ip.":".$this->port." closed due to ".$reason);
 		unset($this->server->clients[$this->CID]);
 	}
 	
@@ -132,6 +134,10 @@ class Session{
 							break;
 						case MC_LOGIN:
 							$this->username = $data["username"];
+							if($this->server->whitelist !== false and !in_array($this->username, $this->server->whitelist)){
+								$this->close("\"".$this->username."\" not being on white-list", false);
+								break;
+							}
 							console("[INFO] Player \"".$this->username."\" connected from ".$this->ip.":".$this->port);
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));

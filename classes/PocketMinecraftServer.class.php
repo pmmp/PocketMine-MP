@@ -40,6 +40,8 @@ class PocketMinecraftServer{
 		$this->eidCnt = 1;
 		$this->maxClients = 20;
 		$this->description = "";
+		$this->whitelist = false;
+		$this->bannedIPs = array();
 		$this->motd = "Welcome to ".$name;
 		$this->serverID = $serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$serverID;
 		$this->seed = $seed === false ? Utils::readInt(Utils::getRandomBytes(4)):((int) $seed);
@@ -51,6 +53,7 @@ class PocketMinecraftServer{
 		//$this->event("onTick", "onTick", true);
 		$this->event("onChat", "eventHandler", true);
 		$this->action(1000000, '$this->time += 10;$this->trigger("onTimeChange", $this->time);');
+		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, $this->port, true, false);		
@@ -58,6 +61,7 @@ class PocketMinecraftServer{
 		$this->action(1000000 * 3 * 60, '$this->chat(false, "This server uses Pocket-Minecraft-PHP");');
 		sleep(2);
 		$this->action(1000000 * 3 * 60, '$this->chat(false, "Check it at http://bit.ly/RE7uaW");');
+		$this->reloadConfig();
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
 		console("[INFO] Protocol Version: ".$this->protocol);
@@ -65,6 +69,13 @@ class PocketMinecraftServer{
 		console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
 		console("[INFO] Max Clients: ".$this->maxClients);
 		$this->stop = false;
+	}
+	
+	public function reloadConfig(){
+		if($this->whitelist === true or is_array($this->whitelist)){
+			$this->whitelist = explode("\n", str_replace(array(" ","\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")));
+		}
+		$this->bannedIPs = explode("\n", str_replace(array(" ","\t","\r"), "", file_get_contents(FILE_PATH."banned-ips.txt")));
 	}
 	
 	public function close($reason = "stop"){	
@@ -139,6 +150,9 @@ class PocketMinecraftServer{
 		}else{
 			switch($packet["pid"]){
 				case 0x02:
+					if(in_array($packet["ip"], $this->bannedIPs)){
+						break;
+					}
 					if(!isset($this->custom["times_".$CID])){
 						$this->custom["times_".$CID] = 0;
 					}
@@ -154,6 +168,9 @@ class PocketMinecraftServer{
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
 				case 0x05:
+					if(in_array($packet["ip"], $this->bannedIPs)){
+						break;
+					}
 					if(count($this->clients) >= $this->maxClients){
 						break;
 					}
@@ -175,6 +192,9 @@ class PocketMinecraftServer{
 					}
 					break;
 				case 0x07:
+					if(in_array($packet["ip"], $this->bannedIPs)){
+						break;
+					}
 					if(count($this->clients) >= $this->maxClients){
 						break;
 					}
