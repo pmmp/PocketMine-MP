@@ -337,7 +337,7 @@ class Utils{
 	
 	public static function writeLong($value){
 		$long = new Math_BigInteger($value, -10);
-		return $long->toBytes(true);
+		return str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT);
 	}	
 	
 }

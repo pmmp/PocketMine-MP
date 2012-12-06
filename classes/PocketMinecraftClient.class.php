@@ -118,7 +118,7 @@ class PocketMinecraftClient{
 					array(
 						"id" => 0x09,
 						"clientID" => $this->clientID,
-						"session" => Utils::getRandomBytes(2),
+						"session" => "\x00\x00\x00\x00\x03\x1c\xaf\x05",
 					),
 				));
 				++$this->counter[0];

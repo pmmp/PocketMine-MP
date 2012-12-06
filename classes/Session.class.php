@@ -91,9 +91,9 @@ class Session{
 								0x00,
 								array(
 									"id" => 0x10,
-									"count" => 0,
 									"port" => $this->port,
-									"session" => $data[2]["session"],
+									"session" => $data["session"],
+									"session2" => Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9"),
 								),
 							));
 							++$this->counter[0];

@@ -49,36 +49,40 @@ class CustomPacketHandler{
 		$this->offset = 0;
 		$this->c = (bool) $create;
 		switch($pid){
+			case 0x00:
+				if($this->c === false){
+					$this->data["payload"] = Utils::readLong($this->get(8));
+				}else{
+					$this->raw .= Utils::writeLong($this->data["payload"]);
+				}				
+				break;
 			case 0x09:
 				if($this->c === false){	
 					$this->data["clientID"] = $this->get(8);
-					$this->data["unknown1"] = $this->get(4);
-					$this->data["session"] = $this->get(2);
-					$this->data["unknown2"] = $this->get(2);
+					$this->data["session"] = Utils::readLong($this->get(8));
+					$this->data["unknown2"] = $this->get(1);
 				}else{
 					$this->raw .= $this->data["clientID"];
-					$this->raw .= "\x00\x00\x00\x00\x00";
-					$this->raw .= $this->data["session"];
-					$this->raw .= "\x19\x00";
+					$this->raw .= Utils::writeLong($this->data["session"]);
+					$this->raw .= "\x00";
 				}
 				break;
 			case 0x10:
 				if($this->c === false){
-					$this->data["cookie"] = $this->get(4); // 043f57ff
-					$this->data["unknown1"] = $this->get(1);
+					$this->data["cookie"] = $this->get(4); // 043f57fe
+					$this->data["security"] = $this->get(1);
 					$this->data["port"] = Utils::readShort($this->get(2), false);
 					$this->data["dataArray"] = Utils::readDataArray($this->get(true, false), 10, $offset);
 					$this->get($offset);
-					$this->data["unknown2"] = $this->get(8);
-					$this->data["unknown3"] = $this->get(2);
-					$this->data["unknown4"] = $this->get(5);
-					$this->data["session"] = $this->get(2);
+					$this->data["unknown1"] = $this->get(2);
+					$this->data["session"] = Utils::readLong($this->get(8));
+					$this->data["session2"] = Utils::readLong($this->get(8));
 				}else{
-					$this->raw .= "\x04\x3f\x57\xff";
-					$this->raw .= "\x3f";
+					$this->raw .= "\x04\x3f\x57\xfe";
+					$this->raw .= "\xcd";
 					$this->raw .= Utils::writeShort($this->data["port"]);
 					$this->raw .= Utils::writeDataArray(array(
-						"\x80\xff\xff\xfe",
+						"\xff\xff\xff\xff",
 						"\xff\xff\xff\xff",
 						"\xff\xff\xff\xff",
 						"\xff\xff\xff\xff",
@@ -89,30 +93,32 @@ class CustomPacketHandler{
 						"\xff\xff\xff\xff",
 						"\xff\xff\xff\xff",
 					));
-					$this->raw .= "\x00\x00\x00\x00\x00\x00\x00\x00";
-					$this->raw .= "\x0c\x98";
-					$this->raw .= "\x00\x00\x00\x00\x00\x00\x00\x00";
-					$this->raw .= $this->data["session"];
+					$this->raw .= "\x00\x00";
+					$this->raw .= Utils::writeLong($this->data["session"]);
+					$this->raw .= Utils::writeLong($this->data["session2"]);
 				}		
 				break;
 			case 0x13:
 				if($this->c === false){
-					$this->data["cookie"] = $this->get(4); // 043f57ff
-					$this->data["unknown1"] = $this->get(1);
+					$this->data["cookie"] = $this->get(4); // 043f57fe
+					$this->data["security"] = $this->get(1);
 					$this->data["port"] = Utils::readShort($this->get(2), false);
 					$this->data["dataArray0"] = $this->get(ord($this->get(1)));
 					$this->data["dataArray"] = Utils::readDataArray($this->get(true, false), 9, $offset);
 					$this->get($offset);
-					$this->data["unknown2"] = $this->get(13);
+					$this->data["unknown1"] = $this->get(2);
+					$this->data["session2"] = Utils::readLong($this->get(8));
+					$this->data["session"] = Utils::readLong($this->get(8));
 				}else{
-					$this->raw .= "\x04\x3f\x57\xff";
-					$this->raw .= "\x3e";
+					$this->raw .= "\x04\x3f\x57\xfe";
+					$this->raw .= "\xed";
 					$this->raw .= Utils::writeShort($this->data["port"]);
 					$w = array_shift($this->data["dataArray"]);
 					$this->raw .= chr(strlen($w)).$w;
 					$this->raw .= Utils::writeDataArray($this->data["dataArray"]);
-					$this->raw .= "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-					$this->raw .= $this->data["session"]."\x5e";
+					$this->raw .= "\x00\x00";
+					$this->raw .= Utils::writeLong($this->data["session2"]);
+					$this->raw .= Utils::writeLong($this->data["session"]);
 				}
 				break;
 			case 0x15:
@@ -174,13 +180,6 @@ class CustomPacketHandler{
 				}else{
 					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
-				break;
-			case 0x00:
-				if($this->c === false){
-					$this->data["payload"] = $this->get(8);
-				}else{
-					$this->raw .= $this->data["payload"];
-				}				
 				break;
 		}
 	}
