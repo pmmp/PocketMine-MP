@@ -29,6 +29,6 @@ require_once("common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
 file_put_contents("packets.log", "");
 
-$server = new PocketMinecraftServer("TEST");
+$server = new PocketMinecraftServer("PHP Server");
 $server->setType("minecon");
 $server->start();

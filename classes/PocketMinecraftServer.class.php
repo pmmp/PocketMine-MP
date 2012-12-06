@@ -28,26 +28,52 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer{
-	var $seed, $protocol;
-	protected $interface, $entities, $player, $cnt, $events, $username, $version, $clients, $serverType;
-	function __construct($username, $protocol = CURRENT_PROTOCOL, $version = CURRENT_VERSION){
-		//$this->player = new Player($username);
+	var $seed, $protocol, $gamemode, $name, $maxClients, $clients;
+	protected $interface, $entities, $player, $cnt, $events, $version, $serverType;
+	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $protocol = CURRENT_PROTOCOL, $serverID = false, $version = CURRENT_VERSION){
+		$this->gamemode = (int) $gamemode;
+		$this->port = (int) $port;
 		$this->version = (int) $version;
-		$this->username = $username;
+		$this->name = $name;
 		$this->cnt = 1;
-		$this->serverID = Utils::getRandomBytes(8);
-		$this->seed = Utils::getRandomBytes(4);//"\x4f\xf0\x2d\x84";
+		$this->maxClients = 20;
+		$this->serverID = $serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$serverID;
+		$this->seed = $seed === false ? Utils::readInt(Utils::getRandomBytes(4)):((int) $seed);
 		$this->events = array("disabled" => array());
 		$this->actions = array();
 		$this->clients = array();
 		$this->protocol = (int) $protocol;
+		$this->time = 0;
+		//$this->event("onTick", "onTick", true);
+		$this->event("onChat", "eventHandler", true);
+		//$this->action(1000000, '$this->time += 10000;$this->trigger("onTimeChange", $this->time);');
 		$this->setType("normal");
-		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true, false);		
-		console("[INFO] Creating Minecraft Server");
-		console("[INFO] Username: ".$this->username);
-		console("[INFO] Seed: ".Utils::readInt($this->seed));
-		//console("[INFO] Protocol: ".$this->protocol);
+		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, $this->port, true, false);		
+		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
+		$this->action(1000000 * 5 * 60, '$this->chat(false, "This server uses Pocket-Minecraft-PHP");');
+		sleep(2);
+		$this->action(1000000 * 5 * 60, '$this->chat(false, "Check it at http://bit.ly/RE7uaW");');
+		console("[INFO] Server Name: ".$this->name);
+		console("[INFO] Server GUID: ".$this->serverID);
+		console("[INFO] Seed: ".$this->seed);
+		console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
+		console("[INFO] Max Clients: ".$this->maxClients);
 		$this->stop = false;
+	}
+	
+	public function close($reason = "stop"){	
+		$this->chat(false, "Stopping server...");
+		$this->stop = true;
+		$this->trigger("onClose");
+	}
+	
+	public function chat($owner, $text, $target = true){
+		$message = "";
+		if($owner !== false){
+			$message = "<".$owner."> ";
+		}
+		$message .= $text;
+		$this->trigger("onChat", $text);
 	}
 	
 	public function setType($type = "demo"){
@@ -62,6 +88,14 @@ class PocketMinecraftServer{
 		
 	}
 	
+	public function eventHandler($data, $event){
+		switch($event){
+			case "onChat":
+				console("[CHAT] $data");
+				break;
+		}
+	}
+	
 	public function action($microseconds, $code){
 		$this->actions[] = array($microseconds / 1000000, microtime(true), $code);
 		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
@@ -72,6 +106,7 @@ class PocketMinecraftServer{
 		register_tick_function(array($this, "tickerFunction"));
 		$this->action(50000, '$this->trigger("onTick", $time);');
 		$this->event("onReceivedPacket", "packetHandler", true);
+		register_shutdown_function(array($this, "close"));
 		$this->process();
 	}
 	
@@ -102,7 +137,7 @@ class PocketMinecraftServer{
 					$data[0],
 					$this->serverID,
 					MAGIC,
-					$this->serverType. $this->username,
+					$this->serverType. $this->name . " [".count($this->clients)."/".$this->maxClients."]",
 				), false, $packet["ip"], $packet["port"]);
 				break;
 			case 0x05:

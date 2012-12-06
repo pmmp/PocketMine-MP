@@ -43,18 +43,23 @@ if(version_compare("5.4.0", PHP_VERSION) > 0){
 	define("HEX2BIN", true);
 }
 
-if(php_sapi_name()!=="cli"){
-	console("[ERROR] Use PHP-CLI to execute the client or create your own", true, true, 0);
+if(php_sapi_name() !== "cli"){
+	console("[ERROR] Use PHP-CLI to execute the library or create your own", true, true, 0);
 	++$errors;
 }
 
-if(!function_exists("gzinflate")){
+if(!extension_loaded("sockets")){
+	console("[ERROR] Unable to find Socket extension", true, true, 0);
+	++$errors;
+}
+
+/*if(!extension_loaded("zlib")){
 	console("[ERROR] Unable to find Zlib extension", true, true, 0);
 	++$errors;
-}
+}*/
 
-if(!function_exists("socket_create")){
-	console("[ERROR] Unable to find Socket functions", true, true, 0);
+if(!extension_loaded("sqlite3")){
+	console("[ERROR] Unable to find SQLite3 extension", true, true, 0);
 	++$errors;
 }
 

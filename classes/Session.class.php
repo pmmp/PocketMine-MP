@@ -27,30 +27,75 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Session{
-	protected $server, $serverID, $timeout, $eventID, $connected;
+	protected $server, $serverID, $timeout, $connected, $evid;
 	var $clientID, $ip, $port, $counter, $username;
 	function __construct($server, $clientID, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
+		$this->CID = $this->server->clientID($ip, $port);
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->serverID =& $this->server->serverID;
-		$this->eventID = $this->server->event("onTick", array($this, "checkTimeout"));
-		console("[DEBUG] New Session started with ".$ip.":".$port, true, true, 2);
+		$this->timeout = microtime(true) + 25;
+		$this->evid = array();
+		$this->evid[] = array("onTick", $this->server->event("onTick", array($this, "checkTimeout")));
+		$this->evid[] = array("onClose", $this->server->event("onClose", array($this, "close")));
+		console("[DEBUG] New Session started with ".$ip.":".$port.". Client GUID ".$this->clientID, true, true, 2);
 		$this->connected = true;
 		$this->counter = array(0, 0);
 	}
 	
 	public function checkTimeout($time){
 		if($time > $this->timeout){
-			$this->close();
+			$this->close("timeout");
 		}
 	}
 	
-	public function close($reason = "timeout"){
-		$this->server->deleteEvent("onTick", $this->eventID);
+	public function close($reason = "server stop"){
+		foreach($this->evid as $ev){
+			$this->server->deleteEvent($ev[0], $ev[1]);
+		}
+		if($this->reason === "server stop"){
+			$this->send(0x84, array(
+				$this->counter[0],
+				0x00,
+				array(
+					"id" => 0x15,
+				),
+			));
+			++$this->counter[0];		
+		}
 		$this->connected = false;
+		$this->server->trigger("onChat", $this->username." left the game");
 		console("[DEBUG] Session with ".$this->ip.":".$this->port." closed due to ".$reason, true, true, 2);
+		unset($this->server->clients[$this->CID]);
+	}
+	
+	public function eventHandler($data, $event){		
+		switch($event){
+			case "onTimeChange":
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => 0x86,
+						"time" => $data,
+					),
+				));
+				++$this->counter[0];				
+				break;
+			case "onChat":
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => 0x85,
+						"message" => $data,
+					),
+				));
+				++$this->counter[0];				
+				break;
+		}
 	}
 	
 	public function handle($pid, &$data){
@@ -72,16 +117,6 @@ class Session{
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
-						/*case 0x00:
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x40,
-								array(
-									"payload" => $data["payload"],
-								),
-							));
-							++$this->counter[0];						
-							break;*/
 						case 0x15:
 							$this->close("client disconnect");
 							break;
@@ -102,6 +137,8 @@ class Session{
 						case 0x82:
 							$this->username = $data["username"];
 							console("[INFO] ".$this->username." connected from ".$this->ip.":".$this->port);
+							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
+							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
@@ -120,15 +157,17 @@ class Session{
 									"x" => 128,
 									"y" => 100,
 									"z" => 128,
-									"spawnX" => 0,
-									"spawnY" => 0,
-									"spawnZ" => 0,
+									"unknown1" => 0,
+									"gamemode" => $this->server->gamemode,
+									"unknwon2" => 0,
 								),
 							));
 							++$this->counter[0];
 							break;
 						case 0x84:
-							console("[INFO] ".$this->username." spawned!");
+							console("[DEBUG] ".$this->username." spawned!", true, true, 2);
+							$this->server->trigger("onChat", $this->username." joined the game");
+							$this->eventHandler("Welcome to ".$this->server->name, "onChat");
 							break;
 							
 					}
@@ -141,7 +180,9 @@ class Session{
 	}
 	
 	public function send($pid, $data = array(), $raw = false){
-		$this->server->send($pid, $data, $raw, $this->ip, $this->port);
+		if($this->connected === true){
+			$this->server->send($pid, $data, $raw, $this->ip, $this->port);
+		}
 	}
 
 }

@@ -60,7 +60,7 @@ class SerializedPacketHandler{
 							$pid = ord($this->get(1));
 						}
 						
-						$len = Utils::readShort($this->get(2), false) >> 3;
+						$len = ceil(Utils::readShort($this->get(2), false) / 8); //Utils::readShort($this->get(2), false) >> 3;
 						if($pid !== 0x00){
 							$c = Utils::readTriad($this->get(3));
 						}

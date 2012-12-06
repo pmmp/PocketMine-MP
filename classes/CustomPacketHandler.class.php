@@ -58,11 +58,11 @@ class CustomPacketHandler{
 				break;
 			case 0x09:
 				if($this->c === false){	
-					$this->data["clientID"] = $this->get(8);
+					$this->data["clientID"] = Utils::readLong($this->get(8));
 					$this->data["session"] = Utils::readLong($this->get(8));
 					$this->data["unknown2"] = $this->get(1);
 				}else{
-					$this->raw .= $this->data["clientID"];
+					$this->raw .= Utils::writeLong($this->data["clientID"]);
 					$this->raw .= Utils::writeLong($this->data["session"]);
 					$this->raw .= "\x00";
 				}
@@ -124,6 +124,9 @@ class CustomPacketHandler{
 			case 0x15:
 				//null
 				break;
+			case 0x18:
+				//null
+				break;
 			case 0x82:
 				if($this->c === false){	
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
@@ -139,6 +142,13 @@ class CustomPacketHandler{
 					$this->data["status"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["status"]);
+				}
+				break;
+			case 0x84:
+				if($this->c === false){	
+					$this->data["status"] = ord($this->get(1));
+				}else{
+					$this->raw .= chr($this->data["status"]);
 				}				
 				break;
 			case 0x85:
@@ -157,22 +167,59 @@ class CustomPacketHandler{
 				break;
 			case 0x87:
 				if($this->c === false){	
-					$this->data["seed"] = $this->get(4);
-					$this->data["spawnX"] = Utils::readInt($this->get(4));
-					$this->data["spawnY"] = Utils::readInt($this->get(4));
-					$this->data["spawnZ"] = Utils::readInt($this->get(4));
+					$this->data["seed"] = Utils::readInt($this->get(4));
+					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["gamemode"] = Utils::readInt($this->get(4));
+					$this->data["unknown2"] = Utils::readInt($this->get(4));
 					$this->data["x"] = Utils::readFloat($this->get(4));
 					$this->data["y"] = Utils::readFloat($this->get(4));
 					$this->data["z"] = Utils::readFloat($this->get(4));
 				}else{
-					$this->raw .= $this->data["seed"];
-					$this->raw .= Utils::writeInt($this->data["spawnX"]);
-					$this->raw .= Utils::writeInt($this->data["spawnY"]);
-					$this->raw .= Utils::writeInt($this->data["spawnZ"]);
+					$this->raw .= Utils::writeInt($this->data["seed"]);
+					$this->raw .= Utils::writeInt($this->data["unknown1"]);
+					$this->raw .= Utils::writeInt($this->data["gamemode"]);
+					$this->raw .= Utils::writeInt($this->data["unknown2"]);
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}			
+				break;				
+			case 0x94: //MovePlayer
+				if($this->c === false){	
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["yaw"] = Utils::readFloat($this->get(4));
+					$this->data["pitch"] = Utils::readFloat($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeFloat($this->data["yaw"]);
+					$this->raw .= Utils::writeFloat($this->data["pitch"]);
+				}
+				break;
+			case 0x96: //RemoveBlock
+				if($this->c === false){	
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["y"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["face"] = ord($this->get(1));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= chr($this->data["face"]);
+				}				
+				break;
+			case 0xa5: //SetHealth
+				if($this->c === false){	
+					$this->data["health"] = ord($this->get(1));
+				}else{
+					$this->raw .= chr($this->data["health"]);
+				}					
 				break;
 			case 0xb1:
 				if($this->c === false){	

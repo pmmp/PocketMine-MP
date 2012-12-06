@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 $pstruct = array(
 	0x02 => array(
-		"double", //Ping ID
+		"long", //Ping ID
 		"magic",
 	),
 	
@@ -39,7 +39,7 @@ $pstruct = array(
 	
 	0x06 => array(
 		"magic",
-		8, //Server GUID
+		"long", //Server GUID
 		"byte", //Server Security
 		"short", //MTU Size
 	),
@@ -49,12 +49,12 @@ $pstruct = array(
 		5, //Security Cookie (idk why it's sent here)
 		"short", //Server UDP Port
 		"short", //MTU Size
-		8, //Client GUID
+		"long", //Client GUID
 	),
 	
 	0x08 => array(
 		"magic",
-		8, //Server GUID
+		"long", //Server GUID
 		"short", //Client UDP Port
 		"short", //MTU Size
 		"byte", //Security
@@ -63,19 +63,19 @@ $pstruct = array(
 	0x1a => array(
 		"byte", //Server Version
 		"magic",
-		8, //Server GUID
+		"long", //Server GUID
 	),
 	
 	0x1c => array(
-		"double", //Ping ID
-		8, //Server ID
+		"long", //Ping ID
+		"long", //Server GUID
 		"magic",
 		"string", //Data
 	),
 	
 	0x1d => array(
-		"double", //Ping ID
-		8, //Server ID
+		"long", //Ping ID
+		"long", //Server GUID
 		"magic",
 		"string", //Data
 	),

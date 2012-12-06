@@ -27,11 +27,16 @@ the Free Software Foundation, either version 3 of the License, or
 
 $dataName = array(
 	0x00 => "KeepAlive",
+	
 	0x09 => "ClientHandshake",
 	0x10 => "ServerHandshake",
+	
 	0x13 => "ClientConnect",
 	
 	0x15 => "ClientDisconnect",
+	
+	0x18 => "ServerDisconnect",
+	
 	0x82 => "Login",
 	0x83 => "LoginStatus",
 	0x84 => "Ready",
@@ -41,7 +46,17 @@ $dataName = array(
 	
 	0x93 => "MoveEntity_PosRot",
 	0x94 => "MovePlayer",
+	
+	0x96 => "RemoveBlock",
+	
 	0x9d => "RequestChunk",
 	
+	0x9f => "PlayerEquipment",
+	
+	0xa1 => "UseItem",
+	
 	0xa4 => "SetEntityMotion",
+	0xa5 => "SetHealth",
+	
+	0xa7 => "Animate",
 );

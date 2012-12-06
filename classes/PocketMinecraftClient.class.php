@@ -28,20 +28,20 @@ the Free Software Foundation, either version 3 of the License, or
 class PocketMinecraftClient{
 	protected $interface, $protocol, $entities, $player, $cnt, $events, $username, $version, $clientID, $connected, $serverID, $start;
 	var $serverList = array(), $counter;
-	function __construct($username, $protocol = CURRENT_PROTOCOL, $version = CURRENT_VERSION){
+	function __construct($username, $protocol = CURRENT_PROTOCOL, $clientID = false, $version = CURRENT_VERSION){
 		//$this->player = new Player($username);
 		$this->start = microtime(true);
 		$this->version = (int) $version;
 		$this->username = $username;
 		$this->connected = false;
 		$this->cnt = 1;
-		$this->clientID = Utils::getRandomBytes(8);
+		$this->clientID = $clientID === false ? Utils::readLong(Utils::getRandomBytes(8)):$clientID;
 		$this->events = array("disabled" => array());
 		$this->actions = array();
 		$this->interface = new MinecraftInterface("255.255.255.255", $protocol, 19132);		
-		console("[INFO] Creating Minecraft Client");
+		console("[INFO] Starting Minecraft Client");
 		console("[INFO] Username: ".$this->username);
-		console("[INFO] Version: ".$this->version);
+		console("[INFO] Client GUID: ".$this->clientID);
 		$this->event("onReceivedPacket", "packetHandler", true);
 		$this->stop = false;
 		$this->counter = array(0,0);
@@ -118,7 +118,7 @@ class PocketMinecraftClient{
 					array(
 						"id" => 0x09,
 						"clientID" => $this->clientID,
-						"session" => "\x00\x00\x00\x00\x03\x1c\xaf\x05",
+						"session" => Utils::readLong("\x00\x00\x00\x00\x03\x1c\xaf\x05"),
 					),
 				));
 				++$this->counter[0];
@@ -138,6 +138,7 @@ class PocketMinecraftClient{
 								"port" => 19132,
 								"dataArray" => $data["dataArray"],
 								"session" => $data["session"],
+								"session2" => $data["session2"],
 							),
 						));
 						++$this->counter[0];
@@ -146,7 +147,7 @@ class PocketMinecraftClient{
 							0x00,
 							array(
 								"id" => 0x00,
-								"payload" => "\x00\x00\x00\x00\x00".$data["session"]."\x5e",
+								"payload" => $data["session"],
 							),
 						));
 						++$this->counter[0];
@@ -159,7 +160,7 @@ class PocketMinecraftClient{
 							),
 						));
 						++$this->counter[0];
-						$this->send(0x84, array(
+						/*$this->send(0x84, array(
 							$this->counter[0],
 							0x00,
 							array(
@@ -167,7 +168,7 @@ class PocketMinecraftClient{
 								"message" => $this->username,
 							),
 						));
-						++$this->counter[0];
+						++$this->counter[0];*/
 						break;
 					case 0x86:
 						console("[DEBUG] Time: ".$data["time"], true, true, 2);
