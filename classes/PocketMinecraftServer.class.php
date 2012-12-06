@@ -28,15 +28,19 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer{
-	var $seed, $protocol, $gamemode, $name, $maxClients, $clients;
+	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd;
 	protected $interface, $entities, $player, $cnt, $events, $version, $serverType;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->gamemode = (int) $gamemode;
 		$this->port = (int) $port;
 		$this->version = (int) $version;
 		$this->name = $name;
+		$this->custom = array();
 		$this->cnt = 1;
+		$this->eidCnt = 1;
 		$this->maxClients = 20;
+		$this->description = "";
+		$this->motd = "Welcome to ".$name;
 		$this->serverID = $serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$serverID;
 		$this->seed = $seed === false ? Utils::readInt(Utils::getRandomBytes(4)):((int) $seed);
 		$this->events = array("disabled" => array());
@@ -46,13 +50,14 @@ class PocketMinecraftServer{
 		$this->time = 0;
 		//$this->event("onTick", "onTick", true);
 		$this->event("onChat", "eventHandler", true);
-		//$this->action(1000000, '$this->time += 10000;$this->trigger("onTimeChange", $this->time);');
+		$this->action(1000000, '$this->time += 10;$this->trigger("onTimeChange", $this->time);');
+		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, $this->port, true, false);		
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
-		$this->action(1000000 * 5 * 60, '$this->chat(false, "This server uses Pocket-Minecraft-PHP");');
+		$this->action(1000000 * 3 * 60, '$this->chat(false, "This server uses Pocket-Minecraft-PHP");');
 		sleep(2);
-		$this->action(1000000 * 5 * 60, '$this->chat(false, "Check it at http://bit.ly/RE7uaW");');
+		$this->action(1000000 * 3 * 60, '$this->chat(false, "Check it at http://bit.ly/RE7uaW");');
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
 		console("[INFO] Protocol Version: ".$this->protocol);
@@ -131,41 +136,57 @@ class PocketMinecraftServer{
 		$CID = $this->clientID($packet["ip"], $packet["port"]);
 		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handle($packet["pid"], $data);
-		}
-		switch($packet["pid"]){
-			case 0x02:
-				$this->send(0x1c, array(
-					$data[0],
-					$this->serverID,
-					MAGIC,
-					$this->serverType. $this->name . " [".count($this->clients)."/".$this->maxClients."]",
-				), false, $packet["ip"], $packet["port"]);
-				break;
-			case 0x05:
-				$version = $data[1];
-				$size = strlen($data[2]);
-				if($version !== $this->protocol){
-					$this->send(0x1a, array(
-						5,
-						MAGIC,
+		}else{
+			switch($packet["pid"]){
+				case 0x02:
+					if(!isset($this->custom["times_".$CID])){
+						$this->custom["times_".$CID] = 0;
+					}
+					$ln = 15;
+					$txt = substr($this->description, $this->custom["times_".$CID], $ln);
+					$txt .= substr($this->descriptiont, 0, $ln - strlen($txt));
+					$this->send(0x1c, array(
+						$data[0],
 						$this->serverID,
-					), false, $packet["ip"], $packet["port"]);
-				}else{
-					$this->send(0x06, array(
 						MAGIC,
-						$this->serverID,
-						0,
-						strlen($packet["raw"]),
+						$this->serverType. $this->name . " [".($this->gamemode === 1 ? "C":"S")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
 					), false, $packet["ip"], $packet["port"]);
-				}
-				break;
-			case 0x07:
-				$port = $data[2];
-				$MTU = $data[3];
-				$clientID = $data[4];
-				$this->clients[$CID] = new Session($this, $clientID, $packet["ip"], $packet["port"]);
-				$this->clients[$CID]->handle(0x07, $data);
-				break;
+					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
+					break;
+				case 0x05:
+					if(count($this->clients) >= $this->maxClients){
+						break;
+					}
+					$version = $data[1];
+					$size = strlen($data[2]);
+					if($version !== $this->protocol){
+						$this->send(0x1a, array(
+							5,
+							MAGIC,
+							$this->serverID,
+						), false, $packet["ip"], $packet["port"]);
+					}else{
+						$this->send(0x06, array(
+							MAGIC,
+							$this->serverID,
+							0,
+							strlen($packet["raw"]),
+						), false, $packet["ip"], $packet["port"]);
+					}
+					break;
+				case 0x07:
+					if(count($this->clients) >= $this->maxClients){
+						break;
+					}
+					$port = $data[2];
+					$MTU = $data[3];
+					$clientID = $data[4];
+					$EID = $this->eidCnt++;
+					$this->clients[$CID] = new Session($this, $clientID, $EID, $packet["ip"], $packet["port"]);
+					$entities[$EID] = &$this->clients[$CID];
+					$this->clients[$CID]->handle(0x07, $data);
+					break;
+			}
 		}
 	}
 	
@@ -190,11 +211,11 @@ class PocketMinecraftServer{
 	public function trigger($event, $data = ""){
 		console("[INTERNAL] Event ". $event, true, true, 3);
 		if(isset($this->events[$event]) and !isset($this->events["disabled"][$event])){
-			foreach($this->events[$event] as $eid => $ev){
+			foreach($this->events[$event] as $evid => $ev){
 				if(isset($ev[1]) and ($ev[1] === true or is_object($ev[1]))){
-					$this->responses[$eid] = call_user_func(array(($ev[1] === true ? $this:$ev[1]), $ev[0]), $data, $event, $this);
+					$this->responses[$evid] = call_user_func(array(($ev[1] === true ? $this:$ev[1]), $ev[0]), $data, $event, $this);
 				}else{
-					$this->responses[$eid] = call_user_func($ev[0], $data, $event, $this);
+					$this->responses[$evid] = call_user_func($ev[0], $data, $event, $this);
 				}
 			}
 		}	

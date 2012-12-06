@@ -28,11 +28,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Session{
 	protected $server, $serverID, $timeout, $connected, $evid;
-	var $clientID, $ip, $port, $counter, $username;
-	function __construct($server, $clientID, $ip, $port){
+	var $clientID, $ip, $port, $counter, $username, $EID;
+	function __construct($server, $clientID, $EID, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
 		$this->CID = $this->server->clientID($ip, $port);
+		$this->EID = $EID;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->serverID =& $this->server->serverID;
@@ -113,7 +114,7 @@ class Session{
 						case MC_CLIENT_DISCONNECT:
 							$this->close("client disconnect");
 							break;
-						case MC_CLIENT_HANDSHAKE:
+						case MC_CLIENT_CONNECT:
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
@@ -126,10 +127,12 @@ class Session{
 							));
 							++$this->counter[0];
 							break;
-							
+						case MC_CLIENT_HANDSHAKE:
+						
+							break;
 						case MC_LOGIN:
 							$this->username = $data["username"];
-							console("[INFO] ".$this->username." connected from ".$this->ip.":".$this->port);
+							console("[INFO] Player \"".$this->username."\" connected from ".$this->ip.":".$this->port);
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
 							$this->send(0x84, array(
@@ -147,20 +150,44 @@ class Session{
 								array(
 									"id" => MC_START_GAME,
 									"seed" => $this->server->seed,
-									"x" => 128,
+									"x" => 128.5,
 									"y" => 100,
-									"z" => 128,
+									"z" => 128.5,
 									"unknown1" => 0,
 									"gamemode" => $this->server->gamemode,
-									"unknwon2" => 0,
+									"eid" => $this->EID,
 								),
 							));
 							++$this->counter[0];
 							break;
-						case 0x84:
-							console("[DEBUG] ".$this->username." spawned!", true, true, 2);
+						case MC_READY:
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => MC_SET_TIME,
+									"time" => $this->server->time,
+								),
+							));
+							console("[DEBUG] Player with EID ".$this->EID." \"".$this->username."\" spawned!", true, true, 2);
 							$this->server->trigger("onChat", $this->username." joined the game");
-							$this->eventHandler("Welcome to ".$this->server->name, "onChat");
+							$this->eventHandler($this->server->motd, "onChat");
+							break;
+						case MC_MOVE_PLAYER:
+							console("[DEBUG] EID ".$this->EID." moved: X ".$data["x"].", Y ".$data["y"].", Z ".$data["z"].", Pitch ".$data["pitch"].", Yaw ".$data["yaw"], true, true, 2);
+							break;
+						case MC_PLAYER_EQUIPMENT:
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => MC_PLAYER_EQUIPMENT,
+									"eid" => 0,
+									"block" => 323,
+									"meta" => 0,
+								),
+							));
+							console("[DEBUG] EID ".$this->EID." has now ".$data["block"]." with metadata ".$data["meta"]." in their hands!", true, true, 2);
 							break;
 							
 					}

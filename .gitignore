@@ -1,7 +1,6 @@
 *.log
-*.ini
-test.php
 *.bat
+server.properties
 
 #################
 ## Eclipse
