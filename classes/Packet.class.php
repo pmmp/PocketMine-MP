@@ -96,6 +96,9 @@ class Packet{
 				case "triad":
 					$this->addRaw(Utils::writeTriad($this->data[$field]));
 					break;
+				case "itriad":
+					$this->addRaw(strrev(Utils::writeTriad($this->data[$field])));
+					break;
 				case "int":
 					$this->addRaw(Utils::writeInt($this->data[$field]));
 					break;
@@ -187,7 +190,10 @@ class Packet{
 					break;
 				case "triad":
 					$this->data[] = Utils::readTriad($this->get(3));
-					break;				
+					break;
+				case "itriad":
+					$this->data[] = Utils::readTriad(strrev($this->get(3)));
+					break;
 				case "int":
 					$this->data[] = Utils::readInt($this->get(4));
 					break;

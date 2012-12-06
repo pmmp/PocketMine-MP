@@ -136,9 +136,9 @@ class CustomPacketHandler{
 				break;
 			case 0x83:
 				if($this->c === false){	
-					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["status"] = Utils::readInt($this->get(4));
 				}else{
-					$this->raw .= Utils::writeInt($this->data["unknown1"]);
+					$this->raw .= Utils::writeInt($this->data["status"]);
 				}				
 				break;
 			case 0x85:

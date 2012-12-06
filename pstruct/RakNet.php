@@ -81,25 +81,25 @@ $pstruct = array(
 	),
 
 	0x80 => array(
-		"triad",
+		"itriad",
 		"ubyte",
 		"customData",
 	),
 	
 	0x84 => array(
-		"triad",
+		"itriad",
 		"ubyte",
 		"customData",
 	),
 	
 	0x88 => array(
-		"triad",
+		"itriad",
 		"ubyte",
 		"customData",
 	),
 	
 	0x8c => array(
-		"triad",
+		"itriad",
 		"ubyte",
 		"customData",
 	),
@@ -107,14 +107,14 @@ $pstruct = array(
 	0xa0 => array(
 		"short",
 		"bool",
-		"triad",
+		"itriad",
 		"special1",
 	),
 	
 	0xc0 => array(
 		"short",
 		"bool",
-		"triad",
+		"itriad",
 		"special1",
 	),
 

@@ -101,22 +101,34 @@ class Session{
 							
 						case 0x82:
 							$this->username = $data["username"];
-							console("[INFO] User ".$this->username." connected from ".$this->ip.":".$this->port);
+							console("[INFO] ".$this->username." connected from ".$this->ip.":".$this->port);
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => 0x83,
+									"status" => 0,
+								),
+							));
+							++$this->counter[0];
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
 								array(
 									"id" => 0x87,
 									"seed" => $this->server->seed,
-									"x" => 0,
+									"x" => 128,
 									"y" => 100,
-									"z" => 0,
+									"z" => 128,
 									"spawnX" => 0,
-									"spawnY" => 100,
+									"spawnY" => 0,
 									"spawnZ" => 0,
 								),
 							));
 							++$this->counter[0];
+							break;
+						case 0x84:
+							console("[INFO] ".$this->username." spawned!");
 							break;
 							
 					}

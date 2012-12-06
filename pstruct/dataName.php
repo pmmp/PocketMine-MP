@@ -40,6 +40,8 @@ $dataName = array(
 	0x87 => "StartGame",
 	
 	0x93 => "MoveEntity_PosRot",
+	0x94 => "MovePlayer",
+	0x9d => "RequestChunk",
 	
 	0xa4 => "SetEntityMotion",
 );

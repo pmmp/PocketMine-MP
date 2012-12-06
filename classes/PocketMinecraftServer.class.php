@@ -36,7 +36,7 @@ class PocketMinecraftServer{
 		$this->username = $username;
 		$this->cnt = 1;
 		$this->serverID = Utils::getRandomBytes(8);
-		$this->seed = "\x4f\xf0\x2d\x84";
+		$this->seed = Utils::getRandomBytes(4);//"\x4f\xf0\x2d\x84";
 		$this->events = array("disabled" => array());
 		$this->actions = array();
 		$this->clients = array();
@@ -45,7 +45,8 @@ class PocketMinecraftServer{
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, 19132, true, false);		
 		console("[INFO] Creating Minecraft Server");
 		console("[INFO] Username: ".$this->username);
-		console("[INFO] Protocol: ".$this->protocol);
+		console("[INFO] Seed: ".Utils::readInt($this->seed));
+		//console("[INFO] Protocol: ".$this->protocol);
 		$this->stop = false;
 	}
 	
