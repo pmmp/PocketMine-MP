@@ -115,6 +115,7 @@ if(file_exists(FILE_PATH."data/maps/level.dat")){
 	rename(FILE_PATH."data/maps/chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
 	unlink(FILE_PATH."data/maps/level.dat");
 	@unlink(FILE_PATH."data/maps/level.dat_old");
+	@unlink(FILE_PATH."data/maps/player.dat");
 	unlink(FILE_PATH."data/maps/entities.dat");
 	if($config["level-name"] === false){
 		console("[INFO] Setting default level to \"".$level["LevelName"]."\"");

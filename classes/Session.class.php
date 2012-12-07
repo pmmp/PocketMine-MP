@@ -92,16 +92,18 @@ class Session{
 				if($data === $this->eid){
 					break;
 				}
-				$entity = $this->server->entities[$this->eid];
+				$entity = $this->server->entities[$data];
 				$this->send(0x84, array(
 					$this->counter[0],
 					0x00,
 					array(
-						"id" => MC_MOVE_ENTITY,
+						"id" => MC_MOVE_ENTITY_POSROT,
 						"eid" => $data,
 						"x" => $entity->position["x"],
 						"y" => $entity->position["y"],
 						"z" => $entity->position["z"],
+						"yaw" => 0,
+						"pitch" => 0,
 					),
 				));
 				++$this->counter[0];
@@ -335,7 +337,7 @@ class Session{
 											"x" => $entity->position["x"],
 											"y" => $entity->position["y"],
 											"z" => $entity->position["z"],
-											"block" => $entity->type,
+											"block" => 10,
 											"meta" => 0,
 											"stack" => 1,
 										),

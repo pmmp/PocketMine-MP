@@ -254,6 +254,23 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}
 				break;
+			case MC_MOVE_ENTITY_POSROT:
+				if($this->c === false){	
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["yaw"] = Utils::readFloat($this->get(4));
+					$this->data["pitch"] = Utils::readFloat($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeFloat($this->data["yaw"]);
+					$this->raw .= Utils::writeFloat($this->data["pitch"]);
+				}
+				break;
 			case MC_MOVE_PLAYER:
 				if($this->c === false){	
 					$this->data["eid"] = Utils::readInt($this->get(4));
