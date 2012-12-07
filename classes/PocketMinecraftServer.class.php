@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer{
-	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities;
+	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapParser, $map, $level, $tileEntities;
 	private $database, $interface, $cnt, $events, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port;
@@ -38,6 +38,12 @@ class PocketMinecraftServer{
 		$this->gamemode = (int) $gamemode;
 		$this->version = (int) $version;
 		$this->name = $name;
+		$this->mapDir = false;
+		$this->mapParser = false;
+		$this->map = false;
+		$this->level = false;
+		$this->tileEntities = array();
+		$this->entities = array();
 		$this->custom = array();
 		$this->cnt = 1;
 		$this->eidCnt = 1;
@@ -61,11 +67,8 @@ class PocketMinecraftServer{
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
 		console("[INFO] Protocol Version: ".$this->protocol);
-		console("[INFO] Seed: ".$this->seed);
-		console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
 		console("[INFO] Max Clients: ".$this->maxClients);
 		$this->stop = false;
-		console("[INFO] Server started!");
 	}
 	
 	public function loadEvents(){
@@ -120,7 +123,7 @@ class PocketMinecraftServer{
 			console("[DEBUG] Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"]."), Entities: ".$info["entities"].", Events: ".$info["events"].", Actions: ".$info["actions"].", Garbage: ".$info["garbage"], true, true, 2);
 		}
 		return $info;
-	}	
+	}
 	
 	public function close($reason = "stop"){	
 		$this->chat(false, "Stopping server...");
@@ -157,12 +160,31 @@ class PocketMinecraftServer{
 		}
 	}
 	
+	private function loadMap(){
+		$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
+		console("[INFO] Map: ".$this->level["LevelName"]);
+		$this->seed = $this->level["RandomSeed"];
+		console("[INFO] Seed: ".$this->seed);
+		console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
+		console("[DEBUG] Loading entities...");
+		$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
+		foreach($entities as $entity){
+			$this->entities[$this->eidCnt] = new Entity($this->eidCnt, ENTITY_MOB, $entity["id"], $this);
+			$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+			$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
+			++$this->eidCnt;
+		}
+		console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
+	}
+	
 	public function start(){
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
 		$this->event("onTick", "tickerFunction", true);
 		$this->event("onReceivedPacket", "packetHandler", true);
 		register_shutdown_function(array($this, "close"));
+		$this->loadMap();
+		console("[INFO] Server started!");
 		$this->process();
 	}
 	

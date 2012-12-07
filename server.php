@@ -29,23 +29,25 @@ require_once("common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
 file_put_contents("packets.log", "");
 
+
 if(!file_exists(FILE_PATH."white-list.txt")){
-	console("[WARNING] No white-list.txt found, creating blank file");
+	console("[NOTICE] No white-list.txt found, creating blank file");
 	file_put_contents(FILE_PATH."white-list.txt", "");
 }
 
 if(!file_exists(FILE_PATH."banned-ips.txt")){
-	console("[WARNING] No banned-ips.txt found, creating blank file");
+	console("[NOTICE] No banned-ips.txt found, creating blank file");
 	file_put_contents(FILE_PATH."banned-ips.txt", "");
 }
 
 if(!file_exists(FILE_PATH."server.properties")){
-	console("[WARNING] No server.properties found, using default settings");
+	console("[NOTICE] No server.properties found, using default settings");
 	copy(FILE_PATH."common/default.properties", FILE_PATH."server.properties");
 }
 
-@mkdir(FILE_PATH."data/entities/", 0777, true);
-@mkdir(FILE_PATH."data/players/", 0777);
+@mkdir(FILE_PATH."data/players/", 0777, true);
+@mkdir(FILE_PATH."data/maps/", 0777);
+
 
 $prop = file_get_contents(FILE_PATH."server.properties");
 $prop = explode("\n", str_replace("\r", "", $prop));
@@ -75,6 +77,10 @@ foreach($prop as $line){
 			$v = trim($v);
 			$v = $v == "false" ? false:(preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v);
 			break;
+		case "level-name":
+			$v = trim($v);
+			$v = $v == "false" ? false:$v;
+			break;
 		case "spawn":
 			$v = explode(";", $v);
 			$v = array("x" => floatval($v[0]), "y" => floatval($v[1]), "z" => floatval($v[2]));
@@ -89,6 +95,39 @@ foreach($prop as $line){
 define("DEBUG", $config["debug"]);
 
 $server = new PocketMinecraftServer($config["server-name"], $config["gamemode"], $config["seed"], $config["protocol"], $config["port"], $config["server-id"]);
+
+if(file_exists(FILE_PATH."data/maps/level.dat")){
+	console("[NOTICE] Detected unimported map data. Importing...");
+	$nbt = new NBT();
+	$level = parseNBTData($nbt->loadFile(FILE_PATH."data/maps/level.dat"));
+	console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
+	unset($level["Player"]);
+	$lvName = $level["LevelName"]."/";
+	@mkdir(FILE_PATH."data/maps/".$lvName, 0777);	
+	file_put_contents(FILE_PATH."data/maps/".$lvName."level.dat", serialize($level));
+	$entities = parseNBTData($nbt->loadFile(FILE_PATH."data/maps/entities.dat"));
+	file_put_contents(FILE_PATH."data/maps/".$lvName."entities.dat", serialize($entities["Entities"]));
+	if(!isset($entities["TileEntities"])){
+		$entities["TileEntities"] = array();
+	}
+	file_put_contents(FILE_PATH."data/maps/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
+	console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
+	rename(FILE_PATH."data/maps/chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
+	unlink(FILE_PATH."data/maps/level.dat");
+	@unlink(FILE_PATH."data/maps/level.dat_old");
+	unlink(FILE_PATH."data/maps/entities.dat");
+	if($config["level-name"] === false){
+		console("[INFO] Setting default level to \"".$level["LevelName"]."\"");
+		$config["level-name"] = $level["LevelName"];
+		$config["gamemode"] = $level["GameType"];
+		$server->gamemode = $config["gamemode"];
+		$server->seed = $level["RandomSeed"];
+		$config["spawn"] = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
+		$config["regenerate-config"] = true;
+	}
+	console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
+	unset($level, $entities, $nbt);
+}
 $server->setType($config["server-type"]);
 $server->timePerSecond = $config["time-per-second"];
 $server->maxClients = $config["max-players"];
@@ -96,6 +135,7 @@ $server->description = $config["description"];
 $server->motd = $config["motd"];
 $server->spawn = $config["spawn"];
 $server->whitelist = $config["white-list"];
+$server->mapDir = FILE_PATH."data/maps/".$config["level-name"]."/";
 $server->reloadConfig();
 
 if($config["regenerate-config"] == true){

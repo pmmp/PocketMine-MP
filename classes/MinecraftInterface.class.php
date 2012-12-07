@@ -55,7 +55,7 @@ class MinecraftInterface{
 	}
 	
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
-		if(LOG === true and DEBUG >= 2){
+		if(LOG === true and DEBUG >= 3){
 			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".(isset($data["id"]) ? "MC Packet ".$this->dataName[$pid]:$this->name[$pid])." (0x".Utils::strTohex(chr($pid)).") [length ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
