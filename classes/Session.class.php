@@ -88,6 +88,24 @@ class Session{
 	
 	public function eventHandler($data, $event){		
 		switch($event){
+			case "onEntityMove":
+				if($data === $this->eid){
+					break;
+				}
+				$entity = $this->server->entities[$this->eid];
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => MC_MOVE_ENTITY,
+						"eid" => $data,
+						"x" => $entity->position["x"],
+						"y" => $entity->position["y"],
+						"z" => $entity->position["z"],
+					),
+				));
+				++$this->counter[0];
+				break;
 			case "onHealthChange":
 				if($data["eid"] === $this->eid){
 					$this->send(0x84, array(
@@ -98,6 +116,7 @@ class Session{
 							"health" => $data["health"],
 						),
 					));
+					++$this->counter[0];
 					$this->data["health"] = $data["health"];
 					if(is_object($this->entity)){
 						$this->entity->setHealth($data["health"]);
@@ -108,7 +127,7 @@ class Session{
 				if($data["eid"] === $this->eid){
 					break;
 				}
-				$this->send(0x84, array(
+				/*$this->send(0x84, array(
 					$this->counter[0],
 					0x00,
 					array(
@@ -124,7 +143,24 @@ class Session{
 						"block" => $data["block"],
 						"meta" => $data["meta"],
 					),
-				));				
+				));
+				++$this->counter[0];
+				*/
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => MC_ADD_ITEM_ENTITY,
+						"eid" => $data["eid"],
+						"x" => $data["x"],
+						"y" => $data["y"],
+						"z" => $data["z"],
+						"block" => 10,
+						"meta" => 0,
+						"stack" => 1,
+					),
+				));
+				++$this->counter[0];
 				break;
 			case "onEntityRemove":
 				if($data === $this->eid){
@@ -138,6 +174,7 @@ class Session{
 							"eid" => $data,
 						),
 					));
+					++$this->counter[0];
 				}
 				break;
 			case "onTimeChange":
@@ -149,7 +186,7 @@ class Session{
 						"time" => $data,
 					),
 				));
-				++$this->counter[0];				
+				++$this->counter[0];
 				break;
 			case "onChat":
 				$this->send(0x84, array(
@@ -239,6 +276,7 @@ class Session{
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
 							$this->evid[] = array("onPlayerAdd", $this->server->event("onPlayerAdd", array($this, "eventHandler")));
 							$this->evid[] = array("onEntityDespawn", $this->server->event("onEntityDespawn", array($this, "eventHandler")));
+							$this->evid[] = array("onEntityMove", $this->server->event("onEntityMove", array($this, "eventHandler")));
 							$this->evid[] = array("onHealthChange", $this->server->event("onHealthChange", array($this, "eventHandler")));
 							$this->send(0x84, array(
 								$this->counter[0],
@@ -274,7 +312,7 @@ class Session{
 							$this->entity = new Entity($this->eid, ENTITY_PLAYER, 0, $this->server);
 							$this->entity->setName($this->username);
 							$this->server->entities[$this->eid] = &$this->entity;
-							/*$this->server->trigger("onPlayerAdd", array(
+							$this->server->trigger("onPlayerAdd", array(
 								"clientID" => $this->clientID,
 								"username" => $this->username,
 								"eid" => $this->eid,
@@ -285,16 +323,50 @@ class Session{
 								"pitch" => $this->data["spawn"]["pitch"],
 								"block" => 0,
 								"meta" => 0,
-							));*/
+							));
+							foreach($this->server->entities as $entity){
+								if($entity->eid !== $this->eid){
+									$this->send(0x84, array(
+										$this->counter[0],
+										0x00,
+										array(
+											"id" => MC_ADD_ITEM_ENTITY,
+											"eid" => $entity->eid,
+											"x" => $entity->position["x"],
+											"y" => $entity->position["y"],
+											"z" => $entity->position["z"],
+											"block" => $entity->type,
+											"meta" => 0,
+											"stack" => 1,
+										),
+									));
+									++$this->counter[0];
+								}							
+							}
 							$this->eventHandler($this->server->motd, "onChat");
 							$this->server->trigger("onChat", $this->username." joined the game");
 							break;
 						case MC_MOVE_PLAYER:
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-							$this->server->trigger("onPlayerMove", $this->eid);
+							$this->server->trigger("onEntityMove", $this->eid);
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => MC_ADD_ITEM_ENTITY,
+									"eid" => $this->server->eidCnt++,
+									"x" => $data["x"],
+									"y" => $data["y"],
+									"z" => $data["z"],
+									"block" => 7,
+									"meta" => 0,
+									"stack" => 1,
+								),
+							));
+							++$this->counter[0];
 							break;
 						case MC_PLAYER_EQUIPMENT:
-							console("[DEBUG] EID ".$this->eid." has now ".$data["block"]." with metadata ".$data["meta"]." in their hands!", true, true, 2);
+							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
 							break;
 						case MC_REQUEST_CHUNK:
 							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
@@ -307,9 +379,9 @@ class Session{
 								array(
 									"id" => MC_ADD_ITEM_ENTITY,
 									"eid" => $this->server->eidCnt++,
-									"x" => $data["x"],
+									"x" => $data["x"] + mt_rand(0, 100)/100,
 									"y" => $data["y"],
-									"z" => $data["z"],
+									"z" => $data["z"] + mt_rand(0, 100)/100,
 									"block" => 1,
 									"meta" => 0,
 									"stack" => 1,

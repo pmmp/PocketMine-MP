@@ -49,6 +49,8 @@ $dataName = array(
 	MC_REMOVE_ENTITY => "RemoveEntity",
 	MC_ADD_ITEM_ENTITY => "AddItemEntity",
 	
+	MC_MOVE_ENTITY => "MoveEntity",
+	
 	MC_MOVE_ENTITY_POSROT => "MoveEntity_PosRot",
 	MC_MOVE_PLAYER => "MovePlayer",
 	MC_PLACE_BLOCK => "PlaceBlock",	
