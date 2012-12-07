@@ -28,5 +28,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
          \ | /
 		 
 		 
-Client/Server Minecraft Pocket Edition library written in PHP.
+Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
+
+Current features of the server:
+	- Players can connect and move around the world
+	- Online list broadcast
+	- Health and position saving
+	- server.properties configuration file
+	- Whitelist and IP Ban files
+	- Survival & Creative
+	- Awesome features in server list!

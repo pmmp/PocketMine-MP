@@ -199,7 +199,7 @@ class PocketMinecraftServer{
 						$data[0],
 						$this->serverID,
 						MAGIC,
-						$this->serverType. $this->name . " [".($this->gamemode === 1 ? "C":"S")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
+						$this->serverType. $this->name . " [".($this->gamemode === 1 ? "C":"S").$this->whitelist !== false ? "W":"")" ".count($this->clients)."/".$this->maxClients."] ".$txt,
 					), false, $packet["ip"], $packet["port"]);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
