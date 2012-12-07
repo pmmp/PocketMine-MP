@@ -47,13 +47,16 @@ define("MC_START_GAME", 0x87);
 define("MC_ADD_PLAYER", 0x89);
 
 define("MC_REMOVE_ENTITY", 0x8d);
+define("MC_ADD_ITEM_ENTITY", 0x8e);
 
 define("MC_MOVE_ENTITY_POSROT", 0x93);
 define("MC_MOVE_PLAYER", 0x94);
 define("MC_PLACE_BLOCK", 0x95);
 define("MC_REMOVE_BLOCK", 0x96);
+define("MC_UPDATE_BLOCK", 0x97);
 
 define("MC_REQUEST_CHUNK", 0x9d);
+define("MC_CHUNK_DATA", 0x9e);
 
 define("MC_PLAYER_EQUIPMENT", 0x9f);
 

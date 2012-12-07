@@ -252,14 +252,6 @@ class Utils{
 		return pack("H*" , $hex);
 	}
 
-	public static function readString($str){
-		return preg_replace('/\x00(.)/s', '$1', $str);
-	}
-	
-	public static function writeString($str){
-		return preg_replace('/(.)/s', "\x00$1", $str);
-	}
-	
 	public static function readBool($b){
 		return Utils::readByte($b, false) === 0 ? false:true;
 	}
@@ -300,6 +292,21 @@ class Utils{
 		}
 		return pack("n", $value);
 	}
+	
+	public static function readLShort($str, $signed = true){
+		list(,$unpacked) = unpack("v", $str);
+		if($unpacked > 0x7fff and $signed === true){
+			$unpacked -= 0x10000; // Convert unsigned short to signed short
+		}
+		return $unpacked;
+	}
+	
+	public static function writeLShort($value){
+		if($value < 0){
+			$value += 0x10000; 
+		}
+		return pack("v", $value);
+	}
 
 	public static function readInt($str){
 		list(,$unpacked) = unpack("N", $str);
@@ -316,6 +323,21 @@ class Utils{
 		return pack("N", $value);
 	}
 	
+	public static function readLInt($str){
+		list(,$unpacked) = unpack("V", $str);
+		if($unpacked >= 2147483648){
+			$unpacked -= 4294967296;
+		}
+		return (int) $unpacked;
+	}
+	
+	public static function writeLInt($value){
+		if($value < 0){
+			$value += 0x100000000; 
+		}
+		return pack("V", $value);
+	}
+	
 	public static function readFloat($str){
 		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("f", $str):unpack("f", strrev($str));
 		return $value;
@@ -323,6 +345,15 @@ class Utils{
 	
 	public static function writeFloat($value){
 		return ENDIANNESS === BIG_ENDIAN ? pack("f", $value):strrev(pack("f", $value));
+	}
+	
+	public static function readLFloat($str){
+		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("f", strrev($str)):unpack("f", $str);
+		return $value;
+	}
+	
+	public static function writeLFloat($value){
+		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("f", $value)):pack("f", $value);
 	}
 	
 	public static function printFloat($value){
@@ -337,6 +368,15 @@ class Utils{
 	public static function writeDouble($value){
 		return ENDIANNESS === BIG_ENDIAN ? pack("d", $value):strrev(pack("d", $value));
 	}
+	
+	public static function readLDouble($str){
+		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("d", strrev($str)):unpack("d", $str);
+		return $value;
+	}
+	
+	public static function writeLDouble($value){
+		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("d", $value)):pack("d", $value);
+	}
 
 	public static function readLong($str){
 		$long = new Math_BigInteger($str, -256);
@@ -346,6 +386,16 @@ class Utils{
 	public static function writeLong($value){
 		$long = new Math_BigInteger($value, -10);
 		return str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT);
+	}
+	
+	public static function readLLong($str){
+		$long = new Math_BigInteger(strrev($str), -256);
+		return $long->toString();
+	}
+	
+	public static function writeLLong($value){
+		$long = new Math_BigInteger($value, -10);
+		return strrev(str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT));
 	}	
 	
 }

@@ -47,6 +47,7 @@ $dataName = array(
 	MC_ADD_PLAYER => "AddPlayer",
 	
 	MC_REMOVE_ENTITY => "RemoveEntity",
+	MC_ADD_ITEM_ENTITY => "AddItemEntity",
 	
 	MC_MOVE_ENTITY_POSROT => "MoveEntity_PosRot",
 	MC_MOVE_PLAYER => "MovePlayer",
@@ -54,6 +55,7 @@ $dataName = array(
 	MC_REMOVE_BLOCK => "RemoveBlock",
 	
 	MC_REQUEST_CHUNK => "RequestChunk",
+	MC_CHUNK_DATA => "ChunkData",
 	
 	MC_PLAYER_EQUIPMENT => "PlayerEquipment",
 	

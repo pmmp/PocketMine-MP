@@ -214,7 +214,32 @@ class CustomPacketHandler{
 					$this->data["eid"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
-				}				
+				}
+				break;
+			case MC_ADD_ITEM_ENTITY:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["block"] = Utils::readShort($this->get(2), false);
+					$this->data["stack"] = ord($this->get(1));
+					$this->data["meta"] = Utils::readShort($this->get(2), false);
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["yaw"] = Utils::readByte($this->get(1));
+					$this->data["pitch"] = Utils::readByte($this->get(1));
+					$this->data["roll"] = Utils::readByte($this->get(1));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeShort($this->data["block"]);
+					$this->raw .= chr($this->data["stack"]);
+					$this->raw .= Utils::writeShort($this->data["meta"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeByte($this->data["yaw"]);
+					$this->raw .= Utils::writeByte($this->data["pitch"]);
+					$this->raw .= Utils::writeByte($this->data["roll"]);
+				}
 				break;
 			case MC_MOVE_PLAYER:
 				if($this->c === false){	
@@ -246,6 +271,21 @@ class CustomPacketHandler{
 					$this->raw .= chr($this->data["face"]);
 				}				
 				break;
+			case MC_UPDATE_BLOCK:
+				if($this->c === false){
+					$this->data["block"] = Utils::readShort($this->get(2));
+					$this->data["meta"] = Utils::readShort($this->get(2));
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["y"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeShort($this->data["block"]);
+					$this->raw .= Utils::writeShort($this->data["meta"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+				}				
+				break;
 			case MC_REQUEST_CHUNK:
 				if($this->c === false){	
 					$this->data["x"] = Utils::readInt($this->get(4));
@@ -254,6 +294,20 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["y"]);
 				}				
+				break;
+			case MC_CHUNK_DATA:
+				if($this->c === false){	
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					//$this->data["unknown1"] = $this->get(WTF);
+					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["unknown2"] = Utils::readInt($this->get(4));
+					//$this->data["unknown3"] = $this->get(WTF);
+				}else{
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= $this->data["data"];
+				}
 				break;
 			case MC_PLAYER_EQUIPMENT:
 				if($this->c === false){	

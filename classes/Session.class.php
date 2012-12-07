@@ -266,6 +266,9 @@ class Session{
 							++$this->counter[0];
 							break;
 						case MC_READY:
+							if(is_object($this->entity)){
+								break;
+							}
 							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => $this->data["health"]));
 							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 							$this->entity = new Entity($this->eid, ENTITY_PLAYER, 0, $this->server);
@@ -287,11 +290,32 @@ class Session{
 							$this->server->trigger("onChat", $this->username." joined the game");
 							break;
 						case MC_MOVE_PLAYER:
-							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["x"], $data["yaw"], $data["pitch"]);
+							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 							$this->server->trigger("onPlayerMove", $this->eid);
 							break;
 						case MC_PLAYER_EQUIPMENT:
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"]." with metadata ".$data["meta"]." in their hands!", true, true, 2);
+							break;
+						case MC_REQUEST_CHUNK:
+							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
+							break;
+						case MC_REMOVE_BLOCK:
+							console("[DEBUG] EID ".$this->eid." broke block at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => MC_ADD_ITEM_ENTITY,
+									"eid" => $this->server->eidCnt++,
+									"x" => $data["x"],
+									"y" => $data["y"],
+									"z" => $data["z"],
+									"block" => 1,
+									"meta" => 0,
+									"stack" => 1,
+								),
+							));
+							++$this->counter[0];
 							break;
 						case MC_RESPAWN:
 							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => 20));

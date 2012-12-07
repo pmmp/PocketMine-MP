@@ -34,8 +34,10 @@ Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Min
 Current features of the server:
 	- Players can connect and move around the world
 	- Online list broadcast
+	- Configurable day/night cycle
 	- Health and position saving
 	- server.properties configuration file
 	- Whitelist and IP Ban files
 	- Survival & Creative
 	- Awesome features in server list!
+	- Multiple worlds and importing!

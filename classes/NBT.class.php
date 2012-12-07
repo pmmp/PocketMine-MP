@@ -34,8 +34,8 @@ class NBT {
 		}
 		switch(basename($filename, ".dat")){
 			case "level":
-				$version = Utils::readInt(strrev(fread($fp, 4)));
-				$lenght = Utils::readInt(strrev(fread($fp, 4)));
+				$version = Utils::readLInt(fread($fp, 4));
+				$lenght = Utils::readLInt(fread($fp, 4));
 				break;
 			case "entities":
 				fread($fp, 12);
@@ -65,15 +65,15 @@ class NBT {
 			case self::TAG_BYTE: // Signed byte (8 bit)
 				return Utils::readByte(fread($fp, 1));
 			case self::TAG_SHORT: // Signed short (16 bit, big endian)
-				return Utils::readShort(strrev(fread($fp, 2)));
+				return Utils::readLShort(fread($fp, 2));
 			case self::TAG_INT: // Signed integer (32 bit, big endian)
-				return Utils::readInt(strrev(fread($fp, 4)));
+				return Utils::readLInt(fread($fp, 4));
 			case self::TAG_LONG: // Signed long (64 bit, big endian)
-				return Utils::readLong(strrev(fread($fp, 8)));
+				return Utils::readLLong(fread($fp, 8));
 			case self::TAG_FLOAT: // Floating point value (32 bit, big endian, IEEE 754-2008)
-				return Utils::readFloat(strrev(fread($fp, 4)));
+				return Utils::readLFloat(fread($fp, 4));
 			case self::TAG_DOUBLE: // Double value (64 bit, big endian, IEEE 754-2008)
-				return Utils::readDouble(strrev(fread($fp, 8)));
+				return Utils::readLDouble(fread($fp, 8));
 			case self::TAG_BYTE_ARRAY: // Byte array
 				$arrayLength = $this->readType($fp, self::TAG_INT);
 				$array = array();
