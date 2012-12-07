@@ -28,13 +28,15 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Session{
 	protected $server, $serverID, $timeout, $connected, $evid;
-	var $clientID, $ip, $port, $counter, $username, $EID;
-	function __construct($server, $clientID, $EID, $ip, $port){
+	var $clientID, $ip, $port, $counter, $username, $eid, $data;
+	function __construct($server, $clientID, $eid, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
 		$this->CID = $this->server->clientID($ip, $port);
-		$this->EID = $EID;
+		$this->eid = $eid;
+		$this->data = array();
 		$this->ip = $ip;
+		$this->entity = false;
 		$this->port = $port;
 		$this->serverID =& $this->server->serverID;
 		$this->timeout = microtime(true) + 25;
@@ -52,6 +54,21 @@ class Session{
 		}
 	}
 	
+	function __destruct(){
+		//$this->close("destruct");
+	}
+	
+	public function save(){
+		if(is_object($this->entity)){
+			$this->data["spawn"] = array(
+				"x" => $this->entity->position["x"],
+				"y" => $this->entity->position["y"],
+				"z" => $this->entity->position["z"],
+			);
+		}
+		file_put_contents(FILE_PATH."data/players/".str_replace("/", "", $this->username).".dat", serialize($this->data));
+	}
+	
 	public function close($reason = "server stop", $msg = true){
 		foreach($this->evid as $ev){
 			$this->server->deleteEvent($ev[0], $ev[1]);
@@ -60,12 +77,69 @@ class Session{
 		if($msg === true){
 			$this->server->trigger("onChat", $this->username." left the game");
 		}
+		$this->save();
+		if(is_object($this->entity)){
+			$this->entity->__destruct();
+		}
 		console("[INFO] Session with ".$this->ip.":".$this->port." closed due to ".$reason);
+		unset($this->server->entities[$this->eid]);
 		unset($this->server->clients[$this->CID]);
 	}
 	
 	public function eventHandler($data, $event){		
 		switch($event){
+			case "onHealthChange":
+				if($data["eid"] === $this->eid){
+					$this->send(0x84, array(
+						$this->counter[0],
+						0x00,
+						array(
+							"id" => MC_SET_HEALTH,
+							"health" => $data["health"],
+						),
+					));
+					$this->data["health"] = $data["health"];
+					if(is_object($this->entity)){
+						$this->entity->setHealth($data["health"]);
+					}
+				}
+				break;
+			case "onPlayerAdd":
+				if($data["eid"] === $this->eid){
+					break;
+				}
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => MC_ADD_PLAYER,
+						"clientID" => $data["clientID"],
+						"username" => $data["username"],
+						"eid" => $data["eid"],
+						"x" => $data["x"],
+						"y" => $data["y"],
+						"z" => $data["z"],
+						"yaw" => $data["yaw"],
+						"pitch" => $data["pitch"],
+						"block" => $data["block"],
+						"meta" => $data["meta"],
+					),
+				));				
+				break;
+			case "onEntityRemove":
+				if($data === $this->eid){
+					$this->close("despawn");
+				}else{
+					$this->send(0x84, array(
+						$this->counter[0],
+						0x00,
+						array(
+							"id" => MC_ENTITY_REMOVE,
+							"eid" => $data,
+						),
+					));
+				}
+				break;
 			case "onTimeChange":
 				$this->send(0x84, array(
 					$this->counter[0],
@@ -133,14 +207,39 @@ class Session{
 						
 							break;
 						case MC_LOGIN:
-							$this->username = $data["username"];
+							$this->username = str_replace("/", "", $data["username"]);
+							foreach($this->server->clients as $c){
+								if($c->eid !== $this->eid and $c->username === $this->username){
+									$c->close("logged in from another location");
+								}
+							}
 							if($this->server->whitelist !== false and !in_array($this->username, $this->server->whitelist)){
 								$this->close("\"".$this->username."\" not being on white-list", false);
 								break;
 							}
 							console("[INFO] Player \"".$this->username."\" connected from ".$this->ip.":".$this->port);
+							if(!file_exists(FILE_PATH."data/players/".$this->username.".dat")){
+								console("[NOTICE] Player data not found for \"".$this->username."\", creating new");
+								$this->data = array(
+									"spawn" => array(
+										"x" => $this->server->spawn["x"],
+										"y" => $this->server->spawn["y"],
+										"z" => $this->server->spawn["z"],
+									),
+									"health" => 20,
+									"lastIP" => $this->ip,
+									"lastID" => $this->clientID,
+								);
+							}else{
+								$this->data = unserialize(file_get_contents(FILE_PATH."data/players/".str_replace("/", "", $this->username).".dat"));
+								$this->data["lastIP"] = $this->ip;
+								$this->data["lastID"] = $this->clientID;
+							}
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
+							$this->evid[] = array("onPlayerAdd", $this->server->event("onPlayerAdd", array($this, "eventHandler")));
+							$this->evid[] = array("onEntityDespawn", $this->server->event("onEntityDespawn", array($this, "eventHandler")));
+							$this->evid[] = array("onHealthChange", $this->server->event("onHealthChange", array($this, "eventHandler")));
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
@@ -156,44 +255,47 @@ class Session{
 								array(
 									"id" => MC_START_GAME,
 									"seed" => $this->server->seed,
-									"x" => 128.5,
-									"y" => 100,
-									"z" => 128.5,
+									"x" => $this->data["spawn"]["x"],
+									"y" => $this->data["spawn"]["y"],
+									"z" => $this->data["spawn"]["z"],
 									"unknown1" => 0,
 									"gamemode" => $this->server->gamemode,
-									"eid" => $this->EID,
+									"eid" => $this->eid,
 								),
 							));
 							++$this->counter[0];
 							break;
 						case MC_READY:
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_SET_TIME,
-									"time" => $this->server->time,
-								),
-							));
-							console("[DEBUG] Player with EID ".$this->EID." \"".$this->username."\" spawned!", true, true, 2);
-							$this->server->trigger("onChat", $this->username." joined the game");
+							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => $this->data["health"]));
+							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
+							$this->entity = new Entity($this->eid, ENTITY_PLAYER, 0, $this->server);
+							$this->entity->setName($this->username);
+							$this->server->entities[$this->eid] = &$this->entity;
+							/*$this->server->trigger("onPlayerAdd", array(
+								"clientID" => $this->clientID,
+								"username" => $this->username,
+								"eid" => $this->eid,
+								"x" => $this->data["spawn"]["x"],
+								"y" => $this->data["spawn"]["y"],
+								"z" => $this->data["spawn"]["z"],
+								"yaw" => $this->data["spawn"]["yaw"],
+								"pitch" => $this->data["spawn"]["pitch"],
+								"block" => 0,
+								"meta" => 0,
+							));*/
 							$this->eventHandler($this->server->motd, "onChat");
+							$this->server->trigger("onChat", $this->username." joined the game");
 							break;
 						case MC_MOVE_PLAYER:
-							console("[DEBUG] EID ".$this->EID." moved: X ".$data["x"].", Y ".$data["y"].", Z ".$data["z"].", Pitch ".$data["pitch"].", Yaw ".$data["yaw"], true, true, 2);
+							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["x"], $data["yaw"], $data["pitch"]);
+							$this->server->trigger("onPlayerMove", $this->eid);
 							break;
 						case MC_PLAYER_EQUIPMENT:
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_PLAYER_EQUIPMENT,
-									"eid" => 0,
-									"block" => 323,
-									"meta" => 0,
-								),
-							));
-							console("[DEBUG] EID ".$this->EID." has now ".$data["block"]." with metadata ".$data["meta"]." in their hands!", true, true, 2);
+							console("[DEBUG] EID ".$this->eid." has now ".$data["block"]." with metadata ".$data["meta"]." in their hands!", true, true, 2);
+							break;
+						case MC_RESPAWN:
+							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => 20));
+							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["x"], 0, 0);
 							break;
 							
 					}

@@ -28,7 +28,6 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
 file_put_contents("packets.log", "");
-file_put_contents("console.log", "");
 
 if(!file_exists(FILE_PATH."white-list.txt")){
 	console("[WARNING] No white-list.txt found, creating blank file");
@@ -43,8 +42,11 @@ if(!file_exists(FILE_PATH."banned-ips.txt")){
 if(!file_exists(FILE_PATH."server.properties")){
 	console("[WARNING] No server.properties found, using default settings");
 	copy(FILE_PATH."common/default.properties", FILE_PATH."server.properties");
-	
 }
+
+@mkdir(FILE_PATH."data/entities/", 0777, true);
+@mkdir(FILE_PATH."data/players/", 0777);
+
 $prop = file_get_contents(FILE_PATH."server.properties");
 $prop = explode("\n", str_replace("\r", "", $prop));
 $config = array();
@@ -65,11 +67,13 @@ foreach($prop as $line){
 		case "max-players":
 		case "port":
 		case "debug":
+		case "time-per-second":
 			$v = (int) $v;
 			break;
 		case "seed":
 		case "server-id":
-			$v = trim($v) == "false" ? false:preg_replace("/^[0-9\-]/", "", $v);
+			$v = trim($v);
+			$v = $v == "false" ? false:(preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v);
 			break;
 		case "spawn":
 			$v = explode(";", $v);
@@ -86,9 +90,11 @@ define("DEBUG", $config["debug"]);
 
 $server = new PocketMinecraftServer($config["server-name"], $config["gamemode"], $config["seed"], $config["protocol"], $config["port"], $config["server-id"]);
 $server->setType($config["type"]);
+$server->timePerSecond = $config["time-per-second"];
 $server->maxClients = $config["max-players"];
 $server->description = $config["description"];
 $server->motd = $config["motd"];
+$server->spawn = $config["spawn"];
 $server->whitelist = $config["white-list"];
 $server->reloadConfig();
 

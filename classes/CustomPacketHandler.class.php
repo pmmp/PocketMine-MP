@@ -184,6 +184,31 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}			
 				break;
+			case MC_ADD_PLAYER:	
+				if($this->c === false){
+					$this->data["clientID"] = Utils::readLong($this->get(8));
+					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["yaw"] = Utils::readFloat($this->get(4));
+					$this->data["pitch"] = Utils::readFloat($this->get(4));
+					$this->data["block"] = Utils::readShort($this->get(2), false);
+					$this->data["meta"] = Utils::readShort($this->get(2), false);
+				}else{
+					$this->raw .= Utils::writeLong($this->data["clientID"]);
+					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeFloat($this->data["yaw"]);
+					$this->raw .= Utils::writeFloat($this->data["pitch"]);
+					$this->raw .= Utils::writeShort($this->data["block"]);
+					$this->raw .= Utils::writeShort($this->data["meta"]);
+				}
+				break;
 			case MC_REMOVE_ENTITY:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
@@ -233,8 +258,8 @@ class CustomPacketHandler{
 			case MC_PLAYER_EQUIPMENT:
 				if($this->c === false){	
 					$this->data["eid"] = Utils::readInt($this->get(4));
-					$this->data["block"] = Utils::readShort($this->get(2), true);
-					$this->data["meta"] = Utils::readShort($this->get(2), true);
+					$this->data["block"] = Utils::readShort($this->get(2), false);
+					$this->data["meta"] = Utils::readShort($this->get(2), false);
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeShort($this->data["block"]);
@@ -246,6 +271,19 @@ class CustomPacketHandler{
 					$this->data["health"] = ord($this->get(1));
 				}else{
 					$this->raw .= chr($this->data["health"]);
+				}
+				break;
+			case MC_RESPAWN:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}					
 				break;
 			case MC_CLIENT_MESSAGE:

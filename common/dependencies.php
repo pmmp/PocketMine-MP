@@ -70,6 +70,7 @@ if($errors > 0){
 require_once("classes/Utils.class.php");
 require_once("classes/UDPSocket.class.php");
 require_once("classes/Packet.class.php");
+require_once("classes/Entity.class.php");
 require_once("classes/SerializedPacketHandler.class.php");
 require_once("classes/CustomPacketHandler.class.php");
 require_once("classes/MinecraftInterface.class.php");
