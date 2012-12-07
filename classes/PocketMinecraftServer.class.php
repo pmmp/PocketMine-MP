@@ -137,7 +137,7 @@ class PocketMinecraftServer{
 		$this->trigger("onChat", $text);
 	}
 	
-	public function setType($type = "demo"){
+	public function setType($type = "normal"){
 		switch($type){
 			case "normal":
 				$this->serverType = "MCCPP;Demo;";

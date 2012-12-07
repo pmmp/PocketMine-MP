@@ -89,7 +89,7 @@ foreach($prop as $line){
 define("DEBUG", $config["debug"]);
 
 $server = new PocketMinecraftServer($config["server-name"], $config["gamemode"], $config["seed"], $config["protocol"], $config["port"], $config["server-id"]);
-$server->setType($config["type"]);
+$server->setType($config["server-type"]);
 $server->timePerSecond = $config["time-per-second"];
 $server->maxClients = $config["max-players"];
 $server->description = $config["description"];
