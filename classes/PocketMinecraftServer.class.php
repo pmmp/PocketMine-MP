@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer{
-	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $map, $level, $tileEntities;
+	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $cnt, $events, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port;
@@ -39,6 +39,7 @@ class PocketMinecraftServer{
 		$this->version = (int) $version;
 		$this->name = $name;
 		$this->mapDir = false;
+		$this->mapName = false;
 		$this->map = false;
 		$this->level = false;
 		$this->tileEntities = array();
@@ -161,35 +162,43 @@ class PocketMinecraftServer{
 	}
 	
 	private function loadMap(){
-		$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
-		console("[INFO] Map: ".$this->level["LevelName"]);
-		$this->time = (int) $this->level["Time"];
-		$this->level["Time"] = &$this->time;
-		console("[INFO] Time: ".$this->time);
-		console("[INFO] Seed: ".$this->seed);
-		console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
-		console("[INFO] Loading map...");
-		$this->map = new ChunkParser();
-		if(!$this->map->loadFile($this->mapDir."chunks.dat")){
-			console("[ERROR] Couldn't load the map \"".$this->level["LevelName"]."\"!", true, true, 0);
-			$this->map = false;
+		if($this->mapName !== false){			
+			$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
+			console("[INFO] Map: ".$this->level["LevelName"]);
+			$this->time = (int) $this->level["Time"];
+			$this->level["Time"] = &$this->time;
+			console("[INFO] Time: ".$this->time);
+			console("[INFO] Seed: ".$this->seed);
+			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
+			console("[INFO] Loading map...");
+			$this->map = new ChunkParser();
+			if(!$this->map->loadFile($this->mapDir."chunks.dat")){
+				console("[ERROR] Couldn't load the map \"".$this->level["LevelName"]."\"!", true, true, 0);
+				$this->map = false;
+			}else{
+				
+			}
+			console("[INFO] Loading entities...");
+			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
+			foreach($entities as $entity){
+				$this->entities[$this->eidCnt] = new Entity($this->eidCnt, ENTITY_MOB, $entity["id"], $this);
+				$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+				$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
+				++$this->eidCnt;
+			}
+			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
+			$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
 		}else{
-			
-		}		
-		console("[INFO] Loading entities...");
-		$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
-		foreach($entities as $entity){
-			$this->entities[$this->eidCnt] = new Entity($this->eidCnt, ENTITY_MOB, $entity["id"], $this);
-			$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-			$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
-			++$this->eidCnt;
+			console("[INFO] Time: ".$this->time);
+			console("[INFO] Seed: ".$this->seed);
+			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
 		}
-		console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
-		$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
 	}
 	
 	public function save(){
-		file_put_contents($this->mapDir."level.dat", serialize($this->level));
+		if($this->mapName !== false){	
+			file_put_contents($this->mapDir."level.dat", serialize($this->level));
+		}
 	}
 	
 	public function start(){

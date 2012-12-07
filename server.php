@@ -135,6 +135,7 @@ $server->description = $config["description"];
 $server->motd = $config["motd"];
 $server->spawn = $config["spawn"];
 $server->whitelist = $config["white-list"];
+$server->mapName = $config["level-name"];
 $server->mapDir = FILE_PATH."data/maps/".$config["level-name"]."/";
 $server->reloadConfig();
 

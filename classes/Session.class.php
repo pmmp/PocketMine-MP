@@ -372,6 +372,7 @@ class Session{
 							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
 							break;
 						case MC_REMOVE_BLOCK:
+							$this->eventHandler("Blocks broken will not be saved", "onChat");
 							console("[DEBUG] EID ".$this->eid." broke block at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 							$this->send(0x84, array(
 								$this->counter[0],
