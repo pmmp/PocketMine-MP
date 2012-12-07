@@ -260,15 +260,15 @@ class CustomPacketHandler{
 				break;
 			case MC_REMOVE_BLOCK:
 				if($this->c === false){	
+					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["x"] = Utils::readInt($this->get(4));
-					$this->data["y"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
-					$this->data["face"] = ord($this->get(1));
+					$this->data["y"] = ord($this->get(1));
 				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeInt($this->data["x"]);
-					$this->raw .= Utils::writeInt($this->data["y"]);
 					$this->raw .= Utils::writeInt($this->data["z"]);
-					$this->raw .= chr($this->data["face"]);
+					$this->raw .= chr($this->data["y"]);
 				}				
 				break;
 			case MC_UPDATE_BLOCK:
