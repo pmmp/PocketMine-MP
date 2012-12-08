@@ -70,16 +70,16 @@ class Session{
 	}
 	
 	public function close($reason = "server stop", $msg = true){
+		$this->save();
+		if(is_object($this->entity)){
+			$this->entity->close();
+		}
 		foreach($this->evid as $ev){
 			$this->server->deleteEvent($ev[0], $ev[1]);
 		}
 		$this->connected = false;
 		if($msg === true){
 			$this->server->trigger("onChat", $this->username." left the game");
-		}
-		$this->save();
-		if(is_object($this->entity)){
-			$this->entity->__destruct();
 		}
 		console("[INFO] Session with ".$this->ip.":".$this->port." closed due to ".$reason);
 		unset($this->server->entities[$this->eid]);
@@ -102,8 +102,8 @@ class Session{
 						"x" => $entity->position["x"],
 						"y" => $entity->position["y"],
 						"z" => $entity->position["z"],
-						"yaw" => 0,
-						"pitch" => 0,
+						"yaw" => $entity->position["yaw"],
+						"pitch" => $entity->position["pitch"],
 					),
 				));
 				++$this->counter[0];
@@ -129,7 +129,7 @@ class Session{
 				if($data["eid"] === $this->eid){
 					break;
 				}
-				/*$this->send(0x84, array(
+				$this->send(0x84, array(
 					$this->counter[0],
 					0x00,
 					array(
@@ -142,42 +142,23 @@ class Session{
 						"z" => $data["z"],
 						"yaw" => $data["yaw"],
 						"pitch" => $data["pitch"],
-						"block" => $data["block"],
-						"meta" => $data["meta"],
-					),
-				));
-				++$this->counter[0];
-				*/
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_ADD_ITEM_ENTITY,
-						"eid" => $data["eid"],
-						"x" => $data["x"],
-						"y" => $data["y"],
-						"z" => $data["z"],
-						"block" => 10,
-						"meta" => 0,
-						"stack" => 1,
 					),
 				));
 				++$this->counter[0];
 				break;
 			case "onEntityRemove":
 				if($data === $this->eid){
-					$this->close("despawn");
-				}else{
-					$this->send(0x84, array(
-						$this->counter[0],
-						0x00,
-						array(
-							"id" => MC_ENTITY_REMOVE,
-							"eid" => $data,
-						),
-					));
-					++$this->counter[0];
+					break;
 				}
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => MC_ENTITY_REMOVE,
+						"eid" => $data,
+					),
+				));
+				++$this->counter[0];
 				break;
 			case "onTimeChange":
 				$this->send(0x84, array(
@@ -277,7 +258,7 @@ class Session{
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
 							$this->evid[] = array("onPlayerAdd", $this->server->event("onPlayerAdd", array($this, "eventHandler")));
-							$this->evid[] = array("onEntityDespawn", $this->server->event("onEntityDespawn", array($this, "eventHandler")));
+							$this->evid[] = array("onEntityRemove", $this->server->event("onEntityRemove", array($this, "eventHandler")));
 							$this->evid[] = array("onEntityMove", $this->server->event("onEntityMove", array($this, "eventHandler")));
 							$this->evid[] = array("onHealthChange", $this->server->event("onHealthChange", array($this, "eventHandler")));
 							$this->send(0x84, array(
@@ -313,6 +294,7 @@ class Session{
 							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 							$this->entity = new Entity($this->eid, ENTITY_PLAYER, 0, $this->server);
 							$this->entity->setName($this->username);
+							$this->entity->data["clientID"] = $this->clientID;
 							$this->server->entities[$this->eid] = &$this->entity;
 							$this->server->trigger("onPlayerAdd", array(
 								"clientID" => $this->clientID,
@@ -323,49 +305,45 @@ class Session{
 								"z" => $this->data["spawn"]["z"],
 								"yaw" => $this->data["spawn"]["yaw"],
 								"pitch" => $this->data["spawn"]["pitch"],
-								"block" => 0,
-								"meta" => 0,
 							));
 							foreach($this->server->entities as $entity){
 								if($entity->eid !== $this->eid){
-									$this->send(0x84, array(
-										$this->counter[0],
-										0x00,
-										array(
-											"id" => MC_ADD_ITEM_ENTITY,
+									if($entity->class === 0){
+										$this->server->trigger("onPlayerAdd", array(
+											"clientID" => $entity->data["clientID"],
+											"username" => $entity->name,
 											"eid" => $entity->eid,
 											"x" => $entity->position["x"],
 											"y" => $entity->position["y"],
 											"z" => $entity->position["z"],
-											"block" => 10,
-											"meta" => 0,
-											"stack" => 1,
-										),
-									));
-									++$this->counter[0];
+											"yaw" => $entity->position["yaw"],
+											"pitch" => $entity->position["pitch"],
+										));
+									}else{
+										$this->send(0x84, array(
+											$this->counter[0],
+											0x00,
+											array(
+												"id" => MC_ADD_ITEM_ENTITY,
+												"eid" => $entity->eid,
+												"x" => $entity->position["x"],
+												"y" => $entity->position["y"],
+												"z" => $entity->position["z"],
+												"block" => 10,
+												"meta" => 0,
+												"stack" => 1,
+											),
+										));
+										++$this->counter[0];
+									}
 								}							
 							}
 							$this->eventHandler($this->server->motd, "onChat");
-							$this->server->trigger("onChat", $this->username." joined the game");
+							//$this->server->trigger("onChat", $this->username." joined the game");
 							break;
 						case MC_MOVE_PLAYER:
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 							$this->server->trigger("onEntityMove", $this->eid);
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_ADD_ITEM_ENTITY,
-									"eid" => $this->server->eidCnt++,
-									"x" => $data["x"],
-									"y" => $data["y"],
-									"z" => $data["z"],
-									"block" => 7,
-									"meta" => 0,
-									"stack" => 1,
-								),
-							));
-							++$this->counter[0];
 							break;
 						case MC_PLAYER_EQUIPMENT:
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);

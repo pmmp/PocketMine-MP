@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
 file_put_contents("packets.log", "");
+file_put_contents("console.in", "");
 
 
 if(!file_exists(FILE_PATH."white-list.txt")){
@@ -129,28 +130,185 @@ if(file_exists(FILE_PATH."data/maps/level.dat")){
 	console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
 	unset($level, $entities, $nbt);
 }
-$server->setType($config["server-type"]);
-$server->timePerSecond = $config["time-per-second"];
-$server->maxClients = $config["max-players"];
-$server->description = $config["description"];
-$server->motd = $config["motd"];
-$server->spawn = $config["spawn"];
-$server->whitelist = $config["white-list"];
+
+
 $server->mapName = $config["level-name"];
 $server->mapDir = FILE_PATH."data/maps/".$config["level-name"]."/";
-$server->reloadConfig();
+loadConfig();
 
-if($config["regenerate-config"] == true){
-	$config["seed"] = $server->seed;
-	$config["server-id"] = $server->serverID;
-	$config["regenerate-config"] = "false";
-	$config["white-list"] = $config["whitelist"] === true ? "true":"false";
-	$config["spawn"] = implode(";", $config["spawn"]);
-	$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
-	foreach($config as $n => $v){
-		$prop .= $n."=".$v."\r\n";
+
+function loadConfig($regenerate = false){
+	global $server, $config;
+	$server->setType($config["server-type"]);
+	$server->timePerSecond = $config["time-per-second"];
+	$server->maxClients = $config["max-players"];
+	$server->description = $config["description"];
+	$server->motd = $config["motd"];
+	$server->spawn = $config["spawn"];
+	$server->whitelist = $config["white-list"];
+	if($config["regenerate-config"] == true or $regenerate === true){
+		$config["seed"] = $server->seed;
+		$config["server-id"] = $server->serverID;
+		$config["regenerate-config"] = "false";
+		$config["white-list"] = $config["whitelist"] === true ? "true":"false";
+		$config["spawn"] = implode(";", $config["spawn"]);
+		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
+		foreach($config as $n => $v){
+			$prop .= $n."=".$v."\r\n";
+		}
+		file_put_contents(FILE_PATH."server.properties", $prop);
 	}
-	file_put_contents(FILE_PATH."server.properties", $prop);
+	$server->reloadConfig();
 }
+
+$server->event("onTick", "serverCommands");
+$commands = fopen(FILE_PATH."console.in", "w+b");
+function serverCommands(){
+	global $server, $commands, $config;
+	while(($line = fgets($commands)) !== false){
+		$line = trim($line);
+		if($line === ""){
+			continue;
+		}
+		$params = explode(" ", $line);
+		$cmd = strtolower(array_shift($params));
+		console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+		switch($cmd){
+			case "stop":
+				console("[INFO] Stopping server...");
+				$server->close();
+				break;
+			case "banip":
+				$s = implode(" ", $params);
+				if(trim($s) == ""){
+					console("[INFO] Usage: /banip <IP>");
+					break;
+				}
+				file_put_contents(FILE_PATH."banned-ips.txt", "\r\n".$s, FILE_APPEND);
+				console("[INFO] IP \"$s\" added to IP ban list");
+				loadConfig();
+				break;
+				break;
+			case "gamemode":
+				$s = trim(array_shift($params));
+				if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
+					console("[INFO] Usage: /gamemode <0 | 1>");
+					break;
+				}
+				$config["gamemode"] = (int) $s;
+				$server->gamemode = $config["gamemode"];
+				console("[INFO] Gamemode changed to ".$server->gamemode);
+				loadConfig();
+				break;
+			case "say":
+				$s = implode(" ", $params);
+				if(trim($s) == ""){
+					console("[INFO] Usage: /say <message>");
+					break;
+				}
+				$server->chat(false, $s);
+				break;
+			case "time":
+				$p = strtolower(array_shift($params));
+				switch($p){
+					case "check":
+						$time = abs($server->time) % 14400;
+						$hour = str_pad(strval((floor($time / 600) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 600) / 10)), 2, "0", STR_PAD_LEFT);
+						if($time < 7200){
+							$time = "daytime";
+						}elseif($time < 8280){
+							$time = "sunset";
+						}elseif($time < 13320){
+							$time = "night";
+						}else{
+							$time = "sunrise";
+						}
+						console("[INFO] Time: $hour, $time (".$server->time.")");
+						break;
+					case "add":
+						$t = (int) array_shift($params);
+						$server->time += $t;
+						break;
+					case "set":
+						$t = (int) array_shift($params);
+						$server->time = $t;					
+						break;
+					case "sunrise":
+						$server->time = 13320;
+						break;
+					case "day":
+						$server->time = 0;
+						break;
+					case "sunset":
+						$server->time = 7200;
+						break;
+					case "night":
+						$server->time = 8280;
+						break;
+					default:
+						console("[INFO] Usage: /time <check | set | add | sunrise | day | sunset | night> [time]");
+						break;
+				}
+				break;
+			case "whitelist":
+				$p = strtolower(array_shift($params));
+				switch($p){
+					case "add":
+						$user = trim(implode(" ", $params));
+						file_put_contents(FILE_PATH."white-list.txt", "\r\n".$user, FILE_APPEND);
+						console("[INFO] Player \"$user\" added to white-list");
+						loadConfig();
+						break;
+					case "on":
+					case "true":
+					case "1":
+						console("[INFO] White-list turned on");
+						$config["white-list"] = true;
+						loadConfig(true);
+						break;
+					case "off":
+					case "false":
+					case "0":
+						console("[INFO] White-list turned off");
+						$config["white-list"] = false;
+						loadConfig(true);
+						break;
+					case "reload":
+						loadConfig(true);
+						break;
+					case "list":
+						console("[INFO] White-list: ".implode(", ", explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")))));
+						break;
+					default:
+						console("[INFO] Usage: /whitelist <on | off | add | reload | list> [username]");
+						break;
+				}
+				break;
+			case "list":
+				$list = "";
+				foreach($server->clients as $c){
+					$list .= ", ".$c->username;
+				}
+				console("[INFO] Online: ".substr($list, 2));
+				break;
+			case "help":
+				console("[INFO] /help: Show available commands");
+				console("[INFO] /gamemode: Changes default gamemode");
+				console("[INFO] /say: Broadcasts mesages");
+				console("[INFO] /time: Manages time");
+				console("[INFO] /list: Lists online users");
+				console("[INFO] /whitelist: Manages whitelisting");
+				console("[INFO] /banip: Bans an IP");
+				console("[INFO] /stop: Stops the server");
+				break;
+			default:
+				console("[ERROR] Command doesn't exist!");
+				break;
+		}
+	}
+	ftruncate($commands, 0);
+	fseek($commands, 0);
+}
+
 
 $server->start();

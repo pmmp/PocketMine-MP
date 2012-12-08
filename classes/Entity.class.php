@@ -33,7 +33,7 @@ define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
 class Entity{
-	var $eid, $type, $name, $position, $dead, $metadata, $class, $attach;
+	var $eid, $type, $name, $position, $dead, $metadata, $class, $attach, $data, $closed;
 	protected $health, $client;
 	
 	function __construct($eid, $class, $type = 0, $server){ //$type = 0 ---> player
@@ -42,9 +42,12 @@ class Entity{
 		$this->type = (int) $type;
 		$this->class = (int) $class;
 		$this->attach = false;
+		$this->data = array();
 		$this->status = 0;
 		$this->health = 20;
 		$this->dead = false;
+		$this->closed = false;
+		$this->name = "";
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
 		$this->metadata = array();
 		/*include("misc/entities.php");
@@ -62,9 +65,16 @@ class Entity{
 		}*/
 	}
 	
+	public function close(){
+		if($this->closed === false){
+			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
+			$this->server->trigger("onEntityRemove", $this->eid);
+			$this->closed = true;
+		}
+	}
+	
 	public function __destruct(){
-		$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
-		$this->server->trigger("onEntityRemove", $this->eid);
+		$this->close();
 	}
 	
 	public function getEID(){

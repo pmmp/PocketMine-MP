@@ -76,7 +76,7 @@ class PocketMinecraftServer{
 		
 		$this->event("onChat", "eventHandler", true);
 		
-		$this->action(1000000, '$this->time += $this->timePerSecond;$this->trigger("onTimeChange", $this->time);');
+		$this->action(100000, '$this->time += ceil($this->timePerSecond / 10);$this->trigger("onTimeChange", $this->time);');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		$this->action(1000000 * 80, '$list = ""; foreach($this->clients as $c){$list .= ", ".$c->username;}$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".substr($list, 2));');
@@ -103,7 +103,7 @@ class PocketMinecraftServer{
 	
 	public function reloadConfig(){
 		if($this->whitelist === true or is_array($this->whitelist)){
-			$this->whitelist = explode("\n", str_replace(array(" ","\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")));
+			$this->whitelist = explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")));
 		}
 		$this->bannedIPs = explode("\n", str_replace(array(" ","\t","\r"), "", file_get_contents(FILE_PATH."banned-ips.txt")));
 	}

@@ -194,8 +194,7 @@ class CustomPacketHandler{
 					$this->data["z"] = Utils::readFloat($this->get(4));
 					$this->data["yaw"] = Utils::readFloat($this->get(4));
 					$this->data["pitch"] = Utils::readFloat($this->get(4));
-					$this->data["block"] = Utils::readShort($this->get(2), false);
-					$this->data["meta"] = Utils::readShort($this->get(2), false);
+					$this->data["metadata"] = $this->get(true);
 				}else{
 					$this->raw .= Utils::writeLong($this->data["clientID"]);
 					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
@@ -205,8 +204,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 					$this->raw .= Utils::writeFloat($this->data["yaw"]);
 					$this->raw .= Utils::writeFloat($this->data["pitch"]);
-					$this->raw .= Utils::writeShort($this->data["block"]);
-					$this->raw .= Utils::writeShort($this->data["meta"]);
+					$this->raw .= "\x21\x2c\x01\x10"."\x7f";
 				}
 				break;
 			case MC_REMOVE_ENTITY:

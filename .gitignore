@@ -5,6 +5,7 @@ data/maps/*
 server.properties
 white-list.txt
 banned-ips.txt
+console.in
 
 #################
 ## Eclipse
