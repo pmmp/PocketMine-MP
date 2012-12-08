@@ -212,13 +212,13 @@ function serverCommands(){
 				$p = strtolower(array_shift($params));
 				switch($p){
 					case "check":
-						$time = abs($server->time) % 14400;
-						$hour = str_pad(strval((floor($time / 600) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 600) / 10)), 2, "0", STR_PAD_LEFT);
-						if($time < 7200){
+						$time = abs($server->time) % 19200;
+						$hour = str_pad(strval((floor($time /800) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
+						if($time < 9500){
 							$time = "daytime";
-						}elseif($time < 8280){
+						}elseif($time < 10900){
 							$time = "sunset";
-						}elseif($time < 13320){
+						}elseif($time < 17800){
 							$time = "night";
 						}else{
 							$time = "sunrise";
@@ -234,16 +234,16 @@ function serverCommands(){
 						$server->time = $t;					
 						break;
 					case "sunrise":
-						$server->time = 13320;
+						$server->time = 17800;
 						break;
 					case "day":
 						$server->time = 0;
 						break;
 					case "sunset":
-						$server->time = 7200;
+						$server->time = 9500;
 						break;
 					case "night":
-						$server->time = 8280;
+						$server->time = 10900;
 						break;
 					default:
 						console("[INFO] Usage: /time <check | set | add | sunrise | day | sunset | night> [time]");
@@ -284,25 +284,42 @@ function serverCommands(){
 						break;
 				}
 				break;
+			case "save-all":
+				$server->save();
+				break;
+			case "spawnplayer":
+				foreach($server->clients as $client){
+								$entity = $client->entity;
+										$server->trigger("onPlayerAdd", array(
+											"clientID" => Utils::readLong(Utils::getRandomBytes(8)),
+											"username" => Utils::strToHex(Utils::getRandomBytes(6)),
+											"eid" => $server->eidCnt++,
+											"x" => $entity->position["x"],
+											"y" => $entity->position["y"],
+											"z" => $entity->position["z"],
+										));
+								}
+				break;
 			case "list":
-				$list = "";
+				console("[INFO] Player list:");
 				foreach($server->clients as $c){
-					$list .= ", ".$c->username;
+					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID);
 				}
-				console("[INFO] Online: ".substr($list, 2));
 				break;
 			case "help":
+			case "?":
 				console("[INFO] /help: Show available commands");
 				console("[INFO] /gamemode: Changes default gamemode");
 				console("[INFO] /say: Broadcasts mesages");
 				console("[INFO] /time: Manages time");
 				console("[INFO] /list: Lists online users");
+				console("[INFO] /save-all: Saves pending changes");
 				console("[INFO] /whitelist: Manages whitelisting");
 				console("[INFO] /banip: Bans an IP");
 				console("[INFO] /stop: Stops the server");
 				break;
 			default:
-				console("[ERROR] Command doesn't exist!");
+				console("[ERROR] Command doesn't exist! Use /help");
 				break;
 		}
 	}

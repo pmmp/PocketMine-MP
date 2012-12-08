@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Session{
-	protected $server, $serverID, $timeout, $connected, $evid;
-	var $clientID, $ip, $port, $counter, $username, $eid, $data;
+	private $server, $serverID, $timeout, $connected, $evid;
+	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity;
 	function __construct($server, $clientID, $eid, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
@@ -140,8 +140,6 @@ class Session{
 						"x" => $data["x"],
 						"y" => $data["y"],
 						"z" => $data["z"],
-						"yaw" => $data["yaw"],
-						"pitch" => $data["pitch"],
 					),
 				));
 				++$this->counter[0];
@@ -303,8 +301,6 @@ class Session{
 								"x" => $this->data["spawn"]["x"],
 								"y" => $this->data["spawn"]["y"],
 								"z" => $this->data["spawn"]["z"],
-								"yaw" => $this->data["spawn"]["yaw"],
-								"pitch" => $this->data["spawn"]["pitch"],
 							));
 							foreach($this->server->entities as $entity){
 								if($entity->eid !== $this->eid){

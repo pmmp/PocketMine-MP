@@ -192,9 +192,7 @@ class CustomPacketHandler{
 					$this->data["x"] = Utils::readFloat($this->get(4));
 					$this->data["y"] = Utils::readFloat($this->get(4));
 					$this->data["z"] = Utils::readFloat($this->get(4));
-					$this->data["yaw"] = Utils::readFloat($this->get(4));
-					$this->data["pitch"] = Utils::readFloat($this->get(4));
-					$this->data["metadata"] = $this->get(true);
+					$this->data["metadata"] = Utils::readMetadata($this->get(true));
 				}else{
 					$this->raw .= Utils::writeLong($this->data["clientID"]);
 					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
@@ -202,9 +200,11 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
-					$this->raw .= Utils::writeFloat($this->data["yaw"]);
-					$this->raw .= Utils::writeFloat($this->data["pitch"]);
-					$this->raw .= "\x21\x2c\x01\x10"."\x7f";
+					$this->raw .= Utils::writeMetadata(array(
+						1 => array("type" => 1, "value" => 300),
+						16 => array("type" => 0, "value" => 0),
+						17 => array("type" => 6, "value" => array(0, 0, 0)),
+					));
 				}
 				break;
 			case MC_REMOVE_ENTITY:

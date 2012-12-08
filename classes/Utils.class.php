@@ -78,6 +78,104 @@ class Utils{
 	public static function writeTriad($value){
 		return substr(pack("N", $value), 1);
 	}
+
+	public static function writeMetadata($data){
+		$m = "";
+		foreach($data as $bottom => $d){
+			$m .= chr(($d["type"] << 5) & (0xE0 | $bottom));
+			switch($d["type"]){
+				case 0:
+					$m .= Utils::writeByte($data["value"]);
+					break;
+				case 1:
+					$m .= Utils::writeLShort($data["value"]);
+					break;
+				case 2:
+					$m .= Utils::writeLInt($data["value"]);
+					break;
+				case 3:
+					$m .= Utils::writeLFloat($data["value"]);
+					break;
+				case 4:
+					$m .= Utils::writeLShort(strlen($data["value"]));
+					$m .= $data["value"];
+					break;
+				case 5:
+					$m .= Utils::writeLShort($data["value"][0]);
+					$m .= Utils::writeByte($data["value"][1]);
+					$m .= Utils::writeLShort($data["value"][2]);
+					break;
+				case 6:
+					for($i=0; $i < 3; ++$i){
+						$m .= Utils::writeLInt($data["value"][$i]);
+					}
+					break;
+					
+			}
+		}
+		$m .= "\x7f";
+		return $m;	
+	}
+	
+	public static function readMetadata($value, $types = false){
+		$offset = 0;
+		$m = array();
+		$b = ord($value{$offset});
+		++$offset;		
+		while($b !== 127){
+			$bottom = $b & 0x1F;
+			$type = $b >> 5;
+			switch($type){
+				case 0:
+					$r = Utils::readByte($value{$offset});
+					++$offset;
+					break;
+				case 1:
+					$r = Utils::readLShort(substr($value, $offset, 2));
+					$offset += 2;
+					break;
+				case 2:
+					$r = Utils::readLInt(substr($value, $offset, 4));
+					$offset += 4;
+					break;
+				case 3:
+					$r = Utils::readLFloat(substr($value, $offset, 4));
+					$offset += 4;
+					break;
+				case 4:
+					$len = Utils::readLShort(substr($value, $offset, 2));
+					$offset += 2;
+					$r = substr($value, $offset, $len);
+					$offset += $len;
+					break;
+				case 5:
+					$r = array();
+					$r[] = Utils::readLShort(substr($value, $offset, 2));
+					$offset += 2;
+					$r[] = Utils::readByte($value{$offset});
+					++$offset;
+					$r[] = Utils::readLShort(substr($value, $offset, 2));
+					$offset += 2;
+					break;
+				case 6:
+					$r = array();
+					for($i=0; $i < 3; ++$i){
+						$r[] = Utils::readLInt(substr($value, $offset, 4));
+						$offset += 4;
+					}
+					break;
+					
+			}
+			if($types === true){
+				$m[$bottom] = array($r, $type);
+			}else{
+				$m[$bottom] = $r;
+			}
+			$b = ord($value{$offset});
+			++$offset;
+		}
+		return $m;	
+	}
 	
 	public static function readDataArray($str, $len = 10, &$offset = null){
 		$data = array();
