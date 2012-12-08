@@ -150,10 +150,12 @@ function loadConfig($regenerate = false){
 		$config["seed"] = $server->seed;
 		$config["server-id"] = $server->serverID;
 		$config["regenerate-config"] = "false";
-		$config["white-list"] = $config["whitelist"] === true ? "true":"false";
-		$config["spawn"] = implode(";", $config["spawn"]);
+		$config["white-list"] = $config["white-list"] === true ? "true":"false";
 		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
 		foreach($config as $n => $v){
+			if($n == "spawn"){
+				$v = implode(";", $v);
+			}
 			$prop .= $n."=".$v."\r\n";
 		}
 		file_put_contents(FILE_PATH."server.properties", $prop);
@@ -179,15 +181,39 @@ function serverCommands(){
 				$server->close();
 				break;
 			case "banip":
-				$s = implode(" ", $params);
-				if(trim($s) == ""){
-					console("[INFO] Usage: /banip <IP>");
-					break;
+				$p = strtolower(array_shift($params));
+				switch($p){
+					case "pardon":
+					case "remove":
+						$ip = trim(implode($params));
+						$new = array();					
+						foreach(explode(file_get_contents(FILE_PATH."banned-ips.txt")) as $i){
+							if($i == $ip){
+								console("[INFO] IP \"$ip\" removed from ban list");
+								continue;
+							}
+							$new[$ip] = $ip;
+						}
+						file_put_contents(FILE_PATH."banned-ips.txt", implode("\r\n", $new));
+						loadConfig();
+						break;
+					case "add":
+					case "ban":
+						$ip = trim(implode($params));
+						file_put_contents(FILE_PATH."banned-ips.txt", "\r\n".$ip, FILE_APPEND);
+						console("[INFO] IP \"$ip\" added to ban list");
+						loadConfig();
+						break;
+					case "reload":
+						loadConfig();
+						break;
+					case "list":
+						console("[INFO] IP ban list: ".implode(", ", explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."banned-ips.txt")))));
+						break;
+					default:
+						console("[INFO] Usage: /banip <add | remove | list | reload> [IP]");
+						break;
 				}
-				file_put_contents(FILE_PATH."banned-ips.txt", "\r\n".$s, FILE_APPEND);
-				console("[INFO] IP \"$s\" added to IP ban list");
-				loadConfig();
-				break;
 				break;
 			case "gamemode":
 				$s = trim(array_shift($params));
@@ -253,11 +279,30 @@ function serverCommands(){
 			case "whitelist":
 				$p = strtolower(array_shift($params));
 				switch($p){
+					case "remove":
+						$user = trim(implode(" ", $params));
+						$new = array();					
+						foreach(explode(file_get_contents(FILE_PATH."white-list.txt")) as $u){
+							if($u == $user){
+								console("[INFO] Player \"$user\" removed from white-list");
+								continue;
+							}
+							$new[$u] = $u;
+						}
+						file_put_contents(FILE_PATH."white-list.txt", implode("\r\n", $new));
+						loadConfig();
+						break;
 					case "add":
 						$user = trim(implode(" ", $params));
 						file_put_contents(FILE_PATH."white-list.txt", "\r\n".$user, FILE_APPEND);
 						console("[INFO] Player \"$user\" added to white-list");
 						loadConfig();
+						break;
+					case "reload":
+						loadConfig(true);
+						break;
+					case "list":
+						console("[INFO] White-list: ".implode(", ", explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")))));
 						break;
 					case "on":
 					case "true":
@@ -272,12 +317,6 @@ function serverCommands(){
 						console("[INFO] White-list turned off");
 						$config["white-list"] = false;
 						loadConfig(true);
-						break;
-					case "reload":
-						loadConfig(true);
-						break;
-					case "list":
-						console("[INFO] White-list: ".implode(", ", explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")))));
 						break;
 					default:
 						console("[INFO] Usage: /whitelist <on | off | add | reload | list> [username]");
@@ -315,7 +354,7 @@ function serverCommands(){
 				console("[INFO] /list: Lists online users");
 				console("[INFO] /save-all: Saves pending changes");
 				console("[INFO] /whitelist: Manages whitelisting");
-				console("[INFO] /banip: Bans an IP");
+				console("[INFO] /banip: Manages IP ban");
 				console("[INFO] /stop: Stops the server");
 				break;
 			default:

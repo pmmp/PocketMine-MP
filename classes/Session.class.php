@@ -69,7 +69,8 @@ class Session{
 		file_put_contents(FILE_PATH."data/players/".str_replace("/", "", $this->username).".dat", serialize($this->data));
 	}
 	
-	public function close($reason = "server stop", $msg = true){
+	public function close($reason = "", $msg = true){
+		$reason = $reason == "" ? "server stop":$reason;
 		$this->save();
 		if(is_object($this->entity)){
 			$this->entity->close();
@@ -77,6 +78,7 @@ class Session{
 		foreach($this->evid as $ev){
 			$this->server->deleteEvent($ev[0], $ev[1]);
 		}
+		$this->eventHandler("You have been kicked. Reason: ".$reason, "onChat");
 		$this->connected = false;
 		if($msg === true){
 			$this->server->trigger("onChat", $this->username." left the game");
@@ -292,6 +294,7 @@ class Session{
 							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 							$this->entity = new Entity($this->eid, ENTITY_PLAYER, 0, $this->server);
 							$this->entity->setName($this->username);
+							$this->entity->setHealth($this->data["health"]);
 							$this->entity->data["clientID"] = $this->clientID;
 							$this->server->entities[$this->eid] = &$this->entity;
 							$this->server->trigger("onPlayerAdd", array(
