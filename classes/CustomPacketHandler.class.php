@@ -207,6 +207,25 @@ class CustomPacketHandler{
 					));
 				}
 				break;
+			case MC_ADD_ENTITY:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["type"] = ord($this->get(1));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= chr($this->data["type"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::hexToStr("000000020000ffd30000");//Utils::writeInt(0);
+					/*$this->raw .= Utils::writeShort(0);
+					$this->raw .= Utils::writeShort(0);
+					$this->raw .= Utils::writeShort(0);*/
+				}
+				break;
 			case MC_REMOVE_ENTITY:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
@@ -286,6 +305,21 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["pitch"]);
 				}
 				break;
+			case MC_PLACE_BLOCK:
+				if($this->c === false){	
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["y"] = ord($this->get(1));
+					$this->data["face"] = Utils::readByte($this->get(1));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= chr($this->data["y"]);
+					$this->raw .= chr($this->data["face"]);
+				}				
+				break;
 			case MC_REMOVE_BLOCK:
 				if($this->c === false){	
 					$this->data["eid"] = Utils::readInt($this->get(4));
@@ -346,6 +380,16 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeShort($this->data["block"]);
 					$this->raw .= Utils::writeShort($this->data["meta"]);
+				}				
+				break;
+			case MC_SET_ENTITY_DATA:
+				if($this->c === false){	
+					$this->data["eid"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeMetadata(array(
+						
+					));
 				}				
 				break;
 			case MC_SET_HEALTH: //SetHealth

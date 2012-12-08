@@ -174,7 +174,7 @@ class PocketMinecraftServer{
 				console("[ERROR] Couldn't load the map \"".$this->level["LevelName"]."\"!", true, true, 0);
 				$this->map = false;
 			}else{
-				
+				$this->map->loadMap();
 			}
 			console("[INFO] Loading entities...");
 			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));

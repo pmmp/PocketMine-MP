@@ -46,6 +46,7 @@ define("MC_START_GAME", 0x87);
 
 define("MC_ADD_PLAYER", 0x89);
 
+define("MC_ADD_ENTITY", 0x8c);
 define("MC_REMOVE_ENTITY", 0x8d);
 define("MC_ADD_ITEM_ENTITY", 0x8e);
 

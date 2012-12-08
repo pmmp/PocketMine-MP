@@ -46,6 +46,7 @@ $dataName = array(
 	
 	MC_ADD_PLAYER => "AddPlayer",
 	
+	MC_ADD_ENTITY => "AddEntity",
 	MC_REMOVE_ENTITY => "RemoveEntity",
 	MC_ADD_ITEM_ENTITY => "AddItemEntity",
 	
@@ -55,6 +56,7 @@ $dataName = array(
 	MC_MOVE_PLAYER => "MovePlayer",
 	MC_PLACE_BLOCK => "PlaceBlock",	
 	MC_REMOVE_BLOCK => "RemoveBlock",
+	MC_UPDATE_BLOCK => "UpdateBlock",
 	
 	MC_REQUEST_CHUNK => "RequestChunk",
 	MC_CHUNK_DATA => "ChunkData",

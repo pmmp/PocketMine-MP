@@ -224,7 +224,7 @@ function serverCommands(){
 				$config["gamemode"] = (int) $s;
 				$server->gamemode = $config["gamemode"];
 				console("[INFO] Gamemode changed to ".$server->gamemode);
-				loadConfig();
+				loadConfig(true);
 				break;
 			case "say":
 				$s = implode(" ", $params);
@@ -338,6 +338,12 @@ function serverCommands(){
 											"z" => $entity->position["z"],
 										));
 								}
+				break;
+			case "block":
+				foreach($server->clients as $client){
+					$b = $server->map->getBlock($client->entity->position["x"], $client->entity->position["y"] - 2, $client->entity->position["z"]);
+					console("[INFO] EID ".$client->eid." is over block ".$b[0].":".$b[1]);
+				}
 				break;
 			case "list":
 				console("[INFO] Player list:");

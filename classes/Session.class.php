@@ -325,12 +325,12 @@ class Session{
 											array(
 												"id" => MC_ADD_ITEM_ENTITY,
 												"eid" => $entity->eid,
+												"type" => $entity->type,
 												"x" => $entity->position["x"],
 												"y" => $entity->position["y"],
 												"z" => $entity->position["z"],
 												"block" => 10,
 												"meta" => 0,
-												"stack" => 1,
 											),
 										));
 										++$this->counter[0];
