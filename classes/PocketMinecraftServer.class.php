@@ -231,6 +231,12 @@ class PocketMinecraftServer{
 			switch($packet["pid"]){
 				case 0x02:
 					if(in_array($packet["ip"], $this->bannedIPs)){
+						$this->send(0x1c, array(
+							$data[0],
+							$this->serverID,
+							MAGIC,
+							$this->serverType. $this->name . " [You're banned]",
+						), false, $packet["ip"], $packet["port"]);
 						break;
 					}
 					if(!isset($this->custom["times_".$CID])){

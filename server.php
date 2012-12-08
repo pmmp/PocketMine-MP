@@ -187,12 +187,12 @@ function serverCommands(){
 					case "remove":
 						$ip = trim(implode($params));
 						$new = array();					
-						foreach(explode(file_get_contents(FILE_PATH."banned-ips.txt")) as $i){
+						foreach(explode("\n", str_replace(array("\r","\t"), "", file_get_contents(FILE_PATH."banned-ips.txt"))) as $i){
 							if($i == $ip){
 								console("[INFO] IP \"$ip\" removed from ban list");
 								continue;
 							}
-							$new[$ip] = $ip;
+							$new[$i] = $i;
 						}
 						file_put_contents(FILE_PATH."banned-ips.txt", implode("\r\n", $new));
 						loadConfig();
@@ -282,7 +282,7 @@ function serverCommands(){
 					case "remove":
 						$user = trim(implode(" ", $params));
 						$new = array();					
-						foreach(explode(file_get_contents(FILE_PATH."white-list.txt")) as $u){
+						foreach(explode("\n", str_replace(array("\r","\t"), "", file_get_contents(FILE_PATH."white-list.txt"))) as $u){
 							if($u == $user){
 								console("[INFO] Player \"$user\" removed from white-list");
 								continue;
