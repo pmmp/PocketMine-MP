@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
-How to conect to internet servers: http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/
+How to connect to internet servers: http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/
 
 
 Current features of the server:

@@ -80,8 +80,6 @@ class PocketMinecraftServer{
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		$this->action(1000000 * 80, '$list = ""; foreach($this->clients as $c){$list .= ", ".$c->username;}$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".substr($list, 2));');
-		$this->action(1000000 * 3 * 60, '$this->chat(false, "This server uses Pocket-Minecraft-PHP");');
-		$this->action(1000000 * 3 * 60, '$this->chat(false, "Check it at http://bit.ly/RE7uaW");');
 		$this->action(1000000 * 75, '$this->debugInfo(true);');
 	}
 
