@@ -335,17 +335,15 @@ class Session{
 							));
 							foreach($this->server->entities as $entity){
 								if($entity->eid !== $this->eid){
-									if($entity->class === 0){
-										$this->server->trigger("onPlayerAdd", array(
+									if($entity->class === ENTITY_PLAYER){
+										$this->eventHandler(array(
 											"clientID" => $entity->data["clientID"],
 											"username" => $entity->name,
 											"eid" => $entity->eid,
 											"x" => $entity->position["x"],
 											"y" => $entity->position["y"],
 											"z" => $entity->position["z"],
-											"yaw" => $entity->position["yaw"],
-											"pitch" => $entity->position["pitch"],
-										));
+										), "onPlayerAdd");
 									}else{
 										$this->send(0x84, array(
 											$this->counter[0],
