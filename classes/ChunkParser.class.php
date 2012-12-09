@@ -140,7 +140,7 @@ class ChunkParser{
 		$Z = $z >> 4;
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
-		$index = $aZ + ($aX << 4);
+		$index = $aX + ($aZ << 4);
 		console("[DEBUG] $x $y $z | $X $Z $index", true, true, 2);
 		var_dump($this->map[$X][$Z][0][$index]);
 		$block = ord($this->map[$X][$Z][0][$index]{$y});

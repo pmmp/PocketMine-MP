@@ -42,6 +42,7 @@ class PocketMinecraftServer{
 		$this->mapName = false;
 		$this->map = false;
 		$this->level = false;
+		$this->difficulty = 1;
 		$this->tileEntities = array();
 		$this->entities = array();
 		$this->custom = array();
@@ -77,6 +78,7 @@ class PocketMinecraftServer{
 		$this->event("onChat", "eventHandler", true);
 		
 		$this->action(100000, '$this->time += ceil($this->timePerSecond / 10);$this->trigger("onTimeChange", $this->time);');
+		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		$this->action(1000000 * 80, '$list = ""; foreach($this->clients as $c){$list .= ", ".$c->username;}$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".substr($list, 2));');
@@ -168,6 +170,8 @@ class PocketMinecraftServer{
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);
 			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
+			$d = array(0 => "peaceful", 1 => "easy", 2 => "normal", 3 => "hard");
+			console("[INFO] Difficulty: ".$d[$this->difficulty]);
 			console("[INFO] Loading map...");
 			$this->map = new ChunkParser();
 			if(!$this->map->loadFile($this->mapDir."chunks.dat")){

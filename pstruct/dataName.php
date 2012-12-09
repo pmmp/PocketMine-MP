@@ -63,6 +63,7 @@ $dataName = array(
 	
 	MC_PLAYER_EQUIPMENT => "PlayerEquipment",
 	
+	MC_INTERACT => "Interact",
 	MC_USE_ITEM => "UseItem",
 	MC_PLAYER_ACTION => "PlayerAction",
 	MC_SET_ENTITY_DATA => "SetEntityData",

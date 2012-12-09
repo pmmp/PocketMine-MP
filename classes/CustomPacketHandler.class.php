@@ -382,6 +382,17 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["meta"]);
 				}				
 				break;
+			case MC_INTERACT:
+				if($this->c === false){	
+					$this->data["action"] = Utils::readByte($this->get(1));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["target"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeByte($this->data["action"]);
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeInt($this->data["target"]);
+				}			
+				break;
 			case MC_SET_ENTITY_DATA:
 				if($this->c === false){	
 					$this->data["eid"] = Utils::readInt($this->get(4));
@@ -392,12 +403,21 @@ class CustomPacketHandler{
 					));
 				}				
 				break;
-			case MC_SET_HEALTH: //SetHealth
+			case MC_SET_HEALTH:
 				if($this->c === false){	
 					$this->data["health"] = ord($this->get(1));
 				}else{
 					$this->raw .= chr($this->data["health"]);
 				}
+				break;
+			case MC_ANIMATE:
+				if($this->c === false){	
+					$this->data["action"] = Utils::readByte($this->get(1));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeByte($this->data["action"]);
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+				}			
 				break;
 			case MC_RESPAWN:
 				if($this->c === false){

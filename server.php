@@ -70,6 +70,7 @@ foreach($prop as $line){
 		case "max-players":
 		case "port":
 		case "debug":
+		case "difficulty":
 		case "time-per-second":
 			$v = (int) $v;
 			break;
@@ -226,6 +227,17 @@ function serverCommands(){
 				console("[INFO] Gamemode changed to ".$server->gamemode);
 				loadConfig(true);
 				break;
+			case "difficulty":
+				$s = trim(array_shift($params));
+				if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
+					console("[INFO] Usage: /difficulty <0 | 1>");
+					break;
+				}
+				$config["difficulty"] = (int) $s;
+				$server->difficulty = $config["difficulty"];
+				console("[INFO] Difficulty changed to ".$server->difficulty);
+				loadConfig(true);
+				break;
 			case "say":
 				$s = implode(" ", $params);
 				if(trim($s) == ""){
@@ -355,6 +367,7 @@ function serverCommands(){
 			case "?":
 				console("[INFO] /help: Show available commands");
 				console("[INFO] /gamemode: Changes default gamemode");
+				console("[INFO] /difficulty: Changes difficulty");
 				console("[INFO] /say: Broadcasts mesages");
 				console("[INFO] /time: Manages time");
 				console("[INFO] /list: Lists online users");

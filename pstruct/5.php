@@ -63,6 +63,7 @@ define("MC_CHUNK_DATA", 0x9e);
 
 define("MC_PLAYER_EQUIPMENT", 0x9f);
 
+define("MC_INTERACT", 0xa0);
 define("MC_USE_ITEM", 0xa1);
 define("MC_PLAYER_ACTION", 0xa2);
 define("MC_SET_ENTITY_DATA", 0xa3);

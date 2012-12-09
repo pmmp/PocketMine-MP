@@ -110,6 +110,11 @@ class Session{
 				));
 				++$this->counter[0];
 				break;
+			case "onHealthRegeneration":
+				if($this->server->difficulty < 2){
+					$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => min(20, $this->data["health"] + $data)));
+				}
+				break;
 			case "onHealthChange":
 				if($data["eid"] === $this->eid){
 					$this->send(0x84, array(
@@ -167,6 +172,21 @@ class Session{
 					array(
 						"id" => MC_SET_TIME,
 						"time" => $data,
+					),
+				));
+				++$this->counter[0];
+				break;
+			case "onAnimate":
+				if($data["eid"] === $this->eid){
+					break;
+				}
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => MC_ANIMATE,
+						"eid" => $data["eid"],
+						"action" => $data["action"],
 					),
 				));
 				++$this->counter[0];
@@ -261,6 +281,8 @@ class Session{
 							$this->evid[] = array("onEntityRemove", $this->server->event("onEntityRemove", array($this, "eventHandler")));
 							$this->evid[] = array("onEntityMove", $this->server->event("onEntityMove", array($this, "eventHandler")));
 							$this->evid[] = array("onHealthChange", $this->server->event("onHealthChange", array($this, "eventHandler")));
+							$this->evid[] = array("onHealthRegeneration", $this->server->event("onHealthRegeneration", array($this, "eventHandler")));
+							$this->evid[] = array("onAnimate", $this->server->event("onAnimate", array($this, "eventHandler")));
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
@@ -368,6 +390,14 @@ class Session{
 								),
 							));
 							++$this->counter[0];
+							break;
+						case MC_INTERACT:
+							if($this->server->difficulty > 0 and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
+								$this->server->trigger("onHealthChange", array("eid" => $data["eid"], "health" => $this->server->entities[$data["eid"]]->getHealth() - $this->server->difficulty));
+							}
+							break;
+						case MC_ANIMATE:
+							$this->server->trigger("onAnimate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
 							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => 20));
