@@ -35,7 +35,8 @@ How to connect to internet servers: http://www.minecraftforum.net/topic/1256915-
 
 
 Current features of the server:
-	- Players can connect and move around the world
+	- Players can connect and move around the world (and see each other)
+	- PvP, life regeneration and death cause!
 	- Online list broadcast
 	- Configurable day/night cycle
 	- Health and position saving
@@ -43,7 +44,5 @@ Current features of the server:
 	- Whitelist and IP Ban files
 	- Survival & Creative
 	- Awesome features in server list!
-	- Players spawn and see each other moving!
-	- PvP and life regeneration!
 	- Multiple worlds and importing!
 	+ more!

@@ -90,6 +90,11 @@ class Session{
 	
 	public function eventHandler($data, $event){		
 		switch($event){
+			case "onDeath":
+				if($data["eid"] === $this->eid){
+					$this->server->trigger("onPlayerDeath", array("name" => $this->username, "cause" => $data["cause"]));
+				}
+				break;
 			case "onEntityMove":
 				if($data === $this->eid){
 					break;
@@ -112,7 +117,7 @@ class Session{
 				break;
 			case "onHealthRegeneration":
 				if($this->server->difficulty < 2){
-					$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => min(20, $this->data["health"] + $data)));
+					$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => min(20, $this->data["health"] + $data), "cause" => "regeneration"));
 				}
 				break;
 			case "onHealthChange":
@@ -277,6 +282,7 @@ class Session{
 							}
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
+							$this->evid[] = array("onDeath", $this->server->event("onDeath", array($this, "eventHandler")));
 							$this->evid[] = array("onPlayerAdd", $this->server->event("onPlayerAdd", array($this, "eventHandler")));
 							$this->evid[] = array("onEntityRemove", $this->server->event("onEntityRemove", array($this, "eventHandler")));
 							$this->evid[] = array("onEntityMove", $this->server->event("onEntityMove", array($this, "eventHandler")));
@@ -312,7 +318,7 @@ class Session{
 							if(is_object($this->entity)){
 								break;
 							}
-							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => $this->data["health"]));
+							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => $this->data["health"], "cause" => "respawn"));
 							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 							$this->entity = new Entity($this->eid, ENTITY_PLAYER, 0, $this->server);
 							$this->entity->setName($this->username);
@@ -392,15 +398,16 @@ class Session{
 							++$this->counter[0];
 							break;
 						case MC_INTERACT:
-							if($this->server->difficulty > 0 and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
-								$this->server->trigger("onHealthChange", array("eid" => $data["target"], "health" => $this->server->entities[$data["target"]]->getHealth() - $this->server->difficulty));
+							if($this->server->gamemode !== 1 and $this->server->difficulty > 0 and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
+								console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
+								$this->server->trigger("onHealthChange", array("eid" => $data["target"], "health" => $this->server->entities[$data["target"]]->getHealth() - $this->server->difficulty, "cause" => $this->eid));
 							}
 							break;
 						case MC_ANIMATE:
 							$this->server->trigger("onAnimate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
-							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => 20));
+							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => 20, "cause" => "respawn"));
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["x"], 0, 0);
 							break;
 							

@@ -76,6 +76,9 @@ class PocketMinecraftServer{
 		$this->events = array("disabled" => array());
 		
 		$this->event("onChat", "eventHandler", true);
+		$this->event("onPlayerDeath", "eventHandler", true);
+		$this->event("onPlayerAdd", "eventHandler", true);
+		$this->event("onHealthChange", "eventHandler", true);
 		
 		$this->action(100000, '$this->time += ceil($this->timePerSecond / 10);$this->trigger("onTimeChange", $this->time);');
 		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
@@ -87,6 +90,7 @@ class PocketMinecraftServer{
 
 	public function startDatabase(){
 		$this->database = new SQLite3(":memory:");
+		$this->query("CREATE TABLE clients (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
@@ -155,6 +159,34 @@ class PocketMinecraftServer{
 	
 	public function eventHandler($data, $event){
 		switch($event){
+			case "onPlayerDeath":
+				$message = $data["name"];
+				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
+					switch($this->entities[$data["cause"]]->class){
+						case ENTITY_PLAYER:
+							$message .= " was killed by ".$this->entities[$data["cause"]]->name;
+							break;
+						default:
+							$message .= " was killed";
+							break;
+					}
+				}else{
+					switch($data["cause"]){
+						default:
+							$message .= " was killed";
+							break;
+					}
+				}
+				$this->chat(false, $message);
+				break;
+			case "onHealthChange":
+				if($data["health"] <= 0){
+					$this->trigger("onDeath", array("eid" => $data["eid"], "cause" => $data["cause"]));
+				}
+				break;
+			case "onPlayerAdd":
+				console("[DEBUG] Player \"".$data["username"]."\" EID ".$data["eid"]." spawned at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+				break;
 			case "onChat":
 				console("[CHAT] $data");
 				break;
