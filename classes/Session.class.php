@@ -393,7 +393,7 @@ class Session{
 							break;
 						case MC_INTERACT:
 							if($this->server->difficulty > 0 and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
-								$this->server->trigger("onHealthChange", array("eid" => $data["eid"], "health" => $this->server->entities[$data["eid"]]->getHealth() - $this->server->difficulty));
+								$this->server->trigger("onHealthChange", array("eid" => $data["target"], "health" => $this->server->entities[$data["target"]]->getHealth() - $this->server->difficulty));
 							}
 							break;
 						case MC_ANIMATE:
