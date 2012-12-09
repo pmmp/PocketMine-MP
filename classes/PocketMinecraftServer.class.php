@@ -162,7 +162,7 @@ class PocketMinecraftServer{
 	}
 	
 	private function loadMap(){
-		if($this->mapName !== false){			
+		if($this->mapName !== false and trim($this->mapName) !== ""){			
 			$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
 			console("[INFO] Map: ".$this->level["LevelName"]);
 			$this->time = (int) $this->level["Time"];
