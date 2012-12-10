@@ -32,6 +32,7 @@ Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
 How to connect to internet servers: http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/
+User-made program to merge server I/O: https://github.com/filfat/MCPES_CPP_INPUT/
 
 
 Current features of the server:
