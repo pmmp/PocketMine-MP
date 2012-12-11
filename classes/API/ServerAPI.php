@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ServerAPI extends stdClass{ //Yay! I can add anything to this class in runtime!
-	var $server;
+	var $server, $restart = false;
 	private $config, $apiList = array();
 	function __construct(){
 		console("[INFO] Starting ServerAPI server handler...");
@@ -260,6 +260,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	
 	public function start(){
 		$this->server->start();
+		return $this->restart;
 	}
 
 

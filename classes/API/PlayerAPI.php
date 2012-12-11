@@ -49,7 +49,7 @@ class PlayerAPI{
 			case "list":
 				console("[INFO] Player list:");
 				foreach($this->server->clients as $c){
-					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID);
+					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->username->entity->position["x"], 2).", ".round($c->username->entity->position["y"], 2).", ".round($c->username->entity->position["z"], 2).")");
 				}
 				break;
 		}

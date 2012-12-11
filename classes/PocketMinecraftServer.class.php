@@ -130,11 +130,12 @@ class PocketMinecraftServer extends stdClass{
 		return $info;
 	}
 	
-	public function close($reason = "stop"){	
+	public function close($reason = "stop"){
 		$this->chat(false, "Stopping server...");
 		$this->save();
 		$this->stop = true;
 		$this->trigger("onClose");
+		$this->interface->close();
 	}
 	
 	public function chat($owner, $text, $target = true){

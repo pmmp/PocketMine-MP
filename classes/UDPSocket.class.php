@@ -48,8 +48,12 @@ class UDPSocket{
 				$this->buffer = array();
 				$this->unblock();
 			}else{
-				socket_bind($this->sock, "0.0.0.0", $port);
-				$this->unblock();	
+				if(socket_bind($this->sock, "0.0.0.0", $port) === true){
+					$this->unblock();
+				}else{
+					console("[ERROR] Couldn't bind to 0.0.0.0:".$port, true, true, 0);
+					die();
+				}
 			}
 		}
 	}

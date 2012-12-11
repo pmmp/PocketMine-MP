@@ -29,7 +29,12 @@ require_once("common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
 require_once("classes/API/ServerAPI.php");
 
-$server = new ServerAPI();
-//You can add simple things here
+while(true){
+	$server = new ServerAPI();
+	//You can add simple things here
 
-$server->start();
+	if($server->start() !== true){
+		break;
+	}
+	console("[NOTICE] The server is restarting...", true, true, 0);
+}

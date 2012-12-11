@@ -45,7 +45,12 @@ class ConsoleAPI{
 					$this->server->api->setProperty("last-update", time());
 					break;
 				case "stop":
-					console("[INFO] Stopping server...");
+					console("[INFO] Stopping the server...");
+					$this->server->close();
+					break;
+				case "restart":
+					console("[INFO] Restarting the server...");
+					$this->server->api->restart = true;
 					$this->server->close();
 					break;
 				case "banip":
@@ -174,6 +179,7 @@ class ConsoleAPI{
 					console("[INFO] /whitelist: Manages whitelisting");
 					console("[INFO] /banip: Manages IP ban");
 					console("[INFO] /stop: Stops the server");
+					console("[INFO] /restart: Restarts the server");
 					foreach($this->help as $c => $h){
 						console("[INFO] /$c: ".$h[0]);
 					}
