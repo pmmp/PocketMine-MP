@@ -27,11 +27,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 require_once("classes/Session.class.php");
 
-class PocketMinecraftServer{
+class PocketMinecraftServer extends stdClass{
 	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $cnt, $events, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port;
+		console("[INFO] Pocket-Minecraft-PHP by @shoghicp, LGPL License. http://bit.ly/RE7uaW", true, true, 0);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		console("[INFO] Loading database...");
 		$this->startDatabase();
@@ -212,16 +213,18 @@ class PocketMinecraftServer{
 			}else{
 				$this->map->loadMap();
 			}
-			console("[INFO] Loading entities...");
-			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
-			foreach($entities as $entity){
-				$this->entities[$this->eidCnt] = new Entity($this->eidCnt, ENTITY_MOB, $entity["id"], $this);
-				$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-				$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
-				++$this->eidCnt;
+			if($this->map !== false){
+				console("[INFO] Loading entities...");
+				$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
+				foreach($entities as $entity){
+					$this->entities[$this->eidCnt] = new Entity($this->eidCnt, ENTITY_MOB, $entity["id"], $this);
+					$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+					$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
+					++$this->eidCnt;
+				}
+				console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
+				$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
 			}
-			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
-			$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
 		}else{
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);

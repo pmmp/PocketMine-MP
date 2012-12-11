@@ -28,10 +28,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
          \ | /
 		 
 		 
+		 
+Github repo: https://github.com/shoghicp/Pocket-Minecraft-PHP
 Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
 How to connect to internet servers: http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/
+Video-Tutorial made by ChrisMCMine: http://www.youtube.com/watch?v=GC9MBVaHge0
 User-made program to merge server I/O: https://github.com/filfat/MCPES_CPP_INPUT/
 
 
