@@ -150,24 +150,24 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	}
 	
 	private function loadProperties(){
-		if(is_object($server)){
-			$server->setType($this->config["server-type"]);
-			$server->timePerSecond = $this->config["time-per-second"];
-			$server->maxClients = $this->config["max-players"];
-			$server->description = $this->config["description"];
-			$server->motd = $this->config["motd"];
-			$server->gamemode = $this->config["gamemode"];
-			$server->difficulty = $this->config["difficulty"];
-			$server->spawn = $this->config["spawn"];
-			$server->whitelist = $this->config["white-list"];
+		if(is_object($this->server)){
+			$this->server->setType($this->config["server-type"]);
+			$this->server->timePerSecond = $this->config["time-per-second"];
+			$this->server->maxClients = $this->config["max-players"];
+			$this->server->description = $this->config["description"];
+			$this->server->motd = $this->config["motd"];
+			$this->server->gamemode = $this->config["gamemode"];
+			$this->server->difficulty = $this->config["difficulty"];
+			$this->server->spawn = $this->config["spawn"];
+			$this->server->whitelist = $this->config["white-list"];
 			$this->server->reloadConfig();
 		}
 	}
 	
 	private function writeProperties(){
-		if(is_object($server)){
-			$this->config["seed"] = $server->seed;
-			$this->config["server-id"] = $server->serverID;
+		if(is_object($this->server)){
+			$this->config["seed"] = $this->server->seed;
+			$this->config["server-id"] = $this->server->serverID;
 		}
 		$this->config["regenerate-config"] = "false";
 		$this->config["white-list"] = $this->config["white-list"] === true ? "true":"false";
