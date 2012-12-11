@@ -110,48 +110,6 @@ class ConsoleAPI{
 					}
 					$this->server->chat(false, $s);
 					break;
-				case "time":
-					$p = strtolower(array_shift($params));
-					switch($p){
-						case "check":
-							$time = abs($this->server->time) % 19200;
-							$hour = str_pad(strval((floor($time /800) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
-							if($time < 9500){
-								$time = "daytime";
-							}elseif($time < 10900){
-								$time = "sunset";
-							}elseif($time < 17800){
-								$time = "night";
-							}else{
-								$time = "sunrise";
-							}
-							console("[INFO] Time: $hour, $time (".$this->server->time.")");
-							break;
-						case "add":
-							$t = (int) array_shift($params);
-							$this->server->time += $t;
-							break;
-						case "set":
-							$t = (int) array_shift($params);
-							$this->server->time = $t;					
-							break;
-						case "sunrise":
-							$this->server->time = 17800;
-							break;
-						case "day":
-							$this->server->time = 0;
-							break;
-						case "sunset":
-							$this->server->time = 9500;
-							break;
-						case "night":
-							$this->server->time = 10900;
-							break;
-						default:
-							console("[INFO] Usage: /time <check | set | add | sunrise | day | sunset | night> [time]");
-							break;
-					}
-					break;
 				case "whitelist":
 					$p = strtolower(array_shift($params));
 					switch($p){
@@ -212,7 +170,6 @@ class ConsoleAPI{
 					console("[INFO] /gamemode: Changes default gamemode");
 					console("[INFO] /difficulty: Changes difficulty");
 					console("[INFO] /say: Broadcasts mesages");
-					console("[INFO] /time: Manages time");
 					console("[INFO] /save-all: Saves pending changes");
 					console("[INFO] /whitelist: Manages whitelisting");
 					console("[INFO] /banip: Manages IP ban");
