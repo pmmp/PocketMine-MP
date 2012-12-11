@@ -57,6 +57,22 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		define("DEBUG", $this->config["debug"]);
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), $this->getProperty("seed"), $this->getProperty("protocol"), $this->getProperty("port"), $this->getProperty("server-id"));
 		$this->server->api = $this;
+		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
+			console("[INFO] Checking for new version...");
+			$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/Pocket-Minecraft-PHP"), true);
+			$last = date_parse($info["updated_at"]);
+			$last = mktime($last["hour"], $last["minute"], $last["second"], $last["month"], $last["day"], $last["year"]);
+			if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
+				console("[NOTICE] Pocket-PHP-Minecraft has been updated at ".date("Y-m-d H:i:s", $last));
+				console("[NOTICE] If you want to update, download the latest version at https://github.com/shoghicp/Pocket-Minecraft-PHP/archive/master.zip");
+				console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
+				sleep(5);
+			}else{
+				$last = time();
+				$this->setProperty("last-update", $last);
+				console("[INFO] Last check at ".date("Y-m-d H:i:s", $last));
+			}
+		}
 		if(file_exists(FILE_PATH."data/maps/level.dat")){
 			console("[NOTICE] Detected unimported map data. Importing...");
 			$this->importMap(FILE_PATH."data/maps/", true);
@@ -193,6 +209,13 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$n = strtolower(array_shift($d));
 			$v = implode("=", $d);
 			switch($n){
+				case "last-update":
+					if(trim($v) == "false"){
+						$v = time();
+					}else{
+						$v = (int) $v;
+					}
+					break;
 				case "protocol":
 					if(trim($v) == "CURRENT"){
 						$v = CURRENT_PROTOCOL;

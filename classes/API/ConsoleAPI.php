@@ -48,6 +48,9 @@ class ConsoleAPI{
 			$cmd = strtolower(array_shift($params));
 			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
 			switch($cmd){
+				case "update-done":
+					$this->server->api->setProperty("last-update", time());
+					break;
 				case "stop":
 					console("[INFO] Stopping server...");
 					$this->server->close();
