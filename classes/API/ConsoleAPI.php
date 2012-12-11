@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class ConsoleAPI{
 	private $input, $server, $event;
 	function __construct($server){
+		$this->help = array();
 		$this->server = $server;
 		$this->input = fopen(FILE_PATH."console.in", "w+b");
 		$this->event = $this->server->event("onTick", array($this, "handle"));
@@ -38,15 +39,7 @@ class ConsoleAPI{
 		fclose($this->input);
 	}
 	
-	public function handle(){
-		while(($line = fgets($this->input)) !== false){
-			$line = trim($line);
-			if($line === ""){
-				continue;
-			}
-			$params = explode(" ", $line);
-			$cmd = strtolower(array_shift($params));
-			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+	public function defaultCommands($cmd, $params){
 			switch($cmd){
 				case "update-done":
 					$this->server->api->setProperty("last-update", time());
@@ -213,12 +206,6 @@ class ConsoleAPI{
 						console("[INFO] EID ".$client->eid." is over block ".$b[0].":".$b[1]);
 					}
 					break;
-				case "list":
-					console("[INFO] Player list:");
-					foreach($this->server->clients as $c){
-						console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID);
-					}
-					break;
 				case "help":
 				case "?":
 					console("[INFO] /help: Show available commands");
@@ -226,15 +213,37 @@ class ConsoleAPI{
 					console("[INFO] /difficulty: Changes difficulty");
 					console("[INFO] /say: Broadcasts mesages");
 					console("[INFO] /time: Manages time");
-					console("[INFO] /list: Lists online users");
 					console("[INFO] /save-all: Saves pending changes");
 					console("[INFO] /whitelist: Manages whitelisting");
 					console("[INFO] /banip: Manages IP ban");
 					console("[INFO] /stop: Stops the server");
+					foreach($this->help as $c => $h){
+						console("[INFO] /$c: ".$h[0]);
+					}
 					break;
 				default:
 					console("[ERROR] Command doesn't exist! Use /help");
 					break;
+			}
+	}
+	
+	public function register($cmd, $help, $callback){
+		$this->help[strtolower(trim($cmd))] = array($help, $callback);
+	}
+	
+	public function handle(){
+		while(($line = fgets($this->input)) !== false){
+			$line = trim($line);
+			if($line === ""){
+				continue;
+			}
+			$params = explode(" ", $line);
+			$cmd = strtolower(array_shift($params));
+			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+			if(isset($this->help[$cmd]) and is_callable($this->help[$cmd][1])){
+				call_user_func($this->help[$cmd][1], $cmd, $params);
+			}elseif($this->server->trigger("onCommand", array("cmd" => $cmd, "params" => $params)) !== false){
+				$this->defaultCommands($cmd, $params);
 			}
 		}
 		ftruncate($this->input, 0);
