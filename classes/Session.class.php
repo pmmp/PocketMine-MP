@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Session{
 	private $server, $serverID, $timeout, $connected, $evid;
-	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity;
+	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth;
 	function __construct($server, $clientID, $eid, $ip, $port){
 		$this->server = $server;
 		$this->clientID = $clientID;
@@ -43,8 +43,9 @@ class Session{
 		$this->evid = array();
 		$this->evid[] = array("onTick", $this->server->event("onTick", array($this, "checkTimeout")));
 		$this->evid[] = array("onClose", $this->server->event("onClose", array($this, "close")));
-		console("[DEBUG] New Session started with ".$ip.":".$port.". Client GUID ".$this->clientID, true, true, 2);
+		console("[DEBUG] New Session started with ".$ip.":".$port.". Client ID ".$this->clientID, true, true, 2);
 		$this->connected = true;
+		$this->auth = false;
 		$this->counter = array(0, 0);
 	}
 	
@@ -66,15 +67,11 @@ class Session{
 				"z" => $this->entity->position["z"],
 			);
 		}
-		file_put_contents(FILE_PATH."data/players/".str_replace("/", "", $this->username).".dat", serialize($this->data));
 	}
 	
 	public function close($reason = "", $msg = true){
 		$reason = $reason == "" ? "server stop":$reason;
 		$this->save();
-		if(is_object($this->entity)){
-			$this->entity->close();
-		}
 		foreach($this->evid as $ev){
 			$this->server->deleteEvent($ev[0], $ev[1]);
 		}
@@ -83,9 +80,8 @@ class Session{
 		if($msg === true){
 			$this->server->trigger("onChat", $this->username." left the game");
 		}
-		console("[INFO] Session with ".$this->ip.":".$this->port." closed due to ".$reason);
-		unset($this->server->entities[$this->eid]);
-		unset($this->server->clients[$this->CID]);
+		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
+		$this->server->api->player->remove($this->CID);
 	}
 	
 	public function eventHandler($data, $event){		
@@ -262,24 +258,10 @@ class Session{
 								$this->close("\"".$this->username."\" not being on white-list", false);
 								break;
 							}
-							console("[INFO] Player \"".$this->username."\" connected from ".$this->ip.":".$this->port);
-							if(!file_exists(FILE_PATH."data/players/".$this->username.".dat")){
-								console("[NOTICE] Player data not found for \"".$this->username."\", creating new");
-								$this->data = array(
-									"spawn" => array(
-										"x" => $this->server->spawn["x"],
-										"y" => $this->server->spawn["y"],
-										"z" => $this->server->spawn["z"],
-									),
-									"health" => 20,
-									"lastIP" => $this->ip,
-									"lastID" => $this->clientID,
-								);
-							}else{
-								$this->data = unserialize(file_get_contents(FILE_PATH."data/players/".str_replace("/", "", $this->username).".dat"));
-								$this->data["lastIP"] = $this->ip;
-								$this->data["lastID"] = $this->clientID;
-							}
+							$this->server->api->player->add($this->CID);
+							$this->auth = true;
+							$this->data["lastIP"] = $this->ip;
+							$this->data["lastID"] = $this->clientID;
 							$this->evid[] = array("onTimeChange", $this->server->event("onTimeChange", array($this, "eventHandler")));
 							$this->evid[] = array("onChat", $this->server->event("onChat", array($this, "eventHandler")));
 							$this->evid[] = array("onDeath", $this->server->event("onDeath", array($this, "eventHandler")));

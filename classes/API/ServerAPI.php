@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ServerAPI extends stdClass{ //Yay! I can add anything to this class in runtime!
 	var $server;
-	private $config;
+	private $config, $apiList = array();
 	function __construct(){
 		console("[INFO] Starting ServerAPI server handler...");
 		file_put_contents("packets.log", "");
@@ -92,6 +92,15 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				}
 			}
 		}
+		foreach($this->apiList as $a){
+			if(method_exists($this->$a, "init")){
+				$this->$a->init();
+			}
+		}
+	}
+	
+	public function getList(){
+		return $this->apiList;
 	}
 	
 	public function loadAPI($name, $class, $dir = false){
@@ -105,9 +114,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		require_once($file);
 		$this->$name = new $class($this->server);
-		
+		$this->apiList[] = $name;
 		console("[INFO] API ".$name." [".$class."] loaded");
-	
 	}
 	
 	public function importMap($dir, $remove = false){
@@ -142,7 +150,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$this->setProperty("gamemode", $level["GameType"]);
 				$this->server->seed = $level["RandomSeed"];
 				$this->setProperty("spawn", array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]));
-				$this->config["spawn"] = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
 				$this->writeProperties();
 			}
 			console("[INFO] Map \"".$level["LevelName"]."\" importing done!");

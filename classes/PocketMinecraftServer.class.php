@@ -85,17 +85,17 @@ class PocketMinecraftServer extends stdClass{
 		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
-		$this->action(1000000 * 80, '$list = ""; foreach($this->clients as $c){$list .= ", ".$c->username;}$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".substr($list, 2));');
+		$this->action(1000000 * 80, '$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".implode(", ",$this->api->player->online()));');
 		$this->action(1000000 * 75, '$this->debugInfo(true);');
 	}
 
 	public function startDatabase(){
 		$this->database = new SQLite3(":memory:");
-		$this->query("CREATE TABLE clients (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT);");
+		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
-		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, eventName TEXT, disabled INTEGER);");
+		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, eventName TEXT, priority NUMERIC, disabled INTEGER);");
 	}
 	
 	public function query($sql, $fetch = false){
@@ -366,6 +366,7 @@ class PocketMinecraftServer extends stdClass{
 				$this->responses[$evn["ID"]] = call_user_func($ev[0], $data, $event, $this);
 			}
 		}
+		return true;
 	}
 
 	public function response($eid){
