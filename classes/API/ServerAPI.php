@@ -260,6 +260,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	
 	public function start(){
 		$this->server->start();
+		unregister_tick_function(array($this->server, "tick"));
+		unset($this->server);
 		return $this->restart;
 	}
 

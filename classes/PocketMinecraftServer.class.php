@@ -242,7 +242,7 @@ class PocketMinecraftServer extends stdClass{
 	public function start(){
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
-		$this->event("onTick", "tickerFunction", true);
+		$this->event("onTick", array($this, "tickerFunction"));
 		$this->event("onReceivedPacket", "packetHandler", true);
 		register_shutdown_function(array($this, "close"));
 		$this->loadMap();

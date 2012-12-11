@@ -35,6 +35,8 @@ while(true){
 
 	if($server->start() !== true){
 		break;
+	}else{
+		$server = null;
+		console("[NOTICE] The server is restarting... (".gc_collect_cycles()." cycles collected)", true, true, 0);
 	}
-	console("[NOTICE] The server is restarting...", true, true, 0);
 }

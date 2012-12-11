@@ -48,11 +48,11 @@ class ConsoleAPI{
 					console("[INFO] Stopping the server...");
 					$this->server->close();
 					break;
-				case "restart":
+				/*case "restart":
 					console("[INFO] Restarting the server...");
 					$this->server->api->restart = true;
 					$this->server->close();
-					break;
+					break;*/
 				case "banip":
 					$p = strtolower(array_shift($params));
 					switch($p){
@@ -179,7 +179,7 @@ class ConsoleAPI{
 					console("[INFO] /whitelist: Manages whitelisting");
 					console("[INFO] /banip: Manages IP ban");
 					console("[INFO] /stop: Stops the server");
-					console("[INFO] /restart: Restarts the server");
+					//console("[INFO] /restart: Restarts the server");
 					foreach($this->help as $c => $h){
 						console("[INFO] /$c: ".$h[0]);
 					}
