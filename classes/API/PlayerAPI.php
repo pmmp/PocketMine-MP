@@ -34,10 +34,34 @@ class PlayerAPI{
 	public function init(){
 		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
+		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
+		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
 	}
 	
 	public function commandHandler($cmd, $params){
 		switch($cmd){
+			case "tp":
+				$name = array_shift($params);
+				$target = array_shift($params);
+				if($name == null or $target == null){
+					console("[INFO] Usage: /tp <player> <target>");
+					break;
+				}
+				$this->teleport($name, $target);
+				console("[INFO] \"$name\" teleported to \"$target\"");			
+				break;
+			case "tppos":
+				$z = array_pop($params);
+				$y = array_pop($params);
+				$x = array_pop($params);
+				$name = implode(" ", $params);
+				if($name == null or $x === null or $y === null or $z === null){
+					console("[INFO] Usage: /tp <player> <x> <y> <z>");
+					break;
+				}
+				$this->tppos($name, $x, $y, $z);
+				console("[INFO] \"$name\" teleported to ($x, $y, $z)");
+				break;
 			case "kill":
 				$player = $this->get(implode(" ", $params));
 				if($player !== false){
@@ -52,6 +76,20 @@ class PlayerAPI{
 					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->username->entity->position["x"], 2).", ".round($c->username->entity->position["y"], 2).", ".round($c->username->entity->position["z"], 2).")");
 				}
 				break;
+		}
+	}
+	
+	public function teleport($name, $target){
+		$target = $this->get($target);
+		if($target !== false){
+			$this->tppos($name, $target->entity->position["x"], $target->entity->position["y"], $target->entity->position["z"]);
+		}
+	}
+	
+	public function tppos($name, $x, $y, $z){
+		$player = $this->get($name);
+		if($player !== false){
+			$this->server->trigger("onTeleport", array("eid" => $player->eid, "x" => $x, "y" => $y, "z" => $z));
 		}
 	}
 	

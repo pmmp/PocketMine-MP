@@ -91,6 +91,25 @@ class Session{
 					$this->server->trigger("onPlayerDeath", array("name" => $this->username, "cause" => $data["cause"]));
 				}
 				break;
+			case "onTeleport":
+				if($data["eid"] !== $this->eid){
+					break;
+				}
+				$this->send(0x84, array(
+					$this->counter[0],
+					0x00,
+					array(
+						"id" => MC_MOVE_PLAYER,
+						"eid" => $data["eid"],
+						"x" => $data["x"],
+						"y" => $data["y"],
+						"z" => $data["z"],
+						"yaw" => 0,
+						"pitch" => 0,
+					),
+				));
+				++$this->counter[0];
+				break;
 			case "onEntityMove":
 				if($data === $this->eid){
 					break;
@@ -271,6 +290,7 @@ class Session{
 							$this->evid[] = array("onHealthChange", $this->server->event("onHealthChange", array($this, "eventHandler")));
 							$this->evid[] = array("onHealthRegeneration", $this->server->event("onHealthRegeneration", array($this, "eventHandler")));
 							$this->evid[] = array("onAnimate", $this->server->event("onAnimate", array($this, "eventHandler")));
+							$this->evid[] = array("onTeleport", $this->server->event("onTeleport", array($this, "eventHandler")));
 							$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
