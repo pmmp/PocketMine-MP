@@ -64,7 +64,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$last = $last->getTimestamp();
 			if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
 				console("[NOTICE] Pocket-PHP-Minecraft has been updated at ".date("Y-m-d H:i:s", $last));
-				console("[NOTICE] If you want to update, download the latest version at https://github.com/shoghicp/Pocket-Minecraft-PHP/archive/master.zip");
+				console("[NOTICE] If you want to update, get the latest version at https://github.com/shoghicp/Pocket-Minecraft-PHP/");
 				console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
 				sleep(5);
 			}else{
