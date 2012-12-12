@@ -26,10 +26,10 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $server, $protocol, $client, $buffer, $dataName;
-	
+	var $pstruct, $name, $protocol, $client, $buffer, $dataName;
+	private $socket;
 	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
-		$this->server = new UDPSocket($server, $port, (bool) $listen);
+		$this->socket = new UDPSocket($server, $port, (bool) $listen);
 		$this->protocol = (int) $protocol;
 		require("pstruct/RakNet.php");
 		require("pstruct/packetName.php");
@@ -44,7 +44,7 @@ class MinecraftInterface{
 	}
 	
 	public function close(){
-		return $this->server->close();
+		return $this->socket->close();
 	}
 	
 	protected function getStruct($pid){
@@ -74,30 +74,22 @@ class MinecraftInterface{
 		if($p !== false){
 			return $p;
 		}
-		if($this->server->connected === false){
-			//return array("pid" => "ff", "data" => array(0 => 'Connection error'));
+		if($this->socket->connected === false){
+			return false;
 		}
-		$data = $this->server->read();
+		$data = $this->socket->read();
 		if($data[3] === false){
 			return false;
 		}
 		$pid = ord($data[0]);
-		/*if($pid === 0x84){
-			$data[0] = substr($data[0], 10);
-			$pid = ord($data[0]);
-		}*/
 		$struct = $this->getStruct($pid);
 		if($struct === false){
-			console("[ERROR] Bad packet id 0x".Utils::strTohex(chr($pid)), true, true, 0);
+			console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);
 			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strTohex(chr($pid))." [length ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($data[0]);
 			$p .= PHP_EOL;
-			logg($p, "packets", true, 2);
-			
+			logg($p, "packets", true, 2);			
 			$this->buffer = "";
-			//$this->server->recieve("\xff".Utils::writeString('Bad packet id '.$pid.''));
-			//$this->writePacket("ff", array(0 => 'Bad packet id '.$pid.''));
-			//return array("pid" => "ff", "data" => array(0 => 'Bad packet id '.$pid.''));
 			return false;
 		}
 		
@@ -131,10 +123,10 @@ class MinecraftInterface{
 			$packet->protocol = $this->protocol;
 			$packet->data = $data;
 			$packet->create();
-			$write = $this->server->write($packet->raw, $dest, $port);
+			$write = $this->socket->write($packet->raw, $dest, $port);
 			$this->writeDump($pid, $packet->raw, $data, "client", $dest, $port);
 		}else{
-			$write = $this->server->write($data, $dest, $port);
+			$write = $this->socket->write($data, $dest, $port);
 			$this->writeDump($pid, $data, false, "client", $dest, $port);
 		}		
 		return true;
