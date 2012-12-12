@@ -26,6 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 set_time_limit(0);
+date_default_timezone_set(@date_default_timezone_get());
 gc_enable();
 error_reporting(E_ALL ^ E_NOTICE);
 ini_set("display_errors", 1);
