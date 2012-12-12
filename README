@@ -44,6 +44,7 @@ Current features of the server:
 	- Extensible API!
 	- Online list broadcast
 	- Configurable day/night cycle
+	- Mob spawning!
 	- Health and position saving
 	- server.properties configuration file
 	- Whitelist and IP Ban files

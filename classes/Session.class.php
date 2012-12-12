@@ -351,14 +351,12 @@ class Session{
 											$this->counter[0],
 											0x00,
 											array(
-												"id" => MC_ADD_ITEM_ENTITY,
+												"id" => MC_ADD_MOB,
 												"eid" => $entity->eid,
 												"type" => $entity->type,
 												"x" => $entity->position["x"],
 												"y" => $entity->position["y"],
 												"z" => $entity->position["z"],
-												"block" => 10,
-												"meta" => 0,
 											),
 										));
 										++$this->counter[0];

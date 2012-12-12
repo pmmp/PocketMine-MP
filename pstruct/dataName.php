@@ -44,6 +44,7 @@ $dataName = array(
 	MC_SET_TIME => "SetTime",
 	MC_START_GAME => "StartGame",
 	
+	MC_ADD_MOB => "AddMob",
 	MC_ADD_PLAYER => "AddPlayer",
 	
 	MC_ADD_ENTITY => "AddEntity",

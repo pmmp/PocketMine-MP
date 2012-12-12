@@ -184,6 +184,27 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}			
 				break;
+			case MC_ADD_MOB:	
+				if($this->c === false){
+					$this->data["int"] = Utils::readInt($this->get(4));
+					$this->data["type"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["metadata"] = Utils::readMetadata($this->get(true));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeInt($this->data["type"]);
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeMetadata(array(
+						1 => array("type" => 1, "value" => 300),
+						16 => array("type" => 0, "value" => 0),
+						17 => array("type" => 6, "value" => array(0, 0, 0)),
+					));
+				}
+				break;
 			case MC_ADD_PLAYER:	
 				if($this->c === false){
 					$this->data["clientID"] = Utils::readLong($this->get(8));

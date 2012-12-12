@@ -44,6 +44,7 @@ define("MC_CHAT", 0x85);
 define("MC_SET_TIME", 0x86);
 define("MC_START_GAME", 0x87);
 
+define("MC_ADD_MOB", 0x88);
 define("MC_ADD_PLAYER", 0x89);
 
 define("MC_ADD_ENTITY", 0x8c);
