@@ -60,8 +60,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new version...");
 			$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/Pocket-Minecraft-PHP"), true);
-			$last = date_parse($info["updated_at"]);
-			$last = mktime($last["hour"], $last["minute"], $last["second"], $last["month"], $last["day"], $last["year"]);
+			$last = new DateTime($info["updated_at"]);
+			$last = $last->getTimestamp();
 			if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
 				console("[NOTICE] Pocket-PHP-Minecraft has been updated at ".date("Y-m-d H:i:s", $last));
 				console("[NOTICE] If you want to update, download the latest version at https://github.com/shoghicp/Pocket-Minecraft-PHP/archive/master.zip");
@@ -192,10 +192,10 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$this->config["seed"] = $this->server->seed;
 			$this->config["server-id"] = $this->server->serverID;
 		}
-		$this->config["regenerate-config"] = "false";
-		$this->config["white-list"] = $this->config["white-list"] === true ? "true":"false";
+		$config = $this->config;
+		$config["white-list"] = $config["white-list"] === true ? "true":"false";
 		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
-		foreach($this->config as $n => $v){
+		foreach($config as $n => $v){
 			if($n == "spawn"){
 				$v = implode(";", $v);
 			}
@@ -250,7 +250,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 					$v = array("x" => floatval($v[0]), "y" => floatval($v[1]), "z" => floatval($v[2]));
 					break;
 				case "white-list":
-				case "regenerate-config":
 					$v = trim($v) == "true" ? true:false;
 					break;
 			}
