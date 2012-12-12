@@ -332,12 +332,16 @@ class CustomPacketHandler{
 					$this->data["x"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
 					$this->data["y"] = ord($this->get(1));
+					$this->data["block"] = ord($this->get(1));
+					$this->data["meta"] = ord($this->get(1));
 					$this->data["face"] = Utils::readByte($this->get(1));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["z"]);
 					$this->raw .= chr($this->data["y"]);
+					$this->raw .= chr($this->data["block"]);
+					$this->raw .= chr($this->data["meta"]);
 					$this->raw .= chr($this->data["face"]);
 				}				
 				break;
@@ -356,17 +360,17 @@ class CustomPacketHandler{
 				break;
 			case MC_UPDATE_BLOCK:
 				if($this->c === false){
-					$this->data["block"] = Utils::readShort($this->get(2));
-					$this->data["meta"] = Utils::readShort($this->get(2));
 					$this->data["x"] = Utils::readInt($this->get(4));
-					$this->data["y"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["y"] = ord($this->get(1));
+					$this->data["block"] = ord($this->get(1));
+					$this->data["meta"] = ord($this->get(1));
 				}else{
-					$this->raw .= Utils::writeShort($this->data["block"]);
-					$this->raw .= Utils::writeShort($this->data["meta"]);
 					$this->raw .= Utils::writeInt($this->data["x"]);
-					$this->raw .= Utils::writeInt($this->data["y"]);
 					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= chr($this->data["y"]);
+					$this->raw .= chr($this->data["block"]);
+					$this->raw .= chr($this->data["meta"]);
 				}				
 				break;
 			case MC_REQUEST_CHUNK:
@@ -376,16 +380,13 @@ class CustomPacketHandler{
 				}else{
 					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["y"]);
-				}				
+				}
 				break;
 			case MC_CHUNK_DATA:
 				if($this->c === false){	
 					$this->data["x"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
-					//$this->data["unknown1"] = $this->get(WTF);
-					$this->data["unknown1"] = Utils::readInt($this->get(4));
-					$this->data["unknown2"] = Utils::readInt($this->get(4));
-					//$this->data["unknown3"] = $this->get(WTF);
+					$this->data["data"] = $this->get(256);
 				}else{
 					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["y"]);

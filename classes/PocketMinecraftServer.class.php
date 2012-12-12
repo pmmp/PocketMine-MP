@@ -99,6 +99,7 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function query($sql, $fetch = false){
+		console("[INTERNAL] [SQL] ".$sql, true, true, 3);
 		$result = $this->database->query($sql) or console("[ERROR] [SQL Error] ".$this->database->lastErrorMsg().". Query: ".$sql, true, true, 0);
 		if($fetch === true and ($result !== false and $result !== true)){
 			$result = $result->fetchArray(SQLITE3_ASSOC);
@@ -328,7 +329,7 @@ class PocketMinecraftServer extends stdClass{
 					$MTU = $data[3];
 					$clientID = $data[4];
 					$eid = $this->eidCnt++;
-					$this->clients[$CID] = new Session($this, $clientID, $eid, $packet["ip"], $packet["port"]);
+					$this->clients[$CID] = new Session($this, $clientID, $eid, $packet["ip"], $packet["port"], $MTU);
 					$this->clients[$CID]->handle(0x07, $data);
 					break;
 			}

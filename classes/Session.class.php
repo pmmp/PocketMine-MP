@@ -27,9 +27,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Session{
-	private $server, $serverID, $timeout, $connected, $evid;
-	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth;
-	function __construct($server, $clientID, $eid, $ip, $port){
+	private $server, $timeout, $connected, $evid;
+	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU;
+	function __construct($server, $clientID, $eid, $ip, $port, $MTU){
+		$this->MTU = $MTU;
 		$this->server = $server;
 		$this->clientID = $clientID;
 		$this->CID = $this->server->clientID($ip, $port);
@@ -38,12 +39,11 @@ class Session{
 		$this->ip = $ip;
 		$this->entity = false;
 		$this->port = $port;
-		$this->serverID =& $this->server->serverID;
 		$this->timeout = microtime(true) + 25;
 		$this->evid = array();
 		$this->evid[] = array("onTick", $this->server->event("onTick", array($this, "checkTimeout")));
 		$this->evid[] = array("onClose", $this->server->event("onClose", array($this, "close")));
-		console("[DEBUG] New Session started with ".$ip.":".$port.". Client ID ".$this->clientID, true, true, 2);
+		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 		$this->connected = true;
 		$this->auth = false;
 		$this->counter = array(0, 0);
@@ -232,7 +232,7 @@ class Session{
 				case 0x07:
 					$this->send(0x08, array(
 						MAGIC,
-						$this->serverID,
+						$this->server->serverID,
 						$this->port,
 						$data[3],
 						0,
@@ -373,11 +373,22 @@ class Session{
 						case MC_PLAYER_EQUIPMENT:
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
 							break;
-						case MC_REQUEST_CHUNK:
+						case MC_REQUEST_CHUNK:							
+							$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => MC_CHUNK_DATA,
+									"x" => $data["x"],
+									"z" => $data["z"],
+									"data" => str_repeat("\x00", 256),
+								),
+							));
+							++$this->counter[0];
 							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
 							break;
 						case MC_REMOVE_BLOCK:
-							$this->eventHandler("Blocks broken will not be saved", "onChat");
+							//$this->eventHandler("Blocks broken will not be saved", "onChat");
 							console("[DEBUG] EID ".$this->eid." broke block at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 							$this->send(0x84, array(
 								$this->counter[0],
@@ -394,6 +405,19 @@ class Session{
 								),
 							));
 							++$this->counter[0];
+							/*$this->send(0x84, array(
+								$this->counter[0],
+								0x00,
+								array(
+									"id" => MC_UPDATE_BLOCK,
+									"x" => $data["x"],
+									"y" => $data["y"],
+									"z" => $data["z"],
+									"block" => 56,
+									"meta" => 0,
+								),
+							));
+							++$this->counter[0];*/
 							break;
 						case MC_INTERACT:
 							if($this->server->gamemode !== 1 and $this->server->difficulty > 0 and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
