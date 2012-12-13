@@ -33,7 +33,7 @@ $dataName = array(
 	
 	MC_CLIENT_HANDSHAKE => "ClientHandshake",
 	
-	MC_CLIENT_DISCONNECT => "ClientDisconnect",
+	MC_DISCONNECT => "Disconnect",
 	
 	0x18 => "Unknown",
 	

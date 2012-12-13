@@ -121,7 +121,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeLong($this->data["session"]);
 				}
 				break;
-			case MC_CLIENT_DISCONNECT:
+			case MC_DISCONNECT:
 				//null
 				break;
 			case 0x18:
@@ -379,17 +379,17 @@ class CustomPacketHandler{
 					$this->data["z"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["x"]);
-					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
 				}
 				break;
 			case MC_CHUNK_DATA:
 				if($this->c === false){	
 					$this->data["x"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
-					$this->data["data"] = $this->get(256);
+					$this->data["data"] = $this->get(true);
 				}else{
 					$this->raw .= Utils::writeInt($this->data["x"]);
-					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
 					$this->raw .= $this->data["data"];
 				}
 				break;

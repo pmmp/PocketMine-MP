@@ -196,11 +196,12 @@ class PocketMinecraftServer extends stdClass{
 		}
 	}
 	
-	private function loadMap(){
+	public function loadMap(){
 		if($this->mapName !== false and trim($this->mapName) !== ""){			
 			$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
 			console("[INFO] Map: ".$this->level["LevelName"]);
 			$this->time = (int) $this->level["Time"];
+			$this->seed = (int) $this->level["RandomSeed"];
 			$this->level["Time"] = &$this->time;
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);
@@ -246,7 +247,6 @@ class PocketMinecraftServer extends stdClass{
 		$this->event("onTick", array($this, "tickerFunction"));
 		$this->event("onReceivedPacket", "packetHandler", true);
 		register_shutdown_function(array($this, "close"));
-		$this->loadMap();
 		console("[INFO] Server started!");
 		$this->process();
 	}

@@ -35,7 +35,7 @@ define("MC_SERVER_HANDSHAKE", 0x10);
 
 define("MC_CLIENT_HANDSHAKE", 0x13);
 
-define("MC_CLIENT_DISCONNECT", 0x15);
+define("MC_DISCONNECT", 0x15);
 
 define("MC_LOGIN", 0x82);
 define("MC_LOGIN_STATUS", 0x83);

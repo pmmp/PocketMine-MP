@@ -81,6 +81,14 @@ class Session{
 			$this->server->trigger("onChat", $this->username." left the game");
 		}
 		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
+		$this->send(0x84, array(
+			$this->counter[0],
+			0x00,
+			array(
+				"id" => MC_DISCONNECT,
+			),
+		));
+		++$this->counter[0];
 		$this->server->api->player->remove($this->CID);
 	}
 	
@@ -247,7 +255,7 @@ class Session{
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
-						case MC_CLIENT_DISCONNECT:
+						case MC_DISCONNECT:
 							$this->close("client disconnect");
 							break;
 						case MC_CLIENT_CONNECT:
@@ -367,23 +375,30 @@ class Session{
 							//$this->server->trigger("onChat", $this->username." joined the game");
 							break;
 						case MC_MOVE_PLAYER:
-							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-							$this->server->trigger("onEntityMove", $this->eid);
+							if(is_object($this->entity)){
+								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
+								$this->server->trigger("onEntityMove", $this->eid);
+							}
 							break;
 						case MC_PLAYER_EQUIPMENT:
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
 							break;
-						case MC_REQUEST_CHUNK:							
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_CHUNK_DATA,
-									"x" => $data["x"],
-									"z" => $data["z"],
-									"data" => str_repeat("\x00", 256),
-								),
-							));
+						case MC_REQUEST_CHUNK:
+							$chunk = $this->server->api->level->getOrderedChunk($data["x"], $data["z"]);
+							foreach($chunk as $d){
+								$this->send(0x84, array(
+									$this->counter[0],
+									0x00,
+									array(
+										"id" => MC_CHUNK_DATA,
+										"x" => $data["x"],
+										"z" => $data["z"],
+										"data" => $d,
+									),
+								));
+							}
+							
+
 							++$this->counter[0];
 							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
 							break;

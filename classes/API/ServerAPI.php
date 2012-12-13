@@ -80,6 +80,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$this->server->mapName = $this->getProperty("level-name");
 		$this->server->mapDir = FILE_PATH."data/maps/".$this->getProperty("level-name")."/";
 		$this->loadProperties();
+		$this->server->loadMap();
+		
 		//Autoload all default APIs
 		console("[INFO] Loading default APIs");
 		$dir = dir(FILE_PATH."classes/API/");
