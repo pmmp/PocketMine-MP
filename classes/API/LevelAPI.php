@@ -60,6 +60,9 @@ class LevelAPI{
 		for($i = 0;$i < 0xff; ){
 			$ordered[$i] = str_repeat("\x00", $i);
 			for($j = 0; $j < $columnsPerPacket; ++$j){
+				if(($i + $j) >= 0xff){
+					break;
+				}
 				$ordered[$i] .= "\xff";
 				for($k = 0; $k < 8; ++$k){
 					$ordered[$i] .= substr($c[0][$i+$j], $k << 4, 16); //Block data

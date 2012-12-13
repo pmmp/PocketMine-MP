@@ -375,21 +375,21 @@ class CustomPacketHandler{
 				break;
 			case MC_REQUEST_CHUNK:
 				if($this->c === false){	
-					$this->data["x"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readInt($this->get(4));
 				}else{
-					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
 				}
 				break;
 			case MC_CHUNK_DATA:
 				if($this->c === false){	
-					$this->data["x"] = Utils::readInt($this->get(4));
 					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readInt($this->get(4));
 					$this->data["data"] = $this->get(true);
 				}else{
-					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= $this->data["data"];
 				}
 				break;
