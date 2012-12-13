@@ -25,17 +25,37 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-define("MAP_WIDTH", 256);
-define("MAP_HEIGHT", 128);
-
 class ChunkParser{
-	private $raw = b"";
+	private $location, $raw = b"";
 	var $sectorLenght = 4096; //16 * 16 * 16
 	var $chunkLenght = 86016; //21 * $sectorLenght
 	var $map;
 	
 	function __construct(){
 		$map = array();
+	}
+	
+	private function loadLocationTable(){
+		$this->location = array();
+		console("[DEBUG] Loading Chunk Location table...", true, true, 2);
+		$chunkCnt = 0;
+		for($offset = 0; $offset < 0x1000; $offset += 4){
+			$data = substr($this->raw, $offset, 4);
+			$sectors = ord($data{0});
+			if($sectors === 0){
+				continue;
+			}
+			$x = ord($data{1});
+			$z = ord($data{2});
+			$X = $chunkCnt % 16;
+			$Z = $chunkCnt >> 4;
+			//$unused = ord($data{3});
+			if(!isset($this->location[$X])){
+				$this->location[$X] = array();
+			}
+			$this->location[$X][$Z] = $this->getOffset($X, $Z, $sectors);
+			++$chunkCnt;
+		}
 	}
 	
 	public function loadFile($file){
@@ -52,10 +72,10 @@ class ChunkParser{
 		return array(ord($data{0}), ord($data{1}), ord($data{2}), ord($data{3}));
     }
 	
-	private function getOffset($X, $Z){
+	private function getOffset($X, $Z, $sectors = 21){
         //$info = $this->getOffsetPosition($X, $Z);		
 		//return 4096 + (($info[1] * $info[0]) << 12) + (($info[2] * $data[0]) << 16);
-		return 4096 + (($X * 21) << 12) + (($Z * 21) << 16);
+		return 0x1000 + (($X * $sectors) << 12) + (($Z * $sectors) << 16);
     }
 	
 	public function getChunk($X, $Z, $header = true){
@@ -72,7 +92,7 @@ class ChunkParser{
 	public function parseChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		$offset = $this->getOffset($X, $Z);
+		$offset = $this->location[$X][$Z];
 		$len = Utils::readLInt(substr($this->raw, $offset, 4));
 		$offset += 4;
 		$chunk = array(
@@ -122,6 +142,7 @@ class ChunkParser{
 	}
 	
 	public function loadMap(){
+		$this->loadLocationTable();
 		console("[DEBUG] Loading chunks...", true, true, 2);
 		for($x = 0; $x < 16; ++$x){
 			$this->map[$x] = array();

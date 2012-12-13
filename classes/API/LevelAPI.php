@@ -44,9 +44,9 @@ class LevelAPI{
 	}
 
 	public function getChunk($X, $Z){
-		/*if($this->check() and isset($this->map->map[$X][$Z])){
+		if($this->check() and isset($this->map->map[$X][$Z])){
 			return $this->map->map[$X][$Z];		
-		}*/
+		}
 		return false;
 	}
 	
@@ -62,11 +62,11 @@ class LevelAPI{
 			for($j = 0; $j < $columnsPerPacket; ++$j){
 				$ordered[$i] .= "\xff";
 				for($k = 0; $k < 8; ++$k){
-					$ordered[$i] .= substr($c[$i][0], $k << 4, 16); //Block data
-					$ordered[$i] .= substr($c[$i][1], $k << 3, 8); //Meta data
+					$ordered[$i] .= substr($c[0][$i+$j], $k << 4, 16); //Block data
+					$ordered[$i] .= substr($c[1][$i+$j], $k << 3, 8); //Meta data
 				}
-				++$i;
 			}
+			$i += $columnsPerPacket;
 		}
 		return $ordered;
 	}

@@ -81,7 +81,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->event("onPlayerAdd", "eventHandler", true);
 		$this->event("onHealthChange", "eventHandler", true);
 		
-		$this->action(100000, '$this->time += ceil($this->timePerSecond / 10);$this->trigger("onTimeChange", $this->time);');
+		$this->action(500000, '$this->time += ceil($this->timePerSecond / 2);$this->trigger("onTimeChange", $this->time);');
 		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
@@ -245,7 +245,6 @@ class PocketMinecraftServer extends stdClass{
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
 		$this->event("onTick", array($this, "tickerFunction"));
-		$this->event("onReceivedPacket", "packetHandler", true);
 		register_shutdown_function(array($this, "close"));
 		console("[INFO] Server started!");
 		$this->process();
@@ -263,7 +262,7 @@ class PocketMinecraftServer extends stdClass{
 		return md5($pi . $port, true);
 	}
 	
-	public function packetHandler($packet, $event){
+	public function packetHandler($packet){
 		$data =& $packet["data"];
 		$CID = $this->clientID($packet["ip"], $packet["port"]);
 		if(isset($this->clients[$CID])){
@@ -337,8 +336,6 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function send($pid, $data = array(), $raw = false, $dest = false, $port = false){
-		$this->trigger($pid, $data);
-		$this->trigger("onSentPacket", $data);
 		$this->interface->writePacket($pid, $data, $raw, $dest, $port);
 	}
 	
@@ -346,8 +343,7 @@ class PocketMinecraftServer extends stdClass{
 		while($this->stop === false){
 			$packet = $this->interface->readPacket();
 			if($packet !== false){
-				$this->trigger("onReceivedPacket", $packet);
-				$this->trigger($packet["pid"], $packet);
+				$this->packetHandler($packet);
 			}else{
 				usleep(10000);
 			}			
@@ -359,7 +355,7 @@ class PocketMinecraftServer extends stdClass{
 		if($events === false or $events === true){
 			return;
 		}
-		console("[INTERNAL] Event ". $event, true, true, 3);
+		//console("[INTERNAL] Event ". $event, true, true, 3);
 		while($evn = $events->fetchArray(SQLITE3_ASSOC)){
 			$ev = $this->events[$event][$evn["ID"]];
 			if(isset($ev[1]) and ($ev[1] === true or is_object($ev[1]))){

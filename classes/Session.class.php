@@ -27,9 +27,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Session{
-	private $server, $timeout, $connected, $evid;
+	private $server, $timeout, $connected, $evid, $queue;
 	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU;
 	function __construct($server, $clientID, $eid, $ip, $port, $MTU){
+		$this->queue = array();
 		$this->MTU = $MTU;
 		$this->server = $server;
 		$this->clientID = $clientID;
@@ -41,7 +42,7 @@ class Session{
 		$this->port = $port;
 		$this->timeout = microtime(true) + 25;
 		$this->evid = array();
-		$this->evid[] = array("onTick", $this->server->event("onTick", array($this, "checkTimeout")));
+		$this->evid[] = array("onTick", $this->server->event("onTick", array($this, "onTick")));
 		$this->evid[] = array("onClose", $this->server->event("onClose", array($this, "close")));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 		$this->connected = true;
@@ -49,9 +50,17 @@ class Session{
 		$this->counter = array(0, 0);
 	}
 	
-	public function checkTimeout($time){
+	public function onTick($time){
 		if($time > $this->timeout){
 			$this->close("timeout");
+		}else{
+			if(count($this->queue) > 0){
+				$limit = $time + 0.1;
+				while($limit > microtime(true)){
+					$p = array_shift($this->queue);
+					$this->dataPacket($p[0], $p[1]);
+				}
+			}
 		}
 	}
 	
@@ -81,14 +90,7 @@ class Session{
 			$this->server->trigger("onChat", $this->username." left the game");
 		}
 		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
-		$this->send(0x84, array(
-			$this->counter[0],
-			0x00,
-			array(
-				"id" => MC_DISCONNECT,
-			),
-		));
-		++$this->counter[0];
+		$this->dataPacket(MC_DISCONNECT);
 		$this->server->api->player->remove($this->CID);
 	}
 	
@@ -103,40 +105,28 @@ class Session{
 				if($data["eid"] !== $this->eid){
 					break;
 				}
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_MOVE_PLAYER,
-						"eid" => $data["eid"],
-						"x" => $data["x"],
-						"y" => $data["y"],
-						"z" => $data["z"],
-						"yaw" => 0,
-						"pitch" => 0,
-					),
+				$this->dataPacket(MC_MOVE_PLAYER, array(
+					"eid" => $data["eid"],
+					"x" => $data["x"],
+					"y" => $data["y"],
+					"z" => $data["z"],
+					"yaw" => 0,
+					"pitch" => 0,
 				));
-				++$this->counter[0];
 				break;
 			case "onEntityMove":
 				if($data === $this->eid){
 					break;
 				}
 				$entity = $this->server->entities[$data];
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_MOVE_ENTITY_POSROT,
-						"eid" => $data,
-						"x" => $entity->position["x"],
-						"y" => $entity->position["y"],
-						"z" => $entity->position["z"],
-						"yaw" => $entity->position["yaw"],
-						"pitch" => $entity->position["pitch"],
-					),
+				$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+					"eid" => $data,
+					"x" => $entity->position["x"],
+					"y" => $entity->position["y"],
+					"z" => $entity->position["z"],
+					"yaw" => $entity->position["yaw"],
+					"pitch" => $entity->position["pitch"],
 				));
-				++$this->counter[0];
 				break;
 			case "onHealthRegeneration":
 				if($this->server->difficulty < 2){
@@ -145,15 +135,9 @@ class Session{
 				break;
 			case "onHealthChange":
 				if($data["eid"] === $this->eid){
-					$this->send(0x84, array(
-						$this->counter[0],
-						0x00,
-						array(
-							"id" => MC_SET_HEALTH,
-							"health" => $data["health"],
-						),
+					$this->dataPacket(MC_SET_HEALTH, array(
+						"health" => $data["health"],
 					));
-					++$this->counter[0];
 					$this->data["health"] = $data["health"];
 					if(is_object($this->entity)){
 						$this->entity->setHealth($data["health"]);
@@ -164,71 +148,41 @@ class Session{
 				if($data["eid"] === $this->eid){
 					break;
 				}
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_ADD_PLAYER,
-						"clientID" => $data["clientID"],
-						"username" => $data["username"],
-						"eid" => $data["eid"],
-						"x" => $data["x"],
-						"y" => $data["y"],
-						"z" => $data["z"],
-					),
+				$this->dataPacket(MC_ADD_PLAYER, array(
+					"clientID" => $data["clientID"],
+					"username" => $data["username"],
+					"eid" => $data["eid"],
+					"x" => $data["x"],
+					"y" => $data["y"],
+					"z" => $data["z"],
 				));
-				++$this->counter[0];
 				break;
 			case "onEntityRemove":
 				if($data === $this->eid){
 					break;
 				}
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_ENTITY_REMOVE,
-						"eid" => $data,
-					),
+				$this->dataPacket(MC_ENTITY_REMOVE, array(
+					"eid" => $data,
 				));
-				++$this->counter[0];
 				break;
 			case "onTimeChange":
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_SET_TIME,
-						"time" => $data,
-					),
+				$this->dataPacket(MC_SET_TIME, array(
+					"time" => $data,
 				));
-				++$this->counter[0];
 				break;
 			case "onAnimate":
 				if($data["eid"] === $this->eid){
 					break;
 				}
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_ANIMATE,
+				$this->dataPacket(MC_ANIMATE, array(
 						"eid" => $data["eid"],
 						"action" => $data["action"],
-					),
-				));
-				++$this->counter[0];
+					));
 				break;
 			case "onChat":
-				$this->send(0x84, array(
-					$this->counter[0],
-					0x00,
-					array(
-						"id" => MC_CHAT,
-						"message" => $data,
-					),
-				));
-				++$this->counter[0];				
+				$this->dataPacket(MC_CHAT, array(
+					"message" => $data,
+				));				
 				break;
 		}
 	}
@@ -251,7 +205,15 @@ class Session{
 				case 0x88:
 				case 0x8c:
 					if(isset($data[0])){
-						$this->counter[1] = $data[0];
+						$diff = $data[0] - $this->counter[1];
+						if($diff > 1){ //Packet recovery
+							for($i = $this->counter[1]; $i < $data[0]; ++$i){
+								$this->send(0xa0, array(1, true, $i));
+							}
+							$this->counter[1] = $data[0];
+						}elseif($diff === 1){
+							$this->counter[1] = $data[0];
+						}
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
@@ -259,17 +221,11 @@ class Session{
 							$this->close("client disconnect");
 							break;
 						case MC_CLIENT_CONNECT:
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_SERVER_HANDSHAKE,
-									"port" => $this->port,
-									"session" => $data["session"],
-									"session2" => Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9"),
-								),
+							$this->dataPacket(MC_SERVER_HANDSHAKE, array(
+								"port" => $this->port,
+								"session" => $data["session"],
+								"session2" => Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9"),
 							));
-							++$this->counter[0];
 							break;
 						case MC_CLIENT_HANDSHAKE:
 						
@@ -299,30 +255,18 @@ class Session{
 							$this->evid[] = array("onHealthRegeneration", $this->server->event("onHealthRegeneration", array($this, "eventHandler")));
 							$this->evid[] = array("onAnimate", $this->server->event("onAnimate", array($this, "eventHandler")));
 							$this->evid[] = array("onTeleport", $this->server->event("onTeleport", array($this, "eventHandler")));
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_LOGIN_STATUS,
-									"status" => 0,
-								),
+							$this->dataPacket(MC_LOGIN_STATUS, array(
+								"status" => 0,
 							));
-							++$this->counter[0];
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_START_GAME,
-									"seed" => $this->server->seed,
-									"x" => $this->data["spawn"]["x"],
-									"y" => $this->data["spawn"]["y"],
-									"z" => $this->data["spawn"]["z"],
-									"unknown1" => 0,
-									"gamemode" => $this->server->gamemode,
-									"eid" => $this->eid,
-								),
+							$this->dataPacket(MC_START_GAME, array(
+								"seed" => $this->server->seed,
+								"x" => $this->data["spawn"]["x"],
+								"y" => $this->data["spawn"]["y"],
+								"z" => $this->data["spawn"]["z"],
+								"unknown1" => 0,
+								"gamemode" => $this->server->gamemode,
+								"eid" => $this->eid,
 							));
-							++$this->counter[0];
 							break;
 						case MC_READY:
 							if(is_object($this->entity)){
@@ -355,24 +299,17 @@ class Session{
 											"z" => $entity->position["z"],
 										), "onPlayerAdd");
 									}else{
-										$this->send(0x84, array(
-											$this->counter[0],
-											0x00,
-											array(
-												"id" => MC_ADD_MOB,
-												"eid" => $entity->eid,
-												"type" => $entity->type,
-												"x" => $entity->position["x"],
-												"y" => $entity->position["y"],
-												"z" => $entity->position["z"],
-											),
+										$this->dataPacket(MC_ADD_MOB, array(
+											"eid" => $entity->eid,
+											"type" => $entity->type,
+											"x" => $entity->position["x"],
+											"y" => $entity->position["y"],
+											"z" => $entity->position["z"],
 										));
-										++$this->counter[0];
 									}
 								}							
 							}
 							$this->eventHandler($this->server->motd, "onChat");
-							//$this->server->trigger("onChat", $this->username." joined the game");
 							break;
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
@@ -384,42 +321,28 @@ class Session{
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
 							break;
 						case MC_REQUEST_CHUNK:
-							$chunk = $this->server->api->level->getOrderedChunk($data["x"], $data["z"]);
+							$max = floor(($this->MTU - 16 - 255) / 192);
+							$chunk = $this->server->api->level->getOrderedChunk($data["x"], $data["z"], $max);
 							foreach($chunk as $d){
-								$this->send(0x84, array(
-									$this->counter[0],
-									0x00,
-									array(
-										"id" => MC_CHUNK_DATA,
-										"x" => $data["x"],
-										"z" => $data["z"],
-										"data" => $d,
-									),
-								));
+								$this->dataPacket(MC_CHUNK_DATA, array(
+									"x" => $data["x"],
+									"z" => $data["z"],
+									"data" => $d,								
+								), true);
 							}
-							
-
-							++$this->counter[0];
 							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
 							break;
 						case MC_REMOVE_BLOCK:
-							//$this->eventHandler("Blocks broken will not be saved", "onChat");
 							console("[DEBUG] EID ".$this->eid." broke block at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
-							$this->send(0x84, array(
-								$this->counter[0],
-								0x00,
-								array(
-									"id" => MC_ADD_ITEM_ENTITY,
-									"eid" => $this->server->eidCnt++,
-									"x" => $data["x"] + mt_rand(0, 100)/100,
-									"y" => $data["y"],
-									"z" => $data["z"] + mt_rand(0, 100)/100,
-									"block" => 1,
-									"meta" => 0,
-									"stack" => 1,
-								),
+							$this->dataPacket(MC_ADD_ITEM_ENTITY, array(
+								"eid" => $this->server->eidCnt++,
+								"x" => $data["x"] + mt_rand(0, 100)/100,
+								"y" => $data["y"],
+								"z" => $data["z"] + mt_rand(0, 100)/100,
+								"block" => 1,
+								"meta" => 0,
+								"stack" => 1,
 							));
-							++$this->counter[0];
 							/*$this->send(0x84, array(
 								$this->counter[0],
 								0x00,
@@ -457,6 +380,20 @@ class Session{
 	public function send($pid, $data = array(), $raw = false){
 		if($this->connected === true){
 			$this->server->send($pid, $data, $raw, $this->ip, $this->port);
+		}
+	}
+	
+	public function dataPacket($id, $data = array(), $queue = false){
+		if($queue === true){
+			$this->queue[] = array($id, $data);
+		}else{
+			$data["id"] = $id;
+			$this->send(0x84, array(
+				$this->counter[0],
+				0x00,
+				$data,
+			));
+			++$this->counter[0];
 		}
 	}
 
