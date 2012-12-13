@@ -156,7 +156,7 @@ class ConsoleAPI{
 							$this->server->api->setProperty("white-list", false);
 							break;
 						default:
-							console("[INFO] Usage: /whitelist <on | off | add | reload | list> [username]");
+							console("[INFO] Usage: /whitelist <on | off | add | remove | reload | list> [username]");
 							break;
 					}
 					break;

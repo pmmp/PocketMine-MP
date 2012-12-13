@@ -85,12 +85,12 @@ class Session{
 			$this->server->deleteEvent($ev[0], $ev[1]);
 		}
 		$this->eventHandler("You have been kicked. Reason: ".$reason, "onChat");
+		$this->dataPacket(MC_DISCONNECT);
 		$this->connected = false;
 		if($msg === true){
 			$this->server->trigger("onChat", $this->username." left the game");
 		}
 		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
-		$this->dataPacket(MC_DISCONNECT);
 		$this->server->api->player->remove($this->CID);
 	}
 	
