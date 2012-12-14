@@ -165,7 +165,7 @@ class ConsoleAPI{
 					break;
 				case "block":
 					foreach($this->server->clients as $client){
-						$b = $this->server->map->getBlock($client->entity->position["x"], $client->entity->position["y"] - 2, $client->entity->position["z"]);
+						$b = $this->server->map->getBlock(round($client->entity->position["x"] - 0.5), round($client->entity->position["y"] - 1), round($client->entity->position["z"] - 0.5));
 						console("[INFO] EID ".$client->eid." is over block ".$b[0].":".$b[1]);
 					}
 					break;

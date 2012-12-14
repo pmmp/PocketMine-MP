@@ -27,10 +27,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Session{
-	private $server, $timeout, $connected, $evid, $queue;
+	private $server, $timeout, $connected, $evid, $queue, $buffer;
 	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU;
 	function __construct($server, $clientID, $eid, $ip, $port, $MTU){
 		$this->queue = array();
+		$this->buffer = array();
 		$this->MTU = $MTU;
 		$this->server = $server;
 		$this->clientID = $clientID;
@@ -55,10 +56,21 @@ class Session{
 			$this->close("timeout");
 		}else{
 			if(count($this->queue) > 0){
-				$limit = $time + 0.1;
-				while($limit > microtime(true)){
+				$cnt = 0;
+				while($cnt < 4){
 					$p = array_shift($this->queue);
-					$this->dataPacket($p[0], $p[1]);
+					if($p === null){
+						break;
+					}
+					switch($p[0]){
+						case 0:
+							$this->dataPacket($p[1], $p[2], false, $p[3]);
+							break;
+						case 1:
+							eval($p[1]);
+							break;
+					}
+					++$cnt;
 				}
 			}
 		}
@@ -191,6 +203,22 @@ class Session{
 		if($this->connected === true){
 			$this->timeout = microtime(true) + 25;
 			switch($pid){
+				case 0xa0: //NACK
+					if(isset($this->buffer[$data[2]])){
+						array_unshift($this->queue, array(0, $this->buffer[$data[2]][0], $this->buffer[$data[2]][1], $data[2]));
+					}
+					if(isset($data[3])){
+						if(isset($this->buffer[$data[3]])){
+							array_unshift($this->queue, array(0, $this->buffer[$data[3]][0], $this->buffer[$data[3]][1], $data[3]));
+						}
+					}
+					break;
+				case 0xc0: //ACK
+					unset($this->buffer[$data[2]]);
+					if(isset($data[3])){
+						unset($this->buffer[$data[3]]);
+					}
+					break;
 				case 0x07:
 					$this->send(0x08, array(
 						MAGIC,
@@ -321,16 +349,18 @@ class Session{
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
 							break;
 						case MC_REQUEST_CHUNK:
+							$this->actionQueue('
 							$max = floor(($this->MTU - 16 - 255) / 192);
-							$chunk = $this->server->api->level->getOrderedChunk($data["x"], $data["z"], $max);
+							$chunk = $this->server->api->level->getOrderedChunk('.$data["x"].', '.$data["z"].', $max);
 							foreach($chunk as $d){
 								$this->dataPacket(MC_CHUNK_DATA, array(
-									"x" => $data["x"],
-									"z" => $data["z"],
+									"x" => '.$data["x"].',
+									"z" => '.$data["z"].',
 									"data" => $d,								
 								), true);
 							}
-							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);						
+							');
+							console("[DEBUG] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 2);
 							break;
 						case MC_REMOVE_BLOCK:
 							console("[DEBUG] EID ".$this->eid." broke block at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
@@ -383,17 +413,28 @@ class Session{
 		}
 	}
 	
-	public function dataPacket($id, $data = array(), $queue = false){
+	public function actionQueue($code){
+		$this->queue[] = array(1, $code);
+	}
+	
+	public function dataPacket($id, $data = array(), $queue = false, $count = false){
 		if($queue === true){
-			$this->queue[] = array($id, $data);
+			$this->queue[] = array(0, $id, $data, $count);
 		}else{
+			if($count === false){
+				$count = $this->counter[0];
+				++$this->counter[0];
+				if(count($this->buffer) >= 512){
+					array_shift($this->buffer);
+				}
+				$this->buffer[$count] = array($id, $data);
+			}
 			$data["id"] = $id;
 			$this->send(0x84, array(
-				$this->counter[0],
+				$count,
 				0x00,
 				$data,
 			));
-			++$this->counter[0];
 		}
 	}
 

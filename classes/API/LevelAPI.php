@@ -60,7 +60,7 @@ class LevelAPI{
 		for($i = 0;$i < 0xff; ){
 			$ordered[$i] = str_repeat("\x00", $i);
 			for($j = 0; $j < $columnsPerPacket; ++$j){
-				if(($i + $j) >= 0xff){
+				if(($i + $j) > 0xff){
 					break;
 				}
 				$ordered[$i] .= "\xff";

@@ -164,7 +164,6 @@ class ChunkParser{
 		$aZ = $z - ($Z << 4);
 		$index = $aX + ($aZ << 4);
 		console("[DEBUG] $x $y $z | $X $Z $index", true, true, 2);
-		var_dump($this->map[$X][$Z][0][$index]);
 		$block = ord($this->map[$X][$Z][0][$index]{$y});
 		//$meta = $this->getOffset($X, $Z) + 4 + (($x << 6) + $y + ($z << 10));
 		return array($block, 0);
