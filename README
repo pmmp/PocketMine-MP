@@ -40,6 +40,8 @@ User-made program to merge server I/O: https://github.com/filfat/MCPES_CPP_INPUT
 
 Current features of the server:
 	- Players can connect and move around the world (and see each other)
+	- Support for reading/sending chunks!
+	- Multiple worlds and importing!
 	- PvP, life regeneration and death cause!
 	- Extensible API!
 	- Online list broadcast
@@ -50,8 +52,8 @@ Current features of the server:
 	- Whitelist and IP Ban files
 	- Survival & Creative
 	- Awesome features in server list!
-	- Multiple worlds and importing!
 	- Automatic new version checking
+	- Implemented packet loss recovery algorithm
 	+ more!
 	
 Tested in in: v4.0.0, v5.0.0
