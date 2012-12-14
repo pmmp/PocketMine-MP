@@ -75,7 +75,7 @@ class ChunkParser{
 	private function getOffset($X, $Z, $sectors = 21){
         //$info = $this->getOffsetPosition($X, $Z);		
 		//return 4096 + (($info[1] * $info[0]) << 12) + (($info[2] * $data[0]) << 16);
-		return 0x1000 + (($X * $sectors) << 12) + (($Z * $sectors) << 16);
+		return 0x1000 + (($Z * $sectors) << 12) + (($X * $sectors) << 16);
     }
 	
 	public function getChunk($X, $Z, $header = true){
@@ -163,7 +163,6 @@ class ChunkParser{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$index = $aX + ($aZ << 4);
-		console("[DEBUG] $x $y $z | $X $Z $index", true, true, 2);
 		$block = ord($this->map[$X][$Z][0][$index]{$y});
 		//$meta = $this->getOffset($X, $Z) + 4 + (($x << 6) + $y + ($z << 10));
 		return array($block, 0);

@@ -146,7 +146,7 @@ class PlayerAPI{
 	
 	public function getOffline($name){
 		if(!file_exists(FILE_PATH."data/players/".$name.".dat")){
-			console("[NOTICE] Player data not found for \"".$name."\", creating new");
+			console("[NOTICE] Player data not found for \"".$name."\", creating new profile");
 			$data = array(
 				"spawn" => array(
 					"x" => $this->server->spawn["x"],

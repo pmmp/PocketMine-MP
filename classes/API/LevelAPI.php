@@ -50,6 +50,13 @@ class LevelAPI{
 		return false;
 	}
 	
+	public function getBlock($x, $y, $z){
+		if($this->check()){
+			return $this->map->getBlock($x, $y, $z);		
+		}
+		return array(0,0);
+	}
+	
 	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){
 		$columnsPerPacket = max(1, (int) $columnsPerPacket);
 		$c = $this->getChunk($X, $Z);

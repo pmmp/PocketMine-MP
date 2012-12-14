@@ -367,13 +367,17 @@ class Session{
 							break;
 						case MC_REMOVE_BLOCK:
 							console("[DEBUG] EID ".$this->eid." broke block at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+							$block = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
+							if($block[0] === 0){
+								break;
+							}
 							$this->dataPacket(MC_ADD_ITEM_ENTITY, array(
 								"eid" => $this->server->eidCnt++,
 								"x" => $data["x"] + mt_rand(0, 100)/100,
 								"y" => $data["y"],
 								"z" => $data["z"] + mt_rand(0, 100)/100,
-								"block" => 1,
-								"meta" => 0,
+								"block" => $block[0],
+								"meta" => $block[1],
 								"stack" => 1,
 							));
 							/*$this->send(0x84, array(
