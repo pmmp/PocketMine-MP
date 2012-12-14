@@ -338,6 +338,9 @@ class Session{
 								}							
 							}
 							$this->eventHandler($this->server->motd, "onChat");
+							if($this->MTU <= 548){
+								$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "onChat");
+							}
 							break;
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
