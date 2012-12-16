@@ -186,7 +186,7 @@ class CustomPacketHandler{
 				break;
 			case MC_ADD_MOB:	
 				if($this->c === false){
-					$this->data["int"] = Utils::readInt($this->get(4));
+					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["type"] = Utils::readInt($this->get(4));
 					$this->data["x"] = Utils::readFloat($this->get(4));
 					$this->data["y"] = Utils::readFloat($this->get(4));

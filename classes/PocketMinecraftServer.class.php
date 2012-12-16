@@ -31,9 +31,12 @@ class PocketMinecraftServer extends stdClass{
 	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $cnt, $events, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
-		$this->port = (int) $port;
+		$this->port = (int) $port; //19132 - 19135
 		console("[INFO] Pocket-Minecraft-PHP by @shoghicp, LGPL License. http://bit.ly/RE7uaW", true, true, 0);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
+		if($this->port < 19132 or $this->port > 19135){
+			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
+		}
 		console("[INFO] Loading database...");
 		$this->startDatabase();
 		$this->gamemode = (int) $gamemode;
@@ -47,7 +50,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->tileEntities = array();
 		$this->entities = array();
 		$this->custom = array();
-		$this->cnt = 1;
+		$this->cnt = 0;
 		$this->eidCnt = 1;
 		$this->maxClients = 20;
 		$this->description = "";
@@ -61,8 +64,6 @@ class PocketMinecraftServer extends stdClass{
 		$this->spawn = array("x" => 128.5,"y" => 100,"z" =>  128.5);
 		$this->time = 0;
 		$this->timePerSecond = 10;
-		console("[INFO] Loading events...");
-		$this->loadEvents();
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, $this->port, true, false);		
 		$this->reloadConfig();
@@ -73,9 +74,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->stop = false;
 	}
 	
-	public function loadEvents(){
-		$this->events = array("disabled" => array());
-		
+	public function loadEvents(){		
 		$this->event("onChat", "eventHandler", true);
 		$this->event("onPlayerDeath", "eventHandler", true);
 		$this->event("onPlayerAdd", "eventHandler", true);
@@ -85,7 +84,9 @@ class PocketMinecraftServer extends stdClass{
 		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
-		$this->action(1000000 * 80, '$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".implode(", ",$this->api->player->online()));');
+		if($this->api !== false){
+			$this->action(1000000 * 80, '$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".implode(", ",$this->api->player->online()));');
+		}
 		$this->action(1000000 * 75, '$this->debugInfo(true);');
 	}
 
@@ -95,7 +96,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
-		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, eventName TEXT, priority NUMERIC, disabled INTEGER);");
+		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, eventName TEXT, priority NUMERIC);");
 	}
 	
 	public function query($sql, $fetch = false){
@@ -216,18 +217,6 @@ class PocketMinecraftServer extends stdClass{
 			}else{
 				$this->map->loadMap();
 			}
-			if($this->map !== false){
-				console("[INFO] Loading entities...");
-				$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
-				foreach($entities as $entity){
-					$this->entities[$this->eidCnt] = new Entity($this->eidCnt, ENTITY_MOB, $entity["id"], $this);
-					$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-					$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
-					++$this->eidCnt;
-				}
-				console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
-				$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
-			}
 		}else{
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);
@@ -235,16 +224,47 @@ class PocketMinecraftServer extends stdClass{
 		}
 	}
 	
+	public function loadEntities(){
+		if($this->map !== false){
+			console("[INFO] Loading entities...");
+			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
+			foreach($entities as $entity){
+				if(!isset($entity["id"])){
+					break;
+				}
+				if(!isset($this->api) or $this->api === false){
+					$this->entities[$this->eidCnt] = new Entity($his, $this->eidCnt, ENTITY_MOB, $entity["id"]);
+					$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+					$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
+					++$this->eidCnt;
+				}else{
+					$e = $this->api->entity->add(ENTITY_MOB, $entity["id"]);
+					$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+					$e->setHealth($entity["Health"]);
+				}
+			}
+			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
+			$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
+		}	
+	}
+	
 	public function save(){
 		if($this->mapName !== false){	
 			file_put_contents($this->mapDir."level.dat", serialize($this->level));
+			$this->map->saveMap();
 		}
 	}
 	
 	public function start(){
+		if($this->mapName !== false and $this->map === false){
+			$this->loadMap();
+			$this->loadEntities();
+		}
+		console("[INFO] Loading events...");
+		$this->loadEvents();
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
-		$this->event("onTick", array($this, "tickerFunction"));
+		$this->event("onTick", "tickerFunction", true);
 		register_shutdown_function(array($this, "close"));
 		console("[INFO] Server started!");
 		$this->process();
@@ -327,8 +347,7 @@ class PocketMinecraftServer extends stdClass{
 					$port = $data[2];
 					$MTU = $data[3];
 					$clientID = $data[4];
-					$eid = $this->eidCnt++;
-					$this->clients[$CID] = new Session($this, $clientID, $eid, $packet["ip"], $packet["port"], $MTU);
+					$this->clients[$CID] = new Session($this, $clientID, $packet["ip"], $packet["port"], $MTU);
 					$this->clients[$CID]->handle(0x07, $data);
 					break;
 			}
@@ -351,18 +370,14 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function trigger($event, $data = ""){
-		$events = $this->query("SELECT ID FROM events WHERE eventName = '".$event."' AND disabled = 0;");
+		$events = $this->query("SELECT ID FROM events WHERE eventName = '".$event."';");
 		if($events === false or $events === true){
 			return;
 		}
-		//console("[INTERNAL] Event ". $event, true, true, 3);
 		while($evn = $events->fetchArray(SQLITE3_ASSOC)){
-			$ev = $this->events[$event][$evn["ID"]];
-			if(isset($ev[1]) and ($ev[1] === true or is_object($ev[1]))){
-				$this->responses[$evn["ID"]] = call_user_func(array(($ev[1] === true ? $this:$ev[1]), $ev[0]), $data, $event, $this);
-			}else{
-				$this->responses[$evn["ID"]] = call_user_func($ev[0], $data, $event, $this);
-			}
+			$evid = (int) $evn["ID"];
+			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event, $this);
+		
 		}
 		return true;
 	}
@@ -397,42 +412,23 @@ class PocketMinecraftServer extends stdClass{
 		$this->query("UPDATE actions SET last = ".$time." WHERE last <= (".$time." - interval);");
 	}	
 	
-	public function toggleEvent($event){
-		if(isset($this->events["disabled"][$event])){
-			unset($this->events["disabled"][$event]);
-			$this->query("UPDATE events SET disabled = 0 WHERE eventName = '".$event."';");
-			console("[INTERNAL] Enabled event ".$event, true, true, 3);
-		}else{
-			$this->events["disabled"][$event] = false;
-			$this->query("UPDATE events SET disabled = 1 WHERE eventName = '".$event."';");
-			console("[INTERNAL] Disabled event ".$event, true, true, 3);
-		}
-	}
-	
 	public function event($event, $func, $in = false){
-		++$this->cnt;
-		if(!isset($this->events[$event])){
-			$this->events[$event] = array();
+		if($in === true){
+			$func = array($this, $func);
 		}
-		$this->query("INSERT INTO events (ID, eventName, disabled) VALUES (".$this->cnt.", '".str_replace("'", "\\'", $event)."', 0);");
-		$this->events[$event][$this->cnt] = array($func, $in);
-		console("[INTERNAL] Attached to event ".$event, true, true, 3);
-		return $this->cnt;
+		if(!is_callable($func)){
+			return false;
+		}
+		$this->events[$this->cnt] = $func;
+		$this->query("INSERT INTO events (ID, eventName) VALUES (".$this->cnt.", '".str_replace("'", "\\'", $event)."');");
+		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->cnt.")", true, true, 3);
+		return $this->cnt++;
 	}
 	
-	public function deleteEvent($event, $id = -1){
+	public function deleteEvent($id){
 		$id = (int) $id;
-		if($id === -1){
-			unset($this->events[$event]);
-			$this->query("DELETE FROM events WHERE eventName = '".str_replace("'", "\\'", $event)."';");
-		}else{
-			unset($this->events[$event][$id]);
-			$this->query("DELETE FROM events WHERE ID = ".$id.";");
-			if(isset($this->events[$event]) and count($this->events[$event]) === 0){
-				unset($this->events[$event]);
-				$this->query("DELETE FROM events WHERE eventName = '".str_replace("'", "\\'", $event)."';");
-			}
-		}
+		unset($this->events[$id]);
+		$this->query("DELETE FROM events WHERE ID = ".$id.";");
 	}
 	
 }

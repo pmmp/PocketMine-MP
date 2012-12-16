@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 require_once(dirname(__FILE__)."/config.php");
 require_once("common/functions.php");
+//set_error_handler("error_handler");
 
 $errors = 0;
 

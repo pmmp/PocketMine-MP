@@ -99,6 +99,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$this->$a->init();
 			}
 		}
+		
+		$this->server->loadEntities();
 	}
 	
 	public function getList(){

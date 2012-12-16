@@ -120,6 +120,10 @@ function console($message, $EOL = true, $log = true, $level = 1){
 	}
 }
 
+function error_handler($errno, $errstr, $errfile, $errline){
+	console("[ERROR] A level ".$errno." error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
+}
+
 function logg($message, $name, $EOL = true, $level = 2, $close = false){
 	global $fpointers;
 	if((!defined("DEBUG") or DEBUG >= $level) and (!defined("LOG") or LOG === true)){

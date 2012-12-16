@@ -73,7 +73,7 @@ class PlayerAPI{
 			case "list":
 				console("[INFO] Player list:");
 				foreach($this->server->clients as $c){
-					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->username->entity->position["x"], 2).", ".round($c->username->entity->position["y"], 2).", ".round($c->username->entity->position["z"], 2).")");
+					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->username->entity->x, 2).", ".round($c->username->entity->y, 2).", ".round($c->username->entity->z, 2).")");
 				}
 				break;
 		}
@@ -82,7 +82,7 @@ class PlayerAPI{
 	public function teleport($name, $target){
 		$target = $this->get($target);
 		if($target !== false){
-			$this->tppos($name, $target->entity->position["x"], $target->entity->position["y"], $target->entity->position["z"]);
+			$this->tppos($name, $target->entity->x, $target->entity->y, $target->entity->z);
 		}
 	}
 	
@@ -102,6 +102,10 @@ class PlayerAPI{
 		return false;
 	}
 	
+	public function getAll(){
+		return $this->server->clients;
+	}
+	
 	public function getByEID($eid){
 		$eid = (int) $eid;
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE EID = '".$eid."';", true);
@@ -110,6 +114,16 @@ class PlayerAPI{
 			return $this->server->clients[$CID];
 		}
 		return false;
+	}
+	
+	public function getByClientID($clientID){
+		$clientID = (int) $clientID;
+		$CID = $this->server->query("SELECT ip,port FROM players WHERE clientID = '".$clientID."';", true);
+		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
+		if(isset($this->server->clients[$CID])){
+			return $this->server->clients[$CID];
+		}
+		return false;	
 	}
 	
 	public function online(){
@@ -127,7 +141,7 @@ class PlayerAPI{
 			$player = $this->server->clients[$CID];
 			console("[INFO] Player \"".$player->username."\" connected from ".$player->ip.":".$player->port);
 			$player->data = $this->getOffline($player->username);
-			$this->server->query("INSERT OR REPLACE INTO players (clientID, EID, ip, port, name) VALUES (".$player->clientID.", ".$player->eid.", '".$player->ip."', ".$player->port.", '".$player->username."');");
+			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".$player->username."');");
 		}
 	}
 	

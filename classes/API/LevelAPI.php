@@ -35,6 +35,32 @@ class LevelAPI{
 		}
 	}
 	
+	public function init(){
+		//$this->server->event("onBlockBreak", array($this, "handle"));
+	}
+	
+	public function handle($data, $event){
+		switch($event){
+			case "onBlockBreak":
+					$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
+					console("[DEBUG] EID ".$data["eid"]." broke block ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+					
+					if($block[0] === 0){
+						break;
+					}
+					$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0);
+					$data["block"] = $block[0];
+					$data["meta"] = $block[1];
+					$data["stack"] = 1;
+					$data["x"] += mt_rand(2, 8) / 10;
+					$data["y"] += mt_rand(2, 8) / 10;
+					$data["z"] += mt_rand(2, 8) / 10;
+					$e = $this->server->api->entity->add(ENTITY_ITEM, $block[0], $data);
+					$this->server->api->entity->spawnToAll($e->eid);
+				break;
+		}
+	}
+	
 	private function check(){
 		if($this->active === false and $this->server->map === false){
 			return false;
@@ -55,6 +81,19 @@ class LevelAPI{
 			return $this->map->getBlock($x, $y, $z);		
 		}
 		return array(0,0);
+	}
+	
+	public function setBlock($x, $y, $z, $block, $meta = 0){
+		if($this->check()){
+			$this->map->setBlock($x, $y, $z, $block, $meta);
+		}
+		$this->server->trigger("onBlockUpdate", array(
+			"x" => $x,
+			"y" => $y,
+			"z" => $z,
+			"block" => $block,
+			"meta" => $meta,
+		));
 	}
 	
 	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){

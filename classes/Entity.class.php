@@ -32,17 +32,17 @@ define("ENTITY_OBJECT", 2);
 define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
-class Entity{
-	var $eid, $type, $name, $position, $dead, $metadata, $class, $attach, $data, $closed;
-	protected $health, $client;
+class Entity extends stdClass{
+	var $eid, $type, $name, $x, $y, $z, $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player;
 	
-	function __construct($eid, $class, $type = 0, $server){ //$type = 0 ---> player
+	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
 		$this->eid = (int) $eid;
 		$this->type = (int) $type;
 		$this->class = (int) $class;
+		$this->player = false;
 		$this->attach = false;
-		$this->data = array();
+		$this->data = $data;
 		$this->status = 0;
 		$this->health = 20;
 		$this->dead = false;
@@ -50,19 +50,72 @@ class Entity{
 		$this->name = "";
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
 		$this->metadata = array();
-		/*include("misc/entities.php");
+		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
+		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
+		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
+		$this->yaw = isset($this->data["yaw"]) ? $this->data["yaw"]:0;
+		$this->pitch = isset($this->data["pitch"]) ? $this->data["pitch"]:0;
+		$this->position = array("x" => &$this->x, "y" => &$this->y, "z" => &$this->z, "yaw" => &$this->yaw, "pitch" => &$this->pitch);
 		switch($this->class){
 			case ENTITY_PLAYER:
-			case ENTITY_ITEM:
+				$this->player = $this->data["player"];
+				$this->health = &$this->player->data["health"];
 				break;
-				
+			case ENTITY_ITEM:
+				$this->meta = (int) $this->data["meta"];
+				$this->stack = (int) $this->data["stack"];
+				break;
 			case ENTITY_MOB:
-				$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
+				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				break;
 			case ENTITY_OBJECT:
-				$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				break;
-		}*/
+		}
+	}
+	
+	public function spawn($player){
+		if(!is_object($player)){
+			$player = $this->server->api->player->get($player);
+		}
+		if($player->eid === $this->eid){
+			return false;
+		}
+		switch($this->class){
+			case ENTITY_PLAYER:
+				$player->dataPacket(MC_ADD_PLAYER, array(
+					"clientID" => $this->player->clientID,
+					"username" => $this->player->username,
+					"eid" => $this->eid,
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+				));
+				break;
+			case ENTITY_ITEM:
+				$player->dataPacket(MC_ADD_ITEM_ENTITY, array(
+					"eid" => $this->eid,
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"block" => $this->type,
+					"meta" => $this->meta,
+					"stack" => $this->stack,
+				));
+				break;				
+			case ENTITY_MOB:
+				$player->dataPacket(MC_ADD_MOB, array(
+					"type" => $this->type,
+					"eid" => $this->eid,
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+				));
+				break;
+			case ENTITY_OBJECT:
+				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+				break;
+		}
 	}
 	
 	public function close(){
@@ -93,59 +146,36 @@ class Entity{
 	public function look($pos2){
 		$pos = $this->getPosition();
 		$angle = Utils::angle3D($pos2, $pos);
-		$this->position["yaw"] = $angle["yaw"];
-		$this->position["pitch"] = $angle["pitch"];
-		$this->server->query("UPDATE entities SET pitch = ".$this->position["pitch"].", yaw = ".$this->position["yaw"]." WHERE EID = ".$this->eid.";");
+		$this->yaw = $angle["yaw"];
+		$this->pitch = $angle["pitch"];
+		$this->server->query("UPDATE entities SET pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 	
 	public function setCoords($x, $y, $z){
-		if(!isset($this->position)){
-			$this->position = array(
-				"x" => 0,
-				"y" => 0,
-				"z" => 0,
-				"yaw" => 0,
-				"pitch" => 0,
-				"ground" => 0,
-			);		
-		}
-		$this->position["x"] = $x;
-		$this->position["y"] = $y;
-		$this->position["z"] = $z;
-		$this->server->query("UPDATE entities SET x = ".$this->position["x"].", y = ".$this->position["y"].", z = ".$this->position["z"]." WHERE EID = ".$this->eid.";");
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
+		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE EID = ".$this->eid.";");
 	}
 	
 	public function move($x, $y, $z, $yaw = 0, $pitch = 0){
-		if(!isset($this->position)){
-			$this->position = array(
-				"x" => 0,
-				"y" => 0,
-				"z" => 0,
-				"yaw" => 0,
-				"pitch" => 0,
-				"ground" => 0,
-			);		
-		}
-		$this->position["x"] += $x;
-		$this->position["y"] += $y;
-		$this->position["z"] += $z;
-		$this->position["yaw"] += $yaw;
-		$this->position["yaw"] %= 360;
-		$this->position["pitch"] += $pitch;
-		$this->position["pitch"] %= 90;
-		$this->server->query("UPDATE entities SET x = ".$this->position["x"].", y = ".$this->position["y"].", z = ".$this->position["z"].", pitch = ".$this->position["pitch"].", yaw = ".$this->position["yaw"]." WHERE EID = ".$this->eid.";");
+		$this->x += $x;
+		$this->y += $y;
+		$this->z += $z;
+		$this->yaw += $yaw;
+		$this->yaw %= 360;
+		$this->pitch += $pitch;
+		$this->pitch %= 90;
+		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 	
 	public function setPosition($x, $y, $z, $yaw, $pitch){
-		$this->position = array(
-			"x" => $x,
-			"y" => $y,
-			"z" => $z,
-			"yaw" => $yaw,
-			"pitch" => $pitch,
-			"ground" => $ground,
-		);
-		$this->server->query("UPDATE entities SET x = ".$this->position["x"].", y = ".$this->position["y"].", z = ".$this->position["z"].", pitch = ".$this->position["pitch"].", yaw = ".$this->position["yaw"]." WHERE EID = ".$this->eid.";");		
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
+		$this->yaw = $yaw;
+		$this->pitch = $pitch;
+		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");		
 		return true;
 	}
 	

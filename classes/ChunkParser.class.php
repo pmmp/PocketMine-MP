@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ChunkParser{
-	private $location, $raw = b"";
+	private $location, $raw = b"", $file;
 	var $sectorLenght = 4096; //16 * 16 * 16
 	var $chunkLenght = 86016; //21 * $sectorLenght
 	var $map;
@@ -62,6 +62,7 @@ class ChunkParser{
 		if(!file_exists($file)){
 			return false;
 		}
+		$this->file = $file;
 		$this->raw = file_get_contents($file);
 		$this->chunkLenght = $this->sectorLenght * ord($this->raw{0});
 		return true;
@@ -78,15 +79,25 @@ class ChunkParser{
 		return 0x1000 + (($Z * $sectors) << 12) + (($X * $sectors) << 16);
     }
 	
-	public function getChunk($X, $Z, $header = true){
+	public function getChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		if($header === false){
-			$add = 4;
-		}else{
-			$add = 0;
+		return substr($this->raw, $this->getOffset($X, $Z), $this->chunkLenght);
+	}
+	
+	public function writeChunk($X, $Z){
+		$X = (int) $X;
+		$Z = (int) $Z;
+		if(!isset($this->map[$X][$Z])){
+			return false;
 		}
-		return substr($this->raw, $this->getOffset($X, $Z) + $add, $this->chunkLenght - $add);
+		$chunk = "";
+		foreach($this->map[$X][$Z] as $section => $data){
+			foreach($data as $r){
+				$chunk .= $r;
+			}
+		}
+		return Utils::writeLInt(strlen($chunk)).$chunk;
 	}
 	
 	public function parseChunk($X, $Z){
@@ -154,6 +165,20 @@ class ChunkParser{
 		console("[DEBUG] Chunks loaded!", true, true, 2);
 	}
 	
+	public function saveMap(){
+		console("[DEBUG] Saving chunks...", true, true, 2);
+		$fp = fopen($this->file, "r+b");
+		flock($fp, LOCK_EX);
+		foreach($this->map as $x => $d){
+			foreach($d as $z => $chunk){
+				fseek($fp, $this->getOffset($x, $z));
+				fwrite($fp, $this->writeChunk($x, $z), $this->chunkLenght);
+			}
+		}
+		flock($fp, LOCK_UN);
+		fclose($fp);
+	}
+	
 	public function getBlock($x, $y, $z){
 		$x = (int) $x;
 		$y = (int) $y;
@@ -164,8 +189,32 @@ class ChunkParser{
 		$aZ = $z - ($Z << 4);
 		$index = $aX + ($aZ << 4);
 		$block = ord($this->map[$X][$Z][0][$index]{$y});
-		//$meta = $this->getOffset($X, $Z) + 4 + (($x << 6) + $y + ($z << 10));
-		return array($block, 0);
+		$meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
+		if(($y & 1) === 0){
+			$meta = $meta & 0x0F;
+		}else{
+			$meta = $meta >> 4;
+		}
+		return array($block, $meta);
+	}
+	
+	public function setBlock($x, $y, $z, $block, $meta = 0){
+		$x = (int) $x;
+		$y = (int) $y;
+		$z = (int) $z;
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$index = $aX + ($aZ << 4);
+		$this->map[$X][$Z][0][$index]{$y} = chr($block);
+		$old_meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
+		if(($y & 1) === 0){
+			$meta = ($old_meta & 0xF0) | ($meta & 0x0F);
+		}else{
+			$meta = (($meta << 4) & 0xF0) | ($old_meta & 0x0F);
+		}
+		$this->map[$X][$Z][1][$index]{$y >> 1} = chr($meta);
 	}
 
 }

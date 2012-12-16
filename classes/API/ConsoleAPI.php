@@ -31,11 +31,14 @@ class ConsoleAPI{
 		$this->help = array();
 		$this->server = $server;
 		$this->input = fopen(FILE_PATH."console.in", "w+b");
+	}
+	
+	public function init(){
 		$this->event = $this->server->event("onTick", array($this, "handle"));
 	}
 	
 	function __destroy(){
-		$this->server->deleteEvent("onTick", $this->event);
+		$this->server->deleteEvent($this->event);
 		fclose($this->input);
 	}
 	

@@ -26,8 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $protocol, $client, $buffer, $dataName;
-	private $socket;
+	var $pstruct, $name, $protocol, $client, $dataName;
+	private $socket, $data;
 	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen);
 		$this->protocol = (int) $protocol;
@@ -88,8 +88,7 @@ class MinecraftInterface{
 			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strTohex(chr($pid))." [length ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($data[0]);
 			$p .= PHP_EOL;
-			logg($p, "packets", true, 2);			
-			$this->buffer = "";
+			logg($p, "packets", true, 2);
 			return false;
 		}
 		
