@@ -47,8 +47,11 @@ class PlayerAPI{
 					console("[INFO] Usage: /tp <player> <target>");
 					break;
 				}
-				$this->teleport($name, $target);
-				console("[INFO] \"$name\" teleported to \"$target\"");			
+				if($this->teleport($name, $target)){
+					console("[INFO] \"$name\" teleported to \"$target\"");
+				}else{
+					console("[ERROR] Couldn't teleport");
+				}
 				break;
 			case "tppos":
 				$z = array_pop($params);
@@ -59,8 +62,11 @@ class PlayerAPI{
 					console("[INFO] Usage: /tp <player> <x> <y> <z>");
 					break;
 				}
-				$this->tppos($name, $x, $y, $z);
-				console("[INFO] \"$name\" teleported to ($x, $y, $z)");
+				if($this->tppos($name, $x, $y, $z)){
+					console("[INFO] \"$name\" teleported to ($x, $y, $z)");
+				}else{
+					console("[ERROR] Couldn't teleport");
+				}
 				break;
 			case "kill":
 				$player = $this->get(implode(" ", $params));
@@ -82,15 +88,25 @@ class PlayerAPI{
 	public function teleport($name, $target){
 		$target = $this->get($target);
 		if($target !== false){
-			$this->tppos($name, $target->entity->x, $target->entity->y, $target->entity->z);
+			return $this->tppos($name, $target->entity->x, $target->entity->y, $target->entity->z);
 		}
+		return false;
 	}
 	
 	public function tppos($name, $x, $y, $z){
 		$player = $this->get($name);
 		if($player !== false){
-			$this->server->trigger("onTeleport", array("eid" => $player->eid, "x" => $x, "y" => $y, "z" => $z));
+			$this->player->dataPacket(MC_MOVE_PLAYER, array(
+				"eid" => $player->eid,
+				"x" => $player->x,
+				"y" => $player->y,
+				"z" => $player->z,
+				"yaw" => 0,
+				"pitch" => 0,
+			));
+			return true;
 		}
+		return false;
 	}
 	
 	public function get($name){
