@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer extends stdClass{
-	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
+	var $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
@@ -94,6 +94,7 @@ class PocketMinecraftServer extends stdClass{
 	}
 
 	public function startDatabase(){
+		$this->preparedSQL = new stdClass();
 		$this->database = new SQLite3(":memory:");
 		$this->query("PRAGMA journal_mode = OFF;");		
 		$this->query("PRAGMA encoding = \"UTF-8\";");
@@ -105,6 +106,10 @@ class PocketMinecraftServer extends stdClass{
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		$this->query("PRAGMA synchronous = OFF;");
+		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT ID FROM handlers WHERE name = ? ORDER BY priority DESC;");
+		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT ID FROM events WHERE name = ?;");
+		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (? - interval);");
+		$this->preparedSQL->updateActions = $this->database->prepare("UPDATE actions SET last = :time WHERE last <= (:time - interval);");
 	}
 	
 	public function query($sql, $fetch = false){
@@ -181,7 +186,8 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function handle($event, &$data){
-		$handlers = $this->query("SELECT ID FROM handlers WHERE name = '$event' ORDER BY priority DESC;");
+		$this->preparedSQL->selectHandlers->bindValue(1, $event, SQLITE3_TEXT);
+		$handlers = $this->preparedSQL->selectHandlers->execute();
 		if($handlers === false or $handlers === true){
 			return $this->trigger($event, $data);
 		}
@@ -401,7 +407,8 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function trigger($event, $data = ""){
-		$events = $this->query("SELECT ID FROM events WHERE name = '".$event."';");
+		$this->preparedSQL->selectEvents->bindValue(1, $event, SQLITE3_TEXT);
+		$events = $this->preparedSQL->selectEvents->execute();
 		if($events === false or $events === true){
 			return;
 		}
@@ -427,10 +434,10 @@ class PocketMinecraftServer extends stdClass{
 		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
 	}
 
-	public function tickerFunction(){
+	public function tickerFunction($time){
 		//actions that repeat every x time will go here
-		$time = microtime(true);
-		$actions = $this->query("SELECT ID,code,repeat FROM actions WHERE last <= (".$time." - interval);");
+		$this->preparedSQL->selectActions->bindValue(1, $time, SQLITE3_FLOAT);
+		$actions = $this->preparedSQL->selectActions->execute();
 		if($actions === false or $actions === true){
 			return;
 		}
@@ -440,7 +447,8 @@ class PocketMinecraftServer extends stdClass{
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
 			}
 		}
-		$this->query("UPDATE actions SET last = ".$time." WHERE last <= (".$time." - interval);");
+		$this->preparedSQL->updateActions->bindValue(":time", $time, SQLITE3_FLOAT);
+		$this->preparedSQL->updateActions->execute();
 	}	
 	
 	public function event($event, $func, $in = false){

@@ -93,8 +93,8 @@ class ChunkParser{
 		}
 		$chunk = "";
 		foreach($this->map[$X][$Z] as $section => $data){
-			foreach($data as $r){
-				$chunk .= $r;
+			for($i = 0; $i < 256; ++$i){
+					$chunk .= $data[$i];
 			}
 		}
 		return Utils::writeLInt(strlen($chunk)).$chunk;
