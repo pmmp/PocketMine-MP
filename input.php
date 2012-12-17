@@ -27,5 +27,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 $fp = fopen(dirname(__FILE__)."/console.in","wb");
 while(true){
-	echo "/";fwrite($fp, fgets(STDIN));
+	$l = fgets(STDIN);
+	fwrite($fp, $l);
+	if(strtolower(trim($l)) === "stop" and isset($argv[1]) and trim($argv[1]) == "1"){
+		sleep(5);die();
+	}
 }

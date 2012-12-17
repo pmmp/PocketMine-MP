@@ -1,7 +1,6 @@
 data/players/*
 data/maps/*
 *.log
-*.bat
 server.properties
 white-list.txt
 banned-ips.txt
