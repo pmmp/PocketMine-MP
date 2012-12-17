@@ -17,8 +17,8 @@ echo        \    ^|    /
 echo           \ ^| /
 echo.
 echo.
-FOR /F "tokens=*" %%i in ('php.exe -r "echo 1;"') do SET PHPOUTPUT=%%i
-if not %PHPOUTPUT%==1 (
+FOR /F "tokens=*" %%i in ('php -r "echo 1;"') do SET PHPOUTPUT=%%i
+if not "%PHPOUTPUT%"=="1" (
 echo [ERROR] Couldn't find PHP in PATH.
 pause
 exit
