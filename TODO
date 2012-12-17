@@ -3,3 +3,4 @@
 - Mob spawning, item pick up
 - Fix metadata orientation
 - Proper session checks
+- Fix incorrect timeout

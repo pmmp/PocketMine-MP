@@ -159,7 +159,6 @@ class ChunkParser{
 			$this->map[$x] = array();
 			for($z = 0; $z < 16; ++$z){
 				$this->map[$x][$z] = $this->parseChunk($x, $z);
-				console("[INTERNAL] Chunk X ".$x." Z ".$z." loaded", true, true, 3);
 			}		
 		}
 		console("[DEBUG] Chunks loaded!", true, true, 2);

@@ -189,11 +189,12 @@ class PocketMinecraftServer extends stdClass{
 		$priority = (int) $priority;
 		$this->handlers[$this->handCnt] = $callable;
 		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (".$this->handCnt.", '".str_replace("'", "\\'", $event)."', ".$priority.");");
-		console("[INTERNAL] New handler ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to special event ".$event." (ID ".$this->handCnt.")", true, true, 3);
+		console("[INTERNAL] New handler ".(is_array($callable) ? get_class($callable[0])."::".$callable[1]:$callable)." to special event ".$event." (ID ".$this->handCnt.")", true, true, 3);
 		return $this->handCnt++;
 	}
 	
 	public function handle($event, &$data){
+		$this->preparedSQL->selectHandlers->clear();
 		$this->preparedSQL->selectHandlers->bindValue(1, $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		if($handlers === false or $handlers === true){
@@ -416,6 +417,7 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function trigger($event, $data = ""){
+		$this->preparedSQL->selectEvents->clear();
 		$this->preparedSQL->selectEvents->bindValue(1, $event, SQLITE3_TEXT);
 		$events = $this->preparedSQL->selectEvents->execute();
 		if($events === false or $events === true){
@@ -445,8 +447,10 @@ class PocketMinecraftServer extends stdClass{
 
 	public function tickerFunction($time){
 		//actions that repeat every x time will go here
+		$this->preparedSQL->selectActions->clear();
 		$this->preparedSQL->selectActions->bindValue(1, $time, SQLITE3_FLOAT);
 		$actions = $this->preparedSQL->selectActions->execute();
+		
 		if($actions === false or $actions === true){
 			return;
 		}
@@ -456,6 +460,7 @@ class PocketMinecraftServer extends stdClass{
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
 			}
 		}
+		$this->preparedSQL->updateActions->clear();
 		$this->preparedSQL->updateActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$this->preparedSQL->updateActions->execute();
 	}	
