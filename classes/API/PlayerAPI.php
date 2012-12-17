@@ -96,11 +96,11 @@ class PlayerAPI{
 	public function tppos($name, $x, $y, $z){
 		$player = $this->get($name);
 		if($player !== false){
-			$this->player->dataPacket(MC_MOVE_PLAYER, array(
-				"eid" => $player->eid,
-				"x" => $player->x,
-				"y" => $player->y,
-				"z" => $player->z,
+			$player->dataPacket(MC_MOVE_PLAYER, array(
+				"eid" => 0,
+				"x" => $x,
+				"y" => $y,
+				"z" => $z,
 				"yaw" => 0,
 				"pitch" => 0,
 			));

@@ -276,7 +276,7 @@ class Session{
 								"z" => $this->data["spawn"]["z"],
 								"unknown1" => 0,
 								"gamemode" => $this->server->gamemode,
-								"eid" => $this->eid,
+								"eid" => 0,
 							));
 							break;
 						case MC_READY:
