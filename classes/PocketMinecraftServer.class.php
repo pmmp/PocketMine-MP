@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer extends stdClass{
-	var $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
+	var $tickMeasure, $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
@@ -67,6 +67,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->spawn = array("x" => 128.5,"y" => 100,"z" =>  128.5);
 		$this->time = 0;
 		$this->timePerSecond = 10;
+		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, $this->port, true, false);		
 		$this->reloadConfig();
@@ -77,13 +78,19 @@ class PocketMinecraftServer extends stdClass{
 		$this->stop = false;
 	}
 	
+	public function getTPS(){
+		$v = array_values($this->tickMeasure);
+		$tps = 40/($v[39] - $v[0]);
+		return round($tps, 4);
+	}
+	
 	public function loadEvents(){		
 		$this->event("onChat", "eventHandler", true);
 		$this->event("onPlayerDeath", "eventHandler", true);
 		$this->event("onPlayerAdd", "eventHandler", true);
 		$this->event("onHealthChange", "eventHandler", true);
 		
-		$this->action(500000, '$this->time += ceil($this->timePerSecond / 2);$this->trigger("onTimeChange", $this->time);');
+		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("onTimeChange", $this->time);');
 		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
@@ -130,6 +137,7 @@ class PocketMinecraftServer extends stdClass{
 	
 	public function debugInfo($console = false){
 		$info = array();
+		$info["tps"] = $this->getTPS();
 		$info["memory_usage"] = round((memory_get_usage(true) / 1024) / 1024, 2)."MB";
 		$info["memory_peak_usage"] = round((memory_get_peak_usage(true) / 1024) / 1024, 2)."MB";
 		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
@@ -140,7 +148,7 @@ class PocketMinecraftServer extends stdClass{
 		$info["actions"] = $info["actions"]["count"];
 		$info["garbage"] = gc_collect_cycles();
 		if($console === true){
-			console("[DEBUG] Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"]."), Entities: ".$info["entities"].", Events: ".$info["events"].", Actions: ".$info["actions"].", Garbage: ".$info["garbage"], true, true, 2);
+			console("[DEBUG] TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"]."), Entities: ".$info["entities"].", Events: ".$info["events"].", Actions: ".$info["actions"].", Garbage: ".$info["garbage"], true, true, 2);
 		}
 		return $info;
 	}
@@ -310,7 +318,8 @@ class PocketMinecraftServer extends stdClass{
 	public function tick(){
 		$time = microtime(true);
 		if($this->lastTick <= ($time - 0.05)){
-			$this->lastTick = $time;
+			$this->tickMeasure[] = $this->lastTick = $time;
+			array_shift($this->tickMeasure);
 			$this->trigger("onTick", $time);
 		}
 	}

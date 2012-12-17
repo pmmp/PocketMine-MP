@@ -31,6 +31,7 @@ class ConsoleAPI{
 		$this->help = array();
 		$this->server = $server;
 		$this->input = fopen(FILE_PATH."console.in", "w+b");
+		$this->last = microtime(true);
 	}
 	
 	public function init(){
@@ -44,6 +45,11 @@ class ConsoleAPI{
 	
 	public function defaultCommands($cmd, $params){
 			switch($cmd){
+				case "status":
+				case "lag":
+					$info = $this->server->debugInfo();
+					console("[INFO] TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"].")");
+					break;
 				case "update-done":
 					$this->server->api->setProperty("last-update", time());
 					break;
@@ -175,6 +181,7 @@ class ConsoleAPI{
 				case "help":
 				case "?":
 					console("[INFO] /help: Show available commands");
+					console("[INFO] /status: Show server TPS and memory usage");
 					console("[INFO] /gamemode: Changes default gamemode");
 					console("[INFO] /difficulty: Changes difficulty");
 					console("[INFO] /say: Broadcasts mesages");
@@ -197,7 +204,7 @@ class ConsoleAPI{
 		$this->help[strtolower(trim($cmd))] = array($help, $callback);
 	}
 	
-	public function handle(){
+	public function handle($time){
 		while(($line = fgets($this->input)) !== false){
 			$line = trim($line);
 			if($line === ""){

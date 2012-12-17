@@ -2,3 +2,4 @@
 - Fix spawn position resetting to 0,128,0
 - Mob spawning, item pick up
 - Fix metadata orientation
+- Proper session checks
