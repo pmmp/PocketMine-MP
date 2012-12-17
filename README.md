@@ -36,7 +36,7 @@ Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
 Tested in: v4.0.0, v5.0.0
-----------------------------
+-------------------------
 
 
 Current features of the server:
