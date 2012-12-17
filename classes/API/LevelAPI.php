@@ -36,7 +36,7 @@ class LevelAPI{
 	}
 	
 	public function init(){
-		//$this->server->event("onBlockBreak", array($this, "handle"));
+		$this->server->addHandler("onBlockBreak", array($this, "handle"));
 	}
 	
 	public function handle($data, $event){

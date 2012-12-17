@@ -335,8 +335,7 @@ class Session{
 							break;
 						case MC_REMOVE_BLOCK:
 							$data["eid"] = $this->eid;
-							$this->server->api->level->handle($data, "onBlockBreak");
-							//$this->server->trigger("onBlockBreak", $data);
+							$this->server->handle("onBlockBreak", $data);
 							break;
 						case MC_INTERACT:
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){

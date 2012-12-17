@@ -29,7 +29,7 @@ require_once("classes/Session.class.php");
 
 class PocketMinecraftServer extends stdClass{
 	var $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
-	private $database, $interface, $cnt, $events, $version, $serverType, $lastTick;
+	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
 		console("[INFO] Pocket-Minecraft-PHP by @shoghicp, LGPL License. http://bit.ly/RE7uaW", true, true, 0);
@@ -44,13 +44,16 @@ class PocketMinecraftServer extends stdClass{
 		$this->name = $name;
 		$this->mapDir = false;
 		$this->mapName = false;
+		$this->events = array();
+		$this->handlers = array();
 		$this->map = false;
 		$this->level = false;
 		$this->difficulty = 1;
 		$this->tileEntities = array();
 		$this->entities = array();
 		$this->custom = array();
-		$this->cnt = 0;
+		$this->evCnt = 0;
+		$this->handCnt = 0;
 		$this->eidCnt = 1;
 		$this->maxClients = 20;
 		$this->description = "";
@@ -92,11 +95,16 @@ class PocketMinecraftServer extends stdClass{
 
 	public function startDatabase(){
 		$this->database = new SQLite3(":memory:");
-		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT);");
+		$this->query("PRAGMA journal_mode = OFF;");		
+		$this->query("PRAGMA encoding = \"UTF-8\";");
+		$this->query("PRAGMA secure_delete = OFF;");
+		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
-		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, eventName TEXT, priority NUMERIC);");
+		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
+		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
+		$this->query("PRAGMA synchronous = OFF;");
 	}
 	
 	public function query($sql, $fetch = false){
@@ -159,6 +167,29 @@ class PocketMinecraftServer extends stdClass{
 				break;
 		}
 		
+	}
+	
+	public function addHandler($event, $callable, $priority = 5){
+		if(!is_callable($callable)){
+			return false;
+		}
+		$priority = (int) $priority;
+		$this->handlers[$this->handCnt] = $callable;
+		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (".$this->handCnt.", '".str_replace("'", "\\'", $event)."', ".$priority.");");
+		console("[INTERNAL] New handler ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to special event ".$event." (ID ".$this->handCnt.")", true, true, 3);
+		return $this->handCnt++;
+	}
+	
+	public function handle($event, &$data){
+		$handlers = $this->query("SELECT ID FROM handlers WHERE name = '$event' ORDER BY priority DESC;");
+		if($handlers === false or $handlers === true){
+			return $this->trigger($event, $data);
+		}
+		while($hn = $handlers->fetchArray(SQLITE3_ASSOC)){
+			$hnid = (int) $hn["ID"];
+			call_user_func($this->handlers[$hnid], $data, $event);
+		}
+		return true;		
 	}
 	
 	public function eventHandler($data, $event){
@@ -370,7 +401,7 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function trigger($event, $data = ""){
-		$events = $this->query("SELECT ID FROM events WHERE eventName = '".$event."';");
+		$events = $this->query("SELECT ID FROM events WHERE name = '".$event."';");
 		if($events === false or $events === true){
 			return;
 		}
@@ -419,10 +450,10 @@ class PocketMinecraftServer extends stdClass{
 		if(!is_callable($func)){
 			return false;
 		}
-		$this->events[$this->cnt] = $func;
-		$this->query("INSERT INTO events (ID, eventName) VALUES (".$this->cnt.", '".str_replace("'", "\\'", $event)."');");
-		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->cnt.")", true, true, 3);
-		return $this->cnt++;
+		$this->events[$this->evCnt] = $func;
+		$this->query("INSERT INTO events (ID, name) VALUES (".$this->evCnt.", '".str_replace("'", "\\'", $event)."');");
+		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->evCnt.")", true, true, 3);
+		return $this->evCnt++;
 	}
 	
 	public function deleteEvent($id){
