@@ -97,7 +97,11 @@ class Session{
 			$this->server->deleteEvent($ev);
 		}
 		$this->eventHandler("You have been kicked. Reason: ".$reason, "onChat");
+		$this->dataPacket(MC_LOGIN_STATUS, array(
+			"status" => 1,
+		));
 		$this->dataPacket(MC_DISCONNECT);
+
 		$this->connected = false;
 		if($msg === true){
 			$this->server->trigger("onChat", $this->username." left the game");

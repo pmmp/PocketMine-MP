@@ -74,8 +74,6 @@ class ChunkParser{
     }
 	
 	private function getOffset($X, $Z, $sectors = 21){
-        //$info = $this->getOffsetPosition($X, $Z);		
-		//return 4096 + (($info[1] * $info[0]) << 12) + (($info[2] * $data[0]) << 16);
 		return 0x1000 + (($Z * $sectors) << 12) + (($X * $sectors) << 16);
     }
 	
