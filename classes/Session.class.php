@@ -55,7 +55,7 @@ class Session{
 		if($time > $this->timeout){
 			$this->close("timeout");
 		}else{
-			if(count($this->queue) > 0){
+			if(!empty($this->queue)){
 				$cnt = 0;
 				while($cnt < 4){
 					$p = array_shift($this->queue);

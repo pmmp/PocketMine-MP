@@ -411,7 +411,7 @@ class PocketMinecraftServer extends stdClass{
 			if($packet !== false){
 				$this->packetHandler($packet);
 			}else{
-				usleep(10000);
+				usleep(1000);
 			}			
 		}
 	}
