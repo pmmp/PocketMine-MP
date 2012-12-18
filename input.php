@@ -30,6 +30,6 @@ while(true){
 	$l = fgets(STDIN);
 	fwrite($fp, $l);
 	if(strtolower(trim($l)) === "stop" and isset($argv[1]) and trim($argv[1]) == "1"){
-		sleep(5);die();
+		die();
 	}
 }
