@@ -37,15 +37,6 @@ define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE
 
 class Utils{
 	
-	/*public static function hashCode($str){
-		$h = 0;
-		$len = strlen($str);
-		for($i = 0; $i < $len; ++$i) {
-			$h = 31 * $h + $str[$i];
-		}
-		return $h;
-	}*/
-	
 	public static function getOS(){
 		$uname = strtoupper(php_uname("s"));
 		if(strpos($uname, "WIN") !== false){

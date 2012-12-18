@@ -30,8 +30,43 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	private $config, $apiList = array();
 	function __construct(){
 		console("[INFO] Starting ServerAPI server handler...");
-		file_put_contents("packets.log", "");
-		file_put_contents("console.in", "");
+		file_put_contents(FILE_PATH."packets.log", "");
+		file_put_contents(FILE_PATH."console.in", "");
+		if(!file_exists(FILE_PATH."test.bin.log") or md5_file(FILE_PATH."test.bin.log") !== TEST_MD5){
+			console("[NOTICE] Executing integrity tests...");
+			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
+			console("[INFO] uname -a: ".php_uname("a"));
+			console("[INFO] PHP Version: ".phpversion());
+			console("[INFO] Endianness: ".ENDIANNESS);
+			$test = b"";
+			$test .= Utils::writeLong("5567381823242127440");
+			$test .= Utils::writeLong("2338608908624488819");
+			$test .= Utils::writeLong("2333181766244987936");
+			$test .= Utils::writeLong("2334669371112169504");
+			$test .= Utils::writeShort(Utils::readShort("\xff\xff\xff\xff"));
+			$test .= Utils::writeShort(Utils::readShort("\xef\xff\xff\xff"));
+			$test .= Utils::writeInt(Utils::readInt("\xff\xff\xff\xff"));
+			$test .= Utils::writeInt(1);
+			$test .= Utils::writeInt(-1);
+			$test .= Utils::writeFloat(Utils::readfloat("\xff\xff\xff\xff"));
+			$test .= Utils::writeFloat(-1.584563155838E+29);
+			$test .= Utils::writeFloat(1);
+			$test .= Utils::writeLDouble(Utils::readLDouble("\xff\xff\xff\xff\xff\xff\xff\xff"));
+			$test .= Utils::writeLong("-1152921504606846977");
+			$test .= Utils::writeLong("-1152921504606846976");
+			$test .= Utils::writeTriad(16777215);
+			$test .= Utils::writeTriad(16777216);
+			$str = new Java_String("THIS_IS_ a TEsT_SEED1_123456789^.,.,\xff\x00\x15");
+			$test .= Utils::writeLong($str->hashCode());
+			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));
+			$test .= Utils::hexToStr("012334567890");
+			file_put_contents(FILE_PATH."test.bin.log", $test);
+			if(md5($test) !== TEST_MD5){
+				console("[ERROR] Test error, please send your console.log + test.bin.log to the Github repo");
+				die();
+			}
+		}
+		
 		if(!file_exists(FILE_PATH."white-list.txt")){
 			console("[NOTICE] No white-list.txt found, creating blank file");
 			file_put_contents(FILE_PATH."white-list.txt", "");
