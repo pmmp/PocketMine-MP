@@ -241,6 +241,16 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 					$v = (int) $v;
 					break;
 				case "seed":
+					$v = trim($v);
+					if($v == "false"){
+						$v = false;
+					}elseif(preg_match("/[^0-9\-]/", $v) > 0){
+						$str = new Java_String($v);
+						$v = $str->hashCode();
+					}else{
+						$v = (int) $v;
+					}
+					break;
 				case "server-id":
 					$v = trim($v);
 					$v = $v == "false" ? false:(preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v);

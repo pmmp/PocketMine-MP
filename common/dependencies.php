@@ -74,6 +74,7 @@ require_once("classes/Packet.class.php");
 require_once("classes/Entity.class.php");
 require_once("classes/ChunkParser.class.php");
 require_once("classes/NBT.class.php");
+require_once("classes/Java.class.php");
 require_once("classes/SerializedPacketHandler.class.php");
 require_once("classes/CustomPacketHandler.class.php");
 require_once("classes/MinecraftInterface.class.php");
