@@ -112,11 +112,6 @@ class Session{
 	
 	public function eventHandler($data, $event){		
 		switch($event){
-			case "onDeath":
-				if($data["eid"] === $this->eid){
-					$this->server->trigger("onPlayerDeath", array("name" => $this->username, "cause" => $data["cause"]));
-				}
-				break;
 			case "onBlockUpdate":
 				$this->dataPacket(MC_UPDATE_BLOCK, $data);
 				break;
@@ -146,22 +141,6 @@ class Session{
 					"yaw" => $entity->yaw,
 					"pitch" => $entity->pitch,
 				));
-				break;
-			case "onHealthRegeneration":
-				if($this->server->difficulty < 2){
-					$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => min(20, $this->data["health"] + $data), "cause" => "regeneration"));
-				}
-				break;
-			case "onHealthChange":
-				if($data["eid"] === $this->eid){
-					$this->dataPacket(MC_SET_HEALTH, array(
-						"health" => $data["health"],
-					));
-					$this->data["health"] = $data["health"];
-					/*if(is_object($this->entity)){
-						$this->entity->setHealth($data["health"]);
-					}*/
-				}
 				break;
 			case "onEntityRemove":
 				if($data === $this->eid){
@@ -296,11 +275,8 @@ class Session{
 							$this->server->api->entity->spawnToAll($this->eid);
 							$this->evid[] = $this->server->event("onTimeChange", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("onChat", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("onDeath", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("onEntityRemove", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("onEntityMove", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("onHealthChange", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("onHealthRegeneration", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("onAnimate", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("onTeleport", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("onBlockUpdate", array($this, "eventHandler"));
@@ -354,8 +330,8 @@ class Session{
 							$this->server->trigger("onAnimate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
-							$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => 20, "cause" => "respawn"));
-							$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["x"], 0, 0);
+							$this->entity->setHealth(20, "respawn");
+							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
 							break;
 							
 					}

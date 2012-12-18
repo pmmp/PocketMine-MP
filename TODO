@@ -4,3 +4,4 @@
 - Fix metadata orientation
 - Proper session checks
 - Fix incorrect timeout
+- Inventory loading and saving

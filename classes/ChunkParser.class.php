@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ChunkParser{
 	private $location, $raw = b"", $file;
-	var $sectorLenght = 4096; //16 * 16 * 16
-	var $chunkLenght = 86016; //21 * $sectorLenght
+	var $sectorLength = 4096; //16 * 16 * 16
+	var $chunkLength = 86016; //21 * $sectorLength
 	var $map;
 	
 	function __construct(){
@@ -64,7 +64,7 @@ class ChunkParser{
 		}
 		$this->file = $file;
 		$this->raw = file_get_contents($file);
-		$this->chunkLenght = $this->sectorLenght * ord($this->raw{0});
+		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
 		return true;
 	}
 	
@@ -80,7 +80,7 @@ class ChunkParser{
 	public function getChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		return substr($this->raw, $this->getOffset($X, $Z), $this->chunkLenght);
+		return substr($this->raw, $this->getOffset($X, $Z), $this->chunkLength);
 	}
 	
 	public function writeChunk($X, $Z){
@@ -169,7 +169,7 @@ class ChunkParser{
 		foreach($this->map as $x => $d){
 			foreach($d as $z => $chunk){
 				fseek($fp, $this->getOffset($x, $z));
-				fwrite($fp, $this->writeChunk($x, $z), $this->chunkLenght);
+				fwrite($fp, $this->writeChunk($x, $z), $this->chunkLength);
 			}
 		}
 		flock($fp, LOCK_UN);

@@ -29,6 +29,7 @@ class PlayerAPI{
 	private $server;
 	function __construct($server){
 		$this->server = $server;
+		$this->server->event("onHealthRegeneration", array($this, "handle"));
 	}
 	
 	public function init(){
@@ -36,6 +37,19 @@ class PlayerAPI{
 		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
+	}
+	
+	public function handle($data, $event){
+		switch($event){
+			case "onHealthRegeneration":
+				$result = $this->server->query("SELECT ip,port FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);", true);
+				if($result !== true and $result !== false){
+					while($player = $result->fetchArray()){
+						$player->entity->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
+					}
+				}
+				break;
+		}
 	}
 	
 	public function commandHandler($cmd, $params){
@@ -71,7 +85,7 @@ class PlayerAPI{
 			case "kill":
 				$player = $this->get(implode(" ", $params));
 				if($player !== false){
-					$this->server->trigger("onHealthChange", array("eid" => $player->eid, "health" => -1, "cause" => "console"));
+					$this->server->api->entity->harm($player->eid, 20, "console");
 				}else{
 					console("[INFO] Usage: /kill <player>");
 				}

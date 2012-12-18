@@ -183,9 +183,23 @@ class Entity extends stdClass{
 		return !isset($this->position) ? false:($round === true ? array_map("floor", $this->position):$this->position);
 	}
 	
-	public function setHealth($health){				
+	public function setHealth($health, $cause = ""){				
 		$this->health = (int) $health;
 		$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
+		$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
+		if($this->player !== false){
+			$this->player->dataPacket(MC_SET_HEALTH, array(
+				"health" => $this->health,
+			));
+		}
+		if($this->health <= 0){
+			$this->dead = true;
+			if($this->player !== false){
+				$this->server->trigger("onPlayerDeath", array("name" => $this->name, "cause" => $cause));
+			}
+		}elseif($this->health > 0){
+			$this->dead = false;
+		}
 	}
 	
 	public function getHealth(){

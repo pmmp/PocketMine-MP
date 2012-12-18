@@ -91,7 +91,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->event("onHealthChange", "eventHandler", true);
 		
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("onTimeChange", $this->time);');
-		$this->action(5000000, '$this->trigger("onHealthRegeneration", 1);');
+		$this->action(5000000, 'if($this->difficulty < 2){$this->trigger("onHealthRegeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		if($this->api !== false){
@@ -167,7 +167,7 @@ class PocketMinecraftServer extends stdClass{
 			$message = "<".$owner."> ";
 		}
 		$message .= $text;
-		$this->trigger("onChat", $text);
+		$this->trigger("onChat", $message);
 	}
 	
 	public function setType($type = "normal"){
@@ -212,9 +212,10 @@ class PocketMinecraftServer extends stdClass{
 			case "onPlayerDeath":
 				$message = $data["name"];
 				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
-					switch($this->entities[$data["cause"]]->class){
+					$e = $this->api->entity->get($data["cause"]);
+					switch($e->class){
 						case ENTITY_PLAYER:
-							$message .= " was killed by ".$this->entities[$data["cause"]]->name;
+							$message .= " was killed by ".$e->name;
 							break;
 						default:
 							$message .= " was killed";
@@ -228,11 +229,6 @@ class PocketMinecraftServer extends stdClass{
 					}
 				}
 				$this->chat(false, $message);
-				break;
-			case "onHealthChange":
-				if($data["health"] <= 0){
-					$this->trigger("onDeath", array("eid" => $data["eid"], "cause" => $data["cause"]));
-				}
 				break;
 			case "onPlayerAdd":
 				console("[DEBUG] Player \"".$data["username"]."\" EID ".$data["eid"]." spawned at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
@@ -425,8 +421,7 @@ class PocketMinecraftServer extends stdClass{
 		}
 		while($evn = $events->fetchArray(SQLITE3_ASSOC)){
 			$evid = (int) $evn["ID"];
-			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event, $this);
-		
+			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event, $this);		
 		}
 		return true;
 	}

@@ -53,6 +53,18 @@ class EntityAPI{
 		return $this->server->entities;
 	}
 	
+	public function heal($eid, $heal = 1, $cause){
+		$this->harm($eid, -$heal, $cause);
+	}
+	
+	public function harm($eid, $attack = 1, $cause){
+		$e = $this->get($eid);
+		if($e === false or $e->dead === true){
+			return false;
+		}
+		$e->setHealth($e->getHealth()-$attack, $cause);
+	}
+	
 	public function add($class, $type = 0, $data = array()){
 		$eid = $this->server->eidCnt++;
 		$this->server->entities[$eid] = new Entity($this->server, $eid, $class, $type, $data);
