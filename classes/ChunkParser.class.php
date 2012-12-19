@@ -77,6 +77,10 @@ class ChunkParser{
 		return 0x1000 + (($Z * $sectors) << 12) + (($X * $sectors) << 16);
     }
 	
+	private function getOffsetLocation($X, $Z){
+		return $X << 2 + $Z << 7;
+    }
+	
 	public function getChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
@@ -92,7 +96,7 @@ class ChunkParser{
 		$chunk = "";
 		foreach($this->map[$X][$Z] as $section => $data){
 			for($i = 0; $i < 256; ++$i){
-					$chunk .= $data[$i];
+				$chunk .= $data[$i];
 			}
 		}
 		return Utils::writeLInt(strlen($chunk)).$chunk;
@@ -113,7 +117,7 @@ class ChunkParser{
 		foreach($chunk as $section => &$data){
 			$l = $section === 0 ? 128:64;
 			for($i = 0; $i < 256; ++$i){
-				$data[] = substr($this->raw, $offset, $l);
+				$data[$i] = substr($this->raw, $offset, $l);
 				$offset += $l;
 			}
 		}
@@ -142,7 +146,7 @@ class ChunkParser{
 		flock($fp, LOCK_EX);
 		foreach($this->map as $x => $d){
 			foreach($d as $z => $chunk){
-				fseek($fp, $this->getOffset($x, $z));
+				fseek($fp, $this->location[$x][$z]);
 				fwrite($fp, $this->writeChunk($x, $z), $this->chunkLength);
 			}
 		}
