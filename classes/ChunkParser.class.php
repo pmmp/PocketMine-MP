@@ -119,46 +119,20 @@ class ChunkParser{
 		}
 		return $chunk;
 	}
-
-	public function getRawColumn($offset, $l){
-		$data = "";
-		if($l === 128){
-			$data = substr($this->raw, $offset, $l);
-		}elseif($l === 64){
-			for($i = 0; $i < $l; ++$i){
-				$d = ord($this->raw{$offset + $i});
-				$data .= chr($d >> 4);
-				$data .= chr($d & 0x0F);
-			}
-		}
-		return $data;
-	}
-	
-	public function parseColumn($offset, $l){
-		$data = array();
-		if($l === 128){
-			for($i = 0; $i < $l; ++$i){
-				$data[] = ord($this->raw{$offset + $i});
-			}
-		}elseif($l === 64){
-			for($i = 0; $i < $l; ++$i){
-				$d = ord($this->raw{$offset + $i});
-				$data[] = $d >> 4;
-				$data[] = $d & 0x0F;
-			}
-		}
-		return $data;
-	}
 	
 	public function loadMap(){
+		if($this->raw == ""){
+			return false;
+		}
 		$this->loadLocationTable();
 		console("[DEBUG] Loading chunks...", true, true, 2);
 		for($x = 0; $x < 16; ++$x){
 			$this->map[$x] = array();
 			for($z = 0; $z < 16; ++$z){
 				$this->map[$x][$z] = $this->parseChunk($x, $z);
-			}		
+			}
 		}
+		$this->raw = b"";
 		console("[DEBUG] Chunks loaded!", true, true, 2);
 	}
 	
