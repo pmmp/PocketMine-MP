@@ -96,13 +96,13 @@ class TimeAPI{
 		$this->server->time += (int) $time;
 	}
 	
-	public function getDate(){
-		$time = $this->get();
+	public function getDate($time = false){
+		$time = $time === false ? $this->get():$time;
 		return str_pad(strval((floor($time /800) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
 	}
 	
-	public function getPhase(){
-		$time = $this->get();
+	public function getPhase($time = false){
+		$time = $time === false ? $this->get():$time;
 		if($time < $this->phase["sunset"]){
 			$time = "day";
 		}elseif($time < $this->phase["night"]){

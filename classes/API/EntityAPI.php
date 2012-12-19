@@ -29,10 +29,37 @@ class EntityAPI{
 	private $server;
 	function __construct($server){
 		$this->server = $server;
+		$this->server->addHandler("onPlayerDeath", array($this, "handle"), 1);
 	}
 	
 	public function init(){
 		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
+	}
+	
+	public function handle($data, $event){
+		switch($event){
+			case "onPlayerDeath":
+				$message = $data["name"];
+				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
+					$e = $this->api->entity->get($data["cause"]);
+					switch($e->class){
+						case ENTITY_PLAYER:
+							$message .= " was killed by ".$e->name;
+							break;
+						default:
+							$message .= " was killed";
+							break;
+					}
+				}else{
+					switch($data["cause"]){
+						default:
+							$message .= " was killed";
+							break;
+					}
+				}
+				$this->server->chat(false, $message);
+				break;
+		}	
 	}
 	
 	public function commandHandler($cmd, $params){

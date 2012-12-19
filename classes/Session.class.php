@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Session{
 	private $server, $timeout, $connected, $evid, $queue, $buffer;
-	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU;
+	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU, $spawned;
 	function __construct($server, $clientID, $ip, $port, $MTU){
 		$this->queue = array();
 		$this->buffer = array();
@@ -43,6 +43,7 @@ class Session{
 		$this->port = $port;
 		$this->timeout = microtime(true) + 25;
 		$this->evid = array();
+		$this->spawned = false;
 		$this->evid[] = $this->server->event("onTick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("onClose", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
@@ -219,6 +220,7 @@ class Session{
 					}
 					switch($data["id"]){
 						case MC_DISCONNECT:
+							$this->connected = false;
 							$this->close("client disconnect");
 							break;
 						case MC_CLIENT_CONNECT:
@@ -263,9 +265,10 @@ class Session{
 							));
 							break;
 						case MC_READY:
-							if(is_object($this->entity)){
+							if($this->spawned !== false){
 								break;
 							}
+							$this->spawned = true;
 							$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
 							$this->eid = $this->entity->eid;
 							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
@@ -320,10 +323,9 @@ class Session{
 						case MC_INTERACT:
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
 								console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
-								if($this->server->gamemode !== 1 and $this->server->difficulty > 0){
-								
+								if($this->server->gamemode !== 1 and $this->server->difficulty > 0){								
+									$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
 								}
-								$this->server->trigger("onHealthChange", array("eid" => $data["target"], "health" => $this->server->entities[$data["target"]]->getHealth() - $this->server->difficulty, "cause" => $this->eid));
 							}
 							break;
 						case MC_ANIMATE:

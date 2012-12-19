@@ -80,15 +80,13 @@ class PocketMinecraftServer extends stdClass{
 	
 	public function getTPS(){
 		$v = array_values($this->tickMeasure);
-		$tps = 40/($v[39] - $v[0]);
+		$tps = 40 / ($v[39] - $v[0]);
 		return round($tps, 4);
 	}
 	
 	public function loadEvents(){		
 		$this->event("onChat", "eventHandler", true);
-		$this->event("onPlayerDeath", "eventHandler", true);
 		$this->event("onPlayerAdd", "eventHandler", true);
-		$this->event("onHealthChange", "eventHandler", true);
 		
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("onTimeChange", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->trigger("onHealthRegeneration", 1);}');
@@ -103,19 +101,19 @@ class PocketMinecraftServer extends stdClass{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->database = new SQLite3(":memory:");
-		$this->query("PRAGMA journal_mode = OFF;");		
-		$this->query("PRAGMA encoding = \"UTF-8\";");
-		$this->query("PRAGMA secure_delete = OFF;");
+		//$this->query("PRAGMA journal_mode = OFF;");		
+		//$this->query("PRAGMA encoding = \"UTF-8\";");
+		//$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
-		$this->query("PRAGMA synchronous = OFF;");
-		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT ID FROM handlers WHERE name = ? ORDER BY priority DESC;");
-		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT ID FROM events WHERE name = ?;");
-		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (? - interval);");
+		//$this->query("PRAGMA synchronous = OFF;");
+		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
+		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT ID FROM events WHERE name = :name;");
+		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
 		$this->preparedSQL->updateActions = $this->database->prepare("UPDATE actions SET last = :time WHERE last <= (:time - interval);");
 	}
 	
@@ -193,43 +191,24 @@ class PocketMinecraftServer extends stdClass{
 		return $this->handCnt++;
 	}
 	
-	public function handle($event, &$data){
+	public function handle($event, $data){
+		$this->preparedSQL->selectHandlers->reset();
 		$this->preparedSQL->selectHandlers->clear();
-		$this->preparedSQL->selectHandlers->bindValue(1, $event, SQLITE3_TEXT);
+		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		if($handlers === false or $handlers === true){
 			return $this->trigger($event, $data);
 		}
-		while($hn = $handlers->fetchArray(SQLITE3_ASSOC)){
+		while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC))){
 			$hnid = (int) $hn["ID"];
 			call_user_func($this->handlers[$hnid], $data, $event);
 		}
+		$handlers->finalize();
 		return true;		
 	}
 	
 	public function eventHandler($data, $event){
 		switch($event){
-			case "onPlayerDeath":
-				$message = $data["name"];
-				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
-					$e = $this->api->entity->get($data["cause"]);
-					switch($e->class){
-						case ENTITY_PLAYER:
-							$message .= " was killed by ".$e->name;
-							break;
-						default:
-							$message .= " was killed";
-							break;
-					}
-				}else{
-					switch($data["cause"]){
-						default:
-							$message .= " was killed";
-							break;
-					}
-				}
-				$this->chat(false, $message);
-				break;
 			case "onPlayerAdd":
 				console("[DEBUG] Player \"".$data["username"]."\" EID ".$data["eid"]." spawned at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 				break;
@@ -357,17 +336,29 @@ class PocketMinecraftServer extends stdClass{
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
 				case 0x05:
-					if(in_array($packet["ip"], $this->bannedIPs)){
-						break;
-					}
-					if(count($this->clients) >= $this->maxClients){
+					if(in_array($packet["ip"], $this->bannedIPs) or count($this->clients) >= $this->maxClients){
+						$this->send(0x80, array(
+							0,
+							0x00,
+							array(
+								"id" => MC_LOGIN_STATUS,
+								"status" => 1,
+							),
+						), false, $packet["ip"], $packet["port"]);
+						$this->send(0x80, array(
+							1,
+							0x00,
+							array(
+								"id" => MC_DISCONNECT,
+							),
+						), false, $packet["ip"], $packet["port"]);
 						break;
 					}
 					$version = $data[1];
 					$size = strlen($data[2]);
 					if($version !== $this->protocol){
 						$this->send(0x1a, array(
-							5,
+							$this->protocol,
 							MAGIC,
 							$this->serverID,
 						), false, $packet["ip"], $packet["port"]);
@@ -381,10 +372,22 @@ class PocketMinecraftServer extends stdClass{
 					}
 					break;
 				case 0x07:
-					if(in_array($packet["ip"], $this->bannedIPs)){
-						break;
-					}
-					if(count($this->clients) >= $this->maxClients){
+					if(in_array($packet["ip"], $this->bannedIPs) or count($this->clients) >= $this->maxClients){
+						$this->send(0x80, array(
+							0,
+							0x00,
+							array(
+								"id" => MC_LOGIN_STATUS,
+								"status" => 1,
+							),
+						), false, $packet["ip"], $packet["port"]);
+						$this->send(0x80, array(
+							1,
+							0x00,
+							array(
+								"id" => MC_DISCONNECT,
+							),
+						), false, $packet["ip"], $packet["port"]);
 						break;
 					}
 					$port = $data[2];
@@ -413,16 +416,18 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function trigger($event, $data = ""){
+		$this->preparedSQL->selectEvents->reset();
 		$this->preparedSQL->selectEvents->clear();
-		$this->preparedSQL->selectEvents->bindValue(1, $event, SQLITE3_TEXT);
+		$this->preparedSQL->selectEvents->bindValue(":name", $event, SQLITE3_TEXT);
 		$events = $this->preparedSQL->selectEvents->execute();
 		if($events === false or $events === true){
 			return;
 		}
-		while($evn = $events->fetchArray(SQLITE3_ASSOC)){
+		while(false !== ($evn = $events->fetchArray(SQLITE3_ASSOC))){
 			$evid = (int) $evn["ID"];
 			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event, $this);		
 		}
+		$events->finalize();
 		return true;
 	}
 
@@ -442,19 +447,22 @@ class PocketMinecraftServer extends stdClass{
 
 	public function tickerFunction($time){
 		//actions that repeat every x time will go here
+		$this->preparedSQL->selectActions->reset();
 		$this->preparedSQL->selectActions->clear();
-		$this->preparedSQL->selectActions->bindValue(1, $time, SQLITE3_FLOAT);
+		$this->preparedSQL->selectActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$actions = $this->preparedSQL->selectActions->execute();
 		
 		if($actions === false or $actions === true){
 			return;
 		}
-		while($action = $actions->fetchArray(SQLITE3_ASSOC)){
+		while(false !== ($action = $actions->fetchArray(SQLITE3_ASSOC))){
 			eval($action["code"]);
 			if($action["repeat"] === 0){
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
 			}
 		}
+		$actions->finalize();
+		$this->preparedSQL->updateActions->reset();
 		$this->preparedSQL->updateActions->clear();
 		$this->preparedSQL->updateActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$this->preparedSQL->updateActions->execute();

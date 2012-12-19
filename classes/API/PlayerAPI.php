@@ -44,7 +44,7 @@ class PlayerAPI{
 			case "onHealthRegeneration":
 				$result = $this->server->query("SELECT ip,port FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);", true);
 				if($result !== true and $result !== false){
-					while($player = $result->fetchArray()){
+					while(false !== ($player = $result->fetchArray())){
 						$player->entity->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
 					}
 				}

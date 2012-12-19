@@ -192,10 +192,10 @@ class Entity extends stdClass{
 				"health" => $this->health,
 			));
 		}
-		if($this->health <= 0){
+		if($this->health <= 0 and $this->dead === false){
 			$this->dead = true;
 			if($this->player !== false){
-				$this->server->trigger("onPlayerDeath", array("name" => $this->name, "cause" => $cause));
+				$this->server->handle("onPlayerDeath", array("name" => $this->name, "cause" => $cause));
 			}
 		}elseif($this->health > 0){
 			$this->dead = false;
