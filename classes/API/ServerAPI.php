@@ -212,6 +212,11 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	}
 	
 	private function loadProperties(){
+		if(isset($this->config["memory-limit"])){
+			@ini_set("memory_limit", $this->config["memory-limit"]);
+		}else{
+			$this->config["memory-limit"] = "256M";
+		}
 		if(is_object($this->server)){
 			$this->server->setType($this->config["server-type"]);
 			$this->server->timePerSecond = $this->config["time-per-second"];

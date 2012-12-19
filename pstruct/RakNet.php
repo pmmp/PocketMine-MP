@@ -86,7 +86,44 @@ $pstruct = array(
 		"customData",
 	),
 	
+	
+	0x81 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x82 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x83 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
 	0x84 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x85 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x86 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x87 => array(
 		"itriad",
 		"ubyte",
 		"customData",
@@ -97,12 +134,50 @@ $pstruct = array(
 		"ubyte",
 		"customData",
 	),
+
+	0x89 => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x8a => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x8b => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
 	
 	0x8c => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
+	
+	0x8d => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x8e => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	0x8f => array(
+		"itriad",
+		"ubyte",
+		"customData",
+	),
+	
+	
 	
 	0xa0 => array(
 		"short",
