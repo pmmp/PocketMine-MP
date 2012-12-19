@@ -62,7 +62,7 @@ class Java_String{
 		if($h === 0 and $this->count > 0){
 			for($i = 0; $i < $this->count; ++$i){
 				$h = (($h << 5) - $h) + ord($this->charAt($i));
-				$h = $h & $h;
+				$h = $h & 0xFFFFFFFF;
 				$this->hash = $h;
 			}
 			$this->hash = $h;
