@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once("classes/Session.class.php");
 
 class PocketMinecraftServer extends stdClass{
-	var $tickMeasure, $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
+	var $invisible, $tickMeasure, $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
@@ -47,6 +47,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->events = array();
 		$this->handlers = array();
 		$this->map = false;
+		$this->invisible = false;
 		$this->level = false;
 		$this->difficulty = 1;
 		$this->tileEntities = array();
@@ -312,6 +313,15 @@ class PocketMinecraftServer extends stdClass{
 		}else{
 			switch($packet["pid"]){
 				case 0x02:
+					if($this->invisible === true){
+						$this->send(0x1c, array(
+							$data[0],
+							$this->serverID,
+							MAGIC,
+							$this->serverType,
+						), false, $packet["ip"], $packet["port"]);					
+						break;
+					}
 					if(in_array($packet["ip"], $this->bannedIPs)){
 						$this->send(0x1c, array(
 							$data[0],
@@ -406,7 +416,7 @@ class PocketMinecraftServer extends stdClass{
 	
 	public function process(){
 		while($this->stop === false){
-			$packet = $this->interface->readPacket();
+			$packet = @$this->interface->readPacket();
 			if($packet !== false){
 				$this->packetHandler($packet);
 			}else{

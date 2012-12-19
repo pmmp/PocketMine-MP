@@ -45,6 +45,26 @@ class ConsoleAPI{
 	
 	public function defaultCommands($cmd, $params){
 			switch($cmd){
+				case "invisible":
+					$p = strtolower(array_shift($params));
+					switch($p){
+						case "on":
+						case "true":
+						case "1":
+							console("[INFO] Server is invisible");
+							$this->server->api->setProperty("invisible", true);
+							break;
+						case "off":
+						case "false":
+						case "0":
+							console("[INFO] Server is visible");
+							$this->server->api->setProperty("invisible", false);
+							break;
+						default:
+							console("[INFO] Usage: /invisible <on | off>");
+							break;
+					}
+					break;
 				case "status":
 				case "lag":
 					$info = $this->server->debugInfo();
@@ -184,6 +204,7 @@ class ConsoleAPI{
 					console("[INFO] /status: Show server TPS and memory usage");
 					console("[INFO] /gamemode: Changes default gamemode");
 					console("[INFO] /difficulty: Changes difficulty");
+					console("[INFO] /invisible: Manages server visibility");
 					console("[INFO] /say: Broadcasts mesages");
 					console("[INFO] /save-all: Saves pending changes");
 					console("[INFO] /whitelist: Manages whitelisting");

@@ -217,9 +217,13 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}else{
 			$this->config["memory-limit"] = "256M";
 		}
+		if(!isset($this->config["invisible"])){
+			$this->config["invisible"] = false;
+		}
 		if(is_object($this->server)){
 			$this->server->setType($this->config["server-type"]);
 			$this->server->timePerSecond = $this->config["time-per-second"];
+			$this->server->invisible = $this->config["invisible"];
 			$this->server->maxClients = $this->config["max-players"];
 			$this->server->description = $this->config["description"];
 			$this->server->motd = $this->config["motd"];
@@ -238,6 +242,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		$config = $this->config;
 		$config["white-list"] = $config["white-list"] === true ? "true":"false";
+		$config["invisible"] = $config["invisible"] === true ? "true":"false";
 		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
 		foreach($config as $n => $v){
 			if($n == "spawn"){
@@ -304,6 +309,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 					$v = array("x" => floatval($v[0]), "y" => floatval($v[1]), "z" => floatval($v[2]));
 					break;
 				case "white-list":
+				case "invisible":
 					$v = trim($v) == "true" ? true:false;
 					break;
 			}
