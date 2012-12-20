@@ -2,3 +2,4 @@
 - Mob spawning, item pick up
 - Fix incorrect timeout
 - Inventory loading and saving
+- Entity saving
