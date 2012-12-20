@@ -74,7 +74,7 @@ class ChunkParser{
     }
 	
 	private function getOffset($X, $Z, $sectors = 21){
-		return 0x1000 + (($Z * $sectors) << 12) + (($X * $sectors) << 16);
+		return 0x1000 + (($X * $sectors) << 12) + (($Z * $sectors) << 16);
     }
 	
 	private function getOffsetLocation($X, $Z){
@@ -162,7 +162,7 @@ class ChunkParser{
 		$Z = $z >> 4;
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
-		$index = $aX + ($aZ << 4);
+		$index = $aZ + ($aX << 4);
 		$block = ord($this->map[$X][$Z][0][$index]{$y});
 		$meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
@@ -173,6 +173,11 @@ class ChunkParser{
 		return array($block, $meta);
 	}
 	
+	public function getChunkColumn($X, $Z, $x, $z, $type = 0){
+		$index = $z + ($x << 4);
+		return $this->map[$X][$Z][$type][$index];
+	}
+	
 	public function setBlock($x, $y, $z, $block, $meta = 0){
 		$x = (int) $x;
 		$y = (int) $y;
@@ -181,7 +186,7 @@ class ChunkParser{
 		$Z = $z >> 4;
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
-		$index = $aX + ($aZ << 4);
+		$index = $aZ + ($aX << 4);
 		$this->map[$X][$Z][0][$index]{$y} = chr($block);
 		$old_meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){

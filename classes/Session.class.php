@@ -304,7 +304,7 @@ class Session{
 									"x" => '.$data["x"].',
 									"z" => '.$data["z"].',
 									"data" => $d,								
-								));
+								), true);
 							}
 							');
 							console("[INTERNAL] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 3);

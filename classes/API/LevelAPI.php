@@ -109,19 +109,25 @@ class LevelAPI{
 			return array(str_repeat("\x00", 256));
 		}
 		$ordered = array();
-		for($i = 0;$i < 0xff; ){
-			$ordered[$i] = str_repeat("\x00", $i);
-			for($j = 0; $j < $columnsPerPacket; ++$j){
-				if(($i + $j) > 0xff){
-					break;
+		$i = 0;
+		$cnt = 0;
+		$ordered[$i] = "";
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				if($cnt >= $columnsPerPacket){
+					++$i;
+					$ordered[$i] = str_repeat("\x00", $i * $columnsPerPacket);
+					$cnt = 0;
 				}
 				$ordered[$i] .= "\xff";
+				$block = $this->map->getChunkColumn($X, $Z, $x, $z, 0);
+				$meta = $this->map->getChunkColumn($X, $Z, $x, $z, 1);
 				for($k = 0; $k < 8; ++$k){
-					$ordered[$i] .= substr($c[0][$i+$j], $k << 4, 16); //Block data
-					$ordered[$i] .= substr($c[1][$i+$j], $k << 3, 8); //Meta data
+					$ordered[$i] .= substr($block, $k << 4, 16);
+					$ordered[$i] .= substr($meta, $k << 3, 8);
 				}
+				++$cnt;
 			}
-			$i += $columnsPerPacket;
 		}
 		return $ordered;
 	}
