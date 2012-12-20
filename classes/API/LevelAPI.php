@@ -37,10 +37,36 @@ class LevelAPI{
 	
 	public function init(){
 		$this->server->addHandler("onBlockBreak", array($this, "handle"));
+		$this->server->addHandler("onBlockPlace", array($this, "handle"));
 	}
 	
 	public function handle($data, $event){
 		switch($event){
+			case "onBlockPlace":
+				switch($data["face"]){
+					case 0:
+						--$data["y"];
+						break;
+					case 1:
+						++$data["y"];
+						break;
+					case 2:
+						--$data["z"];
+						break;
+					case 3:
+						++$data["z"];
+						break;
+					case 4:
+						--$data["x"];
+						break;
+					case 5:
+						++$data["x"];
+						break;
+				}
+				$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
+				console("[DEBUG] EID ".$data["eid"]." placed ".$data["block"].":".$data["meta"]." into ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
+				break;
 			case "onBlockBreak":
 					$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
 					console("[DEBUG] EID ".$data["eid"]." broke block ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);

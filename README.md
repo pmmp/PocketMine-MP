@@ -46,7 +46,7 @@ Current features of the server:
 -------------------------------
 * Players can connect and move around the world (and see each other)
 * Support for reading/sending chunks!
-* Map saving!
+* Map saving! Place & remove blocks
 * Multiple worlds and importing!
 * PvP, life regeneration and death cause!
 * Extensible API!

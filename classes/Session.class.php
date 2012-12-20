@@ -313,6 +313,12 @@ class Session{
 							');
 							console("[INTERNAL] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 3);
 							break;
+						case MC_USE_ITEM:
+							if($data["face"] >= 0 and $data["face"] <= 5 and $data["block"] !== 0){
+								$data["eid"] = $this->eid;
+								$this->server->handle("onBlockPlace", $data);
+							}
+							break;
 						case MC_PLACE_BLOCK:
 							var_dump($data);
 							break;

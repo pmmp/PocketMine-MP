@@ -415,6 +415,24 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt($this->data["target"]);
 				}			
 				break;
+			case MC_USE_ITEM:
+				if($this->c === false){	
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["y"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["face"] = Utils::readInt($this->get(4));
+					$this->data["block"] = Utils::readShort($this->get(2));
+					$this->data["meta"] = Utils::readByte($this->get(1));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["unknown2"] = Utils::readFloat($this->get(4));
+					$this->data["unknown3"] = Utils::readFloat($this->get(4));
+					$this->data["unknown4"] = Utils::readFloat($this->get(4));
+				}else{
+					$this->raw .= Utils::writeByte($this->data["action"]);
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeInt($this->data["target"]);
+				}							
+				break;
 			case MC_SET_ENTITY_DATA:
 				if($this->c === false){	
 					$this->data["eid"] = Utils::readInt($this->get(4));
