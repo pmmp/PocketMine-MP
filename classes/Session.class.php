@@ -234,7 +234,7 @@ class Session{
 							$u = $this->server->api->player->get($this->username);
 							$c = $this->server->api->player->getByClientID($this->clientID);
 							if($u !== false){
-								$c->close("logged in from another location");
+								$u->close("logged in from another location");
 							}
 							if($c !== false){
 								$c->close("logged in from another location");
