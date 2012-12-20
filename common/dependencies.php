@@ -54,10 +54,10 @@ if(!extension_loaded("sockets")){
 	++$errors;
 }
 
-/*if(!extension_loaded("zlib")){
-	console("[ERROR] Unable to find Zlib extension", true, true, 0);
+if(!extension_loaded("curl")){
+	console("[ERROR] Unable to find cURL extension", true, true, 0);
 	++$errors;
-}*/
+}
 
 if(!extension_loaded("sqlite3")){
 	console("[ERROR] Unable to find SQLite3 extension", true, true, 0);

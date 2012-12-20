@@ -35,6 +35,8 @@ Github repo: https://github.com/shoghicp/Pocket-Minecraft-PHP
 Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
+How to install it: https://github.com/shoghicp/Pocket-Minecraft-PHP/wiki/Tutorial:-Setting-up-a-Server
+
 **Project Status: `PRE-ALPHA`**
 
 **Tested in: `v4.0.0, v5.0.0`**
@@ -76,5 +78,5 @@ Third-party Tools:
 ------------------
 * [How to connect to internet servers](http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/)
 * [Video-Tutorial made by ChrisMCMine](http://www.youtube.com/watch?v=GC9MBVaHge0)
-* [User-made program to merge server I/O done in C](https://github.com/filfat/MCPES_CPP_INPUT/)
+* OBSOLETE [User-made program to merge server I/O done in C](https://github.com/filfat/MCPES_CPP_INPUT/)
 * [Proxy to allow devices in your local network join online servers using node.js](https://github.com/brandon15811/Minecraft-PE-Proxy)
