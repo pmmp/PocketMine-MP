@@ -254,15 +254,23 @@ class PocketMinecraftServer extends stdClass{
 				if(!isset($entity["id"])){
 					break;
 				}
-				if(!isset($this->api) or $this->api === false){
-					$this->entities[$this->eidCnt] = new Entity($his, $this->eidCnt, ENTITY_MOB, $entity["id"]);
-					$this->entities[$this->eidCnt]->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-					$this->entities[$this->eidCnt]->setHealth($entity["Health"]);
-					++$this->eidCnt;
-				}else{
-					$e = $this->api->entity->add(ENTITY_MOB, $entity["id"]);
-					$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-					$e->setHealth($entity["Health"]);
+				if(isset($this->api) and $this->api !== false){
+					if($entity["id"] === 64){ //Item Drop
+						$e = $this->api->entity->add(ENTITY_ITEM, $entity["Item"]["id"], array(
+							"meta" => $entity["Item"]["Damage"],
+							"stack" => $entity["Item"]["Count"],
+							"x" => $entity["Pos"][0],
+							"y" => $entity["Pos"][1],
+							"z" => $entity["Pos"][2],
+							"yaw" => $entity["Rotation"][0],
+							"pitch" => $entity["Rotation"][1],
+						));
+					}else{
+						$e = $this->api->entity->add(ENTITY_MOB, $entity["id"]);
+						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+						$e->setHealth($entity["Health"]);
+					
+					}
 				}
 			}
 			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
@@ -274,6 +282,10 @@ class PocketMinecraftServer extends stdClass{
 		if($this->mapName !== false){	
 			file_put_contents($this->mapDir."level.dat", serialize($this->level));
 			$this->map->saveMap();
+			console("[INFO] Saving entities...");
+			foreach($this->entities as $entity){
+				
+			}
 		}
 	}
 	

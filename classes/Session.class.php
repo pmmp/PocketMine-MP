@@ -315,8 +315,38 @@ class Session{
 							break;
 						case MC_USE_ITEM:
 							if($data["face"] >= 0 and $data["face"] <= 5 and $data["block"] !== 0){
+								switch($data["face"]){
+									case 0:
+										--$data["y"];
+										break;
+									case 1:
+										++$data["y"];
+										break;
+									case 2:
+										--$data["z"];
+										break;
+									case 3:
+										++$data["z"];
+										break;
+									case 4:
+										--$data["x"];
+										break;
+									case 5:
+										++$data["x"];
+										break;
+								}
+								if($data["block"] === 65){
+									$data["block"] = 63;
+								}
 								$data["eid"] = $this->eid;
 								$this->server->handle("onBlockPlace", $data);
+								if($data["block"] === 63){
+									$data["line0"] = "WHOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+									$data["line1"] = "this is a test";
+									$data["line2"] = "I'm @shoghicp";
+									$data["line3"] = "TPS: ".$this->server->getTPS();
+									$this->dataPacket(MC_SIGN_UPDATE, $data);
+								}
 							}
 							break;
 						case MC_PLACE_BLOCK:
