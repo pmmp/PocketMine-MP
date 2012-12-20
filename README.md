@@ -77,6 +77,6 @@ How to contact me
 Third-party Tools:
 ------------------
 * [How to connect to internet servers](http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/)
-* [Video-Tutorial made by ChrisMCMine](http://www.youtube.com/watch?v=GC9MBVaHge0)
-* OBSOLETE [User-made program to merge server I/O done in C](https://github.com/filfat/MCPES_CPP_INPUT/)
+* OBSOLETE [Video-Tutorial made by ChrisMCMine](http://www.youtube.com/watch?v=GC9MBVaHge0)
+* [User-made program to merge server I/O done in C++](https://github.com/filfat/MCPES_CPP_INPUT/)
 * [Proxy to allow devices in your local network join online servers using node.js](https://github.com/brandon15811/Minecraft-PE-Proxy)
