@@ -298,7 +298,6 @@ class PocketMinecraftServer extends stdClass{
 		$this->loadEvents();
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
-		$this->event("onTick", "tickerFunction", true);
 		register_shutdown_function(array($this, "close"));
 		console("[INFO] Server started!");
 		$this->process();
@@ -309,6 +308,7 @@ class PocketMinecraftServer extends stdClass{
 		if($this->lastTick <= ($time - 0.05)){
 			$this->tickMeasure[] = $this->lastTick = $time;
 			array_shift($this->tickMeasure);
+			$this->tickerFunction($time);
 			$this->trigger("onTick", $time);
 		}
 	}

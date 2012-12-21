@@ -52,7 +52,10 @@ class Session{
 		$this->counter = array(0, 0);
 	}
 	
-	public function onTick($time){
+	public function onTick($time, $event){
+		if($event !== "onTick"){
+			return;
+		}
 		if($time > $this->timeout){
 			$this->close("timeout");
 		}else{
@@ -169,7 +172,7 @@ class Session{
 		}
 	}
 	
-	public function handle($pid, &$data){
+	public function handle($pid, $data){
 		if($this->connected === true){
 			$this->timeout = microtime(true) + 25;
 			switch($pid){
@@ -397,7 +400,7 @@ class Session{
 				$this->buffer[$count] = array($id, $data);
 			}
 			$data["id"] = $id;
-			$this->send(0x84, array(
+			$this->send(0x80, array(
 				$count,
 				0x00,
 				$data,
