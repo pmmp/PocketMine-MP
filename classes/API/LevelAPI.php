@@ -68,7 +68,9 @@ class LevelAPI{
 	}
 	
 	private function check(){
-		if($this->active === false and $this->server->map === false){
+		if($this->active === true){
+			return true;
+		}elseif($this->active === false and $this->server->map === false){
 			return false;
 		}
 		$this->active = true;
@@ -87,6 +89,13 @@ class LevelAPI{
 			return $this->map->getBlock($x, $y, $z);		
 		}
 		return array(0,0);
+	}
+	
+	public function getFloor($x, $z){
+		if($this->check()){
+			return $this->map->getFloor($x, $z);		
+		}
+		return 0;
 	}
 	
 	public function setBlock($x, $y, $z, $block, $meta = 0){

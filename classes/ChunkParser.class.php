@@ -154,6 +154,20 @@ class ChunkParser{
 		fclose($fp);
 	}
 	
+	public function getFloor($x, $z){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$index = $aZ + ($aX << 4);
+		for($y = 127; $y <= 0; --$y){
+			if($this->map[$X][$Z][0][$index]{$y} !== "\x00"){
+				break;
+			}
+		}
+		return $y;
+	}
+	
 	public function getBlock($x, $y, $z){
 		$x = (int) $x;
 		$y = (int) $y;
