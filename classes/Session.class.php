@@ -342,7 +342,7 @@ class Session{
 								if($data["block"] === 63){
 									$data["line0"] = "WHOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 									$data["line1"] = "this is a test";
-									$data["line2"] = "I'm @shoghicp";
+									$data["line2"] = "I'm ".$this->username;
 									$data["line3"] = "TPS: ".$this->server->getTPS();
 									$this->dataPacket(MC_SIGN_UPDATE, $data);
 								}
