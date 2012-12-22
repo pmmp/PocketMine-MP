@@ -1,5 +1,5 @@
 @echo off
-TITLE Pocket-Minecraft-PHP Server - by @shoghicp
+TITLE PocketMine-MP Server - by @shoghicp
 COLOR F0
 mode con: cols=90
 
@@ -7,8 +7,8 @@ echo.
 echo             -
 echo           /   \
 echo        /         \
-echo     /    POCKET     \
-echo  /    MINECRAFT PHP    \
+echo     /   PocketMine  \
+echo  /          MP         \
 echo  ^|\     @shoghicp     /^|
 echo  ^|.   \           /   .^|
 echo  ^| ..     \   /     .. ^|
