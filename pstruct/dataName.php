@@ -5,8 +5,8 @@
            -
          /   \
       /         \
-   /    POCKET     \
-/    MINECRAFT PHP    \
+   /   PocketMine  \
+/          MP         \
 |\     @shoghicp     /|
 |.   \           /   .|
 | ..     \   /     .. |

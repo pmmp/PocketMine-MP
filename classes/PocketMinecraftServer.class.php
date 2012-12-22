@@ -5,8 +5,8 @@
            -
          /   \
       /         \
-   /    POCKET     \
-/    MINECRAFT PHP    \
+   /   PocketMine  \
+/          MP         \
 |\     @shoghicp     /|
 |.   \           /   .|
 | ..     \   /     .. |
@@ -32,7 +32,7 @@ class PocketMinecraftServer extends stdClass{
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
-		console("[INFO] Pocket-Minecraft-PHP by @shoghicp, LGPL License. http://bit.ly/RE7uaW", true, true, 0);
+		console("[INFO] PocketMine-MP by @shoghicp, LGPL License. http://bit.ly/TbrimG", true, true, 0);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");

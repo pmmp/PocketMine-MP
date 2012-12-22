@@ -15,8 +15,8 @@
 			   -
 			 /   \
 		  /         \
-	   /    POCKET     \
-	/    MINECRAFT PHP    \
+	   /   PocketMine  \
+	/          MP         \
 	|\     @shoghicp     /|
 	|.   \           /   .|
 	| ..     \   /     .. |
@@ -28,14 +28,14 @@
 			 \ | /		 
 		 
 
-Pocket-Minecraft-PHP
-====================
-Github repo: https://github.com/shoghicp/Pocket-Minecraft-PHP
+PocketMine-MP
+=============
+Github repo: https://github.com/shoghicp/PocketMine-MP
 
 Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
-How to install it: https://github.com/shoghicp/Pocket-Minecraft-PHP/wiki/Tutorial:-Setting-up-a-Server
+How to install it: https://github.com/shoghicp/PocketMine-MP/wiki/Tutorial:-Setting-up-a-Server
 
 **Project Status: `PRE-ALPHA`**
 

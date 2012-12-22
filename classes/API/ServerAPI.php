@@ -5,8 +5,8 @@
            -
          /   \
       /         \
-   /    POCKET     \
-/    MINECRAFT PHP    \
+   /   PocketMine  \
+/          MP         \
 |\     @shoghicp     /|
 |.   \           /   .|
 | ..     \   /     .. |
@@ -94,12 +94,12 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$this->server->api = $this;
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new version...");
-			$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/Pocket-Minecraft-PHP"), true);
+			$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/PocketMine-MP"), true);
 			$last = new DateTime($info["updated_at"]);
 			$last = $last->getTimestamp();
 			if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
-				console("[NOTICE] Pocket-PHP-Minecraft has been updated at ".date("Y-m-d H:i:s", $last));
-				console("[NOTICE] If you want to update, get the latest version at https://github.com/shoghicp/Pocket-Minecraft-PHP/archive/master.zip");
+				console("[NOTICE] PocketMine-MP has been updated at ".date("Y-m-d H:i:s", $last));
+				console("[NOTICE] If you want to update, get the latest version at https://github.com/shoghicp/PocketMine-MP/archive/master.zip");
 				console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
 				sleep(3);
 			}else{
