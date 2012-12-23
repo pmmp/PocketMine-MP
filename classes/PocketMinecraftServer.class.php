@@ -25,8 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-require_once("classes/Session.class.php");
-
 class PocketMinecraftServer extends stdClass{
 	var $invisible, $tickMeasure, $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
@@ -86,11 +84,11 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function loadEvents(){		
-		$this->event("onChat", "eventHandler", true);
-		$this->event("onPlayerAdd", "eventHandler", true);
+		$this->event("server.chat", "eventHandler", true);
+		$this->event("player.new", "eventHandler", true);
 		
-		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("onTimeChange", $this->time);');
-		$this->action(5000000, 'if($this->difficulty < 2){$this->trigger("onHealthRegeneration", 1);}');
+		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("server.time.change", $this->time);');
+		$this->action(5000000, 'if($this->difficulty < 2){$this->trigger("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		if($this->api !== false){
@@ -156,7 +154,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->chat(false, "Stopping server...");
 		$this->save();
 		$this->stop = true;
-		$this->trigger("onClose");
+		$this->trigger("server.close");
 		$this->interface->close();
 	}
 	
@@ -166,7 +164,7 @@ class PocketMinecraftServer extends stdClass{
 			$message = "<".$owner."> ";
 		}
 		$message .= $text;
-		$this->trigger("onChat", $message);
+		$this->trigger("server.chat", $message);
 	}
 	
 	public function setType($type = "normal"){
@@ -200,20 +198,21 @@ class PocketMinecraftServer extends stdClass{
 		if($handlers === false or $handlers === true){
 			return $this->trigger($event, $data);
 		}
-		while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC))){
+		$result = true;
+		while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
 			$hnid = (int) $hn["ID"];
-			call_user_func($this->handlers[$hnid], $data, $event);
+			$result = call_user_func($this->handlers[$hnid], $data, $event);
 		}
 		$handlers->finalize();
-		return true;
+		return $result;
 	}
 	
 	public function eventHandler($data, $event){
 		switch($event){
-			case "onPlayerAdd":
+			case "player.new":
 				console("[DEBUG] Player \"".$data["username"]."\" EID ".$data["eid"]." spawned at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 				break;
-			case "onChat":
+			case "server.chat":
 				console("[CHAT] $data");
 				break;
 		}
@@ -309,7 +308,7 @@ class PocketMinecraftServer extends stdClass{
 			array_shift($this->tickMeasure);
 			$this->tickMeasure[] = $this->lastTick = $time;			
 			$this->tickerFunction($time);
-			$this->trigger("onTick", $time);
+			$this->trigger("server.tick", $time);
 		}
 	}
 	
@@ -415,7 +414,7 @@ class PocketMinecraftServer extends stdClass{
 					$port = $data[2];
 					$MTU = $data[3];
 					$clientID = $data[4];
-					$this->clients[$CID] = new Session($this, $clientID, $packet["ip"], $packet["port"], $MTU);
+					$this->clients[$CID] = new Player($this, $clientID, $packet["ip"], $packet["port"], $MTU);
 					$this->clients[$CID]->handle(0x07, $data);
 					break;
 			}

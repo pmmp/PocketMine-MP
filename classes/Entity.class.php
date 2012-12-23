@@ -121,7 +121,7 @@ class Entity extends stdClass{
 	public function close(){
 		if($this->closed === false){
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
-			$this->server->trigger("onEntityRemove", $this->eid);
+			$this->server->trigger("entity.remove", $this->eid);
 			$this->closed = true;
 		}
 	}
@@ -186,7 +186,7 @@ class Entity extends stdClass{
 	public function setHealth($health, $cause = ""){				
 		$this->health = (int) $health;
 		$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
-		$this->server->trigger("onHealthChange", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
+		$this->server->trigger("entity.health.change", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
 		if($this->player !== false){
 			$this->player->dataPacket(MC_SET_HEALTH, array(
 				"health" => $this->health,

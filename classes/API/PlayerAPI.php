@@ -29,7 +29,7 @@ class PlayerAPI{
 	private $server;
 	function __construct($server){
 		$this->server = $server;
-		$this->server->event("onHealthRegeneration", array($this, "handle"));
+		$this->server->event("server.regeneration", array($this, "handle"));
 	}
 	
 	public function init(){
@@ -41,7 +41,7 @@ class PlayerAPI{
 	
 	public function handle($data, $event){
 		switch($event){
-			case "onHealthRegeneration":
+			case "server.regeneration":
 				$result = $this->server->query("SELECT ip,port FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);", true);
 				if($result !== true and $result !== false){
 					while(false !== ($player = $result->fetchArray())){

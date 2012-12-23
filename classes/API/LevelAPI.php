@@ -36,18 +36,17 @@ class LevelAPI{
 	}
 	
 	public function init(){
-		$this->server->addHandler("onBlockBreak", array($this, "handle"));
-		$this->server->addHandler("onBlockPlace", array($this, "handle"));
+		$this->server->addHandler("player.block.break", array($this, "handle"));
+		$this->server->addHandler("player.block.place", array($this, "handle"));
 	}
 	
 	public function handle($data, $event){
 		switch($event){
-			case "onBlockPlace":
-				$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
-				console("[DEBUG] EID ".$data["eid"]." placed ".$data["block"].":".$data["meta"]." into ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+			case "player.block.place":
+				console("[DEBUG] EID ".$data["eid"]." placed ".$data["block"].":".$data["meta"]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
 				break;
-			case "onBlockBreak":
+			case "player.block.break":
 					$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
 					console("[DEBUG] EID ".$data["eid"]." broke block ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 					
@@ -102,7 +101,7 @@ class LevelAPI{
 		if($this->check()){
 			$this->map->setBlock($x, $y, $z, $block, $meta);
 		}
-		$this->server->trigger("onBlockUpdate", array(
+		$this->server->trigger("world.block.change", array(
 			"x" => $x,
 			"y" => $y,
 			"z" => $z,

@@ -424,9 +424,9 @@ class CustomPacketHandler{
 					$this->data["block"] = Utils::readShort($this->get(2));
 					$this->data["meta"] = Utils::readByte($this->get(1));
 					$this->data["eid"] = Utils::readInt($this->get(4));
-					$this->data["unknown2"] = Utils::readFloat($this->get(4));
-					$this->data["unknown3"] = Utils::readFloat($this->get(4));
-					$this->data["unknown4"] = Utils::readFloat($this->get(4));
+					$this->data["fx"] = Utils::readFloat($this->get(4));
+					$this->data["fy"] = Utils::readFloat($this->get(4));
+					$this->data["fz"] = Utils::readFloat($this->get(4));
 				}else{
 					/*$this->raw .= Utils::writeByte($this->data["action"]);
 					$this->raw .= Utils::writeInt($this->data["eid"]);

@@ -69,6 +69,8 @@ if($errors > 0){
 }
 
 
+require_once("classes/Data.class.php");
+require_once("classes/Player.class.php");
 require_once("classes/Generator.class.php");
 require_once("classes/DefaultGenerator.class.php");
 require_once("classes/Utils.class.php");

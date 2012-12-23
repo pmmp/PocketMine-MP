@@ -35,7 +35,7 @@ class ConsoleAPI{
 	}
 	
 	public function init(){
-		$this->event = $this->server->event("onTick", array($this, "handle"));
+		$this->event = $this->server->event("server.tick", array($this, "handle"));
 	}
 	
 	function __destroy(){
@@ -236,7 +236,7 @@ class ConsoleAPI{
 			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
 			if(isset($this->help[$cmd]) and is_callable($this->help[$cmd][1])){
 				call_user_func($this->help[$cmd][1], $cmd, $params);
-			}elseif($this->server->trigger("onCommand", array("cmd" => $cmd, "params" => $params)) !== false){
+			}elseif($this->server->trigger("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
 				$this->defaultCommands($cmd, $params);
 			}
 		}
