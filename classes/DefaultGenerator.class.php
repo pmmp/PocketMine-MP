@@ -47,14 +47,13 @@ class DefaultGenerator{
 	}
 	
 	private function parsePreset(){
-		$preset = explode(";", $this->config["preset"]);
 		$this->structure = array(
 			0 => "",
 			1 => "",
 			2 => str_repeat("\x00", 64),
 			3 => str_repeat("\x00", 64),
 		);
-		
+		$preset = explode(";", trim($this->config["preset"]));		
 		foreach($preset as $i => $data){
 			$num = 1;
 			if(preg_match('#([a-zA-Z\-_]*)\((.*)\)#', $data, $matches) > 0){ //Property
@@ -70,11 +69,10 @@ class DefaultGenerator{
 			$meta = (int) @array_shift($d);
 			for($j = 0; $j < $num; ++$j){
 				$this->structure[0] .= chr($block & 0xFF);
-				$this->structure[1] .= substr(dechex($meta & 0x0F),0,-1);
+				$this->structure[1] .= substr(dechex($meta & 0x0F), -1);
 			}
 		}
-		$this->structure[1] = Utils::hexToStr(str_pad($this->structure[1], (strlen($this->structure[1])&0xFE) + 2, "0", STR_PAD_RIGHT));
-		
+		$this->structure[1] = pack("h*", str_pad($this->structure[1], (strlen($this->structure[1])&0xFE) + 2, "0", STR_PAD_RIGHT)); //invert nibbles
 		$this->structure[0] = substr($this->structure[0], 0, 128);
 		$this->structure[1] = substr($this->structure[1], 0, 64);
 		$this->structure[2] = substr($this->structure[2], 0, 64);
@@ -92,12 +90,6 @@ class DefaultGenerator{
 	public function getColumn($x, $z){
 		$x = (int) $x;
 		$z = (int) $z;
-		$column = array(
-			0 => "",
-			1 => "",
-			2 => "",
-			3 => "",
-		);
 		$column = $this->structure;
 		if(floor(sqrt(pow($x - $this->spawn[0], 2) + pow($z - $this->spawn[2], 2))) <= $this->config["spawn-radius"]){
 			$column[0]{strlen($column[0])-1} = chr($this->config["spawn-surface"]);
