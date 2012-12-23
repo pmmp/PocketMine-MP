@@ -35,7 +35,7 @@ Github repo: https://github.com/shoghicp/PocketMine-MP
 Server (and client) Minecraft Pocket Edition library written in PHP.
 Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
 
-How to install it: https://github.com/shoghicp/PocketMine-MP/wiki/Tutorial:-Setting-up-a-Server
+Check the wiki! https://github.com/shoghicp/PocketMine-MP/wiki
 
 **Project Status: `PRE-ALPHA`**
 
@@ -70,14 +70,3 @@ How to contact me
 * Twitter - [@shoghicp](https://twitter.com/shoghicp)
 * Via IRC - #mcdevs or #mcpedevs on *irc.freenode.net* (or just /msg me there)
 * [MinecraftForums profile](http://www.minecraftforum.net/user/1476633-shoghicp/)
-
-	
----------------------------------------
-	
-	
-Third-party Tools:
-------------------
-* [How to connect to internet servers](http://www.minecraftforum.net/topic/1256915-legit-minecraftpe-online-multiplayer/)
-* [Video-Tutorial made by ChrisMCMine](http://www.youtube.com/watch?v=GC9MBVaHge0)
-* [User-made program to merge server I/O done in C++](https://github.com/filfat/MCPES_CPP_INPUT/)
-* [Proxy to allow devices in your local network join online servers using node.js](https://github.com/brandon15811/Minecraft-PE-Proxy)
