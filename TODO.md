@@ -6,6 +6,8 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Random strips and chunks of different land not sticking (the ones shown before world chunks are loaded)
 
 ## Alpha (full Creative)
+- Block Updates
+- Random Chunk Updates
 - Placing Half Slabs
 - Water/lava spread
 - Door,trapdoor,torch,stair,ladder,fence gate placement/orientation (+should need ground/wall beneath)
@@ -22,7 +24,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 - BUG? Breaking redstone ore blocks not dropping TONS of redstone ore blocks (One-time occurrence... can't reproduce XD;)
 - Redstone ore blocks lighting up upon hit or contact
-- Glass panes changing shape appropriately
 - Cactus placement requirements (needs open blocks beside, sand below)
 - Sapling/flower placement requirements
 - Mushroom placement requirements
