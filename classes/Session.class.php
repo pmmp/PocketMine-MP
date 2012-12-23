@@ -49,7 +49,7 @@ class Session{
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 		$this->connected = true;
 		$this->auth = false;
-		$this->counter = array(0, 0);
+		$this->counter = array(0, 0, 0);
 	}
 	
 	public function onTick($time, $event){
@@ -167,7 +167,7 @@ class Session{
 			case "onChat":
 				$this->dataPacket(MC_CHAT, array(
 					"message" => str_replace("@username", $this->username, $data),
-				));				
+				));
 				break;
 		}
 	}
@@ -187,8 +187,19 @@ class Session{
 					}
 					break;
 				case 0xc0: //ACK
+					$diff = $data[2] - $this->counter[2];
+					if($diff > 8){ //Packet recovery
+						array_unshift($this->queue, array(0, $this->buffer[$data[2]][0], $this->buffer[$data[2]][1], $data[2]));
+					}
+					$this->counter[2] = $data[2];
 					unset($this->buffer[$data[2]]);
+
 					if(isset($data[3])){
+						$diff = $data[3] - $this->counter[2];
+						if($diff > 8){ //Packet recovery
+							array_unshift($this->queue, array(0, $this->buffer[$data[3]][0], $this->buffer[$data[3]][1], $data[3]));
+						}
+						$this->counter[2] = $data[3];
 						unset($this->buffer[$data[3]]);
 					}
 					break;

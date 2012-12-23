@@ -306,8 +306,8 @@ class PocketMinecraftServer extends stdClass{
 	public function tick(){
 		$time = microtime(true);
 		if($this->lastTick <= ($time - 0.05)){
-			$this->tickMeasure[] = $this->lastTick = $time;
 			array_shift($this->tickMeasure);
+			$this->tickMeasure[] = $this->lastTick = $time;			
 			$this->tickerFunction($time);
 			$this->trigger("onTick", $time);
 		}
@@ -427,11 +427,14 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function process(){
+		$cnt = 0;
 		while($this->stop === false){
 			$packet = @$this->interface->readPacket();
-			if($packet !== false){
+			if($packet !== false and $cnt < 20){
 				$this->packetHandler($packet);
+				++$cnt;
 			}else{
+				$cnt = 0;
 				usleep(1);
 			}			
 		}

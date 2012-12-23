@@ -121,14 +121,17 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
 		if($this->server->mapName === false or trim($this->server->mapName) === "" or !file_exists($this->server->mapDir."chunks.dat")){
 			$this->server->mapName = "world";
-			$this->setProperty("seed", $this->server->seed);
-			$this->setProperty("level-name", $this->server->mapName);
-			$this->setProperty("gamemode", 1);
 			$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
 			$this->gen = new Generator("DefaultGenerator", $this->server->seed);
+			if($this->getProperty("generator-settings") !== false){
+				$this->gen->set("preset", $this->getProperty("generator-settings"));
+			}
 			$this->gen->init();
 			$this->gen->generate();
 			$this->gen->save($this->server->mapDir."chunks.dat");
+			$this->setProperty("seed", $this->server->seed);
+			$this->setProperty("level-name", $this->server->mapName);
+			$this->setProperty("gamemode", 1);
 			$s = $this->gen->getSpawn();
 			$this->setProperty("spawn", array("x" => $s[0], "y" => $s[1], "z" => $s[2]));
 			$array = array();
