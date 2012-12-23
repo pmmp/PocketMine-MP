@@ -120,7 +120,9 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$this->server->mapName = $this->getProperty("level-name");
 		$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
 		if($this->server->mapName === false or trim($this->server->mapName) === "" or !file_exists($this->server->mapDir."chunks.dat")){
-			$this->server->mapName = "world";
+			if($this->server->mapName === false or trim($this->server->mapName) === ""){
+				$this->server->mapName = "world";
+			}
 			$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
 			$this->gen = new Generator("DefaultGenerator", $this->server->seed);
 			if($this->getProperty("generator-settings") !== false){
