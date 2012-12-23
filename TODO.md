@@ -1,6 +1,9 @@
+
+__Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/milestones)__
+
+
 ## Not Fixing
 - Random strips and chunks of different land not sticking (the ones shown before world chunks are loaded)
-
 
 ## Alpha (full Creative)
 - Water/lava spread
