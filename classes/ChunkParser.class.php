@@ -68,6 +68,13 @@ class ChunkParser{
 		return true;
 	}
 	
+	public function loadRaw($raw, $file){
+		$this->file = $file;
+		$this->raw = $raw;
+		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
+		return true;
+	}
+	
 	private function getOffsetPosition($X, $Z){
         $data = substr($this->raw, ($X << 2) + ($Z << 7), 4); //$X * 4 + $Z * 128
 		return array(ord($data{0}), ord($data{1}), ord($data{2}), ord($data{3}));

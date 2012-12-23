@@ -113,7 +113,29 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$this->importMap(FILE_PATH."data/maps/", true);
 		}
 		$this->server->mapName = $this->getProperty("level-name");
-		$this->server->mapDir = FILE_PATH."data/maps/".$this->getProperty("level-name")."/";
+		$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
+		if($this->server->mapName === false or trim($this->server->mapName) === "" or !file_exists($this->server->mapDir."chunks.dat")){
+			$this->server->mapName = "world";
+			$this->setProperty("seed", $this->server->seed);
+			$this->setProperty("level-name", $this->server->mapName);
+			$this->setProperty("gamemode", 1);
+			$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
+			$this->gen = new Generator("DefaultGenerator", $this->server->seed);
+			$this->gen->init();
+			$this->gen->generate();
+			$this->gen->save($this->server->mapDir."chunks.dat");
+			$s = $this->gen->getSpawn();
+			$this->setProperty("spawn", array("x" => $s[0], "y" => $s[1], "z" => $s[2]));
+			$array = array();
+			file_put_contents($this->server->mapDir."entities.dat", serialize($array));
+			file_put_contents($this->server->mapDir."tileEntities.dat", serialize($array));
+			$level = array(
+				"LevelName" => $this->server->mapName,
+				"Time" => 0,
+				"RandomSeed" => $this->server->seed,			
+			);
+			file_put_contents($this->server->mapDir."level.dat", serialize($level));
+		}
 		$this->loadProperties();
 		$this->server->loadMap();
 		

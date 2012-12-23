@@ -205,7 +205,7 @@ class PocketMinecraftServer extends stdClass{
 			call_user_func($this->handlers[$hnid], $data, $event);
 		}
 		$handlers->finalize();
-		return true;		
+		return true;
 	}
 	
 	public function eventHandler($data, $event){
