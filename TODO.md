@@ -6,6 +6,7 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Random strips and chunks of different land not sticking (the ones shown before world chunks are loaded)
 
 ## Alpha (full Creative)
+- Placing Half Slabs
 - Water/lava spread
 - Door,trapdoor,torch,stair,ladder,fence gate placement/orientation (+should need ground/wall beneath)
 - Opening/closing doors,fence gates,trapdoors (Not placing block in hand when hitting doors/fence gates/trapdoors to open/close them)
