@@ -166,7 +166,7 @@ class Session{
 				break;
 			case "onChat":
 				$this->dataPacket(MC_CHAT, array(
-					"message" => $data,
+					"message" => str_replace("@username", $this->username, $data),
 				));				
 				break;
 		}

@@ -26,8 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ServerAPI extends stdClass{ //Yay! I can add anything to this class in runtime!
-	var $server, $restart = false;
-	private $config, $apiList = array();
+	var $restart = false;
+	private $server, $config, $apiList = array();
 	function __construct(){
 		console("[INFO] Starting ServerAPI server handler...");
 		file_put_contents(FILE_PATH."packets.log", "");
@@ -291,9 +291,21 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$d = explode("=", $line);
 			$n = strtolower(array_shift($d));
 			$v = implode("=", $d);
+			switch(strtolower(trim($v))){
+				case "on":
+				case "true":
+				case "yes":
+					$v = true;
+					break;
+				case "off":
+				case "false":
+				case "no":
+					$v = false;
+					break;
+			}
 			switch($n){
 				case "last-update":
-					if(trim($v) == "false"){
+					if($v === false){
 						$v = time();
 					}else{
 						$v = (int) $v;
@@ -308,10 +320,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 					$v = (int) $v;
 					break;
 				case "seed":
-					$v = trim($v);
-					if($v == "false"){
-						$v = false;
-					}elseif(preg_match("/[^0-9\-]/", $v) > 0){
+					if($v !== false and preg_match("/[^0-9\-]/", $v) > 0){
 						$str = new Java_String($v);
 						$v = $str->hashCode();
 					}else{
@@ -319,20 +328,13 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 					}
 					break;
 				case "server-id":
-					$v = trim($v);
-					$v = $v == "false" ? false:(preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v);
-					break;
-				case "level-name":
-					$v = trim($v);
-					$v = $v == "false" ? false:$v;
+					if($v !== false){
+						$v = preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v;
+					}
 					break;
 				case "spawn":
 					$v = explode(";", $v);
 					$v = array("x" => floatval($v[0]), "y" => floatval($v[1]), "z" => floatval($v[2]));
-					break;
-				case "white-list":
-				case "invisible":
-					$v = trim($v) == "true" ? true:false;
 					break;
 			}
 			$this->config[$n] = $v;
