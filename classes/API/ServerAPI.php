@@ -90,7 +90,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		console("[DEBUG] Loading server.properties...", true, true, 2);
 		$this->parseProperties();
 		define("DEBUG", $this->config["debug"]);
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), $this->getProperty("seed"), $this->getProperty("protocol"), $this->getProperty("port"), $this->getProperty("server-id"));
+		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), $this->getProperty("seed"), CURRENT_PROTOCOL, $this->getProperty("port"), $this->getProperty("server-id"));
 		$this->server->api = $this;
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
@@ -299,11 +299,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 						$v = (int) $v;
 					}
 					break;
-				case "protocol":
-					if(trim($v) == "CURRENT"){
-						$v = CURRENT_PROTOCOL;
-						break;
-					}
 				case "gamemode":
 				case "max-players":
 				case "port":
