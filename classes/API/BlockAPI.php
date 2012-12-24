@@ -100,9 +100,27 @@ class BlockAPI{
 				$entity = $this->server->api->entity->get($this->eid);				
 				
 				switch($data["block"]){
+					case 50: //Torch
+						if(isset(Material::$transparent[$target[0]])){
+							return;
+						}
+						$faces = array(
+							0 => 6,
+							1 => 5,
+							2 => 4,
+							3 => 3,
+							4 => 2,
+							5 => 1,
+						);
+						if(!isset($faces[$data["face"]])){
+							return false;
+						}
+						$data["meta"] = $faces[$data["face"]];
+						break;
 					case 64://Door placing
 						$blockUp = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
-						if(!isset(Material::$replaceable[$blockUp[0]])){
+						$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
+						if(!isset(Material::$replaceable[$blockUp[0]]) or isset(Material::$transparent[$blockDown[0]])){
 							return;
 						}else{
 							$data2 = $data;
@@ -111,6 +129,21 @@ class BlockAPI{
 							++$data2["y"];
 							$this->server->handle("player.block.place", $data2);
 						}
+						break;
+					case 65: //Ladder
+						if(isset(Material::$transparent[$target[0]])){
+							return;
+						}
+						$faces = array(
+							2 => 2,
+							3 => 3,
+							4 => 4,
+							5 => 5,
+						);
+						if(!isset($faces[$data["face"]])){
+							return false;
+						}
+						$data["meta"] = $faces[$data["face"]];
 						break;
 					case 59://Seeds
 					case 105:
