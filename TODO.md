@@ -10,8 +10,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Water/lava spread
 - Fix spawn position resetting
 - Correct block placement for beds
-- Bonemeal use
-- Hoes tilling dirt
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 - Mushroom placement requirements
 - Reed placement requirements
