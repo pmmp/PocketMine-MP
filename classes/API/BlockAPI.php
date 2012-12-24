@@ -97,7 +97,7 @@ class BlockAPI{
 					return;
 				}
 				
-				$entity = $this->server->api->entity->get($this->eid);				
+				$direction = $this->server->api->entity->get($data["eid"])->getDirection();				
 				
 				switch($data["block"]){
 					case 50: //Torch
@@ -117,6 +117,41 @@ class BlockAPI{
 						}
 						$data["meta"] = $faces[$data["face"]];
 						break;
+					case 53://Stairs
+					case 67:
+					case 108:
+						$faces = array(
+							0 => 0,
+							1 => 2,
+							2 => 1,
+							3 => 3,
+						);
+						$data["meta"] = $faces[$direction] & 0x03;
+						break;
+					case 96: //trapdoor
+						if(isset(Material::$transparent[$target[0]])){
+							return;
+						}
+						$faces = array(
+							2 => 0,
+							3 => 1,
+							4 => 2,
+							5 => 3,
+						);
+						if(!isset($faces[$data["face"]])){
+							return false;
+						}
+						$data["meta"] = $faces[$data["face"]] & 0x03;
+						break;
+					case 107: //Fence gate
+						$faces = array(
+							0 => 3,
+							1 => 0,
+							2 => 1,
+							3 => 2,
+						);
+						$data["meta"] = $faces[$direction] & 0x03;
+						break;
 					case 64://Door placing
 						$blockUp = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
 						$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
@@ -124,8 +159,8 @@ class BlockAPI{
 							return;
 						}else{
 							$data2 = $data;
-							$data2["meta"] = $data2["meta"] | 0x08;
-							$data["meta"] = $data["meta"] & 0x07;
+							$data2["meta"] = 0x08;
+							$data["meta"] = $direction & 0x03;
 							++$data2["y"];
 							$this->server->handle("player.block.place", $data2);
 						}
@@ -155,10 +190,10 @@ class BlockAPI{
 						break;
 					case 81: //Cactus
 						$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-						$block0 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"] + 1);
-						$block1 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"] + 1);
-						$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"] - 1);
-						$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"] - 1);
+						$block0 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] + 1);
+						$block1 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] - 1);
+						$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"]);
+						$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"]);
 						if($blockDown[0] !== 12 or $block0[0] !== 0 or $block1[0] !== 0 or $block2[0] !== 0 or $block3[0] !== 0){
 							return;
 						}

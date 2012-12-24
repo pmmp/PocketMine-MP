@@ -2,20 +2,20 @@
 
 /*
 
-           -
-         /   \
-      /         \
+		   -
+		 /   \
+	  /		 \
    /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
+/		  MP		 \
+|\	 @shoghicp	 /|
+|.   \		   /   .|
+| ..	 \   /	 .. |
+|	..	|	..	|
+|	   .. | ..	   |
+\		  |		  /
+   \	   |	   /
+	  \	|	/
+		 \ | /
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -71,6 +71,26 @@ class Entity extends stdClass{
 			case ENTITY_OBJECT:
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				break;
+		}
+	}
+	
+	public function getDirection(){
+		$rotation = ($this->yaw - 90) % 360;
+		if ($rotation < 0) {
+			$rotation += 360.0;
+		}
+		if(0 <= $rotation && $rotation < 45) {
+			return 2;
+		}elseif(45 <= $rotation && $rotation < 135) {
+			return 3;
+		}elseif(135 <= $rotation && $rotation < 225) {
+			return 0;
+		}elseif(225 <= $rotation && $rotation < 315) {
+			return 1;
+		}elseif(315 <= $rotation && $rotation < 360) {
+			return 2;
+		}else{
+			return null;
 		}
 	}
 	
