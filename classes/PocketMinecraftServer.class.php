@@ -55,6 +55,8 @@ class PocketMinecraftServer extends stdClass{
 		$this->handCnt = 0;
 		$this->eidCnt = 1;
 		$this->maxClients = 20;
+		$this->schedule = array();
+		$this->scheduleCnt = 0;
 		$this->description = "";
 		$this->whitelist = false;
 		$this->bannedIPs = array();
@@ -100,16 +102,16 @@ class PocketMinecraftServer extends stdClass{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->database = new SQLite3(":memory:");
-		//$this->query("PRAGMA journal_mode = OFF;");		
-		//$this->query("PRAGMA encoding = \"UTF-8\";");
-		//$this->query("PRAGMA secure_delete = OFF;");
+		$this->query("PRAGMA journal_mode = OFF;");		
+		$this->query("PRAGMA encoding = \"UTF-8\";");
+		$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
-		//$this->query("PRAGMA synchronous = OFF;");
+		$this->query("PRAGMA synchronous = OFF;");
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
 		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT ID FROM events WHERE name = :name;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
@@ -450,7 +452,7 @@ class PocketMinecraftServer extends stdClass{
 		}
 		while(false !== ($evn = $events->fetchArray(SQLITE3_ASSOC))){
 			$evid = (int) $evn["ID"];
-			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event, $this);		
+			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event);		
 		}
 		$events->finalize();
 		return true;
@@ -463,10 +465,19 @@ class PocketMinecraftServer extends stdClass{
 			return $res;
 		}
 		return false;
-	}	
+	}
+	
+	public function schedule($ticks, $callback, $data = array(), $eventName = "server.schedule"){
+		if(!is_callable($callback)){
+			return false;
+		}
+		$this->schedule[$this->scheduleCnt] = array($callback, $data, $eventName);
+		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.']; unset($this->schedule['.$this->scheduleCnt.']); call_user_func($schedule[0], $schedule[1], $schedule[2]);', false);
+		return $this->scheduleCnt++;
+	}
 	
 	public function action($microseconds, $code, $repeat = true){
-		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".str_replace("'", "\\'", $code)."', ".($repeat === true ? 1:0).");");
+		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".base64_encode($code)."', ".($repeat === true ? 1:0).");");
 		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
 	}
 
@@ -481,7 +492,7 @@ class PocketMinecraftServer extends stdClass{
 			return;
 		}
 		while(false !== ($action = $actions->fetchArray(SQLITE3_ASSOC))){
-			eval($action["code"]);
+			eval(base64_decode($action["code"]));
 			if($action["repeat"] === 0){
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
 			}

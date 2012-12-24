@@ -25,6 +25,13 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+define("BLOCK_UPDATE_NORMAL", 0);
+define("BLOCK_UPDATE_RANDOM", 1);
+define("BLOCK_UPDATE_SCHEDULED", 2);
+define("BLOCK_UPDATE_WEAK", 3);
+
+
+
 class BlockAPI{
 	private $server;
 	function __construct($server){
@@ -114,6 +121,7 @@ class BlockAPI{
 						$data2 = $data;
 						--$data2["y"];
 						$this->server->trigger("player.block.break", $data2);
+						$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
 					}
 				}else{
 					$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
@@ -121,6 +129,7 @@ class BlockAPI{
 						$data2 = $data;
 						++$data2["y"];
 						$this->server->trigger("player.block.break", $data2);
+						$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
 					}
 				}
 				break;
@@ -129,7 +138,7 @@ class BlockAPI{
 			$this->drop($data["x"], $data["y"], $data["z"], $drop[0], $drop[1] & 0x0F, $drop[2] & 0xFF);
 		}
 		$this->server->trigger("player.block.break", $data);		
-		$this->updateBlocksAround($data["x"], $data["x"], $data["z"]);
+		$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
 	}
 	
 	public function drop($x, $y, $z, $block, $meta, $stack = 1){
@@ -300,7 +309,7 @@ class BlockAPI{
 					$data["meta"] = $direction & 0x03;
 					++$data2["y"];
 					$this->server->trigger("player.block.place", $data2);
-					$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"]);
+					$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
 				}
 				break;
 			case 65: //Ladder
@@ -338,10 +347,51 @@ class BlockAPI{
 				break;
 		}
 		$this->server->trigger("player.block.place", $data);
-		$this->updateBlocksAround($data["x"], $data["y"], $data["z"]);
+		$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
 	}
 	
-	public function updateBlocksAround($x, $y, $z){
+	public function blockScheduler($data){
+		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_SCHEDULED);
+	}
 	
+	public function updateBlock($x, $y, $z, $type){
+		$block = $this->server->api->level->getBlock($x, $y, $z);
+		$changed = false;
+
+		switch($block[0]){
+			case 74:
+				if($type === BLOCK_UPDATE_SCHEDULED){
+					$changed = true;
+					$this->server->api->level->setBlock($x, $y, $z, 73, $block[1]);
+				}
+				break;
+			case 73:
+				if($type === BLOCK_UPDATE_NORMAL){
+					$changed = true;
+					$this->server->api->level->setBlock($x, $y, $z, 74, $block[1]);
+					$this->server->schedule(mt_rand(40, 100), array($this, "blockScheduler"), array(
+						"x" => $x,
+						"y" => $y,
+						"z" => $z,
+					));
+					$type = BLOCK_UPDATE_WEAK;
+				}
+				break;
+		}
+		if($type === BLOCK_TYPE_SCHEDULED){
+			$type = BLOCK_UPDATE_WEAK;
+		}
+		if($changed === true){
+			$this->updateBlocksAround($x, $y, $z, $type);
+		}
+	}
+	
+	public function updateBlocksAround($x, $y, $z, $type){
+		$this->updateBlock($x + 1, $y, $z, $type);
+		$this->updateBlock($x, $y + 1, $z, $type);
+		$this->updateBlock($x, $y, $z + 1, $type);
+		$this->updateBlock($x - 1, $y, $z, $type);
+		$this->updateBlock($x, $y - 1, $z, $type);
+		$this->updateBlock($x, $y, $z - 1, $type);
 	}
 }
