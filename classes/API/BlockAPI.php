@@ -59,7 +59,7 @@ class BlockAPI{
 					return;
 				}
 				
-				if(!isset(Material::$replaceable[$target[0]])){
+				//if(!isset(Material::$replaceable[$target[0]])){
 					switch($data["face"]){
 						case 0:
 							--$data["y"];
@@ -80,7 +80,7 @@ class BlockAPI{
 							++$data["x"];
 							break;
 					}
-				}
+				//}
 				if($data["y"] >= 127){
 					return;
 				}
