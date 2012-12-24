@@ -36,11 +36,13 @@ class LevelAPI{
 	public function init(){
 		$this->server->event("player.block.break", array($this, "handle"));
 		$this->server->event("player.block.place", array($this, "handle"));
+		$this->server->event("player.block.update", array($this, "handle"));
 	}
 	
 	public function handle($data, $event){
 		switch($event){
 			case "player.block.place":
+			case "player.block.update":
 				console("[DEBUG] EID ".$data["eid"]." placed ".$data["block"].":".$data["meta"]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
 				break;

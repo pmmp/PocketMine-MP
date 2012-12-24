@@ -163,14 +163,48 @@ class BlockAPI{
 		if($event !== "player.block.action"){
 			return;
 		}
+		if($data["face"] < 0 or $data["face"] > 5){
+			return;
+		}
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		$cancelPlace = false;
-		if(isset(Material::$activable[$target[0]])){
-			
+		if(isset(Material::$activable[$target[0]])){			
 			switch($target[0]){
 				case 2:
 				case 3:
 				case 6:
+					break;
+				case 64: //Door
+					if(($target[1] & 0x08) === 0x08){
+						$down = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
+						if($down[0] === 64){
+							$down[1] = $down[1] ^ 0x04;
+							$data2 = array(
+								"x" => $data["x"],
+								"z" => $data["z"],
+								"y" => $data["y"] - 1,
+								"block" => $down[0],
+								"meta" => $down[1],
+								"eid" => $data["eid"],
+							);
+							$this->server->trigger("player.block.update", $data2);
+							$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+							$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+						}
+					}else{
+						$data["block"] = $target[0];
+						$data["meta"] = $target[1] ^ 0x04;
+						$this->server->trigger("player.block.update", $data);
+						$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
+						if($up[0] === 64){
+							$data2 = $data;
+							$data2["meta"] = $up[1];
+							++$data2["y"];
+							$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+						}
+						$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+					}
+					$cancelPlace = true;
 					break;
 				default:
 					$cancelPlace = true;
@@ -178,7 +212,7 @@ class BlockAPI{
 			}			
 		}
 
-		if($cancelPlace === true or $data["face"] < 0 or $data["face"] > 5){
+		if($cancelPlace === true){
 			return;
 		}
 		
