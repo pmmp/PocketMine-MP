@@ -51,6 +51,61 @@ class BlockAPI{
 			1, //Count
 		);
 		switch($target[0]){
+			case 16:
+				$drop = array(263, 0, 1);
+				break;
+			case 21:
+				$drop = array(351, 4, mt_rand(4, 8));
+				break;
+			case 56:
+				$drop = array(264, 0, 1);
+				break;
+			case 73:
+			case 74:
+				$drop = array(351, 4, mt_rand(4, 5));
+				break;
+			case 18:
+				$drop = false;
+				if(mt_rand(1,20) === 1){ //Saplings
+					$drop = array(6, $target[1], 1);
+				}
+				if($target[1] === 0 and mt_rand(1,200) === 1){ //Apples
+					$this->drop($data["x"], $data["y"], $data["z"], 260, 0, 1);
+				}
+				break;
+			case 59:
+				if($target[1] >= 0x07){ //Seeds
+					$drop = array(296, 0, 1);
+					$this->drop($data["x"], $data["y"], $data["z"], 295, 0, mt_rand(0,3));
+				}else{
+					$drop = array(295, 0, 1);
+				}
+				break;
+			case 31:
+				$drop = false;
+				if(mt_rand(1,10) === 1){ //Seeds
+					$drop = array(295, 0, 1);
+				}
+				break;
+			case 20:
+				$drop = false;
+				break;
+			case 30:
+				$drop = false;
+				break;
+			case 51:
+				$drop = false;
+				break;
+			case 52:
+				$drop = false;
+				break;
+			case 43:
+				$drop = array(
+					44,
+					$target[1],
+					2,
+				);
+				break;
 			case 64: //Door
 				$drop = array(324, 0, 1);
 				if(($target[1] & 0x08) === 0x08){
@@ -70,7 +125,7 @@ class BlockAPI{
 				}
 				break;
 		}
-		if($drop !== false and $drop[0] !== 0 and $drop[2] > 0 and $this->server->gamemode !== 1){
+		if($drop !== false and $drop[0] !== 0 and $drop[2] > 0){
 			$this->drop($data["x"], $data["y"], $data["z"], $drop[0], $drop[1] & 0x0F, $drop[2] & 0xFF);
 		}
 		$this->server->trigger("player.block.break", $data);		
@@ -78,7 +133,7 @@ class BlockAPI{
 	}
 	
 	public function drop($x, $y, $z, $block, $meta, $stack = 1){
-		if($block === 0 or $stack <= 0){
+		if($block === 0 or $stack <= 0 or $this->server->gamemode === 1){
 			return;
 		}
 		$data = array(
@@ -175,6 +230,13 @@ class BlockAPI{
 		$direction = $this->server->api->entity->get($data["eid"])->getDirection();		
 		
 		switch($data["block"]){
+			case 6:
+			case 37:
+			case 38:
+				if($target[0] !== 2 and $target[0] !== 3){
+					return;
+				}
+				break;
 			case 50: //Torch
 				if(isset(Material::$transparent[$target[0]])){
 					return;

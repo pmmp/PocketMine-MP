@@ -27,8 +27,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Material{
 	static $unbreakable = array(
-		0,
-		7,	
+		0 => true,
+		7 => true,
+		8 => true,
+		9 => true,
+		10 => true,
+		11 => true,
 	);
 	static $transparent = array(
 		0 => true,
@@ -137,6 +141,7 @@ class Material{
 		50 => true,
 		53 => true,
 		54 => true,
+		56 => true,
 		59 => true,
 		57 => true,
 		58 => true,
