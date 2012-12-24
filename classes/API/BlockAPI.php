@@ -371,6 +371,7 @@ class BlockAPI{
 				$blockDown = $this->server->api->level->getBlock($x, $y - 1, $z);
 				$down = false;
 				if(isset(Material::$flowable[$blockDown[0]])){
+					if($down[0] !== 9){
 						$this->server->schedule(5, array($this, "blockScheduler"), array(
 							"x" => $x,
 							"y" => $y - 1,
@@ -378,9 +379,8 @@ class BlockAPI{
 							"type" => BLOCK_UPDATE_NORMAL,
 						));
 						$this->server->api->level->setBlock($x, $y - 1, $z, 8, 8);
-					if($down[0] !== 9){
-						$down = true;
-					}					
+					}
+					$down = true;
 				}
 				if(($block[1] & 0x07) < 7 and ($down === false or $block[0] === 9)){
 					$b0 = $this->server->api->level->getBlock($x + 1, $y, $z);
