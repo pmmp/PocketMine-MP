@@ -70,7 +70,7 @@ class BlockAPI{
 				}
 				break;
 		}
-		if($drop !== false and $drop[0] !== 0 and $drop[2] > 0){
+		if($drop !== false and $drop[0] !== 0 and $drop[2] > 0 and $this->server->gamemode !== 1){
 			$this->drop($data["x"], $data["y"], $data["z"], $drop[0], $drop[1] & 0x0F, $drop[2] & 0xFF);
 		}
 		$this->server->trigger("player.block.break", $data);		
