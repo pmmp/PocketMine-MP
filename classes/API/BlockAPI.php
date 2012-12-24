@@ -55,7 +55,7 @@ class BlockAPI{
 					
 				}
 
-				if($cancelPlace === true or $face < 0 or $face > 5){
+				if($cancelPlace === true or $data["face"] < 0 or $data["face"] > 5){
 					return;
 				}
 				
@@ -81,6 +81,9 @@ class BlockAPI{
 							break;
 					}
 				}
+				if($data["y"] >= 127){
+					return;
+				}
 				
 				$block = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 				
@@ -97,8 +100,35 @@ class BlockAPI{
 				$entity = $this->server->api->entity->get($this->eid);				
 				
 				switch($data["block"]){
-					case 53:
-						
+					case 64://Door placing
+						$blockUp = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
+						if(!isset(Material::$replaceable[$blockUp[0]])){
+							return;
+						}else{
+							$data2 = $data;
+							$data2["meta"] = $data2["meta"] | 0x08;
+							$data["meta"] = $data["meta"] & 0x07;
+							++$data2["y"];
+							$this->server->handle("player.block.place", $data2);
+						}
+						break;
+					case 59://Seeds
+					case 105:
+						$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
+						if($blockDown[0] !== 60){
+							return;
+						}
+						$data["meta"] = 0;
+						break;
+					case 81: //Cactus
+						$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
+						$block0 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"] + 1);
+						$block1 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"] + 1);
+						$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"] - 1);
+						$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"] - 1);
+						if($blockDown[0] !== 12 or $block0[0] !== 0 or $block1[0] !== 0 or $block2[0] !== 0 or $block3[0] !== 0){
+							return;
+						}
 						break;
 				}
 				$this->server->handle("player.block.place", $data);

@@ -314,7 +314,7 @@ class Player{
 							$this->server->handle("player.block.action", $data);
 							break;
 						case MC_PLACE_BLOCK:
-							var_dump($data);
+							
 							break;
 						case MC_REMOVE_BLOCK:
 							$data["eid"] = $this->eid;
