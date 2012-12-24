@@ -16,7 +16,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Hoes tilling dirt
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 - Redstone ore blocks lighting up upon hit or contact
-- Cactus placement requirements (needs open blocks beside)
 - Sapling / flower placement requirements
 - Mushroom placement requirements
 - Reed placement requirements
