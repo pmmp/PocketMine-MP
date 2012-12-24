@@ -113,6 +113,10 @@ class BlockAPI{
 					2,
 				);
 				break;
+			case 60:
+			case 2:
+				$drop = array(3, 0, 1);
+				break;
 			case 64: //Door
 				$drop = array(324, 0, 1);
 				if(($target[1] & 0x08) === 0x08){
@@ -168,11 +172,35 @@ class BlockAPI{
 		}
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		$cancelPlace = false;
-		if(isset(Material::$activable[$target[0]])){			
+		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
+				case 6:
+					break;
 				case 2:
 				case 3:
-				case 6:
+					if($data["block"] === 292){ //Hoe
+						$data["block"] = 60;
+						$data["meta"] = 0;
+						$this->server->trigger("player.block.place", $data);
+						$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+						$cancelPlace = true;
+					}
+				case 59:
+				case 105:
+					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
+						switch($target[0]){
+							case 59:
+							case 105:
+								$data["block"] = $target[0];
+								$data["meta"] = 0x07;
+								$this->server->trigger("player.block.place", $data);
+								$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);								
+								break;
+							case 6:
+								break;
+						}
+						$cancelPlace = true;
+					}					
 					break;
 				case 64: //Door
 					if(($target[1] & 0x08) === 0x08){
