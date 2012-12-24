@@ -6,7 +6,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Random strips and chunks of different land not sticking (the ones shown before world chunks are loaded)
 
 ## Alpha (full Creative)
-- Block Updates
 - Random Chunk Updates
 - Water/lava spread
 - Opening/closing doors, fence gates, trapdoors (reflect it to all players)
@@ -15,7 +14,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Bonemeal use
 - Hoes tilling dirt
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
-- Redstone ore blocks lighting up upon hit or contact
 - Mushroom placement requirements
 - Reed placement requirements
 
