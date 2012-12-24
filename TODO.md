@@ -13,7 +13,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Opening/closing doors, fence gates, trapdoors (reflect it to all players)
 - Fix spawn position resetting
 - Correct block placement for beds
-- Blocks broken to not make drops in creative mode
 - Bonemeal use
 - Hoes tilling dirt
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
