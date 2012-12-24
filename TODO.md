@@ -8,7 +8,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 ## Alpha (full Creative)
 - Random Chunk Updates
 - Water/lava spread
-- Opening/closing doors, fence gates, trapdoors (reflect it to all players)
 - Fix spawn position resetting
 - Correct block placement for beds
 - Bonemeal use

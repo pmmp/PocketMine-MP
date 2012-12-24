@@ -206,6 +206,14 @@ class BlockAPI{
 					}
 					$cancelPlace = true;
 					break;
+				case 96: //Trapdoor
+				case 107: //Fence gates
+					$data["block"] = $target[0];
+					$data["meta"] = $target[1] ^ 0x04;
+					$this->server->trigger("player.block.update", $data);
+					$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+					$cancelPlace = true;
+					break;
 				default:
 					$cancelPlace = true;
 					break;
