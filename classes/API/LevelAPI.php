@@ -36,8 +36,8 @@ class LevelAPI{
 	}
 	
 	public function init(){
-		$this->server->addHandler("player.block.break", array($this, "handle"));
-		$this->server->addHandler("player.block.place", array($this, "handle"));
+		$this->server->event("player.block.break", array($this, "handle"));
+		$this->server->event("player.block.place", array($this, "handle"));
 	}
 	
 	public function handle($data, $event){
@@ -54,14 +54,6 @@ class LevelAPI{
 						break;
 					}
 					$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0);
-					$data["block"] = $block[0];
-					$data["meta"] = $block[1];
-					$data["stack"] = 1;
-					$data["x"] += mt_rand(2, 8) / 10;
-					$data["y"] += mt_rand(2, 8) / 10;
-					$data["z"] += mt_rand(2, 8) / 10;
-					$e = $this->server->api->entity->add(ENTITY_ITEM, $block[0], $data);
-					$this->server->api->entity->spawnToAll($e->eid);
 				break;
 		}
 	}
