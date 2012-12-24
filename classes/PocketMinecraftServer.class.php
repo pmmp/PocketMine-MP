@@ -102,16 +102,16 @@ class PocketMinecraftServer extends stdClass{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->database = new SQLite3(":memory:");
-		$this->query("PRAGMA journal_mode = OFF;");		
-		$this->query("PRAGMA encoding = \"UTF-8\";");
-		$this->query("PRAGMA secure_delete = OFF;");
+		//$this->query("PRAGMA journal_mode = OFF;");		
+		//$this->query("PRAGMA encoding = \"UTF-8\";");
+		//$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
-		$this->query("PRAGMA synchronous = OFF;");
+		//$this->query("PRAGMA synchronous = OFF;");
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
 		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT ID FROM events WHERE name = :name;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
@@ -429,14 +429,11 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function process(){
-		$cnt = 0;
 		while($this->stop === false){
 			$packet = @$this->interface->readPacket();
-			if($packet !== false and $cnt < 20){
+			if($packet !== false){
 				$this->packetHandler($packet);
-				++$cnt;
 			}else{
-				$cnt = 0;
 				usleep(1);
 			}			
 		}
@@ -467,12 +464,16 @@ class PocketMinecraftServer extends stdClass{
 		return false;
 	}
 	
-	public function schedule($ticks, $callback, $data = array(), $eventName = "server.schedule"){
+	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
 		if(!is_callable($callback)){
 			return false;
 		}
+		$add = "";
+		if($repeat === false){
+			$add = ' unset($this->schedule['.$this->scheduleCnt.']);';
+		}
 		$this->schedule[$this->scheduleCnt] = array($callback, $data, $eventName);
-		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.']; unset($this->schedule['.$this->scheduleCnt.']); call_user_func($schedule[0], $schedule[1], $schedule[2]);', false);
+		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.'];'.$add.' call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
 		return $this->scheduleCnt++;
 	}
 	

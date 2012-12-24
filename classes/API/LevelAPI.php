@@ -26,13 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class LevelAPI{
-	private $server, $map, $active = false;
+	private $server, $map;
 	function __construct($server){
 		$this->server = $server;
 		$this->map = $this->server->map;
-		if($this->map !== false){
-			$this->active = true;
-		}
+		$this->heightMap = array_fill(0, 256, array());
 	}
 	
 	public function init(){
@@ -57,42 +55,25 @@ class LevelAPI{
 				break;
 		}
 	}
-	
-	private function check(){
-		if($this->active === true){
-			return true;
-		}elseif($this->active === false and $this->server->map === false){
-			return false;
-		}
-		$this->active = true;
-		return true;
-	}
 
 	public function getChunk($X, $Z){
-		if($this->check() and isset($this->map->map[$X][$Z])){
-			return $this->map->map[$X][$Z];		
-		}
-		return false;
+		return $this->map->map[$X][$Z];		
 	}
 	
 	public function getBlock($x, $y, $z){
-		if($this->check()){
-			return $this->map->getBlock($x, $y, $z);		
-		}
-		return array(0,0);
+		return $this->map->getBlock($x, $y, $z);		
 	}
 	
 	public function getFloor($x, $z){
-		if($this->check()){
-			return $this->map->getFloor($x, $z);		
+		if(!isset($this->heightMap[$z][$x])){
+			$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 		}
-		return 0;
+		return $this->heightMap[$z][$x];
 	}
 	
 	public function setBlock($x, $y, $z, $block, $meta = 0){
-		if($this->check()){
-			$this->map->setBlock($x, $y, $z, $block, $meta);
-		}
+		$this->map->setBlock($x, $y, $z, $block, $meta);
+		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 		$this->server->trigger("world.block.change", array(
 			"x" => $x,
 			"y" => $y,
@@ -105,9 +86,6 @@ class LevelAPI{
 	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){
 		$columnsPerPacket = max(1, (int) $columnsPerPacket);
 		$c = $this->getChunk($X, $Z);
-		if($c === false){
-			return array(str_repeat("\x00", 256));
-		}
 		$ordered = array();
 		$i = 0;
 		$cnt = 0;

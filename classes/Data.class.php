@@ -26,6 +26,25 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class Material{
+	static $flowable = array(
+		0 => true,
+		6 => true,
+		//8 => true,
+		//9 => true,
+		30 => true,
+		31 => true,
+		32 => true,
+		37 => true,
+		38 => true,
+		39 => true,
+		40 => true,
+		50 => true,
+		51 => true,
+		55 => true,
+		59 => true,
+		78 => true,
+		105 => true,
+	);
 	static $unbreakable = array(
 		0 => true,
 		7 => true,

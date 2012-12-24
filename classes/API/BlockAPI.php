@@ -39,7 +39,7 @@ class BlockAPI{
 	}
 	
 	public function init(){
-		$this->server->addHandler("world.block.update", array($this, "handle"));
+		$this->server->addHandler("world.block.update", array($this, "updateBlockRemote"));
 		$this->server->addHandler("player.block.break", array($this, "blockBreak"));
 		$this->server->addHandler("player.block.action", array($this, "blockAction"));
 	}
@@ -175,8 +175,7 @@ class BlockAPI{
 				default:
 					$cancelPlace = true;
 					break;
-			}
-			
+			}			
 		}
 
 		if($cancelPlace === true or $data["face"] < 0 or $data["face"] > 5){
@@ -347,6 +346,7 @@ class BlockAPI{
 				break;
 		}
 		$this->server->trigger("player.block.place", $data);
+		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
 		$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
 	}
 	
@@ -354,15 +354,82 @@ class BlockAPI{
 		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_SCHEDULED);
 	}
 	
-	public function updateBlock($x, $y, $z, $type){
+	public function updateBlockRemote($data, $event){
+		if($event !== "world.block.update"){
+			return;
+		}
+		$this->updateBlock($data["x"], $data["y"], $data["z"], isset($data["type"]) ? $data["type"]:BLOCK_UPDATE_RANDOM);
+	}
+	
+	public function updateBlock($x, $y, $z, $type = BLOCK_UPDATE_NORMAL){
 		$block = $this->server->api->level->getBlock($x, $y, $z);
 		$changed = false;
 
 		switch($block[0]){
+			case 8:
+			case 9:
+				$blockDown = $this->server->api->level->getBlock($x, $y - 1, $z);
+				$down = false;
+				if(isset(Material::$flowable[$blockDown[0]])){
+						$this->server->schedule(5, array($this, "blockScheduler"), array(
+							"x" => $x,
+							"y" => $y - 1,
+							"z" => $z,
+							"type" => BLOCK_UPDATE_NORMAL,
+						));
+						$this->server->api->level->setBlock($x, $y - 1, $z, 8, 8);
+					if($down[0] !== 9){
+						$down = true;
+					}					
+				}
+				if(($block[1] & 0x07) < 7 and ($down === false or $block[0] === 9)){
+					$b0 = $this->server->api->level->getBlock($x + 1, $y, $z);
+					if(isset(Material::$flowable[$b0[0]]) and $b0[0] !== 9){
+						$this->server->schedule(10, array($this, "blockScheduler"), array(
+							"x" => $x + 1,
+							"y" => $y,
+							"z" => $z,
+							"type" => BLOCK_UPDATE_NORMAL,
+						));
+						$this->server->api->level->setBlock($x + 1, $y, $z, 8, ($block[1] + 1) & 0x07);
+					}
+					$b1 = $this->server->api->level->getBlock($x - 1, $y, $z);
+					if(isset(Material::$flowable[$b1[0]]) and $b1[0] !== 9){
+						$this->server->schedule(10, array($this, "blockScheduler"), array(
+							"x" => $x - 1,
+							"y" => $y,
+							"z" => $z,
+							"type" => BLOCK_UPDATE_NORMAL,
+						));
+						$this->server->api->level->setBlock($x - 1, $y, $z, 8, ($block[1] + 1) & 0x07);
+					}
+					$b2 = $this->server->api->level->getBlock($x, $y, $z + 1);
+					if(isset(Material::$flowable[$b2[0]]) and $b2[0] !== 9){
+						$this->server->schedule(10, array($this, "blockScheduler"), array(
+							"x" => $x,
+							"y" => $y,
+							"z" => $z + 1,
+							"type" => BLOCK_UPDATE_NORMAL,
+						));
+						$this->server->api->level->setBlock($x, $y, $z + 1, 8, ($block[1] + 1) & 0x07);
+					}
+					$b3 = $this->server->api->level->getBlock($x, $y, $z - 1);
+					if(isset(Material::$flowable[$b3[0]]) and $b3[0] !== 9){
+						$this->server->schedule(10, array($this, "blockScheduler"), array(
+							"x" => $x,
+							"y" => $y,
+							"z" => $z - 1,
+							"type" => BLOCK_UPDATE_NORMAL,
+						));
+						$this->server->api->level->setBlock($x, $y, $z - 1, 8, ($block[1] + 1) & 0x07);
+					}
+				}
+				break;
 			case 74:
-				if($type === BLOCK_UPDATE_SCHEDULED){
+				if($type === BLOCK_UPDATE_SCHEDULED or $type === BLOCK_UPDATE_RANDOM){
 					$changed = true;
 					$this->server->api->level->setBlock($x, $y, $z, 73, $block[1]);
+					$type = BLOCK_UPDATE_WEAK;
 				}
 				break;
 			case 73:
