@@ -119,7 +119,21 @@ class BlockAPI{
 			return;
 		}
 		
-		//if(!isset(Material::$replaceable[$target[0]])){
+		$replace = false;
+		switch($target[0]){
+			case 44: //Slabs
+				if($data["face"] !== 1){
+					break;
+				}
+				if(($target[1] & 0x07) === ($data["meta"] & 0x07)){
+					$replace = true;
+					$data["block"] = 43;
+					$data["meta"] = $data["meta"] & 0x07;
+				}
+				break;
+		}
+		
+		if($replace === false){
 			switch($data["face"]){
 				case 0:
 					--$data["y"];
@@ -140,14 +154,15 @@ class BlockAPI{
 					++$data["x"];
 					break;
 			}
-		//}
+		}
+			
 		if($data["y"] >= 127){
 			return;
 		}
 		
 		$block = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		
-		if(!isset(Material::$replaceable[$block[0]])){
+		if($replace === false and !isset(Material::$replaceable[$block[0]])){
 			return;
 		}
 		
