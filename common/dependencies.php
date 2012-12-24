@@ -72,7 +72,7 @@ if($errors > 0){
 require_once("classes/Data.class.php");
 require_once("classes/Player.class.php");
 require_once("classes/Generator.class.php");
-require_once("classes/DefaultGenerator.class.php");
+require_once("classes/SuperflatGenerator.class.php");
 require_once("classes/Utils.class.php");
 require_once("classes/UDPSocket.class.php");
 require_once("classes/Packet.class.php");

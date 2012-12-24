@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
-class DefaultGenerator{
+class SuperflatGenerator{
 	private $config, $spawn, $structure;
 	public function __construct($seed){
 		$this->config = array(

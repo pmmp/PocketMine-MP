@@ -124,7 +124,11 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$this->server->mapName = "world";
 			}
 			$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
-			$this->gen = new Generator("DefaultGenerator", $this->server->seed);
+			$generator = "SuperflatGenerator";
+			if($this->getProperty("generator") !== false and class_exists($this->getProperty("generator"))){
+				$generator = $this->getProperty("generator");
+			}
+			$this->gen = new Generator($generator, $this->server->seed);
 			if($this->getProperty("generator-settings") !== false){
 				$this->gen->set("preset", $this->getProperty("generator-settings"));
 			}
