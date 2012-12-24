@@ -224,6 +224,7 @@ class PocketMinecraftServer extends stdClass{
 			console("[INFO] Map: ".$this->level["LevelName"]);
 			$this->time = (int) $this->level["Time"];
 			$this->seed = (int) $this->level["RandomSeed"];
+			$this->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
 			$this->level["Time"] = &$this->time;
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);

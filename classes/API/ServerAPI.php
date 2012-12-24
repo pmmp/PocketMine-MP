@@ -90,7 +90,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		console("[DEBUG] Loading server.properties...", true, true, 2);
 		$this->parseProperties();
 		define("DEBUG", $this->config["debug"]);
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), $this->getProperty("seed"), CURRENT_PROTOCOL, $this->getProperty("port"), $this->getProperty("server-id"));
+		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, CURRENT_PROTOCOL, $this->getProperty("port"), $this->getProperty("server-id"));
 		$this->server->api = $this;
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
@@ -130,21 +130,9 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			}
 			$this->gen->init();
 			$this->gen->generate();
-			$this->gen->save($this->server->mapDir."chunks.dat");
-			$this->setProperty("seed", $this->server->seed);
+			$this->gen->save($this->server->mapDir, $this->server->mapName);
 			$this->setProperty("level-name", $this->server->mapName);
 			$this->setProperty("gamemode", 1);
-			$s = $this->gen->getSpawn();
-			$this->setProperty("spawn", array("x" => $s[0], "y" => $s[1], "z" => $s[2]));
-			$array = array();
-			file_put_contents($this->server->mapDir."entities.dat", serialize($array));
-			file_put_contents($this->server->mapDir."tileEntities.dat", serialize($array));
-			$level = array(
-				"LevelName" => $this->server->mapName,
-				"Time" => 0,
-				"RandomSeed" => $this->server->seed,			
-			);
-			file_put_contents($this->server->mapDir."level.dat", serialize($level));
 		}
 		$this->loadProperties();
 		$this->server->loadMap();
@@ -220,7 +208,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$this->setProperty("level-name", $level["LevelName"]);
 				$this->setProperty("gamemode", $level["GameType"]);
 				$this->server->seed = $level["RandomSeed"];
-				$this->setProperty("spawn", array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]));
+				$this->server->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
 				$this->writeProperties();
 			}
 			console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
@@ -261,7 +249,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$this->server->motd = $this->config["motd"];
 			$this->server->gamemode = $this->config["gamemode"];
 			$this->server->difficulty = $this->config["difficulty"];
-			$this->server->spawn = $this->config["spawn"];
 			$this->server->whitelist = $this->config["white-list"];
 			$this->server->reloadConfig();
 		}
@@ -269,7 +256,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	
 	private function writeProperties(){
 		if(is_object($this->server)){
-			$this->config["seed"] = $this->server->seed;
 			$this->config["server-id"] = $this->server->serverID;
 		}
 		$config = $this->config;
@@ -277,9 +263,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$config["invisible"] = $config["invisible"] === true ? "true":"false";
 		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
 		foreach($config as $n => $v){
-			if($n == "spawn"){
-				$v = implode(";", $v);
-			}
 			$prop .= $n."=".$v."\r\n";
 		}
 		file_put_contents(FILE_PATH."server.properties", $prop);
@@ -324,22 +307,10 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				case "time-per-second":
 					$v = (int) $v;
 					break;
-				case "seed":
-					if($v !== false and preg_match("/[^0-9\-]/", $v) > 0){
-						$str = new Java_String($v);
-						$v = $str->hashCode();
-					}else{
-						$v = (int) $v;
-					}
-					break;
 				case "server-id":
 					if($v !== false){
 						$v = preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v;
 					}
-					break;
-				case "spawn":
-					$v = explode(";", $v);
-					$v = array("x" => floatval($v[0]), "y" => floatval($v[1]), "z" => floatval($v[2]));
 					break;
 			}
 			$this->config[$n] = $v;

@@ -334,9 +334,23 @@ class Generator{
 		return $chunk;
 	}
 	
-	public function save($file){
-		@mkdir(dirname($file), 0777, true);
-		return file_put_contents($file, $this->raw);
+	public function save($dir, $name){
+		@mkdir($dir, 0777, true);
+		file_put_contents($dir."chunks.dat", $this->raw);
+		$s = $this->getSpawn();
+		$array = array();
+		file_put_contents($dir."entities.dat", serialize($array));
+		file_put_contents($dir."tileEntities.dat", serialize($array));
+		$level = array(
+			"LevelName" => $name,
+			"Time" => 0,
+			"Gamemode" => 1,
+			"RandomSeed" => $this->seed,
+			"SpawnX" => $s[0],
+			"SpawnY" => $s[1],
+			"SpawnX" => $s[2],
+		);
+		file_put_contents($dir."level.dat", serialize($level));
 	}
 
 }
