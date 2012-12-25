@@ -192,20 +192,25 @@ class PocketMinecraftServer extends stdClass{
 		return $this->handCnt++;
 	}
 	
-	public function handle($event, $data){
+	public function handle($event, &$data){
 		$this->preparedSQL->selectHandlers->reset();
 		$this->preparedSQL->selectHandlers->clear();
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
-		if($handlers === false or $handlers === true){
-			return $this->trigger($event, $data);
-		}
 		$result = true;
-		while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
-			$hnid = (int) $hn["ID"];
-			$result = call_user_func($this->handlers[$hnid], $data, $event);
+		if($handlers !== false and $handlers !== true){		
+			while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
+				$handler = $this->handlers[(int) $hn["ID"]];
+				if(is_array($handler)){
+					$method = $handler[1];
+					$result = $handler[0]->$method($data, $event);
+				}else{
+					$result = $handler($data, $event);
+				}
+			}					
 		}
-		$handlers->finalize();
+		$handlers->finalize();	
+		$this->trigger($event, $data);
 		return $result;
 	}
 	

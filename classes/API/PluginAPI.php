@@ -57,10 +57,10 @@ class PluginAPI extends stdClass{
 			}
 			$info[$i] = $v;
 		}
-		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"])){
+		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"]) or !isset($info["author"])){
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
 		}
-		console("[INFO] [PluginAPI] Loading plugin \"".$info["name"]."\" ".$info["version"]);
+		console("[INFO] [PluginAPI] Loading plugin \"".$info["name"]."\" ".$info["version"]." by ".$info["author"]);
 		if(eval($content) === false or !class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin");
 		}

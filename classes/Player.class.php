@@ -300,12 +300,13 @@ class Player{
 								$this->server->trigger("entity.move", $this->eid);
 							}
 							break;
-						case MC_PLAYER_EQUIPMENT:
-							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
+						case MC_PLAYER_EQUIPMENT:							
 							$data["eid"] = $this->eid;
-							$this->equipment[0] = $data["block"];
-							$this->equipment[1] = $data["meta"];
-							$this->server->trigger("player.equipment.change", $data);
+							if($this->server->handle("player.equipment.change", $data) !== false){
+								$this->equipment[0] = $data["block"];
+								$this->equipment[1] = $data["meta"];
+								console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
+							}
 							break;
 						case MC_REQUEST_CHUNK:
 							$this->actionQueue('

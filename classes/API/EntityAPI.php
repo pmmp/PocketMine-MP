@@ -29,7 +29,7 @@ class EntityAPI{
 	private $server;
 	function __construct($server){
 		$this->server = $server;
-		$this->server->addHandler("onPlayerDeath", array($this, "handle"), 1);
+		$this->server->addHandler("player.death", array($this, "handle"), 1);
 	}
 	
 	public function init(){
@@ -38,7 +38,7 @@ class EntityAPI{
 	
 	public function handle($data, $event){
 		switch($event){
-			case "onPlayerDeath":
+			case "player.death":
 				$message = $data["name"];
 				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
 					$e = $this->api->entity->get($data["cause"]);

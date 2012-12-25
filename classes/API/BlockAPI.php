@@ -39,9 +39,9 @@ class BlockAPI{
 	}
 	
 	public function init(){
-		$this->server->addHandler("world.block.update", array($this, "updateBlockRemote"));
-		$this->server->addHandler("player.block.break", array($this, "blockBreak"));
-		$this->server->addHandler("player.block.action", array($this, "blockAction"));
+		$this->server->addHandler("world.block.update", array($this, "updateBlockRemote"), 1);
+		$this->server->addHandler("player.block.break", array($this, "blockBreak"), 1);
+		$this->server->addHandler("player.block.action", array($this, "blockAction"), 1);
 	}
 	
 	public function blockBreak($data, $event){
