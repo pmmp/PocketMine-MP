@@ -309,9 +309,34 @@ class BlockAPI{
 		
 		switch($data["block"]){
 			case 6:
+				if($target[0] === 60){
+					break;
+				}
 			case 37:
 			case 38:
 				if($target[0] !== 2 and $target[0] !== 3){
+					return;
+				}
+				break;
+			case 39://Mushrooms
+			case 40:
+				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
+				if(isset(Material::$transparent[$blockDown[0]])){
+					return;
+				}
+				break;
+			case 83: //Sugarcane
+				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
+				if($blockDown[0] !== 2 and $blockDown[0] !== 3 and $blockDown[0] !== 12){
+					return;
+				}
+				$block0 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] + 1);
+				$block1 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] - 1);
+				$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"]);
+				$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"]);
+				if($block0[0] === 9 or $block0[0] === 8 or $block1[0] === 9 or $block1[0] === 8 or $block2[0] === 9 or $block2[0] === 8 or $block3[0] === 9 or $block3[0] === 8){
+				
+				}else{
 					return;
 				}
 				break;

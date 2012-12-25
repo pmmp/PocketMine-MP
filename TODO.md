@@ -16,9 +16,8 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Water/lava spread
 - Fix spawn position resetting
 - Correct block placement for beds
+- Correct chest/furnace placement
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
-- Mushroom placement requirements
-- Reed placement requirements
 
 ## Beta (Survival)
 - Mob spawning, item pick up
