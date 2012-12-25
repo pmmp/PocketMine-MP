@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Player{
 	private $server, $timeout, $connected, $evid, $queue, $buffer;
-	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU, $spawned;
+	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU, $spawned, $equipment;
 	function __construct($server, $clientID, $ip, $port, $MTU){
 		$this->queue = array();
 		$this->buffer = array();
@@ -43,6 +43,7 @@ class Player{
 		$this->port = $port;
 		$this->timeout = microtime(true) + 25;
 		$this->evid = array();
+		$this->equipment = array(1, 0);
 		$this->spawned = false;
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
@@ -112,6 +113,12 @@ class Player{
 	
 	public function eventHandler($data, $event){		
 		switch($event){
+			case "player.equipment.change":
+				if($data["eid"] === $this->eid){
+					break;
+				}
+				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
+				break;
 			case "world.block.change":
 				$this->dataPacket(MC_UPDATE_BLOCK, $data);
 				break;
@@ -278,6 +285,7 @@ class Player{
 							$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("world.block.change", array($this, "eventHandler"));
 							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 							
@@ -294,6 +302,10 @@ class Player{
 							break;
 						case MC_PLAYER_EQUIPMENT:
 							console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
+							$data["eid"] = $this->eid;
+							$this->equipment[0] = $data["block"];
+							$this->equipment[1] = $data["meta"];
+							$this->server->trigger("player.equipment.change", $data);
 							break;
 						case MC_REQUEST_CHUNK:
 							$this->actionQueue('

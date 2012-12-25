@@ -111,6 +111,11 @@ class Entity extends stdClass{
 					"y" => $this->y,
 					"z" => $this->z,
 				));
+				$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
+					"eid" => $this->eid,
+					"block" => $this->player->equipment[0],
+					"meta" => $this->player->equipment[1],
+				));
 				break;
 			case ENTITY_ITEM:
 				$player->dataPacket(MC_ADD_ITEM_ENTITY, array(
