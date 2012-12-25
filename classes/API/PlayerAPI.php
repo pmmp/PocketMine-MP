@@ -199,7 +199,7 @@ class PlayerAPI{
 				),
 				"health" => 20,
 				"lastIP" => "",
-				"lastID" => "",
+				"lastID" => 0,
 			);
 			$this->saveOffline($name, $data);
 		}else{

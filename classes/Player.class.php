@@ -239,6 +239,15 @@ class Player{
 							break;
 						case MC_LOGIN:
 							$this->username = str_replace("/", "", $data["username"]);
+							if($this->username == ""){
+								$this->close("bad username", false);
+								break;								
+							}
+							$o = $this->server->api->player->getOffline($this->username);
+							if($this->server->whitelist !== false and (!in_array($this->username, $this->server->whitelist) or ($o["lastID"] != 0 and $o["lastID"] != $this->clientID))){
+								$this->close("\"".$this->username."\" not being on white-list", false);
+								break;
+							}
 							$u = $this->server->api->player->get($this->username);
 							$c = $this->server->api->player->getByClientID($this->clientID);
 							if($u !== false){
@@ -246,10 +255,6 @@ class Player{
 							}
 							if($c !== false){
 								$c->close("logged in from another location");
-							}
-							if($this->server->whitelist !== false and !in_array($this->username, $this->server->whitelist)){
-								$this->close("\"".$this->username."\" not being on white-list", false);
-								break;
 							}
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
