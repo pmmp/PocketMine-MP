@@ -348,7 +348,7 @@ class Generator{
 			"RandomSeed" => $this->seed,
 			"SpawnX" => $s[0],
 			"SpawnY" => $s[1],
-			"SpawnX" => $s[2],
+			"SpawnZ" => $s[2],
 		);
 		file_put_contents($dir."level.dat", serialize($level));
 	}

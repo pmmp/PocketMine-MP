@@ -228,6 +228,7 @@ class PocketMinecraftServer extends stdClass{
 			$this->seed = (int) $this->level["RandomSeed"];
 			$this->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
 			$this->level["Time"] = &$this->time;
+			console("[INFO] Spawn: X ".$level["SpawnX"]." Y ".$level["SpawnY"]." Z ".$level["SpawnZ"]);
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);
 			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
