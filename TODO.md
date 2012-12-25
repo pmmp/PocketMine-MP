@@ -5,6 +5,12 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 ## Not Fixing
 - Random strips and chunks of different land not sticking (the ones shown before world chunks are loaded)
 
+## Known Bugs
+- Players jerk sometimes
+- Some chunk columns doesn't get loaded
+- Players don't despawn
+
+
 ## Alpha (full Creative)
 - Random Chunk Updates
 - Water/lava spread
