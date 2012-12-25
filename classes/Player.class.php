@@ -297,7 +297,7 @@ class Player{
 							break;
 						case MC_REQUEST_CHUNK:
 							$this->actionQueue('
-							$max = max(1, floor(($this->MTU - 16 - 255) / 192) - 1);
+							$max = max(1, floor(($this->MTU - 16 - 255) / 192));
 							$chunk = $this->server->api->level->getOrderedChunk('.$data["x"].', '.$data["z"].', $max);
 							foreach($chunk as $d){
 								$this->dataPacket(MC_CHUNK_DATA, array(
