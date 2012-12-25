@@ -94,7 +94,7 @@ class SuperflatGenerator{
 		if(floor(sqrt(pow($x - $this->spawn[0], 2) + pow($z - $this->spawn[2], 2))) <= $this->config["spawn-radius"]){
 			$column[0]{strlen($column[0])-1} = chr($this->config["spawn-surface"]);
 		}
-		if(($x % 8) === 0 and ($z % 8) === 0){
+		if(($x % 8) === 0 and ($z % 8) === 0 and $this->config["torches"] === 1){
 			$column[0] .= chr(50);
 		}
 		$column[0] .= str_repeat(chr(0), 128 - strlen($column[0]));
