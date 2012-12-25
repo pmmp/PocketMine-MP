@@ -112,7 +112,6 @@ class Material{
 		61 => true,
 		62 => true,
 		64 => true,
-		73 => true,
 		78 => true,
 		96 => true,
 		105 => true,
