@@ -129,7 +129,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$generator = $this->getProperty("generator");
 			}
 			$this->gen = new Generator($generator, $this->server->seed);
-			if($this->getProperty("generator-settings") !== false){
+			if($this->getProperty("generator-settings") !== false or trim($this->getProperty("generator-settings")) != ""){
 				$this->gen->set("preset", $this->getProperty("generator-settings"));
 			}
 			$this->gen->init();
