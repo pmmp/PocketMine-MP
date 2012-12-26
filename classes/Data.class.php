@@ -25,12 +25,46 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+class BlockFace{
+	const BOTTOM = 0;
+	const TOP = 1;
+	const DOWN = 0;
+	const UP = 1;
+	const SOUTH = 3;
+	const EAST = 5;
+	const NORTH = 2;
+	const WEST = 4;
+	public static function setPosition(&$data, $face){
+		switch((int) $face){
+			case 0:
+				--$data["y"];
+				break;
+			case 1:
+				++$data["y"];
+				break;
+			case 2:
+				--$data["z"];
+				break;
+			case 3:
+				++$data["z"];
+				break;
+			case 4:
+				--$data["x"];
+				break;
+			case 5:
+				++$data["x"];
+				break;
+			default:
+				return false;
+		}
+		return true;
+	}
+}
+
 class Material{
 	static $flowable = array(
 		0 => true,
 		6 => true,
-		//8 => true,
-		//9 => true,
 		30 => true,
 		31 => true,
 		32 => true,

@@ -66,8 +66,15 @@ class LevelAPI{
 		return $this->map->map[$X][$Z];		
 	}
 	
+	public function getBlockFace($x, $y, $z, $face){
+		$data = array("x" => $x, "y" => $y, "z" => $z);
+		BlockFace::setPosition($data, $face);
+		return $this->getBlock($data["x"], $data["y"], $data["z"]);
+	}
+	
 	public function getBlock($x, $y, $z){
-		return $this->map->getBlock($x, $y, $z);		
+		$b = $this->map->getBlock($x, $y, $z);
+		$b[2] = array($x, $y, $z);
 	}
 	
 	public function getFloor($x, $z){
