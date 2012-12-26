@@ -99,6 +99,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			if($this->getProperty("update-channel") == "dev" or $this->getProperty("update-channel") == "development"){
 				$channel = "dev";
 			}
+			$this->setProperty("update-channel", $channel);
 			
 			if($channel === "dev"){
 				$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/PocketMine-MP"), true);
