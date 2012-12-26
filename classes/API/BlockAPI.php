@@ -398,6 +398,26 @@ class BlockAPI{
 				);
 				$data["meta"] = $faces[$direction];
 				break;
+			case 26: //bed
+				$face = array(
+					0 => 3,
+					1 => 4,
+					2 => 2,
+					3 => 5,
+				);
+				$next = $this->server->api->level->getBlockFace($block, $face[(($direction + 3) % 4)]);
+				if(!isset(Material::$replaceable[$next[0]])){
+					return false;
+				}
+				$data["meta"] = (($direction + 3) % 4) & 0x3;
+				$data2 = $data;
+				$data2["meta"] = $data2["meta"] | 0x08;
+				$data2["x"] = $next[2][0];
+				$data2["y"] = $next[2][1];
+				$data2["z"] = $next[2][2];
+				$this->server->trigger("player.block.place", $data2);
+				$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+				break;
 			case 65: //Ladder
 				if(isset(Material::$transparent[$target[0]])){
 					return false;
