@@ -10,7 +10,7 @@ class=SpawnChanger
 */
 
 
-class SpawnChanger{
+class SpawnChanger implements Plugin{
 	private $api, $config, $path;
 	public function __construct($api, $server = false){
 		$this->api = $api;
@@ -37,6 +37,10 @@ class SpawnChanger{
 		$this->api->console->register("spawn", "Teleports to spawn", array($this, "command"));
 	}
 	
+	public function __destruct(){
+	
+	}	
+
 	public function command($cmd, $args){
 		switch($cmd){
 			case "spawnchanger":

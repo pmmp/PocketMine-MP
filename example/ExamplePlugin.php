@@ -9,7 +9,7 @@ class=ExamplePlugin
 */
 
 
-class ExamplePlugin{
+class ExamplePlugin implements Plugin{
 	private $api;
 	public function __construct($api, $server = false){
 		$this->api = $api;
@@ -17,6 +17,10 @@ class ExamplePlugin{
 	
 	public function init(){
 		$this->api->console->register("example", "Example command", array($this, "handleCommand"));
+	}
+	
+	public function __destruct(){
+	
 	}
 	
 	public function handleCommand($cmd, $arg){

@@ -10,7 +10,7 @@ class=ReactorAsWater
 */
 
 
-class ReactorAsWater{
+class ReactorAsWater implements Plugin{
 	private $api;
 	public function __construct($api, $server = false){
 		$this->api = $api;
@@ -20,7 +20,10 @@ class ReactorAsWater{
 		$this->api->addHandler("player.block.action", array($this, "handle"), 15); //Priority higher that API
 		$this->api->addHandler("player.equipment.change", array($this, "handle"), 15);
 	}
-
+	
+	public function __destruct(){
+	
+	}
 	
 	public function handle(&$data, $event){
 		switch($event){

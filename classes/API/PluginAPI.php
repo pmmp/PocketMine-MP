@@ -161,3 +161,10 @@ class PluginAPI extends stdClass{
 		}
 	}
 }
+
+
+interface Plugin{
+	public function __construct($api, $server = false);
+	public function init();
+	public function __destruct();
+}
