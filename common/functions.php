@@ -26,6 +26,29 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
+function hard_unset(&$var){
+	if(is_object($var)){
+		$unset = new ReflectionClass($var);
+		foreach($unset->getProperties() as $prop){
+			$prop->setAccessible(true);
+			@hard_unset($prop->getValue($var));
+			$prop->setValue($var, null);
+		}
+		$var = null;
+		unset($var);
+	}elseif(is_array($var)){
+		foreach($var as $i => $v){
+			hard_unset($var[$i]);
+		}
+		$var = null;
+		unset($var);
+	}else{
+		$var = null;
+		unset($var);
+	}
+}
+
+
 function parseNBTData($data){
 	$x = array();
 	if(isset($data["value"])){

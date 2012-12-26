@@ -23,7 +23,17 @@ while(true){
 	if($server->start() !== true){
 		break;
 	}else{
+		console("[INFO] Cleaning up...");
+		hard_unset($server);
+		$excludeList = array("GLOBALS", "_FILES", "_COOKIE", "_POST", "_GET", "excludeList");
+		foreach(get_defined_vars() as $key => $value){
+			if(!in_array($key, $excludeList)){
+				$$key = null;
+				unset($$key);
+			}
+		}
 		$server = null;
+		unset($server);
 		console("[NOTICE] The server is restarting... (".gc_collect_cycles()." cycles collected)", true, true, 0);
 	}
 }
