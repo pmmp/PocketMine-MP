@@ -442,7 +442,7 @@ class BlockAPI{
 	public function flowOn($source, $face){
 		$down = 0;
 		if($face === BlockFace::BOTTOM){
-			$level = 0x00;
+			$level = 0;
 			$down = 1;
 		}else{
 			$level = ($source[1] & 0x07) + 1;
@@ -452,26 +452,15 @@ class BlockAPI{
 		}
 		$spread = $this->server->api->level->getBlockFace($source, $face);
 		if(($source[0] === 8 or $source[0] === 9) and $spread[0] === 8){
-			if($source[0] === 9 and ($spread[1] & 0x07) === 0){
+			if($level < ($spread[1] & 0x07)){
 				$this->server->schedule(10, array($this, "blockScheduler"), array(
-							"x" => $spread[2][0],
-							"y" => $spread[2][1],
-							"z" => $spread[2][2],
-							"type" => BLOCK_UPDATE_NORMAL,
+					"x" => $spread[2][0],
+					"y" => $spread[2][1],
+					"z" => $spread[2][2],
+					"type" => BLOCK_UPDATE_NORMAL,
 				));
-				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 9, 0);
+				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down);
 				return true;
-			}else{
-				if($level < ($spread[1] & 0x07)){
-					$this->server->schedule(10, array($this, "blockScheduler"), array(
-						"x" => $spread[2][0],
-						"y" => $spread[2][1],
-						"z" => $spread[2][2],
-						"type" => BLOCK_UPDATE_NORMAL,
-					));
-					$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down);
-					return true;
-				}
 			}
 		}elseif(isset(Material::$flowable[$spread[0]])){
 			$this->server->schedule(10, array($this, "blockScheduler"), array(
