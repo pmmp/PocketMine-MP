@@ -50,7 +50,7 @@ class BlockAPI{
 		}
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		if(isset(Material::$unbreakable[$target[0]])){
-			return;
+			return false;
 		}
 		$drop = array(
 			$target[0], //Block
@@ -143,6 +143,7 @@ class BlockAPI{
 		}
 		$this->server->trigger("player.block.break", $data);		
 		$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+		return false;
 	}
 	
 	public function drop($x, $y, $z, $block, $meta, $stack = 1){
