@@ -198,7 +198,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = true;
-		if($handlers !== false and $handlers !== true){		
+		if($handlers !== false and $handlers !== true){			
 			while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
 				$handler = $this->handlers[(int) $hn["ID"]];
 				if(is_array($handler)){
@@ -209,8 +209,10 @@ class PocketMinecraftServer extends stdClass{
 				}
 			}					
 		}
-		$handlers->finalize();	
-		$this->trigger($event, $data);
+		$handlers->finalize();
+		if($result !== false){
+			$this->trigger($event, $data);
+		}
 		return $result;
 	}
 	
