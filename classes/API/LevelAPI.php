@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class LevelAPI{
 	private $server, $map;
-	function __construct($server){
+	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 		$this->map = $this->server->map;
 		$this->heightMap = array_fill(0, 256, array());

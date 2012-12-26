@@ -27,12 +27,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 class EntityAPI{
 	private $server;
-	function __construct($server){
+	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
-		$this->server->addHandler("player.death", array($this, "handle"), 1);
 	}
 	
 	public function init(){
+		$this->server->addHandler("player.death", array($this, "handle"), 1);
 		$this->server->api->console->register("give", "Give items to a player [DUMMY]", array($this, "commandHandler"));
 	}
 	

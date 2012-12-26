@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ConsoleAPI{
 	private $input, $server, $event;
-	function __construct($server){
+	function __construct(PocketMinecraftServer $server){
 		$this->help = array();
 		$this->server = $server;
 		$this->input = fopen(FILE_PATH."console.in", "w+b");

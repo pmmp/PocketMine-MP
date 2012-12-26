@@ -27,12 +27,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PlayerAPI{
 	private $server;
-	function __construct($server){
+	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
-		$this->server->event("server.regeneration", array($this, "handle"));
 	}
 	
 	public function init(){
+		$this->server->event("server.regeneration", array($this, "handle"));
 		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
