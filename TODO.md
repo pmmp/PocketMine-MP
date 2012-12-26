@@ -9,15 +9,14 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Players jerk sometimes
 - Some chunk columns doesn't get loaded
 - Players don't despawn
-
-
-## Alpha (full Creative)
-- Random Chunk Updates
-- Correct block placement for beds
-- Correct chest/furnace placement
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 
+## Alpha (full Creative)
+- Correct block placement for beds
+- Correct chest/furnace placement
+
 ## Beta (Survival)
+- Random Chunk Updates
 - Mob spawning, item pick up
 - Mob behavior
 - Placing Paintings
