@@ -485,7 +485,7 @@ class BlockAPI{
 		switch($block[0]){
 			case 8:
 			case 9:
-				if(!$this->flowOn($block, 0) xor $block[0] === 9){
+				if(!$this->flowOn($block, 0) or $block[0] === 9){
 					$this->flowOn($block, 2);
 					$this->flowOn($block, 3);
 					$this->flowOn($block, 4);
