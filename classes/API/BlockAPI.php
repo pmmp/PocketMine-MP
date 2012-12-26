@@ -438,8 +438,47 @@ class BlockAPI{
 		}
 		$this->updateBlock($data["x"], $data["y"], $data["z"], isset($data["type"]) ? $data["type"]:BLOCK_UPDATE_RANDOM);
 	}
+
+	public function flowLavaOn($source, $face){
+		$down = 0;
+		if($face === BlockFace::BOTTOM){
+			$level = 0;
+			$down = 1;
+		}else{
+			$level = ($source[1] & 0x07) + 2;
+			if($level > 0x07){
+				return false;
+			}
+		}
+		$spread = $this->server->api->level->getBlockFace($source, $face);
+		if(($source[0] === 10 or $source[0] === 11) and $spread[0] === 10){
+			if($level < ($spread[1] & 0x07)){
+				$this->server->schedule(20, array($this, "blockScheduler"), array(
+					"x" => $spread[2][0],
+					"y" => $spread[2][1],
+					"z" => $spread[2][2],
+					"type" => BLOCK_UPDATE_NORMAL,
+				));
+				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down);
+				return true;
+			}
+		}elseif(isset(Material::$flowable[$spread[0]])){
+			$this->server->schedule(20, array($this, "blockScheduler"), array(
+				"x" => $spread[2][0],
+				"y" => $spread[2][1],
+				"z" => $spread[2][2],
+				"type" => BLOCK_UPDATE_NORMAL,
+			));
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 10, $level | $down);
+			return true;			
+		}elseif(($source[1] & 0x08) === 0x08){
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07);
+			return true;
+		}
+		return false;
+	}
 	
-	public function flowOn($source, $face){
+	public function flowWaterOn($source, $face){
 		$down = 0;
 		if($face === BlockFace::BOTTOM){
 			$level = 0;
@@ -485,11 +524,11 @@ class BlockAPI{
 		switch($block[0]){
 			case 8:
 			case 9:
-				if(!$this->flowOn($block, 0) or $block[0] === 9){
-					$this->flowOn($block, 2);
-					$this->flowOn($block, 3);
-					$this->flowOn($block, 4);
-					$this->flowOn($block, 5);
+				if(!$this->flowWaterOn($block, 0) or $block[0] === 9){
+					$this->flowWaterOn($block, 2);
+					$this->flowWaterOn($block, 3);
+					$this->flowWaterOn($block, 4);
+					$this->flowWaterOn($block, 5);
 				}
 				if($block[0] === 8){
 					$drained = true;
@@ -585,6 +624,118 @@ class BlockAPI{
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
 							$this->server->schedule(10, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1],
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], $block[0], $block[1]);
+						}
+					}
+				}				
+				break;
+			case 10:
+			case 11:
+				if(!$this->flowLavaOn($block, 0) or $block[0] === 11){
+					$this->flowLavaOn($block, 2);
+					$this->flowLavaOn($block, 3);
+					$this->flowLavaOn($block, 4);
+					$this->flowLavaOn($block, 5);
+				}
+				if($block[0] === 10){
+					$drained = true;
+					$level = $block[1] & 0x07;
+					$up = $this->server->api->level->getBlockFace($block, BlockFace::UP);
+					if($up[0] === 10 or $up[0] === 11){
+						$drained = false;
+					}else{
+						$b = $this->server->api->level->getBlockFace($block, BlockFace::NORTH);
+						if($b[0] === 11 or ($b[0] === 10 and ($b[1] & 0x08) === 0 and ($b[1] & 0x07) < $level)){
+							$drained = false;
+						}else{
+							$b = $this->server->api->level->getBlockFace($block, BlockFace::SOUTH);
+							if($b[0] === 11 or ($b[0] === 10 and ($b[1] & 0x08) === 0 and ($b[1] & 0x07) < $level)){
+								$drained = false;
+							}else{
+								$b = $this->server->api->level->getBlockFace($block, BlockFace::EAST);
+								if($b[0] === 11 or ($b[0] === 10 and ($b[1] & 0x08) === 0 and ($b[1] & 0x07) < $level)){
+									$drained = false;
+								}else{
+									$b = $this->server->api->level->getBlockFace($block, BlockFace::WEST);
+									if($b[0] === 11 or ($b[0] === 10 and ($b[1] & 0x08) === 0 and ($b[1] & 0x07) < $level)){
+										$drained = false;
+									}
+								}
+							}
+						}
+					}
+					if($drained === true){
+						++$level;
+						if($level > 0x07){
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0] + 1,
+								"y" => $block[2][1],
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0] - 1,
+								"y" => $block[2][1],
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1],
+								"z" => $block[2][2] + 1,
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1],
+								"z" => $block[2][2] - 1,
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1] - 1,
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0);						
+						}else{
+							$block[1] = ($block[1] & 0x08) | $level;
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0] + 1,
+								"y" => $block[2][1],
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0] - 1,
+								"y" => $block[2][1],
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1],
+								"z" => $block[2][2] + 1,
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1],
+								"z" => $block[2][2] - 1,
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1] - 1,
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							$this->server->schedule(20, array($this, "blockScheduler"), array(
 								"x" => $block[2][0],
 								"y" => $block[2][1],
 								"z" => $block[2][2],

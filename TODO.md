@@ -13,7 +13,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 
 ## Alpha (full Creative)
 - Random Chunk Updates
-- Lava spread
 - Correct block placement for beds
 - Correct chest/furnace placement
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
