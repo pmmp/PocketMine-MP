@@ -183,7 +183,10 @@ class PocketMinecraftServer extends stdClass{
 		
 	}
 	
-	public function addHandler($event, callable $callable, $priority = 5){
+	public function addHandler($event, $callable, $priority = 5){
+		if(!is_callable($callable)){
+			return false;
+		}
 		$priority = (int) $priority;
 		$this->handlers[$this->handCnt] = $callable;
 		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (".$this->handCnt.", '".str_replace("'", "\\'", $event)."', ".$priority.");");
@@ -474,7 +477,10 @@ class PocketMinecraftServer extends stdClass{
 		return false;
 	}
 	
-	public function schedule($ticks, callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
+	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
+		if(!is_callable($callback)){
+			return false;
+		}
 		$add = "";
 		if($repeat === false){
 			$add = ' unset($this->schedule['.$this->scheduleCnt.']);';
@@ -512,7 +518,10 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->updateActions->execute();
 	}	
 	
-	public function event($event, callable $func){
+	public function event($event, $func){
+		if(!is_callable($func)){
+			return false;
+		}
 		$this->events[$this->evCnt] = $func;
 		$this->query("INSERT INTO events (ID, name) VALUES (".$this->evCnt.", '".str_replace("'", "\\'", $event)."');");
 		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->evCnt.")", true, true, 3);

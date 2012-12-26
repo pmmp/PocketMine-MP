@@ -221,7 +221,10 @@ class ConsoleAPI{
 			}
 	}
 	
-	public function register($cmd, $help,callable $callback){
+	public function register($cmd, $help,$callback){
+		if(!is_callable($callback)){
+			return false;
+		}
 		$this->help[strtolower(trim($cmd))] = array($help, $callback);
 	}
 	
