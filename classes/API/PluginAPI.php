@@ -30,9 +30,26 @@ class PluginAPI extends stdClass{
 	public function __construct($server){
 		$this->server = $server;
 		$this->plugins = array();
+		require_once("classes/Spyc.class.php"); //YAML parser
 	}
 	
-	private function load($file){
+	public function getList(){
+		$list = array();
+		foreach($this->plugins as $p){
+			$list[] = $p[1];
+		}
+		return $list;
+	}
+	
+	public function getInfo($className){
+		if(!isset($this->plugins[$className])){
+			return false;
+		}
+		$plugin = $this->plugins[$className];
+		return array($plugin[1], get_class_methods($plugin[0]));
+	}
+	
+	public function load($file){
 		$content = file_get_contents($file);
 		$info = strstr($content, "*/", true);
 		$content = substr(strstr($content, "*/"),2);
@@ -61,8 +78,11 @@ class PluginAPI extends stdClass{
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
 		}
 		console("[INFO] [PluginAPI] Loading plugin \"".$info["name"]."\" ".$info["version"]." by ".$info["author"]);
+		if(class_exists($info["class"])){
+			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
+		}
 		if(eval($content) === false or !class_exists($info["class"])){
-			console("[ERROR] [PluginAPI] Failed loading plugin");
+			console("[ERROR] [PluginAPI] Failed loading plugin: evaluation error");
 		}
 		$className = trim($info["class"]);
 		if(isset($info["api"]) and $info["api"] !== true){
@@ -72,7 +92,59 @@ class PluginAPI extends stdClass{
 		$this->plugins[$className] = array($object, $info);
 	}
 	
+	public function get($plugin){
+		foreach($this->plugins as &$p){
+			if($p[0] === $plugin){
+				return $p;
+			}
+		}
+		return false;
+	}
+	
+	public function createConfig($plugin, $default = array()){
+		$p = $this->get($plugin);
+		if($p === false){
+			return false;
+		}
+		$path = FILE_PATH."data/plugins/".$p[1]["name"]."/";
+		$this->plugins[$p[1]["class"]][1]["path"] = $path;
+		if(!file_exists($path."config.yml")){
+			@mkdir($path, 0777);
+			$this->writeYAML($path."config.yml", $default);
+		}else{
+			$data = $this->readYAML($path."config.yml");
+			$this->fillDefaults($default, $data);
+			$this->writeYAML($path."config.yml", $data);
+		}
+		return $path;
+	}
+	
+	private function fillDefaults($default, &$yaml){
+		foreach($default as $k => $v){
+			if(is_array($v)){
+				if(!isset($yaml[$k]) or !is_array($yaml[$k])){
+					$yaml[$k] = array();
+				}
+				$this->fillDefaults($v, $yaml[$k]);
+			}elseif(!isset($yaml[$k])){
+				$yaml[$k] = $v;
+			}
+		}
+	}
+	
+	public function readYAML($file){
+		return Spyc::YAMLLoad(file_get_contents($file));
+	}
+	
+	public function writeYAML($file, $data){
+		return file_put_contents($file, Spyc::YAMLDump($data));
+	}
+	
 	public function init(){
+		$this->server->event("server.start", array($this, "loadAll"));
+	}
+	
+	public function loadAll(){
 		console("[INFO] Loading Plugins...");
 		$dir = dir(FILE_PATH."data/plugins/");
 		while(false !== ($file = $dir->read())){
