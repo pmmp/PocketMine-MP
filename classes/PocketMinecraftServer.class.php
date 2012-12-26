@@ -86,8 +86,8 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function loadEvents(){		
-		$this->event("server.chat", "eventHandler", true);
-		$this->event("player.new", "eventHandler", true);
+		$this->event("server.chat", array($this, "eventHandler"));
+		$this->event("player.new", array($this, "eventHandler"));
 		
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("server.time.change", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->trigger("server.regeneration", 1);}');
@@ -181,7 +181,7 @@ class PocketMinecraftServer extends stdClass{
 		
 	}
 	
-	public function addHandler($event, $callable, $priority = 5){
+	public function addHandler($event, callable $callable, $priority = 5){
 		if(!is_callable($callable)){
 			return false;
 		}
@@ -475,7 +475,7 @@ class PocketMinecraftServer extends stdClass{
 		return false;
 	}
 	
-	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
+	public function schedule($ticks, callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
 		if(!is_callable($callback)){
 			return false;
 		}
@@ -516,10 +516,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->updateActions->execute();
 	}	
 	
-	public function event($event, $func, $in = false){
-		if($in === true){
-			$func = array($this, $func);
-		}
+	public function event($event,callable $func){
 		if(!is_callable($func)){
 			return false;
 		}
