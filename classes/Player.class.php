@@ -244,7 +244,7 @@ class Player{
 								break;								
 							}
 							$o = $this->server->api->player->getOffline($this->username);
-							if($this->server->whitelist !== false and (!in_array($this->username, $this->server->whitelist) or ($o["lastID"] != 0 and $o["lastID"] != $this->clientID))){
+							if($this->server->whitelist !== false and (!in_array($this->username, $this->server->whitelist)/* or ($o["lastID"] != 0 and $o["lastID"] != $this->clientID)*/)){
 								$this->close("\"".$this->username."\" not being on white-list", false);
 								break;
 							}
