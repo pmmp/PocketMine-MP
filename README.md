@@ -47,6 +47,7 @@ Current features of the server:
 * Full Creative mode!
 * Plugin API
 * Custom world generation
+* Update Channels!! (stable / dev)
 
 
 How to contact me

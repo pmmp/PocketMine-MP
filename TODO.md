@@ -17,7 +17,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 ### Alpha v1.1
 
 
-
 ## Beta (Survival)
 - Random Chunk Updates
 - Mob spawning, item pick up

@@ -95,22 +95,47 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
 			console("[INFO] Last check: ".date("Y-m-d H:i:s", $this->getProperty("last-update")));
-			$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/PocketMine-MP"), true);
-			if($info === false or !isset($info["updated_at"])){
-				console("[ERROR] GitHub API Error");
-			}else{
-				$last = new DateTime($info["updated_at"]);
-				$last = $last->getTimestamp();
-				if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
-					console("[NOTICE] PocketMine-MP has been updated at ".date("Y-m-d H:i:s", $last));
-					console("[NOTICE] If you want to update, get the latest version at https://github.com/shoghicp/PocketMine-MP/archive/master.zip");
-					console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
-					sleep(3);
+			$channel = "stable";
+			if($this->getProperty("update-channel") == "dev" or $this->getProperty("update-channel") == "development"){
+				$channel = "dev";
+			}
+			
+			if($channel === "dev"){
+				$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/PocketMine-MP"), true);
+				if($info === false or !isset($info["updated_at"])){
+					console("[ERROR] GitHub API Error");
 				}else{
-					$last = time();
-					$this->setProperty("last-update", $last);
-					console("[INFO] This is the latest version");
+					$last = new DateTime($info["updated_at"]);
+					$last = $last->getTimestamp();
+					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
+						console("[NOTICE] A new DEVELOPMENT version of PocketMine-MP has been released");
+						console("[NOTICE] If you want to update, get the latest version at https://github.com/shoghicp/PocketMine-MP/archive/master.zip");
+						console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
+						sleep(3);
+					}else{
+						$this->setProperty("last-update", time());
+						console("[INFO] This is the latest DEVELOPMENT version");
+					}
 				}
+			}else{
+				$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/PocketMine-MP/tags"), true);
+				if($info === false or !isset($info[0])){
+					console("[ERROR] GitHub API Error");
+				}else{
+					$info = $info[0];
+					var_dump($info);
+					if($info["name"] != MAJOR_VERSION){
+						console("[NOTICE] A new STABLE version of PocketMine-MP has been released");
+						console("[NOTICE] Version \"".$info["name"]."\" [".substr($info["commit"]["sha"], 0, 10)."]");
+						console("[NOTICE] Download it at ".$info["zipball_url"]);
+						console("[NOTICE] This message will dissapear as soon as you update\"");
+						sleep(5);
+					}else{
+						$this->setProperty("last-update", time());
+						console("[INFO] This is the latest STABLE version");
+					}
+				}
+			
 			}
 		}
 		if(file_exists(FILE_PATH."data/maps/level.dat")){
