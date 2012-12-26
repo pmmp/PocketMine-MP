@@ -124,7 +124,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 					console("[ERROR] GitHub API Error");
 				}else{
 					$info = $info[0];
-					var_dump($info);
 					if($info["name"] != MAJOR_VERSION){
 						console("[NOTICE] A new STABLE version of PocketMine-MP has been released");
 						console("[NOTICE] Version \"".$info["name"]."\" [".substr($info["commit"]["sha"], 0, 10)."]");
