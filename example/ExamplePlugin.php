@@ -2,7 +2,7 @@
 
 /*
 __PocketMine Plugin__
-name=Example Plugin
+name=ExamplePlugin
 version=0.0.1
 author=shoghicp
 class=ExamplePlugin
