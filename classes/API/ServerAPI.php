@@ -162,79 +162,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$this->server->loadEntities();
 	}
 	
-	public function getList(){
-		return $this->apiList;
-	}
-	
-	public function loadAPI($name, $class, $dir = false){
-		if($dir === false){
-			$dir = FILE_PATH."classes/API/";
-		}
-		$file = $dir.$class.".php";
-		if(!file_exists($file)){
-			console("[ERROR] API ".$name." [".$class."] in ".$dir." doesn't exist", true, true, 0);
-			return false;
-		}
-		require_once($file);
-		$this->$name = new $class($this->server);
-		$this->apiList[] = $name;
-		console("[INFO] API ".$name." [".$class."] loaded");
-	}
-	
-	public function importMap($dir, $remove = false){
-		if(file_exists($dir."level.dat")){
-			$nbt = new NBT();
-			$level = parseNBTData($nbt->loadFile($dir."level.dat"));
-			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
-			unset($level["Player"]);
-			$lvName = $level["LevelName"]."/";
-			@mkdir(FILE_PATH."data/maps/".$lvName, 0777);	
-			file_put_contents(FILE_PATH."data/maps/".$lvName."level.dat", serialize($level));
-			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
-			file_put_contents(FILE_PATH."data/maps/".$lvName."entities.dat", serialize($entities["Entities"]));
-			if(!isset($entities["TileEntities"])){
-				$entities["TileEntities"] = array();
-			}
-			file_put_contents(FILE_PATH."data/maps/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
-			console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
-			
-			if($remove === true){
-				rename($dir."chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
-				unlink($dir."level.dat");
-				@unlink($dir."level.dat_old");
-				@unlink($dir."player.dat");
-				unlink($dir."entities.dat");
-			}else{
-				copy($dir."chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
-			}
-			if($this->getProperty("level-name") === false){
-				console("[INFO] Setting default level to \"".$level["LevelName"]."\"");
-				$this->setProperty("level-name", $level["LevelName"]);
-				$this->setProperty("gamemode", $level["GameType"]);
-				$this->server->seed = $level["RandomSeed"];
-				$this->server->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
-				$this->writeProperties();
-			}
-			console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
-			unset($level, $entities, $nbt);		
-			return true;
-		}
-		return false;
-	}
-	
-	public function getProperty($name){
-		if(isset($this->config[$name])){
-			return $this->config[$name];
-		}
-		return false;
-	}
-	
-	public function setProperty($name, $value){
-		$this->config[$name] = $value;
-		$this->writeProperties();
-		$this->loadProperties();
-	}
-	
 	private function loadProperties(){
 		if(isset($this->config["memory-limit"])){
 			@ini_set("memory_limit", $this->config["memory-limit"]);
@@ -327,6 +254,108 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		unset($this->server);
 		return $this->restart;
 	}
+	
+	/*-------------------------------------------------------------*/
 
+	public function addHandler($e, $c, $p = 5){
+		return $this->server->addHandler($e, $c, $p);
+	}
+	
+	public function handle($e, &$d){
+		return $this->server->handle($e, $d);
+	}
+	
+	public function action($t, $c, $r = true){
+		return $this->server->action($t, $c, $r);
+	}
+	
+	public function schedule($t, $c, $d, $r = false, $e = "server.schedule"){
+		return $this->server->schedule($t, $c, $d, $r, $e);
+	}
+	
+	public function event($e, $d){
+		return $this->server->event($e, $d);
+	}
+	
+	public function trigger($e, $d){
+		return $this->server->trigger($e, $d);
+	}
+	
+	public function deleteEvent($id){
+		return $this->server->deleteEvent($id);
+	}
+	
+	public function importMap($dir, $remove = false){
+		if(file_exists($dir."level.dat")){
+			$nbt = new NBT();
+			$level = parseNBTData($nbt->loadFile($dir."level.dat"));
+			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
+			unset($level["Player"]);
+			$lvName = $level["LevelName"]."/";
+			@mkdir(FILE_PATH."data/maps/".$lvName, 0777);	
+			file_put_contents(FILE_PATH."data/maps/".$lvName."level.dat", serialize($level));
+			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
+			file_put_contents(FILE_PATH."data/maps/".$lvName."entities.dat", serialize($entities["Entities"]));
+			if(!isset($entities["TileEntities"])){
+				$entities["TileEntities"] = array();
+			}
+			file_put_contents(FILE_PATH."data/maps/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
+			console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
+			
+			if($remove === true){
+				rename($dir."chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
+				unlink($dir."level.dat");
+				@unlink($dir."level.dat_old");
+				@unlink($dir."player.dat");
+				unlink($dir."entities.dat");
+			}else{
+				copy($dir."chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
+			}
+			if($this->getProperty("level-name") === false){
+				console("[INFO] Setting default level to \"".$level["LevelName"]."\"");
+				$this->setProperty("level-name", $level["LevelName"]);
+				$this->setProperty("gamemode", $level["GameType"]);
+				$this->server->seed = $level["RandomSeed"];
+				$this->server->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
+				$this->writeProperties();
+			}
+			console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
+			unset($level, $entities, $nbt);		
+			return true;
+		}
+		return false;
+	}
+	
+	public function getProperty($name){
+		if(isset($this->config[$name])){
+			return $this->config[$name];
+		}
+		return false;
+	}
+	
+	public function setProperty($name, $value){
+		$this->config[$name] = $value;
+		$this->writeProperties();
+		$this->loadProperties();
+	}
+	
+	public function getList(){
+		return $this->apiList;
+	}
+	
+	public function loadAPI($name, $class, $dir = false){
+		if($dir === false){
+			$dir = FILE_PATH."classes/API/";
+		}
+		$file = $dir.$class.".php";
+		if(!file_exists($file)){
+			console("[ERROR] API ".$name." [".$class."] in ".$dir." doesn't exist", true, true, 0);
+			return false;
+		}
+		require_once($file);
+		$this->$name = new $class($this->server);
+		$this->apiList[] = $name;
+		console("[INFO] API ".$name." [".$class."] loaded");
+	}
 
 }
