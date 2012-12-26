@@ -465,8 +465,13 @@ class PocketMinecraftServer extends stdClass{
 			return;
 		}
 		while(false !== ($evn = $events->fetchArray(SQLITE3_ASSOC))){
-			$evid = (int) $evn["ID"];
-			$this->responses[$evid] = call_user_func($this->events[$evid], $data, $event);		
+			$ev = $this->events[(int) $evn["ID"]];
+			if(is_array($ev)){
+				$method = $ev[1];
+				$this->responses[(int) $evn["ID"]] = $ev[0]->$method($data, $event);
+			}else{
+				$this->responses[(int) $evn["ID"]] = $ev($data, $event);
+			}
 		}
 		$events->finalize();
 		return true;

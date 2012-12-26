@@ -178,10 +178,9 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				}
 			}
 		}
-		foreach($this->apiList as $a){
-			if(method_exists($a[1], "init")){
-				$a[1]->init();
-				usleep(1);
+		foreach($this->apiList as $ob){
+			if(is_callable(array($ob, "init"))){
+				$ob->init();
 			}
 		}
 		
@@ -380,7 +379,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		require_once($file);
 		$this->$name = new $class($this->server);
-		$this->apiList[] = array($name, $this->$name);
+		$this->apiList[] = $this->$name;
 		console("[INFO] API ".$name." [".$class."] loaded");
 	}
 
