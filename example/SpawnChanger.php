@@ -12,7 +12,7 @@ class=SpawnChanger
 
 class SpawnChanger implements Plugin{
 	private $api, $config, $path;
-	public function __construct($api, $server = false){
+	public function __construct(ServerAPI $api, $server = false){
 		$this->api = $api;
 	}
 	

@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PluginAPI extends stdClass{
 	private $server, $plugins;
-	public function __construct($server){
+	public function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 		$this->plugins = array();
 		require_once("classes/Spyc.class.php"); //YAML parser
@@ -90,12 +90,18 @@ class PluginAPI extends stdClass{
 		}
 		$object = new $className($this->server->api, ((isset($info["api"]) and $info["api"] !== true) ? $this->server:false));
 		if(!($object instanceof Plugin)){
-			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" doesn't use the Plugin Interface");
+			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" doesn't use the Plugin Interface");
+			if(method_exists($object, "__destruct")){
+				$object->__destruct();
+			}
+			$object = null;
+			unset($object);			
+		}else{
+			$this->plugins[$className] = array($object, $info);
 		}
-		$this->plugins[$className] = array($object, $info);
 	}
 	
-	public function get($plugin){
+	public function get(Plugin $plugin){
 		foreach($this->plugins as &$p){
 			if($p[0] === $plugin){
 				return $p;
@@ -104,7 +110,7 @@ class PluginAPI extends stdClass{
 		return false;
 	}
 	
-	public function createConfig($plugin, $default = array()){
+	public function createConfig(Plugin $plugin, $default = array()){
 		$p = $this->get($plugin);
 		if($p === false){
 			return false;
@@ -167,7 +173,7 @@ class PluginAPI extends stdClass{
 
 
 interface Plugin{
-	public function __construct($api, $server = false);
+	public function __construct(ServerAPI $api, $server = false);
 	public function init();
 	public function __destruct();
 }
