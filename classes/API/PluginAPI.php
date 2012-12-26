@@ -89,6 +89,9 @@ class PluginAPI extends stdClass{
 			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" got raw access to Server methods");
 		}
 		$object = new $className($this->server->api, ((isset($info["api"]) and $info["api"] !== true) ? $this->server:false));
+		if(!($object instanceof Plugin)){
+			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" doesn't use the Plugin Interface");
+		}
 		$this->plugins[$className] = array($object, $info);
 	}
 	
