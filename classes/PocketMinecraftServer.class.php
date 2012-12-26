@@ -153,11 +153,13 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function close($reason = "stop"){
-		$this->chat(false, "Stopping server...");
-		$this->save();
-		$this->stop = true;
-		$this->trigger("server.close");
-		$this->interface->close();
+		if($this->stop !== true){
+			$this->chat(false, "Stopping server...");
+			$this->save();
+			$this->stop = true;
+			$this->trigger("server.close");
+			$this->interface->close();
+		}
 	}
 	
 	public function chat($owner, $text, $target = true){
@@ -182,9 +184,6 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function addHandler($event, callable $callable, $priority = 5){
-		if(!is_callable($callable)){
-			return false;
-		}
 		$priority = (int) $priority;
 		$this->handlers[$this->handCnt] = $callable;
 		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (".$this->handCnt.", '".str_replace("'", "\\'", $event)."', ".$priority.");");
@@ -311,7 +310,7 @@ class PocketMinecraftServer extends stdClass{
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
 		register_shutdown_function(array($this, "close"));
-		$this->trigger("server.start");
+		$this->trigger("server.start", microtime(true));
 		console("[INFO] Server started!");
 		$this->process();
 	}
@@ -476,9 +475,6 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function schedule($ticks, callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
-		if(!is_callable($callback)){
-			return false;
-		}
 		$add = "";
 		if($repeat === false){
 			$add = ' unset($this->schedule['.$this->scheduleCnt.']);';
@@ -516,10 +512,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->updateActions->execute();
 	}	
 	
-	public function event($event,callable $func){
-		if(!is_callable($func)){
-			return false;
-		}
+	public function event($event, callable $func){
 		$this->events[$this->evCnt] = $func;
 		$this->query("INSERT INTO events (ID, name) VALUES (".$this->evCnt.", '".str_replace("'", "\\'", $event)."');");
 		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->evCnt.")", true, true, 3);
