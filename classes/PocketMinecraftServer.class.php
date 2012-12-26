@@ -231,7 +231,9 @@ class PocketMinecraftServer extends stdClass{
 			console("[INFO] Map: ".$this->level["LevelName"]);
 			$this->time = (int) $this->level["Time"];
 			$this->seed = (int) $this->level["RandomSeed"];
-			$this->spawn = array("x" => $this->level["SpawnX"], "y" => $this->level["SpawnY"], "z" => $this->level["SpawnZ"]);
+			if(isset($this->level["SpawnX"])){			
+				$this->spawn = array("x" => $this->level["SpawnX"], "y" => $this->level["SpawnY"], "z" => $this->level["SpawnZ"]);
+			}
 			$this->level["Time"] = &$this->time;
 			console("[INFO] Spawn: X ".$this->level["SpawnX"]." Y ".$this->level["SpawnY"]." Z ".$this->level["SpawnZ"]);
 			console("[INFO] Time: ".$this->time);
@@ -307,6 +309,7 @@ class PocketMinecraftServer extends stdClass{
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
 		register_shutdown_function(array($this, "close"));
+		$this->trigger("server.start");
 		console("[INFO] Server started!");
 		$this->process();
 	}
