@@ -205,10 +205,12 @@ class PlayerAPI{
 		}else{
 			$data = unserialize(file_get_contents(FILE_PATH."data/players/".$name.".dat"));
 		}
+		$this->server->handle("api.player.offline.get", $data);
 		return $data;
 	}
 	
 	public function saveOffline($name, $data){
+		$this->server->handle("api.player.offline.save", $data);
 		file_put_contents(FILE_PATH."data/players/".str_replace("/", "", $name).".dat", serialize($data));
 	}	
 }
