@@ -12,7 +12,11 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 
 ## Alpha (full Creative)
-- Correct block placement for beds
+* Done!
+
+### Alpha v1.1
+
+
 
 ## Beta (Survival)
 - Random Chunk Updates

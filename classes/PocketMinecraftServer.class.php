@@ -30,7 +30,7 @@ class PocketMinecraftServer extends stdClass{
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
-		console("[INFO] PocketMine-MP by @shoghicp, LGPL License. http://bit.ly/TbrimG", true, true, 0);
+		console("[INFO] PocketMine-MP ".MAJOR_VERSION." by @shoghicp, LGPL License. http://bit.ly/TbrimG", true, true, 0);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
@@ -237,6 +237,10 @@ class PocketMinecraftServer extends stdClass{
 			$this->seed = (int) $this->level["RandomSeed"];
 			if(isset($this->level["SpawnX"])){			
 				$this->spawn = array("x" => $this->level["SpawnX"], "y" => $this->level["SpawnY"], "z" => $this->level["SpawnZ"]);
+			}else{
+				$this->level["SpawnX"] = $this->spawn["x"];
+				$this->level["SpawnY"] = $this->spawn["y"];
+				$this->level["SpawnZ"] = $this->spawn["z"];
 			}
 			$this->level["Time"] = &$this->time;
 			console("[INFO] Spawn: X ".$this->level["SpawnX"]." Y ".$this->level["SpawnY"]." Z ".$this->level["SpawnZ"]);

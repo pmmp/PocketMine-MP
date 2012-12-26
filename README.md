@@ -37,31 +37,16 @@ Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Min
 
 Check the wiki! https://github.com/shoghicp/PocketMine-MP/wiki
 
-**Project Status: `PRE-ALPHA`**
+**Project Status: `ALPHA`**
 
 **Tested in: `v4.0.0, v5.0.0`**
 
 
 Current features of the server:
 -------------------------------
-* Players can connect and move around the world (and see each other)
-* Support for reading/sending chunks!
-* Map generator!
-* Map saving! Place & remove blocks
-* Multiple worlds and importing!
-* PvP, life regeneration and death cause!
-* Extensible API!
-* Online list broadcast
-* Configurable day/night cycle
-* Mob spawning!
-* Health and position saving
-* server.properties configuration file
-* Whitelist and IP Ban files
-* Survival & Creative
-* Awesome features in server list!
-* Automatic new version checking
-* Implemented packet loss recovery algorithm
-* + more!
+* Full Creative mode!
+* Plugin API
+* Custom world generation
 
 
 How to contact me
