@@ -471,6 +471,9 @@ class BlockAPI{
 			));
 			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 8, $level | $down);
 			return true;			
+		}elseif(($source[1] & 0x08) === 0x08){
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07);
+			return true;
 		}
 		return false;
 	}
@@ -482,13 +485,12 @@ class BlockAPI{
 		switch($block[0]){
 			case 8:
 			case 9:
-				if(!$this->flowOn($block, 0) or $block[0] === 9){
+				if(!$this->flowOn($block, 0) xor $block[0] === 9){
 					$this->flowOn($block, 2);
 					$this->flowOn($block, 3);
 					$this->flowOn($block, 4);
 					$this->flowOn($block, 5);
 				}
-				
 				if($block[0] === 8){
 					$drained = true;
 					$level = $block[1] & 0x07;
