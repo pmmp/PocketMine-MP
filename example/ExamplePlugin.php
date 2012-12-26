@@ -6,7 +6,6 @@ name=ExamplePlugin
 version=0.0.1
 author=shoghicp
 class=ExamplePlugin
-api=true
 */
 
 
