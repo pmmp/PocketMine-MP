@@ -57,6 +57,10 @@ class LevelAPI{
 				break;
 		}
 	}
+	
+	public function getSpawn(){
+		return $this->server->spawn;
+	}
 
 	public function getChunk($X, $Z){
 		return $this->map->map[$X][$Z];		
