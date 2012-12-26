@@ -33,7 +33,7 @@ class EntityAPI{
 	}
 	
 	public function init(){
-		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
+		$this->server->api->console->register("give", "Give items to a player [DUMMY]", array($this, "commandHandler"));
 	}
 	
 	public function handle($data, $event){
