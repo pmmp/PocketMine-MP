@@ -260,6 +260,7 @@ class Player{
 							$this->auth = true;
 							$this->data["lastIP"] = $this->ip;
 							$this->data["lastID"] = $this->clientID;
+							$this->server->api->player->saveOffline($this->username, $this->data);
 							$this->dataPacket(MC_LOGIN_STATUS, array(
 								"status" => 0,
 							));
