@@ -13,7 +13,6 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 
 ## Alpha (full Creative)
 - Correct block placement for beds
-- Correct chest/furnace placement
 
 ## Beta (Survival)
 - Random Chunk Updates

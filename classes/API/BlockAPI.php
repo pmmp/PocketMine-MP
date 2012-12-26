@@ -388,6 +388,16 @@ class BlockAPI{
 					$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
 				}
 				break;
+			case 54:
+			case 61:
+				$faces = array(
+					0 => 4,
+					1 => 2,
+					2 => 5,
+					3 => 3,
+				);
+				$data["meta"] = $faces[$direction];
+				break;
 			case 65: //Ladder
 				if(isset(Material::$transparent[$target[0]])){
 					return false;
