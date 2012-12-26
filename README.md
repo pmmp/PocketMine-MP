@@ -74,6 +74,6 @@ How to contact me
 
 Third-party Libraries Used
 --------------------------
-* __[PHP NBT](https://github.com/TheFrozenFire/PHP-NBT-Decoder-Encoder/blob/master/nbt.class.php)__ by [TheFrozenFire](https://github.com/TheFrozenFire): Class for reading in NBT-format files.
+* __[PHP NBT](https://github.com/TheFrozenFire/PHP-NBT-Decoder-Encoder/blob/master/nbt.class.php)__ by [TheFrozenFire](https://github.com/TheFrozenFire): Class for reading in NBT-format files
 * __[Math_BigInteger](http://phpseclib.sourceforge.net/math/intro.html)__ by _[phpseclib](http://phpseclib.sourceforge.net/)_: Pure-PHP arbitrary precission integer arithmetic library
 * __[Spyc](https://github.com/mustangostang/spyc/blob/master/Spyc.php)__ by _[Vlad Andersen](https://github.com/mustangostang)_: A simple YAML loader/dumper class for PHP
