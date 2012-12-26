@@ -436,7 +436,7 @@ class BlockAPI{
 				$block1 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] - 1);
 				$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"]);
 				$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"]);
-				if($blockDown[0] !== 12 or $block0[0] !== 0 or $block1[0] !== 0 or $block2[0] !== 0 or $block3[0] !== 0){
+				if($blockDown[0] !== 12 or !isset(Material::$transparent[$block0[0]]) or !isset(Material::$transparent[$block1[0]]) or !isset(Material::$transparent[$block2[0]]) or !isset(Material::$transparent[$block3[0]])){
 					return;
 				}
 				break;
