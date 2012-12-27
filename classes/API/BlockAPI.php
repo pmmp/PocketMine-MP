@@ -193,17 +193,10 @@ class BlockAPI{
 				case 59:
 				case 105:
 					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
-						switch($target[0]){
-							case 59:
-							case 105:
-								$data["block"] = $target[0];
-								$data["meta"] = 0x07;
-								$this->server->trigger("player.block.place", $data);
-								$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);								
-								break;
-							case 6:
-								break;
-						}
+						$data["block"] = $target[0];
+						$data["meta"] = 0x07;
+						$this->server->trigger("player.block.place", $data);
+						$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);								
 						$cancelPlace = true;
 					}					
 					break;
@@ -296,7 +289,7 @@ class BlockAPI{
 		switch($data["block"]){
 			case 6:
 				if($target[0] === 60){
-					return false;
+					break;
 				}
 			case 37:
 			case 38:
