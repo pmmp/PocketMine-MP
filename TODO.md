@@ -11,7 +11,10 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Players don't despawn
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 
-### Alpha v1.1
+### Alpha 1.1
+* Threading
+
+### Alpha 1.2
 * Scheduled block updates for events like grow, grass spread
 * Random Wheat growth
 * Random Melon growth
