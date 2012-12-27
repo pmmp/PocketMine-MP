@@ -69,6 +69,7 @@ if($errors > 0){
 }
 
 
+
 require_once("classes/Data.class.php");
 require_once("classes/Player.class.php");
 require_once("classes/Generator.class.php");
@@ -84,5 +85,6 @@ require_once("classes/SerializedPacketHandler.class.php");
 require_once("classes/CustomPacketHandler.class.php");
 require_once("classes/MinecraftInterface.class.php");
 require_once("classes/BigInteger.class.php");
+require_all("misc/");
 
 ?>

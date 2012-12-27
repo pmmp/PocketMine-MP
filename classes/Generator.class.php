@@ -25,8 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
-class Generator{
+class WorldGenerator{
 	private $gen, $seed, $raw;
 	public function __construct($genName, $seed){
 		$this->seed = (int) $seed;

@@ -26,6 +26,21 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
+function require_all($path, &$count = 0){
+	$dir = dir($path."/");
+	while(false !== ($file = $dir->read())){
+		if($file !== "." and $file !== ".."){
+			if(!is_dir($path.$file) and strtolower(substr($file, -3)) === "php"){
+				require_once($path.$file);
+				++$count;
+			}elseif(is_dir($path.$file)){
+				require_all($path.$file."/", $count);
+			}
+		}
+	}
+
+}
+
 function hard_unset(&$var){
 	if(is_object($var)){
 		$unset = new ReflectionClass($var);

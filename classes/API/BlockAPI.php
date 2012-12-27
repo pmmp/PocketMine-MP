@@ -176,6 +176,10 @@ class BlockAPI{
 		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
 				case 6:
+					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
+						Sapling::growTree($this->server->api->level, $target, $target[1] & 0x03);
+						$cancelPlace = true;
+					}
 					break;
 				case 2:
 				case 3:
