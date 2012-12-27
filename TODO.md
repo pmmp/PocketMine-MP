@@ -15,7 +15,7 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 * Done!
 
 ### Alpha v1.1
-* Tree growing!
+
 
 ## Beta (Survival)
 - Random Chunk Updates

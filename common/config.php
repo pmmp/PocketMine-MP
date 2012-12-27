@@ -40,4 +40,4 @@ define("CURRENT_VERSION", 1);
 define("LOG", true);
 define("MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 define("TEST_MD5", "5ca8eced50a5801619f7ae86d631a4e7");
-define("MAJOR_VERSION", "Alpha_1.0");
+define("MAJOR_VERSION", "Alpha_1.0.1");
