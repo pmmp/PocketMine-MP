@@ -11,22 +11,21 @@ __Check Milestones [here](https://github.com/shoghicp/PocketMine-MP/issues/miles
 - Players don't despawn
 - Players can often hear "echos" of their own block interactions' SFX (torch placed, block destroyed, etc. most noticeable when moving around as you place.)
 
-## Alpha (full Creative)
-* Done!
-
 ### Alpha v1.1
-
+* Scheduled block updates for events like grow, grass spread
+* Random Wheat growth
+* Random Melon growth
+* Random Sapling growth
+* Random Cactus growth
+* Random Sugarcane growth
 
 ## Beta (Survival)
-- Random Chunk Updates
+
 - Mob spawning, item pick up
 - Mob behavior
 - Placing Paintings
 - Inventory loading and saving
 - Entity saving
-- Wheat growth
-- Melon growth
-- Sapling growth
 - Mob interaction (hitting)
 - Firing Arrows
 - Eating
