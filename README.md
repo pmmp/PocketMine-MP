@@ -32,12 +32,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # PocketMine-MP
 
-Github repo: https://github.com/shoghicp/PocketMine-MP
+PocketMine-MP is a Server for Minecraft Pocket Edition done in PHP. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
 
-Server (and client) Minecraft Pocket Edition library written in PHP.
-Currently a work in progress, and used to document http://www.wiki.vg/Pocket_Minecraft_Protocol
+The entire server is done in PHP, and has been tested, profiled and optimized to run smoothly.
 
-Check the wiki! https://github.com/shoghicp/PocketMine-MP/wiki
+[Go to Wiki for more information](https://github.com/shoghicp/PocketMine-MP/wiki)
+
+[FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
 **Project Status: `ALPHA`**
 
