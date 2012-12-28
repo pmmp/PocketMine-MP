@@ -30,9 +30,14 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	private $server, $config, $apiList = array();
 	function __construct(){
 		console("[INFO] Starting ServerAPI server handler...");
-		file_put_contents(FILE_PATH."packets.log", "");
-		file_put_contents(FILE_PATH."console.in", "");
-		if(!file_exists(FILE_PATH."test.bin.log") or md5_file(FILE_PATH."test.bin.log") !== TEST_MD5){
+		console("[DEBUG] Checking data folders...", true, true, 2);
+		@mkdir(FILE_PATH."logs/", 0777, true);
+		@mkdir(FILE_PATH."players/", 0777);
+		@mkdir(FILE_PATH."worlds/", 0777);
+		@mkdir(FILE_PATH."plugins/", 0777);
+		file_put_contents(FILE_PATH."logs/packets.log", "");
+		file_put_contents(FILE_PATH."logs/console.in", "");
+		if(!file_exists(FILE_PATH."logs/test.bin.log") or md5_file(FILE_PATH."logs/test.bin.log") !== TEST_MD5){
 			console("[NOTICE] Executing integrity tests...");
 			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
 			console("[INFO] uname -a: ".php_uname("a"));
@@ -60,7 +65,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$test .= Utils::writeLong($str->hashCode());
 			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));
 			$test .= Utils::hexToStr("012334567890");
-			file_put_contents(FILE_PATH."test.bin.log", $test);
+			file_put_contents(FILE_PATH."logs/test.bin.log", $test);
 			if(md5($test) !== TEST_MD5){
 				console("[ERROR] Test error, please send your console.log + test.bin.log to the Github repo");
 				die();
@@ -81,11 +86,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			console("[NOTICE] No server.properties found, using default settings");
 			copy(FILE_PATH."src/common/default.properties", FILE_PATH."server.properties");
 		}
-		
-		console("[DEBUG] Checking data folders...", true, true, 2);
-		@mkdir(FILE_PATH."players/", 0777, true);
-		@mkdir(FILE_PATH."worlds/", 0777);
-		@mkdir(FILE_PATH."plugins/", 0777);
 		
 		console("[DEBUG] Loading server.properties...", true, true, 2);
 		$this->parseProperties();

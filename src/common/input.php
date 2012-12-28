@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-$fp = fopen(dirname(__FILE__)."/console.in","wb");
+$fp = fopen(dirname(__FILE__)."/../../logs/console.in","wb");
 while(true){
 	$l = fgets(STDIN);
 	fwrite($fp, $l);
