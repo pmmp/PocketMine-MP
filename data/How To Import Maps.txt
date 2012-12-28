@@ -1,2 +1,0 @@
-To import a Pocket Edition Map, drop to the folder "maps"
-the chunk.dat, level.dat and entities.dat from the savegame file.

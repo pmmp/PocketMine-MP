@@ -12,9 +12,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-require_once("common/dependencies.php");
+require_once("src/common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
-require_once("classes/API/ServerAPI.php");
+require_once("API/ServerAPI.php");
 
 while(true){
 	$server = new ServerAPI();

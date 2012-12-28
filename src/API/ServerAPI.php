@@ -79,13 +79,13 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 
 		if(!file_exists(FILE_PATH."server.properties")){
 			console("[NOTICE] No server.properties found, using default settings");
-			copy(FILE_PATH."common/default.properties", FILE_PATH."server.properties");
+			copy(FILE_PATH."src/common/default.properties", FILE_PATH."server.properties");
 		}
 		
 		console("[DEBUG] Checking data folders...", true, true, 2);
-		@mkdir(FILE_PATH."data/players/", 0777, true);
-		@mkdir(FILE_PATH."data/maps/", 0777);
-		@mkdir(FILE_PATH."data/plugins/", 0777);
+		@mkdir(FILE_PATH."players/", 0777, true);
+		@mkdir(FILE_PATH."worlds/", 0777);
+		@mkdir(FILE_PATH."plugins/", 0777);
 		
 		console("[DEBUG] Loading server.properties...", true, true, 2);
 		$this->parseProperties();
@@ -138,17 +138,17 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			
 			}
 		}
-		if(file_exists(FILE_PATH."data/maps/level.dat")){
+		if(file_exists(FILE_PATH."worlds/level.dat")){
 			console("[NOTICE] Detected unimported map data. Importing...");
-			$this->importMap(FILE_PATH."data/maps/", true);
+			$this->importMap(FILE_PATH."worlds/", true);
 		}
 		$this->server->mapName = $this->getProperty("level-name");
-		$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
+		$this->server->mapDir = FILE_PATH."worlds/".$this->server->mapName."/";
 		if($this->server->mapName === false or trim($this->server->mapName) === "" or !file_exists($this->server->mapDir."chunks.dat")){
 			if($this->server->mapName === false or trim($this->server->mapName) === ""){
 				$this->server->mapName = "world";
 			}
-			$this->server->mapDir = FILE_PATH."data/maps/".$this->server->mapName."/";
+			$this->server->mapDir = FILE_PATH."worlds/".$this->server->mapName."/";
 			$generator = "SuperflatGenerator";
 			if($this->getProperty("generator") !== false and class_exists($this->getProperty("generator"))){
 				$generator = $this->getProperty("generator");
@@ -168,7 +168,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		
 		//Autoload all default APIs
 		console("[INFO] Loading default APIs");
-		$dir = dir(FILE_PATH."classes/API/");
+		$dir = dir(FILE_PATH."src/API/");
 		while(false !== ($file = $dir->read())){
 			if($file !== "." and $file !== ".."){
 				$API = basename($file, ".php");
@@ -317,24 +317,24 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
 			unset($level["Player"]);
 			$lvName = $level["LevelName"]."/";
-			@mkdir(FILE_PATH."data/maps/".$lvName, 0777);	
-			file_put_contents(FILE_PATH."data/maps/".$lvName."level.dat", serialize($level));
+			@mkdir(FILE_PATH."worlds/".$lvName, 0777);	
+			file_put_contents(FILE_PATH."worlds/".$lvName."level.dat", serialize($level));
 			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
-			file_put_contents(FILE_PATH."data/maps/".$lvName."entities.dat", serialize($entities["Entities"]));
+			file_put_contents(FILE_PATH."worlds/".$lvName."entities.dat", serialize($entities["Entities"]));
 			if(!isset($entities["TileEntities"])){
 				$entities["TileEntities"] = array();
 			}
-			file_put_contents(FILE_PATH."data/maps/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
+			file_put_contents(FILE_PATH."worlds/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
 			console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
 			
 			if($remove === true){
-				rename($dir."chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
+				rename($dir."chunks.dat", FILE_PATH."worlds/".$lvName."chunks.dat");
 				unlink($dir."level.dat");
 				@unlink($dir."level.dat_old");
 				@unlink($dir."player.dat");
 				unlink($dir."entities.dat");
 			}else{
-				copy($dir."chunks.dat", FILE_PATH."data/maps/".$lvName."chunks.dat");
+				copy($dir."chunks.dat", FILE_PATH."worlds/".$lvName."chunks.dat");
 			}
 			if($this->getProperty("level-name") === false){
 				console("[INFO] Setting default level to \"".$level["LevelName"]."\"");
@@ -370,7 +370,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	
 	public function loadAPI($name, $class, $dir = false){
 		if($dir === false){
-			$dir = FILE_PATH."classes/API/";
+			$dir = FILE_PATH."src/API/";
 		}
 		$file = $dir.$class.".php";
 		if(!file_exists($file)){

@@ -115,7 +115,7 @@ class PluginAPI extends stdClass{
 		if($p === false){
 			return false;
 		}
-		$path = FILE_PATH."data/plugins/".$p[1]["name"]."/";
+		$path = FILE_PATH."plugins/".$p[1]["name"]."/";
 		$this->plugins[$p[1]["class"]][1]["path"] = $path;
 		if(!file_exists($path."config.yml")){
 			@mkdir($path, 0777);
@@ -155,11 +155,11 @@ class PluginAPI extends stdClass{
 	
 	public function loadAll(){
 		console("[INFO] Loading Plugins...");
-		$dir = dir(FILE_PATH."data/plugins/");
+		$dir = dir(FILE_PATH."plugins/");
 		while(false !== ($file = $dir->read())){
 			if($file !== "." and $file !== ".."){
 				if(strtolower(substr($file, -3)) === "php"){
-					$this->load(FILE_PATH."data/plugins/" . $file);
+					$this->load(FILE_PATH."plugins/" . $file);
 				}
 			}
 		}

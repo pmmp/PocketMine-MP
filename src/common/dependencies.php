@@ -90,6 +90,6 @@ require_once("classes/SerializedPacketHandler.class.php");
 require_once("classes/CustomPacketHandler.class.php");
 require_once("classes/MinecraftInterface.class.php");
 require_once("classes/BigInteger.class.php");
-require_all("misc/");
+require_all(FILE_PATH . "src/misc/");
 
 ?>
