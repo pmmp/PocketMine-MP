@@ -54,10 +54,10 @@ if(!extension_loaded("sockets")){
 	++$errors;
 }
 
-/*if(!extension_loaded("pthreads")){
+if(!extension_loaded("pthreads")){
 	console("[ERROR] Unable to find pthreads extension. [https://github.com/krakjoe/pthreads]", true, true, 0);
 	++$errors;
-}*/
+}
 
 if(!extension_loaded("curl")){
 	console("[ERROR] Unable to find cURL extension", true, true, 0);
