@@ -258,10 +258,7 @@ class BlockAPI{
 		}
 
 		if($cancelPlace === true){
-			$this->cancelAction($target);
-			BlockFace::setPosition($data, $data["face"]);
-			$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
-			return $this->cancelAction($target);
+			return false;
 		}
 		
 		$replace = false;
