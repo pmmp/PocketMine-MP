@@ -44,8 +44,6 @@ class ConsoleAPI{
 		$this->loop->stop = true;
 		$this->loop->notify();
 		$this->loop->join();
-		unset($this->loop);
-		gc_collect_cycles();
 	}
 	
 	public function defaultCommands($cmd, $params){
