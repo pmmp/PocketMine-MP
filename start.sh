@@ -1,2 +1,2 @@
 #!/bin/bash
-php PocketMine-MP.php
+php -d enable_dl=On PocketMine-MP.php

@@ -26,5 +26,5 @@ if not "%PHPOUTPUT%"=="1" (
 echo [ERROR] Couldn't find PHP binary in PATH.
 ping 127.0.0.1 -n 3 -w 1000>nul
 ) else (
-START /B /WAIT php PocketMine-MP.php
+START /B /WAIT php -d enable_dl=On PocketMine-MP.php
 )

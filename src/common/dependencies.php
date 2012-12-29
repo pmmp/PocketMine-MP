@@ -25,7 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
 require_once(dirname(__FILE__)."/config.php");
 require_once("common/functions.php");
 //set_error_handler("error_handler");
@@ -49,22 +48,22 @@ if(php_sapi_name() !== "cli"){
 	++$errors;
 }
 
-if(!extension_loaded("sockets")){
+if(!extension_loaded("sockets") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "sockets." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find Socket extension", true, true, 0);
 	++$errors;
 }
 
-if(!extension_loaded("pthreads")){
+if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "pthreads." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find pthreads extension. [https://github.com/krakjoe/pthreads]", true, true, 0);
 	++$errors;
 }
 
-if(!extension_loaded("curl")){
+if(!extension_loaded("curl") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "curl." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find cURL extension", true, true, 0);
 	++$errors;
 }
 
-if(!extension_loaded("sqlite3")){
+if(!extension_loaded("sqlite3") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "sqlite3." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find SQLite3 extension", true, true, 0);
 	++$errors;
 }
