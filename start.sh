@@ -1,3 +1,3 @@
 #!/bin/bash
 php PocketMine-MP.php &
-cat > src/console.in
+cat > logs/console.in
