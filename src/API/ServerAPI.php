@@ -36,7 +36,6 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		@mkdir(FILE_PATH."worlds/", 0777);
 		@mkdir(FILE_PATH."plugins/", 0777);
 		file_put_contents(FILE_PATH."logs/packets.log", "");
-		file_put_contents(FILE_PATH."logs/console.in", "");
 		if(!file_exists(FILE_PATH."logs/test.bin.log") or md5_file(FILE_PATH."logs/test.bin.log") !== TEST_MD5){
 			console("[NOTICE] Executing integrity tests...");
 			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
@@ -187,6 +186,16 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$this->server->loadEntities();
 	}
 	
+	public function __destruct(){
+		foreach($this->apiList as $ob){
+			if(is_callable($ob, "__destruct")){
+				$ob->__destruct();
+				unset($this->apiList[$ob]);
+			}
+		}
+	}
+	
+	
 	private function loadProperties(){
 		if(isset($this->config["memory-limit"])){
 			@ini_set("memory_limit", $this->config["memory-limit"]);
@@ -276,6 +285,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	public function start(){
 		$this->server->start();
 		unregister_tick_function(array($this->server, "tick"));
+		$this->__destruct();
 		unset($this->server);
 		return $this->restart;
 	}

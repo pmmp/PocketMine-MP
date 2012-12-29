@@ -26,21 +26,26 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ConsoleAPI{
-	private $input, $server, $event;
+	private $loop, $server, $event;
 	function __construct(PocketMinecraftServer $server){
 		$this->help = array();
 		$this->server = $server;
-		$this->input = fopen(FILE_PATH."logs/console.in", "w+b");
 		$this->last = microtime(true);
 	}
 	
 	public function init(){
 		$this->event = $this->server->event("server.tick", array($this, "handle"));
+		$this->loop = new ConsoleLoop;
+		$this->loop->start();
 	}
 	
-	function __destroy(){
+	function __destruct(){
 		$this->server->deleteEvent($this->event);
-		fclose($this->input);
+		$this->loop->stop = true;
+		$this->loop->notify();
+		$this->loop->join();
+		unset($this->loop);
+		gc_collect_cycles();
 	}
 	
 	public function defaultCommands($cmd, $params){
@@ -74,7 +79,8 @@ class ConsoleAPI{
 					$this->server->api->setProperty("last-update", time());
 					break;
 				case "stop":
-					console("[INFO] Stopping the server...");
+					$this->loop->stop = true;
+					console("[INFO] Stopping the server...");					
 					$this->server->close();
 					break;
 				/*case "restart":
@@ -229,22 +235,34 @@ class ConsoleAPI{
 	}
 	
 	public function handle($time){
-		while(($line = fgets($this->input)) !== false){
-			$line = trim($line);
-			if($line === ""){
-				continue;
+		if($this->loop->line !== false){
+			$line = trim($this->loop->line);
+			$this->loop->line = false;
+			if($line !== ""){
+				$params = explode(" ", $line);
+				$cmd = strtolower(array_shift($params));
+				console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+				if(isset($this->help[$cmd]) and is_callable($this->help[$cmd][1])){
+					call_user_func($this->help[$cmd][1], $cmd, $params);
+				}elseif($this->server->trigger("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
+					$this->defaultCommands($cmd, $params);
+				}
 			}
-			$params = explode(" ", $line);
-			$cmd = strtolower(array_shift($params));
-			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
-			if(isset($this->help[$cmd]) and is_callable($this->help[$cmd][1])){
-				call_user_func($this->help[$cmd][1], $cmd, $params);
-			}elseif($this->server->trigger("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
-				$this->defaultCommands($cmd, $params);
-			}
+		}else{
+			$this->loop->notify();
 		}
-		ftruncate($this->input, 0);
-		fseek($this->input, 0);		
 	}
 
+}
+
+class ConsoleLoop extends Thread{
+	var $line = false, $stop = false;
+	public function run(){
+		$fp = fopen("php://stdin", "r");
+		while($this->stop === false and ($line = fgets($fp)) !== false){
+			$this->line = $line;
+			$this->wait();
+			$this->line = false;
+		}
+	}
 }

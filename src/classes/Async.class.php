@@ -29,7 +29,7 @@ class Async extends Thread {
 	/**
 	* Provide a passthrough to call_user_func_array
 	**/
-	public function __construct($method, $params){
+	public function __construct($method, $params = array()){
 		$this->method = $method;
 		$this->params = $params;
 		$this->result = null;
@@ -40,15 +40,17 @@ class Async extends Thread {
 	* The smallest thread in the world
 	**/
 	public function run(){
-		if (($this->result=call_user_func_array($this->method, $this->params))) {
+		if(($this->result=call_user_func_array($this->method, $this->params))){
 			return true;
-		} else return false;
+		}else{
+			return false;
+		}
 	}
 
 	/**
 	* Static method to create your threads from functions ...
 	**/
-	public static function call($method, $params){
+	public static function call($method, $params = array()){
 		$thread = new Async($method, $params);
 		if($thread->start()){
 			return $thread;
