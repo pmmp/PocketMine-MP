@@ -183,6 +183,12 @@ class BlockAPI{
 			return false;
 		}
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
+		if($target[0] === 0){ //If no block exists
+			$this->cancelAction($target);
+			$block = $this->server->api->level->getBlockFace($target, $data["face"]);
+			return $this->cancelAction($block);		
+		}
+		
 		$cancelPlace = false;
 		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
