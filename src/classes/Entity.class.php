@@ -33,8 +33,8 @@ define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
-	var $eid, $type, $name, $x, $y, $z, $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player;
-	
+	var $eid, $type, $name, $x, $y, $z, $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
+	private $ev, $server;
 	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
 		$this->eid = (int) $eid;
@@ -49,6 +49,7 @@ class Entity extends stdClass{
 		$this->closed = false;
 		$this->name = "";
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
+		$this->ev = $this->server->event("server.tick", array($this, "update"));
 		$this->metadata = array();
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
@@ -72,6 +73,10 @@ class Entity extends stdClass{
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				break;
 		}
+	}
+	
+	public function update(){
+		
 	}
 	
 	public function getDirection(){
@@ -147,6 +152,7 @@ class Entity extends stdClass{
 		if($this->closed === false){
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
 			$this->server->trigger("entity.remove", $this->eid);
+			$this->server->deleteEvent($this->ev);
 			$this->closed = true;
 		}
 	}

@@ -1,11 +1,11 @@
-data/players/*
-data/maps/*
-data/plugins/*
+players/*
+worlds/*
+plugins/*
+logs/*
 *.log
 server.properties
 white-list.txt
 banned-ips.txt
-console.in
 
 #################
 ## Eclipse

@@ -30,7 +30,7 @@ class ConsoleAPI{
 	function __construct(PocketMinecraftServer $server){
 		$this->help = array();
 		$this->server = $server;
-		$this->input = fopen(FILE_PATH."console.in", "w+b");
+		$this->input = fopen(FILE_PATH."logs/console.in", "w+b");
 		$this->last = microtime(true);
 	}
 	

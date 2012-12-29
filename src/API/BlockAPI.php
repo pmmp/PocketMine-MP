@@ -44,13 +44,24 @@ class BlockAPI{
 		$this->server->addHandler("player.block.action", array($this, "blockAction"), 1);
 	}
 	
+	private function cancelAction($block){
+		$this->server->trigger("world.block.change", array(
+			"x" => $block[2][0],
+			"y" => $block[2][1],
+			"z" => $block[2][2],
+			"block" => $block[0],
+			"meta" => $block[1],
+		));
+		return false;
+	}
+	
 	public function blockBreak($data, $event){
 		if($event !== "player.block.break"){
 			return;
 		}
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		if(isset(Material::$unbreakable[$target[0]])){
-			return false;
+			return $this->cancelAction($target);
 		}
 		$drop = array(
 			$target[0], //Block
@@ -247,7 +258,10 @@ class BlockAPI{
 		}
 
 		if($cancelPlace === true){
-			return false;
+			$this->cancelAction($target);
+			BlockFace::setPosition($data, $data["face"]);
+			$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
+			return $this->cancelAction($target);
 		}
 		
 		$replace = false;
@@ -275,13 +289,13 @@ class BlockAPI{
 		$block = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		
 		if($replace === false and !isset(Material::$replaceable[$block[0]])){
-			return false;
+			return $this->cancelAction($block);
 		}
 		
 		if(isset(Material::$placeable[$data["block"]])){
 			$data["block"] = Material::$placeable[$data["block"]] === true ? $data["block"]:Material::$placeable[$data["block"]];
 		}else{
-			return false;
+			return $this->cancelAction($block);
 		}
 		
 		$direction = $this->server->api->entity->get($data["eid"])->getDirection();		
