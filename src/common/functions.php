@@ -169,7 +169,7 @@ function logg($message, $name, $EOL = true, $level = 2, $close = false){
 		if(!isset($fpointers)){
 			$fpointers = array();
 		}
-		if(!isset($fpointers[$name])){
+		if(!isset($fpointers[$name]) or $fpointers[$name] === false){
 			$fpointers[$name] = fopen(FILE_PATH."logs/".$name.".log", "ab");
 		}
 		fwrite($fpointers[$name], $message);
