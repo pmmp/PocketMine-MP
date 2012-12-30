@@ -3,6 +3,19 @@
 /*
 
            -
+         /   \
+      /         \
+   /   PocketMine  \
+/          MP         \
+|\     @shoghicp     /|
+|.   \           /   .|
+| ..     \   /     .. |
+|    ..    |    ..    |
+|       .. | ..       |
+\          |          /
+   \       |       /
+      \    |    /
+         \ | /
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +31,6 @@ require_once("API/ServerAPI.php");
 
 while(true){
 	$server = new ServerAPI();
-	//You can add simple things here
-
 	if($server->start() !== true){
 		break;
 	}else{
