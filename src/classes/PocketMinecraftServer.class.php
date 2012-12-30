@@ -307,7 +307,7 @@ class PocketMinecraftServer extends stdClass{
 		}
 	}
 	
-	public function start(){
+	public function init(){
 		if($this->mapName !== false and $this->map === false){
 			$this->loadMap();
 			$this->loadEntities();

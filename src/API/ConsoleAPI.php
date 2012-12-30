@@ -262,5 +262,6 @@ class ConsoleLoop extends Thread{
 			$this->wait();
 			$this->line = false;
 		}
+		exit(0);
 	}
 }
