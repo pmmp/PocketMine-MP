@@ -93,9 +93,9 @@ class PocketMinecraftServer extends stdClass{
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		if($this->api !== false){
-			$this->action(1000000 * 80, '$this->chat(false, count($this->clients)."/".$this->maxClients." online: ".implode(", ",$this->api->player->online()));');
+			$this->action(1000000 * 80, '$this->chat(false, "Online (".count($this->clients)."): ".implode(", ",$this->api->player->online()));');
 		}
-		$this->action(1000000 * 75, '$this->debugInfo(true);');
+		$this->action(1000000 * 120, '$this->debugInfo(true);');
 	}
 
 	public function startDatabase(){
