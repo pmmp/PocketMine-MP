@@ -26,9 +26,10 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ConsoleAPI{
-	private $loop, $server, $event;
+	private $loop, $server, $event, $help, $cmds;
 	function __construct(PocketMinecraftServer $server){
 		$this->help = array();
+		$this->cmds = array();
 		$this->server = $server;
 		$this->last = microtime(true);
 	}
@@ -216,7 +217,7 @@ class ConsoleAPI{
 					console("[INFO] /stop: Stops the server");
 					//console("[INFO] /restart: Restarts the server");
 					foreach($this->help as $c => $h){
-						console("[INFO] /$c: ".$h[0]);
+						console("[INFO] /$c: ".$h);
 					}
 					break;
 				default:
@@ -225,11 +226,17 @@ class ConsoleAPI{
 			}
 	}
 	
-	public function register($cmd, $help,$callback){
+	public function alias($alias, $cmd){
+		$this->cmds[strtolower(trim($alias))] = &$this->cmds[$cmd];
+	}
+	
+	public function register($cmd, $help, $callback){
 		if(!is_callable($callback)){
 			return false;
 		}
-		$this->help[strtolower(trim($cmd))] = array($help, $callback);
+		$cmd = strtolower(trim($cmd));
+		$this->cmds[$cmd] = $callback;
+		$this->help[$cmd] = $help;
 	}
 	
 	public function handle($time){
@@ -240,8 +247,8 @@ class ConsoleAPI{
 				$params = explode(" ", $line);
 				$cmd = strtolower(array_shift($params));
 				console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
-				if(isset($this->help[$cmd]) and is_callable($this->help[$cmd][1])){
-					call_user_func($this->help[$cmd][1], $cmd, $params);
+				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
+					call_user_func($this->cmds[$cmd], $cmd, $params);
 				}elseif($this->server->trigger("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
 					$this->defaultCommands($cmd, $params);
 				}
