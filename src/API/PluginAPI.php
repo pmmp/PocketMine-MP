@@ -157,7 +157,7 @@ class PluginAPI extends stdClass{
 		console("[INFO] Loading Plugins...");
 		$dir = dir(FILE_PATH."plugins/");
 		while(false !== ($file = $dir->read())){
-			if($file !== "." and $file !== ".."){
+			if($file{0} !== "."){
 				if(strtolower(substr($file, -3)) === "php"){
 					$this->load(FILE_PATH."plugins/" . $file);
 				}

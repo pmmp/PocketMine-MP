@@ -169,7 +169,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		console("[INFO] Loading default APIs");
 		$dir = dir(FILE_PATH."src/API/");
 		while(false !== ($file = $dir->read())){
-			if($file !== "." and $file !== ".."){
+			if($file{0} !== "."){ //Hidden and upwards folders
 				$API = basename($file, ".php");
 				if(strtolower($API) !== "serverapi"){
 					$name = strtolower(substr($API, 0, -3));
