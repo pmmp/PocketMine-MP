@@ -41,6 +41,8 @@ abstract class Utils{
 		$uname = strtoupper(php_uname("s"));
 		if(strpos($uname, "WIN") !== false){
 			return "win";
+		}elseif(strpos($uname, "DARWIN") !== false){
+			return "mac";
 		}else{
 			return "linux";
 		}
