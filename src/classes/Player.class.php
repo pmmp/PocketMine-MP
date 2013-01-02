@@ -330,6 +330,9 @@ class Player{
 							break;
 						case MC_USE_ITEM:
 							$data["eid"] = $this->eid;
+							if(Utils::distance($this->entity->position, $data) > 8){
+								break;
+							}
 							$this->server->handle("player.block.action", $data);
 							break;
 						case MC_PLACE_BLOCK:
@@ -337,6 +340,9 @@ class Player{
 							break;
 						case MC_REMOVE_BLOCK:
 							$data["eid"] = $this->eid;
+							if(Utils::distance($this->entity->position, $data) > 8){
+								break;
+							}
 							$this->server->handle("player.block.break", $data);
 							break;
 						case MC_INTERACT:
