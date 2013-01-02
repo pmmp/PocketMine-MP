@@ -48,3 +48,5 @@ while(true){
 		console("[NOTICE] The server is restarting... (".gc_collect_cycles()." cycles collected)", true, true, 0);
 	}
 }
+
+kill(getmypid());
