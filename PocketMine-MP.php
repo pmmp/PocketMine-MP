@@ -29,24 +29,11 @@ require_once("src/common/dependencies.php");
 require_once("classes/PocketMinecraftServer.class.php");
 require_once("API/ServerAPI.php");
 
-while(true){
-	$server = new ServerAPI();
-	if($server->start() !== true){
-		break;
-	}else{
-		console("[INFO] Cleaning up...");
-		hard_unset($server);
-		$excludeList = array("GLOBALS", "_FILES", "_COOKIE", "_POST", "_GET", "excludeList");
-		foreach(get_defined_vars() as $key => $value){
-			if(!in_array($key, $excludeList)){
-				$$key = null;
-				unset($$key);
-			}
-		}
-		$server = null;
-		unset($server);
-		console("[NOTICE] The server is restarting... (".gc_collect_cycles()." cycles collected)", true, true, 0);
-	}
+$server = new ServerAPI();
+if($server->start() !== true){
+	//Stop
+}else{
+	//Restart
 }
 
-kill(getmypid());
+kill(getmypid()); //Fix for segfault
