@@ -34,6 +34,9 @@ $errors = 0;
 if(version_compare("5.3.3", PHP_VERSION) > 0){
 	console("[ERROR] Use PHP >= 5.3.3", true, true, 0);
 	++$errors;
+}elseif(version_compare("5.5.0", PHP_VERSION) <= 0){
+	console("[NOTICE] PocketMine-MP hasn't been tested with PHP >= 5.5", true, true, 0);
+	++$errors;
 }
 
 if(version_compare("5.4.0", PHP_VERSION) > 0){
