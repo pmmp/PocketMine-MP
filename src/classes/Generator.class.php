@@ -26,10 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class WorldGenerator{
-	private $gen, $seed, $raw;
+	private $gen, $seed, $genName, $raw;
 	public function __construct($genName, $seed){
 		$this->seed = (int) $seed;
 		$this->raw = b"";
+		$this->genName = $genName;
 		$this->gen = new $genName($this->seed);
 	}
 	
@@ -345,6 +346,7 @@ class WorldGenerator{
 			"Time" => 0,
 			"Gamemode" => 1,
 			"RandomSeed" => $this->seed,
+			"Generator" => $this->genName,
 			"SpawnX" => $s[0],
 			"SpawnY" => $s[1],
 			"SpawnZ" => $s[2],
