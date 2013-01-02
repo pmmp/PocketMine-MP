@@ -26,9 +26,9 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PocketMinecraftServer extends stdClass{
-	var $invisible, $tickMeasure, $preparedSQL, $seed, $protocol, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
+	var $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
-	function __construct($name, $gamemode = 1, $seed = false, $protocol = CURRENT_PROTOCOL, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
+	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
 		$this->port = (int) $port; //19132 - 19135
 		console("[INFO] PocketMine-MP ".MAJOR_VERSION." by @shoghicp, LGPL License", true, true, 0);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
@@ -64,17 +64,16 @@ class PocketMinecraftServer extends stdClass{
 		$this->serverID = $serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$serverID;
 		$this->seed = $seed === false ? Utils::readInt(Utils::getRandomBytes(4)):$seed;
 		$this->clients = array();
-		$this->protocol = (int) $protocol;
 		$this->spawn = array("x" => 128.5,"y" => 100,"z" =>  128.5);
 		$this->time = 0;
 		$this->timePerSecond = 10;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
-		$this->interface = new MinecraftInterface("255.255.255.255", $this->protocol, $this->port, true, false);		
+		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);		
 		$this->reloadConfig();
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
-		console("[INFO] Protocol Version: ".$this->protocol);
+		console("[INFO] Protocol Version: ".CURRENT_PROTOCOL);
 		console("[INFO] Max Clients: ".$this->maxClients);
 		$this->stop = false;
 	}
@@ -397,9 +396,9 @@ class PocketMinecraftServer extends stdClass{
 					}
 					$version = $data[1];
 					$size = strlen($data[2]);
-					if($version !== $this->protocol){
+					if($version !== CURRENT_PROTOCOL){
 						$this->send(0x1a, array(
-							$this->protocol,
+							CURRENT_PROTOCOL,
 							MAGIC,
 							$this->serverID,
 						), false, $packet["ip"], $packet["port"]);

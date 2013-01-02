@@ -29,7 +29,7 @@ the Free Software Foundation, either version 3 of the License, or
 class Packet{
 	private $struct, $sock;
 	protected $pid, $packet;
-	public $data, $raw, $protocol;
+	public $data, $raw;
 	
 	function __construct($pid, $struct, $data = ""){
 		$this->pid = $pid;

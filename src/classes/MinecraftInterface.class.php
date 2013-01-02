@@ -26,14 +26,13 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $protocol, $client, $dataName;
+	var $pstruct, $name, $client, $dataName;
 	private $socket, $data;
-	function __construct($server, $protocol = CURRENT_PROTOCOL, $port = 25565, $listen = false, $client = true){
+	function __construct($server, $port = 25565, $listen = false, $client = true){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen);
-		$this->protocol = (int) $protocol;
 		require("pstruct/RakNet.php");
 		require("pstruct/packetName.php");
-		require("pstruct/".$this->protocol.".php");
+		require("pstruct/protocol.php");
 		require("pstruct/dataName.php");
 		$this->pstruct = $pstruct;
 		$this->name = $packetName;
@@ -93,7 +92,6 @@ class MinecraftInterface{
 		}
 		
 		$packet = new Packet($pid, $struct, $data[0]);
-		$packet->protocol = $this->protocol;
 		$packet->parse();
 		$this->data[] = array($pid, $packet->data, $data[0], $data[1], $data[2]);
 		return $this->popPacket();
@@ -119,7 +117,6 @@ class MinecraftInterface{
 		$struct = $this->getStruct($pid);
 		if($raw === false){
 			$packet = new Packet($pid, $struct);
-			$packet->protocol = $this->protocol;
 			$packet->data = $data;
 			$packet->create();
 			$write = $this->socket->write($packet->raw, $dest, $port);
