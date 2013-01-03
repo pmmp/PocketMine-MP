@@ -29,12 +29,11 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	var $restart = false;
 	private $server, $config, $apiList = array();
 	function __construct(){
-		console("[INFO] Starting ServerAPI server handler...");
-		console("[DEBUG] Checking data folders...", true, true, 2);
 		@mkdir(FILE_PATH."logs/", 0777, true);
 		@mkdir(FILE_PATH."players/", 0777);
 		@mkdir(FILE_PATH."worlds/", 0777);
 		@mkdir(FILE_PATH."plugins/", 0777);
+		console("[INFO] Starting ServerAPI server handler...");
 		file_put_contents(FILE_PATH."logs/packets.log", "");
 		if(!file_exists(FILE_PATH."logs/test.bin.log") or md5_file(FILE_PATH."logs/test.bin.log") !== TEST_MD5){
 			console("[NOTICE] Executing integrity tests...");
