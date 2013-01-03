@@ -30,6 +30,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 define("MC_KEEP_ALIVE", 0x00);
 
+define("MC_KEEP_ALIVE", 0x00);
+
 define("MC_CLIENT_CONNECT", 0x09);
 define("MC_SERVER_HANDSHAKE", 0x10);
 

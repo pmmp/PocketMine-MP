@@ -56,6 +56,15 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeLong($this->data["payload"]);
 				}				
 				break;
+			case 0x03:
+				if($this->c === false){
+					$this->data["unknown1"] = Utils::readLong($this->get(8));
+					$this->data["unknown2"] = Utils::readLong($this->get(8));
+				}else{
+					$this->raw .= Utils::writeLong($this->data["unknown1"]);
+					$this->raw .= Utils::writeLong($this->data["unknown2"]);
+				}				
+				break;
 			case MC_CLIENT_CONNECT:
 				if($this->c === false){	
 					$this->data["clientID"] = Utils::readLong($this->get(8));
@@ -508,6 +517,13 @@ class CustomPacketHandler{
 					$this->raw .= $this->data["unknown1"];
 					$this->raw .= $this->data["unknown2"];
 				}				
+				break;
+			default:
+				if($this->c === false){	
+					console("[DEBUG] Received unknown Data Packet ID 0x".dechex($pid), true, true, 2);
+				}else{
+					console("[DEBUG] Sent unknown Data Packet ID 0x".dechex($pid), true, true, 2);
+				}
 				break;
 		}
 	}
