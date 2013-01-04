@@ -62,6 +62,7 @@ cd ../
 --with-mysql \
 --with-mcrypt \
 --with-zlib \
+--enable-sockets \
 --enable-pthreads \
 --enable-maintainer-zts
 make
@@ -70,4 +71,4 @@ make install
 cd $DIR
 rm -r -f install_data/
 rmdir install_data/
-cd php5
+echo "[INFO] Compilation Completed!"
