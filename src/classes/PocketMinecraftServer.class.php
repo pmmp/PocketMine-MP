@@ -88,8 +88,8 @@ class PocketMinecraftServer extends stdClass{
 		$this->event("server.chat", array($this, "eventHandler"));
 		$this->event("player.new", array($this, "eventHandler"));
 		
-		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->trigger("server.time.change", $this->time);');
-		$this->action(5000000, 'if($this->difficulty < 2){$this->trigger("server.regeneration", 1);}');
+		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time.change", $this->time);');
+		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		if($this->api !== false){
@@ -167,7 +167,7 @@ class PocketMinecraftServer extends stdClass{
 			$message = "<".$owner."> ";
 		}
 		$message .= $text;
-		$this->trigger("server.chat", $message);
+		$this->handle("server.chat", $message);
 	}
 	
 	public function setType($type = "normal"){

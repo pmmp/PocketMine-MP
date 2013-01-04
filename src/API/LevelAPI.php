@@ -88,13 +88,16 @@ class LevelAPI{
 	public function setBlock($x, $y, $z, $block, $meta = 0){
 		$this->map->setBlock($x, $y, $z, $block, $meta);
 		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
-		$this->server->trigger("world.block.change", array(
+		if($this->server->api->dhandle("world.block.change", array(
 			"x" => $x,
 			"y" => $y,
 			"z" => $z,
 			"block" => $block,
 			"meta" => $meta,
-		));
+		)) !== false){
+			$this->server->api->block->updateBlock($x, $y, $z, BLOCK_UPDATE_NORMAL);
+			$this->server->api->block->updateBlocksAround($x, $y, $z, BLOCK_UPDATE_NORMAL);
+		}
 	}
 	
 	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){

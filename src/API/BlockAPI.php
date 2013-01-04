@@ -45,12 +45,13 @@ class BlockAPI{
 	}
 	
 	private function cancelAction($block){
-		$this->server->trigger("world.block.change", array(
+		$this->server->api->dhandle("world.block.change", array(
 			"x" => $block[2][0],
 			"y" => $block[2][1],
 			"z" => $block[2][2],
 			"block" => $block[0],
 			"meta" => $block[1],
+			"fake" => true,
 		));
 		return false;
 	}
@@ -135,16 +136,14 @@ class BlockAPI{
 					if($down[0] === 64){
 						$data2 = $data;
 						--$data2["y"];
-						$this->server->trigger("player.block.break", $data2);
-						$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+						$this->server->handle("player.block.break", $data2);
 					}
 				}else{
 					$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
 					if($up[0] === 64){
 						$data2 = $data;
 						++$data2["y"];
-						$this->server->trigger("player.block.break", $data2);
-						$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+						$this->server->handle("player.block.break", $data2);
 					}
 				}
 				break;
@@ -152,8 +151,7 @@ class BlockAPI{
 		if($drop !== false and $drop[0] !== 0 and $drop[2] > 0){
 			$this->drop($data["x"], $data["y"], $data["z"], $drop[0], $drop[1] & 0x0F, $drop[2] & 0xFF);
 		}
-		$this->server->trigger("player.block.break", $data);		
-		$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+		$this->server->handle("player.block.break", $data);
 		return false;
 	}
 	
@@ -203,8 +201,7 @@ class BlockAPI{
 					if($data["block"] === 292){ //Hoe
 						$data["block"] = 60;
 						$data["meta"] = 0;
-						$this->server->trigger("player.block.place", $data);
-						$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+						$this->server->handle("player.block.place", $data);
 						$cancelPlace = true;
 					}
 				case 59:
@@ -212,8 +209,7 @@ class BlockAPI{
 					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
 						$data["block"] = $target[0];
 						$data["meta"] = 0x07;
-						$this->server->trigger("player.block.place", $data);
-						$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);								
+						$this->server->handle("player.block.place", $data);							
 						$cancelPlace = true;
 					}					
 					break;
@@ -230,22 +226,23 @@ class BlockAPI{
 								"meta" => $down[1],
 								"eid" => $data["eid"],
 							);
-							$this->server->trigger("player.block.update", $data2);
-							$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
-							$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+							if($this->server->handle("player.block.update", $data2) !== false){
+								$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+							}
 						}
 					}else{
 						$data["block"] = $target[0];
 						$data["meta"] = $target[1] ^ 0x04;
-						$this->server->trigger("player.block.update", $data);
-						$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
-						if($up[0] === 64){
-							$data2 = $data;
-							$data2["meta"] = $up[1];
-							++$data2["y"];
-							$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+						if($this->server->handle("player.block.update", $data) !== false){
+							$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
+							if($up[0] === 64){
+								$data2 = $data;
+								$data2["meta"] = $up[1];
+								++$data2["y"];
+								$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+							}
+							$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
 						}
-						$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
 					}
 					$cancelPlace = true;
 					break;
@@ -253,8 +250,7 @@ class BlockAPI{
 				case 107: //Fence gates
 					$data["block"] = $target[0];
 					$data["meta"] = $target[1] ^ 0x04;
-					$this->server->trigger("player.block.update", $data);
-					$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+					$this->server->handle("player.block.update", $data);
 					$cancelPlace = true;
 					break;
 				default:
@@ -398,8 +394,7 @@ class BlockAPI{
 					$data2["meta"] = 0x08;
 					$data["meta"] = $direction & 0x03;
 					++$data2["y"];
-					$this->server->trigger("player.block.place", $data2);
-					$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+					$this->server->handle("player.block.place", $data2);
 				}
 				break;
 			case 54:
@@ -429,8 +424,7 @@ class BlockAPI{
 				$data2["x"] = $next[2][0];
 				$data2["y"] = $next[2][1];
 				$data2["z"] = $next[2][2];
-				$this->server->trigger("player.block.place", $data2);
-				$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
+				$this->server->handle("player.block.place", $data2);
 				break;
 			case 65: //Ladder
 				if(isset(Material::$transparent[$target[0]])){
@@ -466,9 +460,7 @@ class BlockAPI{
 				}
 				break;
 		}
-		$this->server->trigger("player.block.place", $data);
-		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
-		$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
+		$this->server->handle("player.block.place", $data);
 		return false;
 	}
 	

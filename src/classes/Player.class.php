@@ -105,7 +105,7 @@ class Player{
 
 		$this->connected = false;
 		if($msg === true){
-			$this->server->trigger("server.chat", $this->username." left the game");
+			$this->server->api->dhandle("server.chat", $this->username." left the game");
 		}
 		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
 		$this->server->api->player->remove($this->CID);
@@ -303,7 +303,7 @@ class Player{
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-								$this->server->trigger("entity.move", $this->eid);
+								$this->server->api->dhandle("entity.move", $this->eid);
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:							
@@ -354,7 +354,7 @@ class Player{
 							}
 							break;
 						case MC_ANIMATE:
-							$this->server->trigger("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
+							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
 							$this->entity->setHealth(20, "respawn");

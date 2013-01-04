@@ -249,7 +249,7 @@ class ConsoleAPI{
 				console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
 				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
 					call_user_func($this->cmds[$cmd], $cmd, $params);
-				}elseif($this->server->trigger("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
+				}elseif($this->server->api->dhandle("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
 					$this->defaultCommands($cmd, $params);
 				}
 			}

@@ -37,7 +37,7 @@ class PineTreeObject extends TreeObject{
 	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
 		$this->findRandomLeavesSize();
 		$checkRadius = 0;
-		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
+		for($yy = 0; $yy < ($this->totalHeight + 2); ++$yy) {
 			if($yy === $this->leavesSizeY) {
 				$checkRadius = $this->leavesAbsoluteMaxRadius;
 			}

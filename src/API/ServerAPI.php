@@ -294,6 +294,10 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	public function addHandler($e, $c, $p = 5){
 		return $this->server->addHandler($e, $c, $p);
 	}
+
+	public function dhandle($e, $d){
+		return $this->server->handle($e, $d);
+	}
 	
 	public function handle($e, &$d){
 		return $this->server->handle($e, $d);

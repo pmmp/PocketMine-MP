@@ -151,7 +151,7 @@ class Entity extends stdClass{
 	public function close(){
 		if($this->closed === false){
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
-			$this->server->trigger("entity.remove", $this->eid);
+			$this->server->api->dhandle("entity.remove", $this->eid);
 			$this->server->deleteEvent($this->ev);
 			$this->closed = true;
 		}
@@ -217,7 +217,7 @@ class Entity extends stdClass{
 	public function setHealth($health, $cause = ""){				
 		$this->health = (int) $health;
 		$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
-		$this->server->trigger("entity.health.change", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
+		$this->server->api->dhandle("entity.health.change", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
 		if($this->player !== false){
 			$this->player->dataPacket(MC_SET_HEALTH, array(
 				"health" => $this->health,
@@ -226,7 +226,7 @@ class Entity extends stdClass{
 		if($this->health <= 0 and $this->dead === false){
 			$this->dead = true;
 			if($this->player !== false){
-				$this->server->handle("player.death", array("name" => $this->name, "cause" => $cause));
+				$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 			}
 		}elseif($this->health > 0){
 			$this->dead = false;
