@@ -288,6 +288,15 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeByte($this->data["roll"]);
 				}
 				break;
+			case MC_TAKE_ITEM_ENTITY:
+				if($this->c === false){
+					$this->data["target"] = Utils::readInt($this->get(4));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["target"]);
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+				}
+				break;
 			case MC_MOVE_ENTITY:
 				if($this->c === false){	
 					$this->data["eid"] = Utils::readInt($this->get(4));

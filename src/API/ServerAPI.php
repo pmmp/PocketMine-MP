@@ -126,7 +126,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 						console("[NOTICE] A new STABLE version of PocketMine-MP has been released");
 						console("[NOTICE] Version \"".$info["name"]."\" [".substr($info["commit"]["sha"], 0, 10)."]");
 						console("[NOTICE] Download it at ".$info["zipball_url"]);
-						console("[NOTICE] This message will dissapear as soon as you update\"");
+						console("[NOTICE] This message will dissapear as soon as you update");
 						sleep(5);
 					}else{
 						$this->setProperty("last-update", time());

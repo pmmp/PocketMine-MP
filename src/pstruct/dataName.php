@@ -50,6 +50,7 @@ $dataName = array(
 	MC_ADD_ENTITY => "AddEntity",
 	MC_REMOVE_ENTITY => "RemoveEntity",
 	MC_ADD_ITEM_ENTITY => "AddItemEntity",
+	MC_TAKE_ITEM_ENTITY => "TakeItemEntity",
 	
 	MC_MOVE_ENTITY => "MoveEntity",
 	

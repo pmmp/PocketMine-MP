@@ -47,13 +47,13 @@ class LevelAPI{
 				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
 				break;
 			case "player.block.break":
-					$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
-					console("[DEBUG] EID ".$data["eid"]." broke ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
-					
-					if($block[0] === 0){
-						break;
-					}
-					$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0);
+				$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
+				console("[DEBUG] EID ".$data["eid"]." broke ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
+				
+				if($block[0] === 0){
+					break;
+				}
+				$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0);
 				break;
 		}
 	}

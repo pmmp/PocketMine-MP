@@ -49,7 +49,7 @@ class Entity extends stdClass{
 		$this->closed = false;
 		$this->name = "";
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
-		$this->ev = $this->server->event("server.tick", array($this, "update"));
+		$this->server->schedule(20, array($this, "update"), array(), true);
 		$this->metadata = array();
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
@@ -76,7 +76,17 @@ class Entity extends stdClass{
 	}
 	
 	public function update(){
-		
+		if($this->class === ENTITY_ITEM){
+			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
+			if($player !== true and $player !== false){
+				if($this->server->api->dhandle("player.item.pick", array(
+					"eid" => $player["EID"],
+					"target" => $this->eid
+				)) !== false){
+					$this->close();						
+				}
+			}
+		}
 	}
 	
 	public function getDirection(){
@@ -152,7 +162,6 @@ class Entity extends stdClass{
 		if($this->closed === false){
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
 			$this->server->api->dhandle("entity.remove", $this->eid);
-			$this->server->deleteEvent($this->ev);
 			$this->closed = true;
 		}
 	}

@@ -113,6 +113,9 @@ class Player{
 	
 	public function eventHandler($data, $event){		
 		switch($event){
+			case "player.item.pick":
+				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);	
+				break;
 			case "player.equipment.change":
 				if($data["eid"] === $this->eid){
 					break;
@@ -140,7 +143,7 @@ class Player{
 				if($data === $this->eid){
 					break;
 				}
-				$this->dataPacket(MC_ENTITY_REMOVE, array(
+				$this->dataPacket(MC_REMOVE_ENTITY, array(
 					"eid" => $data,
 				));
 				break;
@@ -292,6 +295,7 @@ class Player{
 							$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.item.pick", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("world.block.change", array($this, "eventHandler"));
 							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 							

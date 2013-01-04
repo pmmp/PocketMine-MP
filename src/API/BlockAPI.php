@@ -136,14 +136,14 @@ class BlockAPI{
 					if($down[0] === 64){
 						$data2 = $data;
 						--$data2["y"];
-						$this->server->event("player.block.break", $data2);
+						$this->server->trigger("player.block.break", $data2);
 					}
 				}else{
 					$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
 					if($up[0] === 64){
 						$data2 = $data;
 						++$data2["y"];
-						$this->server->event("player.block.break", $data2);
+						$this->server->trigger("player.block.break", $data2);
 					}
 				}
 				break;
@@ -151,7 +151,7 @@ class BlockAPI{
 		if($drop !== false and $drop[0] !== 0 and $drop[2] > 0){
 			$this->drop($data["x"], $data["y"], $data["z"], $drop[0], $drop[1] & 0x0F, $drop[2] & 0xFF);
 		}
-		$this->server->event("player.block.break", $data);
+		$this->server->trigger("player.block.break", $data);
 		return false;
 	}
 	
