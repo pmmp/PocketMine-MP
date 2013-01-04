@@ -59,11 +59,16 @@ class ChunkParser{
 	}
 	
 	public function loadFile($file){
-		if(!file_exists($file)){
+		if(ZLIB_EXTENSION === true and file_exists($file.".gz")){
+			$this->raw = gzinflate(file_get_contents($file.".gz"));
+			@unlink($file.".gz");
+			file_put_contents($file, $this->raw);
+		}elseif(!file_exists($file)){
 			return false;
+		}else{			
+			$this->raw = file_get_contents($file);
 		}
 		$this->file = $file;
-		$this->raw = file_get_contents($file);
 		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
 		return true;
 	}
@@ -147,8 +152,9 @@ class ChunkParser{
 		console("[DEBUG] Chunks loaded!", true, true, 2);
 	}
 	
-	public function saveMap(){
+	public function saveMap($final = false){
 		console("[DEBUG] Saving chunks...", true, true, 2);
+		
 		$fp = fopen($this->file, "r+b");
 		flock($fp, LOCK_EX);
 		foreach($this->map as $x => $d){
@@ -159,6 +165,12 @@ class ChunkParser{
 		}
 		flock($fp, LOCK_UN);
 		fclose($fp);
+		if(ZLIB_EXTENSION === true){
+			file_put_contents($this->file .".gz", gzdeflate(file_get_contents($this->file), 9));
+			if($final === true){
+				@unlink($this->file);
+			}
+		}
 	}
 	
 	public function getFloor($x, $z){

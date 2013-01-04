@@ -142,7 +142,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		$this->server->mapName = $this->getProperty("level-name");
 		$this->server->mapDir = FILE_PATH."worlds/".$this->server->mapName."/";
-		if($this->server->mapName === false or trim($this->server->mapName) === "" or !file_exists($this->server->mapDir."chunks.dat")){
+		if($this->server->mapName === false or trim($this->server->mapName) === "" or (!file_exists($this->server->mapDir."chunks.dat") and !file_exists($this->server->mapDir."chunks.dat.gz"))){
 			if($this->server->mapName === false or trim($this->server->mapName) === ""){
 				$this->server->mapName = "world";
 			}

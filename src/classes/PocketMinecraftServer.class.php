@@ -154,7 +154,7 @@ class PocketMinecraftServer extends stdClass{
 	public function close($reason = "stop"){
 		if($this->stop !== true){
 			$this->chat(false, "Stopping server...");
-			$this->save();
+			$this->save(true);
 			$this->stop = true;
 			$this->trigger("server.close");
 			$this->interface->close();
@@ -295,10 +295,10 @@ class PocketMinecraftServer extends stdClass{
 		}	
 	}
 	
-	public function save(){
+	public function save($final = false){
 		if($this->mapName !== false){	
 			file_put_contents($this->mapDir."level.dat", serialize($this->level));
-			$this->map->saveMap();
+			$this->map->saveMap($final);
 			console("[INFO] Saving entities...");
 			foreach($this->entities as $entity){
 				
