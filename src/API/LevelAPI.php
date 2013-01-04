@@ -85,7 +85,7 @@ class LevelAPI{
 		return $this->heightMap[$z][$x];
 	}
 	
-	public function setBlock($x, $y, $z, $block, $meta = 0){
+	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true){
 		$this->map->setBlock($x, $y, $z, $block, $meta);
 		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 		if($this->server->api->dhandle("world.block.change", array(
@@ -95,8 +95,10 @@ class LevelAPI{
 			"block" => $block,
 			"meta" => $meta,
 		)) !== false){
-			$this->server->api->block->updateBlock($x, $y, $z, BLOCK_UPDATE_NORMAL);
-			$this->server->api->block->updateBlocksAround($x, $y, $z, BLOCK_UPDATE_NORMAL);
+			if($update === true){
+				$this->server->api->block->updateBlock($x, $y, $z, BLOCK_UPDATE_NORMAL);
+				$this->server->api->block->updateBlocksAround($x, $y, $z, BLOCK_UPDATE_NORMAL);
+			}
 		}
 	}
 	

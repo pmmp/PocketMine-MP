@@ -495,7 +495,7 @@ class BlockAPI{
 					"z" => $spread[2][2],
 					"type" => BLOCK_UPDATE_NORMAL,
 				));
-				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down);
+				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down, false);
 				return true;
 			}
 		}elseif(isset(Material::$flowable[$spread[0]])){
@@ -505,10 +505,10 @@ class BlockAPI{
 				"z" => $spread[2][2],
 				"type" => BLOCK_UPDATE_NORMAL,
 			));
-			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 10, $level | $down);
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 10, $level | $down, false);
 			return true;			
 		}elseif(($source[1] & 0x08) === 0x08){
-			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07);
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07, false);
 			return true;
 		}
 		return false;
@@ -534,7 +534,7 @@ class BlockAPI{
 					"z" => $spread[2][2],
 					"type" => BLOCK_UPDATE_NORMAL,
 				));
-				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down);
+				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down, false);
 				return true;
 			}
 		}elseif(isset(Material::$flowable[$spread[0]])){
@@ -544,10 +544,10 @@ class BlockAPI{
 				"z" => $spread[2][2],
 				"type" => BLOCK_UPDATE_NORMAL,
 			));
-			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 8, $level | $down);
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 8, $level | $down, false);
 			return true;			
 		}elseif(($source[1] & 0x08) === 0x08){
-			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07);
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07, false);
 			return true;
 		}
 		return false;
@@ -626,7 +626,7 @@ class BlockAPI{
 								"z" => $block[2][2],
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
-							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0);						
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0, false);						
 						}else{
 							$block[1] = ($block[1] & 0x08) | $level;
 							$this->server->schedule(10, array($this, "blockScheduler"), array(
@@ -665,7 +665,7 @@ class BlockAPI{
 								"z" => $block[2][2],
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
-							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], $block[0], $block[1]);
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], $block[0], $block[1], false);
 						}
 					}
 				}				
@@ -738,7 +738,7 @@ class BlockAPI{
 								"z" => $block[2][2],
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
-							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0);						
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0, false);						
 						}else{
 							$block[1] = ($block[1] & 0x08) | $level;
 							$this->server->schedule(20, array($this, "blockScheduler"), array(
@@ -777,7 +777,7 @@ class BlockAPI{
 								"z" => $block[2][2],
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
-							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], $block[0], $block[1]);
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], $block[0], $block[1], false);
 						}
 					}
 				}
@@ -786,14 +786,14 @@ class BlockAPI{
 			case 74:
 				if($type === BLOCK_UPDATE_SCHEDULED or $type === BLOCK_UPDATE_RANDOM){
 					$changed = true;
-					$this->server->api->level->setBlock($x, $y, $z, 73, $block[1]);
+					$this->server->api->level->setBlock($x, $y, $z, 73, $block[1], false);
 					$type = BLOCK_UPDATE_WEAK;
 				}
 				break;
 			case 73:
 				if($type === BLOCK_UPDATE_NORMAL){
 					$changed = true;
-					$this->server->api->level->setBlock($x, $y, $z, 74, $block[1]);
+					$this->server->api->level->setBlock($x, $y, $z, 74, $block[1], false);
 					$this->server->schedule(mt_rand(40, 100), array($this, "blockScheduler"), array(
 						"x" => $x,
 						"y" => $y,
