@@ -40,7 +40,7 @@ cd ext
 git clone https://github.com/krakjoe/pthreads.git
 cd ../
 ./buildconf --force
-./configure -q --prefix=$DIR/php5 \
+./configure --prefix=$DIR/php5 \
 --exec-prefix=$DIR/php5 \
 --enable-embedded-mysqli \
 --with-openssl \
