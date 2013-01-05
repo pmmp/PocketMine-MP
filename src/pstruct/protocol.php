@@ -76,6 +76,9 @@ define("MC_ANIMATE", 0xa7);
 define("MC_RESPAWN", 0xa8);
 
 define("MC_DROP_ITEM", 0xaa);
+define("MC_CONTAINER_OPEN", 0xab);
+define("MC_CONTAINER_CLOSE", 0xac);
+define("MC_CONTAINER_SET_SLOT", 0xad);
 
 define("MC_CLIENT_MESSAGE", 0xb1);
 define("MC_SIGN_UPDATE", 0xb2);

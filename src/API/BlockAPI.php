@@ -69,7 +69,7 @@ class BlockAPI{
 					$meta = (int) $params[3];
 				}
 				if(($player = $this->server->api->player->get($username)) !== false){
-					$this->drop($player->entity->x, $player->entity->y, $player->entity->z, $block, $meta, $amount);
+					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $block, $meta, $amount);
 					console("[INFO] Giving ".$amount." of ".$block.":".$meta." to ".$username);
 				}else{
 					console("[INFO] Unknown player");
@@ -231,6 +231,14 @@ class BlockAPI{
 		$cancelPlace = false;
 		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
+				case 54:
+					$this->server->api->player->getByEID($data["eid"])->dataPacket(MC_CONTAINER_OPEN, array(
+						"windowid" => 1,
+						"type" => WINDOW_CHEST,
+						"slots" => 27,
+						"title" => "Random Chest",
+					));
+					break;
 				case 6:
 					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
 						Sapling::growTree($this->server->api->level, $target, $target[1] & 0x03);

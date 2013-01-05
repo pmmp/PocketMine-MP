@@ -75,7 +75,7 @@ class Packet{
 						case 0x40:
 							$reply = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
 							$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
-							$this->addRaw(Utils::writeTriad($this->data[$field]["count"]));
+							$this->addRaw(Utils::writeTriad(strrev($this->data[$field]["count"])));
 							$this->addRaw(chr($this->data[$field]["id"]));
 							$this->addRaw($reply->raw);
 							break;

@@ -76,6 +76,9 @@ $dataName = array(
 	MC_RESPAWN => "Respawn",
 	
 	MC_DROP_ITEM => "DropItem",
+	MC_CONTAINER_OPEN => "ContainerOpen",
+	MC_CONTAINER_CLOSE => "ContainerClose",
+	MC_CONTAINER_SET_SLOT => "ContainerSetSlot",
 	
 	MC_CLIENT_MESSAGE => "ClientMessage",
 	MC_SIGN_UPDATE => "SignUpdate",

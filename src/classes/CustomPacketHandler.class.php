@@ -505,6 +505,41 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["meta"]);
 				}
 				break;
+			case MC_CONTAINER_OPEN:
+				if($this->c === false){
+					$this->data["windowid"] = ord($this->get(1));
+					$this->data["type"] = ord($this->get(1));
+					$this->data["slots"] = Utils::readShort($this->get(2), false);
+					$this->data["title"] = $this->get(Utils::readShort($this->get(2), false));
+				}else{
+					$this->raw .= chr($this->data["windowid"]);
+					$this->raw .= chr($this->data["type"]);
+					$this->raw .= Utils::writeShort($this->data["slots"]);
+					$this->raw .= Utils::writeShort(strlen($this->data["title"])).$this->data["title"];
+				}				
+				break;
+			case MC_CONTAINER_CLOSE:
+				if($this->c === false){
+					$this->data["windowid"] = ord($this->get(1));
+				}else{
+					$this->raw .= chr($this->data["windowid"]);
+				}				
+				break;
+			case MC_CONTAINER_SET_SLOT:
+				if($this->c === false){
+					$this->data["windowid"] = ord($this->get(1));
+					$this->data["slot"] = Utils::readShort($this->get(2), false);
+					$this->data["block"] = Utils::readShort($this->get(2), false);
+					$this->data["stack"] = ord($this->get(1));
+					$this->data["meta"] = Utils::readShort($this->get(2), false);
+				}else{
+					$this->raw .= chr($this->data["windowid"]);
+					$this->raw .= Utils::writeShort($this->data["slot"]);
+					$this->raw .= Utils::writeShort($this->data["block"]);
+					$this->raw .= chr($this->data["stack"]);
+					$this->raw .= Utils::writeShort($this->data["meta"]);
+				}				
+				break;
 			case MC_CLIENT_MESSAGE:
 				if($this->c === false){	
 					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));

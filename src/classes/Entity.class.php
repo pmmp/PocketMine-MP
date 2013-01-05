@@ -2,20 +2,20 @@
 
 /*
 
-		   -
-		 /   \
-	  /		 \
+           -
+         /   \
+      /         \
    /   PocketMine  \
-/		  MP		 \
-|\	 @shoghicp	 /|
-|.   \		   /   .|
-| ..	 \   /	 .. |
-|	..	|	..	|
-|	   .. | ..	   |
-\		  |		  /
-   \	   |	   /
-	  \	|	/
-		 \ | /
+/          MP         \
+|\     @shoghicp     /|
+|.   \           /   .|
+| ..     \   /     .. |
+|    ..    |    ..    |
+|       .. | ..       |
+\          |          /
+   \       |       /
+      \    |    /
+         \ | /
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -34,7 +34,7 @@ define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
 	var $eid, $type, $name, $x, $y, $z, $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
-	private $ev, $server;
+	private $server;
 	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
 		$this->eid = (int) $eid;

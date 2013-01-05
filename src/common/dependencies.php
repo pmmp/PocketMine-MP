@@ -92,6 +92,8 @@ require_once("classes/Utils.class.php");
 require_once("classes/UDPSocket.class.php");
 require_once("classes/Packet.class.php");
 require_once("classes/Entity.class.php");
+require_once("classes/TileEntity.class.php");
+require_once("classes/Window.class.php");
 require_once("classes/ChunkParser.class.php");
 require_once("classes/NBT.class.php");
 require_once("classes/Java.class.php");
