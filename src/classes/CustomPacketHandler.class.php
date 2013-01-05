@@ -463,9 +463,9 @@ class CustomPacketHandler{
 				break;
 			case MC_SET_HEALTH:
 				if($this->c === false){	
-					$this->data["health"] = ord($this->get(1));
+					$this->data["health"] = Utils::readByte($this->get(1));
 				}else{
-					$this->raw .= chr($this->data["health"]);
+					$this->raw .= Utils::writeByte($this->data["health"]);
 				}
 				break;
 			case MC_ANIMATE:
