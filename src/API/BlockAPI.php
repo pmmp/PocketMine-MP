@@ -204,11 +204,13 @@ class BlockAPI{
 		$data["x"] += mt_rand(2, 8) / 10;
 		$data["y"] += 0.19;
 		$data["z"] += mt_rand(2, 8) / 10;
-		for($count = $stack; $count > 0; ){
-			$data["stack"] = min(64, $count);
-			$count -= $data["stack"];
-			$e = $this->server->api->entity->add(ENTITY_ITEM, $block, $data);
-			$this->server->api->entity->spawnToAll($e->eid);
+		if($this->server->api->handle("item.drop", $data) !== false){
+			for($count = $stack; $count > 0; ){
+				$data["stack"] = min(64, $count);
+				$count -= $data["stack"];
+				$e = $this->server->api->entity->add(ENTITY_ITEM, $block, $data);
+				$this->server->api->entity->spawnToAll($e->eid);
+			}
 		}
 	}
 	

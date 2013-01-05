@@ -488,7 +488,22 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
-				}					
+				}
+				break;
+			case MC_DROP_ITEM:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["unknown1"] = ord($this->get(1));
+					$this->data["block"] = Utils::readShort($this->get(2), false);
+					$this->data["stack"] = ord($this->get(1));
+					$this->data["meta"] = Utils::readShort($this->get(2), false);
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= chr($this->data["unknown1"]);
+					$this->raw .= Utils::writeShort($this->data["block"]);
+					$this->raw .= chr($this->data["stack"]);
+					$this->raw .= Utils::writeShort($this->data["meta"]);
+				}
 				break;
 			case MC_CLIENT_MESSAGE:
 				if($this->c === false){	

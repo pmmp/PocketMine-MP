@@ -75,6 +75,8 @@ $dataName = array(
 	MC_ANIMATE => "Animate",
 	MC_RESPAWN => "Respawn",
 	
+	MC_DROP_ITEM => "DropItem",
+	
 	MC_CLIENT_MESSAGE => "ClientMessage",
 	MC_SIGN_UPDATE => "SignUpdate",
 	MC_ADVENTURE_SETTINGS => "AdventureSettings",

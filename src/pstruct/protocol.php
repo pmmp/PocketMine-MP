@@ -77,6 +77,8 @@ define("MC_SET_SPAWN_POSITION", 0xa6);
 define("MC_ANIMATE", 0xa7);
 define("MC_RESPAWN", 0xa8);
 
+define("MC_DROP_ITEM", 0xaa);
+
 define("MC_CLIENT_MESSAGE", 0xb1);
 define("MC_SIGN_UPDATE", 0xb2);
 define("MC_ADVENTURE_SETTINGS", 0xb3);

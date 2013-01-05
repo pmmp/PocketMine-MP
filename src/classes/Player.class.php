@@ -373,6 +373,9 @@ class Player{
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
 							break;
+						case MC_DROP_ITEM:
+							$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
+							break;
 							
 					}
 					break;
