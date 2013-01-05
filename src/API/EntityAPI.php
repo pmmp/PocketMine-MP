@@ -33,7 +33,6 @@ class EntityAPI{
 	
 	public function init(){
 		$this->server->addHandler("player.death", array($this, "handle"), 1);
-		$this->server->api->console->register("give", "Give items to a player [DUMMY]", array($this, "commandHandler"));
 	}
 	
 	public function handle($data, $event){
@@ -60,15 +59,6 @@ class EntityAPI{
 				$this->server->chat(false, $message);
 				break;
 		}	
-	}
-	
-	
-	
-	public function commandHandler($cmd, $params){
-		switch($cmd){
-			case "give":
-				break;
-		}
 	}
 
 	public function get($eid){

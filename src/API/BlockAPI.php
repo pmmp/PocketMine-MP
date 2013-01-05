@@ -42,6 +42,41 @@ class BlockAPI{
 		$this->server->addHandler("world.block.update", array($this, "updateBlockRemote"), 1);
 		$this->server->addHandler("player.block.break", array($this, "blockBreak"), 1);
 		$this->server->addHandler("player.block.action", array($this, "blockAction"), 1);
+		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
+	}	
+	
+	public function commandHandler($cmd, $params){
+		switch($cmd){
+			case "give":
+				if(!isset($params[0]) or !isset($params[1])){
+					console("[INFO] Usage: /give <username> <item> [amount] [damage]");
+					break;
+				}
+				$username = $params[0];
+				$b = explode(":", $params[1]);
+				if(!isset($b[1])){
+					$meta = 0;
+				}else{
+					$meta = ((int) $b[1]) & 0x0F;
+				}
+				$block = ((int) $b[0]) & 0xFF;
+				if(!isset($params[2])){
+					$amount = 64;
+				}else{
+					$amount = $params[2] & 0xFF;
+				}
+				if(isset($params[3])){
+					$meta = $params[3] & 0x0F;
+				}
+				if(($player = $this->server->api->player->get($username)) !== false){
+					$this->drop($player->entity->x, $player->entity->y, $player->entity->z, $block, $meta, $amount);
+					console("[INFO] Giving ".$amount." of ".$block.":".$meta." to ".$username);
+				}else{
+					console("[INFO] Unknown player");
+				}
+				
+				break;
+		}
 	}
 	
 	private function cancelAction($block){
