@@ -64,7 +64,8 @@ cd ../
 --with-zlib \
 --enable-sockets \
 --enable-pthreads \
---enable-maintainer-zts
+--enable-maintainer-zts \
+--enable-cli
 make
 echo "n" | make test
 make install

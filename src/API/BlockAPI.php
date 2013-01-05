@@ -306,7 +306,7 @@ class BlockAPI{
 				}
 			case 37:
 			case 38:
-				if($target[0] !== 2 and $target[0] !== 3){
+				if(($target[0] !== 2 and $target[0] !== 3) or $data["face"] !== 1){
 					return false;
 				}
 				break;
