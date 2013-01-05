@@ -129,17 +129,16 @@ class Player{
 				$this->dataPacket(MC_UPDATE_BLOCK, $data);
 				break;
 			case "entity.move":
-				if($data === $this->eid){
+				if($data->eid === $this->eid){
 					break;
 				}
-				$entity = $this->server->entities[$data];
 				$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-					"eid" => $data,
-					"x" => $entity->x,
-					"y" => $entity->y,
-					"z" => $entity->z,
-					"yaw" => $entity->yaw,
-					"pitch" => $entity->pitch,
+					"eid" => $data->eid,
+					"x" => $data->x,
+					"y" => $data->y,
+					"z" => $data->z,
+					"yaw" => $data->yaw,
+					"pitch" => $data->pitch,
 				));
 				break;
 			case "entity.remove":
@@ -241,6 +240,13 @@ class Player{
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
+					
+						case MC_KEEP_ALIVE:
+						
+							break;
+						case 0x03:
+						
+							break;
 						case MC_DISCONNECT:
 							$this->connected = false;
 							$this->close("client disconnect");
@@ -328,7 +334,7 @@ class Player{
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-								$this->server->api->dhandle("entity.move", $this->eid);
+								$this->server->api->dhandle("entity.move", $this->entity);
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:							
@@ -360,9 +366,6 @@ class Player{
 							}
 							$this->server->handle("player.block.action", $data);
 							break;
-						case MC_PLACE_BLOCK:
-							
-							break;
 						case MC_REMOVE_BLOCK:
 							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 8){
@@ -388,7 +391,9 @@ class Player{
 						case MC_DROP_ITEM:
 							$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
 							break;
-							
+						default:
+							console("[INTERNAL] Unhandled 0x".dechex($data["id"])." Data Packet for Client ID ".$this->clientID.": ".print_r($data), true, true, 3);
+							break;
 					}
 					break;
 			}

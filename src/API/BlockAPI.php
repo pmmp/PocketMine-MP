@@ -204,7 +204,7 @@ class BlockAPI{
 		$data["x"] += mt_rand(2, 8) / 10;
 		$data["y"] += 0.19;
 		$data["z"] += mt_rand(2, 8) / 10;
-		if($this->server->api->handle("item.drop", $data) !== false){
+		if($this->server->api->handle("block.drop", $data) !== false){
 			for($count = $stack; $count > 0; ){
 				$data["stack"] = min(64, $count);
 				$count -= $data["stack"];
