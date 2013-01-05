@@ -232,6 +232,9 @@ class BlockAPI{
 		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
 				case 54:
+					if($this->server->gamemode === 1){
+						break;
+					}
 					$this->server->api->player->getByEID($data["eid"])->dataPacket(MC_CONTAINER_OPEN, array(
 						"windowid" => 1,
 						"type" => WINDOW_CHEST,
