@@ -28,9 +28,10 @@ the Free Software Foundation, either version 3 of the License, or
 class PocketMinecraftServer extends stdClass{
 	var $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
-	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false, $version = CURRENT_VERSION){
+	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
 		$this->port = (int) $port; //19132 - 19135
 		console("[INFO] PocketMine-MP ".MAJOR_VERSION." by @shoghicp, LGPL License", true, true, 0);
+		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION, true, true, 2);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
@@ -38,7 +39,6 @@ class PocketMinecraftServer extends stdClass{
 		console("[INFO] Loading database...");
 		$this->startDatabase();
 		$this->gamemode = (int) $gamemode;
-		$this->version = (int) $version;
 		$this->name = $name;
 		$this->mapDir = false;
 		$this->mapName = false;

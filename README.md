@@ -40,10 +40,6 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
-**Project Status: `ALPHA`**
-
-**Tested in: `v4.0.0, v5.0.0`**
-
 
 ## Current features of the server:
 
@@ -51,14 +47,6 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * Plugin API
 * Custom world generation
 * Update Channels!! (stable / dev)
-
-
-## How to contact me
-
-* Email - <shoghicp@gmail.com>
-* Twitter - [@shoghicp](https://twitter.com/shoghicp)
-* Via IRC - #mcdevs or #mcpedevs on *irc.freenode.net* (or just /msg me there)
-* [MinecraftForums profile](http://www.minecraftforum.net/user/1476633-shoghicp/)
 
 
 ## Third-party Libraries Used
