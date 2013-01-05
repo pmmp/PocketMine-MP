@@ -57,16 +57,16 @@ class BlockAPI{
 				if(!isset($b[1])){
 					$meta = 0;
 				}else{
-					$meta = ((int) $b[1]) & 0x0F;
+					$meta = (int) $b[1];
 				}
-				$block = ((int) $b[0]) & 0xFF;
+				$block = ((int) $b[0]) & 0xFFFF;
 				if(!isset($params[2])){
 					$amount = 64;
 				}else{
-					$amount = $params[2] & 0xFF;
+					$amount = (int) $params[2];
 				}
 				if(isset($params[3])){
-					$meta = $params[3] & 0x0F;
+					$meta = (int) $params[3];
 				}
 				if(($player = $this->server->api->player->get($username)) !== false){
 					$this->drop($player->entity->x, $player->entity->y, $player->entity->z, $block, $meta, $amount);
@@ -202,10 +202,14 @@ class BlockAPI{
 			"stack" => $stack,
 		);
 		$data["x"] += mt_rand(2, 8) / 10;
-		$data["y"] += mt_rand(2, 8) / 10;
+		$data["y"] += 0.19;
 		$data["z"] += mt_rand(2, 8) / 10;
-		$e = $this->server->api->entity->add(ENTITY_ITEM, $block, $data);
-		$this->server->api->entity->spawnToAll($e->eid);	
+		for($count = $stack; $count > 0; ){
+			$data["stack"] = min(64, $count);
+			$count -= $data["stack"];
+			$e = $this->server->api->entity->add(ENTITY_ITEM, $block, $data);
+			$this->server->api->entity->spawnToAll($e->eid);
+		}
 	}
 	
 	public function blockAction($data, $event){
