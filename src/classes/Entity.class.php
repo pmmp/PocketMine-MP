@@ -81,6 +81,8 @@ class Entity extends stdClass{
 			if($player !== true and $player !== false){
 				if($this->server->api->dhandle("player.item.pick", array(
 					"eid" => $player["EID"],
+					"block" => $this->type,
+					"meta" => $this->meta,
 					"target" => $this->eid
 				)) !== false){
 					$this->close();						
@@ -163,6 +165,7 @@ class Entity extends stdClass{
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
 			$this->server->api->dhandle("entity.remove", $this->eid);
 			$this->closed = true;
+			unset($this);
 		}
 	}
 	

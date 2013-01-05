@@ -114,7 +114,10 @@ class Player{
 	public function eventHandler($data, $event){		
 		switch($event){
 			case "player.item.pick":
-				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);	
+				if($data["eid"] === $this->eid){
+					$data["eid"] = 0;
+				}
+				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);		
 				break;
 			case "player.equipment.change":
 				if($data["eid"] === $this->eid){
@@ -277,31 +280,37 @@ class Player{
 								"eid" => 0,
 							));
 							break;
-						case MC_READY:
-							if($this->spawned !== false){
-								break;
-							}
-							$this->spawned = true;
-							$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
-							$this->eid = $this->entity->eid;
-							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
-							$this->entity->setName($this->username);
-							$this->entity->data["clientID"] = $this->clientID;
-							$this->server->api->entity->spawnAll($this);
-							$this->server->api->entity->spawnToAll($this->eid);
-							$this->evid[] = $this->server->event("server.time.change", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("player.item.pick", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("world.block.change", array($this, "eventHandler"));
-							console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
-							
-							$this->eventHandler($this->server->motd, "server.chat");
-							if($this->MTU <= 548){
-								$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
+						case MC_READY:						
+							switch($data["status"]){
+								case 1:
+									if($this->spawned !== false){
+										break;
+									}
+									$this->spawned = true;
+									$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
+									$this->eid = $this->entity->eid;
+									$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
+									$this->entity->setName($this->username);
+									$this->entity->data["clientID"] = $this->clientID;
+									$this->server->api->entity->spawnAll($this);
+									$this->server->api->entity->spawnToAll($this->eid);
+									$this->evid[] = $this->server->event("server.time.change", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("player.item.pick", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("world.block.change", array($this, "eventHandler"));
+									console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
+									
+									$this->eventHandler($this->server->motd, "server.chat");
+									if($this->MTU <= 548){
+										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
+									}
+									break;
+								case 2://Chunk loaded?
+									break;
 							}
 							break;
 						case MC_MOVE_PLAYER:
@@ -334,7 +343,7 @@ class Player{
 							break;
 						case MC_USE_ITEM:
 							$data["eid"] = $this->eid;
-							if(Utils::distance($this->entity->position, $data) > 8){
+							if(Utils::distance($this->entity->position, $data) > 10){
 								break;
 							}
 							$this->server->handle("player.block.action", $data);
