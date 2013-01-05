@@ -142,11 +142,11 @@ class Player{
 				));
 				break;
 			case "entity.remove":
-				if($data === $this->eid){
+				if($data->eid === $this->eid){
 					break;
 				}
 				$this->dataPacket(MC_REMOVE_ENTITY, array(
-					"eid" => $data,
+					"eid" => $data->eid,
 				));
 				break;
 			case "server.time.change":
