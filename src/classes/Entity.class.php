@@ -76,7 +76,7 @@ class Entity extends stdClass{
 	}
 	
 	public function update(){
-		if($this->class === ENTITY_ITEM){
+		if($this->class === ENTITY_ITEM and $this->closed === false){
 			$this->server->api->dhandle("entity.move", $this->eid);
 			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 			if($player !== true and $player !== false){
@@ -166,7 +166,7 @@ class Entity extends stdClass{
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
 			$this->server->api->dhandle("entity.remove", $this->eid);
 			$this->closed = true;
-			unset($this);
+			$this->__destruct();
 		}
 	}
 	

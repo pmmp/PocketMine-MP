@@ -213,9 +213,21 @@ class Player{
 					));
 					break;					
 				case 0x80:
+				case 0x81:
+				case 0x82:
+				case 0x83:
 				case 0x84:
+				case 0x85:
+				case 0x86:
+				case 0x87:
 				case 0x88:
+				case 0x89:
+				case 0x8a:
+				case 0x8b:
 				case 0x8c:
+				case 0x8d:
+				case 0x8e:
+				case 0x8f:
 					if(isset($data[0])){
 						$diff = $data[0] - $this->counter[1];
 						if($diff > 1){ //Packet recovery
@@ -244,7 +256,7 @@ class Player{
 						
 							break;
 						case MC_LOGIN:
-							$this->username = str_replace("/", "", $data["username"]);
+							$this->username = str_replace(array("\x00", "/", " ", "\r", "\n"), array("", "-", "_", "", ""), $data["username"]);
 							if($this->username == ""){
 								$this->close("bad username", false);
 								break;								
