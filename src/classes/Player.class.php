@@ -389,6 +389,9 @@ class Player{
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
 							break;
 						case MC_SET_HEALTH:
+							if($this->server->gamemode === 1){
+								break;
+							}
 							$this->entity->setHealth($data["health"], "client");
 							break;
 						case MC_DROP_ITEM:
