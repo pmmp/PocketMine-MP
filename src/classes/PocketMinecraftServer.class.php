@@ -332,7 +332,7 @@ class PocketMinecraftServer extends stdClass{
 	}
 	
 	public function clientID($ip, $port){
-		return md5($pi . $port, true);
+		return md5($ip . $port, true);
 	}
 	
 	public function packetHandler($packet){
