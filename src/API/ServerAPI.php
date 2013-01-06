@@ -121,11 +121,22 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				if($info === false or !isset($info[0])){
 					console("[ERROR] GitHub API Error");
 				}else{
-					$info = $info[0];
-					if($info["name"] != MAJOR_VERSION){
+
+					$newest = new VersionString(MAJOR_VERSION);
+					$newest = array(-1, $newest->getNumber());
+					foreach($info as $i => $tag){
+						$update = new VersionString($tag["name"]);
+						$update = $update->getNumber();
+						if($update > $newest[1]){
+							$newest = array($i, $update);
+						}
+					}
+					
+					if($newest[0] !== -1){
+						$target = $info[$newest[0]];
 						console("[NOTICE] A new STABLE version of PocketMine-MP has been released");
-						console("[NOTICE] Version \"".$info["name"]."\" [".substr($info["commit"]["sha"], 0, 10)."]");
-						console("[NOTICE] Download it at ".$info["zipball_url"]);
+						console("[NOTICE] Version \"".(new VersionString($newest[1]))."\" #".$newest[1]." [".substr($target["commit"]["sha"], 0, 10)."]");
+						console("[NOTICE] Download it at ".$target["zipball_url"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
 						sleep(5);
 					}else{

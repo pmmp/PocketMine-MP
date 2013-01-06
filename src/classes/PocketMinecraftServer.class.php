@@ -30,7 +30,9 @@ class PocketMinecraftServer extends stdClass{
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
 		$this->port = (int) $port; //19132 - 19135
-		console("[INFO] PocketMine-MP ".MAJOR_VERSION." by @shoghicp, LGPL License", true, true, 0);
+		$vNumber = new VersionString();
+		$vNumber = $vNumber->getNumber();
+		console("[INFO] PocketMine-MP ".MAJOR_VERSION." #".$vNumber." by @shoghicp, LGPL License", true, true, 0);
 		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION, true, true, 2);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){

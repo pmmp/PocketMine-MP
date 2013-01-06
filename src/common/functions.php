@@ -25,6 +25,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+
+
 function kill($pid){
 	switch(Utils::getOS()){
 		case "win":
