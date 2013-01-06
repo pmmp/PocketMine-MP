@@ -59,6 +59,8 @@ $dataName = array(
 	MC_PLACE_BLOCK => "PlaceBlock",
 	MC_REMOVE_BLOCK => "RemoveBlock",
 	MC_UPDATE_BLOCK => "UpdateBlock",
+	
+	MC_EXPLOSION => "Explosion",
 
 	MC_REQUEST_CHUNK => "RequestChunk",
 	MC_CHUNK_DATA => "ChunkData",

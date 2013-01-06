@@ -60,6 +60,8 @@ define("MC_PLACE_BLOCK", 0x95);
 define("MC_REMOVE_BLOCK", 0x96);
 define("MC_UPDATE_BLOCK", 0x97);
 
+define("MC_EXPLOSION", 0x99);
+
 define("MC_REQUEST_CHUNK", 0x9d);
 define("MC_CHUNK_DATA", 0x9e);
 

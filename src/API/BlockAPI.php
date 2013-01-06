@@ -160,6 +160,17 @@ class BlockAPI{
 					2,
 				);
 				break;
+			case 46: //TNT
+				if(($player = $this->server->api->player->getByEID($data["eid"])) !== false){
+					$player->dataPacket(MC_EXPLOSION, array(
+						"x" => $data["x"],
+						"y" => $data["y"],
+						"z" => $data["z"],
+						"radius" => 2,
+						"records" => array(),
+					));
+				}
+				break;
 			case 60:
 			case 2:
 				$drop = array(3, 0, 1);
@@ -232,6 +243,7 @@ class BlockAPI{
 		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
 				case 54:
+					$cancelPlace = true;
 					if($this->server->gamemode === 1){
 						break;
 					}
@@ -244,6 +256,7 @@ class BlockAPI{
 					break;
 				case 61:
 				case 62:
+					$cancelPlace = true;
 					if($this->server->gamemode === 1){
 						break;
 					}

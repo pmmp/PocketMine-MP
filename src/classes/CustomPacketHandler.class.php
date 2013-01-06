@@ -391,6 +391,31 @@ class CustomPacketHandler{
 					$this->raw .= chr($this->data["meta"]);
 				}
 				break;
+			case MC_EXPLOSION:
+				if($this->c === false){
+					$this->data["x"] = Utils::readFloat($this->get(4));
+					$this->data["y"] = Utils::readFloat($this->get(4));
+					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["radius"] = Utils::readFloat($this->get(4));
+					$this->data["count"] = Utils::readInt($this->get(4));
+					$this->data["records"] = array();
+					for($r = 0; $r < $this->data["count"]; ++$r){
+						$this->data["records"][] = array(Utils::readByte($this->get(1)), Utils::readByte($this->get(1)), Utils::readByte($this->get(1)));
+					}
+				}else{
+					$this->raw .= Utils::writeFloat($this->data["x"]);
+					$this->raw .= Utils::writeFloat($this->data["y"]);
+					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeFloat($this->data["radius"]);
+					$this->data["records"] = (array) $this->data["records"];
+					$this->raw .= Utils::writeInt(count($this->data["records"]));
+					if(count($this->data["records"]) > 0){
+						foreach($this->data["records"] as $record){
+							$this->raw .= Utils::writeByte($record[0]) . Utils::writeByte($record[1]) . Utils::writeByte($record[2]);
+						}
+					}
+				}
+				break;
 			case MC_REQUEST_CHUNK:
 				if($this->c === false){
 					$this->data["x"] = Utils::readInt($this->get(4));
