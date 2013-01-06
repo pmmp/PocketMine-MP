@@ -239,8 +239,20 @@ class BlockAPI{
 						"windowid" => 1,
 						"type" => WINDOW_CHEST,
 						"slots" => 27,
-						"title" => "Random Chest",
+						"title" => "Chest",
 					));
+					break;
+				case 61:
+				case 62:
+					if($this->server->gamemode === 1){
+						break;
+					}
+					$this->server->api->player->getByEID($data["eid"])->dataPacket(MC_CONTAINER_OPEN, array(
+						"windowid" => 1,
+						"type" => WINDOW_FURNACE,
+						"slots" => 3,
+						"title" => "Furnace",
+					));				
 					break;
 				case 6:
 					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
