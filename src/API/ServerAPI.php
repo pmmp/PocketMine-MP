@@ -90,7 +90,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		define("DEBUG", $this->config["debug"]);
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"));
 		$this->server->api = $this;
-		if($this->getProperty("upnp-forwading") === true ){
+		if($this->getProperty("upnp-forwarding") === true ){
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("port"));
 		}
@@ -240,7 +240,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		$config = $this->config;
 		$config["white-list"] = $config["white-list"] === true ? "true":"false";
 		$config["invisible"] = $config["invisible"] === true ? "true":"false";
-		$config["upnp-forwading"] = $config["upnp-forwading"] === true ? "true":"false";
+		$config["upnp-forwarding"] = $config["upnp-forwarding"] === true ? "true":"false";
 		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
 		foreach($config as $n => $v){
 			$prop .= $n."=".$v."\r\n";
@@ -302,7 +302,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		unregister_tick_function(array($this->server, "tick"));
 		$this->__destruct();
 		unset($this->server);
-		if($this->getProperty("upnp-forwading") === true ){
+		if($this->getProperty("upnp-forwarding") === true ){
 			console("[INFO] [UPnP] Removing port forward...");
 			UPnP_RemovePortForward($this->getProperty("port"));
 		}
