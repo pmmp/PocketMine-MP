@@ -60,7 +60,7 @@ class Async extends Thread {
 	/**
 	* Do whatever, result stored in $this->result, don't try to join twice
 	**/
-	public function __toString(){ 
+	public function __toString(){
 		if(!$this->joined) {
 			$this->joined = true;
 			$this->join();

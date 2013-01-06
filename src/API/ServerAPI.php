@@ -69,7 +69,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				die();
 			}
 		}
-		
+
 		if(!file_exists(FILE_PATH."white-list.txt")){
 			console("[NOTICE] No white-list.txt found, creating blank file");
 			file_put_contents(FILE_PATH."white-list.txt", "");
@@ -84,7 +84,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			console("[NOTICE] No server.properties found, using default settings");
 			copy(FILE_PATH."src/common/default.properties", FILE_PATH."server.properties");
 		}
-		
+
 		console("[DEBUG] Loading server.properties...", true, true, 2);
 		$this->parseProperties();
 		define("DEBUG", $this->config["debug"]);
@@ -98,7 +98,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$channel = "dev";
 			}
 			$this->setProperty("update-channel", $channel);
-			
+
 			if($channel === "dev"){
 				$info = json_decode(Utils::curl_get("https://api.github.com/repos/shoghicp/PocketMine-MP"), true);
 				if($info === false or !isset($info["updated_at"])){
@@ -131,7 +131,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 							$newest = array($i, $update);
 						}
 					}
-					
+
 					if($newest[0] !== -1){
 						$target = $info[$newest[0]];
 						console("[NOTICE] A new STABLE version of PocketMine-MP has been released");
@@ -144,7 +144,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 						console("[INFO] This is the latest STABLE version");
 					}
 				}
-			
+
 			}
 		}
 		if(file_exists(FILE_PATH."worlds/level.dat")){
@@ -174,7 +174,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		$this->loadProperties();
 		$this->server->loadMap();
-		
+
 		//Autoload all default APIs
 		console("[INFO] Loading default APIs");
 		$dir = dir(FILE_PATH."src/API/");
@@ -192,10 +192,10 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$ob->init();
 			}
 		}
-		
+
 		$this->server->loadEntities();
 	}
-	
+
 	public function __destruct(){
 		foreach($this->apiList as $ob){
 			if(is_callable($ob, "__destruct")){
@@ -204,8 +204,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			}
 		}
 	}
-	
-	
+
+
 	private function loadProperties(){
 		if(isset($this->config["memory-limit"])){
 			@ini_set("memory_limit", $this->config["memory-limit"]);
@@ -228,7 +228,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$this->server->reloadConfig();
 		}
 	}
-	
+
 	private function writeProperties(){
 		if(is_object($this->server)){
 			$this->config["server-id"] = $this->server->serverID;
@@ -242,7 +242,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		file_put_contents(FILE_PATH."server.properties", $prop);
 	}
-	
+
 	private function parseProperties(){
 		$prop = file_get_contents(FILE_PATH."server.properties");
 		$prop = explode("\n", str_replace("\r", "", $prop));
@@ -291,7 +291,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$this->config[$n] = $v;
 		}
 	}
-	
+
 	public function start(){
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
@@ -299,7 +299,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		unset($this->server);
 		return $this->restart;
 	}
-	
+
 	/*-------------------------------------------------------------*/
 
 	public function addHandler($e, $c, $p = 5){
@@ -309,31 +309,31 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	public function dhandle($e, $d){
 		return $this->server->handle($e, $d);
 	}
-	
+
 	public function handle($e, &$d){
 		return $this->server->handle($e, $d);
 	}
-	
+
 	public function action($t, $c, $r = true){
 		return $this->server->action($t, $c, $r);
 	}
-	
+
 	public function schedule($t, $c, $d, $r = false, $e = "server.schedule"){
 		return $this->server->schedule($t, $c, $d, $r, $e);
 	}
-	
+
 	public function event($e, $d){
 		return $this->server->event($e, $d);
 	}
-	
+
 	public function trigger($e, $d){
 		return $this->server->trigger($e, $d);
 	}
-	
+
 	public function deleteEvent($id){
 		return $this->server->deleteEvent($id);
 	}
-	
+
 	public function importMap($dir, $remove = false){
 		if(file_exists($dir."level.dat")){
 			$nbt = new NBT();
@@ -341,7 +341,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
 			unset($level["Player"]);
 			$lvName = $level["LevelName"]."/";
-			@mkdir(FILE_PATH."worlds/".$lvName, 0777);	
+			@mkdir(FILE_PATH."worlds/".$lvName, 0777);
 			file_put_contents(FILE_PATH."worlds/".$lvName."level.dat", serialize($level));
 			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
 			file_put_contents(FILE_PATH."worlds/".$lvName."entities.dat", serialize($entities["Entities"]));
@@ -350,7 +350,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			}
 			file_put_contents(FILE_PATH."worlds/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
 			console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
-			
+
 			if($remove === true){
 				rename($dir."chunks.dat", FILE_PATH."worlds/".$lvName."chunks.dat");
 				unlink($dir."level.dat");
@@ -369,29 +369,29 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 				$this->writeProperties();
 			}
 			console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
-			unset($level, $entities, $nbt);		
+			unset($level, $entities, $nbt);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public function getProperty($name){
 		if(isset($this->config[$name])){
 			return $this->config[$name];
 		}
 		return false;
 	}
-	
+
 	public function setProperty($name, $value){
 		$this->config[$name] = $value;
 		$this->writeProperties();
 		$this->loadProperties();
 	}
-	
+
 	public function getList(){
 		return $this->apiList;
 	}
-	
+
 	public function loadAPI($name, $class, $dir = false){
 		if($dir === false){
 			$dir = FILE_PATH."src/API/";

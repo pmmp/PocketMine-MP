@@ -30,7 +30,7 @@ class PlayerAPI{
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 	}
-	
+
 	public function init(){
 		$this->server->event("server.regeneration", array($this, "handle"));
 		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
@@ -38,7 +38,7 @@ class PlayerAPI{
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
 	}
-	
+
 	public function handle($data, $event){
 		switch($event){
 			case "server.regeneration":
@@ -53,7 +53,7 @@ class PlayerAPI{
 				break;
 		}
 	}
-	
+
 	public function commandHandler($cmd, $params){
 		switch($cmd){
 			case "tp":
@@ -100,7 +100,7 @@ class PlayerAPI{
 				break;
 		}
 	}
-	
+
 	public function teleport($name, $target){
 		$target = $this->get($target);
 		if($target !== false){
@@ -108,7 +108,7 @@ class PlayerAPI{
 		}
 		return false;
 	}
-	
+
 	public function tppos($name, $x, $y, $z){
 		$player = $this->get($name);
 		if($player !== false){
@@ -124,7 +124,7 @@ class PlayerAPI{
 		}
 		return false;
 	}
-	
+
 	public function get($name){
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE name = '".str_replace("'", "", $name)."';", true);
 		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
@@ -133,11 +133,11 @@ class PlayerAPI{
 		}
 		return false;
 	}
-	
+
 	public function getAll(){
 		return $this->server->clients;
 	}
-	
+
 	public function getByEID($eid){
 		$eid = (int) $eid;
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE EID = '".$eid."';", true);
@@ -147,7 +147,7 @@ class PlayerAPI{
 		}
 		return false;
 	}
-	
+
 	public function getByClientID($clientID){
 		$clientID = (int) $clientID;
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE clientID = '".$clientID."';", true);
@@ -155,9 +155,9 @@ class PlayerAPI{
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
 		}
-		return false;	
+		return false;
 	}
-	
+
 	public function online(){
 		$o = array();
 		foreach($this->server->clients as $p){
@@ -167,7 +167,7 @@ class PlayerAPI{
 		}
 		return $o;
 	}
-	
+
 	public function add($CID){
 		if(isset($this->server->clients[$CID])){
 			$player = $this->server->clients[$CID];
@@ -176,7 +176,7 @@ class PlayerAPI{
 			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".$player->username."');");
 		}
 	}
-	
+
 	public function remove($CID){
 		if(isset($this->server->clients[$CID])){
 			$player = $this->server->clients[$CID];
@@ -189,7 +189,7 @@ class PlayerAPI{
 			unset($this->server->clients[$player->CID]);
 		}
 	}
-	
+
 	public function getOffline($name){
 		if(!file_exists(FILE_PATH."players/".$name.".dat")){
 			console("[NOTICE] Player data not found for \"".$name."\", creating new profile");
@@ -210,9 +210,9 @@ class PlayerAPI{
 		$this->server->handle("api.player.offline.get", $data);
 		return $data;
 	}
-	
+
 	public function saveOffline($name, $data){
 		$this->server->handle("api.player.offline.save", $data);
 		file_put_contents(FILE_PATH."players/".str_replace("/", "", $name).".dat", serialize($data));
-	}	
+	}
 }

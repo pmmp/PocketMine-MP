@@ -35,20 +35,20 @@ class BigTreeObject extends TreeObject{
 	private $leafDistanceLimit = 5;
 	private $widthScale = 1;
 	private $branchSlope = 0.381;
-	
+
 	private $totalHeight = 6;
 	private $leavesHeight = 3;
 	protected $radiusIncrease = 0;
 	private $addLeavesVines = false;
 	private $addLogVines = false;
-	private $addCocoaPlants = false;	
-	
+	private $addCocoaPlants = false;
+
 	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
 		return false;
 	}
-	
+
 	public function placeObject(LevelAPI $level, $x, $y, $z, $type){
-	
+
 		$this->trunkHeight = (int) ($this->totalHeight * $this->trunkHeightMultiplier);
 		$leaves = $this->getLeafGroupPoints($level, $x, $y, $z);
 		foreach($leaves as $leafGroup){
@@ -64,7 +64,7 @@ class BigTreeObject extends TreeObject{
 			trunk.next().setMaterial(VanillaMaterials.LOG, logMetadata);
 		}
 		generateBranches(w, x, y, z, leaves);
-		
+
 		$level->setBlock($x, $y - 1, $z, 3, 0);
 		$this->totalHeight += mt_rand(-1, 3);
 		$this->leavesHeight += mt_rand(0, 1);

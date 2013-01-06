@@ -47,11 +47,11 @@ class VersionString{
 			$this->minor = (int) $version[4]; //0-31
 		}
 	}
-	
+
 	public function getNumber(){
 		return (int) (VersionString::$stageOrder[$this->stage] << 13) + ($this->generation << 9) + ($this->major << 5) + $this->minor;
 	}
-	
+
 	public function getStage(){
 		return $this->stage;
 	}
@@ -59,23 +59,23 @@ class VersionString{
 	public function getGeneration(){
 		return $this->generation;
 	}
-	
+
 	public function getMajor(){
 		return $this->major;
 	}
-	
+
 	public function getMinor(){
 		return $this->minor;
 	}
-	
+
 	public function getRelease(){
 		return $this->generation . "." . $this->major . "." . $this->minor;
 	}
-	
+
 	public function __toString(){
 		return ucfirst($this->stage) . "_" . $this->generation . "." . $this->major . "." . $this->minor;
 	}
-	
+
 	public function compare($target, $diff = false){
 		if(($target instanceof VersionString) === false){
 			$target = new VersionString($target);
@@ -91,6 +91,6 @@ class VersionString{
 			return 1; //Target is newer
 		}else{
 			return 0; //Same version
-		}		
+		}
 	}
 }

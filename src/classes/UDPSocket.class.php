@@ -42,7 +42,7 @@ class UDPSocket{
 			$this->unblock();
 		}else{
 			$this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-			socket_set_option($this->sock, SOL_SOCKET, SO_BROADCAST, 1); 
+			socket_set_option($this->sock, SOL_SOCKET, SO_BROADCAST, 1);
 			if($listen !== true){
 				$this->connected = true;
 				$this->buffer = array();
@@ -57,7 +57,7 @@ class UDPSocket{
 			}
 		}
 	}
-	
+
 	function listenSocket(){
 		$sock = @socket_accept($this->sock);
 		if($sock !== false){
@@ -67,7 +67,7 @@ class UDPSocket{
 		}
 		return false;
 	}
-	
+
 	public function close($error = 125){
 		$this->connected = false;
 		if($error === false){
@@ -77,7 +77,7 @@ class UDPSocket{
 		}
 		return @socket_close($this->sock);
 	}
-	
+
 	public function block(){
 		socket_set_block($this->sock);
 	}
@@ -85,18 +85,18 @@ class UDPSocket{
 	public function unblock(){
 		socket_set_nonblock($this->sock);
 	}
-	
+
 	public function read(){
 		$source = false;
 		$port = 1;
 		$len = @socket_recvfrom($this->sock, $buf, 65536, 0, $source, $port);
 		return array($buf, $source, $port, $len);
 	}
-	
+
 	public function write($data, $dest = false, $port = false){
 		return @socket_sendto($this->sock, $data, strlen($data), 0, ($dest === false ? $this->server:$dest), ($port === false ? $this->port:$port));
 	}
-	
+
 }
 
 ?>

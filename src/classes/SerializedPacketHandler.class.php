@@ -42,7 +42,7 @@ class SerializedPacketHandler{
 		}
 		return $data;
 	}
-	
+
 	public function __construct($pid, $raw = "", $data = array(), $create = false){
 		$this->raw = $raw;
 		$this->data = $data;
@@ -54,12 +54,12 @@ class SerializedPacketHandler{
 			case 0x00:
 				if($this->c === false){
 					$this->data["packets"] = array();
-					$i = 0;					
+					$i = 0;
 					while($this->offset < strlen($this->raw)){
 						if($i > 0){
 							$pid = ord($this->get(1));
 						}
-						
+
 						$len = ceil(Utils::readShort($this->get(2), false) / 8); //Utils::readShort($this->get(2), false) >> 3;
 						if($pid !== 0x00){
 							$c = Utils::readTriad(strrev($this->get(3)));

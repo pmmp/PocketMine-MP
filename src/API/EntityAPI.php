@@ -30,11 +30,11 @@ class EntityAPI{
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 	}
-	
+
 	public function init(){
 		$this->server->addHandler("player.death", array($this, "handle"), 1);
 	}
-	
+
 	public function handle($data, $event){
 		switch($event){
 			case "player.death":
@@ -58,7 +58,7 @@ class EntityAPI{
 				}
 				$this->server->chat(false, $message);
 				break;
-		}	
+		}
 	}
 
 	public function get($eid){
@@ -67,15 +67,15 @@ class EntityAPI{
 		}
 		return false;
 	}
-	
+
 	public function getAll(){
 		return $this->server->entities;
 	}
-	
+
 	public function heal($eid, $heal = 1, $cause){
 		$this->harm($eid, -$heal, $cause);
 	}
-	
+
 	public function harm($eid, $attack = 1, $cause){
 		$e = $this->get($eid);
 		if($e === false or $e->dead === true){
@@ -83,13 +83,13 @@ class EntityAPI{
 		}
 		$e->setHealth($e->getHealth()-$attack, $cause);
 	}
-	
+
 	public function add($class, $type = 0, $data = array()){
 		$eid = $this->server->eidCnt++;
 		$this->server->entities[$eid] = new Entity($this->server, $eid, $class, $type, $data);
 		return $this->server->entities[$eid];
 	}
-	
+
 	public function spawnTo($eid, $player){
 		$e = $this->get($eid);
 		if($e === false){
@@ -97,7 +97,7 @@ class EntityAPI{
 		}
 		$e->spawn($player);
 	}
-	
+
 	public function spawnToAll($eid){
 		$e = $this->get($eid);
 		if($e === false){
@@ -109,17 +109,17 @@ class EntityAPI{
 			}
 		}
 	}
-	
+
 	public function spawnAll($player){
 		foreach($this->getAll() as $e){
 			$e->spawn($player);
 		}
 	}
-	
+
 	public function remove($eid){
 		if(isset($this->server->entities[$eid])){
 			$this->server->entities[$eid]->close();
 			unset($this->server->entities[$eid]);
 		}
-	}	
+	}
 }

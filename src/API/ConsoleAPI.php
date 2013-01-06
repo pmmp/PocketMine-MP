@@ -33,20 +33,20 @@ class ConsoleAPI{
 		$this->server = $server;
 		$this->last = microtime(true);
 	}
-	
+
 	public function init(){
 		$this->event = $this->server->event("server.tick", array($this, "handle"));
 		$this->loop = new ConsoleLoop;
 		$this->loop->start();
 	}
-	
+
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
 		$this->loop->stop = true;
 		$this->loop->notify();
 		$this->loop->join();
 	}
-	
+
 	public function defaultCommands($cmd, $params){
 			switch($cmd){
 				case "invisible":
@@ -79,7 +79,7 @@ class ConsoleAPI{
 					break;
 				case "stop":
 					$this->loop->stop = true;
-					console("[INFO] Stopping the server...");					
+					console("[INFO] Stopping the server...");
 					$this->server->close();
 					break;
 				/*case "restart":
@@ -93,7 +93,7 @@ class ConsoleAPI{
 						case "pardon":
 						case "remove":
 							$ip = trim(implode($params));
-							$new = array();					
+							$new = array();
 							foreach(explode("\n", str_replace(array("\r","\t"), "", file_get_contents(FILE_PATH."banned-ips.txt"))) as $i){
 								if($i == $ip){
 									console("[INFO] IP \"$ip\" removed from ban list");
@@ -154,7 +154,7 @@ class ConsoleAPI{
 					switch($p){
 						case "remove":
 							$user = trim(implode(" ", $params));
-							$new = array();					
+							$new = array();
 							foreach(explode("\n", str_replace(array("\r","\t"), "", file_get_contents(FILE_PATH."white-list.txt"))) as $u){
 								if($u == $user){
 									console("[INFO] Player \"$user\" removed from white-list");
@@ -225,11 +225,11 @@ class ConsoleAPI{
 					break;
 			}
 	}
-	
+
 	public function alias($alias, $cmd){
 		$this->cmds[strtolower(trim($alias))] = &$this->cmds[$cmd];
 	}
-	
+
 	public function register($cmd, $help, $callback){
 		if(!is_callable($callback)){
 			return false;
@@ -238,7 +238,7 @@ class ConsoleAPI{
 		$this->cmds[$cmd] = $callback;
 		$this->help[$cmd] = $help;
 	}
-	
+
 	public function handle($time){
 		if($this->loop->line !== false){
 			$line = trim($this->loop->line);

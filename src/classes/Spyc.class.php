@@ -88,7 +88,7 @@ class Spyc {
   /**
    * Setting this to true will force YAMLDump to enclose any string value in
    * quotes.  False by default.
-   * 
+   *
    * @var bool
    */
   public $setting_dump_force_quotes = false;
@@ -168,7 +168,7 @@ class Spyc {
   /**
      * Load a string of YAML into a PHP array statically
      *
-     * The load method, when supplied with a YAML string, will do its best 
+     * The load method, when supplied with a YAML string, will do its best
      * to convert YAML in a string into a PHP array.  Pretty simple.
      *
      * Note: use this function if you don't want files from the file system
@@ -257,7 +257,7 @@ class Spyc {
 
     // Start at the base of the array and move through it.
     if ($array) {
-      $array = (array)$array; 
+      $array = (array)$array;
       $previous_key = -1;
       foreach ($array as $key => $value) {
         if (!isset($first_key)) $first_key = $key;
@@ -346,7 +346,7 @@ class Spyc {
     if (is_bool($value)) {
        $value = ($value) ? "true" : "false";
     }
-    
+
     if ($value === null) $value = 'null';
     if ($value === "'" . self::REMPTY . "'") $value = null;
 
@@ -438,7 +438,7 @@ class Spyc {
     $cnt = count($Source);
     for ($i = 0; $i < $cnt; $i++) {
       $line = $Source[$i];
-      
+
       $this->indent = strlen($line) - strlen(ltrim($line));
       $tempPath = $this->getParentPathByIndent($this->indent);
       $line = self::stripIndent($line, $this->indent);
@@ -530,9 +530,9 @@ class Spyc {
      return $this->returnArrayElement($line);
 
     if ($this->isPlainArray($line))
-     return $this->returnPlainArray($line); 
-     
-     
+     return $this->returnPlainArray($line);
+
+
     return $this->returnKeyValuePair($line);
 
   }
@@ -558,7 +558,7 @@ class Spyc {
 
     if ($is_quoted)
       return strtr(substr ($value, 1, -1), array ('\\"' => '"', '\'\'' => '\'', '\\\'' => '\''));
-    
+
     if (strpos($value, ' #') !== false && !$is_quoted)
       $value = preg_replace('/\s+#(.+)$/','',$value);
 
@@ -585,7 +585,7 @@ class Spyc {
       $value = $this->_toType($value);
       return array($key => $value);
     }
-    
+
     if ($first_character == '{' && $last_character == '}') {
       $innerValue = trim(substr ($value, 1, -1));
       if ($innerValue === '') return array();
@@ -632,7 +632,7 @@ class Spyc {
         $value = (float)$value;
       return $value;
     }
-    
+
     return $value;
   }
 
@@ -735,7 +735,7 @@ class Spyc {
     if ($finished) break;
 
     $i++;
-    if ($i > 10) 
+    if ($i > 10)
       break; // Prevent infinite loops.
     }
 
@@ -763,7 +763,7 @@ class Spyc {
   private function addArrayInline ($array, $indent) {
       $CommonGroupPath = $this->path;
       if (empty ($array)) return false;
-      
+
       foreach ($array as $k => $_) {
         $this->addArray(array($k => $_), $indent);
         $this->path = $CommonGroupPath;
@@ -777,7 +777,7 @@ class Spyc {
 
     if (count ($incoming_data) > 1)
       return $this->addArrayInline ($incoming_data, $incoming_indent);
-    
+
     $key = key ($incoming_data);
     $value = isset($incoming_data[$key]) ? $incoming_data[$key] : null;
     if ($key === '__!YAMLZero') $key = '0';
@@ -793,7 +793,7 @@ class Spyc {
     }
 
 
-    
+
     $history = array();
     // Unfolding inner array tree.
     $history[] = $_arr = $this->result;
@@ -940,7 +940,7 @@ class Spyc {
     if ($line[0] != '-') return false;
     if (strlen ($line) > 3)
       if (substr($line,0,3) == '---') return false;
-    
+
     return true;
   }
 
@@ -985,14 +985,14 @@ class Spyc {
   private function startsMappedValue ($line) {
     return (substr ($line, -1, 1) == ':');
   }
-  
+
   private function isPlainArray ($line) {
     return ($line[0] == '[' && substr ($line, -1, 1) == ']');
   }
-  
+
   private function returnPlainArray ($line) {
-    return $this->_toType($line); 
-  }  
+    return $this->_toType($line);
+  }
 
   private function returnKeyValuePair ($line) {
     $array = array();
@@ -1032,7 +1032,7 @@ class Spyc {
   }
 
 
-  private function nodeContainsGroup ($line) {    
+  private function nodeContainsGroup ($line) {
     $symbolsForReference = 'A-z0-9_\-';
     if (strpos($line, '&') === false && strpos($line, '*') === false) return false; // Please die fast ;-)
     if ($line[0] == '&' && preg_match('/^(&['.$symbolsForReference.']+)/', $line, $matches)) return $matches[1];

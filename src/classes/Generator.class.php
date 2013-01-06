@@ -33,15 +33,15 @@ class WorldGenerator{
 		$this->genName = $genName;
 		$this->gen = new $genName($this->seed);
 	}
-	
+
 	public function getSpawn(){
 		return $this->gen->getSpawn();
 	}
-	
+
 	public function set($name, $value){
 		$this->gen->set($name, $value);
 	}
-	
+
 	public function init(){
 		$this->raw = "\x15\x01\x00\x00\x15\x16\x00\x00\x15\x2b\x00\x00\x15\x40\x00\x00". //Location Header
 		"\x15\x55\x00\x00\x15\x6a\x00\x00\x15\x7f\x00\x00\x15\x94\x00\x00".
@@ -301,18 +301,18 @@ class WorldGenerator{
 		"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 		$this->gen->init();
 	}
-	
+
 	public function generate(){
 		for($Z = 0; $Z < 16; ++$Z){
 			for($X = 0; $X < 16; ++$X){
 				$chunk = str_pad($this->getChunk($X, $Z), 86012, "\x00", STR_PAD_RIGHT);
-				$this->raw .= Utils::writeLInt(strlen($chunk)) . $chunk;				
+				$this->raw .= Utils::writeLInt(strlen($chunk)) . $chunk;
 			}
 			console("[DEBUG] Generating level ".ceil(($Z + 1)/0.16)."%", true, true, 2);
 		}
 		return true;
 	}
-	
+
 	private function getChunk($X, $Z){
 		$chunk = b"";
 		$columns = array();
@@ -333,7 +333,7 @@ class WorldGenerator{
 		unset($columns);
 		return $chunk;
 	}
-	
+
 	public function save($dir, $name){
 		@mkdir($dir, 0777, true);
 		file_put_contents($dir."chunks.dat", $this->raw);

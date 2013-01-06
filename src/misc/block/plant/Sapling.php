@@ -30,7 +30,7 @@ class Sapling{
 	const SPRUCE = 1;
 	const BIRCH = 2;
 	const BURN_TIME = 5;
-	
+
 	public static function growTree(LevelAPI $level, $block, $type){
 		$type = $type & 0x03;
 		TreeObject::growTree($level, $block, $type);

@@ -36,7 +36,7 @@ define("LITTLE_ENDIAN", 0x01);
 define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE_ENDIAN));
 
 abstract class Utils{
-	
+
 	public static function getOS(){
 		$uname = strtoupper(php_uname("s"));
 		if(strpos($uname, "WIN") !== false){
@@ -47,22 +47,22 @@ abstract class Utils{
 			return "linux";
 		}
 	}
-	
+
 	public static function hexdump($bin){
 		$output = "";
 		$bin = str_split($bin, 16);
 		foreach($bin as $counter => $line){
 			$hex = chunk_split(chunk_split(str_pad(bin2hex($line), 32, " ", STR_PAD_RIGHT), 2, " "), 24, " ");
 			$ascii = preg_replace('#([^\x20-\x7E])#', ".", $line);
-			$output .= str_pad(dechex($counter << 4), 4, "0", STR_PAD_LEFT). "  " . $hex . " " . $ascii . PHP_EOL;		
+			$output .= str_pad(dechex($counter << 4), 4, "0", STR_PAD_LEFT). "  " . $hex . " " . $ascii . PHP_EOL;
 		}
 		return $output;
 	}
-	
+
 	public static function printable($str){
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
-	
+
 	public static function readTriad($str){
 		list(,$unpacked) = unpack("N", "\x00".$str);
 		return (int) $unpacked;
@@ -103,18 +103,18 @@ abstract class Utils{
 						$m .= Utils::writeLInt($data["value"][$i]);
 					}
 					break;
-					
+
 			}
 		}
 		$m .= "\x7f";
-		return $m;	
+		return $m;
 	}
-	
+
 	public static function readMetadata($value, $types = false){
 		$offset = 0;
 		$m = array();
 		$b = ord($value{$offset});
-		++$offset;		
+		++$offset;
 		while($b !== 127){
 			$bottom = $b & 0x1F;
 			$type = $b >> 5;
@@ -157,7 +157,7 @@ abstract class Utils{
 						$offset += 4;
 					}
 					break;
-					
+
 			}
 			if($types === true){
 				$m[$bottom] = array($r, $type);
@@ -167,9 +167,9 @@ abstract class Utils{
 			$b = ord($value{$offset});
 			++$offset;
 		}
-		return $m;	
+		return $m;
 	}
-	
+
 	public static function readDataArray($str, $len = 10, &$offset = null){
 		$data = array();
 		$offset = 0;
@@ -181,7 +181,7 @@ abstract class Utils{
 		}
 		return $data;
 	}
-	
+
 	public static function writeDataArray($data){
 		$raw = "";
 		foreach($data as $v){
@@ -190,7 +190,7 @@ abstract class Utils{
 		}
 		return $raw;
 	}
-	
+
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
 		$output = b"";
 		$length = abs((int) $length);
@@ -227,7 +227,7 @@ abstract class Utils{
 				(string) disk_total_space("."),
 				uniqid(microtime(),true),
 			);
-			
+
 			shuffle($weakEntropy);
 			$value = hash("sha256", implode($weakEntropy), true);
 			foreach($weakEntropy as $k => $c){ //mixing entropy values with XOR and hash randomness extractor
@@ -237,7 +237,7 @@ abstract class Utils{
 				$value ^= hash("sha256", $c . microtime() . $k, true);
 			}
 			unset($weakEntropy);
-			
+
 			if($secure === true){
 				$strongEntropy = array(
 					is_array($startEntropy) ? $startEntropy[($rounds + $drop) % count($startEntropy)]:$startEntropy, //Get a random index of the startEntropy, or just read it
@@ -275,15 +275,15 @@ abstract class Utils{
 		}
 		return $raw === false ? bin2hex($output):$output;
 	}
-	
+
 	public static function round($number){
 		return round($number, 0, PHP_ROUND_HALF_DOWN);
 	}
-	
+
 	public static function distance($pos1, $pos2){
 		return sqrt(pow($pos1["x"] - $pos2["x"], 2) + pow($pos1["y"] - $pos2["y"], 2) + pow($pos1["z"] - $pos2["z"], 2));
 	}
-	
+
 	public static function angle3D($pos1, $pos2){
 		$X = $pos1["x"] - $pos2["x"];
 		$Z = $pos1["z"] - $pos2["z"];
@@ -293,17 +293,17 @@ abstract class Utils{
 		$vAngle = rad2deg(-atan2($Y, $dXZ));
 		return array("yaw" => $hAngle, "pitch" => $vAngle);
 	}
-	
+
 	public static function sha1($input){
 		$number = new Math_BigInteger(sha1($input, true), -256);
 		$zero = new Math_BigInteger(0);
 		return ($zero->compare($number) <= 0 ? "":"-") . ltrim($number->toHex(), "0");
 	}
-	
+
 	public static function microtime(){
 		return microtime(true);
 	}
-	
+
 	public static function curl_get($page){
 		$ch = curl_init($page);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Minecraft PHP Client 2"));
@@ -317,7 +317,7 @@ abstract class Utils{
 		curl_close($ch);
 		return $ret;
 	}
-	
+
 	public static function curl_post($page, $args, $timeout = 10){
 		$ch = curl_init($page);
 		curl_setopt($ch, CURLOPT_POST, 1);
@@ -331,26 +331,26 @@ abstract class Utils{
 		curl_close($ch);
 		return $ret;
 	}
-	
+
 	public static function strToHex($str){
 		return bin2hex($str);
 	}
-	
+
 	public static function hexToStr($hex){
 		if(HEX2BIN === true){
 			return hex2bin($hex);
-		}		
+		}
 		return pack("H*" , $hex);
 	}
 
 	public static function readBool($b){
 		return Utils::readByte($b, false) === 0 ? false:true;
 	}
-	
+
 	public static function writeBool($b){
 		return Utils::writeByte($b === true ? 1:0);
 	}
-	
+
 	public static function readByte($c, $signed = true){
 		$b = ord($c{0});
 		if($signed === true and ($b & 0x80) === 0x80){ //calculate Two's complement
@@ -358,7 +358,7 @@ abstract class Utils{
 		}
 		return $b;
 	}
-	
+
 	public static function writeByte($c){
 		if($c > 0xff){
 			return false;
@@ -376,14 +376,14 @@ abstract class Utils{
 		}
 		return $unpacked;
 	}
-	
+
 	public static function writeShort($value){
 		if($value < 0){
-			$value += 0x10000; 
+			$value += 0x10000;
 		}
 		return pack("n", $value);
 	}
-	
+
 	public static function readLShort($str, $signed = true){
 		list(,$unpacked) = unpack("v", $str);
 		if($unpacked > 0x7fff and $signed === true){
@@ -391,10 +391,10 @@ abstract class Utils{
 		}
 		return $unpacked;
 	}
-	
+
 	public static function writeLShort($value){
 		if($value < 0){
-			$value += 0x10000; 
+			$value += 0x10000;
 		}
 		return pack("v", $value);
 	}
@@ -406,14 +406,14 @@ abstract class Utils{
 		}
 		return (int) $unpacked;
 	}
-	
+
 	public static function writeInt($value){
 		if($value < 0){
-			$value += 0x100000000; 
+			$value += 0x100000000;
 		}
 		return pack("N", $value);
 	}
-	
+
 	public static function readLInt($str){
 		list(,$unpacked) = unpack("V", $str);
 		if($unpacked >= 2147483648){
@@ -421,50 +421,50 @@ abstract class Utils{
 		}
 		return (int) $unpacked;
 	}
-	
+
 	public static function writeLInt($value){
 		if($value < 0){
-			$value += 0x100000000; 
+			$value += 0x100000000;
 		}
 		return pack("V", $value);
 	}
-	
+
 	public static function readFloat($str){
 		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("f", $str):unpack("f", strrev($str));
 		return $value;
 	}
-	
+
 	public static function writeFloat($value){
 		return ENDIANNESS === BIG_ENDIAN ? pack("f", $value):strrev(pack("f", $value));
 	}
-	
+
 	public static function readLFloat($str){
 		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("f", strrev($str)):unpack("f", $str);
 		return $value;
 	}
-	
+
 	public static function writeLFloat($value){
 		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("f", $value)):pack("f", $value);
 	}
-	
+
 	public static function printFloat($value){
 		return preg_replace("/(\.\d+?)0+$/", "$1", sprintf("%F", $value));
 	}
-	
+
 	public static function readDouble($str){
 		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("d", $str):unpack("d", strrev($str));
 		return $value;
 	}
-	
+
 	public static function writeDouble($value){
 		return ENDIANNESS === BIG_ENDIAN ? pack("d", $value):strrev(pack("d", $value));
 	}
-	
+
 	public static function readLDouble($str){
 		list(,$value) = ENDIANNESS === BIG_ENDIAN ? unpack("d", strrev($str)):unpack("d", $str);
 		return $value;
 	}
-	
+
 	public static function writeLDouble($value){
 		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("d", $value)):pack("d", $value);
 	}
@@ -473,20 +473,20 @@ abstract class Utils{
 		$long = new Math_BigInteger($str, -256);
 		return $long->toString();
 	}
-	
+
 	public static function writeLong($value){
 		$long = new Math_BigInteger($value, -10);
 		return str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT);
 	}
-	
+
 	public static function readLLong($str){
 		$long = new Math_BigInteger(strrev($str), -256);
 		return $long->toString();
 	}
-	
+
 	public static function writeLLong($value){
 		$long = new Math_BigInteger($value, -10);
 		return strrev(str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT));
-	}	
-	
+	}
+
 }

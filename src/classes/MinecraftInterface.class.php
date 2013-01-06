@@ -41,18 +41,18 @@ class MinecraftInterface{
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
 	}
-	
+
 	public function close(){
 		return $this->socket->close();
 	}
-	
+
 	protected function getStruct($pid){
 		if(isset($this->pstruct[$pid])){
 			return $this->pstruct[$pid];
 		}
 		return false;
 	}
-	
+
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
 		if(LOG === true and DEBUG >= 3){
 			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".(isset($data["id"]) ? "MC Packet ".$this->dataName[$pid]:$this->name[$pid])." (0x".Utils::strTohex(chr($pid)).") [length ".strlen($raw)."]".PHP_EOL;
@@ -65,9 +65,9 @@ class MinecraftInterface{
 			$p .= PHP_EOL;
 			logg($p, "packets", false);
 		}
-	
+
 	}
-	
+
 	public function readPacket(){
 		$p = $this->popPacket();
 		if($p !== false){
@@ -90,13 +90,13 @@ class MinecraftInterface{
 			logg($p, "packets", true, 2);
 			return false;
 		}
-		
+
 		$packet = new Packet($pid, $struct, $data[0]);
 		$packet->parse();
 		$this->data[] = array($pid, $packet->data, $data[0], $data[1], $data[2]);
 		return $this->popPacket();
 	}
-	
+
 	public function popPacket(){
 		if(count($this->data) > 0){
 			$p = array_shift($this->data);
@@ -112,7 +112,7 @@ class MinecraftInterface{
 		}
 		return false;
 	}
-	
+
 	public function writePacket($pid, $data = array(), $raw = false, $dest = false, $port = false){
 		$struct = $this->getStruct($pid);
 		if($raw === false){
@@ -124,10 +124,10 @@ class MinecraftInterface{
 		}else{
 			$write = $this->socket->write($data, $dest, $port);
 			$this->writeDump($pid, $data, false, "client", $dest, $port);
-		}		
+		}
 		return true;
 	}
-	
+
 }
 
 ?>

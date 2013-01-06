@@ -28,26 +28,26 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Java_String{
 	private $value = "", $count = 0, $hash = 0;
-	
+
 	public function __construct($string = false){
 		if($string !== false){
 			$this->value = (string) $string;
 			$this->count = strlen($this->value);
 		}
 	}
-	
+
 	public function __toString(){
 		return $this->value;
 	}
-	
+
 	public function lenght(){
 		return $this->count;
 	}
-	
+
 	public function isEmpty(){
 		return $this->count === 0;
 	}
-	
+
 	public function charAt($index){
 		$index = (int) $index;
 		if($index < 0 or $index >= $this->count){
@@ -56,7 +56,7 @@ class Java_String{
 		}
 		return $this->value{$index};
 	}
-	
+
 	public function hashCode(){
 		$h = $this->hash;
 		if($h === 0 and $this->count > 0){
@@ -68,13 +68,13 @@ class Java_String{
 			$this->hash = $h;
 		}
 		return $h;
-	}	
+	}
 }
 
 
 class Java_Random{
 	private $haveNextNextGaussian, $nextNextGaussian, $seed, $n1, $n2, $n3, $zero;
-	
+
 	public function __construct($seed = false){
 		$this->n1 = new Math_BigInteger(0x5DEECE66D);
 		$this->n2 = new Math_BigInteger(1);
@@ -86,19 +86,19 @@ class Java_Random{
 		}
 		$this->setSeed($seed);
 	}
-	
+
 	public function setSeed($seed){
 		$seed = new Math_BigInteger($seed);
 		$this->seed = $seed->bitwise_xor($this->n1)->bitwise_and($this->n2);
 		$this->haveNextNextGaussian = false;
 	}
-	
+
 	protected function next($bits){
 		$bits = (int) $bits;
 		$this->seed = $this->seed->multiply($this->n1)->add($this->n3)->bitwise_and($this->n2);
 		return $this->_tripleRightShift($this->seed, (48 - $bits));
 	}
-	
+
 	private function _tripleRightShift($number, $places){
 		if($number->compare($this->zero) >= 0){
 			return $number->bitwise_rightShift($places);
@@ -106,7 +106,7 @@ class Java_Random{
 		$n1 = new Math_BigInteger(2);
 		return $number->bitwise_rightShift($places)->add($n1->bitwise_leftShift(~$places));
 	}
-	
+
 	public function nextBytes($bytes){
 		$bytes = (int) $bytes;
 		$b = b"";

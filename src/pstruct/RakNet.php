@@ -30,20 +30,20 @@ $pstruct = array(
 		"long", //Ping ID
 		"magic",
 	),
-	
+
 	0x05 => array(
 		"magic",
 		"byte", //Protocol Version
 		"special1", //MTU Size Null Lenght
 	),
-	
+
 	0x06 => array(
 		"magic",
 		"long", //Server GUID
 		"byte", //Server Security
 		"short", //MTU Size
 	),
-	
+
 	0x07 => array(
 		"magic",
 		5, //Security Cookie (idk why it's sent here)
@@ -51,7 +51,7 @@ $pstruct = array(
 		"short", //MTU Size
 		"long", //Client GUID
 	),
-	
+
 	0x08 => array(
 		"magic",
 		"long", //Server GUID
@@ -59,20 +59,20 @@ $pstruct = array(
 		"short", //MTU Size
 		"byte", //Security
 	),
-	
+
 	0x1a => array(
 		"byte", //Server Version
 		"magic",
 		"long", //Server GUID
 	),
-	
+
 	0x1c => array(
 		"long", //Ping ID
 		"long", //Server GUID
 		"magic",
 		"string", //Data
 	),
-	
+
 	0x1d => array(
 		"long", //Ping ID
 		"long", //Server GUID
@@ -85,50 +85,50 @@ $pstruct = array(
 		"ubyte",
 		"customData",
 	),
-	
-	
+
+
 	0x81 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x82 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x83 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x84 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x85 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x86 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x87 => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x88 => array(
 		"itriad",
 		"ubyte",
@@ -140,52 +140,52 @@ $pstruct = array(
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x8a => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x8b => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x8c => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x8d => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x8e => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
+
 	0x8f => array(
 		"itriad",
 		"ubyte",
 		"customData",
 	),
-	
-	
-	
+
+
+
 	0xa0 => array(
 		"short",
 		"bool",
 		"itriad",
 		"special1",
 	),
-	
+
 	0xc0 => array(
 		"short",
 		"bool",

@@ -36,11 +36,11 @@ class TimeAPI{
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 	}
-	
+
 	public function init(){
 		$this->server->api->console->register("time", "Manages server time", array($this, "commandHandler"));
 	}
-	
+
 	public function commandHandler($cmd, $params){
 		switch($cmd){
 			case "time":
@@ -74,7 +74,7 @@ class TimeAPI{
 				break;
 		}
 	}
-	
+
 	public function night(){
 		$this->set("night");
 	}
@@ -87,20 +87,20 @@ class TimeAPI{
 	public function sunset(){
 		$this->set("sunset");
 	}
-	
+
 	public function get($raw = false){
 		return $raw === true ? $this->server->time:abs($this->server->time) % 19200;
 	}
-	
+
 	public function add($time){
 		$this->server->time += (int) $time;
 	}
-	
+
 	public function getDate($time = false){
 		$time = $time === false ? $this->get():$time;
 		return str_pad(strval((floor($time /800) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
 	}
-	
+
 	public function getPhase($time = false){
 		$time = $time === false ? $this->get():$time;
 		if($time < $this->phase["sunset"]){
@@ -114,7 +114,7 @@ class TimeAPI{
 		}
 		return $time;
 	}
-	
+
 	public function set($time){
 		if(is_string($time) and isset($this->phases[$time])){
 			$this->server->time = $this->phases[$time];
@@ -122,6 +122,6 @@ class TimeAPI{
 			$this->server->time = (int) $time;
 		}
 	}
-	
-	
+
+
 }

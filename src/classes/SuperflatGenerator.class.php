@@ -38,14 +38,14 @@ class SuperflatGenerator{
 		);
 		$this->parsePreset();
 	}
-	
+
 	public function set($name, $value){
 		$this->config[$name] = $value;
 		if($name === "preset"){
 			$this->parsePreset();
 		}
 	}
-	
+
 	private function parsePreset(){
 		$this->structure = array(
 			0 => "",
@@ -53,7 +53,7 @@ class SuperflatGenerator{
 			2 => str_repeat("\x00", 64),
 			3 => str_repeat("\x00", 64),
 		);
-		$preset = explode(";", trim($this->config["preset"]));		
+		$preset = explode(";", trim($this->config["preset"]));
 		foreach($preset as $i => $data){
 			$num = 1;
 			if(preg_match('#([a-zA-Z\-_]*)\((.*)\)#', $data, $matches) > 0){ //Property
@@ -78,15 +78,15 @@ class SuperflatGenerator{
 		$this->structure[2] = substr($this->structure[2], 0, 64);
 		$this->structure[3] = substr($this->structure[3], 0, 64);
 	}
-	
+
 	public function init(){
 		$this->spawn = array(128, strlen($this->structure[0]), 128);
 	}
-	
+
 	public function getSpawn(){
 		return $this->spawn;
 	}
-	
+
 	public function getColumn($x, $z){
 		$x = (int) $x;
 		$z = (int) $z;

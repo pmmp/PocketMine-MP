@@ -120,7 +120,7 @@ class Material{
 		102 => true,
 		105 => true,
 		107 => true,
-		108 => true,		
+		108 => true,
 	);
 	static $replaceable = array(
 		0 => true,
@@ -130,7 +130,7 @@ class Material{
 		11 => true,
 		31 => true,
 		51 => true,
-		78 => true,	
+		78 => true,
 	);
 	static $activable = array(
 		2 => true,
@@ -234,7 +234,7 @@ class Material{
 		4 => "Cobblestone",
 		5 => "Wooden Planks",
 		6 => "Sapling",
-		7 => "Bedrock",	
+		7 => "Bedrock",
 	);
 
 

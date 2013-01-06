@@ -37,14 +37,14 @@ class BlockAPI{
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 	}
-	
+
 	public function init(){
 		$this->server->addHandler("world.block.update", array($this, "updateBlockRemote"), 1);
 		$this->server->addHandler("player.block.break", array($this, "blockBreak"), 1);
 		$this->server->addHandler("player.block.action", array($this, "blockAction"), 1);
 		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
-	}	
-	
+	}
+
 	public function commandHandler($cmd, $params){
 		switch($cmd){
 			case "give":
@@ -74,11 +74,11 @@ class BlockAPI{
 				}else{
 					console("[INFO] Unknown player");
 				}
-				
+
 				break;
 		}
 	}
-	
+
 	private function cancelAction($block){
 		$this->server->api->dhandle("world.block.change", array(
 			"x" => $block[2][0],
@@ -90,7 +90,7 @@ class BlockAPI{
 		));
 		return false;
 	}
-	
+
 	public function blockBreak($data, $event){
 		if($event !== "player.block.break"){
 			return;
@@ -189,7 +189,7 @@ class BlockAPI{
 		$this->server->trigger("player.block.break", $data);
 		return false;
 	}
-	
+
 	public function drop($x, $y, $z, $block, $meta, $stack = 1){
 		if($block === 0 or $stack <= 0 or $this->server->gamemode === 1){
 			return;
@@ -213,7 +213,7 @@ class BlockAPI{
 			}
 		}
 	}
-	
+
 	public function blockAction($data, $event){
 		if($event !== "player.block.action"){
 			return;
@@ -225,9 +225,9 @@ class BlockAPI{
 		if($target[0] === 0){ //If no block exists
 			$this->cancelAction($target);
 			$block = $this->server->api->level->getBlockFace($target, $data["face"]);
-			return $this->cancelAction($block);		
+			return $this->cancelAction($block);
 		}
-		
+
 		$cancelPlace = false;
 		if(isset(Material::$activable[$target[0]])){
 			switch($target[0]){
@@ -252,7 +252,7 @@ class BlockAPI{
 						"type" => WINDOW_FURNACE,
 						"slots" => 3,
 						"title" => "Furnace",
-					));				
+					));
 					break;
 				case 6:
 					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
@@ -273,9 +273,9 @@ class BlockAPI{
 					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
 						$data["block"] = $target[0];
 						$data["meta"] = 0x07;
-						$this->server->handle("player.block.place", $data);							
+						$this->server->handle("player.block.place", $data);
 						$cancelPlace = true;
-					}					
+					}
 					break;
 				case 64: //Door
 					if(($target[1] & 0x08) === 0x08){
@@ -320,13 +320,13 @@ class BlockAPI{
 				default:
 					$cancelPlace = true;
 					break;
-			}			
+			}
 		}
 
 		if($cancelPlace === true){
 			return false;
 		}
-		
+
 		$replace = false;
 		switch($target[0]){
 			case 44: //Slabs
@@ -340,29 +340,29 @@ class BlockAPI{
 				}
 				break;
 		}
-		
+
 		if($replace === false){
 			BlockFace::setPosition($data, $data["face"]);
 		}
-			
+
 		if($data["y"] >= 127){
 			return false;
 		}
-		
+
 		$block = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
-		
+
 		if($replace === false and !isset(Material::$replaceable[$block[0]])){
 			return $this->cancelAction($block);
 		}
-		
+
 		if(isset(Material::$placeable[$data["block"]])){
 			$data["block"] = Material::$placeable[$data["block"]] === true ? $data["block"]:Material::$placeable[$data["block"]];
 		}else{
 			return $this->cancelAction($block);
 		}
-		
-		$direction = $this->server->api->entity->get($data["eid"])->getDirection();		
-		
+
+		$direction = $this->server->api->entity->get($data["eid"])->getDirection();
+
 		switch($data["block"]){
 			case 6:
 				if($target[0] === 60){
@@ -391,7 +391,7 @@ class BlockAPI{
 				$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"]);
 				$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"]);
 				if($block0[0] === 9 or $block0[0] === 8 or $block1[0] === 9 or $block1[0] === 8 or $block2[0] === 9 or $block2[0] === 8 or $block3[0] === 9 or $block3[0] === 8){
-				
+
 				}else{
 					return false;
 				}
@@ -527,11 +527,11 @@ class BlockAPI{
 		$this->server->handle("player.block.place", $data);
 		return false;
 	}
-	
+
 	public function blockScheduler($data){
 		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_SCHEDULED);
 	}
-	
+
 	public function updateBlockRemote($data, $event){
 		if($event !== "world.block.update"){
 			return;
@@ -570,14 +570,14 @@ class BlockAPI{
 				"type" => BLOCK_UPDATE_NORMAL,
 			));
 			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 10, $level | $down, false);
-			return true;			
+			return true;
 		}elseif(($source[1] & 0x08) === 0x08){
 			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07, false);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public function flowWaterOn($source, $face){
 		$down = 0;
 		if($face === BlockFace::BOTTOM){
@@ -609,14 +609,14 @@ class BlockAPI{
 				"type" => BLOCK_UPDATE_NORMAL,
 			));
 			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 8, $level | $down, false);
-			return true;			
+			return true;
 		}elseif(($source[1] & 0x08) === 0x08){
 			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $source[0], $source[1] & 0x07, false);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public function updateBlock($x, $y, $z, $type = BLOCK_UPDATE_NORMAL){
 		$block = $this->server->api->level->getBlock($x, $y, $z);
 		$changed = false;
@@ -690,7 +690,7 @@ class BlockAPI{
 								"z" => $block[2][2],
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
-							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0, false);						
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0, false);
 						}else{
 							$block[1] = ($block[1] & 0x08) | $level;
 							$this->server->schedule(10, array($this, "blockScheduler"), array(
@@ -732,7 +732,7 @@ class BlockAPI{
 							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], $block[0], $block[1], false);
 						}
 					}
-				}				
+				}
 				break;
 			case 10:
 			case 11:
@@ -802,7 +802,7 @@ class BlockAPI{
 								"z" => $block[2][2],
 								"type" => BLOCK_UPDATE_NORMAL,
 							));
-							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0, false);						
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 0, 0, false);
 						}else{
 							$block[1] = ($block[1] & 0x08) | $level;
 							$this->server->schedule(20, array($this, "blockScheduler"), array(
@@ -845,7 +845,7 @@ class BlockAPI{
 						}
 					}
 				}
-				
+
 				break;
 			case 74:
 				if($type === BLOCK_UPDATE_SCHEDULED or $type === BLOCK_UPDATE_RANDOM){
@@ -874,7 +874,7 @@ class BlockAPI{
 			$this->updateBlocksAround($x, $y, $z, $type);
 		}
 	}
-	
+
 	public function updateBlocksAround($x, $y, $z, $type){
 		$this->updateBlock($x + 1, $y, $z, $type);
 		$this->updateBlock($x, $y + 1, $z, $type);

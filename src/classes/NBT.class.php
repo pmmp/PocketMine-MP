@@ -1,7 +1,7 @@
 <?php
 /**
  * Class for reading in NBT-format files.
- * 
+ *
  * @author  Justin Martin <frozenfire@thefrozenfire.com>
  * @version 1.0
  * MODIFIED BY @shoghicp
@@ -12,7 +12,7 @@
 
 class NBT {
 	public $root = array();
-	
+
 	const TAG_END = 0;
 	const TAG_BYTE = 1;
 	const TAG_SHORT = 2;
@@ -24,7 +24,7 @@ class NBT {
 	const TAG_STRING = 8;
 	const TAG_LIST = 9;
 	const TAG_COMPOUND = 10;
-	
+
 	public function loadFile($filename) {
 		if(is_file($filename)) {
 			$fp = fopen($filename, "rb");
@@ -44,7 +44,7 @@ class NBT {
 		$this->traverseTag($fp, $this->root);
 		return end($this->root);
 	}
-	
+
 	public function traverseTag($fp, &$tree) {
 		if(feof($fp)) {
 			return false;
@@ -59,7 +59,7 @@ class NBT {
 			return true;
 		}
 	}
-	
+
 	public function readType($fp, $tagType) {
 		switch($tagType) {
 			case self::TAG_BYTE: // Signed byte (8 bit)

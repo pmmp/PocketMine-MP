@@ -35,8 +35,8 @@ class SmallTreeObject extends TreeObject{
 	protected $radiusIncrease = 0;
 	private $addLeavesVines = false;
 	private $addLogVines = false;
-	private $addCocoaPlants = false;	
-	
+	private $addCocoaPlants = false;
+
 	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
 		$radiusToCheck = $this->radiusIncrease;
 		for ($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
@@ -54,7 +54,7 @@ class SmallTreeObject extends TreeObject{
 		}
 		return true;
 	}
-	
+
 	public function placeObject(LevelAPI $level, $x, $y, $z){
 		$level->setBlock($x, $y - 1, $z, 3, 0);
 		$this->totalHeight += mt_rand(-1, 3);
@@ -72,7 +72,7 @@ class SmallTreeObject extends TreeObject{
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
 			$level->setBlock($x, $y + $yy, $z, 17, $this->type);
-		}	
+		}
 	}
 
 

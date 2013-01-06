@@ -52,7 +52,7 @@ class Player{
 		$this->auth = false;
 		$this->counter = array(0, 0, 0);
 	}
-	
+
 	public function onTick($time, $event){
 		if($event !== "server.tick"){
 			return;
@@ -80,7 +80,7 @@ class Player{
 			}
 		}
 	}
-	
+
 	public function save(){
 		if(is_object($this->entity)){
 			$this->data["spawn"] = array(
@@ -90,7 +90,7 @@ class Player{
 			);
 		}
 	}
-	
+
 	public function close($reason = "", $msg = true){
 		$reason = $reason == "" ? "server stop":$reason;
 		$this->save();
@@ -110,14 +110,14 @@ class Player{
 		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
 		$this->server->api->player->remove($this->CID);
 	}
-	
-	public function eventHandler($data, $event){		
+
+	public function eventHandler($data, $event){
 		switch($event){
 			case "player.item.pick":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
 				}
-				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);		
+				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				break;
 			case "player.equipment.change":
 				if($data["eid"] === $this->eid){
@@ -170,7 +170,7 @@ class Player{
 				break;
 		}
 	}
-	
+
 	public function handle($pid, $data){
 		if($this->connected === true){
 			$this->timeout = microtime(true) + 25;
@@ -210,7 +210,7 @@ class Player{
 						$data[3],
 						0,
 					));
-					break;					
+					break;
 				case 0x80:
 				case 0x81:
 				case 0x82:
@@ -240,12 +240,12 @@ class Player{
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
 					switch($data["id"]){
-					
+
 						case MC_KEEP_ALIVE:
-						
+
 							break;
 						case 0x03:
-						
+
 							break;
 						case MC_DISCONNECT:
 							$this->connected = false;
@@ -259,13 +259,13 @@ class Player{
 							));
 							break;
 						case MC_CLIENT_HANDSHAKE:
-						
+
 							break;
 						case MC_LOGIN:
 							$this->username = str_replace(array("\x00", "/", " ", "\r", "\n"), array("", "-", "_", "", ""), $data["username"]);
 							if($this->username == ""){
 								$this->close("bad username", false);
-								break;								
+								break;
 							}
 							$o = $this->server->api->player->getOffline($this->username);
 							if($this->server->whitelist !== false and (!in_array($this->username, $this->server->whitelist)/* or ($o["lastID"] != 0 and $o["lastID"] != $this->clientID)*/)){
@@ -298,7 +298,7 @@ class Player{
 								"eid" => 0,
 							));
 							break;
-						case MC_READY:						
+						case MC_READY:
 							switch($data["status"]){
 								case 1:
 									if($this->spawned !== false){
@@ -321,7 +321,7 @@ class Player{
 									$this->evid[] = $this->server->event("player.item.pick", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("world.block.change", array($this, "eventHandler"));
 									console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
-									
+
 									$this->eventHandler($this->server->motd, "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
@@ -337,7 +337,7 @@ class Player{
 								$this->server->api->dhandle("entity.move", $this->entity);
 							}
 							break;
-						case MC_PLAYER_EQUIPMENT:							
+						case MC_PLAYER_EQUIPMENT:
 							$data["eid"] = $this->eid;
 							if($this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment[0] = $data["block"];
@@ -353,7 +353,7 @@ class Player{
 								$this->dataPacket(MC_CHUNK_DATA, array(
 									"x" => '.$data["x"].',
 									"z" => '.$data["z"].',
-									"data" => $d,								
+									"data" => $d,
 								), true);
 							}
 							');
@@ -376,7 +376,7 @@ class Player{
 						case MC_INTERACT:
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
 								console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
-								if($this->server->gamemode !== 1 and $this->server->difficulty > 0){								
+								if($this->server->gamemode !== 1 and $this->server->difficulty > 0){
 									$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
 								}
 							}
@@ -405,17 +405,17 @@ class Player{
 			}
 		}
 	}
-	
+
 	public function send($pid, $data = array(), $raw = false){
 		if($this->connected === true){
 			$this->server->send($pid, $data, $raw, $this->ip, $this->port);
 		}
 	}
-	
+
 	public function actionQueue($code){
 		$this->queue[] = array(1, $code);
 	}
-	
+
 	public function dataPacket($id, $data = array(), $queue = false, $count = false){
 		if($queue === true){
 			$this->queue[] = array(0, $id, $data, $count);

@@ -33,19 +33,19 @@ class NormalGenerator{
 			"seed" => (int) $seed,
 		);
 	}
-	
+
 	public function set($name, $value){
 		$this->config[$name] = $value;
-	}	
-	
+	}
+
 	public function init(){
 		$this->spawn = array(128, 128, 128);
 	}
-	
+
 	public function getSpawn(){
 		return $this->spawn;
 	}
-	
+
 	public function getColumn($x, $z){
 		$x = (int) $x;
 		$z = (int) $z;

@@ -30,11 +30,11 @@ class ChunkParser{
 	var $sectorLength = 4096; //16 * 16 * 16
 	var $chunkLength = 86016; //21 * $sectorLength
 	var $map;
-	
+
 	function __construct(){
 		$map = array();
 	}
-	
+
 	private function loadLocationTable(){
 		$this->location = array();
 		console("[DEBUG] Loading Chunk Location table...", true, true, 2);
@@ -57,7 +57,7 @@ class ChunkParser{
 			++$chunkCnt;
 		}
 	}
-	
+
 	public function loadFile($file){
 		if(ZLIB_EXTENSION === true and file_exists($file.".gz")){
 			$this->raw = gzinflate(file_get_contents($file.".gz"));
@@ -69,40 +69,40 @@ class ChunkParser{
 			file_put_contents($file, $this->raw);
 		}elseif(!file_exists($file)){
 			return false;
-		}else{			
+		}else{
 			$this->raw = file_get_contents($file);
 		}
 		$this->file = $file;
 		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
 		return true;
 	}
-	
+
 	public function loadRaw($raw, $file){
 		$this->file = $file;
 		$this->raw = $raw;
 		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
 		return true;
 	}
-	
+
 	private function getOffsetPosition($X, $Z){
         $data = substr($this->raw, ($X << 2) + ($Z << 7), 4); //$X * 4 + $Z * 128
 		return array(ord($data{0}), ord($data{1}), ord($data{2}), ord($data{3}));
     }
-	
+
 	private function getOffset($X, $Z, $sectors = 21){
 		return 0x1000 + (($X * $sectors) << 12) + (($Z * $sectors) << 16);
     }
-	
+
 	private function getOffsetLocation($X, $Z){
 		return $X << 2 + $Z << 7;
     }
-	
+
 	public function getChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
 		return substr($this->raw, $this->getOffset($X, $Z), $this->chunkLength);
 	}
-	
+
 	public function writeChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
@@ -117,7 +117,7 @@ class ChunkParser{
 		}
 		return Utils::writeLInt(strlen($chunk)).$chunk;
 	}
-	
+
 	public function parseChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
@@ -139,7 +139,7 @@ class ChunkParser{
 		}
 		return $chunk;
 	}
-	
+
 	public function loadMap(){
 		if($this->raw == ""){
 			return false;
@@ -155,10 +155,10 @@ class ChunkParser{
 		$this->raw = b"";
 		console("[DEBUG] Chunks loaded!", true, true, 2);
 	}
-	
+
 	public function saveMap($final = false){
 		console("[DEBUG] Saving chunks...", true, true, 2);
-		
+
 		$fp = fopen($this->file, "r+b");
 		flock($fp, LOCK_EX);
 		foreach($this->map as $x => $d){
@@ -179,7 +179,7 @@ class ChunkParser{
 			}
 		}
 	}
-	
+
 	public function getFloor($x, $z){
 		$X = $x >> 4;
 		$Z = $z >> 4;
@@ -193,7 +193,7 @@ class ChunkParser{
 		}
 		return $y;
 	}
-	
+
 	public function getBlock($x, $y, $z){
 		$x = (int) $x;
 		$y = (int) $y;
@@ -212,12 +212,12 @@ class ChunkParser{
 		}
 		return array($block, $meta);
 	}
-	
+
 	public function getChunkColumn($X, $Z, $x, $z, $type = 0){
 		$index = $z + ($x << 4);
 		return $this->map[$X][$Z][$type][$index];
 	}
-	
+
 	public function setBlock($x, $y, $z, $block, $meta = 0){
 		$x = (int) $x;
 		$y = (int) $y;

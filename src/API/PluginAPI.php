@@ -32,7 +32,7 @@ class PluginAPI extends stdClass{
 		$this->plugins = array();
 		require_once("classes/Spyc.class.php"); //YAML parser
 	}
-	
+
 	public function getList(){
 		$list = array();
 		foreach($this->plugins as $p){
@@ -40,7 +40,7 @@ class PluginAPI extends stdClass{
 		}
 		return $list;
 	}
-	
+
 	public function getInfo($className){
 		if(!isset($this->plugins[$className])){
 			return false;
@@ -48,7 +48,7 @@ class PluginAPI extends stdClass{
 		$plugin = $this->plugins[$className];
 		return array($plugin[1], get_class_methods($plugin[0]));
 	}
-	
+
 	public function load($file){
 		$content = file_get_contents($file);
 		$info = strstr($content, "*/", true);
@@ -95,12 +95,12 @@ class PluginAPI extends stdClass{
 				$object->__destruct();
 			}
 			$object = null;
-			unset($object);			
+			unset($object);
 		}else{
 			$this->plugins[$className] = array($object, $info);
 		}
 	}
-	
+
 	public function get(Plugin $plugin){
 		foreach($this->plugins as &$p){
 			if($p[0] === $plugin){
@@ -109,7 +109,7 @@ class PluginAPI extends stdClass{
 		}
 		return false;
 	}
-	
+
 	public function createConfig(Plugin $plugin, $default = array()){
 		$p = $this->get($plugin);
 		if($p === false){
@@ -127,7 +127,7 @@ class PluginAPI extends stdClass{
 		}
 		return $path;
 	}
-	
+
 	private function fillDefaults($default, &$yaml){
 		foreach($default as $k => $v){
 			if(is_array($v)){
@@ -140,19 +140,19 @@ class PluginAPI extends stdClass{
 			}
 		}
 	}
-	
+
 	public function readYAML($file){
 		return Spyc::YAMLLoad(file_get_contents($file));
 	}
-	
+
 	public function writeYAML($file, $data){
 		return file_put_contents($file, Spyc::YAMLDump($data));
 	}
-	
+
 	public function init(){
 		$this->server->event("server.start", array($this, "loadAll"));
 	}
-	
+
 	public function loadAll(){
 		console("[INFO] Loading Plugins...");
 		$dir = dir(FILE_PATH."plugins/");

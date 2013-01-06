@@ -71,7 +71,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->timePerSecond = 10;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
-		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);		
+		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);
 		$this->reloadConfig();
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
@@ -79,17 +79,17 @@ class PocketMinecraftServer extends stdClass{
 		console("[INFO] Max Clients: ".$this->maxClients);
 		$this->stop = false;
 	}
-	
+
 	public function getTPS(){
 		$v = array_values($this->tickMeasure);
 		$tps = 40 / ($v[39] - $v[0]);
 		return round($tps, 4);
 	}
-	
-	public function loadEvents(){		
+
+	public function loadEvents(){
 		$this->event("server.chat", array($this, "eventHandler"));
 		$this->event("player.new", array($this, "eventHandler"));
-		
+
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time.change", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
@@ -103,7 +103,7 @@ class PocketMinecraftServer extends stdClass{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->database = new SQLite3(":memory:");
-		//$this->query("PRAGMA journal_mode = OFF;");		
+		//$this->query("PRAGMA journal_mode = OFF;");
 		//$this->query("PRAGMA encoding = \"UTF-8\";");
 		//$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
@@ -118,7 +118,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
 		$this->preparedSQL->updateActions = $this->database->prepare("UPDATE actions SET last = :time WHERE last <= (:time - interval);");
 	}
-	
+
 	public function query($sql, $fetch = false){
 		console("[INTERNAL] [SQL] ".$sql, true, true, 3);
 		$result = $this->database->query($sql) or console("[ERROR] [SQL Error] ".$this->database->lastErrorMsg().". Query: ".$sql, true, true, 0);
@@ -127,14 +127,14 @@ class PocketMinecraftServer extends stdClass{
 		}
 		return $result;
 	}
-	
+
 	public function reloadConfig(){
 		if($this->whitelist === true or is_array($this->whitelist)){
 			$this->whitelist = explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")));
 		}
 		$this->bannedIPs = explode("\n", str_replace(array(" ","\t","\r"), "", file_get_contents(FILE_PATH."banned-ips.txt")));
 	}
-	
+
 	public function debugInfo($console = false){
 		$info = array();
 		$info["tps"] = $this->getTPS();
@@ -152,7 +152,7 @@ class PocketMinecraftServer extends stdClass{
 		}
 		return $info;
 	}
-	
+
 	public function close($reason = "stop"){
 		if($this->stop !== true){
 			$this->chat(false, "Stopping server...");
@@ -162,7 +162,7 @@ class PocketMinecraftServer extends stdClass{
 			$this->interface->close();
 		}
 	}
-	
+
 	public function chat($owner, $text, $target = true){
 		$message = "";
 		if($owner !== false){
@@ -171,7 +171,7 @@ class PocketMinecraftServer extends stdClass{
 		$message .= $text;
 		$this->handle("server.chat", $message);
 	}
-	
+
 	public function setType($type = "normal"){
 		switch($type){
 			case "normal":
@@ -181,9 +181,9 @@ class PocketMinecraftServer extends stdClass{
 				$this->serverType = "MCCPP;MINECON;";
 				break;
 		}
-		
+
 	}
-	
+
 	public function addHandler($event, $callable, $priority = 5){
 		if(!is_callable($callable)){
 			return false;
@@ -194,14 +194,14 @@ class PocketMinecraftServer extends stdClass{
 		console("[INTERNAL] New handler ".(is_array($callable) ? get_class($callable[0])."::".$callable[1]:$callable)." to special event ".$event." (ID ".$this->handCnt.")", true, true, 3);
 		return $this->handCnt++;
 	}
-	
+
 	public function handle($event, &$data){
 		$this->preparedSQL->selectHandlers->reset();
 		$this->preparedSQL->selectHandlers->clear();
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = true;
-		if($handlers !== false and $handlers !== true){			
+		if($handlers !== false and $handlers !== true){
 			while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
 				$handler = $this->handlers[(int) $hn["ID"]];
 				if(is_array($handler)){
@@ -210,7 +210,7 @@ class PocketMinecraftServer extends stdClass{
 				}else{
 					$result = $handler($data, $event);
 				}
-			}					
+			}
 		}
 		$handlers->finalize();
 		if($result !== false){
@@ -218,7 +218,7 @@ class PocketMinecraftServer extends stdClass{
 		}
 		return $result;
 	}
-	
+
 	public function eventHandler($data, $event){
 		switch($event){
 			case "player.new":
@@ -229,14 +229,14 @@ class PocketMinecraftServer extends stdClass{
 				break;
 		}
 	}
-	
+
 	public function loadMap(){
-		if($this->mapName !== false and trim($this->mapName) !== ""){			
+		if($this->mapName !== false and trim($this->mapName) !== ""){
 			$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
 			console("[INFO] Map: ".$this->level["LevelName"]);
 			$this->time = (int) $this->level["Time"];
 			$this->seed = (int) $this->level["RandomSeed"];
-			if(isset($this->level["SpawnX"])){			
+			if(isset($this->level["SpawnX"])){
 				$this->spawn = array("x" => $this->level["SpawnX"], "y" => $this->level["SpawnY"], "z" => $this->level["SpawnZ"]);
 			}else{
 				$this->level["SpawnX"] = $this->spawn["x"];
@@ -264,7 +264,7 @@ class PocketMinecraftServer extends stdClass{
 			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
 		}
 	}
-	
+
 	public function loadEntities(){
 		if($this->map !== false){
 			console("[INFO] Loading entities...");
@@ -288,26 +288,26 @@ class PocketMinecraftServer extends stdClass{
 						$e = $this->api->entity->add(ENTITY_MOB, $entity["id"]);
 						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
 						$e->setHealth($entity["Health"]);
-					
+
 					}
 				}
 			}
 			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
 			$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
-		}	
+		}
 	}
-	
+
 	public function save($final = false){
-		if($this->mapName !== false){	
+		if($this->mapName !== false){
 			file_put_contents($this->mapDir."level.dat", serialize($this->level));
 			$this->map->saveMap($final);
 			console("[INFO] Saving entities...");
 			foreach($this->entities as $entity){
-				
+
 			}
 		}
 	}
-	
+
 	public function init(){
 		if($this->mapName !== false and $this->map === false){
 			$this->loadMap();
@@ -322,21 +322,21 @@ class PocketMinecraftServer extends stdClass{
 		console("[INFO] Server started!");
 		$this->process();
 	}
-	
+
 	public function tick(){
 		$time = microtime(true);
 		if($this->lastTick <= ($time - 0.05)){
 			array_shift($this->tickMeasure);
-			$this->tickMeasure[] = $this->lastTick = $time;			
+			$this->tickMeasure[] = $this->lastTick = $time;
 			$this->tickerFunction($time);
 			$this->trigger("server.tick", $time);
 		}
 	}
-	
+
 	public function clientID($ip, $port){
 		return md5($ip . $port, true);
 	}
-	
+
 	public function packetHandler($packet){
 		$data =& $packet["data"];
 		$CID = $this->clientID($packet["ip"], $packet["port"]);
@@ -351,7 +351,7 @@ class PocketMinecraftServer extends stdClass{
 							$this->serverID,
 							MAGIC,
 							$this->serverType,
-						), false, $packet["ip"], $packet["port"]);					
+						), false, $packet["ip"], $packet["port"]);
 						break;
 					}
 					if(in_array($packet["ip"], $this->bannedIPs)){
@@ -441,11 +441,11 @@ class PocketMinecraftServer extends stdClass{
 			}
 		}
 	}
-	
+
 	public function send($pid, $data = array(), $raw = false, $dest = false, $port = false){
 		$this->interface->writePacket($pid, $data, $raw, $dest, $port);
 	}
-	
+
 	public function process(){
 		while($this->stop === false){
 			$packet = @$this->interface->readPacket();
@@ -453,10 +453,10 @@ class PocketMinecraftServer extends stdClass{
 				$this->packetHandler($packet);
 			}else{
 				usleep(1);
-			}			
+			}
 		}
 	}
-	
+
 	public function trigger($event, $data = ""){
 		$this->preparedSQL->selectEvents->reset();
 		$this->preparedSQL->selectEvents->clear();
@@ -486,7 +486,7 @@ class PocketMinecraftServer extends stdClass{
 		}
 		return false;
 	}
-	
+
 	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
 		if(!is_callable($callback)){
 			return false;
@@ -499,7 +499,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$this->scheduleCnt.']);return;} call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
 		return $this->scheduleCnt++;
 	}
-	
+
 	public function action($microseconds, $code, $repeat = true){
 		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".base64_encode($code)."', ".($repeat === true ? 1:0).");");
 		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
@@ -511,7 +511,7 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->selectActions->clear();
 		$this->preparedSQL->selectActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$actions = $this->preparedSQL->selectActions->execute();
-		
+
 		if($actions === false or $actions === true){
 			return;
 		}
@@ -526,8 +526,8 @@ class PocketMinecraftServer extends stdClass{
 		$this->preparedSQL->updateActions->clear();
 		$this->preparedSQL->updateActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$this->preparedSQL->updateActions->execute();
-	}	
-	
+	}
+
 	public function event($event, $func){
 		if(!is_callable($func)){
 			return false;
@@ -537,11 +537,11 @@ class PocketMinecraftServer extends stdClass{
 		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->evCnt.")", true, true, 3);
 		return $this->evCnt++;
 	}
-	
+
 	public function deleteEvent($id){
 		$id = (int) $id;
 		unset($this->events[$id]);
 		$this->query("DELETE FROM events WHERE ID = ".$id.";");
 	}
-	
+
 }

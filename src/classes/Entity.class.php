@@ -74,7 +74,7 @@ class Entity extends stdClass{
 				break;
 		}
 	}
-	
+
 	public function update(){
 		if($this->class === ENTITY_ITEM and $this->closed === false){
 			$this->server->api->dhandle("entity.move", $this);
@@ -86,12 +86,12 @@ class Entity extends stdClass{
 					"meta" => $this->meta,
 					"target" => $this->eid
 				)) !== false){
-					$this->close();						
+					$this->close();
 				}
 			}
 		}
 	}
-	
+
 	public function getDirection(){
 		$rotation = ($this->yaw - 90) % 360;
 		if ($rotation < 0) {
@@ -111,7 +111,7 @@ class Entity extends stdClass{
 			return null;
 		}
 	}
-	
+
 	public function spawn($player){
 		if(!is_object($player)){
 			$player = $this->server->api->player->get($player);
@@ -145,7 +145,7 @@ class Entity extends stdClass{
 					"meta" => $this->meta,
 					"stack" => $this->stack,
 				));
-				break;				
+				break;
 			case ENTITY_MOB:
 				$player->dataPacket(MC_ADD_MOB, array(
 					"type" => $this->type,
@@ -160,7 +160,7 @@ class Entity extends stdClass{
 				break;
 		}
 	}
-	
+
 	public function close(){
 		if($this->closed === false){
 			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
@@ -169,24 +169,24 @@ class Entity extends stdClass{
 			$this->__destruct();
 		}
 	}
-	
+
 	public function __destruct(){
 		$this->close();
 	}
-	
+
 	public function getEID(){
 		return $this->eid;
 	}
-	
+
 	public function getName(){
 		return $this->name;
 	}
-	
+
 	public function setName($name){
 		$this->name = $name;
 		$this->server->query("UPDATE entities SET name = '".str_replace("'", "", $this->name)."' WHERE EID = ".$this->eid.";");
 	}
-	
+
 	public function look($pos2){
 		$pos = $this->getPosition();
 		$angle = Utils::angle3D($pos2, $pos);
@@ -194,14 +194,14 @@ class Entity extends stdClass{
 		$this->pitch = $angle["pitch"];
 		$this->server->query("UPDATE entities SET pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
-	
+
 	public function setCoords($x, $y, $z){
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE EID = ".$this->eid.";");
 	}
-	
+
 	public function move($x, $y, $z, $yaw = 0, $pitch = 0){
 		$this->x += $x;
 		$this->y += $y;
@@ -212,22 +212,22 @@ class Entity extends stdClass{
 		$this->pitch %= 90;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
-	
+
 	public function setPosition($x, $y, $z, $yaw, $pitch){
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
-		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");		
+		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 		return true;
 	}
-	
+
 	public function getPosition($round = false){
 		return !isset($this->position) ? false:($round === true ? array_map("floor", $this->position):$this->position);
 	}
-	
-	public function setHealth($health, $cause = ""){				
+
+	public function setHealth($health, $cause = ""){
 		$this->health = (int) $health;
 		$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
 		$this->server->api->dhandle("entity.health.change", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
@@ -245,7 +245,7 @@ class Entity extends stdClass{
 			$this->dead = false;
 		}
 	}
-	
+
 	public function getHealth(){
 		return $this->health;
 	}

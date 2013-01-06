@@ -112,7 +112,7 @@ function arg($name, $default){
 	if(!isset($arguments)){
 		$arguments = arguments($argv);
 	}
-	
+
 	if(isset($arguments["commands"][$name])){
 		return $arguments["commands"][$name];
 	}else{
@@ -171,7 +171,7 @@ function console($message, $EOL = true, $log = true, $level = 1){
 		$message = date("H:i:s"). " ". $message;
 		if($log === true and (!defined("LOG") or LOG === true)){
 			logg($message, "console", false, $level);
-		}	
+		}
 		echo $message;
 	}
 }

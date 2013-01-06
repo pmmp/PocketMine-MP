@@ -30,7 +30,7 @@ class Packet{
 	private $struct, $sock;
 	protected $pid, $packet;
 	public $data, $raw;
-	
+
 	function __construct($pid, $struct, $data = ""){
 		$this->pid = $pid;
 		$this->offset = 1;
@@ -42,7 +42,7 @@ class Packet{
 		$this->struct = $struct;
 		$this->sock = $sock;
 	}
-	
+
 	public function create($raw = false){
 		foreach($this->struct as $field => $type){
 			if(!isset($this->data[$field])){
@@ -83,7 +83,7 @@ class Packet{
 							$reply = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
 							$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
 							$this->addRaw(chr($this->data[$field]["id"]));
-							$this->addRaw($reply->raw);						
+							$this->addRaw($reply->raw);
 							break;
 					}
 					break;
@@ -136,10 +136,10 @@ class Packet{
 				default:
 					$this->addRaw(Utils::writeByte($this->data[$field]));
 					break;
-			}			
+			}
 		}
 	}
-	
+
 	private function get($len = true){
 		if($len === true){
 			$data = substr($this->raw, $this->offset);
@@ -150,12 +150,12 @@ class Packet{
 		$this->offset += $len;
 		return $data;
 	}
-	
+
 	protected function addRaw($str){
 		$this->raw .= $str;
 		return $str;
 	}
-	
+
 	public function parse(){
 		$continue = true;
 		foreach($this->struct as $field => $type){
@@ -205,7 +205,7 @@ class Packet{
 					break;
 				case "byte":
 					$this->data[] = Utils::readByte($this->get(1));
-					break;				
+					break;
 				case "ubyte":
 					$this->data[] = ord($this->get(1));
 					break;
@@ -231,8 +231,8 @@ class Packet{
 			}
 		}
 	}
-	
-	
+
+
 
 
 }

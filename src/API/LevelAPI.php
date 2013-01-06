@@ -32,13 +32,13 @@ class LevelAPI{
 		$this->map = $this->server->map;
 		$this->heightMap = array_fill(0, 256, array());
 	}
-	
+
 	public function init(){
 		$this->server->event("player.block.break", array($this, "handle"));
 		$this->server->event("player.block.place", array($this, "handle"));
 		$this->server->event("player.block.update", array($this, "handle"));
 	}
-	
+
 	public function handle($data, $event){
 		switch($event){
 			case "player.block.place":
@@ -49,7 +49,7 @@ class LevelAPI{
 			case "player.block.break":
 				$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
 				console("[DEBUG] EID ".$data["eid"]." broke ".$block[0].":".$block[1]." at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
-				
+
 				if($block[0] === 0){
 					break;
 				}
@@ -57,34 +57,34 @@ class LevelAPI{
 				break;
 		}
 	}
-	
+
 	public function getSpawn(){
 		return $this->server->spawn;
 	}
 
 	public function getChunk($X, $Z){
-		return $this->map->map[$X][$Z];		
+		return $this->map->map[$X][$Z];
 	}
-	
+
 	public function getBlockFace($block, $face){
 		$data = array("x" => $block[2][0], "y" => $block[2][1], "z" => $block[2][2]);
 		BlockFace::setPosition($data, $face);
 		return $this->getBlock($data["x"], $data["y"], $data["z"]);
 	}
-	
+
 	public function getBlock($x, $y, $z){
 		$b = $this->map->getBlock($x, $y, $z);
 		$b[2] = array($x, $y, $z);
 		return $b;
 	}
-	
+
 	public function getFloor($x, $z){
 		if(!isset($this->heightMap[$z][$x])){
 			$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 		}
 		return $this->heightMap[$z][$x];
 	}
-	
+
 	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true){
 		$this->map->setBlock($x, $y, $z, $block, $meta);
 		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
@@ -101,7 +101,7 @@ class LevelAPI{
 			}
 		}
 	}
-	
+
 	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){
 		$columnsPerPacket = max(1, (int) $columnsPerPacket);
 		$c = $this->getChunk($X, $Z);

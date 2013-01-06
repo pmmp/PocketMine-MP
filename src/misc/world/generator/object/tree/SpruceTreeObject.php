@@ -33,7 +33,7 @@ class SpruceTreeObject extends TreeObject{
 	private $totalHeight = 8;
 	private $leavesBottomY = -1;
 	private $leavesMaxRadius = -1;
-	
+
 	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
 		$this->findRandomLeavesSize();
 		$checkRadius = 0;
@@ -52,13 +52,13 @@ class SpruceTreeObject extends TreeObject{
 		}
 		return true;
 	}
-	
+
 	private function findRandomLeavesSize(){
 		$this->totalHeight += mt_rand(-1, 2);
 		$this->leavesBottomY = (int) ($this->totalHeight - mt_rand(1,2) - 3);
 		$this->leavesMaxRadius = 1 + mt_rand(0, 1);
 	}
-	
+
 	public function placeObject(LevelAPI $level, $x, $y, $z){
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
 			$this->findRandomLeavesSize();
@@ -81,7 +81,7 @@ class SpruceTreeObject extends TreeObject{
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
 			$level->setBlock($x, $y + $yy, $z, 17, $this->type);
-		}	
+		}
 	}
 
 
