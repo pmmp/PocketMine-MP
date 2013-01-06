@@ -317,10 +317,29 @@ class PocketMinecraftServer extends stdClass{
 		$this->loadEvents();
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
+		register_shutdown_function(array($this, "dumpError"));
 		register_shutdown_function(array($this, "close"));
 		$this->trigger("server.start", microtime(true));
 		console("[INFO] Server started!");
 		$this->process();
+	}
+	
+	public function dumpError(){
+		console("[ERROR] An Unrecovereable has ocurred and the server has Crashed. Creating an Error Dump");
+		$dump = "# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
+		$dump .= "Error: ".var_export(error_get_last(), true)."\r\n\r\n";
+		$version = new VersionString();
+		$dump .= "PM Version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."]\r\n";
+		$dump .= "uname -a: ".php_uname("a")."\r\n";
+		$dump .= "PHP Version: " .phpversion()."\r\n";
+		$dump .= "Zend version: ".zend_version()."\r\n";
+		$dump .= "OS : " .PHP_OS.", ".Utils::getOS()."\r\n";
+		$dump .= "Debug Info: ".var_export($this->debugInfo(false), true)."\r\n\r\n\r\n";
+		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
+		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n";
+		$name = "error_dump_".time();
+		logg($dump, $name, true, 0, true);
+		console("[ERROR] Please submit the \"logs/{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
 	public function tick(){

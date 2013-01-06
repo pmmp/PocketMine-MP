@@ -383,6 +383,10 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 		return false;
 	}
+	
+	public function getProperties(){
+		return $this->config;
+	}
 
 	public function getProperty($name){
 		if(isset($this->config[$name])){
