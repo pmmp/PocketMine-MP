@@ -42,10 +42,12 @@ class PlayerAPI{
 	public function handle($data, $event){
 		switch($event){
 			case "server.regeneration":
-				$result = $this->server->query("SELECT ip,port FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);");
+				$result = $this->server->query("SELECT EID FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);");
 				if($result !== true and $result !== false){
 					while(false !== ($player = $result->fetchArray())){
-						$player->entity->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
+						if(($player = $this->server->api->player->getByEID($player["EID"])) !== false){
+							$player->entity->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
+						}
 					}
 				}
 				break;
