@@ -76,7 +76,6 @@ class PocketMinecraftServer extends stdClass{
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
 		console("[INFO] Protocol Version: ".CURRENT_PROTOCOL);
-		console("[INFO] Max Clients: ".$this->maxClients);
 		$this->stop = false;
 	}
 
