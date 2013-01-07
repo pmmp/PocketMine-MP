@@ -107,7 +107,7 @@ function parseNBTData($data){
 }
 
 
-function arg($name, $default){
+function arg($name, $default = false){
 	global $arguments, $argv;
 	if(!isset($arguments)){
 		$arguments = arguments($argv);
@@ -127,7 +127,7 @@ function arguments ( $args ){
     array_shift( $args );
     $args = join( $args, ' ' );
 
-    preg_match_all('/ (--\w+ (?:[= ] [^-]+ [^\s-] )? ) | (-\w+) | (\w+) /x', $args, $match );
+    preg_match_all('/ (--[\w\-]+ (?:[= ] [^-]+ [^\s-] )? ) | (-\w+) | (\w+) /x', $args, $match );
     $args = array_shift( $match );
 
     $ret = array(

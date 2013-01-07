@@ -335,6 +335,8 @@ class PocketMinecraftServer extends stdClass{
 		$dump .= "Zend version: ".zend_version()."\r\n";
 		$dump .= "OS : " .PHP_OS.", ".Utils::getOS()."\r\n";
 		$dump .= "Debug Info: ".var_export($this->debugInfo(false), true)."\r\n\r\n\r\n";
+		global $arguments;
+		$dump .= "Parameters: ".var_export($arguments, true)."\r\n\r\n\r\n";
 		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
 		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n";
 		$name = "error_dump_".time();

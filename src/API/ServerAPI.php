@@ -87,10 +87,10 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 
 		console("[DEBUG] Loading server.properties...", true, true, 2);
 		$this->parseProperties();
-		define("DEBUG", $this->config["debug"]);
+		define("DEBUG", $this->getProperty("debug"));
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"));
 		$this->server->api = $this;
-		if($this->getProperty("upnp-forwarding") === true ){
+		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("port"));
 		}
@@ -211,8 +211,8 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 
 
 	private function loadProperties(){
-		if(isset($this->config["memory-limit"])){
-			@ini_set("memory_limit", $this->config["memory-limit"]);
+		if($this->getProperty("memory-limit") !== false){
+			@ini_set("memory_limit", $this->getProperty("memory-limit"));
 		}else{
 			$this->config["memory-limit"] = "256M";
 		}
@@ -220,15 +220,15 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$this->config["invisible"] = false;
 		}
 		if(is_object($this->server)){
-			$this->server->setType($this->config["server-type"]);
-			$this->server->timePerSecond = $this->config["time-per-second"];
-			$this->server->invisible = $this->config["invisible"];
-			$this->server->maxClients = $this->config["max-players"];
-			$this->server->description = $this->config["description"];
-			$this->server->motd = $this->config["motd"];
-			$this->server->gamemode = $this->config["gamemode"];
-			$this->server->difficulty = $this->config["difficulty"];
-			$this->server->whitelist = $this->config["white-list"];
+			$this->server->setType($this->getProperty("server-type"));
+			$this->server->timePerSecond = $this->getProperty("time-per-second");
+			$this->server->invisible = $this->getProperty("invisible");
+			$this->server->maxClients = $this->getProperty("max-players");
+			$this->server->description = $this->getProperty("description");
+			$this->server->motd = $this->getProperty("motd");
+			$this->server->gamemode = $this->getProperty("gamemode");
+			$this->server->difficulty = $this->getProperty("difficulty");
+			$this->server->whitelist = $this->getProperty("white-list");
 			$this->server->reloadConfig();
 		}
 	}
@@ -389,6 +389,43 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 	}
 
 	public function getProperty($name){
+		if(($v = arg($name)) !== false){ //Allow for command-line arguments
+			switch(strtolower(trim($v))){
+				case "on":
+				case "true":
+				case "yes":
+					$v = true;
+					break;
+				case "off":
+				case "false":
+				case "no":
+					$v = false;
+					break;
+			}
+			switch($name){
+				case "last-update":
+					if($v === false){
+						$v = time();
+					}else{
+						$v = (int) $v;
+					}
+					break;
+				case "gamemode":
+				case "max-players":
+				case "port":
+				case "debug":
+				case "difficulty":
+				case "time-per-second":
+					$v = (int) $v;
+					break;
+				case "server-id":
+					if($v !== false){
+						$v = preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v;
+					}
+					break;
+			}
+			return $v;
+		}
 		if(isset($this->config[$name])){
 			return $this->config[$name];
 		}
