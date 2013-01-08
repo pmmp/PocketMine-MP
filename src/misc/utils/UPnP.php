@@ -33,9 +33,9 @@ function UPnP_PortForward($port){
 	$myLocalIP = gethostbyname(trim(`hostname`));
 	try{
 		$com = new COM("HNetCfg.NATUPnP");
-		if($com === false){
+		if($com === false or !is_object($com->StaticPortMappingCollection)){
 			return false;
-		}	
+		}
 		$com->StaticPortMappingCollection->Add($port, "UDP", $port, $myLocalIP, true, "PocketMine-MP");
 	}catch(Exception $e){
 		return false;
@@ -50,7 +50,7 @@ function UPnP_RemovePortForward($port){
 	$port = (int) $port;
 	try{
 		$com = new COM("HNetCfg.NATUPnP") or false;
-		if($com === false){
+		if($com === false or !is_object($com->StaticPortMappingCollection)){
 			return false;
 		}
 		$com->StaticPortMappingCollection->Remove($port, "UDP");
