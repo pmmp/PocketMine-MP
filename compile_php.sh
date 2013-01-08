@@ -17,6 +17,7 @@ php5-gd \
 php5-gmp \
 php5-mcrypt \
 build-essential \
+autoconf \
 git-core \
 libxml2-dev \
 libcurl4-openssl-dev \
