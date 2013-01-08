@@ -25,8 +25,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class PocketMinecraftServer extends stdClass{
-	var $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
+class PocketMinecraftServer{
+	var $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
 	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
 		$this->port = (int) $port; //19132 - 19135
@@ -39,6 +39,7 @@ class PocketMinecraftServer extends stdClass{
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
 		console("[INFO] Loading database...");
+		$this->api = false;
 		$this->startDatabase();
 		$this->gamemode = (int) $gamemode;
 		$this->name = $name;
