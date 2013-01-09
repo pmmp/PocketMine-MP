@@ -163,10 +163,8 @@ class Entity extends stdClass{
 
 	public function close(){
 		if($this->closed === false){
-			$this->server->query("DELETE FROM entities WHERE EID = ".$this->eid.";");
-			$this->server->api->dhandle("entity.remove", $this);
+			$this->server->api->entity->remove($this->eid);
 			$this->closed = true;
-			$this->__destruct();
 		}
 	}
 
