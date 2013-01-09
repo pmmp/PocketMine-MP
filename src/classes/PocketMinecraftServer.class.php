@@ -306,6 +306,7 @@ class PocketMinecraftServer{
 			foreach($this->entities as $entity){
 
 			}
+			$this->trigger("server.save", $final);
 		}
 	}
 
@@ -365,6 +366,9 @@ class PocketMinecraftServer{
 		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handle($packet["pid"], $data);
 		}else{
+			if($this->handle("server.noauthpacket", $packet) === false){
+				return;
+			}
 			switch($packet["pid"]){
 				case 0x02:
 					if($this->invisible === true){
