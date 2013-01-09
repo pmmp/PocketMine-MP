@@ -280,7 +280,7 @@ class Player{
 							if($c !== false){
 								$c->close("logged in from another location");
 							}
-							if($this->server->dhandle("player.join", $this) === false){
+							if($this->server->api->dhandle("player.join", $this) === false){
 								$this->close();
 								return;
 							}
