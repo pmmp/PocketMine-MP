@@ -1,76 +1,111 @@
 #!/bin/bash
-echo "[INFO] PocketMine-MP PHP compiler for Linux - by @shoghicp v0.1"
+echo "[INFO] PocketMine-MP PHP compiler for Linux - by @shoghicp v0.2"
 if [ "$(whoami)" != 'root' ]; then
 echo "[ERROR] You must be root to run this script"
 exit 1;
 fi
 DIR=`pwd`
-mkdir -m 0777 install_data
-mkdir -m 0777 php5
+date > $DIR/install.log
+mkdir -m 0777 install_data >> $DIR/install.log 2>&1
+mkdir -m 0777 php5 >> $DIR/install.log 2>&1
 cd install_data
-apt-get -f -y install 
+apt-get -f -y install >> $DIR/install.log 2>&1
 apt-get -y install \
-php5-cli \
-php5-common \
-php5-curl \
-php5-gd \
-php5-gmp \
-php5-mcrypt \
 build-essential \
-autoconf \
-git-core \
-libxml2-dev \
-libcurl4-openssl-dev \
-libjpeg-dev \
-libpng-dev \
-libmysqlclient-dev \
-libfreetype6-dev \
-libmcrypt-dev \
-libmhash-dev
-wget ftp://ftp.gmplib.org/pub/gmp-5.1.0/gmp-5.1.0.tar.bz2 -O gmp-5.1.0.tar.bz2
-tar -jxvf gmp-5.1.0.tar.bz2
-cd gmp-5.1.0
-./configure
-make
-make check
-make install
-wget http://php.net/get/php-5.4.10.tar.gz/from/this/mirror -O php-5.4.10.tar.gz
-tar -zxvf php-5.4.10.tar.gz
-cd php-5.4.10
-cd ext
-git clone https://github.com/krakjoe/pthreads.git
+autoconf >> $DIR/install.log 2>&1
+
+#zlib
+echo -n "[zlib] Downloading..."
+wget http://zlib.net/zlib-1.2.7.tar.gz -q -O zlib-1.2.7.tar.gz
+echo -n " extracting..."
+tar -zxvf zlib-1.2.7.tar.gz >> $DIR/install.log 2>&1
+mv zlib-1.2.7 zlib
+echo -n " compiling..."
+cd zlib
+./configure >> $DIR/install.log 2>&1
+make >> $DIR/install.log 2>&1
+make install >> $DIR/install.log 2>&1
+echo " done!"
+cd ..
+
+#OpenSSL
+echo -n "[OpenSSL] downloading..."
+wget ftp://ftp.openssl.org/source/openssl-1.0.1c.tar.gz -q -O openssl-1.0.1c.tar.gz
+echo -n " extracting..."
+tar -zxvf openssl-1.0.1c.tar.gz >> $DIR/install.log 2>&1
+mv openssl-1.0.1c openssl
+echo -n " compiling..."
+cd openssl
+./config >> $DIR/install.log 2>&1
+make >> $DIR/install.log 2>&1
+make install >> $DIR/install.log 2>&1
+echo " done!"
+cd ..
+
+#GMP
+echo -n "[GMP] downloading..."
+wget ftp://ftp.gmplib.org/pub/gmp-5.1.0/gmp-5.1.0.tar.bz2 -q -O gmp-5.1.0.tar.bz2
+echo -n " extracting..."
+tar -jxvf gmp-5.1.0.tar.bz2 >> $DIR/install.log 2>&1
+mv gmp-5.1.0 gmp
+echo -n " compiling..."
+cd gmp
+./configure >> $DIR/install.log 2>&1
+make >> $DIR/install.log 2>&1
+make install >> $DIR/install.log 2>&1
+echo " done!"
+cd ..
+
+echo -n "[cURL] downloading..."
+wget https://github.com/bagder/curl/archive/master.tar.gz -q -O curl-master.tar.gz 
+echo -n " extracting..."
+tar -zxvf curl-master.tar.gz >> $DIR/install.log 2>&1
+mv curl-master curl
+echo -n " compiling..."
+cd curl
+./buildconf >> $DIR/install.log 2>&1
+./configure >> $DIR/install.log 2>&1
+make >> $DIR/install.log 2>&1
+make install >> $DIR/install.log 2>&1
+echo " done!"
+cd ..
+
+#PHP 5
+echo -n "[PHP5] downloading..."
+wget http://php.net/get/php-5.4.10.tar.gz/from/this/mirror -q -O php-5.4.10.tar.gz
+echo -n " extracting..."
+tar -zxvf php-5.4.10.tar.gz >> $DIR/install.log 2>&1
+mv php-5.4.10 php
+echo " done!"
+cd php/ext
+echo "[PHP pthreads] downloading..."
+wget https://github.com/krakjoe/pthreads/archive/master.tar.gz -q -O pthreads-master.tar.gz 
+echo -n " extracting..."
+tar -zxvf pthreads-master.tar.gz >> $DIR/install.log 2>&1
+mv pthreads-master pthreads
+echo " done!"
 cd ../
+echo -n "[PHP5] compiling..."
 ./buildconf --force
 ./configure --prefix=$DIR/php5 \
 --exec-prefix=$DIR/php5 \
 --enable-embedded-mysqli \
 --with-openssl \
---with-mcrypt \
---with-mhash \
---enable-exif \
---with-freetype-dir \
---enable-calendar \
---enable-soap \
---enable-mbstring \
 --enable-bcmath \
---enable-gd-native-ttf \
 --with-gmp \
 --with-curl \
 --enable-zip \
---with-gd \
---with-jpeg-dir \
---with-png-dir \
---with-mysql \
---with-mcrypt \
 --with-zlib \
 --enable-sockets \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-cli
 make
-echo "n" | make test
 make install
+echo " done!"
 cd $DIR
+echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/
 rmdir install_data/
-echo "[INFO] Compilation Completed!"
+echo " done!"
+echo "[PocketMine] You should start the server now using \"./start.sh\""
