@@ -25,10 +25,16 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class ServerAPI extends stdClass{ //Yay! I can add anything to this class in runtime!
+class ServerAPI{
 	var $restart = false;
 	private $server, $config, $apiList = array();
-	function __construct(){
+	
+	public function run(){
+		$this->load();
+		return $this->init();
+	}
+	
+	public function load(){
 		@mkdir(FILE_PATH."logs/", 0777, true);
 		@mkdir(FILE_PATH."players/", 0777);
 		@mkdir(FILE_PATH."worlds/", 0777);
@@ -36,7 +42,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		console("[INFO] Starting ServerAPI server handler...");
 		file_put_contents(FILE_PATH."logs/packets.log", "");
 		if(!file_exists(FILE_PATH."logs/test.bin.log") or md5_file(FILE_PATH."logs/test.bin.log") !== TEST_MD5){
-			console("[NOTICE] Executing integrity tests...");
+			console("[NOTICE] Executing tests...");
 			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
 			console("[INFO] uname -a: ".php_uname("a"));
 			console("[INFO] PHP Version: ".phpversion());
@@ -59,12 +65,14 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 			$test .= Utils::writeLong("-1152921504606846976");
 			$test .= Utils::writeTriad(16777215);
 			$test .= Utils::writeTriad(16777216);
-			$str = new Java_String("THIS_IS_ a TEsT_SEED1_123456789^.,.,\xff\x00\x15");
+			$str = new Java_String("TESTING\x00\n\r\t\xff");
 			$test .= Utils::writeLong($str->hashCode());
 			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));
 			$test .= Utils::hexToStr("012334567890");
 			file_put_contents(FILE_PATH."logs/test.bin.log", $test);
-			if(md5($test) !== TEST_MD5){
+			$md5 = md5($test);
+			console("[INFO] MD5 of test: ".$md5);
+			if($md5 !== TEST_MD5){
 				console("[ERROR] Test error, please send your console.log + test.bin.log to the Github repo");
 				die();
 			}
@@ -297,7 +305,7 @@ class ServerAPI extends stdClass{ //Yay! I can add anything to this class in run
 		}
 	}
 
-	public function start(){
+	public function init(){
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
 		$this->__destruct();

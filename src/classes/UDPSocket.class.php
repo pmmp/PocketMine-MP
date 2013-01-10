@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 
-class UDPSocket extends Thread{
+class UDPSocket{
 	private $encrypt;
 	var $buffer, $connected, $errors, $sock, $server;
 	function __construct($server, $port, $listen = false, $socket = false){
@@ -55,10 +55,6 @@ class UDPSocket extends Thread{
 				}
 			}
 		}
-	}
-	
-	public function run(){
-	
 	}
 
 	public function listenSocket(){

@@ -30,10 +30,7 @@ require_once("classes/PocketMinecraftServer.class.php");
 require_once("API/ServerAPI.php");
 
 $server = new ServerAPI();
-if($server->start() !== true){
-	//Stop
-}else{
-	//Restart
-}
+$server->run();//$server->start();
+//$server->join();
 
 kill(getmypid()); //Fix for segfault

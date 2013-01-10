@@ -26,30 +26,30 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PocketMinecraftServer{
-	var $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
-	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick, $ticker;
-	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
-		$this->port = (int) $port; //19132 - 19135
-		$vNumber = new VersionString();
-		$vNumber = $vNumber->getNumber();
-		console("[INFO] PocketMine-MP ".MAJOR_VERSION." #".$vNumber." by @shoghicp, LGPL License", true, true, 0);
+	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
+	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $serverType, $lastTick, $ticker;
+	
+	private function load(){
+		$this->version = new VersionString();
+		console("[INFO] PocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
 		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION, true, true, 2);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
+		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$this->serverID;
+		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4)):$this->seed;
 		console("[INFO] Loading database...");
-		$this->api = false;
 		$this->startDatabase();
-		$this->gamemode = (int) $gamemode;
-		$this->name = $name;
+		$this->doTick = false;
+		$this->api = false;		
 		$this->mapDir = false;
 		$this->mapName = false;
 		$this->events = array();
 		$this->handlers = array();
 		$this->map = false;
 		$this->invisible = false;
-		$this->level = false;
+		$this->levelData = false;
 		$this->difficulty = 1;
 		$this->tileEntities = array();
 		$this->entities = array();
@@ -63,9 +63,6 @@ class PocketMinecraftServer{
 		$this->description = "";
 		$this->whitelist = false;
 		$this->bannedIPs = array();
-		$this->motd = "Welcome to ".$name;
-		$this->serverID = $serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$serverID;
-		$this->seed = $seed === false ? Utils::readInt(Utils::getRandomBytes(4)):$seed;
 		$this->clients = array();
 		$this->spawn = array("x" => 128.5,"y" => 100,"z" =>  128.5);
 		$this->time = 0;
@@ -77,11 +74,17 @@ class PocketMinecraftServer{
 		console("[INFO] Server Name: ".$this->name);
 		console("[INFO] Server GUID: ".$this->serverID);
 		console("[INFO] Protocol Version: ".CURRENT_PROTOCOL);
-		$this->stop = false;
+		$this->stop = false;	
 	}
 	
-	public function run(){
-	
+	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
+		$this->port = (int) $port; //19132 - 19135
+		$this->gamemode = (int) $gamemode;
+		$this->name = $name;
+		$this->motd = "Welcome to ".$name;
+		$this->serverID = $serverID;
+		$this->seed = $seed;
+		$this->load();
 	}
 
 	public function getTPS(){
@@ -238,19 +241,19 @@ class PocketMinecraftServer{
 
 	public function loadMap(){
 		if($this->mapName !== false and trim($this->mapName) !== ""){
-			$this->level = unserialize(file_get_contents($this->mapDir."level.dat"));
-			console("[INFO] Map: ".$this->level["LevelName"]);
-			$this->time = (int) $this->level["Time"];
-			$this->seed = (int) $this->level["RandomSeed"];
-			if(isset($this->level["SpawnX"])){
-				$this->spawn = array("x" => $this->level["SpawnX"], "y" => $this->level["SpawnY"], "z" => $this->level["SpawnZ"]);
+			$this->levelData = unserialize(file_get_contents($this->mapDir."level.dat"));
+			console("[INFO] Map: ".$this->levelData["LevelName"]);
+			$this->time = (int) $this->levelData["Time"];
+			$this->seed = (int) $this->levelData["RandomSeed"];
+			if(isset($this->levelData["SpawnX"])){
+				$this->spawn = array("x" => $this->levelData["SpawnX"], "y" => $this->levelData["SpawnY"], "z" => $this->levelData["SpawnZ"]);
 			}else{
-				$this->level["SpawnX"] = $this->spawn["x"];
-				$this->level["SpawnY"] = $this->spawn["y"];
-				$this->level["SpawnZ"] = $this->spawn["z"];
+				$this->levelData["SpawnX"] = $this->spawn["x"];
+				$this->levelData["SpawnY"] = $this->spawn["y"];
+				$this->levelData["SpawnZ"] = $this->spawn["z"];
 			}
-			$this->level["Time"] = &$this->time;
-			console("[INFO] Spawn: X ".$this->level["SpawnX"]." Y ".$this->level["SpawnY"]." Z ".$this->level["SpawnZ"]);
+			$this->levelData["Time"] = $this->time;
+			console("[INFO] Spawn: X ".$this->levelData["SpawnX"]." Y ".$this->levelData["SpawnY"]." Z ".$this->levelData["SpawnZ"]);
 			console("[INFO] Time: ".$this->time);
 			console("[INFO] Seed: ".$this->seed);
 			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
@@ -259,7 +262,7 @@ class PocketMinecraftServer{
 			console("[INFO] Loading map...");
 			$this->map = new ChunkParser();
 			if(!$this->map->loadFile($this->mapDir."chunks.dat")){
-				console("[ERROR] Couldn't load the map \"".$this->level["LevelName"]."\"!", true, true, 0);
+				console("[ERROR] Couldn't load the map \"".$this->levelData["LevelName"]."\"!", true, true, 0);
 				$this->map = false;
 			}else{
 				$this->map->loadMap();
@@ -305,7 +308,8 @@ class PocketMinecraftServer{
 
 	public function save($final = false){
 		if($this->mapName !== false){
-			file_put_contents($this->mapDir."level.dat", serialize($this->level));
+			$this->levelData["Time"] = $this->time;
+			file_put_contents($this->mapDir."level.dat", serialize($this->levelData));
 			$this->map->saveMap($final);
 			console("[INFO] Saving entities...");
 			foreach($this->entities as $entity){
@@ -322,7 +326,7 @@ class PocketMinecraftServer{
 		}
 		console("[INFO] Loading events...");
 		$this->loadEvents();
-		$this->ticker = new TickLoop;
+		$this->ticker = new TickLoop($this);
 		$this->ticker->start();
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
@@ -354,13 +358,21 @@ class PocketMinecraftServer{
 	}
 
 	public function tick(){
-		if($this->ticker->isWaiting() === true){
+		/*if($this->ticker->tick === true and $this->ticker->isWaiting() === true){
+			$this->ticker->tick = false;
 			$time = microtime(true);
 			array_shift($this->tickMeasure);
 			$this->tickMeasure[] = $this->lastTick = $time;
 			$this->tickerFunction($time);
 			$this->trigger("server.tick", $time);
 			$this->ticker->notify();
+		}*/
+		$time = microtime(true);
+		if($this->lastTick <= ($time - 0.05)){
+			array_shift($this->tickMeasure);
+			$this->tickMeasure[] = $this->lastTick = $time;
+			$this->tickerFunction($time);
+			$this->trigger("server.tick", $time);
 		}
 	}
 
