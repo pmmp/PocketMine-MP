@@ -27,10 +27,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 
-class UDPSocket{
+class UDPSocket extends Thread{
 	private $encrypt;
 	var $buffer, $connected, $errors, $sock, $server;
-
 	function __construct($server, $port, $listen = false, $socket = false){
 		$this->errors = array_fill(88,(125 - 88) + 1, true);
 		$this->server = $server;
@@ -57,8 +56,12 @@ class UDPSocket{
 			}
 		}
 	}
+	
+	public function run(){
+	
+	}
 
-	function listenSocket(){
+	public function listenSocket(){
 		$sock = @socket_accept($this->sock);
 		if($sock !== false){
 			$sock = new Socket(false, false, false, $sock);

@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PocketMinecraftServer{
 	var $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $level, $tileEntities;
-	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick;
+	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $version, $serverType, $lastTick, $ticker;
 	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
 		$this->port = (int) $port; //19132 - 19135
 		$vNumber = new VersionString();
@@ -78,6 +78,10 @@ class PocketMinecraftServer{
 		console("[INFO] Server GUID: ".$this->serverID);
 		console("[INFO] Protocol Version: ".CURRENT_PROTOCOL);
 		$this->stop = false;
+	}
+	
+	public function run(){
+	
 	}
 
 	public function getTPS(){
@@ -157,6 +161,7 @@ class PocketMinecraftServer{
 	public function close($reason = "stop"){
 		if($this->stop !== true){
 			$this->chat(false, "Stopping server...");
+			$this->ticker->stop = true;
 			$this->save(true);
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
@@ -317,6 +322,8 @@ class PocketMinecraftServer{
 		}
 		console("[INFO] Loading events...");
 		$this->loadEvents();
+		$this->ticker = new TickLoop;
+		$this->ticker->start();
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
 		register_shutdown_function(array($this, "dumpError"));
@@ -347,12 +354,13 @@ class PocketMinecraftServer{
 	}
 
 	public function tick(){
-		$time = microtime(true);
-		if($this->lastTick <= ($time - 0.05)){
+		if($this->ticker->isWaiting() === true){
+			$time = microtime(true);
 			array_shift($this->tickMeasure);
 			$this->tickMeasure[] = $this->lastTick = $time;
 			$this->tickerFunction($time);
 			$this->trigger("server.tick", $time);
+			$this->ticker->notify();
 		}
 	}
 
