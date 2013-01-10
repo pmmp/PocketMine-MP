@@ -92,23 +92,25 @@ class Player{
 	}
 
 	public function close($reason = "", $msg = true){
-		$reason = $reason == "" ? "server stop":$reason;
-		$this->save();
-		foreach($this->evid as $ev){
-			$this->server->deleteEvent($ev);
-		}
-		$this->eventHandler("You have been kicked. Reason: ".$reason, "server.chat");
-		$this->dataPacket(MC_LOGIN_STATUS, array(
-			"status" => 1,
-		));
-		$this->dataPacket(MC_DISCONNECT);
+		if($this->connected === true){
+			$reason = $reason == "" ? "server stop":$reason;
+			$this->save();
+			foreach($this->evid as $ev){
+				$this->server->deleteEvent($ev);
+			}
+			$this->eventHandler("You have been kicked. Reason: ".$reason, "server.chat");
+			$this->dataPacket(MC_LOGIN_STATUS, array(
+				"status" => 1,
+			));
+			$this->dataPacket(MC_DISCONNECT);
 
-		$this->connected = false;
-		if($msg === true){
-			$this->server->api->dhandle("server.chat", $this->username." left the game");
+			$this->connected = false;
+			if($msg === true){
+				$this->server->api->dhandle("server.chat", $this->username." left the game");
+			}
+			console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
+			$this->server->api->player->remove($this->CID);
 		}
-		console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
-		$this->server->api->player->remove($this->CID);
 	}
 
 	public function eventHandler($data, $event){

@@ -210,6 +210,7 @@ class PocketMinecraftServer{
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = true;
+		console("[INTERNAL] Handling ".$event, true, true, 3);
 		if($handlers !== false and $handlers !== true){
 			while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
 				$handler = $this->handlers[(int) $hn["ID"]];

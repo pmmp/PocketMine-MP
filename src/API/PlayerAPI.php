@@ -32,7 +32,8 @@ class PlayerAPI{
 	}
 
 	public function init(){
-		$this->server->event("server.regeneration", array($this, "handle"));
+		$this->server->addHandler("server.regeneration", array($this, "handle"));
+		$this->server->addHandler("player.death", array($this, "handle"), 1);
 		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
@@ -50,6 +51,27 @@ class PlayerAPI{
 						}
 					}
 				}
+				break;
+			case "player.death":
+				$message = $data["name"];
+				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
+					$e = $this->api->entity->get($data["cause"]);
+					switch($e->class){
+						case ENTITY_PLAYER:
+							$message .= " was killed by ".$e->name;
+							break;
+						default:
+							$message .= " was killed";
+							break;
+					}
+				}else{
+					switch($data["cause"]){
+						default:
+							$message .= " was killed";
+							break;
+					}
+				}
+				$this->server->chat(false, $message);
 				break;
 		}
 	}
@@ -180,9 +202,7 @@ class PlayerAPI{
 	public function remove($CID){
 		if(isset($this->server->clients[$CID])){
 			$player = $this->server->clients[$CID];
-			if(is_object($player->entity)){
-				$player->entity->close();
-			}
+			$this->server->api->entity->remove($player->entity->eid);
 			$this->saveOffline($player->username, $player->data);
 			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
 			unset($this->server->entities[$player->eid]);
