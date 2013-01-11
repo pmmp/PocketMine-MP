@@ -1,7 +1,3 @@
-<?php
-
-/*
-
            -
          /   \
       /         \
@@ -22,21 +18,23 @@ it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
+#Authored By: sekjun9878
+#Author's Email: sekjun9878@gmail.com
+#
+#BlokAPI Function Documentation.
+#
+#Version Alpha
+#Revision Alpha
 
-*/
-
-class ChatAPI{
-	private $server;
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
-	}
-	
-	public function init(){
+public function blockBreak($data, $event)
+	Description:
+		Breajs a block on the map.
+	Parameters:
+		$name = Array of
+			$data["x"] = x coordinate
+			$data["y"] = y coordinate
+			$data["z"] = z coordinate
+		$event //
+	Return Values: 
+		true = If the block is unbreakable
 		
-	}
-	
-	public function send($a, $b){//a == name of owner. b == message
-		$this->server->chat($a, $b);
-		return true;
-	}
-}
