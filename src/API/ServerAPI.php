@@ -102,6 +102,9 @@ class ServerAPI{
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("port"));
 		}
+		if(($ip = Utils::getIP()) !== false){
+			console("[INFO] External IP: ".$ip);
+		}
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
 			console("[INFO] Last check: ".date("Y-m-d H:i:s", $this->getProperty("last-update")));

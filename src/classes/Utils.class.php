@@ -40,6 +40,21 @@ class Utils extends Thread{
 	public function run(){
 	
 	}
+	
+	public static function getIP(){
+		$ip = trim(Utils::curl_get("http://automation.whatismyip.com/n09230945.asp"));
+		if($ip != ""){
+			return $ip;
+		}else{
+			$ip = trim(Utils::curl_get("http://checkip.dyndns.org/"));
+			$ip = preg_replace("/Current IP Address: (.*)/", '$1', $ip);
+			if($ip != ""){
+				return $ip;
+			}else{
+				return false;
+			}
+		}
+	}
 
 	public static function getOS(){
 		$uname = strtoupper(php_uname("s"));
@@ -310,7 +325,7 @@ class Utils extends Thread{
 
 	public static function curl_get($page){
 		$ch = curl_init($page);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Minecraft PHP Client 2"));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"));
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -328,7 +343,7 @@ class Utils extends Thread{
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Minecraft PHP Client 2"));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
