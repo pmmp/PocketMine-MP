@@ -92,10 +92,11 @@ class EntityAPI{
 
 	public function remove($eid){
 		if(isset($this->server->entities[$eid])){
-			$this->server->query("DELETE FROM entities WHERE EID = ".$eid.";");
-			$this->server->api->dhandle("entity.remove", $this->server->entities[$eid]);
-			$this->server->entities[$eid]->close();
+			$entity = $this->server->entities[$eid];
 			unset($this->server->entities[$eid]);
+			$this->server->query("DELETE FROM entities WHERE EID = ".$entity->eid.";");
+			$this->server->api->dhandle("entity.remove", $entity);
+			unset($entity);			
 		}
 	}
 }

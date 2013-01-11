@@ -202,11 +202,11 @@ class PlayerAPI{
 	public function remove($CID){
 		if(isset($this->server->clients[$CID])){
 			$player = $this->server->clients[$CID];
-			$this->server->api->entity->remove($player->entity->eid);
+			unset($this->server->clients[$player->CID]);
 			$this->saveOffline($player->username, $player->data);
 			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
-			unset($this->server->entities[$player->eid]);
-			unset($this->server->clients[$player->CID]);
+			unset($player);
+			$this->server->api->entity->remove($player->eid);
 		}
 	}
 
