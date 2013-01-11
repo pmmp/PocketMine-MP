@@ -26,8 +26,17 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ChatAPI{
+	private $server;
+	function __construct(PocketMinecraftServer $server){
+		$this->server = $server;
+	}
 	
-	public function chat($a, $b){
+	public function init(){
+		
+	}
+	
+	public function chat($a, $b){//a == name of owner. b == message
 		$this->server->chat($a, $b);
 		return true;
+	}
 }
