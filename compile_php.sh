@@ -115,8 +115,8 @@ cd php
 --enable-bcmath \
 --with-gmp=$DIR/install_data/php/ext/gmp \
 --with-curl=$DIR/install_data/php/ext/curl \
---enable-zip \
 --with-zlib=$DIR/install_data/php/ext/zlib \
+--disable-xml \
 --enable-sockets \
 --enable-pthreads \
 --enable-maintainer-zts \
