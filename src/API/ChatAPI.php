@@ -26,6 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ChatAPI{
-
-
+	
+	public function chat($a, $b){
+		$this->server->chat($a, $b);
+		return true;
 }
