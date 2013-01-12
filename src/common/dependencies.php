@@ -57,7 +57,7 @@ if(!extension_loaded("sockets") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"")
 }
 
 if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "pthreads." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find pthreads extension. [https://github.com/krakjoe/pthreads]", true, true, 0);
+	console("[ERROR] Unable to find pthreads extension. Use the Installer available in the Homepage", true, true, 0);
 	++$errors;
 }
 
