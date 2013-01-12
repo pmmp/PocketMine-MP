@@ -117,6 +117,7 @@ cd php
 --with-curl=$DIR/install_data/php/ext/curl \
 --with-zlib=$DIR/install_data/php/ext/zlib \
 --disable-xml \
+--without-pear \
 --enable-sockets \
 --enable-pthreads \
 --enable-maintainer-zts \
