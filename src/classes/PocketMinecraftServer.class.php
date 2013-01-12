@@ -94,15 +94,13 @@ class PocketMinecraftServer{
 	}
 
 	public function loadEvents(){
-		$this->event("server.chat", array($this, "eventHandler"));
 		$this->event("player.new", array($this, "eventHandler"));
-
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time.change", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		if($this->api !== false){
-			$this->action(1000000 * 80, '$cnt = count($this->clients); if($cnt > 1){$this->chat(false, "Online (".$cnt."): ".implode(", ",$this->api->player->online()));}');
+			$this->action(1000000 * 80, '$cnt = count($this->clients); if($cnt > 1){$this->api->chat->broadcast("Online (".$cnt."): ".implode(", ",$this->api->player->online()));}');
 		}
 		$this->action(1000000 * 120, '$this->debugInfo(true);');
 	}
@@ -163,7 +161,7 @@ class PocketMinecraftServer{
 
 	public function close($reason = "stop"){
 		if($this->stop !== true){
-			$this->chat(false, "Stopping server...");
+			$this->api->chat->send(false, "Stopping server...");
 			$this->ticker->stop = true;
 			$this->save(true);
 			$this->stop = true;
@@ -172,13 +170,8 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function chat($owner, $text, $target = true){
-		$message = "";
-		if($owner !== false){
-			$message = "<".$owner."> ";
-		}
-		$message .= $text;
-		$this->handle("server.chat", $message);
+	public function chat($owner, $text, $target = false){
+		$this->api->chat->send($owner, $text, $target);
 	}
 
 	public function setType($type = "normal"){
@@ -233,9 +226,6 @@ class PocketMinecraftServer{
 		switch($event){
 			case "player.new":
 				console("[DEBUG] Player \"".$data["username"]."\" EID ".$data["eid"]." spawned at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
-				break;
-			case "server.chat":
-				console("[CHAT] $data");
 				break;
 		}
 	}
@@ -303,7 +293,7 @@ class PocketMinecraftServer{
 				}
 			}
 			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
-			$this->action(1000000 * 60 * 15, '$this->chat(false, "Forcing save...");$this->save();$this->chat(false, "Done");');
+			$this->action(1000000 * 60 * 15, '$this->api->chat->broadcast("Forcing save...");$this->save();');
 		}
 	}
 

@@ -147,7 +147,7 @@ class ConsoleAPI{
 						console("[INFO] Usage: /say <message>");
 						break;
 					}
-					$this->server->chat(false, $s);
+					$this->server->api->chat->broadcast($s);
 					break;
 				case "whitelist":
 					$p = strtolower(array_shift($params));

@@ -98,7 +98,7 @@ class Player{
 			foreach($this->evid as $ev){
 				$this->server->deleteEvent($ev);
 			}
-			$this->eventHandler("You have been kicked. Reason: ".$reason, "server.chat");
+			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
 			$this->dataPacket(MC_LOGIN_STATUS, array(
 				"status" => 1,
 			));
@@ -106,7 +106,7 @@ class Player{
 
 			$this->connected = false;
 			if($msg === true){
-				$this->server->api->dhandle("server.chat", $this->username." left the game");
+				$this->server->api->chat->broadcast($this->username." left the game");
 			}
 			console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
 			$this->server->api->player->remove($this->CID);
@@ -166,8 +166,17 @@ class Player{
 					));
 				break;
 			case "server.chat":
+				if(($data instanceof Container) === true){
+					if(!$data->check($this->username)){
+						return;
+					}else{
+						$message = $data->get();
+					}
+				}else{
+					$message = (string) $data;
+				}
 				$this->dataPacket(MC_CHAT, array(
-					"message" => str_replace("@username", $this->username, $data),
+					"message" => str_replace("@username", $this->username, $message),
 				));
 				break;
 		}

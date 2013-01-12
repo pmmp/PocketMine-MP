@@ -35,8 +35,17 @@ class ChatAPI{
 		
 	}
 	
-	public function send($a, $b){//a == name of owner. b == message
-		$this->server->chat($a, $b);
-		return true;
+	public function broadcast($message){
+		$this->send(false, $message);
+	}
+	
+	public function send($owner, $text, $whitelist = false, $blacklist = false){
+		$message = "";
+		if($owner !== false){
+			$message = "<".$owner."> ";
+		}
+		$message .= $text;
+		console("[CHAT] ".$message);
+		$this->server->handle("server.chat", new Container($message, $whitelist, $blacklist));
 	}
 }
