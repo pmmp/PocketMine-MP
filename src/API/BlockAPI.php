@@ -503,6 +503,8 @@ class BlockAPI{
 					++$data2["y"];
 					$this->server->handle("player.block.place", $data2);
 				}
+				$next = $this->server->api->level->getBlockFace($block, $face[(($direction + 2) % 4)]);
+				var_dump($next);
 				break;
 			case 54:
 			case 61:

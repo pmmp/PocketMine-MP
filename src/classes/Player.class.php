@@ -92,7 +92,7 @@ class Player{
 
 	public function close($reason = "", $msg = true){
 		if($this->connected === true){
-			$this->server->dhandle("player.quit", $this);
+			$this->server->api->dhandle("player.quit", $this);
 			$reason = $reason == "" ? "server stop":$reason;
 			$this->save();
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
@@ -345,7 +345,7 @@ class Player{
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-								$this->server->dhandle("player.move", $this->entity);
+								$this->server->api->dhandle("player.move", $this->entity);
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:
