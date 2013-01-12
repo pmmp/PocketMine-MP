@@ -105,11 +105,28 @@ class BlockAPI{
 			1, //Count
 		);
 		switch($target[0]){
+			case 1:
+				$drop[0] = 4;
+				break;
 			case 16:
 				$drop = array(263, 0, 1);
 				break;
 			case 21:
 				$drop = array(351, 4, mt_rand(4, 8));
+				break;
+			case 62:
+				$drop[0] = 61;
+			case 50: //Drop without metadata
+			case 53:
+			case 54:
+			case 61:
+			case 65:
+			case 67:
+			case 96:
+			case 107:
+			case 108:
+			case 109:
+				$drop[1] = 0;
 				break;
 			case 56:
 				$drop = array(264, 0, 1);
