@@ -541,7 +541,7 @@ class PocketMinecraftServer{
 			$add = ' unset($this->schedule['.$this->scheduleCnt.']);';
 		}
 		$this->schedule[$this->scheduleCnt] = array($callback, $data, $eventName);
-		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$this->scheduleCnt.']);return;} call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
+		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$this->scheduleCnt.']);return false;} call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
 		return $this->scheduleCnt++;
 	}
 
@@ -561,8 +561,8 @@ class PocketMinecraftServer{
 			return;
 		}
 		while(false !== ($action = $actions->fetchArray(SQLITE3_ASSOC))){
-			eval(base64_decode($action["code"]));
-			if($action["repeat"] === 0){
+			$return = eval(base64_decode($action["code"]));
+			if($action["repeat"] === 0 or $return === false){
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
 			}
 		}

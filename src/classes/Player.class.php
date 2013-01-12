@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Player{
-	private $server, $timeout, $connected, $queue, $buffer;
+	private $server, $timeout, $connected, $queue, $buffer, $evid = array();
 	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU, $spawned, $equipment;
 	function __construct($server, $clientID, $ip, $port, $MTU){
 		$this->queue = array();
@@ -44,8 +44,8 @@ class Player{
 		$this->timeout = microtime(true) + 25;
 		$this->equipment = array(1, 0);
 		$this->spawned = false;
-		$this->server->event("server.tick", array($this, "onTick"));
-		$this->server->event("server.close", array($this, "close"));
+		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
+		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 		$this->connected = true;
 		$this->auth = false;
@@ -92,6 +92,9 @@ class Player{
 
 	public function close($reason = "", $msg = true){
 		if($this->connected === true){
+			foreach($this->evid as $ev){
+				$this->server->deleteEvent($ev);
+			}
 			$this->server->api->dhandle("player.quit", $this);
 			$reason = $reason == "" ? "server stop":$reason;
 			$this->save();
@@ -323,14 +326,14 @@ class Player{
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
-									$this->server->event("server.timee", array($this, "eventHandler"));
-									$this->server->event("server.chat", array($this, "eventHandler"));
-									$this->server->event("entity.remove", array($this, "eventHandler"));
-									$this->server->event("entity.move", array($this, "eventHandler"));
-									$this->server->event("entity.animate", array($this, "eventHandler"));
-									$this->server->event("player.equipment.change", array($this, "eventHandler"));
-									$this->server->event("player.pickup", array($this, "eventHandler"));
-									$this->server->event("block.change", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("server.timee", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 									console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
