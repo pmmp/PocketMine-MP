@@ -250,7 +250,6 @@ class Player{
 
 							break;
 						case MC_DISCONNECT:
-							$this->connected = false;
 							$this->close("client disconnect");
 							break;
 						case MC_CLIENT_CONNECT:
