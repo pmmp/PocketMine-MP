@@ -93,8 +93,8 @@ class PocketMinecraftServer{
 	}
 
 	public function loadEvents(){
-		$this->event("player.new", array($this, "eventHandler"));
-		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time.change", $this->time);');
+		$this->event("player.add", array($this, "eventHandler"));
+		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
@@ -232,7 +232,7 @@ class PocketMinecraftServer{
 
 	public function eventHandler($data, $event){
 		switch($event){
-			case "player.new":
+			case "player.add":
 				console("[DEBUG] Player \"".$data["username"]."\" EID ".$data["eid"]." spawned at X ".$data["x"]." Y ".$data["y"]." Z ".$data["z"], true, true, 2);
 				break;
 		}

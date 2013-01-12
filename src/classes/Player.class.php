@@ -112,7 +112,7 @@ class Player{
 
 	public function eventHandler($data, $event){
 		switch($event){
-			case "player.item.pick":
+			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
 				}
@@ -124,7 +124,7 @@ class Player{
 				}
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
 				break;
-			case "world.block.change":
+			case "block.change":
 				$this->dataPacket(MC_UPDATE_BLOCK, $data);
 				break;
 			case "entity.move":
@@ -148,7 +148,7 @@ class Player{
 					"eid" => $data->eid,
 				));
 				break;
-			case "server.time.change":
+			case "server.time":
 				$this->dataPacket(MC_SET_TIME, array(
 					"time" => $data,
 				));
@@ -323,14 +323,14 @@ class Player{
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
-									$this->server->event("server.time.change", array($this, "eventHandler"));
+									$this->server->event("server.timee", array($this, "eventHandler"));
 									$this->server->event("server.chat", array($this, "eventHandler"));
 									$this->server->event("entity.remove", array($this, "eventHandler"));
 									$this->server->event("entity.move", array($this, "eventHandler"));
 									$this->server->event("entity.animate", array($this, "eventHandler"));
 									$this->server->event("player.equipment.change", array($this, "eventHandler"));
-									$this->server->event("player.item.pick", array($this, "eventHandler"));
-									$this->server->event("world.block.change", array($this, "eventHandler"));
+									$this->server->event("player.pickup", array($this, "eventHandler"));
+									$this->server->event("block.change", array($this, "eventHandler"));
 									console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 
 									$this->eventHandler(new Container($this->server->motd), "server.chat");

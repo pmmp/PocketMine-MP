@@ -176,35 +176,18 @@ class BlockAPI{
 				$drop = array(3, 0, 1);
 				break;
 			case 64: //Wood Door
-				$drop = array(324, 0, 1);
-				if(($target[1] & 0x08) === 0x08){
-					$down = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-					if($down[0] === 64){
-						$data2 = $data;
-						--$data2["y"];
-						$this->server->trigger("player.block.break", $data2);
-					}
-				}else{
-					$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
-					if($up[0] === 64){
-						$data2 = $data;
-						++$data2["y"];
-						$this->server->trigger("player.block.break", $data2);
-					}
-				}
-				break;
 			case 71: //Iron Door
-				$drop = array(330, 0, 1);
+				$drop = array(($target[0] === 64 ? 324:330), 0, 1);
 				if(($target[1] & 0x08) === 0x08){
 					$down = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-					if($down[0] === 71){
+					if($down[0] === $target[0]){
 						$data2 = $data;
 						--$data2["y"];
 						$this->server->trigger("player.block.break", $data2);
 					}
 				}else{
 					$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
-					if($up[0] === 71){
+					if($up[0] === $target[0]){
 						$data2 = $data;
 						++$data2["y"];
 						$this->server->trigger("player.block.break", $data2);
