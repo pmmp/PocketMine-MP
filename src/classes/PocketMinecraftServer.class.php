@@ -32,7 +32,7 @@ class PocketMinecraftServer{
 	private function load(){
 		$this->version = new VersionString();
 		console("[INFO] PocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
-		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION, true, true, 2);
+		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION.", protocol #".CURRENT_PROTOCOL, true, true, 2);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
@@ -72,8 +72,7 @@ class PocketMinecraftServer{
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);
 		$this->reloadConfig();
 		console("[INFO] Server Name: ".$this->name);
-		console("[INFO] Server GUID: ".$this->serverID);
-		console("[INFO] Protocol Version: ".CURRENT_PROTOCOL);
+		console("[DEBUG] Server GUID: ".$this->serverID, true, true, 2);
 		$this->stop = false;	
 	}
 	

@@ -229,6 +229,16 @@ class Entity extends stdClass{
 		$this->server->api->dhandle("entity.move", $this);
 	}
 	
+	public function inBlock($x, $y, $z){
+		$block = new Vector3($x + 0.5, $y, $z + 0.5);
+		$me = new Vector3($this->x, $this->y, $this->z);
+		$up = new Vector3($this->x, $this->y + 1, $this->z);
+		if($block->distance($me) < 0.8 or $block->distance($up) < 0.8){
+			return true;
+		}
+		return false;
+	}
+	
 	public function updateVelocity(){
 		$diffTime = microtime(true) - $this->last[3];
 		$this->last[3] = microtime(true);

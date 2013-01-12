@@ -391,8 +391,16 @@ class BlockAPI{
 		}else{
 			return $this->cancelAction($block);
 		}
+		$entity = $this->server->api->entity->get($data["eid"]);
+		if(($entity instanceof Entity) !== true){
+			return $this->cancelAction($block); //No Entity WTF?
+		}
+		
+		if($entity->inBlock($block[2][0], $block[2][1], $block[2][2])){
+			return $this->cancelAction($block); //Entity in block
+		}
 
-		$direction = $this->server->api->entity->get($data["eid"])->getDirection();
+		$direction = $entity->getDirection();
 
 		switch($data["block"]){
 			case 6:
