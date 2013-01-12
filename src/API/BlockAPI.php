@@ -576,7 +576,7 @@ class BlockAPI{
 	}
 
 	public function updateBlockRemote($data, $event){
-		if($event !== "world.block.update"){
+		if($event !== "block.update"){
 			return;
 		}
 		$this->updateBlock($data["x"], $data["y"], $data["z"], isset($data["type"]) ? $data["type"]:BLOCK_UPDATE_RANDOM);

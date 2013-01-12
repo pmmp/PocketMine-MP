@@ -88,7 +88,7 @@ class LevelAPI{
 	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true){
 		$this->map->setBlock($x, $y, $z, $block, $meta);
 		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
-		if($this->server->api->dhandle("world.block.change", array(
+		if($this->server->api->dhandle("block.change", array(
 			"x" => $x,
 			"y" => $y,
 			"z" => $z,

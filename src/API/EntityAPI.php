@@ -61,6 +61,7 @@ class EntityAPI{
 	public function add($class, $type = 0, $data = array()){
 		$eid = $this->server->eidCnt++;
 		$this->server->entities[$eid] = new Entity($this->server, $eid, $class, $type, $data);
+		$this->server->handle("entity.add", $this->server->entities[$eid]);
 		return $this->server->entities[$eid];
 	}
 

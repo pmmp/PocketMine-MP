@@ -83,7 +83,7 @@ class Entity extends stdClass{
 			$this->server->api->dhandle("entity.move", $this);
 			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 			if($player !== true and $player !== false){
-				if($this->server->api->dhandle("player.item.pick", array(
+				if($this->server->api->dhandle("player.pickup", array(
 					"eid" => $player["EID"],
 					"block" => $this->type,
 					"meta" => $this->meta,

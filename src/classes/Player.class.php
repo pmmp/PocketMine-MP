@@ -92,6 +92,7 @@ class Player{
 
 	public function close($reason = "", $msg = true){
 		if($this->connected === true){
+			$this->server->dhandle("player.quit", $this);
 			$reason = $reason == "" ? "server stop":$reason;
 			$this->save();
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
@@ -344,6 +345,7 @@ class Player{
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
+								$this->server->dhandle("player.move", $this->entity);
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:
@@ -384,9 +386,11 @@ class Player{
 							break;
 						case MC_INTERACT:
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
-								console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
-								if($this->server->gamemode !== 1 and $this->server->difficulty > 0){
-									$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
+								if($this->handle("player.interact", $data) !== false){
+									console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
+									if($this->server->gamemode !== 1 and $this->server->difficulty > 0){
+										$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
+									}
 								}
 							}
 							break;
@@ -406,7 +410,9 @@ class Player{
 							//$this->entity->setHealth($data["health"], "client");
 							break;
 						case MC_DROP_ITEM:
-							$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
+							if($this->server->handle("player.drop", $data) !== false){
+								$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
+							}
 							break;
 						default:
 							console("[DEBUG] Unhandled 0x".dechex($data["id"])." Data Packet for Client ID ".$this->clientID.": ".print_r($data, true), true, true, 2);
