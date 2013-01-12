@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PocketMinecraftServer{
-	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $responses, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
+	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $serverType, $lastTick, $ticker;
 	
 	private function load(){
@@ -118,8 +118,8 @@ class PocketMinecraftServer{
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		//$this->query("PRAGMA synchronous = OFF;");
-		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
-		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT ID FROM events WHERE name = :name;");
+		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
+		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT DISTINCT ID FROM events WHERE name = :name;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
 		$this->preparedSQL->updateActions = $this->database->prepare("UPDATE actions SET last = :time WHERE last <= (:time - interval);");
 	}
@@ -203,19 +203,28 @@ class PocketMinecraftServer{
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = true;
-		console("[INTERNAL] Handling ".$event, true, true, 3);
 		if($handlers !== false and $handlers !== true){
-			while(false !== ($hn = $handlers->fetchArray(SQLITE3_ASSOC)) and $result !== false){
-				$handler = $this->handlers[(int) $hn["ID"]];
-				if(is_array($handler)){
-					$method = $handler[1];
-					$result = $handler[0]->$method($data, $event);
+			console("[INTERNAL] Handling ".$event, true, true, 3);
+			$call = array();
+			while(($hn = $handlers->fetchArray(SQLITE3_ASSOC)) !== false){
+				$call[(int) $hn["ID"]] = true;
+			}
+			$handlers->finalize();
+			foreach($call as $hnid => $boolean){
+				if($result !== false){
+					$called[$hnid] = true;
+					$handler = $this->handlers[$hnid];
+					if(is_array($handler)){
+						$method = $handler[1];
+						$result = $handler[0]->$method($data, $event);
+					}else{
+						$result = $handler($data, $event);
+					}
 				}else{
-					$result = $handler($data, $event);
+					break;
 				}
 			}
 		}
-		$handlers->finalize();
 		if($result !== false){
 			$this->trigger($event, $data);
 		}
@@ -502,26 +511,26 @@ class PocketMinecraftServer{
 		if($events === false or $events === true){
 			return;
 		}
-		while(false !== ($evn = $events->fetchArray(SQLITE3_ASSOC))){
-			$ev = $this->events[(int) $evn["ID"]];
-			if(is_array($ev)){
-				$method = $ev[1];
-				$this->responses[(int) $evn["ID"]] = $ev[0]->$method($data, $event);
-			}else{
-				$this->responses[(int) $evn["ID"]] = $ev($data, $event);
-			}
+		$call = array();
+		while(($evn = $events->fetchArray(SQLITE3_ASSOC)) !== false){
+			$call[(int) $evn["ID"]] = true;
 		}
 		$events->finalize();
-		return true;
-	}
-
-	public function response($eid){
-		if(isset($this->responses[$eid])){
-			$res = $this->responses[$eid];
-			unset($this->responses[$eid]);
-			return $res;
+		foreach($call as $evid => $boolean){
+			$ev = $this->events[$evid];
+			if(!is_callable($ev)){
+				$this->deleteEvent($evid);
+				continue;
+			}
+			if(is_array($ev)){
+				$method = $ev[1];
+				$ev[0]->$method($data, $event);
+			}else{
+				$ev($data, $event);
+			}
 		}
-		return false;
+		
+		return true;
 	}
 
 	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){

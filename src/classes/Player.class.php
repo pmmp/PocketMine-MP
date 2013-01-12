@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Player{
-	private $server, $timeout, $connected, $evid, $queue, $buffer;
+	private $server, $timeout, $connected, $queue, $buffer;
 	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU, $spawned, $equipment;
 	function __construct($server, $clientID, $ip, $port, $MTU){
 		$this->queue = array();
@@ -42,11 +42,10 @@ class Player{
 		$this->entity = false;
 		$this->port = $port;
 		$this->timeout = microtime(true) + 25;
-		$this->evid = array();
 		$this->equipment = array(1, 0);
 		$this->spawned = false;
-		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
-		$this->evid[] = $this->server->event("server.close", array($this, "close"));
+		$this->server->event("server.tick", array($this, "onTick"));
+		$this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 		$this->connected = true;
 		$this->auth = false;
@@ -95,9 +94,6 @@ class Player{
 		if($this->connected === true){
 			$reason = $reason == "" ? "server stop":$reason;
 			$this->save();
-			foreach($this->evid as $ev){
-				$this->server->deleteEvent($ev);
-			}
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
 			$this->dataPacket(MC_LOGIN_STATUS, array(
 				"status" => 1,
@@ -326,17 +322,17 @@ class Player{
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
-									$this->evid[] = $this->server->event("server.time.change", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("player.item.pick", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("world.block.change", array($this, "eventHandler"));
+									$this->server->event("server.time.change", array($this, "eventHandler"));
+									$this->server->event("server.chat", array($this, "eventHandler"));
+									$this->server->event("entity.remove", array($this, "eventHandler"));
+									$this->server->event("entity.move", array($this, "eventHandler"));
+									$this->server->event("entity.animate", array($this, "eventHandler"));
+									$this->server->event("player.equipment.change", array($this, "eventHandler"));
+									$this->server->event("player.item.pick", array($this, "eventHandler"));
+									$this->server->event("world.block.change", array($this, "eventHandler"));
 									console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 
-									$this->eventHandler($this->server->motd, "server.chat");
+									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
 									}
