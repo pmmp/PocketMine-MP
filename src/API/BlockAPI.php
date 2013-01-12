@@ -489,7 +489,7 @@ class BlockAPI{
 				break;
 			case 64://Door placing
 			case 71:
-				if($data["face"] !== 0){
+				if($data["face"] !== 1){
 					return false;
 				}
 				$blockUp = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
@@ -500,11 +500,19 @@ class BlockAPI{
 					$data2 = $data;
 					$data2["meta"] = 0x08;
 					$data["meta"] = $direction & 0x03;
+					$face = array(
+						0 => 3,
+						1 => 4,
+						2 => 2,
+						3 => 5,
+					);
+					$next = $this->server->api->level->getBlockFace($block, $face[(($direction + 2) % 4)]);
+					if($next[0] === $data["block"]){ //Door hinge
+						$data2["meta"] = $data2["meta"] | 0x01;
+					}
 					++$data2["y"];
 					$this->server->handle("player.block.place", $data2);
 				}
-				$next = $this->server->api->level->getBlockFace($block, $face[(($direction + 2) % 4)]);
-				var_dump($next);
 				break;
 			case 54:
 			case 61:
