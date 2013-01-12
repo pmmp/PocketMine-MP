@@ -33,7 +33,7 @@ define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
-	var $eid, $type, $name, $x, $y, $z, $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
+	var $invincible = false, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
 	private $server;
 	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
@@ -54,6 +54,9 @@ class Entity extends stdClass{
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
+		$this->speedX = isset($this->data["speedX"]) ? $this->data["speedX"]:0;
+		$this->speedY = isset($this->data["speedY"]) ? $this->data["speedY"]:0;
+		$this->speedZ = isset($this->data["speedZ"]) ? $this->data["speedZ"]:0;
 		$this->yaw = isset($this->data["yaw"]) ? $this->data["yaw"]:0;
 		$this->pitch = isset($this->data["pitch"]) ? $this->data["pitch"]:0;
 		$this->position = array("x" => &$this->x, "y" => &$this->y, "z" => &$this->z, "yaw" => &$this->yaw, "pitch" => &$this->pitch);
@@ -198,6 +201,8 @@ class Entity extends stdClass{
 		$this->y = $y;
 		$this->z = $z;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE EID = ".$this->eid.";");
+		$this->updateVelocity();
+		$this->server->api->dhandle("entity.move", $this);
 	}
 
 	public function move($x, $y, $z, $yaw = 0, $pitch = 0){
@@ -209,6 +214,8 @@ class Entity extends stdClass{
 		$this->pitch += $pitch;
 		$this->pitch %= 90;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
+		$this->updateVelocity();
+		$this->server->api->dhandle("entity.move", $this);
 	}
 
 	public function setPosition($x, $y, $z, $yaw, $pitch){
@@ -218,7 +225,22 @@ class Entity extends stdClass{
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
-		return true;
+		$this->updateVelocity();
+		$this->server->api->dhandle("entity.move", $this);
+	}
+	
+	public function updateVelocity(){
+		$diffTime = microtime(true) - $this->last[3];
+		$this->last[3] = microtime(true);
+		$speedX = ($this->x - $this->last[0]) / $diffTime;
+		$this->last[0] = $this->x;
+		$speedY = ($this->y - $this->last[1]) / $diffTime;
+		$this->last[1] = $this->y;
+		$speedZ = ($this->z - $this->last[2]) / $diffTime;
+		$this->last[2] = $this->z;
+		$this->speedX = $speedX;
+		$this->speedY = $speedY;
+		$this->speedZ = $speedZ;
 	}
 
 	public function getPosition($round = false){

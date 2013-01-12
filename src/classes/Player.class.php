@@ -344,7 +344,6 @@ class Player{
 						case MC_MOVE_PLAYER:
 							if(is_object($this->entity)){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-								$this->server->api->dhandle("entity.move", $this->entity);
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:
@@ -395,14 +394,16 @@ class Player{
 							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
+							$this->entity->invincible = true;
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
+							$this->entity->invincible = false;
 							break;
 						case MC_SET_HEALTH:
 							if($this->server->gamemode === 1){
 								break;
 							}
-							$this->entity->setHealth($data["health"], "client");
+							//$this->entity->setHealth($data["health"], "client");
 							break;
 						case MC_DROP_ITEM:
 							$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
