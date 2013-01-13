@@ -115,7 +115,7 @@ class Player{
 			if($msg === true){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
-			console("[INFO] Session with ".$this->ip.":".$this->port." Client ID ".$this->clientID." closed due to ".$reason);
+			console("[INFO] Session with \x1b[36m".$this->ip.":".$this->port."\x1b[0m Client ID ".$this->clientID." closed due to ".$reason);
 			$this->server->api->player->remove($this->CID);
 		}
 	}
@@ -286,7 +286,7 @@ class Player{
 							}
 							$o = $this->server->api->player->getOffline($this->username);
 							if($this->server->whitelist !== false and (!in_array($this->username, $this->server->whitelist)/* or ($o["lastID"] != 0 and $o["lastID"] != $this->clientID)*/)){
-								$this->close("\"".$this->username."\" not being on white-list", false);
+								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" not being on white-list", false);
 								break;
 							}
 							$u = $this->server->api->player->get($this->username);
@@ -341,7 +341,6 @@ class Player{
 									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
-									console("[DEBUG] Player with EID ".$this->eid." \"".$this->username."\" spawned!", true, true, 2);
 
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){

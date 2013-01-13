@@ -27,6 +27,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 require_once(dirname(__FILE__)."/config.php");
 require_once("common/functions.php");
+if(strpos(strtoupper(php_uname("s")), "WIN") === false or arg("enable-ansi", false) === true){
+	define("ENABLE_ANSI", true);
+}else{
+	define("ENABLE_ANSI", false);
+}
 //set_error_handler("error_handler");
 
 $errors = 0;

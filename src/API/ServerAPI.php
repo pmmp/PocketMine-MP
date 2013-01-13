@@ -109,7 +109,7 @@ class ServerAPI{
 		}
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
-			console("[INFO] Last check: ".date("Y-m-d H:i:s", $this->getProperty("last-update")));
+			console("[INFO] Last check: \x1b[36m".date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
 			$channel = "stable";
 			if($this->getProperty("update-channel") == "dev" or $this->getProperty("update-channel") == "development"){
 				$channel = "dev";
@@ -124,13 +124,13 @@ class ServerAPI{
 					$last = new DateTime($info["updated_at"]);
 					$last = $last->getTimestamp();
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
-						console("[NOTICE] A new DEVELOPMENT version of PocketMine-MP has been released");
-						console("[NOTICE] If you want to update, get the latest version at https://github.com/shoghicp/PocketMine-MP/archive/master.zip");
+						console("[NOTICE] \x1b[33mA new DEVELOPMENT version of PocketMine-MP has been released");
+						console("[NOTICE] \x1b[36mIf you want to update, get the latest version at https://github.com/shoghicp/PocketMine-MP/archive/master.zip");
 						console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
 						sleep(3);
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] This is the latest DEVELOPMENT version");
+						console("[INFO] \x1b[36mThis is the latest DEVELOPMENT version");
 					}
 				}
 			}else{
@@ -151,14 +151,14 @@ class ServerAPI{
 
 					if($newest[0] !== -1){
 						$target = $info[$newest[0]];
-						console("[NOTICE] A new STABLE version of PocketMine-MP has been released");
-						console("[NOTICE] Version \"".(new VersionString($newest[1]))."\" #".$newest[1]." [".substr($target["commit"]["sha"], 0, 10)."]");
+						console("[NOTICE] \x1b[33mA new STABLE version of PocketMine-MP has been released");
+						console("[NOTICE] \x1b[36mVersion \"".(new VersionString($newest[1]))."\" #".$newest[1]." [".substr($target["commit"]["sha"], 0, 10)."]");
 						console("[NOTICE] Download it at ".$target["zipball_url"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
 						sleep(5);
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] This is the latest STABLE version");
+						console("[INFO] \x1b[36mThis is the latest STABLE version");
 					}
 				}
 
@@ -471,7 +471,7 @@ class ServerAPI{
 		require_once($file);
 		$this->$name = new $class($this->server);
 		$this->apiList[] = $this->$name;
-		console("[INFO] API ".$name." [".$class."] loaded");
+		console("[INFO] API \x1b[36m".$name."\x1b[0m [\x1b[30m".$class."\x1b[0m] loaded");
 	}
 
 }

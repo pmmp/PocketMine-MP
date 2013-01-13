@@ -31,7 +31,7 @@ class PocketMinecraftServer{
 	
 	private function load(){
 		$this->version = new VersionString();
-		console("[INFO] PocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
+		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
 		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION.", protocol #".CURRENT_PROTOCOL, true, true, 2);
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
@@ -71,8 +71,8 @@ class PocketMinecraftServer{
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);
 		$this->reloadConfig();
-		console("[INFO] Server Name: ".$this->name);
-		console("[DEBUG] Server GUID: ".$this->serverID, true, true, 2);
+		console("[INFO] Server Name: \x1b[36m".$this->name."\x1b[0m");
+		console("[DEBUG] Server ID: ".$this->serverID, true, true, 2);
 		$this->stop = false;	
 	}
 	
@@ -254,24 +254,24 @@ class PocketMinecraftServer{
 				$this->levelData["SpawnZ"] = $this->spawn["z"];
 			}
 			$this->levelData["Time"] = $this->time;
-			console("[INFO] Spawn: X ".$this->levelData["SpawnX"]." Y ".$this->levelData["SpawnY"]." Z ".$this->levelData["SpawnZ"]);
-			console("[INFO] Time: ".$this->time);
-			console("[INFO] Seed: ".$this->seed);
-			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
+			console("[INFO] Spawn: X \x1b[36m".$this->levelData["SpawnX"]."\x1b[0m Y \x1b[36m".$this->levelData["SpawnY"]."\x1b[0m Z \x1b[36m".$this->levelData["SpawnZ"]."\x1b[0m");
+			console("[INFO] Time: \x1b[36m".$this->time."\x1b[0m");
+			console("[INFO] Seed: \x1b[36m".$this->seed."\x1b[0m");
+			console("[INFO] Gamemode: \x1b[36m".($this->gamemode === 0 ? "survival":"creative")."\x1b[0m");
 			$d = array(0 => "peaceful", 1 => "easy", 2 => "normal", 3 => "hard");
-			console("[INFO] Difficulty: ".$d[$this->difficulty]);
+			console("[INFO] Difficulty: \x1b[36m".$d[$this->difficulty]."\x1b[0m");
 			console("[INFO] Loading map...");
 			$this->map = new ChunkParser();
 			if(!$this->map->loadFile($this->mapDir."chunks.dat")){
-				console("[ERROR] Couldn't load the map \"".$this->levelData["LevelName"]."\"!", true, true, 0);
+				console("[ERROR] Couldn't load the map \"\x1b[32m".$this->levelData["LevelName"]."\x1b[0m\"!", true, true, 0);
 				$this->map = false;
 			}else{
 				$this->map->loadMap();
 			}
 		}else{
-			console("[INFO] Time: ".$this->time);
-			console("[INFO] Seed: ".$this->seed);
-			console("[INFO] Gamemode: ".($this->gamemode === 0 ? "survival":"creative"));
+			console("[INFO] Time: \x1b[36m".$this->time."\x1b[0m");
+			console("[INFO] Seed: \x1b[36m".$this->seed."\x1b[0m");
+			console("[INFO] Gamemode: \x1b[36m".($this->gamemode === 0 ? "survival":"creative")."\x1b[0m");
 		}
 	}
 

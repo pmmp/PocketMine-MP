@@ -76,7 +76,7 @@ class PluginAPI extends stdClass{
 		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"]) or !isset($info["author"])){
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
 		}
-		console("[INFO] [PluginAPI] Loading plugin \"".$info["name"]."\" ".$info["version"]." by ".$info["author"]);
+		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]."\x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
 		if(class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
 		}
@@ -85,11 +85,11 @@ class PluginAPI extends stdClass{
 		}
 		$className = trim($info["class"]);
 		if(isset($info["api"]) and $info["api"] !== true){
-			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" got raw access to Server methods");
+			console("[NOTICE] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" got raw access to Server methods");
 		}
 		$object = new $className($this->server->api, ((isset($info["api"]) and $info["api"] !== true) ? $this->server:false));
 		if(!($object instanceof Plugin)){
-			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" doesn't use the Plugin Interface");
+			console("[ERROR] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
 			if(method_exists($object, "__destruct")){
 				$object->__destruct();
 			}
@@ -149,7 +149,8 @@ class PluginAPI extends stdClass{
 	}
 
 	public function init(){
-		$this->server->event("server.start", array($this, "loadAll"));
+		$this->server->event("server.start", array($this, "initAll"));
+		$this->loadAll();
 	}
 
 	public function loadAll(){
@@ -162,6 +163,9 @@ class PluginAPI extends stdClass{
 				}
 			}
 		}
+	}
+	
+	public function initAll(){
 		foreach($this->plugins as $p){
 			$p[0]->init(); //ARGHHH!!! Plugin loading randomly fails!!
 		}

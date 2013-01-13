@@ -193,7 +193,7 @@ class PlayerAPI{
 	public function add($CID){
 		if(isset($this->server->clients[$CID])){
 			$player = $this->server->clients[$CID];
-			console("[INFO] Player \"".$player->username."\" connected from ".$player->ip.":".$player->port);
+			console("[INFO] Player \"\x1b[33m".$player->username."\x1b[0m\" connected from \x1b[36m".$player->ip.":".$player->port."\x1b[0m");
 			$player->data = $this->getOffline($player->username);
 			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".$player->username."');");
 		}

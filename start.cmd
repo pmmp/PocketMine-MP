@@ -1,6 +1,6 @@
 @echo off
 TITLE PocketMine-MP Server - by @shoghicp
-COLOR F0
+COLOR 0F
 mode con: cols=90
 
 echo.
@@ -26,6 +26,10 @@ if not "%PHPOUTPUT%"=="1" (
 echo [ERROR] Couldn't find PHP binary in PATH.
 ping 127.0.0.1 -n 3 -w 1000>nul
 ) else (
-START /B /WAIT php -d enable_dl=On PocketMine-MP.php
+	if exist bin\ansicon.exe (
+		bin\ansicon.exe php -d enable_dl=On PocketMine-MP.php --enable-ansi
+	) else (
+		php -d enable_dl=On PocketMine-MP.php
+	)
 )
 pause

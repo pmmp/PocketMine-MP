@@ -167,9 +167,36 @@ function arguments ( $args ){
 function console($message, $EOL = true, $log = true, $level = 1){
 	if(!defined("DEBUG") or DEBUG >= $level){
 		$message .= $EOL === true ? PHP_EOL:"";
-		$message = date("H:i:s"). " ". $message;
+		$time = (ENABLE_ANSI === true ? "\x1b[36m".date("H:i:s")."\x1b[0m":date("H:i:s")) . " ";
+		$replaced = preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message);
 		if($log === true and (!defined("LOG") or LOG === true)){
-			logg($message, "console", false, $level);
+			logg($replaced, "console", false, $level);
+		}
+		if(ENABLE_ANSI === true){
+			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
+				$add = "\x1b";
+				switch($matches[1]){
+					case "ERROR":
+						$add .= "[31;1m";
+						break;
+					case "INTERNAL":
+					case "DEBUG":
+						$add .= "[30;1m";
+						break;
+					case "WARNING":
+						$add .= "[33;1m";
+						break;
+					case "NOTICE":
+						$add .= "[37;1m";
+						break;
+					default:
+						$add = "";
+						break;
+				}
+				$message = $time . $add . $message . "\x1b[0m";
+			}
+		}else{
+			$message = $replaced;
 		}
 		echo $message;
 	}
