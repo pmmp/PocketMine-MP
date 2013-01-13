@@ -29,8 +29,11 @@ the Free Software Foundation, either version 3 of the License, or
 class VersionString{
 	public static $stageOrder = array(
 		"alpha" => 0,
+		"a" => 0,
 		"beta" => 1,
+		"b" => 1,
 		"final" => 2,
+		"f" => 2,
 	);
 	private $stage, $major, $release, $minor;
 	public function __construct($version = MAJOR_VERSION){
