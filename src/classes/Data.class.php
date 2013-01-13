@@ -104,6 +104,7 @@ class Material{
 		38 => true,
 		39 => true,
 		40 => true,
+		44 => true,
 		46 => true,
 		50 => true,
 		51 => true,
