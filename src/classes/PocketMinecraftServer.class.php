@@ -148,12 +148,14 @@ class PocketMinecraftServer{
 		$info["entities"] = $info["entities"]["count"];
 		$info["events"] = $this->query("SELECT count(ID) as count FROM events;", true);
 		$info["events"] = $info["events"]["count"];
+		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
+		$info["handlers"] = $info["handlers"]["count"];
 		$info["actions"] = $this->query("SELECT count(ID) as count FROM actions;", true);
 		$info["actions"] = $info["actions"]["count"];
 		$info["garbage"] = gc_collect_cycles();
 		$this->handle("server.debug", $info);
 		if($console === true){
-			console("[DEBUG] TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"]."), Entities: ".$info["entities"].", Events: ".$info["events"].", Actions: ".$info["actions"].", Garbage: ".$info["garbage"], true, true, 2);
+			console("[DEBUG] TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"]."), Entities: ".$info["entities"].", Events: ".$info["events"].", Handlers: ".$info["handlers"].", Actions: ".$info["actions"].", Garbage: ".$info["garbage"], true, true, 2);
 		}
 		return $info;
 	}
