@@ -198,7 +198,7 @@ class ServerAPI{
 		while(false !== ($file = $dir->read())){
 			if($file{0} !== "."){ //Hidden and upwards folders
 				$API = basename($file, ".php");
-				if(strtolower($API) !== "serverapi"){
+				if(strtolower($API) !== "serverapi" and strtolower($API) !== "pluginapi"){
 					$name = strtolower(substr($API, 0, -3));
 					$this->loadAPI($name, $API);
 				}
@@ -209,7 +209,10 @@ class ServerAPI{
 				$ob->init(); //Fails sometimes!!!
 			}
 		}
-
+		$this->loadAPI("plugin", "PluginAPI"); //fix :(
+		$this->plugin->init();
+		
+		
 		$this->server->loadEntities();
 	}
 
@@ -262,6 +265,7 @@ class ServerAPI{
 	}
 
 	private function parseProperties(){
+		$this->config = new Config(FILE_PATH."white-list.txt");
 		$prop = file_get_contents(FILE_PATH."server.properties");
 		$prop = explode("\n", str_replace("\r", "", $prop));
 		$this->config = array();
