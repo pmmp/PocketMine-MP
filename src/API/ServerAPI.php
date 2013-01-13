@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ServerAPI{
 	var $restart = false;
-	private $server
-	private $config
+	private $server;
+	private $config;
 	private $apiList = array();
 	
 	public function run(){

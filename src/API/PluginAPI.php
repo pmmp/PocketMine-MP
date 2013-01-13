@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PluginAPI extends stdClass{
-	private $server
+	private $server;
 	private $plugins = array();
 	public function __construct(PocketMinecraftServer $server){
 		$this->server = $server;

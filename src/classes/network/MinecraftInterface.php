@@ -26,11 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct
-	var $name
-	var $client
+	var $pstruct;
+	var $name;
+	var $client;
 	var $dataName;
-	private $socket
+	private $socket;
 	private $data;
 	function __construct($server, $port = 25565, $listen = false, $client = true){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen);
