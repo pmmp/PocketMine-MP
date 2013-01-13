@@ -329,6 +329,9 @@ class Player{
 									$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
 									$this->eid = $this->entity->eid;
 									$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
+									$this->entity->x = $this->data["spawn"]["x"];
+									$this->entity->y = $this->data["spawn"]["y"];
+									$this->entity->z = $this->data["spawn"]["z"];
 									$this->entity->setName($this->username);
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
@@ -341,7 +344,7 @@ class Player{
 									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
-
+									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
