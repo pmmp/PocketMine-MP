@@ -132,10 +132,10 @@ class PocketMinecraftServer{
 	}
 
 	public function reloadConfig(){
-		if($this->whitelist === true or is_array($this->whitelist)){
-			$this->whitelist = explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")));
+		if($this->whitelist === true or ($this->whitelist instanceof Config)){
+			$this->whitelist = new Config(FILE_PATH."white-list.txt", CONFIG_LIST);
 		}
-		$this->bannedIPs = explode("\n", str_replace(array(" ","\t","\r"), "", file_get_contents(FILE_PATH."banned-ips.txt")));
+		$this->bannedIPs = new Config(FILE_PATH."banned-ips.txt", CONFIG_LIST);
 	}
 
 	public function debugInfo($console = false){
@@ -398,7 +398,7 @@ class PocketMinecraftServer{
 						), false, $packet["ip"], $packet["port"]);
 						break;
 					}
-					if(in_array($packet["ip"], $this->bannedIPs)){
+					if($this->bannedIPs->exists($packet["ip"])){
 						$this->send(0x1c, array(
 							$data[0],
 							$this->serverID,
@@ -422,7 +422,7 @@ class PocketMinecraftServer{
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
 				case 0x05:
-					if(in_array($packet["ip"], $this->bannedIPs) or count($this->clients) >= $this->maxClients){
+					if($this->bannedIPs->exists($packet["ip"]) or count($this->clients) >= $this->maxClients){
 						$this->send(0x80, array(
 							0,
 							0x00,
@@ -458,7 +458,7 @@ class PocketMinecraftServer{
 					}
 					break;
 				case 0x07:
-					if(in_array($packet["ip"], $this->bannedIPs) or count($this->clients) >= $this->maxClients){
+					if($this->bannedIPs->exists($packet["ip"]) or count($this->clients) >= $this->maxClients){
 						$this->send(0x80, array(
 							0,
 							0x00,

@@ -156,8 +156,16 @@ class Config{
 		$this->config[$k] = $v;
 	}
 	
-	public function getAll(){
-		return ($this->config);
+	public function exists($k){
+		return isset($this->config[$k]);
+	}
+	
+	public function remove($k){
+		unset($this->config[$k]);
+	}
+	
+	public function getAll($keys = false){
+		return ($keys === true ? array_keys($this->config):$this->config);
 	}
 	
 	private function fillDefaults($default, &$data){

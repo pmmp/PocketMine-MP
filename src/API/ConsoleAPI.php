@@ -98,21 +98,16 @@ class ConsoleAPI{
 						case "pardon":
 						case "remove":
 							$ip = trim(implode($params));
-							$new = array();
-							foreach(explode("\n", str_replace(array("\r","\t"), "", file_get_contents(FILE_PATH."banned-ips.txt"))) as $i){
-								if($i == $ip){
-									console("[INFO] IP \"$ip\" removed from ban list");
-									continue;
-								}
-								$new[$i] = $i;
-							}
-							file_put_contents(FILE_PATH."banned-ips.txt", implode("\r\n", $new));
+							$this->server->bannedIPs->remove($packet["ip"]);
+							$this->server->bannedIPs->save();
+							console("[INFO] IP \"$ip\" removed from ban list");
 							$this->server->reloadConfig();
 							break;
 						case "add":
 						case "ban":
 							$ip = trim(implode($params));
-							file_put_contents(FILE_PATH."banned-ips.txt", "\r\n".$ip, FILE_APPEND);
+							$this->server->bannedIPs->set($packet["ip"]);
+							$this->server->bannedIPs->save();
 							console("[INFO] IP \"$ip\" added to ban list");
 							$this->server->reloadConfig();
 							break;
@@ -120,7 +115,7 @@ class ConsoleAPI{
 							$this->server->reloadConfig();
 							break;
 						case "list":
-							console("[INFO] IP ban list: ".implode(", ", explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."banned-ips.txt")))));
+							console("[INFO] IP ban list: ".implode(", ", $this->server->bannedIPs->getAll(true)));
 							break;
 						default:
 							console("[INFO] Usage: /banip <add | remove | list | reload> [IP]");
@@ -159,20 +154,15 @@ class ConsoleAPI{
 					switch($p){
 						case "remove":
 							$user = trim(implode(" ", $params));
-							$new = array();
-							foreach(explode("\n", str_replace(array("\r","\t"), "", file_get_contents(FILE_PATH."white-list.txt"))) as $u){
-								if($u == $user){
-									console("[INFO] Player \"$user\" removed from white-list");
-									continue;
-								}
-								$new[$u] = $u;
-							}
-							file_put_contents(FILE_PATH."white-list.txt", implode("\r\n", $new));
+							$this->server->whitelist->remove($user);
+							$this->server->whitelist->save();
+							console("[INFO] Player \"$user\" removed from white-list");
 							$this->server->reloadConfig();
 							break;
 						case "add":
 							$user = trim(implode(" ", $params));
-							file_put_contents(FILE_PATH."white-list.txt", "\r\n".$user, FILE_APPEND);
+							$this->server->whitelist->set($user);
+							$this->server->whitelist->save();
 							console("[INFO] Player \"$user\" added to white-list");
 							$this->server->reloadConfig();
 							break;
@@ -180,7 +170,11 @@ class ConsoleAPI{
 							$this->server->reloadConfig();
 							break;
 						case "list":
-							console("[INFO] White-list: ".implode(", ", explode("\n", str_replace(array("\t","\r"), "", file_get_contents(FILE_PATH."white-list.txt")))));
+							if(($this->server->whitelist instanceof Config) === false){
+								console("[INFO] No White-list");
+							}else{
+								console("[INFO] White-list: ".implode(", ", $this->server->whitelist->getAll(true)));
+							}
 							break;
 						case "on":
 						case "true":

@@ -80,25 +80,12 @@ class ServerAPI{
 			}
 		}
 
-		if(!file_exists(FILE_PATH."white-list.txt")){
-			console("[NOTICE] No white-list.txt found, creating blank file");
-			file_put_contents(FILE_PATH."white-list.txt", "");
-		}
-
-		if(!file_exists(FILE_PATH."banned-ips.txt")){
-			console("[NOTICE] No banned-ips.txt found, creating blank file");
-			file_put_contents(FILE_PATH."banned-ips.txt", "");
-		}
-
-		if(!file_exists(FILE_PATH."server.properties")){
-			console("[NOTICE] No server.properties found, using default settings");
-			copy(FILE_PATH."src/common/default.properties", FILE_PATH."server.properties");
-		}
-
 		console("[DEBUG] Loading server.properties...", true, true, 2);
+		$this->config = new Config(FILE_PATH . "server.properties", CONFIG_PROPERTIES);
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug"));
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"));
+		$this->setProperty("server-id", $this->server->serverID);
 		$this->server->api = $this;
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
@@ -230,10 +217,10 @@ class ServerAPI{
 		if($this->getProperty("memory-limit") !== false){
 			@ini_set("memory_limit", $this->getProperty("memory-limit"));
 		}else{
-			$this->config["memory-limit"] = "256M";
+			$this->setProperty("memory-limit", "256M");
 		}
-		if(!isset($this->config["invisible"])){
-			$this->config["invisible"] = false;
+		if(!$this->config->exists("invisible")){
+			$this->config->set("invisible", false);
 		}
 		if(is_object($this->server)){
 			$this->server->setType($this->getProperty("server-type"));
@@ -250,44 +237,11 @@ class ServerAPI{
 	}
 
 	private function writeProperties(){
-		if(is_object($this->server)){
-			$this->config["server-id"] = $this->server->serverID;
-		}
-		$config = $this->config;
-		$config["white-list"] = $config["white-list"] === true ? "true":"false";
-		$config["invisible"] = $config["invisible"] === true ? "true":"false";
-		$config["upnp-forwarding"] = $config["upnp-forwarding"] === true ? "true":"false";
-		$prop = "#Pocket Minecraft PHP server properties\r\n#".date("D M j H:i:s T Y")."\r\n";
-		foreach($config as $n => $v){
-			$prop .= $n."=".$v."\r\n";
-		}
-		file_put_contents(FILE_PATH."server.properties", $prop);
+		$this->config->save();
 	}
 
 	private function parseProperties(){
-		$this->config = new Config(FILE_PATH."white-list.txt");
-		$prop = file_get_contents(FILE_PATH."server.properties");
-		$prop = explode("\n", str_replace("\r", "", $prop));
-		$this->config = array();
-		foreach($prop as $line){
-			if(trim($line) == "" or $line{0} == "#"){
-				continue;
-			}
-			$d = explode("=", $line);
-			$n = strtolower(array_shift($d));
-			$v = implode("=", $d);
-			switch(strtolower(trim($v))){
-				case "on":
-				case "true":
-				case "yes":
-					$v = true;
-					break;
-				case "off":
-				case "false":
-				case "no":
-					$v = false;
-					break;
-			}
+		foreach($this->config->getAll() as $n => $v){
 			switch($n){
 				case "last-update":
 					if($v === false){
@@ -310,7 +264,7 @@ class ServerAPI{
 					}
 					break;
 			}
-			$this->config[$n] = $v;
+			$this->config->set($n, $v);
 		}
 	}
 
@@ -402,7 +356,7 @@ class ServerAPI{
 	}
 	
 	public function getProperties(){
-		return $this->config;
+		return $this->config->getAll();
 	}
 
 	public function getProperty($name){
@@ -443,14 +397,11 @@ class ServerAPI{
 			}
 			return $v;
 		}
-		if(isset($this->config[$name])){
-			return $this->config[$name];
-		}
-		return false;
+		return $this->config->get($name);
 	}
 
 	public function setProperty($name, $value){
-		$this->config[$name] = $value;
+		$this->config->set($name, $value);
 		$this->writeProperties();
 		$this->loadProperties();
 	}
