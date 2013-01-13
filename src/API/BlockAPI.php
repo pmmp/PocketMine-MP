@@ -359,15 +359,26 @@ class BlockAPI{
 		}
 
 		$replace = false;
-		switch($target[0]){
+		switch($data["block"]){
 			case 44: //Slabs
-				if($data["face"] !== 1){
+				if($data["face"] === 0){
 					break;
-				}
-				if(($target[1] & 0x07) === ($data["meta"] & 0x07)){
-					$replace = true;
-					$data["block"] = 43;
-					$data["meta"] = $data["meta"] & 0x07;
+				}elseif($data["face"] === 1){
+					if(($target[1] & 0x07) === ($data["meta"] & 0x07) and $target[0] === 44){
+						$replace = true;
+						$data["block"] = 43;
+						$data["meta"] = $data["meta"] & 0x07;
+					}
+				}else{
+					$data2 = $data;
+					BlockFace::setPosition($data2, $data["face"]);
+					$b = $this->server->api->level->getBlock($data2["x"], $data2["y"], $data2["z"]);
+					if($b[0] === 44 and ($b[1] & 0x07) === ($data["meta"] & 0x07) and $b[0] === 44){
+						$data = $data2;
+						$replace = true;
+						$data["block"] = 43;
+						$data["meta"] = $data["meta"] & 0x07;
+					}
 				}
 				break;
 		}
