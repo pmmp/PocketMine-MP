@@ -81,7 +81,28 @@ class ServerAPI{
 		}
 
 		console("[DEBUG] Loading server.properties...", true, true, 2);
-		$this->config = new Config(FILE_PATH . "server.properties", CONFIG_PROPERTIES);
+		$this->config = new Config(FILE_PATH . "server.properties", CONFIG_PROPERTIES, array(
+			"server-name" => "Minecraft Server",
+			"description" => "Server made using PocketMine-MP",
+			"motd" => "Welcome @username to this server!",
+			"invisible" => false,
+			"port" => 19132
+			"memory-limit" => "256M",
+			"last-update" => false,
+			"update-channel" => "stable",
+			"white-list" => false,
+			"debug" => 2,
+			"max-players" => 20,
+			"server-type" => "normal",
+			"time-per-second" => 20,
+			"gamemode" => 1,
+			"difficulty" => 1,
+			"generator" => "",
+			"generator-settings" => "",
+			"level-name" => false,
+			"server-id" => false,
+			"upnp-forwarding" => false,
+		));
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug"));
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"));
