@@ -86,7 +86,7 @@ class ServerAPI{
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @username to this server!",
 			"invisible" => false,
-			"port" => 19132
+			"port" => 19132,
 			"memory-limit" => "256M",
 			"last-update" => false,
 			"update-channel" => "stable",

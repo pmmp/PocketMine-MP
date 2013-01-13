@@ -108,6 +108,16 @@ class PluginAPI extends stdClass{
 		}
 		return false;
 	}
+	
+	public function configPath(Plugin $plugin){
+		$p = $this->get($plugin);
+		if($p === false){
+			return false;
+		}
+		$path = FILE_PATH."plugins/".$p[1]["name"]."/";
+		$this->plugins[$p[1]["class"]][1]["path"] = $path;
+		return $path;
+	}
 
 	public function createConfig(Plugin $plugin, $default = array()){
 		$p = $this->get($plugin);
@@ -116,14 +126,8 @@ class PluginAPI extends stdClass{
 		}
 		$path = FILE_PATH."plugins/".$p[1]["name"]."/";
 		$this->plugins[$p[1]["class"]][1]["path"] = $path;
-		if(!file_exists($path."config.yml")){
-			@mkdir($path, 0777);
-			$this->writeYAML($path."config.yml", $default);
-		}else{
-			$data = $this->readYAML($path."config.yml");
-			$this->fillDefaults($default, $data);
-			$this->writeYAML($path."config.yml", $data);
-		}
+		$cnf = new Config($path."config.yml", CONFIG_YAML, $default);
+		$cnf->save();
 		return $path;
 	}
 
