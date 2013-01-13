@@ -26,20 +26,20 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
-require_once("misc/world/generator/object/tree/TreeObject.php");
+require_once("classes/world/generator/object/tree/TreeObject.php");
 
-class SpruceTreeObject extends TreeObject{
+class PineTreeObject extends TreeObject{
 	var $type = 1;
 	private $totalHeight = 8;
-	private $leavesBottomY = -1;
-	private $leavesMaxRadius = -1;
+	private $leavesSizeY = -1;
+	private $leavesAbsoluteMaxRadius = -1;
 
 	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
 		$this->findRandomLeavesSize();
 		$checkRadius = 0;
-		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
-			if($yy === $this->leavesBottomY) {
-				$checkRadius = $this->leavesMaxRadius;
+		for($yy = 0; $yy < ($this->totalHeight + 2); ++$yy) {
+			if($yy === $this->leavesSizeY) {
+				$checkRadius = $this->leavesAbsoluteMaxRadius;
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
 				for($zz = -$checkRadius; $zz < ($checkRadius + 1); ++$zz){
@@ -55,17 +55,21 @@ class SpruceTreeObject extends TreeObject{
 
 	private function findRandomLeavesSize(){
 		$this->totalHeight += mt_rand(-1, 2);
-		$this->leavesBottomY = (int) ($this->totalHeight - mt_rand(1,2) - 3);
-		$this->leavesMaxRadius = 1 + mt_rand(0, 1);
+		$this->leavesSizeY = 1 + mt_rand(0,2);
+		$this->leavesAbsoluteMaxRadius = 2 + mt_rand(0, 2);
 	}
 
 	public function placeObject(LevelAPI $level, $x, $y, $z){
-		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
+		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
 		$level->setBlock($x, $y - 1, $z, 3, 0);
-		$leavesRadius = 0;
-		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
+		$leavesRadius = mt_rand(0,2);
+		$leavesMaxRadius = 1;
+		$leavesBottomY = $this->totalHeight - $this->leavesSizeY;
+		$firstMaxedRadius = false;
+		for($leavesY = 0; $leavesY < ($leavesBottomY + 1); ++$leavesY) {
+			$yy = $this->totalHeight - $leavesY;
 			for ($xx = -$leavesRadius; $xx < ($leavesRadius + 1); ++$xx) {
 				for ($zz = -$leavesRadius; $zz < ($leavesRadius + 1); ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
@@ -73,13 +77,18 @@ class SpruceTreeObject extends TreeObject{
 					}
 				}
 			}
-			if ($leavesRadius > 0 and $yy === ($y + $this->leavesBottomY + 1)) {
-				--$leavesRadius;
-			}elseif($leavesRadius < $this->leavesMaxRadius){
+			if ($leavesRadius >= $leavesMaxRadius) {
+				$leavesRadius = $firstMaxedRadius ? 1 : 0;
+				$firstMaxedRadius = true;
+				if (++$leavesMaxRadius > $this->leavesAbsoluteMaxRadius) {
+					$leavesMaxRadius = $this->leavesAbsoluteMaxRadius;
+				}
+			}else{
 				++$leavesRadius;
 			}
 		}
-		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
+		$trunkHeightReducer = mt_rand(0,3);
+		for($yy = 0; $yy < ($this->totalHeight - $trunkHeightReducer); ++$yy){
 			$level->setBlock($x, $y + $yy, $z, 17, $this->type);
 		}
 	}

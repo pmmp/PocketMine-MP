@@ -27,7 +27,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ServerAPI{
 	var $restart = false;
-	private $server, $config, $apiList = array();
+	private $server
+	private $config
+	private $apiList = array();
 	
 	public function run(){
 		$this->load();
@@ -204,7 +206,7 @@ class ServerAPI{
 		}
 		foreach($this->apiList as $ob){
 			if(is_callable(array($ob, "init"))){
-				$ob->init();
+				$ob->init(); //Fails sometimes!!!
 			}
 		}
 

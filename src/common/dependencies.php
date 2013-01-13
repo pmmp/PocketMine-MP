@@ -82,25 +82,6 @@ if($errors > 0){
 	die();
 }
 
-
-require_once("classes/Async.class.php");
-require_once("classes/Data.class.php");
-require_once("classes/Player.class.php");
-require_once("classes/Generator.class.php");
-require_once("classes/SuperflatGenerator.class.php");
-require_once("classes/Utils.class.php");
-require_once("classes/UDPSocket.class.php");
-require_once("classes/Packet.class.php");
-require_once("classes/Entity.class.php");
-require_once("classes/TileEntity.class.php");
-require_once("classes/Window.class.php");
-require_once("classes/ChunkParser.class.php");
-require_once("classes/NBT.class.php");
-require_once("classes/Java.class.php");
-require_once("classes/SerializedPacketHandler.class.php");
-require_once("classes/CustomPacketHandler.class.php");
-require_once("classes/MinecraftInterface.class.php");
-require_once("classes/BigInteger.class.php");
-require_all(FILE_PATH . "src/misc/");
+require_all(FILE_PATH . "src/classes/");
 
 ?>

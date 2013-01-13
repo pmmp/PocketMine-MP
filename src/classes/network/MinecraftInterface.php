@@ -26,18 +26,21 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct, $name, $client, $dataName;
-	private $socket, $data;
+	var $pstruct
+	var $name
+	var $client
+	var $dataName;
+	private $socket
+	private $data;
 	function __construct($server, $port = 25565, $listen = false, $client = true){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen);
-		require("pstruct/RakNet.php");
-		require("pstruct/packetName.php");
-		require("pstruct/protocol.php");
-		require("pstruct/dataName.php");
+		require("protocol/RakNet.php");
+		require("protocol/packetName.php");
+		require("protocol/current.php");
+		require("protocol/dataName.php");
 		$this->pstruct = $pstruct;
 		$this->name = $packetName;
 		$this->dataName = $dataName;
-		$this->buffer = array();
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
 	}

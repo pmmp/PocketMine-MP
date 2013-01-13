@@ -26,11 +26,10 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PluginAPI extends stdClass{
-	private $server, $plugins;
+	private $server
+	private $plugins = array();
 	public function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
-		$this->plugins = array();
-		require_once("classes/Spyc.class.php"); //YAML parser
 	}
 
 	public function getList(){
@@ -164,9 +163,7 @@ class PluginAPI extends stdClass{
 			}
 		}
 		foreach($this->plugins as $p){
-			if(method_exists($p[0], "init")){
-				$p[0]->init();
-			}
+			$p[0]->init(); //ARGHHH!!! Plugin loading randomly fails!!
 		}
 	}
 }

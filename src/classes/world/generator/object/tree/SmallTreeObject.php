@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
-require_once("misc/world/generator/object/tree/TreeObject.php");
+require_once("classes/world/generator/object/tree/TreeObject.php");
 
 class SmallTreeObject extends TreeObject{
 	var $type = 0;

@@ -27,33 +27,40 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Player{
-	private $server, $timeout, $connected, $queue, $buffer, $evid = array();
-	var $clientID, $ip, $port, $counter, $username, $eid, $data, $entity, $auth, $CID, $MTU, $spawned, $equipment;
-	function __construct($server, $clientID, $ip, $port, $MTU){
-		$this->queue = array();
-		$this->buffer = array();
+	private $server;
+	private $queue = array();
+	private $buffer = array();
+	private $evid = array();
+	var $timeout;
+	var $connected = true;
+	var $clientID;
+	var $ip;
+	var $port;
+	var $counter = array(0, 0, 0);
+	var $username;
+	var $eid = false;
+	var $data = array();
+	var $entity = false;
+	var $auth = false;
+	var $CID;
+	var $MTU;
+	var $spawned = false;
+	var $equipment = array(1, 0);
+	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
 		$this->server = $server;
 		$this->clientID = $clientID;
 		$this->CID = $this->server->clientID($ip, $port);
-		$this->eid = false;
-		$this->data = array();
 		$this->ip = $ip;
-		$this->entity = false;
 		$this->port = $port;
 		$this->timeout = microtime(true) + 25;
-		$this->equipment = array(1, 0);
-		$this->spawned = false;
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
-		$this->connected = true;
-		$this->auth = false;
-		$this->counter = array(0, 0, 0);
 	}
 
 	public function onTick($time, $event){
-		if($event !== "server.tick"){
+		if($event !== "server.tick"){ //WTF??
 			return;
 		}
 		if($time > $this->timeout){
