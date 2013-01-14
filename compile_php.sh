@@ -116,7 +116,12 @@ cd php
 --with-gmp=$DIR/install_data/php/ext/gmp \
 --with-curl=$DIR/install_data/php/ext/curl \
 --with-zlib=$DIR/install_data/php/ext/zlib \
+--disable-libxml \
 --disable-xml \
+--disable-dom \
+--disable-simplexml \
+--disable-xmlreader \
+--disable-xmlwriter \
 --without-pear \
 --enable-sockets \
 --enable-pthreads \
