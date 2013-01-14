@@ -232,8 +232,7 @@ class Entity extends stdClass{
 	public function inBlock($x, $y, $z){
 		$block = new Vector3($x + 0.5, $y, $z + 0.5);
 		$me = new Vector3($this->x, $this->y, $this->z);
-		$up = new Vector3($this->x, $this->y + 1, $this->z);
-		if($block->distance($me) < 0.8 or $block->distance($up) < 0.8){
+		if(($y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < 0.8){
 			return true;
 		}
 		return false;

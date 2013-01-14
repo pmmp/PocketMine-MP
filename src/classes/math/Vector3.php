@@ -132,6 +132,14 @@ class Vector3{
 			return pow($this->x - $x, 2) + pow($this->y - $y, 2) + pow($this->z - $z, 2);
 		}
 	}
+	
+	public function maxPlainDistance($x = 0, $z = 0){
+		if(($x instanceof Vector3) === true){
+			return $this->maxPlainDistance($x->x, $x->z);
+		}else{
+			return max(abs($this->x - $x), abs($this->z - $z));
+		}	
+	}
 
 	public function __toString(){
 		return "Vector3(x=".$this->x.",y=".$this->y.",z=".$this->z.")";
