@@ -576,10 +576,11 @@ class PocketMinecraftServer{
 		if(!is_callable($func)){
 			return false;
 		}
-		$this->events[$this->evCnt] = $func;
-		$this->query("INSERT INTO events (ID, name) VALUES (".$this->evCnt.", '".str_replace("'", "\\'", $event)."');");
-		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$this->evCnt.")", true, true, 3);
-		return $this->evCnt++;
+		$evid = $this->evCnt++;
+		$this->events[$evid] = $func;
+		$this->query("INSERT INTO events (ID, name) VALUES (".$evid.", '".str_replace("'", "\\'", $event)."');");
+		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$evid.")", true, true, 3);
+		return $evid;
 	}
 
 	public function deleteEvent($id){
