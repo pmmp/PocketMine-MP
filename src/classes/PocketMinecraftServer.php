@@ -161,6 +161,9 @@ class PocketMinecraftServer{
 
 	public function close($reason = "stop"){
 		if($this->stop !== true){
+			if(is_int($reason)){
+				$reason = "signal stop";
+			}
 			$this->api->chat->send(false, "Stopping server...");
 			$this->ticker->stop = true;
 			$this->save(true);
