@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "[PocketMine] PHP installer and compiler for Linux - by @shoghicp v0.3"
 DIR=`pwd`
-date > $DIR/install.log
-uname -a >> $DIR/install.log
+date > $DIR/install.log 2>&1
+uname -a >> $DIR/install.log 2>&1
 echo "[INFO] Checking dependecies"
 type make >> $DIR/install.log 2>&1 || { echo >&2 "[ERROR] Please install \"make\""; exit 1; }
 type autoconf >> $DIR/install.log 2>&1 || { echo >&2 "[ERROR] Please install \"autoconf\""; exit 1; }
@@ -31,9 +31,11 @@ echo -n " extracting..."
 tar -zxvf zlib-1.2.7.tar.gz >> $DIR/install.log 2>&1
 rm -f zlib-1.2.7.tar.gz >> $DIR/install.log 2>&1
 mv zlib-1.2.7 zlib
-echo -n " compiling..."
+echo -n " checking..."
 cd zlib
-./configure --prefix=$DIR/install_data/php/ext/zlib >> $DIR/install.log 2>&1
+./configure --prefix=$DIR/install_data/php/ext/zlib \
+--static >> $DIR/install.log 2>&1
+echo -n " compiling..."
 make >> $DIR/install.log 2>&1
 echo -n " installing..."
 make install >> $DIR/install.log 2>&1
@@ -49,9 +51,10 @@ echo " done!"
 #tar -zxvf openssl-1.0.1c.tar.gz >> $DIR/install.log 2>&1
 #rm -f openssl-1.0.1c.tar.gz >> $DIR/install.log 2>&1
 #mv openssl-1.0.1c openssl
-#echo -n " compiling..."
+#echo -n " checking..."
 #cd openssl
 #./config --prefix=$DIR/install_data/php/ext/openssl >> $DIR/install.log 2>&1
+#echo -n " compiling..."
 #make >> $DIR/install.log 2>&1
 #echo -n " installing..."
 #make install >> $DIR/install.log 2>&1
@@ -67,9 +70,11 @@ echo -n " extracting..."
 tar -jxvf gmp-5.1.0.tar.bz2 >> $DIR/install.log 2>&1
 rm -f gmp-5.1.0.tar.bz2 >> $DIR/install.log 2>&1
 mv gmp-5.1.0 gmp
-echo -n " compiling..."
+echo -n " checking..."
 cd gmp
-./configure --prefix=$DIR/install_data/php/ext/gmp >> $DIR/install.log 2>&1
+./configure --prefix=$DIR/install_data/php/ext/gmp \
+--disable-shared >> $DIR/install.log 2>&1
+echo -n " compiling..."
 make >> $DIR/install.log 2>&1
 echo -n " installing..."
 make install >> $DIR/install.log 2>&1
@@ -84,10 +89,12 @@ echo -n " extracting..."
 tar -zxvf curl-master.tar.gz >> $DIR/install.log 2>&1
 rm -f curl-master.tar.gz >> $DIR/install.log 2>&1
 mv curl-master curl
-echo -n " compiling..."
+echo -n " checking..."
 cd curl
 ./buildconf >> $DIR/install.log 2>&1
-./configure --prefix=$DIR/install_data/php/ext/curl >> $DIR/install.log 2>&1
+./configure --prefix=$DIR/install_data/php/ext/curl \
+--disable-shared >> $DIR/install.log 2>&1
+echo -n " compiling..."
 make >> $DIR/install.log 2>&1
 echo -n " installing..."
 make install >> $DIR/install.log 2>&1
@@ -106,7 +113,7 @@ mv pthreads-master $DIR/install_data/php/ext/pthreads
 echo " done!"
 
 #--with-openssl=$DIR/install_data/php/ext/openssl
-echo -n "[PHP5] compiling..."
+echo -n "[PHP5] checking..."
 cd php
 ./buildconf --force >> $DIR/install.log 2>&1
 ./configure --prefix=$DIR/php5 \
@@ -123,18 +130,26 @@ cd php
 --disable-xmlreader \
 --disable-xmlwriter \
 --without-pear \
+--disable-cgi \
+--disable-session \
+--enable-ctype \
+--without-iconv \
 --enable-sockets \
+--enable-shared=no \
+--enable-static=yes \
 --enable-pcntl \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-cli >> $DIR/install.log 2>&1
+echo -n " compiling..."
 make >> $DIR/install.log 2>&1
+echo -n " installing..."
 make install >> $DIR/install.log 2>&1
 echo " done!"
 cd $DIR
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> $DIR/install.log 2>&1
-date >> $DIR/install.log
+date >> $DIR/install.log 2>&1
 echo " done!"
 echo "[PocketMine] You should start the server now using \"./start.sh\""
 echo "[PocketMine] If it doesn't works, please send the \"install.log\" file to the Bug Tracker"
