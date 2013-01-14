@@ -1,3 +1,7 @@
+![](http://shoghicp.github.com/PocketMine-MP/favicon.png)
+
+# PocketMine-MP
+
 ```
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -11,42 +15,17 @@ GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```	
 
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /	 
-
-```		 
-
-# PocketMine-MP
-
-PocketMine-MP is a Server for Minecraft Pocket Edition done in PHP. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
+__PocketMine-MP is a Server for Minecraft Pocket Edition done in PHP__. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
 
 The entire server is done in PHP, and has been tested, profiled and optimized to run smoothly.
 
-[Go to Wiki for more information](https://github.com/shoghicp/PocketMine-MP/wiki)
+### [Homepage](http://shoghicp.github.com/PocketMine-MP/)
 
-[FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
+### [Go to Wiki for more information](https://github.com/shoghicp/PocketMine-MP/wiki)
 
-
-## Current features of the server:
-
-* Full Creative mode!
-* Plugin API
-* Custom world generation
-* Update Channels!! (stable / dev)
+### [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
 
 ## Third-party Libraries Used
