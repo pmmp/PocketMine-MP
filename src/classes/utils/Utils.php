@@ -42,14 +42,13 @@ class Utils extends Thread{
 	}
 	
 	public static function getIP(){
-		$ip = trim(Utils::curl_get("http://automation.whatismyip.com/n09230945.asp"));
+		$ip = "";//trim(Utils::curl_get("http://automation.whatismyip.com/n09230945.asp"));
 		if($ip != ""){
 			return $ip;
 		}else{
-			$ip = trim(Utils::curl_get("http://checkip.dyndns.org/"));
-			$ip = preg_replace("/Current IP Address: (.*)/", '$1', $ip);
-			if($ip != ""){
-				return $ip;
+			$ip = trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
+			if(preg_match('/Current IP Address\: (.*)/', $ip, $matches) > 0){
+				return $matches[1];
 			}else{
 				return false;
 			}
