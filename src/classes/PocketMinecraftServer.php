@@ -537,12 +537,13 @@ class PocketMinecraftServer{
 			return false;
 		}
 		$add = "";
+		$chcnt = $this->scheduleCnt++;
 		if($repeat === false){
-			$add = ' unset($this->schedule['.$this->scheduleCnt.']);';
+			$add = ' unset($this->schedule['.$chcnt.']);';
 		}
-		$this->schedule[$this->scheduleCnt] = array($callback, $data, $eventName);
-		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$this->scheduleCnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$this->scheduleCnt.']);return false;} call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
-		return $this->scheduleCnt++;
+		$this->schedule[$chcnt] = array($callback, $data, $eventName);
+		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$chcnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$chcnt.']);return false;} call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
+		return $chcnt;
 	}
 
 	public function action($microseconds, $code, $repeat = true){
