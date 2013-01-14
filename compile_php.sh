@@ -134,7 +134,7 @@ echo " done!"
 cd $DIR
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> $DIR/install.log 2>&1
-rmdir install_data/ >> $DIR/install.log 2>&1
+date >> $DIR/install.log
 echo " done!"
 echo "[PocketMine] You should start the server now using \"./start.sh\""
 echo "[PocketMine] If it doesn't works, please send the \"install.log\" file to the Bug Tracker"
