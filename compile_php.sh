@@ -124,6 +124,7 @@ cd php
 --disable-xmlwriter \
 --without-pear \
 --enable-sockets \
+--enable-pcntl \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-cli >> $DIR/install.log 2>&1

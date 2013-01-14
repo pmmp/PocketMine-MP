@@ -331,6 +331,11 @@ class PocketMinecraftServer{
 		register_tick_function(array($this, "tick"));
 		register_shutdown_function(array($this, "dumpError"));
 		register_shutdown_function(array($this, "close"));
+		if(function_exists("pcntl_signal")){
+			pcntl_signal(SIGTERM, array($this, "close"));
+			pcntl_signal(SIGINT, array($this, "close"));
+			pcntl_signal(SIGHUP, array($this, "close"));
+		}
 		$this->trigger("server.start", microtime(true));
 		console("[INFO] Server started!");
 		$this->process();
