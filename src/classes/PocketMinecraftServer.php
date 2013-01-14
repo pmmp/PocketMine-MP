@@ -191,10 +191,11 @@ class PocketMinecraftServer{
 			return false;
 		}
 		$priority = (int) $priority;
-		$this->handlers[$this->handCnt] = $callable;
-		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (".$this->handCnt.", '".str_replace("'", "\\'", $event)."', ".$priority.");");
-		console("[INTERNAL] New handler ".(is_array($callable) ? get_class($callable[0])."::".$callable[1]:$callable)." to special event ".$event." (ID ".$this->handCnt.")", true, true, 3);
-		return $this->handCnt++;
+		$hnid = $this->handCnt++;
+		$this->handlers[$hnid] = $callable;
+		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (".$hnid.", '".str_replace("'", "\\'", $event)."', ".$priority.");");
+		console("[INTERNAL] New handler ".(is_array($callable) ? get_class($callable[0])."::".$callable[1]:$callable)." to special event ".$event." (ID ".$hnid.")", true, true, 3);
+		return $hnid;
 	}
 
 	public function handle($event, &$data){
