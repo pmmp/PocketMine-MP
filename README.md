@@ -27,6 +27,10 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
+### [@PocketMine](https://twitter.com/PocketMine)
+
+### [Mailing List](https://groups.google.com/forum/#!forum/pocketmine-development) pocketmine-development@googlegroups.com
+
 
 ## Third-party Libraries Used
 * __[PHP cURL](http://php.net/manual/en/book.curl.php)__
