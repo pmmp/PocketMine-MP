@@ -39,7 +39,7 @@ class BlockAPI{
 	}
 
 	public function init(){
-		$this->server->addHandler("world.block.update", array($this, "updateBlockRemote"), 1);
+		$this->server->addHandler("block.update", array($this, "updateBlockRemote"), 1);
 		$this->server->addHandler("player.block.break", array($this, "blockBreak"), 1);
 		$this->server->addHandler("player.block.action", array($this, "blockAction"), 1);
 		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
@@ -80,7 +80,7 @@ class BlockAPI{
 	}
 
 	private function cancelAction($block){
-		$this->server->api->dhandle("world.block.change", array(
+		$this->server->api->dhandle("block.change", array(
 			"x" => $block[2][0],
 			"y" => $block[2][1],
 			"z" => $block[2][2],
