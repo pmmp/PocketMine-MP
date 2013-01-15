@@ -95,7 +95,7 @@ class MinecraftInterface{
 		}
 
 		$packet = new Packet($pid, $struct, $data[0]);
-		$packet->parse();
+		@$packet->parse();
 		$this->data[] = array($pid, $packet->data, $data[0], $data[1], $data[2]);
 		return $this->popPacket();
 	}
@@ -121,7 +121,7 @@ class MinecraftInterface{
 		if($raw === false){
 			$packet = new Packet($pid, $struct);
 			$packet->data = $data;
-			$packet->create();
+			@$packet->create();
 			$write = $this->socket->write($packet->raw, $dest, $port);
 			$this->writeDump($pid, $packet->raw, $data, "client", $dest, $port);
 		}else{

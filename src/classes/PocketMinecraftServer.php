@@ -165,7 +165,7 @@ class PocketMinecraftServer{
 				$reason = "signal stop";
 			}
 			$this->api->chat->send(false, "Stopping server...");
-			$this->ticker->stop = true;
+			//$this->ticker->stop = true;
 			$this->save(true);
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
@@ -328,8 +328,8 @@ class PocketMinecraftServer{
 		}
 		console("[INFO] Loading events...");
 		$this->loadEvents();
-		$this->ticker = new TickLoop($this);
-		$this->ticker->start();
+		//$this->ticker = new TickLoop($this);
+		//$this->ticker->start();
 		declare(ticks=15);
 		register_tick_function(array($this, "tick"));
 		register_shutdown_function(array($this, "dumpError"));
@@ -358,6 +358,8 @@ class PocketMinecraftServer{
 		global $arguments;
 		$dump .= "Parameters: ".var_export($arguments, true)."\r\n\r\n\r\n";
 		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
+		global $lasttrace;
+		$dump .= "Last Backtrace: ".$lasttrace."\r\n\r\n\r\n";
 		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n";
 		$name = "error_dump_".time();
 		logg($dump, $name, true, 0, true);
@@ -504,7 +506,7 @@ class PocketMinecraftServer{
 
 	public function process(){
 		while($this->stop === false){
-			$packet = @$this->interface->readPacket();
+			$packet = $this->interface->readPacket();
 			if($packet !== false){
 				$this->packetHandler($packet);
 			}else{

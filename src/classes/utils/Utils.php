@@ -247,7 +247,6 @@ class Utils extends Thread{
 				(string) mt_rand(),
 				(string) rand(),
 				function_exists("zend_thread_id") ? ((string) zend_thread_id()):microtime(),
-				var_export(@get_browser(), true),
 				function_exists("sys_getloadavg") ? implode(";", sys_getloadavg()):microtime(),
 				serialize(get_loaded_extensions()),
 				sys_get_temp_dir(),

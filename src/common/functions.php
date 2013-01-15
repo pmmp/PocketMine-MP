@@ -202,8 +202,15 @@ function console($message, $EOL = true, $log = true, $level = 1){
 	}
 }
 
-function error_handler($errno, $errstr, $errfile, $errline){
+function fatal_handler($errno, $errstr, $errfile, $errline){
+	global $lasttrace;
 	console("[ERROR] A level ".$errno." error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
+	ob_start(); 
+	debug_print_backtrace(); 
+	$lasttrace = ob_get_contents(); 
+	ob_end_clean();
+	console("[ERROR] [Backtrace] $lasttrace", true, true, 0);
+	return false;
 }
 
 function logg($message, $name, $EOL = true, $level = 2, $close = false){

@@ -235,8 +235,13 @@ class ServerAPI{
 
 
 	private function loadProperties(){
-		if($this->getProperty("memory-limit") !== false){
-			@ini_set("memory_limit", $this->getProperty("memory-limit"));
+		if(($memory = $this->getProperty("memory-limit")) !== false){
+			$value = array("M" => 1, "G" => 1024);
+			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
+			if($real < 128){
+				console("[ERROR] PocketMine doesn't work right with less than 128MB of RAM", true, true, 0);
+			}
+			@ini_set("memory_limit", $memory);
 		}else{
 			$this->setProperty("memory-limit", "256M");
 		}
