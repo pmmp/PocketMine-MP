@@ -407,7 +407,7 @@ class BlockAPI{
 			return $this->cancelAction($block); //No Entity WTF?
 		}
 		
-		if(!isset(Material::$transparent[$block[0]) and $entity->inBlock($block[2][0], $block[2][1], $block[2][2])){
+		if(!isset(Material::$transparent[$block[0]]) and $entity->inBlock($block[2][0], $block[2][1], $block[2][2])){
 			return $this->cancelAction($block); //Entity in block
 		}
 
