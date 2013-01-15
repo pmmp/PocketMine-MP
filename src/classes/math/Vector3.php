@@ -116,6 +116,25 @@ class Vector3{
 	public function abs(){
 		return new Vector3(abs($this->x), abs($this->y), abs($this->z));
 	}
+	
+	public function getSide($side){
+		switch((int) $side){
+			case 0:
+				return new Vector3($this->x, $this->y - 1, $this->z);
+			case 1:
+				return new Vector3($this->x, $this->y + 1, $this->z);
+			case 2:
+				return new Vector3($this->x, $this->y, $this->z - 1);
+			case 3:
+				return new Vector3($this->x, $this->y, $this->z + 1);
+			case 4:
+				return new Vector3($this->x - 1, $this->y, $this->z);
+			case 5:
+				return new Vector3($this->x + 1, $this->y, $this->z);	
+			default:
+				return $this;
+		}
+	}
 
 	public function distance($x = 0, $y = 0, $z = 0){
 		if(($x instanceof Vector3) === true){
