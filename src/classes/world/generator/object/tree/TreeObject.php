@@ -36,7 +36,7 @@ class TreeObject{
 	public static function growTree(LevelAPI $level, $block, $type){
 		switch($type){
 			case Sapling::SPRUCE:
-				if(mt_rand(0,1) == 2){
+				if(mt_rand(0,1) == 1){
 					$tree = new SpruceTreeObject();
 				}else{
 					$tree = new PineTreeObject();
