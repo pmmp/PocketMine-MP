@@ -46,11 +46,21 @@ class Utils extends Thread{
 		if($ip != ""){
 			return $ip;
 		}else{
-			$ip = trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
-			if(preg_match('/Current IP Address\: (.*)/', $ip, $matches) > 0){
+			trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
+			if(preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 				return $matches[1];
 			}else{
-				return false;
+				$ip = Utils::curl_get("http://www.checkip.org/");
+				if(preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
+					return $matches[1];
+				}else{
+					$ip = Utils::curl_get("http://checkmyip.org/");
+					if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
+						return $matches[1];
+					}else{
+						return false;
+					}
+				}
 			}
 		}
 	}
