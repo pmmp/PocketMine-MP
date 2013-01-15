@@ -134,6 +134,7 @@ cd php
 --disable-session \
 --enable-ctype \
 --without-iconv \
+--without-pdo-sqlite \
 --enable-sockets \
 --enable-shared=no \
 --enable-static=yes \

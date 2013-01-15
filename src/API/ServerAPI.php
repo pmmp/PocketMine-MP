@@ -443,7 +443,7 @@ class ServerAPI{
 		require_once($file);
 		$this->$name = new $class($this->server);
 		$this->apiList[] = $this->$name;
-		console("[INFO] API \x1b[36m".$name."\x1b[0m [\x1b[30m".$class."\x1b[0m] loaded");
+		console("[INFO] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded");
 	}
 
 }
