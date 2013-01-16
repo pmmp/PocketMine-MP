@@ -44,4 +44,4 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 
 ## IRC #mcpedevs @ irc.freenode.net
-<iframe src="http://webchat.freenode.net?channels=mcpedevs&uio=d4" width="647" height="400"></iframe>
+* [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4)
