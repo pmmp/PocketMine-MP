@@ -6,6 +6,7 @@ logs/*
 server.properties
 white-list.txt
 banned-ips.txt
+banned.txt
 
 #################
 ## Eclipse

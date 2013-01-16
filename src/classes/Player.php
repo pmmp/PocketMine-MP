@@ -285,9 +285,11 @@ class Player{
 								break;
 							}
 							$o = $this->server->api->player->getOffline($this->username);
-							if($this->server->whitelist !== false and $this->server->whitelist->exists($this->username)){
+							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->username)){
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" not being on white-list", false);
 								break;
+							}elseif($this->server->api->ban->isBanned($this->username) or $this->server->api->ban->isIPBanned($this->ip)){
+								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" is banned!", false);
 							}
 							$u = $this->server->api->player->get($this->username);
 							$c = $this->server->api->player->getByClientID($this->clientID);

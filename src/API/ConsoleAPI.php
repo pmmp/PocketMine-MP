@@ -92,36 +92,6 @@ class ConsoleAPI{
 					$this->server->api->restart = true;
 					$this->server->close();
 					break;*/
-				case "banip":
-					$p = strtolower(array_shift($params));
-					switch($p){
-						case "pardon":
-						case "remove":
-							$ip = trim(implode($params));
-							$this->server->bannedIPs->remove($packet["ip"]);
-							$this->server->bannedIPs->save();
-							console("[INFO] IP \"$ip\" removed from ban list");
-							$this->server->reloadConfig();
-							break;
-						case "add":
-						case "ban":
-							$ip = trim(implode($params));
-							$this->server->bannedIPs->set($packet["ip"]);
-							$this->server->bannedIPs->save();
-							console("[INFO] IP \"$ip\" added to ban list");
-							$this->server->reloadConfig();
-							break;
-						case "reload":
-							$this->server->reloadConfig();
-							break;
-						case "list":
-							console("[INFO] IP ban list: ".implode(", ", $this->server->bannedIPs->getAll(true)));
-							break;
-						default:
-							console("[INFO] Usage: /banip <add | remove | list | reload> [IP]");
-							break;
-					}
-					break;
 				case "gamemode":
 					$s = trim(array_shift($params));
 					if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
@@ -149,50 +119,6 @@ class ConsoleAPI{
 					}
 					$this->server->api->chat->broadcast($s);
 					break;
-				case "whitelist":
-					$p = strtolower(array_shift($params));
-					switch($p){
-						case "remove":
-							$user = trim(implode(" ", $params));
-							$this->server->whitelist->remove($user);
-							$this->server->whitelist->save();
-							console("[INFO] Player \"$user\" removed from white-list");
-							$this->server->reloadConfig();
-							break;
-						case "add":
-							$user = trim(implode(" ", $params));
-							$this->server->whitelist->set($user);
-							$this->server->whitelist->save();
-							console("[INFO] Player \"$user\" added to white-list");
-							$this->server->reloadConfig();
-							break;
-						case "reload":
-							$this->server->reloadConfig();
-							break;
-						case "list":
-							if(($this->server->whitelist instanceof Config) === false){
-								console("[INFO] No White-list");
-							}else{
-								console("[INFO] White-list: ".implode(", ", $this->server->whitelist->getAll(true)));
-							}
-							break;
-						case "on":
-						case "true":
-						case "1":
-							console("[INFO] White-list turned on");
-							$this->server->api->setProperty("white-list", true);
-							break;
-						case "off":
-						case "false":
-						case "0":
-							console("[INFO] White-list turned off");
-							$this->server->api->setProperty("white-list", false);
-							break;
-						default:
-							console("[INFO] Usage: /whitelist <on | off | add | remove | reload | list> [username]");
-							break;
-					}
-					break;
 				case "save-all":
 					$this->server->save();
 					break;
@@ -211,8 +137,6 @@ class ConsoleAPI{
 					console("[INFO] /invisible: Manages server visibility");
 					console("[INFO] /say: Broadcasts mesages");
 					console("[INFO] /save-all: Saves pending changes");
-					console("[INFO] /whitelist: Manages whitelisting");
-					console("[INFO] /banip: Manages IP ban");
 					console("[INFO] /stop: Stops the server");
 					//console("[INFO] /restart: Restarts the server");
 					foreach($this->help as $c => $h){
