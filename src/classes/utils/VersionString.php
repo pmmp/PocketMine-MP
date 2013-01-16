@@ -25,7 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
 class VersionString{
 	public static $stageOrder = array(
 		"alpha" => 0,
@@ -35,7 +34,11 @@ class VersionString{
 		"final" => 2,
 		"f" => 2,
 	);
-	private $stage, $major, $release, $minor;
+	private $stage;
+	private $major;
+	private $release;
+	private $minor;
+	private $development = false;
 	public function __construct($version = MAJOR_VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
@@ -43,11 +46,12 @@ class VersionString{
 			$this->generation = ($version >> 9) & 0x0F;
 			$this->stage = array_search(($version >> 13) & 0x0F, VersionString::$stageOrder, true);
 		}else{
-			$version = preg_split("/([A-Za-z]*)[ _\-]([0-9]*)\.([0-9]*)\.{0,1}([0-9]*)/", $version, -1, PREG_SPLIT_DELIM_CAPTURE);
+			$version = preg_split("/([A-Za-z]*)[ _\-]([0-9]*)\.([0-9]*)\.{0,1}([0-9]*)(dev|)/", $version, -1, PREG_SPLIT_DELIM_CAPTURE);
 			$this->stage = strtolower($version[1]); //0-15
 			$this->generation = (int) $version[2]; //0-15
 			$this->major = (int) $version[3]; //0-15
 			$this->minor = (int) $version[4]; //0-31
+			$this->development = $version[5] === "dev" ? true:false;
 		}
 	}
 
@@ -74,9 +78,17 @@ class VersionString{
 	public function getRelease(){
 		return $this->generation . "." . $this->major . "." . $this->minor;
 	}
+	
+	public function isDev(){
+		return $this->development === true;
+	}
+	
+	public function get(){
+		return ucfirst($this->stage) . "_" . $this->getRelease() . ($this->development === true ? "dev":"");
+	}
 
 	public function __toString(){
-		return ucfirst($this->stage) . "_" . $this->generation . "." . $this->major . "." . $this->minor;
+		return $this->get();
 	}
 
 	public function compare($target, $diff = false){

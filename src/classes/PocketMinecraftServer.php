@@ -32,7 +32,10 @@ class PocketMinecraftServer{
 	private function load(){
 		$this->version = new VersionString();
 		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
-		console("[DEBUG] Target Minecraft PE: ".CURRENT_MINECRAFT_VERSION.", protocol #".CURRENT_PROTOCOL, true, true, 2);
+		console("[INFO] Target Minecraft PE: \x1b[36;1m".CURRENT_MINECRAFT_VERSION."\x1b[0m, protocol #".CURRENT_PROTOCOL, true, true, 0);
+		if($this->version->isDev()){
+			console("[INFO] \x1b[31;1mThis is a Development version");
+		}
 		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
