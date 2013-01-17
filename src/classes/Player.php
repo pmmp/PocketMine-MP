@@ -338,7 +338,7 @@ class Player{
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
-									$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));  
 									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
