@@ -52,7 +52,7 @@ class BanAPI{
 					console("[INFO] Usage: /kick <playername> [reason]");
 				}else{
 					$name = array_shift($params);
-					$player = $this->api->player->get($name);
+					$player = $this->server->api->player->get($name);
 					if($player === false){
 						console("[ERROR] Player \"".$name."\" does not exist");
 					}else{
