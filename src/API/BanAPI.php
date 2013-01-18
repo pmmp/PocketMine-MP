@@ -148,6 +148,22 @@ class BanAPI{
 		}
 	}
 	
+	public function ban($username){
+		$this->commandHandler("ban", array("add", $username));
+	}
+	
+	public function pardon($username){
+		$this->commandHandler("ban", array("pardon", $username));
+	}
+	
+	public function banIP($username){
+		$this->commandHandler("banip", array("add", $username));
+	}
+	
+	public function pardonIP($username){
+		$this->commandHandler("banip", array("pardon", $username));
+	}
+	
 	public function isIPBanned($ip){
 		if($this->server->api->dhandle("api.ban.ip.check", $ip) === false){
 			return true;
