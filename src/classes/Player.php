@@ -181,14 +181,16 @@ class Player{
 	public function eventHandler($data, $event){
 		switch($event){
 			case "player.block.place":
-				if($data["eid"] === $this->eid){
+				if($data["eid"] === $this->eid and $this->server->gamemode === 0){
 					$this->removeItem($data["original"][0], $data["original"][1], 1);
 				}
 				break;
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
+					if($this->server->gamemode === 0){
+						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
+					}
 				}
 				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				break;
