@@ -41,11 +41,28 @@ class BanAPI{
 		$this->banned = new Config(FILE_PATH."banned.txt", CONFIG_LIST);
 		$this->server->api->console->register("banip", "Manages IP Banning", array($this, "commandHandler"));
 		$this->server->api->console->register("ban", "Manages Bannning", array($this, "commandHandler"));
+		$this->server->api->console->register("kick", "Kicks a player", array($this, "commandHandler"));
 		$this->server->api->console->register("whitelist", "Manages White-listing", array($this, "commandHandler"));
 	}
 	
 	public function commandHandler($cmd, $params){
 		switch($cmd){
+			case "kick":
+				if(!isset($params[0])){
+					console("[INFO] Usage: /kick <playername> [reason]");
+				}else{
+					$name = array_shift($params);
+					$player = $this->server->api->player->get($name);
+					if($player === false){
+						console("[ERROR] Player \"".$name."\" does not exist");
+					}else{
+						$reason = implode(" ", $params);
+						$reason = $reason == "" ? "No reason":$reason;
+						$player->close("You have been kicked: ".$reason);
+						console("[INFO] Player \"".$player->username."\" has been kicked: $reason");
+					}
+				}
+				break;
 			case "whitelist":
 				$p = strtolower(array_shift($params));
 				switch($p){

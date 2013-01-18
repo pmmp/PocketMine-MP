@@ -87,11 +87,6 @@ class ConsoleAPI{
 					console("[INFO] Stopping the server...");
 					$this->server->close();
 					break;
-				/*case "restart":
-					console("[INFO] Restarting the server...");
-					$this->server->api->restart = true;
-					$this->server->close();
-					break;*/
 				case "gamemode":
 					$s = trim(array_shift($params));
 					if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
@@ -122,12 +117,6 @@ class ConsoleAPI{
 				case "save-all":
 					$this->server->save();
 					break;
-				case "block":
-					foreach($this->server->clients as $client){
-						$b = $this->server->map->getBlock(round($client->entity->position["x"] - 0.5), round($client->entity->position["y"] - 1), round($client->entity->position["z"] - 0.5));
-						console("[INFO] EID ".$client->eid." is over block ".$b[0].":".$b[1]);
-					}
-					break;
 				case "help":
 				case "?":
 					console("[INFO] /help: Show available commands");
@@ -150,7 +139,11 @@ class ConsoleAPI{
 	}
 
 	public function alias($alias, $cmd){
+		if(!isset($this->cmds[$cmd])){
+			return false;
+		}
 		$this->cmds[strtolower(trim($alias))] = &$this->cmds[$cmd];
+		return true;
 	}
 
 	public function register($cmd, $help, $callback){
@@ -161,21 +154,25 @@ class ConsoleAPI{
 		$this->cmds[$cmd] = $callback;
 		$this->help[$cmd] = $help;
 	}
+	
+	public function run($line = ""){
+		if($line != ""){
+			$params = explode(" ", $line);
+			$cmd = strtolower(array_shift($params));
+			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+			if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
+				call_user_func($this->cmds[$cmd], $cmd, $params);
+			}elseif($this->server->api->dhandle("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
+				$this->defaultCommands($cmd, $params);
+			}
+		}
+	}
 
 	public function handle($time){
 		if($this->loop->line !== false){
 			$line = trim($this->loop->line);
 			$this->loop->line = false;
-			if($line !== ""){
-				$params = explode(" ", $line);
-				$cmd = strtolower(array_shift($params));
-				console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
-				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
-					call_user_func($this->cmds[$cmd], $cmd, $params);
-				}elseif($this->server->api->dhandle("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
-					$this->defaultCommands($cmd, $params);
-				}
-			}
+			$this->run($line);
 		}else{
 			$this->loop->notify();
 		}
