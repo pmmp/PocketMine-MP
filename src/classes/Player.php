@@ -45,6 +45,7 @@ class Player{
 	var $CID;
 	var $MTU;
 	var $spawned = false;
+	var $inventory = array();
 	var $equipment = array(1, 0);
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
@@ -125,6 +126,7 @@ class Player{
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
+					$this->inventory[] = array($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 				}
 				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				break;
