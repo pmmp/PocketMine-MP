@@ -156,12 +156,12 @@ class BanAPI{
 		$this->commandHandler("ban", array("pardon", $username));
 	}
 	
-	public function banIP($username){
-		$this->commandHandler("banip", array("add", $username));
+	public function banIP($ip){
+		$this->commandHandler("banip", array("add", $ip));
 	}
 	
-	public function pardonIP($username){
-		$this->commandHandler("banip", array("pardon", $username));
+	public function pardonIP($ip){
+		$this->commandHandler("banip", array("pardon", $ip));
 	}
 	
 	public function isIPBanned($ip){
