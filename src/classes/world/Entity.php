@@ -79,12 +79,13 @@ class Entity extends stdClass{
 	}
 
 	public function update(){
+		$this->server->api->dhandle("entity.move", $this);
 		if($this->class === ENTITY_ITEM and $this->closed === false){
-			$this->server->api->dhandle("entity.move", $this);
 			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 			if($player !== true and $player !== false){
 				if($this->server->api->dhandle("player.pickup", array(
 					"eid" => $player["EID"],
+					"entity" => $this,
 					"block" => $this->type,
 					"meta" => $this->meta,
 					"target" => $this->eid
