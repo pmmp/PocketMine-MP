@@ -45,7 +45,7 @@ class Player{
 	var $CID;
 	var $MTU;
 	var $spawned = false;
-	var $inventory = array();
+	var $inventory;
 	var $equipment = array(1, 0);
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
@@ -55,6 +55,7 @@ class Player{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->timeout = microtime(true) + 25;
+		$this->inventory = array_fill(0, 36, array(0, 0, 0));
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
@@ -121,12 +122,73 @@ class Player{
 		}
 	}
 
+	public function addItem($type, $damage, $count){
+		while($count > 0){
+			$add = 0;
+			foreach($this->inventory as $s => $data){
+				if($data[0] === 0){
+					$add = min(64, $count);
+					$this->inventory[$s] = array($type, $damage, $add);
+					break;
+				}elseif($data[0] === $type and $data[1] === $damage){
+					$add = min(64 - $data[2], $count);
+					if($add <= 0){
+						continue;
+					}
+					$this->inventory[$s] = array($type, $damage, $data[2] + $add);
+					break;
+				}
+			}
+			if($add === 0){
+				return false;
+			}
+			$count -= $add;
+		}
+		return true;
+	}
+
+	public function removeItem($type, $damage, $count){
+		while($count > 0){
+			$remove = 0;
+			foreach($this->inventory as $s => $data){
+				if($data[0] === $type and $data[1] === $damage){
+					$remove = min($count, $data[2]);
+					if($remove < $data[2]){
+						$this->inventory[$s][2] -= $remove;
+					}else{
+						$this->inventory[$s] = array(0, 0, 0);
+					}
+					break;
+				}
+			}
+			if($remove === 0){
+				return false;
+			}
+			$count -= $remove;
+		}
+		return true;
+	}
+	
+	public function hasItem($type, $damage = false){
+		foreach($this->inventory as $s => $data){
+			if($data[0] === $type and ($data[1] === $damage or $damage === false) and $data[2] > 0){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public function eventHandler($data, $event){
 		switch($event){
+			case "player.block.place":
+				if($data["eid"] === $this->eid){
+					$this->removeItem($data["original"][0], $data["original"][1], 1);
+				}
+				break;
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					$this->inventory[] = array($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
+					$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 				}
 				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				break;
@@ -307,6 +369,11 @@ class Player{
 							}
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
+							if(!isset($this->data["inventory"])){
+								$this->data["inventory"] = $this->inventory;
+							}
+							$this->inventory = &$this->data["inventory"];
+							
 							$this->data["lastIP"] = $this->ip;
 							$this->data["lastID"] = $this->clientID;
 							$this->server->api->player->saveOffline($this->username, $this->data);
@@ -348,10 +415,25 @@ class Player{
 									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
 									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
+									}
+									foreach($this->inventory as $s => $data){
+										if($data[0] <= 0 or $data[2] <= 0){
+											$this->inventory[$s] = array(0, 0, 0);
+											continue;
+										}
+										$e = $this->server->api->entity->add(ENTITY_ITEM, $data[0], array(
+											"x" => $this->entity->x + 0.5,
+											"y" => $this->entity->y + 0.19,
+											"z" => $this->entity->z + 0.5,
+											"meta" => $data[1],
+											"stack" => $data[2],
+										));
+										$this->server->api->entity->spawnTo($e->eid, $this);
 									}
 									break;
 								case 2://Chunk loaded?
@@ -390,6 +472,9 @@ class Player{
 							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 10){
 								break;
+							}elseif($this->server->gamemode === 0 and !$this->hasItem($data["block"], $data["meta"])){
+								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
+								//break;
 							}
 							$this->server->handle("player.block.action", $data);
 							break;

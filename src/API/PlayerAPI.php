@@ -220,6 +220,7 @@ class PlayerAPI{
 					"y" => $this->server->spawn["y"],
 					"z" => $this->server->spawn["z"],
 				),
+				"inventory" => array_fill(0, 36, array(0, 0, 0)),
 				"health" => 20,
 				"lastIP" => "",
 				"lastID" => 0,

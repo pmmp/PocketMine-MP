@@ -250,6 +250,7 @@ class BlockAPI{
 		if($data["face"] < 0 or $data["face"] > 5){
 			return false;
 		}
+		$data["original"] = array($data["block"], $data["meta"]);
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
 		if($target[0] === 0){ //If no block exists
 			$this->cancelAction($target);
@@ -296,7 +297,7 @@ class BlockAPI{
 					if($data["block"] === 292){ //Hoe
 						$data["block"] = 60;
 						$data["meta"] = 0;
-						$this->server->handle("player.block.place", $data);
+						$this->server->handle("player.block.update", $data);
 						$cancelPlace = true;
 					}
 				case 59:
