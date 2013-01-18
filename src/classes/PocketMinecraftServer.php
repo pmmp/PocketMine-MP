@@ -243,6 +243,10 @@ class PocketMinecraftServer{
 	public function loadMap(){
 		if($this->mapName !== false and trim($this->mapName) !== ""){
 			$this->levelData = unserialize(file_get_contents($this->mapDir."level.dat"));
+			if($this->levelData === false){
+				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
+				$this->close("invalid world data");
+			}
 			console("[INFO] Map: ".$this->levelData["LevelName"]);
 			$this->time = (int) $this->levelData["Time"];
 			$this->seed = (int) $this->levelData["RandomSeed"];
@@ -279,6 +283,10 @@ class PocketMinecraftServer{
 		if($this->map !== false){
 			console("[INFO] Loading entities...");
 			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
+			if($entities === false){
+				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
+				$this->close("invalid world data");
+			}
 			foreach($entities as $entity){
 				if(!isset($entity["id"])){
 					break;
