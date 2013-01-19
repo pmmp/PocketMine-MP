@@ -85,6 +85,9 @@ class LevelAPI{
 	}
 
 	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true){
+		if($x < 0 or $y < 0 or $z < 0){
+			return false;
+		}
 		$this->map->setBlock($x, $y, $z, $block, $meta);
 		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 		if($this->server->api->dhandle("block.change", array(
@@ -99,6 +102,7 @@ class LevelAPI{
 				$this->server->api->block->updateBlocksAround($x, $y, $z, BLOCK_UPDATE_NORMAL);
 			}
 		}
+		return true;
 	}
 
 	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){
