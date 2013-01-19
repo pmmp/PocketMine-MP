@@ -181,6 +181,12 @@ class BanAPI{
 		$this->commandHandler("banip", array("pardon", $ip));
 	}
 	
+	public function reload(){
+		$this->commandHandler("ban", array("reload"));
+		$this->commandHandler("banip", array("reload"));
+		$this->commandHandler("whitelist", array("reload"));
+	}
+	
 	public function isIPBanned($ip){
 		if($this->server->api->dhandle("api.ban.ip.check", $ip) === false){
 			return true;
