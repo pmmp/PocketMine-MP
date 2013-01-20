@@ -49,7 +49,7 @@ class Entity extends stdClass{
 		$this->closed = false;
 		$this->name = "";
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
-		$this->server->schedule(2, array($this, "update"), array(), true);
+		$this->server->schedule(4, array($this, "update"), array(), true);
 		$this->metadata = array();
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
@@ -82,7 +82,7 @@ class Entity extends stdClass{
 	public function update(){
 		$this->calculateVelocity();
 		$this->server->api->dhandle("entity.move", $this);
-		if($this->class === ENTITY_ITEM and $this->closed === false){
+		if($this->class === ENTITY_ITEM and $this->closed === false and $this->server->gamemode === 0){
 			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 			if($player !== true and $player !== false){
 				if($this->server->api->dhandle("player.pickup", array(

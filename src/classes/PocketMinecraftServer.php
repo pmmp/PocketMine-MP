@@ -283,7 +283,7 @@ class PocketMinecraftServer{
 		if($this->map !== false){
 			console("[INFO] Loading entities...");
 			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
-			if($entities === false){
+			if($entities === false or !is_array($entities)){
 				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
 				$this->close("invalid world data");
 			}
@@ -564,7 +564,7 @@ class PocketMinecraftServer{
 		return $chcnt;
 	}
 
-	public function action($microseconds, $code, $repeat = true){
+	public function action($microseconds, $code, $repeat = true){ 
 		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".base64_encode($code)."', ".($repeat === true ? 1:0).");");
 		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
 	}
@@ -579,7 +579,7 @@ class PocketMinecraftServer{
 		if($actions === false or $actions === true){
 			return;
 		}
-		while(false !== ($action = $actions->fetchArray(SQLITE3_ASSOC))){
+		while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
 			$return = eval(base64_decode($action["code"]));
 			if($action["repeat"] === 0 or $return === false){
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");

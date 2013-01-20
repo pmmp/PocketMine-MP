@@ -55,7 +55,7 @@ class EntityAPI{
 		if($e === false or $e->dead === true){
 			return false;
 		}
-		$e->setHealth($e->getHealth()-$attack, $cause);
+		$e->setHealth($e->getHealth() - $attack, $cause);
 	}
 
 	public function add($class, $type = 0, $data = array()){

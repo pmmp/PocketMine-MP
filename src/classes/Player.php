@@ -47,6 +47,7 @@ class Player{
 	var $spawned = false;
 	var $inventory;
 	var $equipment = array(1, 0);
+	var $loggedIn = false;
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
 		$this->server = $server;
@@ -345,6 +346,10 @@ class Player{
 
 							break;
 						case MC_LOGIN:
+							if($this->loggedIn === true){
+								break;
+							}
+							$this->loggedIn = true;
 							$this->username = str_replace(array("\x00", "/", " ", "\r", "\n"), array("", "-", "_", "", ""), $data["username"]);
 							if($this->username == ""){
 								$this->close("bad username", false);
@@ -371,7 +376,7 @@ class Player{
 							}
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
-							if(!isset($this->data["inventory"])){
+							if(!isset($this->data["inventory"]) or $this->server->gamemode === 1){
 								$this->data["inventory"] = $this->inventory;
 							}
 							$this->inventory = &$this->data["inventory"];
