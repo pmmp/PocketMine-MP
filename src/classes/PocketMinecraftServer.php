@@ -191,6 +191,12 @@ class PocketMinecraftServer{
 	public function addHandler($event, $callable, $priority = 5){
 		if(!is_callable($callable)){
 			return false;
+		}elseif(isset(Deprecation::$events[$event])){
+			$sub = "";
+			if(Deprecation::$events[$event] !== false){
+				$sub = " Substitute \"".Deprecation::$events[$event]."\" found.";
+			}
+			console("[ERROR] Event \"$event\" has been deprecated.$sub [Adding handle to ".(is_array($callable) ? get_class($callable[0])."::".$callable[1]:$callable)."]");
 		}
 		$priority = (int) $priority;
 		$hnid = $this->handCnt++;
@@ -227,7 +233,14 @@ class PocketMinecraftServer{
 					break;
 				}
 			}
+		}elseif(isset(Deprecation::$events[$event])){
+			$sub = "";
+			if(Deprecation::$events[$event] !== false){
+				$sub = " Substitute \"".Deprecation::$events[$event]."\" found.";
+			}
+			console("[ERROR] Event \"$event\" has been deprecated.$sub [Handler]");
 		}
+		
 		if($result !== false){
 			$this->trigger($event, $data);
 		}
@@ -533,18 +546,26 @@ class PocketMinecraftServer{
 			$call[(int) $evn["ID"]] = true;
 		}
 		$events->finalize();
-		foreach($call as $evid => $boolean){
-			$ev = $this->events[$evid];
-			if(!is_callable($ev)){
-				$this->deleteEvent($evid);
-				continue;
+		if(count($call) > 0){
+			foreach($call as $evid => $boolean){
+				$ev = $this->events[$evid];
+				if(!is_callable($ev)){
+					$this->deleteEvent($evid);
+					continue;
+				}
+				if(is_array($ev)){
+					$method = $ev[1];
+					$ev[0]->$method($data, $event);
+				}else{
+					$ev($data, $event);
+				}
 			}
-			if(is_array($ev)){
-				$method = $ev[1];
-				$ev[0]->$method($data, $event);
-			}else{
-				$ev($data, $event);
+		}elseif(isset(Deprecation::$events[$event])){
+			$sub = "";
+			if(Deprecation::$events[$event] !== false){
+				$sub = " Substitute \"".Deprecation::$events[$event]."\" found.";
 			}
+			console("[ERROR] Event \"$event\" has been deprecated.$sub [Trigger]");
 		}
 		
 		return true;
@@ -595,6 +616,12 @@ class PocketMinecraftServer{
 	public function event($event, $func){
 		if(!is_callable($func)){
 			return false;
+		}elseif(isset(Deprecation::$events[$event])){
+			$sub = "";
+			if(Deprecation::$events[$event] !== false){
+				$sub = " Substitute \"".Deprecation::$events[$event]."\" found.";
+			}
+			console("[ERROR] Event \"$event\" has been deprecated.$sub [Attach to ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)."]");
 		}
 		$evid = $this->evCnt++;
 		$this->events[$evid] = $func;
