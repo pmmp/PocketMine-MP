@@ -17,11 +17,11 @@ cd install_data
 
 #PHP 5
 echo -n "[PHP5] downloading..."
-wget http://php.net/get/php-5.4.10.tar.gz/from/this/mirror -O php-5.4.10.tar.gz >> $DIR/install.log 2>&1
+wget http://php.net/get/php-5.4.11.tar.gz/from/this/mirror -O php-5.4.11.tar.gz >> $DIR/install.log 2>&1
 echo -n " extracting..."
-tar -zxvf php-5.4.10.tar.gz >> $DIR/install.log 2>&1
-rm -f php-5.4.10.tar.gz >> $DIR/install.log 2>&1
-mv php-5.4.10 php
+tar -zxvf php-5.4.11.tar.gz >> $DIR/install.log 2>&1
+rm -f php-5.4.11.tar.gz >> $DIR/install.log 2>&1
+mv php-5.4.11 php
 echo " done!"
 
 #zlib
