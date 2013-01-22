@@ -26,6 +26,9 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 function UPnP_PortForward($port){
+	if(Utils::$online === false){
+		return false;
+	}
 	if(Utils::getOS() != "win" or !class_exists("COM")){
 		return false;
 	}
@@ -44,6 +47,9 @@ function UPnP_PortForward($port){
 }
 
 function UPnP_RemovePortForward($port){
+	if(Utils::$online === false){
+		return false;
+	}
 	if(Utils::getOS() != "win" or !class_exists("COM")){
 		return false;
 	}

@@ -36,12 +36,19 @@ define("LITTLE_ENDIAN", 0x01);
 define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE_ENDIAN));
 
 class Utils extends Thread{
-
+	public static $online = true;
 	public function run(){
 	
 	}
 	
+	public static function isOnline(){
+		return (checkdnsrr("google.com", "ANY") && checkdnsrr("yahoo.com", "ANY") && checkdnsrr("microsoft.com", "ANY"));
+	}
+	
 	public static function getIP(){
+		if(Utils::$online === false){
+			return false;
+		}
 		$ip = "";//trim(Utils::curl_get("http://automation.whatismyip.com/n09230945.asp"));
 		if($ip != ""){
 			return $ip;
@@ -332,6 +339,9 @@ class Utils extends Thread{
 	}
 
 	public static function curl_get($page){
+		if(Utils::$online === false){
+			return false;
+		}
 		$ch = curl_init($page);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"));
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
@@ -346,6 +356,9 @@ class Utils extends Thread{
 	}
 
 	public static function curl_post($page, $args, $timeout = 10){
+		if(Utils::$online === false){
+			return false;
+		}
 		$ch = curl_init($page);
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
@@ -516,4 +529,8 @@ class Utils extends Thread{
 		return strrev(str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT));
 	}
 
+}
+
+if(Utils::isOnline() === false){
+	Utils::$online = false;
 }
