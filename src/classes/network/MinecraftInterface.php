@@ -46,7 +46,7 @@ class MinecraftInterface{
 	}
 
 	public function close(){
-		return $this->socket->close();
+		return $this->socket->close(false);
 	}
 
 	protected function getStruct($pid){

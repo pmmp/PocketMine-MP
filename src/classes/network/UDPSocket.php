@@ -62,9 +62,7 @@ class UDPSocket{
 
 	public function close($error = 125){
 		$this->connected = false;
-		if($error === false){
-			console("[ERROR] [Socket] Socket closed, Error: End of Stream");
-		}else{
+		if($error !== false){
 			console("[ERROR] [Socket] Socket closed, Error $error: ".socket_strerror($error));
 		}
 		return @socket_close($this->sock);
