@@ -1,5 +1,12 @@
 #!/bin/bash
-echo "[PocketMine] PHP installer and compiler for Linux - by @shoghicp v0.3"
+COMPILER_VERSION="0.4"
+PHP_VERSION="5.4.11"
+ZLIB_VERSION="1.2.7"
+GMP_VERSION="5.1.0"
+PTHREADS_VERSION="2ef11a4341d12c697d508138863f3c79b3729189"
+CURL_VERSION="master"
+
+echo "[PocketMine] PHP installer and compiler for Linux - by @shoghicp v$COMPILER_VERSION"
 DIR=`pwd`
 date > $DIR/install.log 2>&1
 uname -a >> $DIR/install.log 2>&1
@@ -16,21 +23,21 @@ mkdir -m 0777 php5 >> $DIR/install.log 2>&1
 cd install_data
 
 #PHP 5
-echo -n "[PHP5] downloading..."
-wget http://php.net/get/php-5.4.11.tar.gz/from/this/mirror -O php-5.4.11.tar.gz >> $DIR/install.log 2>&1
+echo -n "[PHP5] downloading $PHP_VERSION..."
+wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -O php-$PHP_VERSION.tar.gz >> $DIR/install.log 2>&1
 echo -n " extracting..."
-tar -zxvf php-5.4.11.tar.gz >> $DIR/install.log 2>&1
-rm -f php-5.4.11.tar.gz >> $DIR/install.log 2>&1
-mv php-5.4.11 php
+tar -zxvf php-$PHP_VERSION.tar.gz >> $DIR/install.log 2>&1
+rm -f php-$PHP_VERSION.tar.gz >> $DIR/install.log 2>&1
+mv php-$PHP_VERSION php
 echo " done!"
 
 #zlib
-echo -n "[zlib] downloading..."
-wget http://zlib.net/zlib-1.2.7.tar.gz -O zlib-1.2.7.tar.gz >> $DIR/install.log 2>&1
+echo -n "[zlib] downloading $ZLIB_VERSION..."
+wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz -O zlib-$ZLIB_VERSION.tar.gz >> $DIR/install.log 2>&1
 echo -n " extracting..."
-tar -zxvf zlib-1.2.7.tar.gz >> $DIR/install.log 2>&1
-rm -f zlib-1.2.7.tar.gz >> $DIR/install.log 2>&1
-mv zlib-1.2.7 zlib
+tar -zxvf zlib-$ZLIB_VERSION.tar.gz >> $DIR/install.log 2>&1
+rm -f zlib-$ZLIB_VERSION.tar.gz >> $DIR/install.log 2>&1
+mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
 ./configure --prefix=$DIR/install_data/php/ext/zlib \
@@ -44,32 +51,13 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-#OpenSSL
-#echo -n "[OpenSSL] downloading..."
-#wget ftp://ftp.openssl.org/source/openssl-1.0.1c.tar.gz -O openssl-1.0.1c.tar.gz >> $DIR/install.log 2>&1
-#echo -n " extracting..."
-#tar -zxvf openssl-1.0.1c.tar.gz >> $DIR/install.log 2>&1
-#rm -f openssl-1.0.1c.tar.gz >> $DIR/install.log 2>&1
-#mv openssl-1.0.1c openssl
-#echo -n " checking..."
-#cd openssl
-#./config --prefix=$DIR/install_data/php/ext/openssl >> $DIR/install.log 2>&1
-#echo -n " compiling..."
-#make >> $DIR/install.log 2>&1
-#echo -n " installing..."
-#make install >> $DIR/install.log 2>&1
-#echo -n " cleaning..."
-#cd ..
-#rm -r -f ./openssl
-#echo " done!"
-
 #GMP
-echo -n "[GMP] downloading..."
-wget ftp://ftp.gmplib.org/pub/gmp-5.1.0/gmp-5.1.0.tar.bz2 -O gmp-5.1.0.tar.bz2 >> $DIR/install.log 2>&1
+echo -n "[GMP] downloading $GMP_VERSION..."
+wget ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION/gmp-$GMP_VERSION.tar.bz2 -O gmp-$GMP_VERSION.tar.bz2 >> $DIR/install.log 2>&1
 echo -n " extracting..."
-tar -jxvf gmp-5.1.0.tar.bz2 >> $DIR/install.log 2>&1
-rm -f gmp-5.1.0.tar.bz2 >> $DIR/install.log 2>&1
-mv gmp-5.1.0 gmp
+tar -jxvf gmp-$GMP_VERSION.tar.bz2 >> $DIR/install.log 2>&1
+rm -f gmp-$GMP_VERSION.tar.bz2 >> $DIR/install.log 2>&1
+mv gmp-$GMP_VERSION gmp
 echo -n " checking..."
 cd gmp
 ./configure --prefix=$DIR/install_data/php/ext/gmp \
@@ -83,12 +71,12 @@ cd ..
 rm -r -f ./gmp
 echo " done!"
 
-echo -n "[cURL] downloading..."
-wget https://github.com/bagder/curl/archive/master.tar.gz --no-check-certificate -O curl-master.tar.gz >> $DIR/install.log 2>&1
+echo -n "[cURL] downloading $CURL_VERSION..."
+wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -O curl-$CURL_VERSION.tar.gz >> $DIR/install.log 2>&1
 echo -n " extracting..."
-tar -zxvf curl-master.tar.gz >> $DIR/install.log 2>&1
-rm -f curl-master.tar.gz >> $DIR/install.log 2>&1
-mv curl-master curl
+tar -zxvf curl-$CURL_VERSION.tar.gz >> $DIR/install.log 2>&1
+rm -f curl-$CURL_VERSION.tar.gz >> $DIR/install.log 2>&1
+mv curl-$CURL_VERSION curl
 echo -n " checking..."
 cd curl
 ./buildconf >> $DIR/install.log 2>&1
@@ -104,15 +92,14 @@ rm -r -f ./curl
 echo " done!"
 
 #pthreads
-echo -n "[PHP pthreads] downloading..."
-wget https://github.com/krakjoe/pthreads/archive/master.tar.gz --no-check-certificate -O pthreads-master.tar.gz >> $DIR/install.log 2>&1
+echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
+wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-check-certificate -O pthreads-$PTHREADS_VERSION.tar.gz >> $DIR/install.log 2>&1
 echo -n " extracting..."
-tar -zxvf pthreads-master.tar.gz >> $DIR/install.log 2>&1
-rm -f pthreads-master.tar.gz >> $DIR/install.log 2>&1
-mv pthreads-master $DIR/install_data/php/ext/pthreads
+tar -zxvf pthreads-$PTHREADS_VERSION.tar.gz >> $DIR/install.log 2>&1
+rm -f pthreads-$PTHREADS_VERSION.tar.gz >> $DIR/install.log 2>&1
+mv pthreads-$PTHREADS_VERSION $DIR/install_data/php/ext/pthreads
 echo " done!"
 
-#--with-openssl=$DIR/install_data/php/ext/openssl
 echo -n "[PHP5] checking..."
 cd php
 ./buildconf --force >> $DIR/install.log 2>&1
