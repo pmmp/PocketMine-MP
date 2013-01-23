@@ -585,7 +585,7 @@ class PocketMinecraftServer{
 			$add = ' unset($this->schedule['.$chcnt.']);';
 		}
 		$this->schedule[$chcnt] = array($callback, $data, $eventName);
-		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$chcnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$chcnt.']);return false;} call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
+		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$chcnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$chcnt.']);return false;} return call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
 		return $chcnt;
 	}
 

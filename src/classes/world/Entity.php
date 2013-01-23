@@ -80,9 +80,12 @@ class Entity extends stdClass{
 	}
 
 	public function update(){
+		if($this->closed === true){
+			return false;
+		}
 		$this->calculateVelocity();
 		$this->server->api->dhandle("entity.move", $this);
-		if($this->class === ENTITY_ITEM and $this->closed === false and $this->server->gamemode === 0){
+		if($this->class === ENTITY_ITEM and $this->server->gamemode === 0){
 			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 			if($player !== true and $player !== false){
 				if($this->server->api->dhandle("player.pickup", array(
@@ -93,6 +96,7 @@ class Entity extends stdClass{
 					"target" => $this->eid
 				)) !== false){
 					$this->close();
+					return false;
 				}
 			}
 		}
