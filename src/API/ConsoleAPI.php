@@ -181,7 +181,12 @@ class ConsoleAPI{
 }
 
 class ConsoleLoop extends Thread{
-	var $line = false, $stop = false;
+	public $line, $stop;
+	public function __construct(){
+		$this->line = false;
+		$this->stop = false;
+	}
+	
 	public function run(){
 		$fp = fopen("php://stdin", "r");
 		while($this->stop === false and ($line = fgets($fp)) !== false){
