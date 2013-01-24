@@ -101,9 +101,17 @@ mv pthreads-$PTHREADS_VERSION $DIR/install_data/php/ext/pthreads
 echo " done!"
 
 echo -n "[PHP5] checking..."
+MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
+if [ $MAX_MEMORY -gt 2048 ]
+then
+  echo -n " enabling optimizations..."
+  OPTIMIZATION="--enable-inline-optimization "
+else
+  OPTIMIZATION=""
+fi
 cd php
 ./buildconf --force >> $DIR/install.log 2>&1
-./configure --prefix=$DIR/php5 \
+./configure $OPTIMIZATION--prefix=$DIR/php5 \
 --exec-prefix=$DIR/php5 \
 --enable-embedded-mysqli \
 --enable-bcmath \
