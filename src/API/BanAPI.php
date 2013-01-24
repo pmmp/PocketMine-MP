@@ -181,6 +181,10 @@ class BanAPI{
 		$this->commandHandler("banip", array("pardon", $ip));
 	}
 	
+	public function kick($username, $reason){
+		$this->commandHandler("kick", array($username, $reason));
+	}
+	
 	public function reload(){
 		$this->commandHandler("ban", array("reload"));
 		$this->commandHandler("banip", array("reload"));
