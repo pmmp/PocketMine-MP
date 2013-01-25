@@ -4,7 +4,7 @@ PHP_VERSION="5.4.11"
 ZLIB_VERSION="1.2.7"
 GMP_VERSION="5.1.0"
 PTHREADS_VERSION="2ef11a4341d12c697d508138863f3c79b3729189"
-CURL_VERSION="master"
+CURL_VERSION="curl-7_28_1"
 
 echo "[PocketMine] PHP installer and compiler for Linux - by @shoghicp v$COMPILER_VERSION"
 DIR=`pwd`
