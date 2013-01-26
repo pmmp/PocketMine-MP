@@ -46,6 +46,7 @@ class Entity extends stdClass{
 		$this->status = 0;
 		$this->health = 20;
 		$this->dmgcounter = array(0, 0);
+		$this->air = 300;
 		$this->invincible = false;
 		$this->dead = false;
 		$this->closed = false;
@@ -97,6 +98,14 @@ class Entity extends stdClass{
 				for($z = $startZ; $z <= $endZ; ++$z){
 					$b = $this->server->api->level->getBlock($x, $y, $z);
 					switch($b[0]){
+						case 8:
+						case 9: //Drowing
+							if($this->air <= 0){
+								$this->harm(2, "water");
+							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
+								$this->air -= 10;
+							}
+							break;
 						case 10: //Lava damage
 						case 11:
 							if($this->inBlock($x, $y, $z)){
@@ -116,6 +125,8 @@ class Entity extends stdClass{
 						default:
 							if($this->inBlock($x, $y, $z) and !isset(Material::$transparent[$b[0]])){
 								$this->harm(1, "suffocation"); //Suffocation
+							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
+								$this->air = 300; //Breathing
 							}
 							break;
 					}
