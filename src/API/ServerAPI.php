@@ -102,6 +102,7 @@ class ServerAPI{
 			"level-name" => false,
 			"server-id" => false,
 			"upnp-forwarding" => false,
+			"send-usage" => true,
 		));
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug"));
@@ -223,6 +224,18 @@ class ServerAPI{
 		
 		$this->server->loadEntities();
 	}
+	
+	public function sendUsage(){
+		console("[INTERNAL] Sending usage data...", true, true, 3);
+		Utils::curl_post("http://www.pocketmine.org/usage.php", array(
+			"serverid" => $this->server->serverID,
+			"os" => Utils::getOS(),
+			"version" => MAJOR_VERSION,
+			"protocol" => CURRENT_PROTOCOL,
+			"online" => count($this->clients),
+			"max" => $this->maxClients,
+		));
+	}
 
 	public function __destruct(){
 		foreach($this->apiList as $ob){
@@ -295,6 +308,10 @@ class ServerAPI{
 	}
 
 	public function init(){
+		if($this->getProperty("send-usage") !== false){
+			$this->server->schedule(36000, array($this, "sendUsage"), array(), true); //Send usage data every 30 minutes
+			$this->sendUsage();
+		}
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
 		$this->__destruct();

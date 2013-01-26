@@ -49,27 +49,23 @@ class Utils extends Thread{
 		if(Utils::$online === false){
 			return false;
 		}
-		$ip = "";//trim(Utils::curl_get("http://automation.whatismyip.com/n09230945.asp"));
-		if($ip != ""){
-			return $ip;
+		$ip = trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
+		if(preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
+			return $matches[1];
 		}else{
-			trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
-			if(preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
+			$ip = Utils::curl_get("http://www.checkip.org/");
+			if(preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
 				return $matches[1];
 			}else{
-				$ip = Utils::curl_get("http://www.checkip.org/");
-				if(preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
+				$ip = Utils::curl_get("http://checkmyip.org/");
+				if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 					return $matches[1];
 				}else{
-					$ip = Utils::curl_get("http://checkmyip.org/");
-					if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
-						return $matches[1];
-					}else{
-						return false;
-					}
+					return false;
 				}
 			}
 		}
+		
 	}
 
 	public static function getOS(){

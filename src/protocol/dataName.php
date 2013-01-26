@@ -61,6 +61,8 @@ $dataName = array(
 	MC_UPDATE_BLOCK => "UpdateBlock",
 	
 	MC_EXPLOSION => "Explosion",
+	
+	MC_LEVEL_EVENT => "LevelEvent",
 
 	MC_ENTITY_EVENT => "EntityEvent",
 	MC_REQUEST_CHUNK => "RequestChunk",
