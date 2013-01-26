@@ -361,6 +361,7 @@ class Entity extends stdClass{
 				if($this->player !== false){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 				}
+				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
 			}elseif($this->health > 0){
 				$this->dead = false;
 			}
