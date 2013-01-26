@@ -703,7 +703,7 @@ class BlockAPI{
 			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 49, 0, true);
 			return true;
 		}elseif($spread[0] === 10){
-			if($face === 0){
+			if($face === 0 or ($spread[1] & 0x08) === 0){
 				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 4, 0, true);
 				return true;
 			}
