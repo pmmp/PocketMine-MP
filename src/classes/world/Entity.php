@@ -139,8 +139,10 @@ class Entity extends stdClass{
 		if($this->closed === true){
 			return false;
 		}
-		$this->calculateVelocity();
-		$this->server->api->dhandle("entity.move", $this);
+		if($this->last[0] !== $this->x or $this->last[1] !== $this->y or $this->last[2] !== $this->z){
+			$this->server->api->dhandle("entity.move", $this);
+			$this->calculateVelocity();
+		}
 		if($this->class === ENTITY_ITEM and $this->server->gamemode === 0){
 			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 			if($player !== true and $player !== false){
