@@ -582,10 +582,10 @@ class PocketMinecraftServer{
 		$add = "";
 		$chcnt = $this->scheduleCnt++;
 		if($repeat === false){
-			$add = ' unset($this->schedule['.$chcnt.']);';
+			$add = '$this->schedule['.$chcnt.']=null;unset($this->schedule['.$chcnt.']);';
 		}
 		$this->schedule[$chcnt] = array($callback, $data, $eventName);
-		$this->action(50000 * $ticks, '$schedule = $this->schedule['.$chcnt.'];'.$add.'if(!is_callable($schedule[0])){unset($this->schedule['.$chcnt.']);return false;} return call_user_func($schedule[0], $schedule[1], $schedule[2]);', (bool) $repeat);
+		$this->action(50000 * $ticks, '$schedule=$this->schedule['.$chcnt.'];'.$add.'if(!is_callable($schedule[0])){$this->schedule['.$chcnt.']=null;unset($this->schedule['.$chcnt.']);return false;}return call_user_func($schedule[0],$schedule[1],$schedule[2]);', (bool) $repeat);
 		return $chcnt;
 	}
 
@@ -636,6 +636,7 @@ class PocketMinecraftServer{
 
 	public function deleteEvent($id){
 		$id = (int) $id;
+		$this->events[$id] = null;
 		unset($this->events[$id]);
 		$this->query("DELETE FROM events WHERE ID = ".$id.";");
 	}

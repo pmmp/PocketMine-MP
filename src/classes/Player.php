@@ -113,7 +113,10 @@ class Player{
 				"status" => 1,
 			));
 			$this->dataPacket(MC_DISCONNECT);
-
+			$this->buffer = null;
+			unset($this->buffer);
+			$this->queue = null;
+			unset($this->queue);
 			$this->connected = false;
 			if($msg === true){
 				$this->server->api->chat->broadcast($this->username." left the game");
@@ -287,6 +290,7 @@ class Player{
 						array_unshift($this->queue, array(0, $this->buffer[$data[2]][0], $this->buffer[$data[2]][1], $data[2]));
 					}
 					$this->counter[2] = $data[2];
+					$this->buffer[$data[2]] = null;
 					unset($this->buffer[$data[2]]);
 
 					if(isset($data[3])){
@@ -295,6 +299,7 @@ class Player{
 							array_unshift($this->queue, array(0, $this->buffer[$data[3]][0], $this->buffer[$data[3]][1], $data[3]));
 						}
 						$this->counter[2] = $data[3];
+						$this->buffer[$data[3]] = null;
 						unset($this->buffer[$data[3]]);
 					}
 					break;
