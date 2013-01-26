@@ -69,8 +69,20 @@ class PlayerAPI{
 					}
 				}else{
 					switch($data["cause"]){
+						case "cactus":
+							$message .= " was pricked to death";
+							break;
+						case "lava":
+							$message .= " tried to swim in lava";
+							break;
+						case "fire":
+							$message .= " burned to death";
+							break;
+						case "suffocation":
+							$message .= " suffocated in a wall";
+							break;
 						default:
-							$message .= " was killed";
+							$message .= " died";
 							break;
 					}
 				}
