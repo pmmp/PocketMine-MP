@@ -95,6 +95,9 @@ class Utils extends Thread{
 	}
 
 	public static function printable($str){
+		if(!is_string($str)){
+			return gettype($str);
+		}
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
 
