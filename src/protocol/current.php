@@ -25,8 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-//Protocol Version: 5
-
 
 define("MC_KEEP_ALIVE", 0x00);
 
@@ -62,6 +60,7 @@ define("MC_UPDATE_BLOCK", 0x97);
 
 define("MC_EXPLOSION", 0x99);
 
+define("MC_ENTITY_EVENT", 0x9c);
 define("MC_REQUEST_CHUNK", 0x9d);
 define("MC_CHUNK_DATA", 0x9e);
 

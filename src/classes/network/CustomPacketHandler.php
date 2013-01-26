@@ -416,6 +416,15 @@ class CustomPacketHandler{
 					}
 				}
 				break;
+			case MC_ENTITY_EVENT:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["event"] = ord($this->get(1));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= chr($this->data["event"]);
+				}
+				break;
 			case MC_REQUEST_CHUNK:
 				if($this->c === false){
 					$this->data["x"] = Utils::readInt($this->get(4));

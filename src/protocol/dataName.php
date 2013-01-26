@@ -62,6 +62,7 @@ $dataName = array(
 	
 	MC_EXPLOSION => "Explosion",
 
+	MC_ENTITY_EVENT => "EntityEvent",
 	MC_REQUEST_CHUNK => "RequestChunk",
 	MC_CHUNK_DATA => "ChunkData",
 

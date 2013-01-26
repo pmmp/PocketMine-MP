@@ -331,7 +331,9 @@ class Entity extends stdClass{
 
 	public function setHealth($health, $cause = "", $force = false){
 		$health = (int) $health;
+		$harm = false;
 		if($health < $this->health){
+			$harm = true;
 			$dmg = $this->health - $health;
 			if(($this->server->gamemode === 0 or $force === true) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter = array(microtime(true) + 0.5, $dmg);
@@ -344,6 +346,9 @@ class Entity extends stdClass{
 		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false){
 			$this->health = min(127, max(-127, $health));
 			$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
+			if($harm === true){
+				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
+			}
 			if($this->player instanceof Player){
 				$this->player->dataPacket(MC_SET_HEALTH, array(
 					"health" => $this->health,

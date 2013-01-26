@@ -239,6 +239,17 @@ class Player{
 						"action" => $data["action"],
 					));
 				break;
+			case "entity.event":
+				if($data["entity"]->eid === $this->eid){
+					$eid = 0;
+				}else{
+					$eid = $data["entity"]->eid;
+				}
+				$this->dataPacket(MC_ENTITY_EVENT, array(
+					"eid" => $eid,
+					"event" => $data["event"],
+				));
+				break;
 			case "server.chat":
 				if(($data instanceof Container) === true){
 					if(!$data->check($this->username)){
@@ -419,6 +430,7 @@ class Player{
 									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
