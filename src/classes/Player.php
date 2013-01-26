@@ -410,7 +410,7 @@ class Player{
 							break;
 						case MC_READY:
 							switch($data["status"]){
-								case 1:
+								case 1: //Spawn!!
 									if($this->spawned !== false){
 										break;
 									}
@@ -425,6 +425,9 @@ class Player{
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
+									$this->dataPacket(MC_SET_HEALTH, array(
+										"health" => $this->entity->health,
+									));
 									$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));  
 									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
@@ -517,10 +520,10 @@ class Player{
 							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
-							$this->entity->invincible = true;
-							$this->entity->setHealth(20, "respawn");
+							//$this->entity->invincible = true;
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
-							$this->entity->invincible = false;
+							$this->entity->setHealth(20, "respawn");							
+							//$this->entity->invincible = false;
 							break;
 						case MC_SET_HEALTH:
 							if($this->server->gamemode === 1){
