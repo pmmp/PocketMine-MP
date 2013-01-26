@@ -123,7 +123,7 @@ class Entity extends stdClass{
 							}
 							break;
 						default:
-							if($this->inBlock($x, $y, $z) and !isset(Material::$transparent[$b[0]])){
+							if($this->inBlock($x, $y, $z, 0.7) and !isset(Material::$transparent[$b[0]])){
 								$this->harm(1, "suffocation"); //Suffocation
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 300; //Breathing
@@ -333,7 +333,7 @@ class Entity extends stdClass{
 		$health = (int) $health;
 		if($health < $this->health){
 			$dmg = $this->health - $health;
-			if(($this->gamemode === 0 or $force === true) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+			if(($this->server->gamemode === 0 or $force === true) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter = array(microtime(true) + 0.5, $dmg);
 			}else{
 				return false; //Entity inmunity
