@@ -651,6 +651,15 @@ class BlockAPI{
 				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down, false);
 				return true;
 			}
+		}elseif($spread[0] === 9 or $spread[0] === 8){
+			if($source[0] === 11){
+				$this->server->api->level->setBlock($source[2][0], $source[2][1], $source[2][2], 49, 0);
+			}elseif($face === 0){
+				$this->server->api->level->setBlock($source[2][0], $source[2][1], $source[2][2], 1, 0);
+			}else{
+				$this->server->api->level->setBlock($source[2][0], $source[2][1], $source[2][2], 4, 0);
+			}
+			return true;
 		}elseif(isset(Material::$flowable[$spread[0]])){
 			$this->server->schedule(20, array($this, "blockScheduler"), array(
 				"x" => $spread[2][0],
@@ -688,6 +697,14 @@ class BlockAPI{
 					"type" => BLOCK_UPDATE_NORMAL,
 				));
 				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], $spread[0], $level | $down, false);
+				return true;
+			}
+		}elseif($spread[0] === 11){
+			$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 49, 0, true);
+			return true;
+		}elseif($spread[0] === 10){
+			if($face === 0){
+				$this->server->api->level->setBlock($spread[2][0], $spread[2][1], $spread[2][2], 4, 0, true);
 				return true;
 			}
 		}elseif(isset(Material::$flowable[$spread[0]])){
