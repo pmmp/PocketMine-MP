@@ -224,6 +224,8 @@ class PlayerAPI{
 			$player->close();
 			$this->saveOffline($player->username, $player->data);
 			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
+			unset($player->entity->player);
+			unset($player->entity);
 			$this->server->api->entity->remove($player->eid);
 			unset($player);
 		}
