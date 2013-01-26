@@ -1,5 +1,5 @@
 #!/bin/bash
-COMPILER_VERSION="0.4"
+COMPILER_VERSION="0.5"
 PHP_VERSION="5.4.11"
 ZLIB_VERSION="1.2.7"
 GMP_VERSION="5.1.0"
@@ -24,19 +24,13 @@ cd install_data
 
 #PHP 5
 echo -n "[PHP5] downloading $PHP_VERSION..."
-wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -O php-$PHP_VERSION.tar.gz >> $DIR/install.log 2>&1
-echo -n " extracting..."
-tar -zxvf php-$PHP_VERSION.tar.gz >> $DIR/install.log 2>&1
-rm -f php-$PHP_VERSION.tar.gz >> $DIR/install.log 2>&1
+wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -zx >> $DIR/install.log 2>&1
 mv php-$PHP_VERSION php
 echo " done!"
 
 #zlib
 echo -n "[zlib] downloading $ZLIB_VERSION..."
-wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz -O zlib-$ZLIB_VERSION.tar.gz >> $DIR/install.log 2>&1
-echo -n " extracting..."
-tar -zxvf zlib-$ZLIB_VERSION.tar.gz >> $DIR/install.log 2>&1
-rm -f zlib-$ZLIB_VERSION.tar.gz >> $DIR/install.log 2>&1
+wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz -q -O - | tar -zx >> $DIR/install.log 2>&1
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
@@ -53,10 +47,7 @@ echo " done!"
 
 #GMP
 echo -n "[GMP] downloading $GMP_VERSION..."
-wget ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION/gmp-$GMP_VERSION.tar.bz2 -O gmp-$GMP_VERSION.tar.bz2 >> $DIR/install.log 2>&1
-echo -n " extracting..."
-tar -jxvf gmp-$GMP_VERSION.tar.bz2 >> $DIR/install.log 2>&1
-rm -f gmp-$GMP_VERSION.tar.bz2 >> $DIR/install.log 2>&1
+wget ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION/gmp-$GMP_VERSION.tar.bz2 -q -O - | tar -xj >> $DIR/install.log 2>&1
 mv gmp-$GMP_VERSION gmp
 echo -n " checking..."
 cd gmp
@@ -72,10 +63,7 @@ rm -r -f ./gmp
 echo " done!"
 
 echo -n "[cURL] downloading $CURL_VERSION..."
-wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -O curl-$CURL_VERSION.tar.gz >> $DIR/install.log 2>&1
-echo -n " extracting..."
-tar -zxvf curl-$CURL_VERSION.tar.gz >> $DIR/install.log 2>&1
-rm -f curl-$CURL_VERSION.tar.gz >> $DIR/install.log 2>&1
+wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> $DIR/install.log 2>&1
 mv curl-$CURL_VERSION curl
 echo -n " checking..."
 cd curl
@@ -93,10 +81,7 @@ echo " done!"
 
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
-wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-check-certificate -O pthreads-$PTHREADS_VERSION.tar.gz >> $DIR/install.log 2>&1
-echo -n " extracting..."
-tar -zxvf pthreads-$PTHREADS_VERSION.tar.gz >> $DIR/install.log 2>&1
-rm -f pthreads-$PTHREADS_VERSION.tar.gz >> $DIR/install.log 2>&1
+wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> $DIR/install.log 2>&1
 mv pthreads-$PTHREADS_VERSION $DIR/install_data/php/ext/pthreads
 echo " done!"
 
