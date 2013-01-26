@@ -300,10 +300,10 @@ class Entity extends stdClass{
 	}
 
 	public function setHealth($health, $cause = ""){
-		$health = min(127, max(-128, (int) $health));
+		$health = (int) $health;
 		if($health < $this->health){
 			$dmg = $this->health - $health;
-			if($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg and !$this->dead){
+			if(($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter = array(microtime(true) + 0.5, $dmg);
 			}else{
 				return false; //Entity inmunity
@@ -312,9 +312,9 @@ class Entity extends stdClass{
 			return false;
 		}
 		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false){
-			$this->health = $health;
+			$this->health = min(127, max(-127, $health));
 			$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
-			if($this->player !== false){
+			if($this->player instanceof Player){
 				$this->player->dataPacket(MC_SET_HEALTH, array(
 					"health" => $this->health,
 				));

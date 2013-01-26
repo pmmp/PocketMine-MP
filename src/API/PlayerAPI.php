@@ -46,8 +46,11 @@ class PlayerAPI{
 				$result = $this->server->query("SELECT EID FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);");
 				if($result !== true and $result !== false){
 					while(false !== ($player = $result->fetchArray())){
-						if(($player = $this->server->api->player->getByEID($player["EID"])) !== false){
-							$player->entity->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
+						if(($player = $this->server->api->entity->get($player["EID"])) !== false){
+							if($player->dead === true){
+								continue;
+							}
+							$player->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
 						}
 					}
 				}
