@@ -50,7 +50,7 @@ class PlayerAPI{
 							if($player->dead === true){
 								continue;
 							}
-							$player->setHealth(min(20, $player->entity->getHealth() + $data), "regeneration");
+							$player->setHealth(min(20, $player->getHealth() + $data), "regeneration");
 						}
 					}
 				}

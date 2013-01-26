@@ -86,31 +86,41 @@ class Entity extends stdClass{
 		if($this->closed === true){
 			return false;
 		}
-		$down = $this->server->api->level->getBlock(round($this->x + 0.5), round($this->y), round($this->z + 0.5));
-		$up = $this->server->api->level->getBlock(round($this->x + 0.5), round($this->y + 1), round($this->z + 0.5));
-		switch($down[0]){
-			case 10: //Lava damage
-			case 11:
-				$this->harm(5, "lava");
-				break;
-			case 51: //Fire block damage
-				$this->harm(1, "fire");
-				break;
-		}
-		
-		switch($up[0]){
-			case 10: //Lava damage
-			case 11:
-				$this->harm(5, "lava");
-				break;
-			case 51: //Fire block damage
-				$this->harm(1, "fire");
-				break;
-			default:
-				if(!isset(Material::$transparent[$up[0]])){
-					$this->harm(1, "suffocation");
+		$startX = (int) (round($this->x - 0.5) - 1);
+		$startY = (int) (round($this->y) - 1);
+		$startZ = (int) (round($this->z - 0.5) - 1);
+		$endX = $startX + 2;
+		$endY = $startY + 2;
+		$endZ = $startZ + 2;
+		for($y = $startY; $y <= $endY; ++$y){
+			for($x = $startX; $x <= $endX; ++$x){
+				for($z = $startZ; $z <= $endZ; ++$z){
+					$b = $this->server->api->level->getBlock($x, $y, $z);
+					switch($b[0]){
+						case 10: //Lava damage
+						case 11:
+							if($this->inBlock($x, $y, $z)){
+								$this->harm(5, "lava");
+							}
+							break;
+						case 51: //Fire block damage
+							if($this->inBlock($x, $y, $z)){
+								$this->harm(1, "fire");
+							}
+							break;
+						case 81: //Cactus damage
+							if($this->touchingBlock($x, $y, $z)){
+								$this->harm(1, "cactus");
+							}
+							break;
+						default:
+							if($this->inBlock($x, $y, $z) and !isset(Material::$transparent[$b[0]])){
+								$this->harm(1, "suffocation"); //Suffocation
+							}
+							break;
+					}
 				}
-				break;
+			}		
 		}
 	}
 
@@ -265,10 +275,19 @@ class Entity extends stdClass{
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 	
-	public function inBlock($x, $y, $z){
-		$block = new Vector3($x + 0.5, $y, $z + 0.5);
-		$me = new Vector3($this->x, $this->y, $this->z);
-		if(($y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < 0.8){
+	public function inBlock($x, $y, $z, $radius = 0.8){
+		$block = new Vector3($x, $y, $z);
+		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
+		if(($y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
+			return true;
+		}
+		return false;
+	}
+	
+	public function touchingBlock($x, $y, $z, $radius = 0.9){
+		$block = new Vector3($x, $y, $z);
+		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
+		if(($y == (((int) $this->y) - 1) or $y == ((int) $this->y)) and $block->maxPlainDistance($me) < $radius){
 			return true;
 		}
 		return false;
