@@ -33,7 +33,7 @@ define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
-	var $invincible = false, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
+	var $invincible, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
 	private $server;
 	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
@@ -45,11 +45,14 @@ class Entity extends stdClass{
 		$this->data = $data;
 		$this->status = 0;
 		$this->health = 20;
+		$this->dmgcounter = array(0, 0);
+		$this->invincible = false;
 		$this->dead = false;
 		$this->closed = false;
 		$this->name = "";
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
 		$this->server->schedule(4, array($this, "update"), array(), true);
+		$this->server->schedule(10, array($this, "environmentUpdate"), array(), true);
 		$this->metadata = array();
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
@@ -75,6 +78,38 @@ class Entity extends stdClass{
 				break;
 			case ENTITY_OBJECT:
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+				break;
+		}
+	}
+	
+	public function environmentUpdate(){
+		if($this->closed === true){
+			return false;
+		}
+		$down = $this->server->api->level->getBlock(round($this->x + 0.5), round($this->y), round($this->z + 0.5));
+		$up = $this->server->api->level->getBlock(round($this->x + 0.5), round($this->y + 1), round($this->z + 0.5));
+		switch($down[0]){
+			case 10: //Lava damage
+			case 11:
+				$this->harm(5, "lava");
+				break;
+			case 51: //Fire block damage
+				$this->harm(1, "fire");
+				break;
+		}
+		
+		switch($up[0]){
+			case 10: //Lava damage
+			case 11:
+				$this->harm(5, "lava");
+				break;
+			case 51: //Fire block damage
+				$this->harm(1, "fire");
+				break;
+			default:
+				if(!isset(Material::$transparent[$up[0]])){
+					$this->harm(1, "suffocation");
+				}
 				break;
 		}
 	}
@@ -259,24 +294,42 @@ class Entity extends stdClass{
 	public function getPosition($round = false){
 		return !isset($this->position) ? false:($round === true ? array_map("floor", $this->position):$this->position);
 	}
+	
+	public function harm($dmg, $cause = ""){
+		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause);
+	}
 
 	public function setHealth($health, $cause = ""){
-		$this->health = (int) $health;
-		$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
-		$this->server->api->dhandle("entity.health.change", array("eid" => $this->eid, "health" => $health, "cause" => $cause));
-		if($this->player !== false){
-			$this->player->dataPacket(MC_SET_HEALTH, array(
-				"health" => $this->health,
-			));
-		}
-		if($this->health <= 0 and $this->dead === false){
-			$this->dead = true;
-			if($this->player !== false){
-				$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
+		$health = min(127, max(-128, (int) $health));
+		if($health < $this->health){
+			$dmg = $this->health - $health;
+			if($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg and !$this->dead){
+				$this->dmgcounter = array(microtime(true) + 0.5, $dmg);
+			}else{
+				return false; //Entity inmunity
 			}
-		}elseif($this->health > 0){
-			$this->dead = false;
+		}elseif($health === $this->health){
+			return false;
 		}
+		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false){
+			$this->health = $health;
+			$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
+			if($this->player !== false){
+				$this->player->dataPacket(MC_SET_HEALTH, array(
+					"health" => $this->health,
+				));
+			}
+			if($this->health <= 0 and $this->dead === false){
+				$this->dead = true;
+				if($this->player !== false){
+					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
+				}
+			}elseif($this->health > 0){
+				$this->dead = false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public function getHealth(){
