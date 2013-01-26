@@ -329,11 +329,11 @@ class Entity extends stdClass{
 		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause);
 	}
 
-	public function setHealth($health, $cause = ""){
+	public function setHealth($health, $cause = "", $force = false){
 		$health = (int) $health;
 		if($health < $this->health){
 			$dmg = $this->health - $health;
-			if(($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+			if(($this->gamemode === 0 or $force === true) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter = array(microtime(true) + 0.5, $dmg);
 			}else{
 				return false; //Entity inmunity

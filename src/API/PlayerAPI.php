@@ -247,6 +247,9 @@ class PlayerAPI{
 		}else{
 			$data = unserialize(file_get_contents(FILE_PATH."players/".$name.".dat"));
 		}
+		if($this->server->gamemode === 1){
+			$data["health"] = 20;
+		}
 		$this->server->handle("api.player.offline.get", $data);
 		return $data;
 	}
