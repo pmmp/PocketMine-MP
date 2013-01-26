@@ -33,7 +33,7 @@ define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
-	var $invincible, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
+	var $invincible, $air, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
 	private $server;
 	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;

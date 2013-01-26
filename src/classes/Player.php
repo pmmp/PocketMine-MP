@@ -429,7 +429,7 @@ class Player{
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
 									}
 									foreach($this->inventory as $s => $data){
-										if($data[0] >= 0 or $data[2] >= 0){
+										if($data[0] > 0 and $data[2] >= 0){
 											$e = $this->server->api->entity->add(ENTITY_ITEM, $data[0], array(
 												"x" => $this->entity->x + 0.5,
 												"y" => $this->entity->y + 0.19,
