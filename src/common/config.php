@@ -38,6 +38,6 @@ ini_set("memory_limit", "256M");
 define("LOG", true);
 define("MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 define("TEST_MD5", "d0ca3786e53b615bb4fb9f5094d5c9a7");
-define("MAJOR_VERSION", "Alpha_1.1dev");
+define("MAJOR_VERSION", "Alpha_1.0.8");
 define("CURRENT_PROTOCOL", 5);
 define("CURRENT_MINECRAFT_VERSION", "v0.5.0 alpha");
