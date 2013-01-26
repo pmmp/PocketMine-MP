@@ -127,7 +127,7 @@ class PlayerAPI{
 			case "kill":
 				$player = $this->get(implode(" ", $params));
 				if($player !== false){
-					$this->server->api->entity->harm($player->eid, 20, "console");
+					$this->server->api->entity->harm($player->eid, 20, "console", true);
 				}else{
 					console("[INFO] Usage: /kill <player>");
 				}

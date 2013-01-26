@@ -50,12 +50,12 @@ class EntityAPI{
 		$this->harm($eid, -$heal, $cause);
 	}
 
-	public function harm($eid, $attack = 1, $cause){
+	public function harm($eid, $attack = 1, $cause, $force = false){
 		$e = $this->get($eid);
 		if($e === false or $e->dead === true){
 			return false;
 		}
-		$e->setHealth($e->getHealth() - $attack, $cause);
+		$e->setHealth($e->getHealth() - $attack, $cause, $force);
 	}
 
 	public function add($class, $type = 0, $data = array()){

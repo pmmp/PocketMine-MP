@@ -125,6 +125,7 @@ class PluginAPI extends stdClass{
 			return false;
 		}
 		$path = FILE_PATH."plugins/".$p[1]["name"]."/";
+		@mkdir($path);
 		$this->plugins[$p[1]["class"]][1]["path"] = $path;
 		$cnf = new Config($path."config.yml", CONFIG_YAML, $default);
 		$cnf->save();
