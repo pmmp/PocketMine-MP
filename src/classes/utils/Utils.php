@@ -61,7 +61,12 @@ class Utils extends Thread{
 				if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 					return $matches[1];
 				}else{
-					return false;
+					$ip = trim(Utils::curl_get("http://ifconfig.me/ip"));
+					if($ip != ""){
+						return $ip;
+					}else{
+						return false;
+					}
 				}
 			}
 		}
