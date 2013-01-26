@@ -77,10 +77,8 @@ if(!extension_loaded("sqlite3") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"")
 }
 
 if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "zlib." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find Zlib extension. Compressed worlds won't be loaded", true, true, 0);
-	define("ZLIB_EXTENSION", false);
-}else{
-	define("ZLIB_EXTENSION", true);
+	console("[ERROR] Unable to find Zlib extension", true, true, 0);
+	++$errors;
 }
 
 if($errors > 0){

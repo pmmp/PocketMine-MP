@@ -36,6 +36,8 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * __[PHP cURL](http://php.net/manual/en/book.curl.php)__
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
 * __[PHP SQLite3](http://php.net/manual/en/book.sqlite3.php)__
+* __[PHP GMP](http://php.net/manual/en/book.gmp.php)__
+* __[PHP Zlib](http://php.net/manual/en/book.zlib.php)__
 * __[PHP pthreads](https://github.com/krakjoe/pthreads)__ by _[krakjoe](https://github.com/krakjoe)_: Threading for PHP - Share Nothing, Do Everything.
 * __[PHP NBT](https://github.com/TheFrozenFire/PHP-NBT-Decoder-Encoder/blob/master/nbt.class.php)__ by _[TheFrozenFire](https://github.com/TheFrozenFire)_: Class for reading in NBT-format files (modified to handle Little-Endian files).
 * __[Math_BigInteger](http://phpseclib.sourceforge.net/math/intro.html)__ by _[phpseclib](http://phpseclib.sourceforge.net/)_: Pure-PHP arbitrary precission integer arithmetic library

@@ -59,7 +59,7 @@ class ChunkParser{
 	}
 
 	public function loadFile($file){
-		if(ZLIB_EXTENSION === true and file_exists($file.".gz")){
+		if(file_exists($file.".gz")){
 			$this->raw = gzinflate(file_get_contents($file.".gz"));
 			$r = @gzinflate($this->raw);
 			if($r !== false and $r != ""){
@@ -169,14 +169,12 @@ class ChunkParser{
 		}
 		flock($fp, LOCK_UN);
 		fclose($fp);
-		if(ZLIB_EXTENSION === true){
-			$original = filesize($this->file);
-			file_put_contents($this->file .".gz", gzdeflate(gzdeflate(file_get_contents($this->file),9),9)); //Double compression for flat maps
-			$compressed = filesize($this->file .".gz");
-			console("[DEBUG] Saved chunks.dat.gz with ".round(($compressed/$original)*100, 2)."% (".round($compressed/1024, 2)."KB) of the original size", true, true, 2);
-			if($final === true){
-				@unlink($this->file);
-			}
+		$original = filesize($this->file);
+		file_put_contents($this->file .".gz", gzdeflate(gzdeflate(file_get_contents($this->file),9),9)); //Double compression for flat maps
+		$compressed = filesize($this->file .".gz");
+		console("[DEBUG] Saved chunks.dat.gz with ".round(($compressed/$original)*100, 2)."% (".round($compressed/1024, 2)."KB) of the original size", true, true, 2);
+		if($final === true){
+			@unlink($this->file);
 		}
 	}
 
