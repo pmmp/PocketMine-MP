@@ -287,7 +287,7 @@ class Entity extends stdClass{
 	public function touchingBlock($x, $y, $z, $radius = 0.9){
 		$block = new Vector3($x, $y, $z);
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
-		if(($y == (((int) $this->y) - 1) or $y == ((int) $this->y)) and $block->maxPlainDistance($me) < $radius){
+		if(($y == (((int) $this->y) - 1) or $y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
 		}
 		return false;
