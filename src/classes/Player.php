@@ -341,6 +341,7 @@ class Player{
 
 							break;
 						case 0x03:
+						case 0xa9:
 
 							break;
 						case MC_DISCONNECT:

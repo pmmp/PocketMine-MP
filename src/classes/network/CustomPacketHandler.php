@@ -134,6 +134,7 @@ class CustomPacketHandler{
 				//null
 				break;
 			case 0x18:
+			case 0xa9:
 				//null
 				break;
 			case MC_LOGIN:
