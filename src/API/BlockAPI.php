@@ -302,26 +302,11 @@ class BlockAPI{
 							if($b[0] === 0 and $d[0] === 2){
 								$arr = array(
 									array(37, 0),
-									array(37, 0),
-									array(37, 0),
-									array(37, 0),
-									array(38, 0),
-									array(38, 0),
 									array(38, 0),
 									array(31, 1),
 									array(31, 1),
 									array(31, 1),
 									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(0, 0),
-									array(0, 0),
 									array(0, 0),
 								);
 								$t = $arr[mt_rand(0, count($arr) - 1)];
