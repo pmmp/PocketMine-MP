@@ -676,7 +676,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function flowWaterOn($source, $face){
+	public function flowWaterOn($source, $face, &$spread = null){
 		$down = 0;
 		if($face === BlockFace::BOTTOM){
 			$level = 0;
@@ -730,13 +730,34 @@ class BlockAPI{
 		switch($block[0]){
 			case 8:
 			case 9:
-				if(!$this->flowWaterOn($block, 0) or $block[0] === 9){
-					$this->flowWaterOn($block, 2);
-					$this->flowWaterOn($block, 3);
-					$this->flowWaterOn($block, 4);
-					$this->flowWaterOn($block, 5);
+				$faces = array();
+				if(!$this->flowWaterOn($block, 0, $floor) or $block[0] === 9){
+					$this->flowWaterOn($block, 2, $faces[0]);
+					$this->flowWaterOn($block, 3, $faces[1]);
+					$this->flowWaterOn($block, 4, $faces[2]);
+					$this->flowWaterOn($block, 5, $faces[3]);
 				}
 				if($block[0] === 8){
+					//Source creation
+					if(!isset(Material::$flowable[$floor[0]])){
+						$sources = 0;
+						foreach($faces as $i => $b){
+							if($b[0] === 9){
+								++$sources;
+							}
+						}
+						if($sources >= 2){
+							$this->server->api->level->setBlock($block[2][0], $block[2][1], $block[2][2], 9, 0, false);
+							$this->server->schedule(10, array($this, "blockScheduler"), array(
+								"x" => $block[2][0],
+								"y" => $block[2][1],
+								"z" => $block[2][2],
+								"type" => BLOCK_UPDATE_NORMAL,
+							));
+							break;
+						}
+					}
+					
 					$drained = true;
 					$level = $block[1] & 0x07;
 					$up = $this->server->api->level->getBlockFace($block, BlockFace::UP);
