@@ -33,7 +33,7 @@ define("ENTITY_ITEM", 3);
 define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
-	var $invincible, $air, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
+	var $invincible, $air, $spawntime, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
 	private $server;
 	function __construct($server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
@@ -50,6 +50,7 @@ class Entity extends stdClass{
 		$this->fire = 0;
 		$this->crouched = false;
 		$this->invincible = false;
+		$this->spawntime = microtime(true);
 		$this->dead = false;
 		$this->closed = false;
 		$this->name = "";
@@ -71,10 +72,12 @@ class Entity extends stdClass{
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
 				$this->health = &$this->player->data["health"];
+				$this->setHealth($this->health, "generic");
 				break;
 			case ENTITY_ITEM:
 				$this->meta = (int) $this->data["meta"];
 				$this->stack = (int) $this->data["stack"];
+				$this->setHealth(2, "generic");
 				break;
 			case ENTITY_MOB:
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
@@ -88,6 +91,27 @@ class Entity extends stdClass{
 	public function environmentUpdate(){
 		if($this->closed === true){
 			return false;
+		}
+		if($this->class === ENTITY_ITEM){
+			if((microtime(true) - $this->spawntime) >= 300){
+				$this->close(); //Despawn timer
+				return false;
+			}
+			if($this->server->gamemode === 0){
+				$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
+				if($player !== true and $player !== false){
+					if($this->server->api->dhandle("player.pickup", array(
+						"eid" => $player["EID"],
+						"entity" => $this,
+						"block" => $this->type,
+						"meta" => $this->meta,
+						"target" => $this->eid
+					)) !== false){
+						$this->close();
+						return false;
+					}
+				}
+			}
 		}
 		if($this->fire > 0){
 			if(($this->fire % 20) === 0){
@@ -119,7 +143,7 @@ class Entity extends stdClass{
 							}
 							if($this->air <= 0){
 								$this->harm(2, "water");
-							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
+							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->air -= 10;
 								$this->updateMetadata();
 							}
@@ -145,7 +169,7 @@ class Entity extends stdClass{
 							}
 							break;
 						default:
-							if($this->inBlock($x, $y, $z, 0.7) and !isset(Material::$transparent[$b[0]])){
+							if($this->inBlock($x, $y, $z, 0.7) and !isset(Material::$transparent[$b[0]]) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->harm(1, "suffocation"); //Suffocation
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 300; //Breathing
@@ -164,21 +188,6 @@ class Entity extends stdClass{
 		if($this->last[0] !== $this->x or $this->last[1] !== $this->y or $this->last[2] !== $this->z){
 			$this->server->api->dhandle("entity.move", $this);
 			$this->calculateVelocity();
-		}
-		if($this->class === ENTITY_ITEM and $this->server->gamemode === 0){
-			$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
-			if($player !== true and $player !== false){
-				if($this->server->api->dhandle("player.pickup", array(
-					"eid" => $player["EID"],
-					"entity" => $this,
-					"block" => $this->type,
-					"meta" => $this->meta,
-					"target" => $this->eid
-				)) !== false){
-					$this->close();
-					return false;
-				}
-			}
 		}
 	}
 
@@ -367,11 +376,11 @@ class Entity extends stdClass{
 		return !isset($this->position) ? false:($round === true ? array_map("floor", $this->position):$this->position);
 	}
 	
-	public function harm($dmg, $cause = ""){
+	public function harm($dmg, $cause = "generic"){
 		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause);
 	}
 
-	public function setHealth($health, $cause = "", $force = false){
+	public function setHealth($health, $cause = "generic", $force = false){
 		$health = (int) $health;
 		$harm = false;
 		if($health < $this->health){

@@ -450,9 +450,6 @@ class Player{
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
-									$this->dataPacket(MC_SET_HEALTH, array(
-										"health" => $this->entity->health,
-									));
 									$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));  
 									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));

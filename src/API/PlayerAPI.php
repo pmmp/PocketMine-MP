@@ -76,6 +76,9 @@ class PlayerAPI{
 							$message .= " tried to swim in lava";
 							break;
 						case "fire":
+							$message .= " went up in flames";
+							break;
+						case "burning":
 							$message .= " burned to death";
 							break;
 						case "suffocation":
