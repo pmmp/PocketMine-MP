@@ -35,7 +35,7 @@ define("ENTITY_PAINTING", 4);
 class Entity extends stdClass{
 	var $invincible, $air, $spawntime, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
 	private $server;
-	function __construct($server, $eid, $class, $type = 0, $data = array()){
+	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
 		$this->eid = (int) $eid;
 		$this->type = (int) $type;
@@ -84,6 +84,9 @@ class Entity extends stdClass{
 				break;
 			case ENTITY_OBJECT:
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+				break;
+			case ENTITY_PAINTING:
+			
 				break;
 		}
 	}
@@ -169,7 +172,7 @@ class Entity extends stdClass{
 							}
 							break;
 						default:
-							if($this->inBlock($x, $y, $z, 0.7) and !isset(Material::$transparent[$b[0]]) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+							if($this->inBlock($x, $y, $z, 0.7) and $y == $endY and !isset(Material::$transparent[$b[0]]) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->harm(1, "suffocation"); //Suffocation
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 300; //Breathing
@@ -280,8 +283,8 @@ class Entity extends stdClass{
 
 	public function close(){
 		if($this->closed === false){
-			$this->server->api->entity->remove($this->eid);
 			$this->closed = true;
+			$this->server->api->entity->remove($this->eid);
 		}
 	}
 
@@ -411,7 +414,7 @@ class Entity extends stdClass{
 				$this->crouched = false;
 				$this->updateMetadata();
 				$this->dead = true;
-				if($this->player !== false){
+				if($this->player instanceof Player){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 				}
 				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
@@ -428,5 +431,3 @@ class Entity extends stdClass{
 	}
 
 }
-
-?>
