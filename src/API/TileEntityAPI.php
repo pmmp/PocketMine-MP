@@ -30,10 +30,31 @@ class TileEntityAPI{
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 	}
+	
+	public function get($x, $y, $z){
+		$x = (int) $x;
+		$y = (int) $y;
+		$z = (int) $z;
+		$tiles = $this->server->query("SELECT * FROM tileentities WHERE x = $x AND y = $y AND z = $z;");
+		$ret = array();
+		if($tiles !== false and $tiles !== true){
+			while(($t = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
+				if(($tile = $this->getByID($t["ID"])) !== false){
+					if($tile->normal === true){					
+						$ret[] = $tile;
+					}
+				}
+			}
+		}
+		if(count($ret) === 0){
+			return false;
+		}
+		return $ret;
+	}
 
-	public function get($eid){
-		if(isset($this->server->tileEntities[$eid])){
-			return $this->server->tileEntities[$eid];
+	public function getByID($id){
+		if(isset($this->server->tileEntities[$id])){
+			return $this->server->tileEntities[$id];
 		}
 		return false;
 	}
@@ -53,7 +74,7 @@ class TileEntityAPI{
 	}
 
 	public function spawnTo($id, $player){
-		$t = $this->get($id);
+		$t = $this->getByID($id);
 		if($t === false){
 			return false;
 		}
@@ -61,7 +82,7 @@ class TileEntityAPI{
 	}
 
 	public function spawnToAll($id){
-		$t = $this->get($id);
+		$t = $this->getByID($id);
 		if($t === false){
 			return false;
 		}

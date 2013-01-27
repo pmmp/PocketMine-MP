@@ -30,6 +30,7 @@ define("TILE_SIGN", 0);
 
 class TileEntity extends stdClass{
 	public $name;
+	public $normal;
 	public $id;
 	public $x;
 	public $y;
@@ -42,6 +43,7 @@ class TileEntity extends stdClass{
 	private $server;
 	function __construct(PocketMinecraftServer $server, $id, $class, $x, $y, $z, $data = array()){
 		$this->server = $server;
+		$this->normal = true;
 		$this->class = (int) $class;
 		$this->data = $data;
 		$this->closed = false;
@@ -54,15 +56,13 @@ class TileEntity extends stdClass{
 		$this->y = (int) $y;
 		$this->z = (int) $z;
 		$this->server->query("INSERT OR REPLACE INTO tileentities (ID, class, x, y, z) VALUES (".$this->id.", ".$this->class.", ".$this->x.", ".$this->y.", ".$this->z.");");
-		$update = false;
 		switch($this->class){
 			case TILE_SIGN:
 				$this->server->query("UPDATE tileentities SET spawnable = 1 WHERE ID = ".$this->id.";");
+				
 				break;
 		}
-		if($update === true){
-			$this->server->schedule(40, array($this, "update"), array(), true);
-		}
+		//$this->server->schedule(40, array($this, "update"), array(), true);
 	}
 
 	public function update(){

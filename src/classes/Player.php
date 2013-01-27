@@ -551,10 +551,14 @@ class Player{
 							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
-							//$this->entity->invincible = true;
+							if($this->entity->dead === false){
+								break;
+							}
+							$this->entity->fire = 0;
+							$this->entity->air = 300;
 							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
-							$this->entity->setHealth(20, "respawn");							
-							//$this->entity->invincible = false;
+							$this->entity->setHealth(20, "respawn");
+							$this->entity->updateMetadata();
 							break;
 						case MC_SET_HEALTH:
 							if($this->server->gamemode === 1){

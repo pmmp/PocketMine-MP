@@ -52,7 +52,7 @@ class LevelAPI{
 				if($block[0] === 0){
 					break;
 				}
-				$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0);
+				$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0, true, true);
 				break;
 		}
 	}
@@ -84,12 +84,10 @@ class LevelAPI{
 		return $this->heightMap[$z][$x];
 	}
 
-	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true){
+	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true, $tiles = false){
 		if($x < 0 or $y < 0 or $z < 0){
 			return false;
 		}
-		$this->map->setBlock($x, $y, $z, $block, $meta);
-		$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 		if($this->server->api->dhandle("block.change", array(
 			"x" => $x,
 			"y" => $y,
@@ -97,9 +95,16 @@ class LevelAPI{
 			"block" => $block,
 			"meta" => $meta,
 		)) !== false){
+			$this->map->setBlock($x, $y, $z, $block, $meta);
+			$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
 			if($update === true){
 				$this->server->api->block->updateBlock($x, $y, $z, BLOCK_UPDATE_NORMAL);
 				$this->server->api->block->updateBlocksAround($x, $y, $z, BLOCK_UPDATE_NORMAL);
+			}
+			if($tiles === true){
+				if(($t = $this->server->api->tileentity->get($x, $y, $z)) !== false){
+					$t[0]->close();
+				}				
 			}
 		}
 		return true;
