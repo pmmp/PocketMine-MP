@@ -165,6 +165,10 @@ class Entity extends stdClass{
 			}
 		}
 		
+		if($this->dead === true){
+			return;
+		}
+		
 		$startX = (int) (round($this->x - 0.5) - 1);
 		$startY = (int) (round($this->y) - 1);
 		$startZ = (int) (round($this->z - 0.5) - 1);
