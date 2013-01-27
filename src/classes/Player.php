@@ -238,9 +238,20 @@ class Player{
 					break;
 				}
 				$this->dataPacket(MC_ANIMATE, array(
-						"eid" => $data["eid"],
-						"action" => $data["action"],
-					));
+					"eid" => $data["eid"],
+					"action" => $data["action"],
+				));
+				break;
+			case "entity.metadata":
+				if($data->eid === $this->eid){
+					$eid = 0;
+				}else{
+					$eid = $data->eid;
+				}
+				$this->dataPacket(MC_SET_ENTITY_DATA, array(
+					"eid" => $eid,
+					"metadata" => $data->getMetadata(),
+				));
 				break;
 			case "entity.event":
 				if($data["entity"]->eid === $this->eid){
@@ -448,6 +459,7 @@ class Player{
 									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));

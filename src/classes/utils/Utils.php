@@ -184,7 +184,7 @@ class Utils extends Thread{
 					$r = array();
 					$r[] = Utils::readLShort(substr($value, $offset, 2));
 					$offset += 2;
-					$r[] = Utils::readByte($value{$offset});
+					$r[] = ord($value{$offset});
 					++$offset;
 					$r[] = Utils::readLShort(substr($value, $offset, 2));
 					$offset += 2;

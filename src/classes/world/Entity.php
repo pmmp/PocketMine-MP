@@ -47,6 +47,8 @@ class Entity extends stdClass{
 		$this->health = 20;
 		$this->dmgcounter = array(0, 0);
 		$this->air = 300;
+		$this->fire = 0;
+		$this->crouched = false;
 		$this->invincible = false;
 		$this->dead = false;
 		$this->closed = false;
@@ -87,6 +89,17 @@ class Entity extends stdClass{
 		if($this->closed === true){
 			return false;
 		}
+		if($this->fire > 0){
+			if(($this->fire % 20) === 0){
+				$this->harm(1, "burning");
+			}
+			$this->fire -= 10;
+			if($this->fire <= 0){
+				$this->fire = 0;
+				$this->updateMetadata();
+			}
+		}
+		
 		$startX = (int) (round($this->x - 0.5) - 1);
 		$startY = (int) (round($this->y) - 1);
 		$startZ = (int) (round($this->z - 0.5) - 1);
@@ -100,21 +113,30 @@ class Entity extends stdClass{
 					switch($b[0]){
 						case 8:
 						case 9: //Drowing
+							if($this->fire > 0 and $this->inBlock($x, $y, $z)){
+								$this->fire = 0;
+								$this->updateMetadata();
+							}
 							if($this->air <= 0){
 								$this->harm(2, "water");
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air -= 10;
+								$this->updateMetadata();
 							}
 							break;
 						case 10: //Lava damage
 						case 11:
 							if($this->inBlock($x, $y, $z)){
 								$this->harm(5, "lava");
+								$this->fire = 300;
+								$this->updateMetadata();
 							}
 							break;
 						case 51: //Fire block damage
 							if($this->inBlock($x, $y, $z)){
 								$this->harm(1, "fire");
+								$this->fire = 300;
+								$this->updateMetadata();
 							}
 							break;
 						case 81: //Cactus damage
@@ -179,6 +201,22 @@ class Entity extends stdClass{
 			return null;
 		}
 	}
+	
+	public function getMetadata(){
+		$flags = 0;
+		$flags |= $this->fire > 0 ? 1:0;
+		$flags |= ($this->crouched === true ? 1:0) << 1;
+		return array(
+			0 => array("type" => 0, "value" => $flags),
+			1 => array("type" => 1, "value" => $this->air),
+			16 => array("type" => 0, "value" => 0),
+			17 => array("type" => 6, "value" => array(0, 0, 0)),
+		);
+	}
+	
+	public function updateMetadata(){
+		$this->server->api->dhandle("entity.metadata", $this);
+	}
 
 	public function spawn($player){
 		if(!is_object($player)){
@@ -196,6 +234,7 @@ class Entity extends stdClass{
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
+					"metadata" => $this->getMetadata(),
 				));
 				$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
 					"eid" => $this->eid,
@@ -221,6 +260,7 @@ class Entity extends stdClass{
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
+					"metadata" => $this->getMetadata(),
 				));
 				break;
 			case ENTITY_OBJECT:
@@ -357,6 +397,10 @@ class Entity extends stdClass{
 				));
 			}
 			if($this->health <= 0 and $this->dead === false){
+				$this->air = 300;
+				$this->fire = 0;
+				$this->crouched = false;
+				$this->updateMetadata();
 				$this->dead = true;
 				if($this->player !== false){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));

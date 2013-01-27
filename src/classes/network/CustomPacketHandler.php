@@ -208,11 +208,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
-					$this->raw .= Utils::writeMetadata(array(
-						1 => array("type" => 1, "value" => 300),
-						16 => array("type" => 0, "value" => 0),
-						17 => array("type" => 6, "value" => array(0, 0, 0)),
-					));
+					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
 			case MC_ADD_PLAYER:
@@ -231,11 +227,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
-					$this->raw .= Utils::writeMetadata(array(
-						1 => array("type" => 1, "value" => 300),
-						16 => array("type" => 0, "value" => 0),
-						17 => array("type" => 6, "value" => array(0, 0, 0)),
-					));
+					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
 			case MC_ADD_ENTITY:
@@ -489,11 +481,10 @@ class CustomPacketHandler{
 			case MC_SET_ENTITY_DATA:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["metadata"] = Utils::readMetadata($this->get(true));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
-					$this->raw .= Utils::writeMetadata(array(
-
-					));
+					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
 			case MC_SET_HEALTH:
