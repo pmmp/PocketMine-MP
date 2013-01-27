@@ -26,6 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PocketMinecraftServer{
+	public $tCnt;
 	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $serverType, $lastTick, $ticker;
 	
@@ -45,7 +46,8 @@ class PocketMinecraftServer{
 		console("[INFO] Loading database...");
 		$this->startDatabase();
 		$this->doTick = false;
-		$this->api = false;		
+		$this->api = false;	
+		$this->tCnt = 1;
 		$this->mapDir = false;
 		$this->mapName = false;
 		$this->events = array();
@@ -57,12 +59,12 @@ class PocketMinecraftServer{
 		$this->tileEntities = array();
 		$this->entities = array();
 		$this->custom = array();
-		$this->evCnt = 0;
-		$this->handCnt = 0;
+		$this->evCnt = 1;
+		$this->handCnt = 1;
 		$this->eidCnt = 1;
 		$this->maxClients = 20;
 		$this->schedule = array();
-		$this->scheduleCnt = 0;
+		$this->scheduleCnt = 1;
 		$this->description = "";
 		$this->whitelist = false;
 		$this->clients = array();
@@ -113,7 +115,7 @@ class PocketMinecraftServer{
 		//$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
-		$this->query("CREATE TABLE metadata (EID INTEGER PRIMARY KEY, name TEXT, value TEXT);");
+		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, class NUMERIC, x NUMERIC, y NUMERIC, z NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
@@ -327,7 +329,21 @@ class PocketMinecraftServer{
 					}
 				}
 			}
-			console("[DEBUG] Loaded ".count($this->entities)." Entities", true, true, 2);
+			$tiles = unserialize(file_get_contents($this->mapDir."tileEntities.dat"));
+			foreach($tiles as $tile){
+				if(!isset($tile["id"])){
+					break;
+				}
+				$class = false;
+				switch($tile["id"]){
+					case "Sign":
+						$class = TILE_SIGN;
+						break;
+				}
+				if($class !== false){
+					$t = $this->api->tileentity->add($class, $tile["x"], $tile["y"], $tile["z"], $tile);
+				}
+			}
 			$this->action(1000000 * 60 * 15, '$this->api->chat->broadcast("Forcing save...");$this->save();');
 		}
 	}
