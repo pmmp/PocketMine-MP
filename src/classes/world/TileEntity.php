@@ -57,6 +57,7 @@ class TileEntity extends stdClass{
 		$update = false;
 		switch($this->class){
 			case TILE_SIGN:
+				$this->server->query("UPDATE tileentities SET spawnable = 1 WHERE ID = ".$this->id.";");
 				break;
 		}
 		if($update === true){
