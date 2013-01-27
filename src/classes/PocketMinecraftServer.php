@@ -322,7 +322,7 @@ class PocketMinecraftServer{
 							"pitch" => $entity["Rotation"][1],
 						));
 					}else{
-						$e = $this->api->entity->add(ENTITY_MOB, $entity["id"]);
+						$e = $this->api->entity->add(ENTITY_MOB, $entity["id"], $entity);
 						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
 						$e->setHealth($entity["Health"]);
 
@@ -340,9 +340,7 @@ class PocketMinecraftServer{
 						$class = TILE_SIGN;
 						break;
 				}
-				if($class !== false){
-					$t = $this->api->tileentity->add($class, $tile["x"], $tile["y"], $tile["z"], $tile);
-				}
+				$t = $this->api->tileentity->add($class, $tile["x"], $tile["y"], $tile["z"], $tile);
 			}
 			$this->action(1000000 * 60 * 15, '$this->api->chat->broadcast("Forcing save...");$this->save();');
 		}
@@ -353,11 +351,57 @@ class PocketMinecraftServer{
 			$this->levelData["Time"] = $this->time;
 			file_put_contents($this->mapDir."level.dat", serialize($this->levelData));
 			$this->map->saveMap($final);
-			console("[INFO] Saving entities...");
-			foreach($this->entities as $entity){
-
-			}
 			$this->trigger("server.save", $final);
+			console("[INFO] Saving entities...");
+			if(count($this->entities) > 0){
+				$entities = array();
+				foreach($this->entities as $entity){
+					if($entity->class === ENTITY_MOB){
+						$entities[] = array(
+							"id" => $entity->type,
+							"Color" => @$entity->data["Color"],
+							"Sheared" => @$entity->data["Sheared"],
+							"Health" => $entity->health,
+							"Pos" => array(
+								0 => $entity->x,
+								1 => $entity->y,
+								2 => $entity->z,
+							),
+							"Rotation" => array(
+								0 => $entity->yaw,
+								1 => $entity->pitch,
+							),				
+						);
+					}elseif($entity->class === ENTITY_ITEM){
+						$entities[] = array(
+							"id" => 64,
+							"Item" => array(
+								"id" => $entity->type,
+								"Damage" => $entity->meta,
+								"Count" => $entity->stack,
+							),
+							"Health" => $entity->health,
+							"Pos" => array(
+								0 => $entity->x,
+								1 => $entity->y,
+								2 => $entity->z,
+							),
+							"Rotation" => array(
+								0 => 0,
+								1 => 0,
+							),				
+						);					
+					}
+				}
+				file_put_contents($this->mapDir."entities.dat", serialize($entities));
+			}
+			if(count($this->tileEntities) > 0){
+				$tiles = array();
+				foreach($this->tileEntities as $tile){
+					$tiles[] = $tile->data;
+				}
+				file_put_contents($this->mapDir."tileEntities.dat", serialize($tiles));
+			}
 		}
 	}
 

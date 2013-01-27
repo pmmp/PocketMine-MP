@@ -27,13 +27,50 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 define("ENTITY_PLAYER", 0);
+
 define("ENTITY_MOB", 1);
+	define("MOB_CHICKEN", 10);
+	define("MOB_COW", 11);
+	define("MOB_PIG", 12);
+	define("MOB_SHEEP", 13);
+
+	define("MOB_ZOMBIE", 32);
+	define("MOB_CREEPER", 33);
+	define("MOB_SKELETON", 34);
+	define("MOB_SPIDER", 35);
+	define("MOB_PIGMAN", 36);
+
 define("ENTITY_OBJECT", 2);
+
 define("ENTITY_ITEM", 3);
+
 define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
-	var $invincible, $air, $spawntime, $dmgcounter, $eid, $type, $name, $x, $y, $z, $speedX, $speedY, $speedZ, $speed, $last = array(0, 0, 0, 0), $yaw, $pitch, $dead, $data, $class, $attach, $metadata, $closed, $player, $onTick;
+	public $invincible;
+	public $age;
+	public $air;
+	public $spawntime;
+	public $dmgcounter;
+	public $eid;
+	public $type;
+	public $name;
+	public $x;
+	public $y;
+	public $z;
+	public $speedX;
+	public $speedY;
+	public $speedZ;
+	public $speed;
+	public $last = array(0, 0, 0, 0);
+	public $yaw;
+	public $pitch;
+	public $dead;
+	public $data;
+	public $class;
+	public $attach;
+	public $closed;
+	public $player;
 	private $server;
 	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
@@ -45,8 +82,9 @@ class Entity extends stdClass{
 		$this->data = $data;
 		$this->status = 0;
 		$this->health = 20;
-		$this->dmgcounter = array(0, 0);
+		$this->dmgcounter = array(0, 0, 0);
 		$this->air = 300;
+		$this->onground = true;
 		$this->fire = 0;
 		$this->crouched = false;
 		$this->invincible = false;
@@ -57,7 +95,6 @@ class Entity extends stdClass{
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
 		$this->server->schedule(4, array($this, "update"), array(), true);
 		$this->server->schedule(10, array($this, "environmentUpdate"), array(), true);
-		$this->metadata = array();
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
@@ -77,9 +114,10 @@ class Entity extends stdClass{
 			case ENTITY_ITEM:
 				$this->meta = (int) $this->data["meta"];
 				$this->stack = (int) $this->data["stack"];
-				$this->setHealth(2, "generic");
+				$this->setHealth(5, "generic");
 				break;
 			case ENTITY_MOB:
+				$this->setHealth($this->data["Health"], "generic");
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				break;
 			case ENTITY_OBJECT:
@@ -218,12 +256,16 @@ class Entity extends stdClass{
 		$flags = 0;
 		$flags |= $this->fire > 0 ? 1:0;
 		$flags |= ($this->crouched === true ? 1:0) << 1;
-		return array(
+		$d = array(
 			0 => array("type" => 0, "value" => $flags),
 			1 => array("type" => 1, "value" => $this->air),
 			16 => array("type" => 0, "value" => 0),
 			17 => array("type" => 6, "value" => array(0, 0, 0)),
 		);
+		if($this->class === ENTITY_MOB and $this->type === MOB_SHEEP){
+			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 5) | ($this->data["Color"] & 0x0F);
+		}
+		return $d;
 	}
 	
 	public function updateMetadata(){
@@ -390,7 +432,8 @@ class Entity extends stdClass{
 			$harm = true;
 			$dmg = $this->health - $health;
 			if(($this->server->gamemode === 0 or $force === true) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
-				$this->dmgcounter = array(microtime(true) + 0.5, $dmg);
+				$this->dmgcounter[0] = microtime(true) + 0.5;
+				$this->dmgcounter[1] = $dmg;
 			}else{
 				return false; //Entity inmunity
 			}

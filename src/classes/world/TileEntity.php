@@ -45,6 +45,9 @@ class TileEntity extends stdClass{
 		$this->class = (int) $class;
 		$this->data = $data;
 		$this->closed = false;
+		if($class === false){
+			$this->closed = true;
+		}
 		$this->name = "";
 		$this->id = (int) $id;
 		$this->x = (int) $x;
@@ -68,6 +71,9 @@ class TileEntity extends stdClass{
 	}
 
 	public function spawn($player){
+		if($this->closed){
+			return false;
+		}
 		if(!($player instanceof Player)){
 			$player = $this->server->api->player->get($player);
 		}
