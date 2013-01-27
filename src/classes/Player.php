@@ -304,6 +304,9 @@ class Player{
 					}
 					break;
 				case 0x07:
+					if($this->loggedIn === true){
+						break;
+					}
 					$this->send(0x08, array(
 						MAGIC,
 						$this->server->serverID,
@@ -353,6 +356,9 @@ class Player{
 							$this->close("client disconnect");
 							break;
 						case MC_CLIENT_CONNECT:
+							if($this->loggedIn === true){
+								break;
+							}
 							$this->dataPacket(MC_SERVER_HANDSHAKE, array(
 								"port" => $this->port,
 								"session" => $data["session"],
@@ -360,7 +366,9 @@ class Player{
 							));
 							break;
 						case MC_CLIENT_HANDSHAKE:
-
+							if($this->loggedIn === true){
+								break;
+							}
 							break;
 						case MC_LOGIN:
 							if($this->loggedIn === true){
