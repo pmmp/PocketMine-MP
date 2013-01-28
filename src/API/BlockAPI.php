@@ -491,6 +491,10 @@ class BlockAPI{
 			case 53://Stairs
 			case 67:
 			case 108:
+			case 109:
+			case 114:
+			case 128:
+			case 156:
 				$faces = array(
 					0 => 0,
 					1 => 2,
@@ -498,6 +502,9 @@ class BlockAPI{
 					3 => 3,
 				);
 				$data["meta"] = $faces[$direction] & 0x03;
+				if(($data["y"] - 1) > $entity->y){
+					$data["meta"] |= 0x04; //Upside-down stairs
+				}
 				break;
 			case 96: //trapdoor
 				if(isset(Material::$transparent[$target[0]])){

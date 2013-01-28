@@ -129,6 +129,7 @@ class Material{
 		109 => true,
 		114 => true,
 		128 => true,
+		156 => true,
 	);
 	static $replaceable = array(
 		0 => true,
@@ -235,6 +236,8 @@ class Material{
 		108 => true,
 		112 => true,
 		114 => true,
+		128 => true,
+		156 => true,
 		246 => true,
 		247 => true,
 	);
