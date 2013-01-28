@@ -98,9 +98,9 @@ class Entity extends stdClass{
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
-		$this->speedX = isset($this->data["speedX"]) ? $this->data["speedX"]:0;
-		$this->speedY = isset($this->data["speedY"]) ? $this->data["speedY"]:0;
-		$this->speedZ = isset($this->data["speedZ"]) ? $this->data["speedZ"]:0;
+		$this->speedX = /*isset($this->data["speedX"]) ? $this->data["speedX"]:*/0;
+		$this->speedY = /*isset($this->data["speedY"]) ? $this->data["speedY"]:*/0;
+		$this->speedZ = /*isset($this->data["speedZ"]) ? $this->data["speedZ"]:*/0;
 		$this->speed = 0;
 		$this->yaw = isset($this->data["yaw"]) ? $this->data["yaw"]:0;
 		$this->pitch = isset($this->data["pitch"]) ? $this->data["pitch"]:0;
@@ -230,9 +230,35 @@ class Entity extends stdClass{
 		if($this->closed === true){
 			return false;
 		}
-		if($this->last[0] !== $this->x or $this->last[1] !== $this->y or $this->last[2] !== $this->z){
+		if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
+			$x = (int) round($this->x - 0.5);
+			$y = (int) round($this->y - 1);
+			$z = (int) round($this->z - 0.5);
+			if($this->speedX != 0){
+				$this->x += $this->speedX;
+			}
+			if($this->speedY != 0){
+				$this->y += $this->speedY;
+			}
+			if($this->speedZ != 0){
+				$this->z += $this->speedZ;
+			}
+			$b = $this->server->api->level->getBlock($x, $y, $z);
+			if(isset(Material::$transparent[$b[0]])){
+				$this->speedY -= 0.32;
+			}elseif($this->speedY < 0){
+				var_dump($this->speedY);
+				$this->y = $y + 1.19;
+				$this->speedY = 0;
+			}
+		}
+		
+		if($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z){
 			$this->server->api->dhandle("entity.move", $this);
-			$this->calculateVelocity();
+			if($this->class === ENTITY_PLAYER){
+				$this->calculateVelocity();				
+			}
+			$this->updateLast();
 		}
 	}
 
@@ -406,19 +432,22 @@ class Entity extends stdClass{
 	
 	public function calculateVelocity(){
 		$diffTime = microtime(true) - $this->last[3];
-		$this->last[3] = microtime(true);
 		$origin = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 		$final = new Vector3($this->x, $this->y, $this->z);
 		$speedX = abs($this->x - $this->last[0]) / $diffTime;
-		$this->last[0] = $this->x;
 		$speedY = ($this->y - $this->last[1]) / $diffTime;
-		$this->last[1] = $this->y;
 		$speedZ = abs($this->z - $this->last[2]) / $diffTime;
-		$this->last[2] = $this->z;
 		$this->speedX = $speedX;
 		$this->speedY = $speedY;
 		$this->speedZ = $speedZ;		
 		$this->speed = $origin->distance($final) / $diffTime;
+	}
+	
+	public function updateLast(){
+		$this->last[3] = microtime(true);
+		$this->last[0] = $this->x;
+		$this->last[1] = $this->y;
+		$this->last[2] = $this->z;
 	}
 
 	public function getPosition($round = false){

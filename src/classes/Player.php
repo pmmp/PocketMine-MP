@@ -502,7 +502,7 @@ class Player{
 						case MC_REQUEST_CHUNK:
 							$x = $data["x"] * 16;
 							$z = $data["z"] * 16;
-							$this->actionQueue('
+							/*
 							$max = max(1, floor(($this->MTU - 16 - 255) / 192));
 							$chunk = $this->server->api->level->getOrderedChunk('.$data["x"].', '.$data["z"].', $max);
 							foreach($chunk as $d){
@@ -518,7 +518,8 @@ class Player{
 									$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);
 								}
 							}
-							');
+							*/
+							$this->actionQueue('$max = max(1, floor(($this->MTU - 16 - 255) / 192));$chunk = $this->server->api->level->getOrderedChunk('.$data["x"].', '.$data["z"].', $max);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$data["x"].',"z" => '.$data["z"].',"data" => $d,), true);}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}');
 							console("[INTERNAL] Chunk X ".$data["x"]." Z ".$data["z"]." requested", true, true, 3);
 							break;
 						case MC_USE_ITEM:
