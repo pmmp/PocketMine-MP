@@ -71,7 +71,7 @@ class TileEntity extends stdClass{
 		}
 	}
 
-	public function spawn($player){
+	public function spawn($player, $queue = false){
 		if($this->closed){
 			return false;
 		}
@@ -88,7 +88,7 @@ class TileEntity extends stdClass{
 					"line1" => $this->data["Text2"],
 					"line2" => $this->data["Text3"],
 					"line3" => $this->data["Text4"],
-				), true);
+				), $queue);
 				break;
 		}
 	}

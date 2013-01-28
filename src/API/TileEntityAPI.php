@@ -87,12 +87,12 @@ class TileEntityAPI{
 		));
 	}
 
-	public function spawnTo($id, $player){
+	public function spawnTo($id, $player, $queue = false){
 		$t = $this->getByID($id);
 		if($t === false){
 			return false;
 		}
-		$t->spawn($player);
+		$t->spawn($player, $queue);
 	}
 
 	public function spawnToAll($id){

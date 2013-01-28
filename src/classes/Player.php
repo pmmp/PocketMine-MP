@@ -515,7 +515,7 @@ class Player{
 							$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");
 							if($tiles !== false and $tiles !== true){
 								while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-									$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'");
+									$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);
 								}
 							}
 							');
