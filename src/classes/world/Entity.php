@@ -247,8 +247,7 @@ class Entity extends stdClass{
 			if(isset(Material::$transparent[$b[0]])){
 				$this->speedY -= 0.32;
 			}elseif($this->speedY < 0){
-				var_dump($this->speedY);
-				$this->y = $y + 1.19;
+				$this->y = $y + 1;
 				$this->speedY = 0;
 			}
 		}
