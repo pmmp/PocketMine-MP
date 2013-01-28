@@ -245,6 +245,9 @@ class BlockAPI{
 				$data["stack"] = min(64, $count);
 				$count -= $data["stack"];
 				$e = $this->server->api->entity->add(ENTITY_ITEM, $block, $data);
+				//$e->speedX = mt_rand(-10, 10) / 100;
+				//$e->speedY = mt_rand(0, 5) / 100;
+				//$e->speedZ = mt_rand(-10, 10) / 100;
 				$this->server->api->entity->spawnToAll($e->eid);
 			}
 		}

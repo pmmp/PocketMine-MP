@@ -246,11 +246,13 @@ class Entity extends stdClass{
 			$b = $this->server->api->level->getBlock($x, $y, $z);
 			if(isset(Material::$transparent[$b[0]])){
 				$this->speedY -= 0.04 * 4;
-				$this->server->api->dhandle("entity.motion", $this);
+				$this->server->api->handle("entity.motion", $this);
 			}elseif($this->speedY < 0){
 				$this->y = $y + 1;
+				$this->speedX = 0;
 				$this->speedY = 0;
-				$this->server->api->dhandle("entity.motion", $this);
+				$this->speedZ = 0;
+				$this->server->api->handle("entity.motion", $this);
 			}
 		}
 		
