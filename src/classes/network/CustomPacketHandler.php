@@ -487,6 +487,19 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
+			case MC_SET_ENTITY_MOTION:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["speedX"] = Utils::readShort($this->get(2));
+					$this->data["speedY"] = Utils::readShort($this->get(2));
+					$this->data["speedZ"] = Utils::readShort($this->get(2));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeShort($this->data["speedX"]);
+					$this->raw .= Utils::writeShort($this->data["speedY"]);
+					$this->raw .= Utils::writeShort($this->data["speedZ"]);
+				}
+				break;
 			case MC_SET_HEALTH:
 				if($this->c === false){
 					$this->data["health"] = Utils::readByte($this->get(1));

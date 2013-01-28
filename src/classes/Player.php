@@ -220,6 +220,17 @@ class Player{
 					"pitch" => $data->pitch,
 				));
 				break;
+			case "entity.motion":
+				/*if($data->eid === $this->eid){
+					break;
+				}
+				$this->dataPacket(MC_SET_ENTITY_MOTION, array(
+					"eid" => $data->eid,
+					"speedX" => (int) ($data->speedX * 32000),
+					"speedY" => (int) ($data->speedY * 32000),
+					"speedZ" => (int) ($data->speedZ * 32000),
+				));
+				break;*/
 			case "entity.remove":
 				if($data->eid === $this->eid){
 					break;
@@ -454,6 +465,7 @@ class Player{
 									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));

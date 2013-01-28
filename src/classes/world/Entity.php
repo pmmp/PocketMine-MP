@@ -235,20 +235,22 @@ class Entity extends stdClass{
 			$y = (int) round($this->y - 1);
 			$z = (int) round($this->z - 0.5);
 			if($this->speedX != 0){
-				$this->x += $this->speedX;
+				$this->x += $this->speedX * 4;
 			}
 			if($this->speedY != 0){
-				$this->y += $this->speedY;
+				$this->y += $this->speedY * 4;
 			}
 			if($this->speedZ != 0){
-				$this->z += $this->speedZ;
+				$this->z += $this->speedZ * 4;
 			}
 			$b = $this->server->api->level->getBlock($x, $y, $z);
 			if(isset(Material::$transparent[$b[0]])){
-				$this->speedY -= 0.32;
+				$this->speedY -= 0.04 * 4;
+				$this->server->api->dhandle("entity.motion", $this);
 			}elseif($this->speedY < 0){
 				$this->y = $y + 1;
 				$this->speedY = 0;
+				$this->server->api->dhandle("entity.motion", $this);
 			}
 		}
 		
