@@ -479,6 +479,7 @@ class Player{
 										}
 										$this->inventory[$s] = array(0, 0, 0);
 									}
+									$this->entity->setPosition($this->entity->x, $this->entity->y, $this->entity->z, 0, 0);
 									break;
 								case 2://Chunk loaded?
 									break;

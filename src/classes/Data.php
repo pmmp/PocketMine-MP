@@ -241,6 +241,7 @@ class Material{
 		156 => true,
 		246 => true,
 		247 => true,
+		323 => true, //Special case of signs
 	);
 	static $blocks = array(
 		0 => "Air",

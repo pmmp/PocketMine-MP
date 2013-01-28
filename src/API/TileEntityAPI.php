@@ -70,7 +70,21 @@ class TileEntityAPI{
 	public function add($class, $x, $y, $z, $data = array()){
 		$id = $this->tCnt++;
 		$this->server->tileEntities[$id] = new TileEntity($this->server, $id, $class, $x, $y, $z, $data);
+		$this->spawnToAll($id);
 		return $this->server->tileEntities[$id];
+	}
+	
+	public function addSign($x, $y, $z, $lines = array("", "", "", "")){
+		return $this->add(TILE_SIGN, $x, $y, $z, $data = array(
+			"id" => "Sign",
+			"x" => $x,
+			"y" => $y,
+			"z" => $z,
+			"Text1" => $lines[0],
+			"Text2" => $lines[1],
+			"Text3" => $lines[2],
+			"Text4" => $lines[3],
+		));
 	}
 
 	public function spawnTo($id, $player){

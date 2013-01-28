@@ -104,7 +104,7 @@ class LevelAPI{
 			if($tiles === true){
 				if(($t = $this->server->api->tileentity->get($x, $y, $z)) !== false){
 					$t[0]->close();
-				}				
+				}
 			}
 		}
 		return true;

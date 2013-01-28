@@ -126,10 +126,17 @@ class BlockAPI{
 			case 107:
 			case 108:
 			case 109:
+			case 114:
+			case 128:
+			case 156:
 				$drop[1] = 0;
 				break;
 			case 56:
 				$drop = array(264, 0, 1);
+				break;
+			case 63:
+			case 68:
+				$drop = array(323, 0, 1);
 				break;
 			case 73:
 			case 74:
@@ -617,6 +624,27 @@ class BlockAPI{
 				$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"]);
 				if($blockDown[0] !== 12 or !isset(Material::$transparent[$block0[0]]) or !isset(Material::$transparent[$block1[0]]) or !isset(Material::$transparent[$block2[0]]) or !isset(Material::$transparent[$block3[0]])){
 					return false;
+				}
+				break;
+			case 323: //Signs
+				$faces = array(
+					2 => 2,
+					3 => 3,
+					4 => 4,
+					5 => 5,
+				);
+				if(!isset($faces[$data["face"]])){
+					if($data["face"] === 1){
+						$data["block"] = 63;
+						$data["meta"] = 0;
+						$this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
+					}else{
+						return false;
+					}
+				}else{
+					$data["block"] = 68;
+					$data["meta"] = $faces[$data["face"]];
+					$this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
 				}
 				break;
 		}
