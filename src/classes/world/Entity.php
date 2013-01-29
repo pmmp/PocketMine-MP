@@ -154,6 +154,17 @@ class Entity extends stdClass{
 				}
 			}
 		}
+		
+		if($this->dead === true){
+			$this->fire = 0;
+			$this->air = 300;
+			return;
+		}
+		
+		if($this->y < -16){
+			$this->harm(8, "void", true); //4 per second
+		}
+		
 		if($this->fire > 0){
 			if(($this->fire % 20) === 0){
 				$this->harm(1, "burning");
@@ -163,10 +174,6 @@ class Entity extends stdClass{
 				$this->fire = 0;
 				$this->updateMetadata();
 			}
-		}
-		
-		if($this->dead === true){
-			return;
 		}
 		
 		$startX = (int) (round($this->x - 0.5) - 1);
@@ -459,8 +466,8 @@ class Entity extends stdClass{
 		return !isset($this->position) ? false:($round === true ? array_map("floor", $this->position):$this->position);
 	}
 	
-	public function harm($dmg, $cause = "generic"){
-		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause);
+	public function harm($dmg, $cause = "generic", $force = false){
+		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause, $force);
 	}
 
 	public function setHealth($health, $cause = "generic", $force = false){
