@@ -321,11 +321,14 @@ class PocketMinecraftServer{
 							"yaw" => $entity["Rotation"][0],
 							"pitch" => $entity["Rotation"][1],
 						));
+					}elseif($entity["id"] === 83){ //Painting
+						$e = $this->api->entity->add(ENTITY_OBJECT, $entity["id"], $entity);
+						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+						$e->setHealth($entity["Health"]);
 					}else{
 						$e = $this->api->entity->add(ENTITY_MOB, $entity["id"], $entity);
 						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
 						$e->setHealth($entity["Health"]);
-
 					}
 				}
 			}

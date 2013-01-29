@@ -76,6 +76,7 @@ class ConsoleAPI{
 					break;
 				case "status":
 				case "lag":
+					$this->server->debugInfo(true);
 					$info = $this->server->debugInfo();
 					console("[INFO] TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"].")");
 					break;

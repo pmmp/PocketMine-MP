@@ -41,10 +41,9 @@ define("ENTITY_MOB", 1);
 	define("MOB_PIGMAN", 36);
 
 define("ENTITY_OBJECT", 2);
+	define("OBJECT_PAINTING", 83);
 
 define("ENTITY_ITEM", 3);
-
-define("ENTITY_PAINTING", 4);
 
 class Entity extends stdClass{
 	public $invincible;
@@ -71,6 +70,7 @@ class Entity extends stdClass{
 	public $attach;
 	public $closed;
 	public $player;
+	private $tickCounter;
 	private $server;
 	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
 		$this->server = $server;
@@ -92,9 +92,9 @@ class Entity extends stdClass{
 		$this->dead = false;
 		$this->closed = false;
 		$this->name = "";
+		$this->tickCounter = 0;
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
-		$this->server->schedule(4, array($this, "update"), array(), true);
-		$this->server->schedule(10, array($this, "environmentUpdate"), array(), true);
+		$this->server->schedule(5, array($this, "update"), array(), true);
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
@@ -130,9 +130,6 @@ class Entity extends stdClass{
 	}
 	
 	public function environmentUpdate(){
-		if($this->closed === true){
-			return false;
-		}
 		if($this->class === ENTITY_ITEM){
 			if((microtime(true) - $this->spawntime) >= 300){
 				$this->close(); //Despawn timer
@@ -237,22 +234,30 @@ class Entity extends stdClass{
 		if($this->closed === true){
 			return false;
 		}
+		
+		if($this->tickCounter === 0){
+			$this->tickCounter = 1;
+			$this->environmentUpdate();
+		}else{
+			$this->tickCounter = 0;
+		}
+		
 		if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
 			$x = (int) round($this->x - 0.5);
 			$y = (int) round($this->y - 1);
 			$z = (int) round($this->z - 0.5);
 			if($this->speedX != 0){
-				$this->x += $this->speedX * 4;
+				$this->x += $this->speedX * 5;
 			}
 			if($this->speedY != 0){
-				$this->y += $this->speedY * 4;
+				$this->y += $this->speedY * 5;
 			}
 			if($this->speedZ != 0){
-				$this->z += $this->speedZ * 4;
+				$this->z += $this->speedZ * 5;
 			}
 			$b = $this->server->api->level->getBlock($x, $y, $z);
 			if(isset(Material::$transparent[$b[0]])){
-				$this->speedY -= 0.04 * 4;
+				$this->speedY -= 0.04 * 5;
 				//$this->server->api->handle("entity.motion", $this);
 			}elseif($this->speedY < 0){
 				$this->y = $y + 1;
@@ -266,7 +271,7 @@ class Entity extends stdClass{
 		if($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch){
 			$this->server->api->dhandle("entity.move", $this);
 			if($this->class === ENTITY_PLAYER){
-				$this->calculateVelocity();				
+				$this->calculateVelocity();
 			}
 			$this->updateLast();
 		}
