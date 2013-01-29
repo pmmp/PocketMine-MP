@@ -359,7 +359,7 @@ class PocketMinecraftServer{
 			if(count($this->entities) > 0){
 				$entities = array();
 				foreach($this->entities as $entity){
-					if($entity->class === ENTITY_MOB){
+					if($entity->class === ENTITY_MOB or $entity->class === ENTITY_OBJECT){
 						$entities[] = array(
 							"id" => $entity->type,
 							"Color" => @$entity->data["Color"],
