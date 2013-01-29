@@ -1,5 +1,5 @@
 #!/bin/bash
-COMPILER_VERSION="0.5"
+COMPILER_VERSION="0.6"
 PHP_VERSION="5.4.11"
 ZLIB_VERSION="1.2.7"
 GMP_VERSION="5.1.0"
@@ -21,6 +21,7 @@ rm -r -f php5/ >> $DIR/install.log 2>&1
 mkdir -m 0777 install_data >> $DIR/install.log 2>&1
 mkdir -m 0777 php5 >> $DIR/install.log 2>&1
 cd install_data
+set -e
 
 #PHP 5
 echo -n "[PHP5] downloading $PHP_VERSION..."
@@ -85,8 +86,13 @@ wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-c
 mv pthreads-$PTHREADS_VERSION $DIR/install_data/php/ext/pthreads
 echo " done!"
 
+set +e
 echo -n "[PHP5] checking..."
-MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
+if which free >/dev/null; then
+    MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
+else
+    MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
+fi
 if [ $MAX_MEMORY -gt 2048 ]
 then
   echo -n " enabling optimizations..."
@@ -94,6 +100,7 @@ then
 else
   OPTIMIZATION=""
 fi
+set -e
 cd php
 ./buildconf --force >> $DIR/install.log 2>&1
 ./configure $OPTIMIZATION--prefix=$DIR/php5 \
