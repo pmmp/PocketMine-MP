@@ -162,7 +162,7 @@ class Entity extends stdClass{
 		}
 		
 		if($this->y < -16){
-			$this->harm(8, "void", true); //4 per second
+			$this->harm(8, "void", true);
 		}
 		
 		if($this->fire > 0){
@@ -468,6 +468,10 @@ class Entity extends stdClass{
 	
 	public function harm($dmg, $cause = "generic", $force = false){
 		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause, $force);
+	}
+
+	public function heal($health, $cause = "generic"){
+		return $this->setHealth(min(20, $this->getHealth() + ((int) $health)), $cause);
 	}
 
 	public function setHealth($health, $cause = "generic", $force = false){

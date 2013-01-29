@@ -583,6 +583,30 @@ class Player{
 							}
 							//$this->entity->setHealth($data["health"], "client");
 							break;
+						case MC_ENTITY_EVENT:
+							$data["eid"] = $this->eid;
+							switch($data["event"]){
+								case 9: //Eating
+									$items = array(
+										260 => 2, //Apples
+										282 => 10, //Stew
+										297 => 5, //Bread
+										319 => 3,
+										320 => 8,
+										363 => 3,
+										364 => 8,
+									);
+									if(isset($items[$this->equipment[0]])){
+										$this->removeItem($this->equipment[0], 0, 1);
+										$this->dataPacket(MC_ENTITY_EVENT, array(
+											"eid" => 0,
+											"event" => 9,
+										));
+										$this->entity->heal($items[$this->equipment[0]], "eating");
+									}
+									break;
+							}
+							break;
 						case MC_DROP_ITEM:
 							if($this->server->handle("player.drop", $data) !== false){
 								$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);

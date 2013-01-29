@@ -478,6 +478,9 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt($this->data["target"]);*/
 				}
 				break;
+			case MC_PLAYER_ACTION:
+				//TODO
+				break;
 			case MC_SET_ENTITY_DATA:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
