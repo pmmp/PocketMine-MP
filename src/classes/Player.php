@@ -174,6 +174,9 @@ class Player{
 	}
 	
 	public function hasItem($type, $damage = false){
+		if($type === 0){
+			return true;
+		}
 		foreach($this->inventory as $s => $data){
 			if($data[0] === $type and ($data[1] === $damage or $damage === false) and $data[2] > 0){
 				return true;

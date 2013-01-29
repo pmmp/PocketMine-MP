@@ -246,13 +246,13 @@ class Entity extends stdClass{
 			$b = $this->server->api->level->getBlock($x, $y, $z);
 			if(isset(Material::$transparent[$b[0]])){
 				$this->speedY -= 0.04 * 4;
-				$this->server->api->handle("entity.motion", $this);
+				//$this->server->api->handle("entity.motion", $this);
 			}elseif($this->speedY < 0){
 				$this->y = $y + 1;
 				$this->speedX = 0;
 				$this->speedY = 0;
 				$this->speedZ = 0;
-				$this->server->api->handle("entity.motion", $this);
+				//$this->server->api->handle("entity.motion", $this);
 			}
 		}
 		
@@ -437,9 +437,9 @@ class Entity extends stdClass{
 		$diffTime = microtime(true) - $this->last[5];
 		$origin = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 		$final = new Vector3($this->x, $this->y, $this->z);
-		$speedX = abs($this->x - $this->last[0]) / $diffTime;
-		$speedY = ($this->y - $this->last[1]) / $diffTime;
-		$speedZ = abs($this->z - $this->last[2]) / $diffTime;
+		$speedX = ($this->last[0] - $this->x) / $diffTime;
+		$speedY = ($this->last[1] - $this->y) / $diffTime;
+		$speedZ = ($this->last[2] - $this->z) / $diffTime;
 		$this->speedX = $speedX;
 		$this->speedY = $speedY;
 		$this->speedZ = $speedZ;		
