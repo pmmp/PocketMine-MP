@@ -1,10 +1,12 @@
 #!/bin/bash
-COMPILER_VERSION="0.6"
+COMPILER_VERSION="0.7"
 PHP_VERSION="5.4.11"
+ZEND_VM="GOTO"
 ZLIB_VERSION="1.2.7"
 GMP_VERSION="5.1.0"
 PTHREADS_VERSION="e4700122a89bf759a9c3a024bda0c7d025bcb93d"
 CURL_VERSION="curl-7_28_1"
+#READLINE_VERSION="6.2"
 
 echo "[PocketMine] PHP installer and compiler for Linux - by @shoghicp v$COMPILER_VERSION"
 DIR=`pwd`
@@ -45,6 +47,25 @@ echo -n " cleaning..."
 cd ..
 rm -r -f ./zlib
 echo " done!"
+
+#Readline
+#echo -n "[Readline] downloading $READLINE_VERSION..."
+#wget ftp://ftp.cwru.edu/pub/bash/readline-$READLINE_VERSION.tar.gz -q -O - | tar -xz >> $DIR/install.log 2>&1
+#mv readline-$READLINE_VERSION readline
+#echo -n " checking..."
+#cd readline
+#./configure --prefix=$DIR/install_data/php/ext/readline \
+#--disable-shared >> $DIR/install.log 2>&1
+#echo -n " compiling..."
+#make >> $DIR/install.log 2>&1
+#echo -n " installing..."
+#make install >> $DIR/install.log 2>&1
+#echo -n " cleaning..."
+#cd ..
+#rm -r -f ./readine
+#echo " done!"
+
+#--with-readline=$DIR/install_data/php/ext/readline
 
 #GMP
 echo -n "[GMP] downloading $GMP_VERSION..."
@@ -128,6 +149,8 @@ cd php
 --enable-pcntl \
 --enable-pthreads \
 --enable-maintainer-zts \
+--enable-zend-signals \
+--with-zend-vm=$ZEND_VM \
 --enable-cli >> $DIR/install.log 2>&1
 echo -n " compiling..."
 make >> $DIR/install.log 2>&1
