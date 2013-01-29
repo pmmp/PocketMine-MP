@@ -36,23 +36,17 @@ set_error_handler("fatal_handler", E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_
 
 $errors = 0;
 
-if(version_compare("5.3.3", PHP_VERSION) > 0){
-	console("[ERROR] Use PHP >= 5.3.3", true, true, 0);
-	++$errors;
-}elseif(version_compare("5.5.0", PHP_VERSION) <= 0){
-	console("[NOTICE] PocketMine-MP hasn't been tested with PHP >= 5.5", true, true, 0);
+if(version_compare("5.4.0", PHP_VERSION) > 0){
+	console("[ERROR] Use PHP >= 5.4.0", true, true, 0);
 	++$errors;
 }
 
-if(version_compare("5.4.0", PHP_VERSION) > 0){
-	console("[NOTICE] Use PHP >= 5.4.0 to increase performance", true, true, 0);
-	define("HEX2BIN", false);
-}else{
-	define("HEX2BIN", true);
+if(version_compare("5.5.0", PHP_VERSION) <= 0){
+	console("[NOTICE] PocketMine-MP hasn't been tested with PHP >= 5.5", true, true, 0);
 }
 
 if(php_sapi_name() !== "cli"){
-	console("[ERROR] Use PHP-CLI to execute the library or create your own", true, true, 0);
+	console("[ERROR] Use PHP-CLI to execute the server or create your own", true, true, 0);
 	++$errors;
 }
 
