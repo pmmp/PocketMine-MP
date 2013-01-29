@@ -62,7 +62,7 @@ class Entity extends stdClass{
 	public $speedY;
 	public $speedZ;
 	public $speed;
-	public $last = array(0, 0, 0, 0);
+	public $last = array(0, 0, 0, 0, 0, 0);
 	public $yaw;
 	public $pitch;
 	public $dead;
@@ -256,7 +256,7 @@ class Entity extends stdClass{
 			}
 		}
 		
-		if($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z){
+		if($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch){
 			$this->server->api->dhandle("entity.move", $this);
 			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();				
@@ -434,7 +434,7 @@ class Entity extends stdClass{
 	}
 	
 	public function calculateVelocity(){
-		$diffTime = microtime(true) - $this->last[3];
+		$diffTime = microtime(true) - $this->last[5];
 		$origin = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 		$final = new Vector3($this->x, $this->y, $this->z);
 		$speedX = abs($this->x - $this->last[0]) / $diffTime;
@@ -446,11 +446,13 @@ class Entity extends stdClass{
 		$this->speed = $origin->distance($final) / $diffTime;
 	}
 	
-	public function updateLast(){
-		$this->last[3] = microtime(true);
+	public function updateLast(){		
 		$this->last[0] = $this->x;
 		$this->last[1] = $this->y;
 		$this->last[2] = $this->z;
+		$this->last[3] = $this->yaw;
+		$this->last[4] = $this->pitch;
+		$this->last[5] = microtime(true);
 	}
 
 	public function getPosition($round = false){
