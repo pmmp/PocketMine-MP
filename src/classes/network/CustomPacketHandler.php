@@ -91,7 +91,7 @@ class CustomPacketHandler{
 					$this->raw .= "\xcd";
 					$this->raw .= Utils::writeShort($this->data["port"]);
 					$this->raw .= Utils::writeDataArray(array(
-						"\xff\xff\xff\xff",
+						"\xf5\xff\xff\xf5",
 						"\xff\xff\xff\xff",
 						"\xff\xff\xff\xff",
 						"\xff\xff\xff\xff",
@@ -140,11 +140,11 @@ class CustomPacketHandler{
 			case MC_LOGIN:
 				if($this->c === false){
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
-					$this->data["maxX"] = Utils::readInt($this->get(4));
-					$this->data["maxY"] = Utils::readInt($this->get(4));
+					$this->data["protocol1"] = Utils::readInt($this->get(4));
+					$this->data["protocol2"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
-					$this->raw .= "\x00\x00\x00\x08\x00\x00\x00\x08";
+					$this->raw .= Utils::writeInt(CURRENT_PROTOCOL).Utils::writeInt(CURRENT_PROTOCOL);
 				}
 				break;
 			case MC_LOGIN_STATUS:

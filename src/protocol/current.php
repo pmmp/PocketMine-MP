@@ -68,20 +68,20 @@ define("MC_CHUNK_DATA", 0x9e);
 
 define("MC_PLAYER_EQUIPMENT", 0x9f);
 
-define("MC_INTERACT", 0xa0);
-define("MC_USE_ITEM", 0xa1);
-define("MC_PLAYER_ACTION", 0xa2);
-define("MC_SET_ENTITY_DATA", 0xa3);
-define("MC_SET_ENTITY_MOTION", 0xa4);
-define("MC_SET_HEALTH", 0xa5);
-define("MC_SET_SPAWN_POSITION", 0xa6);
-define("MC_ANIMATE", 0xa7);
-define("MC_RESPAWN", 0xa8);
+define("MC_INTERACT", 0xa1);
+define("MC_USE_ITEM", 0xa2);
+define("MC_PLAYER_ACTION", 0xa3);
+define("MC_SET_ENTITY_DATA", 0xa4);
+define("MC_SET_ENTITY_MOTION", 0xa5);
+define("MC_SET_HEALTH", 0xa6);
+define("MC_SET_SPAWN_POSITION", 0xa7);
+define("MC_ANIMATE", 0xa8);
+define("MC_RESPAWN", 0xa9);
 
-define("MC_DROP_ITEM", 0xaa);
-define("MC_CONTAINER_OPEN", 0xab);
-define("MC_CONTAINER_CLOSE", 0xac);
-define("MC_CONTAINER_SET_SLOT", 0xad);
+define("MC_DROP_ITEM", 0xab);
+define("MC_CONTAINER_OPEN", 0xac);
+define("MC_CONTAINER_CLOSE", 0xad);
+define("MC_CONTAINER_SET_SLOT", 0xae);
 
 define("MC_CLIENT_MESSAGE", 0xb1);
 define("MC_SIGN_UPDATE", 0xb2);

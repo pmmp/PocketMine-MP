@@ -55,7 +55,7 @@ class Player{
 		$this->CID = $this->server->clientID($ip, $port);
 		$this->ip = $ip;
 		$this->port = $port;
-		$this->timeout = microtime(true) + 25;
+		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(0, 0, 0));
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
@@ -297,7 +297,7 @@ class Player{
 
 	public function handle($pid, $data){
 		if($this->connected === true){
-			$this->timeout = microtime(true) + 25;
+			$this->timeout = microtime(true) + 20;
 			switch($pid){
 				case 0xa0: //NACK
 					if(isset($this->buffer[$data[2]])){
@@ -368,6 +368,10 @@ class Player{
 						}
 						$this->send(0xc0, array(1, true, $data[0]));
 					}
+					
+					if(!isset($data["id"])){
+						break;
+					}
 					switch($data["id"]){
 
 						case MC_KEEP_ALIVE:
@@ -397,6 +401,10 @@ class Player{
 							break;
 						case MC_LOGIN:
 							if($this->loggedIn === true){
+								break;
+							}
+							if($data["protocol1"] !== CURRENT_PROTOCOL){
+								$this->close("protocol", false);
 								break;
 							}
 							$this->loggedIn = true;
