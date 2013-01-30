@@ -133,10 +133,6 @@ class CustomPacketHandler{
 			case MC_DISCONNECT:
 				//null
 				break;
-			case 0x18:
-			case 0xa9:
-				//null
-				break;
 			case MC_LOGIN:
 				if($this->c === false){
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));

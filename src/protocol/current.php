@@ -79,8 +79,7 @@ define("MC_SET_ENTITY_MOTION", 0xa5);
 define("MC_SET_HEALTH", 0xa8);
 define("MC_SET_SPAWN_POSITION", 0xa9);
 define("MC_ANIMATE", 0xaa);
-
-define("MC_RESPAWN", 0xac);
+define("MC_RESPAWN", 0xab);
 
 define("MC_DROP_ITEM", 0xad);
 
