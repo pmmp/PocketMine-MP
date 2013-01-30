@@ -319,7 +319,7 @@ class Entity extends stdClass{
 	}
 
 	public function spawn($player){
-		if(!is_object($player)){
+		if(!($player instanceof Player)){
 			$player = $this->server->api->player->get($player);
 		}
 		if($player->eid === $this->eid){

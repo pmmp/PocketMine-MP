@@ -101,7 +101,7 @@ class PocketMinecraftServer{
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
-		if($this->api !== false){
+		if($this->api instanceof ServerAPI){
 			$this->action(1000000 * 80, '$cnt = count($this->clients); if($cnt > 1){$this->api->chat->broadcast("Online (".$cnt."): ".implode(", ",$this->api->player->online()));}');
 		}
 		$this->action(1000000 * 120, '$this->debugInfo(true);');

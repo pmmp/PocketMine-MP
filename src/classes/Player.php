@@ -92,7 +92,7 @@ class Player{
 	}
 
 	public function save(){
-		if(is_object($this->entity)){
+		if($this->entity instanceof Entity){
 			$this->data["spawn"] = array(
 				"x" => $this->entity->x,
 				"y" => $this->entity->y,
@@ -521,7 +521,7 @@ class Player{
 							}
 							break;
 						case MC_MOVE_PLAYER:
-							if(is_object($this->entity)){
+							if($this->entity instanceof Entity){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								$this->server->api->dhandle("player.move", $this->entity);
 							}
