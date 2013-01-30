@@ -47,6 +47,7 @@ class Player{
 	var $spawned = false;
 	var $inventory;
 	var $equipment = array(1, 0);
+	var $armor = array(0, 0, 0, 0);
 	var $loggedIn = false;
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
@@ -187,6 +188,15 @@ class Player{
 	
 	public function eventHandler($data, $event){
 		switch($event){
+			case "player.armor":
+				if($data["eid"] === $this->eid){
+					$data["eid"] = 0;
+					$this->armor = array($data["slot0"], $data["slot1"], $data["slot2"], $data["slot3"]);
+					$this->dataPacket(MC_SET_ARMOR, $data);
+				}else{
+					$this->dataPacket(MC_SET_ARMOR, $data);
+				}
+				break;
 			case "player.block.place":
 				if($data["eid"] === $this->eid and $this->server->gamemode === 0){
 					$this->removeItem($data["original"][0], $data["original"][1], 1);
@@ -437,6 +447,7 @@ class Player{
 								$this->data["inventory"] = $this->inventory;
 							}
 							$this->inventory = &$this->data["inventory"];
+							$this->armor = &$this->data["armor"];
 							
 							$this->data["lastIP"] = $this->ip;
 							$this->data["lastID"] = $this->clientID;
@@ -480,9 +491,11 @@ class Player{
 									$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
+									$this->handle("player.armor", array("eid" => $this->eid, "slot0" => $this->armor[0], "slot1" => $this->armor[1], "slot2" => $this->armor[2], "slot3" => $this->armor[3]));
 									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
@@ -560,6 +573,10 @@ class Player{
 								break;
 							}
 							$this->server->handle("player.block.break", $data);
+							break;
+						case MC_SET_ARMOR:
+							$data["eid"] = $this->eid;
+							$this->handle("player.armor", $data);
 							break;
 						case MC_INTERACT:
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){

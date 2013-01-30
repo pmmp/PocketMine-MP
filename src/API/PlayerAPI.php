@@ -261,6 +261,7 @@ class PlayerAPI{
 					"z" => $this->server->spawn["z"],
 				),
 				"inventory" => array_fill(0, 36, array(0, 0, 0)),
+				"armor" => array(0, 0, 0, 0),
 				"health" => 20,
 				"lastIP" => "",
 				"lastID" => 0,

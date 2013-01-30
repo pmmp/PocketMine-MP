@@ -445,6 +445,21 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["meta"]);
 				}
 				break;
+			case MC_SET_ARMOR:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["slot0"] = ord($this->get(1));
+					$this->data["slot1"] = ord($this->get(1));
+					$this->data["slot2"] = ord($this->get(1));
+					$this->data["slot3"] = ord($this->get(1));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= chr($this->data["slot0"]);
+					$this->raw .= chr($this->data["slot1"]);
+					$this->raw .= chr($this->data["slot2"]);
+					$this->raw .= chr($this->data["slot3"]);
+				}
+				break;
 			case MC_INTERACT:
 				if($this->c === false){
 					$this->data["action"] = Utils::readByte($this->get(1));

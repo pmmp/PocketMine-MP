@@ -69,7 +69,7 @@ $dataName = array(
 	MC_CHUNK_DATA => "ChunkData",
 
 	MC_PLAYER_EQUIPMENT => "PlayerEquipment",
-
+	MC_SET_ARMOR => "SetArmorSlot",
 	MC_INTERACT => "Interact",
 	MC_USE_ITEM => "UseItem",
 	MC_PLAYER_ACTION => "PlayerAction",
