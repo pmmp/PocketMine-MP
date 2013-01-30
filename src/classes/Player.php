@@ -495,7 +495,7 @@ class Player{
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
-									$this->handle("player.armor", array("eid" => $this->eid, "slot0" => $this->armor[0], "slot1" => $this->armor[1], "slot2" => $this->armor[2], "slot3" => $this->armor[3]));
+									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => $this->armor[0], "slot1" => $this->armor[1], "slot2" => $this->armor[2], "slot3" => $this->armor[3]));
 									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
@@ -576,7 +576,7 @@ class Player{
 							break;
 						case MC_SET_ARMOR:
 							$data["eid"] = $this->eid;
-							$this->handle("player.armor", $data);
+							$this->server->handle("player.armor", $data);
 							break;
 						case MC_INTERACT:
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
