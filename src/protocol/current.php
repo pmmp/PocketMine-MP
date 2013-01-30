@@ -69,7 +69,7 @@ define("MC_CHUNK_DATA", 0x9e);
 define("MC_PLAYER_EQUIPMENT", 0x9f);
 
 
-//a0 set armor slot
+//define("MC_SET_ARMOR_SLOT", 0xa0);
 define("MC_INTERACT", 0xa1);
 define("MC_USE_ITEM", 0xa2);
 define("MC_PLAYER_ACTION", 0xa3);
@@ -80,13 +80,14 @@ define("MC_SET_HEALTH", 0xa8);
 define("MC_SET_SPAWN_POSITION", 0xa9);
 define("MC_ANIMATE", 0xaa);
 define("MC_RESPAWN", 0xab);
-
+//define("MC_VOID", 0xac);
 define("MC_DROP_ITEM", 0xad);
-
 define("MC_CONTAINER_OPEN", 0xae);
 define("MC_CONTAINER_CLOSE", 0xaf);
 define("MC_CONTAINER_SET_SLOT", 0xb0);
-
+//define("MC_CONTAINER_SET_DATA", 0xb1);
+//define("MC_CONTAINER_SET_CONTENT", 0xb2);
+//define("MC_CONTAINER_ACK", 0xb3);
 define("MC_CLIENT_MESSAGE", 0xb4);
 define("MC_SIGN_UPDATE", 0xb5);
 define("MC_ADVENTURE_SETTINGS", 0xb6);
