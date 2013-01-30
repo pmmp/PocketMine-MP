@@ -192,9 +192,9 @@ class Player{
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
 					$this->armor = array($data["slot0"], $data["slot1"], $data["slot2"], $data["slot3"]);
-					$this->dataPacket(MC_SET_ARMOR, $data);
+					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}else{
-					$this->dataPacket(MC_SET_ARMOR, $data);
+					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}
 				break;
 			case "player.block.place":
@@ -574,7 +574,7 @@ class Player{
 							}
 							$this->server->handle("player.block.break", $data);
 							break;
-						case MC_SET_ARMOR:
+						case MC_PLAYER_ARMOR_EQUIPMENT:
 							$data["eid"] = $this->eid;
 							$this->server->handle("player.armor", $data);
 							break;

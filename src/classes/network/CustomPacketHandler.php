@@ -445,7 +445,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["meta"]);
 				}
 				break;
-			case MC_SET_ARMOR:
+			case MC_PLAYER_ARMOR_EQUIPMENT:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["slot0"] = ord($this->get(1));
@@ -514,11 +514,29 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["speedZ"]);
 				}
 				break;
+			case MC_HURT_ARMOR:
+				if($this->c === false){
+					$this->data["health"] = Utils::readByte($this->get(1));
+				}else{
+					$this->raw .= Utils::writeByte($this->data["health"]);
+				}
+				break;
 			case MC_SET_HEALTH:
 				if($this->c === false){
 					$this->data["health"] = Utils::readByte($this->get(1));
 				}else{
 					$this->raw .= Utils::writeByte($this->data["health"]);
+				}
+				break;
+			case MC_SET_SPAWN_POSITION:
+				if($this->c === false){
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["y"] = ord($this->get(1));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= chr($this->data["y"]);
 				}
 				break;
 			case MC_ANIMATE:
@@ -626,8 +644,7 @@ class CustomPacketHandler{
 						$this->data["line$i"] = $this->get(Utils::readLShort($this->get(2), false));
 					}
 				}else{
-					$this->raw .= $this->data["unknown1"];
-					$this->raw .= $this->data["unknown2"];
+					$this->raw .= "\xff";
 				}
 				break;
 			default:
