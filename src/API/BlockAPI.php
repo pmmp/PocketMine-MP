@@ -66,7 +66,7 @@ class BlockAPI{
 					$amount = (int) $params[2];
 				}
 				if(isset($params[3])){
-					$meta = (int) $params[3];
+					$meta = ((int) $params[3]) & 0xFFFF;
 				}
 				if(($player = $this->server->api->player->get($username)) !== false){
 					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $block, $meta, $amount);
