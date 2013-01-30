@@ -160,6 +160,7 @@ class Material{
 		96 => true,
 		105 => true,
 		107 => true,
+		245 => true,
 		247 => true,
 	);
 	static $placeable = array(
@@ -239,6 +240,7 @@ class Material{
 		128 => true,
 		155 => true,
 		156 => true,
+		245 => true,
 		246 => true,
 		247 => true,
 		323 => true, //Special case of signs
