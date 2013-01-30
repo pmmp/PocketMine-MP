@@ -378,7 +378,6 @@ class Player{
 
 							break;
 						case 0x03:
-						case 0xa9:
 
 							break;
 						case MC_DISCONNECT:
@@ -618,6 +617,21 @@ class Player{
 						case MC_DROP_ITEM:
 							if($this->server->handle("player.drop", $data) !== false){
 								$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
+							}
+							break;
+						case MC_SIGN_UPDATE:
+							$t = $this->server->api->tileentity->get($data["x"], $data["y"], $data["z"]);
+							if(($t[0] instanceof TileEntity) and $t[0]->class === TILE_SIGN){
+								$t = $t[0];
+								if($t->data["creator"] !== $this->username){
+									$t->spawn($this);
+								}else{
+									$t->data["Text1"] = $data["line0"];
+									$t->data["Text2"] = $data["line1"];
+									$t->data["Text3"] = $data["line2"];
+									$t->data["Text4"] = $data["line3"];
+									$this->server->api->tileentity->spawnToAll($t);
+								}
 							}
 							break;
 						default:

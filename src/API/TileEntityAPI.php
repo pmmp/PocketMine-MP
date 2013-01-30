@@ -53,7 +53,9 @@ class TileEntityAPI{
 	}
 
 	public function getByID($id){
-		if(isset($this->server->tileEntities[$id])){
+		if($id instanceof TileEntity){
+			return $id;
+		}elseif(isset($this->server->tileEntities[$id])){
 			return $this->server->tileEntities[$id];
 		}
 		return false;

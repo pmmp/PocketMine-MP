@@ -640,14 +640,16 @@ class BlockAPI{
 					if($data["face"] === 1){
 						$data["block"] = 63;
 						$data["meta"] = 0;
-						$this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
+						$t = $this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
+						$t->data["creator"] = $entity->player->username;
 					}else{
 						return false;
 					}
 				}else{
 					$data["block"] = 68;
 					$data["meta"] = $faces[$data["face"]];
-					$this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
+					$t = $this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
+					$t->data["creator"] = $entity->player->username;
 				}
 				break;
 		}

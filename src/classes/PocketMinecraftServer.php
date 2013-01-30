@@ -115,7 +115,7 @@ class PocketMinecraftServer{
 		//$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
-		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, class NUMERIC, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
+		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
@@ -337,13 +337,7 @@ class PocketMinecraftServer{
 				if(!isset($tile["id"])){
 					break;
 				}
-				$class = false;
-				switch($tile["id"]){
-					case "Sign":
-						$class = TILE_SIGN;
-						break;
-				}
-				$t = $this->api->tileentity->add($class, $tile["x"], $tile["y"], $tile["z"], $tile);
+				$t = $this->api->tileentity->add($tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
 			}
 			$this->action(1000000 * 60 * 15, '$this->api->chat->broadcast("Forcing save...");$this->save();');
 		}

@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
-define("TILE_SIGN", 0);
+define("TILE_SIGN", "Sign");
 
 class TileEntity extends stdClass{
 	public $name;
@@ -44,7 +44,7 @@ class TileEntity extends stdClass{
 	function __construct(PocketMinecraftServer $server, $id, $class, $x, $y, $z, $data = array()){
 		$this->server = $server;
 		$this->normal = true;
-		$this->class = (int) $class;
+		$this->class = $class;
 		$this->data = $data;
 		$this->closed = false;
 		if($class === false){
@@ -55,14 +55,13 @@ class TileEntity extends stdClass{
 		$this->x = (int) $x;
 		$this->y = (int) $y;
 		$this->z = (int) $z;
-		$this->server->query("INSERT OR REPLACE INTO tileentities (ID, class, x, y, z) VALUES (".$this->id.", ".$this->class.", ".$this->x.", ".$this->y.", ".$this->z.");");
+		$this->server->query("INSERT OR REPLACE INTO tileentities (ID, class, x, y, z) VALUES (".$this->id.", '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
 		switch($this->class){
 			case TILE_SIGN:
 				$this->server->query("UPDATE tileentities SET spawnable = 1 WHERE ID = ".$this->id.";");
 				
 				break;
 		}
-		//$this->server->schedule(40, array($this, "update"), array(), true);
 	}
 
 	public function update(){
