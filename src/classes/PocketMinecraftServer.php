@@ -535,10 +535,10 @@ class PocketMinecraftServer{
 					}
 					$version = $data[1];
 					$size = strlen($data[2]);
-					if($version !== 5){
-						console("[DEBUG] Incorrect protocol #$version from ".$packet["ip"].":".$packet["port"], true, true, 2);
+					if($version !== CURRENT_STRUCTURE){
+						console("[DEBUG] Incorrect structure #$version from ".$packet["ip"].":".$packet["port"], true, true, 2);
 						$this->send(0x1a, array(
-							CURRENT_PROTOCOL,
+							CURRENT_STRUCTURE,
 							MAGIC,
 							$this->serverID,
 						), false, $packet["ip"], $packet["port"]);
