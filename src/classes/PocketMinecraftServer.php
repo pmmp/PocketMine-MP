@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class PocketMinecraftServer{
 	public $tCnt;
 	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
-	private $database, $interface, $evCnt, $handCnt, $events, $handlers, $serverType, $lastTick, $ticker;
+	private $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticker;
 	
 	private function load(){
 		$this->version = new VersionString();
@@ -51,6 +51,7 @@ class PocketMinecraftServer{
 		$this->mapDir = false;
 		$this->mapName = false;
 		$this->events = array();
+		$this->eventsID = array();
 		$this->handlers = array();
 		$this->map = false;
 		$this->invisible = false;
@@ -117,11 +118,9 @@ class PocketMinecraftServer{
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
-		$this->query("CREATE TABLE events (ID INTEGER PRIMARY KEY, name TEXT);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		//$this->query("PRAGMA synchronous = OFF;");
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
-		$this->preparedSQL->selectEvents = $this->database->prepare("SELECT DISTINCT ID FROM events WHERE name = :name;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
 		$this->preparedSQL->updateActions = $this->database->prepare("UPDATE actions SET last = :time WHERE last <= (:time - interval);");
 	}
@@ -146,8 +145,7 @@ class PocketMinecraftServer{
 		$info["memory_peak_usage"] = round((memory_get_peak_usage(true) / 1024) / 1024, 2)."MB";
 		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
 		$info["entities"] = $info["entities"]["count"];
-		$info["events"] = $this->query("SELECT count(ID) as count FROM events;", true);
-		$info["events"] = $info["events"]["count"];
+		$info["events"] = count($this->eventsID);
 		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
 		$info["handlers"] = $info["handlers"]["count"];
 		$info["actions"] = $this->query("SELECT count(ID) as count FROM actions;", true);
@@ -596,21 +594,8 @@ class PocketMinecraftServer{
 	}
 
 	public function trigger($event, $data = ""){
-		$this->preparedSQL->selectEvents->reset();
-		$this->preparedSQL->selectEvents->clear();
-		$this->preparedSQL->selectEvents->bindValue(":name", $event, SQLITE3_TEXT);
-		$events = $this->preparedSQL->selectEvents->execute();
-		if($events === false or $events === true){
-			return;
-		}
-		$call = array();
-		while(($evn = $events->fetchArray(SQLITE3_ASSOC)) !== false){
-			$call[(int) $evn["ID"]] = true;
-		}
-		$events->finalize();
-		if(count($call) > 0){
-			foreach($call as $evid => $boolean){
-				$ev = $this->events[$evid];
+		if(isset($this->events[$event])){
+			foreach($this->events[$event] as $evid => $ev){
 				if(!is_callable($ev)){
 					$this->deleteEvent($evid);
 					continue;
@@ -620,7 +605,7 @@ class PocketMinecraftServer{
 					$ev[0]->$method($data, $event);
 				}else{
 					$ev($data, $event);
-				}
+				}			
 			}
 		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
@@ -629,8 +614,6 @@ class PocketMinecraftServer{
 			}
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Trigger]");
 		}
-		
-		return true;
 	}
 
 	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
@@ -686,17 +669,27 @@ class PocketMinecraftServer{
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Attach to ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)."]");
 		}
 		$evid = $this->evCnt++;
-		$this->events[$evid] = $func;
-		$this->query("INSERT INTO events (ID, name) VALUES (".$evid.", '".str_replace("'", "\\'", $event)."');");
+		if(!isset($this->events[$event])){
+			$this->events[$event] = array();
+		}
+		$this->events[$event][$evid] = $func;
+		$this->eventsID[$evid] = $event;
 		console("[INTERNAL] Attached ".(is_array($func) ? get_class($func[0])."::".$func[1]:$func)." to event ".$event." (ID ".$evid.")", true, true, 3);
 		return $evid;
 	}
 
 	public function deleteEvent($id){
 		$id = (int) $id;
-		$this->events[$id] = null;
-		unset($this->events[$id]);
-		$this->query("DELETE FROM events WHERE ID = ".$id.";");
+		if(isset($this->eventsID[$id])){
+			$ev = $this->eventsID[$id];
+			$this->eventsID[$id] = null;
+			unset($this->eventsID[$id]);
+			$this->events[$ev][$id] = null;
+			unset($this->events[$ev][$id]);
+			if(count($this->events[$ev]) === 0){
+				unset($this->events[$ev]);
+			}
+		}
 	}
 
 }
