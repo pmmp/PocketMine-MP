@@ -96,7 +96,7 @@ class BlockAPI{
 			return;
 		}
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
-		if(isset(Material::$unbreakable[$target[0]])){
+		if(isset(Material::$unbreakable[$target[0]]) or $this->server->gamemode === 2){
 			return $this->cancelAction($target);
 		}
 		$drop = array(
@@ -391,6 +391,10 @@ class BlockAPI{
 
 		if($cancelPlace === true){
 			return false;
+		}
+		
+		if($this->server->gamemode === 2){
+			return $this->cancelAction($block);
 		}
 
 		$replace = false;

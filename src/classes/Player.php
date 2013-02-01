@@ -198,14 +198,14 @@ class Player{
 				}
 				break;
 			case "player.block.place":
-				if($data["eid"] === $this->eid and $this->server->gamemode === 0){
+				if($data["eid"] === $this->eid and ($this->server->gamemode === 0 or $this->server->gamemode === 2)){
 					$this->removeItem($data["original"][0], $data["original"][1], 1);
 				}
 				break;
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					if($this->server->gamemode === 0){
+					if(($this->server->gamemode === 0 or $this->server->gamemode === 2)){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
 				}
@@ -524,8 +524,11 @@ class Player{
 									0x20 nametags_visible
 									0x40 ?
 									0x80 ?
-									*/									
+									*/
 									$flags = 0;
+									if($this->server->gamemode === 2){
+										$flags |= 0x01; //Not allow placing/breaking blocks
+									}
 									$flags |= 0x20; //Nametags
 									$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
 										"flags" => $flags,
@@ -576,7 +579,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 10){
 								break;
-							}elseif($this->server->gamemode === 0 and !$this->hasItem($data["block"], $data["meta"])){
+							}elseif(($this->server->gamemode === 0 or $this->server->gamemode === 2) and !$this->hasItem($data["block"], $data["meta"])){
 								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
 								//break;
 							}
@@ -597,7 +600,7 @@ class Player{
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
 								if($this->handle("player.interact", $data) !== false){
 									console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
-									if($this->server->gamemode !== 1 and $this->server->difficulty > 0){
+									if($this->server->difficulty > 0){
 										$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
 									}
 								}

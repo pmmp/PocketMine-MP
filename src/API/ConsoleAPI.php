@@ -90,12 +90,12 @@ class ConsoleAPI{
 					break;
 				case "gamemode":
 					$s = trim(array_shift($params));
-					if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
-						console("[INFO] Usage: /gamemode <0 | 1>");
+					if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1 and ((int) $s) !== 2)){
+						console("[INFO] Usage: /gamemode <0 | 1 | 2>");
 						break;
 					}
 					$this->server->api->setProperty("gamemode", (int) $s);
-					console("[INFO] Gamemode changed to ".$this->server->gamemode);
+					console("[INFO] Gamemode changed to ".$this->server->getGamemode());
 					break;
 				case "difficulty":
 					$s = trim(array_shift($params));

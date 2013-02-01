@@ -278,7 +278,7 @@ class PocketMinecraftServer{
 			console("[INFO] Spawn: X \x1b[36m".$this->levelData["SpawnX"]."\x1b[0m Y \x1b[36m".$this->levelData["SpawnY"]."\x1b[0m Z \x1b[36m".$this->levelData["SpawnZ"]."\x1b[0m");
 			console("[INFO] Time: \x1b[36m".$this->time."\x1b[0m");
 			console("[INFO] Seed: \x1b[36m".$this->seed."\x1b[0m");
-			console("[INFO] Gamemode: \x1b[36m".($this->gamemode === 0 ? "survival":"creative")."\x1b[0m");
+			console("[INFO] Gamemode: \x1b[36m".$this->getGamemode()."\x1b[0m");
 			$d = array(0 => "peaceful", 1 => "easy", 2 => "normal", 3 => "hard");
 			console("[INFO] Difficulty: \x1b[36m".$d[$this->difficulty]."\x1b[0m");
 			console("[INFO] Loading map...");
@@ -292,7 +292,18 @@ class PocketMinecraftServer{
 		}else{
 			console("[INFO] Time: \x1b[36m".$this->time."\x1b[0m");
 			console("[INFO] Seed: \x1b[36m".$this->seed."\x1b[0m");
-			console("[INFO] Gamemode: \x1b[36m".($this->gamemode === 0 ? "survival":"creative")."\x1b[0m");
+			console("[INFO] Gamemode: \x1b[36m".$this->getGamemode()."\x1b[0m");
+		}
+	}
+	
+	public function getGamemode(){
+		switch($this->gamemode){
+			case 0:
+				return "survival";
+			case 1:
+				return "creative";
+			case 2:
+				return "adventure";
 		}
 	}
 
@@ -508,7 +519,7 @@ class PocketMinecraftServer{
 						$data[0],
 						$this->serverID,
 						MAGIC,
-						$this->serverType. $this->name . " [".($this->gamemode === 1 ? "C":"S").($this->whitelist !== false ? "W":"")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
+						$this->serverType. $this->name . " [".($this->gamemode === 1 ? "C":($this->gamemode === 2 ? "A":"S")).($this->whitelist !== false ? "W":"")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
 					), false, $packet["ip"], $packet["port"]);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
