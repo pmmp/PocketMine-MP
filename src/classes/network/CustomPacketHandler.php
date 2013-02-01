@@ -637,14 +637,9 @@ class CustomPacketHandler{
 				break;
 			case MC_ADVENTURE_SETTINGS:
 				if($this->c === false){
-					$this->data["x"] = Utils::readShort($this->get(2));
-					$this->data["y"] = ord($this->get(1));
-					$this->data["z"] = Utils::readShort($this->get(2));
-					for($i = 0; $i < 4; ++$i){
-						$this->data["line$i"] = $this->get(Utils::readLShort($this->get(2), false));
-					}
+					$this->data["flags"] = Utils::readInt($this->get(4));
 				}else{
-					$this->raw .= "\xff";
+					$this->raw .= Utils::writeInt($this->data["flags"]);
 				}
 				break;
 			default:

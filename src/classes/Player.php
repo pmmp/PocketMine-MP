@@ -515,6 +515,21 @@ class Player{
 										$this->inventory[$s] = array(0, 0, 0);
 									}
 									$this->entity->setPosition($this->entity->x, $this->entity->y, $this->entity->z, 0, 0);
+									/*
+									0x01 world_inmutable
+									0x02 ?
+									0x04 ?
+									0x08 ?
+									0x10 ?
+									0x20 nametags_visible
+									0x40 ?
+									0x80 ?
+									*/									
+									$flags = 0;
+									$flags |= 0x20; //Nametags
+									$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
+										"flags" => $flags,
+									));
 									break;
 								case 2://Chunk loaded?
 									break;
