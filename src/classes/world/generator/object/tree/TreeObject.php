@@ -35,19 +35,19 @@ class TreeObject{
 	);
 	public static function growTree(LevelAPI $level, Block $block){
 		switch($block->getMetadata() & 0x03){
-			case Sapling::SPRUCE:
+			case SaplingBlock::SPRUCE:
 				if(mt_rand(0,1) == 1){
 					$tree = new SpruceTreeObject();
 				}else{
 					$tree = new PineTreeObject();
 				}
 				break;
-			case Sapling::BIRCH:
+			case SaplingBlock::BIRCH:
 				$tree = new SmallTreeObject();
-				$tree->type = Sapling::BIRCH;
+				$tree->type = SaplingBlock::BIRCH;
 				break;
 			default:
-			case Sapling::OAK:
+			case SaplingBlock::OAK:
 				if(mt_rand(0,9) === 0){
 					$tree = new BigTreeObject();
 				}else{

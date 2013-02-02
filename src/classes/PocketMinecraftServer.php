@@ -29,7 +29,7 @@ class PocketMinecraftServer{
 	public $tCnt;
 	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
 	private $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticker;
-	
+
 	private function load(){
 		$this->version = new VersionString();
 		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
@@ -46,7 +46,7 @@ class PocketMinecraftServer{
 		console("[INFO] Loading database...");
 		$this->startDatabase();
 		$this->doTick = false;
-		$this->api = false;	
+		$this->api = false;
 		$this->tCnt = 1;
 		$this->mapDir = false;
 		$this->mapName = false;
@@ -78,9 +78,9 @@ class PocketMinecraftServer{
 		$this->reloadConfig();
 		console("[INFO] Server Name: \x1b[36m".$this->name."\x1b[0m");
 		console("[DEBUG] Server ID: ".$this->serverID, true, true, 2);
-		$this->stop = false;	
+		$this->stop = false;
 	}
-	
+
 	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
 		$this->port = (int) $port; //19132 - 19135
 		$this->gamemode = (int) $gamemode;
@@ -244,7 +244,7 @@ class PocketMinecraftServer{
 			}
 			console("[ERROR] Event \"$event\" has been deprecated.$sub [Handler]");
 		}
-		
+
 		if($result !== false){
 			$this->trigger($event, $data);
 		}
@@ -295,7 +295,7 @@ class PocketMinecraftServer{
 			console("[INFO] Gamemode: \x1b[36m".$this->getGamemode()."\x1b[0m");
 		}
 	}
-	
+
 	public function getGamemode(){
 		switch($this->gamemode){
 			case 0:
@@ -376,7 +376,7 @@ class PocketMinecraftServer{
 							"Rotation" => array(
 								0 => $entity->yaw,
 								1 => $entity->pitch,
-							),				
+							),
 						);
 					}elseif($entity->class === ENTITY_ITEM){
 						$entities[] = array(
@@ -395,8 +395,8 @@ class PocketMinecraftServer{
 							"Rotation" => array(
 								0 => 0,
 								1 => 0,
-							),				
-						);					
+							),
+						);
 					}
 				}
 				file_put_contents($this->mapDir."entities.dat", serialize($entities));
@@ -433,7 +433,7 @@ class PocketMinecraftServer{
 		console("[INFO] Server started!");
 		$this->process();
 	}
-	
+
 	public function dumpError(){
 		console("[ERROR] An Unrecovereable has ocurred and the server has Crashed. Creating an Error Dump");
 		$dump = "# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
@@ -616,7 +616,7 @@ class PocketMinecraftServer{
 					$ev[0]->$method($data, $event);
 				}else{
 					$ev($data, $event);
-				}			
+				}
 			}
 		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
@@ -641,7 +641,7 @@ class PocketMinecraftServer{
 		return $chcnt;
 	}
 
-	public function action($microseconds, $code, $repeat = true){ 
+	public function action($microseconds, $code, $repeat = true){
 		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".base64_encode($code)."', ".($repeat === true ? 1:0).");");
 		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
 	}

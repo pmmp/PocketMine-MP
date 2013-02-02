@@ -27,10 +27,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 abstract class Block{
-	/*public static $name = array(
-		AIR => "GenericBlock",
-	
-	);*/
 
 	protected $id;
 	protected $meta;
