@@ -26,8 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class TallGrassBlock extends FlowableBlock{
-	public function __construct($type = 1){
-		parent::__construct(TALL_GRASS, $type, "Tall Grass");
+	public function __construct($meta = 1){
+		parent::__construct(TALL_GRASS, $meta, "Tall Grass");
 		$this->isFlowable = true;
 		$this->isReplaceable = true;
 		$names = array(
@@ -35,7 +35,7 @@ class TallGrassBlock extends FlowableBlock{
 			1 => "Tall Grass",
 			2 => "Fern",
 		);
-		$this->name = $names[$this->type & 0x03];
+		$this->name = $names[$this->meta & 0x03];
 	}
 	
 }

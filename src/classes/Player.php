@@ -549,7 +549,8 @@ class Player{
 							if($this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment[0] = $data["block"];
 								$this->equipment[1] = $data["meta"];
-								console("[DEBUG] EID ".$this->eid." has now ".$data["block"].":".$data["meta"]." in their hands!", true, true, 2);
+								$b = BlockAPI::get($data["block"], $data["meta"]);
+								console("[DEBUG] Player ".$this->username." has now ".$b->getName()." (".$data["block"].":".$data["meta"].") in their hands!", true, true, 2);
 							}
 							break;
 						case MC_REQUEST_CHUNK:

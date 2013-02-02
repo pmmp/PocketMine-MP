@@ -29,14 +29,14 @@ class WoodBlock extends SolidBlock{
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
-	public function __construct($type = 0){
-		parent::__construct(WOOD, $type, "Wood");
+	public function __construct($meta = 0){
+		parent::__construct(WOOD, $meta, "Wood");
 		$names = array(
 			0 => "Oak Wood",
 			1 => "Spruce Wood",
 			2 => "Birch Wood",
 		);
-		$this->name = $names[$this->type & 0x03];
+		$this->name = $names[$this->meta & 0x03];
 	}
 	
 }

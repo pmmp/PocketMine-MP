@@ -58,7 +58,7 @@ abstract class Block{
 	}
 	
 	final public function getMetadata(){
-		return $meta & 0x0F;
+		return $this->meta & 0x0F;
 	}
 	
 	final public function position(Vector3 $v){

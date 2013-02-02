@@ -31,8 +31,8 @@ class SaplingBlock extends TransparentBlock{
 	const BIRCH = 2;
 	const BURN_TIME = 5;
 	
-	public function __construct($type = Sapling::OAK){
-		parent::__construct(SAPLING, $type, "Sapling");
+	public function __construct($meta = Sapling::OAK){
+		parent::__construct(SAPLING, $meta, "Sapling");
 		$this->isActivable = true;
 		$this->isFlowable = true;
 		$names = array(
@@ -40,7 +40,7 @@ class SaplingBlock extends TransparentBlock{
 			1 => "Spruce Sapling",
 			2 => "Birch Sapling",
 		);
-		$this->name = $names[$this->type & 0x03];
+		$this->name = $names[$this->meta & 0x03];
 	}
 	
 	public function onActivate(LevelAPI $level, Item $item, Player $player){

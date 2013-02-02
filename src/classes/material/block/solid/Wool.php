@@ -26,8 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class WoolBlock extends SolidBlock{
-	public function __construct($type = 0){
-		parent::__construct(WOOL, $type, "Wool");
+	public function __construct($meta = 0){
+		parent::__construct(WOOL, $meta, "Wool");
 		$names = array(
 			0 => "White Wool",
 			1 => "Orange Wool",
@@ -46,7 +46,7 @@ class WoolBlock extends SolidBlock{
 			14 => "Red Wool",
 			15 => "Black Wool",
 		);
-		$this->name = $names[$this->type];
+		$this->name = $names[$this->meta];
 	}
 	
 }

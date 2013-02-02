@@ -26,14 +26,14 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class SandstoneBlock extends SolidBlock{
-	public function __construct($type = 0){
-		parent::__construct(SANDSTONE, $type, "Sandstone");
+	public function __construct($meta = 0){
+		parent::__construct(SANDSTONE, $meta, "Sandstone");
 		$names = array(
 			0 => "Sandstone",
 			1 => "Chiseled Sandstone",
 			2 => "Smooth Sandstone",
 		);
-		$this->name = $names[$this->type & 0x03];
+		$this->name = $names[$this->meta & 0x03];
 	}
 	
 }

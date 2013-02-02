@@ -26,8 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class PlanksBlock extends SolidBlock{
-	public function __construct($type = 0){
-		parent::__construct(PLANKS, $type, "Wooden Planks");
+	public function __construct($meta = 0){
+		parent::__construct(PLANKS, $meta, "Wooden Planks");
 	}
 	
 }

@@ -43,7 +43,7 @@ class LevelAPI{
 		switch($event){
 			case "player.block.place":
 			case "player.block.update":
-				$b = BlockAPI::get($data["block"]);
+				$b = BlockAPI::get($data["block"], $data["meta"]);
 				console("[DEBUG] Player ".$data["entity"]->player->username." placed ".$b->getName()." (".$data["block"].":".$data["meta"].") at (".$data["x"].", ".$data["y"].", ".$data["z"].")", true, true, 2);
 				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
 				break;
@@ -52,7 +52,7 @@ class LevelAPI{
 				if($block[0] === 0){
 					break;
 				}
-				$b = BlockAPI::get($block[0]);
+				$b = BlockAPI::get($block[0], $block[1]);
 				console("[DEBUG] Player ".$data["entity"]->player->username." broke ".$b->getName()." (".$block[0].":".$block[1].") at (".$data["x"].", ".$data["y"].", ".$data["z"].")", true, true, 2);
 				$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0, true, true);
 				break;
