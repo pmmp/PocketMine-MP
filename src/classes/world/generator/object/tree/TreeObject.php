@@ -33,8 +33,8 @@ class TreeObject{
 		17 => true,
 		18 => true,
 	);
-	public static function growTree(LevelAPI $level, $block, $type){
-		switch($type){
+	public static function growTree(LevelAPI $level, Block $block){
+		switch($block->getMetadata() & 0x03){
 			case Sapling::SPRUCE:
 				if(mt_rand(0,1) == 1){
 					$tree = new SpruceTreeObject();
@@ -55,8 +55,8 @@ class TreeObject{
 				}
 				break;
 		}
-		if($tree->canPlaceObject($level, $block[2][0], $block[2][1], $block[2][2])){
-			$tree->placeObject($level, $block[2][0], $block[2][1], $block[2][2]);
+		if($tree->canPlaceObject($level, $block->position->x, $block->position->y, $block->position->z)){
+			$tree->placeObject($level, $block->position->x, $block->position->y, $block->position->z);
 		}
 	}
 }

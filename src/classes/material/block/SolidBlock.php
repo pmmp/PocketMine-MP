@@ -25,14 +25,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class Sapling{
-	const OAK = 0;
-	const SPRUCE = 1;
-	const BIRCH = 2;
-	const BURN_TIME = 5;
-
-	public static function growTree(LevelAPI $level, $block, $type){
-		$type = $type & 0x03;
-		TreeObject::growTree($level, $block, $type);
+class SolidBlock extends GenericBlock{
+	public function __construct($id, $meta = 0, $name = "Unknown"){
+		parent::__construct($id, $meta, $name);
 	}
 }
