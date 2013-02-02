@@ -115,6 +115,7 @@ define("GLOWING_REDSTONE_ORE", 73);
 define("LIT_REDSTONE_ORE", 73);
 
 define("SNOW", 78);
+define("SNOW_LAYER", 78);
 define("ICE", 79);
 define("SNOW_BLOCK", 80);
 define("CACTUS", 81);
@@ -134,6 +135,7 @@ define("STONE_BRICKS", 98);
 define("GLASS_PANE", 102);
 define("GLASS_PANEL", 102);
 define("MELON", 103);
+define("MELON_BLOCK", 103);
 
 define("MELON_STEM", 105);
 
