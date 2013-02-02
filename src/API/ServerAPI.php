@@ -232,8 +232,8 @@ class ServerAPI{
 			"os" => Utils::getOS(),
 			"version" => MAJOR_VERSION,
 			"protocol" => CURRENT_PROTOCOL,
-			"online" => count($this->clients),
-			"max" => $this->maxClients,
+			"online" => count($this->server->clients),
+			"max" => $this->server->maxClients,
 		));
 	}
 
