@@ -75,7 +75,8 @@ define("DOUBLE_SLAB", 43);
 define("DOUBLE_SLABS", 43);
 define("SLAB", 44);
 define("SLABS", 44);
-define("BICKS", 45);
+define("BRICKS", 45);
+define("BRICKS_BLOCK", 45);
 define("TNT", 46);
 define("BOOKSHELF", 47);
 define("MOSS_STONE", 48);
@@ -85,6 +86,7 @@ define("TORCH", 50);
 define("FIRE", 51);
 
 define("WOOD_STAIRS", 53);
+define("WOODEN_STAIRS", 53);
 define("CHEST", 54);
 
 define("DIAMOND_ORE", 56);
@@ -98,9 +100,9 @@ define("BURNING_FURNACE", 62);
 define("LIT_FURNACE", 62);
 define("SIGN", 63);
 define("SIGN_POST", 63);
-define("DOOR", 64);
-define("WOODEN_DOOR", 64);
-define("WOOD_DOOR", 64);
+define("DOOR_BLOCK", 64);
+define("WOODEN_DOOR_BLOCK", 64);
+define("WOOD_DOOR_BLOCK", 64);
 define("LADDER", 65);
 
 define("COBBLE_STAIRS", 67);
