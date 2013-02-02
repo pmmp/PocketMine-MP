@@ -200,7 +200,8 @@ class BlockAPI{
 				}
 				if(($player = $this->server->api->player->get($username)) !== false){
 					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $block, $meta, $amount);
-					console("[INFO] Giving ".$amount." of ".$block.":".$meta." to ".$username);
+					$b = BlockAPI::get($block, $meta);
+					console("[INFO] Giving ".$amount." of ".$b->getName()." (".$block.":".$meta.") to ".$username);
 				}else{
 					console("[INFO] Unknown player");
 				}
