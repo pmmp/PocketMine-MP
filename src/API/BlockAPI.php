@@ -640,7 +640,6 @@ class BlockAPI{
 					return false;
 				}
 				$faces = array(
-					0 => 6,
 					1 => 5,
 					2 => 4,
 					3 => 3,
