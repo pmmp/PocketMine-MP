@@ -40,6 +40,7 @@ abstract class Block{
 	public $isPlaceable = true;
 	public $inWorld = false;
 	public $hasPhysics = false;
+	public $isLiquid = false;
 	public $v = false;
 	
 	public function __construct($id, $meta = 0, $name = "Unknown"){
@@ -63,7 +64,7 @@ abstract class Block{
 	
 	final public function position(Vector3 $v){
 		$this->inWorld = true;
-		$this->position = new Vector3((int) $v->x, (int) $v->y, (int) $v->z);
+		$this->v = new Vector3((int) $v->x, (int) $v->y, (int) $v->z);
 	}
 	
 	public function getDrops(Item $item, Player $player){
