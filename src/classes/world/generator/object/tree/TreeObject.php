@@ -55,8 +55,8 @@ class TreeObject{
 				}
 				break;
 		}
-		if($tree->canPlaceObject($level, $block->position->x, $block->position->y, $block->position->z)){
-			$tree->placeObject($level, $block->position->x, $block->position->y, $block->position->z);
+		if($tree->canPlaceObject($level, $block->v->x, $block->v->y, $block->v->z)){
+			$tree->placeObject($level, $block->v->x, $block->v->y, $block->v->z);
 		}
 	}
 }
