@@ -611,7 +611,9 @@ class BlockAPI{
 					return false;
 				}
 				break;
+			case 338:
 			case 83: //Sugarcane
+				$data["block"] = 83;
 				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
 				if($blockDown[0] !== 2 and $blockDown[0] !== 3 and $blockDown[0] !== 12){
 					return false;
