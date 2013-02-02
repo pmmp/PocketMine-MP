@@ -111,50 +111,48 @@ class BlockAPI{
 			COBBLESTONE_STAIRS => "CobblestoneStairsBlock",
 			WALL_SIGN => "WallSignBlock",
 
-			/*IRON_DOOR => (new GenericBlock(IRON_DOOR, 0, "")),
-			REDSTONE_ORE => (new GenericBlock(REDSTONE_ORE, 0, "")),
-			GLOWING_REDSTONE_ORE => (new GenericBlock(GLOWING_REDSTONE_ORE, 0, "")),
-			LIT_REDSTONE_ORE => (new GenericBlock(LIT_REDSTONE_ORE, 0, "")),
+			IRON_DOOR => "IronDoorBlock",
+			REDSTONE_ORE => "RedstoneOreBlock",
+			GLOWING_REDSTONE_ORE => "GlowingRedstoneOreBlock",
 
-			SNOW => (new GenericBlock(SNOW, 0, "")),
-			ICE => (new GenericBlock(ICE, 0, "")),
-			SNOW_BLOCK => (new GenericBlock(SNOW_BLOCK, 0, "")),
-			CACTUS => (new GenericBlock(CACTUS, 0, "")),
-			CLAY_BLOCK => (new GenericBlock(CLAY_BLOCK, 0, "")),
-			SUGARCANE_BLOCK => (new GenericBlock(SUGARCANE_BLOCK, 0, "")),
+			SNOW_LAYER => "SnowLayerBlock",
+			ICE => "IceBlock",
+			SNOW_BLOCK => "SnowBlock",
+			CACTUS => "CactusBlock",
+			CLAY_BLOCK => "ClayBlock",
+			SUGARCANE_BLOCK => "SugarcaneBlock",
 
-			FENCE => (new GenericBlock(FENCE, 0, "")),
+			FENCE => "FenceBlock",
 
-			NETHERRACK => (new GenericBlock(NETHERRACK, 0, "")),
-			SOUL_SAND => (new GenericBlock(SOUL_SAND, 0, "")),
-			GLOWSTONE_BLOCK => (new GenericBlock(GLOWSTONE_BLOCK, 0, "")),
+			NETHERRACK => "NetherrackBlock",
+			SOUL_SAND => "SoulSandBlock",
+			GLOWSTONE_BLOCK => "GlowstoneBlock",
 
-			TRAPDOOR => (new GenericBlock(TRAPDOOR, 0, "")),
+			TRAPDOOR => "TrapdoorBlock",
 
-			STONE_BRICKS => (new GenericBlock(STONE_BRICKS, 0, "")),
+			STONE_BRICKS => "StoneBricksBlock",
 
-			GLASS_PANE => (new GenericBlock(GLASS_PANE, 0, "")),
-			GLASS_PANEL => (new GenericBlock(GLASS_PANEL, 0, "")),
-			MELON => (new GenericBlock(MELON, 0, "")),
+			GLASS_PANE => "GlassPaneBlock",
+			MELON_BLOCK => "MelonBlock",
 
-			MELON_STEM => (new GenericBlock(MELON_STEM, 0, "")),
+			MELON_STEM => "MelonStemBlock",
 
-			FENCE_GATE => (new GenericBlock(FENCE_GATE, 0, "")),
-			BRICK_STAIRS => (new GenericBlock(BRICK_STAIRS, 0, "")),
-			STONE_BRICK_STAIRS => (new GenericBlock(STONE_BRICK_STAIRS, 0, "")),
+			FENCE_GATE => "FenceGateBlock",
+			BRICK_STAIRS => "BrickStairsBlock",
+			STONE_BRICK_STAIRS => "StoneBrickStairsBlock",
 
-			NETHER_BRICK => (new GenericBlock(NETHER_BRICK, 0, "")),
+			NETHER_BRICK => "NetherBrickBlock",
 
-			NETHER_BRICK_STAIRS => (new GenericBlock(NETHER_BRICK_STAIRS, 0, "")),
+			NETHER_BRICK_STAIRS => "NetherBrickStairsBlock",
 
-			SANDSTONE_STAIRS => (new GenericBlock(SANDSTONE_STAIRS, 0, "")),
+			SANDSTONE_STAIRS => "SandstoneStairsBlock",
 
-			QUARTZ_BLOCK => (new GenericBlock(QUARTZ_BLOCK, 0, "")),
-			QUARTZ_STAIRS => (new GenericBlock(QUARTZ_STAIRS, 0, "")),
+			QUARTZ_BLOCK => "QuartzBlock",
+			QUARTZ_STAIRS => "QuartzStairsBlock",
 
-			STONECUTTER => (new GenericBlock(STONECUTTER, 0, "")),
-			GLOWING_OBSIDIAN => (new GenericBlock(GLOWING_OBSIDIAN, 0, "")),
-			NETHER_REACTOR => (new GenericBlock(NETHER_REACTOR, 0, "")),*/
+			STONECUTTER => "StonecutterBlock",
+			GLOWING_OBSIDIAN => "GlowingObsidianBlock",
+			NETHER_REACTOR => "NetherReactorBlock",
 		);
 	}
 

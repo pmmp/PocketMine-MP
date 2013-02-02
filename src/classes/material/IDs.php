@@ -131,6 +131,7 @@ define("GLOWSTONE_BLOCK", 89);
 define("TRAPDOOR", 96);
 
 define("STONE_BRICKS", 98);
+define("STONE_BRICK", 98);
 
 define("GLASS_PANE", 102);
 define("GLASS_PANEL", 102);
