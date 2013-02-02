@@ -82,7 +82,7 @@ define("MOSS_STONE", 48);
 define("MOSSY_STONE", 48);
 define("OBSIDIAN", 49);
 define("TORCH", 50);
-define("FiRE", 51);
+define("FIRE", 51);
 
 define("WOOD_STAIRS", 53);
 define("CHEST", 54);

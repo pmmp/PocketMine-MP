@@ -328,7 +328,7 @@ class Entity extends stdClass{
 		switch($this->class){
 			case ENTITY_PLAYER:
 				$player->dataPacket(MC_ADD_PLAYER, array(
-					"clientID" => $this->player->clientID,
+					"clientID" => 0,/*$this->player->clientID,*/
 					"username" => $this->player->username,
 					"eid" => $this->eid,
 					"x" => $this->x,

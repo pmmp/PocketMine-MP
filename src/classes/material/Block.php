@@ -49,6 +49,10 @@ abstract class Block{
 		$this->shortname = strtolower(str_replace(" ", "_", $name));
 	}
 	
+	public function getName(){
+		return $this->name;
+	}
+	
 	final public function getID(){
 		return $id;
 	}

@@ -37,123 +37,134 @@ define("BLOCK_UPDATE_WEAK", 3);
 class BlockAPI{
 	public static $class = array();
 	private $server;
+	
+	public static function get($id, $meta = 0){
+		$id = (int) $id;
+		if(isset(BlockAPI::$class[$id])){
+			$classname = BlockAPI::$class[$id];
+			return new $classname($meta);
+		}
+		return (new GenericBlock($id, $meta, ""));
+	}
+	
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 		BlockAPI::$class = array(
-			AIR => new AirBlock(),
-			STONE => new StoneBlock(),
-			GRASS => new GrassBlock(),
-			DIRT => new DirtBlock(),
-			COBBLESTONE => new CobblestoneBlock(),
-			PLANKS => new PlanksBlock(),
-			SAPLING => new SaplingBlock(0),
-			BEDROCK => new BedrockBlock(),
-			WATER => new GenericBlock(WATER, 0, ""),
-			STILL_WATER => new GenericBlock(STILL_WATER, 0, ""),
-			LAVA => new GenericBlock(LAVA, 0, ""),
-			STILL_LAVA => new GenericBlock(STILL_LAVA, 0, ""),
-			SAND => new SandBlock(),
-			GRAVEL => new GravelBlock(),
-			GOLD_ORE => new GoldOreBlock(),
-			IRON_ORE => new IronOreBlock(),
-			COAL_ORE => new CoalOreBlock(),
-			WOOD => new WoodBlock(0),
-			LEAVES => new LeavesBlock(0),
-			GLASS => new GlassBlock(),
-			LAPIS_ORE => new LapisOreBlock(),
-			LAPIS_BLOCK => new LapisBlock(),
-			SANDSTONE => new SandstoneBlock(0),
-			BED_BLOCK => new BedBlock(0),
-			COBWEB => new CobwebBlock(),
-			TALL_GRASS => new TallGrassBlock(1),
-			DEAD_BUSH => new DeadBushBlock(),
-			WOOL => new WoolBlock(0),
-			DANDELION => new DandelionBlock(),
-			CYAN_FLOWER => new CyanFlowerBlock(),
-			BROWN_MUSHROOM => new BrownMushroomBlock(),
-			RED_MUSHROOM => new RedMushRoomBlock(),
-			GOLD_BLOCK => new GoldBlock(),
-			IRON_BLOCK => new IronBlock(),
-			DOUBLE_SLAB => new GenericBlock(DOUBLE_SLAB, 0, ""),
-			DOUBLE_SLABS => new GenericBlock(DOUBLE_SLABS, 0, ""),
-			SLAB => new GenericBlock(SLAB, 0, ""),
-			SLABS => new GenericBlock(SLABS, 0, ""),
-			BICKS => new GenericBlock(BICKS, 0, ""),
-			TNT => new GenericBlock(TNT, 0, ""),
-			BOOKSHELF => new GenericBlock(BOOKSHELF, 0, ""),
-			MOSS_STONE => new GenericBlock(MOSS_STONE, 0, ""),
-			MOSSY_STONE => new GenericBlock(MOSSY_STONE, 0, ""),
-			OBSIDIAN => new GenericBlock(OBSIDIAN, 0, ""),
-			TORCH => new GenericBlock(TORCH, 0, ""),
-			FiRE => new GenericBlock(FiRE, 0, ""),
+			AIR => "AirBlock",
+			STONE => "StoneBlock",
+			GRASS => "GrassBlock",
+			DIRT => "DirtBlock",
+			COBBLESTONE => "CobblestoneBlock",
+			PLANKS => "PlanksBlock",
+			SAPLING => "SaplingBlock",
+			BEDROCK => "BedrockBlock",
+			/*WATER => (new GenericBlock(WATER, 0, "")),
+			STILL_WATER => (new GenericBlock(STILL_WATER, 0, "")),
+			LAVA => (new GenericBlock(LAVA, 0, "")),
+			STILL_LAVA => (new GenericBlock(STILL_LAVA, 0, "")),*/
+			SAND => "SandBlock",
+			GRAVEL => "GravelBlock",
+			GOLD_ORE => "GoldOreBlock",
+			IRON_ORE => "IronOreBlock",
+			COAL_ORE => "CoalOreBlock",
+			WOOD => "WoodBlock",
+			LEAVES => "LeavesBlock",
+			GLASS => "GlassBlock",
+			LAPIS_ORE => "LapisOreBlock",
+			LAPIS_BLOCK => "LapisBlock",
+			SANDSTONE => "SandstoneBlock",
+			BED_BLOCK => "BedBlock",
+			COBWEB => "CobwebBlock",
+			TALL_GRASS => "TallGrassBlock",
+			DEAD_BUSH => "DeadBushBlock",
+			WOOL => "WoolBlock",
+			DANDELION => "DandelionBlock",
+			CYAN_FLOWER => "CyanFlowerBlock",
+			BROWN_MUSHROOM => "BrownMushroomBlock",
+			RED_MUSHROOM => "RedMushRoomBlock",
+			GOLD_BLOCK => "GoldBlock",
+			IRON_BLOCK => "IronBlock",
+			/*DOUBLE_SLAB => (new GenericBlock(DOUBLE_SLAB, 0, "")),
+			DOUBLE_SLABS => (new GenericBlock(DOUBLE_SLABS, 0, "")),
+			SLAB => (new GenericBlock(SLAB, 0, "")),
+			SLABS => (new GenericBlock(SLABS, 0, "")),
+			BICKS => (new GenericBlock(BICKS, 0, "")),
+			TNT => (new GenericBlock(TNT, 0, "")),
+			BOOKSHELF => (new GenericBlock(BOOKSHELF, 0, "")),
+			MOSS_STONE => (new GenericBlock(MOSS_STONE, 0, "")),
+			MOSSY_STONE => (new GenericBlock(MOSSY_STONE, 0, "")),
+			OBSIDIAN => (new GenericBlock(OBSIDIAN, 0, "")),
+			TORCH => (new GenericBlock(TORCH, 0, "")),
+			FIRE => (new GenericBlock(FIRE, 0, "")),
 
-			WOOD_STAIRS => new GenericBlock(WOOD_STAIRS, 0, ""),
-			CHEST => new GenericBlock(CHEST, 0, ""),
+			WOOD_STAIRS => (new GenericBlock(WOOD_STAIRS, 0, "")),
+			CHEST => (new GenericBlock(CHEST, 0, "")),
 
-			DIAMOND_ORE => new GenericBlock(DIAMOND_ORE, 0, ""),
-			DIAMOND_BLOCK => new GenericBlock(DIAMOND_BLOCK, 0, ""),
-			CRAFTING_TABLE => new GenericBlock(CRAFTING_TABLE, 0, ""),
-			WORKBENCH => new GenericBlock(WORKBENCH, 0, ""),
-			WHEAT => new GenericBlock(WHEAT, 0, ""),
-			FARMLAND => new GenericBlock(FARMLAND, 0, ""),
-			FURNACE => new GenericBlock(FURNACE, 0, ""),
-			BURNING_FURNACE => new GenericBlock(BURNING_FURNACE, 0, ""),
-			LIT_FURNACE => new GenericBlock(LIT_FURNACE, 0, ""),
-			SIGN => new GenericBlock(SIGN, 0, ""),
-			SIGN_POST => new GenericBlock(SIGN_POST, 0, ""),
-			DOOR => new GenericBlock(DOOR, 0, ""),
-			WOODEN_DOOR => new GenericBlock(WOODEN_DOOR, 0, ""),
-			WOOD_DOOR => new GenericBlock(WOOD_DOOR, 0, ""),
-			LADDER => new GenericBlock(LADDER, 0, ""),
+			DIAMOND_ORE => (new GenericBlock(DIAMOND_ORE, 0, "")),
+			DIAMOND_BLOCK => (new GenericBlock(DIAMOND_BLOCK, 0, "")),
+			CRAFTING_TABLE => (new GenericBlock(CRAFTING_TABLE, 0, "")),
+			WORKBENCH => (new GenericBlock(WORKBENCH, 0, "")),
+			WHEAT => (new GenericBlock(WHEAT, 0, "")),
+			FARMLAND => (new GenericBlock(FARMLAND, 0, "")),
+			FURNACE => (new GenericBlock(FURNACE, 0, "")),
+			BURNING_FURNACE => (new GenericBlock(BURNING_FURNACE, 0, "")),
+			LIT_FURNACE => (new GenericBlock(LIT_FURNACE, 0, "")),
+			SIGN => (new GenericBlock(SIGN, 0, "")),
+			SIGN_POST => (new GenericBlock(SIGN_POST, 0, "")),
+			DOOR => (new GenericBlock(DOOR, 0, "")),
+			WOODEN_DOOR => (new GenericBlock(WOODEN_DOOR, 0, "")),
+			WOOD_DOOR => (new GenericBlock(WOOD_DOOR, 0, "")),
+			LADDER => (new GenericBlock(LADDER, 0, "")),
 
-			COBBLE_STAIRS => new GenericBlock(COBBLE_STAIRS, 0, ""),
-			COBBLESTONE_STAIRS => new GenericBlock(COBBLESTONE_STAIRS, 0, ""),
-			WALL_SIGN => new GenericBlock(WALL_SIGN, 0, ""),
+			COBBLE_STAIRS => (new GenericBlock(COBBLE_STAIRS, 0, "")),
+			COBBLESTONE_STAIRS => (new GenericBlock(COBBLESTONE_STAIRS, 0, "")),
+			WALL_SIGN => (new GenericBlock(WALL_SIGN, 0, "")),
 
-			IRON_DOOR => new GenericBlock(IRON_DOOR, 0, ""),
-			REDSTONE_ORE => new GenericBlock(REDSTONE_ORE, 0, ""),
-			GLOWING_REDSTONE_ORE => new GenericBlock(GLOWING_REDSTONE_ORE, 0, ""),
-			LIT_REDSTONE_ORE => new GenericBlock(LIT_REDSTONE_ORE, 0, ""),
+			IRON_DOOR => (new GenericBlock(IRON_DOOR, 0, "")),
+			REDSTONE_ORE => (new GenericBlock(REDSTONE_ORE, 0, "")),
+			GLOWING_REDSTONE_ORE => (new GenericBlock(GLOWING_REDSTONE_ORE, 0, "")),
+			LIT_REDSTONE_ORE => (new GenericBlock(LIT_REDSTONE_ORE, 0, "")),
 
-			SNOW => new GenericBlock(SNOW, 0, ""),
-			ICE => new GenericBlock(ICE, 0, ""),
-			SNOW_BLOCK => new GenericBlock(SNOW_BLOCK, 0, ""),
-			CACTUS => new GenericBlock(CACTUS, 0, ""),
-			CLAY_BLOCK => new GenericBlock(CLAY_BLOCK, 0, ""),
-			SUGARCANE_BLOCK => new GenericBlock(SUGARCANE_BLOCK, 0, ""),
+			SNOW => (new GenericBlock(SNOW, 0, "")),
+			ICE => (new GenericBlock(ICE, 0, "")),
+			SNOW_BLOCK => (new GenericBlock(SNOW_BLOCK, 0, "")),
+			CACTUS => (new GenericBlock(CACTUS, 0, "")),
+			CLAY_BLOCK => (new GenericBlock(CLAY_BLOCK, 0, "")),
+			SUGARCANE_BLOCK => (new GenericBlock(SUGARCANE_BLOCK, 0, "")),
 
-			FENCE => new GenericBlock(FENCE, 0, ""),
+			FENCE => (new GenericBlock(FENCE, 0, "")),
 
-			NETHERRACK => new GenericBlock(NETHERRACK, 0, ""),
-			SOUL_SAND => new GenericBlock(SOUL_SAND, 0, ""),
-			GLOWSTONE_BLOCK => new GenericBlock(GLOWSTONE_BLOCK, 0, ""),
+			NETHERRACK => (new GenericBlock(NETHERRACK, 0, "")),
+			SOUL_SAND => (new GenericBlock(SOUL_SAND, 0, "")),
+			GLOWSTONE_BLOCK => (new GenericBlock(GLOWSTONE_BLOCK, 0, "")),
 
-			TRAPDOOR => new GenericBlock(TRAPDOOR, 0, ""),
+			TRAPDOOR => (new GenericBlock(TRAPDOOR, 0, "")),
 
-			STONE_BRICKS => new GenericBlock(STONE_BRICKS, 0, ""),
+			STONE_BRICKS => (new GenericBlock(STONE_BRICKS, 0, "")),
 
-			GLASS_PANE => new GenericBlock(GLASS_PANE, 0, ""),
-			GLASS_PANEL => new GenericBlock(GLASS_PANEL, 0, ""),
-			MELON => new GenericBlock(MELON, 0, ""),
+			GLASS_PANE => (new GenericBlock(GLASS_PANE, 0, "")),
+			GLASS_PANEL => (new GenericBlock(GLASS_PANEL, 0, "")),
+			MELON => (new GenericBlock(MELON, 0, "")),
 
-			MELON_STEM => new GenericBlock(MELON_STEM, 0, ""),
+			MELON_STEM => (new GenericBlock(MELON_STEM, 0, "")),
 
-			FENCE_GATE => new GenericBlock(FENCE_GATE, 0, ""),
-			BRICK_STAIRS => new GenericBlock(BRICK_STAIRS, 0, ""),
-			STONE_BRICK_STAIRS => new GenericBlock(STONE_BRICK_STAIRS, 0, ""),
+			FENCE_GATE => (new GenericBlock(FENCE_GATE, 0, "")),
+			BRICK_STAIRS => (new GenericBlock(BRICK_STAIRS, 0, "")),
+			STONE_BRICK_STAIRS => (new GenericBlock(STONE_BRICK_STAIRS, 0, "")),
 
-			NETHER_BRICK => new GenericBlock(NETHER_BRICK, 0, ""),
+			NETHER_BRICK => (new GenericBlock(NETHER_BRICK, 0, "")),
 
-			NETHER_BRICK_STAIRS => new GenericBlock(NETHER_BRICK_STAIRS, 0, ""),
+			NETHER_BRICK_STAIRS => (new GenericBlock(NETHER_BRICK_STAIRS, 0, "")),
 
-			SANDSTONE_STAIRS => new GenericBlock(SANDSTONE_STAIRS, 0, ""),
+			SANDSTONE_STAIRS => (new GenericBlock(SANDSTONE_STAIRS, 0, "")),
 
-			QUARTZ_BLOCK => new GenericBlock(QUARTZ_BLOCK, 0, ""),
-			QUARTZ_STAIRS => new GenericBlock(QUARTZ_STAIRS, 0, ""),
+			QUARTZ_BLOCK => (new GenericBlock(QUARTZ_BLOCK, 0, "")),
+			QUARTZ_STAIRS => (new GenericBlock(QUARTZ_STAIRS, 0, "")),
 
-			STONECUTTER => new GenericBlock(STONECUTTER, 0, ""),
-			GLOWING_OBSIDIAN => new GenericBlock(GLOWING_OBSIDIAN, 0, ""),
-			NETHER_REACTOR => new GenericBlock(NETHER_REACTOR, 0, ""),
+			STONECUTTER => (new GenericBlock(STONECUTTER, 0, "")),
+			GLOWING_OBSIDIAN => (new GenericBlock(GLOWING_OBSIDIAN, 0, "")),
+			NETHER_REACTOR => (new GenericBlock(NETHER_REACTOR, 0, "")),
+			*/
 		);
 	}
 
@@ -216,6 +227,11 @@ class BlockAPI{
 		}
 
 		$target = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"]);
+		$entity = $this->server->api->entity->get($data["eid"]);
+		if(($entity instanceof Entity) !== true){
+			return $this->cancelAction($block); //No Entity WTF?
+		}
+		$data["entity"] = $entity;
 		if(isset(Material::$unbreakable[$target[0]]) or $this->server->gamemode === 2){
 			return $this->cancelAction($target);
 		}
@@ -386,6 +402,7 @@ class BlockAPI{
 		if(($entity instanceof Entity) !== true){
 			return $this->cancelAction($block); //No Entity WTF?
 		}
+		$data["entity"] = $entity;
 		if($target[0] === 0){ //If no block exists
 			$this->cancelAction($target);
 			$block = $this->server->api->level->getBlockFace($target, $data["face"]);
