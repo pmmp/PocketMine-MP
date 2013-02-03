@@ -39,7 +39,7 @@ class StairBlock extends TransparentBlock{
 				3 => 3,
 			);
 			$this->meta = $faces[$player->entity->getDirection()] & 0x03;
-			if($fy > 0.5){
+			if(($fy > 0.5 and $face !== 1) or $face === 0){
 				$this->meta |= 0x04; //Upside-down stairs
 			}
 			$level->setBlock($block, $this->id, $this->meta);
