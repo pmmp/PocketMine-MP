@@ -277,8 +277,10 @@ class Entity extends stdClass{
 					}
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
+						$d = $this->server->api->level->getBlock($x, $y + 1, $z);
+						$d = BlockAPI::get($d[0]);
 						$dmg = ($this->fallY - $y) - 3;
-						if($dmg > 0){
+						if($dmg > 0 and !($d instanceof LiquidBlock)){
 							$this->harm($dmg, "fall");
 						}
 					}
