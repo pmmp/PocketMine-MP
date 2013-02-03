@@ -395,16 +395,6 @@ class BlockAPI{
 					}
 				}
 				break;
-			case 54:
-			case 61:
-				$faces = array(
-					0 => 4,
-					1 => 2,
-					2 => 5,
-					3 => 3,
-				);
-				$data["meta"] = $faces[$direction];
-				break;
 			case 26: //bed
 				$face = array(
 					0 => 3,
