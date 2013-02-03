@@ -25,10 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class IronDoorBlock extends TransparentBlock{
+class IronDoorBlock extends DoorBlock{
 	public function __construct($meta = 0){
-		parent::__construct(IRON_DOOR, $meta, "Iron Door");
-		$this->isActivable = true;
+		parent::__construct(IRON_DOOR_BLOCK, $meta, "Iron Door Block");
+		//$this->isActivable = true;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array(

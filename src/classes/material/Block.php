@@ -90,7 +90,7 @@ abstract class Block{
 			COBBLESTONE_STAIRS => "CobblestoneStairsBlock",
 			WALL_SIGN => "WallSignBlock",
 
-			IRON_DOOR => "IronDoorBlock",
+			IRON_DOOR_BLOCK => "IronDoorBlock",
 			REDSTONE_ORE => "RedstoneOreBlock",
 			GLOWING_REDSTONE_ORE => "GlowingRedstoneOreBlock",
 
@@ -182,6 +182,8 @@ abstract class Block{
 		);
 	}
 	
+	abstract function onBreak(BlockAPI $level, Item $item, Player $player);
+	
 	abstract function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 	
 	abstract function onActivate(BlockAPI $level, Item $item, Player $player);
@@ -195,3 +197,4 @@ require_once("block/TransparentBlock.php");
 require_once("block/FallableBlock.php");
 require_once("block/LiquidBlock.php");
 require_once("block/StairBlock.php");
+require_once("block/DoorBlock.php");

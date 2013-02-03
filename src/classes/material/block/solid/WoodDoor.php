@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class WoodDoorBlock extends TransparentBlock{
+class WoodDoorBlock extends DoorBlock{
 	public function __construct($meta = 0){
 		parent::__construct(WOOD_DOOR_BLOCK, $meta, "Wood Door Block");
 		$this->isActivable = true;

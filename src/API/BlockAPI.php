@@ -199,16 +199,13 @@ class BlockAPI{
 				}
 				break;
 		}*/
+		$target->onBreak($this, $item, $player);
+		
 		if(count($drops) > 0){
 			foreach($drops as $drop){
 				$this->drop($target->x, $target->y, $target->z, $drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF);
 			}			
 		}
-		$this->server->trigger("player.block.break", array(
-			"block" => $target,
-			"player" => $player,
-			"item" => $item,
-		));
 		return false;
 	}
 
@@ -347,46 +344,6 @@ class BlockAPI{
 						$cancelPlace = true;
 					}
 					break;
-				case 64: //Door
-					if(($target[1] & 0x08) === 0x08){
-						$down = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-						if($down[0] === 64){
-							$down[1] = $down[1] ^ 0x04;
-							$data2 = array(
-								"x" => $data["x"],
-								"z" => $data["z"],
-								"y" => $data["y"] - 1,
-								"block" => $down[0],
-								"meta" => $down[1],
-								"eid" => $data["eid"],
-							);
-							if($this->server->handle("player.block.update", $data2) !== false){
-								$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
-							}
-						}
-					}else{
-						$data["block"] = $target[0];
-						$data["meta"] = $target[1] ^ 0x04;
-						if($this->server->handle("player.block.update", $data) !== false){
-							$up = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
-							if($up[0] === 64){
-								$data2 = $data;
-								$data2["meta"] = $up[1];
-								++$data2["y"];
-								$this->updateBlocksAround($data2["x"], $data2["y"], $data2["z"], BLOCK_UPDATE_NORMAL);
-							}
-							$this->updateBlocksAround($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_NORMAL);
-						}
-					}
-					$cancelPlace = true;
-					break;
-				case 96: //Trapdoor
-				case 107: //Fence gates
-					$data["block"] = $target[0];
-					$data["meta"] = $target[1] ^ 0x04;
-					$this->server->handle("player.block.update", $data);
-					$cancelPlace = true;
-					break;
 				default:
 					$cancelPlace = true;
 					break;
@@ -436,42 +393,6 @@ class BlockAPI{
 					}else{
 						return false;
 					}
-				}
-				break;
-			case 107: //Fence gate
-				$faces = array(
-					0 => 3,
-					1 => 0,
-					2 => 1,
-					3 => 2,
-				);
-				$data["meta"] = $faces[$direction] & 0x03;
-				break;
-			case 64://Door placing
-			case 71:
-				if($data["face"] !== 1){
-					return false;
-				}
-				$blockUp = $this->server->api->level->getBlock($data["x"], $data["y"] + 1, $data["z"]);
-				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-				if(!isset(Material::$replaceable[$blockUp[0]]) or isset(Material::$transparent[$blockDown[0]])){
-					return false;
-				}else{
-					$data2 = $data;
-					$data2["meta"] = 0x08;
-					$data["meta"] = $direction & 0x03;
-					$face = array(
-						0 => 3,
-						1 => 4,
-						2 => 2,
-						3 => 5,
-					);
-					$next = $this->server->api->level->getBlockFace($block, $face[(($direction + 2) % 4)]);
-					if($next[0] === $data["block"]){ //Door hinge
-						$data2["meta"] = $data2["meta"] | 0x01;
-					}
-					++$data2["y"];
-					$this->server->handle("player.block.place", $data2);
 				}
 				break;
 			case 54:
@@ -561,7 +482,9 @@ class BlockAPI{
 				break;
 		}
 		*/
-		
+		if($this->server->gamemode === 0 or $this->server->gamemode === 2){
+			$player->removeItem($item->getID(), $item->getMetadata(), 1);
+		}
 		//$this->server->handle("player.block.place", $data);
 		return false;
 	}

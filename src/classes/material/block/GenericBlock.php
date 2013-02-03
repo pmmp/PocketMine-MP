@@ -38,6 +38,14 @@ class GenericBlock extends Block{
 		return false;
 	}
 	
+	public function onBreak(BlockAPI $level, Item $item, Player $player){
+		if($this->inWorld === true){
+			$level->setBlock($this, 0, 0);
+			return true;
+		}
+		return false;
+	}
+	
 	public function onUpdate(BlockAPI $level, $type){
 		return false;
 	}
