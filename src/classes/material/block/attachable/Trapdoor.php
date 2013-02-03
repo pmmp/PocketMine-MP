@@ -25,22 +25,25 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class TorchBlock extends FlowableBlock{
+class TrapdoorBlock extends TransparentBlock{
 	public function __construct($meta = 0){
-		parent::__construct(TORCH, $meta, "Torch");
+		parent::__construct(TRAPDOOR, $meta, "Trapdoor");
+		$this->isActivable = true;
 	}
-	
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
-			if($target->isTransparent === false and $face !== 0){
+			if($target->isTransparent === false and $face !== 0 and $face !== 1){
 				$faces = array(
-					1 => 5,
-					2 => 4,
-					3 => 3,
+					2 => 0,
+					3 => 1,
 					4 => 2,
-					5 => 1,
+					5 => 3,
 				);
-				$level->setBlock($block, $this->id, $faces[$face]);
+				$this->meta = $faces[$face] & 0x03;
+				if($fy > 0.5){
+					$this->meta |= 0x08;
+				}
+				$level->setBlock($block, $this->id, $this->meta);
 				return true;
 			}
 		}
@@ -50,5 +53,10 @@ class TorchBlock extends FlowableBlock{
 		return array(
 			array($this->id, 0, 1),
 		);
+	}
+	public function onActivate(BlockAPI $level, Item $item, Player $player){
+		$this->meta ^= 0x04;
+		$level->setBlock($this, $this->id, $this->meta);
+		return true;
 	}
 }
