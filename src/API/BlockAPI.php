@@ -512,23 +512,6 @@ class BlockAPI{
 		}
 
 		/*switch($data["block"]){
-			case 6:
-				if($target[0] === 60){
-					break;
-				}
-			case 37:
-			case 38:
-				if(($target[0] !== 2 and $target[0] !== 3) or $data["face"] !== 1){
-					return false;
-				}
-				break;
-			case 39://Mushrooms
-			case 40:
-				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-				if(isset(Material::$transparent[$blockDown[0]])){
-					return false;
-				}
-				break;
 			case 338:
 			case 83: //Sugarcane
 				$data["block"] = 83;

@@ -30,5 +30,15 @@ class RedMushroomBlock extends FlowableBlock{
 		parent::__construct(RED_MUSHROOM, 0, "Red Mushroom");
 		$this->isFlowable = true;
 	}
-	
+
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($block->inWorld === true){
+			$down = $level->getBlockFace($block, 0);
+			if($down->isTransparent === false){
+				$level->setBlock($block, $this->id, $this->getMetadata());
+				return true;
+			}
+		}
+		return false;
+	}	
 }
