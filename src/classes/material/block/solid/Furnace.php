@@ -31,4 +31,13 @@ class FurnaceBlock extends SolidBlock{
 		$this->isActivable = true;
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		if($item->isPickaxe() >= 1){
+			return array(
+				array(FURNACE, 0, 1),
+			);
+		}else{
+			return array();
+		}
+	}
 }

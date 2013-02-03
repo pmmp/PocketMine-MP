@@ -29,5 +29,18 @@ class TNTBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(TNT, 0, "TNT");
 	}
-	
+	public function getDrops(Item $item, Player $player){
+		if($this->inWorld === true){
+			$player->dataPacket(MC_EXPLOSION, array(
+				"x" => $this->x,
+				"y" => $this->y,
+				"z" => $this->z,
+				"radius" => 2,
+				"records" => array(),
+			));
+		}
+		return array(
+			array(TNT, 0, 1),
+		);
+	}	
 }

@@ -29,5 +29,9 @@ class SignPostBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
 	}
-	
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(323, 0, 1),
+		);
+	}	
 }

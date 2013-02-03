@@ -43,11 +43,26 @@ class SaplingBlock extends TransparentBlock{
 		$this->name = $names[$this->meta & 0x03];
 	}
 	
-	public function onActivate(LevelAPI $level, Item $item, Player $player){
-		TreeObject::growTree($level, $this);
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face){
+		if($block->inWorld === true){
+			$down = $level->getBlockFace($block, 0);
+			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
+				$level->setBlock($block, $this->id, $this->getMetadata());
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public function onUpdate(LevelAPI $level, $type){
+	public function onActivate(BlockAPI $level, Item $item, Player $player){
+		if($item->getID() === 351 and $item->getMetadata() === 0x0F){ //Bonemeal
+			TreeObject::growTree($level, $this);
+			return true;
+		}
+		return false;
+	}
+	
+	public function onUpdate(BlockAPI $level, $type){
 		if($this->inWorld !== true){
 			return false;
 		}

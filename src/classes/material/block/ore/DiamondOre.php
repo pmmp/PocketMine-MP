@@ -30,4 +30,13 @@ class DiamondOreBlock extends SolidBlock{
 		parent::__construct(DIAMOND_ORE, 0, "Diamond Ore");
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		if($item->isPickaxe() >= 3){
+			return array(
+				array(264, 0, 1),
+			);
+		}else{
+			return array();
+		}
+	}	
 }

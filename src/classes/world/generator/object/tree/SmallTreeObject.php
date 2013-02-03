@@ -37,7 +37,7 @@ class SmallTreeObject extends TreeObject{
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
 
-	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
+	public function canPlaceObject(BlockAPI $level, $x, $y, $z){
 		$radiusToCheck = $this->radiusIncrease;
 		for ($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
 			if ($yy == 1 or $yy === $this->totalHeight - 1) {
@@ -45,8 +45,8 @@ class SmallTreeObject extends TreeObject{
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
 				for($zz = -$radiusToCheck; $zz < ($radiusToCheck + 1); ++$zz){
-					$block = $level->getBlock($x + $xx, $y + $yy, $z + $zz);
-					if(!isset($this->overridable[$block[0]])){
+					$block = $level->getBlock(new Vector3($x + $xx, $y + $yy, $z + $zz));
+					if(!isset($this->overridable[$block->getID()])){
 						return false;
 					}
 				}
@@ -55,8 +55,8 @@ class SmallTreeObject extends TreeObject{
 		return true;
 	}
 
-	public function placeObject(LevelAPI $level, $x, $y, $z){
-		$level->setBlock($x, $y - 1, $z, 3, 0);
+	public function placeObject(BlockAPI $level, $x, $y, $z){
+		$level->setBlock(new Vector3($x, $y - 1, $z), 3, 0);
 		$this->totalHeight += mt_rand(-1, 3);
 		$this->leavesHeight += mt_rand(0, 1);
 		for($yy = ($this->totalHeight - $this->leavesHeight); $yy < ($this->totalHeight + 1); ++$yy){
@@ -65,13 +65,13 @@ class SmallTreeObject extends TreeObject{
 			for($xx = -$xzRadius; $xx < ($xzRadius + 1); ++$xx){
 				for($zz = -$xzRadius; $zz < ($xzRadius + 1); ++$zz){
 					if((abs($xx) != $xzRadius or abs($zz) != $xzRadius) and $yRadius != 0){
-						$level->setBlock($x + $xx, $y + $yy, $z + $zz, 18, $this->type);
+						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), 18, $this->type);
 					}
 				}
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlock($x, $y + $yy, $z, 17, $this->type);
+			$level->setBlock(new Vector3($x, $y + $yy, $z), 17, $this->type);
 		}
 	}
 

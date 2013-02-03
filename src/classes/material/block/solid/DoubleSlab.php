@@ -40,5 +40,10 @@ class DoubleSlabBlock extends SolidBlock{
 		);
 		$this->name = "Double " . $names[$this->meta & 0x07] . " Slab";
 	}
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(SLAB, $this->meta & 0x07, 2),
+		);
+	}
 	
 }

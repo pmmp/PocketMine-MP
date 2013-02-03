@@ -30,4 +30,7 @@ class GlassBlock extends TransparentBlock{
 		parent::__construct(GLASS, 0, "Glass");
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		return array();
+	}
 }

@@ -41,7 +41,9 @@ abstract class Block{
 	public $inWorld = false;
 	public $hasPhysics = false;
 	public $isLiquid = false;
-	public $v = false;
+	public $x;
+	public $y;
+	public $z;
 	
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;
@@ -55,7 +57,7 @@ abstract class Block{
 	}
 	
 	final public function getID(){
-		return $id;
+		return $this->id;
 	}
 	
 	final public function getMetadata(){
@@ -64,7 +66,9 @@ abstract class Block{
 	
 	final public function position(Vector3 $v){
 		$this->inWorld = true;
-		$this->v = new Vector3((int) $v->x, (int) $v->y, (int) $v->z);
+		$this->x = (int) $v->x;
+		$this->y = (int) $v->y;
+		$this->z = (int) $v->z;
 	}
 	
 	public function getDrops(Item $item, Player $player){
@@ -73,9 +77,11 @@ abstract class Block{
 		);
 	}
 	
-	abstract function onActivate(LevelAPI $level, Item $item, Player $player);
+	abstract function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face);
 	
-	abstract function onUpdate(LevelAPI $level, $type);
+	abstract function onActivate(BlockAPI $level, Item $item, Player $player);
+	
+	abstract function onUpdate(BlockAPI $level, $type);
 }
 
 require_once("block/GenericBlock.php");

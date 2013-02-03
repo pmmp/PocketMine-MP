@@ -29,5 +29,9 @@ class FarmlandBlock extends SolidBlock{
 	public function __construct($meta = 0){
 		parent::__construct(FARMLAND, $meta, "Farmland");
 	}
-	
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(DIRT, 0, 1),
+		);
+	}		
 }

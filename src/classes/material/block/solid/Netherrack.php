@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class NetherrackBlock extends SolidBlock{
 	public function __construct(){
-		parent::__construct(NETHERRACK, 0, "Netherrrack");
+		parent::__construct(NETHERRACK, 0, "Netherrack");
 	}
 	
 }

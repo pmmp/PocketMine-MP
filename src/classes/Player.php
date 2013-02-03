@@ -46,7 +46,7 @@ class Player{
 	var $MTU;
 	var $spawned = false;
 	var $inventory;
-	var $equipment = array(1, 0);
+	public $equipment;
 	var $armor = array(0, 0, 0, 0);
 	var $loggedIn = false;
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
@@ -57,7 +57,12 @@ class Player{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->timeout = microtime(true) + 20;
-		$this->inventory = array_fill(0, 36, array(0, 0, 0));
+		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
+		if($this->server->gamemode === 0 or $this->server->gamemode === 2){
+			$this->equipment = new Item(AIR);
+		}else{
+			$this->equipment = new Item(STONE);
+		}
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
@@ -199,7 +204,7 @@ class Player{
 				break;
 			case "player.block.place":
 				if($data["eid"] === $this->eid and ($this->server->gamemode === 0 or $this->server->gamemode === 2)){
-					$this->removeItem($data["original"][0], $data["original"][1], 1);
+					$this->removeItem($data["original"]->getID(), $data["original"]->getMetadata(), 1);
 				}
 				break;
 			case "player.pickup":
@@ -547,10 +552,8 @@ class Player{
 						case MC_PLAYER_EQUIPMENT:
 							$data["eid"] = $this->eid;
 							if($this->server->handle("player.equipment.change", $data) !== false){
-								$this->equipment[0] = $data["block"];
-								$this->equipment[1] = $data["meta"];
-								$b = BlockAPI::get($data["block"], $data["meta"]);
-								console("[DEBUG] Player ".$this->username." has now ".$b->getName()." (".$data["block"].":".$data["meta"].") in their hands!", true, true, 2);
+								$this->equipment = new Item($data["block"], $data["meta"]);
+								console("[DEBUG] Player ".$this->username." has now ".$this->equipment->getName()." (".$this->equipment->getID().":".$this->equipment->getMetadata().") in their hands!", true, true, 2);
 							}
 							break;
 						case MC_REQUEST_CHUNK:
@@ -639,13 +642,13 @@ class Player{
 										363 => 3,
 										364 => 8,
 									);
-									if(isset($items[$this->equipment[0]])){
+									if(isset($items[$this->equipment->getID()])){
 										$this->removeItem($this->equipment[0], 0, 1);
 										$this->dataPacket(MC_ENTITY_EVENT, array(
 											"eid" => 0,
 											"event" => 9,
 										));
-										$this->entity->heal($items[$this->equipment[0]], "eating");
+										$this->entity->heal($items[$this->equipment->getID()], "eating");
 									}
 									break;
 							}

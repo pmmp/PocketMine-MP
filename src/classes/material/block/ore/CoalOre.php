@@ -31,9 +31,13 @@ class CoalOreBlock extends SolidBlock{
 	}
 	
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(263, 0, 1),
-		);
+		if($item->isPickaxe() >= 1){
+			return array(
+				array(263, 0, 1), //Coal
+			);
+		}else{
+			return array();
+		}
 	}
 	
 }

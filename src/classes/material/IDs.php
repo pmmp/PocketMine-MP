@@ -35,6 +35,7 @@ define("PLANK", 5);
 define("PLANKS", 5);
 define("WOODEN_PLANK", 5);
 define("SAPLING", 6);
+define("SAPLINGS", 6);
 define("BEDROCK", 7);
 define("WATER", 8);
 define("STILL_WATER", 9);

@@ -30,4 +30,14 @@ class StoneBlock extends SolidBlock{
 		parent::__construct(STONE, 0, "Stone");
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		if($item->isPickaxe() >= 1){
+			return array(
+				array(COBBLESTONE, 0, 1),
+			);
+		}else{
+			return array();
+		}
+	}
+	
 }

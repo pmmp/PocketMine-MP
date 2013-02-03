@@ -48,13 +48,12 @@ class LevelAPI{
 				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
 				break;
 			case "player.block.break":
-				$block = $this->getBlock($data["x"], $data["y"], $data["z"]);
-				if($block[0] === 0){
+				if($data["block"]->getID() === 0){
 					break;
 				}
 				$b = BlockAPI::get($block[0], $block[1]);
-				console("[DEBUG] Player ".$data["entity"]->player->username." broke ".$b->getName()." (".$block[0].":".$block[1].") at (".$data["x"].", ".$data["y"].", ".$data["z"].")", true, true, 2);
-				$this->setBlock($data["x"], $data["y"], $data["z"], 0, 0, true, true);
+				console("[DEBUG] Player ".$data["player"]->username." broke ".$data["block"]->getName()." (".$data["block"]->getID().":".$data["block"]->getMetadata().") at (".$data["block"]->x.", ".$data["block"]->y.", ".$data["block"]->z.")", true, true, 2);
+				$this->setBlock($data["block"]->x, $data["block"]->y, $data["block"]->z, 0, 0, true, true);
 				break;
 		}
 	}

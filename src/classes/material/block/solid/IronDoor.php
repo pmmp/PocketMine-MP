@@ -30,5 +30,9 @@ class IronDoorBlock extends TransparentBlock{
 		parent::__construct(IRON_DOOR, $meta, "Iron Door");
 		$this->isActivable = true;
 	}
-	
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(330, 0, 1),
+		);
+	}	
 }

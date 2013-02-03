@@ -30,5 +30,7 @@ class CobwebBlock extends FlowableBlock{
 		parent::__construct(COBWEB, 0, "Cobweb");
 		$this->isFlowable = true;
 	}
-	
+	public function getDrops(Item $item, Player $player){
+		return array();
+	}	
 }

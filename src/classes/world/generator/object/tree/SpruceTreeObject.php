@@ -34,7 +34,7 @@ class SpruceTreeObject extends TreeObject{
 	private $leavesBottomY = -1;
 	private $leavesMaxRadius = -1;
 
-	public function canPlaceObject(LevelAPI $level, $x, $y, $z){
+	public function canPlaceObject(BlockAPI $level, $x, $y, $z){
 		$this->findRandomLeavesSize();
 		$checkRadius = 0;
 		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
@@ -43,8 +43,8 @@ class SpruceTreeObject extends TreeObject{
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
 				for($zz = -$checkRadius; $zz < ($checkRadius + 1); ++$zz){
-					$block = $level->getBlock($x + $xx, $y + $yy, $z + $zz);
-					if(!isset($this->overridable[$block[0]])){
+					$block = $level->getBlock(new Vector3($x + $xx, $y + $yy, $z + $zz));
+					if(!isset($this->overridable[$block->getID()])){
 						return false;
 					}
 				}
@@ -59,17 +59,17 @@ class SpruceTreeObject extends TreeObject{
 		$this->leavesMaxRadius = 1 + mt_rand(0, 1);
 	}
 
-	public function placeObject(LevelAPI $level, $x, $y, $z){
+	public function placeObject(BlockAPI $level, $x, $y, $z){
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
-		$level->setBlock($x, $y - 1, $z, 3, 0);
+		$level->setBlock(new Vector3($x, $y - 1, $z), 3, 0);
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
 			for ($xx = -$leavesRadius; $xx < ($leavesRadius + 1); ++$xx) {
 				for ($zz = -$leavesRadius; $zz < ($leavesRadius + 1); ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
-						$level->setBlock($x + $xx, $y + $yy, $z + $zz, 18, $this->type);
+						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), 18, $this->type);
 					}
 				}
 			}
@@ -80,7 +80,7 @@ class SpruceTreeObject extends TreeObject{
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlock($x, $y + $yy, $z, 17, $this->type);
+			$level->setBlock(new Vector3($x, $y + $yy, $z), 17, $this->type);
 		}
 	}
 

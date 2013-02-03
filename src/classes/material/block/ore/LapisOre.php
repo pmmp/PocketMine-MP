@@ -31,9 +31,13 @@ class LapisOreBlock extends SolidBlock{
 	}
 	
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(351, 4, 1),
-		);
+		if($item->isPickaxe() >= 2){
+			return array(
+				array(351, 4, mt_rand(4, 8)),
+			);
+		}else{
+			return array();
+		}
 	}
 	
 }

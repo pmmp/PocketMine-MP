@@ -38,4 +38,12 @@ class TallGrassBlock extends FlowableBlock{
 		$this->name = $names[$this->meta & 0x03];
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		$drops = array();
+		if(mt_rand(1,10) === 1){//Seeds
+			$drops[] = array(295, 0, 1);
+		}
+		return $drops;
+	}
+
 }

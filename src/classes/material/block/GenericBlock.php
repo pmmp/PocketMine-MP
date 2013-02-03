@@ -29,11 +29,19 @@ the Free Software Foundation, either version 3 of the License, or
 class GenericBlock extends Block{
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
-	}
-	public function onUpdate(LevelAPI $level, $type){
+	}	
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face){
+		if($block->inWorld === true){
+			$level->setBlock($block, $this->id, $this->getMetadata());
+			return true;
+		}
 		return false;
 	}
-	public function onActivate(LevelAPI $level, Item $item, Player $player){
+	
+	public function onUpdate(BlockAPI $level, $type){
+		return false;
+	}
+	public function onActivate(BlockAPI $level, Item $item, Player $player){
 		return false;
 	}
 }
