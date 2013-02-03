@@ -25,20 +25,27 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+require_once("classes/material/IDs.php");
+
 class Item{
+	public static $class = array(
+	
+	
+	);
 	protected $block = false;
 	protected $id;
 	protected $meta;
 	protected $count;
 	protected $maxStackSize = 64;
 	protected $durability = 0;
-	protected $name = "Unknown";
+	protected $name;
 	
-	public function __construct($id, $meta = 0, $count = 1){
+	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 		$this->count = (int) $count;
-		if(isset(BlockAPI::$class[$this->id])){
+		$this->name = $name;
+		if(isset(Block::$class[$this->id])){
 			$this->block = BlockAPI::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
 		}

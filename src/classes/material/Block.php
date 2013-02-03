@@ -25,9 +25,114 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+require_once("classes/material/IDs.php");
 
 abstract class Block{
+	public static $class = array(
+			AIR => "AirBlock",
+			STONE => "StoneBlock",
+			GRASS => "GrassBlock",
+			DIRT => "DirtBlock",
+			COBBLESTONE => "CobblestoneBlock",
+			PLANKS => "PlanksBlock",
+			SAPLING => "SaplingBlock",
+			BEDROCK => "BedrockBlock",
+			WATER => "WaterBlock",
+			STILL_WATER => "StillWaterBlock",
+			LAVA => "LavaBlock",
+			STILL_LAVA => "StillLavaBlock",
+			SAND => "SandBlock",
+			GRAVEL => "GravelBlock",
+			GOLD_ORE => "GoldOreBlock",
+			IRON_ORE => "IronOreBlock",
+			COAL_ORE => "CoalOreBlock",
+			WOOD => "WoodBlock",
+			LEAVES => "LeavesBlock",
+			GLASS => "GlassBlock",
+			LAPIS_ORE => "LapisOreBlock",
+			LAPIS_BLOCK => "LapisBlock",
+			SANDSTONE => "SandstoneBlock",
+			BED_BLOCK => "BedBlock",
+			COBWEB => "CobwebBlock",
+			TALL_GRASS => "TallGrassBlock",
+			DEAD_BUSH => "DeadBushBlock",
+			WOOL => "WoolBlock",
+			DANDELION => "DandelionBlock",
+			CYAN_FLOWER => "CyanFlowerBlock",
+			BROWN_MUSHROOM => "BrownMushroomBlock",
+			RED_MUSHROOM => "RedMushRoomBlock",
+			GOLD_BLOCK => "GoldBlock",
+			IRON_BLOCK => "IronBlock",
+			DOUBLE_SLAB => "DoubleSlabBlock",
+			SLAB => "SlabBlock",
+			BRICKS => "BricksBlock",
+			TNT => "TNTBlock",
+			BOOKSHELF => "BookshelfBlock",
+			MOSS_STONE => "MossStoneBlock",
+			OBSIDIAN => "ObsidianBlock",
+			TORCH => "TorchBlock",
+			FIRE => "FireBlock",
 
+			WOOD_STAIRS => "WoodStairsBlock",
+			CHEST => "ChestBlock",
+
+			DIAMOND_ORE => "DiamondOreBlock",
+			DIAMOND_BLOCK => "DiamondBlock",
+			WORKBENCH => "WorkbenchBlock",
+			WHEAT => "WheatBlock",
+			FARMLAND => "FarmlandBlock",
+			FURNACE => "FurnaceBlock",
+			BURNING_FURNACE => "BurningFurnaceBlock",
+			SIGN_POST => "SignPostBlock",
+			WOOD_DOOR_BLOCK => "WoodDoorBlock",
+			LADDER => "LadderBlock",
+
+			COBBLESTONE_STAIRS => "CobblestoneStairsBlock",
+			WALL_SIGN => "WallSignBlock",
+
+			IRON_DOOR => "IronDoorBlock",
+			REDSTONE_ORE => "RedstoneOreBlock",
+			GLOWING_REDSTONE_ORE => "GlowingRedstoneOreBlock",
+
+			SNOW_LAYER => "SnowLayerBlock",
+			ICE => "IceBlock",
+			SNOW_BLOCK => "SnowBlock",
+			CACTUS => "CactusBlock",
+			CLAY_BLOCK => "ClayBlock",
+			SUGARCANE_BLOCK => "SugarcaneBlock",
+
+			FENCE => "FenceBlock",
+
+			NETHERRACK => "NetherrackBlock",
+			SOUL_SAND => "SoulSandBlock",
+			GLOWSTONE_BLOCK => "GlowstoneBlock",
+
+			TRAPDOOR => "TrapdoorBlock",
+
+			STONE_BRICKS => "StoneBricksBlock",
+
+			GLASS_PANE => "GlassPaneBlock",
+			MELON_BLOCK => "MelonBlock",
+
+			MELON_STEM => "MelonStemBlock",
+
+			FENCE_GATE => "FenceGateBlock",
+			BRICK_STAIRS => "BrickStairsBlock",
+			STONE_BRICK_STAIRS => "StoneBrickStairsBlock",
+
+			NETHER_BRICK => "NetherBrickBlock",
+
+			NETHER_BRICK_STAIRS => "NetherBrickStairsBlock",
+
+			SANDSTONE_STAIRS => "SandstoneStairsBlock",
+
+			QUARTZ_BLOCK => "QuartzBlock",
+			QUARTZ_STAIRS => "QuartzStairsBlock",
+
+			STONECUTTER => "StonecutterBlock",
+			GLOWING_OBSIDIAN => "GlowingObsidianBlock",
+			NETHER_REACTOR => "NetherReactorBlock",
+	);
 	protected $id;
 	protected $meta;
 	protected $shortname = "";

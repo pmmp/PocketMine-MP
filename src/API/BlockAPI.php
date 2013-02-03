@@ -25,6 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+
 define("BLOCK_UPDATE_NORMAL", 0);
 define("BLOCK_UPDATE_RANDOM", 1);
 define("BLOCK_UPDATE_SCHEDULED", 2);
@@ -35,21 +36,31 @@ define("BLOCK_UPDATE_WEAK", 3);
 
 
 class BlockAPI{
-	public static $class = array();
 	private $server;
 	
 	public static function get($id, $meta = 0, $v = false){
 		$id = (int) $id;
-		if(isset(BlockAPI::$class[$id])){
-			$classname = BlockAPI::$class[$id];
+		if(isset(Block::$class[$id])){
+			$classname = Block::$class[$id];
 			$b = new $classname($meta);
 		}else{
-			$b = new GenericBlock($id, $meta, "");
+			$b = new GenericBlock($id, $meta);
 		}
 		if($v instanceof Vector3){
 			$b->position($v);
 		}
 		return $b;
+	}
+	
+	public static function getItem($id, $meta = 0, $count = 1){
+		$id = (int) $id;
+		if(isset(Item::$class[$id])){
+			$classname = Item::$class[$id];
+			$i = new $classname($meta);
+		}else{
+			$i = new Item($id, $meta, $count);
+		}
+		return $i;
 	}
 	
 	public function setBlock($block, $id, $meta){
@@ -78,111 +89,6 @@ class BlockAPI{
 	
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
-		BlockAPI::$class = array(
-			AIR => "AirBlock",
-			STONE => "StoneBlock",
-			GRASS => "GrassBlock",
-			DIRT => "DirtBlock",
-			COBBLESTONE => "CobblestoneBlock",
-			PLANKS => "PlanksBlock",
-			SAPLING => "SaplingBlock",
-			BEDROCK => "BedrockBlock",
-			WATER => "WaterBlock",
-			STILL_WATER => "StillWaterBlock",
-			LAVA => "LavaBlock",
-			STILL_LAVA => "StillLavaBlock",
-			SAND => "SandBlock",
-			GRAVEL => "GravelBlock",
-			GOLD_ORE => "GoldOreBlock",
-			IRON_ORE => "IronOreBlock",
-			COAL_ORE => "CoalOreBlock",
-			WOOD => "WoodBlock",
-			LEAVES => "LeavesBlock",
-			GLASS => "GlassBlock",
-			LAPIS_ORE => "LapisOreBlock",
-			LAPIS_BLOCK => "LapisBlock",
-			SANDSTONE => "SandstoneBlock",
-			BED_BLOCK => "BedBlock",
-			COBWEB => "CobwebBlock",
-			TALL_GRASS => "TallGrassBlock",
-			DEAD_BUSH => "DeadBushBlock",
-			WOOL => "WoolBlock",
-			DANDELION => "DandelionBlock",
-			CYAN_FLOWER => "CyanFlowerBlock",
-			BROWN_MUSHROOM => "BrownMushroomBlock",
-			RED_MUSHROOM => "RedMushRoomBlock",
-			GOLD_BLOCK => "GoldBlock",
-			IRON_BLOCK => "IronBlock",
-			DOUBLE_SLAB => "DoubleSlabBlock",
-			SLAB => "SlabBlock",
-			BRICKS => "BricksBlock",
-			TNT => "TNTBlock",
-			BOOKSHELF => "BookshelfBlock",
-			MOSS_STONE => "MossStoneBlock",
-			OBSIDIAN => "ObsidianBlock",
-			TORCH => "TorchBlock",
-			FIRE => "FireBlock",
-
-			WOOD_STAIRS => "WoodStairsBlock",
-			CHEST => "ChestBlock",
-
-			DIAMOND_ORE => "DiamondOreBlock",
-			DIAMOND_BLOCK => "DiamondBlock",
-			WORKBENCH => "WorkbenchBlock",
-			WHEAT => "WheatBlock",
-			FARMLAND => "FarmlandBlock",
-			FURNACE => "FurnaceBlock",
-			BURNING_FURNACE => "BurningFurnaceBlock",
-			SIGN_POST => "SignPostBlock",
-			WOOD_DOOR_BLOCK => "WoodDoorBlock",
-			LADDER => "LadderBlock",
-
-			COBBLESTONE_STAIRS => "CobblestoneStairsBlock",
-			WALL_SIGN => "WallSignBlock",
-
-			IRON_DOOR => "IronDoorBlock",
-			REDSTONE_ORE => "RedstoneOreBlock",
-			GLOWING_REDSTONE_ORE => "GlowingRedstoneOreBlock",
-
-			SNOW_LAYER => "SnowLayerBlock",
-			ICE => "IceBlock",
-			SNOW_BLOCK => "SnowBlock",
-			CACTUS => "CactusBlock",
-			CLAY_BLOCK => "ClayBlock",
-			SUGARCANE_BLOCK => "SugarcaneBlock",
-
-			FENCE => "FenceBlock",
-
-			NETHERRACK => "NetherrackBlock",
-			SOUL_SAND => "SoulSandBlock",
-			GLOWSTONE_BLOCK => "GlowstoneBlock",
-
-			TRAPDOOR => "TrapdoorBlock",
-
-			STONE_BRICKS => "StoneBricksBlock",
-
-			GLASS_PANE => "GlassPaneBlock",
-			MELON_BLOCK => "MelonBlock",
-
-			MELON_STEM => "MelonStemBlock",
-
-			FENCE_GATE => "FenceGateBlock",
-			BRICK_STAIRS => "BrickStairsBlock",
-			STONE_BRICK_STAIRS => "StoneBrickStairsBlock",
-
-			NETHER_BRICK => "NetherBrickBlock",
-
-			NETHER_BRICK_STAIRS => "NetherBrickStairsBlock",
-
-			SANDSTONE_STAIRS => "SandstoneStairsBlock",
-
-			QUARTZ_BLOCK => "QuartzBlock",
-			QUARTZ_STAIRS => "QuartzStairsBlock",
-
-			STONECUTTER => "StonecutterBlock",
-			GLOWING_OBSIDIAN => "GlowingObsidianBlock",
-			NETHER_REACTOR => "NetherReactorBlock",
-		);
 	}
 
 	public function init(){
@@ -531,22 +437,6 @@ class BlockAPI{
 						return false;
 					}
 				}
-				break;
-			case 50: //Torch
-				if(isset(Material::$transparent[$target[0]])){
-					return false;
-				}
-				$faces = array(
-					1 => 5,
-					2 => 4,
-					3 => 3,
-					4 => 2,
-					5 => 1,
-				);
-				if(!isset($faces[$data["face"]])){
-					return false;
-				}
-				$data["meta"] = $faces[$data["face"]];
 				break;
 			case 53://Stairs
 			case 67:
