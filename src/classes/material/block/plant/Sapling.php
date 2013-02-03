@@ -79,7 +79,7 @@ class SaplingBlock extends TransparentBlock{
 	}
 	
 	public function getDrops(Item $item, Player $player){
-		return = array(
+		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);
 	}

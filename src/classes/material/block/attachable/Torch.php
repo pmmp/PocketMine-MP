@@ -32,8 +32,7 @@ class TorchBlock extends FlowableBlock{
 	
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
-			$down = $level->getBlockFace($block, 0);
-			if($down->isTransparent === false and $face !== 0){
+			if($target->isTransparent === false and $face !== 0){
 				$faces = array(
 					1 => 5,
 					2 => 4,
@@ -48,7 +47,7 @@ class TorchBlock extends FlowableBlock{
 		return false;
 	}	
 	public function getDrops(Item $item, Player $player){
-		return = array(
+		return array(
 			array($this->id, 0, 1),
 		);
 	}

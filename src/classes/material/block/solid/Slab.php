@@ -77,7 +77,7 @@ class SlabBlock extends TransparentBlock{
 		return false;
 	}
 	public function getDrops(Item $item, Player $player){
-		return = array(
+		return array(
 			array($this->id, $this->meta & 0x07, 1),
 		);
 	}	
