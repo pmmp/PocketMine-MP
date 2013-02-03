@@ -531,9 +531,13 @@ class BlockAPI{
 			return false;
 		}
 
-		if($block->isReplaceable === true and $item->isPlaceable()){
+		if($item->isPlaceable()){
 			$hand = $item->getBlock();
 		}else{
+			return $this->cancelAction($block);
+		}
+		
+		if(!($block->isReplaceable === true or ($hand->getID() === SLAB and $block->getID() === SLAB))){
 			return $this->cancelAction($block);
 		}
 		
@@ -543,7 +547,7 @@ class BlockAPI{
 
 		//$direction = $player->entity->getDirection();
 
-		if($hand->place($this, $item, $player, $block, $target, $data["face"]) === false){
+		if($hand->place($this, $item, $player, $block, $target, $data["face"], $data["fx"], $data["fy"], $data["fz"]) === false){
 			return false;
 		}
 

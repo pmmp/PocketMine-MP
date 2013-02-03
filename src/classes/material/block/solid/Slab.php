@@ -41,4 +41,38 @@ class SlabBlock extends TransparentBlock{
 		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . $names[$this->meta & 0x07] . " Slab";
 	}
 	
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($block->inWorld === true){
+			$this->meta = $this->meta & 0x07;
+			if($face === 0){
+				if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
+					$level->setBlock($target, DOUBLE_SLAB, $this->meta & 0x07);
+					return true;
+				}else{
+					$this->meta |= 0x08;
+				}
+			}elseif($face === 1){
+				if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
+					$level->setBlock($target, DOUBLE_SLAB, $this->meta & 0x07);
+					return true;
+				}
+			}else{
+				if($block->getID() === SLAB){
+					if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+						$level->setBlock($block, DOUBLE_SLAB, $this->meta & 0x07);
+						return true;
+					}
+					return false;
+				}else{
+					if($fy > 0.5){
+						$this->meta |= 0x08;
+					}
+				}
+			}			
+			$level->setBlock($block, $this->id, $this->meta);
+			return true;
+		}
+		return false;
+	}
+	
 }

@@ -77,7 +77,7 @@ abstract class Block{
 		);
 	}
 	
-	abstract function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face);
+	abstract function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 	
 	abstract function onActivate(BlockAPI $level, Item $item, Player $player);
 	
