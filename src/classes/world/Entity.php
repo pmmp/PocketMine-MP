@@ -70,9 +70,11 @@ class Entity extends stdClass{
 	public $attach;
 	public $closed;
 	public $player;
+	public $fallY;
 	private $tickCounter;
 	private $server;
 	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
+		$this->fallY = false;
 		$this->server = $server;
 		$this->eid = (int) $eid;
 		$this->type = (int) $type;
@@ -185,8 +187,8 @@ class Entity extends stdClass{
 				for($z = $startZ; $z <= $endZ; ++$z){
 					$b = $this->server->api->level->getBlock($x, $y, $z);
 					switch($b[0]){
-						case 8:
-						case 9: //Drowing
+						case WATER:
+						case STILL_WATER: //Drowing
 							if($this->fire > 0 and $this->inBlock($x, $y, $z)){
 								$this->fire = 0;
 								$this->updateMetadata();
@@ -198,22 +200,22 @@ class Entity extends stdClass{
 								$this->updateMetadata();
 							}
 							break;
-						case 10: //Lava damage
-						case 11:
+						case LAVA: //Lava damage
+						case STILL_LAVA:
 							if($this->inBlock($x, $y, $z)){
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
 							}
 							break;
-						case 51: //Fire block damage
+						case FIRE: //Fire block damage
 							if($this->inBlock($x, $y, $z)){
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
 							}
 							break;
-						case 81: //Cactus damage
+						case CACTUS: //Cactus damage
 							if($this->touchingBlock($x, $y, $z)){
 								$this->harm(1, "cactus");
 							}
@@ -243,29 +245,45 @@ class Entity extends stdClass{
 			$this->tickCounter = 0;
 		}
 		
-		if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
+		if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER){
 			$x = (int) round($this->x - 0.5);
 			$y = (int) round($this->y - 1);
 			$z = (int) round($this->z - 0.5);
-			if($this->speedX != 0){
-				$this->x += $this->speedX * 5;
-			}
-			if($this->speedY != 0){
-				$this->y += $this->speedY * 5;
-			}
-			if($this->speedZ != 0){
-				$this->z += $this->speedZ * 5;
-			}
-			$b = $this->server->api->level->getBlock($x, $y, $z);
-			if(isset(Material::$transparent[$b[0]])){
-				$this->speedY -= 0.04 * 5;
-				//$this->server->api->handle("entity.motion", $this);
-			}elseif($this->speedY < 0){
-				$this->y = $y + 1;
-				$this->speedX = 0;
-				$this->speedY = 0;
-				$this->speedZ = 0;
-				//$this->server->api->handle("entity.motion", $this);
+			$blockDown = $this->server->api->level->getBlock($x, $y, $z);
+			if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
+				if($this->speedX != 0){
+					$this->x += $this->speedX * 5;
+				}
+				if($this->speedY != 0){
+					$this->y += $this->speedY * 5;
+				}
+				if($this->speedZ != 0){
+					$this->z += $this->speedZ * 5;
+				}
+				if(isset(Material::$transparent[$blockDown[0]])){
+					$this->speedY -= 0.04 * 5;
+					//$this->server->api->handle("entity.motion", $this);
+				}elseif($this->speedY < 0){
+					$this->y = $y + 1;
+					$this->speedX = 0;
+					$this->speedY = 0;
+					$this->speedZ = 0;
+					//$this->server->api->handle("entity.motion", $this);
+				}
+			}else{
+				if(isset(Material::$flowable[$blockDown[0]])){
+					if($this->fallY === false or $y > $this->fallY){
+						$this->fallY = $y;
+					}
+				}elseif($this->fallY !== false){ //Fall damage!
+					if($y < $this->fallY){
+						$dmg = ($this->fallY - $y) - 3;
+						if($dmg > 0){
+							$this->harm($dmg, "fall");
+						}
+					}
+					$this->fallY = false;
+				}
 			}
 		}
 		
