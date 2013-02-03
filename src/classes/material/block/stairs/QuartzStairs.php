@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class QuartzStairsBlock extends TransparentBlock{
+class QuartzStairsBlock extends StairBlock{
 	public function __construct($meta = 0){
 		parent::__construct(QUARTZ_STAIRS, $meta, "Quartz Stairs");
 	}
