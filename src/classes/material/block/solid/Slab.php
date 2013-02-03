@@ -56,7 +56,7 @@ class SlabBlock extends TransparentBlock{
 					$level->setBlock($target, DOUBLE_SLAB, $this->meta & 0x07);
 					return true;
 				}
-			}else{
+			}elseif(!$player->entity->inBlock($block->x, $block->y, $block->z)){
 				if($block->getID() === SLAB){
 					if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 						$level->setBlock($block, DOUBLE_SLAB, $this->meta & 0x07);
@@ -68,7 +68,9 @@ class SlabBlock extends TransparentBlock{
 						$this->meta |= 0x08;
 					}
 				}
-			}			
+			}else{
+				return false;
+			}
 			$level->setBlock($block, $this->id, $this->meta);
 			return true;
 		}
