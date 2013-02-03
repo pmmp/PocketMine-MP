@@ -30,5 +30,10 @@ class WorkbenchBlock extends SolidBlock{
 		parent::__construct(WORKBENCH, $meta, "Crafting Table");
 		$this->isActivable = true;
 	}
-	
+
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array($this->id, 0, 1),
+		);
+	}	
 }

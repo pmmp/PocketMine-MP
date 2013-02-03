@@ -30,5 +30,22 @@ class ChestBlock extends SolidBlock{
 		parent::__construct(CHEST, $meta, "Chest");
 		$this->isActivable = true;
 	}
-	
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($block->inWorld === true){
+			$faces = array(
+				0 => 4,
+				1 => 2,
+				2 => 5,
+				3 => 3,
+			);
+			$level->setBlock($block, $this->id, $faces[$player->entity->getDirection()]);
+			return true;
+		}
+		return false;
+	}
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array($this->id, 0, 1),
+		);
+	}	
 }

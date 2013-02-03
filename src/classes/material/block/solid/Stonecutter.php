@@ -30,5 +30,10 @@ class StonecutterBlock extends SolidBlock{
 		parent::__construct(STONECUTTER, $meta, "Stonecutter");
 		$this->isActivable = true;
 	}
-	
+
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array($this->id, 0, 1),
+		);
+	}	
 }
