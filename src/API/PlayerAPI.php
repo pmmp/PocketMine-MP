@@ -91,6 +91,9 @@ class PlayerAPI{
 						case "void":
 							$message .= " fell out of the world";
 							break;
+						case "fall":
+							$message .= " hit the ground too hard";
+							break;
 						default:
 							$message .= " died";
 							break;
