@@ -487,46 +487,6 @@ class BlockAPI{
 			}
 		}*/
 
-		
-		
-		/*
-		$replace = false;
-		switch($data["block"]){
-			case 44: //Slabs
-				if($data["face"] === 0){
-					if($target[0] === 44 and ($target[1] & 0x08) === 0x08 and ($target[1] & 0x07) === ($data["meta"] & 0x07)){
-						$replace = true;
-						$data["block"] = 43;
-						$data["meta"] = $data["meta"] & 0x07;
-					}else{
-						$data["meta"] |= 0x08;
-					}
-				}elseif($data["face"] === 1){
-					if($target[0] === 44 and ($target[1] & 0x08) === 0 and ($target[1] & 0x07) === ($data["meta"] & 0x07)){
-						$replace = true;
-						$data["block"] = 43;
-						$data["meta"] = $data["meta"] & 0x07;
-					}
-				}else{
-					$data2 = $data;
-					BlockFace::setPosition($data2, $data["face"]);
-					$b = $this->server->api->level->getBlock($data2["x"], $data2["y"], $data2["z"]);
-					if($b[0] === 44 and ($b[1] & 0x07) === ($data["meta"] & 0x07)){
-						$data = $data2;
-						$replace = true;
-						$data["block"] = 43;
-						$data["meta"] = $data["meta"] & 0x07;
-					}else{
-						$data["meta"] = $data["meta"] & 0x07;
-						if($data["fy"] > 0.5){
-							$data["meta"] |= 0x08;
-						}
-					}
-				}
-				break;
-		}
-		*/
-
 		if($block->y > 127 or $block->y < 0){
 			return false;
 		}
