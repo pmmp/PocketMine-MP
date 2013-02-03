@@ -25,9 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class NetherBrickStairsBlock extends TransparentBlock{
+class SandstoneStairsBlock extends StairBlock{
 	public function __construct($meta = 0){
-		parent::__construct(NETHER_BRICK_STAIRS, $meta, "Nether Brick Stairs");
+		parent::__construct(SANDSTONE_STAIRS, $meta, "Sandstone Stairs");
 	}
 	
 }

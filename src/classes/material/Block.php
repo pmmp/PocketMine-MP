@@ -194,3 +194,4 @@ require_once("block/SolidBlock.php");
 require_once("block/TransparentBlock.php");
 require_once("block/FallableBlock.php");
 require_once("block/LiquidBlock.php");
+require_once("block/StairBlock.php");

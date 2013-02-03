@@ -25,9 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class BrickStairsBlock extends TransparentBlock{
+class CobblestoneStairsBlock extends StairBlock{
 	public function __construct($meta = 0){
-		parent::__construct(BRICK_STAIRS, $meta, "Brick Stairs");
+		parent::__construct(COBBLESTONE_STAIRS, $meta, "Cobblestone Stairs");
 	}
 	
 }

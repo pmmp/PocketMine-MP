@@ -25,9 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class SandstoneStairsBlock extends TransparentBlock{
+class WoodStairsBlock extends StairBlock{
 	public function __construct($meta = 0){
-		parent::__construct(SANDSTONE_STAIRS, $meta, "Sandstone Stairs");
+		parent::__construct(WOOD_STAIRS, $meta, "Wood Stairs");
 	}
 	
 }
