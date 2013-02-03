@@ -50,7 +50,13 @@ class FenceGateBlock extends TransparentBlock{
 		);
 	}
 	public function onActivate(BlockAPI $level, Item $item, Player $player){
-		$this->meta ^= 0x04;
+		$faces = array(
+			0 => 3,
+			1 => 0,
+			2 => 1,
+			3 => 2,
+		);
+		$this->meta = ($faces[$player->entity->getDirection()] & 0x03) | ((~$this->meta) & 0x04);
 		$level->setBlock($this, $this->id, $this->meta);
 		return true;
 	}	
