@@ -31,4 +31,34 @@ class BedBlock extends TransparentBlock{
 		$this->isActivable = true;
 	}
 	
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($block->inWorld === true){
+			$down = $level->getBlockFace($block, 0);
+			if($down->isTransparent === false){
+				$faces = array(
+					0 => 3,
+					1 => 4,
+					2 => 2,
+					3 => 5,
+				);
+				$d = $player->entity->getDirection();
+				$next = $level->getBlockFace($block, $faces[(($d + 3) % 4)]);
+				$downNext = $level->getBlockFace($next, 0);
+				if($next->isReplaceable === true and $downNext->isTransparent === false){
+					$meta = (($d + 3) % 4) & 0x03;
+					$level->setBlock($block, $this->id, $meta);
+					$level->setBlock($next, $this->id, $meta | 0x08);
+					return true;
+				}
+			}
+		}
+		return false;
+	}	
+	
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(BED, 0, 1),
+		);
+	}
+	
 }

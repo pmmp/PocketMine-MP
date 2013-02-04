@@ -322,7 +322,7 @@ class BlockAPI{
 					2 => 2,
 					3 => 5,
 				);
-				$next = $this->server->api->level->getBlockFace($block, $face[(($direction + 3) % 4)]);
+				$next = $level->getBlockFace($block, $face[(($direction + 3) % 4)]);
 				if(!isset(Material::$replaceable[$next[0]])){
 					return false;
 				}

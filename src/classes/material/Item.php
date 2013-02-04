@@ -35,6 +35,7 @@ class Item{
 		SIGN => "SignItem",
 		WOODEN_DOOR => "WoodenDoorItem",
 		IRON_DOOR => "IronDoorItem",
+		BED => "BedItem",
 	);
 	protected $block;
 	protected $id;
