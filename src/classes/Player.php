@@ -76,15 +76,15 @@ class Player{
 		if(!($this->entity instanceof Entity)){
 			return false;
 		}
-		$X = (int) min(15, round($this->entity->x / 16));
-		$Z = (int) min(15, round($this->entity->z / 16));
+		$X = $this->entity->x / 16;
+		$Z = $this->entity->z / 16;
 		$v = new Vector2($X, $Z);
 		$this->chunksOrder = array();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$d = $x.":".$z;
 				if(!isset($this->chunksLoaded[$d])){				
-					$this->chunksOrder[$d] = $v->distance(new Vector2($x, $z));
+					$this->chunksOrder[$d] = $v->distance(new Vector2($x + 0.5, $z + 0.5));
 				}
 			}
 		}
