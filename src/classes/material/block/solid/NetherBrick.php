@@ -25,9 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class NetherBrickBlock extends SolidBlock{
+class NetherBricksBlock extends SolidBlock{
 	public function __construct(){
-		parent::__construct(NETHER_BRICK, 0, "Nether Brick");
+		parent::__construct(NETHER_BRICKS, 0, "Nether Bricks");
 	}
 	
 }

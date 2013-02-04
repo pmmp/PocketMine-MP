@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class MelonBlock extends TransparentBlock{
 	public function __construct(){
-		parent::__construct(MELON_BLOCK, 0, "Melon");
+		parent::__construct(MELON_BLOCK, 0, "Melon Block");
 	}
 	
 }

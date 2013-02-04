@@ -79,7 +79,7 @@ abstract class Block{
 			DIAMOND_ORE => "DiamondOreBlock",
 			DIAMOND_BLOCK => "DiamondBlock",
 			WORKBENCH => "WorkbenchBlock",
-			WHEAT => "WheatBlock",
+			WHEAT_BLOCK => "WheatBlock",
 			FARMLAND => "FarmlandBlock",
 			FURNACE => "FurnaceBlock",
 			BURNING_FURNACE => "BurningFurnaceBlock",
@@ -120,9 +120,9 @@ abstract class Block{
 			BRICK_STAIRS => "BrickStairsBlock",
 			STONE_BRICK_STAIRS => "StoneBrickStairsBlock",
 
-			NETHER_BRICK => "NetherBrickBlock",
+			NETHER_BRICKS => "NetherBricksBlock",
 
-			NETHER_BRICK_STAIRS => "NetherBrickStairsBlock",
+			NETHER_BRICKS_STAIRS => "NetherBricksStairsBlock",
 
 			SANDSTONE_STAIRS => "SandstoneStairsBlock",
 
@@ -179,10 +179,11 @@ abstract class Block{
 	public function getDrops(Item $item, Player $player){
 		if(!isset(Block::$class[$this->id])){ //Unknown blocks
 			return array();
+		}else{
+			return array(
+				array($this->id, $this->meta, 1),
+			);
 		}
-		return array(
-			array($this->id, $this->meta, 1),
-		);
 	}
 	
 	abstract function onBreak(BlockAPI $level, Item $item, Player $player);

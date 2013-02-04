@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class WheatBlock extends FlowableBlock{
 	public function __construct($meta = 0){
-		parent::__construct(WHEAT, $meta, "Wheat");
+		parent::__construct(WHEAT_BLOCK, $meta, "Wheat");
 	}
 
 	public function getDrops(Item $item, Player $player){
