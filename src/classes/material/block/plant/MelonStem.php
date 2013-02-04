@@ -29,5 +29,20 @@ class MelonStemBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(MELON_STEM, $meta, "Melon Stem");
 	}
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($block->inWorld === true){
+			$down = $level->getBlockFace($block, 0);
+			if($down->getID() === 60){
+				$level->setBlock($block, $this->id, $this->getMetadata());
+				return true;
+			}
+		}
+		return false;
+	}
 	
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(MELON_SEEDS, 0, mt_rand(0, 2)),
+		);
+	}
 }

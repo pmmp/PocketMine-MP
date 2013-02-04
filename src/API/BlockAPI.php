@@ -171,8 +171,6 @@ class BlockAPI{
 		$drops = $target->getDrops($item, $player);
 		
 		/*switch($target->getID()){
-			case 62:
-				$drop[0] = 61;
 			case 50: //Drop without metadata
 			case 53:
 			case 54:
@@ -187,24 +185,6 @@ class BlockAPI{
 			case 128:
 			case 156:
 				$drop[1] = 0;
-				break;
-			case 64: //Wood Door
-			case 71: //Iron Door
-				if(($target->getMetadata() & 0x08) === 0x08){
-					$down = $this->getBlock($target->x, $target->y - 1, $target->z);
-					if($down->getID() === $target->getID()){
-						$data2 = $data;
-						--$data2["y"];
-						$this->server->trigger("player.block.break", $data2);
-					}
-				}else{
-					$up = $this->getBlock($target->x, $target->y + 1, $target->z);
-					if($up->getID() === $target->getID()){
-						$data2 = $data;
-						++$data2["y"];
-						$this->server->trigger("player.block.break", $data2);
-					}
-				}
 				break;
 		}*/
 		$target->onBreak($this, $item, $player);
