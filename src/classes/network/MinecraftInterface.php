@@ -32,8 +32,8 @@ class MinecraftInterface{
 	var $dataName;
 	private $socket;
 	private $data;
-	function __construct($server, $port = 25565, $listen = false, $client = true){
-		$this->socket = new UDPSocket($server, $port, (bool) $listen);
+	function __construct($server, $port = 25565, $listen = false, $client = false, $serverip = "0.0.0.0"){
+		$this->socket = new UDPSocket($server, $port, (bool) $listen, $serverip);
 		require("protocol/RakNet.php");
 		require("protocol/packetName.php");
 		require("protocol/current.php");

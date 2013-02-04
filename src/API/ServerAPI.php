@@ -86,6 +86,7 @@ class ServerAPI{
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @username to this server!",
 			"invisible" => false,
+			"server-ip" => "0.0.0.0",
 			"port" => 19132,
 			"memory-limit" => "256M",
 			"last-update" => false,
@@ -106,7 +107,7 @@ class ServerAPI{
 		));
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug"));
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"));
+		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"), $this->getProperty("server-ip"));
 		$this->setProperty("server-id", $this->server->serverID);
 		$this->server->api = $this;
 		if($this->getProperty("upnp-forwarding") === true){

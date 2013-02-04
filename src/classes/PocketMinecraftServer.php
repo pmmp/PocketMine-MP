@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class PocketMinecraftServer{
 	public $tCnt;
 	var $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
-	private $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticker;
+	private $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticker;
 
 	private function load(){
 		$this->version = new VersionString();
@@ -37,7 +37,7 @@ class PocketMinecraftServer{
 		if($this->version->isDev()){
 			console("[INFO] \x1b[31;1mThis is a Development version");
 		}
-		console("[INFO] Starting Minecraft PE Server at *:".$this->port);
+		console("[INFO] Starting Minecraft PE Server at ".$this->serverip.":".$this->port);
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
@@ -81,13 +81,14 @@ class PocketMinecraftServer{
 		$this->stop = false;
 	}
 
-	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false){
+	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
 		$this->port = (int) $port; //19132 - 19135
 		$this->gamemode = (int) $gamemode;
 		$this->name = $name;
 		$this->motd = "Welcome to ".$name;
 		$this->serverID = $serverID;
 		$this->seed = $seed;
+		$this->serverip = $serverip;
 		$this->load();
 	}
 

@@ -30,7 +30,7 @@ the Free Software Foundation, either version 3 of the License, or
 class UDPSocket{
 	private $encrypt;
 	var $buffer, $connected, $errors, $sock, $server;
-	function __construct($server, $port, $listen = false){
+	function __construct($server, $port, $listen = false, $serverip = "0.0.0.0"){
 		$this->errors = array_fill(88,(125 - 88) + 1, true);
 		$this->server = $server;
 		$this->port = $port;
@@ -41,10 +41,10 @@ class UDPSocket{
 			$this->buffer = array();
 			$this->unblock();
 		}else{
-			if(socket_bind($this->sock, "0.0.0.0", $port) === true){
+			if(socket_bind($this->sock, $serverip, $port) === true){
 				$this->unblock();
 			}else{
-				console("[ERROR] Couldn't bind to 0.0.0.0:".$port, true, true, 0);
+				console("[ERROR] Couldn't bind to $serverip:".$port, true, true, 0);
 				die();
 			}
 		}
