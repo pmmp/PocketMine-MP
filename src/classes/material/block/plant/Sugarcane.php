@@ -36,4 +36,27 @@ class SugarcaneBlock extends TransparentBlock{
 		);
 	}
 	
+	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($block->inWorld === true){
+			$down = $level->getBlockFace($block, 0);
+			if($down->getID() === SUGARCANE_BLOCK){
+				$level->setBlock($block, $this->id, 0);
+				return true;				
+			}elseif(/*$down->getID() === 2 or $down->getID() === 3 or */$down->getID() === 12){
+				$block0 = $level->getBlockFace($down, 2);
+				$block1 = $level->getBlockFace($down, 3);
+				$block2 = $level->getBlockFace($down, 4);
+				$block3 = $level->getBlockFace($down, 5);
+				if($block0->getID() === WATER or $block0->getID() === STILL_WATER
+				or $block1->getID() === WATER or $block1->getID() === STILL_WATER
+				or $block2->getID() === WATER or $block2->getID() === STILL_WATER
+				or $block3->getID() === WATER or $block3->getID() === STILL_WATER){
+					$level->setBlock($block, $this->id, 0);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 }
