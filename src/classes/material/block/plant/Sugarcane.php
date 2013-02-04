@@ -42,15 +42,23 @@ class SugarcaneBlock extends TransparentBlock{
 			if($down->getID() === SUGARCANE_BLOCK){
 				$level->setBlock($block, $this->id, 0);
 				return true;				
-			}elseif(/*$down->getID() === 2 or $down->getID() === 3 or */$down->getID() === 12){
+			}elseif($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 12){
 				$block0 = $level->getBlockFace($down, 2);
 				$block1 = $level->getBlockFace($down, 3);
 				$block2 = $level->getBlockFace($down, 4);
 				$block3 = $level->getBlockFace($down, 5);
+				/*$block4 = $level->getBlockFace($block, 2);
+				$block5 = $level->getBlockFace($block, 3);
+				$block6 = $level->getBlockFace($block, 4);
+				$block7 = $level->getBlockFace($block, 5);*/
 				if($block0->getID() === WATER or $block0->getID() === STILL_WATER
 				or $block1->getID() === WATER or $block1->getID() === STILL_WATER
 				or $block2->getID() === WATER or $block2->getID() === STILL_WATER
-				or $block3->getID() === WATER or $block3->getID() === STILL_WATER){
+				or $block3->getID() === WATER or $block3->getID() === STILL_WATER
+				/*or $block4->getID() === WATER or $block4->getID() === STILL_WATER
+				or $block5->getID() === WATER or $block5->getID() === STILL_WATER
+				or $block6->getID() === WATER or $block6->getID() === STILL_WATER
+				or $block7->getID() === WATER or $block7->getID() === STILL_WATER*/){
 					$level->setBlock($block, $this->id, 0);
 					return true;
 				}
