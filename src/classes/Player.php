@@ -587,14 +587,13 @@ class Player{
 								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
 								//break;
 							}
-							$this->server->handle("player.block.action", $data);
+							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
 							break;
 						case MC_REMOVE_BLOCK:
-							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 8){
 								break;
 							}
-							$this->server->handle("player.block.break", $data);
+							$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
 							break;
 						case MC_PLAYER_ARMOR_EQUIPMENT:
 							$data["eid"] = $this->eid;

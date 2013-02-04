@@ -34,9 +34,9 @@ class LevelAPI{
 	}
 
 	public function init(){
-		$this->server->event("player.block.break", array($this, "handle"));
+		/*$this->server->event("player.block.break", array($this, "handle"));
 		$this->server->event("player.block.place", array($this, "handle"));
-		$this->server->event("player.block.update", array($this, "handle"));
+		$this->server->event("player.block.update", array($this, "handle"));*/
 	}
 
 	public function handle($data, $event){

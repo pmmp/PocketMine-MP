@@ -93,8 +93,6 @@ class BlockAPI{
 
 	public function init(){
 		$this->server->addHandler("block.update", array($this, "updateBlockRemote"), 1);
-		$this->server->addHandler("player.block.break", array($this, "blockBreak"), 1);
-		$this->server->addHandler("player.block.action", array($this, "blockAction"), 1);
 		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
 	}
 
@@ -153,41 +151,22 @@ class BlockAPI{
 		return false;
 	}
 
-	public function blockBreak($data, $event){
-		if($event !== "player.block.break"){
-			return;
-		}
+	public function playerBlockBreak(Player $player, Vector3 $vector){
 
-		$target = $this->getBlock($data["x"], $data["y"], $data["z"]);
-		$player = $this->server->api->player->getByEID($data["eid"]);
-		if(($player instanceof Player) !== true){
-			return $this->cancelAction($target); //No Entity WTF?
-		}
-		$data["player"] = $player;
+		$target = $this->getBlock($vector);
 		if($target->isBreakable === false or $this->server->gamemode === 2){
 			return $this->cancelAction($target);
-		}
+		}		
 		$item = $player->equipment;
-		$drops = $target->getDrops($item, $player);
 		
-		/*switch($target->getID()){
-			case 50: //Drop without metadata
-			case 53:
-			case 54:
-			case 61:
-			case 65:
-			case 67:
-			case 96:
-			case 107:
-			case 108:
-			case 109:
-			case 114:
-			case 128:
-			case 156:
-				$drop[1] = 0;
-				break;
-		}*/
-		$target->onBreak($this, $item, $player);
+		
+		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
+			$drops = $target->getDrops($item, $player);
+			$target->onBreak($this, $item, $player);
+		}else{
+			return $this->cancelAction($target);
+		}
+		
 		
 		if(count($drops) > 0){
 			foreach($drops as $drop){
@@ -224,21 +203,13 @@ class BlockAPI{
 		}
 	}
 
-	public function blockAction($data, $event){
-		if($event !== "player.block.action"){
-			return;
-		}
-		if($data["face"] < 0 or $data["face"] > 5){
+	public function playerBlockAction(Player $player, Vector3 $vector, $face, $fx, $fy, $fz){
+		if($face < 0 or $face > 5){
 			return false;
 		}
-		$data["original"] = BlockAPI::get($data["block"], $data["meta"]);
-		$target = $this->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
-		$player = $this->server->api->player->getByEID($data["eid"]);
-		if(($player instanceof Player) !== true){
-			return $this->cancelAction($target); //No Entity WTF?
-		}
-		$data["player"] = $player;
-		$block = $this->getBlockFace($target, $data["face"]);
+
+		$target = $this->getBlock($vector);		
+		$block = $this->getBlockFace($target, $face);
 		$item = $player->equipment;
 		
 		if($target->getID() === AIR){ //If no block exists
@@ -246,9 +217,8 @@ class BlockAPI{
 			return $this->cancelAction($block);
 		}
 
-		$cancelPlace = false;
 		if($target->isActivable === true){
-			if($target->onActivate($this, $item, $player) === true){
+			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($this, $item, $player) === true){
 				return false;
 			}
 		}
@@ -306,40 +276,21 @@ class BlockAPI{
 		if($hand->isTransparent === false and $player->entity->inBlock($block->x, $block->y, $block->z)){
 			return $this->cancelAction($block); //Entity in block
 		}
-
-		if($hand->place($this, $item, $player, $block, $target, $data["face"], $data["fx"], $data["fy"], $data["fz"]) === false){
-			return false;
+		
+		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
+			return $this->cancelAction($block);
+		}elseif($hand->place($this, $item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
+			return $this->cancelAction($block);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_POST){
 			$t = $this->server->api->tileentity->addSign($block->x, $block->y, $block->z);
 			$t->data["creator"] = $player->username;
 		}
-		/*switch($data["block"]){
-			case 26: //bed
-				$face = array(
-					0 => 3,
-					1 => 4,
-					2 => 2,
-					3 => 5,
-				);
-				$next = $level->getBlockFace($block, $face[(($direction + 3) % 4)]);
-				if(!isset(Material::$replaceable[$next[0]])){
-					return false;
-				}
-				$data["meta"] = (($direction + 3) % 4) & 0x3;
-				$data2 = $data;
-				$data2["meta"] = $data2["meta"] | 0x08;
-				$data2["x"] = $next[2][0];
-				$data2["y"] = $next[2][1];
-				$data2["z"] = $next[2][2];
-				$this->server->handle("player.block.place", $data2);
-				break;
-		}
-		*/
+
 		if($this->server->gamemode === 0 or $this->server->gamemode === 2){
 			$player->removeItem($item->getID(), $item->getMetadata(), 1);
 		}
-		//$this->server->handle("player.block.place", $data);
+
 		return false;
 	}
 
