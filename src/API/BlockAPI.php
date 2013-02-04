@@ -291,47 +291,6 @@ class BlockAPI{
 						$cancelPlace = true;
 					}
 					break;
-				case 2:
-					if($target[0] === 2 and $data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
-						for($c = 0; $c < 15; ++$c){
-							$x = mt_rand($target[2][0] - 2, $target[2][0] + 2);
-							$z = mt_rand($target[2][2] - 2, $target[2][2] + 2);
-							$b = $this->server->api->level->getBlock($x, $target[2][1] + 1, $z);
-							$d = $this->server->api->level->getBlock($x, $target[2][1], $z);
-							if($b[0] === 0 and $d[0] === 2){
-								$arr = array(
-									array(37, 0),
-									array(38, 0),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(31, 1),
-									array(0, 0),
-								);
-								$t = $arr[mt_rand(0, count($arr) - 1)];
-								$this->server->api->level->setBlock($x, $target[2][1] + 1, $z, $t[0], $t[1]);
-							}
-						}
-						$cancelPlace = true;
-						break;
-					}
-				case 3:
-					if($data["block"] === 292){ //Hoe
-						$data["block"] = 60;
-						$data["meta"] = 0;
-						$this->server->handle("player.block.update", $data);
-						$cancelPlace = true;
-					}
-					break;
-				case 59:
-				case 105:
-					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
-						$data["block"] = $target[0];
-						$data["meta"] = 0x07;
-						$this->server->handle("player.block.place", $data);
-						$cancelPlace = true;
-					}
-					break;
 				default:
 					$cancelPlace = true;
 					break;
