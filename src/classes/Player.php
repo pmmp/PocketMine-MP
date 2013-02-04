@@ -668,6 +668,7 @@ class Player{
 									$t->data["Text2"] = $data["line1"];
 									$t->data["Text3"] = $data["line2"];
 									$t->data["Text4"] = $data["line3"];
+									$this->server->handle("tile.update", $t);
 									$this->server->api->tileentity->spawnToAll($t);
 								}
 							}
