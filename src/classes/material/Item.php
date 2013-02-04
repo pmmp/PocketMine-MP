@@ -32,7 +32,7 @@ class Item{
 	
 	
 	);
-	protected $block = false;
+	protected $block;
 	protected $id;
 	protected $meta;
 	protected $count;
@@ -45,7 +45,7 @@ class Item{
 		$this->meta = (int) $meta;
 		$this->count = (int) $count;
 		$this->name = $name;
-		if(isset(Block::$class[$this->id])){
+		if(!isset($this->block) and isset(Block::$class[$this->id])){
 			$this->block = BlockAPI::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
 		}

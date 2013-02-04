@@ -31,7 +31,7 @@ class LadderBlock extends TransparentBlock{
 	}
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
-			if($block->isTransparent === false){
+			if($target->isTransparent === false){
 				$faces = array(
 					2 => 2,
 					3 => 3,

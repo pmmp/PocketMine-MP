@@ -414,21 +414,6 @@ class BlockAPI{
 				$data2["z"] = $next[2][2];
 				$this->server->handle("player.block.place", $data2);
 				break;
-			case 65: //Ladder
-				if(isset(Material::$transparent[$target[0]])){
-					return false;
-				}
-				$faces = array(
-					2 => 2,
-					3 => 3,
-					4 => 4,
-					5 => 5,
-				);
-				if(!isset($faces[$data["face"]])){
-					return false;
-				}
-				$data["meta"] = $faces[$data["face"]];
-				break;
 			case 59://Seeds
 			case 105:
 				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);

@@ -177,6 +177,9 @@ abstract class Block{
 	}
 	
 	public function getDrops(Item $item, Player $player){
+		if(!isset(Block::$class[$this->id])){ //Unknown blocks
+			return array();
+		}
 		return array(
 			array($this->id, $this->meta, 1),
 		);
