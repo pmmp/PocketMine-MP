@@ -283,14 +283,6 @@ class BlockAPI{
 						"title" => "Furnace",
 					));
 					break;
-				case 6:
-					if($data["block"] === 351 and $data["meta"] === 0x0F){ //Bonemeal
-						$s = new SaplingBlock($target[1] & 0x03);
-						$s->position(new Vector3($target[2][0], $target[2][1], $target[2][2]));
-						$s->onActivate($this->server->api->level, new Item($data["block"], $data["meta"]), $entity->player);
-						$cancelPlace = true;
-					}
-					break;
 				default:
 					$cancelPlace = true;
 					break;
@@ -340,14 +332,6 @@ class BlockAPI{
 				$data2["y"] = $next[2][1];
 				$data2["z"] = $next[2][2];
 				$this->server->handle("player.block.place", $data2);
-				break;
-			case 59://Seeds
-			case 105:
-				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-				if($blockDown[0] !== 60){
-					return false;
-				}
-				$data["meta"] = 0;
 				break;
 			case 81: //Cactus
 				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);

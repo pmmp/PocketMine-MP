@@ -42,7 +42,7 @@ class SugarcaneBlock extends TransparentBlock{
 			if($down->getID() === SUGARCANE_BLOCK){
 				$level->setBlock($block, $this->id, 0);
 				return true;
-			}elseif($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 12){
+			}elseif($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === SAND){
 				$block0 = $level->getBlockFace($down, 2);
 				$block1 = $level->getBlockFace($down, 3);
 				$block2 = $level->getBlockFace($down, 4);
