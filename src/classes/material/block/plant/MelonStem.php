@@ -32,7 +32,7 @@ class MelonStemBlock extends TransparentBlock{
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
 			$down = $level->getBlockFace($block, 0);
-			if($down->getID() === 60){
+			if($down->getID() === FARMLAND){
 				$level->setBlock($block, $this->id, $this->getMetadata());
 				return true;
 			}

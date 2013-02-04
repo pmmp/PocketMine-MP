@@ -28,6 +28,14 @@ the Free Software Foundation, either version 3 of the License, or
 class DirtBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(DIRT, 0, "Dirt");
+		$this->isActivable = true;
 	}
-	
+
+	public function onActivate(BlockAPI $level, Item $item, Player $player){
+		if($item->isHoe()){
+			$level->setBlock($this, FARMLAND, 0);
+			return true;
+		}
+		return false;
+	}
 }

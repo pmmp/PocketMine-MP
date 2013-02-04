@@ -84,14 +84,27 @@ class Item{
 		switch($this->id){
 			case IRON_PICKAXE:
 				return 3;
-			case 270: //Wood
+			case WOODEN_PICKAXE:
 				return 1;
-			case 274: //Stone
+			case STONE_PICKAXE:
 				return 2;
-			case 278: //Diamond
+			case DIAMOND_PICKAXE:
 				return 4;
-			case 285: //Gold
+			case GOLD_PICKAXE:
 				return 3;
+			default:
+				return false;
+		}
+	}
+	
+	public function isHoe(){
+		switch($this->id){
+			case IRON_HOE:
+			case WOODEN_HOE:
+			case STONE_HOE:
+			case DIAMOND_HOE:
+			case GOLD_HOE:
+				return true;
 			default:
 				return false;
 		}

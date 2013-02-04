@@ -46,7 +46,7 @@ class SaplingBlock extends TransparentBlock{
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
 			$down = $level->getBlockFace($block, 0);
-			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
+			if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
 				$level->setBlock($block, $this->id, $this->getMetadata());
 				return true;
 			}
@@ -55,7 +55,7 @@ class SaplingBlock extends TransparentBlock{
 	}
 	
 	public function onActivate(BlockAPI $level, Item $item, Player $player){
-		if($item->getID() === 351 and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			TreeObject::growTree($level, $this);
 			return true;
 		}
