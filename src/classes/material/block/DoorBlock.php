@@ -45,8 +45,9 @@ class DoorBlock extends TransparentBlock{
 				3 => 5,
 			);
 			$next = $level->getBlockFace($block, $face[(($direction + 2) % 4)]);
+			$next2 = $level->getBlockFace($block, $face[$direction]);
 			$metaUp = 0x08;
-			if($next->getID() === $this->id){ //Door hinge
+			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
 			$level->setBlock($blockUp, $this->id, $metaUp); //Top

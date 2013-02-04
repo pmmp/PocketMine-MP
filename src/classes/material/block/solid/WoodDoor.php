@@ -33,7 +33,7 @@ class WoodDoorBlock extends DoorBlock{
 	
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array(324, 0, 1),
+			array(WOODEN_DOOR, 0, 1),
 		);
 	}
 }

@@ -32,7 +32,7 @@ class IronDoorBlock extends DoorBlock{
 	}
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array(330, 0, 1),
+			array(IRON_DOOR, 0, 1),
 		);
 	}	
 }
