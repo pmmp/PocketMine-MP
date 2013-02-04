@@ -185,8 +185,8 @@ class Entity extends stdClass{
 		for($y = $startY; $y <= $endY; ++$y){
 			for($x = $startX; $x <= $endX; ++$x){
 				for($z = $startZ; $z <= $endZ; ++$z){
-					$b = $this->server->api->level->getBlock($x, $y, $z);
-					switch($b[0]){
+					$b = $this->server->api->block->getBlock(new Vector3($x, $y, $z));
+					switch($b->getID()){
 						case WATER:
 						case STILL_WATER: //Drowing
 							if($this->fire > 0 and $this->inBlock($x, $y, $z)){
@@ -221,7 +221,7 @@ class Entity extends stdClass{
 							}
 							break;
 						default:
-							if($this->inBlock($x, $y, $z, 0.7) and $y == $endY and !isset(Material::$transparent[$b[0]]) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+							if($this->inBlock($x, $y, $z, 0.7) and $y == $endY and $b->isTransparent === false and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->harm(1, "suffocation"); //Suffocation
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 300; //Breathing
@@ -249,7 +249,7 @@ class Entity extends stdClass{
 			$x = (int) round($this->x - 0.5);
 			$y = (int) round($this->y - 1);
 			$z = (int) round($this->z - 0.5);
-			$blockDown = $this->server->api->level->getBlock($x, $y, $z);
+			$blockDown = $this->server->api->block->getBlock(new Vector3($x, $y, $z));
 			if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
 				if($this->speedX != 0){
 					$this->x += $this->speedX * 5;
@@ -260,7 +260,7 @@ class Entity extends stdClass{
 				if($this->speedZ != 0){
 					$this->z += $this->speedZ * 5;
 				}
-				if(isset(Material::$transparent[$blockDown[0]])){
+				if(isset($blockDown->isFlowable === true){
 					$this->speedY -= 0.04 * 5;
 					//$this->server->api->handle("entity.motion", $this);
 				}elseif($this->speedY < 0){
@@ -271,14 +271,13 @@ class Entity extends stdClass{
 					//$this->server->api->handle("entity.motion", $this);
 				}
 			}else{
-				if(isset(Material::$flowable[$blockDown[0]])){
+				if(isset($blockDown->isFlowable === true){
 					if($this->fallY === false or $y > $this->fallY){
 						$this->fallY = $y;
 					}
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
-						$d = $this->server->api->level->getBlock($x, $y + 1, $z);
-						$d = BlockAPI::get($d[0]);
+						$d = $this->server->api->block->getBlock(new Vector3($x, $y + 1, $z));
 						$dmg = ($this->fallY - $y) - 3;
 						if($dmg > 0 and !($d instanceof LiquidBlock)){
 							$this->harm($dmg, "fall");

@@ -375,26 +375,6 @@ class BlockAPI{
 		}
 
 		/*switch($data["block"]){
-			case 338:
-			case 83: //Sugarcane
-				$data["block"] = 83;
-				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-				if($blockDown[0] === 83){
-				
-				}elseif($blockDown[0] !== 2 and $blockDown[0] !== 3 and $blockDown[0] !== 12){
-					return false;
-				}else{
-					$block0 = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"] + 1);
-					$block1 = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"] - 1);
-					$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"] - 1, $data["z"]);
-					$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"] - 1, $data["z"]);
-					if($block0[0] === 9 or $block0[0] === 8 or $block1[0] === 9 or $block1[0] === 8 or $block2[0] === 9 or $block2[0] === 8 or $block3[0] === 9 or $block3[0] === 8){
-
-					}else{
-						return false;
-					}
-				}
-				break;
 			case 26: //bed
 				$face = array(
 					0 => 3,
