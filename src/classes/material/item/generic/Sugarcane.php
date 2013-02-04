@@ -25,15 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class SugarcaneBlock extends TransparentBlock{
-	public function __construct(){
-		parent::__construct(SUGARCANE_BLOCK, 0, "Sugarcane");
+class SugarcaneItem extends Item{
+	public function __construct($meta = 0, $count = 1){
+		$this->block = BlockAPI::get(SUGARCANE_BLOCK);
+		parent::__construct(SUGARCANE, 0, $count, "Sugar Cane");
 	}
-	
-	public function getDrops(Item $item, Player $player){
-		return array(
-			array(SUGARCANE, 0, 1),
-		);
-	}
-	
 }

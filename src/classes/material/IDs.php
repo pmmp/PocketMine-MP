@@ -237,6 +237,7 @@ define("LEATHER", 334);
 
 define("BRICK", 336);
 define("CLAY", 337);
+define("SUGARCANE", 338);
 define("SUGAR_CANE", 338);
 define("SUGAR_CANES", 338);
 define("PAPER", 339);

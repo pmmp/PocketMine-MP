@@ -29,8 +29,7 @@ require_once("classes/material/IDs.php");
 
 class Item{
 	public static $class = array(
-	
-	
+		SUGARCANE => "SugarcaneItem",	
 	);
 	protected $block;
 	protected $id;

@@ -59,9 +59,9 @@ class Player{
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 		if($this->server->gamemode === 0 or $this->server->gamemode === 2){
-			$this->equipment = new Item(AIR);
+			$this->equipment = BlockAPI::getItem(AIR);
 		}else{
-			$this->equipment = new Item(STONE);
+			$this->equipment = BlockAPI::getItem(STONE);
 		}
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
@@ -136,7 +136,7 @@ class Player{
 		while($count > 0){
 			$add = 0;
 			foreach($this->inventory as $s => $data){
-				if($data[0] === 0){
+				if($data[0] === AIR){
 					$add = min(64, $count);
 					$this->inventory[$s] = array($type, $damage, $add);
 					break;
@@ -180,7 +180,7 @@ class Player{
 	}
 	
 	public function hasItem($type, $damage = false){
-		if($type === 0){
+		if($type === AIR){
 			return true;
 		}
 		foreach($this->inventory as $s => $data){
@@ -552,7 +552,7 @@ class Player{
 						case MC_PLAYER_EQUIPMENT:
 							$data["eid"] = $this->eid;
 							if($this->server->handle("player.equipment.change", $data) !== false){
-								$this->equipment = new Item($data["block"], $data["meta"]);
+								$this->equipment = BlockAPI::getItem($data["block"], $data["meta"]);
 								console("[DEBUG] Player ".$this->username." has now ".$this->equipment->getName()." (".$this->equipment->getID().":".$this->equipment->getMetadata().") in their hands!", true, true, 2);
 							}
 							break;

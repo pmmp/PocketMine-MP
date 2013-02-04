@@ -56,7 +56,7 @@ class BlockAPI{
 		$id = (int) $id;
 		if(isset(Item::$class[$id])){
 			$classname = Item::$class[$id];
-			$i = new $classname($meta);
+			$i = new $classname($meta, $count);
 		}else{
 			$i = new Item($id, $meta, $count);
 		}
