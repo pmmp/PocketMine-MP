@@ -49,6 +49,10 @@ class Player{
 	public $equipment;
 	var $armor = array(0, 0, 0, 0);
 	var $loggedIn = false;
+	private $mapLoaded = false;
+	private $chunksLoaded = array();
+	private $chunksOrder = array();
+	
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
 		$this->server = $server;
@@ -66,6 +70,59 @@ class Player{
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
+	}
+	
+	private function orderChunks(){
+		if(!($this->entity instanceof Entity)){
+			return false;
+		}
+		$X = (int) min(15, round($this->entity->x / 16));
+		$Z = (int) min(15, round($this->entity->z / 16));
+		$v = new Vector2($X, $Z);
+		$this->chunksOrder = array();
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$d = $x.":".$z;
+				if(!isset($this->chunksLoaded[$d])){				
+					$this->chunksOrder[$d] = $v->distance(new Vector2($x, $z));
+				}
+			}
+		}
+		asort($this->chunksOrder);
+	}
+	
+	private function getNextChunk(){
+		$c = key($this->chunksOrder);
+		if($c === null){
+			$this->mapLoaded = true;
+			return false;
+		}
+		array_shift($this->chunksOrder);
+		$this->chunksLoaded[$c] = true;
+		$id = explode(":", $c);
+		$x = $id[0] * 16;
+		$z = $id[1] * 16;
+		/*
+		$max = max(1, floor(($this->MTU - 16 - 255) / 192));
+		$chunk = $this->server->api->level->getOrderedChunk('.$id[0].', '.$id[1].', $max);
+		foreach($chunk as $d){
+			$this->dataPacket(MC_CHUNK_DATA, array(
+				"x" => '.$id[0].',
+				"z" => '.$id[1].',
+				"data" => $d,
+			), true);
+		}
+		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");
+		if($tiles !== false and $tiles !== true){
+			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
+				$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);
+			}
+		}
+		$this->orderChunks();
+		$this->getNextChunk();
+		*/
+		$this->actionQueue('$max = max(1, floor(($this->MTU - 16 - 255) / 192));$chunk = $this->server->api->level->getOrderedChunk('.$id[0].', '.$id[1].', $max);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$id[0].',"z" => '.$id[1].',"data" => $d,), true);}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->orderChunks();$this->getNextChunk();');
+
 	}
 
 	public function onTick($time, $event){
@@ -538,6 +595,8 @@ class Player{
 									$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
 										"flags" => $flags,
 									));
+									$this->orderChunks();
+									$this->getNextChunk();
 									break;
 								case 2://Chunk loaded?
 									break;
@@ -557,6 +616,7 @@ class Player{
 							}
 							break;
 						case MC_REQUEST_CHUNK:
+							break;
 							$x = $data["x"] * 16;
 							$z = $data["z"] * 16;
 							/*
