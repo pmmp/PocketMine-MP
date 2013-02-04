@@ -118,10 +118,9 @@ class Player{
 				$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);
 			}
 		}
-		$this->orderChunks();
-		$this->getNextChunk();
+		$this->actionQueue('$this->orderChunks();$this->getNextChunk();');
 		*/
-		$this->actionQueue('$max = max(1, floor(($this->MTU - 16 - 255) / 192));$chunk = $this->server->api->level->getOrderedChunk('.$id[0].', '.$id[1].', $max);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$id[0].',"z" => '.$id[1].',"data" => $d,), true);}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->orderChunks();$this->getNextChunk();');
+		$this->actionQueue('$max = max(1, floor(($this->MTU - 16 - 255) / 192));$chunk = $this->server->api->level->getOrderedChunk('.$id[0].', '.$id[1].', $max);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$id[0].',"z" => '.$id[1].',"data" => $d,), true);}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->actionQueue(\'$this->orderChunks();$this->getNextChunk();\');');
 
 	}
 
