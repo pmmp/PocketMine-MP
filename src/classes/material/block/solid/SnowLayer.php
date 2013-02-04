@@ -25,9 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class SnowLayerBlock extends TransparentBlock{
+class SnowLayerBlock extends FlowableBlock{
 	public function __construct($meta = 0){
-		parent::__construct(SNOW_LAYER, $meta, "Snow");
+		parent::__construct(SNOW_LAYER, $meta, "Snow Layer");
+		$this->isReplaceable = true;
 	}
 	
 }
