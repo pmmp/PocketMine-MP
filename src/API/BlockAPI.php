@@ -110,9 +110,18 @@ class BlockAPI{
 				if(!isset($b[1])){
 					$meta = 0;
 				}else{
-					$meta = (int) $b[1];
+					$meta = ((int) $b[1]) & 0xFFFF;
 				}
-				$block = ((int) $b[0]) & 0xFFFF;
+				
+				if(defined(strtoupper($b[0]))){
+					$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
+					if($item->getID() === 0){
+						$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+					}
+				}else{
+					$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+				}
+				
 				if(!isset($params[2])){
 					$amount = 64;
 				}else{
@@ -122,9 +131,8 @@ class BlockAPI{
 					$meta = ((int) $params[3]) & 0xFFFF;
 				}
 				if(($player = $this->server->api->player->get($username)) !== false){
-					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $block, $meta, $amount);
-					$b = BlockAPI::get($block, $meta);
-					console("[INFO] Giving ".$amount." of ".$b->getName()." (".$block.":".$meta.") to ".$username);
+					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $item->getID(), $item->getMetadata(), $amount);
+					console("[INFO] Giving ".$amount." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username);
 				}else{
 					console("[INFO] Unknown player");
 				}

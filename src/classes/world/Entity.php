@@ -260,7 +260,7 @@ class Entity extends stdClass{
 				if($this->speedZ != 0){
 					$this->z += $this->speedZ * 5;
 				}
-				if(isset($blockDown->isFlowable === true){
+				if($blockDown->isFlowable === true){
 					$this->speedY -= 0.04 * 5;
 					//$this->server->api->handle("entity.motion", $this);
 				}elseif($this->speedY < 0){
@@ -271,7 +271,7 @@ class Entity extends stdClass{
 					//$this->server->api->handle("entity.motion", $this);
 				}
 			}else{
-				if(isset($blockDown->isFlowable === true){
+				if($blockDown->isFlowable === true){
 					if($this->fallY === false or $y > $this->fallY){
 						$this->fallY = $y;
 					}

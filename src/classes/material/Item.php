@@ -30,6 +30,8 @@ require_once("classes/material/IDs.php");
 class Item{
 	public static $class = array(
 		SUGARCANE => "SugarcaneItem",	
+		WHEAT_SEEDS => "WheatSeedsItem",
+		MELON_SEEDS => "MelonSeedsItem",
 	);
 	protected $block;
 	protected $id;
