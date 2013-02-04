@@ -84,8 +84,11 @@ class PluginAPI extends stdClass{
 			console("[ERROR] [PluginAPI] Failed loading plugin: evaluation error");
 		}
 		$className = trim($info["class"]);
+		if(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){
+			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses an outdated API! It can crash or corrupt the server!");
+		}
 		if(isset($info["api"]) and $info["api"] !== true){
-			console("[NOTICE] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" got raw access to Server methods");
+			console("[INFO] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" got raw access to Server methods");
 		}
 		$object = new $className($this->server->api, ((isset($info["api"]) and $info["api"] !== true) ? $this->server:false));
 		if(!($object instanceof Plugin)){
