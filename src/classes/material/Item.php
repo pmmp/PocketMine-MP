@@ -32,6 +32,9 @@ class Item{
 		SUGARCANE => "SugarcaneItem",	
 		WHEAT_SEEDS => "WheatSeedsItem",
 		MELON_SEEDS => "MelonSeedsItem",
+		SIGN => "SignItem",
+		WOODEN_DOOR => "WoodenDoorItem",
+		IRON_DOOR => "IronDoorItem",
 	);
 	protected $block;
 	protected $id;

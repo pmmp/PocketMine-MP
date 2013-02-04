@@ -25,30 +25,44 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class TorchBlock extends FlowableBlock{
+class WallSignBlock extends TransparentBlock{
 	public function __construct($meta = 0){
-		parent::__construct(TORCH, $meta, "Torch");
+		parent::__construct(WALL_SIGN, $meta, "Wall Sign");
 	}
 	
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true and $face !== 0){
-			if($target->isTransparent === false){
+			if($face !== 0){
 				$faces = array(
-					1 => 5,
-					2 => 4,
+					2 => 2,
 					3 => 3,
-					4 => 2,
-					5 => 1,
+					4 => 4,
+					5 => 5,
 				);
-				$level->setBlock($block, $this->id, $faces[$face]);
-				return true;
+				if(!isset($faces[$face])){
+					$level->setBlock($block, SIGN_POST, 0);
+					return true;
+				}else{
+					$level->setBlock($block, WALL_SIGN, $faces[$face]);
+					return true;
+				}
 			}
 		}
 		return false;
 	}
+	
+	public function onBreak(BlockAPI $level, Item $item, Player $player){
+		if($this->inWorld === true){
+			$level->setBlock($this, AIR, 0, true, true);
+			return true;
+		}
+		return false;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array($this->id, 0, 1),
+			array(SIGN, 0, 1),
 		);
 	}
+	
 }

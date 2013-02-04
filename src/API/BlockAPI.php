@@ -63,9 +63,9 @@ class BlockAPI{
 		return $i;
 	}
 	
-	public function setBlock($block, $id, $meta){
+	public function setBlock($block, $id, $meta, $update = true, $tiles = false){
 		if(($block instanceof Vector3) or (($block instanceof Block) and $block->inWorld === true)){
-			$this->server->api->level->setBlock($block->x, $block->y, $block->z, (int) $id, (int) $meta);
+			$this->server->api->level->setBlock($block->x, $block->y, $block->z, (int) $id, (int) $meta, $update, $tiles);
 			return true;
 		}
 		return false;
@@ -307,12 +307,13 @@ class BlockAPI{
 			return $this->cancelAction($block); //Entity in block
 		}
 
-		//$direction = $player->entity->getDirection();
-
 		if($hand->place($this, $item, $player, $block, $target, $data["face"], $data["fx"], $data["fy"], $data["fz"]) === false){
 			return false;
 		}
-
+		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_POST){
+			$t = $this->server->api->tileentity->addSign($block->x, $block->y, $block->z);
+			$t->data["creator"] = $player->username;
+		}
 		/*switch($data["block"]){
 			case 26: //bed
 				$face = array(
@@ -332,39 +333,6 @@ class BlockAPI{
 				$data2["y"] = $next[2][1];
 				$data2["z"] = $next[2][2];
 				$this->server->handle("player.block.place", $data2);
-				break;
-			case 81: //Cactus
-				$blockDown = $this->server->api->level->getBlock($data["x"], $data["y"] - 1, $data["z"]);
-				$block0 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] + 1);
-				$block1 = $this->server->api->level->getBlock($data["x"], $data["y"], $data["z"] - 1);
-				$block2 = $this->server->api->level->getBlock($data["x"] + 1, $data["y"], $data["z"]);
-				$block3 = $this->server->api->level->getBlock($data["x"] - 1, $data["y"], $data["z"]);
-				if($blockDown[0] !== 12 or !isset(Material::$transparent[$block0[0]]) or !isset(Material::$transparent[$block1[0]]) or !isset(Material::$transparent[$block2[0]]) or !isset(Material::$transparent[$block3[0]])){
-					return false;
-				}
-				break;
-			case 323: //Signs
-				$faces = array(
-					2 => 2,
-					3 => 3,
-					4 => 4,
-					5 => 5,
-				);
-				if(!isset($faces[$data["face"]])){
-					if($data["face"] === 1){
-						$data["block"] = 63;
-						$data["meta"] = 0;
-						$t = $this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
-						$t->data["creator"] = $entity->player->username;
-					}else{
-						return false;
-					}
-				}else{
-					$data["block"] = 68;
-					$data["meta"] = $faces[$data["face"]];
-					$t = $this->server->api->tileentity->addSign($data["x"], $data["y"], $data["z"]);
-					$t->data["creator"] = $entity->player->username;
-				}
 				break;
 		}
 		*/

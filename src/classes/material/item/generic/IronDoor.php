@@ -25,14 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class WallSignBlock extends TransparentBlock{
-	public function __construct($meta = 0){
-		parent::__construct(WALL_SIGN, $meta, "Wall Sign");
+class IronDoorItem extends Item{
+	public function __construct($meta = 0, $count = 1){
+		$this->block = BlockAPI::get(IRON_DOOR_BLOCK);
+		parent::__construct(IRON_DOOR, 0, $count, "Iron Door");
 	}
-	public function getDrops(Item $item, Player $player){
-		return array(
-			array(323, 0, 1),
-		);
-	}
-	
 }
