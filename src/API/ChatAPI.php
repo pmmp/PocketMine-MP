@@ -39,6 +39,10 @@ class ChatAPI{
 		$this->send(false, $message);
 	}
 	
+	public function sendTo($owner, $text, $username){
+		$this->send($owner, $text, array($username));
+	}
+	
 	public function send($owner, $text, $whitelist = false, $blacklist = false){
 		$message = "";
 		if($owner !== false){

@@ -111,9 +111,8 @@ class LevelAPI{
 		return true;
 	}
 
-	public function getOrderedChunk($X, $Z, $columnsPerPacket = 2){
+	public function getOrderedChunks($X, $Z, $columnsPerPacket = 2){
 		$columnsPerPacket = max(1, (int) $columnsPerPacket);
-		$c = $this->getChunk($X, $Z);
 		$ordered = array();
 		$i = 0;
 		$cnt = 0;
@@ -132,6 +131,28 @@ class LevelAPI{
 					$ordered[$i] .= substr($block, $k << 4, 16);
 					$ordered[$i] .= substr($meta, $k << 3, 8);
 				}
+				++$cnt;
+			}
+		}
+		return $ordered;
+	}
+	
+	public function getMiniChunk($X, $Z, $Y, $MTU){
+		$ordered = array();
+		$i = 0;
+		$ordered[$i] = "";
+		$cnt = 0;
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				if((strlen($ordered[$i]) + 16 + 8 + 1) > $MTU){
+					++$i;
+					$ordered[$i] = str_repeat("\x00", $cnt);
+				}
+				$ordered[$i] .= chr(1 << $Y);
+				$block = $this->map->getChunkColumn($X, $Z, $x, $z, 0);
+				$meta = $this->map->getChunkColumn($X, $Z, $x, $z, 1);
+				$ordered[$i] .= substr($block, $Y << 4, 16);
+				$ordered[$i] .= substr($meta, $Y << 3, 8);
 				++$cnt;
 			}
 		}
