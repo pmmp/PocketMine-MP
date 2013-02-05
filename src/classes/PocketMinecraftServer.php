@@ -438,7 +438,14 @@ class PocketMinecraftServer{
 	public function dumpError(){
 		console("[ERROR] An Unrecovereable has ocurred and the server has Crashed. Creating an Error Dump");
 		$dump = "# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
-		$dump .= "Error: ".var_export(error_get_last(), true)."\r\n\r\n";
+		$er = error_get_last();
+		$dump .= "Error: ".var_export($er, true)."\r\n\r\n";
+		$dump .= "Code: \r\n";
+		$file = file($er["file"], FILE_IGNORE_NEW_LINES);
+		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
+			$dump .= "[".($l + 1)."] ".$file[$l]."\r\n";
+		}
+		$dump .= "\r\n\r\n";
 		$version = new VersionString();
 		$dump .= "PM Version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."]\r\n";
 		$dump .= "uname -a: ".php_uname("a")."\r\n";
@@ -451,6 +458,9 @@ class PocketMinecraftServer{
 		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
 		global $lasttrace;
 		$dump .= "Last Backtrace: ".$lasttrace."\r\n\r\n\r\n";
+		if($this->api->plugin instanceof PluginAPI){
+			$dump .= "Loaded plugins: ".var_export($this->api->plugin->getList(), true)."\r\n\r\n\r\n";
+		}
 		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n";
 		$name = "error_dump_".time();
 		logg($dump, $name, true, 0, true);
