@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class GlassPaneBlock extends SolidBlock{
+class GlassPaneBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(GLASS_PANE, 0, "Glass Pane");
 	}
