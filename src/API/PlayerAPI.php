@@ -44,11 +44,11 @@ class PlayerAPI{
 	public function handle($data, $event){
 		switch($event){
 			case "server.regeneration":
-				$result = $this->server->query("SELECT EID FROM players WHERE EID = (SELECT EID FROM entities WHERE health < 20);");
+				$result = $this->server->query("SELECT EID FROM entities WHERE class = ".ENTITY_PLAYER." AND health < 20;");
 				if($result !== true and $result !== false){
-					while(false !== ($player = $result->fetchArray())){
+					while(($player = $result->fetchArray()) !== false){
 						if(($player = $this->server->api->entity->get($player["EID"])) !== false){
-							if($player->dead === true){
+							if($player->getHealth() <= 0){
 								continue;
 							}
 							$player->setHealth(min(20, $player->getHealth() + $data), "regeneration");
@@ -94,6 +94,9 @@ class PlayerAPI{
 						case "fall":
 							$message .= " hit the ground too hard";
 							break;
+						case "flying":
+							$message .= " tried to get up to the sky";
+							break;							
 						default:
 							$message .= " died";
 							break;
@@ -171,6 +174,8 @@ class PlayerAPI{
 	public function tppos($name, $x, $y, $z){
 		$player = $this->get($name);
 		if($player !== false){
+			$player->entity->setPosition($x, $y, $z, 0, 0);
+			$player->fallY = false;
 			$player->dataPacket(MC_MOVE_PLAYER, array(
 				"eid" => 0,
 				"x" => $x,
@@ -179,6 +184,7 @@ class PlayerAPI{
 				"yaw" => 0,
 				"pitch" => 0,
 			));
+			$player->fallY = false;
 			return true;
 		}
 		return false;

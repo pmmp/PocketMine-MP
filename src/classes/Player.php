@@ -607,7 +607,6 @@ class Player{
 									$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
 										"flags" => $flags,
 									));
-									$this->orderChunks();
 									$this->getNextChunk();
 									break;
 								case 2://Chunk loaded?
@@ -683,9 +682,9 @@ class Player{
 							switch($data["event"]){
 								case 9: //Eating
 									$items = array(
-										260 => 2, //Apples
+										APPLE => 2, //Apples
 										282 => 10, //Stew
-										297 => 5, //Bread
+										BREAD => 5, //Bread
 										319 => 3,
 										320 => 8,
 										363 => 3,

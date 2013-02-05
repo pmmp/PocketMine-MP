@@ -46,7 +46,6 @@ define("ENTITY_OBJECT", 2);
 define("ENTITY_ITEM", 3);
 
 class Entity extends stdClass{
-	public $invincible;
 	public $age;
 	public $air;
 	public $spawntime;
@@ -71,10 +70,12 @@ class Entity extends stdClass{
 	public $closed;
 	public $player;
 	public $fallY;
+	public $fallStart;
 	private $tickCounter;
 	private $server;
 	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
 		$this->fallY = false;
+		$this->fallStart = false;
 		$this->server = $server;
 		$this->eid = (int) $eid;
 		$this->type = (int) $type;
@@ -110,7 +111,6 @@ class Entity extends stdClass{
 		switch($this->class){
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
-				$this->health = &$this->player->data["health"];
 				$this->setHealth($this->health, "generic");
 				break;
 			case ENTITY_ITEM:
@@ -272,18 +272,27 @@ class Entity extends stdClass{
 				}
 			}else{
 				if($blockDown->isFlowable === true){
-					if($this->fallY === false or $y > $this->fallY){
+					if($this->fallY === false){
+						$this->fallY = $y;
+						$this->fallStart = microtime(true);
+					}elseif($y > $this->fallY){
+						$this->fallY = $y;
+					}
+					if($this->fallY !== false and ($this->fallStart + 8) < microtime(true)){ //Flying
+						$this->harm(1, "flying");
 						$this->fallY = $y;
 					}
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
 						$d = $this->server->api->block->getBlock(new Vector3($x, $y + 1, $z));
 						$dmg = ($this->fallY - $y) - 3;
-						if($dmg > 0 and !($d instanceof LiquidBlock)){
+						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER){
 							$this->harm($dmg, "fall");
 						}
 					}
 					$this->fallY = false;
+					$this->fallStart = false;
+					
 				}
 			}
 		}

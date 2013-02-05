@@ -171,7 +171,7 @@ class BlockAPI{
 		if(count($drops) > 0){
 			foreach($drops as $drop){
 				$this->drop($target->x, $target->y, $target->z, $drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF);
-			}			
+			}
 		}
 		return false;
 	}
