@@ -36,6 +36,7 @@ class Item{
 		WOODEN_DOOR => "WoodenDoorItem",
 		IRON_DOOR => "IronDoorItem",
 		BED => "BedItem",
+		PAINTING => "PaintingItem",
 	);
 	protected $block;
 	protected $id;
@@ -44,6 +45,7 @@ class Item{
 	protected $maxStackSize = 64;
 	protected $durability = 0;
 	protected $name;
+	public $isActivable = false;
 	
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		$this->id = (int) $id;
@@ -116,6 +118,10 @@ class Item{
 	
 	public function getDestroySpeed(Block $block, Player $player){
 		return 1;
+	}
+	
+	public function onActivate(BlockAPI $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		return false;
 	}
 	
 }

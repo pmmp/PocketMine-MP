@@ -226,7 +226,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
-			case MC_ADD_ENTITY:
+			case MC_ADD_ENTITY: //Not used?
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["type"] = ord($this->get(1));
@@ -240,9 +240,6 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 					$this->raw .= Utils::hexToStr("000000020000ffd30000");//Utils::writeInt(0);
-					/*$this->raw .= Utils::writeShort(0);
-					$this->raw .= Utils::writeShort(0);
-					$this->raw .= Utils::writeShort(0);*/
 				}
 				break;
 			case MC_REMOVE_ENTITY:
@@ -378,6 +375,23 @@ class CustomPacketHandler{
 					$this->raw .= chr($this->data["y"]);
 					$this->raw .= chr($this->data["block"]);
 					$this->raw .= chr($this->data["meta"]);
+				}
+				break;
+			case MC_ADD_PAINTING:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["y"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["direction"] = Utils::readInt($this->get(4));
+					$this->data["title"] = $this->get(Utils::readShort($this->get(2), false));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= Utils::writeInt($this->data["direction"]);
+					$this->raw .= Utils::writeShort(strlen($this->data["title"])).$this->data["title"];
 				}
 				break;
 			case MC_EXPLOSION:

@@ -123,6 +123,7 @@ class Entity extends stdClass{
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				break;
 			case ENTITY_OBJECT:
+				$this->setHealth(1, "generic");
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				break;
 			case ENTITY_PAINTING:
@@ -392,7 +393,16 @@ class Entity extends stdClass{
 				));
 				break;
 			case ENTITY_OBJECT:
-				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+				if($this->type === OBJECT_PAINTING){
+					$player->dataPacket(MC_ADD_PAINTING, array(
+						"eid" => $this->eid,
+						"x" => (int) $this->x,
+						"y" => (int) $this->y,
+						"z" => (int) $this->z,
+						"direction" => $this->getDirection(),
+						"title" => "Creepers",
+					));
+				}
 				break;
 		}
 	}
@@ -540,10 +550,12 @@ class Entity extends stdClass{
 				$this->crouched = false;
 				$this->updateMetadata();
 				$this->dead = true;
+				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
 				if($this->player instanceof Player){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
+				}else{
+					$this->close();
 				}
-				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
 			}elseif($this->health > 0){
 				$this->dead = false;
 			}

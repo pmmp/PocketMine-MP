@@ -194,11 +194,12 @@ class BlockAPI{
 			for($count = $stack; $count > 0; ){
 				$data["stack"] = min(64, $count);
 				$count -= $data["stack"];
-				$e = $this->server->api->entity->add(ENTITY_ITEM, $block, $data);
+				$server = ServerAPI::request();
+				$e = $server->api->entity->add(ENTITY_ITEM, $block, $data);
 				//$e->speedX = mt_rand(-10, 10) / 100;
 				//$e->speedY = mt_rand(0, 5) / 100;
 				//$e->speedZ = mt_rand(-10, 10) / 100;
-				$this->server->api->entity->spawnToAll($e->eid);
+				$server->api->entity->spawnToAll($e->eid);
 			}
 		}
 	}
@@ -261,6 +262,10 @@ class BlockAPI{
 
 		if($block->y > 127 or $block->y < 0){
 			return false;
+		}
+		
+		if($item->isActivable === true and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
+			return $this->cancelAction($block);
 		}
 
 		if($item->isPlaceable()){

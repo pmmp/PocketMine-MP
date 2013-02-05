@@ -56,7 +56,7 @@ define("MC_MOVE_PLAYER", 0x94);
 define("MC_PLACE_BLOCK", 0x95);
 define("MC_REMOVE_BLOCK", 0x96);
 define("MC_UPDATE_BLOCK", 0x97);
-//define("MC_ADD_PAINTING", 0x98);
+define("MC_ADD_PAINTING", 0x98);
 define("MC_EXPLOSION", 0x99);
 define("MC_LEVEL_EVENT", 0x9a);
 //define("MC_TILE_EVENT", 0x9b);

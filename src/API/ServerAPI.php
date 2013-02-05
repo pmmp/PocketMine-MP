@@ -27,9 +27,14 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ServerAPI{
 	var $restart = false;
+	private static $serverRequest = false;
 	private $server;
 	private $config;
 	private $apiList = array();
+	
+	public static function request(){
+		return self::$serverRequest;
+	}
 	
 	public function run(){
 		$this->load();
@@ -107,6 +112,7 @@ class ServerAPI{
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug"));
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"), $this->getProperty("server-ip"));
+		self::$serverRequest = $this->server;
 		$this->setProperty("server-id", $this->server->serverID);
 		$this->server->api = $this;
 		if($this->getProperty("upnp-forwarding") === true){

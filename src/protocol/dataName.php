@@ -59,7 +59,7 @@ $dataName = array(
 	MC_PLACE_BLOCK => "PlaceBlock",
 	MC_REMOVE_BLOCK => "RemoveBlock",
 	MC_UPDATE_BLOCK => "UpdateBlock",
-	
+	MC_ADD_PAINTING => "AddPainting",
 	MC_EXPLOSION => "Explosion",
 	
 	MC_LEVEL_EVENT => "LevelEvent",
