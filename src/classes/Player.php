@@ -49,7 +49,6 @@ class Player{
 	public $equipment;
 	var $armor = array(0, 0, 0, 0);
 	var $loggedIn = false;
-	private $mapLoaded = false;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	
@@ -91,10 +90,12 @@ class Player{
 		asort($this->chunksOrder);
 	}
 	
-	private function getNextChunk(){
+	public function getNextChunk(){
+		$this->orderChunks();
 		$c = key($this->chunksOrder);
-		if($c === null){
-			$this->mapLoaded = true;
+		$d = $this->chunksOrder[$c];
+		if($c === null or $d > 5){
+			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
 		array_shift($this->chunksOrder);
@@ -130,9 +131,9 @@ class Player{
 				$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);
 			}
 		}
-		$this->actionQueue(\'$this->orderChunks();$this->getNextChunk();\');
+		$this->actionQueue(\'$this->getNextChunk();\');
 		*/
-		$this->actionQueue('$MTU = $this->MTU - 16;$y = $this->entity->y / 16;$order = array();for($Y = 0; $Y < 8; ++$Y){$order[$Y] = abs($y - ($Y + 0.5));}asort($order);foreach($order as $Y => $distance){$chunk = $this->server->api->level->getMiniChunk('.$X.', '.$Z.', $Y, $MTU);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$X.',"z" => '.$Z.',"data" => $d,), true);}}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->actionQueue(\'$this->orderChunks();$this->getNextChunk();\');');
+		$this->actionQueue('$MTU = $this->MTU - 16;$y = $this->entity->y / 16;$order = array();for($Y = 0; $Y < 8; ++$Y){$order[$Y] = abs($y - ($Y + 0.5));}asort($order);foreach($order as $Y => $distance){$chunk = $this->server->api->level->getMiniChunk('.$X.', '.$Z.', $Y, $MTU);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$X.',"z" => '.$Z.',"data" => $d,), true);}}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->actionQueue(\'$this->getNextChunk();\');');
 
 	}
 
