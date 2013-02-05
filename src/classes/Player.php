@@ -94,7 +94,7 @@ class Player{
 		$this->orderChunks();
 		$c = key($this->chunksOrder);
 		$d = $this->chunksOrder[$c];
-		if($c === null or $d > 5){
+		if($c === null or $d > 6){
 			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
