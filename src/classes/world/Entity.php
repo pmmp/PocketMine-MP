@@ -357,8 +357,8 @@ class Entity extends stdClass{
 				));
 				$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
 					"eid" => $this->eid,
-					"block" => $this->player->equipment[0],
-					"meta" => $this->player->equipment[1],
+					"block" => $this->player->equipment->blockID(),
+					"meta" => $this->player->equipment->getMetadata(),
 				));
 				break;
 			case ENTITY_ITEM:
