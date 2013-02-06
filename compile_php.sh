@@ -74,6 +74,7 @@ mv gmp-$GMP_VERSION gmp
 echo -n " checking..."
 cd gmp
 ./configure --prefix=$DIR/install_data/php/ext/gmp \
+--disable-assembly \
 --disable-shared >> $DIR/install.log 2>&1
 echo -n " compiling..."
 make >> $DIR/install.log 2>&1
