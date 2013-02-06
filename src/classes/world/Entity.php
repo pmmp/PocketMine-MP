@@ -281,7 +281,9 @@ class Entity extends stdClass{
 					}
 					if($this->fallY !== false and ($this->fallStart + 8) < microtime(true)){ //Flying
 						$this->harm(1, "flying");
-						$this->fallY = $y;
+						if($y > $this->fallY){
+							$this->fallY = $y;
+						}
 					}
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
@@ -548,6 +550,8 @@ class Entity extends stdClass{
 				$this->air = 300;
 				$this->fire = 0;
 				$this->crouched = false;
+				$this->fallY = false;
+				$this->fallStart = false;
 				$this->updateMetadata();
 				$this->dead = true;
 				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead

@@ -33,11 +33,19 @@ class PaintingItem extends Item{
 	
 	public function onActivate(BlockAPI $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1){
+			$faces = array(
+				2 => 1,
+				3 => 3,
+				4 => 0,
+				5 => 2,
+			
+			);
+
 			$data = array(
 				"x" => $target->x,
 				"y" => $target->y,
 				"z" => $target->z,
-				"yaw" => ($face % 4) * 90,
+				"yaw" => $faces[$face] * 90,
 			);
 			$server = ServerAPI::request();
 			$e = $server->api->entity->add(ENTITY_OBJECT, OBJECT_PAINTING, $data);

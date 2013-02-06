@@ -95,7 +95,7 @@ class PlayerAPI{
 							$message .= " hit the ground too hard";
 							break;
 						case "flying":
-							$message .= " tried to get up to the sky";
+							$message .= " tried to fly up to the sky";
 							break;							
 						default:
 							$message .= " died";
@@ -176,6 +176,7 @@ class PlayerAPI{
 		if($player !== false){
 			$player->entity->setPosition($x, $y, $z, 0, 0);
 			$player->fallY = false;
+			$player->fallStart = false;
 			$player->dataPacket(MC_MOVE_PLAYER, array(
 				"eid" => 0,
 				"x" => $x,
@@ -185,6 +186,7 @@ class PlayerAPI{
 				"pitch" => 0,
 			));
 			$player->fallY = false;
+			$player->fallStart = false;
 			return true;
 		}
 		return false;
