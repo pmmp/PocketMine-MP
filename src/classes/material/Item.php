@@ -37,6 +37,11 @@ class Item{
 		IRON_DOOR => "IronDoorItem",
 		BED => "BedItem",
 		PAINTING => "PaintingItem",
+		COAL => "CoalItem",
+		APPLE => "AppleItem",
+		DIAMOND => "DiamondItem",
+		STICK => "StickItem",
+		BOWL => "BowlItem",
 	);
 	protected $block;
 	protected $id;

@@ -162,11 +162,11 @@ define("IRON_SHOVEL", 256);
 define("IRON_PICKAXE", 257);
 define("IRON_AXE", 258);
 define("FLINT_STEEL", 259);
-define("APPLE", 260);
+define("APPLE", 260);//Implemented
 define("BOW", 261);
 define("ARROW", 262);
-define("COAL", 263);
-define("DIAMOND", 264);
+define("COAL", 263);//Implemented
+define("DIAMOND", 264);//Implemented
 define("IRON_INGOT", 265);
 define("GOLD_INGOT", 266);
 define("IRON_SWORD", 267);
@@ -182,8 +182,8 @@ define("DIAMOND_SWORD", 276);
 define("DIAMOND_SHOVEL", 277);
 define("DIAMOND_PICKAXE", 278);
 define("DIAMOND_AXE", 279);
-define("STICK", 280);
-define("BOWL", 281);
+define("STICK", 280);//Implemented
+define("BOWL", 281);//Implemented
 define("MUSHROOM_STEW", 282);
 define("GOLD_SWORD", 283);
 define("GOLD_SHOVEL", 284);
