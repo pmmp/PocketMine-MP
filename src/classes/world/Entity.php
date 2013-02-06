@@ -97,7 +97,6 @@ class Entity extends stdClass{
 		$this->name = "";
 		$this->tickCounter = 0;
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
-		$this->server->schedule(5, array($this, "update"), array(), true);
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
@@ -112,17 +111,23 @@ class Entity extends stdClass{
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
 				$this->setHealth($this->health, "generic");
+				$this->server->schedule(5, array($this, "update"), array(), true);
 				break;
 			case ENTITY_ITEM:
 				$this->meta = (int) $this->data["meta"];
 				$this->stack = (int) $this->data["stack"];
 				$this->setHealth(5, "generic");
+				$this->server->schedule(5, array($this, "update"), array(), true);
 				break;
 			case ENTITY_MOB:
 				$this->setHealth($this->data["Health"], "generic");
+				//$this->server->schedule(5, array($this, "update"), array(), true);
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				break;
 			case ENTITY_OBJECT:
+				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"]:$this->x;
+				$this->y = isset($this->data["TileY"]) ? $this->data["TileY"]:$this->y;
+				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
 				$this->setHealth(1, "generic");
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				break;
@@ -399,7 +404,7 @@ class Entity extends stdClass{
 						"y" => (int) $this->y,
 						"z" => (int) $this->z,
 						"direction" => $this->getDirection(),
-						"title" => "Creepers",
+						"title" => $this->data["Motive"],
 					));
 				}
 				break;

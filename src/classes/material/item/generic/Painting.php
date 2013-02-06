@@ -40,12 +40,22 @@ class PaintingItem extends Item{
 				5 => 2,
 			
 			);
+			$motives = array(
+				"Kebab",
+				"Aztec",
+				"Alban",
+				"Aztec2",
+				"Bomb",
+				"Plant",
+				"Wasteland",
+			);
 
 			$data = array(
 				"x" => $target->x,
 				"y" => $target->y,
 				"z" => $target->z,
 				"yaw" => $faces[$face] * 90,
+				"Motive" => $motives[mt_rand(0, count($motives) - 1)],
 			);
 			$server = ServerAPI::request();
 			$e = $server->api->entity->add(ENTITY_OBJECT, OBJECT_PAINTING, $data);
