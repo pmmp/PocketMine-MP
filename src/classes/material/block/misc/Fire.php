@@ -29,7 +29,7 @@ class FireBlock extends FlowableBlock{
 	public function __construct($meta = 0){
 		parent::__construct(FIRE, $meta, "Fire");
 		$this->isReplaceable = true;
-		$this->isBreakable = false;
+		$this->breakable = false;
 	}
 	
 }

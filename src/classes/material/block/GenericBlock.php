@@ -38,6 +38,10 @@ class GenericBlock extends Block{
 		return false;
 	}
 	
+	public function isBreakable(Item $item, Player $player){
+		return $this->breakable;
+	}
+	
 	public function onBreak(BlockAPI $level, Item $item, Player $player){
 		if($this->inWorld === true){
 			$level->setBlock($this, AIR, 0);

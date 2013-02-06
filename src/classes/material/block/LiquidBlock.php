@@ -29,7 +29,7 @@ class LiquidBlock extends TransparentBlock{
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
 		$this->isLiquid = true;
-		$this->isBreakable = false;
+		$this->breakable = false;
 		$this->isReplaceable = true;
 	}
 }

@@ -49,6 +49,7 @@ class Player{
 	public $equipment;
 	var $armor = array(0, 0, 0, 0);
 	var $loggedIn = false;
+	public $gamemode;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	
@@ -61,7 +62,8 @@ class Player{
 		$this->port = $port;
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
-		if($this->server->gamemode === 0 or $this->server->gamemode === 2){
+		$this->gamemode = $this->server->gamemode;
+		if($this->gamemode === 0 or $this->gamemode === 2){
 			$this->equipment = BlockAPI::getItem(AIR);
 		}else{
 			$this->equipment = BlockAPI::getItem(STONE);
@@ -272,14 +274,14 @@ class Player{
 				}
 				break;
 			case "player.block.place":
-				if($data["eid"] === $this->eid and ($this->server->gamemode === 0 or $this->server->gamemode === 2)){
+				if($data["eid"] === $this->eid and ($this->gamemode === 0 or $this->gamemode === 2)){
 					$this->removeItem($data["original"]->getID(), $data["original"]->getMetadata(), 1);
 				}
 				break;
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					if(($this->server->gamemode === 0 or $this->server->gamemode === 2)){
+					if(($this->gamemode === 0 or $this->gamemode === 2)){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
 				}
@@ -517,7 +519,7 @@ class Player{
 							}
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
-							if(!isset($this->data["inventory"]) or $this->server->gamemode === 1){
+							if(!isset($this->data["inventory"]) or $this->gamemode === 1){
 								$this->data["inventory"] = $this->inventory;
 							}
 							$this->inventory = &$this->data["inventory"];
@@ -535,7 +537,7 @@ class Player{
 								"y" => $this->data["spawn"]["y"],
 								"z" => $this->data["spawn"]["z"],
 								"unknown1" => 0,
-								"gamemode" => $this->server->gamemode,
+								"gamemode" => $this->gamemode,
 								"eid" => 0,
 							));
 							break;
@@ -600,7 +602,7 @@ class Player{
 									0x80 ?
 									*/
 									$flags = 0;
-									if($this->server->gamemode === 2){
+									if($this->gamemode === 2){
 										$flags |= 0x01; //Not allow placing/breaking blocks
 									}
 									$flags |= 0x20; //Nametags
@@ -632,7 +634,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 10){
 								break;
-							}elseif(($this->server->gamemode === 0 or $this->server->gamemode === 2) and !$this->hasItem($data["block"], $data["meta"])){
+							}elseif(($this->gamemode === 0 or $this->gamemode === 2) and !$this->hasItem($data["block"], $data["meta"])){
 								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
 								//break;
 							}
@@ -672,7 +674,7 @@ class Player{
 							$this->entity->updateMetadata();
 							break;
 						case MC_SET_HEALTH:
-							if($this->server->gamemode === 1){
+							if($this->gamemode === 1){
 								break;
 							}
 							//$this->entity->setHealth($data["health"], "client");

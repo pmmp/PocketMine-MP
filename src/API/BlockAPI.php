@@ -154,10 +154,10 @@ class BlockAPI{
 	public function playerBlockBreak(Player $player, Vector3 $vector){
 
 		$target = $this->getBlock($vector);
-		if($target->isBreakable === false or $this->server->gamemode === 2){
-			return $this->cancelAction($target);
-		}		
 		$item = $player->equipment;
+		if(!$target->isBreakable($item, $player) or $this->server->gamemode === 2){
+			return $this->cancelAction($target);
+		}
 		
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
