@@ -133,7 +133,7 @@ class ServerAPI{
 					$last = $info["development"]["date"];
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
 						console("[NOTICE] \x1b[33mA new DEVELOPMENT version of PocketMine-MP has been released");
-						console("[NOTICE] \x1b[33mA \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
+						console("[NOTICE] \x1b[33mVersion \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
 						console("[NOTICE] \x1b[36mIf you want to update, get the latest version at ".$info["development"]["download"]);
 						console("[NOTICE] This message will dissapear when you issue the command \"/update-done\"");
 						sleep(3);
