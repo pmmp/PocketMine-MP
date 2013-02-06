@@ -126,9 +126,6 @@ class Entity extends stdClass{
 				$this->setHealth(1, "generic");
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
 				break;
-			case ENTITY_PAINTING:
-			
-				break;
 		}
 	}
 	
@@ -300,7 +297,7 @@ class Entity extends stdClass{
 			}
 		}
 		
-		if($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch){
+		if($this->class !== ENTITY_OBJECT and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
 			$this->server->api->dhandle("entity.move", $this);
 			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();
