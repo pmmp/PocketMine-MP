@@ -190,7 +190,7 @@ define("GOLD_SHOVEL", 284);
 define("GOLD_PICKAXE", 285);
 define("GOLD_AXE", 286);
 define("STRING", 287);
-define("FEATHER", 288);
+define("FEATHER", 288);//Implemented
 define("GUNPOWDER", 289);
 define("WOODEN_HOE", 290);
 define("STONE_HOE", 291);
