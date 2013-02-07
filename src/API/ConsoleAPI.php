@@ -77,7 +77,9 @@ class ConsoleAPI{
 						break;
 					case "status":
 					case "lag":
-						$this->server->debugInfo(true);
+						if(!($issuer instanceof Player) and $issuer === "console"){
+							$this->server->debugInfo(true);
+						}
 						$info = $this->server->debugInfo();
 						$output .= "TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"].")\n";
 						break;
@@ -192,7 +194,7 @@ class ConsoleAPI{
 		if($this->loop->line !== false){
 			$line = trim($this->loop->line);
 			$this->loop->line = false;
-			$this->run($line);
+			$this->run($line, "console");
 		}else{
 			$this->loop->notify();
 		}

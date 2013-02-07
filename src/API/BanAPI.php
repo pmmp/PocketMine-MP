@@ -29,6 +29,7 @@ class BanAPI{
 	private $server;
 	private $whitelist;
 	private $banned;
+	private $ops;
 	private $bannedIPs;
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
@@ -39,15 +40,57 @@ class BanAPI{
 		$this->whitelist = new Config(FILE_PATH."white-list.txt", CONFIG_LIST);
 		$this->bannedIPs = new Config(FILE_PATH."banned-ips.txt", CONFIG_LIST);
 		$this->banned = new Config(FILE_PATH."banned.txt", CONFIG_LIST);
+		$this->ops = new Config(FILE_PATH."ops.txt", CONFIG_LIST);
 		$this->server->api->console->register("banip", "Manages IP Banning", array($this, "commandHandler"));
 		$this->server->api->console->register("ban", "Manages Bannning", array($this, "commandHandler"));
 		$this->server->api->console->register("kick", "Kicks a player", array($this, "commandHandler"));
 		$this->server->api->console->register("whitelist", "Manages White-listing", array($this, "commandHandler"));
+		$this->server->api->console->register("op", "Ops a player", array($this, "commandHandler"));
+		$this->server->api->console->register("deop", "Deops a player", array($this, "commandHandler"));
+		$this->server->addHandler("console.command", array($this, "opCheck"), 1);
+	}
+	
+	public function isOp($username){
+		if($this->server->api->dhandle("api.op.check", $username) === false){
+			return true;
+		}elseif($this->op->exists($username)){
+			return true;
+		}
+		return false;	
+	}
+	
+	public function opCheck($data, $event){
+		if($data["issuer"] instanceof Player){
+			if($this->isOp($data["issuer"]->username)){
+				return true;
+			}
+		}elseif($data["issuer"] === "console"){
+			return true;
+		}
+		return false;
 	}
 	
 	public function commandHandler($cmd, $params, $issuer){
 		$output = "";
 		switch($cmd){
+			case "op":
+				$user = trim(implode(" ", $params));
+				if($user == ""){
+					break;
+				}
+				$this->ops->set($user);
+				$this->ops->save();
+				$output .= $user." is now op\n";
+				break;
+			case "deop":
+				$user = trim(implode(" ", $params));
+				if($user == ""){
+					break;
+				}
+				$this->ops->remove($user);
+				$this->ops->save();
+				$output .= $user." is not longer op\n";
+				break;
 			case "kick":
 				if(!isset($params[0])){
 					$output .= "Usage: /kick <playername> [reason]\n";
