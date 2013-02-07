@@ -41,13 +41,14 @@ class TimeAPI{
 		$this->server->api->console->register("time", "Manages server time", array($this, "commandHandler"));
 	}
 
-	public function commandHandler($cmd, $params){
+	public function commandHandler($cmd, $params, $issuer){
+		$output = "";
 		switch($cmd){
 			case "time":
 				$p = strtolower(array_shift($params));
 				switch($p){
 					case "check":
-						console("[INFO] Time: ".$this->getDate().", ".$this->getPhase()." (".$this->get(true).")");
+						$output .= "Time: ".$this->getDate().", ".$this->getPhase()." (".$this->get(true).")\n";
 						break;
 					case "add":
 						$this->add(array_shift($params));
@@ -68,11 +69,12 @@ class TimeAPI{
 						$this->night();
 						break;
 					default:
-						console("[INFO] Usage: /time <check | set | add | sunrise | day | sunset | night> [time]");
+						$output .= "Usage: /time <check | set | add | sunrise | day | sunset | night> [time]\n";
 						break;
 				}
 				break;
 		}
+		return $output;
 	}
 
 	public function night(){

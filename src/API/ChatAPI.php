@@ -39,14 +39,18 @@ class ChatAPI{
 		$this->send(false, $message);
 	}
 	
-	public function sendTo($owner, $text, $username){
-		$this->send($owner, $text, array($username));
+	public function sendTo($owner, $text, $player){
+		$this->send($owner, $text, array($player));
 	}
 	
 	public function send($owner, $text, $whitelist = false, $blacklist = false){
 		$message = "";
 		if($owner !== false){
-			$message = "<".$owner."> ";
+			if($owner instanceof Player){
+				$message = "<".$owner->username."> ";
+			}else{
+				$message = "<".$owner."> ";
+			}
 		}
 		$message .= $text;
 		console("[CHAT] ".$message);

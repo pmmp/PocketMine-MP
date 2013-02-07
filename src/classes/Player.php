@@ -374,10 +374,17 @@ class Player{
 				}else{
 					$message = (string) $data;
 				}
-				$this->dataPacket(MC_CHAT, array(
-					"message" => str_replace("@username", $this->username, $message),
-				));
+				$this->sendChat($message);
 				break;
+		}
+	}
+	
+	public function sendChat($message){
+		$mes = explode("\n", $message);
+		foreach($mes as $m){
+			$this->dataPacket(MC_CHAT, array(
+				"message" => str_replace("@username", $this->username, $m),
+			));	
 		}
 	}
 
@@ -721,6 +728,16 @@ class Player{
 									$t->data["Text4"] = $data["line3"];
 									$this->server->handle("tile.update", $t);
 									$this->server->api->tileentity->spawnToAll($t);
+								}
+							}
+							break;
+						case MC_CHAT:
+							$message = $data["message"];
+							if($message{0} === "/"){ //Command
+								$this->server->api->console->run(substr($message, 1), $this);
+							}else{
+								if($this->server->api->dhandle("player.chat", array("player" => $this, "message" => $message)) !== false){
+									$this->server->api->send($this, $message);
 								}
 							}
 							break;

@@ -107,19 +107,20 @@ class PlayerAPI{
 		}
 	}
 
-	public function commandHandler($cmd, $params){
+	public function commandHandler($cmd, $params, $issuer){
+		$output = "";
 		switch($cmd){
 			case "tp":
 				$name = array_shift($params);
 				$target = array_shift($params);
 				if($name == null or $target == null){
-					console("[INFO] Usage: /tp <player> <target>");
+					$output .= "Usage: /tp <player> <target>\n";
 					break;
 				}
 				if($this->teleport($name, $target)){
-					console("[INFO] \"$name\" teleported to \"$target\"");
+					$output .= "\"$name\" teleported to \"$target\"\n";
 				}else{
-					console("[ERROR] Couldn't teleport");
+					$output .= "Couldn't teleport\n";
 				}
 				break;
 			case "tppos":
@@ -128,13 +129,13 @@ class PlayerAPI{
 				$x = array_pop($params);
 				$name = implode(" ", $params);
 				if($name == null or $x === null or $y === null or $z === null){
-					console("[INFO] Usage: /tp <player> <x> <y> <z>");
+					$output .= "Usage: /tp <player> <x> <y> <z>\n";
 					break;
 				}
 				if($this->tppos($name, $x, $y, $z)){
-					console("[INFO] \"$name\" teleported to ($x, $y, $z)");
+					$output .= "\"$name\" teleported to ($x, $y, $z)\n";
 				}else{
-					console("[ERROR] Couldn't teleport");
+					$output .= "Couldn't teleport\n";
 				}
 				break;
 			case "kill":
@@ -142,7 +143,7 @@ class PlayerAPI{
 				if($player !== false){
 					$this->server->api->entity->harm($player->eid, 20, "console", true);
 				}else{
-					console("[INFO] Usage: /kill <player>");
+					$output .= "Usage: /kill <player>\n";
 				}
 				break;
 			case "harm":
@@ -151,16 +152,17 @@ class PlayerAPI{
 				if($player !== false){
 					$this->server->api->entity->harm($player->eid, $dmg, "console", true);
 				}else{
-					console("[INFO] Usage: /harm <damage> <player>");
+					$output .= "Usage: /harm <damage> <player>\n";
 				}
 				break;
 			case "list":
-				console("[INFO] Player list:");
+				$output .= "Player list:\n";
 				foreach($this->server->clients as $c){
-					console("[INFO] ".$c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->entity->x, 2).", ".round($c->entity->y, 2).", ".round($c->entity->z, 2).")");
+					$output .= $c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->entity->x, 2).", ".round($c->entity->y, 2).", ".round($c->entity->z, 2).")\n";
 				}
 				break;
 		}
+		return $output;
 	}
 
 	public function teleport($name, $target){

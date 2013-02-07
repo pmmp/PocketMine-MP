@@ -47,96 +47,97 @@ class ConsoleAPI{
 		$this->loop->join();
 	}
 
-	public function defaultCommands($cmd, $params){
-			switch($cmd){
-				case "crash": //Crashes the server to generate an report
-					$this->callNotDefinedMethodCrash();
-					$this->server->api->server; //Access a private property
-					callNotExistingFunction();
-					break;
-				case "invisible":
-					$p = strtolower(array_shift($params));
-					switch($p){
-						case "on":
-						case "true":
-						case "1":
-							console("[INFO] Server is invisible");
-							$this->server->api->setProperty("invisible", true);
-							break;
-						case "off":
-						case "false":
-						case "0":
-							console("[INFO] Server is visible");
-							$this->server->api->setProperty("invisible", false);
-							break;
-						default:
-							console("[INFO] Usage: /invisible <on | off>");
-							break;
-					}
-					break;
-				case "status":
-				case "lag":
-					$this->server->debugInfo(true);
-					$info = $this->server->debugInfo();
-					console("[INFO] TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"].")");
-					break;
-				case "update-done":
-					$this->server->api->setProperty("last-update", time());
-					break;
-				case "stop":
-					$this->loop->stop = true;
-					console("[INFO] Stopping the server...");
-					$this->server->close();
-					break;
-				case "gamemode":
-					$s = trim(array_shift($params));
-					if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1 and ((int) $s) !== 2)){
-						console("[INFO] Usage: /gamemode <0 | 1 | 2>");
+	public function defaultCommands($cmd, $params, $issuer){
+			$output = "";
+				switch($cmd){
+					case "crash": //Crashes the server to generate an report
+						$this->callNotDefinedMethodCrash();
+						$this->server->api->server; //Access a private property
+						callNotExistingFunction();
 						break;
-					}
-					$this->server->api->setProperty("gamemode", (int) $s);
-					console("[INFO] Gamemode changed to ".$this->server->getGamemode());
-					break;
-				case "difficulty":
-					$s = trim(array_shift($params));
-					if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
-						console("[INFO] Usage: /difficulty <0 | 1>");
+					case "invisible":
+						$p = strtolower(array_shift($params));
+						switch($p){
+							case "on":
+							case "true":
+							case "1":
+								$output .= "Server is invisible\n";
+								$this->server->api->setProperty("invisible", true);
+								break;
+							case "off":
+							case "false":
+							case "0":
+								$output .= "Server is visible\n";
+								$this->server->api->setProperty("invisible", false);
+								break;
+							default:
+								$output .= "Usage: /invisible <on | off>\n";
+								break;
+						}
 						break;
-					}
-					$this->server->api->setProperty("difficulty", (int) $s);
-					console("[INFO] Difficulty changed to ".$this->server->difficulty);
-					loadConfig(true);
-					break;
-				case "say":
-					$s = implode(" ", $params);
-					if(trim($s) == ""){
-						console("[INFO] Usage: /say <message>");
+					case "status":
+					case "lag":
+						$this->server->debugInfo(true);
+						$info = $this->server->debugInfo();
+						$output .= "TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"].")\n";
 						break;
-					}
-					$this->server->api->chat->broadcast($s);
-					break;
-				case "save-all":
-					$this->server->save();
-					break;
-				case "help":
-				case "?":
-					console("[INFO] /help: Show available commands");
-					console("[INFO] /status: Show server TPS and memory usage");
-					console("[INFO] /gamemode: Changes default gamemode");
-					console("[INFO] /difficulty: Changes difficulty");
-					console("[INFO] /invisible: Manages server visibility");
-					console("[INFO] /say: Broadcasts mesages");
-					console("[INFO] /save-all: Saves pending changes");
-					console("[INFO] /stop: Stops the server");
-					//console("[INFO] /restart: Restarts the server");
-					foreach($this->help as $c => $h){
-						console("[INFO] /$c: ".$h);
-					}
-					break;
-				default:
-					console("[ERROR] Command doesn't exist! Use /help");
-					break;
-			}
+					case "update-done":
+						$this->server->api->setProperty("last-update", time());
+						break;
+					case "stop":
+						$this->loop->stop = true;
+						$output .= "Stopping the server\n";
+						$this->server->close();
+						break;
+					case "gamemode":
+						$s = trim(array_shift($params));
+						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1 and ((int) $s) !== 2)){
+							$output .= "Usage: /gamemode <0 | 1 | 2>\n";
+							break;
+						}
+						$this->server->api->setProperty("gamemode", (int) $s);
+						$output .= "Gamemode changed to ".$this->server->getGamemode()."\n";
+						break;
+					case "difficulty":
+						$s = trim(array_shift($params));
+						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
+							$output .= "Usage: /difficulty <0 | 1>\n";
+							break;
+						}
+						$this->server->api->setProperty("difficulty", (int) $s);
+						$output .= "Difficulty changed to ".$this->server->difficulty."\n";
+						loadConfig(true);
+						break;
+					case "say":
+						$s = implode(" ", $params);
+						if(trim($s) == ""){
+							$output .= "Usage: /say <message>\n";
+							break;
+						}
+						$this->server->api->chat->broadcast($s);
+						break;
+					case "save-all":
+						$this->server->save();
+						break;
+					case "help":
+					case "?":
+						$output .= "/help: Show available commands\n";
+						$output .= "/status: Show server TPS and memory usage\n";
+						$output .= "/gamemode: Changes default gamemode\n";
+						$output .= "/difficulty: Changes difficulty\n";
+						$output .= "/invisible: Manages server visibility\n";
+						$output .= "/say: Broadcasts mesagesv";
+						$output .= "/save-all: Saves pending changes\n";
+						$output .= "/stop: Stops the server\n";
+						foreach($this->help as $c => $h){
+							$output .= "/$c: ".$h."\n";
+						}
+						break;
+					default:
+						$output .= "Command doesn't exist! Use /help\n";
+						break;
+				}
+		return $output;
 	}
 
 	public function alias($alias, $cmd){
@@ -156,15 +157,33 @@ class ConsoleAPI{
 		$this->help[$cmd] = $help;
 	}
 	
-	public function run($line = ""){
+	public function run($line = "", $issuer = false){
 		if($line != ""){
 			$params = explode(" ", $line);
 			$cmd = strtolower(array_shift($params));
-			console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
-			if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
-				call_user_func($this->cmds[$cmd], $cmd, $params);
-			}elseif($this->server->api->dhandle("api.console.command", array("cmd" => $cmd, "params" => $params)) !== false){
-				$this->defaultCommands($cmd, $params);
+			if($issuer instanceof Player){
+				console("[INFO] \"".$issuer->username."\" issued server command: /$cmd ".implode(" ", $params));
+			}else{
+				console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+			}
+			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer)) === false
+			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer)) === false){
+				$output = "You don't have permissions\n";
+			}else{
+				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
+					$output = @call_user_func($this->cmds[$cmd], $cmd, $params, $issuer);
+				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer)) !== false){
+					$output = $this->defaultCommands($cmd, $params, $issuer);
+				}
+			}
+			if($output != "" and ($issuer instanceof Player)){
+				$issuer->sendChat($output);
+			}elseif($output != ""){
+				$mes = explode("\n", $output);
+				foreach($mes as $m){
+					console($m);	
+				}
+				
 			}
 		}
 	}
