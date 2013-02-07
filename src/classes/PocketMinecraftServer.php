@@ -331,7 +331,7 @@ class PocketMinecraftServer{
 							"yaw" => $entity["Rotation"][0],
 							"pitch" => $entity["Rotation"][1],
 						));
-					}elseif($entity["id"] === 83){ //Painting
+					}elseif($entity["id"] === OBJECT_PAINTING){ //Painting
 						$e = $this->api->entity->add(ENTITY_OBJECT, $entity["id"], $entity);
 						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
 						$e->setHealth($entity["Health"]);
@@ -363,12 +363,30 @@ class PocketMinecraftServer{
 			if(count($this->entities) > 0){
 				$entities = array();
 				foreach($this->entities as $entity){
-					if($entity->class === ENTITY_MOB or $entity->class === ENTITY_OBJECT){
+					if($entity->class === ENTITY_MOB){
 						$entities[] = array(
 							"id" => $entity->type,
 							"Color" => @$entity->data["Color"],
 							"Sheared" => @$entity->data["Sheared"],
 							"Health" => $entity->health,
+							"Pos" => array(
+								0 => $entity->x,
+								1 => $entity->y,
+								2 => $entity->z,
+							),
+							"Rotation" => array(
+								0 => $entity->yaw,
+								1 => $entity->pitch,
+							),
+						);
+					}elseif($entity->class === ENTITY_OBJECT){
+						$entities[] = array(
+							"id" => $entity->type,
+							"TileX" => $entity->x,
+							"TileX" => $entity->y,
+							"TileX" => $entity->z,
+							"Health" => $entity->health,
+							"Motive" => $entity->data["Motive"],
 							"Pos" => array(
 								0 => $entity->x,
 								1 => $entity->y,

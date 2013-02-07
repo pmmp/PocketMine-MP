@@ -28,7 +28,14 @@ the Free Software Foundation, either version 3 of the License, or
 class BedrockBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(BEDROCK, 0, "Bedrock");
-		$this->isBreakable = false;
+		$this->breakable = false;
+	}
+	
+	public function isBreakable(Item $item, Player $player){
+		if($player->gamemode === 1){
+			return true;
+		}
+		return false;
 	}
 	
 }

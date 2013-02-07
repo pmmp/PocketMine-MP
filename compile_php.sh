@@ -1,14 +1,16 @@
 #!/bin/bash
-COMPILER_VERSION="0.7"
+COMPILER_VERSION="0.8"
+
 PHP_VERSION="5.4.11"
 ZEND_VM="GOTO"
+
 ZLIB_VERSION="1.2.7"
-GMP_VERSION="5.1.0a"
-PTHREADS_VERSION="e4700122a89bf759a9c3a024bda0c7d025bcb93d"
-CURL_VERSION="curl-7_28_1"
+GMP_VERSION="5.1.0"
+PTHREADS_VERSION="fc8622882bed09aa181b3eb1cb33c046ce11199b"
+CURL_VERSION="curl-7_29_0"
 #READLINE_VERSION="6.2"
 
-echo "[PocketMine] PHP installer and compiler for Linux - by @shoghicp v$COMPILER_VERSION"
+echo "[PocketMine] PHP installer and compiler for Linux & Mac - by @shoghicp v$COMPILER_VERSION"
 DIR=`pwd`
 date > $DIR/install.log 2>&1
 uname -a >> $DIR/install.log 2>&1
@@ -18,6 +20,7 @@ type autoconf >> $DIR/install.log 2>&1 || { echo >&2 "[ERROR] Please install \"a
 type automake >> $DIR/install.log 2>&1 || { echo >&2 "[ERROR] Please install \"automake\""; exit 1; }
 type gcc >> $DIR/install.log 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\""; exit 1; }
 type m4 >> $DIR/install.log 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; exit 1; }
+
 rm -r -f install_data/ >> $DIR/install.log 2>&1
 rm -r -f php5/ >> $DIR/install.log 2>&1
 mkdir -m 0777 install_data >> $DIR/install.log 2>&1
@@ -26,7 +29,7 @@ cd install_data
 set -e
 
 #PHP 5
-echo -n "[PHP5] downloading $PHP_VERSION..."
+echo -n "[PHP] downloading $PHP_VERSION..."
 wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -zx >> $DIR/install.log 2>&1
 mv php-$PHP_VERSION php
 echo " done!"
@@ -74,6 +77,7 @@ mv gmp-$GMP_VERSION gmp
 echo -n " checking..."
 cd gmp
 ./configure --prefix=$DIR/install_data/php/ext/gmp \
+--disable-assembly \
 --disable-shared >> $DIR/install.log 2>&1
 echo -n " compiling..."
 make >> $DIR/install.log 2>&1
@@ -83,6 +87,7 @@ echo -n " cleaning..."
 cd ..
 rm -r -f ./gmp
 echo " done!"
+
 
 echo -n "[cURL] downloading $CURL_VERSION..."
 wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> $DIR/install.log 2>&1
@@ -108,7 +113,6 @@ mv pthreads-$PTHREADS_VERSION $DIR/install_data/php/ext/pthreads
 echo " done!"
 
 set +e
-echo -n "[PHP5] checking..."
 if which free >/dev/null; then
     MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
 else
@@ -122,6 +126,7 @@ else
   OPTIMIZATION=""
 fi
 set -e
+echo -n "[PHP] checking..."
 cd php
 ./buildconf --force >> $DIR/install.log 2>&1
 ./configure $OPTIMIZATION--prefix=$DIR/php5 \

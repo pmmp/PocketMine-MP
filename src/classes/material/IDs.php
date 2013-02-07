@@ -276,8 +276,3 @@ define("QUARTZ", 406);
 define("NETHER_QUARTZ", 406);
 
 define("CAMERA", 456);
-
-/*
-
-define("", );
-*/

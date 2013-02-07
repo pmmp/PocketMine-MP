@@ -29,7 +29,7 @@ class AirBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(AIR, 0, "Air");
 		$this->isActivable = false;
-		$this->isBreakable = false;
+		$this->breakable = false;
 		$this->isFlowable = true;
 		$this->isTransparent = true;
 		$this->isReplaceable = true;

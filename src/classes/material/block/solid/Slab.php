@@ -71,6 +71,9 @@ class SlabBlock extends TransparentBlock{
 			}else{
 				return false;
 			}
+			if($block->getID() === SLAB and ($target->getMetadata() & 0x07) !== ($this->meta & 0x07)){
+				return false;
+			}
 			$level->setBlock($block, $this->id, $this->meta);
 			return true;
 		}

@@ -138,7 +138,7 @@ abstract class Block{
 	protected $shortname = "";
 	protected $name = "";
 	public $isActivable = false;
-	public $isBreakable = true;
+	public $breakable = true;
 	public $isFlowable = false;
 	public $isTransparent = false;
 	public $isReplaceable = false;
@@ -185,6 +185,8 @@ abstract class Block{
 			);
 		}
 	}
+	
+	abstract function isBreakable(Item $item, Player $player);
 	
 	abstract function onBreak(BlockAPI $level, Item $item, Player $player);
 	
