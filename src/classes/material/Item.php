@@ -43,6 +43,7 @@ class Item{
 		STICK => "StickItem",
 		BOWL => "BowlItem",
 		FEATHER => "FeatherItem",
+		BRICK => "BrickItem",
 	);
 	protected $block;
 	protected $id;
