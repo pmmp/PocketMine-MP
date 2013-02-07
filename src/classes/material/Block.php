@@ -135,7 +135,6 @@ abstract class Block{
 	);
 	protected $id;
 	protected $meta;
-	protected $shortname = "";
 	protected $name = "";
 	public $isActivable = false;
 	public $breakable = true;
@@ -154,7 +153,6 @@ abstract class Block{
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 		$this->name = $name;
-		$this->shortname = strtolower(str_replace(" ", "_", $name));
 	}
 	
 	public function getName(){
@@ -184,6 +182,10 @@ abstract class Block{
 				array($this->id, $this->meta, 1),
 			);
 		}
+	}
+	
+	final public function __toString(){
+		return $this->name ." (".$this->id.":".$this->meta.")";
 	}
 	
 	abstract function isBreakable(Item $item, Player $player);

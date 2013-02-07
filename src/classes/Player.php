@@ -549,6 +549,9 @@ class Player{
 							));
 							break;
 						case MC_READY:
+							if($this->loggedIn === false){
+								break;
+							}
 							switch($data["status"]){
 								case 1: //Spawn!!
 									if($this->spawned !== false){
@@ -623,12 +626,18 @@ class Player{
 							}
 							break;
 						case MC_MOVE_PLAYER:
+							if($this->loggedIn === false){
+								break;
+							}
 							if($this->entity instanceof Entity){
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								$this->server->api->dhandle("player.move", $this->entity);
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:
+							if($this->loggedIn === false){
+								break;
+							}
 							$data["eid"] = $this->eid;
 							if($this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = BlockAPI::getItem($data["block"], $data["meta"]);
@@ -636,8 +645,14 @@ class Player{
 							}
 							break;
 						case MC_REQUEST_CHUNK:
+							if($this->loggedIn === false){
+								break;
+							}
 							break;
 						case MC_USE_ITEM:
+							if($this->loggedIn === false){
+								break;
+							}
 							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 10){
 								break;
@@ -648,16 +663,25 @@ class Player{
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
 							break;
 						case MC_REMOVE_BLOCK:
+							if($this->loggedIn === false){
+								break;
+							}
 							if(Utils::distance($this->entity->position, $data) > 8){
 								break;
 							}
 							$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
 							break;
 						case MC_PLAYER_ARMOR_EQUIPMENT:
+							if($this->loggedIn === false){
+								break;
+							}
 							$data["eid"] = $this->eid;
 							$this->server->handle("player.armor", $data);
 							break;
 						case MC_INTERACT:
+							if($this->loggedIn === false){
+								break;
+							}
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
 								if($this->handle("player.interact", $data) !== false){
 									console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
@@ -668,9 +692,15 @@ class Player{
 							}
 							break;
 						case MC_ANIMATE:
+							if($this->loggedIn === false){
+								break;
+							}
 							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
+							if($this->loggedIn === false){
+								break;
+							}
 							if($this->entity->dead === false){
 								break;
 							}
@@ -681,12 +711,18 @@ class Player{
 							$this->entity->updateMetadata();
 							break;
 						case MC_SET_HEALTH:
+							if($this->loggedIn === false){
+								break;
+							}
 							if($this->gamemode === 1){
 								break;
 							}
 							//$this->entity->setHealth($data["health"], "client");
 							break;
 						case MC_ENTITY_EVENT:
+							if($this->loggedIn === false){
+								break;
+							}
 							$data["eid"] = $this->eid;
 							switch($data["event"]){
 								case 9: //Eating
@@ -711,11 +747,17 @@ class Player{
 							}
 							break;
 						case MC_DROP_ITEM:
+							if($this->loggedIn === false){
+								break;
+							}
 							if($this->server->handle("player.drop", $data) !== false){
 								$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
 							}
 							break;
 						case MC_SIGN_UPDATE:
+							if($this->loggedIn === false){
+								break;
+							}
 							$t = $this->server->api->tileentity->get($data["x"], $data["y"], $data["z"]);
 							if(($t[0] instanceof TileEntity) and $t[0]->class === TILE_SIGN){
 								$t = $t[0];
@@ -732,6 +774,9 @@ class Player{
 							}
 							break;
 						case MC_CHAT:
+							if($this->loggedIn === false){
+								break;
+							}
 							$message = $data["message"];
 							if($message{0} === "/"){ //Command
 								$this->server->api->console->run(substr($message, 1), $this);
@@ -779,6 +824,13 @@ class Player{
 				$data,
 			));
 		}
+	}
+	
+	function __toString(){
+		if($this->username != ""){
+			return $this->username;
+		}
+		return $this->clientID;
 	}
 
 }
