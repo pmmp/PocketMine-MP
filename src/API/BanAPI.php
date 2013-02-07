@@ -60,6 +60,13 @@ class BanAPI{
 	}
 	
 	public function opCheck($data, $event){
+		$whitelist = array(
+			"help",		
+		);
+		if(in_array($data["cmd"], $whitelist, true)){
+			return true;
+		}
+		
 		if($data["issuer"] instanceof Player){
 			if($this->isOp($data["issuer"]->username)){
 				return true;

@@ -128,7 +128,7 @@ class ConsoleAPI{
 						$output .= "/gamemode: Changes default gamemode\n";
 						$output .= "/difficulty: Changes difficulty\n";
 						$output .= "/invisible: Manages server visibility\n";
-						$output .= "/say: Broadcasts mesagesv";
+						$output .= "/say: Broadcasts mesages\n";
 						$output .= "/save-all: Saves pending changes\n";
 						$output .= "/stop: Stops the server\n";
 						foreach($this->help as $c => $h){
