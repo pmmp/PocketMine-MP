@@ -700,7 +700,7 @@ class Player{
 										364 => 8,
 									);
 									if(isset($items[$this->equipment->getID()])){
-										$this->removeItem($this->equipment[0], 0, 1);
+										$this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1);
 										$this->dataPacket(MC_ENTITY_EVENT, array(
 											"eid" => 0,
 											"event" => 9,
