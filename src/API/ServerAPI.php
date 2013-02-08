@@ -252,7 +252,7 @@ class ServerAPI{
 		if(!$this->config->exists("invisible")){
 			$this->config->set("invisible", false);
 		}
-		if(is_object($this->server)){
+		if($this->server instanceof PocketMinecraftServer){
 			$this->server->setType($this->getProperty("server-type"));
 			$this->server->timePerSecond = $this->getProperty("time-per-second");
 			$this->server->invisible = $this->getProperty("invisible");

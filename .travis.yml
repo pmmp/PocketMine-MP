@@ -1,0 +1,23 @@
+language: php
+
+php:
+ - 5.4
+ - 5.5
+ 
+matrix:
+ allow_failures:
+  - php: 5.5
+  
+before_script:
+ - sudo pecl install channel://pecl.php.net/pthreads-0.0.42
+ 
+script:
+ - phpunit tests/
+ 
+notifications:
+ email: false
+ irc: 
+  channels:
+   - "irc.freenode.org#mcpedevs"
+  template:
+   "PocketMine-MP #%{build_number} %{commit}: %{message} (%{build_url})
