@@ -148,6 +148,18 @@ class Utils extends Thread{
 		$m .= "\x7f";
 		return $m;
 	}
+	
+	public static function writeSlot(Item $item){
+		return Utils::writeShort($item->getID()).chr($item->count).Utils::writeShort($item->getMetadata());
+	}
+	
+	public static function readSlot($str){
+		return BlockAPI::getItem(
+			Utils::readShort(substr($str, 0, 2), false),
+			Utils::readShort(substr($str, 3, 2), false),
+			ord($str{2})
+		);
+	}
 
 	public static function readMetadata($value, $types = false){
 		$offset = 0;

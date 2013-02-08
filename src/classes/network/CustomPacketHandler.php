@@ -575,6 +575,38 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["z"]);
 				}
 				break;
+			case MC_SEND_INVENTORY:
+				if($this->c === false){
+					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["windowid"] = ord($this->get(1));
+					$this->data["count"] = Utils::readShort($this->get(2), false);
+					$this->data["slots"] = array();
+					for($s = 0; $s < $this->data["count"]; ++$s){
+						$this->data["slots"][$s] = Utils::readSlot($this->get(5));
+					}
+					if($this->data["windowid"] === 1){ //Armor is also sent
+						$this->data["armor"] = array(
+							Utils::readSlot($this->get(5)),
+							Utils::readSlot($this->get(5)),
+							Utils::readSlot($this->get(5)),
+							Utils::readSlot($this->get(5))
+						);
+					}
+				}else{
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= chr($this->data["windowid"]);
+					$this->raw .= Utils::writeShort(count($this->data["slots"]));
+					foreach($this->data["slots"] as $slot){
+						$this->raw .= Utils::writeSlot($slot);
+					}
+					if($this->data["windowid"] === 1 and isset($this->data["armor"])){
+						$this->raw .= Utils::writeSlot($this->data["armor"][0]);
+						$this->raw .= Utils::writeSlot($this->data["armor"][1]);
+						$this->raw .= Utils::writeSlot($this->data["armor"][2]);
+						$this->raw .= Utils::writeSlot($this->data["armor"][3]);
+					}
+				}
+				break;
 			case MC_DROP_ITEM:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));

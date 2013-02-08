@@ -48,7 +48,7 @@ class Item{
 	protected $block;
 	protected $id;
 	protected $meta;
-	protected $count;
+	public $count;
 	protected $maxStackSize = 64;
 	protected $durability = 0;
 	protected $name;
