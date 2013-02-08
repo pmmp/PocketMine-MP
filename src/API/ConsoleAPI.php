@@ -26,10 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ConsoleAPI{
-	private $loop, $server, $event, $help, $cmds;
+	private $loop, $server, $event, $help, $cmds, $alias;
 	function __construct(PocketMinecraftServer $server){
 		$this->help = array();
 		$this->cmds = array();
+		$this->alias = array();
 		$this->server = $server;
 		$this->last = microtime(true);
 	}
@@ -143,10 +144,7 @@ class ConsoleAPI{
 	}
 
 	public function alias($alias, $cmd){
-		if(!isset($this->cmds[$cmd])){
-			return false;
-		}
-		$this->cmds[strtolower(trim($alias))] = &$this->cmds[$cmd];
+		$this->alias[strtolower(trim($alias))] = trim($cmd);
 		return true;
 	}
 
@@ -163,6 +161,10 @@ class ConsoleAPI{
 		if($line != ""){
 			$params = explode(" ", $line);
 			$cmd = strtolower(array_shift($params));
+			if(isset($this->alias[$cmd])){
+				$this->run($this->alias[$cmd] . " " .implode(" ", $params), $issuer);
+				return;
+			}
 			if($issuer instanceof Player){
 				console("[INFO] \"".$issuer->username."\" issued server command: /$cmd ".implode(" ", $params));
 			}else{
@@ -179,11 +181,11 @@ class ConsoleAPI{
 				}
 			}
 			if($output != "" and ($issuer instanceof Player)){
-				$issuer->sendChat($output);
-			}elseif($output != ""){
-				$mes = explode("\n", $output);
+				$issuer->sendChat(trim($output));
+			}elseif($output != "" and $issuer === "console"){
+				$mes = explode("\n", trim($output));
 				foreach($mes as $m){
-					console($m);	
+					console("[CMD] ".$m);	
 				}
 				
 			}
