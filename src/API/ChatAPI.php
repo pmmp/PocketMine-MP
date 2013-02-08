@@ -37,6 +37,7 @@ class ChatAPI{
 	
 	public function broadcast($message){
 		$this->send(false, $message);
+		console("[CHAT] ".$message);
 	}
 	
 	public function sendTo($owner, $text, $player){
@@ -53,7 +54,6 @@ class ChatAPI{
 			}
 		}
 		$message .= $text;
-		console("[CHAT] ".$message);
 		$this->server->handle("server.chat", new Container($message, $whitelist, $blacklist));
 	}
 }
