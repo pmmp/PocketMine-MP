@@ -76,7 +76,7 @@ define("MC_SET_HEALTH", 0xa8);
 define("MC_SET_SPAWN_POSITION", 0xa9);
 define("MC_ANIMATE", 0xaa);
 define("MC_RESPAWN", 0xab);
-//define("MC_SEND_INVENTORY", 0xac);
+define("MC_SEND_INVENTORY", 0xac);
 define("MC_DROP_ITEM", 0xad);
 define("MC_CONTAINER_OPEN", 0xae);
 define("MC_CONTAINER_CLOSE", 0xaf);
