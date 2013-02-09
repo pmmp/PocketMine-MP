@@ -138,7 +138,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to white-list\n";
 						break;
 					case "reload":
-						$this->whitelist = $this->load(FILE_PATH."white-list.txt", CONFIG_LIST);
+						$this->whitelist = new Config(FILE_PATH."white-list.txt", CONFIG_LIST);
 						break;
 					case "list":
 						$output .= "White-list: ".implode(", ", $this->whitelist->getAll(true))."\n";
