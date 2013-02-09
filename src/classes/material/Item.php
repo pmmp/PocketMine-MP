@@ -44,6 +44,8 @@ class Item{
 		BOWL => "BowlItem",
 		FEATHER => "FeatherItem",
 		BRICK => "BrickItem",
+		IRON_INGOT => "IronIngotItem",
+		GOLD_INGOT => "GoldIngotItem",
 	);
 	protected $block;
 	protected $id;

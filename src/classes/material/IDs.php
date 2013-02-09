@@ -167,8 +167,8 @@ define("BOW", 261);
 define("ARROW", 262);
 define("COAL", 263);//Implemented
 define("DIAMOND", 264);//Implemented
-define("IRON_INGOT", 265);
-define("GOLD_INGOT", 266);
+define("IRON_INGOT", 265);//Implemented
+define("GOLD_INGOT", 266);//Implemented
 define("IRON_SWORD", 267);
 define("WOODEN_SWORD", 268);
 define("WOODEN_SHOVEL", 269);
