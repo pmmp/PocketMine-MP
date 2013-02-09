@@ -1,4 +1,4 @@
-![](http://shoghicp.github.com/PocketMine-MP/favicon.png)
+![](http://www.pocketmine.org/favicon.png)
 
 # PocketMine-MP
 
@@ -29,21 +29,21 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-### [Mailing List](https://groups.google.com/forum/#!forum/pocketmine-discussion) pocketmine-discussion@googlegroups.com
+### [Mailing List](https://groups.google.com/forum/#!forum/pocketmine-discussion) _pocketmine-discussion@googlegroups.com_
+
+
+## IRC #mcpedevs @ irc.freenode.net
+* [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4)
 
 
 ## Third-party Libraries Used
-* __[PHP cURL](http://php.net/manual/en/book.curl.php)__
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
 * __[PHP SQLite3](http://php.net/manual/en/book.sqlite3.php)__
-* __[PHP GMP](http://php.net/manual/en/book.gmp.php)__
-* __[PHP Zlib](http://php.net/manual/en/book.zlib.php)__
+* __[cURL](http://curl.haxx.se/)__: cURL is a command line tool for transferring data with URL syntax
+* __[GMP](http://gmplib.org/)__: Arithmetic without limitations
+* __[Zlib](http://www.zlib.net/)__: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
 * __[PHP pthreads](https://github.com/krakjoe/pthreads)__ by _[krakjoe](https://github.com/krakjoe)_: Threading for PHP - Share Nothing, Do Everything.
 * __[PHP NBT](https://github.com/TheFrozenFire/PHP-NBT-Decoder-Encoder/blob/master/nbt.class.php)__ by _[TheFrozenFire](https://github.com/TheFrozenFire)_: Class for reading in NBT-format files (modified to handle Little-Endian files).
 * __[Math_BigInteger](http://phpseclib.sourceforge.net/math/intro.html)__ by _[phpseclib](http://phpseclib.sourceforge.net/)_: Pure-PHP arbitrary precission integer arithmetic library
 * __[Spyc](https://github.com/mustangostang/spyc/blob/master/Spyc.php)__ by _[Vlad Andersen](https://github.com/mustangostang)_: A simple YAML loader/dumper class for PHP.
 * __[ANSICON](https://github.com/adoxa/ansicon)__ by _[Jason Hood](https://github.com/adoxa)_: Process ANSI escape sequences for Windows console programs.
-
-
-## IRC #mcpedevs @ irc.freenode.net
-* [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4)
