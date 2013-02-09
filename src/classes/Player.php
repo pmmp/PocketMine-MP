@@ -47,7 +47,7 @@ class Player{
 	var $spawned = false;
 	var $inventory;
 	public $equipment;
-	var $armor = array(0, 0, 0, 0);
+	public $armor;
 	var $loggedIn = false;
 	public $gamemode;
 	private $chunksLoaded = array();
@@ -62,6 +62,7 @@ class Player{
 		$this->port = $port;
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
+		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
 		$this->gamemode = $this->server->gamemode;
 		if($this->gamemode === 0 or $this->gamemode === 2){
 			$this->equipment = BlockAPI::getItem(AIR);
@@ -267,7 +268,14 @@ class Player{
 			case "player.armor":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					$this->armor = array($data["slot0"], $data["slot1"], $data["slot2"], $data["slot3"]);
+					$this->armor = array();
+					for($i = 0; $i < 4; ++$i){
+						if($data["slot".$i] > 0){
+							$this->armor[$i] = array($data["slot".$i] + 256, 0, 1);
+						}else{
+							$this->armor[$i] = array(AIR, 0, 0);
+						}
+					}
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}else{
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
@@ -581,25 +589,13 @@ class Player{
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
-									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => $this->armor[0], "slot1" => $this->armor[1], "slot2" => $this->armor[2], "slot3" => $this->armor[3]));
+									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
 									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
 									}
-									foreach($this->inventory as $s => $data){
-										if($data[0] > 0 and $data[2] >= 0){
-											$e = $this->server->api->entity->add(ENTITY_ITEM, $data[0], array(
-												"x" => $this->entity->x + 0.5,
-												"y" => $this->entity->y + 0.19,
-												"z" => $this->entity->z + 0.5,
-												"meta" => $data[1],
-												"stack" => $data[2],
-											));
-											$this->server->api->entity->spawnTo($e->eid, $this);
-										}
-										$this->inventory[$s] = array(0, 0, 0);
-									}
+									$this->sendInventory();
 									$this->entity->setPosition($this->entity->x, $this->entity->y, $this->entity->z, 0, 0);
 									/*
 									0x01 world_inmutable
@@ -793,6 +789,45 @@ class Player{
 					break;
 			}
 		}
+	}
+	
+	public function sendInventory(){
+		foreach($this->inventory as $s => $data){
+			if($data[0] > 0 and $data[2] >= 0){
+				$e = $this->server->api->entity->add(ENTITY_ITEM, $data[0], array(
+					"x" => $this->entity->x + 0.5,
+					"y" => $this->entity->y + 0.19,
+					"z" => $this->entity->z + 0.5,
+					"meta" => $data[1],
+					"stack" => $data[2],
+				));
+				$this->server->api->entity->spawnTo($e->eid, $this);
+			}
+			$this->inventory[$s] = array(AIR, 0, 0);
+		}	
+		/*
+		//Future
+		$inv = array();
+		foreach($this->inventory as $s => $data){
+			if($data[0] > 0 and $data[2] >= 0){
+				$inv[] = BlockAPI::getItem($data[0], $data[1], $data[2]);
+			}else{
+				$inv[] = BlockAPI::getItem(AIR, 0, 0);
+				$this->inventory[$s] = array(AIR, 0, 0);
+			}
+		}
+		$this->dataPacket(MC_SEND_INVENTORY, array(
+			"eid" => 0,
+			"windowid" => 0,
+			"slots" => $inv,
+			"armor" => array(
+				0 => BlockAPI::getItem($this->armor[0][0], $this->armor[0][1], $this->armor[0][2], $this->armor[0][3]),
+				1 => BlockAPI::getItem($this->armor[1][0], $this->armor[1][1], $this->armor[1][2], $this->armor[1][3]),
+				2 => BlockAPI::getItem($this->armor[2][0], $this->armor[2][1], $this->armor[2][2], $this->armor[2][3]),
+				3 => BlockAPI::getItem($this->armor[3][0], $this->armor[3][1], $this->armor[3][2], $this->armor[3][3]),
+			),	
+		));
+		*/
 	}
 
 	public function send($pid, $data = array(), $raw = false){
