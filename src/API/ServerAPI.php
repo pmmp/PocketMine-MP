@@ -352,6 +352,9 @@ class ServerAPI{
 		if(file_exists($dir."level.dat")){
 			$nbt = new NBT();
 			$level = parseNBTData($nbt->loadFile($dir."level.dat"));
+			if($level["LevelName"] == ""){
+				$level["LevelName"] = "world".time();
+			}
 			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
 			unset($level["Player"]);
 			$lvName = $level["LevelName"]."/";
