@@ -29,7 +29,7 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-### [Mailing List](https://groups.google.com/forum/#!forum/pocketmine-development) pocketmine-development@googlegroups.com
+### [Mailing List](https://groups.google.com/forum/#!forum/pocketmine-discussion) pocketmine-discussion@googlegroups.com
 
 
 ## Third-party Libraries Used
