@@ -78,7 +78,7 @@ if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . 
 }
 
 if($errors > 0){
-	die();
+	exit(1); //Exit with error
 }
 
 require_all(FILE_PATH . "src/classes/");
