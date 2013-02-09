@@ -167,7 +167,7 @@ class PlayerAPI{
 
 	public function teleport($name, $target){
 		$target = $this->get($target);
-		if($target !== false){
+		if(($target instanceof Player) and ($target->entity instanceof Entity)){
 			return $this->tppos($name, $target->entity->x, $target->entity->y, $target->entity->z);
 		}
 		return false;
@@ -175,7 +175,7 @@ class PlayerAPI{
 
 	public function tppos($name, $x, $y, $z){
 		$player = $this->get($name);
-		if($player !== false){
+		if(($player instanceof Player) and ($player->entity instanceof Entity)){
 			$player->entity->setPosition($x, $y, $z, 0, 0);
 			$player->fallY = false;
 			$player->fallStart = false;
