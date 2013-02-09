@@ -20,4 +20,4 @@ notifications:
   channels:
    - "irc.freenode.org#mcpedevs"
   template:
-   "PocketMine-MP #%{build_number} %{commit}: %{message} (%{build_url})
+   - "PocketMine-MP #%{build_number} %{commit}: %{message} (%{build_url})"
