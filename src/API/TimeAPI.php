@@ -41,7 +41,7 @@ class TimeAPI{
 		$this->server->api->console->register("time", "Manages server time", array($this, "commandHandler"));
 	}
 
-	public function commandHandler($cmd, $params, $issuer){
+	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
 			case "time":

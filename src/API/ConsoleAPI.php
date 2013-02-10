@@ -48,7 +48,7 @@ class ConsoleAPI{
 		$this->loop->join();
 	}
 
-	public function defaultCommands($cmd, $params, $issuer){
+	public function defaultCommands($cmd, $params, $issuer, $alias){
 			$output = "";
 				switch($cmd){
 					case "crash": //Crashes the server to generate an report
@@ -157,27 +157,27 @@ class ConsoleAPI{
 		$this->help[$cmd] = $help;
 	}
 	
-	public function run($line = "", $issuer = false){
+	public function run($line = "", $issuer = false, $alias = false){
 		if($line != ""){
 			$params = explode(" ", $line);
 			$cmd = strtolower(array_shift($params));
 			if(isset($this->alias[$cmd])){
-				$this->run($this->alias[$cmd] . " " .implode(" ", $params), $issuer);
+				$this->run($this->alias[$cmd] . " " .implode(" ", $params), $issuer, $cmd);
 				return;
 			}
 			if($issuer instanceof Player){
-				console("[INFO] \"".$issuer->username."\" issued server command: /$cmd ".implode(" ", $params));
+				console("[INFO] \"".$issuer->username."\" issued server command: $alias /$cmd ".implode(" ", $params));
 			}else{
-				console("[INFO] Issued server command: /$cmd ".implode(" ", $params));
+				console("[INFO] Issued server command: $alias /$cmd ".implode(" ", $params));
 			}
-			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer)) === false
-			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer)) === false){
+			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false
+			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false){
 				$output = "You don't have permissions\n";
 			}else{
 				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
-					$output = @call_user_func($this->cmds[$cmd], $cmd, $params, $issuer);
-				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer)) !== false){
-					$output = $this->defaultCommands($cmd, $params, $issuer);
+					$output = @call_user_func($this->cmds[$cmd], $cmd, $params, $issuer, $alias);
+				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
+					$output = $this->defaultCommands($cmd, $params, $issuer, $alias);
 				}
 			}
 			if($output != "" and ($issuer instanceof Player)){

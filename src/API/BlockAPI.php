@@ -38,6 +38,25 @@ define("BLOCK_UPDATE_WEAK", 3);
 class BlockAPI{
 	private $server;
 	
+	public static function fromString($str){
+		$b = explode(":", str_replace(" ", "_", trim($str)));
+		if(!isset($b[1])){
+			$meta = 0;
+		}else{
+			$meta = ((int) $b[1]) & 0xFFFF;
+		}
+		
+		if(defined(strtoupper($b[0]))){
+			$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
+			if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
+				$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+			}
+		}else{
+			$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+		}
+		return $item;
+	}
+
 	public static function get($id, $meta = 0, $v = false){
 		$id = (int) $id;
 		if(isset(Block::$class[$id])){
@@ -96,29 +115,16 @@ class BlockAPI{
 		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
 	}
 
-	public function commandHandler($cmd, $params){
+	public function commandHandler($cmd, $params, $issuer, $alias){
+		$output = "";
 		switch($cmd){
 			case "give":
 				if(!isset($params[0]) or !isset($params[1])){
-					console("[INFO] Usage: /give <username> <item> [amount] [damage]");
+					$output .= "Usage: /give <username> <item> [amount] [damage]\n";
 					break;
 				}
 				$username = $params[0];
-				$b = explode(":", $params[1]);
-				if(!isset($b[1])){
-					$meta = 0;
-				}else{
-					$meta = ((int) $b[1]) & 0xFFFF;
-				}
-				
-				if(defined(strtoupper($b[0]))){
-					$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
-					if($item->getID() === 0){
-						$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
-					}
-				}else{
-					$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
-				}
+				$item = BlockAPI::fromString($params[1]);
 				
 				if(!isset($params[2])){
 					$amount = 64;
@@ -130,9 +136,9 @@ class BlockAPI{
 				}
 				if(($player = $this->server->api->player->get($username)) !== false){
 					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $item->getID(), $item->getMetadata(), $amount);
-					console("[INFO] Giving ".$amount." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username);
+					$output .= "Giving ".$amount." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username."\n";
 				}else{
-					console("[INFO] Unknown player");
+					$output .= "Unknown player\n";
 				}
 
 				break;

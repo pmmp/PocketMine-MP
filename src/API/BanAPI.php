@@ -81,7 +81,7 @@ class BanAPI{
 		return false;
 	}
 	
-	public function commandHandler($cmd, $params, $issuer){
+	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
 			case "op":
