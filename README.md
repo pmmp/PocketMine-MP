@@ -23,14 +23,11 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Homepage](http://www.pocketmine.org/)
 
-### [Go to Wiki for more information](https://github.com/shoghicp/PocketMine-MP/wiki)
-
 ### [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
+### [Help Page](http://www.pocketmine.org/help.php)
+
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
-
-### [Mailing List](https://groups.google.com/forum/#!forum/pocketmine-discussion) _pocketmine-discussion@googlegroups.com_
-
 
 ## IRC #mcpedevs @ irc.freenode.net
 * [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4)
