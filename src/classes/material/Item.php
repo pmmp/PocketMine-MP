@@ -46,6 +46,10 @@ class Item{
 		BRICK => "BrickItem",
 		IRON_INGOT => "IronIngotItem",
 		GOLD_INGOT => "GoldIngotItem",
+		IRON_SHOVEL => "IronShovelItem",
+		IRON_PICKAXE => "IronPickaxeItem",
+		IRON_AXE => "IronAxeItem",
+		IRON_HOE => "IronHoeItem",
 	);
 	protected $block;
 	protected $id;

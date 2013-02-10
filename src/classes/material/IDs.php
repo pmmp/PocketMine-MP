@@ -158,9 +158,9 @@ define("GLOWING_OBSIDIAN", 246);
 define("NETHER_REACTOR", 247);
 
 // ---- Items ----
-define("IRON_SHOVEL", 256);
-define("IRON_PICKAXE", 257);
-define("IRON_AXE", 258);
+define("IRON_SHOVEL", 256);//Implemented
+define("IRON_PICKAXE", 257);//Implemented
+define("IRON_AXE", 258);//Implemented
 define("FLINT_STEEL", 259);
 define("APPLE", 260);//Implemented
 define("BOW", 261);
@@ -194,7 +194,7 @@ define("FEATHER", 288);//Implemented
 define("GUNPOWDER", 289);
 define("WOODEN_HOE", 290);
 define("STONE_HOE", 291);
-define("IRON_HOE", 292);
+define("IRON_HOE", 292);//Implemented
 define("DIAMOND_HOE", 293);
 define("GOLD_HOE", 294);
 define("SEEDS", 295);
