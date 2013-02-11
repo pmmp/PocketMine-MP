@@ -17,7 +17,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```	
 
-__PocketMine-MP is a Server for Minecraft Pocket Edition done in PHP__. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
+__PocketMine-MP is a Server for Minecraft Pocket Edition__. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
 
 The entire server is done in PHP, and has been tested, profiled and optimized to run smoothly.
 
