@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class GlowstoneBlock extends SolidBlock{
 	public function __construct(){
-		parent::__construct(GLOWSTONE, 0, "Glowstone");
+		parent::__construct(GLOWSTONE_BLOCK, 0, "Glowstone");
 	}
 	
 }
