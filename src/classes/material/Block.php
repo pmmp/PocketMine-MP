@@ -65,7 +65,7 @@ abstract class Block{
 			IRON_BLOCK => "IronBlock",
 			DOUBLE_SLAB => "DoubleSlabBlock",
 			SLAB => "SlabBlock",
-			BRICKS => "BricksBlock",
+			BRICKS_BLOCK => "BricksBlock",
 			TNT => "TNTBlock",
 			BOOKSHELF => "BookshelfBlock",
 			MOSS_STONE => "MossStoneBlock",

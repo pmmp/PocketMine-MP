@@ -143,6 +143,7 @@ class BlockAPI{
 
 				break;
 		}
+		return $output;
 	}
 
 	private function cancelAction(Block $block){
