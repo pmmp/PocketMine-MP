@@ -81,7 +81,7 @@ class PocketMinecraftServer{
 		$this->stop = false;
 	}
 
-	function __construct($name, $gamemode = 1, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
+	function __construct($name, $gamemode = CREATIVE, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
 		$this->port = (int) $port; //19132 - 19135
 		$this->gamemode = (int) $gamemode;
 		$this->name = $name;
@@ -299,11 +299,11 @@ class PocketMinecraftServer{
 
 	public function getGamemode(){
 		switch($this->gamemode){
-			case 0:
+			case SURVIVAL:
 				return "survival";
-			case 1:
+			case CREATIVE:
 				return "creative";
-			case 2:
+			case ADVENTURE:
 				return "adventure";
 		}
 	}
@@ -548,7 +548,7 @@ class PocketMinecraftServer{
 						$data[0],
 						$this->serverID,
 						MAGIC,
-						$this->serverType. $this->name . " [".($this->gamemode === 1 ? "C":($this->gamemode === 2 ? "A":"S")).($this->whitelist !== false ? "W":"")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
+						$this->serverType. $this->name . " [".($this->gamemode === CREATIVE ? "C":($this->gamemode === ADVENTURE ? "A":"S")).($this->whitelist !== false ? "W":"")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
 					), false, $packet["ip"], $packet["port"]);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;

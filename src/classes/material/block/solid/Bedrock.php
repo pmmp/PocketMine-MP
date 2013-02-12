@@ -32,7 +32,7 @@ class BedrockBlock extends SolidBlock{
 	}
 	
 	public function isBreakable(Item $item, Player $player){
-		if($player->gamemode === 1){
+		if($player->gamemode === CREATIVE){
 			return true;
 		}
 		return false;

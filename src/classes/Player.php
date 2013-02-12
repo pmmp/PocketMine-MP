@@ -64,7 +64,7 @@ class Player{
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
 		$this->gamemode = $this->server->gamemode;
-		if($this->gamemode === 0 or $this->gamemode === 2){
+		if($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE){
 			$this->equipment = BlockAPI::getItem(AIR);
 		}else{
 			$this->equipment = BlockAPI::getItem(STONE);
@@ -282,14 +282,14 @@ class Player{
 				}
 				break;
 			case "player.block.place":
-				if($data["eid"] === $this->eid and ($this->gamemode === 0 or $this->gamemode === 2)){
+				if($data["eid"] === $this->eid and ($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE)){
 					$this->removeItem($data["original"]->getID(), $data["original"]->getMetadata(), 1);
 				}
 				break;
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					if(($this->gamemode === 0 or $this->gamemode === 2)){
+					if(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE)){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
 				}
@@ -534,7 +534,7 @@ class Player{
 							}
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
-							if(!isset($this->data["inventory"]) or $this->gamemode === 1){
+							if(!isset($this->data["inventory"]) or $this->gamemode === CREATIVE){
 								$this->data["inventory"] = $this->inventory;
 							}
 							$this->inventory = &$this->data["inventory"];
@@ -608,7 +608,7 @@ class Player{
 									0x80 ?
 									*/
 									$flags = 0;
-									if($this->gamemode === 2){
+									if($this->gamemode === ADVENTURE){
 										$flags |= 0x01; //Not allow placing/breaking blocks
 									}
 									$flags |= 0x20; //Nametags
@@ -652,7 +652,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							if(Utils::distance($this->entity->position, $data) > 10){
 								break;
-							}elseif(($this->gamemode === 0 or $this->gamemode === 2) and !$this->hasItem($data["block"], $data["meta"])){
+							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"])){
 								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
 								//break;
 							}
@@ -710,7 +710,7 @@ class Player{
 							if($this->loggedIn === false){
 								break;
 							}
-							if($this->gamemode === 1){
+							if($this->gamemode === CREATIVE){
 								break;
 							}
 							//$this->entity->setHealth($data["health"], "client");

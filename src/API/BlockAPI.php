@@ -162,7 +162,7 @@ class BlockAPI{
 
 		$target = $this->getBlock($vector);
 		$item = $player->equipment;
-		if(!$target->isBreakable($item, $player) or $this->server->gamemode === 2){
+		if(!$target->isBreakable($item, $player) or $this->server->gamemode === ADVENTURE){
 			return $this->cancelAction($target);
 		}
 		
@@ -184,7 +184,7 @@ class BlockAPI{
 	}
 
 	public function drop($x, $y, $z, $block, $meta, $stack = 1){
-		if($block === AIR or $stack <= 0 or $this->server->gamemode === 1){
+		if($block === AIR or $stack <= 0 or $this->server->gamemode === CREATIVE){
 			return;
 		}
 		$data = array(
@@ -230,7 +230,7 @@ class BlockAPI{
 				return false;
 			}
 		}
-		if($this->server->gamemode === 2){ //Adventure mode!!
+		if($this->server->gamemode === ADVENTURE){ //Adventure mode!!
 			return $this->cancelAction($block);
 		}
 		
@@ -299,7 +299,7 @@ class BlockAPI{
 			$t->data["creator"] = $player->username;
 		}
 
-		if($this->server->gamemode === 0 or $this->server->gamemode === 2){
+		if($this->server->gamemode === SURVIVAL or $this->server->gamemode === ADVENTURE){
 			$player->removeItem($item->getID(), $item->getMetadata(), 1);
 		}
 
