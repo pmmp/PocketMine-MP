@@ -5,7 +5,8 @@ php:
   
 before_script:
  - sudo pecl install channel://pecl.php.net/pthreads-0.0.42
- 
+ - git clone --depth=100 --quiet --branch=tests git://github.com/shoghicp/PocketMine-MP.git $(pwd)
+
 script:
  - phpunit tests/
  
