@@ -32,7 +32,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 ini_set("allow_url_fopen", 1);
 ini_set("display_errors", 1);
 ini_set('default_charset', 'utf-8');
-define("FILE_PATH", dirname(__FILE__)."/../../");
+define("FILE_PATH", dirname(__FILE__)."/../");
 set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH . PATH_SEPARATOR . FILE_PATH . "/src/" . PATH_SEPARATOR . FILE_PATH . "/src/classes/");
 ini_set("memory_limit", "256M");
 define("LOG", true);

@@ -26,21 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class MinecraftInterface{
-	var $pstruct;
-	var $name;
-	var $client;
-	var $dataName;
+	public $client;
 	private $socket;
 	private $data;
 	function __construct($server, $port = 25565, $listen = false, $client = false, $serverip = "0.0.0.0"){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen, $serverip);
-		require("protocol/RakNet.php");
-		require("protocol/packetName.php");
-		require("protocol/current.php");
-		require("protocol/dataName.php");
-		$this->pstruct = $pstruct;
-		$this->name = $packetName;
-		$this->dataName = $dataName;
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
 	}
@@ -50,19 +40,19 @@ class MinecraftInterface{
 	}
 
 	protected function getStruct($pid){
-		if(isset($this->pstruct[$pid])){
-			return $this->pstruct[$pid];
+		if(isset(Protocol::$raknet[$pid])){
+			return Protocol::$raknet[$pid];
 		}
 		return false;
 	}
 
 	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
 		if(LOG === true and DEBUG >= 3){
-			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".(isset($data["id"]) ? "MC Packet ".$this->dataName[$pid]:$this->name[$pid])." (0x".Utils::strTohex(chr($pid)).") [length ".strlen($raw)."]".PHP_EOL;
+			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".(isset($data["id"]) ? "MC Packet ".Protocol::$dataName[$pid]:Protocol::$packetName[$pid])." (0x".Utils::strTohex(chr($pid)).") [length ".strlen($raw)."]".PHP_EOL;
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
 				foreach($data as $i => $d){
-					$p .= $i ." => ".(!is_array($d) ? $this->pstruct[$pid][$i]."(".(($this->pstruct[$pid][$i] === "magic" or substr($this->pstruct[$pid][$i], 0, 7) === "special" or is_int($this->pstruct[$pid][$i])) ? Utils::strToHex($d):Utils::printable($d)).")":$this->pstruct[$pid][$i]."(\"".serialize(array_map("Utils::printable", $d))."\")").PHP_EOL;
+					$p .= $i ." => ".(!is_array($d) ? Protocol::$raknet[$pid][$i]."(".((Protocol::$raknet[$pid][$i] === "magic" or substr(Protocol::$raknet[$pid][$i], 0, 7) === "special" or is_int(Protocol::$raknet[$pid][$i])) ? Utils::strToHex($d):Utils::printable($d)).")":Protocol::$raknet[$pid][$i]."(\"".serialize(array_map("Utils::printable", $d))."\")").PHP_EOL;
 				}
 			}
 			$p .= PHP_EOL;
