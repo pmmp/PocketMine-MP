@@ -191,19 +191,19 @@ class ServerAPI{
 		}
 		$this->loadProperties();
 		$this->server->loadMap();
-
-		//Autoload all default APIs
+		
 		console("[INFO] Loading default APIs");
-		$dir = dir(FILE_PATH."src/API/");
-		while(false !== ($file = $dir->read())){
-			if($file{0} !== "."){ //Hidden and upwards folders
-				$API = basename($file, ".php");
-				if(strtolower($API) !== "serverapi" and strtolower($API) !== "pluginapi"){
-					$name = strtolower(substr($API, 0, -3));
-					$this->loadAPI($name, $API);
-				}
-			}
-		}
+		
+		$this->loadAPI("console", "ConsoleAPI");
+		$this->loadAPI("level", "LevelAPI");
+		$this->loadAPI("block", "BlockAPI");
+		$this->loadAPI("chat", "ChatAPI");
+		$this->loadAPI("ban", "BanAPI");		
+		$this->loadAPI("entity", "EntityAPI");		
+		$this->loadAPI("tileentity", "TileEntityAPI");
+		$this->loadAPI("player", "PlayerAPI");
+		$this->loadAPI("time", "TimeAPI");
+		
 		foreach($this->apiList as $ob){
 			if(is_callable(array($ob, "init"))){
 				$ob->init(); //Fails sometimes!!!
@@ -448,15 +448,19 @@ class ServerAPI{
 	}
 
 	public function loadAPI($name, $class, $dir = false){
-		if($dir === false){
-			$dir = FILE_PATH."src/API/";
-		}
-		$file = $dir.$class.".php";
-		if(!file_exists($file)){
-			console("[ERROR] API ".$name." [".$class."] in ".$dir." doesn't exist", true, true, 0);
+		if(isset($this->$name)){
 			return false;
+		}elseif(!class_exists($class)){
+			if($dir === false){
+				$dir = FILE_PATH."src/API/";
+			}
+			$file = $dir.$class.".php";
+			if(!file_exists($file)){
+				console("[ERROR] API ".$name." [".$class."] in ".$dir." doesn't exist", true, true, 0);
+				return false;
+			}
+			require_once($file);
 		}
-		require_once($file);
 		$this->$name = new $class($this->server);
 		$this->apiList[] = $this->$name;
 		console("[INFO] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded");

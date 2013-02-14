@@ -25,8 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-require_once("classes/material/IDs.php");
-
 class Item{
 	public static $class = array(
 		SUGARCANE => "SugarcaneItem",	

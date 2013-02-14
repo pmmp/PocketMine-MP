@@ -25,8 +25,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-require_once(dirname(__FILE__)."/src/dependencies.php");
-require_once("API/ServerAPI.php");
+
+/***REM_START***/
+require_once(dirname(__FILE__)."/src/config.php");
+require_once(FILE_PATH."/src/functions.php");
+require_once(FILE_PATH."/src/dependencies.php");
+/***REM_END***/
 
 $server = new ServerAPI();
 $server->run();//$server->start();

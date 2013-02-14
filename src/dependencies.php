@@ -25,8 +25,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+/***REM_START***/
 require_once(dirname(__FILE__)."/config.php");
-require_once(dirname(__FILE__)."/functions.php");
+require_once(FILE_PATH."/src/functions.php");
+/***REM_END***/
+
 if(strpos(strtoupper(php_uname("s")), "WIN") === false or arg("enable-ansi", false) === true){
 	define("ENABLE_ANSI", true);
 }else{
@@ -81,6 +84,9 @@ if($errors > 0){
 	exit(1); //Exit with error
 }
 
-require_all(FILE_PATH . "src/classes/");
+/***REM_START***/
+require_all(FILE_PATH . "src/");
+/***REM_END***/
+
 
 ?>

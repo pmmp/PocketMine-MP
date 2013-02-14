@@ -25,8 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-require_once("classes/material/IDs.php");
-
 abstract class Block{
 	public static $class = array(
 			AIR => "AirBlock",
@@ -199,6 +197,7 @@ abstract class Block{
 	abstract function onUpdate(BlockAPI $level, $type);
 }
 
+/***REM_START***/
 require_once("block/GenericBlock.php");
 require_once("block/SolidBlock.php");
 require_once("block/TransparentBlock.php");
@@ -206,3 +205,4 @@ require_once("block/FallableBlock.php");
 require_once("block/LiquidBlock.php");
 require_once("block/StairBlock.php");
 require_once("block/DoorBlock.php");
+/***REM_END***/
