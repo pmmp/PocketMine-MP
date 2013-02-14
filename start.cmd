@@ -2,24 +2,6 @@
 TITLE PocketMine-MP Server - by @shoghicp
 COLOR 0F
 mode con: cols=90
-
-echo.
-echo             -
-echo           /   \
-echo        /         \
-echo     /   PocketMine  \
-echo  /          MP         \
-echo  ^|\     @shoghicp     /^|
-echo  ^|.   \           /   .^|
-echo  ^| ..     \   /     .. ^|
-echo  ^|    ..    ^|    ..    ^|
-echo  ^|       .. ^| ..       ^|
-echo  \          ^|          /
-echo     \       ^|       /
-echo        \    ^|    /
-echo           \ ^| /
-echo.
-echo.
 cd /d %~dp0
 FOR /F "tokens=*" %%i in ('php -r "echo 1;"') do SET PHPOUTPUT=%%i
 if not "%PHPOUTPUT%"=="1" (
