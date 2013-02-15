@@ -104,7 +104,7 @@ class Utils extends Thread{
 
 	public static function readTriad($str){
 		list(,$unpacked) = unpack("N", "\x00".$str);
-		return (int) $unpacked;
+		return $unpacked;
 	}
 
 	public static function writeTriad($value){
@@ -344,11 +344,11 @@ class Utils extends Thread{
 		return array("yaw" => $hAngle, "pitch" => $vAngle);
 	}
 
-	public static function sha1($input){
+	/*public static function sha1($input){
 		$number = new Math_BigInteger(sha1($input, true), -256);
 		$zero = new Math_BigInteger(0);
 		return ($zero->compare($number) <= 0 ? "":"-") . ltrim($number->toHex(), "0");
-	}
+	}*/
 
 	public static function microtime(){
 		return microtime(true);
@@ -526,24 +526,28 @@ class Utils extends Thread{
 	}
 
 	public static function readLong($str){
-		$long = new Math_BigInteger($str, -256);
-		return $long->toString();
+		$n = gmp_init(Utils::strToHex($str));
+		if(gmp_testbit($n, 63)){
+			$n = gmp_xor($n, "0xffffffffffffffff"); //flip the bits
+			$n = gmp_neg(gmp_add($n, 1)); // add one and negate
+		}
+		return gmp_strval($n);
 	}
 
 	public static function writeLong($value){
-		$long = new Math_BigInteger($value, -10);
-		return str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT);
+		$long = gmp_init($value, 10);
+		$long = gmp_and($long, "0xffffffffffffffff");
+		return Utils::hexToStr(str_pad(gmp_strval($long, -16), 16, "00", STR_PAD_LEFT));
 	}
 
 	public static function readLLong($str){
-		$long = new Math_BigInteger(strrev($str), -256);
-		return $long->toString();
+		return Utils::readLong(strrev($str));
 	}
 
 	public static function writeLLong($value){
-		$long = new Math_BigInteger($value, -10);
-		return strrev(str_pad($long->toBytes(true), 8, "\x00", STR_PAD_LEFT));
+		return strrev(Utils::writeLong($str));
 	}
+
 
 }
 

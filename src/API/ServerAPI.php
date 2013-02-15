@@ -64,14 +64,12 @@ class ServerAPI{
 			$test .= Utils::writeInt(Utils::readInt("\xff\xff\xff\xff"));
 			$test .= Utils::writeInt(1);
 			$test .= Utils::writeInt(-1);
-			$test .= Utils::writeFloat(Utils::readfloat("\xff\xff\xff\xff"));
+			$test .= Utils::writeFloat(Utils::readFloat("\xff\xff\xff\xff"));
 			$test .= Utils::writeFloat(-1.584563155838E+29);
 			$test .= Utils::writeFloat(1);
 			$test .= Utils::writeLDouble(Utils::readLDouble("\xff\xff\xff\xff\xff\xff\xff\xff"));
 			$test .= Utils::writeLong("-1152921504606846977");
 			$test .= Utils::writeLong("-1152921504606846976");
-			$test .= Utils::writeTriad(16777215);
-			$test .= Utils::writeTriad(16777216);
 			$str = new Java_String("TESTING\x00\n\r\t\xff");
 			$test .= Utils::writeLong($str->hashCode());
 			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));

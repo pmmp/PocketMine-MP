@@ -80,6 +80,11 @@ if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . 
 	++$errors;
 }
 
+if(!extension_loaded("gmp") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "gmp." . PHP_SHLIB_SUFFIX) === false){
+	console("[ERROR] Unable to find GMP extension", true, true, 0);
+	++$errors;
+}
+
 if($errors > 0){
 	exit(1); //Exit with error
 }

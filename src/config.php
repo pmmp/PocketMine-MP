@@ -37,7 +37,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 ini_set("memory_limit", "256M");
 define("LOG", true);
 define("MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
-define("TEST_MD5", "d0ca3786e53b615bb4fb9f5094d5c9a7");
+define("TEST_MD5", "2c25fb29459162c2a865b370ef0cdfcf");
 define("MAJOR_VERSION", "Alpha_1.2dev");
 define("CURRENT_STRUCTURE", 5);
 define("CURRENT_PROTOCOL", 9);
