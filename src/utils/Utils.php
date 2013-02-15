@@ -526,10 +526,10 @@ class Utils extends Thread{
 	}
 
 	public static function readLong($str){
-		$n = gmp_init(Utils::strToHex($str));
-		if(gmp_testbit($n, 63)){
+		$n = gmp_init(Utils::strToHex($str), 16);
+		if(gmp_testbit($n, "63")){
 			$n = gmp_xor($n, "0xffffffffffffffff"); //flip the bits
-			$n = gmp_neg(gmp_add($n, 1)); // add one and negate
+			$n = gmp_neg(gmp_add($n, "1")); // add one and negate
 		}
 		return gmp_strval($n);
 	}
