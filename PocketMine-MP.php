@@ -33,7 +33,6 @@ require_once(FILE_PATH."/src/dependencies.php");
 /***REM_END***/
 
 $server = new ServerAPI();
-$server->run();//$server->start();
-//$server->join();
+$server->run();
 
 kill(getmypid()); //Fix for segfault
