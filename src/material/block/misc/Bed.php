@@ -55,6 +55,42 @@ class BedBlock extends TransparentBlock{
 		return false;
 	}	
 	
+	public function onBreak(BlockAPI $level, Item $item, Player $player){
+		if($this->inWorld === true){
+			$blockNorth = $level->getBlockFace($this, 2);
+			$blockSouth = $level->getBlockFace($this, 3);
+			$blockEast = $level->getBlockFace($this, 5);
+			$blockWest = $level->getBlockFace($this, 4);
+			
+			if(($this->meta & 0x08) === 0x08){//This is the Top part of bed
+			
+				if($blockNorth->getID() === $this->id and $blockNorth->meta != 0x08)
+					$level->setBlock($blockNorth, 0, 0);
+				if($blockSouth->getID() === $this->id and $blockSouth->meta != 0x08)
+					$level->setBlock($blockSouth, 0, 0);
+				if($blockEast->getID() === $this->id and $blockEast->meta != 0x08)
+					$level->setBlock($blockEast, 0, 0);
+				if($blockWest->getID() === $this->id and $blockWest->meta != 0x08)
+					$level->setBlock($blockWest, 0, 0);
+			}
+			else
+			{
+				if(($this->meta & 0x08) != 0x08)//Bottom Part of Bed
+				{
+					if($blockNorth->getID() === $this->id and $blockNorth->meta === 0x08)
+						$level->setBlock($blockNorth, 0, 0);
+					if($blockSouth->getID() === $this->id and $blockSouth->meta === 0x08)
+						$level->setBlock($blockSouth, 0, 0);
+					if($blockEast->getID() === $this->id and $blockEast->meta === 0x08)
+						$level->setBlock($blockEast, 0, 0);
+					if($blockWest->getID() === $this->id and $blockWest->meta === 0x08)
+						$level->setBlock($blockWest, 0, 0);
+					
+				}
+			}
+		}
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array(BED, 0, 1),
