@@ -76,13 +76,13 @@ class BedBlock extends TransparentBlock{
 				}
 				return true;
 			}else{ //Bottom Part of Bed
-				if($blockNorth->getID() === $this->id and $blockNorth->meta === 0x08){
+				if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
 					$level->setBlock($blockNorth, 0, 0);
-				}elseif($blockSouth->getID() === $this->id and $blockSouth->meta === 0x08){
+				}elseif($blockSouth->getID() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
 					$level->setBlock($blockSouth, 0, 0);
-				}elseif($blockEast->getID() === $this->id and $blockEast->meta === 0x08){
+				}elseif($blockEast->getID() === $this->id and ($blockEast->meta & 0x08) === 0x08){
 					$level->setBlock($blockEast, 0, 0);
-				}elseif($blockWest->getID() === $this->id and $blockWest->meta === 0x08){
+				}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 					$level->setBlock($blockWest, 0, 0);
 				}else{
 					return false;
