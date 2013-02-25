@@ -782,6 +782,8 @@ class Player{
 								}
 							}
 							break;
+						case MC_SEND_INVENTORY: //TODO
+							break;
 						default:
 							console("[DEBUG] Unhandled 0x".dechex($data["id"])." Data Packet for Client ID ".$this->clientID.": ".print_r($data, true), true, true, 2);
 							break;
