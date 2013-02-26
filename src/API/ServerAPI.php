@@ -71,7 +71,7 @@ class ServerAPI{
 			$test .= Utils::writeLong("-1152921504606846977");
 			$test .= Utils::writeLong("-1152921504606846976");
 			$str = new Java_String("TESTING\x00\n\r\t\xff");
-			$test .= Utils::writeLong($str->hashCode());
+			$test .= Utils::writeInt($str->hashCode());
 			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));
 			$test .= Utils::hexToStr("012334567890");
 			file_put_contents(FILE_PATH."logs/test.bin.log", $test);
