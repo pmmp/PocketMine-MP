@@ -1,11 +1,11 @@
 #!/bin/bash
-COMPILER_VERSION="0.8"
+COMPILER_VERSION="0.9"
 
-PHP_VERSION="5.4.11"
+PHP_VERSION="5.4.12"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.7"
-GMP_VERSION="5.1.0"
+GMP_VERSION="5.1.1"
 PTHREADS_VERSION="fc8622882bed09aa181b3eb1cb33c046ce11199b"
 CURL_VERSION="curl-7_29_0"
 #READLINE_VERSION="6.2"
@@ -129,7 +129,7 @@ fi
 set -e
 echo -n " checking..."
 cd php
-./buildconf --force >> ""$DIR/install.log"" 2>&1
+./buildconf --force >> "$DIR/install.log" 2>&1
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
 --enable-embedded-mysqli \
