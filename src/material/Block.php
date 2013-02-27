@@ -205,4 +205,5 @@ require_once("block/FallableBlock.php");
 require_once("block/LiquidBlock.php");
 require_once("block/StairBlock.php");
 require_once("block/DoorBlock.php");
+require_once("block/ContainerBlock.php");
 /***REM_END***/

@@ -27,6 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 define("TILE_SIGN", "Sign");
+define("TILE_CHEST", "Chest");
 
 class TileEntity extends stdClass{
 	public $name;

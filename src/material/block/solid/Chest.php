@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class ChestBlock extends SolidBlock{
+class ChestBlock extends ContainerBlock{
 	public function __construct($meta = 0){
 		parent::__construct(CHEST, $meta, "Chest");
 		$this->isActivable = true;

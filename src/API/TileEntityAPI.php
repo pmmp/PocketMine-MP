@@ -31,10 +31,16 @@ class TileEntityAPI{
 		$this->server = $server;
 	}
 	
-	public function get($x, $y, $z){
-		$x = (int) $x;
-		$y = (int) $y;
-		$z = (int) $z;
+	public function get($x, $y = false, $z = false){
+		if(($x instanceof Vector3) or ($x instanceof Block)){
+			$z = (int) $x->z;	
+			$y = (int) $x->y;	
+			$x = (int) $x->x;			
+		}else{
+			$x = (int) $x;
+			$y = (int) $y;
+			$z = (int) $z;
+		}
 		$tiles = $this->server->query("SELECT * FROM tileentities WHERE x = $x AND y = $y AND z = $z;");
 		$ret = array();
 		if($tiles !== false and $tiles !== true){
