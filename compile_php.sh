@@ -1,7 +1,7 @@
 #!/bin/bash
 COMPILER_VERSION="0.9"
 
-PHP_VERSION="5.4.11"
+PHP_VERSION="5.4.12"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.7"
@@ -129,6 +129,9 @@ fi
 set -e
 echo -n " checking..."
 cd php
+rm -rf ./aclocal.m4 >> "$DIR/install.log" 2>&1
+rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
+rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
