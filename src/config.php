@@ -43,4 +43,4 @@ define("CURRENT_STRUCTURE", 5);
 define("CURRENT_PROTOCOL", 9);
 define("CURRENT_MINECRAFT_VERSION", "v0.6.1 alpha");
 define("CURRENT_API_VERSION", 2);
-define("CURRENT_PHP_VERSION", "5.4.12");
+define("CURRENT_PHP_VERSION", "5.4.11");
