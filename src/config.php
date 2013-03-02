@@ -32,9 +32,9 @@ error_reporting(E_ALL ^ E_NOTICE);
 ini_set("allow_url_fopen", 1);
 ini_set("display_errors", 1);
 ini_set('default_charset', 'utf-8');
-define("FILE_PATH", dirname(get_included_files()[0])."/");
+define("FILE_PATH", realpath(dirname(__FILE__)."/../")."/");
 set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
-ini_set("memory_limit", "256M");
+ini_set("memory_limit", "256M"); //Default
 define("LOG", true);
 define("MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 define("TEST_MD5", "ffe889db5932db1e3371d48773590e59");
