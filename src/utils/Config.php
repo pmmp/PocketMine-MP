@@ -126,7 +126,7 @@ class Config{
 					$content = $this->writeProperties();
 					break;
 				case CONFIG_JSON:
-					$content = json_encode($this->config);
+					$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
 					break;
 				case CONFIG_YAML:
 					$content = Spyc::YAMLDump($this->config);
