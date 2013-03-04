@@ -101,9 +101,7 @@ class BlockAPI{
 	}
 	
 	public function getBlockFace(Block $block, $face){
-		$data = array("x" => $block->x, "y" => $block->y, "z" => $block->z);
-		BlockFace::setPosition($data, $face);
-		return $this->getBlock($data["x"], $data["y"], $data["z"]);
+		return $this->getBlock($block->getSide($face));
 	}
 	
 	function __construct(PocketMinecraftServer $server){
