@@ -114,8 +114,13 @@ class Entity extends stdClass{
 				$this->server->schedule(5, array($this, "update"), array(), true);
 				break;
 			case ENTITY_ITEM:
-				$this->meta = (int) $this->data["meta"];
-				$this->stack = (int) $this->data["stack"];
+				if($data["item"] instanceof Item){
+					$this->meta = $this->data["item"]->getMetadata();
+					$this->stack = $this->data["item"]->count;			
+				}else{
+					$this->meta = (int) $this->data["meta"];
+					$this->stack = (int) $this->data["stack"];
+				}
 				$this->setHealth(5, "generic");
 				$this->server->schedule(5, array($this, "update"), array(), true);
 				break;

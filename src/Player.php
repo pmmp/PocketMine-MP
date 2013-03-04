@@ -747,7 +747,7 @@ class Player{
 								break;
 							}
 							if($this->server->handle("player.drop", $data) !== false){
-								$this->server->api->block->drop($this->entity->x, $this->entity->y, $this->entity->z, $data["block"], $data["meta"], $data["stack"]);
+								$this->server->api->block->drop(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]));
 							}
 							break;
 						case MC_SIGN_UPDATE:

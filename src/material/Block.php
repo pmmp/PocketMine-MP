@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-abstract class Block{
+abstract class Block extends Vector3{
 	public static $class = array(
 			AIR => "AirBlock",
 			STONE => "StoneBlock",
@@ -183,7 +183,7 @@ abstract class Block{
 	}
 	
 	final public function __toString(){
-		return $this->name ." (".$this->id.":".$this->meta.")";
+		return "Block ". $this->name ." (".$this->id.":".$this->meta.")";
 	}
 	
 	abstract function isBreakable(Item $item, Player $player);

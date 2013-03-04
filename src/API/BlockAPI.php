@@ -127,15 +127,13 @@ class BlockAPI{
 				$item = BlockAPI::fromString($params[1]);
 				
 				if(!isset($params[2])){
-					$amount = 64;
+					$item->count = $item->getMaxStackSize();
 				}else{
-					$amount = (int) $params[2];
+					$item->count = (int) $params[2];
 				}
-				if(isset($params[3])){
-					$meta = ((int) $params[3]) & 0xFFFF;
-				}
+
 				if(($player = $this->server->api->player->get($username)) !== false){
-					$this->drop($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $item->getID(), $item->getMetadata(), $amount);
+					$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
 					$output .= "Giving ".$amount." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username."\n";
 				}else{
 					$output .= "Unknown player\n";
@@ -177,32 +175,28 @@ class BlockAPI{
 		
 		if(count($drops) > 0){
 			foreach($drops as $drop){
-				$this->drop($target->x, $target->y, $target->z, $drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF);
+				$this->drop($target, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
 			}
 		}
 		return false;
 	}
 
-	public function drop($x, $y, $z, $block, $meta, $stack = 1){
-		if($block === AIR or $stack <= 0 or $this->server->gamemode === CREATIVE){
+	public function drop(Vector3 $pos, Item $item, $force = false){
+		if($item->getID() === AIR or $item->count <= 0 or ($this->server->gamemode === CREATIVE and $force !== true)){
 			return;
 		}
 		$data = array(
-			"x" => $x,
-			"y" => $y,
-			"z" => $z,
-			"meta" => $meta,
-			"stack" => $stack,
+			"x" => $pos->x + mt_rand(2, 8) / 10,
+			"y" => $pos->y + 0.19,
+			"z" => $pos->z + mt_rand(2, 8) / 10,
+			"item" => $item,
 		);
-		$data["x"] += mt_rand(2, 8) / 10;
-		$data["y"] += 0.19;
-		$data["z"] += mt_rand(2, 8) / 10;
 		if($this->server->api->handle("block.drop", $data) !== false){
-			for($count = $stack; $count > 0; ){
-				$data["stack"] = min(64, $count);
-				$count -= $data["stack"];
+			for($count = $item->count; $count > 0; ){
+				$item->count = min($item->getMaxStackSize(), $count);
+				$count -= $item->count;
 				$server = ServerAPI::request();
-				$e = $server->api->entity->add(ENTITY_ITEM, $block, $data);
+				$e = $server->api->entity->add(ENTITY_ITEM, $item->getID(), $data);
 				//$e->speedX = mt_rand(-10, 10) / 100;
 				//$e->speedY = mt_rand(0, 5) / 100;
 				//$e->speedZ = mt_rand(-10, 10) / 100;
