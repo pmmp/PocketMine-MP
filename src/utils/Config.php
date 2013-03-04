@@ -182,7 +182,7 @@ class Config{
 	}
 
 	private function parseList($content){
-		foreach(explode("\n", trim(str_replace("\r", "", $content))) as $v){
+		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
 				continue;
