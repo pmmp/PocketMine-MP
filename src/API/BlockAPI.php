@@ -132,7 +132,7 @@ class BlockAPI{
 
 				if(($player = $this->server->api->player->get($username)) !== false){
 					$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
-					$output .= "Giving ".$amount." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username."\n";
+					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username."\n";
 				}else{
 					$output .= "Unknown player\n";
 				}
