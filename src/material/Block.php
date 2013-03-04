@@ -25,6 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+/***REM_START***/
+require_once(FILE_PATH."/src/math/Vector3.php");
+/***REM_END***/
+
 abstract class Block extends Vector3{
 	public static $class = array(
 			AIR => "AirBlock",
