@@ -139,6 +139,46 @@ class Entity extends stdClass{
 		}
 	}
 	
+	public function getDrops(){
+		if($this->class === ENTITY_OBJECT){
+			switch($this->type){
+				case OBJECT_PAINTING:
+					return array(
+						array(PAINTING, 0, 1),
+					);
+			}
+		}elseif($this->class === ENTITY_MOB){
+			switch($this->type){
+				case MOB_CHICKEN:
+					return array(
+						array(FEATHER, 0, mt_rand(0,2)),
+						array(($this->fire > 0 ? COOKED_CHICKEN:RAW_CHICKEN), 0, 1),
+					);
+				case MOB_COW:
+					return array(
+						array(LEATHER, 0, mt_rand(0,2)),
+						array(($this->fire > 0 ? STEAK:RAW_BEEF), 0, 1),
+					);
+				case MOB_PIG:
+					return array(
+						array(LEATHER, 0, mt_rand(0,2)),
+						array(($this->fire > 0 ? COOKED_PORKCHOP:RAW_PORKCHOP), 0, 1),
+					);
+				case MOB_SHEEP:
+					return array(
+						array(WOOL, $this->data["Color"] & 0x0F, 1),
+					);
+			}
+		}
+		return array();
+	}
+	
+	public function spawnDrops(){
+		foreach($this->getDrops() as $drop){
+			$this->server->api->block->drop(new Vector3($this->x, $this->y, $this->z), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
+		}
+	}
+	
 	public function environmentUpdate(){
 		if($this->class === ENTITY_ITEM){
 			$time = microtime(true);
@@ -563,6 +603,7 @@ class Entity extends stdClass{
 				if($this->player instanceof Player){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 				}else{
+					$this->spawnDrops();
 					$this->close();
 				}
 			}elseif($this->health > 0){
