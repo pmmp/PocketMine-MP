@@ -173,9 +173,9 @@ class Entity extends stdClass{
 		return array();
 	}
 	
-	public function spawnDrops(){
+	private function spawnDrops(){
 		foreach($this->getDrops() as $drop){
-			$this->server->api->block->drop(new Vector3($this->x, $this->y, $this->z), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
+			$this->server->api->block->drop(new Vector3($this->x, $this->y, $this->z), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 		}
 	}
 	
@@ -592,6 +592,7 @@ class Entity extends stdClass{
 				));
 			}
 			if($this->health <= 0 and $this->dead === false){
+				$this->spawnDrops();
 				$this->air = 300;
 				$this->fire = 0;
 				$this->crouched = false;
@@ -603,7 +604,6 @@ class Entity extends stdClass{
 				if($this->player instanceof Player){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 				}else{
-					$this->spawnDrops();
 					$this->close();
 				}
 			}elseif($this->health > 0){
