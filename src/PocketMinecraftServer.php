@@ -474,8 +474,6 @@ class PocketMinecraftServer{
 		global $arguments;
 		$dump .= "Parameters: ".var_export($arguments, true)."\r\n\r\n\r\n";
 		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
-		global $lasttrace;
-		$dump .= "Last Backtrace: ".$lasttrace."\r\n\r\n\r\n";
 		if($this->api->plugin instanceof PluginAPI){
 			$dump .= "Loaded plugins: ".var_export($this->api->plugin->getList(), true)."\r\n\r\n\r\n";
 		}

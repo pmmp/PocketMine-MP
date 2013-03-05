@@ -52,47 +52,45 @@ if(version_compare(CURRENT_PHP_VERSION, PHP_VERSION) > 0){
 }
 
 if(php_sapi_name() !== "cli"){
-	console("[ERROR] Use PHP-CLI to execute the server or create your own", true, true, 0);
+	console("[ERROR] You must run PocketMine-MP using the CLI.", true, true, 0);
 	++$errors;
 }
 
 if(!extension_loaded("sockets") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "sockets." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find Socket extension", true, true, 0);
+	console("[ERROR] Unable to find the Socket extension.", true, true, 0);
 	++$errors;
 }
 
 if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "pthreads." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find pthreads extension. Use the Installer available in the Homepage", true, true, 0);
+	console("[ERROR] Unable to find the pthreads extension.", true, true, 0);
 	++$errors;
 }
 
 if(!extension_loaded("curl") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "curl." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find cURL extension", true, true, 0);
+	console("[ERROR] Unable to find the cURL extension.", true, true, 0);
 	++$errors;
 }
 
 if(!extension_loaded("sqlite3") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "sqlite3." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find SQLite3 extension", true, true, 0);
+	console("[ERROR] Unable to find the SQLite3 extension.", true, true, 0);
 	++$errors;
 }
 
 if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "zlib." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find Zlib extension", true, true, 0);
+	console("[ERROR] Unable to find the Zlib extension.", true, true, 0);
 	++$errors;
 }
 
 if(!extension_loaded("gmp") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "gmp." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find GMP extension", true, true, 0);
+	console("[ERROR] Unable to find the GMP extension.", true, true, 0);
 	++$errors;
 }
 
 if($errors > 0){
+	console("[ERROR] Please use the installer provided on the homepage.", true, true, 0);
 	exit(1); //Exit with error
 }
 
 /***REM_START***/
 require_all(FILE_PATH . "src/");
 /***REM_END***/
-
-
-?>
