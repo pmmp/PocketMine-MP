@@ -25,11 +25,13 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+
 class FurnaceBlock extends SolidBlock{
 	public function __construct($meta = 0){
 		parent::__construct(FURNACE, $meta, "Furnace");
 		$this->isActivable = true;
 	}
+
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
 			$faces = array(
