@@ -269,6 +269,22 @@ class Player{
 	
 	public function eventHandler($data, $event){
 		switch($event){
+			case "tile.container.slot":
+				if($player === $this){
+					break;
+				}
+				foreach($this->windows as $id => $w){
+					if($w === $data["tile"]){
+						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+							"windowid" => $id,
+							"slot" => $data["slotdata"]["Slot"],
+							"block" => $data["slotdata"]["id"],
+							"stack" => $data["slotdata"]["Count"],
+							"meta" => $data["slotdata"]["Damage"],
+						));
+					}
+				}
+				break;
 			case "player.armor":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
@@ -593,6 +609,7 @@ class Player{
 									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 									$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
+									$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
 									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
@@ -823,6 +840,8 @@ class Player{
 							$this->server->api->dhandle("tile.container.slot", array(
 								"tile" => $tile,
 								"slot" => $data["slot"],
+								"slotdata" => $s,
+								"player" => $this,
 							));
 							break;
 						case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
