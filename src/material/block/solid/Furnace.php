@@ -25,33 +25,12 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
-class FurnaceBlock extends SolidBlock{
+class FurnaceBlock extends BurningFurnaceBlock{
 	public function __construct($meta = 0){
-		parent::__construct(FURNACE, $meta, "Furnace");
+		parent::__construct($meta);
+		$this->id = FURNACE;
+		$this->name = "Furnace";
 		$this->isActivable = true;
 	}
-
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			$faces = array(
-				0 => 4,
-				1 => 2,
-				2 => 5,
-				3 => 3,
-			);
-			$level->setBlock($block, $this->id, $faces[$player->entity->getDirection()]);
-			return true;
-		}
-		return false;
-	}	
-	public function getDrops(Item $item, Player $player){
-		if($item->isPickaxe() >= 1){
-			return array(
-				array(FURNACE, 0, 1),
-			);
-		}else{
-			return array();
-		}
-	}
+	
 }
