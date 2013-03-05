@@ -143,13 +143,12 @@ class BlockAPI{
 	}
 
 	private function cancelAction(Block $block, Player $player){
-		$this->server->api->dhandle("block.change", array(
+		$player->dataPacket(MC_UPDATE_BLOCK, array(
 			"x" => $block->x,
 			"y" => $block->y,
 			"z" => $block->z,
 			"block" => $block->getID(),
-			"meta" => $block->getMetadata(),
-			"fake" => true,
+			"meta" => $block->getMetadata()		
 		));
 		return false;
 	}
