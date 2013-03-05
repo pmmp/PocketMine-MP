@@ -41,8 +41,8 @@ class PocketMinecraftServer{
 		if($this->port < 19132 or $this->port > 19135){
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
-		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8)):$this->serverID;
-		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4)):$this->seed;
+		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8, false)):$this->serverID;
+		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
 		console("[INFO] Loading database...");
 		$this->startDatabase();
 		$this->doTick = false;

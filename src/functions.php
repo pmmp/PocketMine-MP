@@ -207,7 +207,6 @@ function console($message, $EOL = true, $log = true, $level = 1){
 }
 
 function fatal_handler($errno, $errstr, $errfile, $errline){
-	global $lasttrace;
 	console("[ERROR] A level ".$errno." error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
 	return false;
 }

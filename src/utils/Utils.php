@@ -252,7 +252,7 @@ class Utils extends Thread{
 			//some entropy, but works ^^
 			$weakEntropy = array(
 				is_array($startEntropy) ? implode($startEntropy):$startEntropy,
-				serialize(stat(__FILE__)),
+				serialize(@stat(__FILE__)),
 				__DIR__,
 				PHP_OS,
 				microtime(),
