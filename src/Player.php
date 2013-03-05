@@ -51,6 +51,8 @@ class Player{
 	var $loggedIn = false;
 	public $gamemode;
 	public $lastBreak;
+	public $windowCnt = 0;
+	public $windows = array();
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	
@@ -786,7 +788,44 @@ class Player{
 								}
 							}
 							break;
-						case MC_SEND_INVENTORY: //TODO
+						case MC_CONTAINER_CLOSE:
+							unset($this->windows[$data["windowid"]]);
+							$this->dataPacket(MC_CONTAINER_CLOSE, array(
+								"windowid" => $id,
+							));
+							break;
+						case MC_CONTAINER_SET_SLOT:
+							if(!isset($this->windows[$data["windowid"]])){
+								break;
+							}
+							$tile = $this->windows[$data["windowid"]];
+							$done = false;
+							foreach($tile->data["Items"] as $i => $slot){
+								if($slot["Slot"] === $data["slot"]){
+									$done = true;
+									$s = $tile->data["Items"][$i] = array(
+										"Count" => $data["stack"] & 0xFFFF,
+										"Slot" => $data["slot"],
+										"id" => $data["block"] & 0xFFFF,
+										"Damage" => $data["meta"] & 0xFFFF
+									);
+									break;
+								}
+							}
+							if($done === false){
+								$tile->data["Items"][] = $s = array(
+									"Count" => $data["stack"] & 0xFFFF,
+									"Slot" => $data["slot"],
+									"id" => $data["block"] & 0xFFFF,
+									"Damage" => $data["meta"] & 0xFFFF
+								);
+							}
+							$this->server->api->dhandle("tile.container.slot", array(
+								"tile" => $tile,
+								"slot" => $data["slot"],
+							));
+							break;
+						case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 							break;
 						default:
 							console("[DEBUG] Unhandled 0x".dechex($data["id"])." Data Packet for Client ID ".$this->clientID.": ".print_r($data, true), true, true, 2);
