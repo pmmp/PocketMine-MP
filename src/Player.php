@@ -681,11 +681,13 @@ class Player{
 								break;
 							}
 							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
-								if($this->handle("player.interact", $data) !== false){
-									console("[DEBUG] EID ".$this->eid." attacked EID ".$data["target"], true, true, 2);
-									if($this->server->difficulty > 0){
-										$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
-									}
+								$target = $this->server->api->entity->get($data["target"]);
+								$data["targetentity"] = $target;
+								$data["entity"] = $this->entity;
+								if(($target instanceof Entity) and $target->class === ENTITY_PLAYER and ($this->server->difficulty <= 0 or $target->gamemode === CREATIVE)){
+									break;
+								}elseif($this->handle("player.interact", $data) !== false){
+									$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
 								}
 							}
 							break;
