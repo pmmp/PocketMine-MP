@@ -38,7 +38,7 @@ class PocketMinecraftServer{
 			console("[INFO] \x1b[31;1mThis is a Development version");
 		}
 		console("[INFO] Starting Minecraft PE Server at ".$this->serverip.":".$this->port);
-		if($this->port < 19132 or $this->port > 19135){
+		if($this->port < 19132 or $this->port > 19135){ //Mojang =(
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
 		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8, false)):$this->serverID;

@@ -321,16 +321,14 @@ class Entity extends stdClass{
 		if ($rotation < 0) {
 			$rotation += 360.0;
 		}
-		if(0 <= $rotation && $rotation < 45) {
-			return 2;
-		}elseif(45 <= $rotation && $rotation < 135) {
-			return 3;
-		}elseif(135 <= $rotation && $rotation < 225) {
-			return 0;
-		}elseif(225 <= $rotation && $rotation < 315) {
-			return 1;
-		}elseif(315 <= $rotation && $rotation < 360) {
-			return 2;
+		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)) {
+			return 2; //North
+		}elseif(45 <= $rotation and $rotation < 135) {
+			return 3; //East
+		}elseif(135 <= $rotation and $rotation < 225) {
+			return 0; //South
+		}elseif(225 <= $rotation and $rotation < 315) {
+			return 1; //West
 		}else{
 			return null;
 		}
