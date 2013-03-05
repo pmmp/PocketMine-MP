@@ -42,13 +42,13 @@ class ServerAPI{
 	}
 	
 	public function load(){
-		@mkdir(FILE_PATH."logs/", 0777, true);
-		@mkdir(FILE_PATH."players/", 0777);
-		@mkdir(FILE_PATH."worlds/", 0777);
-		@mkdir(FILE_PATH."plugins/", 0777);
+		@mkdir(DATA_PATH."logs/", 0777, true);
+		@mkdir(DATA_PATH."players/", 0777);
+		@mkdir(DATA_PATH."worlds/", 0777);
+		@mkdir(DATA_PATH."plugins/", 0777);
 		console("[INFO] Starting ServerAPI server handler...");
-		file_put_contents(FILE_PATH."logs/packets.log", "");
-		if(!file_exists(FILE_PATH."logs/test.bin.log") or md5_file(FILE_PATH."logs/test.bin.log") !== TEST_MD5){
+		file_put_contents(DATA_PATH."logs/packets.log", "");
+		if(!file_exists(DATA_PATH."logs/test.bin.log") or md5_file(DATA_PATH."logs/test.bin.log") !== TEST_MD5){
 			console("[NOTICE] Executing tests...");
 			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
 			console("[INFO] uname -a: ".php_uname("a"));
@@ -74,7 +74,7 @@ class ServerAPI{
 			$test .= Utils::writeInt($str->hashCode());
 			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));
 			$test .= Utils::hexToStr("012334567890");
-			file_put_contents(FILE_PATH."logs/test.bin.log", $test);
+			file_put_contents(DATA_PATH."logs/test.bin.log", $test);
 			$md5 = md5($test);
 			console("[INFO] MD5 of test: ".$md5);
 			if($md5 !== TEST_MD5){
@@ -84,7 +84,7 @@ class ServerAPI{
 		}
 
 		console("[DEBUG] Loading server.properties...", true, true, 2);
-		$this->config = new Config(FILE_PATH . "server.properties", CONFIG_PROPERTIES, array(
+		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
 			"server-name" => "Minecraft Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @username to this server!",
@@ -162,17 +162,17 @@ class ServerAPI{
 
 			}
 		}
-		if(file_exists(FILE_PATH."worlds/level.dat")){
+		if(file_exists(DATA_PATH."worlds/level.dat")){
 			console("[NOTICE] Detected unimported map data. Importing...");
-			$this->importMap(FILE_PATH."worlds/", true);
+			$this->importMap(DATA_PATH."worlds/", true);
 		}
 		$this->server->mapName = $this->getProperty("level-name");
-		$this->server->mapDir = FILE_PATH."worlds/".$this->server->mapName."/";
+		$this->server->mapDir = DATA_PATH."worlds/".$this->server->mapName."/";
 		if($this->server->mapName === false or trim($this->server->mapName) === "" or (!file_exists($this->server->mapDir."chunks.dat") and !file_exists($this->server->mapDir."chunks.dat.gz"))){
 			if($this->server->mapName === false or trim($this->server->mapName) === ""){
 				$this->server->mapName = "world";
 			}
-			$this->server->mapDir = FILE_PATH."worlds/".$this->server->mapName."/";
+			$this->server->mapDir = DATA_PATH."worlds/".$this->server->mapName."/";
 			$generator = "SuperflatGenerator";
 			if($this->getProperty("generator") !== false and class_exists($this->getProperty("generator"))){
 				$generator = $this->getProperty("generator");
@@ -356,24 +356,24 @@ class ServerAPI{
 			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
 			unset($level["Player"]);
 			$lvName = $level["LevelName"]."/";
-			@mkdir(FILE_PATH."worlds/".$lvName, 0777);
-			file_put_contents(FILE_PATH."worlds/".$lvName."level.dat", serialize($level));
+			@mkdir(DATA_PATH."worlds/".$lvName, 0777);
+			file_put_contents(DATA_PATH."worlds/".$lvName."level.dat", serialize($level));
 			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
-			file_put_contents(FILE_PATH."worlds/".$lvName."entities.dat", serialize($entities["Entities"]));
+			file_put_contents(DATA_PATH."worlds/".$lvName."entities.dat", serialize($entities["Entities"]));
 			if(!isset($entities["TileEntities"])){
 				$entities["TileEntities"] = array();
 			}
-			file_put_contents(FILE_PATH."worlds/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
+			file_put_contents(DATA_PATH."worlds/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
 			console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
 
 			if($remove === true){
-				rename($dir."chunks.dat", FILE_PATH."worlds/".$lvName."chunks.dat");
+				rename($dir."chunks.dat", DATA_PATH."worlds/".$lvName."chunks.dat");
 				unlink($dir."level.dat");
 				@unlink($dir."level.dat_old");
 				@unlink($dir."player.dat");
 				unlink($dir."entities.dat");
 			}else{
-				copy($dir."chunks.dat", FILE_PATH."worlds/".$lvName."chunks.dat");
+				copy($dir."chunks.dat", DATA_PATH."worlds/".$lvName."chunks.dat");
 			}
 			if($this->getProperty("level-name") === false){
 				console("[INFO] Setting default level to \"".$level["LevelName"]."\"");

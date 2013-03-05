@@ -29,6 +29,7 @@ the Free Software Foundation, either version 3 of the License, or
 require_once(dirname(__FILE__)."/config.php");
 require_once(FILE_PATH."/src/functions.php");
 /***REM_END***/
+define(DATA_PATH, realpath(arg("data-path", FILE_PATH))."/");
 
 if(strpos(strtoupper(php_uname("s")), "WIN") === false or arg("enable-ansi", false) === true){
 	define("ENABLE_ANSI", true);

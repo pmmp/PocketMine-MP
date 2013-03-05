@@ -37,10 +37,10 @@ class BanAPI{
 	
 	public function init(){
 		console("[INFO] Loading authentication lists...");
-		$this->whitelist = new Config(FILE_PATH."white-list.txt", CONFIG_LIST);
-		$this->bannedIPs = new Config(FILE_PATH."banned-ips.txt", CONFIG_LIST);
-		$this->banned = new Config(FILE_PATH."banned.txt", CONFIG_LIST);
-		$this->ops = new Config(FILE_PATH."ops.txt", CONFIG_LIST);
+		$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);
+		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);
+		$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);
+		$this->ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);
 		$this->server->api->console->register("banip", "Manages IP Banning", array($this, "commandHandler"));
 		$this->server->api->console->register("ban", "Manages Bannning", array($this, "commandHandler"));
 		$this->server->api->console->register("kick", "Kicks a player", array($this, "commandHandler"));
@@ -138,7 +138,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to white-list\n";
 						break;
 					case "reload":
-						$this->whitelist = new Config(FILE_PATH."white-list.txt", CONFIG_LIST);
+						$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);
 						break;
 					case "list":
 						$output .= "White-list: ".implode(", ", $this->whitelist->getAll(true))."\n";
@@ -178,7 +178,7 @@ class BanAPI{
 						$output .= "IP \"$ip\" added to ban list\n";
 						break;
 					case "reload":
-						$this->bannedIPs = new Config(FILE_PATH."banned-ips.txt", CONFIG_LIST);
+						$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);
 						break;
 					case "list":
 						$output .= "IP ban list: ".implode(", ", $this->bannedIPs->getAll(true))."\n";
@@ -216,7 +216,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to ban list\n";
 						break;
 					case "reload":
-						$this->banned = new Config(FILE_PATH."banned.txt", CONFIG_LIST);
+						$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);
 						break;
 					case "list":
 						$output .= "Ban list: ".implode(", ", $this->banned->getAll(true))."\n";

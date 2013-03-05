@@ -265,7 +265,7 @@ class PlayerAPI{
 	}
 
 	public function getOffline($name){
-		if(!file_exists(FILE_PATH."players/".$name.".dat")){
+		if(!file_exists(DATA_PATH."players/".$name.".dat")){
 			console("[NOTICE] Player data not found for \"".$name."\", creating new profile");
 			$data = array(
 				"spawn" => array(
@@ -281,7 +281,7 @@ class PlayerAPI{
 			);
 			$this->saveOffline($name, $data);
 		}else{
-			$data = unserialize(file_get_contents(FILE_PATH."players/".$name.".dat"));
+			$data = unserialize(file_get_contents(DATA_PATH."players/".$name.".dat"));
 		}
 		if($this->server->gamemode === 1){
 			$data["health"] = 20;
@@ -292,6 +292,6 @@ class PlayerAPI{
 
 	public function saveOffline($name, $data){
 		$this->server->handle("api.player.offline.save", $data);
-		file_put_contents(FILE_PATH."players/".str_replace("/", "", $name).".dat", serialize($data));
+		file_put_contents(DATA_PATH."players/".str_replace("/", "", $name).".dat", serialize($data));
 	}
 }
