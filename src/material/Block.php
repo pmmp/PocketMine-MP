@@ -137,7 +137,8 @@ abstract class Block extends Vector3{
 	);
 	protected $id;
 	protected $meta;
-	protected $name = "";
+	protected $name;
+	protected $breakTime;
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;
@@ -155,6 +156,7 @@ abstract class Block extends Vector3{
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 		$this->name = $name;
+		$this->breakTime = 0.25;
 	}
 	
 	public function getName(){
@@ -184,6 +186,13 @@ abstract class Block extends Vector3{
 				array($this->id, $this->meta, 1),
 			);
 		}
+	}
+	
+	public function getBreakTime(Item $item, Player $player){
+		if($player->gamemode === CREATIVE){
+			return 0.25;
+		}
+		return $this->breakTime;
 	}
 	
 	final public function __toString(){

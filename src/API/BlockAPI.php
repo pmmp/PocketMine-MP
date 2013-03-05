@@ -142,7 +142,7 @@ class BlockAPI{
 		return $output;
 	}
 
-	private function cancelAction(Block $block){
+	private function cancelAction(Block $block, Player $player){
 		$this->server->api->dhandle("block.change", array(
 			"x" => $block->x,
 			"y" => $block->y,
@@ -158,16 +158,17 @@ class BlockAPI{
 
 		$target = $this->getBlock($vector);
 		$item = $player->equipment;
-		if(!$target->isBreakable($item, $player) or $this->server->gamemode === ADVENTURE){
-			return $this->cancelAction($target);
+		if(!$target->isBreakable($item, $player) or $player->gamemode === ADVENTURE or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
+			return $this->cancelAction($target, $player);
 		}
 		
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
+			$player->lastBreak = microtime(true);
 			$drops = $target->getDrops($item, $player);
 			$target->onBreak($this, $item, $player);
 		}else{
-			return $this->cancelAction($target);
+			return $this->cancelAction($target, $player);
 		}
 		
 		
@@ -213,8 +214,8 @@ class BlockAPI{
 		$item = $player->equipment;
 		
 		if($target->getID() === AIR){ //If no block exists
-			$this->cancelAction($target);
-			return $this->cancelAction($block);
+			$this->cancelAction($target, $player);
+			return $this->cancelAction($block, $player);
 		}
 
 		if($target->isActivable === true){
@@ -222,8 +223,8 @@ class BlockAPI{
 				return false;
 			}
 		}
-		if($this->server->gamemode === ADVENTURE){ //Adventure mode!!
-			return $this->cancelAction($block);
+		if($player->gamemode === ADVENTURE){ //Adventure mode!!
+			return $this->cancelAction($block, $player);
 		}
 		
 		/*if(isset(Material::$activable[$target[0]])){
@@ -264,27 +265,27 @@ class BlockAPI{
 		}
 		
 		if($item->isActivable === true and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
-			return $this->cancelAction($block);
+			return $this->cancelAction($block, $player);
 		}
 
 		if($item->isPlaceable()){
 			$hand = $item->getBlock();
 		}else{
-			return $this->cancelAction($block);
+			return $this->cancelAction($block, $player);
 		}
 		
 		if(!($block->isReplaceable === true or ($hand->getID() === SLAB and $block->getID() === SLAB))){
-			return $this->cancelAction($block);
+			return $this->cancelAction($block, $player);
 		}
 		
 		if($hand->isTransparent === false and $player->entity->inBlock($block->x, $block->y, $block->z)){
-			return $this->cancelAction($block); //Entity in block
+			return $this->cancelAction($block, $player); //Entity in block
 		}
 		
 		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
-			return $this->cancelAction($block);
+			return $this->cancelAction($block, $player);
 		}elseif($hand->place($this, $item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
-			return $this->cancelAction($block);
+			return $this->cancelAction($block, $player);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_POST){
 			$t = $this->server->api->tileentity->addSign($block->x, $block->y, $block->z);

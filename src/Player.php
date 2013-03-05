@@ -50,12 +50,14 @@ class Player{
 	public $armor;
 	var $loggedIn = false;
 	public $gamemode;
+	public $lastBreak;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	
 	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
 		$this->server = $server;
+		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
 		$this->CID = $this->server->clientID($ip, $port);
 		$this->ip = $ip;
