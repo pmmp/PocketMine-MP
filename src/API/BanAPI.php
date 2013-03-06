@@ -103,6 +103,7 @@ class BanAPI{
 				$this->ops->set($user);
 				$this->ops->save();
 				$output .= $user." is now op\n";
+				$this->server->api->chat->sendTo(false, "You are now op.", $user);
 				break;
 			case "deop":
 				$user = array_shift($params);
@@ -112,6 +113,7 @@ class BanAPI{
 				$this->ops->remove($user);
 				$this->ops->save();
 				$output .= $user." is not longer op\n";
+				$this->server->api->chat->sendTo(false, "You are not longer op.", $user);
 				break;
 			case "kick":
 				if(!isset($params[0])){
