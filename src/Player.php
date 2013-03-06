@@ -843,6 +843,7 @@ class Player{
 								"slotdata" => $s,
 								"player" => $this,
 							));
+							$this->server->handle("tile.update", $tile);
 							break;
 						case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 							break;
