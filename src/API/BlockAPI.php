@@ -38,23 +38,31 @@ define("BLOCK_UPDATE_WEAK", 3);
 class BlockAPI{
 	private $server;
 	
-	public static function fromString($str){
-		$b = explode(":", str_replace(" ", "_", trim($str)));
-		if(!isset($b[1])){
-			$meta = 0;
+	public static function fromString($str, $multiple = false){
+		if($multiple === true){
+			$blocks = array();
+			foreach(explode(",",$str) as $b){
+				$blocks[] = BlockAPI::fromString($b, false);
+			}
+			return $blocks;
 		}else{
-			$meta = ((int) $b[1]) & 0xFFFF;
-		}
-		
-		if(defined(strtoupper($b[0]))){
-			$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
-			if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
+			$b = explode(":", str_replace(" ", "_", trim($str)));
+			if(!isset($b[1])){
+				$meta = 0;
+			}else{
+				$meta = ((int) $b[1]) & 0xFFFF;
+			}
+			
+			if(defined(strtoupper($b[0]))){
+				$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
+				if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
+					$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+				}
+			}else{
 				$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
 			}
-		}else{
-			$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+			return $item;
 		}
-		return $item;
 	}
 
 	public static function get($id, $meta = 0, $v = false){
