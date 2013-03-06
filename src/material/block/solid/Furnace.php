@@ -25,6 +25,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+/***REM_START***/
+require_once("BurningFurnace.php");
+/***REM_END***/
+
+
 class FurnaceBlock extends BurningFurnaceBlock{
 	public function __construct($meta = 0){
 		parent::__construct($meta);
