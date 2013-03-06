@@ -57,7 +57,7 @@ class BanAPI{
 	public function isOp($username){
 		if($this->server->api->dhandle("api.op.check", $username) === false){
 			return true;
-		}elseif($this->op->exists($username)){
+		}elseif($this->ops->exists($username)){
 			return true;
 		}
 		return false;	
