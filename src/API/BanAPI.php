@@ -47,6 +47,7 @@ class BanAPI{
 		$this->server->api->console->register("whitelist", "Manages White-listing", array($this, "commandHandler"));
 		$this->server->api->console->register("op", "Ops a player", array($this, "commandHandler"));
 		$this->server->api->console->register("deop", "Deops a player", array($this, "commandHandler"));
+		$this->server->api->console->register("sudo", "Run a command as a player", array($this, "commandHandler"));
 		$this->server->api->console->alias("ban-ip", "banip add");
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
@@ -84,8 +85,18 @@ class BanAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "sudo":
+				$target = array_shift($params);
+				$player = $this->server->api->player->get($target);
+				if(!($player instanceof Player)){
+					$output .= "Player not connected.\n";
+					break;
+				}
+				$this->server->api->console->run(implode(" ", $params), $player);
+				$output .= "Command ran.\n";
+				break;
 			case "op":
-				$user = trim(implode(" ", $params));
+				$user = array_shift($params);
 				if($user == ""){
 					break;
 				}
@@ -94,7 +105,7 @@ class BanAPI{
 				$output .= $user." is now op\n";
 				break;
 			case "deop":
-				$user = trim(implode(" ", $params));
+				$user = array_shift($params);
 				if($user == ""){
 					break;
 				}
