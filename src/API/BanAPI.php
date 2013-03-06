@@ -211,7 +211,7 @@ class BanAPI{
 						break;
 					case "add":
 					case "ban":
-						$user = trim(implode($params));
+						$user = array_shift($params);
 						$this->banned->set($user);
 						$this->banned->save();
 						$player = $this->server->api->player->get($user);
@@ -224,6 +224,7 @@ class BanAPI{
 						}else{
 							$this->server->api->chat->broadcast($user." has been banned\n");
 						}
+						$this->kick($user, "Banned");
 						$output .= "Player \"$user\" added to ban list\n";
 						break;
 					case "reload":
@@ -257,7 +258,7 @@ class BanAPI{
 		$this->commandHandler("banip", array("pardon", $ip));
 	}
 	
-	public function kick($username, $reason){
+	public function kick($username, $reason = "No Reason"){
 		$this->commandHandler("kick", array($username, $reason));
 	}
 	
