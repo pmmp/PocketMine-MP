@@ -165,6 +165,11 @@ class BlockAPI{
 
 		$target = $this->getBlock($vector);
 		$item = $player->equipment;
+		
+		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
+			return $this->cancelAction($target, $player);
+		}
+		
 		if(!$target->isBreakable($item, $player) or $player->gamemode === ADVENTURE or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
 			return $this->cancelAction($target, $player);
 		}
@@ -224,12 +229,17 @@ class BlockAPI{
 			$this->cancelAction($target, $player);
 			return $this->cancelAction($block, $player);
 		}
+		
+		if($this->server->api->dhandle("player.block.touch", array("type" => "place", "player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
+			return $this->cancelAction($block, $player);
+		}
 
 		if($target->isActivable === true){
 			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($this, $item, $player) === true){
 				return false;
 			}
 		}
+		
 		if($player->gamemode === ADVENTURE){ //Adventure mode!!
 			return $this->cancelAction($block, $player);
 		}
