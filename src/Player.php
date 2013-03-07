@@ -778,7 +778,7 @@ class Player{
 							$data["item"] = $item;
 							if($this->server->handle("player.drop", $data) !== false){
 								$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
-								$this->server->api->block->drop(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), $item);
+								$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
 							}
 							break;
 						case MC_SIGN_UPDATE:
