@@ -188,7 +188,7 @@ class Player{
 			foreach($this->evid as $ev){
 				$this->server->deleteEvent($ev);
 			}
-			$this->server->api->dhandle("player.quit", $this);
+			$this->server->api->handle("player.quit", $this);
 			$reason = $reason == "" ? "server stop":$reason;
 			$this->save();
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
@@ -548,7 +548,7 @@ class Player{
 								$u->close("logged in from another location");
 							}
 							
-							if($this->server->api->dhandle("player.join", $this) === false){
+							if($this->server->api->handle("player.join", $this) === false){
 								$this->close();
 								return;
 							}
@@ -661,8 +661,10 @@ class Player{
 								break;
 							}
 							$data["eid"] = $this->eid;
+							$data["player"] = $this;
+							$data["item"] = BlockAPI::getItem($data["block"], $data["meta"]);
 							if($this->server->handle("player.equipment.change", $data) !== false){
-								$this->equipment = BlockAPI::getItem($data["block"], $data["meta"]);
+								$this->equipment = $data["item"];
 								console("[DEBUG] Player ".$this->username." has now ".$this->equipment->getName()." (".$this->equipment->getID().":".$this->equipment->getMetadata().") in their hands!", true, true, 2);
 							}
 							break;

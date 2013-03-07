@@ -34,27 +34,11 @@ class LevelAPI{
 	}
 
 	public function init(){
-		/*$this->server->event("player.block.break", array($this, "handle"));
-		$this->server->event("player.block.place", array($this, "handle"));
-		$this->server->event("player.block.update", array($this, "handle"));*/
+
 	}
 
 	public function handle($data, $event){
 		switch($event){
-			case "player.block.place":
-			case "player.block.update":
-				$b = BlockAPI::get($data["block"], $data["meta"]);
-				console("[DEBUG] Player ".$data["entity"]->player->username." placed ".$b->getName()." (".$data["block"].":".$data["meta"].") at (".$data["x"].", ".$data["y"].", ".$data["z"].")", true, true, 2);
-				$this->setBlock($data["x"], $data["y"], $data["z"], $data["block"], $data["meta"]);
-				break;
-			case "player.block.break":
-				if($data["block"]->getID() === 0){
-					break;
-				}
-				$b = BlockAPI::get($block[0], $block[1]);
-				console("[DEBUG] Player ".$data["player"]->username." broke ".$data["block"]->getName()." (".$data["block"]->getID().":".$data["block"]->getMetadata().") at (".$data["block"]->x.", ".$data["block"]->y.", ".$data["block"]->z.")", true, true, 2);
-				$this->setBlock($data["block"]->x, $data["block"]->y, $data["block"]->z, 0, 0, true, true);
-				break;
 		}
 	}
 

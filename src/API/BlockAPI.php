@@ -202,7 +202,7 @@ class BlockAPI{
 			"z" => $pos->z + mt_rand(2, 8) / 10,
 			"item" => $item,
 		);
-		if($this->server->api->handle("block.drop", $data) !== false){
+		if($this->server->api->handle("item.drop", $data) !== false){
 			for($count = $item->count; $count > 0; ){
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
