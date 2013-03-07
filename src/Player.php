@@ -822,26 +822,43 @@ class Player{
 							}
 							$tile = $this->windows[$data["windowid"]];
 							$done = false;
+							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+							
+							$s = array(
+								"Count" => $item->count,
+								"Slot" => $data["slot"],
+								"id" => $item->getID(),
+								"Damage" => $item->getMetadata(),
+							);
+							
 							foreach($tile->data["Items"] as $i => $slot){
 								if($slot["Slot"] === $data["slot"]){
 									$done = true;
-									$s = $tile->data["Items"][$i] = array(
-										"Count" => $data["stack"] & 0xFFFF,
-										"Slot" => $data["slot"],
-										"id" => $data["block"] & 0xFFFF,
-										"Damage" => $data["meta"] & 0xFFFF
-									);
+									if($item->getID() !== AIR and $slot["id"] == $item->getID()){
+										if($slot["Count"] < $item->count){
+											$this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot["Count"]);
+										}elseif($slot["Count"] > $item->count){
+											$this->addItem($item->getID(), $item->getMetadata(), $slot["Count"] - $item->count);
+										}										
+										$tile->data["Items"][$i] = $s;
+									}else{
+										$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
+										$this->addItem($slot["id"], $slot["Damage"], $slot["Count"]);
+										if($item->getID() === AIR or $item->count <= 0){
+											unset($tile->data["Items"][$i]);
+										}
+									}
 									break;
 								}
 							}
-							if($done === false){
-								$tile->data["Items"][] = $s = array(
-									"Count" => $data["stack"] & 0xFFFF,
-									"Slot" => $data["slot"],
-									"id" => $data["block"] & 0xFFFF,
-									"Damage" => $data["meta"] & 0xFFFF
-								);
+							
+							if($done === false){								
+								if($item->getID() !== AIR and $item->count > 0){
+									$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
+									$tile->data["Items"][] = $s;
+								}
 							}
+							
 							$this->server->api->dhandle("tile.container.slot", array(
 								"tile" => $tile,
 								"slot" => $data["slot"],
