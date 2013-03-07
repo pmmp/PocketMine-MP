@@ -529,10 +529,10 @@ class Player{
 								break;
 							}
 							$this->loggedIn = true;
-							$this->username = str_replace(array("\x00", "/", " ", "\r", "\n", '"', "'"), array("", "-", "_", "", "", "", ""), $data["username"]);
-							$this->iusername = strtolower($this->username);
-							
-							if($this->username == ""){
+							if(preg_match('#^[a-zA-Z0-9_]{2,16}$#', $data["username"])){
+								$this->username = $data["username"];
+								$this->iusername = strtolower($this->username);
+							}else{
 								$this->close("bad username", false);
 								break;
 							}
