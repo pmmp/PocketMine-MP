@@ -195,7 +195,7 @@ class PlayerAPI{
 	}
 
 	public function get($name){
-		$CID = $this->server->query("SELECT ip,port FROM players WHERE name = '".str_replace("'", "", $name)."';", true);
+		$CID = $this->server->query("SELECT ip,port FROM players WHERE name = '".$name."';", true);
 		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
