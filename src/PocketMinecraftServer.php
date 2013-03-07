@@ -115,7 +115,7 @@ class PocketMinecraftServer{
 		//$this->query("PRAGMA journal_mode = OFF;");
 		//$this->query("PRAGMA encoding = \"UTF-8\";");
 		//$this->query("PRAGMA secure_delete = OFF;");
-		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE);");
+		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE COLLATE NOCASE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");

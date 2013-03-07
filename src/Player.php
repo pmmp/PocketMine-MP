@@ -31,24 +31,25 @@ class Player{
 	private $queue = array();
 	private $buffer = array();
 	private $evid = array();
-	var $timeout;
-	var $connected = true;
-	var $clientID;
-	var $ip;
-	var $port;
-	var $counter = array(0, 0, 0);
-	var $username;
-	var $eid = false;
-	var $data = array();
-	var $entity = false;
-	var $auth = false;
-	var $CID;
-	var $MTU;
-	var $spawned = false;
-	var $inventory;
+	public $timeout;
+	public $connected = true;
+	public $clientID;
+	public $ip;
+	public $port;
+	public $counter = array(0, 0, 0);
+	public $username;
+	public $iusername;
+	public $eid = false;
+	public $data = array();
+	public $entity = false;
+	public $auth = false;
+	public $CID;
+	public $MTU;
+	public $spawned = false;
+	public $inventory;
 	public $equipment;
 	public $armor;
-	var $loggedIn = false;
+	public $loggedIn = false;
 	public $gamemode;
 	public $lastBreak;
 	public $windowCnt = 0;
@@ -529,24 +530,22 @@ class Player{
 							}
 							$this->loggedIn = true;
 							$this->username = str_replace(array("\x00", "/", " ", "\r", "\n", '"', "'"), array("", "-", "_", "", "", "", ""), $data["username"]);
+							$this->iusername = strtolower($this->username);
+							
 							if($this->username == ""){
 								$this->close("bad username", false);
 								break;
 							}
 							$o = $this->server->api->player->getOffline($this->username);
-							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->username)){
+							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" not being on white-list", false);
 								break;
-							}elseif($this->server->api->ban->isBanned($this->username) or $this->server->api->ban->isIPBanned($this->ip)){
+							}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" is banned!", false);
 							}
-							$u = $this->server->api->player->get($this->username);
-							$c = $this->server->api->player->getByClientID($this->clientID);
+							$u = $this->server->api->player->get($this->iusername);
 							if($u !== false){
 								$u->close("logged in from another location");
-							}
-							if($c !== false){
-								$c->close("logged in from another location");
 							}
 							
 							if($this->server->api->dhandle("player.join", $this) === false){
@@ -617,6 +616,10 @@ class Player{
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
+									}
+									
+									if($this->iusername === "steve" or $this->iusername === "stevie"){
+										$this->eventHandler("You're using the default username. Please change it on the Minecraft PE settings.", "server.chat");
 									}
 									$this->sendInventory();
 									$this->entity->setPosition($this->entity->x, $this->entity->y, $this->entity->z, 0, 0);
