@@ -326,12 +326,6 @@ class Entity extends stdClass{
 					}elseif($y > $this->fallY){
 						$this->fallY = $y;
 					}
-					if($this->fallY !== false and ($this->fallStart + 8) < microtime(true)){ //Flying
-						$this->harm(1, "flying");
-						if($y > $this->fallY){
-							$this->fallY = $y;
-						}
-					}
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
 						$d = $this->server->api->block->getBlock(new Vector3($x, $y + 1, $z));
