@@ -548,10 +548,12 @@ class Player{
 							if($c !== false){
 								$c->close("logged in from another location");
 							}
+							
 							if($this->server->api->dhandle("player.join", $this) === false){
 								$this->close();
 								return;
 							}
+							
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
 							if(!isset($this->data["inventory"]) or $this->gamemode === CREATIVE){
@@ -769,8 +771,11 @@ class Player{
 							if($this->loggedIn === false){
 								break;
 							}
+							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+							$data["item"] = $item;
 							if($this->server->handle("player.drop", $data) !== false){
-								$this->server->api->block->drop(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]));
+								$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
+								$this->server->api->block->drop(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), $item);
 							}
 							break;
 						case MC_SIGN_UPDATE:
