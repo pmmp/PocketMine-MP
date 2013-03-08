@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class QuartzBlock extends SolidBlock{
 	public function __construct($meta = 0){
-		parent::__construct(QUARTZ, $meta, "Quartz Block");
+		parent::__construct(QUARTZ_BLOCK, $meta, "Quartz Block");
 		$names = array(
 			0 => "Quartz Block",
 			1 => "Chiseled Quartz Block",
