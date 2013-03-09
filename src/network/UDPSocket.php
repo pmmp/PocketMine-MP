@@ -78,7 +78,7 @@ class UDPSocket{
 
 	public function read(){
 		if($this->connected === false){
-			return false;
+			return array(3 => false);
 		}
 		$source = false;
 		$port = 1; //$source and $port will be overwritten

@@ -94,7 +94,7 @@ class ServerAPI{
 			"memory-limit" => "256M",
 			"last-update" => false,
 			"white-list" => false,
-			"debug" => 2,
+			"debug" => 1,
 			"max-players" => 20,
 			"server-type" => "normal",
 			"time-per-second" => 20,
