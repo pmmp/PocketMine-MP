@@ -77,13 +77,19 @@ class UDPSocket{
 	}
 
 	public function read(){
+		if($this->connected === false){
+			return false;
+		}
 		$source = false;
-		$port = 1;
-		$len = @socket_recvfrom($this->sock, $buf, 65536, 0, $source, $port);
+		$port = 1; //$source and $port will be overwritten
+		$len = @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
 		return array($buf, $source, $port, $len);
 	}
 
 	public function write($data, $dest = false, $port = false){
+		if($this->connected === false){
+			return false;
+		}
 		return @socket_sendto($this->sock, $data, strlen($data), 0, ($dest === false ? $this->server:$dest), ($port === false ? $this->port:$port));
 	}
 

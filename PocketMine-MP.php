@@ -35,4 +35,5 @@ require_once(FILE_PATH."/src/dependencies.php");
 $server = new ServerAPI();
 $server->run();
 
+
 kill(getmypid()); //Fix for segfault
