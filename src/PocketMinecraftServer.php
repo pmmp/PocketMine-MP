@@ -349,7 +349,7 @@ class PocketMinecraftServer{
 				}
 				$t = $this->api->tileentity->add($tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
 			}
-			$this->action(1000000 * 60 * 15, '$this->api->chat->broadcast("Forcing save...");$this->save();');
+			$this->action(1000000 * 60 * 25, '$this->api->chat->broadcast("Forcing save...");$this->save();');
 		}
 	}
 
