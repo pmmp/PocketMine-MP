@@ -1,4 +1,4 @@
-![](http://www.pocketmine.org/favicon.png)
+![](http://shoghicp.github.com/PocketMine-MP/favicon.png)
 
 # PocketMine-MP [![Build Status](https://travis-ci.org/shoghicp/PocketMine-MP.png?branch=master)](https://travis-ci.org/shoghicp/PocketMine-MP)
 
