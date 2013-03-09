@@ -193,7 +193,7 @@ class PocketMinecraftServer{
 
 	}
 
-	public function addHandler($event, $callable, $priority = 5){
+	public function addHandler($event,callable $callable, $priority = 5){
 		if(!is_callable($callable)){
 			return false;
 		}elseif(isset(Deprecation::$events[$event])){
@@ -656,7 +656,7 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function schedule($ticks, $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
+	public function schedule($ticks,callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
 		if(!is_callable($callback)){
 			return false;
 		}
@@ -698,7 +698,7 @@ class PocketMinecraftServer{
 		$this->preparedSQL->updateActions->execute();
 	}
 
-	public function event($event, $func){
+	public function event($event,callable $func){
 		if(!is_callable($func)){
 			return false;
 		}elseif(isset(Deprecation::$events[$event])){
