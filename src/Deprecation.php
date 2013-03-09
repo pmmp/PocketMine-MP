@@ -29,6 +29,7 @@ the Free Software Foundation, either version 3 of the License, or
 class Deprecation{
 	public static $events = array(
 		"world.block.change" => "block.change",
+		"block.drop" => "item.drop",
 	);
 
 

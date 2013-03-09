@@ -76,7 +76,7 @@ class PluginAPI extends stdClass{
 		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"]) or !isset($info["author"])){
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
 		}
-		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]."\x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
+		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." #".intval($info["apiversion"])."\x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
 		if(class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
 		}
@@ -84,8 +84,10 @@ class PluginAPI extends stdClass{
 			console("[ERROR] [PluginAPI] Failed loading plugin: evaluation error");
 		}
 		$className = trim($info["class"]);
-		if(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){
-			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses an outdated API! It can crash or corrupt the server!");
+		if(isset($info["apiversion"]) and intval($info["apiversion"]) > CURRENT_API_VERSION){
+			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses a newer API! It can crash or corrupt the server!");
+		}elseif(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){
+			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" uses an old API");
 		}
 		if(isset($info["api"]) and $info["api"] !== true){
 			console("[INFO] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" got raw access to Server methods");

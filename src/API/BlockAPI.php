@@ -325,6 +325,7 @@ class BlockAPI{
 			return;
 		}
 		$this->updateBlock($data["x"], $data["y"], $data["z"], isset($data["type"]) ? $data["type"]:BLOCK_UPDATE_RANDOM);
+		return true;
 	}
 
 	public function flowLavaOn($source, $face){

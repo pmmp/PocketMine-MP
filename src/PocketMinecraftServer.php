@@ -216,7 +216,7 @@ class PocketMinecraftServer{
 		$this->preparedSQL->selectHandlers->clear();
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
-		$result = true;
+		$result = null;
 		if($handlers !== false and $handlers !== true){
 			console("[INTERNAL] Handling ".$event, true, true, 3);
 			$call = array();
@@ -225,7 +225,7 @@ class PocketMinecraftServer{
 			}
 			$handlers->finalize();
 			foreach($call as $hnid => $boolean){
-				if($result !== false){
+				if($result !== false and $result !== true){
 					$called[$hnid] = true;
 					$handler = $this->handlers[$hnid];
 					if(is_array($handler)){

@@ -54,6 +54,7 @@ class PlayerAPI{
 							$player->setHealth(min(20, $player->getHealth() + $data), "regeneration");
 						}
 					}
+					return true;
 				}
 				break;
 			case "player.death":
@@ -103,6 +104,7 @@ class PlayerAPI{
 					}
 				}
 				$this->server->chat(false, $message);
+				return true;
 				break;
 		}
 	}
