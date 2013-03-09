@@ -46,7 +46,7 @@ class BanAPI{
 		$this->server->api->console->register("kick", "Kicks a player", array($this, "commandHandler"));
 		$this->server->api->console->register("whitelist", "Manages White-listing", array($this, "commandHandler"));
 		$this->server->api->console->register("op", "Ops a player", array($this, "commandHandler"));
-		$this->server->api->console->register("deop", "Deops a player", array($this, "commandHandler"));
+		$this->server->api->console->register("deop", "De-ops a player", array($this, "commandHandler"));
 		$this->server->api->console->register("sudo", "Run a command as a player", array($this, "commandHandler"));
 		$this->server->api->console->alias("ban-ip", "banip add");
 		$this->server->api->console->alias("banlist", "ban list");
