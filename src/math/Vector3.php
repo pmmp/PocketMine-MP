@@ -86,9 +86,6 @@ class Vector3{
 		if(($x instanceof Vector3) === true){
 			return $this->add($x->x, $x->y, $x->z);
 		}else{
-			$this->x += $x;
-			$this->y += $y;
-			$this->z += $z;
 			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
 		}
 	}
