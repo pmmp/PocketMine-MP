@@ -90,7 +90,7 @@ class BlockAPI{
 		return $i;
 	}
 	
-	public function setBlock($block, $id, $meta, $update = true, $tiles = false){
+	public function setBlock(Vector3 $block, $id, $meta, $update = true, $tiles = false){
 		if(($block instanceof Vector3) or (($block instanceof Block) and $block->inWorld === true)){
 			$this->server->api->level->setBlock($block->x, $block->y, $block->z, (int) $id, (int) $meta, $update, $tiles);
 			return true;
