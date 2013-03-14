@@ -308,7 +308,7 @@ class WorldGenerator{
 				$chunk = str_pad($this->getChunk($X, $Z), 86012, "\x00", STR_PAD_RIGHT);
 				$this->raw .= Utils::writeLInt(strlen($chunk)) . $chunk;
 			}
-			console("[DEBUG] Generating level ".ceil(($Z + 1)/0.16)."%", true, true, 2);
+			console("[NOTICE] Generating level ".ceil(($Z + 1)/0.16)."%");
 		}
 		return true;
 	}
