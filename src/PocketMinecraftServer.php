@@ -29,7 +29,7 @@ class PocketMinecraftServer{
 	public $tCnt;
 	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
 	private $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticker;
-
+	
 	private function load(){
 		$this->version = new VersionString();
 		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
@@ -97,8 +97,17 @@ class PocketMinecraftServer{
 		$tps = 40 / ($v[39] - $v[0]);
 		return round($tps, 4);
 	}
+	
+	public function titleTick(){
+		if(ENABLE_ANSI === true){
+			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)." | RAM ".round((memory_get_usage(true) / 1024) / 1024, 2)."MB | TPS ".$this->getTPS()."\x07";
+		}
+	}
 
 	public function loadEvents(){
+		if(ENABLE_ANSI === true){
+			$this->action(1500000, '$this->titleTick();');
+		}
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 60, '$this->reloadConfig();');
@@ -106,7 +115,6 @@ class PocketMinecraftServer{
 		if($this->api instanceof ServerAPI){
 			$this->action(1000000 * 80, '$cnt = count($this->clients); if($cnt > 1){$this->api->chat->broadcast("Online (".$cnt."): ".implode(", ",$this->api->player->online()));}');
 		}
-		$this->action(1000000 * 120, '$this->debugInfo(true);');
 	}
 
 	public function startDatabase(){
