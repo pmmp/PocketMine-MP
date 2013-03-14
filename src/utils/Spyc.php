@@ -1,32 +1,7 @@
 <?php
 /**
-
-The MIT License
-
-Copyright (c) 2011 Vladimir Andersen
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-
-
    * Spyc -- A Simple PHP YAML Class
-   * @version 0.5
+   * @version 0.5.1
    * @author Vlad Andersen <vlad.andersen@gmail.com>
    * @author Chris Wanstrath <chris@ozmm.org>
    * @link http://code.google.com/p/spyc/
@@ -34,28 +9,6 @@ THE SOFTWARE.
    * @license http://www.opensource.org/licenses/mit-license.php MIT License
    * @package Spyc
    */
-
-if (!function_exists('spyc_load')) {
-  /**
-   * Parses YAML to array.
-   * @param string $string YAML string.
-   * @return array
-   */
-  function spyc_load ($string) {
-    return Spyc::YAMLLoadString($string);
-  }
-}
-
-if (!function_exists('spyc_load_file')) {
-  /**
-   * Parses YAML to array.
-   * @param string $file Path to YAML file.
-   * @return array
-   */
-  function spyc_load_file ($file) {
-    return Spyc::YAMLLoad($file);
-  }
-}
 
 /**
    * The Simple PHP YAML Class.
@@ -458,17 +411,15 @@ class Spyc {
         $i--;
       }
 
+      // Strip out comments
+      if (strpos ($line, '#')) {
+          $line = preg_replace('/\s*#([^"\']+)$/','',$line);
+      }
+
       while (++$i < $cnt && self::greedilyNeedNextLine($line)) {
         $line = rtrim ($line, " \n\t\r") . ' ' . ltrim ($Source[$i], " \t");
       }
       $i--;
-
-
-
-      if (strpos ($line, '#')) {
-        if (strpos ($line, '"') === false && strpos ($line, "'") === false)
-          $line = preg_replace('/\s+#(.+)$/','',$line);
-      }
 
       $lineArray = $this->_parseLine($line);
 
@@ -678,7 +629,8 @@ class Spyc {
 
     } while (strpos ($inline, '[') !== false || strpos ($inline, '{') !== false);
 
-    $explode = explode(', ',$inline);
+    $explode = explode(',',$inline);
+    $explode = array_map('trim', $explode);
     $stringi = 0; $i = 0;
 
     while (1) {
