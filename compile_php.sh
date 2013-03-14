@@ -18,6 +18,7 @@ echo "[INFO] Checking dependecies"
 type make >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"make\""; exit 1; }
 type autoconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"autoconf\""; exit 1; }
 type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"automake\""; exit 1; }
+type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; exit 1; }
 type gcc >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\""; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; exit 1; }
 
