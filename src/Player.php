@@ -429,18 +429,18 @@ class Player{
 			switch($pid){
 				case 0xa0: //NACK
 					if(isset($this->recovery[$data[2]])){
-						$this->directDataPacket($this->recovery[$data[2]][1]["id"], $this->recovery[$data[2]][1]);
+						$this->directDataPacket($this->recovery[$data[2]]["id"], $this->recovery[$data[2]]);
 					}
 					if(isset($data[3])){
 						if(isset($this->recovery[$data[3]])){
-							$this->directDataPacket($this->recovery[$data[3]][1]["id"], $this->recovery[$data[3]][1]);
+							$this->directDataPacket($this->recovery[$data[3]]["id"], $this->recovery[$data[3]]);
 						}
 					}
 					break;
 				case 0xc0: //ACK
 					$diff = $data[2] - $this->counter[2];
 					if($diff > 8){ //Packet recovery
-						$this->directDataPacket($this->recovery[$data[2]][1]["id"], $this->recovery[$data[2]][1]);
+						$this->directDataPacket($this->recovery[$data[2]]["id"], $this->recovery[$data[2]]);
 					}
 					$this->counter[2] = $data[2];
 					$this->recovery[$data[2]] = null;
@@ -449,7 +449,7 @@ class Player{
 					if(isset($data[3])){
 						$diff = $data[3] - $this->counter[2];
 						if($diff > 8){ //Packet recovery
-							$this->directDataPacket($this->recovery[$data[3]][1]["id"], $this->recovery[$data[3]][1]);
+							$this->directDataPacket($this->recovery[$data[3]]["id"], $this->recovery[$data[3]]);
 						}
 						$this->counter[2] = $data[3];
 						$this->recovery[$data[3]] = null;
@@ -969,11 +969,11 @@ class Player{
 			if(count($this->recovery) >= 512){
 				array_shift($this->recovery);
 			}
-			$this->recovery[$count] = $this->buffer;
+			$this->recovery[$count] = array("id" => false, "raw" => $this->buffer);
 			$this->send(0x80, array(
 				$count,
 				0x00,
-				array("id" => false, "raw" => $this->buffer),
+				$this->recovery[$count],
 			));
 		}
 
@@ -982,6 +982,9 @@ class Player{
 	}
 	
 	public function directDataPacket($id, $data){
+		$data["id"] = $id;
+		$count = $this->counter[0];
+		++$this->counter[0];
 		$this->send(0x80, array(
 			$count,
 			0x00,
