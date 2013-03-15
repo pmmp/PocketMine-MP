@@ -428,19 +428,19 @@ class Player{
 			$this->timeout = microtime(true) + 20;
 			switch($pid){
 				case 0xa0: //NACK
-					/*if(isset($this->recovery[$data[2]])){
-						array_unshift($this->queue, array(0, $this->recovery[$data[2]][0], $this->recovery[$data[2]][1], $data[2]));
+					if(isset($this->recovery[$data[2]])){
+						$this->directDataPacket($this->recovery[$data[2]][1]["id"], $this->recovery[$data[2]][1]);
 					}
 					if(isset($data[3])){
 						if(isset($this->recovery[$data[3]])){
-							array_unshift($this->queue, array(0, $this->recovery[$data[3]][0], $this->recovery[$data[3]][1], $data[3]));
+							$this->directDataPacket($this->recovery[$data[3]][1]["id"], $this->recovery[$data[3]][1]);
 						}
-					}*/
+					}
 					break;
 				case 0xc0: //ACK
-					/*$diff = $data[2] - $this->counter[2];
+					$diff = $data[2] - $this->counter[2];
 					if($diff > 8){ //Packet recovery
-						array_unshift($this->queue, array(0, $this->recovery[$data[2]][0], $this->recovery[$data[2]][1], $data[2]));
+						$this->directDataPacket($this->recovery[$data[2]][1]["id"], $this->recovery[$data[2]][1]);
 					}
 					$this->counter[2] = $data[2];
 					$this->recovery[$data[2]] = null;
@@ -449,12 +449,12 @@ class Player{
 					if(isset($data[3])){
 						$diff = $data[3] - $this->counter[2];
 						if($diff > 8){ //Packet recovery
-							array_unshift($this->queue, array(0, $this->recovery[$data[3]][0], $this->recovery[$data[3]][1], $data[3]));
+							$this->directDataPacket($this->recovery[$data[3]][1]["id"], $this->recovery[$data[3]][1]);
 						}
 						$this->counter[2] = $data[3];
 						$this->recovery[$data[3]] = null;
 						unset($this->recovery[$data[3]]);
-					}*/
+					}
 					break;
 				case 0x07:
 					if($this->loggedIn === true){
