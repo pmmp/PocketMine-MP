@@ -29,7 +29,9 @@ the Free Software Foundation, either version 3 of the License, or
 class Player{
 	private $server;
 	private $queue = array();
-	private $buffer = array();
+	private $buffer = "";
+	private $lastBuffer = 0;
+	private $recovery = array();
 	private $evid = array();
 	public $timeout;
 	public $connected = true;
@@ -152,6 +154,10 @@ class Player{
 		if($time > $this->timeout){
 			$this->close("timeout");
 		}else{
+			if($this->lastBuffer <= $time and strlen($this->buffer) > 0){
+				$this->sendBuffer();
+			}
+			
 			if(!empty($this->queue)){
 				$cnt = 0;
 				while($cnt < 4){
@@ -161,7 +167,7 @@ class Player{
 					}
 					switch($p[0]){
 						case 0:
-							$this->dataPacket($p[1], $p[2], false, $p[3]);
+							$this->dataPacket($p[1]["id"], $p[1], false);
 							break;
 						case 1:
 							eval($p[1]);
@@ -422,33 +428,33 @@ class Player{
 			$this->timeout = microtime(true) + 20;
 			switch($pid){
 				case 0xa0: //NACK
-					if(isset($this->buffer[$data[2]])){
-						array_unshift($this->queue, array(0, $this->buffer[$data[2]][0], $this->buffer[$data[2]][1], $data[2]));
+					/*if(isset($this->recovery[$data[2]])){
+						array_unshift($this->queue, array(0, $this->recovery[$data[2]][0], $this->recovery[$data[2]][1], $data[2]));
 					}
 					if(isset($data[3])){
-						if(isset($this->buffer[$data[3]])){
-							array_unshift($this->queue, array(0, $this->buffer[$data[3]][0], $this->buffer[$data[3]][1], $data[3]));
+						if(isset($this->recovery[$data[3]])){
+							array_unshift($this->queue, array(0, $this->recovery[$data[3]][0], $this->recovery[$data[3]][1], $data[3]));
 						}
-					}
+					}*/
 					break;
 				case 0xc0: //ACK
-					$diff = $data[2] - $this->counter[2];
+					/*$diff = $data[2] - $this->counter[2];
 					if($diff > 8){ //Packet recovery
-						array_unshift($this->queue, array(0, $this->buffer[$data[2]][0], $this->buffer[$data[2]][1], $data[2]));
+						array_unshift($this->queue, array(0, $this->recovery[$data[2]][0], $this->recovery[$data[2]][1], $data[2]));
 					}
 					$this->counter[2] = $data[2];
-					$this->buffer[$data[2]] = null;
-					unset($this->buffer[$data[2]]);
+					$this->recovery[$data[2]] = null;
+					unset($this->recovery[$data[2]]);
 
 					if(isset($data[3])){
 						$diff = $data[3] - $this->counter[2];
 						if($diff > 8){ //Packet recovery
-							array_unshift($this->queue, array(0, $this->buffer[$data[3]][0], $this->buffer[$data[3]][1], $data[3]));
+							array_unshift($this->queue, array(0, $this->recovery[$data[3]][0], $this->recovery[$data[3]][1], $data[3]));
 						}
 						$this->counter[2] = $data[3];
-						$this->buffer[$data[3]] = null;
-						unset($this->buffer[$data[3]]);
-					}
+						$this->recovery[$data[3]] = null;
+						unset($this->recovery[$data[3]]);
+					}*/
 					break;
 				case 0x07:
 					if($this->loggedIn === true){
@@ -955,25 +961,49 @@ class Player{
 	public function actionQueue($code){
 		$this->queue[] = array(1, $code);
 	}
-
-	public function dataPacket($id, $data = array(), $queue = false, $count = false){
-		if($queue === true){
-			$this->queue[] = array(0, $id, $data, $count);
-		}else{
-			if($count === false){
-				$count = $this->counter[0];
-				++$this->counter[0];
-				if(count($this->buffer) >= 512){
-					array_shift($this->buffer);
-				}
-				$this->buffer[$count] = array($id, $data);
+	
+	public function sendBuffer(){
+		if(strlen($this->buffer) > 0){
+			$count = $this->counter[0];
+			++$this->counter[0];
+			if(count($this->recovery) >= 512){
+				array_shift($this->recovery);
 			}
-			$data["id"] = $id;
+			$this->recovery[$count] = $this->buffer;
 			$this->send(0x80, array(
 				$count,
 				0x00,
-				$data,
+				array("id" => false, "raw" => $this->buffer),
 			));
+		}
+
+		$this->buffer = "";
+		$this->lastBuffer = microtime(true) + 0.05;
+	}
+	
+	public function directDataPacket($id, $data){
+		$this->send(0x80, array(
+			$count,
+			0x00,
+			$data,		
+		));
+	}
+
+	public function dataPacket($id, $data = array(), $queue = false){
+		$data["id"] = $id;
+		if($queue === true){
+			$this->queue[] = array(0, $data);
+		}else{
+			$data = new CustomPacketHandler($id, "", $data, true);
+			$len = strlen($data->raw) + 1;
+			$MTU = $this->MTU - 7;
+			
+			if((strlen($this->buffer) + $len) >= $MTU){
+				$this->sendBuffer();
+			}
+
+			$this->buffer .= ($this->buffer === "" ? "":"\x00").Utils::writeShort($len << 3) . chr($id) . $data->raw;
+			
 		}
 	}
 	

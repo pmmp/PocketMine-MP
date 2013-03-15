@@ -76,14 +76,12 @@ class UDPSocket{
 		socket_set_nonblock($this->sock);
 	}
 
-	public function read(){
+	public function read(&$buf, &$source, &$port){
 		if($this->connected === false){
-			return array(3 => false);
+			return false;
 		}
-		$source = false;
-		$port = 1; //$source and $port will be overwritten
 		$len = @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
-		return array($buf, $source, $port, $len);
+		return $len;
 	}
 
 	public function write($data, $dest = false, $port = false){

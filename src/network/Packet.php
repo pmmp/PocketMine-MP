@@ -80,10 +80,15 @@ class Packet{
 							$this->addRaw($reply->raw);
 							break;
 						case 0x00:
-							$reply = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
-							$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
-							$this->addRaw(chr($this->data[$field]["id"]));
-							$this->addRaw($reply->raw);
+							if($this->data[$field]["id"] !== false){
+								$raw = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
+								$raw = $raw->raw;
+								$this->addRaw(Utils::writeShort((strlen($raw) + 1) << 3));
+								$this->addRaw(chr($this->data[$field]["id"]));
+								$this->addRaw($raw);
+							}else{
+								$this->addRaw($this->data[$field]["raw"]);
+							}
 							break;
 					}
 					break;

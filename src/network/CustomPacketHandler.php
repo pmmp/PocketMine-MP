@@ -26,7 +26,11 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class CustomPacketHandler{
-	var $offset, $raw, $c, $data, $name = "";
+	public $offset;
+	public $raw;
+	public $c;
+	public $data;
+	public $name = "";
 
 	private function get($len = true, $check = true){
 		if($len === true){

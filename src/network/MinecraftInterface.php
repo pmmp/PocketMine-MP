@@ -69,24 +69,27 @@ class MinecraftInterface{
 		if($this->socket->connected === false){
 			return false;
 		}
-		$data = $this->socket->read();
-		if($data[3] === false){
+		$buf = "";
+		$source = false;
+		$port = 1;
+		$len = $this->socket->read($buf, $source, $port);
+		if($len === false){
 			return false;
 		}
-		$pid = ord($data[0]);
+		$pid = ord($buf{0});
 		$struct = $this->getStruct($pid);
 		if($struct === false){
 			console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);
-			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strTohex(chr($pid))." [length ".strlen($raw)."]".PHP_EOL;
-			$p .= Utils::hexdump($data[0]);
+			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strToHex(chr($pid))." [length ".strlen($buf)."]".PHP_EOL;
+			$p .= Utils::hexdump($buf);
 			$p .= PHP_EOL;
 			logg($p, "packets", true, 2);
 			return false;
 		}
 
-		$packet = new Packet($pid, $struct, $data[0]);
+		$packet = new Packet($pid, $struct, $buf);
 		@$packet->parse();
-		$this->data[] = array($pid, $packet->data, $data[0], $data[1], $data[2]);
+		$this->data[] = array($pid, $packet->data, $buf, $source, $port);
 		return $this->popPacket();
 	}
 
