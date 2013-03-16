@@ -42,7 +42,7 @@ class Player{
 	public $username;
 	public $iusername;
 	public $eid = false;
-	public $data = array();
+	public $data;
 	public $entity = false;
 	public $auth = false;
 	public $CID;
@@ -181,11 +181,13 @@ class Player{
 
 	public function save(){
 		if($this->entity instanceof Entity){
-			$this->data["spawn"] = array(
+			$this->data->set("position", array(
 				"x" => $this->entity->x,
 				"y" => $this->entity->y,
 				"z" => $this->entity->z,
-			);
+			));
+			$this->data->set("inventory", $this->inventory);
+			$this->data->set("armor", $this->armor);
 		}
 	}
 
@@ -194,9 +196,11 @@ class Player{
 			foreach($this->evid as $ev){
 				$this->server->deleteEvent($ev);
 			}
-			$this->server->api->handle("player.quit", $this);
-			$reason = $reason == "" ? "server stop":$reason;
-			$this->save();
+			if($this->username != ""){
+				$this->server->api->handle("player.quit", $this);
+				$this->save();
+			}
+			$reason = $reason == "" ? "server stop":$reason;			
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
 			$this->dataPacket(MC_LOGIN_STATUS, array(
 				"status" => 1,
@@ -622,23 +626,24 @@ class Player{
 							
 							$this->server->api->player->add($this->CID);
 							$this->auth = true;
-							if(!isset($this->data["inventory"]) or $this->gamemode === CREATIVE){
-								$this->data["inventory"] = $this->inventory;
+							if(!$this->data->exists("inventory") or $this->gamemode === CREATIVE){
+								$this->data->set("inventory", $this->inventory);
 							}
-							$this->inventory = &$this->data["inventory"];
-							$this->armor = &$this->data["armor"];
+							$this->inventory = $this->data->get("inventory");
+							$this->armor = $this->data->get("armor");
 							
-							$this->data["lastIP"] = $this->ip;
-							$this->data["lastID"] = $this->clientID;
-							$this->server->api->player->saveOffline($this->username, $this->data);
+							$this->data->set("lastIP", $this->ip);
+							$this->data->set("lastID", $this->clientID);
+
+							$this->server->api->player->saveOffline($this->data);
 							$this->dataPacket(MC_LOGIN_STATUS, array(
 								"status" => 0,
 							));
 							$this->dataPacket(MC_START_GAME, array(
 								"seed" => $this->server->seed,
-								"x" => $this->data["spawn"]["x"],
-								"y" => $this->data["spawn"]["y"],
-								"z" => $this->data["spawn"]["z"],
+								"x" => $this->data->get("position")["x"],
+								"y" => $this->data->get("position")["y"],
+								"z" => $this->data->get("position")["z"],
 								"unknown1" => 0,
 								"gamemode" => $this->gamemode,
 								"eid" => 0,
@@ -657,9 +662,9 @@ class Player{
 									$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
 									$this->eid = $this->entity->eid;
 									$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
-									$this->entity->x = $this->data["spawn"]["x"];
-									$this->entity->y = $this->data["spawn"]["y"];
-									$this->entity->z = $this->data["spawn"]["z"];
+									$this->entity->x = $this->data->get("position")["x"];
+									$this->entity->y = $this->data->get("position")["y"];
+									$this->entity->z = $this->data->get("position")["z"];
 									$this->entity->setName($this->username);
 									$this->entity->data["clientID"] = $this->clientID;
 									$this->server->api->entity->spawnAll($this);
@@ -689,7 +694,7 @@ class Player{
 										$this->eventHandler("You're using the default username. Please change it on the Minecraft PE settings.", "server.chat");
 									}
 									$this->sendInventory();
-									$this->teleport(new Vector3($this->data["spawn"]["x"], $this->data["spawn"]["y"], $this->data["spawn"]["z"]));
+									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
 									$this->sendSettings();
 									$this->getNextChunk();
 									break;

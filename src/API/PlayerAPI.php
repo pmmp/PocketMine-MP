@@ -258,7 +258,9 @@ class PlayerAPI{
 			$this->server->clients[$CID] = null;
 			unset($this->server->clients[$CID]);
 			$player->close();
-			$this->saveOffline($player->username, $player->data);
+			if($player->username != ""){
+				$this->saveOffline($player->data);
+			}
 			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
 			if($player->entity instanceof Entity){
 				$player->entity->player = null;
@@ -271,33 +273,33 @@ class PlayerAPI{
 	}
 
 	public function getOffline($name){
-		if(!file_exists(DATA_PATH."players/".$name.".dat")){
-			console("[NOTICE] Player data not found for \"".$name."\", creating new profile");
-			$data = array(
-				"spawn" => array(
-					"x" => $this->server->spawn["x"],
-					"y" => $this->server->spawn["y"],
-					"z" => $this->server->spawn["z"],
-				),
-				"inventory" => array_fill(0, 36, array(AIR, 0, 0)),
-				"armor" => array_fill(0, 4, array(AIR, 0, 0)),
-				"health" => 20,
-				"lastIP" => "",
-				"lastID" => 0,
-			);
-			$this->saveOffline($name, $data);
-		}else{
-			$data = unserialize(file_get_contents(DATA_PATH."players/".$name.".dat"));
+		$iname = strtolower($name);
+		$default = array(
+			"position" => array(
+				"x" => $this->server->spawn["x"],
+				"y" => $this->server->spawn["y"],
+				"z" => $this->server->spawn["z"],
+			),
+			"inventory" => array_fill(0, 36, array(AIR, 0, 0)),
+			"armor" => array_fill(0, 4, array(AIR, 0, 0)),
+			"health" => 20,
+			"lastIP" => "",
+			"lastID" => 0,
+		);
+		$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
+		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
+			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
+			$data->save();
 		}
 		if($this->server->gamemode === 1){
-			$data["health"] = 20;
+			$data->set("health", 20);
 		}
 		$this->server->handle("api.player.offline.get", $data);
 		return $data;
 	}
 
-	public function saveOffline($name, $data){
+	public function saveOffline(Config $data){
 		$this->server->handle("api.player.offline.save", $data);
-		file_put_contents(DATA_PATH."players/".str_replace("/", "", $name).".dat", serialize($data));
+		$data->save();
 	}
 }
