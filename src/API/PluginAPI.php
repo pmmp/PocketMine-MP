@@ -41,6 +41,7 @@ class PluginAPI extends stdClass{
 	}
 
 	public function getInfo($className){
+		$className = strtolower($className);
 		if(!isset($this->plugins[$className])){
 			return false;
 		}
@@ -83,7 +84,9 @@ class PluginAPI extends stdClass{
 		if(eval($content) === false or !class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: evaluation error");
 		}
-		$className = trim($info["class"]);
+		$info["code"] = $content;
+		$info["class"] = trim(strtolower($info["class"]));
+		$className = $info["class"];
 		if(isset($info["apiversion"]) and intval($info["apiversion"]) > CURRENT_API_VERSION){
 			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses a newer API! It can crash or corrupt the server!");
 		}elseif(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){

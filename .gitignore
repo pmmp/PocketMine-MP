@@ -3,6 +3,7 @@ worlds/*
 plugins/*
 logs/*
 *.log
+*.pmf
 server.properties
 white-list.txt
 banned-ips.txt

@@ -38,7 +38,7 @@ class PMF{
 			$this->create($file, $type, $version);
 		}else{
 			if($this->load($file) !== true){
-				$this->parse();
+				$this->parseInfo();
 			}
 		}
 	}
@@ -51,7 +51,7 @@ class PMF{
 		return $this->type;
 	}
 	
-	private function load($file){
+	public function load($file){
 		$this->close();
 		$this->file = realpath($file);
 		if(($this->fp = @fopen($file, "c+b")) !== false){
@@ -64,7 +64,7 @@ class PMF{
 		return false;
 	}
 	
-	public function parse(){
+	public function parseInfo(){
 		if(fread($this->fp, 3) !== "PMF"){
 			return false;			
 		}
@@ -92,7 +92,7 @@ class PMF{
 	
 	public function create($file, $type, $version = PMF_CURRENT_VERSION){
 		$this->file = realpath($file);
-		if(!is_resource($this->fp)){		
+		if(!is_resource($this->fp)){
 			if(($this->fp = @fopen($file, "c+b")) === false){
 				return false;
 			}
@@ -102,6 +102,9 @@ class PMF{
 	}
 	
 	public function read($length){
+		if($length <= 0){
+			return "";
+		}
 		if(is_resource($this->fp)){
 			return fread($this->fp, (int) $length);
 		}
