@@ -31,6 +31,7 @@ class BanAPI{
 	private $banned;
 	private $ops;
 	private $bannedIPs;
+	private $cmdWL = array();
 	function __construct(PocketMinecraftServer $server){
 		$this->server = $server;
 	}
@@ -52,11 +53,16 @@ class BanAPI{
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
 		$this->server->api->console->alias("pardon-ip", "banip remove");
-		$this->server->addHandler("console.command", array($this, "opCheck"), 1);
+		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);
+		$this->cmdWhitelist("help");
+	}
+	
+	public function cmdWhitelist($cmd){
+		$this->cmdWhitelist[strtolower(trim($cmd))] = true;
 	}
 	
 	public function isOp($username){
-		if($this->server->api->dhandle("api.op.check", $username) === true){
+		if($this->server->api->dhandle("op.check", $username) === true){
 			return true;
 		}elseif($this->ops->exists($username)){
 			return true;
@@ -64,16 +70,14 @@ class BanAPI{
 		return false;	
 	}
 	
-	public function opCheck($data, $event){
-		$whitelist = array(
-			"help",		
-		);
-		if(in_array($data["cmd"], $whitelist, true)){
+	public function permissionsCheck($data, $event){
+
+		if(isset($this->cmdWhitelist[$data["cmd"]])){
 			return true;
 		}
 		
 		if($data["issuer"] instanceof Player){
-			if($this->isOp($data["issuer"]->username)){
+			if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->username)){
 				return true;
 			}
 		}elseif($data["issuer"] === "console"){

@@ -30,6 +30,7 @@ class Deprecation{
 	public static $events = array(
 		"world.block.change" => "block.change",
 		"block.drop" => "item.drop",
+		"api.op.check" => "op.check",
 	);
 
 
