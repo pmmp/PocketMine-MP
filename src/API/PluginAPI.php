@@ -92,10 +92,7 @@ class PluginAPI extends stdClass{
 		}elseif(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){
 			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" uses an old API");
 		}
-		if(isset($info["api"]) and $info["api"] !== true){
-			console("[INFO] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" got raw access to Server methods");
-		}
-		$object = new $className($this->server->api, ((isset($info["api"]) and $info["api"] !== true) ? $this->server:false));
+		$object = new $className($this->server->api, false);
 		if(!($object instanceof Plugin)){
 			console("[ERROR] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
 			if(method_exists($object, "__destruct")){
