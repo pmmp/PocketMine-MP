@@ -422,6 +422,67 @@ class Player{
 			));	
 		}
 	}
+	
+	public function sendSettings(){
+		/*
+		0x00000001 world_inmutable
+		0x00000002 ?
+		0x00000004 ?
+		0x00000008 ?
+		0x00000010 ?
+		0x00000020 nametags_visible
+		0x00000040 ?
+		0x00000080 ?
+		0x00000100 ?
+		0x00000200 ?
+		0x00000400 ?
+		0x00000800 ?
+		0x00001000 ?
+		0x00002000 ?
+		0x00004000 ?
+		0x00008000 ?
+		0x00010000 ?
+		0x00020000 ?
+		0x00040000 ?
+		0x00080000 ?
+		0x00100000 ?
+		0x00200000 ?
+		0x00400000 ?
+		0x00800000 ?
+		0x01000000 ?
+		0x02000000 ?
+		0x04000000 ?
+		0x08000000 ?
+		0x10000000 ?
+		0x20000000 ?
+		0x40000000 ?
+		0x80000000 ?
+		*/
+		$flags = 0;
+		if($this->gamemode === ADVENTURE){
+			$flags |= 0x01; //Not allow placing/breaking blocks
+		}
+		$flags |= 0x20; //Nametags
+		$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
+			"flags" => $flags,
+		));
+	}
+	
+	public function teleport(Vector3 $pos){
+		if($this->entity instanceof Entity){
+			$this->entity->fallY = false;
+			$this->entity->fallStart = false;
+			$this->entity->setPosition($pos->x, $pos->y, $pos->z, 0, 0);
+		}
+		$this->dataPacket(MC_MOVE_PLAYER, array(
+			"eid" => 0,
+			"x" => $pos->x,
+			"y" => $pos->y,
+			"z" => $pos->z,
+			"yaw" => 0,
+			"pitch" => 0,
+		));
+	}
 
 	public function handle($pid, $data){
 		if($this->connected === true){
@@ -628,49 +689,8 @@ class Player{
 										$this->eventHandler("You're using the default username. Please change it on the Minecraft PE settings.", "server.chat");
 									}
 									$this->sendInventory();
-									$this->entity->setPosition($this->entity->x, $this->entity->y, $this->entity->z, 0, 0);
-									/*
-									0x00000001 world_inmutable
-									0x00000002 ?
-									0x00000004 ?
-									0x00000008 ?
-									0x00000010 ?
-									0x00000020 nametags_visible
-									0x00000040 ?
-									0x00000080 ?
-									0x00000100 ?
-									0x00000200 ?
-									0x00000400 ?
-									0x00000800 ?
-									0x00001000 ?
-									0x00002000 ?
-									0x00004000 ?
-									0x00008000 ?
-									0x00010000 ?
-									0x00020000 ?
-									0x00040000 ?
-									0x00080000 ?
-									0x00100000 ?
-									0x00200000 ?
-									0x00400000 ?
-									0x00800000 ?
-									0x01000000 ?
-									0x02000000 ?
-									0x04000000 ?
-									0x08000000 ?
-									0x10000000 ?
-									0x20000000 ?
-									0x40000000 ?
-									0x80000000 ?
-									*/
-									$flags = 0;
-									if($this->gamemode === ADVENTURE){
-										$flags |= 0x01; //Not allow placing/breaking blocks
-									}
-									$flags |= 0x20; //Nametags
-									$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
-										"flags" => $flags,
-									));
+									$this->teleport(new Vector3($this->data["spawn"]["x"], $this->data["spawn"]["y"], $this->data["spawn"]["z"]));
+									$this->sendSettings();
 									$this->getNextChunk();
 									break;
 								case 2://Chunk loaded?
@@ -762,7 +782,7 @@ class Player{
 							}
 							$this->entity->fire = 0;
 							$this->entity->air = 300;
-							$this->entity->setPosition($data["x"], $data["y"], $data["z"], 0, 0);
+							$this->teleport(new Vector3($this->data["spawn"]["x"], $this->data["spawn"]["y"], $this->data["spawn"]["z"]));
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->updateMetadata();
 							break;

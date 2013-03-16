@@ -178,19 +178,7 @@ class PlayerAPI{
 	public function tppos($name, $x, $y, $z){
 		$player = $this->get($name);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
-			$player->entity->setPosition($x, $y, $z, 0, 0);
-			$player->fallY = false;
-			$player->fallStart = false;
-			$player->dataPacket(MC_MOVE_PLAYER, array(
-				"eid" => 0,
-				"x" => $x,
-				"y" => $y,
-				"z" => $z,
-				"yaw" => 0,
-				"pitch" => 0,
-			));
-			$player->fallY = false;
-			$player->fallStart = false;
+			$player->teleport(new Vector3($x, $y, $z));
 			return true;
 		}
 		return false;
