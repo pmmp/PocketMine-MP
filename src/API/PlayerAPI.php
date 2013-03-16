@@ -39,6 +39,7 @@ class PlayerAPI{
 		$this->server->api->console->register("harm", "Harms a player", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
+		$this->server->api->console->alias("suicide", "kill");
 	}
 
 	public function handle($data, $event){
@@ -113,10 +114,14 @@ class PlayerAPI{
 		$output = "";
 		switch($cmd){
 			case "tp":
-				$name = array_shift($params);
-				$target = array_shift($params);
-				if($name == null or $target == null){
-					$output .= "Usage: /tp <player> <target>\n";
+				if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+					$name = $issuer->username;
+					$target = $params[1];
+				}elseif(isset($params[1]) and isset($params[0])){
+					$name = $params[0];
+					$target = $params[1];
+				}else{
+					$output .= "Usage: /tp [player] <target>\n";
 					break;
 				}
 				if($this->teleport($name, $target)){
@@ -126,12 +131,18 @@ class PlayerAPI{
 				}
 				break;
 			case "tppos":
-				$z = array_pop($params);
-				$y = array_pop($params);
-				$x = array_pop($params);
-				$name = implode(" ", $params);
-				if($name == null or $x === null or $y === null or $z === null){
-					$output .= "Usage: /tp <player> <x> <y> <z>\n";
+				if(!isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+					$name = $issuer->username;
+					$z = (float) $params[0];
+					$y = (float) $params[1];
+					$x = (float) $params[2];
+				}elseif(isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0])){
+					$name = $params[0];
+					$z = (float) $params[1];
+					$y = (float) $params[2];
+					$x = (float) $params[3];
+				}else{
+					$output .= "Usage: /tp [player] <x> <y> <z>\n";
 					break;
 				}
 				if($this->tppos($name, $x, $y, $z)){
@@ -141,11 +152,16 @@ class PlayerAPI{
 				}
 				break;
 			case "kill":
-				$player = $this->get(implode(" ", $params));
-				if($player !== false){
+			case "suicide":
+				if(!isset($params[0]) and ($issuer instanceof Player)){
+					$player = $issuer;
+				}else{
+					$player = $this->get($params[0]);
+				}
+				if($player instanceof Player){
 					$this->server->api->entity->harm($player->eid, 20, "console", true);
 				}else{
-					$output .= "Usage: /kill <player>\n";
+					$output .= "Usage: /kill [player]\n";
 				}
 				break;
 			case "harm":
