@@ -59,16 +59,16 @@ class PMF{
 			if($stat["size"] >= 5){ //Header + 2 Bytes
 				return true;
 			}
-			fclose($this->fp);
+			$this->close();
 		}
 		return false;
 	}
 	
 	public function parseInfo(){
+		$this->seek(0);
 		if(fread($this->fp, 3) !== "PMF"){
 			return false;			
-		}
-		$this->seek(0);
+		}		
 		$this->version = ord($this->read(1));
 		switch($this->version){
 			case 0x01:
@@ -87,7 +87,9 @@ class PMF{
 	
 	public function close(){
 		unset($this->version, $this->type, $this->file);
-		fclose($this->fp);
+		if(is_object($this->fp)){
+			fclose($this->fp);
+		}
 	}
 	
 	public function create($file, $type, $version = PMF_CURRENT_VERSION){
@@ -98,7 +100,7 @@ class PMF{
 			}
 		}
 		$this->seek(0);
-		$this->write("PMF" . chr((int) $type) . chr((int) $version));
+		$this->write("PMF" . chr((int) $version) . chr((int) $type));
 	}
 	
 	public function read($length){

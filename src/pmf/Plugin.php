@@ -39,8 +39,12 @@ class PMFPlugin extends PMF{
 		$this->parsePlugin();
 	}
 	
+	public function getPluginInfo(){
+		return $this->pluginData;
+	}
+	
 	protected function parsePlugin(){
-		if($this->type !== 0x01){
+		if($this->getType() !== 0x01){
 			return false;
 		}
 		
@@ -48,12 +52,13 @@ class PMFPlugin extends PMF{
 		$this->pluginData["name"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->pluginData["version"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->pluginData["author"] = $this->read(Utils::readShort($this->read(2), false));
+		$this->pluginData["apiversion"] = Utils::readShort($this->read(2), false);
 		$this->pluginData["class"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->pluginData["identifier"] = $this->read(Utils::readShort($this->read(2), false)); //Will be used to check for updates
-		$this->pluginData["extra"] = $this->read(Utils::readShort($this->read(2), false)); //Additional custom plugin data
+		$this->pluginData["extra"] = gzinflate($this->read(Utils::readShort($this->read(2), false))); //Additional custom plugin data
 		$this->pluginData["code"] = "";
 		while(!feof($this->fp)){
-			$this->pluginData["code"] .= fread($this->fp, 4096);
+			$this->pluginData["code"] .= $this->read(4096);
 		}
 		$this->pluginData["code"] = gzinflate($this->pluginData["code"]);
 	}

@@ -50,42 +50,51 @@ class PluginAPI extends stdClass{
 	}
 
 	public function load($file){
-		$content = file_get_contents($file);
-		$info = strstr($content, "*/", true);
-		$content = substr(strstr($content, "*/"),2);
-		if(preg_match_all('#([a-zA-Z0-9\-_]*)=([^\r\n]*)#u', $info, $matches) == 0){ //false or 0 matches
-			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
-			return false;
-		}
-		$info = array();
-		foreach($matches[1] as $k => $i){
-			$v = $matches[2][$k];
-			switch(strtolower($v)){
-				case "on":
-				case "true":
-				case "yes":
-					$v = true;
-					break;
-				case "off":
-				case "false":
-				case "no":
-					$v = false;
-					break;
+		if(strtolower(substr($file, -3)) === "pmf"){
+			$pmf = new PMFPlugin($file);
+			$info = $pmf->getPluginInfo();
+		}else{
+			$content = file_get_contents($file);
+			$info = strstr($content, "*/", true);
+			$content = substr(strstr($content, "*/"),2);
+			if(preg_match_all('#([a-zA-Z0-9\-_]*)=([^\r\n]*)#u', $info, $matches) == 0){ //false or 0 matches
+				console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
+				return false;
 			}
-			$info[$i] = $v;
+			$info = array();
+			foreach($matches[1] as $k => $i){
+				$v = $matches[2][$k];
+				switch(strtolower($v)){
+					case "on":
+					case "true":
+					case "yes":
+						$v = true;
+						break;
+					case "off":
+					case "false":
+					case "no":
+						$v = false;
+						break;
+				}
+				$info[$i] = $v;
+			}
+			$info["code"] = $content;
+			$info["class"] = trim(strtolower($info["class"]));
 		}
 		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"]) or !isset($info["author"])){
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
+			return false;
 		}
 		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." #".intval($info["apiversion"])."\x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
 		if(class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
+			return false;
 		}
-		if(eval($content) === false or !class_exists($info["class"])){
+		if(eval($info["code"]) === false or !class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: evaluation error");
+			return false;
 		}
-		$info["code"] = $content;
-		$info["class"] = trim(strtolower($info["class"]));
+		
 		$className = $info["class"];
 		if(isset($info["apiversion"]) and intval($info["apiversion"]) > CURRENT_API_VERSION){
 			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses a newer API! It can crash or corrupt the server!");
@@ -168,7 +177,8 @@ class PluginAPI extends stdClass{
 		$dir = dir(DATA_PATH."plugins/");
 		while(false !== ($file = $dir->read())){
 			if($file{0} !== "."){
-				if(strtolower(substr($file, -3)) === "php"){
+				$ext = strtolower(substr($file, -3));
+				if($ext === "php" or $ext === "pmf"){
 					$this->load(DATA_PATH."plugins/" . $file);
 				}
 			}
