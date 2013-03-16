@@ -782,7 +782,7 @@ class Player{
 							}
 							$this->entity->fire = 0;
 							$this->entity->air = 300;
-							$this->teleport(new Vector3($this->data["spawn"]["x"], $this->data["spawn"]["y"], $this->data["spawn"]["z"]));
+							$this->teleport(new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]));
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->updateMetadata();
 							break;
