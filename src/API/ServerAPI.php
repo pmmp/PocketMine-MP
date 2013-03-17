@@ -113,6 +113,11 @@ class ServerAPI{
 		self::$serverRequest = $this->server;
 		$this->setProperty("server-id", $this->server->serverID);
 		$this->server->api = $this;
+		if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!
+			$sha1 = trim(file_get_contents(FILE_PATH.".git/refs/heads/master"));
+			console("[GIT] Commit \x1b[33m".$sha1);
+		}
+		
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("port"));
