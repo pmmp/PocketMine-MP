@@ -28,6 +28,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 define("TILE_SIGN", "Sign");
 define("TILE_CHEST", "Chest");
+	define("CHEST_SLOTS", 27);
+define("TILE_FURNACE", "Furnace");
+	define("FURNACE_SLOTS", 3);
 
 class TileEntity extends stdClass{
 	public $name;
@@ -69,6 +72,55 @@ class TileEntity extends stdClass{
 		if($this->closed === true){
 			return false;
 		}
+	}
+	
+	public function getSlotIndex($s){
+		if($this->class !== TILE_CHEST and $this->class !== TILE_FURNACE){
+			return false;
+		}
+		foreach($this->data["Items"] as $i => $slot){
+			if($slot["Slot"] === $s){
+				return $i;
+			}
+		}
+		return -1;
+	}
+	
+	public function getSlot($s){
+		$i = $this->getSlotIndex($s);
+		if($i === false or $i < 0){
+			return BlockAPI::getItem(AIR, 0, 0);
+		}else{
+			return BlockAPI::getItem($this->data["Items"][$i]["id"], $this->data["Items"][$i]["Damage"], $this->data["Items"][$i]["Count"]);
+		}
+	}
+	
+	public function setSlot($s, Item $item){
+		$i = $this->getSlotIndex($s);
+		$d = array(
+			"Count" => $item->count,
+			"Slot" => $s,
+			"id" => $item->getID(),
+			"Damage" => $item->getMetadata(),
+		);
+		if($i === false){
+			return false;
+		}elseif($item->getID() === AIR or $item->count <= 0){
+			if($i >= 0){
+				unset($this->data["Items"][$i]);
+			}
+		}elseif($i < 0){
+			$this->data["Items"][] = $d;
+		}else{
+			$this->data["Items"][$i] = $d;
+		}
+		$this->server->api->dhandle("tile.container.slot", array(
+			"tile" => $this,
+			"slot" => $s,
+			"slotdata" => $item,
+		));
+		$this->server->handle("tile.update", $this);
+		return true;
 	}
 
 	public function spawn($player, $queue = false){

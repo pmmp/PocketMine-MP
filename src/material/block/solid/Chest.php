@@ -104,17 +104,17 @@ class ChestBlock extends SolidBlock{
 			"slots" => 27,
 			"title" => "Chest",
 		));
-		foreach($chest->data["Items"] as $slot){
-			if($slot["Slot"] < 0 or $slot["Slot"] >= 27){
-				continue;
+		for($s = 0; $s < 3; ++$s){
+			$slot = $chest->getSlot($s);
+			if($slot->getID() > 0 and $slot->count > 0){
+				$player->dataPacket(MC_CONTAINER_SET_SLOT, array(
+					"windowid" => $id,
+					"slot" => $s,
+					"block" => $slot->getID(),
+					"stack" => $slot->count,
+					"meta" => $slot->getMetadata(),
+				));
 			}
-			$player->dataPacket(MC_CONTAINER_SET_SLOT, array(
-				"windowid" => $id,
-				"slot" => $slot["Slot"],
-				"block" => $slot["id"],
-				"stack" => $slot["Count"],
-				"meta" => $slot["Damage"],
-			));			
 		}
 		
 		return true;
