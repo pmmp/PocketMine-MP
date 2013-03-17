@@ -31,7 +31,7 @@ class SuperflatGenerator{
 	public function __construct($seed){
 		$this->config = array(
 			"preset" => "7;70x1;3x3;2",
-			"spawn-surface" => 74,
+			"spawn-surface" => 24,
 			"spawn-radius" => 10,
 			"torches" => 0,
 			"seed" => (int) $seed,
