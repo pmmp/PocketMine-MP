@@ -69,7 +69,7 @@ class SuperflatGenerator{
 			$meta = (int) @array_shift($d);
 			for($j = 0; $j < $num; ++$j){
 				$this->structure[0] .= chr($block & 0xFF);
-				$this->structure[1] .= substr(dechex($meta & 0x0F), -1);
+				$this->structure[1] .= dechex($meta & 0x0F);
 			}
 		}
 		$this->structure[1] = pack("h*", str_pad($this->structure[1], (strlen($this->structure[1])&0xFE) + 2, "0", STR_PAD_RIGHT)); //invert nibbles
