@@ -44,7 +44,75 @@ class BurningFurnaceBlock extends SolidBlock{
 			return true;
 		}
 		return false;
-	}	
+	}
+	
+	public function onBreak(BlockAPI $level, Item $item, Player $player){
+		if($this->inWorld === true){
+			$server = ServerAPI::request();
+			$t = $server->api->tileentity->get($this);
+			if($t !== false){
+				if(is_array($t)){
+					foreach($t as $ts){
+						if($ts->class === TILE_FURNACE){
+							$server->api->tileentity->remove($ts->id);
+						}
+					}
+				}elseif($t->class === TILE_FURNACE){
+					$server->api->tileentity->remove($t->id);
+				}
+			}
+			$level->setBlock($this, 0, 0);
+			return true;
+		}
+		return false;
+	}
+
+	public function onActivate(BlockAPI $level, Item $item, Player $player){
+		$server = ServerAPI::request();
+		$t = $server->api->tileentity->get($this);
+		$furnace = false;
+		if($t !== false){
+			if(is_array($t)){
+				$furnace = array_shift($t);
+			}else{
+				$furnace = $t;
+			}
+		}else{
+			$furnace = $server->api->tileentity->add(TILE_FURNACE, $this->x, $this->y, $this->z, array(
+				"Items" => array(),
+				"id" => TILE_FURNACE,
+				"x" => $this->x,
+				"y" => $this->y,
+				"z" => $this->z			
+			));
+		}
+		
+		if($furnace->class !== TILE_FURNACE){
+			return false;
+		}
+		$id = $player->windowCnt = $player->windowCnt++ % 255;
+		$player->windows[$id] = $furnace;
+		$player->dataPacket(MC_CONTAINER_OPEN, array(
+			"windowid" => $id,
+			"type" => WINDOW_FURNACE,
+			"slots" => 3,
+			"title" => "Furnace",
+		));
+		for($s = 0; $s < 3; ++$s){
+			$slot = $furnace->getSlot($s);
+			if($slot->getID() > 0 and $slot->count > 0){
+				$player->dataPacket(MC_CONTAINER_SET_SLOT, array(
+					"windowid" => $id,
+					"slot" => $s,
+					"block" => $slot->getID(),
+					"stack" => $slot->count,
+					"meta" => $slot->getMetadata(),
+				));
+			}
+		}
+		return true;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
