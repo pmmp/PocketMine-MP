@@ -648,6 +648,29 @@ class Player{
 								"gamemode" => $this->gamemode,
 								"eid" => 0,
 							));
+							$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
+							$this->eid = $this->entity->eid;
+							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
+							$this->entity->x = $this->data->get("position")["x"];
+							$this->entity->y = $this->data->get("position")["y"];
+							$this->entity->z = $this->data->get("position")["z"];
+							$this->entity->setName($this->username);
+							$this->entity->data["clientID"] = $this->clientID;
+							$this->server->api->entity->spawnAll($this);
+							$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));  
+							$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							break;
 						case MC_READY:
 							if($this->loggedIn === false){
@@ -658,31 +681,9 @@ class Player{
 									if($this->spawned !== false){
 										break;
 									}
-									$this->spawned = true;
-									$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
-									$this->eid = $this->entity->eid;
-									$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
-									$this->entity->x = $this->data->get("position")["x"];
-									$this->entity->y = $this->data->get("position")["y"];
-									$this->entity->z = $this->data->get("position")["z"];
-									$this->entity->setName($this->username);
-									$this->entity->data["clientID"] = $this->clientID;
-									$this->server->api->entity->spawnAll($this);
+									$this->spawned = true;									
 									$this->server->api->entity->spawnToAll($this->eid);
-									$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));  
-									$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
-									$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
+									$this->server->schedule(5, array($this->entity, "update"), array(), true);
 									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
 									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
 									$this->eventHandler(new Container($this->server->motd), "server.chat");

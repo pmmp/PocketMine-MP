@@ -188,9 +188,16 @@ class Entity extends stdClass{
 			}
 			if(($time - $this->spawntime) >= 2){
 				$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
-				if(($player instanceof Entity) and $player->gamemode === SURVIVAL or $player->gamemode === ADVENTURE){
+				$player = $this->server->api->entity->get($player["EID"]);
+				if($player instanceof Entity){
+					$player = $player->player;
+				}else{
+					return false;
+				}
+				if(($player instanceof Player) and ($player->gamemode === SURVIVAL or $player->gamemode === ADVENTURE) and $player->spawned === true){
 					if($this->server->api->dhandle("player.pickup", array(
-						"eid" => $player["EID"],
+						"eid" => $player->eid,
+						"player" => $player,
 						"entity" => $this,
 						"block" => $this->type,
 						"meta" => $this->meta,
@@ -199,6 +206,7 @@ class Entity extends stdClass{
 						$this->close();
 						return false;
 					}
+					return true;
 				}
 			}
 		}
