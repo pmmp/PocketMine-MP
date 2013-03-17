@@ -186,9 +186,9 @@ class Entity extends stdClass{
 				$this->close(); //Despawn timer
 				return false;
 			}
-			if(($this->server->gamemode === 0 or $this->server->gamemode === 2) and ($time - $this->spawntime) >= 2){
+			if(($time - $this->spawntime) >= 2){
 				$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
-				if($player !== true and $player !== false){
+				if(($player instanceof Entity) and $player->gamemode === SURVIVAL or $player->gamemode === ADVENTURE){
 					if($this->server->api->dhandle("player.pickup", array(
 						"eid" => $player["EID"],
 						"entity" => $this,
