@@ -258,7 +258,7 @@ class PlayerAPI{
 			$this->server->clients[$CID] = null;
 			unset($this->server->clients[$CID]);
 			$player->close();
-			if($player->username != ""){
+			if($player->username != "" and ($player->data instanceof Config)){
 				$this->saveOffline($player->data);
 			}
 			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");

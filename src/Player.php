@@ -635,7 +635,9 @@ class Player{
 							$this->data->set("lastIP", $this->ip);
 							$this->data->set("lastID", $this->clientID);
 
-							$this->server->api->player->saveOffline($this->data);
+							if($this->data instanceof Config){
+								$this->server->api->player->saveOffline($this->data);
+							}
 							$this->dataPacket(MC_LOGIN_STATUS, array(
 								"status" => 0,
 							));
