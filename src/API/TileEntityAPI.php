@@ -123,7 +123,7 @@ class TileEntityAPI{
 
 	public function remove($id){
 		if(isset($this->server->tileEntities[$id])){
-			$t = $this->server->tileEntities[$eid];
+			$t = $this->server->tileEntities[$id];
 			$this->server->tileEntities[$id] = null;
 			unset($this->server->tileEntities[$id]);
 			$t->closed = true;
