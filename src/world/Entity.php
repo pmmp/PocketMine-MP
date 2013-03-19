@@ -111,7 +111,6 @@ class Entity extends stdClass{
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
 				$this->setHealth($this->health, "generic");
-				$this->server->schedule(5, array($this, "update"), array(), true);
 				break;
 			case ENTITY_ITEM:
 				if($data["item"] instanceof Item){
@@ -126,7 +125,7 @@ class Entity extends stdClass{
 				break;
 			case ENTITY_MOB:
 				$this->setHealth($this->data["Health"], "generic");
-				//$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->server->schedule(5, array($this, "update"), array(), true);
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				break;
 			case ENTITY_OBJECT:
