@@ -21,11 +21,11 @@ __PocketMine-MP is a Server for Minecraft Pocket Edition__. It has a Plugin API 
 
 The entire server is done in PHP, and has been tested, profiled and optimized to run smoothly.
 
-### [Homepage](http://www.pocketmine.org/)
+### [Homepage](http://www.pocketmine.net/)
 
 ### [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
-### [Help Page](http://www.pocketmine.org/help.php)
+### [Help Page](http://www.pocketmine.net/help.php)
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
