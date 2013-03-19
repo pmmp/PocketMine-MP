@@ -238,6 +238,7 @@ class Entity extends stdClass{
 		$endX = $startX + 2;
 		$endY = $startY + 2;
 		$endZ = $startZ + 2;
+		$waterDone = false;
 		for($y = $startY; $y <= $endY; ++$y){
 			for($x = $startX; $x <= $endX; ++$x){
 				for($z = $startZ; $z <= $endZ; ++$z){
@@ -251,8 +252,9 @@ class Entity extends stdClass{
 							}
 							if($this->air <= 0){
 								$this->harm(2, "water");
-							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER) and $waterDone === false){
 								$this->air -= 10;
+								$waterDone = true;
 								$this->updateMetadata();
 							}
 							break;
