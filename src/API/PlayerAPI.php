@@ -133,14 +133,14 @@ class PlayerAPI{
 			case "tppos":
 				if(!isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
 					$name = $issuer->username;
-					$z = (float) $params[0];
+					$x = (float) $params[0];
 					$y = (float) $params[1];
-					$x = (float) $params[2];
+					$z = (float) $params[2];
 				}elseif(isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0])){
 					$name = $params[0];
-					$z = (float) $params[1];
+					$x = (float) $params[1];
 					$y = (float) $params[2];
-					$x = (float) $params[3];
+					$z = (float) $params[3];
 				}else{
 					$output .= "Usage: /tp [player] <x> <y> <z>\n";
 					break;
