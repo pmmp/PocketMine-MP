@@ -32,22 +32,28 @@ class ChestBlock extends SolidBlock{
 	}
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
-			$faces = array(
-				0 => 4,
-				1 => 2,
-				2 => 5,
-				3 => 3,
-			);
-			$level->setBlock($block, $this->id, $faces[$player->entity->getDirection()]);
-			$server = ServerAPI::request();
-			$server->api->tileentity->add(TILE_CHEST, $this->x, $this->y, $this->z, array(
-				"Items" => array(),
-				"id" => TILE_CHEST,
-				"x" => $this->x,
-				"y" => $this->y,
-				"z" => $this->z			
-			));
-			return true;
+			$block0 = $level->getBlockFace($block, 2);
+			$block1 = $level->getBlockFace($block, 3);
+			$block2 = $level->getBlockFace($block, 4);
+			$block3 = $level->getBlockFace($block, 5);
+			if($block0->getID() !== CHEST and $block1->getID() !== CHEST and $block2->getID() !== CHEST and $block3->getID() !== CHEST){
+				$faces = array(
+					0 => 4,
+					1 => 2,
+					2 => 5,
+					3 => 3,
+				);
+				$level->setBlock($block, $this->id, $faces[$player->entity->getDirection()]);
+				$server = ServerAPI::request();
+				$server->api->tileentity->add(TILE_CHEST, $this->x, $this->y, $this->z, array(
+					"Items" => array(),
+					"id" => TILE_CHEST,
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z
+				));
+				return true;
+			}
 		}
 		return false;
 	}
