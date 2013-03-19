@@ -90,17 +90,17 @@ class BanAPI{
 		$output = "";
 		switch($cmd){
 			case "sudo":
-				$target = array_shift($params);
+				$target = strtolower($params[0]);
 				$player = $this->server->api->player->get($target);
 				if(!($player instanceof Player)){
 					$output .= "Player not connected.\n";
 					break;
 				}
 				$this->server->api->console->run(implode(" ", $params), $player);
-				$output .= "Command ran.\n";
+				$output .= "Command ran as ".$player->username.".\n";
 				break;
 			case "op":
-				$user = array_shift($params);
+				$user = strtolower($params[0]);
 				if($user == ""){
 					break;
 				}
@@ -110,7 +110,7 @@ class BanAPI{
 				$this->server->api->chat->sendTo(false, "You are now op.", $user);
 				break;
 			case "deop":
-				$user = array_shift($params);
+				$user = strtolower($params[0]);
 				if($user == ""){
 					break;
 				}
@@ -123,7 +123,7 @@ class BanAPI{
 				if(!isset($params[0])){
 					$output .= "Usage: /kick <playername> [reason]\n";
 				}else{
-					$name = array_shift($params);
+					$name = strtolower(array_shift($params));
 					$player = $this->server->api->player->get($name);
 					if($player === false){
 						$output .= "Player \"".$name."\" does not exist\n";
@@ -143,13 +143,13 @@ class BanAPI{
 				$p = strtolower(array_shift($params));
 				switch($p){
 					case "remove":
-						$user = trim(implode(" ", $params));
+						$user = strtolower($params[0]);
 						$this->whitelist->remove($user);
 						$this->whitelist->save();
 						$output .= "Player \"$user\" removed from white-list\n";
 						break;
 					case "add":
-						$user = trim(implode(" ", $params));
+						$user = strtolower($params[0]);
 						$this->whitelist->set($user);
 						$this->whitelist->save();
 						$output .= "Player \"$user\" added to white-list\n";
@@ -182,14 +182,14 @@ class BanAPI{
 				switch($p){
 					case "pardon":
 					case "remove":
-						$ip = trim(implode($params));
+						$ip = strtolower($params[0]);
 						$this->bannedIPs->remove($ip);
 						$this->bannedIPs->save();
 						$output .= "IP \"$ip\" removed from ban list\n";
 						break;
 					case "add":
 					case "ban":
-						$ip = trim(implode($params));
+						$ip = strtolower($params[0]);
 						$this->bannedIPs->set($ip);
 						$this->bannedIPs->save();
 						$output .= "IP \"$ip\" added to ban list\n";
@@ -210,21 +210,20 @@ class BanAPI{
 				switch($p){
 					case "pardon":
 					case "remove":
-						$user = trim(implode($params));
+						$user = strtolower($params[0]);
 						$this->banned->remove($user);
 						$this->banned->save();
 						$output .= "Player \"$user\" removed from ban list\n";
 						break;
 					case "add":
 					case "ban":
-						$user = array_shift($params);
+						$user = strtolower($params[0]);
 						$this->banned->set($user);
 						$this->banned->save();
 						$player = $this->server->api->player->get($user);
 						if($player !== false){
 							$player->close("You have been banned");
 						}
-						$this->server->api->chat->broadcast("$user has been banned");
 						if($issuer instanceof Player){
 							$this->server->api->chat->broadcast($user." has been banned by ".$issuer->username."\n");
 						}else{
@@ -284,6 +283,7 @@ class BanAPI{
 	}
 	
 	public function isBanned($username){
+		$username = strtolower($username);
 		if($this->server->api->dhandle("api.ban.check", $username) === false){
 			return true;
 		}elseif($this->banned->exists($username)){
@@ -293,6 +293,7 @@ class BanAPI{
 	}
 	
 	public function inWhitelist($username){
+		$username = strtolower($username);
 		if($this->server->api->dhandle("api.ban.whitelist.check", $ip) === false){
 			return true;
 		}elseif($this->whitelist->exists($username)){
