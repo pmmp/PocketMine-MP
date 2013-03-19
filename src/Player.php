@@ -208,6 +208,8 @@ class Player{
 			$this->dataPacket(MC_DISCONNECT);
 			$this->buffer = null;
 			unset($this->buffer);
+			$this->recovery = null;
+			unset($this->recovery);
 			$this->queue = null;
 			unset($this->queue);
 			$this->connected = false;
