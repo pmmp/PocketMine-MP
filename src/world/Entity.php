@@ -574,7 +574,7 @@ class Entity extends stdClass{
 		if($health < $this->health){
 			$harm = true;
 			$dmg = $this->health - $health;
-			if(($this->server->gamemode === 0 or $this->server->gamemode === 2 or $force === true or $this->class !== ENTITY_PLAYER) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and ($this->player->gamemode === SURVIVAL or $this->player->gamemode === ADVENTURE or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter[0] = microtime(true) + 0.5;
 				$this->dmgcounter[1] = $dmg;
 			}else{
