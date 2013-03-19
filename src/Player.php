@@ -214,7 +214,7 @@ class Player{
 			$this->queue = null;
 			unset($this->queue);
 			$this->connected = false;
-			if($msg === true){
+			if($msg === true and $this->username != ""){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
 			console("[INFO] Session with \x1b[36m".$this->ip.":".$this->port."\x1b[0m Client ID ".$this->clientID." closed due to ".$reason);
