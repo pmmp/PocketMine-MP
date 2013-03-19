@@ -37,6 +37,7 @@ class PlayerAPI{
 		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
 		$this->server->api->console->register("harm", "Harms a player", array($this, "commandHandler"));
+		$this->server->api->console->register("gamemode", "Changes the player gamemode", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
@@ -113,6 +114,26 @@ class PlayerAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "gamemode":
+				$gm = -1;
+				$player = false;
+				if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+					$player = $issuer;
+					$gm = (int) $params[1];
+				}elseif(isset($params[1]) and isset($params[0])){
+					$player = $this->server->api->player->get($params[0]);
+					$gm = (int) $params[1];
+				}
+				if(!($player instanceof Player) or $gm < 0 or $gm > 2){
+					$output .= "Usage: /gamemode [player] <0 | 1 | 2>\n";
+					break;
+				}				
+				
+				
+				if($player->setGamemode($gm)){
+					$output .= "Gamemode of ".$player->username." changed to ".$player->getGamemode()."\n";
+				}
+				break;
 			case "tp":
 				if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
 					$name = $issuer->username;
@@ -248,6 +269,7 @@ class PlayerAPI{
 			$player = $this->server->clients[$CID];
 			console("[INFO] Player \"\x1b[33m".$player->username."\x1b[0m\" connected from \x1b[36m".$player->ip.":".$player->port."\x1b[0m");
 			$player->data = $this->getOffline($player->username);
+			$player->gamemode = $player->data->get("gamemode");
 			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".$player->username."');");
 		}
 	}
@@ -282,6 +304,7 @@ class PlayerAPI{
 			),
 			"inventory" => array_fill(0, 36, array(AIR, 0, 0)),
 			"armor" => array_fill(0, 4, array(AIR, 0, 0)),
+			"gamemode" => $this->server->gamemode,
 			"health" => 20,
 			"lastIP" => "",
 			"lastID" => 0,
@@ -291,15 +314,15 @@ class PlayerAPI{
 			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
 			$data->save();
 		}
-		if($this->server->gamemode === 1){
+		if($this->server->gamemode === CREATIVE){
 			$data->set("health", 20);
 		}
-		$this->server->handle("api.player.offline.get", $data);
+		$this->server->handle("player.offline.get", $data);
 		return $data;
 	}
 
 	public function saveOffline(Config $data){
-		$this->server->handle("api.player.offline.save", $data);
+		$this->server->handle("player.offline.save", $data);
 		$data->save();
 	}
 }

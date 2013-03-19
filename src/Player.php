@@ -188,6 +188,7 @@ class Player{
 			));
 			$this->data->set("inventory", $this->inventory);
 			$this->data->set("armor", $this->armor);
+			$this->data->set("gamemode", $this->gamemode);
 		}
 	}
 
@@ -490,6 +491,34 @@ class Player{
 			"pitch" => 0,
 		));
 	}
+	
+	public function getGamemode(){
+		switch($this->gamemode){
+			case SURVIVAL:
+				return "survival";
+			case CREATIVE:
+				return "creative";
+			case ADVENTURE:
+				return "adventure";
+		}
+	}
+	
+	public function setGamemode($gm){
+		if($gm < 0 or $gm > 2 or $this->gamemode === $gm){
+			return false;
+		}
+		
+		if(($this->gamemode === SURVIVAL and $gm === ADVENTURE) or ($this->gamemode === ADVENTURE and $gm === SURVIVAL)){
+			$this->gamemode = $gm;
+			$this->sendSettings();
+			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode()."..", "server.chat");
+		}else{
+			$this->gamemode = $gm;
+			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
+			$this->server->schedule(30, array($this, "close")); //Forces a kick
+		}
+		return true;
+	}
 
 	public function handle($pid, $data){
 		if($this->connected === true){
@@ -610,7 +639,7 @@ class Player{
 								$this->close("bad username", false);
 								break;
 							}
-							$o = $this->server->api->player->getOffline($this->username);
+							
 							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" not being on white-list", false);
 								break;
@@ -622,12 +651,12 @@ class Player{
 								$u->close("logged in from another location");
 							}
 							
+							$this->server->api->player->add($this->CID);							
 							if($this->server->api->handle("player.join", $this) === false){
 								$this->close();
 								return;
 							}
 							
-							$this->server->api->player->add($this->CID);
 							$this->auth = true;
 							if(!$this->data->exists("inventory") or $this->gamemode === CREATIVE){
 								$this->data->set("inventory", $this->inventory);

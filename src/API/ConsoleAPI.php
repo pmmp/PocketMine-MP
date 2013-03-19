@@ -92,15 +92,6 @@ class ConsoleAPI{
 						$output .= "Stopping the server\n";
 						$this->server->close();
 						break;
-					case "gamemode":
-						$s = trim(array_shift($params));
-						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1 and ((int) $s) !== 2)){
-							$output .= "Usage: /gamemode <0 | 1 | 2>\n";
-							break;
-						}
-						$this->server->api->setProperty("gamemode", (int) $s);
-						$output .= "Gamemode changed to ".$this->server->getGamemode()."\n";
-						break;
 					case "difficulty":
 						$s = trim(array_shift($params));
 						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
@@ -126,7 +117,6 @@ class ConsoleAPI{
 					case "?":
 						$output .= "/help: Show available commands\n";
 						$output .= "/status: Show server TPS and memory usage\n";
-						$output .= "/gamemode: Changes default gamemode\n";
 						$output .= "/difficulty: Changes difficulty\n";
 						$output .= "/invisible: Manages server visibility\n";
 						$output .= "/say: Broadcasts mesages\n";
