@@ -206,6 +206,7 @@ class Player{
 				"status" => 1,
 			));
 			$this->dataPacket(MC_DISCONNECT);
+			$this->sendBuffer();
 			$this->buffer = null;
 			unset($this->buffer);
 			$this->recovery = null;
