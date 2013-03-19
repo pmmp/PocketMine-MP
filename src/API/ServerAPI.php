@@ -128,10 +128,10 @@ class ServerAPI{
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
 			console("[INFO] Last check: \x1b[36m".date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
-			$info = json_decode(Utils::curl_get("http://www.pocketmine.org/latest"), true);
+			$info = json_decode(Utils::curl_get("http://www.pocketmine.net/latest"), true);
 			if($this->server->version->isDev()){
 				if($info === false or !isset($info["development"])){
-					console("[ERROR] PocketMine.org API error");
+					console("[ERROR] PocketMine API error");
 				}else{
 					$last = $info["development"]["date"];
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false){
@@ -147,7 +147,7 @@ class ServerAPI{
 				}
 			}else{
 				if($info === false or !isset($info["stable"])){
-					console("[ERROR] PocketMine.org API error");
+					console("[ERROR] PocketMine API error");
 				}else{
 					$newest = new VersionString(MAJOR_VERSION);
 					$newestN = $newest->getNumber();
@@ -221,7 +221,7 @@ class ServerAPI{
 	
 	public function sendUsage(){
 		console("[INTERNAL] Sending usage data...", true, true, 3);
-		Utils::curl_post("http://www.pocketmine.org/usage.php", array(
+		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
 			"serverid" => $this->server->serverID,
 			"os" => Utils::getOS(),
 			"version" => MAJOR_VERSION,
