@@ -478,19 +478,21 @@ class Player{
 		));
 	}
 	
-	public function teleport(Vector3 $pos){
+	public function teleport(Vector3 $pos, $yaw = 0, $pitch = 0){
 		if($this->entity instanceof Entity){
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
-			$this->entity->setPosition($pos->x, $pos->y, $pos->z, 0, 0);
+			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
+			$this->entity->calculateVelocity();
+			$this->entity->updateLast();
 		}
 		$this->dataPacket(MC_MOVE_PLAYER, array(
 			"eid" => 0,
 			"x" => $pos->x,
 			"y" => $pos->y,
 			"z" => $pos->z,
-			"yaw" => 0,
-			"pitch" => 0,
+			"yaw" => $yaw,
+			"pitch" => $pitch,
 		));
 	}
 	
