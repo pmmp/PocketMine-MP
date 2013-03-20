@@ -36,7 +36,6 @@ class PlayerAPI{
 		$this->server->addHandler("player.death", array($this, "handle"), 1);
 		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
-		$this->server->api->console->register("harm", "Harms a player", array($this, "commandHandler"));
 		$this->server->api->console->register("gamemode", "Changes the player gamemode", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
@@ -183,15 +182,6 @@ class PlayerAPI{
 					$this->server->api->entity->harm($player->eid, 20, "console", true);
 				}else{
 					$output .= "Usage: /kill [player]\n";
-				}
-				break;
-			case "harm":
-				$dmg = (int) array_shift($params);
-				$player = $this->get(implode(" ", $params));
-				if($player !== false){
-					$this->server->api->entity->harm($player->eid, $dmg, "console", true);
-				}else{
-					$output .= "Usage: /harm <damage> <player>\n";
 				}
 				break;
 			case "list":
