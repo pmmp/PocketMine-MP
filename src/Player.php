@@ -30,7 +30,7 @@ class Player{
 	private $server;
 	private $queue = array();
 	private $buffer = "";
-	private $lastBuffer = 0;
+	private $nextBuffer = 0;
 	private $recovery = array();
 	private $evid = array();
 	public $lastMovement = 0;
@@ -155,7 +155,7 @@ class Player{
 		if($time > $this->timeout){
 			$this->close("timeout");
 		}else{
-			if($this->lastBuffer <= $time and strlen($this->buffer) > 0){
+			if($this->nextBuffer <= $time and strlen($this->buffer) > 0){
 				$this->sendBuffer();
 			}
 			
@@ -1029,7 +1029,7 @@ class Player{
 		}
 
 		$this->buffer = "";
-		$this->lastBuffer = microtime(true) + 0.05;
+		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
 	public function directDataPacket($id, $data){
