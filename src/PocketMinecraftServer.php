@@ -110,6 +110,7 @@ class PocketMinecraftServer{
 		}
 		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
+		$this->action(1000000 * 15, 'if($this->getTPS() < 15){console("[WARNING] Can\'t keep up! Is the server overloaded?");}');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
 		if($this->api instanceof ServerAPI){
 			$this->action(1000000 * 80, '$cnt = count($this->clients); if($cnt > 1){$this->api->chat->broadcast("Online (".$cnt."): ".implode(", ",$this->api->player->online()));}');
