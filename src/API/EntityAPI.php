@@ -79,7 +79,7 @@ class EntityAPI{
 			return false;
 		}
 		foreach($this->server->api->player->getAll() as $player){
-			if($player->eid !== false){
+			if($player->eid !== false and $player->eid !== $eid){
 				$e->spawn($player);
 			}
 		}

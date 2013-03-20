@@ -694,7 +694,6 @@ class Player{
 							$this->entity->z = $this->data->get("position")["z"];
 							$this->entity->setName($this->username);
 							$this->entity->data["clientID"] = $this->clientID;
-							$this->server->api->entity->spawnAll($this);
 							$this->evid[] = $this->server->event("server.time", array($this, "eventHandler"));  
 							$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
@@ -719,7 +718,8 @@ class Player{
 									if($this->spawned !== false){
 										break;
 									}
-									$this->spawned = true;									
+									$this->spawned = true;						
+									$this->server->api->entity->spawnAll($this);
 									$this->server->api->entity->spawnToAll($this->eid);
 									$this->server->schedule(5, array($this->entity, "update"), array(), true);
 									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
