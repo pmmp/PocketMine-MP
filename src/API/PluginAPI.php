@@ -99,7 +99,7 @@ class PluginAPI extends stdClass{
 		if(isset($info["apiversion"]) and intval($info["apiversion"]) > CURRENT_API_VERSION){
 			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses a newer API! It can crash or corrupt the server!");
 		}elseif(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){
-			console("[NOTICE] [PluginAPI] Plugin \"".$info["name"]."\" uses an old API");
+			console("[DEBUG] [PluginAPI] Plugin \"".$info["name"]."\" uses an old API", true, true, 2);
 		}
 		$object = new $className($this->server->api, false);
 		if(!($object instanceof Plugin)){
