@@ -33,6 +33,7 @@ class Player{
 	private $lastBuffer = 0;
 	private $recovery = array();
 	private $evid = array();
+	public $lastMovement = 0;
 	public $timeout;
 	public $connected = true;
 	public $clientID;
@@ -741,7 +742,8 @@ class Player{
 							if($this->loggedIn === false){
 								break;
 							}
-							if($this->entity instanceof Entity){
+							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
+								$this->lastMovement = $data["counter"];
 								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								$this->server->api->dhandle("player.move", $this->entity);
 							}
