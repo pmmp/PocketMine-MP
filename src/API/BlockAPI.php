@@ -192,7 +192,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function drop(Vector3 $pos, Item $item{
+	public function drop(Vector3 $pos, Item $item){
 		if($item->getID() === AIR or $item->count <= 0){
 			return;
 		}
