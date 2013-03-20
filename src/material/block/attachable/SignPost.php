@@ -40,7 +40,8 @@ class SignPostBlock extends TransparentBlock{
 					5 => 5,
 				);
 				if(!isset($faces[$face])){
-					$level->setBlock($block, SIGN_POST, 0);
+					$b = floor((($player->entity->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
+					$level->setBlock($block, SIGN_POST, $b);
 					return true;
 				}else{
 					$level->setBlock($block, WALL_SIGN, $faces[$face]);
