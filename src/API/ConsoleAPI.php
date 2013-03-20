@@ -108,7 +108,7 @@ class ConsoleAPI{
 							$output .= "Usage: /say <message>\n";
 							break;
 						}
-						$this->server->api->chat->broadcast($s);
+						$this->server->api->chat->broadcast("[Server] ".$s);
 						break;
 					case "save-all":
 						$this->server->save();
