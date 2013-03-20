@@ -39,6 +39,14 @@ class ConsoleAPI{
 		$this->event = $this->server->event("server.tick", array($this, "handle"));
 		$this->loop = new ConsoleLoop;
 		$this->loop->start();
+		$this->register("help", "Show available commands", array($this, "defaultCommands"));
+		$this->register("status", "Show server TPS and memory usage", array($this, "defaultCommands"));
+		$this->alias("lag", "status");
+		$this->register("difficulty", "Changes server difficulty", array($this, "defaultCommands"));
+		$this->register("invisible", "Changes server visibility", array($this, "defaultCommands"));
+		$this->register("say", "Broadcast a message", array($this, "defaultCommands"));
+		$this->register("save-all", "Save pending changes to disk", array($this, "defaultCommands"));
+		$this->register("stop", "Stops the server gracefully", array($this, "defaultCommands"));
 	}
 
 	function __destruct(){
@@ -113,17 +121,24 @@ class ConsoleAPI{
 					case "save-all":
 						$this->server->save();
 						break;
-					case "help":
+						
 					case "?":
-						$output .= "/help: Show available commands\n";
-						$output .= "/status: Show server TPS and memory usage\n";
-						$output .= "/difficulty: Changes difficulty\n";
-						$output .= "/invisible: Manages server visibility\n";
-						$output .= "/say: Broadcasts mesages\n";
-						$output .= "/save-all: Saves pending changes\n";
-						$output .= "/stop: Stops the server\n";
+						if($issuer !== "console"){
+							break;
+						}
+					case "help":
+						$max = ceil(count($this->help) / 5);
+						$page = isset($params[0]) ? min($max - 1, max(0, intval($params[0]) - 1)):0;						
+						$output .= "- Showing help page ". ($page + 1) ." of $max (/help <page>) -\n";
+						$current = 0;
 						foreach($this->help as $c => $h){
-							$output .= "/$c: ".$h."\n";
+							$curpage = (int) ($current / 5);
+							if($curpage === $page){
+								$output .= "/$c: ".$h."\n";
+							}elseif($curpage > $page){
+								break;
+							}							
+							++$current;
 						}
 						break;
 					default:
@@ -145,6 +160,7 @@ class ConsoleAPI{
 		$cmd = strtolower(trim($cmd));
 		$this->cmds[$cmd] = $callback;
 		$this->help[$cmd] = $help;
+		ksort($this->help, SORT_NATURAL | SORT_FLAG_CASE);
 	}
 	
 	public function run($line = "", $issuer = false, $alias = false){

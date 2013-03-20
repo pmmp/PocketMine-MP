@@ -90,7 +90,7 @@ class BanAPI{
 		$output = "";
 		switch($cmd){
 			case "sudo":
-				$target = strtolower($params[0]);
+				$target = strtolower(array_shift($params));
 				$player = $this->server->api->player->get($target);
 				if(!($player instanceof Player)){
 					$output .= "Player not connected.\n";
