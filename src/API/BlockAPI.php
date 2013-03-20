@@ -192,8 +192,8 @@ class BlockAPI{
 		return false;
 	}
 
-	public function drop(Vector3 $pos, Item $item, $force = false){
-		if($item->getID() === AIR or $item->count <= 0 or ($this->server->gamemode === CREATIVE and $force !== true)){
+	public function drop(Vector3 $pos, Item $item{
+		if($item->getID() === AIR or $item->count <= 0){
 			return;
 		}
 		$data = array(
@@ -243,39 +243,6 @@ class BlockAPI{
 		if($player->gamemode === ADVENTURE){ //Adventure mode!!
 			return $this->cancelAction($block, $player);
 		}
-		
-		/*if(isset(Material::$activable[$target[0]])){
-			switch($target[0]){
-				case 54:
-					$cancelPlace = true;
-					if($this->server->gamemode === 1){
-						break;
-					}
-					$this->server->api->player->getByEID($data["eid"])->dataPacket(MC_CONTAINER_OPEN, array(
-						"windowid" => 1,
-						"type" => WINDOW_CHEST,
-						"slots" => 27,
-						"title" => "Chest",
-					));
-					break;
-				case 61:
-				case 62:
-					$cancelPlace = true;
-					if($this->server->gamemode === 1){
-						break;
-					}
-					$this->server->api->player->getByEID($data["eid"])->dataPacket(MC_CONTAINER_OPEN, array(
-						"windowid" => 1,
-						"type" => WINDOW_FURNACE,
-						"slots" => 3,
-						"title" => "Furnace",
-					));
-					break;
-				default:
-					$cancelPlace = true;
-					break;
-			}
-		}*/
 
 		if($block->y > 127 or $block->y < 0){
 			return false;
