@@ -746,9 +746,12 @@ class Player{
 								break;
 							}
 							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
-								$this->lastMovement = $data["counter"];
-								$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
-								$this->server->api->dhandle("player.move", $this->entity);
+								$this->lastMovement = $data["counter"];								
+								if($this->server->api->handle("player.move", $this->entity) === false){
+									$this->teleport(new Vecotr3($this->entity->x, $this->entity->y, $this->entity->z), $this->entity->yaw, $this->entity->pitch);
+								}else{
+									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
+								}
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:

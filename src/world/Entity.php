@@ -351,7 +351,14 @@ class Entity extends stdClass{
 		}
 		
 		if($this->class !== ENTITY_OBJECT and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
-			$this->server->api->dhandle("entity.move", $this);
+			if($this->server->api->handle("entity.move", $this) === false){
+				if($this->class === ENTITY_PLAYER){
+					$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
+				}else{
+					$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
+				}
+				return;
+			}
 			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();
 			}
