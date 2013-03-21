@@ -25,6 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+define("RAKNET_MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 
 define("MC_KEEP_ALIVE", 0x00);
 

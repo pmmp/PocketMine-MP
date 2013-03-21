@@ -562,7 +562,7 @@ class Player{
 						break;
 					}
 					$this->send(0x08, array(
-						MAGIC,
+						RAKNET_MAGIC,
 						$this->server->serverID,
 						$this->port,
 						$data[3],

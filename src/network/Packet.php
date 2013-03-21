@@ -93,7 +93,7 @@ class Packet{
 					}
 					break;
 				case "magic":
-					$this->addRaw(MAGIC);
+					$this->addRaw(RAKNET_MAGIC);
 					break;
 				case "float":
 					$this->addRaw(Utils::writeFloat($this->data[$field]));

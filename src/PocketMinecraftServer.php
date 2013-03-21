@@ -529,7 +529,7 @@ class PocketMinecraftServer{
 						$this->send(0x1c, array(
 							$data[0],
 							$this->serverID,
-							MAGIC,
+							RAKNET_MAGIC,
 							$this->serverType,
 						), false, $packet["ip"], $packet["port"]);
 						break;
@@ -538,7 +538,7 @@ class PocketMinecraftServer{
 						$this->send(0x1c, array(
 							$data[0],
 							$this->serverID,
-							MAGIC,
+							RAKNET_MAGIC,
 							$this->serverType. $this->name . " [You're banned]",
 						), false, $packet["ip"], $packet["port"]);
 						break;
@@ -555,7 +555,7 @@ class PocketMinecraftServer{
 					$this->send(0x1c, array(
 						$data[0],
 						$this->serverID,
-						MAGIC,
+						RAKNET_MAGIC,
 						$this->serverType. $this->name . " [".($this->gamemode === CREATIVE ? "C":($this->gamemode === ADVENTURE ? "A":"S")).($this->whitelist !== false ? "W":"")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
 					), false, $packet["ip"], $packet["port"]);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
@@ -585,12 +585,12 @@ class PocketMinecraftServer{
 						console("[DEBUG] Incorrect structure #$version from ".$packet["ip"].":".$packet["port"], true, true, 2);
 						$this->send(0x1a, array(
 							CURRENT_STRUCTURE,
-							MAGIC,
+							RAKNET_MAGIC,
 							$this->serverID,
 						), false, $packet["ip"], $packet["port"]);
 					}else{
 						$this->send(0x06, array(
-							MAGIC,
+							RAKNET_MAGIC,
 							$this->serverID,
 							0,
 							strlen($packet["raw"]),
