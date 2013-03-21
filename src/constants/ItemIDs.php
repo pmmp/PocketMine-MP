@@ -37,10 +37,10 @@ define("DIAMOND", 264);//Implemented
 define("IRON_INGOT", 265);//Implemented
 define("GOLD_INGOT", 266);//Implemented
 define("IRON_SWORD", 267);
-define("WOODEN_SWORD", 268);
-define("WOODEN_SHOVEL", 269);
-define("WOODEN_PICKAXE", 270);
-define("WOODEN_AXE", 271);
+define("WOODEN_SWORD", 268);//Implemented
+define("WOODEN_SHOVEL", 269);//Implemented
+define("WOODEN_PICKAXE", 270);//Implemented
+define("WOODEN_AXE", 271);//Implemented
 define("STONE_SWORD", 272);
 define("STONE_SHOVEL", 273);
 define("STONE_PICKAXE", 274);

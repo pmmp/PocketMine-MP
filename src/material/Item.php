@@ -48,6 +48,10 @@ class Item{
 		IRON_PICKAXE => "IronPickaxeItem",
 		IRON_AXE => "IronAxeItem",
 		IRON_HOE => "IronHoeItem",
+		WOODEN_SWORD => "WoodenSwordItem",
+		WOODEN_SHOVEL => "WoodenShovelItem",
+		WOODEN_PICKAXE => "WoodenPickaxeItem",
+		WOODEN_AXE => "WoodenAxeItem",
 	);
 	protected $block;
 	protected $id;
