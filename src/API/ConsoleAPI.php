@@ -59,6 +59,12 @@ class ConsoleAPI{
 	public function defaultCommands($cmd, $params, $issuer, $alias){
 			$output = "";
 				switch($cmd){
+					case "reload":
+					$output .= "Reloading...";
+					$this->server->api->plugin->loadAll();
+					$this->server->api->plugin->initAll();
+					$output .= "done\n";
+					break;
 					case "crash": //Crashes the server to generate an report
 						$this->callNotDefinedMethodCrash();
 						$this->server->api->server; //Access a private property
