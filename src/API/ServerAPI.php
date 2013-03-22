@@ -229,7 +229,7 @@ class ServerAPI{
 			"protocol" => CURRENT_PROTOCOL,
 			"online" => count($this->server->clients),
 			"max" => $this->server->maxClients,
-		));
+		), 10);
 	}
 
 	public function __destruct(){

@@ -354,10 +354,11 @@ class Utils extends Thread{
 		return microtime(true);
 	}
 
-	public static function curl_get($page){
+	public static function curl_get($page, $timeout = 10){
 		if(Utils::$online === false){
 			return false;
 		}
+
 		$ch = curl_init($page);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"));
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
@@ -365,7 +366,7 @@ class Utils extends Thread{
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);
 		curl_close($ch);
 		return $ret;
@@ -375,6 +376,7 @@ class Utils extends Thread{
 		if(Utils::$online === false){
 			return false;
 		}
+		
 		$ch = curl_init($page);
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
