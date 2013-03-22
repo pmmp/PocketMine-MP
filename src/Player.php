@@ -646,9 +646,10 @@ class Player{
 							
 							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" not being on white-list", false);
-								break;
+								return;
 							}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" is banned!", false);
+								return;
 							}
 							$u = $this->server->api->player->get($this->iusername);
 							if($u !== false){
@@ -657,7 +658,12 @@ class Player{
 							
 							$this->server->api->player->add($this->CID);							
 							if($this->server->api->handle("player.join", $this) === false){
-								$this->close();
+								$this->close("join cancelled", false);
+								return;
+							}
+							
+							if(!($this->data instanceof Config)){
+								$u->close("no config created", false);
 								return;
 							}
 							

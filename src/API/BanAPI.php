@@ -62,6 +62,7 @@ class BanAPI{
 	}
 	
 	public function isOp($username){
+		$username = strtolower($username);
 		if($this->server->api->dhandle("op.check", $username) === true){
 			return true;
 		}elseif($this->ops->exists($username)){
@@ -77,7 +78,7 @@ class BanAPI{
 		}
 		
 		if($data["issuer"] instanceof Player){
-			if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->username)){
+			if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
 				return true;
 			}
 		}elseif($data["issuer"] === "console"){
