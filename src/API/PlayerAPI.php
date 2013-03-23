@@ -287,6 +287,7 @@ class PlayerAPI{
 	public function getOffline($name){
 		$iname = strtolower($name);
 		$default = array(
+			"caseusername" => $name,
 			"position" => array(
 				"x" => $this->server->spawn["x"],
 				"y" => $this->server->spawn["y"],

@@ -671,6 +671,7 @@ class Player{
 							if(!$this->data->exists("inventory") or $this->gamemode === CREATIVE){
 								$this->data->set("inventory", $this->inventory);
 							}
+							$this->data->set("caseusername", $this->username);
 							$this->inventory = $this->data->get("inventory");
 							$this->armor = $this->data->get("armor");
 							
