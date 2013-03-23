@@ -471,6 +471,8 @@ class ServerAPI{
 				return false;
 			}
 			require_once($file);
+		}else{
+			$internal = true;
 		}
 		$this->$name = new $class($this->server);
 		$this->apiList[] = $this->$name;
