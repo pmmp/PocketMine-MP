@@ -460,7 +460,9 @@ class ServerAPI{
 		if(isset($this->$name)){
 			return false;
 		}elseif(!class_exists($class)){
+			$internal = false;
 			if($dir === false){
+				$internal = true;
 				$dir = FILE_PATH."src/API/";
 			}
 			$file = $dir.$class.".php";
@@ -472,7 +474,7 @@ class ServerAPI{
 		}
 		$this->$name = new $class($this->server);
 		$this->apiList[] = $this->$name;
-		console("[INFO] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded");
+		console("[".($internal === true ? "DEBUG":"INFO")."] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded", true, true, ($internal === true ? 2:1));
 	}
 
 }
