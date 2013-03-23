@@ -98,7 +98,7 @@ class BurningFurnaceBlock extends SolidBlock{
 			"slots" => 3,
 			"title" => "Furnace",
 		));
-		for($s = 0; $s < 3; ++$s){
+		for($s = 0; $s < FURNACE_SLOTS; ++$s){
 			$slot = $furnace->getSlot($s);
 			if($slot->getID() > 0 and $slot->count > 0){
 				$player->dataPacket(MC_CONTAINER_SET_SLOT, array(

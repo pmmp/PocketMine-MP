@@ -110,7 +110,7 @@ class ChestBlock extends SolidBlock{
 			"slots" => 27,
 			"title" => "Chest",
 		));
-		for($s = 0; $s < 3; ++$s){
+		for($s = 0; $s < CHEST_SLOTS; ++$s){
 			$slot = $chest->getSlot($s);
 			if($slot->getID() > 0 and $slot->count > 0){
 				$player->dataPacket(MC_CONTAINER_SET_SLOT, array(
