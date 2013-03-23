@@ -29,7 +29,7 @@ define("PMF_CURRENT_VERSION", 0x01);
 
 class PMF{
 	protected $fp;
-	private $file;
+	protected $file;
 	private $version;
 	private $type;
 	
@@ -55,8 +55,9 @@ class PMF{
 		$this->close();
 		$this->file = realpath($file);
 		if(($this->fp = @fopen($file, "c+b")) !== false){
-			$stat = fstat($this->fp);
-			if($stat["size"] >= 5){ //Header + 2 Bytes
+			fseek($this->fp, 0, SEEK_END);
+			if(ftell($this->fp) >= 5){ //Header + 2 Bytes
+				@flock($this->fp, LOCK_EX);
 				return true;
 			}
 			$this->close();
@@ -88,6 +89,7 @@ class PMF{
 	public function close(){
 		unset($this->version, $this->type, $this->file);
 		if(is_object($this->fp)){
+			@flock($this->fp, LOCK_UN);
 			fclose($this->fp);
 		}
 	}

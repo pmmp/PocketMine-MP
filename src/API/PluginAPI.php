@@ -130,6 +130,7 @@ class PluginAPI extends stdClass{
 		}
 		$path = DATA_PATH."plugins/".$p[1]["name"]."/";
 		$this->plugins[$p[1]["class"]][1]["path"] = $path;
+		@mkdir($path);
 		return $path;
 	}
 
@@ -138,9 +139,7 @@ class PluginAPI extends stdClass{
 		if($p === false){
 			return false;
 		}
-		$path = DATA_PATH."plugins/".$p[1]["name"]."/";
-		@mkdir($path);
-		$this->plugins[$p[1]["class"]][1]["path"] = $path;
+		$path = $this->configPath($plugin);
 		$cnf = new Config($path."config.yml", CONFIG_YAML, $default);
 		$cnf->save();
 		return $path;
