@@ -47,7 +47,7 @@ class PMFPlugin extends PMF{
 		if($this->getType() !== 0x01){
 			return false;
 		}
-		
+		$this->seek(5);
 		$this->pluginData["fversion"] = ord($this->read(1));
 		$this->pluginData["name"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->pluginData["version"] = $this->read(Utils::readShort($this->read(2), false));

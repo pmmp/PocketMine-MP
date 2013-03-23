@@ -68,7 +68,7 @@ class PMF{
 		$this->seek(0);
 		if(fread($this->fp, 3) !== "PMF"){
 			return false;			
-		}		
+		}
 		$this->version = ord($this->read(1));
 		switch($this->version){
 			case 0x01:
