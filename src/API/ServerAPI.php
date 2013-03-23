@@ -222,6 +222,10 @@ class ServerAPI{
 	
 	public function sendUsage(){
 		console("[INTERNAL] Sending usage data...", true, true, 3);
+		$plist = "";
+		foreach($this->plugin->getList() as $p){
+			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
+		}
 		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
 			"serverid" => $this->server->serverID,
 			"os" => Utils::getOS(),
@@ -229,6 +233,7 @@ class ServerAPI{
 			"protocol" => CURRENT_PROTOCOL,
 			"online" => count($this->server->clients),
 			"max" => $this->server->maxClients,
+			"plugins" => $plist,
 		), 10);
 	}
 
