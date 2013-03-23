@@ -34,7 +34,7 @@ define("PMF_CURRENT_LEVEL_VERSION", 0x00);
 class PMFLevel extends PMF{
 	private $levelData = array();
 	private $locationTable = array();
-	public $isLoaded = true
+	public $isLoaded = true;
 	private $log = 4;
 	private $payloadOffset = 0;
 	private $chunks = array();
