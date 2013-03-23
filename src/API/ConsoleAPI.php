@@ -47,6 +47,7 @@ class ConsoleAPI{
 		$this->register("say", "Broadcast a message", array($this, "defaultCommands"));
 		$this->register("save-all", "Save pending changes to disk", array($this, "defaultCommands"));
 		$this->register("stop", "Stops the server gracefully", array($this, "defaultCommands"));
+		$this->server->api->ban->cmdWhitelist("help");
 	}
 
 	function __destruct(){

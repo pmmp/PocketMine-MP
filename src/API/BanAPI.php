@@ -54,7 +54,6 @@ class BanAPI{
 		$this->server->api->console->alias("pardon", "ban remove");
 		$this->server->api->console->alias("pardon-ip", "banip remove");
 		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);
-		$this->cmdWhitelist("help");
 	}
 	
 	public function cmdWhitelist($cmd){
