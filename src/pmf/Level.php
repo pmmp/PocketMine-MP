@@ -212,23 +212,26 @@ class PMFLevel extends PMF{
 		$aY = $y - ($Y << 4);
 		$bindex = $aY + $aZ << 5 + $aX << 9;
 		$mindex = $aY >> 1 + 16 + $aZ << 5 + $aX << 9;
-		$old_b = $this->chunks[$index][$Y]{$bindex};
-		$this->chunks[$index][$Y]{$bindex} = chr($block & 0xFF);
+		$old_b = $this->chunks[$index][$Y]{$bindex};		
 		$old_m = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
-			$m = ($old_m & 0xF0) | ($meta & 0x0F);
+			$old_m = $old_m & 0x0F;
+			$m = ($old_m << 4) | ($meta & 0x0F);
 		}else{
-			$m = (($meta << 4) & 0xF0) | ($old_m & 0x0F);
+			$old_m = $old_m >> 4;
+			$m = (($meta << 4) & 0xF0) | $old_m;
 		}
-		$this->chunks[$index][$Y]{$mindex} = chr($meta);
 		if($old_b !== $block or $old_m !== $meta){
+			$this->chunks[$index][$Y]{$bindex} = chr($block & 0xFF);
+			$this->chunks[$index][$Y]{$mindex} = chr($m);		
 			if(!isset($this->chunkChange[$index][$Y])){
 				$this->chunkChange[$index][$Y] = 1;
 			}else{
 				++$this->chunkChange[$index][$Y];
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public function saveChunk($X, $Z){
