@@ -72,6 +72,7 @@ class Entity extends stdClass{
 	public $fallY;
 	public $fallStart;
 	private $tickCounter;
+	private $speedMeasure = array(0, 0, 0, 0, 0);
 	private $server;
 	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
 		$this->fallY = false;
@@ -100,9 +101,9 @@ class Entity extends stdClass{
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
-		$this->speedX = /*isset($this->data["speedX"]) ? $this->data["speedX"]:*/0;
-		$this->speedY = /*isset($this->data["speedY"]) ? $this->data["speedY"]:*/0;
-		$this->speedZ = /*isset($this->data["speedZ"]) ? $this->data["speedZ"]:*/0;
+		$this->speedX = isset($this->data["speedX"]) ? $this->data["speedX"]:0;
+		$this->speedY = isset($this->data["speedY"]) ? $this->data["speedY"]:0;
+		$this->speedZ = isset($this->data["speedZ"]) ? $this->data["speedZ"]:0;
 		$this->speed = 0;
 		$this->yaw = isset($this->data["yaw"]) ? $this->data["yaw"]:0;
 		$this->pitch = isset($this->data["pitch"]) ? $this->data["pitch"]:0;
@@ -348,6 +349,10 @@ class Entity extends stdClass{
 					
 				}
 			}
+			
+			if($this->class === ENTITY_PLAYER){
+				$this->calculateVelocity();
+			}
 		}
 		
 		if($this->class !== ENTITY_OBJECT and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
@@ -357,10 +362,10 @@ class Entity extends stdClass{
 				}else{
 					$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
 				}
+				if($this->class === ENTITY_PLAYER){
+					$this->calculateVelocity();
+				}
 				return;
-			}
-			if($this->class === ENTITY_PLAYER){
-				$this->calculateVelocity();
 			}
 			$this->updateLast();
 		}
@@ -541,6 +546,10 @@ class Entity extends stdClass{
 		return false;
 	}
 	
+	public function getSpeed(){
+		return array_sum($this->speedMeasure) / count($this->speedMeasure);		
+	}
+	
 	public function calculateVelocity(){
 		$diffTime = microtime(true) - $this->last[5];
 		$origin = new Vector3($this->last[0], $this->last[1], $this->last[2]);
@@ -552,6 +561,8 @@ class Entity extends stdClass{
 		$this->speedY = $speedY;
 		$this->speedZ = $speedZ;		
 		$this->speed = $origin->distance($final) / $diffTime;
+		array_shift($this->speedMeasure);
+		$this->speedMeasure[] = $this->speed;
 	}
 	
 	public function updateLast(){		
