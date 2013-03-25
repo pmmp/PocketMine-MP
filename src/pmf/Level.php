@@ -124,7 +124,7 @@ class PMFLevel extends PMF{
 	
 	public function getXZ($index, &$X = null, &$Z = null){
 		$X = $index >> $this->log;
-		$Z = $index & (($this->log << 1) - 1);
+		$Z = $index & (pow($this->log, 2) - 1);
 		return array($X, $Z);
 	}
 	
