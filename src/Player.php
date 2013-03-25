@@ -519,7 +519,7 @@ class Player{
 		}else{
 			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
-			$this->server->schedule(30, array($this, "close")); //Forces a kick
+			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
 		}
 		return true;
 	}
