@@ -109,7 +109,6 @@ class ConsoleAPI{
 						}
 						$this->server->api->setProperty("difficulty", (int) $s);
 						$output .= "Difficulty changed to ".$this->server->difficulty."\n";
-						loadConfig(true);
 						break;
 					case "say":
 						$s = implode(" ", $params);
