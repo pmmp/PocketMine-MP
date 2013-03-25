@@ -447,7 +447,7 @@ class PocketMinecraftServer{
 		$this->loadEvents();
 		//$this->ticker = new TickLoop($this);
 		//$this->ticker->start();
-		declare(ticks=15);
+		declare(ticks=40);
 		register_tick_function(array($this, "tick"));
 		register_shutdown_function(array($this, "dumpError"));
 		register_shutdown_function(array($this, "close"));
