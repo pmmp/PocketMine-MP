@@ -40,16 +40,54 @@ class PMFLevel extends PMF{
 	private $chunks = array();
 	private $chunkChange = array();
 	
-	public function __construct($file){
-		if($this->load($file) !== false){
-			if($this->parseLevel() === false){
-				$this->isLoaded = false;
-			}else{
-				$this->isLoaded = true;
-				$this->log = (int) ((string) log($this->levelData["width"], 2));
-			}
+	public function __construct($file, $blank = false){
+		if(is_array($blank)){
+			$this->create($file, 0);
+			$this->levelData = $blank;
+			$this->createBlank();
+			$this->isLoaded = true;
+			$this->log = (int) ((string) log($this->levelData["width"], 2));
 		}else{
-			$this->isLoaded = false;
+			if($this->load($file) !== false){
+				$this->parseInfo();
+				if($this->parseLevel() === false){
+					$this->isLoaded = false;
+				}else{
+					$this->isLoaded = true;
+					$this->log = (int) ((string) log($this->levelData["width"], 2));
+				}
+			}else{
+				$this->isLoaded = false;
+			}
+		}
+	}
+	
+	private function createBlank(){			
+		$this->levelData["version"] = PMF_CURRENT_LEVEL_VERSION;
+		$this->seek(5);
+		$this->write(chr($this->levelData["version"]));
+		$this->write(Utils::writeShort(strlen($this->levelData["name"])).$this->levelData["name"]);
+		$this->write(Utils::writeInt($this->levelData["seed"]));
+		$this->write(Utils::writeInt($this->levelData["time"]));
+		$this->write(Utils::writeFloat($this->levelData["spawnX"]));
+		$this->write(Utils::writeFloat($this->levelData["spawnY"]));
+		$this->write(Utils::writeFloat($this->levelData["spawnZ"]));
+		$this->write(chr($this->levelData["width"]));
+		$this->write(chr($this->levelData["height"]));
+		$this->write(gzdeflate("", 9));
+		$this->locationTable = array();
+		$cnt = pow($this->levelData["width"], 2);
+		@mkdir(dirname($this->file)."/chunks/", 0755);
+		for($index = 0; $index < $cnt; ++$index){
+			$this->chunks[$index] = false;
+			$this->chunkChange[$index] = false;
+			$this->locationTable[$index] = array(
+				0 => 0,
+			);
+			$this->write(Utils::writeShort(0));
+			$X = $Z = null;
+			$this->getXZ($index, $X, $Z);
+			@file_put_contents($this->getChunkPath($X, $Z), gzdeflate("", 9));
 		}
 	}
 	
@@ -58,6 +96,7 @@ class PMFLevel extends PMF{
 			return false;
 		}
 		$this->seek(5);
+		$this->levelData["version"] = ord($this->read(1));
 		$this->levelData["name"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->levelData["seed"] = Utils::readInt($this->read(4));
 		$this->levelData["time"] = Utils::readInt($this->read(4));

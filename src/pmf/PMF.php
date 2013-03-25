@@ -53,7 +53,7 @@ class PMF{
 	
 	public function load($file){
 		$this->close();
-		$this->file = realpath($file);
+		$this->file = $file;
 		if(($this->fp = @fopen($file, "c+b")) !== false){
 			fseek($this->fp, 0, SEEK_END);
 			if(ftell($this->fp) >= 5){ //Header + 2 Bytes
@@ -95,7 +95,8 @@ class PMF{
 	}
 	
 	public function create($file, $type, $version = PMF_CURRENT_VERSION){
-		$this->file = realpath($file);
+		$this->file = $file;
+		@mkdir(dirname($this->file), 0755, true);
 		if(!is_resource($this->fp)){
 			if(($this->fp = @fopen($file, "c+b")) === false){
 				return false;
