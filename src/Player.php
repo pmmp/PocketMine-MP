@@ -411,7 +411,7 @@ class Player{
 				break;
 			case "server.chat":
 				if(($data instanceof Container) === true){
-					if(!$data->check($this->username)){
+					if(!$data->check($this->username) or !$data->check($this->iusername)){
 						return;
 					}else{
 						$message = $data->get();
