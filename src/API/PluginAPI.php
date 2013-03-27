@@ -85,7 +85,7 @@ class PluginAPI extends stdClass{
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
 			return false;
 		}
-		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." #".intval($info["apiversion"])."\x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
+		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
 		if(class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
 			return false;
@@ -96,11 +96,11 @@ class PluginAPI extends stdClass{
 		}
 		
 		$className = $info["class"];
-		if(isset($info["apiversion"]) and intval($info["apiversion"]) > CURRENT_API_VERSION){
-			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" uses a newer API! It can crash or corrupt the server!");
-		}elseif(!isset($info["apiversion"]) or intval($info["apiversion"]) < CURRENT_API_VERSION){
-			console("[DEBUG] [PluginAPI] Plugin \"".$info["name"]."\" uses an old API", true, true, 2);
+		$apiversion = array_map("intval", explode(",", (string) $info["apiversion"]));
+		if(!in_array((string) CURRENT_API_VERSION, $apiversion)){
+			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" is not compatible with the API (".$info["apiversion"]." != ".CURRENT_API_VERSION.")! It can crash or corrupt the server!");
 		}
+
 		$object = new $className($this->server->api, false);
 		if(!($object instanceof Plugin)){
 			console("[ERROR] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
