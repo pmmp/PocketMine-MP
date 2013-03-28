@@ -583,9 +583,11 @@ class Player{
 					if(isset($data[0])){
 						$diff = $data[0] - $this->counter[1];
 						if($diff > 1){ //Packet recovery
+							$arr = array();
 							for($i = $this->counter[1]; $i < $data[0]; ++$i){
-								$this->send(0xa0, array(array($i)));
+								$arr[] = $i;
 							}
+							$this->send(0xa0, array($arr));
 							$this->counter[1] = $data[0];
 						}elseif($diff === 1){
 							$this->counter[1] = $data[0];
