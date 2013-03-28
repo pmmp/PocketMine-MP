@@ -326,8 +326,6 @@ class Protocol{
 			"customData",
 		),
 
-
-
 		0xa0 => array(
 			"special1",
 		),

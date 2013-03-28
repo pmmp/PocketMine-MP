@@ -135,19 +135,9 @@ class Packet{
 				case "short":
 					$this->addRaw(Utils::writeShort($this->data[$field]));
 					break;
-				case "byteArray":
-					$this->addRaw($this->data[$field]);
-					break;
 				case "string":
 					$this->addRaw(Utils::writeShort(strlen($this->data[$field])));
 					$this->addRaw($this->data[$field]);
-					break;
-				case "slotData":
-					$this->addRaw(Utils::writeShort($this->data[$field][0]));
-					if($this->data[$field][0]!=-1){
-						$this->addRaw(Utils::writeByte($this->data[$field][1]));
-						$this->addRaw(Utils::writeShort($this->data[$field][2]));
-					}
 					break;
 				default:
 					$this->addRaw(Utils::writeByte($this->data[$field]));
@@ -173,7 +163,6 @@ class Packet{
 	}
 
 	public function parse(){
-		$continue = true;
 		foreach($this->struct as $field => $type){
 			if(is_int($type)){
 				$this->data[] = $this->get($type);
@@ -246,9 +235,6 @@ class Packet{
 				case "boolean":
 					$this->data[] = Utils::readBool($this->get(1));
 					break;
-			}
-			if($continue === false){
-				break;
 			}
 		}
 	}
