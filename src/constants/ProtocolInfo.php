@@ -329,16 +329,10 @@ class Protocol{
 
 
 		0xa0 => array(
-			"short",
-			"bool",
-			"itriad",
 			"special1",
 		),
 
 		0xc0 => array(
-			"short",
-			"bool",
-			"itriad",
 			"special1",
 		),
 

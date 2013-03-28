@@ -61,8 +61,18 @@ class Packet{
 					switch($this->pid){
 						case 0xc0:
 						case 0xa0:
-							if($this->data[1] === false){
-								$this->addRaw(strrev(Utils::writeTriad($this->data[$field])));
+							$cnt = 0;
+							$this->addRaw(Utils::writeShort(floor(count($this->data[$field]) / 2)));
+							foreach($this->data[$field] as $i => $count){
+								if(($cnt % 2) === 0){
+									if(count($this->data[$field]) > 1){
+										$this->addRaw(Utils::writeBool(false));
+									}else{
+										$this->addRaw(Utils::writeBool(true));
+									}
+								}
+								$this->addRaw(strrev(Utils::writeTriad($count)));
+								unset($this->data[$field][$i]);
 							}
 							break;
 						case 0x05:
@@ -173,8 +183,13 @@ class Packet{
 					switch($this->pid){
 						case 0xc0:
 						case 0xa0:
-							if($this->data[1] === false){
-								$this->data[] = Utils::readTriad(strrev($this->get(3)));
+							$cnt = Utils::readShort($this->get(2), false);
+							$this->data[$field] = array();
+							for($i = 0; $i < $cnt; ++$i){
+								if(Utils::readBool($this->get(1)) === false){
+									$this->data[$field][] = Utils::readTriad(strrev($this->get(3)));
+								}
+								$this->data[$field][] = Utils::readTriad(strrev($this->get(3)));
 							}
 							break;
 						case 0x05:

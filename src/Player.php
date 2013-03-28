@@ -529,46 +529,26 @@ class Player{
 			$this->timeout = microtime(true) + 20;
 			switch($pid){
 				case 0xa0: //NACK
-					if(isset($this->recovery[$data[2]])){
-						$this->directDataPacket($this->recovery[$data[2]]["id"], $this->recovery[$data[2]], $data[2]);
-					}
-					if(isset($data[3])){
-						if(isset($this->recovery[$data[3]])){
-							$this->directDataPacket($this->recovery[$data[3]]["id"], $this->recovery[$data[3]], $data[3]);
+					foreach($data[0] as $count){
+						if(isset($this->recovery[$count])){
+							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $count);
 						}
 					}
 					break;
 				case 0xc0: //ACK
-					/*$diff = $data[2] - $this->counter[2];
-					if($diff > 8){ //Packet recovery
-						$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
-					}*/
-					if($data[2] > $this->counter[2]){
-						$this->counter[2] = $data[2];
-					}
-					$this->recovery[$data[2]] = null;
-					unset($this->recovery[$data[2]]);
-					if(isset($data[3])){
-						/*$diff = $data[3] - $this->counter[2];
-						if($diff > 8){ //Packet recovery
-							$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
-						}*/
-						if($data[3] > $this->counter[2]){
-							$this->counter[2] = $data[3];
+					foreach($data[0] as $count){
+						if($count > $this->counter[2]){
+							$this->counter[2] = $count;
 						}
-						$this->recovery[$data[3]] = null;
-						unset($this->recovery[$data[3]]);
+						$this->recovery[$count] = null;
+						unset($this->recovery[$count]);
 					}
-					
-					$cnt = 0;
-					$limit = microtime(true) - 0.5; //max lag
+					$limit = microtime(true) - 1; //max lag
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
-						if($diff > 16 and $cnt < 16 and $d["sendtime"] < $limit){
+						if($diff > 16 and $d["sendtime"] < $limit){
 							++$cnt;
 							$this->directDataPacket($d["id"], $d, $count);
-						}else{
-							break;
 						}
 					}
 					break;
