@@ -57,6 +57,7 @@ class Player{
 	public $lastBreak;
 	public $windowCnt = 0;
 	public $windows = array();
+	public $blocked = true;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	
@@ -472,7 +473,7 @@ class Player{
 		if($this->gamemode === ADVENTURE){
 			$flags |= 0x01; //Not allow placing/breaking blocks
 		}
-		$flags |= 0x20; //Nametags
+		$flags |= 0x20; //Show Nametags
 		$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
 			"flags" => $flags,
 		));
@@ -517,6 +518,7 @@ class Player{
 			$this->sendSettings();
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode()."..", "server.chat");
 		}else{
+			$this->blocked = true;
 			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
@@ -740,6 +742,7 @@ class Player{
 									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
 									$this->sendSettings();
 									$this->getNextChunk();
+									$this->blocked = false;
 									break;
 								case 2://Chunk loaded?
 									break;
@@ -752,7 +755,7 @@ class Player{
 							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
-								if(($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 12 or $this->server->api->handle("player.move", $this->entity) === false){
+								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 12 or $this->server->api->handle("player.move", $this->entity) === false){
 									$this->teleport(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), $this->entity->yaw, $this->entity->pitch);
 								}else{
 									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
@@ -780,7 +783,7 @@ class Player{
 								break;
 							}
 							$data["eid"] = $this->eid;
-							if(Utils::distance($this->entity->position, $data) > 10){
+							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
 								break;
 							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"])){
 								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
@@ -792,7 +795,7 @@ class Player{
 							if($this->loggedIn === false){
 								break;
 							}
-							if(Utils::distance($this->entity->position, $data) > 8){
+							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 8){
 								break;
 							}
 							$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
@@ -808,7 +811,7 @@ class Player{
 							if($this->loggedIn === false){
 								break;
 							}
-							if(isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
+							if($this->blocked === false and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
 								$target = $this->server->api->entity->get($data["target"]);
 								$data["targetentity"] = $target;
 								$data["entity"] = $this->entity;
@@ -880,7 +883,7 @@ class Player{
 							}
 							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
 							$data["item"] = $item;
-							if($this->server->handle("player.drop", $data) !== false){
+							if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
 								$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
 								$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
 							}
