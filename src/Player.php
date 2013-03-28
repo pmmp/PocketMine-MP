@@ -543,7 +543,7 @@ class Player{
 						$this->recovery[$count] = null;
 						unset($this->recovery[$count]);
 					}
-					$limit = microtime(true) - 1; //max lag
+					$limit = microtime(true) - 2; //max lag
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
@@ -584,13 +584,13 @@ class Player{
 						$diff = $data[0] - $this->counter[1];
 						if($diff > 1){ //Packet recovery
 							for($i = $this->counter[1]; $i < $data[0]; ++$i){
-								$this->send(0xa0, array($i));
+								$this->send(0xa0, array(array($i)));
 							}
 							$this->counter[1] = $data[0];
 						}elseif($diff === 1){
 							$this->counter[1] = $data[0];
 						}
-						$this->send(0xc0, array($data[0]));
+						$this->send(0xc0, array(array($data[0])));
 					}
 					
 					if(!isset($data["id"])){

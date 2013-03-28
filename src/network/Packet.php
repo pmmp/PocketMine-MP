@@ -62,15 +62,16 @@ class Packet{
 						case 0xc0:
 						case 0xa0:
 							$cnt = 0;
-							$this->addRaw(Utils::writeShort(floor(count($this->data[$field]) / 2)));
+							$this->addRaw(Utils::writeShort(ceil(count($this->data[$field]) / 2)));
 							foreach($this->data[$field] as $i => $count){
-								if(($cnt % 2) === 0){
+								if(($cnt % 2) === 0 or $cnt === 0){
 									if(count($this->data[$field]) > 1){
 										$this->addRaw(Utils::writeBool(false));
 									}else{
 										$this->addRaw(Utils::writeBool(true));
 									}
 								}
+								++$cnt;
 								$this->addRaw(strrev(Utils::writeTriad($count)));
 								unset($this->data[$field][$i]);
 							}
