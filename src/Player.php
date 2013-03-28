@@ -530,31 +530,41 @@ class Player{
 			switch($pid){
 				case 0xa0: //NACK
 					if(isset($this->recovery[$data[2]])){
-						$this->directDataPacket($this->recovery[$data[2]]["id"], $this->recovery[$data[2]]);
+						$this->directDataPacket($this->recovery[$data[2]]["id"], $this->recovery[$data[2]], $data[2]);
 					}
 					if(isset($data[3])){
 						if(isset($this->recovery[$data[3]])){
-							$this->directDataPacket($this->recovery[$data[3]]["id"], $this->recovery[$data[3]]);
+							$this->directDataPacket($this->recovery[$data[3]]["id"], $this->recovery[$data[3]], $data[3]);
 						}
 					}
 					break;
 				case 0xc0: //ACK
-					$diff = $data[2] - $this->counter[2];
+					/*$diff = $data[2] - $this->counter[2];
 					if($diff > 8){ //Packet recovery
 						$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
-					}
+					}*/
 					$this->counter[2] = $data[2];
 					$this->recovery[$data[2]] = null;
 					unset($this->recovery[$data[2]]);
-
 					if(isset($data[3])){
-						$diff = $data[3] - $this->counter[2];
+						/*$diff = $data[3] - $this->counter[2];
 						if($diff > 8){ //Packet recovery
 							$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
-						}
+						}*/
 						$this->counter[2] = $data[3];
 						$this->recovery[$data[3]] = null;
 						unset($this->recovery[$data[3]]);
+					}
+					
+					$cnt = 0;
+					foreach($this->recovery as $count => $d){
+						$diff = $this->counter[2] - $count;
+						if($diff > 16 and $cnt < 16){
+							++$cnt;
+							$this->directDataPacket($d["id"], $d, $count);
+						}else{
+							break;
+						}
 					}
 					break;
 				case 0x07:
@@ -1029,31 +1039,30 @@ class Player{
 	
 	public function sendBuffer(){
 		if(strlen($this->buffer) > 0){
-			$count = $this->counter[0];
-			++$this->counter[0];
-			if(count($this->recovery) >= 512){
-				array_shift($this->recovery);
-			}
-			$this->recovery[$count] = array("id" => false, "raw" => $this->buffer);
-			$this->send(0x80, array(
-				$count,
-				0x00,
-				$this->recovery[$count],
-			));
+			$this->directDataPacket(false, array("raw" => $this->buffer));
 		}
-
 		$this->buffer = "";
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
-	public function directDataPacket($id, $data){
+	public function directDataPacket($id, $data, $count = false){
 		$data["id"] = $id;
-		$count = $this->counter[0];
-		++$this->counter[0];
+		if($count === false){
+			$count = $this->counter[0];
+			++$this->counter[0];
+			if(count($this->recovery) >= 1024){
+				reset($this->recovery);
+				$k = key($this->recovery);
+				$this->recovery[$k] = null;
+				unset($this->recovery[$k]);
+				end($this->recovery);
+			}
+		}
+		$this->recovery[$count] = $data;
 		$this->send(0x80, array(
 			$count,
 			0x00,
-			$data,		
+			$data,
 		));
 	}
 
