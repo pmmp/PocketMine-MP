@@ -543,7 +543,9 @@ class Player{
 					if($diff > 8){ //Packet recovery
 						$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
 					}*/
-					$this->counter[2] = $data[2];
+					if($data[2] > $this->counter[2]){
+						$this->counter[2] = $data[2];
+					}
 					$this->recovery[$data[2]] = null;
 					unset($this->recovery[$data[2]]);
 					if(isset($data[3])){
@@ -551,15 +553,18 @@ class Player{
 						if($diff > 8){ //Packet recovery
 							$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
 						}*/
-						$this->counter[2] = $data[3];
+						if($data[3] > $this->counter[2]){
+							$this->counter[2] = $data[3];
+						}
 						$this->recovery[$data[3]] = null;
 						unset($this->recovery[$data[3]]);
 					}
 					
 					$cnt = 0;
+					$limit = microtime(true) - 0.5; //max lag
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
-						if($diff > 16 and $cnt < 16){
+						if($diff > 16 and $cnt < 16 and $d["sendtime"] < $limit){
 							++$cnt;
 							$this->directDataPacket($d["id"], $d, $count);
 						}else{
@@ -1047,6 +1052,7 @@ class Player{
 	
 	public function directDataPacket($id, $data, $count = false){
 		$data["id"] = $id;
+		$data["sendtime"] = microtime(true);
 		if($count === false){
 			$count = $this->counter[0];
 			++$this->counter[0];
