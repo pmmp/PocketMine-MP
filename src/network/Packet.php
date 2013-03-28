@@ -62,7 +62,7 @@ class Packet{
 						case 0xc0:
 						case 0xa0:
 							if($this->data[1] === false){
-								$this->addRaw($this->data[$field]);
+								$this->addRaw(strrev(Utils::writeTriad($this->data[$field])));
 							}
 							break;
 						case 0x05:
@@ -174,7 +174,7 @@ class Packet{
 						case 0xc0:
 						case 0xa0:
 							if($this->data[1] === false){
-								$this->data[] = $this->get(3);
+								$this->data[] = Utils::readTriad(strrev($this->get(3)));
 							}
 							break;
 						case 0x05:

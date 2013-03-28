@@ -541,7 +541,7 @@ class Player{
 				case 0xc0: //ACK
 					$diff = $data[2] - $this->counter[2];
 					if($diff > 8){ //Packet recovery
-						$this->directDataPacket($this->recovery[$data[2]]["id"], $this->recovery[$data[2]]);
+						$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
 					}
 					$this->counter[2] = $data[2];
 					$this->recovery[$data[2]] = null;
@@ -550,7 +550,7 @@ class Player{
 					if(isset($data[3])){
 						$diff = $data[3] - $this->counter[2];
 						if($diff > 8){ //Packet recovery
-							$this->directDataPacket($this->recovery[$data[3]]["id"], $this->recovery[$data[3]]);
+							$this->directDataPacket($this->recovery[$this->counter[2]]["id"], $this->recovery[$this->counter[2]]);
 						}
 						$this->counter[2] = $data[3];
 						$this->recovery[$data[3]] = null;
