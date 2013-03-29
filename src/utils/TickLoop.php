@@ -28,10 +28,10 @@ the Free Software Foundation, either version 3 of the License, or
 class TickLoop extends Thread{
 	public $tick, $stop, $lastTic;
 	private $server;
-	public function __construct(PocketMinecraftServer $server){
+	public function __construct(){
 		$this->tick = false;
 		$this->lastTick = 0;
-		$this->server = $server;
+		$this->server = ServerAPI::request();
 	}
 	public function run(){
 		while($this->stop !== true){

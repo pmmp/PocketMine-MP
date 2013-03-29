@@ -474,7 +474,7 @@ class ServerAPI{
 		}else{
 			$internal = true;
 		}
-		$this->$name = new $class($this->server);
+		$this->$name = new $class();
 		$this->apiList[] = $this->$name;
 		console("[".($internal === true ? "DEBUG":"INFO")."] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded", true, true, ($internal === true ? 2:1));
 	}

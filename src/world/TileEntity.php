@@ -45,8 +45,8 @@ class TileEntity extends stdClass{
 	public $metadata;
 	public $closed;
 	private $server;
-	function __construct(PocketMinecraftServer $server, $id, $class, $x, $y, $z, $data = array()){
-		$this->server = $server;
+	function __construct($id, $class, $x, $y, $z, $data = array()){
+		$this->server = ServerAPI::request();
 		$this->normal = true;
 		$this->class = $class;
 		$this->data = $data;

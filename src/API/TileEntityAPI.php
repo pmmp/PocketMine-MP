@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 class TileEntityAPI{
 	private $server;
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
+	function __construct(){
+		$this->server = ServerAPI::request();
 	}
 	
 	public function get($x, $y = false, $z = false){
@@ -77,7 +77,7 @@ class TileEntityAPI{
 
 	public function add($class, $x, $y, $z, $data = array()){
 		$id = $this->tCnt++;
-		$this->server->tileEntities[$id] = new TileEntity($this->server, $id, $class, $x, $y, $z, $data);
+		$this->server->tileEntities[$id] = new TileEntity($id, $class, $x, $y, $z, $data);
 		$this->spawnToAll($id);
 		return $this->server->tileEntities[$id];
 	}

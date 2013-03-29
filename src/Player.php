@@ -61,9 +61,9 @@ class Player{
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	
-	function __construct(PocketMinecraftServer $server, $clientID, $ip, $port, $MTU){
+	function __construct($clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
-		$this->server = $server;
+		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
 		$this->CID = $this->server->clientID($ip, $port);
@@ -616,6 +616,7 @@ class Player{
 						case MC_KEEP_ALIVE:
 
 							break;
+						case 0x01:
 						case 0x03:
 
 							break;

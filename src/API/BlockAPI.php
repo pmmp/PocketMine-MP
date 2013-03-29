@@ -112,8 +112,8 @@ class BlockAPI{
 		return $this->getBlock($block->getSide($face));
 	}
 	
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
+	function __construct(){
+		$this->server = ServerAPI::request();
 	}
 
 	public function init(){

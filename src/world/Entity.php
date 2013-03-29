@@ -74,10 +74,10 @@ class Entity extends stdClass{
 	private $tickCounter;
 	private $speedMeasure = array(0, 0, 0, 0, 0);
 	private $server;
-	function __construct(PocketMinecraftServer $server, $eid, $class, $type = 0, $data = array()){
+	function __construct($eid, $class, $type = 0, $data = array()){
 		$this->fallY = false;
 		$this->fallStart = false;
-		$this->server = $server;
+		$this->server = ServerAPI::request();
 		$this->eid = (int) $eid;
 		$this->type = (int) $type;
 		$this->class = (int) $class;

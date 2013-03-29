@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 class EntityAPI{
 	private $server;
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
+	function __construct(){
+		$this->server = ServerAPI::request();
 	}
 
 	public function get($eid){
@@ -60,7 +60,7 @@ class EntityAPI{
 
 	public function add($class, $type = 0, $data = array()){
 		$eid = $this->server->eidCnt++;
-		$this->server->entities[$eid] = new Entity($this->server, $eid, $class, $type, $data);
+		$this->server->entities[$eid] = new Entity($eid, $class, $type, $data);
 		$this->server->handle("entity.add", $this->server->entities[$eid]);
 		return $this->server->entities[$eid];
 	}

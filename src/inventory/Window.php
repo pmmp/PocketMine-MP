@@ -31,8 +31,8 @@ define("WINDOW_FURNACE", 2);
 
 class Window{
 	private $server;
-	public function __construct(PocketMinecraftServer $server){
-
+	public function __construct(){
+		$this->server = ServerAPI::request();
 	}
 }
 

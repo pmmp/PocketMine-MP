@@ -619,7 +619,7 @@ class PocketMinecraftServer{
 					$port = $data[2];
 					$MTU = $data[3];
 					$clientID = $data[4];
-					$this->clients[$CID] = new Player($this, $clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
+					$this->clients[$CID] = new Player($clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
 					$this->clients[$CID]->handle(0x07, $data);
 					break;
 			}

@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ChatAPI{
 	private $server;
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
+	function __construct(){
+		$this->server = ServerAPI::request();
 	}
 	
 	public function init(){

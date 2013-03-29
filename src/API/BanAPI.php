@@ -32,8 +32,8 @@ class BanAPI{
 	private $ops;
 	private $bannedIPs;
 	private $cmdWL = array();
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
+	function __construct(){
+		$this->server = ServerAPI::request();
 	}
 	
 	public function init(){

@@ -33,8 +33,8 @@ class TimeAPI{
 		"sunrise" => 17800,
 	);
 	private $server;
-	function __construct(PocketMinecraftServer $server){
-		$this->server = $server;
+	function __construct(){
+		$this->server = ServerAPI::request();
 	}
 
 	public function init(){

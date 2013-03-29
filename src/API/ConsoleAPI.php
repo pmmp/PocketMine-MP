@@ -27,11 +27,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 class ConsoleAPI{
 	private $loop, $server, $event, $help, $cmds, $alias;
-	function __construct(PocketMinecraftServer $server){
+	function __construct(){
 		$this->help = array();
 		$this->cmds = array();
 		$this->alias = array();
-		$this->server = $server;
+		$this->server = ServerAPI::request();
 		$this->last = microtime(true);
 	}
 
