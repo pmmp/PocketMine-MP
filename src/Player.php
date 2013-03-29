@@ -484,8 +484,14 @@ class Player{
 		));
 	}
 	
-	public function teleport(Vector3 $pos, $yaw = 0, $pitch = 0){
+	public function teleport(Vector3 $pos, $yaw = false, $pitch = false){
 		if($this->entity instanceof Entity){
+			if($yaw === false){
+				$yaw = $this->entity->yaw;
+			}
+			if($pitch === false){
+				$pitch = $this->entity->yaw;
+			}
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
 			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
