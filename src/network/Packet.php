@@ -177,9 +177,14 @@ class Packet{
 							$this->data[$field] = array();
 							for($i = 0; $i < $cnt; ++$i){
 								if(Utils::readBool($this->get(1)) === false){
+									$start = Utils::readTriad(strrev($this->get(3)));
+									$end = Utils::readTriad(strrev($this->get(3)));
+									for($c = $start; $c <= $end; ++$c){
+										$this->data[$field][] = $c;
+									}
+								}else{
 									$this->data[$field][] = Utils::readTriad(strrev($this->get(3)));
 								}
-								$this->data[$field][] = Utils::readTriad(strrev($this->get(3)));
 							}
 							break;
 						case 0x05:
