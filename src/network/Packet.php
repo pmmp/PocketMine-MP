@@ -61,20 +61,36 @@ class Packet{
 					switch($this->pid){
 						case 0xc0:
 						case 0xa0:
-							$cnt = 0;
-							$this->addRaw(Utils::writeShort(ceil(count($this->data[$field]) / 2)));
-							foreach($this->data[$field] as $i => $count){
-								if(($cnt % 2) === 0 or $cnt === 0){
-									if(count($this->data[$field]) > 1){
-										$this->addRaw(Utils::writeBool(false));
-									}else{
-										$this->addRaw(Utils::writeBool(true));
-									}
+							$payload = "";
+							$records = 0;
+							$pointer = 0;
+							sort($this->data[$field], SORT_NUMERIC);
+							$max = count($this->data[$field]);
+							while($pointer < $max){
+								$type = true;
+								$curr = $start = $this->data[$field][$pointer];
+								for($i = $start + 1; $i < $max; ++$i){
+									$n = $this->data[$field][$i];
+									if(($n - $curr) === 1){
+										$curr = $end = $n;
+										$type = false;
+										$pointer = $i + 1;
+									}else{	
+										break;
+									}									
 								}
-								++$cnt;
-								$this->addRaw(strrev(Utils::writeTriad($count)));
-								unset($this->data[$field][$i]);
+								++$pointer;
+								if($type === false){
+									$payload .= Utils::writeBool(false);
+									$payload .= strrev(Utils::writeTriad($start));
+									$payload .= strrev(Utils::writeTriad($end));
+								}else{
+									$payload .= Utils::writeBool(true);
+									$payload .= strrev(Utils::writeTriad($start));
+								}
+								++$records;
 							}
+							$this->addRaw(Utils::writeShort($records) . $payload);
 							break;
 						case 0x05:
 							$this->addRaw($this->data[$field]);
