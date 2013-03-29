@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class IronAxeItem extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(IRON_AXE, 0, $count, "IronAxe");
+		parent::__construct(IRON_AXE, 0, $count, "Iron Axe");
 	}
 
 }

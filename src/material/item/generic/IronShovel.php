@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class IronShovelItem extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(IRON_SHOVEL, 0, $count, "IronShovel");
+		parent::__construct(IRON_SHOVEL, 0, $count, "Iron Shovel");
 	}
 
 }

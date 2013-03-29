@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class WoodenShovelItem extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(WOODEN_SHOVEL, 0, $count, "WoodenShovelItem");
+		parent::__construct(WOODEN_SHOVEL, 0, $count, "Wooden Shovel");
 	}
 
 }

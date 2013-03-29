@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class WoodenPickaxeItem extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(WOODEN_PICKAXE, 0, $count, "WoodenPickaxeItem");
+		parent::__construct(WOODEN_PICKAXE, 0, $count, "Wooden Pickaxe");
 	}
 
 }
