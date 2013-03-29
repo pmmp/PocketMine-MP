@@ -434,13 +434,14 @@ class Player{
 		}
 	}
 	
-	public function sendSettings(){
+	public function sendSettings($nametags = true){
 		/*
+		 bit mask | flag name
 		0x00000001 world_inmutable
-		0x00000002 ?
-		0x00000004 ?
-		0x00000008 ?
-		0x00000010 ?
+		0x00000002 -
+		0x00000004 -
+		0x00000008 - (autojump)
+		0x00000010 -
 		0x00000020 nametags_visible
 		0x00000040 ?
 		0x00000080 ?
@@ -473,7 +474,11 @@ class Player{
 		if($this->gamemode === ADVENTURE){
 			$flags |= 0x01; //Not allow placing/breaking blocks
 		}
-		$flags |= 0x20; //Show Nametags
+		
+		if($nametags !== false){
+			$flags |= 0x20; //Show Nametags
+		}
+
 		$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
 			"flags" => $flags,
 		));
@@ -484,8 +489,8 @@ class Player{
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
 			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
-			$this->entity->calculateVelocity();
 			$this->entity->updateLast();
+			$this->entity->calculateVelocity();
 		}
 		$this->dataPacket(MC_MOVE_PLAYER, array(
 			"eid" => 0,

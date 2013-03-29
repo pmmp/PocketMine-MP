@@ -126,7 +126,7 @@ class PlayerAPI{
 				if(!($player instanceof Player) or $gm < 0 or $gm > 2){
 					$output .= "Usage: /gamemode [player] <0 | 1 | 2>\n";
 					break;
-				}				
+				}
 				
 				
 				if($player->setGamemode($gm)){
