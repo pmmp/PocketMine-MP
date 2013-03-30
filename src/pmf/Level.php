@@ -78,6 +78,7 @@ class PMFLevel extends PMF{
 		$this->locationTable = array();
 		$cnt = pow($this->levelData["width"], 2);
 		@mkdir(dirname($this->file)."/chunks/", 0755);
+		$this->payloadOffset = ftell($this->fp);
 		for($index = 0; $index < $cnt; ++$index){
 			$this->chunks[$index] = false;
 			$this->chunkChange[$index] = false;
@@ -88,6 +89,14 @@ class PMFLevel extends PMF{
 			$X = $Z = null;
 			$this->getXZ($index, $X, $Z);
 			@file_put_contents($this->getChunkPath($X, $Z), gzdeflate("", 9));
+		}
+		if(!file_exists(dirname($this->file)."/entities.yml")){
+			$entities = new Config(dirname($this->file)."/entities.yml", CONFIG_YAML);
+			$entities->save();
+		}
+		if(!file_exists(dirname($this->file)."/tileEntities.yml")){
+			$tileEntities = new Config(dirname($this->file)."/tileEntities.yml", CONFIG_YAML);
+			$tileEntities->save();
 		}
 	}
 	
@@ -119,7 +128,7 @@ class PMFLevel extends PMF{
 	public function getIndex($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		return $X << $this->log + $Z;
+		return ($Z << $this->log) + $X;
 	}
 	
 	public function getXZ($index, &$X = null, &$Z = null){
@@ -143,7 +152,7 @@ class PMFLevel extends PMF{
 	}
 	
 	private function getChunkPath($X, $Z){
-		return dirname($this->file)."/chunks/".$X.".".$Z.".pmc";
+		return dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
 	}
 	
 	public function loadChunk($X, $Z){
@@ -185,7 +194,9 @@ class PMFLevel extends PMF{
 	protected function isMiniChunkEmpty($X, $Z, $Y){
 		$index = $this->getIndex($X, $Z);
 		if($this->chunks[$index][$Y] !== false){
-			
+			if(substr_count($this->chunks[$index][$Y], "\x00") < 8192){
+				return false;
+			}
 		}
 		return true;
 	}
@@ -224,7 +235,29 @@ class PMFLevel extends PMF{
 		if($this->isChunkLoaded($X, $Z) === false){
 			return false;
 		}
+		$index = $this->getIndex($X, $Z);
 		$this->chunks[$index][$Y] = str_repeat("\x00", 8192);
+		$this->locationTable[$index][0] |= 1 << $Y;
+		return true;
+	}
+	
+	public function getMiniChunk($X, $Z, $Y){
+		if($this->isChunkLoaded($X, $Z) === false){
+			return str_repeat("\x00", 8192);
+		}
+		$index = $this->getIndex($X, $Z);
+		if(!isset($this->chunks[$index][$Y])){
+			return str_repeat("\x00", 8192);
+		}
+		return $this->chunks[$index][$Y];
+	}
+	
+	public function setMiniChunk($X, $Z, $Y, $data){
+		if($this->isChunkLoaded($X, $Z) === false){
+			$this->loadChunk($X, $Z);
+		}
+		$index = $this->getIndex($X, $Z);
+		$this->chunks[$index][$Y] = substr($data, 0, 8192);
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
 	}
@@ -291,7 +324,7 @@ class PMFLevel extends PMF{
 			}
 		}
 		$this->locationTable[$index][0] = $bitmap;
-		$this->seek($this->payloadOffset + $index << 2);
+		$this->seek($this->payloadOffset + ($index << 1));
 		$this->write(Utils::writeShort($this->locationTable[$index][0]));
 	}
 
