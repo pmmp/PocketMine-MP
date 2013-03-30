@@ -551,7 +551,7 @@ class Entity extends stdClass{
 	}
 	
 	public function calculateVelocity(){
-		$diffTime = microtime(true) - $this->last[5];
+		$diffTime = max(0.05, abs(microtime(true) - $this->last[5]));
 		$origin = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 		$final = new Vector3($this->x, $this->y, $this->z);
 		$speedX = ($this->last[0] - $this->x) / $diffTime;
