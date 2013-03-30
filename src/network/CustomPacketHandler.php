@@ -87,7 +87,7 @@ class CustomPacketHandler{
 					$this->data["port"] = Utils::readShort($this->get(2), false);
 					$this->data["dataArray"] = Utils::readDataArray($this->get(true, false), 10, $offset);
 					$this->get($offset);
-					$this->data["unknown1"] = $this->get(2);
+					$this->data["timestamp"] = $this->get(2);
 					$this->data["session"] = Utils::readLong($this->get(8));
 					$this->data["session2"] = Utils::readLong($this->get(8));
 				}else{
@@ -119,7 +119,7 @@ class CustomPacketHandler{
 					$this->data["dataArray0"] = $this->get(ord($this->get(1)));
 					$this->data["dataArray"] = Utils::readDataArray($this->get(true, false), 9, $offset);
 					$this->get($offset);
-					$this->data["unknown1"] = $this->get(2);
+					$this->data["timestamp"] = $this->get(2);
 					$this->data["session2"] = Utils::readLong($this->get(8));
 					$this->data["session"] = Utils::readLong($this->get(8));
 				}else{
@@ -134,8 +134,22 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeLong($this->data["session"]);
 				}
 				break;
+			case MC_SERVER_FULL:
+				if($this->c === false){
+				}else{
+					$this->raw .= RAKNET_MAGIC;
+					$this->raw .= Utils::writeLong($this->data["serverID"]);
+				}
+				break;
 			case MC_DISCONNECT:
 				//null
+				break;
+			case MC_BANNED:
+				if($this->c === false){
+				}else{
+					$this->raw .= RAKNET_MAGIC;
+					$this->raw .= Utils::writeLong($this->data["serverID"]);
+				}
 				break;
 			case MC_LOGIN:
 				if($this->c === false){

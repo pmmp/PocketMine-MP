@@ -534,15 +534,6 @@ class PocketMinecraftServer{
 						), false, $packet["ip"], $packet["port"]);
 						break;
 					}
-					if($this->api->ban->isIPBanned($packet["ip"])){
-						$this->send(0x1c, array(
-							$data[0],
-							$this->serverID,
-							RAKNET_MAGIC,
-							$this->serverType. $this->name . " [You're banned]",
-						), false, $packet["ip"], $packet["port"]);
-						break;
-					}
 					if(!isset($this->custom["times_".$CID])){
 						$this->custom["times_".$CID] = 0;
 					}
@@ -561,24 +552,6 @@ class PocketMinecraftServer{
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
 				case 0x05:
-					if($this->api->ban->isIPBanned($packet["ip"]) or count($this->clients) >= $this->maxClients){
-						$this->send(0x80, array(
-							0,
-							0x00,
-							array(
-								"id" => MC_LOGIN_STATUS,
-								"status" => 1,
-							),
-						), false, $packet["ip"], $packet["port"]);
-						$this->send(0x80, array(
-							1,
-							0x00,
-							array(
-								"id" => MC_DISCONNECT,
-							),
-						), false, $packet["ip"], $packet["port"]);
-						break;
-					}
 					$version = $data[1];
 					$size = strlen($data[2]);
 					if($version !== CURRENT_STRUCTURE){
@@ -598,24 +571,6 @@ class PocketMinecraftServer{
 					}
 					break;
 				case 0x07:
-					if($this->api->ban->isIPBanned($packet["ip"]) or count($this->clients) >= $this->maxClients){
-						$this->send(0x80, array(
-							0,
-							0x00,
-							array(
-								"id" => MC_LOGIN_STATUS,
-								"status" => 1,
-							),
-						), false, $packet["ip"], $packet["port"]);
-						$this->send(0x80, array(
-							1,
-							0x00,
-							array(
-								"id" => MC_DISCONNECT,
-							),
-						), false, $packet["ip"], $packet["port"]);
-						break;
-					}
 					$port = $data[2];
 					$MTU = $data[3];
 					$clientID = $data[4];

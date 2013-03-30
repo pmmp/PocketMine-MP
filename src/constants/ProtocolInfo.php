@@ -34,7 +34,10 @@ define("MC_SERVER_HANDSHAKE", 0x10);
 
 define("MC_CLIENT_HANDSHAKE", 0x13);
 
+define("MC_SERVER_FULL", 0x14);
 define("MC_DISCONNECT", 0x15);
+
+define("MC_BANNED", 0x17);
 
 define("MC_LOGIN", 0x82);
 define("MC_LOGIN_STATUS", 0x83);
@@ -99,6 +102,7 @@ class Protocol{
 
 		MC_CLIENT_HANDSHAKE => "Client Handshake",
 
+		//MC_SERVER_FULL => "Server Full",
 		MC_DISCONNECT => "Disconnect",
 
 		0x18 => "Unknown",

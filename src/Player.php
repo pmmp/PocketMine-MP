@@ -202,10 +202,10 @@ class Player{
 			}
 			$reason = $reason == "" ? "server stop":$reason;			
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
-			$this->dataPacket(MC_LOGIN_STATUS, array(
+			$this->directDataPacket(MC_LOGIN_STATUS, array(
 				"status" => 1,
 			));
-			$this->dataPacket(MC_DISCONNECT);
+			$this->directDataPacket(MC_DISCONNECT);
 			$this->sendBuffer();
 			$this->buffer = null;
 			unset($this->buffer);
@@ -638,11 +638,15 @@ class Player{
 							if($this->loggedIn === true){
 								break;
 							}
+							if(count($this->server->clients) >= $this->server->maxClients){
+								$this->close("server is full!", false);
+								return;
+							}
+							
 							if($data["protocol1"] !== CURRENT_PROTOCOL){
 								$this->close("protocol", false);
 								break;
 							}
-							$this->loggedIn = true;
 							if(preg_match('#^[a-zA-Z0-9_]{2,16}$#', $data["username"])){
 								$this->username = $data["username"];
 								$this->iusername = strtolower($this->username);
@@ -658,6 +662,8 @@ class Player{
 								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" is banned!", false);
 								return;
 							}
+							$this->loggedIn = true;
+							
 							$u = $this->server->api->player->get($this->iusername);
 							if($u !== false){
 								$u->close("logged in from another location");
@@ -1045,7 +1051,7 @@ class Player{
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
-	public function directDataPacket($id, $data, $count = false){
+	public function directDataPacket($id, $data = array(), $count = false){
 		$data["id"] = $id;
 		$data["sendtime"] = microtime(true);
 		if($count === false){
