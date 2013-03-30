@@ -527,7 +527,7 @@ class Player{
 		if(($this->gamemode === SURVIVAL and $gm === ADVENTURE) or ($this->gamemode === ADVENTURE and $gm === SURVIVAL)){
 			$this->gamemode = $gm;
 			$this->sendSettings();
-			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode()."..", "server.chat");
+			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
 		}else{
 			$this->blocked = true;
 			$this->gamemode = $gm;
