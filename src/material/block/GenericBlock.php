@@ -39,7 +39,7 @@ class GenericBlock extends Block{
 	}
 	
 	public function isBreakable(Item $item, Player $player){
-		return $this->breakable;
+		return ($this->breakable);
 	}
 	
 	public function onBreak(BlockAPI $level, Item $item, Player $player){
@@ -54,6 +54,6 @@ class GenericBlock extends Block{
 		return false;
 	}
 	public function onActivate(BlockAPI $level, Item $item, Player $player){
-		return false;
+		return ($this->isActivable);
 	}
 }
