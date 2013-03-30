@@ -84,19 +84,22 @@ class Player{
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
 	
-	private function orderChunks(){
+	public function orderChunks(){
 		if(!($this->entity instanceof Entity)){
 			return false;
 		}
 		$X = $this->entity->x / 16;
 		$Z = $this->entity->z / 16;
-		$v = new Vector2($X, $Z);
+		$Y = $this->entity->y / 16;
+		$v = new Vector3($X, $Y, $Z);
 		$this->chunksOrder = array();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-				$d = $x.":".$z;
-				if(!isset($this->chunksLoaded[$d])){				
-					$this->chunksOrder[$d] = $v->distance(new Vector2($x + 0.5, $z + 0.5));
+				for($y = 0; $y < 8; ++$y){
+					$d = $x.":".$y.":".$z;
+					if(!isset($this->chunksLoaded[$d])){				
+						$this->chunksOrder[$d] = $v->distance(new Vector3($x + 0.5, $y, $z + 0.5));
+					}
 				}
 			}
 		}
@@ -104,7 +107,6 @@ class Player{
 	}
 	
 	public function getNextChunk(){
-		$this->orderChunks();
 		$c = key($this->chunksOrder);
 		$d = $this->chunksOrder[$c];
 		if($c === null or $d > 6){
@@ -115,30 +117,23 @@ class Player{
 		$this->chunksLoaded[$c] = true;
 		$id = explode(":", $c);
 		$X = $id[0];
-		$Z = $id[1];
-		$x = $X * 16;
-		$z = $Z * 16;
+		$Z = $id[2];
+		$Y = $id[1];
+		$x = $X << 4;
+		$z = $Z << 4;
+		$y = $Y << 4;
 		/*
 		$MTU = $this->MTU - 16;
-		$y = $this->entity->y / 16;
-		$order = array();
-		
-		for($Y = 0; $Y < 8; ++$Y){
-			$order[$Y] = abs($y - ($Y + 0.5));
-		}
-		asort($order);
-		foreach($order as $Y => $distance){
-			$chunk = $this->level->getMiniChunk('.$X.', '.$Z.', $Y, $MTU);
-			foreach($chunk as $d){
-				$this->dataPacket(MC_CHUNK_DATA, array(
-					"x" => '.$X.',
-					"z" => '.$Z.',
-					"data" => $d,
-				), true);
-			}
+		$chunk = $this->level->getMiniChunk('.$X.', '.$Z.', '.$Y.', $MTU);
+		foreach($chunk as $d){
+			$this->dataPacket(MC_CHUNK_DATA, array(
+				"x" => '.$X.',
+				"z" => '.$Z.',
+				"data" => $d,
+			), true);
 		}
 		
-		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");
+		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).' AND y >= '.$y.' AND y < '.($y + 16).';");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
 				$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);
@@ -146,7 +141,7 @@ class Player{
 		}
 		$this->actionQueue(\'$this->getNextChunk();\');
 		*/
-		$this->actionQueue('$MTU = $this->MTU - 16;$y = $this->entity->y / 16;$order = array();for($Y = 0; $Y < 8; ++$Y){$order[$Y] = abs($y - ($Y + 0.5));}asort($order);foreach($order as $Y => $distance){$chunk = $this->level->getMiniChunk('.$X.', '.$Z.', $Y, $MTU);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$X.',"z" => '.$Z.',"data" => $d,), true);}}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->actionQueue(\'$this->getNextChunk();\');');
+		$this->actionQueue('$MTU = $this->MTU - 16;$chunk = $this->level->getMiniChunk('.$X.', '.$Z.', '.$Y.', $MTU);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$X.',"z" => '.$Z.',"data" => $d,), true);}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).' AND y >= '.$y.' AND y < '.($y + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->actionQueue(\'$this->getNextChunk();\');');
 
 	}
 
@@ -754,6 +749,8 @@ class Player{
 									$this->sendInventory();
 									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
 									$this->sendSettings();
+									$this->orderChunks();
+									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 									$this->getNextChunk();
 									$this->blocked = false;
 									break;
