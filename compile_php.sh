@@ -21,6 +21,7 @@ type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \
 type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; read -p "Press [Enter] to continue..."; exit 1; }
 type gcc >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
+type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f php5/ >> "$DIR/install.log" 2>&1
