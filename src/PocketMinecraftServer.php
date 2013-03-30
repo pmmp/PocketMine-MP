@@ -511,7 +511,7 @@ class PocketMinecraftServer{
 	}
 
 	public function clientID($ip, $port){
-		return md5($ip . $port, true);
+		return md5($ip . $port, true) ^ sha1($port . $ip, true);
 	}
 
 	public function packetHandler($packet){

@@ -156,7 +156,7 @@ class Player{
 		}
 		if($time > $this->timeout){
 			$this->close("timeout");
-		}else{			
+		}else{
 			if(!empty($this->queue)){
 				$cnt = 0;
 				$maxtime = $time + 0.025;
