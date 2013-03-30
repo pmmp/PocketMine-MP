@@ -248,7 +248,7 @@ class ServerAPI{
 
 
 	private function loadProperties(){
-		if(($memory = $this->getProperty("memory-limit")) !== false){
+		if(($memory = str_replace("B", "", strtoupper($this->getProperty("memory-limit")))) !== false){
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
