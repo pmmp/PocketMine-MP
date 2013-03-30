@@ -170,7 +170,7 @@ class BlockAPI{
 			return $this->cancelAction($target, $player);
 		}
 		
-		if(!$target->isBreakable($item, $player) or $player->gamemode === ADVENTURE or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
+		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or $player->gamemode === ADVENTURE or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
 			return $this->cancelAction($target, $player);
 		}
 		
@@ -225,7 +225,7 @@ class BlockAPI{
 		$block = $this->getBlockFace($target, $face);
 		$item = $player->equipment;
 		
-		if($target->getID() === AIR){ //If no block exists
+		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists
 			$this->cancelAction($target, $player);
 			return $this->cancelAction($block, $player);
 		}
