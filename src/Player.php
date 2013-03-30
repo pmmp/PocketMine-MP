@@ -156,14 +156,11 @@ class Player{
 		}
 		if($time > $this->timeout){
 			$this->close("timeout");
-		}else{
-			if($this->nextBuffer <= $time and strlen($this->buffer) > 0){
-				$this->sendBuffer();
-			}
-			
+		}else{			
 			if(!empty($this->queue)){
 				$cnt = 0;
-				while($cnt < 4){
+				$maxtime = $time + 0.025;
+				while(microtime(true) < $maxtime){
 					$p = array_shift($this->queue);
 					if($p === null){
 						break;
@@ -178,6 +175,10 @@ class Player{
 					}
 					++$cnt;
 				}
+			}
+
+			if($this->nextBuffer <= $time and strlen($this->buffer) > 0){
+				$this->sendBuffer();
 			}
 		}
 	}
