@@ -100,7 +100,7 @@ class PocketMinecraftServer{
 	
 	public function titleTick(){
 		if(ENABLE_ANSI === true){
-			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)." | RAM ".round((memory_get_usage(true) / 1024) / 1024, 2)."MB | TPS ".$this->getTPS()."\x07";
+			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | TPS ".$this->getTPS()."\x07";
 		}
 	}
 
@@ -150,7 +150,7 @@ class PocketMinecraftServer{
 	public function debugInfo($console = false){
 		$info = array();
 		$info["tps"] = $this->getTPS();
-		$info["memory_usage"] = round((memory_get_usage(true) / 1024) / 1024, 2)."MB";
+		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2)."MB";
 		$info["memory_peak_usage"] = round((memory_get_peak_usage(true) / 1024) / 1024, 2)."MB";
 		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
 		$info["entities"] = $info["entities"]["count"];
