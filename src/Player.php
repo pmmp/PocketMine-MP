@@ -154,7 +154,7 @@ class Player{
 		}else{
 			if(!empty($this->queue)){
 				$cnt = 0;
-				$maxtime = $time + 0.025;
+				$maxtime = $time + 0.0025;
 				while(microtime(true) < $maxtime){
 					$p = array_shift($this->queue);
 					if($p === null){
