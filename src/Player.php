@@ -153,7 +153,6 @@ class Player{
 			$this->close("timeout");
 		}else{
 			if(!empty($this->queue)){
-				$cnt = 0;
 				$maxtime = $time + 0.0025;
 				while(microtime(true) < $maxtime){
 					$p = array_shift($this->queue);
@@ -168,7 +167,6 @@ class Player{
 							eval($p[1]);
 							break;
 					}
-					++$cnt;
 				}
 			}
 
@@ -416,7 +414,7 @@ class Player{
 				}else{
 					$message = (string) $data;
 				}
-				$this->sendChat($message);
+				$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message)); //Remove ANSI codes from chat
 				break;
 		}
 	}
