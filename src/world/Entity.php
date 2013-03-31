@@ -621,7 +621,20 @@ class Entity extends stdClass{
 				$this->fallStart = false;
 				$this->updateMetadata();
 				$this->dead = true;
-				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
+				if($this->player instanceof Player){
+					$x = $this->x;
+					$y = $this->y;
+					$z = $this->z;
+					$this->x = 0;
+					$this->y = -10;
+					$this->z = 0;
+					$this->server->api->dhandle("entity.move", $this);
+					$this->x = $x;
+					$this->y = $y;
+					$this->z = $z;
+				}else{
+					$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
+				}
 				if($this->player instanceof Player){
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 				}else{
