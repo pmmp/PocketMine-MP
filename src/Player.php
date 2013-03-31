@@ -491,6 +491,8 @@ class Player{
 			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
 			$this->entity->updateLast();
 			$this->entity->calculateVelocity();
+			$this->orderChunks();
+			$this->getNextChunk();
 		}
 		$this->dataPacket(MC_MOVE_PLAYER, array(
 			"eid" => 0,
@@ -751,12 +753,15 @@ class Player{
 										$this->eventHandler("You're using the default username. Please change it on the Minecraft PE settings.", "server.chat");
 									}
 									$this->sendInventory();
-									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
 									$this->sendSettings();
-									$this->orderChunks();
 									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
-									$this->getNextChunk();
 									$this->blocked = false;
+									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
+									$this->dataPacket(MC_SET_SPAWN_POSITION, array(
+										"x" => (int) $this->server->spawn["x"],
+										"y" => (int) $this->server->spawn["y"],
+										"z" => (int) $this->server->spawn["z"],
+									));
 									break;
 								case 2://Chunk loaded?
 									break;
@@ -851,9 +856,9 @@ class Player{
 							}
 							$this->entity->fire = 0;
 							$this->entity->air = 300;
-							$this->teleport(new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]));
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->updateMetadata();
+							$this->teleport(new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]));
 							break;
 						case MC_SET_HEALTH:
 							if($this->loggedIn === false){
