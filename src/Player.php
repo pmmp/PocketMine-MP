@@ -91,14 +91,14 @@ class Player{
 		$X = $this->entity->x / 16;
 		$Z = $this->entity->z / 16;
 		$Y = $this->entity->y / 16;
-		$v = new Vector3($X, $Y, $Z);
+		$v = new Vector3($X, $Y / 4, $Z);
 		$this->chunksOrder = array();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				for($y = 0; $y < 8; ++$y){
 					$d = $x.":".$y.":".$z;
 					if(!isset($this->chunksLoaded[$d])){				
-						$this->chunksOrder[$d] = $v->distance(new Vector3($x + 0.5, $y, $z + 0.5));
+						$this->chunksOrder[$d] = $v->distance(new Vector3($x + 0.5, $y / 4, $z + 0.5));
 					}
 				}
 			}
@@ -122,27 +122,23 @@ class Player{
 		$x = $X << 4;
 		$z = $Z << 4;
 		$y = $Y << 4;
-		/*
 		$MTU = $this->MTU - 16;
-		$chunk = $this->level->getMiniChunk('.$X.', '.$Z.', '.$Y.', $MTU);
+		$chunk = $this->level->getMiniChunk($X, $Z, $Y, $MTU);
 		foreach($chunk as $d){
 			$this->dataPacket(MC_CHUNK_DATA, array(
-				"x" => '.$X.',
-				"z" => '.$Z.',
+				"x" => $X,
+				"z" => $Z,
 				"data" => $d,
 			));
 		}
 		
-		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).' AND y >= '.$y.' AND y < '.($y + 16).';");
+		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= ".$x." AND x < ".($x + 16)." AND z >= ".$z." AND z < ".($z + 16)." AND y >= ".$y." AND y < ".($y + 16).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-				$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'");
+				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
 			}
 		}
-		$this->actionQueue(\'$this->getNextChunk();\');
-		*/
-		$this->actionQueue('$MTU = $this->MTU - 16;$chunk = $this->level->getMiniChunk('.$X.', '.$Z.', '.$Y.', $MTU);foreach($chunk as $d){$this->dataPacket(MC_CHUNK_DATA, array("x" => '.$X.',"z" => '.$Z.',"data" => $d,), true);}$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= '.$x.' AND x < '.($x + 16).' AND z >= '.$z.' AND z < '.($z + 16).' AND y >= '.$y.' AND y < '.($y + 16).';");if($tiles !== false and $tiles !== true){while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){$this->server->api->tileentity->spawnTo($tile["ID"], "'.$this->username.'", true);}}$this->actionQueue(\'$this->getNextChunk();\');');
-
+		$this->server->schedule(2, array($this, "getNextChunk"));
 	}
 
 	public function onTick($time, $event){
@@ -153,8 +149,8 @@ class Player{
 			$this->close("timeout");
 		}else{
 			if(!empty($this->queue)){
-				$cnt = 0;
-				while($cnt < 4){
+				$maxtime = $time + 0.0025;
+				while(microtime(true) < $maxtime){
 					$p = array_shift($this->queue);
 					if($p === null){
 						break;
@@ -167,7 +163,6 @@ class Player{
 							eval($p[1]);
 							break;
 					}
-					++$cnt;
 				}
 			}
 
