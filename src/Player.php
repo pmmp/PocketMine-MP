@@ -851,7 +851,6 @@ class Player{
 									if($data["entity"]->hand == 276) { // diamond sword
 									$harmamount = $harmamount + 6;
 									}
-									}
 									$this->server->api->entity->harm($data["target"], $harmamount, $this->eid);
 								}
 							}
