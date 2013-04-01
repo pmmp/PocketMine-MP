@@ -53,20 +53,20 @@ class CustomPacketHandler{
 		$this->offset = 0;
 		$this->c = (bool) $create;
 		switch($pid){
-			case MC_KEEP_ALIVE:
+			case MC_PING:
 				if($this->c === false){
-					$this->data["payload"] = Utils::readLong($this->get(8));
+					$this->data["time"] = Utils::readLong($this->get(8));
 				}else{
-					$this->raw .= Utils::writeLong($this->data["payload"]);
+					$this->raw .= Utils::writeLong($this->data["time"]);
 				}
 				break;
-			case 0x03:
+			case MC_PONG:
 				if($this->c === false){
-					$this->data["unknown1"] = Utils::readLong($this->get(8));
-					$this->data["unknown2"] = Utils::readLong($this->get(8));
+					$this->data["ptime"] = Utils::readLong($this->get(8));
+					$this->data["time"] = Utils::readLong($this->get(8));
 				}else{
-					$this->raw .= Utils::writeLong($this->data["unknown1"]);
-					$this->raw .= Utils::writeLong($this->data["unknown2"]);
+					$this->raw .= Utils::writeLong($this->data["ptime"]);
+					$this->raw .= Utils::writeLong($this->data["time"]);
 				}
 				break;
 			case MC_CLIENT_CONNECT:

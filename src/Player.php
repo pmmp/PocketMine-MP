@@ -604,13 +604,13 @@ class Player{
 						break;
 					}
 					switch($data["id"]){
-
-						case MC_KEEP_ALIVE:
-
-							break;
 						case 0x01:
-						case 0x03:
-
+							break;
+						case MC_PING:
+							$this->dataPacket(MC_PONG, array(
+								"ptime" => $data["time"],
+								"time" => (int) (microtime(true) * 1000),
+							));
 							break;
 						case MC_DISCONNECT:
 							$this->close("client disconnect");
