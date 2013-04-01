@@ -97,7 +97,7 @@ define("MC_ADVENTURE_SETTINGS", 0xb6);
 
 class Protocol{
 	public static $dataName = array(
-		MC_KEEP_ALIVE => "Keep Alive",
+		MC_PING => "Ping",
 
 		MC_CLIENT_CONNECT => "Client Connect",
 		MC_SERVER_HANDSHAKE => "Server Handshake",

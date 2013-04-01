@@ -60,6 +60,7 @@ class Player{
 	public $blocked = true;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
+	private $lag = array(0, 0);
 	
 	function __construct($clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
@@ -528,6 +529,18 @@ class Player{
 		}
 		return true;
 	}
+	
+	public function measureLag(){
+		$this->lag[0] = microtime(true) * 1000;
+		$this->dataPacket(MC_PING, array(
+			"time" => (int) $this->lag[0],
+		));
+		$this->sendBuffer();
+	}
+	
+	public function getLag(){
+		return $this->lag[1] - $this->lag[0];
+	}
 
 	public function handle($pid, $data){
 		if($this->connected === true){
@@ -606,11 +619,16 @@ class Player{
 					switch($data["id"]){
 						case 0x01:
 							break;
+						case MC_PONG:
+							$this->lag[1] = microtime(true) * 1000;
+							break;
 						case MC_PING:
+							$t = (int) (microtime(true) * 1000);
 							$this->dataPacket(MC_PONG, array(
 								"ptime" => $data["time"],
 								"time" => (int) (microtime(true) * 1000),
 							));
+							$this->sendBuffer();
 							break;
 						case MC_DISCONNECT:
 							$this->close("client disconnect");
@@ -724,6 +742,7 @@ class Player{
 							$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
+							$this->server->schedule(40, array($this, "measureLag"), array(), true);
 							break;
 						case MC_READY:
 							if($this->loggedIn === false){

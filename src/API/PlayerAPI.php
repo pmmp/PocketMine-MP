@@ -39,6 +39,7 @@ class PlayerAPI{
 		$this->server->api->console->register("gamemode", "Changes the player gamemode", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
+		$this->server->api->console->register("lag", "Measure your connection lag", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
 	}
 
@@ -113,6 +114,13 @@ class PlayerAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "lag":
+				if(!($issuer instanceof Player)){					
+					$output .= "Please run this command in-game.\n";
+					break;
+				}
+				$output .= "Lag: ".round($issuer->getLag(), 2)."\n";
+				break;
 			case "gamemode":
 				$gm = -1;
 				$player = false;

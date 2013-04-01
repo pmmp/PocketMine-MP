@@ -41,7 +41,6 @@ class ConsoleAPI{
 		$this->loop->start();
 		$this->register("help", "Show available commands", array($this, "defaultCommands"));
 		$this->register("status", "Show server TPS and memory usage", array($this, "defaultCommands"));
-		$this->alias("lag", "status");
 		$this->register("difficulty", "Changes server difficulty", array($this, "defaultCommands"));
 		$this->register("invisible", "Changes server visibility", array($this, "defaultCommands"));
 		$this->register("say", "Broadcast a message", array($this, "defaultCommands"));
@@ -86,7 +85,6 @@ class ConsoleAPI{
 						}
 						break;
 					case "status":
-					case "lag":
 						if(!($issuer instanceof Player) and $issuer === "console"){
 							$this->server->debugInfo(true);
 						}
