@@ -852,7 +852,24 @@ class Player{
 								if(($target instanceof Entity) and $target->class === ENTITY_PLAYER and ($this->server->difficulty <= 0 or $target->gamemode === CREATIVE)){
 									break;
 								}elseif($this->handle("player.interact", $data) !== false){
-									$this->server->api->entity->harm($data["target"], $this->server->difficulty, $this->eid);
+									// Swords do proper damage amiunt (by williamtdr)
+									$harmamount = $this->server->difficulty;
+									if($data["entity"]->hand == 268) { // wooden sword
+									$harmamount = $harmamount + 3;
+									}
+									if($data["entity"]->hand == 283) { // gold sword
+									$harmamount = $harmamount + 3;
+									}
+									if($data["entity"]->hand == 272) { // stone sword
+									$harmamount = $harmamount + 4;
+									}
+									if($data["entity"]->hand == 267) { // iron sword
+									$harmamount = $harmamount + 5;
+									}
+									if($data["entity"]->hand == 276) { // diamond sword
+									$harmamount = $harmamount + 6;
+									}
+									$this->server->api->entity->harm($data["target"], $harmamount, $this->eid);
 								}
 							}
 							break;
@@ -1001,7 +1018,7 @@ class Player{
 							}
 							$tile->setSlot($data["slot"], $item);
 							break;
-						case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
+						case MC_SEND_INVENTORY: //TODO, Mojang, enable this ï¿½^_^`
 							break;
 						default:
 							console("[DEBUG] Unhandled 0x".dechex($data["id"])." Data Packet for Client ID ".$this->clientID.": ".print_r($data, true), true, true, 2);
