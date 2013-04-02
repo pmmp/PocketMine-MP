@@ -78,8 +78,14 @@ class MinecraftInterface{
 		}
 		$pid = ord($buf{0});
 		$struct = $this->getStruct($pid);
-		if($struct === false){
-			console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);
+		if($struct === false and ServerAPI::request()->api->dhandle("server.unknownpacket", array(
+			"pid" => $pid,
+			"data" => array(),
+			"raw" => $buf,
+			"ip" => $source,
+			"port" => $port
+		)) !== true){
+			console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);			
 			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strToHex(chr($pid))." [length ".strlen($buf)."]".PHP_EOL;
 			$p .= Utils::hexdump($buf);
 			$p .= PHP_EOL;
