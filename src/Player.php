@@ -852,24 +852,24 @@ class Player{
 								if(($target instanceof Entity) and $target->class === ENTITY_PLAYER and ($this->server->difficulty <= 0 or $target->gamemode === CREATIVE)){
 									break;
 								}elseif($this->handle("player.interact", $data) !== false){
-									// Swords do proper damage amiunt (by williamtdr)
-									$harmamount = $this->server->difficulty;
-									if($data["entity"]->hand == 268) { // wooden sword
-									$harmamount = $harmamount + 3;
+									switch($this->equipment->getID()){
+										case WOODEN_SWORD:
+										case GOLD_SWORD:
+											$damage = 4;
+											break;
+										case STONE_SWORD:
+											$damage = 5;
+											break;
+										case IRON_SWORD:
+											$damage = 6;
+											break;
+										case DIAMOND_SWORD:
+											$damage = 7;
+											break;
+										default:
+											$damage = $this->server->difficulty;
 									}
-									if($data["entity"]->hand == 283) { // gold sword
-									$harmamount = $harmamount + 3;
-									}
-									if($data["entity"]->hand == 272) { // stone sword
-									$harmamount = $harmamount + 4;
-									}
-									if($data["entity"]->hand == 267) { // iron sword
-									$harmamount = $harmamount + 5;
-									}
-									if($data["entity"]->hand == 276) { // diamond sword
-									$harmamount = $harmamount + 6;
-									}
-									$this->server->api->entity->harm($data["target"], $harmamount, $this->eid);
+									$this->server->api->entity->harm($data["target"], $damage, $this->eid);
 								}
 							}
 							break;
