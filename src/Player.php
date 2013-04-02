@@ -866,8 +866,51 @@ class Player{
 										case DIAMOND_SWORD:
 											$damage = 7;
 											break;
+											
+										case WOODEN_AXE:
+										case GOLD_AXE:
+											$damage = 3;
+											break;
+										case STONE_AXE:
+											$damage = 4;
+											break;
+										case IRON_AXE:
+											$damage = 5;
+											break;
+										case DIAMOND_AXE:
+											$damage = 6;
+											break;
+
+										case WOODEN_PICKAXE:
+										case GOLD_PICKAXE:
+											$damage = 2;
+											break;
+										case STONE_PICKAXE:
+											$damage = 3;
+											break;
+										case IRON_PICKAXE:
+											$damage = 4;
+											break;
+										case DIAMOND_PICKAXE:
+											$damage = 5;
+											break;
+
+										case WOODEN_SHOVEL:
+										case GOLD_SHOVEL:
+											$damage = 1;
+											break;
+										case STONE_SHOVEL:
+											$damage = 2;
+											break;
+										case IRON_SHOVEL:
+											$damage = 3;
+											break;
+										case DIAMOND_SHOVEL:
+											$damage = 4;
+											break;
+
 										default:
-											$damage = $this->server->difficulty;
+											$damage = 1;//$this->server->difficulty;
 									}
 									$this->server->api->entity->harm($data["target"], $damage, $this->eid);
 								}
