@@ -32,7 +32,7 @@ class PocketMinecraftServer{
 	
 	private function load(){
 		$this->version = new VersionString();
-		cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
+		@cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
 		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
 		console("[INFO] Target Minecraft PE: \x1b[36;1m".CURRENT_MINECRAFT_VERSION."\x1b[0m, protocol #".CURRENT_PROTOCOL, true, true, 0);
 		if($this->version->isDev()){
