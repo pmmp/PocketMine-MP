@@ -25,6 +25,17 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+if(!function_exists("cli_set_process_title")){
+	function cli_set_process_title($title){
+		if(ENABLE_ANSI === true){
+			echo "\x1b]0;".$title."\x07";
+			return true;
+		}else{
+			return false;
+		}
+	}
+}
+
 function require_all($path, &$count = 0){
 	$dir = dir($path."/");
 	$dirs = array();

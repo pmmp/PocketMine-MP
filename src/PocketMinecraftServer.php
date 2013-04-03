@@ -32,6 +32,7 @@ class PocketMinecraftServer{
 	
 	private function load(){
 		$this->version = new VersionString();
+		cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
 		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
 		console("[INFO] Target Minecraft PE: \x1b[36;1m".CURRENT_MINECRAFT_VERSION."\x1b[0m, protocol #".CURRENT_PROTOCOL, true, true, 0);
 		if($this->version->isDev()){
@@ -100,7 +101,7 @@ class PocketMinecraftServer{
 	
 	public function titleTick(){
 		if(ENABLE_ANSI === true){
-			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | TPS ".$this->getTPS()."\x07";
+			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)."/".$this->maxClients." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | TPS ".$this->getTPS()."\x07";
 		}
 	}
 
