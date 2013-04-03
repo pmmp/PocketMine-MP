@@ -106,6 +106,9 @@ class PMFLevel extends PMF{
 		}
 		$this->seek(5);
 		$this->levelData["version"] = ord($this->read(1));
+		if($this->levelData["version"] > PMF_CURRENT_LEVEL_VERSION){
+			return false;
+		}
 		$this->levelData["name"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->levelData["seed"] = Utils::readInt($this->read(4));
 		$this->levelData["time"] = Utils::readInt($this->read(4));

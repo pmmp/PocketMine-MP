@@ -49,6 +49,9 @@ class PMFPlugin extends PMF{
 		}
 		$this->seek(5);
 		$this->pluginData["fversion"] = ord($this->read(1));
+		if($this->pluginData["fversion"] > PMF_CURRENT_PLUGIN_VERSION){
+			return false;
+		}
 		$this->pluginData["name"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->pluginData["version"] = $this->read(Utils::readShort($this->read(2), false));
 		$this->pluginData["author"] = $this->read(Utils::readShort($this->read(2), false));
