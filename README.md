@@ -1,4 +1,4 @@
-![](http://shoghicp.github.com/PocketMine-MP/favicon.png)
+![](http://www.pocketmine.net/favicon.png)
 
 # PocketMine-MP [![Build Status](https://travis-ci.org/shoghicp/PocketMine-MP.png?branch=master)](https://travis-ci.org/shoghicp/PocketMine-MP)
 
@@ -17,11 +17,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```	
 
-__PocketMine-MP is a Server for Minecraft Pocket Edition__. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
+__PocketMine-MP is a sofware for creating Minecraft Pocket Edition servers__. It has a Plugin API that enables a developer to extend it and add new features, or change default ones.
 
 The entire server is done in PHP, and has been tested, profiled and optimized to run smoothly.
 
 ### [Homepage](http://www.pocketmine.net/)
+
+### [Plugin Repository](http://plugins.pocketmine.net/)
 
 ### [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
