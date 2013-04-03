@@ -315,7 +315,6 @@ class ServerAPI{
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
 		$this->__destruct();
-		unset($this->server);
 		if($this->getProperty("upnp-forwarding") === true ){
 			console("[INFO] [UPnP] Removing port forward...");
 			UPnP_RemovePortForward($this->getProperty("port"));

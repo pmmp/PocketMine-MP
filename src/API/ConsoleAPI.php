@@ -209,7 +209,8 @@ class ConsoleAPI{
 }
 
 class ConsoleLoop extends Thread{
-	public $line, $stop;
+	public $line;
+	public $stop;
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
