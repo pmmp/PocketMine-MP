@@ -74,13 +74,15 @@ class Utils extends Thread{
 	}
 
 	public static function getOS(){
-		$uname = strtoupper(php_uname("s"));
-		if(strpos($uname, "WIN") !== false){
+		$uname = trim(strtoupper(php_uname("s")));
+		if(strpos($uname, "WIN") !== false or $uname === "WIN"){
 			return "win";
-		}elseif(strpos($uname, "DARWIN") !== false){
+		}elseif(strpos($uname, "DARWIN") !== false or $uname === "DARWIN"){
 			return "mac";
-		}else{
+		}elseif(strpos($uname, "LINUX") !== false or $uname === "LINUX"){
 			return "linux";
+		}else{
+			return "other";
 		}
 	}
 
