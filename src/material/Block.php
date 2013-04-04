@@ -159,7 +159,7 @@ abstract class Block extends Vector3{
 		$this->breakTime = 0.25;
 	}
 	
-	public function getName(){
+	final public function getName(){
 		return $this->name;
 	}
 	

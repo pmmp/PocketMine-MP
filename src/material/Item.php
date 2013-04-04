@@ -73,15 +73,15 @@ class Item{
 		}
 	}
 	
-	public function getName(){
+	final public function getName(){
 		return $this->name;
 	}
 	
-	public function isPlaceable(){
+	final public function isPlaceable(){
 		return (($this->block instanceof Block) and $this->block->isPlaceable === true);
 	}
 	
-	public function getBlock(){
+	final public function getBlock(){
 		if($this->block instanceof Block){
 			return $this->block;
 		}else{
@@ -89,19 +89,19 @@ class Item{
 		}
 	}
 	
-	public function getID(){
+	final public function getID(){
 		return $this->id;
 	}
 	
-	public function getMetadata(){
+	final public function getMetadata(){
 		return $this->meta;
 	}	
 	
-	public function getMaxStackSize(){
+	final public function getMaxStackSize(){
 		return $this->maxStackSize;
 	}
 	
-	public function isPickaxe(){ //Returns false or level of the pickaxe
+	final public function isPickaxe(){ //Returns false or level of the pickaxe
 		switch($this->id){
 			case IRON_PICKAXE:
 				return 3;
