@@ -101,23 +101,27 @@ class BanAPI{
 				break;
 			case "op":
 				$user = strtolower($params[0]);
-				if($user == ""){
+				$player = $this->server->api->player->get($user);
+				if(!($player instanceof Player)){
+					$output .= "Player not connected.\n";
 					break;
 				}
-				$this->ops->set($user);
+				$this->ops->set($player->iusername);
 				$this->ops->save();
-				$output .= $user." is now op\n";
-				$this->server->api->chat->sendTo(false, "You are now op.", $user);
+				$output .= $player->iusername." is now op\n";
+				$this->server->api->chat->sendTo(false, "You are now op.", $player->iusername);
 				break;
 			case "deop":
 				$user = strtolower($params[0]);
-				if($user == ""){
+				$player = $this->server->api->player->get($user);
+				if(!($player instanceof Player)){
+					$output .= "Player not connected.\n";
 					break;
 				}
-				$this->ops->remove($user);
+				$this->ops->remove($player->iusername);
 				$this->ops->save();
-				$output .= $user." is not longer op\n";
-				$this->server->api->chat->sendTo(false, "You are not longer op.", $user);
+				$output .= $player->iusername." is not longer op\n";
+				$this->server->api->chat->sendTo(false, "You are not longer op.", $player->iusername);
 				break;
 			case "kick":
 				if(!isset($params[0])){
