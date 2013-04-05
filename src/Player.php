@@ -475,7 +475,7 @@ class Player{
 		));
 	}
 	
-	public function teleport(Vector3 $pos, $yaw = false, $pitch = false){
+	public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true){
 		if($this->entity instanceof Entity){
 			if($yaw === false){
 				$yaw = $this->entity->yaw;
@@ -486,10 +486,13 @@ class Player{
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
 			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
+			$this->entity->resetSpeed();
 			$this->entity->updateLast();
 			$this->entity->calculateVelocity();
-			$this->orderChunks();
-			$this->getNextChunk();
+			if($terrain === true){
+				$this->orderChunks();
+				$this->getNextChunk();
+			}
 		}
 		$this->dataPacket(MC_MOVE_PLAYER, array(
 			"eid" => 0,
@@ -790,7 +793,7 @@ class Player{
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
 								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 12 or $this->server->api->handle("player.move", $this->entity) === false){
-									$this->teleport(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), $this->entity->yaw, $this->entity->pitch);
+									$this->teleport(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), $this->entity->yaw, $this->entity->pitch, false);
 								}else{
 									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								}

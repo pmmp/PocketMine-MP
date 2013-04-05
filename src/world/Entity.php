@@ -545,7 +545,11 @@ class Entity extends stdClass{
 		}
 		return false;
 	}
-	
+
+	public function resetSpeed(){
+		$this->speedMeasure = array(0, 0, 0, 0, 0);	
+	}
+
 	public function getSpeed(){
 		return array_sum($this->speedMeasure) / count($this->speedMeasure);		
 	}
