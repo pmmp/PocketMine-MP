@@ -138,10 +138,10 @@ class PlayerAPI{
 					$player = $issuer;
 				}
 				if(isset($params[1])){
-					$player = $this->server->api->player->get($params[0]);
+					$player = $this->server->api->player->get($params[1]);
 				}
 				if(!($player instanceof Player) or !isset($gms[strtolower($params[0])])){
-					$output .= "Usage: /gamemode <survival | creative | adventure> [player]\n";
+					$output .= "Usage: /$cmd <survival | creative | adventure> [player]\n";
 					break;
 				}
 				if($player->setGamemode($gms[strtolower($params[0])])){
@@ -156,7 +156,7 @@ class PlayerAPI{
 					$name = $params[0];
 					$target = $params[1];
 				}else{
-					$output .= "Usage: /tp [player] <target>\n";
+					$output .= "Usage: /$cmd [player] <target>\n";
 					break;
 				}
 				if($this->teleport($name, $target)){
@@ -177,7 +177,7 @@ class PlayerAPI{
 					$y = (float) $params[2];
 					$z = (float) $params[3];
 				}else{
-					$output .= "Usage: /tp [player] <x> <y> <z>\n";
+					$output .= "Usage: /$cmd [player] <x> <y> <z>\n";
 					break;
 				}
 				if($this->tppos($name, $x, $y, $z)){
@@ -196,14 +196,15 @@ class PlayerAPI{
 				if($player instanceof Player){
 					$this->server->api->entity->harm($player->eid, 20, "console", true);
 				}else{
-					$output .= "Usage: /kill [player]\n";
+					$output .= "Usage: /$cmd [player]\n";
 				}
 				break;
 			case "list":
 				$output .= "Player list:\n";
 				foreach($this->server->clients as $c){
-					$output .= $c->username." (".$c->ip.":".$c->port."), ClientID ".$c->clientID.", (".round($c->entity->x, 2).", ".round($c->entity->y, 2).", ".round($c->entity->z, 2).")\n";
+					$output .= $c->username.", ";
 				}
+				$output = substr($output, 0, -2);
 				break;
 		}
 		return $output;
@@ -227,6 +228,7 @@ class PlayerAPI{
 	}
 
 	public function get($name, $alike = true){
+		$name = strtolower($name);
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";", true);
 		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
@@ -275,7 +277,7 @@ class PlayerAPI{
 			console("[INFO] Player \"\x1b[33m".$player->username."\x1b[0m\" connected from \x1b[36m".$player->ip.":".$player->port."\x1b[0m");
 			$player->data = $this->getOffline($player->username);
 			$player->gamemode = $player->data->get("gamemode");
-			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".$player->username."');");
+			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
 		}
 	}
 
