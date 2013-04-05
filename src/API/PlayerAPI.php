@@ -122,7 +122,6 @@ class PlayerAPI{
 				$output .= "Lag: ".round($issuer->getLag(), 2)."\n";
 				break;
 			case "gamemode":
-				$gm = -1;
 				$player = false;
 				$gms = array(
 					"0" => SURVIVAL,
@@ -135,18 +134,17 @@ class PlayerAPI{
 					"adventure" => ADVENTURE,
 					"a" => ADVENTURE,					
 				);
-				if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+				if($issuer instanceof Player){
 					$player = $issuer;
-				}elseif(isset($params[1]) and isset($params[0])){
+				}
+				if(isset($params[1])){
 					$player = $this->server->api->player->get($params[0]);
 				}
-				if(!($player instanceof Player) or !isset($gms[strtolower($params[1])])){
-					$output .= "Usage: /gamemode [player] <survival | creative | adventure>\n";
+				if(!($player instanceof Player) or !isset($gms[strtolower($params[0])])){
+					$output .= "Usage: /gamemode <survival | creative | adventure> [player]\n";
 					break;
 				}
-				
-				
-				if($player->setGamemode($gms[strtolower($params[1])])){
+				if($player->setGamemode($gms[strtolower($params[0])])){
 					$output .= "Gamemode of ".$player->username." changed to ".$player->getGamemode()."\n";
 				}
 				break;
