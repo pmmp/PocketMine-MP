@@ -34,6 +34,8 @@ class ChatAPI{
 	public function init(){
 		$this->server->api->console->register("tell", "Sends a private message to a player", array($this, "commandHandler"));
 		$this->server->api->console->register("me", "Broadcast an action", array($this, "commandHandler"));
+		$this->server->api->ban->cmdWhitelist("tell");
+		$this->server->api->ban->cmdWhitelist("me");
 	}
 	
 	public function commandHandler($cmd, $params, $issuer, $alias){

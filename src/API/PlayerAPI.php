@@ -41,6 +41,8 @@ class PlayerAPI{
 		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
 		$this->server->api->console->register("lag", "Measure your connection lag", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
+		$this->server->api->ban->cmdWhitelist("list");
+		$this->server->api->ban->cmdWhitelist("lag");
 	}
 
 	public function handle($data, $event){
