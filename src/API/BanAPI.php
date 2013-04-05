@@ -54,6 +54,8 @@ class BanAPI{
 		$this->server->api->console->alias("pardon", "ban remove");
 		$this->server->api->console->alias("pardon-ip", "banip remove");
 		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);
+		$this->server->addHandler("player.block.break", array($this, "permissionsCheck"), 1);
+		$this->server->addHandler("player.block.place", array($this, "permissionsCheck"), 1);
 	}
 	
 	public function cmdWhitelist($cmd){
@@ -71,19 +73,33 @@ class BanAPI{
 	}
 	
 	public function permissionsCheck($data, $event){
-
-		if(isset($this->cmdWhitelist[$data["cmd"]])){
-			return true;
+		switch($event){
+			case "player.block.break":
+			case "player.block.place":
+				if(!$this->isOp($data["player"]->iusername)){
+					$t = new Vector2($data["target"]->x, $data["target"]->z);
+					$s = new Vector2($this->server->spawn["x"], $this->server->spawn["z"]);
+					if($t->distance($s) <= 16.5 and $this->server->api->dhandle($event.".spawn", $data) !== true){
+						return false;
+					}
+				}
+				return;
+				break;
+			case "console.command":
+				if(isset($this->cmdWhitelist[$data["cmd"]])){
+					return true;
+				}
+				
+				if($data["issuer"] instanceof Player){
+					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
+						return true;
+					}
+				}elseif($data["issuer"] === "console"){
+					return true;
+				}
+				return false;
+			break;
 		}
-		
-		if($data["issuer"] instanceof Player){
-			if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
-				return true;
-			}
-		}elseif($data["issuer"] === "console"){
-			return true;
-		}
-		return false;
 	}
 	
 	public function commandHandler($cmd, $params, $issuer, $alias){
