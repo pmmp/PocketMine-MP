@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class ChestBlock extends SolidBlock{
+class ChestBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(CHEST, $meta, "Chest");
 		$this->isActivable = true;
@@ -80,6 +80,14 @@ class ChestBlock extends SolidBlock{
 	}
 	
 	public function onActivate(BlockAPI $level, Item $item, Player $player){
+		if($this->inWorld !== true){
+			return false;
+		}
+		$top = $level->getBlockFace($this, 1);
+		if($top->isTransparent !== true){
+			return true;
+		}
+	
 		$server = ServerAPI::request();
 		$t = $server->api->tileentity->get($this);
 		$chest = false;
@@ -100,8 +108,9 @@ class ChestBlock extends SolidBlock{
 		}
 		
 		if($chest->class !== TILE_CHEST){
-			return false;
+			return true;
 		}
+
 		$id = $player->windowCnt = $player->windowCnt++ % 255;
 		$player->windows[$id] = $chest;
 		$player->dataPacket(MC_CONTAINER_OPEN, array(

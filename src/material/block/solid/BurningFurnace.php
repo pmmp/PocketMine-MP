@@ -68,6 +68,9 @@ class BurningFurnaceBlock extends SolidBlock{
 	}
 
 	public function onActivate(BlockAPI $level, Item $item, Player $player){
+		if($this->inWorld !== true){
+			return false;
+		}
 		$server = ServerAPI::request();
 		$t = $server->api->tileentity->get($this);
 		$furnace = false;
@@ -88,7 +91,7 @@ class BurningFurnaceBlock extends SolidBlock{
 		}
 		
 		if($furnace->class !== TILE_FURNACE){
-			return false;
+			return true;
 		}
 		$id = $player->windowCnt = $player->windowCnt++ % 255;
 		$player->windows[$id] = $furnace;
