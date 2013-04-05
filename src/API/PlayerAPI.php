@@ -124,20 +124,29 @@ class PlayerAPI{
 			case "gamemode":
 				$gm = -1;
 				$player = false;
+				$gms = array(
+					"0" => SURVIVAL,
+					"survival" => SURVIVAL,
+					"s" => SURVIVAL,
+					"1" => CREATIVE,
+					"creative" => CREATIVE,
+					"c" => CREATIVE,
+					"2" => ADVENTURE,
+					"adventure" => ADVENTURE,
+					"a" => ADVENTURE,					
+				);
 				if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
 					$player = $issuer;
-					$gm = (int) $params[1];
 				}elseif(isset($params[1]) and isset($params[0])){
 					$player = $this->server->api->player->get($params[0]);
-					$gm = (int) $params[1];
 				}
-				if(!($player instanceof Player) or $gm < 0 or $gm > 2){
-					$output .= "Usage: /gamemode [player] <0 | 1 | 2>\n";
+				if(!($player instanceof Player) or !isset($gms[strtolower($params[1])])){
+					$output .= "Usage: /gamemode [player] <survival | creative | adventure>\n";
 					break;
 				}
 				
 				
-				if($player->setGamemode($gm)){
+				if($player->setGamemode($gms[strtolower($params[1])])){
 					$output .= "Gamemode of ".$player->username." changed to ".$player->getGamemode()."\n";
 				}
 				break;
@@ -219,8 +228,8 @@ class PlayerAPI{
 		return false;
 	}
 
-	public function get($name){
-		$CID = $this->server->query("SELECT ip,port FROM players WHERE name = '".$name."';", true);
+	public function get($name, $alike = true){
+		$CID = $this->server->query("SELECT ip,port FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";", true);
 		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
