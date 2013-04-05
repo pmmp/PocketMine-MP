@@ -339,8 +339,9 @@ class Entity extends stdClass{
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
 						$d = $this->server->api->block->getBlock(new Vector3($x, $y + 1, $z));
+						$d2 = $this->server->api->block->getBlock(new Vector3($x, $y + 2, $z));
 						$dmg = ($this->fallY - $y) - 3;
-						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER){
+						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER and !($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER){
 							$this->harm($dmg, "fall");
 						}
 					}
