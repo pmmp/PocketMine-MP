@@ -33,11 +33,20 @@ class ChatAPI{
 	
 	public function init(){
 		$this->server->api->console->register("tell", "Sends a private message to a player", array($this, "commandHandler"));
+		$this->server->api->console->register("me", "Broadcast an action", array($this, "commandHandler"));
 	}
 	
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "me":
+				if(!($issuer instanceof Player)){
+					$sender = "Console";
+				}else{
+					$sender = $issuer->username;
+				}
+				$this->broadcast("* $sender ".implode(" ", $params));
+				break;
 			case "tell":
 				if(!isset($params[0]) or !isset($params[1])){
 					$output .= "Usage: /$cmd <player> <message>\n";
