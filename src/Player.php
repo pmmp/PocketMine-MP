@@ -139,7 +139,7 @@ class Player{
 				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
 			}
 		}
-		$this->server->schedule(1, array($this, "getNextChunk"));
+		$this->server->schedule(0.5, array($this, "getNextChunk"));
 	}
 
 	public function onTick($time, $event){
