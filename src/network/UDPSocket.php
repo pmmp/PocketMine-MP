@@ -28,43 +28,27 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class UDPSocket{
-	private $encrypt;
-	var $buffer, $connected, $errors, $sock, $server;
+	public $connected, $sock, $server;
 	function __construct($server, $port, $listen = false, $serverip = "0.0.0.0"){
-		$this->errors = array_fill(88,(125 - 88) + 1, true);
 		$this->server = $server;
 		$this->port = $port;
 		$this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		socket_set_option($this->sock, SOL_SOCKET, SO_BROADCAST, 1); //Allow sending broadcast messages
 		if($listen !== true){
 			$this->connected = true;
-			$this->buffer = array();
 			$this->unblock();
 		}else{
 			if(socket_bind($this->sock, $serverip, $port) === true){
 				$this->unblock();
+				$this->connected = true;
 			}else{
-				console("[ERROR] Couldn't bind to $serverip:".$port, true, true, 0);
-				die();
+				$this->connected = false;
 			}
 		}
 	}
 
-	public function listenSocket(){
-		$sock = @socket_accept($this->sock);
-		if($sock !== false){
-			$sock = new Socket(false, false, false, $sock);
-			$sock->unblock();
-			return $sock;
-		}
-		return false;
-	}
-
 	public function close($error = 125){
 		$this->connected = false;
-		if($error !== false){
-			console("[ERROR] [Socket] Socket closed, Error $error: ".socket_strerror($error));
-		}
 		return @socket_close($this->sock);
 	}
 
@@ -80,8 +64,7 @@ class UDPSocket{
 		if($this->connected === false){
 			return false;
 		}
-		$len = @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
-		return $len;
+		return @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
 	}
 
 	public function write($data, $dest = false, $port = false){

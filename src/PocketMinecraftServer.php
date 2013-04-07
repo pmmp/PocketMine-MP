@@ -186,8 +186,9 @@ class PocketMinecraftServer{
 	}
 
 	public function setType($type = "normal"){
-		switch($type){
+		switch(trim(strtolower($type))){
 			case "normal":
+			case "demo":
 				$this->serverType = "MCCPP;Demo;";
 				break;
 			case "minecon":
