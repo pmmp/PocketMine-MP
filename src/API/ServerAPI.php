@@ -42,10 +42,10 @@ class ServerAPI{
 	}
 	
 	public function load(){
-		@mkdir(DATA_PATH."logs/", 0777, true);
-		@mkdir(DATA_PATH."players/", 0777);
-		@mkdir(DATA_PATH."worlds/", 0777);
-		@mkdir(DATA_PATH."plugins/", 0777);
+		@mkdir(DATA_PATH."logs/", 0755, true);
+		@mkdir(DATA_PATH."players/", 0755);
+		@mkdir(DATA_PATH."worlds/", 0755);
+		@mkdir(DATA_PATH."plugins/", 0755);
 		console("[INFO] Starting ServerAPI server handler...");
 		file_put_contents(DATA_PATH."logs/packets.log", "");
 		if(!file_exists(DATA_PATH."logs/test.bin.log") or md5_file(DATA_PATH."logs/test.bin.log") !== TEST_MD5){
@@ -366,7 +366,7 @@ class ServerAPI{
 			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
 			unset($level["Player"]);
 			$lvName = $level["LevelName"]."/";
-			@mkdir(DATA_PATH."worlds/".$lvName, 0777);
+			@mkdir(DATA_PATH."worlds/".$lvName, 0755);
 			file_put_contents(DATA_PATH."worlds/".$lvName."level.dat", serialize($level));
 			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
 			file_put_contents(DATA_PATH."worlds/".$lvName."entities.dat", serialize($entities["Entities"]));
