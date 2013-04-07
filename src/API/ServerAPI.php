@@ -226,15 +226,19 @@ class ServerAPI{
 		foreach($this->plugin->getList() as $p){
 			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
 		}
-		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
-			"serverid" => $this->server->serverID,
-			"os" => Utils::getOS(),
-			"version" => MAJOR_VERSION,
-			"protocol" => CURRENT_PROTOCOL,
-			"online" => count($this->server->clients),
-			"max" => $this->server->maxClients,
-			"plugins" => $plist,
-		), 10);
+		Async::call("Utils::curl_post", array(
+			0 => "http://stats.pocketmine.net/usage.php",
+			1 => array(
+				"serverid" => $this->server->serverID,
+				"os" => Utils::getOS(),
+				"version" => MAJOR_VERSION,
+				"protocol" => CURRENT_PROTOCOL,
+				"online" => count($this->server->clients),
+				"max" => $this->server->maxClients,
+				"plugins" => $plist,
+			),
+			2 => 10
+		));
 	}
 
 	public function __destruct(){
