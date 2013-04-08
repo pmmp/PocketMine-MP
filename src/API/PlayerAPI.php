@@ -107,7 +107,7 @@ class PlayerAPI{
 							break;
 					}
 				}
-				$this->server->chat(false, $message);
+				$this->server->api->chat->broadcast($message);
 				return true;
 				break;
 		}
