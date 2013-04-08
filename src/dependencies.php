@@ -48,9 +48,7 @@ if(version_compare("5.4.0", PHP_VERSION) > 0){
 
 if(version_compare(CURRENT_PHP_VERSION, PHP_VERSION) > 0){
 	console("[NOTICE] This PocketMine-MP version has not been tested with PHP < ".CURRENT_PHP_VERSION, true, true, 0);
-}/*elseif(version_compare(CURRENT_PHP_VERSION, PHP_VERSION) < 0){
-	console("[NOTICE] This PocketMine-MP version has not been tested with PHP > ".CURRENT_PHP_VERSION, true, true, 0);
-}*/
+}
 
 if(php_sapi_name() !== "cli"){
 	console("[ERROR] You must run PocketMine-MP using the CLI.", true, true, 0);
@@ -79,11 +77,6 @@ if(!extension_loaded("sqlite3") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"")
 
 if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "zlib." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find the Zlib extension.", true, true, 0);
-	++$errors;
-}
-
-if(!extension_loaded("gmp") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "gmp." . PHP_SHLIB_SUFFIX) === false){
-	console("[ERROR] Unable to find the GMP extension.", true, true, 0);
 	++$errors;
 }
 

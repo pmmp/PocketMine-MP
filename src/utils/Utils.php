@@ -529,19 +529,45 @@ class Utils extends Thread{
 		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("d", $value)):pack("d", $value);
 	}
 
-	public static function readLong($str){
-		$n = gmp_init(Utils::strToHex($str), 16);
-		if(gmp_testbit($n, "63")){
-			$n = gmp_xor($n, "0xffffffffffffffff"); //flip the bits
-			$n = gmp_neg(gmp_add($n, "1")); // add one and negate
+	public static function readLong($x, $signed = true){
+		$value = "0";
+		if($signed === true){
+			$negative = ((ord($x{0}) & 0x80) === 0x80) ? true:false;
+			if($negative){
+				$x = ~$x;
+			}
+		}else{
+			$negative = false;
 		}
-		return gmp_strval($n);
+
+		for($i = 0; $i < 8; $i += 4){
+			$value = bcmul($value, "4294967296", 0); //4294967296 == 2^32
+			$value = bcadd($value, 0x1000000 * ord($x{$i}) + ((ord($x{$i + 1}) << 16) | (ord($x{$i + 2}) << 8) | ord($x{$i + 3})), 0);
+		}
+		return ($negative === true ? "-".$value:$value);
 	}
 
 	public static function writeLong($value){
-		$long = gmp_init($value, 10);
-		$long = gmp_and($long, "0xffffffffffffffff");
-		return Utils::hexToStr(str_pad(gmp_strval($long, -16), 16, "00", STR_PAD_LEFT));
+		$x = "";
+		if($value{0} === "-"){
+			$negative = true;
+			$value = bcadd($value, "1");
+			if($value{0} === "-"){
+				$value = substr($value, 1);
+			}
+		}else{
+			$negative = false;
+		}
+		while(bccomp($value, '0', 0) > 0){
+			$temp = bcmod($value, "16777216");
+			$x = chr($temp >> 16) . chr($temp >> 8) . chr($temp) . $x;
+			$value = bcdiv($value, "16777216", 0);
+		}
+		$x = str_pad(substr($x, 0, 8), 8, "\x00", STR_PAD_LEFT);
+		if($negative === true){
+			$x = ~$x; 
+		}
+		return $x;
 	}
 
 	public static function readLLong($str){
