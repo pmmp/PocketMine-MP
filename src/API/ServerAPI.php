@@ -94,9 +94,9 @@ class ServerAPI{
 			"server-name" => "Minecraft Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @username to this server!",
-			"invisible" => false,
+			"server-invisible" => false,
 			"server-ip" => "0.0.0.0",
-			"port" => 19132,
+			"server-port" => 19132,
 			"memory-limit" => "256M",
 			"last-update" => false,
 			"white-list" => false,
@@ -118,7 +118,12 @@ class ServerAPI{
 		));
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug"));
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("port"), $this->getProperty("server-id"), $this->getProperty("server-ip"));
+		if($this->getProperty("port") !== false){
+			$this->setProperty("server-port", $this->getProperty("port"));
+			$this->config->remove("port");
+			$this->config->remove("invisible");
+		}
+		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("server-port"), $this->getProperty("server-id"), $this->getProperty("server-ip"));
 		self::$serverRequest = $this->server;
 		$this->setProperty("server-id", $this->server->serverID);
 		$this->server->api = $this;
@@ -130,7 +135,7 @@ class ServerAPI{
 		
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
-			UPnP_PortForward($this->getProperty("port"));
+			UPnP_PortForward($this->getProperty("server-port"));
 		}
 		if(($ip = Utils::getIP()) !== false){
 			console("[INFO] External IP: ".$ip);
@@ -287,8 +292,8 @@ class ServerAPI{
 		}else{
 			$this->setProperty("memory-limit", "256M");
 		}
-		if(!$this->config->exists("invisible")){
-			$this->config->set("invisible", false);
+		if(!$this->config->exists("server-invisible")){
+			$this->config->set("server-invisible", false);
 		}
 		if($this->server instanceof PocketMinecraftServer){
 			$this->server->setType($this->getProperty("server-type"));
@@ -346,7 +351,7 @@ class ServerAPI{
 		$this->__destruct();
 		if($this->getProperty("upnp-forwarding") === true ){
 			console("[INFO] [UPnP] Removing port forward...");
-			UPnP_RemovePortForward($this->getProperty("port"));
+			UPnP_RemovePortForward($this->getProperty("server-port"));
 		}
 		return $this->restart;
 	}
