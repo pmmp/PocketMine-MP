@@ -314,6 +314,8 @@ class BanAPI{
 	
 	public function inWhitelist($username){
 		$username = strtolower($username);
+		if($this->isOp($username)){
+			return true;
 		if($this->server->api->dhandle("api.ban.whitelist.check", $ip) === false){
 			return true;
 		}elseif($this->whitelist->exists($username)){
