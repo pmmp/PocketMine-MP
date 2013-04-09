@@ -56,6 +56,7 @@ class BanAPI{
 		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);
 		$this->server->addHandler("player.block.break", array($this, "permissionsCheck"), 1);
 		$this->server->addHandler("player.block.place", array($this, "permissionsCheck"), 1);
+		$this->server->addHandler("player.flying", array($this, "permissionsCheck"), 1);
 	}
 	
 	public function cmdWhitelist($cmd){
@@ -74,6 +75,11 @@ class BanAPI{
 	
 	public function permissionsCheck($data, $event){
 		switch($event){
+			case "player.flying":
+				if($this->isOp($data->iusername)){
+					return true;
+				}
+				break;
 			case "player.block.break":
 			case "player.block.place":
 				if(!$this->isOp($data["player"]->iusername)){

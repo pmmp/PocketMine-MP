@@ -351,7 +351,7 @@ class Entity extends stdClass{
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
 					}elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
-						if($this->player->gamemode !== CREATIVE and $this->server->api->getProperty("allow-flight") !== true){
+						if($this->player->gamemode !== CREATIVE and $this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true){
 							$this->player->close("flying");
 							return;
 						}
