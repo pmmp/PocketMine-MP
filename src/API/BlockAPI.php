@@ -129,7 +129,7 @@ class BlockAPI{
 					$output .= "Usage: /give <username> <item> [amount] [damage]\n";
 					break;
 				}
-				$username = $params[0];
+				$player = $this->server->api->player->get($params[0]);
 				$item = BlockAPI::fromString($params[1]);
 				
 				if(!isset($params[2])){
@@ -138,9 +138,9 @@ class BlockAPI{
 					$item->count = (int) $params[2];
 				}
 
-				if(($player = $this->server->api->player->get($username)) !== false){
+				if($player instanceof Player){
 					$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
-					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$username."\n";
+					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username."\n";
 				}else{
 					$output .= "Unknown player\n";
 				}
