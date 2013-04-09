@@ -110,7 +110,7 @@ class Player{
 	public function getNextChunk($repeat = false){
 		$c = key($this->chunksOrder);
 		$d = $this->chunksOrder[$c];
-		if($c === null or $d > $this->server->getProperty("view-distance")){
+		if($c === null or $d > $this->server->api->getProperty("view-distance")){
 			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
@@ -858,7 +858,7 @@ class Player{
 								$data["entity"] = $this->entity;
 								if(!($target instanceof Entity)){
 									break;
-								}elseif($target->class === ENTITY_PLAYER and ($this->server->getProperty("pvp") == false or $this->server->difficulty <= 0 or $target->player->gamemode === CREATIVE)){
+								}elseif($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or $target->player->gamemode === CREATIVE)){
 									break;
 								}elseif($this->handle("player.interact", $data) !== false){
 									switch($this->equipment->getID()){

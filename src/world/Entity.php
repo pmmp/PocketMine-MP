@@ -304,10 +304,27 @@ class Entity extends stdClass{
 		}
 		
 		if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER){
-			$x = (int) round($this->x - 0.5);
+			$startX = ((int) round($this->x - 0.5)) - 1;
 			$y = (int) round($this->y - 1);
-			$z = (int) round($this->z - 0.5);
-			$blockDown = $this->server->api->block->getBlock(new Vector3($x, $y, $z));
+			$startZ = ((int) round($this->z - 0.5)) - 1;
+			$endX = $startX + 2;
+			$endZ = $startZ + 2;
+			$support = false;
+			for($z = $startZ; $z < $endZ; ++$z){
+				for($x = $startX; $x < $endX; ++$x){
+					$v = new Vector3($x, $y, $z);
+					if($this->isSupport($v)){
+						$b = $this->server->api->block->getBlock($v);
+						if($b->isFlowable !== true){
+							$support = true;
+							break;
+						}
+					}
+				}
+				if($support === true){
+					break;
+				}
+			}
 			if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
 				if($this->speedX != 0){
 					$this->x += $this->speedX * 5;
@@ -318,7 +335,7 @@ class Entity extends stdClass{
 				if($this->speedZ != 0){
 					$this->z += $this->speedZ * 5;
 				}
-				if($blockDown->isFlowable === true){
+				if($support === false){
 					$this->speedY -= 0.04 * 5;
 					//$this->server->api->handle("entity.motion", $this);
 				}elseif($this->speedY < 0){
@@ -329,13 +346,18 @@ class Entity extends stdClass{
 					//$this->server->api->handle("entity.motion", $this);
 				}
 			}else{
-				if($blockDown->isFlowable === true){
+				if($support === false){
 					if($this->fallY === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
+					}elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
+						if($this->player->gamemode === CREATIVE and $this->server->api->getProperty("allow-flight") !== true){
+							$this->player->close("flying");
+							return;
+						}
 					}elseif($y > $this->fallY){
 						$this->fallY = $y;
-					}
+					}					
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
 						$d = $this->server->api->block->getBlock(new Vector3($x, $y + 1, $z));
@@ -542,6 +564,16 @@ class Entity extends stdClass{
 		$block = new Vector3($x, $y, $z);
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
 		if(($y == (((int) $this->y) - 1) or $y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
+			return true;
+		}
+		return false;
+	}
+	
+	public function isSupport(Vector3 $pos, $radius = 0.75){
+		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
+		$diff = $pos->y - $this->y;
+		var_dump($diff);
+		if($me->distance($pos) < $radius and $diff >= -0.16 and $diff <= 0.6){
 			return true;
 		}
 		return false;
