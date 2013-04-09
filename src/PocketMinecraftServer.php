@@ -560,6 +560,9 @@ class PocketMinecraftServer{
 					}
 					break;
 				case 0x07:
+					if($this->invisible === true){
+						break;
+					}
 					$port = $data[2];
 					$MTU = $data[3];
 					$clientID = $data[4];
