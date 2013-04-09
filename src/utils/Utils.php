@@ -35,7 +35,7 @@ define("BIG_ENDIAN", 0x00);
 define("LITTLE_ENDIAN", 0x01);
 define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE_ENDIAN));
 
-class Utils extends Thread{
+class Utils{
 	public static $online = true;
 	public function run(){
 	

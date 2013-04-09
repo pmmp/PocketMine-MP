@@ -28,12 +28,18 @@ the Free Software Foundation, either version 3 of the License, or
 class ServerAPI{
 	var $restart = false;
 	private static $serverRequest = false;
+	private $asyncCalls = array();
 	private $server;
 	private $config;
 	private $apiList = array();
+	private $asyncCnt = 0;
 	
 	public static function request(){
 		return self::$serverRequest;
+	}
+	
+	public function start(){
+		return $this->run();
 	}
 	
 	public function run(){
@@ -223,13 +229,29 @@ class ServerAPI{
 		$this->server->loadEntities();
 	}
 	
+	public function async(callable $callable, $params = array()){
+		$cnt = $this->asyncCnt++;
+		$this->asyncCalls[$cnt] = new Async($callable, $params);
+		return $cnt;
+	}
+	
+	public function getAsync($id){
+		if(!isset($this->asyncCalls[$id])){
+			return false;
+		}
+		$ob = $this->asyncCalls[$id];
+		$this->asyncCalls[$id] = null;
+		unset($this->asyncCalls[$id]);
+		return $ob;
+	}
+		
 	public function sendUsage(){
 		console("[INTERNAL] Sending usage data...", true, true, 3);
 		$plist = "";
 		foreach($this->plugin->getList() as $p){
 			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
 		}
-		Async::call("Utils::curl_post", array(
+		$this->async("Utils::curl_post", array(
 			0 => "http://stats.pocketmine.net/usage.php",
 			1 => array(
 				"serverid" => $this->server->serverID,
