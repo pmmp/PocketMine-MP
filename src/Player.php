@@ -107,10 +107,10 @@ class Player{
 		asort($this->chunksOrder);
 	}
 	
-	public function getNextChunk(){
+	public function getNextChunk($repeat = false){
 		$c = key($this->chunksOrder);
 		$d = $this->chunksOrder[$c];
-		if($c === null or $d > 6){
+		if($c === null or $d > $this->server->getProperty("view-distance")){
 			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
@@ -139,7 +139,11 @@ class Player{
 				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
 			}
 		}
-		$this->server->schedule(0.5, array($this, "getNextChunk"));
+		if($repeat === false){
+			$this->getNextChunk(true);
+		}
+		
+		$this->server->schedule(1, array($this, "getNextChunk"));
 	}
 
 	public function onTick($time, $event){
