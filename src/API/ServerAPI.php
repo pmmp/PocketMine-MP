@@ -229,10 +229,10 @@ class ServerAPI{
 		$this->server->loadEntities();
 	}
 	
-	public function async(callable $callable, $params = array()){
+	public function async(callable $callable, $params = array(), $remove = false){
 		$cnt = $this->asyncCnt++;
 		$this->asyncCalls[$cnt] = new Async($callable, $params);
-		return $cnt;
+		return $remove === true ? $this->getAsync($cnt):$cnt;
 	}
 	
 	public function getAsync($id){
@@ -263,7 +263,7 @@ class ServerAPI{
 				"plugins" => $plist,
 			),
 			2 => 10
-		));
+		), true);
 	}
 
 	public function __destruct(){
