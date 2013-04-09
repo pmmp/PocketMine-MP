@@ -347,7 +347,7 @@ class Entity extends stdClass{
 				}
 			}else{
 				if($support === false){
-					if($this->fallY === false){
+					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
 					}elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
@@ -569,11 +569,10 @@ class Entity extends stdClass{
 		return false;
 	}
 	
-	public function isSupport(Vector3 $pos, $radius = 0.75){
-		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
-		$diff = $pos->y - $this->y;
-		var_dump($diff);
-		if($me->distance($pos) < $radius and $diff >= -0.16 and $diff <= 0.6){
+	public function isSupport(Vector3 $pos, $radius = 0.85){
+		$me = new Vector3($this->x - 0.5, $pos->y, $this->z - 0.5);
+		$diff = $this->y - $pos->y;
+		if($me->distance($pos) < $radius and $diff > 0.8 and $diff < 1.2){
 			return true;
 		}
 		return false;
