@@ -95,6 +95,7 @@ class ServerAPI{
 			"last-update" => false,
 			"white-list" => false,
 			"debug" => 1,
+			"spawn-protection" => 16,
 			"max-players" => 20,
 			"server-type" => "normal",
 			"time-per-second" => 20,

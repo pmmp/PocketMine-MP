@@ -79,7 +79,7 @@ class BanAPI{
 				if(!$this->isOp($data["player"]->iusername)){
 					$t = new Vector2($data["target"]->x, $data["target"]->z);
 					$s = new Vector2($this->server->spawn["x"], $this->server->spawn["z"]);
-					if($t->distance($s) <= 16.5 and $this->server->api->dhandle($event.".spawn", $data) !== true){
+					if($t->distance($s) <= $this->server->getProperty("spawn-protection") and $this->server->api->dhandle($event.".spawn", $data) !== true){
 						return false;
 					}
 				}
