@@ -61,6 +61,7 @@ class Player{
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
+	public $lastCorrect;
 	
 	function __construct($clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
@@ -487,6 +488,7 @@ class Player{
 			if($pitch === false){
 				$pitch = $this->entity->yaw;
 			}
+			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
 			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
@@ -797,7 +799,7 @@ class Player{
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
 								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 12 or $this->server->api->handle("player.move", $this->entity) === false){
-									$this->teleport(new Vector3($this->entity->x, $this->entity->y, $this->entity->z), $this->entity->yaw, $this->entity->pitch, false);
+									$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 								}else{
 									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								}
@@ -938,6 +940,7 @@ class Player{
 							if($this->entity->dead === false){
 								break;
 							}
+							$this->blocked = false;
 							$this->entity->fire = 0;
 							$this->entity->air = 300;
 							$this->entity->setHealth(20, "respawn");

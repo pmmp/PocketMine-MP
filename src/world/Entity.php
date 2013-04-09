@@ -375,6 +375,9 @@ class Entity extends stdClass{
 			
 			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();
+				if($this->getSpeed() <= 0.001){
+					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
+				}
 			}
 		}
 		
@@ -644,6 +647,7 @@ class Entity extends stdClass{
 				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
 			}
 			if($this->player instanceof Player){
+				$this->player->blocked = true;
 				$this->player->dataPacket(MC_SET_HEALTH, array(
 					"health" => $this->health,
 				));
