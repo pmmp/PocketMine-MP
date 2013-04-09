@@ -216,6 +216,11 @@ class BanAPI{
 					case "add":
 					case "ban":
 						$ip = strtolower($params[0]);
+						$player = $this->server->api->player->get($ip);
+						if($player instanceof Player){
+							$ip = $player->ip;
+							$player->close("banned");
+						}
 						$this->bannedIPs->set($ip);
 						$this->bannedIPs->save();
 						$output .= "IP \"$ip\" added to ban list\n";
@@ -227,7 +232,7 @@ class BanAPI{
 						$output .= "IP ban list: ".implode(", ", $this->bannedIPs->getAll(true))."\n";
 						break;
 					default:
-						$output .= "Usage: /banip <add | remove | list | reload> [IP]\n";
+						$output .= "Usage: /banip <add | remove | list | reload> [IP | Player]\n";
 						break;
 				}
 				break;
