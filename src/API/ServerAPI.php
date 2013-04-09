@@ -125,7 +125,9 @@ class ServerAPI{
 		}
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("server-port"), $this->getProperty("server-id"), $this->getProperty("server-ip"));
 		self::$serverRequest = $this->server;
-		$this->setProperty("server-id", $this->server->serverID);
+		if($this->getProperty("server-id") != $this->server->serverID){
+			$this->setProperty("server-id", $this->server->serverID);
+		}
 		$this->server->api = $this;
 		$gitsha1 = false;
 		if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!
@@ -205,7 +207,7 @@ class ServerAPI{
 			$this->gen->generate();
 			$this->gen->save($this->server->mapDir, $this->server->mapName);
 			$this->setProperty("level-name", $this->server->mapName);
-			$this->setProperty("gamemode", 1);
+			$this->setProperty("gamemode", CREATIVE);
 		}
 		$this->loadProperties();
 		$this->server->loadMap();

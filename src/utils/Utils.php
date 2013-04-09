@@ -346,12 +346,6 @@ class Utils{
 		return array("yaw" => $hAngle, "pitch" => $vAngle);
 	}
 
-	/*public static function sha1($input){
-		$number = new Math_BigInteger(sha1($input, true), -256);
-		$zero = new Math_BigInteger(0);
-		return ($zero->compare($number) <= 0 ? "":"-") . ltrim($number->toHex(), "0");
-	}*/
-
 	public static function microtime(){
 		return microtime(true);
 	}
