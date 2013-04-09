@@ -852,7 +852,9 @@ class Player{
 								$target = $this->server->api->entity->get($data["target"]);
 								$data["targetentity"] = $target;
 								$data["entity"] = $this->entity;
-								if(($target instanceof Entity) and $target->class === ENTITY_PLAYER and ($this->server->difficulty <= 0 or $target->gamemode === CREATIVE)){
+								if(!($target instanceof Entity)){
+									break;
+								}elseif($target->class === ENTITY_PLAYER and ($this->server->getProperty("pvp") == false or $this->server->difficulty <= 0 or $target->player->gamemode === CREATIVE)){
 									break;
 								}elseif($this->handle("player.interact", $data) !== false){
 									switch($this->equipment->getID()){

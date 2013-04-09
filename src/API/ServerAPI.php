@@ -99,6 +99,7 @@ class ServerAPI{
 			"server-type" => "normal",
 			"time-per-second" => 20,
 			"gamemode" => 1,
+			"pvp" => true,
 			"difficulty" => 1,
 			"generator" => "",
 			"generator-settings" => "",
