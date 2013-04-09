@@ -106,7 +106,6 @@ class ServerAPI{
 			"max-players" => 20,
 			"allow-flight" => false,
 			"server-type" => "normal",
-			"time-per-second" => 20,
 			"gamemode" => CREATIVE,
 			"pvp" => true,
 			"difficulty" => 1,
@@ -300,8 +299,7 @@ class ServerAPI{
 		}
 		if($this->server instanceof PocketMinecraftServer){
 			$this->server->setType($this->getProperty("server-type"));
-			$this->server->timePerSecond = $this->getProperty("time-per-second");
-			$this->server->invisible = $this->getProperty("invisible");
+			$this->server->invisible = $this->getProperty("server-invisible");
 			$this->server->maxClients = $this->getProperty("max-players");
 			$this->server->description = $this->getProperty("description");
 			$this->server->motd = $this->getProperty("motd");
@@ -328,10 +326,9 @@ class ServerAPI{
 					break;
 				case "gamemode":
 				case "max-players":
-				case "port":
+				case "server-port":
 				case "debug":
 				case "difficulty":
-				case "time-per-second":
 					$v = (int) $v;
 					break;
 				case "server-id":
@@ -465,7 +462,7 @@ class ServerAPI{
 					break;
 				case "gamemode":
 				case "max-players":
-				case "port":
+				case "server-port":
 				case "debug":
 				case "difficulty":
 				case "time-per-second":

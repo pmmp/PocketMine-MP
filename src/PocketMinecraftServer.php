@@ -71,7 +71,7 @@ class PocketMinecraftServer{
 		$this->clients = array();
 		$this->spawn = array("x" => 128.5,"y" => 100,"z" =>  128.5);
 		$this->time = 0;
-		$this->timePerSecond = 10;
+		$this->timePerSecond = 20;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);
