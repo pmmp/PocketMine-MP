@@ -375,7 +375,7 @@ class Entity extends stdClass{
 			
 			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();
-				if($this->getSpeed() <= 0.001){
+				if($this->speed <= 5 or ($this->speed <= 12 and $this->gamemode === CREATIVE)){
 					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 				}
 			}
