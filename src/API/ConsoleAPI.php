@@ -71,13 +71,13 @@ class ConsoleAPI{
 							case "true":
 							case "1":
 								$output .= "Server is invisible\n";
-								$this->server->api->setProperty("invisible", true);
+								$this->server->api->setProperty("server-invisible", true);
 								break;
 							case "off":
 							case "false":
 							case "0":
 								$output .= "Server is visible\n";
-								$this->server->api->setProperty("invisible", false);
+								$this->server->api->setProperty("server-invisible", false);
 								break;
 							default:
 								$output .= "Usage: /invisible <on | off>\n";
