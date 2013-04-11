@@ -647,7 +647,6 @@ class Entity extends stdClass{
 				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
 			}
 			if($this->player instanceof Player){
-				$this->player->blocked = true;
 				$this->player->dataPacket(MC_SET_HEALTH, array(
 					"health" => $this->health,
 				));
@@ -676,6 +675,7 @@ class Entity extends stdClass{
 					$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
 				}
 				if($this->player instanceof Player){
+					$this->player->blocked = true;
 					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
 				}else{
 					$this->close();
