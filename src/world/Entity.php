@@ -310,8 +310,8 @@ class Entity extends stdClass{
 			$endX = $startX + 2;
 			$endZ = $startZ + 2;
 			$support = false;
-			for($z = $startZ; $z < $endZ; ++$z){
-				for($x = $startX; $x < $endX; ++$x){
+			for($z = $startZ; $z <= $endZ; ++$z){
+				for($x = $startX; $x <= $endX; ++$x){
 					$v = new Vector3($x, $y, $z);
 					if($this->isSupport($v)){
 						$b = $this->server->api->block->getBlock($v);
@@ -345,13 +345,14 @@ class Entity extends stdClass{
 					$this->speedZ = 0;
 					//$this->server->api->handle("entity.motion", $this);
 				}
-			}else{
-				if($support === false){
+			}elseif($this->class === ENTITY_PLAYER){
+				if($support === false and $this->player->gamemode !== CREATIVE){
+					console("flying!");
 					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
 					}elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
-						if($this->player->gamemode !== CREATIVE and $this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true){
+						if($this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true){
 							$this->player->close("flying");
 							return;
 						}
