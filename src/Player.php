@@ -833,7 +833,9 @@ class Player{
 								break;
 							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"])){
 								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
-								//break;
+								if($this->server->getProperty("disallow-crafting") === true){
+									break;
+								}
 							}
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
 							break;
@@ -993,8 +995,9 @@ class Player{
 							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
 							$data["item"] = $item;
 							if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
-								$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
-								$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->server->getProperty("disallow-crafting") !== true){
+									$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
+								}
 							}
 							break;
 						case MC_SIGN_UPDATE:
@@ -1072,12 +1075,17 @@ class Player{
 							}
 							if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 								if($slot->count < $item->count){
-									$this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count);
+									if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count) === false and $this->server->getProperty("disallow-crafting") === true){
+										break;
+									}
 								}elseif($slot->count > $item->count){
 									$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count);
 								}
 							}else{
-								$this->removeItem($item->getID(), $item->getMetadata(), $item->count);
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->getProperty("disallow-crafting") === true){
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->getProperty("disallow-crafting") === true){
+									break;
+								}
 								$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count);
 							}
 							$tile->setSlot($data["slot"], $item);
