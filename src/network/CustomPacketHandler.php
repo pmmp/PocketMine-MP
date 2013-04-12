@@ -421,7 +421,7 @@ class CustomPacketHandler{
 					$this->data["count"] = Utils::readInt($this->get(4));
 					$this->data["records"] = array();
 					for($r = 0; $r < $this->data["count"]; ++$r){
-						$this->data["records"][] = array(Utils::readByte($this->get(1)), Utils::readByte($this->get(1)), Utils::readByte($this->get(1)));
+						$this->data["records"][] = new Vector3(Utils::readByte($this->get(1)), Utils::readByte($this->get(1)), Utils::readByte($this->get(1)));
 					}
 				}else{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
@@ -432,7 +432,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt(count($this->data["records"]));
 					if(count($this->data["records"]) > 0){
 						foreach($this->data["records"] as $record){
-							$this->raw .= Utils::writeByte($record[0]) . Utils::writeByte($record[1]) . Utils::writeByte($record[2]);
+							$this->raw .= Utils::writeByte($record->x) . Utils::writeByte($record->y) . Utils::writeByte($record->z);
 						}
 					}
 				}
