@@ -63,7 +63,7 @@ class PlayerAPI{
 				break;
 			case "player.death":
 				if(is_numeric($data["cause"])){
-					$e = $this->api->entity->get($data["cause"]);
+					$e = $this->server->api->entity->get($data["cause"]);
 					if($e instanceof Entity){
 						switch($e->class){
 							case ENTITY_PLAYER:
@@ -100,9 +100,6 @@ class PlayerAPI{
 						case "fall":
 							$message = " hit the ground too hard";
 							break;
-						case "flying":
-							$message = " tried to fly up to the sky";
-							break;							
 						default:
 							$message = " died";
 							break;
