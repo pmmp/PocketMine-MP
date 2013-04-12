@@ -679,10 +679,10 @@ class Player{
 							}
 							
 							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
-								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" not being on white-list", false);
+								$this->close("\x1b[33m".$this->username."\x1b[0m not being on white-list", false);
 								return;
 							}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
-								$this->close("\"\x1b[33m".$this->username."\x1b[0m\" is banned!", false);
+								$this->close("\x1b[33m".$this->username."\x1b[0m is banned!", false);
 								return;
 							}
 							$this->loggedIn = true;
@@ -767,7 +767,7 @@ class Player{
 									$this->server->api->entity->spawnToAll($this->eid);
 									$this->server->schedule(5, array($this->entity, "update"), array(), true);
 									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
-									console("[DEBUG] Player \"".$this->username."\" EID ".$this->eid." spawned at X ".$this->entity->x." Y ".$this->entity->y." Z ".$this->entity->z, true, true, 2);
+									console("[INFO] \x1b[33m".$player->username."\x1b[0m logged in with entity id ".$this->eid." at (".$this->entity->x.", ".$this->entity->y.", ".$this->entity->z.")");
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
@@ -798,10 +798,11 @@ class Player{
 							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
-								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 12 or $this->server->api->handle("player.move", $this->entity) === false){
+								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 13 or $this->server->api->handle("player.move", $this->entity) === false){
 									if($this->lastCorrect instanceof Vector3){
 										$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 									}
+									console("[WARNING] ".$this->username." moved too quickly!");
 								}else{
 									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								}
