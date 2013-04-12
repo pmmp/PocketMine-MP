@@ -792,21 +792,23 @@ class Player{
 							}
 							break;
 						case MC_MOVE_PLAYER:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
 								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 12 or $this->server->api->handle("player.move", $this->entity) === false){
-									$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
+									if($this->lastCorrect instanceof Vector3){
+										$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
+									}
 								}else{
 									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
 								}
 							}
 							break;
 						case MC_PLAYER_EQUIPMENT:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$data["eid"] = $this->eid;
@@ -817,12 +819,12 @@ class Player{
 							}
 							break;
 						case MC_REQUEST_CHUNK:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							break;
 						case MC_USE_ITEM:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$data["eid"] = $this->eid;
@@ -835,7 +837,7 @@ class Player{
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
 							break;
 						case MC_REMOVE_BLOCK:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 8){
@@ -844,14 +846,14 @@ class Player{
 							$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
 							break;
 						case MC_PLAYER_ARMOR_EQUIPMENT:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$data["eid"] = $this->eid;
 							$this->server->handle("player.armor", $data);
 							break;
 						case MC_INTERACT:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							if($this->blocked === false and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
@@ -928,13 +930,13 @@ class Player{
 							}
 							break;
 						case MC_ANIMATE:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							if($this->entity->dead === false){
@@ -948,7 +950,7 @@ class Player{
 							$this->teleport(new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]));
 							break;
 						case MC_SET_HEALTH:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							if($this->gamemode === CREATIVE){
@@ -957,7 +959,7 @@ class Player{
 							//$this->entity->setHealth($data["health"], "client");
 							break;
 						case MC_ENTITY_EVENT:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$data["eid"] = $this->eid;
@@ -984,7 +986,7 @@ class Player{
 							}
 							break;
 						case MC_DROP_ITEM:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
@@ -995,7 +997,7 @@ class Player{
 							}
 							break;
 						case MC_SIGN_UPDATE:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$t = $this->server->api->tileentity->get($data["x"], $data["y"], $data["z"]);
@@ -1014,7 +1016,7 @@ class Player{
 							}
 							break;
 						case MC_CHAT:
-							if($this->loggedIn === false){
+							if($this->spawned === false){
 								break;
 							}
 							$message = $data["message"];
@@ -1027,12 +1029,18 @@ class Player{
 							}
 							break;
 						case MC_CONTAINER_CLOSE:
+							if($this->spawned === false){
+								break;
+							}
 							unset($this->windows[$data["windowid"]]);
 							$this->dataPacket(MC_CONTAINER_CLOSE, array(
 								"windowid" => $id,
 							));
 							break;
 						case MC_CONTAINER_SET_SLOT:
+							if($this->spawned === false){
+								break;
+							}
 							if(!isset($this->windows[$data["windowid"]])){
 								break;
 							}
@@ -1073,7 +1081,10 @@ class Player{
 							}
 							$tile->setSlot($data["slot"], $item);
 							break;
-						case MC_SEND_INVENTORY: //TODO, Mojang, enable this �^_^`
+						case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
+							if($this->spawned === false){
+								break;
+							}
 							break;
 						default:
 							console("[DEBUG] Unhandled 0x".dechex($data["id"])." Data Packet for Client ID ".$this->clientID.": ".print_r($data, true), true, true, 2);
