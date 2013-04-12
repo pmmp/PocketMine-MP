@@ -62,52 +62,53 @@ class PlayerAPI{
 				}
 				break;
 			case "player.death":
-				$message = $data["name"];
-				if(is_numeric($data["cause"]) and isset($this->entities[$data["cause"]])){
+				if(is_numeric($data["cause"])){
 					$e = $this->api->entity->get($data["cause"]);
-					switch($e->class){
-						case ENTITY_PLAYER:
-							$message .= " was killed by ".$e->name;
-							break;
-						default:
-							$message .= " was killed";
-							break;
+					if($e instanceof Entity){
+						switch($e->class){
+							case ENTITY_PLAYER:
+								$message .= " was killed by ".$e->name;
+								break;
+							default:
+								$message = " was killed";
+								break;
+						}
 					}
 				}else{
 					switch($data["cause"]){
 						case "cactus":
-							$message .= " was pricked to death";
+							$message = " was pricked to death";
 							break;
 						case "lava":
-							$message .= " tried to swim in lava";
+							$message = " tried to swim in lava";
 							break;
 						case "fire":
-							$message .= " went up in flames";
+							$message = " went up in flames";
 							break;
 						case "burning":
-							$message .= " burned to death";
+							$message = " burned to death";
 							break;
 						case "suffocation":
-							$message .= " suffocated in a wall";
+							$message = " suffocated in a wall";
 							break;
 						case "water":
-							$message .= " drowned";
+							$message = " drowned";
 							break;
 						case "void":
-							$message .= " fell out of the world";
+							$message = " fell out of the world";
 							break;
 						case "fall":
-							$message .= " hit the ground too hard";
+							$message = " hit the ground too hard";
 							break;
 						case "flying":
-							$message .= " tried to fly up to the sky";
+							$message = " tried to fly up to the sky";
 							break;							
 						default:
-							$message .= " died";
+							$message = " died";
 							break;
 					}
 				}
-				$this->server->api->chat->broadcast($message);
+				$this->server->api->chat->broadcast($data["player"]->username . $message);
 				return true;
 				break;
 		}

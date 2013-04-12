@@ -676,7 +676,7 @@ class Entity extends stdClass{
 				}
 				if($this->player instanceof Player){
 					$this->player->blocked = true;
-					$this->server->api->dhandle("player.death", array("name" => $this->name, "cause" => $cause));
+					$this->server->api->dhandle("player.death", array("player" => $this->player, "cause" => $cause));
 				}else{
 					$this->close();
 				}
