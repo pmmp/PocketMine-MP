@@ -279,19 +279,19 @@ class BanAPI{
 	}
 	
 	public function ban($username){
-		$this->commandHandler("ban", array("add", $username));
+		$this->commandHandler("ban", array("add", $username), "console", "");
 	}
 	
 	public function pardon($username){
-		$this->commandHandler("ban", array("pardon", $username));
+		$this->commandHandler("ban", array("pardon", $username), "console", "");
 	}
 	
 	public function banIP($ip){
-		$this->commandHandler("banip", array("add", $ip));
+		$this->commandHandler("banip", array("add", $ip), "console", "");
 	}
 	
 	public function pardonIP($ip){
-		$this->commandHandler("banip", array("pardon", $ip));
+		$this->commandHandler("banip", array("pardon", $ip), "console", "");
 	}
 	
 	public function kick($username, $reason = "No Reason"){
