@@ -347,7 +347,6 @@ class Entity extends stdClass{
 				}
 			}elseif($this->class === ENTITY_PLAYER){
 				if($support === false and $this->player->gamemode !== CREATIVE){
-					console("flying!");
 					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
@@ -576,7 +575,7 @@ class Entity extends stdClass{
 	public function isSupport(Vector3 $pos, $radius = 0.85){
 		$me = new Vector3($this->x - 0.5, $pos->y, $this->z - 0.5);
 		$diff = $this->y - $pos->y;
-		if($me->distance($pos) < $radius and $diff > 0.8 and $diff < 1.2){
+		if($me->distance($pos) < $radius and $diff > 0 and $diff < 1.2){
 			return true;
 		}
 		return false;
