@@ -572,7 +572,7 @@ class Entity extends stdClass{
 		return false;
 	}
 	
-	public function isSupport(Vector3 $pos, $radius = 0.85){
+	public function isSupport(Vector3 $pos, $radius = 1){
 		$me = new Vector3($this->x - 0.5, $pos->y, $this->z - 0.5);
 		$diff = $this->y - $pos->y;
 		if($me->distance($pos) < $radius and $diff > 0 and $diff < 1.2){
