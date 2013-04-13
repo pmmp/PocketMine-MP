@@ -95,6 +95,10 @@ define("PAINTING", 321);
 define("GOLDEN_APPLE", 322);
 define("SIGN", 323);
 define("WOODEN_DOOR", 324);
+define("BUCKET", 325);
+define("WATER_BUCKET", 326);
+define("LAVA_BUCKET", 327);
+
 
 define("IRON_DOOR", 330);
 
