@@ -439,11 +439,14 @@ class Entity extends stdClass{
 		if(!($player instanceof Player)){
 			$player = $this->server->api->player->get($player);
 		}
-		if($player->eid === $this->eid){
+		if($player->eid === $this->eid or $this->closed !== false){
 			return false;
 		}
 		switch($this->class){
 			case ENTITY_PLAYER:
+				if($this->player->connected !== true){
+					return false;
+				}
 				$player->dataPacket(MC_ADD_PLAYER, array(
 					"clientID" => 0,/*$this->player->clientID,*/
 					"username" => $this->player->username,
