@@ -85,7 +85,7 @@ class PluginAPI extends stdClass{
 			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
 			return false;
 		}
-		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0m by \x1b[36m".$info["author"]."\x1b[0m");
+		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0mby \x1b[36m".$info["author"]."\x1b[0m");
 		if(class_exists($info["class"])){
 			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
 			return false;
