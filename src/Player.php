@@ -815,7 +815,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							$data["player"] = $this;
 							$data["item"] = BlockAPI::getItem($data["block"], $data["meta"]);
-							if($this->server->handle("player.equipment.change", $data) !== false){
+							if(!$this->hasItem($data["block"], $data["meta"]) and $this->server->getProperty("disallow-crafting") === true and $this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = $data["item"];
 							}
 							break;
@@ -831,11 +831,8 @@ class Player{
 							$data["eid"] = $this->eid;
 							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
 								break;
-							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"])){
-								console("[DEBUG] Player \"".$this->username."\" tried to place not got block (or crafted block)", true, true, 2);
-								if($this->server->getProperty("disallow-crafting") === true){
-									break;
-								}
+							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"]) and $this->server->getProperty("disallow-crafting") === true){
+								break;
 							}
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
 							break;
