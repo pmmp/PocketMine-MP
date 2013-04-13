@@ -767,7 +767,7 @@ class Player{
 									$this->server->api->entity->spawnToAll($this->eid);
 									$this->server->schedule(5, array($this->entity, "update"), array(), true);
 									$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
-									console("[INFO] \x1b[33m".$this->username."\x1b[0m logged in with entity id ".$this->eid." at (".$this->entity->x.", ".$this->entity->y.", ".$this->entity->z.")");
+									console("[INFO] \x1b[33m".$this->username."\x1b[0m logged in with entity id ".$this->eid." at (".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
 									if($this->MTU <= 548){
 										$this->eventHandler("Your connection is bad, you may experience lag and slow map loading.", "server.chat");
