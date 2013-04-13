@@ -98,7 +98,7 @@ class PluginAPI extends stdClass{
 		$className = $info["class"];
 		$apiversion = array_map("intval", explode(",", (string) $info["apiversion"]));
 		if(!in_array((string) CURRENT_API_VERSION, $apiversion)){
-			console("[ERROR] [PluginAPI] Plugin \"".$info["name"]."\" is not compatible with the API (".$info["apiversion"]." != ".CURRENT_API_VERSION.")! It can crash or corrupt the server!");
+			console("[WARNING] [PluginAPI] Plugin \"".$info["name"]."\" may not be compatible with the API (".$info["apiversion"]." != ".CURRENT_API_VERSION.")! It can crash or corrupt the server!");
 		}
 
 		$object = new $className($this->server->api, false);
