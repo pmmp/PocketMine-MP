@@ -128,16 +128,16 @@ class ConsoleAPI{
 							}
 						}
 						$max = ceil(count($this->help) / 5);
-						$page = isset($params[0]) ? min($max - 1, max(0, intval($params[0]) - 1)):0;						
-						$output .= "- Showing help page ". ($page + 1) ." of $max (/help <page>) -\n";
-						$current = 0;
+						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
+						$output .= "- Showing help page $page of $max (/help <page>) -\n";
+						$current = 1;
 						foreach($this->help as $c => $h){
-							$curpage = (int) ($current / 5);
+							$curpage = (int) ceil($current / 5);
 							if($curpage === $page){
 								$output .= "/$c ".$h."\n";
 							}elseif($curpage > $page){
 								break;
-							}							
+							}
 							++$current;
 						}
 						break;
