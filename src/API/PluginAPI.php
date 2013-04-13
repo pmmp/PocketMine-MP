@@ -58,7 +58,7 @@ class PluginAPI extends stdClass{
 			$info = strstr($content, "*/", true);
 			$content = substr(strstr($content, "*/"),2);
 			if(preg_match_all('#([a-zA-Z0-9\-_]*)=([^\r\n]*)#u', $info, $matches) == 0){ //false or 0 matches
-				console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
+				console("[ERROR] Failed parsing of ".basename($file));
 				return false;
 			}
 			$info = array();
@@ -82,28 +82,28 @@ class PluginAPI extends stdClass{
 			$info["class"] = trim(strtolower($info["class"]));
 		}
 		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"]) or !isset($info["author"])){
-			console("[ERROR] [PluginAPI] Failed parsing of ".basename($file));
+			console("[ERROR] Failed parsing of ".basename($file));
 			return false;
 		}
-		console("[INFO] [PluginAPI] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0mby \x1b[36m".$info["author"]."\x1b[0m");
+		console("[INFO] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0mby \x1b[36m".$info["author"]."\x1b[0m");
 		if(class_exists($info["class"])){
-			console("[ERROR] [PluginAPI] Failed loading plugin: class exists");
+			console("[ERROR] Failed loading plugin: class already exists");
 			return false;
 		}
 		if(eval($info["code"]) === false or !class_exists($info["class"])){
-			console("[ERROR] [PluginAPI] Failed loading plugin: evaluation error");
+			console("[ERROR] Failed loading plugin: evaluation error");
 			return false;
 		}
 		
 		$className = $info["class"];
 		$apiversion = array_map("intval", explode(",", (string) $info["apiversion"]));
 		if(!in_array((string) CURRENT_API_VERSION, $apiversion)){
-			console("[WARNING] [PluginAPI] Plugin \"".$info["name"]."\" may not be compatible with the API (".$info["apiversion"]." != ".CURRENT_API_VERSION.")! It can crash or corrupt the server!");
+			console("[WARNING] Plugin \"".$info["name"]."\" may not be compatible with the API (".$info["apiversion"]." != ".CURRENT_API_VERSION.")! It can crash or corrupt the server!");
 		}
 
 		$object = new $className($this->server->api, false);
 		if(!($object instanceof Plugin)){
-			console("[ERROR] [PluginAPI] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
+			console("[ERROR] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
 			if(method_exists($object, "__destruct")){
 				$object->__destruct();
 			}
@@ -172,7 +172,6 @@ class PluginAPI extends stdClass{
 	}
 
 	public function loadAll(){
-		console("[INFO] Loading Plugins...");
 		$dir = dir(DATA_PATH."plugins/");
 		while(false !== ($file = $dir->read())){
 			if($file{0} !== "."){
@@ -185,6 +184,7 @@ class PluginAPI extends stdClass{
 	}
 	
 	public function initAll(){
+		console("[INFO] Starting plugins...");
 		foreach($this->plugins as $p){
 			$p[0]->init(); //ARGHHH!!! Plugin loading randomly fails!!
 		}

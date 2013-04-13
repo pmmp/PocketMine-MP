@@ -33,18 +33,15 @@ class PocketMinecraftServer{
 	private function load(){
 		$this->version = new VersionString();
 		@cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
-		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." #".$this->version->getNumber()." by @shoghicp, LGPL License", true, true, 0);
-		console("[INFO] Target Minecraft PE: \x1b[36;1m".CURRENT_MINECRAFT_VERSION."\x1b[0m, protocol #".CURRENT_PROTOCOL, true, true, 0);
 		if($this->version->isDev()){
 			console("[INFO] \x1b[31;1mThis is a Development version");
 		}
-		console("[INFO] Starting Minecraft PE Server at ".$this->serverip.":".$this->port);
+		console("[INFO] Starting \x1b[36;1m".CURRENT_MINECRAFT_VERSION."\x1b[0m #".CURRENT_PROTOCOL." Minecraft PE Server at ".$this->serverip.":".$this->port);
 		if($this->port < 19132 or $this->port > 19135){ //Mojang =(
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
 		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8, false)):$this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
-		console("[INFO] Loading database...");
 		$this->startDatabase();
 		$this->api = false;
 		$this->tCnt = 1;
@@ -76,8 +73,6 @@ class PocketMinecraftServer{
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);
 		$this->reloadConfig();
-		console("[INFO] Server Name: \x1b[36m".$this->name."\x1b[0m");
-		console("[DEBUG] Server ID: ".$this->serverID, true, true, 2);
 		$this->stop = false;
 	}
 
@@ -223,7 +218,6 @@ class PocketMinecraftServer{
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = null;
 		if($handlers !== false and $handlers !== true){
-			console("[INTERNAL] Handling ".$event, true, true, 3);
 			$call = array();
 			while(($hn = $handlers->fetchArray(SQLITE3_ASSOC)) !== false){
 				$call[(int) $hn["ID"]] = true;
@@ -270,7 +264,6 @@ class PocketMinecraftServer{
 				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
 				$this->close("invalid world data");
 			}
-			console("[INFO] Map: ".$this->levelData["LevelName"]);
 			$this->time = (int) $this->levelData["Time"];
 			$this->seed = (int) $this->levelData["RandomSeed"];
 			if(isset($this->levelData["SpawnX"])){
@@ -281,13 +274,7 @@ class PocketMinecraftServer{
 				$this->levelData["SpawnZ"] = $this->spawn["z"];
 			}
 			$this->levelData["Time"] = $this->time;
-			console("[INFO] Spawn: X \x1b[36m".$this->levelData["SpawnX"]."\x1b[0m Y \x1b[36m".$this->levelData["SpawnY"]."\x1b[0m Z \x1b[36m".$this->levelData["SpawnZ"]."\x1b[0m");
-			console("[INFO] Time: \x1b[36m".$this->time."\x1b[0m");
-			console("[INFO] Seed: \x1b[36m".$this->seed."\x1b[0m");
-			console("[INFO] Gamemode: \x1b[36m".$this->getGamemode()."\x1b[0m");
-			$d = array(0 => "peaceful", 1 => "easy", 2 => "normal", 3 => "hard");
-			console("[INFO] Difficulty: \x1b[36m".$d[$this->difficulty]."\x1b[0m");
-			console("[INFO] Loading map...");
+			console("[INFO] Preparing level \"".$this->levelData["LevelName"]."\"");
 			$this->map = new ChunkParser();
 			if(!$this->map->loadFile($this->mapDir."chunks.dat")){
 				console("[ERROR] Couldn't load the map \"\x1b[32m".$this->levelData["LevelName"]."\x1b[0m\"!", true, true, 0);
@@ -295,10 +282,6 @@ class PocketMinecraftServer{
 			}else{
 				$this->map->loadMap();
 			}
-		}else{
-			console("[INFO] Time: \x1b[36m".$this->time."\x1b[0m");
-			console("[INFO] Seed: \x1b[36m".$this->seed."\x1b[0m");
-			console("[INFO] Gamemode: \x1b[36m".$this->getGamemode()."\x1b[0m");
 		}
 	}
 
@@ -315,7 +298,6 @@ class PocketMinecraftServer{
 
 	public function loadEntities(){
 		if($this->map !== false){
-			console("[INFO] Loading entities...");
 			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
 			if($entities === false or !is_array($entities)){
 				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
@@ -364,7 +346,6 @@ class PocketMinecraftServer{
 			file_put_contents($this->mapDir."level.dat", serialize($this->levelData));
 			$this->map->saveMap($final);
 			$this->trigger("server.save", $final);
-			console("[INFO] Saving entities...");
 			if(count($this->entities) > 0){
 				$entities = array();
 				foreach($this->entities as $entity){
@@ -440,7 +421,6 @@ class PocketMinecraftServer{
 			$this->loadMap();
 			$this->loadEntities();
 		}
-		console("[INFO] Loading events...");
 		$this->loadEvents();
 		declare(ticks=40);
 		register_tick_function(array($this, "tick"));
@@ -451,8 +431,9 @@ class PocketMinecraftServer{
 			pcntl_signal(SIGINT, array($this, "close"));
 			pcntl_signal(SIGHUP, array($this, "close"));
 		}
+		console("[INFO] Default game type: ".strtoupper($this->getGamemode()));
 		$this->trigger("server.start", microtime(true));
-		console("[INFO] Server started!");
+		console('[INFO] Done ('.round(microtime(true) - START_TIME, 3).'s)! For help, type "help" or "?"');
 		$this->process();
 	}
 
@@ -627,7 +608,6 @@ class PocketMinecraftServer{
 
 	public function action($microseconds, $code, $repeat = true){
 		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".base64_encode($code)."', ".($repeat === true ? 1:0).");");
-		console("[INTERNAL] Attached to action ".$microseconds, true, true, 3);
 	}
 
 	public function tickerFunction($time){

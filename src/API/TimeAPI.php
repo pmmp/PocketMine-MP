@@ -38,7 +38,7 @@ class TimeAPI{
 	}
 
 	public function init(){
-		$this->server->api->console->register("time", "Manages server time", array($this, "commandHandler"));
+		$this->server->api->console->register("time", "<check|set|add> [time]", array($this, "commandHandler"));
 	}
 
 	public function commandHandler($cmd, $params, $issuer, $alias){
@@ -69,7 +69,7 @@ class TimeAPI{
 						$this->night();
 						break;
 					default:
-						$output .= "Usage: /time <check | set | add | sunrise | day | sunset | night> [time]\n";
+						$output .= "Usage: /time <check|set|add> [time]\n";
 						break;
 				}
 				break;

@@ -41,6 +41,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 
 ini_set("memory_limit", "256M"); //Default
 define("LOG", true);
+define("START_TIME", microtime(true));
 define("TEST_MD5", "1e0d28177b73dfd09f922502fe767bec");
 define("MAJOR_VERSION", "Alpha_1.3dev");
 define("CURRENT_STRUCTURE", 5);

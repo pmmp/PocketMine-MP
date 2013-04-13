@@ -32,8 +32,8 @@ class ChatAPI{
 	}
 	
 	public function init(){
-		$this->server->api->console->register("tell", "Sends a private message to a player", array($this, "commandHandler"));
-		$this->server->api->console->register("me", "Broadcast an action", array($this, "commandHandler"));
+		$this->server->api->console->register("tell", "<player> <private message ...>", array($this, "commandHandler"));
+		$this->server->api->console->register("me", "<action ...>", array($this, "commandHandler"));
 		$this->server->api->ban->cmdWhitelist("tell");
 		$this->server->api->ban->cmdWhitelist("me");
 	}
@@ -85,7 +85,7 @@ class ChatAPI{
 	
 	public function broadcast($message){
 		$this->send(false, $message);
-		console("[CHAT] ".$message);
+		console($message);
 	}
 	
 	public function sendTo($owner, $text, $player){

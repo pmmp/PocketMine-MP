@@ -118,7 +118,7 @@ class BlockAPI{
 
 	public function init(){
 		$this->server->addHandler("block.update", array($this, "updateBlockRemote"), 1);
-		$this->server->api->console->register("give", "Give items to a player", array($this, "commandHandler"));
+		$this->server->api->console->register("give", "<player> <item[:damage]> [amount]", array($this, "commandHandler"));
 	}
 
 	public function commandHandler($cmd, $params, $issuer, $alias){
@@ -126,7 +126,7 @@ class BlockAPI{
 		switch($cmd){
 			case "give":
 				if(!isset($params[0]) or !isset($params[1])){
-					$output .= "Usage: /give <username> <item> [amount] [damage]\n";
+					$output .= "Usage: /give <player> <item[:damage]> [amount]\n";
 					break;
 				}
 				$player = $this->server->api->player->get($params[0]);

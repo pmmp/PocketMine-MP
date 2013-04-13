@@ -37,18 +37,17 @@ class BanAPI{
 	}
 	
 	public function init(){
-		console("[INFO] Loading authentication lists...");
 		$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);
 		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);
 		$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);
 		$this->ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);
-		$this->server->api->console->register("banip", "Manages IP Banning", array($this, "commandHandler"));
-		$this->server->api->console->register("ban", "Manages Bannning", array($this, "commandHandler"));
-		$this->server->api->console->register("kick", "Kicks a player", array($this, "commandHandler"));
-		$this->server->api->console->register("whitelist", "Manages White-listing", array($this, "commandHandler"));
-		$this->server->api->console->register("op", "Ops a player", array($this, "commandHandler"));
-		$this->server->api->console->register("deop", "De-ops a player", array($this, "commandHandler"));
-		$this->server->api->console->register("sudo", "Run a command as a player", array($this, "commandHandler"));
+		$this->server->api->console->register("banip", "<add|remove|list|reload> [IP|player]", array($this, "commandHandler"));
+		$this->server->api->console->register("ban", "<add|remove|list|reload> [username]", array($this, "commandHandler"));
+		$this->server->api->console->register("kick", "<player> [reason ...]", array($this, "commandHandler"));
+		$this->server->api->console->register("whitelist", "<on|off|list|add|remove|reload> [username]", array($this, "commandHandler"));
+		$this->server->api->console->register("op", "<player>", array($this, "commandHandler"));
+		$this->server->api->console->register("deop", "<player>", array($this, "commandHandler"));
+		$this->server->api->console->register("sudo", "<player>", array($this, "commandHandler"));
 		$this->server->api->console->alias("ban-ip", "banip add");
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
@@ -147,7 +146,7 @@ class BanAPI{
 				break;
 			case "kick":
 				if(!isset($params[0])){
-					$output .= "Usage: /kick <playername> [reason]\n";
+					$output .= "Usage: /kick <player> [reason ...]\n";
 				}else{
 					$name = strtolower(array_shift($params));
 					$player = $this->server->api->player->get($name);
@@ -199,7 +198,7 @@ class BanAPI{
 						$this->server->api->setProperty("white-list", false);
 						break;
 					default:
-						$output .= "Usage: /whitelist <on | off | add | remove | reload | list> [username]\n";
+						$output .= "Usage: /whitelist <on|off|list|add|remove|reload> [username]\n";
 						break;
 				}
 				break;
@@ -232,7 +231,7 @@ class BanAPI{
 						$output .= "IP ban list: ".implode(", ", $this->bannedIPs->getAll(true))."\n";
 						break;
 					default:
-						$output .= "Usage: /banip <add | remove | list | reload> [IP | Player]\n";
+						$output .= "Usage: /banip <add|remove|list|reload> [IP|player]\n";
 						break;
 				}
 				break;
@@ -270,7 +269,7 @@ class BanAPI{
 						$output .= "Ban list: ".implode(", ", $this->banned->getAll(true))."\n";
 						break;
 					default:
-						$output .= "Usage: /ban <add | remove | list | reload> [player]\n";
+						$output .= "Usage: /ban <add|remove|list|reload> [username]\n";
 						break;
 				}
 				break;

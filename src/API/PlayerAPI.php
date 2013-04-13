@@ -34,12 +34,12 @@ class PlayerAPI{
 	public function init(){
 		$this->server->addHandler("server.regeneration", array($this, "handle"));
 		$this->server->addHandler("player.death", array($this, "handle"), 1);
-		$this->server->api->console->register("list", "Shows connected player list", array($this, "commandHandler"));
-		$this->server->api->console->register("kill", "Kills a player", array($this, "commandHandler"));
-		$this->server->api->console->register("gamemode", "Changes the player gamemode", array($this, "commandHandler"));
-		$this->server->api->console->register("tppos", "Teleports a player to a position", array($this, "commandHandler"));
-		$this->server->api->console->register("tp", "Teleports a player to another player", array($this, "commandHandler"));
-		$this->server->api->console->register("lag", "Measure your connection lag", array($this, "commandHandler"));
+		$this->server->api->console->register("list", "", array($this, "commandHandler"));
+		$this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
+		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
+		$this->server->api->console->register("tppos", "[target player] <x> <y> <z>", array($this, "commandHandler"));
+		$this->server->api->console->register("tp", "[target player] <destination player>", array($this, "commandHandler"));
+		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
 		$this->server->api->ban->cmdWhitelist("list");
 		$this->server->api->ban->cmdWhitelist("lag");

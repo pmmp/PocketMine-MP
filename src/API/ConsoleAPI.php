@@ -39,13 +39,13 @@ class ConsoleAPI{
 		$this->event = $this->server->event("server.tick", array($this, "handle"));
 		$this->loop = new ConsoleLoop;
 		$this->loop->start();
-		$this->register("help", "Show available commands", array($this, "defaultCommands"));
-		$this->register("status", "Show server TPS and memory usage", array($this, "defaultCommands"));
-		$this->register("difficulty", "Changes server difficulty", array($this, "defaultCommands"));
-		$this->register("invisible", "Changes server visibility", array($this, "defaultCommands"));
-		$this->register("say", "Broadcast a message", array($this, "defaultCommands"));
-		$this->register("save-all", "Save pending changes to disk", array($this, "defaultCommands"));
-		$this->register("stop", "Stops the server gracefully", array($this, "defaultCommands"));
+		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
+		$this->register("status", "", array($this, "defaultCommands"));
+		$this->register("difficulty", "<0|1>", array($this, "defaultCommands"));
+		$this->register("invisible", "<on|off>", array($this, "defaultCommands"));
+		$this->register("say", "<message ...>", array($this, "defaultCommands"));
+		$this->register("save-all", "", array($this, "defaultCommands"));
+		$this->register("stop", "", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
 	}
 
@@ -97,7 +97,7 @@ class ConsoleAPI{
 					case "difficulty":
 						$s = trim(array_shift($params));
 						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
-							$output .= "Usage: /difficulty <0 | 1>\n";
+							$output .= "Usage: /difficulty <0|1>\n";
 							break;
 						}
 						$this->server->api->setProperty("difficulty", (int) $s);
@@ -120,6 +120,13 @@ class ConsoleAPI{
 							break;
 						}
 					case "help":
+						if(isset($params[0]) and !is_numeric($params[0])){
+							$c = trim(strtolower($params[0]));
+							if(isset($this->help[$c])){
+								$output .= "Usage: /$c ".$this->help[$c]."\n";
+								break;
+							}
+						}
 						$max = ceil(count($this->help) / 5);
 						$page = isset($params[0]) ? min($max - 1, max(0, intval($params[0]) - 1)):0;						
 						$output .= "- Showing help page ". ($page + 1) ." of $max (/help <page>) -\n";
@@ -127,7 +134,7 @@ class ConsoleAPI{
 						foreach($this->help as $c => $h){
 							$curpage = (int) ($current / 5);
 							if($curpage === $page){
-								$output .= "/$c: ".$h."\n";
+								$output .= "/$c ".$h."\n";
 							}elseif($curpage > $page){
 								break;
 							}							
@@ -167,7 +174,7 @@ class ConsoleAPI{
 			if($issuer instanceof Player){
 				console("[INFO] \"".$issuer->username."\" issued server command: $alias /$cmd ".implode(" ", $params));
 			}else{
-				console("[INFO] Issued server command: $alias /$cmd ".implode(" ", $params));
+				console("[INFO] Issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params));
 			}
 			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false
 			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false){

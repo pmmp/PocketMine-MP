@@ -52,8 +52,7 @@ class ServerAPI{
 		@mkdir(DATA_PATH."players/", 0755);
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
-		console("[INFO] Starting ServerAPI server handler...");
-		file_put_contents(DATA_PATH."logs/packets.log", "");
+		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION.", LGPL License", true, true, 0);
 		if(!file_exists(DATA_PATH."logs/test.bin.log") or md5_file(DATA_PATH."logs/test.bin.log") !== TEST_MD5){
 			console("[NOTICE] Executing tests...");
 			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
@@ -89,7 +88,7 @@ class ServerAPI{
 			}
 		}
 
-		console("[DEBUG] Loading server.properties...", true, true, 2);
+		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
 			"server-name" => "Minecraft Server",
 			"description" => "Server made using PocketMine-MP",
@@ -213,8 +212,6 @@ class ServerAPI{
 		$this->loadProperties();
 		$this->server->loadMap();
 		
-		console("[INFO] Loading default APIs");
-		
 		$this->loadAPI("console", "ConsoleAPI");
 		$this->loadAPI("level", "LevelAPI");
 		$this->loadAPI("block", "BlockAPI");
@@ -254,7 +251,7 @@ class ServerAPI{
 	}
 		
 	public function sendUsage(){
-		console("[INTERNAL] Sending usage data...", true, true, 3);
+		console("[DEBUG] Sending usage data...", true, true, 2);
 		$plist = "";
 		foreach($this->plugin->getList() as $p){
 			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
@@ -289,7 +286,7 @@ class ServerAPI{
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				console("[ERROR] PocketMine doesn't work right with less than 128MB of RAM", true, true, 0);
+				console("[WARNING] PocketMine-MP doesn't work right with less than 128MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -398,7 +395,7 @@ class ServerAPI{
 			if($level["LevelName"] == ""){
 				$level["LevelName"] = "world".time();
 			}
-			console("[DEBUG] Importing map \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
+			console("[DEBUG] Importing level \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
 			unset($level["Player"]);
 			$lvName = $level["LevelName"]."/";
 			@mkdir(DATA_PATH."worlds/".$lvName, 0755);
@@ -428,7 +425,7 @@ class ServerAPI{
 				$this->server->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
 				$this->writeProperties();
 			}
-			console("[INFO] Map \"".$level["LevelName"]."\" importing done!");
+			console("[INFO] Level \"".$level["LevelName"]."\" importing done!");
 			unset($level, $entities, $nbt);
 			return true;
 		}
@@ -510,7 +507,7 @@ class ServerAPI{
 		}
 		$this->$name = new $class();
 		$this->apiList[] = $this->$name;
-		console("[".($internal === true ? "DEBUG":"INFO")."] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded", true, true, ($internal === true ? 2:1));
+		console("[".($internal === true ? "INTERNAL":"DEBUG")."] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded", true, true, ($internal === true ? 2:1));
 	}
 
 }
