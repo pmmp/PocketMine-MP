@@ -978,12 +978,13 @@ class Player{
 										364 => 8,
 									);
 									if(isset($items[$this->equipment->getID()])){
-										$this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1);
-										$this->dataPacket(MC_ENTITY_EVENT, array(
-											"eid" => 0,
-											"event" => 9,
-										));
-										$this->entity->heal($items[$this->equipment->getID()], "eating");
+										if($this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1) === true or $this->server->getProperty("disallow-crafting") !== true){
+											$this->dataPacket(MC_ENTITY_EVENT, array(
+												"eid" => 0,
+												"event" => 9,
+											));
+											$this->entity->heal($items[$this->equipment->getID()], "eating");
+										}
 									}
 									break;
 							}
@@ -1082,7 +1083,6 @@ class Player{
 									$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count);
 								}
 							}else{
-								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->getProperty("disallow-crafting") === true){
 								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->getProperty("disallow-crafting") === true){
 									break;
 								}
