@@ -76,11 +76,7 @@ class Player{
 		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level;
-		if($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE){
-			$this->equipment = BlockAPI::getItem(AIR);
-		}else{
-			$this->equipment = BlockAPI::getItem(STONE);
-		}
+		$this->equipment = BlockAPI::getItem(AIR);
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
@@ -729,6 +725,9 @@ class Player{
 								"gamemode" => $this->gamemode,
 								"eid" => 0,
 							));
+							if($this->gamemode === CREATIVE){
+								$this->equipment = BlockAPI::getItem(STONE);
+							}
 							$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
 							$this->eid = $this->entity->eid;
 							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
@@ -815,7 +814,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							$data["player"] = $this;
 							$data["item"] = BlockAPI::getItem($data["block"], $data["meta"]);
-							if(!$this->hasItem($data["block"], $data["meta"]) and $this->server->getProperty("disallow-crafting") === true and $this->server->handle("player.equipment.change", $data) !== false){
+							if(($this->hasItem($data["block"], $data["meta"]) or $this->server->getProperty("disallow-crafting") !== true) and $this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = $data["item"];
 							}
 							break;
