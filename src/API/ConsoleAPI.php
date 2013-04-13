@@ -59,11 +59,6 @@ class ConsoleAPI{
 	public function defaultCommands($cmd, $params, $issuer, $alias){
 			$output = "";
 				switch($cmd){
-					case "crash": //Crashes the server to generate an report
-						$this->callNotDefinedMethodCrash();
-						$this->server->api->server; //Access a private property
-						callNotExistingFunction();
-						break;
 					case "invisible":
 						$p = strtolower(array_shift($params));
 						switch($p){
