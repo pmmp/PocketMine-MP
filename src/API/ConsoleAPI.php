@@ -163,7 +163,7 @@ class ConsoleAPI{
 		ksort($this->help, SORT_NATURAL | SORT_FLAG_CASE);
 	}
 	
-	public function run($line = "", $issuer = false, $alias = false){
+	public function run($line = "", $issuer = "console", $alias = false){
 		if($line != ""){
 			$params = explode(" ", $line);
 			$cmd = strtolower(array_shift($params));
