@@ -271,7 +271,7 @@ class Packet{
 						$pk = new CustomPacketHandler($id, $pak);
 						$pk->data["length"] = $ln;
 						$pk->data["id"] = $id;
-						$pk->data["counter"] = $messageNumber;
+						$pk->data["counter"] = $messageIndex;
 						$pk->data["packetName"] = $pk->name;
 						$this->data["packets"][] = array($pid, $pk->data, $pak);
 					}
