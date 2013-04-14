@@ -224,17 +224,17 @@ class Packet{
 						if($reliability === 2
 						or $reliability === 3
 						or $reliability === 4){
-							$messageNumber = Utils::readTriad(strrev(substr($raw, $offset, 3)));
+							$messageIndex = Utils::readTriad(strrev(substr($raw, $offset, 3)));
 							$offset += 3;
 						}else{
-							$messageNumber = 0;
+							$messageIndex = 0;
 						}
 						
 						if($reliability === 1
 						or $reliability === 3
 						or $reliability === 4){
-							$orderIndex = Utils::readInt(substr($raw, $offset, 4));
-							$offset += 4;
+							$orderIndex = Utils::readTriad(strrev(substr($raw, $offset, 3)));
+							$offset += 3;
 							$orderChannel = ord($raw{$offset}); //5 bits, 32 values
 							++$offset;
 						}else{
