@@ -77,7 +77,7 @@ class ChatAPI{
 				if($target !== "Console"){
 					$this->sendTo(false, "[".$sender." -> me] ".$mes, $target);
 				}
-				console("[".$sender." -> ".$target."] ".$mes);
+				console("[INFO] [".$sender." -> ".$target."] ".$mes);
 				break;
 		}
 		return $output;
@@ -85,7 +85,6 @@ class ChatAPI{
 	
 	public function broadcast($message){
 		$this->send(false, $message);
-		console($message);
 	}
 	
 	public function sendTo($owner, $text, $player){
@@ -102,6 +101,9 @@ class ChatAPI{
 			}
 		}
 		$message .= $text;
+		if($whitelist === false and $blacklist === false){
+			console("[INFO] ".$message);
+		}
 		$this->server->handle("server.chat", new Container($message, $whitelist, $blacklist));
 	}
 }
