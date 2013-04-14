@@ -673,6 +673,10 @@ class Player{
 								$this->close("bad username", false);
 								break;
 							}
+							if($this->server->api->handle("player.connect", $this) === false){
+								$this->close("join cancelled", false);
+								return;
+							}
 							
 							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
 								$this->close("\x1b[33m".$this->username."\x1b[0m not being on white-list", false);
@@ -688,7 +692,7 @@ class Player{
 								$u->close("logged in from another location");
 							}
 							
-							$this->server->api->player->add($this->CID);							
+							$this->server->api->player->add($this->CID);
 							if($this->server->api->handle("player.join", $this) === false){
 								$this->close("join cancelled", false);
 								return;
