@@ -213,7 +213,7 @@ class Player{
 			if($msg === true and $this->username != ""){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
-			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] disconnected due to ".$reason);
+			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 			$this->server->api->player->remove($this->CID);
 		}
 	}
