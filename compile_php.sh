@@ -9,7 +9,7 @@ PTHREADS_VERSION="5fb77bc053a45c2d389c5042f44474a523308d8b"
 CURL_VERSION="curl-7_29_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - by @shoghicp v$COMPILER_VERSION"
-DIR=`pwd`
+DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
 echo "[INFO] Checking dependecies"
