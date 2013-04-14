@@ -98,23 +98,24 @@ class Packet{
 					}
 					break;
 				case "customData":
+					$this->addRaw(chr($this->data[1]));
 					switch($this->data[1]){
 						case 0x40:
-							$reply = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
+							$reply = new CustomPacketHandler($this->data[2]["id"], "", $this->data[2], true);
 							$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
-							$this->addRaw(Utils::writeTriad(strrev($this->data[$field]["count"])));
-							$this->addRaw(chr($this->data[$field]["id"]));
+							$this->addRaw(Utils::writeTriad(strrev($this->data[2]["count"])));
+							$this->addRaw(chr($this->data[2]["id"]));
 							$this->addRaw($reply->raw);
 							break;
 						case 0x00:
-							if($this->data[$field]["id"] !== false){
-								$raw = new CustomPacketHandler($this->data[$field]["id"], "", $this->data[$field], true);
+							if($this->data[2]["id"] !== false){
+								$raw = new CustomPacketHandler($this->data[2]["id"], "", $this->data[2], true);
 								$raw = $raw->raw;
 								$this->addRaw(Utils::writeShort((strlen($raw) + 1) << 3));
-								$this->addRaw(chr($this->data[$field]["id"]));
+								$this->addRaw(chr($this->data[2]["id"]));
 								$this->addRaw($raw);
 							}else{
-								$this->addRaw($this->data[$field]["raw"]);
+								$this->addRaw($this->data[2]["raw"]);
 							}
 							break;
 					}
@@ -209,11 +210,67 @@ class Packet{
 					}
 					break;
 				case "customData":
-					$d = new SerializedPacketHandler($this->data[1], $this->get(true));
-					if(isset($d->data["packets"])){
-						$this->data["packets"] = $d->data["packets"];
-					}else{
-						$this->data[] = $d->data;
+					$raw = $this->get(true);
+					$len = strlen($raw);
+					$offset = 0;
+					$this->data["packets"] = array();
+					while($len > $offset){
+						$pid = ord($raw{$offset});
+						++$offset;						
+						$reliability = ($pid & 0b11100000) >> 5;
+						$hasSplit = ($pid & 0b00010000) >> 4;
+						$length = Utils::readShort(substr($raw, $offset, 2), false);
+						$offset += 2;
+						if($reliability === 2
+						or $reliability === 3
+						or $reliability === 4){
+							$messageNumber = Utils::readTriad(strrev(substr($raw, $offset, 3)));
+							$offset += 3;
+						}else{
+							$messageNumber = 0;
+						}
+						
+						if($reliability === 1
+						or $reliability === 3
+						or $reliability === 4){
+							$orderIndex = Utils::readInt(substr($raw, $offset, 4));
+							$offset += 4;
+							$orderChannel = ord($raw{$offset}); //5 bits, 32 values
+							++$offset;
+						}else{
+							$orderIndex = 0;
+							$orderChannel = 0;
+						}
+						
+						if($hasSplit === 1){
+							$splitCount = Utils::readInt(substr($raw, $offset, 4));
+							$offset += 4;
+							$splitID = Utils::readShort(substr($raw, $offset, 2));
+							$offset += 2;
+							$splitIndex = Utils::readInt(substr($raw, $offset, 4));
+							$offset += 4;
+						}else{
+							$splitCount = 0;
+							$splitID = 0;
+							$splitIndex = 0;
+						}
+						
+						if($length == 0
+						or $orderingChannel >= 32
+						or ($hasSplit === 1 and $splitIndex >= $splitCount)){
+							continue;
+						}
+						$ln = ceil($length / 8);
+						$id = ord($raw{$offset});
+						++$offset;
+						$pak = substr($raw, $offset, $ln - 1);
+						$offset += $ln - 1;
+						$pk = new CustomPacketHandler($id, $pak);
+						$pk->data["length"] = $ln;
+						$pk->data["id"] = $id;
+						$pk->data["counter"] = $messageNumber;
+						$pk->data["packetName"] = $pk->name;
+						$this->data["packets"][] = array($pid, $pk->data, $pak);
 					}
 					break;
 				case "magic":
