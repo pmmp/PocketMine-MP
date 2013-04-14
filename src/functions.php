@@ -169,8 +169,9 @@ function console($message, $EOL = true, $log = true, $level = 1){
 			logg($replaced, "console", false, $level);
 		}
 		if(ENABLE_ANSI === true){
+			$add = "";
 			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
-				$add = "\x1b";
+				$add .= "\x1b";
 				switch($matches[1]){
 					case "ERROR":
 						$add .= "[31;1m";
@@ -189,8 +190,8 @@ function console($message, $EOL = true, $log = true, $level = 1){
 						$add = "";
 						break;
 				}
-				$message = $time . $add . $message . "\x1b[0m";
 			}
+			$message = $time . $add . $message . "\x1b[0m";
 		}else{
 			$message = $replaced;
 		}
