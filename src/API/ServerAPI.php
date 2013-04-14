@@ -245,7 +245,6 @@ class ServerAPI{
 			return false;
 		}
 		$ob = $this->asyncCalls[$id];
-		$this->asyncCalls[$id] = null;
 		unset($this->asyncCalls[$id]);
 		return $ob;
 	}
@@ -256,19 +255,15 @@ class ServerAPI{
 		foreach($this->plugin->getList() as $p){
 			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
 		}
-		$this->async("Utils::curl_post", array(
-			0 => "http://stats.pocketmine.net/usage.php",
-			1 => array(
-				"serverid" => $this->server->serverID,
-				"os" => Utils::getOS(),
-				"version" => MAJOR_VERSION,
-				"protocol" => CURRENT_PROTOCOL,
-				"online" => count($this->server->clients),
-				"max" => $this->server->maxClients,
-				"plugins" => $plist,
-			),
-			2 => 10
-		), true);
+		Utils::curl_post("http://stats.pocketmine.net/usage.php",array(
+			"serverid" => $this->server->serverID,
+			"os" => Utils::getOS(),
+			"version" => MAJOR_VERSION,
+			"protocol" => CURRENT_PROTOCOL,
+			"online" => count($this->server->clients),
+			"max" => $this->server->maxClients,
+			"plugins" => $plist,
+		), 2);
 	}
 
 	public function __destruct(){
@@ -343,6 +338,7 @@ class ServerAPI{
 		if($this->getProperty("send-usage") !== false){
 			$this->server->schedule(36000, array($this, "sendUsage"), array(), true); //Send usage data every 30 minutes
 			$this->server->schedule(6000, array($this, "sendUsage")); //Send the info after 5 minutes have passed
+			$this->sendUsage();
 		}
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
