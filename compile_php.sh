@@ -23,8 +23,10 @@ type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wge
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f php5/ >> "$DIR/install.log" 2>&1
+rm -r -f bin/ >> "$DIR/install.log" 2>&1
 mkdir -m 0777 install_data >> "$DIR/install.log" 2>&1
 mkdir -m 0777 php5 >> "$DIR/install.log" 2>&1
+mkdir -m 0777 bin >> "$DIR/install.log" 2>&1
 cd install_data
 set -e
 
@@ -130,6 +132,8 @@ echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
+mv php5/bin/php bin/php
+rm -r -f php/ >> "$DIR/install.log" 2>&1
 date >> "$DIR/install.log" 2>&1
 echo " done!"
 echo "[PocketMine] You should start the server now using \"./start.sh\""
