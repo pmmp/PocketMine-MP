@@ -122,7 +122,8 @@ class ConsoleAPI{
 					case "help":
 						if(isset($params[0]) and !is_numeric($params[0])){
 							$c = trim(strtolower($params[0]));
-							if(isset($this->help[$c])){
+							if(isset($this->help[$c]) or isset($this->alias[$c])){
+								$c = isset($this->help[$c]) ? $c : $this->alias[$c];
 								$output .= "Usage: /$c ".$this->help[$c]."\n";
 								break;
 							}
