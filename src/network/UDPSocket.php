@@ -39,6 +39,9 @@ class UDPSocket{
 			$this->unblock();
 		}else{
 			if(socket_bind($this->sock, $serverip, $port) === true){
+				socket_set_option($this->sock, SOL_SOCKET, SO_REUSEADDR, 0);
+				socket_set_option($this->sock, SOL_SOCKET, SO_SNDBUF, 65535);
+				socket_set_option($this->sock, SOL_SOCKET, SO_RCVBUF, 65535);
 				$this->unblock();
 				$this->connected = true;
 			}else{
