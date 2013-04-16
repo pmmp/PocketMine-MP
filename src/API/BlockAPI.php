@@ -37,6 +37,7 @@ define("BLOCK_UPDATE_WEAK", 3);
 
 class BlockAPI{
 	private $server;
+	private $scheduledUpdates = array();
 	
 	public static function fromString($str, $multiple = false){
 		if($multiple === true){
@@ -93,6 +94,15 @@ class BlockAPI{
 	public function setBlock(Vector3 $block, $id, $meta, $update = true, $tiles = false){
 		if(($block instanceof Vector3) or (($block instanceof Block) and $block->inWorld === true)){
 			$this->server->api->level->setBlock($block->x, $block->y, $block->z, (int) $id, (int) $meta, $update, $tiles);
+			if($update === true){
+				$this->blockUpdate($block, BLOCK_UPDATE_NORMAL); //????? water?
+				$this->blockUpdateAround($block, BLOCK_UPDATE_NORMAL);
+			}
+			if($tiles === true){
+				if(($t = $this->server->api->tileentity->get($block->x, $block->y, $block->z)) !== false){
+					$t[0]->close();
+				}
+			}
 			return true;
 		}
 		return false;
@@ -117,7 +127,8 @@ class BlockAPI{
 	}
 
 	public function init(){
-		$this->server->addHandler("block.update", array($this, "updateBlockRemote"), 1);
+		$this->server->event("server.tick", array($this, "blockUpdateTick"));
+		$this->server->addHandler("block.update", array($this, "blockUpdateRemote"), 1);
 		$this->server->api->console->register("give", "<player> <item[:damage]> [amount]", array($this, "commandHandler"));
 	}
 
@@ -283,7 +294,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function blockScheduler($data){
+	/*public function blockScheduler($data){
 		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_SCHEDULED);
 	}
 
@@ -667,14 +678,68 @@ class BlockAPI{
 		if($changed === true){
 			$this->updateBlocksAround($x, $y, $z, $type);
 		}
+	}*/
+
+	public function blockUpdateAround(Vector3 $pos, $type = BLOCK_UPDATE_NORMAL){
+		$this->blockUpdate($pos->getSide(0), $type);
+		$this->blockUpdate($pos->getSide(1), $type);
+		$this->blockUpdate($pos->getSide(2), $type);
+		$this->blockUpdate($pos->getSide(3), $type);
+		$this->blockUpdate($pos->getSide(4), $type);
+		$this->blockUpdate($pos->getSide(5), $type);
+	}
+	
+	public function blockUpdate(Vector3 $pos, $type = BLOCK_UPDATE_NORMAL){
+		$pos = $pos->floor();
+		$block = $this->getBlock($pos);
+		return $block->onUpdate($this, $type);
+	}
+	
+	public function scheduleBlockUpdate(Vector3 $pos, $delay, $type = BLOCK_UPDATE_NORMAL){
+		$type = (int) $type;
+		if($delay < 0){
+			return false;
+		}
+		$pos = $pos->floor();
+		$index = $pos->x.".".$pos->y.".".$pos->z;
+		$delay = microtime(true) + $delay * 0.05;		
+		if(!isset($this->scheduledUpdates[$index])){
+			$this->scheduledUpdates[$index] = array(
+				$pos,
+				$type,
+				$delay,
+			);
+			$this->server->query("INSERT INTO blockUpdates (x, y, z, type, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", ".$type.", ".$delay.");");
+			return true;
+		}
+	}
+	
+	public function blockUpdateRemote($data, $event){
+		if($event !== "block.update"){
+			return;
+		}
+		$this->blockUpdate(new Vector3($data["x"], $data["y"], $data["z"]), isset($data["type"]) ? ((int) $data["type"]):BLOCK_UPDATE_RANDOM);
+		return true;
+	}
+	
+	public function blockUpdateTick($time, $event){
+		if($event !== "server.tick"){ //WTF??
+			return;
+		}
+		if(count($this->scheduledUpdates) > 0){
+			$update = $this->server->query("SELECT x,y,z FROM blockUpdates WHERE delay <= ".$time.";");
+			if($update !== false and $update !== true){
+				while(($up = $update->fetchArray(SQLITE3_ASSOC)) !== false){
+					$index = $up["x"].".".$up["y"].".".$up["z"];
+					if(isset($this->scheduledUpdates[$index])){
+						$up = $this->scheduledUpdates[$index];
+						unset($this->scheduledUpdates[$index]);
+						$this->blockUpdate($up[0], $up[1]);
+					}
+				}
+			}
+			$this->server->query("DELETE FROM blockUpdates WHERE delay <= ".$time.";");
+		}
 	}
 
-	public function updateBlocksAround($x, $y, $z, $type){
-		$this->updateBlock($x + 1, $y, $z, $type);
-		$this->updateBlock($x, $y + 1, $z, $type);
-		$this->updateBlock($x, $y, $z + 1, $type);
-		$this->updateBlock($x - 1, $y, $z, $type);
-		$this->updateBlock($x, $y - 1, $z, $type);
-		$this->updateBlock($x, $y, $z - 1, $type);
-	}
 }

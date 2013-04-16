@@ -69,7 +69,7 @@ class LevelAPI{
 		return $this->heightMap[$z][$x];
 	}
 
-	public function setBlock($x, $y, $z, $block, $meta = 0, $update = true, $tiles = false){
+	public function setBlock($x, $y, $z, $block, $meta = 0){
 		if($x < 0 or $y < 0 or $z < 0){
 			return false;
 		}
@@ -82,15 +82,6 @@ class LevelAPI{
 		)) !== false){
 			$this->map->setBlock($x, $y, $z, $block, $meta);
 			$this->heightMap[$z][$x] = $this->map->getFloor($x, $z);
-			if($update === true){
-				$this->server->api->block->updateBlock($x, $y, $z, BLOCK_UPDATE_NORMAL);
-				$this->server->api->block->updateBlocksAround($x, $y, $z, BLOCK_UPDATE_NORMAL);
-			}
-			if($tiles === true){
-				if(($t = $this->server->api->tileentity->get($x, $y, $z)) !== false){
-					$t[0]->close();
-				}
-			}
 		}
 		return true;
 	}

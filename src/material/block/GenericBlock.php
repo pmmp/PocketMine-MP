@@ -53,6 +53,7 @@ class GenericBlock extends Block{
 	public function onUpdate(BlockAPI $level, $type){
 		return false;
 	}
+
 	public function onActivate(BlockAPI $level, Item $item, Player $player){
 		return ($this->isActivable);
 	}
