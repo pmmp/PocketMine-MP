@@ -124,15 +124,28 @@ class ConsoleAPI{
 							$c = trim(strtolower($params[0]));
 							if(isset($this->help[$c]) or isset($this->alias[$c])){
 								$c = isset($this->help[$c]) ? $c : $this->alias[$c];
+								if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false
+								or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
+									break;
+								}
 								$output .= "Usage: /$c ".$this->help[$c]."\n";
 								break;
 							}
 						}
-						$max = ceil(count($this->help) / 5);
+						$cmds = array();
+						foreach($this->help as $c => $h){
+							if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false
+							or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
+								continue;
+							}
+							$cmds[$c] = $h;
+						}
+						
+						$max = ceil(count($cmds) / 5);
 						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
 						$output .= "- Showing help page $page of $max (/help <page>) -\n";
 						$current = 1;
-						foreach($this->help as $c => $h){
+						foreach($cmds as $c => $h){
 							$curpage = (int) ceil($current / 5);
 							if($curpage === $page){
 								$output .= "/$c ".$h."\n";
