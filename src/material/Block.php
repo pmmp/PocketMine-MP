@@ -109,6 +109,8 @@ abstract class Block extends Vector3{
 			SOUL_SAND => "SoulSandBlock",
 			GLOWSTONE_BLOCK => "GlowstoneBlock",
 
+			CAKE_BLOCK => "CakeBlock",
+			
 			TRAPDOOR => "TrapdoorBlock",
 
 			STONE_BRICKS => "StoneBricksBlock",

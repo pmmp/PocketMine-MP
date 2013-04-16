@@ -123,7 +123,7 @@ define("COOKED_FISH", 350);
 define("DYE", 351);
 define("BONE", 352);
 define("SUGAR", 353);
-
+define("CAKE", 354);
 define("BED", 355);
 
 

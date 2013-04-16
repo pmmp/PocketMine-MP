@@ -129,6 +129,8 @@ define("NETHERRACK", 87);
 define("SOUL_SAND", 88);
 define("GLOWSTONE_BLOCK", 89);
 
+define("CAKE_BLOCK", 92);
+
 define("TRAPDOOR", 96);
 
 define("STONE_BRICKS", 98);

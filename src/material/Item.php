@@ -36,6 +36,7 @@ class Item{
 		WATER_BUCKET => "WaterBucketItem",
 		LAVA_BUCKET => "LavaBucketItem",
 		IRON_DOOR => "IronDoorItem",
+		CAKE => "CakeItem",
 		BED => "BedItem",
 		PAINTING => "PaintingItem",
 		COAL => "CoalItem",
