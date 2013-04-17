@@ -151,8 +151,11 @@ class BlockAPI{
 				}
 
 				if($player instanceof Player){
-					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
-					//$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
+					if($this->server->api->getProperty("item-enforcement") === false){
+						$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
+					}else{
+						$player->addItem($item->getID(), $item->getMetadata(), $item->count);
+					}
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username."\n";
 				}else{
 					$output .= "Unknown player\n";
