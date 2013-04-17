@@ -270,7 +270,7 @@ class Player{
 	
 	public function sendInventorySlot($s){
 		$s = (int) $s;
-		if(!isset($this->inventory[$s])){
+		if(!isset($this->inventory[$s]) or $this->server->api->getProperty("disallow-crafting") === false){
 			return false;
 		}
 		

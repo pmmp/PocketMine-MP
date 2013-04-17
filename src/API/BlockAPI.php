@@ -171,7 +171,6 @@ class BlockAPI{
 			"block" => $block->getID(),
 			"meta" => $block->getMetadata()		
 		));
-		$player->sendInventory();
 		return false;
 	}
 
