@@ -289,7 +289,7 @@ class BlockAPI{
 			$t->data["creator"] = $player->username;
 		}
 
-		if($this->server->gamemode === SURVIVAL or $this->server->gamemode === ADVENTURE){
+		if($player->gamemode !== CREATIVE){
 			$player->removeItem($item->getID(), $item->getMetadata(), 1);
 		}
 
