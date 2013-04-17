@@ -232,7 +232,10 @@ class PlayerAPI{
 	}
 
 	public function get($name, $alike = true){
-		$name = strtolower($name);
+		$name = trim(strtolower($name));
+		if($name === ""){
+			return false;
+		}
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";", true);
 		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
