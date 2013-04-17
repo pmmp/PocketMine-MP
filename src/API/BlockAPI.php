@@ -39,6 +39,111 @@ define("BLOCK_UPDATE_TOUCH", 4);
 class BlockAPI{
 	private $server;
 	private $scheduledUpdates = array();
+	public static $creative = array(
+		array(COBBLESTONE, 0),
+		array(STONE_BRICKS, 0),
+		array(STONE_BRICKS, 1),
+		array(STONE_BRICKS, 2),
+		array(MOSS_STONE, 0),
+		array(WOODEN_PLANKS, 0),
+		array(BRICKS, 0),
+		array(STONE, 0),
+		array(DIRT, 0),
+		array(GRASS, 0),
+		array(CLAY_BLOCK, 0),
+		array(SANDSTONE, 0),
+		array(SANDSTONE, 1),
+		array(SANDSTONE, 2),
+		array(SAND, 0),
+		array(GRAVEL, 0),
+		array(TRUNK, 0),
+		array(TRUNK, 1),
+		array(TRUNK, 2),
+		array(NETHER_BRICKS, 0),
+		array(NETHERRACK, 0),
+		array(COBBLESTONE_STAIRS, 0),
+		array(WOODEN_STAIRS, 0),
+		array(BRICK_STAIRS, 0),
+		array(SANDSTONE_STAIRS, 0),
+		array(STONE_BRICK_STAIRS, 0),
+		array(NETHER_BRICKS_STAIRS, 0),
+		array(QUARTZ_STAIRS, 0),
+		array(SLAB, 0),
+		array(SLAB, 1),
+		array(SLAB, 2),
+		array(SLAB, 3),
+		array(SLAB, 4),
+		array(SLAB, 5),
+		array(QUARTZ_BLOCK, 0),
+		array(QUARTZ_BLOCK, 1),
+		array(QUARTZ_BLOCK, 2),
+		array(COAL_ORE, 0),
+		array(IRON_ORE, 0),
+		array(GOLD_ORE, 0),
+		array(DIAMOND_ORE, 0),
+		array(LAPIS_ORE, 0),
+		array(REDSTONE_ORE, 0),
+		array(GOLD_BLOCK, 0),
+		array(IRON_BLOCK, 0),
+		array(DIAMOND_BLOCK, 0),
+		array(LAPIS_BLOCK, 0),
+		array(OBSIDIAN, 0),
+		array(SNOW_BLOCK, 0),
+		array(GLASS, 0),
+		array(GLOWSTONE_BLOCK, 0),
+		array(NETHER_REACTOR, 0),
+		array(WOOL, 0),
+		array(WOOL, 7),
+		array(WOOL, 6),
+		array(WOOL, 5),
+		array(WOOL, 4),
+		array(WOOL, 3),
+		array(WOOL, 2),
+		array(WOOL, 1),
+		array(WOOL, 15),
+		array(WOOL, 14),
+		array(WOOL, 13),
+		array(WOOL, 12),
+		array(WOOL, 11),
+		array(WOOL, 10),
+		array(WOOL, 9),
+		array(WOOL, 8),
+		array(LADDER, 0),
+		array(TORCH, 0),
+		array(GLASS_PANE, 0),
+		array(WOODEN_DOOR, 0),
+		array(TRAPDOOR, 0),
+		array(FENCE, 0),
+		array(FENCE_GATE, 0),
+		array(BED, 0),
+		array(BOOKSHELF, 0),
+		array(PAINTING, 0),
+		array(WORKBENCH, 0),
+		array(STONECUTTER, 0),
+		array(CHEST, 0),
+		array(FURNACE, 0),
+		array(TNT, 0),
+		array(DANDELION, 0),
+		array(CYAN_FLOWER, 0),
+		array(BROWN_MUSHROOM, 0),
+		array(RED_MUSHROOM, 0),
+		array(CACTUS, 0),
+		array(MELON_BLOCK, 0),
+		array(SUGARCANE, 0),
+		array(SAPLING, 0),
+		array(SAPLING, 1),
+		array(SAPLING, 2),
+		array(LEAVES, 0),
+		array(LEAVES, 1),
+		array(LEAVES, 2),
+		array(SEEDS, 0),
+		array(MELON_SEEDS, 0),
+		array(DYE, 15), //Bonemeal
+		array(IRON_HOE, 0),
+		array(IRON_SWORD, 0),
+		array(BOW, 0),
+		array(SIGN, 0),
+	);
 	
 	public static function fromString($str, $multiple = false){
 		if($multiple === true){
@@ -151,6 +256,10 @@ class BlockAPI{
 				}
 
 				if($player instanceof Player){
+					if($player->gamemode === CREATIVE){
+						$output .= "Player is in creative mode.\n";
+						break;
+					}
 					if($this->server->api->getProperty("item-enforcement") === false){
 						$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
 					}else{
@@ -158,7 +267,7 @@ class BlockAPI{
 					}
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username."\n";
 				}else{
-					$output .= "Unknown player\n";
+					$output .= "Unknown player.\n";
 				}
 
 				break;
@@ -241,7 +350,7 @@ class BlockAPI{
 		$block = $this->getBlockFace($target, $face);
 		$item = $player->equipment;
 		
-		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists
+		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
 			$this->cancelAction($target, $player);
 			return $this->cancelAction($block, $player);
 		}

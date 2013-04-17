@@ -61,6 +61,7 @@ class Player{
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
+	public $itemEnforcement;
 	public $lastCorrect;
 	
 	function __construct($clientID, $ip, $port, $MTU){
@@ -71,6 +72,7 @@ class Player{
 		$this->CID = $this->server->clientID($ip, $port);
 		$this->ip = $ip;
 		$this->port = $port;
+		$this->itemEnforcement = $this->server->api->getProperty("item-enforcement");
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
@@ -268,9 +270,14 @@ class Player{
 		return true;
 	}
 	
+	public function setSlot($slot, Item $item){
+		$this->inventory[(int) $slot] = array($item->getID(), $item->getMetadata(), $item->count);
+		return true;
+	}
+	
 	public function sendInventorySlot($s){
 		$s = (int) $s;
-		if(!isset($this->inventory[$s]) or $this->server->api->getProperty("item-enforcement") === false){
+		if(!isset($this->inventory[$s]) or ($this->itemEnforcement === false and $this->gamemode !== CREATIVE)){
 			return false;
 		}
 		
@@ -335,11 +342,6 @@ class Player{
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}else{
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
-				}
-				break;
-			case "player.block.place":
-				if($data["eid"] === $this->eid and ($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE)){
-					$this->removeItem($data["original"]->getID(), $data["original"]->getMetadata(), 1);
 				}
 				break;
 			case "player.pickup":
@@ -557,6 +559,7 @@ class Player{
 		}else{
 			$this->blocked = true;
 			$this->gamemode = $gm;
+			$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
 		}
@@ -733,6 +736,13 @@ class Player{
 							
 							$this->auth = true;
 							if(!$this->data->exists("inventory") or $this->gamemode === CREATIVE){
+								if($this->gamemode === CREATIVE){
+									$this->itemEnforcement = true;
+									$this->inventory = array();
+									foreach(BlockAPI::$creative as $item){
+										$this->inventory[] = array($item[0], $item[1], 1);
+									}
+								}
 								$this->data->set("inventory", $this->inventory);
 							}
 							$this->data->set("caseusername", $this->username);
@@ -780,7 +790,6 @@ class Player{
 							$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("player.block.place", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->server->schedule(40, array($this, "measureLag"), array(), true);
 							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
@@ -846,7 +855,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							$data["player"] = $this;
 							$data["item"] = BlockAPI::getItem($data["block"], $data["meta"]);
-							if(($this->hasItem($data["block"], $data["meta"]) or $this->server->api->getProperty("item-enforcement") !== true) and $this->server->handle("player.equipment.change", $data) !== false){
+							if(($this->hasItem($data["block"], $data["meta"]) or $this->itemEnforcement !== true) and $this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = $data["item"];
 							}
 							break;
@@ -862,7 +871,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
 								break;
-							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"]) and $this->server->api->getProperty("item-enforcement") === true){
+							}elseif(!$this->hasItem($data["block"], $data["meta"]) and $this->itemEnforcement === true){
 								break;
 							}
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
@@ -1007,7 +1016,7 @@ class Player{
 										364 => 8,
 									);
 									if(isset($items[$this->equipment->getID()])){
-										if($this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1) === true or $this->server->api->getProperty("item-enforcement") !== true){
+										if($this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1) === true or $this->itemEnforcement !== true){
 											$this->dataPacket(MC_ENTITY_EVENT, array(
 												"eid" => 0,
 												"event" => 9,
@@ -1025,7 +1034,7 @@ class Player{
 							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
 							$data["item"] = $item;
 							if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
-								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->server->api->getProperty("item-enforcement") !== true){
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->itemEnforcement !== true){
 									$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
 								}
 							}
@@ -1105,14 +1114,14 @@ class Player{
 							}
 							if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 								if($slot->count < $item->count){
-									if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count) === false and $this->server->api->getProperty("item-enforcement") === true){
+									if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count) === false and $this->itemEnforcement === true){
 										break;
 									}
 								}elseif($slot->count > $item->count){
 									$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count);
 								}
 							}else{
-								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->api->getProperty("item-enforcement") === true){
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->itemEnforcement === true){
 									break;
 								}
 								$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count);

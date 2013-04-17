@@ -34,6 +34,7 @@ define("COBBLE", 4);
 define("PLANK", 5);
 define("PLANKS", 5);
 define("WOODEN_PLANK", 5);
+define("WOODEN_PLANKS", 5);
 define("SAPLING", 6);
 define("SAPLINGS", 6);
 define("BEDROCK", 7);

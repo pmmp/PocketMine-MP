@@ -60,7 +60,9 @@ class PaintingItem extends Item{
 			$server = ServerAPI::request();
 			$e = $server->api->entity->add(ENTITY_OBJECT, OBJECT_PAINTING, $data);
 			$server->api->entity->spawnToAll($e->eid);
-			$player->removeItem($this->getID(), $this->getMetadata(), 1);
+			if($player->gamemode !== CREATIVE){
+				$player->removeItem($this->getID(), $this->getMetadata(), 1);
+			}
 			return true;
 		}
 		return false;
