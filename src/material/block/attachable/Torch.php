@@ -63,6 +63,9 @@ class TorchBlock extends FlowableBlock{
 				);
 				$level->setBlock($block, $this->id, $faces[$face]);
 				return true;
+			}elseif($level->getBlockFace($block, 0)->isTransparent === false){
+				$level->setBlock($block, $this->id, 5);
+				return true;
 			}
 		}
 		return false;
