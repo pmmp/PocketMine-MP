@@ -255,7 +255,7 @@ class ServerAPI{
 		foreach($this->plugin->getList() as $p){
 			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
 		}
-		Utils::curl_post("http://stats.pocketmine.net/usage.php",array(
+		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
 			"serverid" => $this->server->serverID,
 			"os" => Utils::getOS(),
 			"version" => MAJOR_VERSION,

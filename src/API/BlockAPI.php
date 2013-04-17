@@ -30,6 +30,7 @@ define("BLOCK_UPDATE_NORMAL", 0);
 define("BLOCK_UPDATE_RANDOM", 1);
 define("BLOCK_UPDATE_SCHEDULED", 2);
 define("BLOCK_UPDATE_WEAK", 3);
+define("BLOCK_UPDATE_TOUCH", 4);
 
 
 
@@ -244,6 +245,7 @@ class BlockAPI{
 		if($this->server->api->dhandle("player.block.touch", array("type" => "place", "player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
 			return $this->cancelAction($block, $player);
 		}
+		$this->blockUpdate($target, BLOCK_UPDATE_TOUCH);
 
 		if($target->isActivable === true){
 			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($this, $item, $player) === true){
@@ -690,12 +692,16 @@ class BlockAPI{
 	}
 	
 	public function blockUpdate(Vector3 $pos, $type = BLOCK_UPDATE_NORMAL){
-		$pos = $pos->floor();
-		$block = $this->getBlock($pos);
+		if(!($pos instanceof Block)){
+			$pos = $pos->floor();
+			$block = $this->getBlock($pos);
+		}else{
+			$block = $pos;
+		}
 		return $block->onUpdate($this, $type);
 	}
 	
-	public function scheduleBlockUpdate(Vector3 $pos, $delay, $type = BLOCK_UPDATE_NORMAL){
+	public function scheduleBlockUpdate(Vector3 $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
 			return false;

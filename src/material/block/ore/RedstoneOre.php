@@ -29,6 +29,16 @@ class RedstoneOreBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(REDSTONE_ORE, 0, "Redstone Ore");
 	}
+	
+	public function onUpdate(BlockAPI $level, $type){
+		if($type === BLOCK_UPDATE_NORMAL or $type === BLOCK_UPDATE_TOUCH){
+			$level->setBlock($this, GLOWING_REDSTONE_ORE, $this->getMetadata(), false);
+			$level->scheduleBlockUpdate($this, mt_rand(45, 100));
+			return BLOCK_UPDATE_WEAK;
+		}
+		return false;
+	}
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 2){
 			return array(
