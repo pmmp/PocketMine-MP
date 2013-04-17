@@ -186,7 +186,7 @@ class ConsoleAPI{
 				return;
 			}
 			if($issuer instanceof Player){
-				console("[INFO] \"".$issuer->username."\" issued server command: $alias /$cmd ".implode(" ", $params));
+				console("[INFO] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params));
 			}else{
 				console("[INFO] Issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params));
 			}
@@ -207,8 +207,8 @@ class ConsoleAPI{
 				foreach($mes as $m){
 					console("[CMD] ".$m);	
 				}
-				
 			}
+			return $output;
 		}
 	}
 
