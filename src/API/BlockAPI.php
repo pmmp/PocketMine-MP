@@ -296,17 +296,7 @@ class BlockAPI{
 		return false;
 	}
 
-	/*public function blockScheduler($data){
-		$this->updateBlock($data["x"], $data["y"], $data["z"], BLOCK_UPDATE_SCHEDULED);
-	}
-
-	public function updateBlockRemote($data, $event){
-		if($event !== "block.update"){
-			return;
-		}
-		$this->updateBlock($data["x"], $data["y"], $data["z"], isset($data["type"]) ? $data["type"]:BLOCK_UPDATE_RANDOM);
-		return true;
-	}
+	/*
 
 	public function flowLavaOn($source, $face){
 		$down = 0;

@@ -30,9 +30,30 @@ class TorchBlock extends FlowableBlock{
 		parent::__construct(TORCH, $meta, "Torch");
 	}
 	
+	public function onUpdate(BlockAPI $level, $type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			$side = $this->getMetadata();
+			$faces = array(
+					1 => 3,
+					2 => 2,
+					3 => 5,
+					4 => 4,
+					5 => 0,
+					6 => 0,
+					0 => 0,
+			);
+			if($level->getBlockFace($this, $faces[$side])->isTransparent === true){
+				$level->drop($this, BlockAPI::getItem($this->id));
+				$level->setBlock($this, AIR, 0, false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
+
 	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true and $face !== 0){
-			if($target->isTransparent === false){
+		if($block->inWorld === true){
+			if($target->isTransparent === false and $face !== 0){
 				$faces = array(
 					1 => 5,
 					2 => 4,
