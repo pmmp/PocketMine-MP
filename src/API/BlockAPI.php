@@ -654,25 +654,6 @@ class BlockAPI{
 				}
 
 				break;
-			case 74:
-				if($type === BLOCK_UPDATE_SCHEDULED or $type === BLOCK_UPDATE_RANDOM){
-					$changed = true;
-					$this->server->api->level->setBlock($x, $y, $z, 73, $block[1], false);
-					$type = BLOCK_UPDATE_WEAK;
-				}
-				break;
-			case 73:
-				if($type === BLOCK_UPDATE_NORMAL){
-					$changed = true;
-					$this->server->api->level->setBlock($x, $y, $z, 74, $block[1], false);
-					$this->server->schedule(mt_rand(40, 100), array($this, "blockScheduler"), array(
-						"x" => $x,
-						"y" => $y,
-						"z" => $z,
-					));
-					$type = BLOCK_UPDATE_WEAK;
-				}
-				break;
 		}
 		if($type === BLOCK_TYPE_SCHEDULED){
 			$type = BLOCK_UPDATE_WEAK;
@@ -698,7 +679,11 @@ class BlockAPI{
 		}else{
 			$block = $pos;
 		}
-		return $block->onUpdate($this, $type);
+		$level = $block->onUpdate($this, $type);
+		if($level === BLOCK_UPDATE_NORMAL){
+			$this->blockUpdateAround($block, $level);
+		}
+		return $level;
 	}
 	
 	public function scheduleBlockUpdate(Vector3 $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
@@ -715,9 +700,10 @@ class BlockAPI{
 				$type,
 				$delay,
 			);
-			$this->server->query("INSERT INTO blockUpdates (x, y, z, type, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", ".$type.", ".$delay.");");
+			$this->server->query("INSERT INTO blockUpdates (x, y, z, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", ".$delay.");");
 			return true;
 		}
+		return false;
 	}
 	
 	public function blockUpdateRemote($data, $event){
