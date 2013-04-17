@@ -104,7 +104,7 @@ class ServerAPI{
 			"view-distance" => 7,
 			"max-players" => 20,
 			"allow-flight" => false,
-			"disallow-crafting" => false,
+			"item-enforcement" => false,
 			"server-type" => "normal",
 			"gamemode" => CREATIVE,
 			"pvp" => true,

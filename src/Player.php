@@ -270,7 +270,7 @@ class Player{
 	
 	public function sendInventorySlot($s){
 		$s = (int) $s;
-		if(!isset($this->inventory[$s]) or $this->server->api->getProperty("disallow-crafting") === false){
+		if(!isset($this->inventory[$s]) or $this->server->api->getProperty("item-enforcement") === false){
 			return false;
 		}
 		
@@ -846,7 +846,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							$data["player"] = $this;
 							$data["item"] = BlockAPI::getItem($data["block"], $data["meta"]);
-							if(($this->hasItem($data["block"], $data["meta"]) or $this->server->api->getProperty("disallow-crafting") !== true) and $this->server->handle("player.equipment.change", $data) !== false){
+							if(($this->hasItem($data["block"], $data["meta"]) or $this->server->api->getProperty("item-enforcement") !== true) and $this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = $data["item"];
 							}
 							break;
@@ -862,7 +862,7 @@ class Player{
 							$data["eid"] = $this->eid;
 							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
 								break;
-							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"]) and $this->server->api->getProperty("disallow-crafting") === true){
+							}elseif(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE) and !$this->hasItem($data["block"], $data["meta"]) and $this->server->api->getProperty("item-enforcement") === true){
 								break;
 							}
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
@@ -1006,7 +1006,7 @@ class Player{
 										364 => 8,
 									);
 									if(isset($items[$this->equipment->getID()])){
-										if($this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1) === true or $this->server->api->getProperty("disallow-crafting") !== true){
+										if($this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1) === true or $this->server->api->getProperty("item-enforcement") !== true){
 											$this->dataPacket(MC_ENTITY_EVENT, array(
 												"eid" => 0,
 												"event" => 9,
@@ -1024,7 +1024,7 @@ class Player{
 							$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
 							$data["item"] = $item;
 							if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
-								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->server->api->getProperty("disallow-crafting") !== true){
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->server->api->getProperty("item-enforcement") !== true){
 									$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
 								}
 							}
@@ -1104,14 +1104,14 @@ class Player{
 							}
 							if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 								if($slot->count < $item->count){
-									if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count) === false and $this->server->api->getProperty("disallow-crafting") === true){
+									if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count) === false and $this->server->api->getProperty("item-enforcement") === true){
 										break;
 									}
 								}elseif($slot->count > $item->count){
 									$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count);
 								}
 							}else{
-								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->api->getProperty("disallow-crafting") === true){
+								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false and $this->server->api->getProperty("item-enforcement") === true){
 									break;
 								}
 								$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count);
