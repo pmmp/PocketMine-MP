@@ -225,6 +225,7 @@ class Player{
 				if($data[0] === AIR){
 					$add = min(64, $count);
 					$this->inventory[$s] = array($type, $damage, $add);
+					$this->sendInventorySlot($s);
 					break;
 				}elseif($data[0] === $type and $data[1] === $damage){
 					$add = min(64 - $data[2], $count);
@@ -232,6 +233,7 @@ class Player{
 						continue;
 					}
 					$this->inventory[$s] = array($type, $damage, $data[2] + $add);
+					$this->sendInventorySlot($s);
 					break;
 				}
 			}
@@ -254,6 +256,7 @@ class Player{
 					}else{
 						$this->inventory[$s] = array(0, 0, 0);
 					}
+					$this->sendInventorySlot($s);
 					break;
 				}
 			}
@@ -263,6 +266,29 @@ class Player{
 			$count -= $remove;
 		}
 		return true;
+	}
+	
+	public function sendInventorySlot($s){
+		$s = (int) $s;
+		if(!isset($this->inventory[$s])){
+			return false;
+		}
+		
+		
+		$this->sendInventory(); //Fallback
+		return true;
+		
+		//Can't do this :(
+		
+		/*$slot = BlockAPI::getItem($this->inventory[$s][0], $this->inventory[$s][1], $this->inventory[$s][2]);
+		$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+			"windowid" => 0,
+			"slot" => (int) $s,
+			"block" => $slot->getID(),
+			"stack" => $slot->count,
+			"meta" => $slot->getMetadata(),
+		));
+		return true;*/
 	}
 	
 	public function hasItem($type, $damage = false){
@@ -1105,6 +1131,8 @@ class Player{
 	}
 	
 	public function sendInventory(){
+		/*
+		//OLD WAY
 		foreach($this->inventory as $s => $data){
 			if($data[0] > 0 and $data[2] >= 0){
 				$e = $this->server->api->entity->add(ENTITY_ITEM, $data[0], array(
@@ -1117,7 +1145,21 @@ class Player{
 				$this->server->api->entity->spawnTo($e->eid, $this);
 			}
 			$this->inventory[$s] = array(AIR, 0, 0);
-		}	
+		}*/
+		$inv = array();
+		foreach($this->inventory as $s => $data){
+			if($data[0] > 0 and $data[2] >= 0){
+				$inv[] = BlockAPI::getItem($data[0], $data[1], $data[2]);
+			}else{
+				$inv[] = BlockAPI::getItem(AIR, 0, 0);
+				$this->inventory[$s] = array(AIR, 0, 0);
+			}
+		}
+		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+			"windowid" => 0,
+			"count" => count($inv),
+			"slots" => $inv
+		));
 		/*
 		//Future
 		$inv = array();

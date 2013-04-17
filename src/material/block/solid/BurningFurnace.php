@@ -93,26 +93,27 @@ class BurningFurnaceBlock extends SolidBlock{
 		if($furnace->class !== TILE_FURNACE){
 			return true;
 		}
-		$id = $player->windowCnt = $player->windowCnt++ % 255;
-		$player->windows[$id] = $furnace;
+		$player->windowCnt++;
+		$player->windowCnt = $id = max(1, $player->windowCnt % 255);
+		$player->windows[$id] = $chest;
 		$player->dataPacket(MC_CONTAINER_OPEN, array(
 			"windowid" => $id,
 			"type" => WINDOW_FURNACE,
-			"slots" => 3,
+			"slots" => FURNACE_SLOTS,
 			"title" => "Furnace",
 		));
+		$slots = array();
 		for($s = 0; $s < FURNACE_SLOTS; ++$s){
-			$slot = $furnace->getSlot($s);
+			$slot = $chest->getSlot($s);
 			if($slot->getID() > 0 and $slot->count > 0){
-				$player->dataPacket(MC_CONTAINER_SET_SLOT, array(
-					"windowid" => $id,
-					"slot" => $s,
-					"block" => $slot->getID(),
-					"stack" => $slot->count,
-					"meta" => $slot->getMetadata(),
-				));
+				$slots[] = $slot;
 			}
 		}
+		$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+			"windowid" => $id,
+			"count" => count($slots),
+			"slots" => $slots
+		));
 		return true;
 	}
 	

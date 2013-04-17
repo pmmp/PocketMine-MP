@@ -675,6 +675,22 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["meta"]);
 				}
 				break;
+			case MC_CONTAINER_SET_CONTENT:
+				if($this->c === false){
+					$this->data["windowid"] = ord($this->get(1));
+					$this->data["count"] = Utils::readShort($this->get(2), false);
+					$this->data["slots"] = array();
+					for($s = 0; $s < $this->data["count"]; ++$s){
+						$this->data["slots"][$s] = Utils::readSlot($this->get(5));
+					}
+				}else{
+					$this->raw .= chr($this->data["windowid"]);
+					$this->raw .= Utils::writeShort(count($this->data["slots"]));
+					foreach($this->data["slots"] as $slot){
+						$this->raw .= Utils::writeSlot($slot);
+					}
+				}
+				break;
 			case MC_CLIENT_MESSAGE:
 				if($this->c === false){
 					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
