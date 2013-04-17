@@ -42,8 +42,6 @@ class TorchBlock extends FlowableBlock{
 					6 => 0,
 					0 => 0,
 			);
-			console($side);
-			console($faces[$side]);
 			if($level->getBlockFace($this, $faces[$side])->isTransparent === true){
 				$level->drop($this, BlockAPI::getItem($this->id));
 				$level->setBlock($this, AIR, 0, false);
