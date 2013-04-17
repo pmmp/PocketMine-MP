@@ -978,6 +978,7 @@ class Player{
 							$this->entity->air = 300;
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->updateMetadata();
+							$this->sendInventory();
 							$this->teleport(new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]));
 							break;
 						case MC_SET_HEALTH:
