@@ -272,6 +272,7 @@ class Player{
 	
 	public function setSlot($slot, Item $item){
 		$this->inventory[(int) $slot] = array($item->getID(), $item->getMetadata(), $item->count);
+		$this->sendInventorySlot((int) $slot);
 		return true;
 	}
 	
