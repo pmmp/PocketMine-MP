@@ -254,7 +254,7 @@ class Player{
 					if($remove < $data[2]){
 						$this->inventory[$s][2] -= $remove;
 					}else{
-						$this->inventory[$s] = array(0, 0, 0);
+						$this->inventory[$s] = array(AIR, 0, 0);
 					}
 					$this->sendInventorySlot($s);
 					break;
@@ -345,11 +345,13 @@ class Player{
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
+					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 					if(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE)){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
+				}else{
+					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				}
-				$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				break;
 			case "player.equipment.change":
 				if($data["eid"] === $this->eid){
