@@ -321,6 +321,11 @@ class PlayerAPI{
 				"y" => $this->server->spawn["y"],
 				"z" => $this->server->spawn["z"],
 			),
+			"spawn" => array(
+				"x" => $this->server->spawn["x"],
+				"y" => $this->server->spawn["y"],
+				"z" => $this->server->spawn["z"],
+			),
 			"inventory" => array_fill(0, 36, array(AIR, 0, 0)),
 			"armor" => array_fill(0, 4, array(AIR, 0, 0)),
 			"gamemode" => $this->server->gamemode,

@@ -61,6 +61,7 @@ class Player{
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
+	private $spawnPosition;
 	public $itemEnforcement;
 	public $lastCorrect;
 	
@@ -80,6 +81,7 @@ class Player{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->itemEnforcement = $this->server->api->getProperty("item-enforcement");
+		$this->spawnPosition = new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]);
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
@@ -89,6 +91,15 @@ class Player{
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
+	}
+	
+	public function setSpawn(Vector3 $pos){
+		$this->spawnPosition = $pos;
+		$this->dataPacket(MC_SET_SPAWN_POSITION, array(
+			"x" => (int) $this->spawnPosition->x,
+			"y" => (int) $this->spawnPosition->y,
+			"z" => (int) $this->spawnPosition->z,
+		));
 	}
 	
 	public function orderChunks(){
@@ -189,6 +200,11 @@ class Player{
 				"x" => $this->entity->x,
 				"y" => $this->entity->y,
 				"z" => $this->entity->z,
+			));
+			$this->data->set("spawn", array(
+				"x" => $this->spawnPosition->x,
+				"y" => $this->spawnPosition->y,
+				"z" => $this->spawnPosition->z,
 			));
 			$this->data->set("inventory", $this->inventory);
 			$this->data->set("armor", $this->armor);
@@ -865,11 +881,7 @@ class Player{
 									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 									$this->blocked = false;
 									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
-									$this->dataPacket(MC_SET_SPAWN_POSITION, array(
-										"x" => (int) $this->server->spawn["x"],
-										"y" => (int) $this->server->spawn["y"],
-										"z" => (int) $this->server->spawn["z"],
-									));
+									$this->setSpawn(new Vector3($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"]));
 									break;
 								case 2://Chunk loaded?
 									break;
@@ -1035,7 +1047,7 @@ class Player{
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->updateMetadata();
 							$this->sendInventory();
-							$this->teleport(new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]));
+							$this->teleport($this->spawnPosition);
 							break;
 						case MC_SET_HEALTH:
 							if($this->spawned === false){
