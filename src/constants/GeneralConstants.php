@@ -30,3 +30,4 @@ define("SURVIVAL", 0);
 define("CREATIVE", 1);
 define("ADVENTURE", 2);
 define("VIEW", 3);
+define("VIEWER", 3);

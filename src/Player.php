@@ -785,7 +785,7 @@ class Player{
 								"y" => $this->data->get("position")["y"],
 								"z" => $this->data->get("position")["z"],
 								"unknown1" => 0,
-								"gamemode" => $this->gamemode,
+								"gamemode" => ($this->gamemode & 0x01),
 								"eid" => 0,
 							));
 							if(($this->gamemode & 0x01) === 0x01){
