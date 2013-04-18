@@ -560,6 +560,9 @@ class Player{
 				foreach(BlockAPI::$creative as $item){
 					$this->inventory[] = array(DANDELION, 0, 1);
 				}
+			}
+			
+			if($this->itemEnforcement === true){
 				$this->sendInventory();
 			}
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");

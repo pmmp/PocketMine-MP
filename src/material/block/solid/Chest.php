@@ -107,7 +107,7 @@ class ChestBlock extends TransparentBlock{
 			));
 		}
 		
-		if($chest->class !== TILE_CHEST){
+		if($chest->class !== TILE_CHEST or ($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
 		$player->windowCnt++;
