@@ -33,16 +33,16 @@ class Player{
 	private $nextBuffer = 0;
 	private $recovery = array();
 	private $evid = array();
-	public $lastMovement = 0;
-	public $timeout;
-	public $connected = true;
-	public $clientID;
-	public $ip;
-	public $port;
-	public $counter = array(0, 0, 0);
-	public $username;
-	public $iusername;
-	public $eid = false;
+	private $lastMovement = 0;
+	private $timeout;
+	private $connected = true;
+	private $clientID;
+	private $ip;
+	private $port;
+	private $counter = array(0, 0, 0);
+	private $username;
+	private $iusername;
+	private $eid = false;
 	public $data;
 	public $entity = false;
 	public $auth = false;
@@ -55,8 +55,8 @@ class Player{
 	public $loggedIn = false;
 	public $gamemode;
 	public $lastBreak;
-	public $windowCnt = 0;
-	public $windows = array();
+	private $windowCnt = 0;
+	private $windows = array();
 	public $blocked = true;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
@@ -64,7 +64,14 @@ class Player{
 	public $itemEnforcement;
 	public $lastCorrect;
 	
-	function __construct($clientID, $ip, $port, $MTU){
+	public function __get($name){
+		if(isset($this->{$name})){
+			return ($this->{$name});
+		}
+		return null;
+	}
+	
+	public function __construct($clientID, $ip, $port, $MTU){
 		$this->MTU = $MTU;
 		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
