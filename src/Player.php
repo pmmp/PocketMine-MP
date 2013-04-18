@@ -572,6 +572,7 @@ class Player{
 			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
 		}else{
+			$inv = array_fill(0, 36, array(AIR, 0, 0));
 			$this->blocked = true;
 			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
