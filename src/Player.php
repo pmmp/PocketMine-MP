@@ -558,16 +558,22 @@ class Player{
 		
 		$inv =& $this->inventory;
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){			
-			$this->sendSettings();
-			if(($this->gamemode & 0x01) === 0x01 and ($this->gamemode & 0x02) === 0x02){
+			if(($gm & 0x01) === 0x01 and ($gm & 0x02) === 0x02){
 				$inv = array();
 				foreach(BlockAPI::$creative as $item){
 					$inv[] = array(DANDELION, 0, 1);
 				}
+			}elseif(($gm & 0x01) === 0x01){
+				$inv = array();
+				foreach(BlockAPI::$creative as $item){
+					$inv[] = array($item[0], $item[1], 1);
+				}
 			}
+			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
 		}else{
 			$this->blocked = true;
+			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
 			if(($gm & 0x01) === 0x01){
@@ -575,7 +581,7 @@ class Player{
 			}
 		}
 		$this->inventory = $inv;
-		$this->gamemode = $gm;
+		$this->sendSettings();
 		if($this->itemEnforcement === true){
 			$this->sendInventory();
 		}
