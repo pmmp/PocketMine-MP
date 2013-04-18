@@ -552,26 +552,32 @@ class Player{
 			return false;
 		}
 		
-		if(($this->gamemode & 0x01) === ($gm & 0x01)){
-			$this->gamemode = $gm;
+		if($this->server->api->dhandle("player.gamemode.change", array("player" => $player, "gamemode" => $gm)) === false){
+			return false;
+		}
+		
+		$inv =& $this->inventory;
+		if(($this->gamemode & 0x01) === ($gm & 0x01)){			
 			$this->sendSettings();
 			if(($this->gamemode & 0x01) === 0x01 and ($this->gamemode & 0x02) === 0x02){
-				$this->inventory = array();
+				$inv = array();
 				foreach(BlockAPI::$creative as $item){
-					$this->inventory[] = array(DANDELION, 0, 1);
+					$inv[] = array(DANDELION, 0, 1);
 				}
-			}
-			
-			if($this->itemEnforcement === true){
-				$this->sendInventory();
 			}
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
 		}else{
 			$this->blocked = true;
-			$this->gamemode = $gm;
-			$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
+			if(($gm & 0x01) === 0x01){
+				$this->itemEnforcement = true;
+			}
+		}
+		$this->inventory = $inv;
+		$this->gamemode = $gm;
+		if($this->itemEnforcement === true){
+			$this->sendInventory();
 		}
 		return true;
 	}
