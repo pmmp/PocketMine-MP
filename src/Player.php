@@ -558,7 +558,7 @@ class Player{
 			if(($this->gamemode & 0x01) === 0x01 and ($this->gamemode & 0x02) === 0x02){
 				$this->inventory = array();
 				foreach(BlockAPI::$creative as $item){
-					$this->inventory[] = array(AIR, 0, 0);
+					$this->inventory[] = array(DANDELION, 0, 1);
 				}
 				$this->sendInventory();
 			}
@@ -756,7 +756,7 @@ class Player{
 									$this->inventory = array();
 									if(($this->gamemode & 0x02) === 0x02){
 										foreach(BlockAPI::$creative as $item){
-											$this->inventory[] = array(AIR, 0, 0);
+											$this->inventory[] = array(DANDELION, 0, 1);
 										}
 									}else{
 										foreach(BlockAPI::$creative as $item){
@@ -878,6 +878,8 @@ class Player{
 							$data["item"] = BlockAPI::getItem($data["block"], $data["meta"]);
 							if(($this->hasItem($data["block"], $data["meta"]) or $this->itemEnforcement !== true) and $this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = $data["item"];
+							}elseif($this->itemEnforcement === true){
+								$this->sendSettings();
 							}
 							break;
 						case MC_REQUEST_CHUNK:
@@ -893,6 +895,7 @@ class Player{
 							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
 								break;
 							}elseif(!$this->hasItem($data["block"], $data["meta"]) and $this->itemEnforcement === true){
+								$this->sendInventory();
 								break;
 							}
 							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
@@ -917,7 +920,7 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							if($this->blocked === false and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
+							if($this->gamemode !== VIEW and $this->blocked === false and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
 								$target = $this->server->api->entity->get($data["target"]);
 								$data["targetentity"] = $target;
 								$data["entity"] = $this->entity;
