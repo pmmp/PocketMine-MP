@@ -200,9 +200,6 @@ class Player{
 			}
 			$reason = $reason == "" ? "server stop":$reason;			
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
-			$this->directDataPacket(MC_LOGIN_STATUS, array(
-				"status" => 1,
-			));
 			$this->directDataPacket(MC_DISCONNECT);
 			$this->sendBuffer();
 			$this->buffer = null;
@@ -692,29 +689,37 @@ class Player{
 							if(count($this->server->clients) >= $this->server->maxClients){
 								$this->close("server is full!", false);
 								return;
-							}
-							
+							}					
 							if($data["protocol1"] !== CURRENT_PROTOCOL){
-								$this->close("protocol", false);
+								if($data["protocol1"] < CURRENT_PROTOCOL){
+									$this->directDataPacket(MC_LOGIN_STATUS, array(
+										"status" => 1,
+									));
+								}else{
+									$this->directDataPacket(MC_LOGIN_STATUS, array(
+										"status" => 2,
+									));
+								}
+								$this->close("Incorrect protocol", false);
 								break;
 							}
 							if(preg_match('#^[a-zA-Z0-9_]{2,16}$#', $data["username"])){
 								$this->username = $data["username"];
 								$this->iusername = strtolower($this->username);
 							}else{
-								$this->close("bad username", false);
+								$this->close("Bad username", false);
 								break;
 							}
 							if($this->server->api->handle("player.connect", $this) === false){
-								$this->close("join cancelled", false);
+								$this->close("Unknown reason", false);
 								return;
 							}
 							
 							if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
-								$this->close("\x1b[33m".$this->username."\x1b[0m not being on white-list", false);
+								$this->close("Server is white-listed", false);
 								return;
 							}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
-								$this->close("\x1b[33m".$this->username."\x1b[0m is banned!", false);
+								$this->close("You are banned!", false);
 								return;
 							}
 							$this->loggedIn = true;
