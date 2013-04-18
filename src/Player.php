@@ -275,7 +275,7 @@ class Player{
 	
 	public function sendInventorySlot($s){
 		$s = (int) $s;
-		if(!isset($this->inventory[$s]) or ($this->itemEnforcement === false and $this->gamemode !== CREATIVE)){
+		if(!isset($this->inventory[$s]) or $this->itemEnforcement === false){
 			return false;
 		}
 		
@@ -346,7 +346,7 @@ class Player{
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
 					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
-					if(($this->gamemode === SURVIVAL or $this->gamemode === ADVENTURE)){
+					if(($this->gamemode & 0x01) === 0x00){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
 				}else{
@@ -491,8 +491,8 @@ class Player{
 		0x80000000 ?
 		*/
 		$flags = 0;
-		if($this->gamemode === ADVENTURE){
-			$flags |= 0x01; //Not allow placing/breaking blocks
+		if(($this->gamemode & 0x02) === 0x02){
+			$flags |= 0x01; //Not allow placing/breaking blocks, adventure mode
 		}
 		
 		if($nametags !== false){
@@ -542,17 +542,26 @@ class Player{
 				return "creative";
 			case ADVENTURE:
 				return "adventure";
+			case VIEW:
+				return "view";
 		}
 	}
 	
 	public function setGamemode($gm){
-		if($gm < 0 or $gm > 2 or $this->gamemode === $gm){
+		if($gm < 0 or $gm > 3 or $this->gamemode === $gm){
 			return false;
 		}
 		
-		if(($this->gamemode === SURVIVAL and $gm === ADVENTURE) or ($this->gamemode === ADVENTURE and $gm === SURVIVAL)){
+		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
 			$this->sendSettings();
+			if(($this->gamemode & 0x01) === 0x01 and ($this->gamemode & 0x02) === 0x02){
+				$this->inventory = array();
+				foreach(BlockAPI::$creative as $item){
+					$this->inventory[] = array(AIR, 0, 0);
+				}
+				$this->sendInventory();
+			}
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
 		}else{
 			$this->blocked = true;
@@ -741,12 +750,18 @@ class Player{
 							}
 							
 							$this->auth = true;
-							if(!$this->data->exists("inventory") or $this->gamemode === CREATIVE){
-								if($this->gamemode === CREATIVE){
+							if(!$this->data->exists("inventory") or ($this->gamemode & 0x01) === 0x01){
+								if(($this->gamemode & 0x01) === 0x01){
 									$this->itemEnforcement = true;
 									$this->inventory = array();
-									foreach(BlockAPI::$creative as $item){
-										$this->inventory[] = array($item[0], $item[1], 1);
+									if(($this->gamemode & 0x02) === 0x02){
+										foreach(BlockAPI::$creative as $item){
+											$this->inventory[] = array(AIR, 0, 0);
+										}
+									}else{
+										foreach(BlockAPI::$creative as $item){
+											$this->inventory[] = array($item[0], $item[1], 1);
+										}
 									}
 								}
 								$this->data->set("inventory", $this->inventory);
@@ -773,8 +788,8 @@ class Player{
 								"gamemode" => $this->gamemode,
 								"eid" => 0,
 							));
-							if($this->gamemode === CREATIVE){
-								$this->equipment = BlockAPI::getItem(STONE);
+							if(($this->gamemode & 0x01) === 0x01){
+								$this->equipment = BlockAPI::getItem($this->inventory[7][0], $this->inventory[7][1], $this->inventory[7][2]);
 							}
 							$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
 							$this->eid = $this->entity->eid;
@@ -844,7 +859,7 @@ class Player{
 							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
-								if($this->blocked === true or ($speed > 5 and $this->gamemode !== CREATIVE) or $speed > 13 or $this->server->api->handle("player.move", $this->entity) === false){
+								if($this->blocked === true or ($speed > 5 and ($this->gamemode & 0x01) === 0x00) or $speed > 13 or $this->server->api->handle("player.move", $this->entity) === false){
 									if($this->lastCorrect instanceof Vector3){
 										$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 									}
@@ -908,7 +923,7 @@ class Player{
 								$data["entity"] = $this->entity;
 								if(!($target instanceof Entity)){
 									break;
-								}elseif($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or $target->player->gamemode === CREATIVE)){
+								}elseif($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
 									break;
 								}elseif($this->handle("player.interact", $data) !== false){
 									switch($this->equipment->getID()){
@@ -1000,7 +1015,7 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							if($this->gamemode === CREATIVE){
+							if(($this->gamemode & 0x01) === 0x01){
 								break;
 							}
 							//$this->entity->setHealth($data["health"], "client");

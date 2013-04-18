@@ -191,7 +191,7 @@ abstract class Block extends Vector3{
 	}
 	
 	public function getBreakTime(Item $item, Player $player){
-		if($player->gamemode === CREATIVE){
+		if(($player->gamemode & 0x01) === 0x01){
 			return 0.25;
 		}
 		return $this->breakTime;

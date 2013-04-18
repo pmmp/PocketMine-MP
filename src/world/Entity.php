@@ -194,7 +194,7 @@ class Entity extends stdClass{
 				}else{
 					return false;
 				}
-				if(($player instanceof Player) and ($player->gamemode === SURVIVAL or $player->gamemode === ADVENTURE) and $player->spawned === true){
+				if(($player instanceof Player) and ($player->gamemode & 0x01) === 0x00 and $player->spawned === true){
 					if($this->server->api->dhandle("player.pickup", array(
 						"eid" => $player->eid,
 						"player" => $player,
@@ -346,7 +346,7 @@ class Entity extends stdClass{
 					//$this->server->api->handle("entity.motion", $this);
 				}
 			}elseif($this->class === ENTITY_PLAYER){
-				if($support === false and $this->player->gamemode !== CREATIVE){
+				if($support === false and ($this->player->gamemode & 0x01) === 0x00){
 					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
@@ -375,7 +375,7 @@ class Entity extends stdClass{
 			
 			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();
-				if($this->speed <= 5 or ($this->speed <= 12 and $this->gamemode === CREATIVE)){
+				if($this->speed <= 5 or ($this->speed <= 12 and ($player->gamemode & 0x01) === 0x01)){
 					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 				}
 			}
@@ -634,7 +634,7 @@ class Entity extends stdClass{
 		if($health < $this->health){
 			$harm = true;
 			$dmg = $this->health - $health;
-			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and ($this->player->gamemode === SURVIVAL or $this->player->gamemode === ADVENTURE or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
+			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter[0] = microtime(true) + 0.5;
 				$this->dmgcounter[1] = $dmg;
 			}else{

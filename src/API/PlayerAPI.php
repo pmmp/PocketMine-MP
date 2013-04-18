@@ -132,7 +132,12 @@ class PlayerAPI{
 					"c" => CREATIVE,
 					"2" => ADVENTURE,
 					"adventure" => ADVENTURE,
-					"a" => ADVENTURE,					
+					"a" => ADVENTURE,
+					"3" => VIEW,
+					"view" => VIEW,
+					"viewer" => VIEW,
+					"spectator" => VIEW,
+					"v" => VIEW,
 				);
 				if($issuer instanceof Player){
 					$player = $issuer;
@@ -328,7 +333,7 @@ class PlayerAPI{
 			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
 			$data->save();
 		}
-		if($this->server->gamemode === CREATIVE){
+		if(($this->server->gamemode & 0x01) === 0x01){
 			$data->set("health", 20);
 		}
 		$this->server->handle("player.offline.get", $data);

@@ -344,7 +344,7 @@ class WorldGenerator{
 		$level = array(
 			"LevelName" => $name,
 			"Time" => 0,
-			"Gamemode" => 1,
+			"Gamemode" => CREATIVE,
 			"RandomSeed" => $this->seed,
 			"Generator" => $this->genName,
 			"SpawnX" => $s[0],

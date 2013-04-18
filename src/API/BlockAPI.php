@@ -256,7 +256,7 @@ class BlockAPI{
 				}
 
 				if($player instanceof Player){
-					if($player->gamemode === CREATIVE){
+					if(($player->gamemode & 0x01) === 0x01){
 						$output .= "Player is in creative mode.\n";
 						break;
 					}
@@ -283,6 +283,9 @@ class BlockAPI{
 			"block" => $block->getID(),
 			"meta" => $block->getMetadata()		
 		));
+		if($player->itemEnforcement === true){
+			$player->sendInventory();
+		}
 		return false;
 	}
 
@@ -295,7 +298,7 @@ class BlockAPI{
 			return $this->cancelAction($target, $player);
 		}
 		
-		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or $player->gamemode === ADVENTURE or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
+		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
 			return $this->cancelAction($target, $player);
 		}
 		
@@ -309,7 +312,7 @@ class BlockAPI{
 		}
 		
 		
-		if($player->gamemode !== CREATIVE and count($drops) > 0){
+		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
 				$this->drop($target, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
 			}
@@ -366,7 +369,7 @@ class BlockAPI{
 			}
 		}
 		
-		if($player->gamemode === ADVENTURE){ //Adventure mode!!
+		if(($player->gamemode & 0x02) === 0x02){ //Adventure mode!!
 			return $this->cancelAction($block, $player);
 		}
 
@@ -402,7 +405,7 @@ class BlockAPI{
 			$t->data["creator"] = $player->username;
 		}
 
-		if($player->gamemode !== CREATIVE){
+		if(($player->gamemode & 0x01) === 0x00){
 			$player->removeItem($item->getID(), $item->getMetadata(), 1);
 		}
 

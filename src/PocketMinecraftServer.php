@@ -291,6 +291,8 @@ class PocketMinecraftServer{
 				return "creative";
 			case ADVENTURE:
 				return "adventure";
+			case VIEW:
+				return "view";
 		}
 	}
 
@@ -515,7 +517,7 @@ class PocketMinecraftServer{
 						$data[0],
 						$this->serverID,
 						RAKNET_MAGIC,
-						$this->serverType. $this->name . " [".($this->gamemode === CREATIVE ? "C":($this->gamemode === ADVENTURE ? "A":"S")).($this->whitelist !== false ? "W":"")." ".count($this->clients)."/".$this->maxClients."] ".$txt,
+						$this->serverType. $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt,
 					), false, $packet["ip"], $packet["port"]);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;

@@ -29,3 +29,4 @@ the Free Software Foundation, either version 3 of the License, or
 define("SURVIVAL", 0);
 define("CREATIVE", 1);
 define("ADVENTURE", 2);
+define("VIEW", 3);
