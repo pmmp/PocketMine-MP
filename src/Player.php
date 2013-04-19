@@ -55,8 +55,8 @@ class Player{
 	public $loggedIn = false;
 	public $gamemode;
 	public $lastBreak;
-	private $windowCnt = 0;
-	private $windows = array();
+	public $windowCnt = 0;
+	public $windows = array();
 	public $blocked = true;
 	private $chunksLoaded = array();
 	private $chunksOrder = array();
