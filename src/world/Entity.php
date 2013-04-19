@@ -634,6 +634,38 @@ class Entity extends stdClass{
 		if($health < $this->health){
 			$harm = true;
 			$dmg = $this->health - $health;
+			if($this->class === ENTITY_PLAYER and ($this->player instanceof Player)){
+				$points = 0;
+				$values = array(
+					LEATHER_CAP => 1,
+					LEATHER_TUNIC => 3,
+					LEATHER_PANTS => 2,
+					LEATHER_BOOTS => 1,
+					CHAIN_HELMET => 1,
+					CHAIN_CHESTPLATE => 5,
+					CHAIN_LEGGINS => 4,
+					CHAIN_BOOTS => 1,
+					GOLD_HELMET => 1,
+					GOLD_CHESTPLATE => 5,
+					GOLD_LEGGINS => 3,
+					GOLD_BOOTS => 1,
+					IRON_HELMET => 2,
+					IRON_CHESTPLATE => 6,
+					IRON_LEGGINS => 5,
+					IRON_BOOTS => 2,
+					DIAMOND_HELMET => 3,
+					DIAMOND_CHESTPLATE => 8,
+					DIAMOND_LEGGINS => 6,
+					DIAMOND_BOOTS => 3,
+				);
+				foreach($this->player->armor as $part){
+					if(isset($values[$part[0]])){
+						$points += $values[$part[0]];
+					}
+				}
+				$dmg = (int) ($dmg - ($dmg * $points * 0.04));
+				$health = $this->health - $dmg;
+			}
 			if(($this->class !== ENTITY_PLAYER or (($this->player instanceof Player) and (($this->player->gamemode & 0x01) === 0x00 or $force === true))) and ($this->dmgcounter[0] < microtime(true) or $this->dmgcounter[1] < $dmg) and !$this->dead){
 				$this->dmgcounter[0] = microtime(true) + 0.5;
 				$this->dmgcounter[1] = $dmg;
