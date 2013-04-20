@@ -34,6 +34,8 @@ class ChatAPI{
 	public function init(){
 		$this->server->api->console->register("tell", "<player> <private message ...>", array($this, "commandHandler"));
 		$this->server->api->console->register("me", "<action ...>", array($this, "commandHandler"));
+		$this->server->api->console->register("coordinates", "", array($this, "commandHandler"));
+		$this->server->api->ban->cmdWhitelist("coordinates");
 		$this->server->api->ban->cmdWhitelist("tell");
 		$this->server->api->ban->cmdWhitelist("me");
 	}
@@ -41,6 +43,22 @@ class ChatAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "coordinates":
+				if(!($issuer instanceof Player))
+				{//Console with player not specified
+					$output .= "[ERROR] Console cannot get his own position";//Print Error
+				}
+				else if($issuer instanceof Player)
+				{
+					$sender = $issuer->username;//Issued by player
+					$msg = "Your location is x=".$issuer->entity->x." y=".$issuer->entity->y." z=".$issuer->entity->z;
+					$this->sendTo(false, $msg, $sender);
+				}
+				else 
+				{
+					$output .= "[ERROR] Command: Coordiates. Unknown sender.";
+				}
+				break;
 			case "me":
 				if(!($issuer instanceof Player)){
 					$sender = "Console";
