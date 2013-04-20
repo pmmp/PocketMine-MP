@@ -146,7 +146,7 @@ class PlayerAPI{
 					$player = $this->server->api->player->get($params[1]);
 				}
 				if(!($player instanceof Player) or !isset($gms[strtolower($params[0])])){
-					$output .= "Usage: /$cmd <survival | creative | adventure> [player]\n";
+					$output .= "Usage: /$cmd <mode> [player]\n";
 					break;
 				}
 				if($player->setGamemode($gms[strtolower($params[0])])){
