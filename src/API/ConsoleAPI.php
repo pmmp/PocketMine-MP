@@ -46,6 +46,7 @@ class ConsoleAPI{
 		$this->register("say", "<message ...>", array($this, "defaultCommands"));
 		$this->register("save-all", "", array($this, "defaultCommands"));
 		$this->register("stop", "", array($this, "defaultCommands"));
+		$this->register("defaultgamemode", "<CREATIVE|SURVIVAL|ADVENTURE|VIEW>", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
 	}
 
@@ -59,6 +60,30 @@ class ConsoleAPI{
 	public function defaultCommands($cmd, $params, $issuer, $alias){
 			$output = "";
 				switch($cmd){
+					case "defaultgamemode":
+						$p = strtolower(array_shift($params));
+						switch($p){
+							case "creative":
+								$output .= "Default Gamemode is now Creative\n";
+								$this->server->gamemode = CREATIVE;
+								break;
+							case "survival":
+								$output .= "Default Gamemode is now Survival\n";
+								$this->server->gamemode = SURVIVAL;
+								break;
+							case "adventure":
+								$output .= "Default Gamemode is now Adventure\n";
+								$this->server->gamemode = ADVENTURE;
+								break;
+							case "view":
+								$output .= "Default Gamemode is now View\n";
+								$this->server->gamemode = VIEW;
+								break;
+							default:
+								$output .= "Usage: /defaultgamemode <CREATIVE|SURVIVAL|ADVENTURE|VIEW>\n";
+								break;
+							}
+							break;
 					case "invisible":
 						$p = strtolower(array_shift($params));
 						switch($p){
