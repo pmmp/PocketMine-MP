@@ -106,7 +106,9 @@ class Config{
 				if(!is_array($this->config)){
 					$this->config = $default;
 				}
-				$this->fillDefaults($default, $this->config);
+				if($this->fillDefaults($default, $this->config) > 0){
+					$this->save();
+				}
 			}else{
 				return false;
 			}
@@ -169,16 +171,19 @@ class Config{
 	}
 	
 	private function fillDefaults($default, &$data){
+		$changed = 0;
 		foreach($default as $k => $v){
 			if(is_array($v)){
 				if(!isset($data[$k]) or !is_array($data[$k])){
 					$data[$k] = array();
 				}
-				$this->fillDefaults($v, $data[$k]);
+				$changed += $this->fillDefaults($v, $data[$k]);
 			}elseif(!isset($data[$k])){
 				$data[$k] = $v;
+				++$changed;
 			}
 		}
+		return $changed;
 	}
 
 	private function parseList($content){
@@ -205,7 +210,7 @@ class Config{
 	}
 	
 	private function parseProperties($content){
-		if(preg_match_all('/([a-zA-Z0-9\-_]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
+		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
 				switch(strtolower($v)){
