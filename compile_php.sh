@@ -6,7 +6,7 @@ ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.7"
 PTHREADS_VERSION="53eb5d9ee6ec9c00ffa698681ecd132edeb5b8b2"
-CURL_VERSION="curl-7_29_0"
+CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - by @shoghicp v$COMPILER_VERSION"
 DIR="$(pwd)"
