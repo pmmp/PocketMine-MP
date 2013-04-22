@@ -205,15 +205,14 @@ class PlayerAPI{
 				}
 				break;
 			case "list":
+				$output .= "There are ".count($this->server->clients)."/".$this->server->maxClients." players online:\n";
 				if(count($this->server->clients) == 0){
-					$output .= "No online players.\n";
 					break;
 				}
-				$output .= "Online players: ";
 				foreach($this->server->clients as $c){
 					$output .= $c->username.", ";
 				}
-				$output = substr($output, 0, -2);
+				$output = substr($output, 0, -2)."\n";
 				break;
 		}
 		return $output;
