@@ -894,7 +894,7 @@ class Player{
 							if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 								$this->lastMovement = $data["counter"];
 								$speed = $this->entity->getSpeed();
-								if($this->blocked === true or ($speed > 5 and ($this->gamemode & 0x01) === 0x00) or $speed > 13 or $this->server->api->handle("player.move", $this->entity) === false){
+								if($this->blocked === true or ($speed > 6 and ($this->gamemode & 0x01) === 0x00) or $speed > 15 or $this->server->api->handle("player.move", $this->entity) === false){
 									if($this->lastCorrect instanceof Vector3){
 										$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 									}
