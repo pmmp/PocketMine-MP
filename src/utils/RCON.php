@@ -30,7 +30,7 @@ the Free Software Foundation, either version 3 of the License, or
 class RCON{
 	private $socket, $password, $workers, $threads;
 	
-	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 4, $clientsPerThread = 5){
+	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 4, $clientsPerThread = 25){
 		$this->workers = array();
 		$this->password = (string) $password;
 		console("[INFO] Starting remote control listener");
