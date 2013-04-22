@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class ServerAPI{
-	var $restart = false;
+	public $restart = false;
 	private static $serverRequest = false;
 	private $asyncCalls = array();
 	private $server;

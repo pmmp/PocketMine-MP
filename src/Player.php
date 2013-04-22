@@ -150,7 +150,7 @@ class Player{
 			));
 		}
 		
-		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= ".$x." AND x < ".($x + 16)." AND z >= ".$z." AND z < ".($z + 16)." AND y >= ".$y." AND y < ".($y + 16).";");
+		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
 				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
