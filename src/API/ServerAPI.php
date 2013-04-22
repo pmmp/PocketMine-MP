@@ -34,6 +34,7 @@ class ServerAPI{
 	private $apiList = array();
 	private $asyncCnt = 0;
 	private $rcon;
+	private $query;
 	
 	public static function request(){
 		return self::$serverRequest;
@@ -91,7 +92,7 @@ class ServerAPI{
 
 		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
-			"server-name" => "Minecraft Server",
+			"server-name" => "Minecraft PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @username to this server!",
 			"server-invisible" => false,
@@ -114,6 +115,7 @@ class ServerAPI{
 			"generator-settings" => "",
 			"level-name" => false,
 			"server-id" => false,
+			"enable-query" => false,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"rcon.port" => 19132,
@@ -347,6 +349,9 @@ class ServerAPI{
 
 		if($this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", 19132));
+		}
+		if($this->getProperty("enable-query") === true){
+			$this->query = new Query();
 		}
 
 		$this->server->init();
