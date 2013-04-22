@@ -33,6 +33,7 @@ class ServerAPI{
 	private $config;
 	private $apiList = array();
 	private $asyncCnt = 0;
+	private $rcon;
 	
 	public static function request(){
 		return self::$serverRequest;
@@ -113,6 +114,9 @@ class ServerAPI{
 			"generator-settings" => "",
 			"level-name" => false,
 			"server-id" => false,
+			"enable-rcon" => false,
+			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
+			"rcon.port" => 19132,
 			"upnp-forwarding" => false,
 			"send-usage" => true,
 		));
@@ -340,8 +344,17 @@ class ServerAPI{
 			$this->server->schedule(6000, array($this, "sendUsage")); //Send the info after 5 minutes have passed
 			$this->sendUsage();
 		}
+
+		if($this->getProperty("enable-rcon") === true){
+			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", 19132));
+		}
+
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
+		$this->console->__destruct();
+		if($this->rcon instanceof RCON){
+			$this->rcon->stop();
+		}
 		$this->__destruct();
 		if($this->getProperty("upnp-forwarding") === true ){
 			console("[INFO] [UPnP] Removing port forward...");

@@ -37,8 +37,7 @@ class ConsoleAPI{
 
 	public function init(){
 		$this->event = $this->server->event("server.tick", array($this, "handle"));
-		$this->loop = new ConsoleLoop;
-		$this->loop->start();
+		$this->loop = new ConsoleLoop();
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1>", array($this, "defaultCommands"));
@@ -53,6 +52,7 @@ class ConsoleAPI{
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
 		$this->loop->stop = true;
+		@fclose(STDIN);
 		$this->loop->notify();
 		$this->loop->join();
 	}
@@ -227,11 +227,6 @@ class ConsoleAPI{
 			}
 			if($output != "" and ($issuer instanceof Player)){
 				$issuer->sendChat(trim($output));
-			}elseif($output != "" and $issuer === "console"){
-				$mes = explode("\n", trim($output));
-				foreach($mes as $m){
-					console("[CMD] ".$m);	
-				}
 			}
 			return $output;
 		}
@@ -241,7 +236,13 @@ class ConsoleAPI{
 		if($this->loop->line !== false){
 			$line = trim($this->loop->line);
 			$this->loop->line = false;
-			$this->run($line, "console");
+			$output = $this->run($line, "console");
+			if($output != ""){
+				$mes = explode("\n", trim($output));
+				foreach($mes as $m){
+					console("[CMD] ".$m);	
+				}
+			}
 		}else{
 			$this->loop->notify();
 		}
@@ -255,6 +256,7 @@ class ConsoleLoop extends Thread{
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
+		$this->start();
 	}
 	
 	public function run(){
@@ -264,6 +266,7 @@ class ConsoleLoop extends Thread{
 			$this->wait();
 			$this->line = false;
 		}
+		@fclose($fp);
 		exit(0);
 	}
 }
