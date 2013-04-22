@@ -25,7 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
+/*
+Implementation of the UT3 Query Protocol (GameSpot)
+Source: http://wiki.unrealadmin.org/UT3_query_protocol
+*/
 
 class Query{
 	private $socket, $workers, $threads, $server, $token, $longData, $timeout;

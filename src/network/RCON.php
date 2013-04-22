@@ -25,7 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
+/*
+Implementation of the Source RCON Protocol to allow remote console commands
+Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
+*/
 
 class RCON{
 	private $socket, $password, $workers, $threads;
