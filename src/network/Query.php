@@ -69,7 +69,7 @@ class Query{
 			"numplayers" => count($this->server->clients),
 			"maxplayers" => $this->server->maxClients,
 			"hostport" => $this->server->api->getProperty("server-port"),
-			"hostip" => $this->server->api->getProperty("server-ip")
+			//"hostip" => $this->server->api->getProperty("server-ip")
 		);
 		foreach($KVdata as $key => $value){
 			$str .= $key."\x00".$value."\x00";
