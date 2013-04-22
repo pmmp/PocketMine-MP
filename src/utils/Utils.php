@@ -155,11 +155,13 @@ class Utils{
 		return Utils::writeShort($item->getID()).chr($item->count).Utils::writeShort($item->getMetadata());
 	}
 	
-	public static function readSlot($str){
+	public static function readSlot($ob){
+		$id = Utils::readShort($ob->get(2));
+		$cnt = ord($ob->get(1));
 		return BlockAPI::getItem(
-			Utils::readShort(substr($str, 0, 2), false),
-			Utils::readShort(substr($str, 3, 2), false),
-			ord($str{2})
+			$id,
+			Utils::readShort($ob->get(2)),
+			$cnt
 		);
 	}
 

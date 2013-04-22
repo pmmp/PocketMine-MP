@@ -32,7 +32,7 @@ class CustomPacketHandler{
 	public $data;
 	public $name = "";
 
-	private function get($len = true, $check = true){
+	public function get($len = true, $check = true){
 		if($len === true){
 			$data = substr($this->raw, $this->offset);
 			if($check === true){
@@ -600,14 +600,14 @@ class CustomPacketHandler{
 					$this->data["count"] = Utils::readShort($this->get(2), false);
 					$this->data["slots"] = array();
 					for($s = 0; $s < $this->data["count"]; ++$s){
-						$this->data["slots"][$s] = Utils::readSlot($this->get(5));
+						$this->data["slots"][$s] = Utils::readSlot($this);
 					}
 					if($this->data["windowid"] === 1){ //Armor is also sent
 						$this->data["armor"] = array(
-							Utils::readSlot($this->get(5)),
-							Utils::readSlot($this->get(5)),
-							Utils::readSlot($this->get(5)),
-							Utils::readSlot($this->get(5))
+							Utils::readSlot($this),
+							Utils::readSlot($this),
+							Utils::readSlot($this),
+							Utils::readSlot($this)
 						);
 					}
 				}else{
@@ -681,7 +681,7 @@ class CustomPacketHandler{
 					$this->data["count"] = Utils::readShort($this->get(2), false);
 					$this->data["slots"] = array();
 					for($s = 0; $s < $this->data["count"]; ++$s){
-						$this->data["slots"][$s] = Utils::readSlot($this->get(5));
+						$this->data["slots"][$s] = Utils::readSlot($this);
 					}
 				}else{
 					$this->raw .= chr($this->data["windowid"]);

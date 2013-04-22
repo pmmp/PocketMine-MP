@@ -963,7 +963,7 @@ class Player{
 									break;
 								}elseif($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
 									break;
-								}elseif($this->handle("player.interact", $data) !== false){
+								}elseif($this->server->handle("player.interact", $data) !== false){
 									switch($this->equipment->getID()){
 										case WOODEN_SWORD:
 										case GOLD_SWORD:
@@ -1223,7 +1223,7 @@ class Player{
 		}*/
 		$inv = array();
 		foreach($this->inventory as $s => $data){
-			if($data[0] > 0 and $data[2] >= 0){
+			if($data[0] > AIR and $data[2] >= 0){
 				$inv[] = BlockAPI::getItem($data[0], $data[1], $data[2]);
 			}else{
 				$inv[] = BlockAPI::getItem(AIR, 0, 0);
