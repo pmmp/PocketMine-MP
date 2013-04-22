@@ -99,7 +99,7 @@ class BanAPI{
 					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
 						return true;
 					}
-				}elseif($data["issuer"] === "console"){
+				}elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
 					return true;
 				}
 				return false;

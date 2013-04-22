@@ -42,7 +42,6 @@ class ConsoleAPI{
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1>", array($this, "defaultCommands"));
 		$this->register("invisible", "<on|off>", array($this, "defaultCommands"));
-		$this->register("say", "<message ...>", array($this, "defaultCommands"));
 		$this->register("save-all", "", array($this, "defaultCommands"));
 		$this->register("stop", "", array($this, "defaultCommands"));
 		$this->register("defaultgamemode", "<mode>", array($this, "defaultCommands"));
@@ -128,20 +127,12 @@ class ConsoleAPI{
 						$this->server->api->setProperty("difficulty", (int) $s);
 						$output .= "Difficulty changed to ".$this->server->difficulty."\n";
 						break;
-					case "say":
-						$s = implode(" ", $params);
-						if(trim($s) == ""){
-							$output .= "Usage: /say <message>\n";
-							break;
-						}
-						$this->server->api->chat->broadcast("[Server] ".$s);
-						break;
 					case "save-all":
 						$this->server->save();
 						break;
 						
 					case "?":
-						if($issuer !== "console"){
+						if($issuer !== "console" and $issuer !== "rcon"){
 							break;
 						}
 					case "help":

@@ -30,7 +30,7 @@ the Free Software Foundation, either version 3 of the License, or
 class RCON{
 	private $socket, $password, $workers, $threads;
 	
-	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 4, $clientsPerThread = 25){
+	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
 		$this->workers = array();
 		$this->password = (string) $password;
 		console("[INFO] Starting remote control listener");
@@ -72,7 +72,7 @@ class RCON{
 					console($this->workers[$n]->response);
 					$this->workers[$n]->notify();
 				}else{
-					$this->workers[$n]->response = ServerAPI::request()->api->console->run($this->workers[$n]->cmd, "console");
+					$this->workers[$n]->response = ServerAPI::request()->api->console->run($this->workers[$n]->cmd, "rcon");
 					$this->workers[$n]->notify();
 				}
 			}
@@ -90,7 +90,7 @@ class RCONInstance extends Thread{
 	private $status;
 	private $maxClients;
 
-	public function __construct($socket, $password, $maxClients = 5){
+	public function __construct($socket, $password, $maxClients = 50){
 		$this->stop = false;
 		$this->cmd = "";
 		$this->response = "";
@@ -100,6 +100,7 @@ class RCONInstance extends Thread{
 		for($n = 0; $n < $this->maxClients; ++$n){
 			$this->{"client".$n} = null;
 			$this->{"status".$n} = 0;
+			$this->{"timeout".$n} = 0;
 		}
 		$this->status = array();
 		$this->start();
@@ -145,6 +146,7 @@ class RCONInstance extends Thread{
 					if($this->{"client".$n} === null){
 						$this->{"client".$n} = $client;
 						$this->{"status".$n} = 0;
+						$this->{"timeout".$n} = microtime(true) + 5;
 						$done = true;
 						break;
 					}
@@ -158,6 +160,10 @@ class RCONInstance extends Thread{
 				$client = &$this->{"client".$n};
 				if($client !== null){
 					if($this->{"status".$n} !== -1 and $this->stop !== true){
+						if($this->{"status".$n} === 0 and $this->{"timeout".$n} < microtime(true)){ //Timeout
+							$this->{"status".$n} = -1;
+							continue;
+						}
 						$p = $this->readPacket($client, $size, $requestID, $packetType, $payload);
 						if($p === false){
 							$this->{"status".$n} = -1;

@@ -34,6 +34,7 @@ class ChatAPI{
 	public function init(){
 		$this->server->api->console->register("tell", "<player> <private message ...>", array($this, "commandHandler"));
 		$this->server->api->console->register("me", "<action ...>", array($this, "commandHandler"));
+		$this->server->api->console->register("say", "<message ...>", array($this, "commandHandler"));
 		$this->server->api->ban->cmdWhitelist("tell");
 		$this->server->api->ban->cmdWhitelist("me");
 	}
@@ -41,9 +42,22 @@ class ChatAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "say":
+				$s = implode(" ", $params);
+				if(trim($s) == ""){
+					$output .= "Usage: /say <message>\n";
+					break;
+				}
+				$sender = ($issuer instanceof Player) ? "Server":ucfirst($issuer);
+				$this->server->api->chat->broadcast("[$sender] ".$s);
+				break;
 			case "me":
 				if(!($issuer instanceof Player)){
-					$sender = "Console";
+					if($issuer === "rcon"){
+						$sender = "Rcon";
+					}else{
+						$sender = "Console";
+					}
 				}else{
 					$sender = $issuer->username;
 				}
@@ -55,7 +69,7 @@ class ChatAPI{
 					break;
 				}
 				if(!($issuer instanceof Player)){
-					$sender = "Console";
+					$sender = ucfirst($issuer);
 				}else{
 					$sender = $issuer->username;
 				}
@@ -65,7 +79,7 @@ class ChatAPI{
 					$target = $target->username;
 				}else{
 					$target = strtolower($n);
-					if($target === "server" or $target === "console"){
+					if($target === "server" or $target === "console" or $target === "rcon"){
 						$target = "Console";
 					}else{
 						$output .= "Usage: /$cmd <player> <message>\n";
@@ -74,7 +88,7 @@ class ChatAPI{
 				}
 				$mes = implode(" ", $params);
 				$output .= "[me -> ".$target."] ".$mes."\n";
-				if($target !== "Console"){
+				if($target !== "Console" and $target !== "Rcon"){
 					$this->sendTo(false, "[".$sender." -> me] ".$mes, $target);
 				}
 				console("[INFO] [".$sender." -> ".$target."] ".$mes);
