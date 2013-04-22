@@ -51,22 +51,16 @@ class TimeAPI{
 						$output .= "Time: ".$this->getDate().", ".$this->getPhase()." (".$this->get(true).")\n";
 						break;
 					case "add":
-						$this->add(array_shift($params));
+						$output .= "Set the time to ".$this->add(array_shift($params))."\n";
 						break;
 					case "set":
-						$this->set(array_shift($params));
+						$output .= "Set the time to ".$this->set(array_shift($params))."\n";
 						break;
 					case "sunrise":
-						$this->sunrise();
-						break;
 					case "day":
-						$this->day();
-						break;
 					case "sunset":
-						$this->sunset();
-						break;
 					case "night":
-						$this->night();
+						$output .= "Set the time to ".$this->set($p)."\n";
 						break;
 					default:
 						$output .= "Usage: /time <check|set|add> [time]\n";
@@ -78,16 +72,16 @@ class TimeAPI{
 	}
 
 	public function night(){
-		$this->set("night");
+		return $this->set("night");
 	}
 	public function day(){
-		$this->set("day");
+		return $this->set("day");
 	}
 	public function sunrise(){
-		$this->set("sunrise");
+		return $this->set("sunrise");
 	}
 	public function sunset(){
-		$this->set("sunset");
+		return $this->set("sunset");
 	}
 
 	public function get($raw = false){
@@ -96,6 +90,7 @@ class TimeAPI{
 
 	public function add($time){
 		$this->server->time += (int) $time;
+		return $this->server->time;
 	}
 
 	public function getDate($time = false){
@@ -123,6 +118,7 @@ class TimeAPI{
 		}else{
 			$this->server->time = (int) $time;
 		}
+		return $this->server->time;
 	}
 
 
