@@ -35,4 +35,5 @@ require_once(FILE_PATH."/src/dependencies.php");
 $server = new ServerAPI();
 $server->start();
 
+kill(getmypid()); //Fix for ConsoleAPI being blocked
 exit(0);

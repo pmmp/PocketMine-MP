@@ -54,7 +54,7 @@ class ConsoleAPI{
 		$this->loop->stop = true;
 		@fclose(STDIN);
 		$this->loop->notify();
-		$this->loop->join();
+		//$this->loop->join();
 	}
 
 	public function defaultCommands($cmd, $params, $issuer, $alias){

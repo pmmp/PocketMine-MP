@@ -36,6 +36,23 @@ if(!function_exists("cli_set_process_title")){
 	}
 }
 
+function kill($pid){
+	switch(Utils::getOS()){
+		case "win":
+			ob_start();
+			passthru("%WINDIR%\\System32\\taskkill.exe /F /PID ".((int) $pid));
+			ob_end_clean();
+			break;
+		case "mac":
+		case "linux":
+		default:
+			ob_start();
+			passthru("kill -9 ".((int) $pid));
+			ob_end_clean();
+	}
+}
+
+
 function require_all($path, &$count = 0){
 	$dir = dir($path."/");
 	$dirs = array();
