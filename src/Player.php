@@ -296,6 +296,12 @@ class Player{
 		return true;
 	}
 	
+	public function getSlot($slot){
+		$slot = $this->inventory[(int) $slot];
+		return BlockAPI::getItem($slot[0], $slot[1], $slot[2]);
+		return true;
+	}
+	
 	public function sendInventorySlot($s){
 		$s = (int) $s;
 		if(!isset($this->inventory[$s]) or $this->itemEnforcement === false){
