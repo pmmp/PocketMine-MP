@@ -40,7 +40,7 @@ class Query{
 		$this->threads = (int) max(1, $threads);
 		$this->clientsPerThread = (int) max(1, $clientsPerThread);
 		$this->server = ServerAPI::request();
-		$addr = $this->server->api->getProperty("server-ip");
+		$addr = $this->server->api->getProperty("server-ip", "0.0.0.0");
 		$port = $this->server->api->getProperty("server-port");
 		console("[INFO] Setting query port to $port");
 		$this->server->addHandler("server.unknownpacket", array($this, "packetHandler"), 50);
@@ -72,7 +72,7 @@ class Query{
 			"numplayers" => count($this->server->clients),
 			"maxplayers" => $this->server->maxClients,
 			"hostport" => $this->server->api->getProperty("server-port"),
-			//"hostip" => $this->server->api->getProperty("server-ip")
+			//"hostip" => $this->server->api->getProperty("server-ip", "0.0.0.0")
 		);
 		foreach($KVdata as $key => $value){
 			$str .= $key."\x00".$value."\x00";
@@ -121,7 +121,7 @@ class Query{
 					}
 					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->longData, true, $packet["ip"], $packet["port"]);				
 				}else{
-					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00SMP\x00".$this->server->mapName."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip")."\x00", true, $packet["ip"], $packet["port"]);
+					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00SMP\x00".$this->server->mapName."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00", true, $packet["ip"], $packet["port"]);
 				}
 				break;
 		}

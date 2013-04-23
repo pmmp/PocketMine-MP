@@ -101,14 +101,13 @@ class ServerAPI{
 			"memory-limit" => "256M",
 			"last-update" => false,
 			"white-list" => false,
-			"debug" => 1,
 			"spawn-protection" => 16,
 			"view-distance" => 7,
 			"max-players" => 20,
 			"allow-flight" => false,
 			"item-enforcement" => false,
 			"server-type" => "normal",
-			"gamemode" => CREATIVE,
+			"gamemode" => SURVIVAL,
 			"pvp" => true,
 			"difficulty" => 1,
 			"generator" => "",
@@ -122,13 +121,13 @@ class ServerAPI{
 			"send-usage" => true,
 		));
 		$this->parseProperties();
-		define("DEBUG", $this->getProperty("debug"));
+		define("DEBUG", $this->getProperty("debug", 1));
 		if($this->getProperty("port") !== false){
 			$this->setProperty("server-port", $this->getProperty("port"));
 			$this->config->remove("port");
 			$this->config->remove("invisible");
 		}
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("server-port"), $this->getProperty("server-id"), $this->getProperty("server-ip"));
+		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("server-port"), $this->getProperty("server-id"), $this->getProperty("server-ip", "0.0.0.0"));
 		self::$serverRequest = $this->server;
 		if($this->getProperty("server-id") != $this->server->serverID){
 			$this->setProperty("server-id", $this->server->serverID);
@@ -212,7 +211,7 @@ class ServerAPI{
 			$this->gen->generate();
 			$this->gen->save($this->server->mapDir, $this->server->mapName);
 			$this->setProperty("level-name", $this->server->mapName);
-			$this->setProperty("gamemode", CREATIVE);
+			$this->setProperty("gamemode", SURVIVAL);
 		}
 		$this->loadProperties();
 		$this->server->loadMap();
@@ -347,7 +346,7 @@ class ServerAPI{
 		}
 
 		if($this->getProperty("enable-rcon") === true){
-			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("server-port"));
+			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("server-port"), $this->getProperty("server-ip", "0.0.0.0"));
 		}
 		if($this->getProperty("enable-query") === true){
 			$this->query = new Query();
@@ -449,7 +448,7 @@ class ServerAPI{
 		return $this->config->getAll();
 	}
 
-	public function getProperty($name){
+	public function getProperty($name, $default = false){
 		if(($v = arg($name)) !== false){ //Allow for command-line arguments
 			switch(strtolower(trim($v))){
 				case "on":
@@ -487,7 +486,7 @@ class ServerAPI{
 			}
 			return $v;
 		}
-		return $this->config->get($name);
+		return ($this->config->exists($name) ? $this->config->get($name):$default);
 	}
 
 	public function setProperty($name, $value){

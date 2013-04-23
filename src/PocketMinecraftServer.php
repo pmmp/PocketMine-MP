@@ -71,12 +71,12 @@ class PocketMinecraftServer{
 		$this->timePerSecond = 20;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
-		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false);
+		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false, $this->serverip);
 		$this->reloadConfig();
 		$this->stop = false;
 	}
 
-	function __construct($name, $gamemode = CREATIVE, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
+	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
 		$this->port = (int) $port; //19132 - 19135
 		$this->doTick = true;
 		$this->gamemode = (int) $gamemode;
