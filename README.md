@@ -35,7 +35,7 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4)
 
 
-## Third-party Libraries Used
+## Third-party Libraries/Protocols Used
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
 * __[PHP SQLite3](http://php.net/manual/en/book.sqlite3.php)__
 * __[PHP BCMath](http://php.net/manual/en/book.bc.php)__
@@ -45,3 +45,5 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * __[ANSICON](https://github.com/adoxa/ansicon)__ by _[Jason Hood](https://github.com/adoxa)_: Process ANSI escape sequences for Windows console programs.
 * __[cURL](http://curl.haxx.se/)__: cURL is a command line tool for transferring data with URL syntax
 * __[Zlib](http://www.zlib.net/)__: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
+* __[Source RCON Protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol)__
+* __[UT3 Query Protocol](http://wiki.unrealadmin.org/UT3_query_protocol)__
