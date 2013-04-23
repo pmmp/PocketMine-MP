@@ -118,7 +118,6 @@ class ServerAPI{
 			"enable-query" => false,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
-			"rcon.port" => 19132,
 			"upnp-forwarding" => false,
 			"send-usage" => true,
 		));
@@ -348,7 +347,7 @@ class ServerAPI{
 		}
 
 		if($this->getProperty("enable-rcon") === true){
-			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", 19132));
+			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("server-port"));
 		}
 		if($this->getProperty("enable-query") === true){
 			$this->query = new Query();
