@@ -53,9 +53,9 @@ class Container{
 			$w = true;
 		}
 		if($this->blacklist !== false){
-			$b = true;
+			$b = false;
 			if(in_array($target, $this->blacklist, true)){
-				$b = false;
+				$b = true;
 			}
 		}else{
 			$b = false;

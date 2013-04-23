@@ -31,7 +31,7 @@ Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
 */
 
 class RCON{
-	private $socket, $password, $workers, $threads;
+	private $socket, $password, $workers, $threads, $clientsPerThread;
 	
 	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
 		$this->workers = array();
@@ -90,7 +90,6 @@ class RCONInstance extends Thread{
 	public $response;
 	private $socket;
 	private $password;
-	private $status;
 	private $maxClients;
 
 	public function __construct($socket, $password, $maxClients = 50){
@@ -105,7 +104,6 @@ class RCONInstance extends Thread{
 			$this->{"status".$n} = 0;
 			$this->{"timeout".$n} = 0;
 		}
-		$this->status = array();
 		$this->start();
 	}
 	

@@ -115,7 +115,7 @@ class ChatAPI{
 			}
 		}
 		$message .= $text;
-		if($whitelist === false and $blacklist === false){
+		if($whitelist === false){
 			console("[INFO] ".$message);
 		}
 		$this->server->handle("server.chat", new Container($message, $whitelist, $blacklist));
