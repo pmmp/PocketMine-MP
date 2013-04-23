@@ -187,7 +187,7 @@ class Entity extends stdClass{
 				return false;
 			}
 			if(($time - $this->spawntime) >= 2){
-				$player = $this->server->query("SELECT EID FROM entities WHERE class == ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
+				$player = $this->server->query("SELECT EID FROM entities WHERE class = ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 				$player = $this->server->api->entity->get($player["EID"]);
 				if($player instanceof Entity){
 					$player = $player->player;
