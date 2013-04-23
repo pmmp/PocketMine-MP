@@ -202,9 +202,9 @@ class ConsoleAPI{
 				return;
 			}
 			if($issuer instanceof Player){
-				console("[INFO] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params));
+				console("[DEBUG] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params), true, true, 2);
 			}else{
-				console("[INFO] Issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params));
+				console("[DEBUG] \x1b[33m*".$issuer."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params), true, true, 2);
 			}
 			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false
 			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false){

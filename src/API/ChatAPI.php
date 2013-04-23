@@ -56,7 +56,7 @@ class ChatAPI{
 					if($issuer === "rcon"){
 						$sender = "Rcon";
 					}else{
-						$sender = "Console";
+						$sender = ucfirst($issuer);
 					}
 				}else{
 					$sender = $issuer->username;
@@ -79,11 +79,8 @@ class ChatAPI{
 					$target = $target->username;
 				}else{
 					$target = strtolower($n);
-					if($target === "server" or $target === "console" or $target === "rcon"){
+					if($t === "server" or $t === "console" or $t === "rcon"){
 						$target = "Console";
-					}else{
-						$output .= "Usage: /$cmd <player> <message>\n";
-						break;
 					}
 				}
 				$mes = implode(" ", $params);
