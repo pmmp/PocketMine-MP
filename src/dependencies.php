@@ -65,6 +65,11 @@ if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":""
 	++$errors;
 }
 
+if(!extension_loaded("libevent") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "libevent." . PHP_SHLIB_SUFFIX) === false){
+	console("[ERROR] Unable to find the libevent extension.", true, true, 0);
+	++$errors;
+}
+
 if(!extension_loaded("curl") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "curl." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find the cURL extension.", true, true, 0);
 	++$errors;

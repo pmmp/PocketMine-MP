@@ -46,6 +46,6 @@ define("TEST_MD5", "1e0d28177b73dfd09f922502fe767bec");
 define("MAJOR_VERSION", "Alpha_1.3dev");
 define("CURRENT_STRUCTURE", 5);
 define("CURRENT_PROTOCOL", 9);
-define("CURRENT_MINECRAFT_VERSION", "0.6.1");
+define("CURRENT_MINECRAFT_VERSION", "0.6.1 alpha");
 define("CURRENT_API_VERSION", 6);
 define("CURRENT_PHP_VERSION", "5.5");
