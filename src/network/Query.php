@@ -43,6 +43,14 @@ class Query{
 		$addr = $this->server->api->getProperty("server-ip", "0.0.0.0");
 		$port = $this->server->api->getProperty("server-port");
 		console("[INFO] Setting query port to $port");
+		/*
+		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
+		Because the 0xFE packet does not exist in the MCPE protocol,
+		we can identify	Query packets and remove them from the packet queue.
+		
+		Then, the Query class handles itself sending the packets in raw form, because
+		packets can conflict with the MCPE ones.
+		*/
 		$this->server->addHandler("server.unknownpacket", array($this, "packetHandler"), 50);
 		$this->server->schedule(20 * 30, array($this, "regenerateToken"), array(), true);
 		$this->regenerateToken();
