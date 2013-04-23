@@ -31,7 +31,7 @@ Source: http://wiki.unrealadmin.org/UT3_query_protocol
 */
 
 class Query{
-	private $socket, $workers, $threads, $server, $token, $longData, $timeout;
+	private $socket, $workers, $threads, $server, $lastToken, $token, $longData, $timeout;
 	
 	public function __construct(){
 		$this->workers = array();
@@ -46,6 +46,7 @@ class Query{
 		$this->server->addHandler("server.unknownpacket", array($this, "packetHandler"), 50);
 		$this->server->schedule(20 * 30, array($this, "regenerateToken"), array(), true);
 		$this->regenerateToken();
+		$this->lastToken = $this->token;
 		$this->regenerateInfo();
 		console("[INFO] Query running on $addr:$port");
 	}
@@ -89,6 +90,7 @@ class Query{
 	}
 	
 	public function regenerateToken(){
+		$this->lastToken = $this->token;
 		$this->token = Utils::readInt("\x00".Utils::getRandomBytes(3, false));
 	}
 	
@@ -112,7 +114,7 @@ class Query{
 				break;
 			case 0: //Stat
 				$token = Utils::readInt(substr($payload, 0, 4));
-				if($token !== $this->token){
+				if($token !== $this->token and $token !== $this->lastToken){
 					break;
 				}
 				if(strlen($payload) === 8){
