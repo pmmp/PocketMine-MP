@@ -218,17 +218,19 @@ class PlayerAPI{
 		return $output;
 	}
 
-	public function teleport($name, $target){
-		$target = $this->get($target);
-		if(($target instanceof Player) and ($target->entity instanceof Entity)){
-			return $this->tppos($name, $target->entity->x, $target->entity->y, $target->entity->z);
+	public function teleport(&$name, &$target){
+		$player = $this->get($target);
+		if(($player instanceof Player) and ($player->entity instanceof Entity)){
+			$target = $player->username;
+			return $this->tppos($name, $player->entity->x, $player->entity->y, $player->entity->z);
 		}
 		return false;
 	}
 
-	public function tppos($name, $x, $y, $z){
+	public function tppos(&$name, $x, $y, $z){
 		$player = $this->get($name);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
+			$name = $player->username;
 			$player->teleport(new Vector3($x, $y, $z));
 			return true;
 		}
