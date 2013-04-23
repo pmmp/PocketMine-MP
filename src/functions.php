@@ -40,14 +40,14 @@ function kill($pid){
 	switch(Utils::getOS()){
 		case "win":
 			ob_start();
-			passthru("%WINDIR%\\System32\\taskkill.exe /F /PID ".((int) $pid));
+			passthru("%WINDIR%\\System32\\taskkill.exe /F /PID ".((int) $pid)." > NUL");
 			ob_end_clean();
 			break;
 		case "mac":
 		case "linux":
 		default:
 			ob_start();
-			passthru("kill -9 ".((int) $pid));
+			passthru("kill -9 ".((int) $pid)." > /dev/null 2>&1");
 			ob_end_clean();
 	}
 }
