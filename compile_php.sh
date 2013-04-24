@@ -55,24 +55,6 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-#libevent
-echo -n "[libevent] downloading $LIBEVENT_VERSION..."
-wget https://github.com/libevent/libevent/archive/$LIBEVENT_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
-mv libevent-$LIBEVENT_VERSION libevent
-echo -n " checking..."
-cd libevent
-./autogen.sh >> "$DIR/install.log" 2>&1
-./configure --prefix="$DIR/install_data/php/ext/libevent" \
---disable-shared >> "$DIR/install.log" 2>&1
-echo -n " compiling..."
-make >> "$DIR/install.log" 2>&1
-echo -n " installing..."
-make install >> "$DIR/install.log" 2>&1
-echo -n " cleaning..."
-cd ..
-rm -r -f ./libevent
-echo " done!"
-
 #curl
 echo -n "[cURL] downloading $CURL_VERSION..."
 wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
@@ -103,6 +85,24 @@ wget http://pecl.php.net/get/libevent-$PHP_LIBEVENT_VERSION.tgz -q -O - | tar -z
 mv libevent-$PHP_LIBEVENT_VERSION "$DIR/install_data/php/ext/libevent"
 echo " done!"
 
+#libevent
+echo -n "[libevent] downloading $LIBEVENT_VERSION..."
+wget https://github.com/libevent/libevent/archive/$LIBEVENT_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+mv libevent-$LIBEVENT_VERSION libevent
+echo -n " checking..."
+cd libevent
+./autogen.sh >> "$DIR/install.log" 2>&1
+./configure --prefix="$DIR/install_data/php/ext/libevent/lib" \
+--disable-shared >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+echo -n " cleaning..."
+cd ..
+rm -r -f ./libevent
+echo " done!"
+
 
 echo -n "[PHP]"
 set +e
@@ -131,7 +131,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-bcmath \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
---with-libevent-dir="$DIR/install_data/php/ext/libevent" \
+--with-libevent="$DIR/install_data/php/ext/libevent/lib" \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
