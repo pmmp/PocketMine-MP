@@ -51,7 +51,6 @@ class ConsoleAPI{
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
 		$this->loop->stop = true;
-		@fclose(STDIN);
 		$this->loop->notify();
 		//$this->loop->join();
 	}

@@ -147,6 +147,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-sockets \
 --enable-shared=no \
 --enable-static=yes \
+--enable-shmop \
 --enable-pcntl \
 --enable-pthreads \
 --enable-maintainer-zts \
