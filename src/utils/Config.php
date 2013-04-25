@@ -69,6 +69,7 @@ class Config{
 		}
 		if(!file_exists($file)){
 			$this->config = $default;
+			$this->save();
 		}else{			
 			if($this->type === CONFIG_DETECT){
 				$extension = explode(".", basename($this->file));
