@@ -40,7 +40,7 @@ class ConsoleAPI{
 		$this->loop = new ConsoleLoop();
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
-		$this->register("difficulty", "<0|1>", array($this, "defaultCommands"));
+		$this->register("difficulty", "<0|1|2>", array($this, "defaultCommands"));
 		$this->register("invisible", "<on|off>", array($this, "defaultCommands"));
 		$this->register("save-all", "", array($this, "defaultCommands"));
 		$this->register("stop", "", array($this, "defaultCommands"));

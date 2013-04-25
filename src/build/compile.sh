@@ -7,8 +7,6 @@ ZEND_VM="GOTO"
 ZLIB_VERSION="1.2.7"
 PTHREADS_VERSION="53eb5d9ee6ec9c00ffa698681ecd132edeb5b8b2"
 CURL_VERSION="curl-7_30_0"
-LIBEVENT_VERSION="release-1.4.14b-stable"
-PHP_LIBEVENT_VERSION="0.0.5"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
 DIR="$(pwd)"
@@ -79,30 +77,6 @@ wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-c
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
-#php-libevent
-echo -n "[PHP libevent] downloading $PHP_LIBEVENT_VERSION..."
-wget http://pecl.php.net/get/libevent-$PHP_LIBEVENT_VERSION.tgz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
-mv libevent-$PHP_LIBEVENT_VERSION "$DIR/install_data/php/ext/libevent"
-echo " done!"
-
-#libevent
-echo -n "[libevent] downloading $LIBEVENT_VERSION..."
-wget https://github.com/libevent/libevent/archive/$LIBEVENT_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
-mv libevent-$LIBEVENT_VERSION libevent
-echo -n " checking..."
-cd libevent
-./autogen.sh >> "$DIR/install.log" 2>&1
-./configure --prefix="$DIR/install_data/php/ext/libevent/lib" \
---disable-shared >> "$DIR/install.log" 2>&1
-echo -n " compiling..."
-make >> "$DIR/install.log" 2>&1
-echo -n " installing..."
-make install >> "$DIR/install.log" 2>&1
-echo -n " cleaning..."
-cd ..
-rm -r -f ./libevent
-echo " done!"
-
 
 echo -n "[PHP]"
 set +e
@@ -131,7 +105,6 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-bcmath \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
---with-libevent="$DIR/install_data/php/ext/libevent/lib" \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
