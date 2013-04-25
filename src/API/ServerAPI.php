@@ -133,11 +133,6 @@ class ServerAPI{
 			$this->setProperty("server-id", $this->server->serverID);
 		}
 		$this->server->api = $this;
-		$gitsha1 = false;
-		if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!
-			$gitsha1 = trim(file_get_contents(FILE_PATH.".git/refs/heads/master"));
-			console("[GIT] Commit \x1b[33m".$gitsha1);
-		}
 		
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
@@ -155,7 +150,7 @@ class ServerAPI{
 					console("[ERROR] PocketMine API error");
 				}else{
 					$last = $info["development"]["date"];
-					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and $gitsha1 != $info["development"]["commit"]){
+					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info["development"]["commit"]){
 						console("[NOTICE] \x1b[33mA new DEVELOPMENT version of PocketMine-MP has been released");
 						console("[NOTICE] \x1b[33mVersion \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
 						console("[NOTICE] \x1b[36mIf you want to update, get the latest version at ".$info["development"]["download"]);

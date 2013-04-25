@@ -453,6 +453,7 @@ class PocketMinecraftServer{
 		$dump .= "\r\n\r\n";
 		$version = new VersionString();
 		$dump .= "PM Version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."]\r\n";
+		$dump .= "Commit: ".GIT_COMMIT."\r\n";
 		$dump .= "uname -a: ".php_uname("a")."\r\n";
 		$dump .= "PHP Version: " .phpversion()."\r\n";
 		$dump .= "Zend version: ".zend_version()."\r\n";

@@ -49,3 +49,9 @@ define("CURRENT_PROTOCOL", 9);
 define("CURRENT_MINECRAFT_VERSION", "0.6.1 alpha");
 define("CURRENT_API_VERSION", 6);
 define("CURRENT_PHP_VERSION", "5.5");
+$gitsha1 = false;
+if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!
+	define(GIT_COMMIT, strtolower(trim(file_get_contents(FILE_PATH.".git/refs/heads/master"))));
+}else{ //Unknown :(
+	define(GIT_COMMIT, str_repeat("00", 20));
+}
