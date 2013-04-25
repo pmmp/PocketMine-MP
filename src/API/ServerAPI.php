@@ -55,40 +55,6 @@ class ServerAPI{
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
 		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION.", LGPL License", true, true, 0);
-		if(!file_exists(DATA_PATH."logs/test.bin.log") or md5_file(DATA_PATH."logs/test.bin.log") !== TEST_MD5){
-			console("[NOTICE] Executing tests...");
-			console("[INFO] OS: ".PHP_OS.", ".Utils::getOS());
-			console("[INFO] uname -a: ".php_uname("a"));
-			console("[INFO] PHP Version: ".phpversion());
-			console("[INFO] Endianness: ".ENDIANNESS);
-			$test = b"";
-			$test .= Utils::writeLong("5567381823242127440");
-			$test .= Utils::writeLong("2338608908624488819");
-			$test .= Utils::writeLong("2333181766244987936");
-			$test .= Utils::writeLong("2334669371112169504");
-			$test .= Utils::writeShort(Utils::readShort("\xff\xff\xff\xff"));
-			$test .= Utils::writeShort(Utils::readShort("\xef\xff\xff\xff"));
-			$test .= Utils::writeInt(Utils::readInt("\xff\xff\xff\xff"));
-			$test .= Utils::writeInt(1);
-			$test .= Utils::writeInt(-1);
-			$test .= Utils::writeFloat(Utils::readFloat("\xff\xff\xff\xff"));
-			$test .= Utils::writeFloat(-1.584563155838E+29);
-			$test .= Utils::writeFloat(1);
-			$test .= Utils::writeLDouble(Utils::readLDouble("\xff\xff\xff\xff\xff\xff\xff\xff"));
-			$test .= Utils::writeLong("-1152921504606846977");
-			$test .= Utils::writeLong("-1152921504606846976");
-			$str = new Java_String("TESTING\x00\n\r\t\xff");
-			$test .= Utils::writeInt($str->hashCode());
-			$test .= Utils::writeDataArray(array("a", "b", "c", "\xff\xff\xff\xff"));
-			$test .= Utils::hexToStr("012334567890");
-			file_put_contents(DATA_PATH."logs/test.bin.log", $test);
-			$md5 = md5($test);
-			console("[INFO] MD5 of test: ".$md5);
-			if($md5 !== TEST_MD5){
-				console("[ERROR] Test error, please send your console.log + test.bin.log to the Github repo");
-				die();
-			}
-		}
 
 		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
