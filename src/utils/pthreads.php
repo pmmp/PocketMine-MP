@@ -25,6 +25,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+class StackableArray{
+	public $counter = 0;
+	public function run(){}
+}
+
 class Async extends Thread {
 	public function __construct($method, $params = array()){
 		$this->method = $method;

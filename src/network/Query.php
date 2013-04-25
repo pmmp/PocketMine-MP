@@ -31,14 +31,11 @@ Source: http://wiki.unrealadmin.org/UT3_query_protocol
 */
 
 class Query{
-	private $socket, $workers, $threads, $server, $lastToken, $token, $longData, $timeout;
+	private $socket, $server, $lastToken, $token, $longData, $timeout;
 	
 	public function __construct(){
-		$this->workers = array();
 		$this->password = (string) $password;
 		console("[INFO] Starting GS4 status listener");
-		$this->threads = (int) max(1, $threads);
-		$this->clientsPerThread = (int) max(1, $clientsPerThread);
 		$this->server = ServerAPI::request();
 		$addr = $this->server->api->getProperty("server-ip", "0.0.0.0");
 		$port = $this->server->api->getProperty("server-port");
