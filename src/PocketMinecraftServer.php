@@ -463,7 +463,12 @@ class PocketMinecraftServer{
 		$dump .= "Parameters: ".var_export($arguments, true)."\r\n\r\n\r\n";
 		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
 		if($this->api->plugin instanceof PluginAPI){
-			$dump .= "Loaded plugins: ".var_export($this->api->plugin->getList(), true)."\r\n\r\n\r\n";
+			$plist = $this->api->plugin->getList();
+			$dump .= "Loaded plugins:\r\n";
+			foreach($plist as $p){
+				$dump .= $p["name"]." ".$p["version"]." by ".$p["author"]."\r\n";
+			}
+			$dump .= "\r\n\r\n";
 		}
 		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n";
 		$name = "error_dump_".time();
