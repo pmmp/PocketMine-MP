@@ -134,8 +134,6 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
---enable-embedded-mysqli \
---enable-bcmath \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
 --with-event-core="$DIR/install_data/php/ext/event" \
@@ -149,13 +147,12 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --disable-simplexml \
 --disable-xmlreader \
 --disable-xmlwriter \
---without-pear \
 --disable-cgi \
 --disable-session \
---enable-ctype \
---without-iconv \
---without-pdo-sqlite \
+--disable-zip \
+--disable-debug \
 --disable-phar \
+--enable-ctype \
 --enable-sockets \
 --enable-shared=no \
 --enable-static=yes \
@@ -164,9 +161,13 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
---disable-debug \
---with-zend-vm=$ZEND_VM \
---enable-cli >> "$DIR/install.log" 2>&1
+--enable-embedded-mysqli \
+--enable-bcmath \
+--enable-cli \
+--without-pear \
+--without-iconv \
+--without-pdo-sqlite \
+--with-zend-vm=$ZEND_VM >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make >> "$DIR/install.log" 2>&1
 echo -n " installing..."
