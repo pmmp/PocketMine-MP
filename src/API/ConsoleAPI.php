@@ -262,24 +262,28 @@ class ConsoleLoop extends Thread{
 		$line = trim(fgets($fp));
 		if($line != ""){
 			$this->line = $line;
-			$this->wait();
-			$this->line = false;
 		}
 	}
 	
 	public function run(){
+		$fp = fopen("php://stdin", "r");
 		if(HAS_EVENT){
 			$this->base = new EventBase();
-			$this->ev = new Event($this->base, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
+			$this->ev = new Event($this->base, $fp, Event::READ | Event::PERSIST, array($this, "readLine"));
 			$this->ev->add();
-			$this->base->loop();
-		}else{
-			$fp = fopen("php://stdin", "r");
+			while($this->stop === false){
+				$this->base->loop(EventBase::LOOP_ONCE);
+				if($this->line !== false){
+					$this->wait();
+					$this->line = false;
+				}
+			}
+		}else{			
 			while($this->stop === false){
 				$this->readLine($fp);
 			}
-			@fclose($fp);
 		}
+		@fclose($fp);
 		exit(0);
 	}
 }
