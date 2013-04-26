@@ -37,10 +37,9 @@ class ConsoleAPI{
 
 	public function init(){
 		if(HAS_EVENT){
-			$this->event = new EventBase();
-			$event = new Event($this->event, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
+			$this->loop = new EventBase();
+			$event = new Event($this->loop, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
 			$event->add();
-			$this->event->loop(EventBase::LOOP_NONBLOCK);
 		}else{
 			$this->event = $this->server->event("server.tick", array($this, "handle"));
 			$this->loop = new ConsoleLoop();
@@ -70,6 +69,7 @@ class ConsoleAPI{
 
 	function __destruct(){
 		if(HAS_EVENT){
+			$this->server->deleteEvent($this->event);
 			$this->loop->stop();
 		}else{
 			$this->server->deleteEvent($this->event);
@@ -247,18 +247,22 @@ class ConsoleAPI{
 	}
 
 	public function handle($time){
-		if($this->loop->line !== false){
-			$line = trim($this->loop->line);
-			$this->loop->line = false;
-			$output = $this->run($line, "console");
-			if($output != ""){
-				$mes = explode("\n", trim($output));
-				foreach($mes as $m){
-					console("[CMD] ".$m);	
-				}
-			}
+		if(HAS_EVENT){
+			$this->loop->loop(EventBase::LOOP_NONBLOCK);
 		}else{
-			$this->loop->notify();
+			if($this->loop->line !== false){
+				$line = trim($this->loop->line);
+				$this->loop->line = false;
+				$output = $this->run($line, "console");
+				if($output != ""){
+					$mes = explode("\n", trim($output));
+					foreach($mes as $m){
+						console("[CMD] ".$m);	
+					}
+				}
+			}else{
+				$this->loop->notify();
+			}
 		}
 	}
 
