@@ -36,8 +36,15 @@ class ConsoleAPI{
 	}
 
 	public function init(){
-		$this->event = $this->server->event("server.tick", array($this, "handle"));
-		$this->loop = new ConsoleLoop();
+		if(HAS_EVENT){
+			$this->event = new EventBase();
+			$event = new Event($this->event, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
+			$event->add();
+			$this->event->loop();
+		}else{
+			$this->event = $this->server->event("server.tick", array($this, "handle"));
+			$this->loop = new ConsoleLoop();
+		}
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1|2>", array($this, "defaultCommands"));
@@ -47,12 +54,29 @@ class ConsoleAPI{
 		$this->register("defaultgamemode", "<mode>", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
 	}
+	
+	public function readLine($fd, $events){
+		$line = trim(fgets($fd));
+		if($line != ""){
+			$output = $this->run($line, "console");
+			if($output != ""){
+				$mes = explode("\n", trim($output));
+				foreach($mes as $m){
+					console("[CMD] ".$m);	
+				}
+			}
+		}
+	}
 
 	function __destruct(){
-		$this->server->deleteEvent($this->event);
-		$this->loop->stop = true;
-		$this->loop->notify();
-		//$this->loop->join();
+		if(HAS_EVENT){
+			$this->loop->stop();
+		}else{
+			$this->server->deleteEvent($this->event);
+			$this->loop->stop = true;
+			$this->loop->notify();
+			//$this->loop->join();
+		}
 	}
 
 	public function defaultCommands($cmd, $params, $issuer, $alias){
