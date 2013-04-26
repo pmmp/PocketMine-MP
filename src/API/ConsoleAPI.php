@@ -40,7 +40,7 @@ class ConsoleAPI{
 			$this->event = new EventBase();
 			$event = new Event($this->event, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
 			$event->add();
-			$this->event->loop();
+			$this->event->loop(EventBase::LOOP_NONBLOCK);
 		}else{
 			$this->event = $this->server->event("server.tick", array($this, "handle"));
 			$this->loop = new ConsoleLoop();
