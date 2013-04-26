@@ -166,6 +166,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-cli \
 --without-pear \
 --without-iconv \
+--without-pdo \
 --without-pdo-sqlite \
 --with-zend-vm=$ZEND_VM >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
