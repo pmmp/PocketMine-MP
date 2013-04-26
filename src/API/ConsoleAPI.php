@@ -36,14 +36,8 @@ class ConsoleAPI{
 	}
 
 	public function init(){
-		if(HAS_EVENT){
-			$this->loop = new EventBase();
-			$event = new Event($this->loop, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
-			$event->add();
-		}else{
-			$this->event = $this->server->event("server.tick", array($this, "handle"));
-			$this->loop = new ConsoleLoop();
-		}
+		$this->event = $this->server->event("server.tick", array($this, "handle"));
+		$this->loop = new ConsoleLoop();
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1|2>", array($this, "defaultCommands"));
@@ -53,30 +47,12 @@ class ConsoleAPI{
 		$this->register("defaultgamemode", "<mode>", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
 	}
-	
-	public function readLine($fd, $events){
-		$line = trim(fgets($fd));
-		if($line != ""){
-			$output = $this->run($line, "console");
-			if($output != ""){
-				$mes = explode("\n", trim($output));
-				foreach($mes as $m){
-					console("[CMD] ".$m);	
-				}
-			}
-		}
-	}
 
 	function __destruct(){
-		if(HAS_EVENT){
-			$this->server->deleteEvent($this->event);
-			$this->loop->stop();
-		}else{
-			$this->server->deleteEvent($this->event);
-			$this->loop->stop = true;
-			$this->loop->notify();
-			//$this->loop->join();
-		}
+		$this->server->deleteEvent($this->event);
+		$this->loop->stop();
+		$this->loop->notify();
+		//$this->loop->join();
 	}
 
 	public function defaultCommands($cmd, $params, $issuer, $alias){
@@ -247,22 +223,18 @@ class ConsoleAPI{
 	}
 
 	public function handle($time){
-		if(HAS_EVENT){
-			$this->loop->loop(EventBase::LOOP_NONBLOCK);
-		}else{
-			if($this->loop->line !== false){
-				$line = trim($this->loop->line);
-				$this->loop->line = false;
-				$output = $this->run($line, "console");
-				if($output != ""){
-					$mes = explode("\n", trim($output));
-					foreach($mes as $m){
-						console("[CMD] ".$m);	
-					}
+		if($this->loop->line !== false){
+			$line = trim($this->loop->line);
+			$this->loop->line = false;
+			$output = $this->run($line, "console");
+			if($output != ""){
+				$mes = explode("\n", trim($output));
+				foreach($mes as $m){
+					console("[CMD] ".$m);	
 				}
-			}else{
-				$this->loop->notify();
 			}
+		}else{
+			$this->loop->notify();
 		}
 	}
 
@@ -271,20 +243,43 @@ class ConsoleAPI{
 class ConsoleLoop extends Thread{
 	public $line;
 	public $stop;
+	public $base;
+	public $ev;
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
 		$this->start();
 	}
 	
-	public function run(){
-		$fp = fopen("php://stdin", "r");
-		while($this->stop === false and ($line = fgets($fp)) !== false){
+	public function stop(){
+		$this->stop = true;
+		if(HAS_EVENT){
+			$this->base->stop();
+		}
+	}
+	
+	public function readLine($fp, $events = null){
+		$line = trim(fgets($fp));
+		if($line != ""){
 			$this->line = $line;
 			$this->wait();
 			$this->line = false;
 		}
-		@fclose($fp);
+	}
+	
+	public function run(){
+		if(HAS_EVENT){
+			$this->base = new EventBase();
+			$this->ev = new Event($this->base, STDIN, Event::READ | Event::PERSIST, array($this, "readLine"));
+			$this->ev->add();
+			$this->base->loop();
+		}else{
+			$fp = fopen("php://stdin", "r");
+			while($this->stop === false){
+				$this->readLine($fp);
+			}
+			@fclose($fp);
+		}
 		exit(0);
 	}
 }
