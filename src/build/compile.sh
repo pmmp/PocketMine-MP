@@ -7,6 +7,8 @@ ZEND_VM="GOTO"
 ZLIB_VERSION="1.2.7"
 PTHREADS_VERSION="53eb5d9ee6ec9c00ffa698681ecd132edeb5b8b2"
 CURL_VERSION="curl-7_30_0"
+LIBEVENT2_VERSION="release-2.0.21-stable"
+PHP_EVENT_VERSION="1.6.1"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
 DIR="$(pwd)"
@@ -71,6 +73,37 @@ cd ..
 rm -r -f ./curl
 echo " done!"
 
+#libevent2
+echo -n "[libevent2] downloading $LIBEVENT2_VERSION..."
+wget https://github.com/libevent/libevent/archive/$LIBEVENT2_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+mv libevent-$LIBEVENT2_VERSION libevent2
+echo -n " checking..."
+cd libevent2
+libtoolize >> "$DIR/install.log" 2>&1
+set +e
+./autogen.sh >> "$DIR/install.log" 2>&1 #Why does this fails for the first time?
+set -e
+./autogen.sh >> "$DIR/install.log" 2>&1
+automake --add-missing >> "$DIR/install.log" 2>&1
+./configure --prefix="$DIR/install_data/php/ext/libevent2" \
+--disable-openssl \
+--disable-shared >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+echo -n " cleaning..."
+cd ..
+rm -r -f ./libevent2
+echo " done!"
+
+#php-event
+echo -n "[PHP event] downloading $PHP_EVENT_VERSION..."
+wget http://pecl.php.net/get/event-$PHP_EVENT_VERSION.tgz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+wget "http://pastie.org/pastes/7725928/download?key=e8oa8uzexeh7ynxnyjzkq" -q -O event-$PHP_EVENT_VERSION/config.m4 >> "$DIR/install.log" 2>&1
+mv event-$PHP_EVENT_VERSION "$DIR/install_data/php/ext/event"
+echo " done!"
+
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
 wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
@@ -85,12 +118,12 @@ if which free >/dev/null; then
 else
     MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
 fi
-if [ $MAX_MEMORY -gt 2048 ]
+if [ $MAX_MEMORY -gt 512 ]
 then
   echo -n " enabling optimizations..."
   OPTIMIZATION="--enable-inline-optimization "
 else
-  OPTIMIZATION=""
+  OPTIMIZATION="--disable-inline-optimization "
 fi
 set -e
 echo -n " checking..."
@@ -105,6 +138,11 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-bcmath \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
+--with-event-core \
+--with-event-pthreads \
+--with-event-extra=no \
+--with-event-openssl=no \
+--with-event-libevent-dir="$DIR/install_data/php/ext/libevent2" \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
@@ -125,6 +163,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
+--disable-debug \
 --with-zend-vm=$ZEND_VM \
 --enable-cli >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
