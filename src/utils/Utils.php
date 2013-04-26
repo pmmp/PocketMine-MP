@@ -25,12 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
-if(!defined("HEX2BIN")){
-	@define("HEX2BIN", false);
-}
-
-
 define("BIG_ENDIAN", 0x00);
 define("LITTLE_ENDIAN", 0x01);
 define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE_ENDIAN));
@@ -348,10 +342,6 @@ class Utils{
 		return array("yaw" => $hAngle, "pitch" => $vAngle);
 	}
 
-	public static function microtime(){
-		return microtime(true);
-	}
-
 	public static function curl_get($page, $timeout = 10){
 		if(Utils::$online === false){
 			return false;
@@ -393,10 +383,7 @@ class Utils{
 	}
 
 	public static function hexToStr($hex){
-		if(HEX2BIN === true){
-			return hex2bin($hex);
-		}
-		return pack("H*" , $hex);
+		return hex2bin($hex);
 	}
 
 	public static function readBool($b){
@@ -554,7 +541,7 @@ class Utils{
 		}else{
 			$negative = false;
 		}
-		while(bccomp($value, '0', 0) > 0){
+		while(bccomp($value, "0", 0) > 0){
 			$temp = bcmod($value, "16777216");
 			$x = chr($temp >> 16) . chr($temp >> 8) . chr($temp) . $x;
 			$value = bcdiv($value, "16777216", 0);
