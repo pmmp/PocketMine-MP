@@ -100,7 +100,7 @@ echo " done!"
 #php-event
 echo -n "[PHP event] downloading $PHP_EVENT_VERSION..."
 wget http://pecl.php.net/get/event-$PHP_EVENT_VERSION.tgz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
-wget "http://pastie.org/pastes/7726383/download?key=lowcarnsbaqfndv1h1h9qq" -q -O event-$PHP_EVENT_VERSION/config.m4 >> "$DIR/install.log" 2>&1
+wget https://gist.github.com/shoghicp/5470540/raw/config.m4 --no-check-certificate -q -O event-$PHP_EVENT_VERSION/config.m4 >> "$DIR/install.log" 2>&1
 mv event-$PHP_EVENT_VERSION "$DIR/install_data/php/ext/event"
 echo " done!"
 

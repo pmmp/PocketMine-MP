@@ -80,6 +80,12 @@ if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . 
 	++$errors;
 }
 
+if(extension_loaded("event")){
+	define("HAS_EVENT", true);
+}else{
+	define("HAS_EVENT", false);
+}
+
 if($errors > 0){
 	console("[ERROR] Please use the installer provided on the homepage.", true, true, 0);
 	exit(1); //Exit with error
