@@ -253,7 +253,7 @@ class ConsoleLoop extends Thread{
 	
 	public function stop(){
 		$this->stop = true;
-		if(HAS_EVENT){
+		if(HAS_EVENT and false){
 			$this->base->stop();
 		}
 	}
