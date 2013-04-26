@@ -138,7 +138,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --enable-bcmath \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
---with-event-core="$DIR/install_data/php/ext/event" \ \
+--with-event-core="$DIR/install_data/php/ext/event" \
 --with-event-pthreads \
 --with-event-extra=no \
 --with-event-openssl=no \
