@@ -69,10 +69,10 @@ class Utils{
 
 	public static function getOS(){
 		$uname = trim(strtoupper(php_uname("s")));
-		if(strpos($uname, "WIN") !== false or $uname === "WIN"){
-			return "win";
-		}elseif(strpos($uname, "DARWIN") !== false or $uname === "DARWIN"){
+		if(strpos($uname, "DARWIN") !== false or $uname === "DARWIN"){
 			return "mac";
+		}elseif(strpos($uname, "WIN") !== false or $uname === "WIN"){
+			return "win";
 		}elseif(strpos($uname, "LINUX") !== false or $uname === "LINUX"){
 			return "linux";
 		}else{
