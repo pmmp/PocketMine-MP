@@ -25,11 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-/***REM_START***/
-require_once(FILE_PATH."/src/math/Vector3.php");
-/***REM_END***/
-
-abstract class Block extends Vector3{
+abstract class Block extends Position{
 	public static $class = array(
 			AIR => "AirBlock",
 			STONE => "StoneBlock",
@@ -147,12 +143,12 @@ abstract class Block extends Vector3{
 	public $isTransparent = false;
 	public $isReplaceable = false;
 	public $isPlaceable = true;
-	public $inWorld = false;
+	public $level = false;
 	public $hasPhysics = false;
 	public $isLiquid = false;
-	public $x;
-	public $y;
-	public $z;
+	public $x = 0;
+	public $y = 0;
+	public $z = 0;
 	
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;
@@ -173,8 +169,8 @@ abstract class Block extends Vector3{
 		return $this->meta & 0x0F;
 	}
 	
-	final public function position(Vector3 $v){
-		$this->inWorld = true;
+	final public function position(Position $v){
+		$this->level = $v->level;
 		$this->x = (int) $v->x;
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
@@ -197,19 +193,27 @@ abstract class Block extends Vector3{
 		return $this->breakTime;
 	}
 	
+	public function getSide($side){
+		$v = parent::getSide($side);
+		if($this->level instanceof Level){
+			return $this->level->getBlock($v);
+		}
+		return $v;
+	}
+	
 	final public function __toString(){
 		return "Block ". $this->name ." (".$this->id.":".$this->meta.")";
 	}
 	
 	abstract function isBreakable(Item $item, Player $player);
 	
-	abstract function onBreak(BlockAPI $level, Item $item, Player $player);
+	abstract function onBreak(Item $item, Player $player);
 	
-	abstract function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	abstract function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 	
-	abstract function onActivate(BlockAPI $level, Item $item, Player $player);
+	abstract function onActivate(Item $item, Player $player);
 	
-	abstract function onUpdate(BlockAPI $level, $type);
+	abstract function onUpdate($type);
 }
 
 /***REM_START***/

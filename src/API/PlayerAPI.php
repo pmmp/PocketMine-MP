@@ -318,14 +318,16 @@ class PlayerAPI{
 		$default = array(
 			"caseusername" => $name,
 			"position" => array(
-				"x" => $this->server->spawn["x"],
-				"y" => $this->server->spawn["y"],
-				"z" => $this->server->spawn["z"],
+				"level" => $this->server->spawn->level->getName(),
+				"x" => $this->server->spawn->x,
+				"y" => $this->server->spawn->y,
+				"z" => $this->server->spawn->z,
 			),
 			"spawn" => array(
-				"x" => $this->server->spawn["x"],
-				"y" => $this->server->spawn["y"],
-				"z" => $this->server->spawn["z"],
+				"level" => $this->server->spawn->level->getName(),
+				"x" => $this->server->spawn->x,
+				"y" => $this->server->spawn->y,
+				"z" => $this->server->spawn->z,
 			),
 			"inventory" => array_fill(0, 36, array(AIR, 0, 0)),
 			"armor" => array_fill(0, 4, array(AIR, 0, 0)),

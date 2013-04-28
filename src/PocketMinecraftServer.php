@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PocketMinecraftServer{
 	public $tCnt;
-	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond, $spawn, $entities, $mapDir, $mapName, $map, $levelData, $tileEntities;
+	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond;
 	private $port, $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick;
 	
 	private function load(){
@@ -45,12 +45,9 @@ class PocketMinecraftServer{
 		$this->startDatabase();
 		$this->api = false;
 		$this->tCnt = 1;
-		$this->mapDir = false;
-		$this->mapName = false;
 		$this->events = array();
 		$this->eventsID = array();
 		$this->handlers = array();
-		$this->map = false;
 		$this->invisible = false;
 		$this->levelData = false;
 		$this->difficulty = 1;
@@ -113,15 +110,15 @@ class PocketMinecraftServer{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->database = new SQLite3(":memory:");
-		//$this->query("PRAGMA journal_mode = OFF;");
-		//$this->query("PRAGMA encoding = \"UTF-8\";");
-		//$this->query("PRAGMA secure_delete = OFF;");
+		$this->query("PRAGMA journal_mode = OFF;");
+		$this->query("PRAGMA encoding = \"UTF-8\";");
+		$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE COLLATE NOCASE);");
-		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
-		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
+		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, level TEXT, type NUMERIC, class NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
+		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, level TEXT, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
-		$this->query("CREATE TABLE blockUpdates (x INTEGER, y INTEGER, z INTEGER, delay NUMERIC);");
+		$this->query("CREATE TABLE blockUpdates (level TEXT, x INTEGER, y INTEGER, z INTEGER, delay NUMERIC);");
 		//$this->query("PRAGMA synchronous = OFF;");
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
@@ -255,34 +252,6 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function loadMap(){
-		if($this->mapName !== false and trim($this->mapName) !== ""){
-			$this->levelData = unserialize(file_get_contents($this->mapDir."level.dat"));
-			if($this->levelData === false){
-				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
-				$this->close("invalid world data");
-			}
-			$this->time = (int) $this->levelData["Time"];
-			$this->seed = (int) $this->levelData["RandomSeed"];
-			if(isset($this->levelData["SpawnX"])){
-				$this->spawn = array("x" => $this->levelData["SpawnX"], "y" => $this->levelData["SpawnY"], "z" => $this->levelData["SpawnZ"]);
-			}else{
-				$this->levelData["SpawnX"] = $this->spawn["x"];
-				$this->levelData["SpawnY"] = $this->spawn["y"];
-				$this->levelData["SpawnZ"] = $this->spawn["z"];
-			}
-			$this->levelData["Time"] = $this->time;
-			console("[INFO] Preparing level \"".$this->levelData["LevelName"]."\"");
-			$this->map = new ChunkParser();
-			if(!$this->map->loadFile($this->mapDir."chunks.dat")){
-				console("[ERROR] Couldn't load the map \"\x1b[32m".$this->levelData["LevelName"]."\x1b[0m\"!", true, true, 0);
-				$this->map = false;
-			}else{
-				$this->map->loadMap();
-			}
-		}
-	}
-
 	public function getGamemode(){
 		switch($this->gamemode){
 			case SURVIVAL:
@@ -296,131 +265,9 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function loadEntities(){
-		if($this->map !== false){
-			$entities = unserialize(file_get_contents($this->mapDir."entities.dat"));
-			if($entities === false or !is_array($entities)){
-				console("[ERROR] Invalid world data for \"".$this->mapDir."\. Please import the world correctly");
-				$this->close("invalid world data");
-			}
-			foreach($entities as $entity){
-				if(!isset($entity["id"])){
-					break;
-				}
-				if(isset($this->api) and $this->api !== false){
-					if($entity["id"] === 64){ //Item Drop
-						$e = $this->api->entity->add(ENTITY_ITEM, $entity["Item"]["id"], array(
-							"meta" => $entity["Item"]["Damage"],
-							"stack" => $entity["Item"]["Count"],
-							"x" => $entity["Pos"][0],
-							"y" => $entity["Pos"][1],
-							"z" => $entity["Pos"][2],
-							"yaw" => $entity["Rotation"][0],
-							"pitch" => $entity["Rotation"][1],
-						));
-					}elseif($entity["id"] === OBJECT_PAINTING){ //Painting
-						$e = $this->api->entity->add(ENTITY_OBJECT, $entity["id"], $entity);
-						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-						$e->setHealth($entity["Health"]);
-					}else{
-						$e = $this->api->entity->add(ENTITY_MOB, $entity["id"], $entity);
-						$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
-						$e->setHealth($entity["Health"]);
-					}
-				}
-			}
-			$tiles = unserialize(file_get_contents($this->mapDir."tileEntities.dat"));
-			foreach($tiles as $tile){
-				if(!isset($tile["id"])){
-					break;
-				}
-				$t = $this->api->tileentity->add($tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
-			}
-			$this->action(1000000 * 60 * 25, '$this->api->chat->broadcast("Forcing save...");$this->save();');
-		}
-	}
 
-	public function save($final = false){
-		if($this->mapName !== false){
-			$this->levelData["Time"] = $this->time;
-			file_put_contents($this->mapDir."level.dat", serialize($this->levelData));
-			$this->map->saveMap($final);
-			$this->trigger("server.save", $final);
-			if(count($this->entities) > 0){
-				$entities = array();
-				foreach($this->entities as $entity){
-					if($entity->class === ENTITY_MOB){
-						$entities[] = array(
-							"id" => $entity->type,
-							"Color" => @$entity->data["Color"],
-							"Sheared" => @$entity->data["Sheared"],
-							"Health" => $entity->health,
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => $entity->yaw,
-								1 => $entity->pitch,
-							),
-						);
-					}elseif($entity->class === ENTITY_OBJECT){
-						$entities[] = array(
-							"id" => $entity->type,
-							"TileX" => $entity->x,
-							"TileX" => $entity->y,
-							"TileX" => $entity->z,
-							"Health" => $entity->health,
-							"Motive" => $entity->data["Motive"],
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => $entity->yaw,
-								1 => $entity->pitch,
-							),
-						);
-					}elseif($entity->class === ENTITY_ITEM){
-						$entities[] = array(
-							"id" => 64,
-							"Item" => array(
-								"id" => $entity->type,
-								"Damage" => $entity->meta,
-								"Count" => $entity->stack,
-							),
-							"Health" => $entity->health,
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => 0,
-								1 => 0,
-							),
-						);
-					}
-				}
-				file_put_contents($this->mapDir."entities.dat", serialize($entities));
-			}
-			if(count($this->tileEntities) > 0){
-				$tiles = array();
-				foreach($this->tileEntities as $tile){
-					$tiles[] = $tile->data;
-				}
-				file_put_contents($this->mapDir."tileEntities.dat", serialize($tiles));
-			}
-		}
-	}
 
 	public function init(){
-		if($this->mapName !== false and $this->map === false){
-			$this->loadMap();
-			$this->loadEntities();
-		}
 		$this->loadEvents();
 		declare(ticks=40);
 		register_tick_function(array($this, "tick"));

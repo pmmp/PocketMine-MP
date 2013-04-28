@@ -25,10 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-/***REM_START***/
-require_once(FILE_PATH."/src/pmf/PMF.php");
-/***REM_END***/
-
 define("PMF_CURRENT_LEVEL_VERSION", 0x00);
 
 class PMFLevel extends PMF{
@@ -39,6 +35,21 @@ class PMFLevel extends PMF{
 	private $payloadOffset = 0;
 	private $chunks = array();
 	private $chunkChange = array();
+	
+	public function getData($index){
+		if(!isset($this->levelData[$index])){
+			return false;
+		}
+		return ($this->levelData[$index]);
+	}
+	
+	public function setData($index, $data){
+		if(!isset($this->levelData[$index])){
+			return false;
+		}
+		$this->levelData[$index] = $data;
+		return true;
+	}
 	
 	public function __construct($file, $blank = false){
 		if(is_array($blank)){
@@ -62,8 +73,9 @@ class PMFLevel extends PMF{
 		}
 	}
 	
-	private function createBlank(){			
+	public function saveData($locationTable = true){
 		$this->levelData["version"] = PMF_CURRENT_LEVEL_VERSION;
+		@ftruncate($this->fp, 5);
 		$this->seek(5);
 		$this->write(chr($this->levelData["version"]));
 		$this->write(Utils::writeShort(strlen($this->levelData["name"])).$this->levelData["name"]);
@@ -74,11 +86,20 @@ class PMFLevel extends PMF{
 		$this->write(Utils::writeFloat($this->levelData["spawnZ"]));
 		$this->write(chr($this->levelData["width"]));
 		$this->write(chr($this->levelData["height"]));
-		$this->write(gzdeflate("", 9));
+		$extra = gzdeflate($this->levelData["extra"], 9);
+		$this->write(Utils::writeShort(strlen($extra)).$extra);
+		$this->payloadOffset = ftell($this->fp);
+		
+		if($locationTable !== false){
+			$this->writeLocationTable();
+		}
+	}
+	
+	private function createBlank(){
+		$this->saveData(false);
 		$this->locationTable = array();
 		$cnt = pow($this->levelData["width"], 2);
 		@mkdir(dirname($this->file)."/chunks/", 0755);
-		$this->payloadOffset = ftell($this->fp);
 		for($index = 0; $index < $cnt; ++$index){
 			$this->chunks[$index] = false;
 			$this->chunkChange[$index] = false;
@@ -154,6 +175,15 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
+	private function writeLocationTable(){
+		$cnt = pow($this->levelData["width"], 2);
+		@ftruncate($this->fp, $this->payloadOffset);
+		$this->seek($this->payloadOffset);
+		for($index = 0; $index < $cnt; ++$index){
+			$this->write(Utils::writeShort($this->locationTable[$index]));
+		}
+	}
+	
 	private function getChunkPath($X, $Z){
 		return dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
 	}
@@ -181,8 +211,20 @@ class PMFLevel extends PMF{
 			}else{
 				$this->chunks[$index][$Y] = false;
 			}
-		}		
+		}
 		@gzclose($chunk);
+		return true;
+	}
+	
+	public function unloadChunk($X, $Z, $save = true){
+		$X = (int) $X;
+		$Z = (int) $Z;
+		if($this->isChunkLoaded($X, $Z)){
+			return false;
+		}elseif($save !== false){
+			$this->saveChunk($X, $Z);
+		}
+		unset($this->chunks[$index], $this->chunkChange[$index]);
 		return true;
 	}
 	
@@ -205,9 +247,9 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getBlock($x, $y, $z){
-		$X = $x << 4;
-		$Z = $z << 4;
-		$Y = $y << 4;
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
 		if($X >= 32 or $Z >= 32){
 			return array(AIR, 0);
 		}
@@ -222,8 +264,8 @@ class PMFLevel extends PMF{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
-		$bindex = $aY + $aZ << 5 + $aX << 9;
-		$mindex = $aY >> 1 + 16 + $aZ << 5 + $aX << 9;
+		$bindex = $aY + ($aX << 5) + ($aZ << 9);
+		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
 		$b = ord($this->chunks[$index][$Y]{$bindex});
 		$m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
@@ -245,11 +287,11 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getMiniChunk($X, $Z, $Y){
-		if($this->isChunkLoaded($X, $Z) === false){
+		if($this->loadChunk($X, $Z) === false){
 			return str_repeat("\x00", 8192);
 		}
 		$index = $this->getIndex($X, $Z);
-		if(!isset($this->chunks[$index][$Y])){
+		if($this->chunks[$index][$Y] === false){
 			return str_repeat("\x00", 8192);
 		}
 		return $this->chunks[$index][$Y];
@@ -259,16 +301,20 @@ class PMFLevel extends PMF{
 		if($this->isChunkLoaded($X, $Z) === false){
 			$this->loadChunk($X, $Z);
 		}
+		if(strlen($data) !== 8192){
+			return false;
+		}
 		$index = $this->getIndex($X, $Z);
-		$this->chunks[$index][$Y] = substr($data, 0, 8192);
+		$this->chunks[$index][$Y] = $data;
+		$this->chunkChange[$index][$Y] = 8192;
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
 	}
 	
 	public function setBlock($x, $y, $z, $block, $meta = 0){
-		$X = $x << 4;
-		$Z = $z << 4;
-		$Y = $y << 4;
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
 		$block &= 0xFF;
 		$meta &= 0x0F;
 		if($X >= 32 or $Z >= 32){
@@ -285,8 +331,8 @@ class PMFLevel extends PMF{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
-		$bindex = $aY + $aZ << 5 + $aX << 9;
-		$mindex = $aY >> 1 + 16 + $aZ << 5 + $aX << 9;
+		$bindex = $aY + ($aX << 5) + ($aZ << 9);
+		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
 		$old_b = $this->chunks[$index][$Y]{$bindex};		
 		$old_m = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
@@ -319,16 +365,24 @@ class PMFLevel extends PMF{
 		$chunk = @gzopen($this->getChunkPath($X, $Z), "wb9");
 		$bitmap = 0;
 		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
-			if($this->chunks[$index][$Y] !== false and !$this->isMiniChunkEmpty($X, $Z, $Y)){
+			if($this->chunks[$index][$Y] !== false and ((isset($this->chunkChange[$index][$Y]) and $this->chunkChange[$index][$Y] === 0) or !$this->isMiniChunkEmpty($X, $Z, $Y))){
 				gzwrite($chunk, $this->chunks[$index][$Y]);
 				$bitmap |= 1 << $Y;
 			}else{
 				$this->chunks[$index][$Y] = false;
 			}
+			$this->chunkChange[$index][$Y] = 0;
 		}
 		$this->locationTable[$index][0] = $bitmap;
 		$this->seek($this->payloadOffset + ($index << 1));
 		$this->write(Utils::writeShort($this->locationTable[$index][0]));
+	}
+	
+	public function doSaveRound(){
+		foreach($this->chunks as $index => $chunk){
+			$this->getXZ($index, $X, $Z);
+			$this->saveChunk($X, $Z);
+		}
 	}
 
 }

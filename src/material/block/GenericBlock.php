@@ -30,31 +30,23 @@ class GenericBlock extends Block{
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
 	}	
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			$level->setBlock($block, $this->id, $this->getMetadata());
-			return true;
-		}
-		return false;
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		return $this->level->setBlock($block, $this);
 	}
 	
 	public function isBreakable(Item $item, Player $player){
 		return ($this->breakable);
 	}
 	
-	public function onBreak(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld === true){
-			$level->setBlock($this, AIR, 0);
-			return true;
-		}
-		return false;
+	public function onBreak(Item $item, Player $player){
+		return $this->level->setBlock($this, BlockAPI::getBlock(AIR, 0));
 	}
 	
-	public function onUpdate(BlockAPI $level, $type){
+	public function onUpdate($type){
 		return false;
 	}
 
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		return ($this->isActivable);
 	}
 }

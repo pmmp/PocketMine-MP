@@ -27,21 +27,15 @@ the Free Software Foundation, either version 3 of the License, or
 
 class TileEntityAPI{
 	private $server;
+	private $tileEntities;
+	private $tCnt = 1;
 	function __construct(){
+		$this->tileEntities = array();
 		$this->server = ServerAPI::request();
 	}
 	
-	public function get($x, $y = false, $z = false){
-		if(($x instanceof Vector3) or ($x instanceof Block)){
-			$z = (int) $x->z;	
-			$y = (int) $x->y;	
-			$x = (int) $x->x;			
-		}else{
-			$x = (int) $x;
-			$y = (int) $y;
-			$z = (int) $z;
-		}
-		$tiles = $this->server->query("SELECT * FROM tileentities WHERE x = $x AND y = $y AND z = $z;");
+	public function get(Position $pos){
+		$tiles = $this->server->query("SELECT * FROM tileentities WHERE level = '".$pos->level->getName()."' AND x = {$pos->x} AND y = {$pos->y} AND z = {$pos->z};");
 		$ret = array();
 		if($tiles !== false and $tiles !== true){
 			while(($t = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
@@ -61,8 +55,8 @@ class TileEntityAPI{
 	public function getByID($id){
 		if($id instanceof TileEntity){
 			return $id;
-		}elseif(isset($this->server->tileEntities[$id])){
-			return $this->server->tileEntities[$id];
+		}elseif(isset($this->tileEntities[$id])){
+			return $this->tileEntities[$id];
 		}
 		return false;
 	}
@@ -71,18 +65,31 @@ class TileEntityAPI{
 	
 	}
 
-	public function getAll(){
-		return $this->server->tileEntities;
+	public function getAll($level = null){
+		if($level instanceof Level){
+			$tileEntities = array();
+			$l = $this->server->query("SELECT ID FROM tileentities WHERE level = '".$this->level->getName()."';");
+			if($l !== false and $l !== true){
+				while(($t = $l->fetchArray(SQLITE3_ASSOC)) !== false){
+					$t = $this->get($e["ID"]);
+					if($t instanceof TileEntity){
+						$tileEntities[$t->id] = $t;
+					}
+				}
+			}
+			return $tileEntities;
+		}
+		return $this->tileEntities;
 	}
 
-	public function add($class, $x, $y, $z, $data = array()){
+	public function add(Level $level, $class, $x, $y, $z, $data = array()){
 		$id = $this->tCnt++;
-		$this->server->tileEntities[$id] = new TileEntity($id, $class, $x, $y, $z, $data);
+		$this->tileEntities[$id] = new TileEntity($id, $class, $x, $y, $z, $data);
 		$this->spawnToAll($id);
-		return $this->server->tileEntities[$id];
+		return $this->tileEntities[$id];
 	}
 	
-	public function addSign($x, $y, $z, $lines = array("", "", "", "")){
+	public function addSign(Level $level, $x, $y, $z, $lines = array("", "", "", "")){
 		return $this->add(TILE_SIGN, $x, $y, $z, $data = array(
 			"id" => "Sign",
 			"x" => $x,
@@ -122,10 +129,10 @@ class TileEntityAPI{
 	}
 
 	public function remove($id){
-		if(isset($this->server->tileEntities[$id])){
-			$t = $this->server->tileEntities[$id];
-			$this->server->tileEntities[$id] = null;
-			unset($this->server->tileEntities[$id]);
+		if(isset($this->tileEntities[$id])){
+			$t = $this->tileEntities[$id];
+			$this->tileEntities[$id] = null;
+			unset($this->tileEntities[$id]);
 			$t->closed = true;
 			$t->close();
 			$this->server->query("DELETE FROM tileentities WHERE ID = ".$id.";");

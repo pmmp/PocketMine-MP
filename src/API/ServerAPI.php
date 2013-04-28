@@ -54,7 +54,7 @@ class ServerAPI{
 		@mkdir(DATA_PATH."players/", 0755);
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
-		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION.", LGPL License", true, true, 0);
+		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." API #".CURRENT_API_VERSION.", LGPL License", true, true, 0);
 
 		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
@@ -149,33 +149,9 @@ class ServerAPI{
 
 			}
 		}
-		if(file_exists(DATA_PATH."worlds/level.dat")){
-			console("[NOTICE] Detected unimported map data. Importing...");
-			$this->importMap(DATA_PATH."worlds/", true);
-		}
-		$this->server->mapName = $this->getProperty("level-name");
-		$this->server->mapDir = DATA_PATH."worlds/".$this->server->mapName."/";
-		if($this->server->mapName === false or trim($this->server->mapName) === "" or (!file_exists($this->server->mapDir."chunks.dat") and !file_exists($this->server->mapDir."chunks.dat.gz"))){
-			if($this->server->mapName === false or trim($this->server->mapName) === ""){
-				$this->server->mapName = "world";
-			}
-			$this->server->mapDir = DATA_PATH."worlds/".$this->server->mapName."/";
-			$generator = "SuperflatGenerator";
-			if($this->getProperty("generator") !== false and class_exists($this->getProperty("generator"))){
-				$generator = $this->getProperty("generator");
-			}
-			$this->gen = new WorldGenerator($generator, $this->server->seed);
-			if($this->getProperty("generator-settings") !== false and trim($this->getProperty("generator-settings")) != ""){
-				$this->gen->set("preset", $this->getProperty("generator-settings"));
-			}
-			$this->gen->init();
-			$this->gen->generate();
-			$this->gen->save($this->server->mapDir, $this->server->mapName);
-			$this->setProperty("level-name", $this->server->mapName);
-			$this->setProperty("gamemode", SURVIVAL);
-		}
+
 		$this->loadProperties();
-		$this->server->loadMap();
+		
 		
 		$this->loadAPI("console", "ConsoleAPI");
 		$this->loadAPI("level", "LevelAPI");
@@ -228,7 +204,7 @@ class ServerAPI{
 			"online" => count($this->server->clients),
 			"max" => $this->server->maxClients,
 			"plugins" => $plist,
-		), 2);
+		), 10);
 	}
 
 	public function __destruct(){
@@ -480,7 +456,7 @@ class ServerAPI{
 		}
 		$this->$name = new $class();
 		$this->apiList[] = $this->$name;
-		console("[".($internal === true ? "INTERNAL":"DEBUG")."] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded", true, true, ($internal === true ? 2:1));
+		console("[".($internal === true ? "INTERNAL":"DEBUG")."] API \x1b[36m".$name."\x1b[0m [\x1b[30;1m".$class."\x1b[0m] loaded", true, true, ($internal === true ? 3:2));
 	}
 
 }

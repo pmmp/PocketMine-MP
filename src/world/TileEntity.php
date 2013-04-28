@@ -32,7 +32,7 @@ define("TILE_CHEST", "Chest");
 define("TILE_FURNACE", "Furnace");
 	define("FURNACE_SLOTS", 3);
 
-class TileEntity extends stdClass{
+class TileEntity extends Position{
 	public $name;
 	public $normal;
 	public $id;
@@ -45,8 +45,9 @@ class TileEntity extends stdClass{
 	public $metadata;
 	public $closed;
 	private $server;
-	function __construct($id, $class, $x, $y, $z, $data = array()){
+	function __construct(Level $level, $id, $class, $x, $y, $z, $data = array()){
 		$this->server = ServerAPI::request();
+		$this->level = $level;
 		$this->normal = true;
 		$this->class = $class;
 		$this->data = $data;
@@ -59,7 +60,7 @@ class TileEntity extends stdClass{
 		$this->x = (int) $x;
 		$this->y = (int) $y;
 		$this->z = (int) $z;
-		$this->server->query("INSERT OR REPLACE INTO tileentities (ID, class, x, y, z) VALUES (".$this->id.", '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
+		$this->server->query("INSERT OR REPLACE INTO tileentities (ID, level, class, x, y, z) VALUES (".$this->id.", '".$this->level->getName()."', '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
 		switch($this->class){
 			case TILE_SIGN:
 				$this->server->query("UPDATE tileentities SET spawnable = 1 WHERE ID = ".$this->id.";");
@@ -148,7 +149,7 @@ class TileEntity extends stdClass{
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
-			$this->server->api->entity->remove($this->eid);
+			$this->server->api->tileentity->remove($this->id);
 		}
 	}
 
@@ -160,17 +161,16 @@ class TileEntity extends stdClass{
 		return $this->name;
 	}
 
-	public function setName($name){
-		$this->name = $name;
-		$this->server->query("UPDATE entities SET name = '".str_replace("'", "", $this->name)."' WHERE EID = ".$this->eid.";");
-	}
 
-
-	public function setPosition($x, $y, $z){
-		$this->x = (int) $x;
-		$this->y = (int) $y;
-		$this->z = (int) $z;
-		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE EID = ".$this->eid.";");
+	public function setPosition(Vector3 $pos){
+		if($pos instanceof Position){
+			$this->level = $pos->level;
+			$this->server->query("UPDATE tileentities SET level = '".$this->level->getName()."' WHERE ID = ".$this->id.";");
+		}
+		$this->x = (int) $pos->x;
+		$this->y = (int) $pos->y;
+		$this->z = (int) $pos->z;
+		$this->server->query("UPDATE tileentities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE ID = ".$this->id.";");
 	}
 
 }

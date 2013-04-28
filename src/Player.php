@@ -81,19 +81,19 @@ class Player{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->itemEnforcement = $this->server->api->getProperty("item-enforcement");
-		$this->spawnPosition = new Vector3($this->server->spawn["x"], $this->server->spawn["y"], $this->server->spawn["z"]);
+		$this->spawnPosition = $this->server->spawn;
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array_fill(0, 36, array(AIR, 0, 0));
 		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
 		$this->gamemode = $this->server->gamemode;
-		$this->level = $this->server->api->level;
+		$this->level = $this->server->api->level->getDefault();
 		$this->equipment = BlockAPI::getItem(AIR);
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
 	
-	public function setSpawn(Vector3 $pos){
+	public function setSpawn(Position $pos){
 		$this->spawnPosition = $pos;
 		$this->dataPacket(MC_SET_SPAWN_POSITION, array(
 			"x" => (int) $this->spawnPosition->x,
@@ -141,7 +141,7 @@ class Player{
 		$z = $Z << 4;
 		$y = $Y << 4;
 		$MTU = $this->MTU - 16;
-		$chunk = $this->level->getMiniChunk($X, $Z, $Y, $MTU);
+		$chunk = $this->level->getOrderedMiniChunk($X, $Z, $Y, $MTU);
 		foreach($chunk as $d){
 			$this->dataPacket(MC_CHUNK_DATA, array(
 				"x" => $X,
@@ -197,11 +197,13 @@ class Player{
 	public function save(){
 		if($this->entity instanceof Entity){
 			$this->data->set("position", array(
+				"level" => $this->entity->level->getName(),
 				"x" => $this->entity->x,
 				"y" => $this->entity->y,
 				"z" => $this->entity->z,
 			));
 			$this->data->set("spawn", array(
+				"level" => $this->entity->level->getName(),
 				"x" => $this->spawnPosition->x,
 				"y" => $this->spawnPosition->y,
 				"z" => $this->spawnPosition->z,

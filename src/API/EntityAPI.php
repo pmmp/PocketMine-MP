@@ -27,13 +27,17 @@ the Free Software Foundation, either version 3 of the License, or
 
 class EntityAPI{
 	private $server;
+	private $entities;
+	private $eCnt = 1;
+
 	function __construct(){
+		$this->entities = array();
 		$this->server = ServerAPI::request();
 	}
 
 	public function get($eid){
-		if(isset($this->server->entities[$eid])){
-			return $this->server->entities[$eid];
+		if(isset($this->entities[$eid])){
+			return $this->entities[$eid];
 		}
 		return false;
 	}
@@ -42,8 +46,21 @@ class EntityAPI{
 	
 	}
 
-	public function getAll(){
-		return $this->server->entities;
+	public function getAll($level = null){
+		if($level instanceof Level){
+			$entities = array();
+			$l = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."';");
+			if($l !== false and $l !== true){
+				while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
+					$e = $this->get($e["EID"]);
+					if($e instanceof Entity){
+						$entities[$e->eid] = $e;
+					}
+				}
+			}
+			return $entities;
+		}
+		return $this->entities;
 	}
 
 	public function heal($eid, $heal = 1, $cause){
@@ -58,11 +75,11 @@ class EntityAPI{
 		$e->setHealth($e->getHealth() - $attack, $cause, $force);
 	}
 
-	public function add($class, $type = 0, $data = array()){
-		$eid = $this->server->eidCnt++;
-		$this->server->entities[$eid] = new Entity($eid, $class, $type, $data);
-		$this->server->handle("entity.add", $this->server->entities[$eid]);
-		return $this->server->entities[$eid];
+	public function add(Level $level, $class, $type = 0, $data = array()){
+		$eid = $this->eCnt++;
+		$this->entities[$eid] = new Entity($level, $eid, $class, $type, $data);
+		$this->server->handle("entity.add", $this->entities[$eid]);
+		return $this->entities[$eid];
 	}
 
 	public function spawnTo($eid, $player){
@@ -92,10 +109,10 @@ class EntityAPI{
 	}
 
 	public function remove($eid){
-		if(isset($this->server->entities[$eid])){
-			$entity = $this->server->entities[$eid];
-			$this->server->entities[$eid] = null;
-			unset($this->server->entities[$eid]);
+		if(isset($this->entities[$eid])){
+			$entity = $this->entities[$eid];
+			$this->entities[$eid] = null;
+			unset($this->entities[$eid]);
 			$entity->closed = true;
 			$this->server->query("DELETE FROM entities WHERE EID = ".$eid.";");
 			$this->server->api->dhandle("entity.remove", $entity);

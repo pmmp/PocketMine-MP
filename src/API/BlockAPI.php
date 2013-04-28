@@ -180,7 +180,7 @@ class BlockAPI{
 		}else{
 			$b = new GenericBlock($id, $meta);
 		}
-		if($v instanceof Vector3){
+		if($v instanceof Position){
 			$b->position($v);
 		}
 		return $b;
@@ -197,44 +197,12 @@ class BlockAPI{
 		return $i;
 	}
 	
-	public function setBlock(Vector3 $block, $id, $meta, $update = true, $tiles = false){
-		if(($block instanceof Vector3) or (($block instanceof Block) and $block->inWorld === true)){
-			$this->server->api->level->setBlock($block->x, $block->y, $block->z, (int) $id, (int) $meta, $update, $tiles);
-			if($update === true){
-				$this->blockUpdate($block, BLOCK_UPDATE_NORMAL); //????? water?
-				$this->blockUpdateAround($block, BLOCK_UPDATE_NORMAL);
-			}
-			if($tiles === true){
-				if(($t = $this->server->api->tileentity->get($block->x, $block->y, $block->z)) !== false){
-					$t[0]->close();
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	public function getBlock($x, $y = 0, $z = 0){
-		if($x instanceof Vector3){
-			$y = $x->y;
-			$z = $x->z;
-			$x = $x->x;
-		}
-		$b = $this->server->api->level->getBlock($x, $y, $z);
-		return BlockAPI::get($b[0], $b[1], new Vector3($b[2][0], $b[2][1], $b[2][2]));
-	}
-	
-	public function getBlockFace(Block $block, $face){
-		return $this->getBlock($block->getSide($face));
-	}
-	
 	function __construct(){
 		$this->server = ServerAPI::request();
 	}
 
 	public function init(){
 		$this->server->event("server.tick", array($this, "blockUpdateTick"));
-		$this->server->addHandler("block.update", array($this, "blockUpdateRemote"), 1);
 		$this->server->api->console->register("give", "<player> <item[:damage]> [amount]", array($this, "commandHandler"));
 	}
 
@@ -291,7 +259,7 @@ class BlockAPI{
 
 	public function playerBlockBreak(Player $player, Vector3 $vector){
 
-		$target = $this->getBlock($vector);
+		$target = $player->level->getBlock($vector);
 		$item = $player->equipment;
 		
 		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
@@ -306,7 +274,7 @@ class BlockAPI{
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
 			$player->lastBreak = microtime(true);
 			$drops = $target->getDrops($item, $player);
-			$target->onBreak($this, $item, $player);
+			$target->onBreak($item, $player);
 		}else{
 			return $this->cancelAction($target, $player);
 		}
@@ -320,7 +288,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function drop(Vector3 $pos, Item $item){
+	public function drop(Position $pos, Item $item){
 		if($item->getID() === AIR or $item->count <= 0){
 			return;
 		}
@@ -335,7 +303,7 @@ class BlockAPI{
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
 				$server = ServerAPI::request();
-				$e = $server->api->entity->add(ENTITY_ITEM, $item->getID(), $data);
+				$e = $server->api->entity->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
 				//$e->speedX = mt_rand(-10, 10) / 100;
 				//$e->speedY = mt_rand(0, 5) / 100;
 				//$e->speedZ = mt_rand(-10, 10) / 100;
@@ -349,8 +317,8 @@ class BlockAPI{
 			return false;
 		}
 
-		$target = $this->getBlock($vector);		
-		$block = $this->getBlockFace($target, $face);
+		$target = $player->level->getBlock($vector);		
+		$block = $target->getSide($face);
 		$item = $player->equipment;
 		
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
@@ -364,7 +332,7 @@ class BlockAPI{
 		$this->blockUpdate($target, BLOCK_UPDATE_TOUCH);
 
 		if($target->isActivable === true){
-			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($this, $item, $player) === true){
+			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($item, $player) === true){
 				return false;
 			}
 		}
@@ -397,11 +365,11 @@ class BlockAPI{
 		
 		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
 			return $this->cancelAction($block, $player);
-		}elseif($hand->place($this, $item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
+		}elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
 			return $this->cancelAction($block, $player);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_POST){
-			$t = $this->server->api->tileentity->addSign($block->x, $block->y, $block->z);
+			$t = $this->server->api->tileentity->addSign($player->level, $block->x, $block->y, $block->z);
 			$t->data["creator"] = $player->username;
 		}
 
@@ -769,36 +737,42 @@ class BlockAPI{
 		}
 	}*/
 
-	public function blockUpdateAround(Vector3 $pos, $type = BLOCK_UPDATE_NORMAL){
-		$this->blockUpdate($pos->getSide(0), $type);
-		$this->blockUpdate($pos->getSide(1), $type);
-		$this->blockUpdate($pos->getSide(2), $type);
-		$this->blockUpdate($pos->getSide(3), $type);
-		$this->blockUpdate($pos->getSide(4), $type);
-		$this->blockUpdate($pos->getSide(5), $type);
-	}
-	
-	public function blockUpdate(Vector3 $pos, $type = BLOCK_UPDATE_NORMAL){
+	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL){
 		if(!($pos instanceof Block)){
 			$pos = $pos->floor();
-			$block = $this->getBlock($pos);
+			$block = $pos->level->getBlock($pos);
 		}else{
 			$block = $pos;
 		}
-		$level = $block->onUpdate($this, $type);
+		$this->blockUpdate($block->getSide(0), $type);
+		$this->blockUpdate($block->getSide(1), $type);
+		$this->blockUpdate($block->getSide(2), $type);
+		$this->blockUpdate($block->getSide(3), $type);
+		$this->blockUpdate($block->getSide(4), $type);
+		$this->blockUpdate($block->getSide(5), $type);
+	}
+	
+	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
+		if(!($pos instanceof Block)){
+			$pos = $pos->floor();
+			$block = $pos->level->getBlock($pos);
+		}else{
+			$block = $pos;
+		}
+		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
 		}
 		return $level;
 	}
 	
-	public function scheduleBlockUpdate(Vector3 $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
+	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
 			return false;
 		}
 		$pos = $pos->floor();
-		$index = $pos->x.".".$pos->y.".".$pos->z;
+		$index = $pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName();
 		$delay = microtime(true) + $delay * 0.05;		
 		if(!isset($this->scheduledUpdates[$index])){
 			$this->scheduledUpdates[$index] = array(
@@ -806,18 +780,10 @@ class BlockAPI{
 				$type,
 				$delay,
 			);
-			$this->server->query("INSERT INTO blockUpdates (x, y, z, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", ".$delay.");");
+			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", '".$pos->level->getName()."', ".$delay.");");
 			return true;
 		}
 		return false;
-	}
-	
-	public function blockUpdateRemote($data, $event){
-		if($event !== "block.update"){
-			return;
-		}
-		$this->blockUpdate(new Vector3($data["x"], $data["y"], $data["z"]), isset($data["type"]) ? ((int) $data["type"]):BLOCK_UPDATE_RANDOM);
-		return true;
 	}
 	
 	public function blockUpdateTick($time, $event){
@@ -825,10 +791,10 @@ class BlockAPI{
 			return;
 		}
 		if(count($this->scheduledUpdates) > 0){
-			$update = $this->server->query("SELECT x,y,z FROM blockUpdates WHERE delay <= ".$time.";");
+			$update = $this->server->query("SELECT x,y,z,level FROM blockUpdates WHERE delay <= ".$time.";");
 			if($update !== false and $update !== true){
 				while(($up = $update->fetchArray(SQLITE3_ASSOC)) !== false){
-					$index = $up["x"].".".$up["y"].".".$up["z"];
+					$index = $up["x"].".".$up["y"].".".$up["z"].".".$up["level"];
 					if(isset($this->scheduledUpdates[$index])){
 						$up = $this->scheduledUpdates[$index];
 						unset($this->scheduledUpdates[$index]);

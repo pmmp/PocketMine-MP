@@ -45,7 +45,7 @@ define("ENTITY_OBJECT", 2);
 
 define("ENTITY_ITEM", 3);
 
-class Entity extends stdClass{
+class Entity extends Position{
 	public $age;
 	public $air;
 	public $spawntime;
@@ -74,7 +74,9 @@ class Entity extends stdClass{
 	private $tickCounter;
 	private $speedMeasure = array(0, 0, 0, 0, 0);
 	private $server;
-	function __construct($eid, $class, $type = 0, $data = array()){
+	public $level;
+	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
+		$this->level = $level;
 		$this->fallY = false;
 		$this->fallStart = false;
 		$this->server = ServerAPI::request();
@@ -97,7 +99,7 @@ class Entity extends stdClass{
 		$this->closed = false;
 		$this->name = "";
 		$this->tickCounter = 0;
-		$this->server->query("INSERT OR REPLACE INTO entities (EID, type, class, health) VALUES (".$this->eid.", ".$this->type.", ".$this->class.", ".$this->health.");");
+		$this->server->query("INSERT OR REPLACE INTO entities (EID, level, type, class, health) VALUES (".$this->eid.", '".$this->level->getName()."', ".$this->type.", ".$this->class.", ".$this->health.");");
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
@@ -107,7 +109,7 @@ class Entity extends stdClass{
 		$this->speed = 0;
 		$this->yaw = isset($this->data["yaw"]) ? $this->data["yaw"]:0;
 		$this->pitch = isset($this->data["pitch"]) ? $this->data["pitch"]:0;
-		$this->position = array("x" => &$this->x, "y" => &$this->y, "z" => &$this->z, "yaw" => &$this->yaw, "pitch" => &$this->pitch);
+		$this->position = array("level" => $this->level, "x" => &$this->x, "y" => &$this->y, "z" => &$this->z, "yaw" => &$this->yaw, "pitch" => &$this->pitch);
 		switch($this->class){
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
@@ -175,7 +177,7 @@ class Entity extends stdClass{
 	
 	private function spawnDrops(){
 		foreach($this->getDrops() as $drop){
-			$this->server->api->block->drop(new Vector3($this->x, $this->y, $this->z), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
+			$this->server->api->block->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 		}
 	}
 	
@@ -186,8 +188,8 @@ class Entity extends stdClass{
 				$this->close(); //Despawn timer
 				return false;
 			}
-			if(($time - $this->spawntime) >= 2){
-				$player = $this->server->query("SELECT EID FROM entities WHERE class = ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
+			if(($time - $this->spawntime) >= 0.6){ //TODO: set this on Player class, updates things when it moves
+				$player = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."' AND class = ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
 				$player = $this->server->api->entity->get($player["EID"]);
 				if($player instanceof Entity){
 					$player = $player->player;
@@ -439,7 +441,7 @@ class Entity extends stdClass{
 		if(!($player instanceof Player)){
 			$player = $this->server->api->player->get($player);
 		}
-		if($player->eid === $this->eid or $this->closed !== false){
+		if($player->eid === $this->eid or $this->closed !== false or $player->level !== $this->level){
 			return false;
 		}
 		switch($this->class){
@@ -530,17 +532,23 @@ class Entity extends stdClass{
 		$this->server->query("UPDATE entities SET pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
-	public function setCoords($x, $y, $z){
-		$this->x = $x;
-		$this->y = $y;
-		$this->z = $z;
+	public function setCoords(Vector3 $pos){
+		if($pos instanceof Position){
+			$this->level = $pos->level;
+			$this->server->query("UPDATE entities SET level = '".$this->level->getName()."' WHERE EID = ".$this->eid.";");
+		}
+		$this->x = $pos->x;
+		$this->y = $pos->y;
+		$this->z = $pos->z;
+		$this->yaw = $yaw;
+		$this->pitch = $pitch;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE EID = ".$this->eid.";");
 	}
 
-	public function move($x, $y, $z, $yaw = 0, $pitch = 0){
-		$this->x += $x;
-		$this->y += $y;
-		$this->z += $z;
+	public function move(Vector3 $pos, $yaw = 0, $pitch = 0){
+		$this->x += $pos->x;
+		$this->y += $pos->y;
+		$this->z += $pos->z;
 		$this->yaw += $yaw;
 		$this->yaw %= 360;
 		$this->pitch += $pitch;
@@ -548,17 +556,20 @@ class Entity extends stdClass{
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
-	public function setPosition($x, $y, $z, $yaw, $pitch){
-		$this->x = $x;
-		$this->y = $y;
-		$this->z = $z;
+	public function setPosition(Vector3 $pos, $yaw, $pitch){
+		if($pos instanceof Position){
+			$this->level = $pos->level;
+			$this->server->query("UPDATE entities SET level = '".$this->level->getName()."' WHERE EID = ".$this->eid.";");
+		}
+		$this->x = $pos->x;
+		$this->y = $pos->y;
+		$this->z = $pos->z;
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 	
-	public function inBlock($x, $y, $z, $radius = 0.8){
-		$block = new Vector3($x, $y, $z);
+	public function inBlock(Vector3 $block, $radius = 0.8){
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
 		if(($y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
@@ -566,8 +577,7 @@ class Entity extends stdClass{
 		return false;
 	}
 	
-	public function touchingBlock($x, $y, $z, $radius = 0.9){
-		$block = new Vector3($x, $y, $z);
+	public function touchingBlock(Vector3 $block, $radius = 0.9){
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
 		if(($y == (((int) $this->y) - 1) or $y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
