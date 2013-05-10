@@ -31,16 +31,16 @@ class BanAPI{
 	private $banned;
 	private $ops;
 	private $bannedIPs;
-	private $cmdWL = array();
+	private $cmdWL = array();//Command WhiteList
 	function __construct(){
 		$this->server = ServerAPI::request();
 	}
 	
 	public function init(){
-		$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);
-		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);
-		$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);
-		$this->ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);
+		$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);//Open whitelist list file
+		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);//Open Banned IPs list file
+		$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);//Open Banned Usernames list file
+		$this->ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);//Open list of OPs
 		$this->server->api->console->register("banip", "<add|remove|list|reload> [IP|player]", array($this, "commandHandler"));
 		$this->server->api->console->register("ban", "<add|remove|list|reload> [username]", array($this, "commandHandler"));
 		$this->server->api->console->register("kick", "<player> [reason ...]", array($this, "commandHandler"));
@@ -52,17 +52,17 @@ class BanAPI{
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
 		$this->server->api->console->alias("pardon-ip", "banip remove");
-		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);
-		$this->server->addHandler("player.block.break", array($this, "permissionsCheck"), 1);
-		$this->server->addHandler("player.block.place", array($this, "permissionsCheck"), 1);
-		$this->server->addHandler("player.flying", array($this, "permissionsCheck"), 1);
+		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);//Event handler when commands are issued. Used to check permissions of commands that go through the server.
+		$this->server->addHandler("player.block.break", array($this, "permissionsCheck"), 1);//Event handler for blocks
+		$this->server->addHandler("player.block.place", array($this, "permissionsCheck"), 1);//Event handler for blocks
+		$this->server->addHandler("player.flying", array($this, "permissionsCheck"), 1);//Flying Event
 	}
 	
-	public function cmdWhitelist($cmd){
+	public function cmdWhitelist($cmd){//Whitelists a CMD so everyone can issue it - Even non OPs.
 		$this->cmdWhitelist[strtolower(trim($cmd))] = true;
 	}
 	
-	public function isOp($username){
+	public function isOp($username){//Is a player op?
 		$username = strtolower($username);
 		if($this->server->api->dhandle("op.check", $username) === true){
 			return true;
@@ -74,13 +74,13 @@ class BanAPI{
 	
 	public function permissionsCheck($data, $event){
 		switch($event){
-			case "player.flying":
+			case "player.flying"://OPs can fly around the server.
 				if($this->isOp($data->iusername)){
 					return true;
 				}
 				break;
 			case "player.block.break":
-			case "player.block.place":
+			case "player.block.place"://Spawn protection detection. Allows OPs to place/break blocks in the spawn area.
 				if(!$this->isOp($data["player"]->iusername)){
 					$t = new Vector2($data["target"]->x, $data["target"]->z);
 					$s = new Vector2($this->server->spawn["x"], $this->server->spawn["z"]);
@@ -90,7 +90,7 @@ class BanAPI{
 				}
 				return;
 				break;
-			case "console.command":
+			case "console.command"://Checks if a command is allowed with the current user permissions.
 				if(isset($this->cmdWhitelist[$data["cmd"]])){
 					return true;
 				}
