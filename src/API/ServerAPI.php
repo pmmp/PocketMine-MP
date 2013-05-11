@@ -199,7 +199,11 @@ class ServerAPI{
 		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
 			"serverid" => $this->server->serverID,
 			"os" => Utils::getOS(),
+			"memory_total" => $this->getProperty("memory-limit"),
+			"memory_usage" => memory_get_usage(true),
+			"php_version" => PHP_VERSION,
 			"version" => MAJOR_VERSION,
+			"mc_version" => CURRENT_MINECRAFT_VERSION,
 			"protocol" => CURRENT_PROTOCOL,
 			"online" => count($this->server->clients),
 			"max" => $this->server->maxClients,
