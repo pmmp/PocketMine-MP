@@ -33,7 +33,6 @@ class BurningFurnaceBlock extends SolidBlock{
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
 			$faces = array(
 				0 => 4,
 				1 => 2,
@@ -43,8 +42,6 @@ class BurningFurnaceBlock extends SolidBlock{
 			$this->meta = $faces[$player->entity->getDirection()];
 			$this->level->setBlock($block, $this);
 			return true;
-		}
-		return false;
 	}
 	
 	public function onBreak(Item $item, Player $player){

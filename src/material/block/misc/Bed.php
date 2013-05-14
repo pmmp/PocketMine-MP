@@ -41,8 +41,8 @@ class BedBlock extends TransparentBlock{
 					3 => 5,
 				);
 				$d = $player->entity->getDirection();
-				$next = $this->level->getBlockFace($block, $faces[(($d + 3) % 4)]);
-				$downNext = $this->level->getBlockFace($next, 0);
+				$next = $this->getSide($faces[(($d + 3) % 4)]);
+				$downNext = $this->getSide(0);
 				if($next->isReplaceable === true and $downNext->isTransparent === false){
 					$meta = (($d + 3) % 4) & 0x03;
 					$this->level->setBlock($block, BlockAPI::get($this->id, $meta));

@@ -84,8 +84,8 @@ class TileEntityAPI{
 
 	public function add(Level $level, $class, $x, $y, $z, $data = array()){
 		$id = $this->tCnt++;
-		$this->tileEntities[$id] = new TileEntity($id, $class, $x, $y, $z, $data);
-		$this->spawnToAll($id);
+		$this->tileEntities[$id] = new TileEntity($level, $id, $class, $x, $y, $z, $data);
+		$this->spawnToAll($level, $id);
 		return $this->tileEntities[$id];
 	}
 	

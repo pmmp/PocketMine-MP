@@ -34,7 +34,6 @@ class Query{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
 	
 	public function __construct(){
-		$this->password = (string) $password;
 		console("[INFO] Starting GS4 status listener");
 		$this->server = ServerAPI::request();
 		$addr = $this->server->api->getProperty("server-ip", "0.0.0.0");
@@ -74,7 +73,7 @@ class Query{
 			"game_id" => "MINECRAFTPE",
 			"version" => CURRENT_MINECRAFT_VERSION,
 			"plugins" => $plist,
-			"map" => $this->server->mapName,
+			"map" => $this->server->api->level->getDefault()->getName(),
 			"numplayers" => count($this->server->clients),
 			"maxplayers" => $this->server->maxClients,
 			"hostport" => $this->server->api->getProperty("server-port"),
@@ -128,7 +127,7 @@ class Query{
 					}
 					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->longData, true, $packet["ip"], $packet["port"]);				
 				}else{
-					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00SMP\x00".$this->server->mapName."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00", true, $packet["ip"], $packet["port"]);
+					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00SMP\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00", true, $packet["ip"], $packet["port"]);
 				}
 				break;
 		}

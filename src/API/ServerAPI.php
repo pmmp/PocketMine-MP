@@ -83,7 +83,6 @@ class ServerAPI{
 			"enable-query" => false,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
-			"upnp-forwarding" => false,
 			"send-usage" => true,
 		));
 		$this->parseProperties();

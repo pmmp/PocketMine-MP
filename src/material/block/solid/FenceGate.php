@@ -31,18 +31,15 @@ class FenceGateBlock extends TransparentBlock{
 		$this->isActivable = true;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			$faces = array(
-				0 => 3,
-				1 => 0,
-				2 => 1,
-				3 => 2,
-			);
-			$this->meta = $faces[$player->entity->getDirection()] & 0x03;
-			$this->level->setBlock($block, $this);
-			return true;
-		}
-		return false;
+		$faces = array(
+			0 => 3,
+			1 => 0,
+			2 => 1,
+			3 => 2,
+		);
+		$this->meta = $faces[$player->entity->getDirection()] & 0x03;
+		$this->level->setBlock($block, $this);
+		return true;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array(

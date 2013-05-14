@@ -34,7 +34,6 @@ class AirBlock extends TransparentBlock{
 		$this->isTransparent = true;
 		$this->isReplaceable = true;
 		$this->isPlaceable = false;
-		$this->inWorld = false;
 		$this->hasPhysics = false;
 	}
 	
