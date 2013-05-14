@@ -302,6 +302,9 @@ class PlayerAPI{
 			$player = $this->server->clients[$CID];
 			$player->data = $this->getOffline($player->username);
 			$player->gamemode = $player->data->get("gamemode");
+			if(($player->level = $this->server->api->level->get($player->data->get("position")["level"])) === false){
+				$player->level = $this->server->api->level->getDefault();
+			}
 			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
 		}
 	}

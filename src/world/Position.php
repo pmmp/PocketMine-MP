@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class Position{
+class Position extends Vector3{
 	public $level;
 
 	public function __construct($x = 0, $y = 0, $z = 0, Level $level){

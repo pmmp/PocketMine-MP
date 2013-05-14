@@ -30,7 +30,13 @@ class LevelAPI{
 	public function __construct(){
 		$this->server = ServerAPI::request();
 		$this->levels = array();
-		$this->map = $this->server->level;
+	}
+	
+	public function get($name){
+		if(isset($this->levels[$name])){
+			return $this->levels[$name];
+		}
+		return false;
 	}
 	
 	public function getDefault(){
@@ -54,6 +60,7 @@ class LevelAPI{
 			$gen->save($path, $this->default);
 			$this->loadLevel($this->default);
 		}
+		$this->server->spawn = $this->getDefault()->getSpawn();
 	}
 	
 	public function loadLevel($name){
@@ -85,11 +92,11 @@ class LevelAPI{
 				));
 			}elseif($entity["id"] === OBJECT_PAINTING){ //Painting
 				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_OBJECT, $entity["id"], $entity);
-				$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
 				$e->setHealth($entity["Health"]);
 			}else{
 				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_MOB, $entity["id"], $entity);
-				$e->setPosition($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2], $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
 				$e->setHealth($entity["Health"]);
 			}
 		}

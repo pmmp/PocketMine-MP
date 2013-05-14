@@ -78,7 +78,7 @@ class ServerAPI{
 			"difficulty" => 1,
 			"generator" => "",
 			"generator-settings" => "",
-			"level-name" => false,
+			"level-name" => "world",
 			"server-id" => false,
 			"enable-query" => false,
 			"enable-rcon" => false,
@@ -170,9 +170,6 @@ class ServerAPI{
 		}
 		$this->loadAPI("plugin", "PluginAPI"); //fix :(
 		$this->plugin->init();
-		
-		
-		$this->server->loadEntities();
 	}
 	
 	public function async(callable $callable, $params = array(), $remove = false){

@@ -64,7 +64,7 @@ class PocketMinecraftServer{
 		$this->description = "";
 		$this->whitelist = false;
 		$this->clients = array();
-		$this->spawn = array("x" => 128.5,"y" => 100,"z" =>  128.5);
+		$this->spawn = false;
 		$this->time = 0;
 		$this->timePerSecond = 20;
 		$this->tickMeasure = array_fill(0, 40, 0);

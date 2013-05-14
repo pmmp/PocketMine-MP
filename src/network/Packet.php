@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class Packet{
-	private $struct, $sock;
+	private $struct;
 	protected $pid, $packet;
 	public $data, $raw;
 
@@ -40,7 +40,6 @@ class Packet{
 			$this->addRaw(chr($pid));
 		}
 		$this->struct = $struct;
-		$this->sock = $sock;
 	}
 
 	public function create($raw = false){

@@ -248,7 +248,7 @@ class Entity extends Position{
 					switch($b->getID()){
 						case WATER:
 						case STILL_WATER: //Drowing
-							if($this->fire > 0 and $this->inBlock($x, $y, $z)){
+							if($this->fire > 0 and $this->inBlock(new Vector3($x, $y, $z))){
 								$this->fire = 0;
 								$this->updateMetadata();
 							}
@@ -262,26 +262,26 @@ class Entity extends Position{
 							break;
 						case LAVA: //Lava damage
 						case STILL_LAVA:
-							if($this->inBlock($x, $y, $z)){
+							if($this->inBlock(new Vector3($x, $y, $z))){
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
 							}
 							break;
 						case FIRE: //Fire block damage
-							if($this->inBlock($x, $y, $z)){
+							if($this->inBlock(new Vector3($x, $y, $z))){
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
 							}
 							break;
 						case CACTUS: //Cactus damage
-							if($this->touchingBlock($x, $y, $z)){
+							if($this->touchingBlock(new Vector3($x, $y, $z))){
 								$this->harm(1, "cactus");
 							}
 							break;
 						default:
-							if($this->inBlock($x, $y, $z, 0.7) and $y == $endY and $b->isTransparent === false and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+							if($this->inBlock(new Vector3($x, $y, $z), 0.7) and $y == $endY and $b->isTransparent === false and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->harm(1, "suffocation"); //Suffocation
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 300; //Breathing
@@ -362,8 +362,8 @@ class Entity extends Position{
 					}					
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
-						$d = $this->server->api->block->getBlock(new Vector3($x, $y + 1, $z));
-						$d2 = $this->server->api->block->getBlock(new Vector3($x, $y + 2, $z));
+						$d = $this->level->getBlock(new Vector3($x, $y + 1, $z));
+						$d2 = $this->level->getBlock(new Vector3($x, $y + 2, $z));
 						$dmg = ($this->fallY - $y) - 3;
 						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER and !($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER){
 							$this->harm($dmg, "fall");
@@ -571,7 +571,7 @@ class Entity extends Position{
 	
 	public function inBlock(Vector3 $block, $radius = 0.8){
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
-		if(($y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
+		if(($block->y == ((int) $this->y) or $block->y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
 		}
 		return false;
@@ -579,7 +579,7 @@ class Entity extends Position{
 	
 	public function touchingBlock(Vector3 $block, $radius = 0.9){
 		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
-		if(($y == (((int) $this->y) - 1) or $y == ((int) $this->y) or $y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
+		if(($block->y == (((int) $this->y) - 1) or $block->y == ((int) $this->y) or $block->y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
 		}
 		return false;

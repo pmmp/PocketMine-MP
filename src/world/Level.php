@@ -97,7 +97,7 @@ class Level{
 	}
 	
 	public function getOrderedMiniChunk($X, $Z, $Y, $MTU){
-		$raw = $this->map->getMiniChunk($X, $Z, $Y);
+		$raw = $this->level->getMiniChunk($X, $Z, $Y);
 		$ordered = array();
 		$i = 0;
 		$ordered[$i] = "";

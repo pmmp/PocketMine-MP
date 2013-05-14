@@ -93,8 +93,11 @@ class Player{
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
 	
-	public function setSpawn(Position $pos){
-		$this->spawnPosition = $pos;
+	public function setSpawn(Vector3 $pos, $level){
+		if(($level = $this->server->api->level->get($level)) === false){
+			$level = $this->server->api->level->getDefault();
+		}
+		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
 		$this->dataPacket(MC_SET_SPAWN_POSITION, array(
 			"x" => (int) $this->spawnPosition->x,
 			"y" => (int) $this->spawnPosition->y,
@@ -546,7 +549,7 @@ class Player{
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
-			$this->entity->setPosition($pos->x, $pos->y, $pos->z, $yaw, $pitch);
+			$this->entity->setPosition($pos, $yaw, $pitch);
 			$this->entity->resetSpeed();
 			$this->entity->updateLast();
 			$this->entity->calculateVelocity();
@@ -838,7 +841,7 @@ class Player{
 							if(($this->gamemode & 0x01) === 0x01){
 								$this->equipment = BlockAPI::getItem($this->inventory[7][0], $this->inventory[7][1], $this->inventory[7][2]);
 							}
-							$this->entity = $this->server->api->entity->add(ENTITY_PLAYER, 0, array("player" => $this));
+							$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, array("player" => $this));
 							$this->eid = $this->entity->eid;
 							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
 							$this->entity->x = $this->data->get("position")["x"];
@@ -888,8 +891,8 @@ class Player{
 									$this->sendSettings();
 									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 									$this->blocked = false;
-									$this->teleport(new Vector3($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"]));
-									$this->setSpawn(new Vector3($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"]));
+									$this->teleport(new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level));
+									$this->setSpawn(new Vector3($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"]), $this->data->get("spawn")["level"]);
 									break;
 								case 2://Chunk loaded?
 									break;
@@ -908,7 +911,7 @@ class Player{
 									}
 									console("[WARNING] ".$this->username." moved too quickly!");
 								}else{
-									$this->entity->setPosition($data["x"], $data["y"], $data["z"], $data["yaw"], $data["pitch"]);
+									$this->entity->setPosition(new Vector3($data["x"], $data["y"], $data["z"]), $data["yaw"], $data["pitch"]);
 								}
 							}
 							break;

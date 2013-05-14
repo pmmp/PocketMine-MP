@@ -359,7 +359,7 @@ class BlockAPI{
 			return $this->cancelAction($block, $player);
 		}
 		
-		if($hand->isTransparent === false and $player->entity->inBlock($block->x, $block->y, $block->z)){
+		if($hand->isTransparent === false and $player->entity->inBlock($block)){
 			return $this->cancelAction($block, $player); //Entity in block
 		}
 		
