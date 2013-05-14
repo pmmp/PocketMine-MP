@@ -345,7 +345,7 @@ class BlockAPI{
 			return false;
 		}
 		
-		if($item->isActivable === true and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
+		if($item->isActivable === true and $item->onActivate($player, $block, $target, $face, $fx, $fy, $fz)){
 			return $this->cancelAction($block, $player);
 		}
 

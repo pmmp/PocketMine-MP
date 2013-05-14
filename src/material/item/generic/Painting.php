@@ -31,7 +31,7 @@ class PaintingItem extends Item{
 		$this->isActivable = true;
 	}
 	
-	public function onActivate(BlockAPI $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1 and $block->isFlowable === true){
 			$server = ServerAPI::request();
 			$faces = array(
@@ -78,9 +78,8 @@ class PaintingItem extends Item{
 				"yaw" => $faces[$face] * 90,
 				"Motive" => $motive[0],
 			);
-			$server = ServerAPI::request();
-			$e = $server->api->entity->add(ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			$server->api->entity->spawnToAll($e->eid);
+			$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
+			$server->api->entity->spawnToAll($this->level, $e->eid);
 			if(($player->gamemode & 0x01) === 0x00){
 				$player->removeItem($this->getID(), $this->getMetadata(), 1);
 			}

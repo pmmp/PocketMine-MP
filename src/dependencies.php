@@ -37,7 +37,7 @@ if(arg("enable-ansi", strpos(strtoupper(php_uname("s")), "WIN") === false ? true
 	define("ENABLE_ANSI", false);
 }
 
-set_error_handler("fatal_handler", E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_DEPRECATED);
+set_error_handler("error_handler", E_ALL);
 
 $errors = 0;
 

@@ -30,12 +30,11 @@ class ChestBlock extends TransparentBlock{
 		parent::__construct(CHEST, $meta, "Chest");
 		$this->isActivable = true;
 	}
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			$block0 = $level->getBlockFace($block, 2);
-			$block1 = $level->getBlockFace($block, 3);
-			$block2 = $level->getBlockFace($block, 4);
-			$block3 = $level->getBlockFace($block, 5);
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+			$block0 = $this->getSide(2);
+			$block1 = $this->getSide(3);
+			$block2 = $this->getSide(4);
+			$block3 = $this->getSide(5);
 			if($block0->getID() !== CHEST and $block1->getID() !== CHEST and $block2->getID() !== CHEST and $block3->getID() !== CHEST){
 				$faces = array(
 					0 => 4,
@@ -43,9 +42,10 @@ class ChestBlock extends TransparentBlock{
 					2 => 5,
 					3 => 3,
 				);
-				$level->setBlock($block, $this->id, $faces[$player->entity->getDirection()]);
+				$this->meta = $faces[$player->entity->getDirection()];
+				$this->level->setBlock($block, $this);
 				$server = ServerAPI::request();
-				$server->api->tileentity->add(TILE_CHEST, $this->x, $this->y, $this->z, array(
+				$server->api->tileentity->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
 					"Items" => array(),
 					"id" => TILE_CHEST,
 					"x" => $this->x,
@@ -54,12 +54,10 @@ class ChestBlock extends TransparentBlock{
 				));
 				return true;
 			}
-		}
 		return false;
 	}
 	
-	public function onBreak(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld === true){
+	public function onBreak(Item $item, Player $player){
 			$server = ServerAPI::request();
 			$t = $server->api->tileentity->get($this);
 			if($t !== false){
@@ -73,17 +71,12 @@ class ChestBlock extends TransparentBlock{
 					$server->api->tileentity->remove($t->id);
 				}
 			}
-			$level->setBlock($this, 0, 0);
+			$this->level->setBlock($this, new AirBlock());
 			return true;
-		}
-		return false;
 	}
 	
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld !== true){
-			return false;
-		}
-		$top = $level->getBlockFace($this, 1);
+	public function onActivate(Item $item, Player $player){
+		$top = $this->getSide(1);
 		if($top->isTransparent !== true){
 			return true;
 		}
@@ -98,7 +91,7 @@ class ChestBlock extends TransparentBlock{
 				$chest = $t;
 			}
 		}else{
-			$chest = $server->api->tileentity->add(TILE_CHEST, $this->x, $this->y, $this->z, array(
+			$chest = $server->api->tileentity->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
 				"id" => TILE_CHEST,
 				"x" => $this->x,

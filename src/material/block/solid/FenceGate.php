@@ -30,7 +30,7 @@ class FenceGateBlock extends TransparentBlock{
 		parent::__construct(FENCE_GATE, $meta, "Fence Gate");
 		$this->isActivable = true;
 	}
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
 			$faces = array(
 				0 => 3,
@@ -39,7 +39,7 @@ class FenceGateBlock extends TransparentBlock{
 				3 => 2,
 			);
 			$this->meta = $faces[$player->entity->getDirection()] & 0x03;
-			$level->setBlock($block, $this->id, $this->meta);
+			$this->level->setBlock($block, $this);
 			return true;
 		}
 		return false;
@@ -49,7 +49,7 @@ class FenceGateBlock extends TransparentBlock{
 			array($this->id, 0, 1),
 		);
 	}
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		$faces = array(
 			0 => 3,
 			1 => 0,
@@ -57,7 +57,7 @@ class FenceGateBlock extends TransparentBlock{
 			3 => 2,
 		);
 		$this->meta = ($faces[$player->entity->getDirection()] & 0x03) | ((~$this->meta) & 0x04);
-		$level->setBlock($this, $this->id, $this->meta);
+		$this->level->setBlock($this, $this);
 		return true;
 	}	
 }

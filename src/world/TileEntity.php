@@ -134,6 +134,7 @@ class TileEntity extends Position{
 		switch($this->class){
 			case TILE_SIGN:
 				$player->dataPacket(MC_SIGN_UPDATE, array(
+					"level" => $this->level,
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,

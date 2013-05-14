@@ -244,7 +244,7 @@ class Entity extends Position{
 		for($y = $startY; $y <= $endY; ++$y){
 			for($x = $startX; $x <= $endX; ++$x){
 				for($z = $startZ; $z <= $endZ; ++$z){
-					$b = $this->server->api->block->getBlock(new Vector3($x, $y, $z));
+					$b = $this->level->getBlock(new Vector3($x, $y, $z));
 					switch($b->getID()){
 						case WATER:
 						case STILL_WATER: //Drowing
@@ -316,7 +316,7 @@ class Entity extends Position{
 				for($x = $startX; $x <= $endX; ++$x){
 					$v = new Vector3($x, $y, $z);
 					if($this->isSupport($v)){
-						$b = $this->server->api->block->getBlock($v);
+						$b = $this->level->getBlock($v);
 						if($b->isFlowable !== true){
 							$support = true;
 							break;

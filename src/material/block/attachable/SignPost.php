@@ -30,34 +30,30 @@ class SignPostBlock extends TransparentBlock{
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
 	}
 	
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true and $face !== 0){
-			if($face !== 0){
-				$faces = array(
-					2 => 2,
-					3 => 3,
-					4 => 4,
-					5 => 5,
-				);
-				if(!isset($faces[$face])){
-					$b = floor((($player->entity->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
-					$level->setBlock($block, SIGN_POST, $b);
-					return true;
-				}else{
-					$level->setBlock($block, WALL_SIGN, $faces[$face]);
-					return true;
-				}
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($face !== 0){
+			$faces = array(
+				2 => 2,
+				3 => 3,
+				4 => 4,
+				5 => 5,
+			);
+			if(!isset($faces[$face])){
+				$this->meta = floor((($player->entity->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
+				$this->level->setBlock($block, BlockAPI::get(SIGN_POST, $this->meta));
+				return true;
+			}else{
+				$this->meta = $faces[$face];
+				$this->level->setBlock($block, BlockAPI::get(WALL_SIGN, $this->meta));
+				return true;
 			}
 		}
 		return false;
 	}
 	
-	public function onBreak(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld === true){
-			$level->setBlock($this, 0, 0, true, true);
-			return true;
-		}
-		return false;
+	public function onBreak(Item $item, Player $player){
+		$this->level->setBlock($this, new AirBlock(), true, true);
+		return true;
 	}
 
 	public function getDrops(Item $item, Player $player){

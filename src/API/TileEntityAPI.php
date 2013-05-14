@@ -90,7 +90,7 @@ class TileEntityAPI{
 	}
 	
 	public function addSign(Level $level, $x, $y, $z, $lines = array("", "", "", "")){
-		return $this->add(TILE_SIGN, $x, $y, $z, $data = array(
+		return $this->add($level, TILE_SIGN, $x, $y, $z, $data = array(
 			"id" => "Sign",
 			"x" => $x,
 			"y" => $y,
@@ -110,7 +110,7 @@ class TileEntityAPI{
 		$t->spawn($player, $queue);
 	}
 
-	public function spawnToAll($id){
+	public function spawnToAll(Level $level, $id){
 		$t = $this->getByID($id);
 		if($t === false){
 			return false;

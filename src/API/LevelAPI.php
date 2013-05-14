@@ -52,7 +52,7 @@ class LevelAPI{
 			$gen->init();
 			$gen->generate();
 			$gen->save($path, $this->default);
-			$this->loadLevel($this->default)
+			$this->loadLevel($this->default);
 		}
 	}
 	

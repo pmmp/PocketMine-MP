@@ -143,7 +143,7 @@ class Item{
 		return 1;
 	}
 	
-	public function onActivate(BlockAPI $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
 	

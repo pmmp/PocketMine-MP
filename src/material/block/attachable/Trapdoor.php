@@ -30,8 +30,7 @@ class TrapdoorBlock extends TransparentBlock{
 		parent::__construct(TRAPDOOR, $meta, "Trapdoor");
 		$this->isActivable = true;
 	}
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			if($target->isTransparent === false and $face !== 0 and $face !== 1){
 				$faces = array(
 					2 => 0,
@@ -43,20 +42,18 @@ class TrapdoorBlock extends TransparentBlock{
 				if($fy > 0.5){
 					$this->meta |= 0x08;
 				}
-				$level->setBlock($block, $this->id, $this->meta);
+				$this->level->setBlock($block, $this);
 				return true;
 			}
-		}
-		return false;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);
 	}
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		$this->meta ^= 0x04;
-		$level->setBlock($this, $this->id, $this->meta);
+		$this->level->setBlock($this, $this);
 		return true;
 	}
 }

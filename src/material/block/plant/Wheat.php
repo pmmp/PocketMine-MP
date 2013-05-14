@@ -31,20 +31,19 @@ class WheatBlock extends FlowableBlock{
 		$this->isActivable = true;
 	}
 
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			$down = $level->getBlockFace($block, 0);
-			if($down->getID() === FARMLAND){
-				$level->setBlock($block, $this->id, $this->getMetadata());
-				return true;
-			}
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		$down = $this->getSide(0);
+		if($down->getID() === FARMLAND){
+			$this->level->setBlock($block, $this);
+			return true;
 		}
 		return false;
 	}
 	
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			$level->setBlock($this, $this->id, 0x07);
+			$this->meta = 0x07;
+			$this->level->setBlock($this, $this);
 			return true;
 		}
 		return false;

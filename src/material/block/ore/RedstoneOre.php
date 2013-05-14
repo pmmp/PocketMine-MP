@@ -30,10 +30,10 @@ class RedstoneOreBlock extends SolidBlock{
 		parent::__construct(REDSTONE_ORE, 0, "Redstone Ore");
 	}
 	
-	public function onUpdate(BlockAPI $level, $type){
+	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL or $type === BLOCK_UPDATE_TOUCH){
-			$level->setBlock($this, GLOWING_REDSTONE_ORE, $this->getMetadata(), false);
-			$level->scheduleBlockUpdate($this, mt_rand(45, 100));
+			$this->level->setBlock($this, GLOWING_REDSTONE_ORE, $this->getMetadata(), false);
+			$this->level->scheduleBlockUpdate($this, mt_rand(45, 100));
 			return BLOCK_UPDATE_WEAK;
 		}
 		return false;

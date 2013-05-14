@@ -29,18 +29,17 @@ class LadderBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(LADDER, $meta, "Ladder");
 	}
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			if($target->isTransparent === false){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($target->isTransparent === false){
 				$faces = array(
 					2 => 2,
 					3 => 3,
 					4 => 4,
 					5 => 5,
 				);
-				$level->setBlock($block, $this->id, $faces[$face]);
-				return true;
-			}
+			$this->meta = $faces[$face];
+			$this->level->setBlock($block, $this);
+			return true;
 		}
 		return false;
 	}

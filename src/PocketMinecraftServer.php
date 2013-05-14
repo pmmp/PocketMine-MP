@@ -40,6 +40,7 @@ class PocketMinecraftServer{
 		if($this->port < 19132 or $this->port > 19135){ //Mojang =(
 			console("[WARNING] You've selected a not-standard port. Normal port range is from 19132 to 19135 included");
 		}
+		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8, false)):$this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
 		$this->startDatabase();
@@ -333,13 +334,14 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function clientID($ip, $port){
-		return md5($ip . $port, true) ^ sha1($port . $ip, true);
+	public static function clientID($ip, $port){
+		//faster than string indexes in PHP
+		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
 	}
 
 	public function packetHandler($packet){
 		$data =& $packet["data"];
-		$CID = $this->clientID($packet["ip"], $packet["port"]);
+		$CID = PocketMinecraftServer::clientID($packet["ip"], $packet["port"]);
 		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handle($packet["pid"], $data);
 		}else{

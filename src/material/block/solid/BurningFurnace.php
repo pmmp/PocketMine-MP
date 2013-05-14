@@ -32,7 +32,7 @@ class BurningFurnaceBlock extends SolidBlock{
 		$this->isActivable = true;
 	}
 
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($block->inWorld === true){
 			$faces = array(
 				0 => 4,
@@ -40,14 +40,14 @@ class BurningFurnaceBlock extends SolidBlock{
 				2 => 5,
 				3 => 3,
 			);
-			$level->setBlock($block, $this->id, $faces[$player->entity->getDirection()]);
+			$this->meta = $faces[$player->entity->getDirection()];
+			$this->level->setBlock($block, $this);
 			return true;
 		}
 		return false;
 	}
 	
-	public function onBreak(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld === true){
+	public function onBreak(Item $item, Player $player){
 			$server = ServerAPI::request();
 			$t = $server->api->tileentity->get($this);
 			if($t !== false){
@@ -61,16 +61,12 @@ class BurningFurnaceBlock extends SolidBlock{
 					$server->api->tileentity->remove($t->id);
 				}
 			}
-			$level->setBlock($this, 0, 0);
+			$this->level->setBlock($this, new AirBlock());
 			return true;
-		}
-		return false;
 	}
 
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld !== true){
-			return false;
-		}
+	public function onActivate(Item $item, Player $player){
+
 		$server = ServerAPI::request();
 		$t = $server->api->tileentity->get($this);
 		$furnace = false;
@@ -81,7 +77,7 @@ class BurningFurnaceBlock extends SolidBlock{
 				$furnace = $t;
 			}
 		}else{
-			$furnace = $server->api->tileentity->add(TILE_FURNACE, $this->x, $this->y, $this->z, array(
+			$furnace = $server->api->tileentity->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
 				"id" => TILE_FURNACE,
 				"x" => $this->x,

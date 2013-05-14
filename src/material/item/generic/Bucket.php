@@ -32,9 +32,9 @@ class BucketItem extends Item{
 		$this->maxStackSize = 1;
 	}
 	
-	public function onActivate(BlockAPI $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->getID() === STILL_WATER or $target->getID() === STILL_LAVA){
-			$level->setBlock($target, AIR, 0);
+			$level->setBlock($target, new AirBlock());
 			$player->removeItem($this->getID(), $this->getMetadata(), $this->count);
 			$player->addItem(($target->getID() === STILL_LAVA ? LAVA_BUCKET:WATER_BUCKET), 0, 1);
 			return true;

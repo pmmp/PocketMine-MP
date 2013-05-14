@@ -30,7 +30,7 @@ class TorchBlock extends FlowableBlock{
 		parent::__construct(TORCH, $meta, "Torch");
 	}
 	
-	public function onUpdate(BlockAPI $level, $type){
+	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			$side = $this->getMetadata();
 			$faces = array(
@@ -42,31 +42,32 @@ class TorchBlock extends FlowableBlock{
 					6 => 0,
 					0 => 0,
 			);
-			if($level->getBlockFace($this, $faces[$side])->isTransparent === true){
-				$level->drop($this, BlockAPI::getItem($this->id));
-				$level->setBlock($this, AIR, 0, false);
+
+			if($this->getSide($faces[$side])->isTransparent === true){ //Replace wit hcommon break method
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
+				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
 		return false;
 	}
 
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			if($target->isTransparent === false and $face !== 0){
-				$faces = array(
-					1 => 5,
-					2 => 4,
-					3 => 3,
-					4 => 2,
-					5 => 1,
-				);
-				$level->setBlock($block, $this->id, $faces[$face]);
-				return true;
-			}elseif($level->getBlockFace($block, 0)->isTransparent === false){
-				$level->setBlock($block, $this->id, 5);
-				return true;
-			}
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($target->isTransparent === false and $face !== 0){
+			$faces = array(
+				1 => 5,
+				2 => 4,
+				3 => 3,
+				4 => 2,
+				5 => 1,
+			);
+			$this->meta = $faces[$face];
+			$this->level->setBlock($block, $this);
+			return true;
+		}elseif($this->getSide(0)->isTransparent === false){
+			$this->meta = 0;
+			$this->level->setBlock($block, $this);
+			return true;
 		}
 		return false;
 	}

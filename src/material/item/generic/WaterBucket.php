@@ -32,9 +32,9 @@ class WaterBucketItem extends Item{
 		$this->maxStackSize = 1;
 	}
 	
-	public function onActivate(BlockAPI $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->getID() === AIR){
-			$level->setBlock($target, STILL_WATER, 0);
+			$level->setBlock($target, new StillWaterBLock());
 			$player->removeItem($this->getID(), $this->getMetadata(), $this->count);
 			$player->addItem(BUCKET, 0, 1);
 			return true;

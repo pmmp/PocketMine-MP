@@ -30,10 +30,10 @@ class DoorBlock extends TransparentBlock{
 		parent::__construct($id, $meta, $name);
 	}
 
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true and $face === 1){
-			$blockUp = $level->getBlockFace($block, 1);
-			$blockDown = $level->getBlockFace($block, 0);
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		if($face === 1){
+			$blockUp = $this->getSide(1);
+			$blockDown = $this->getSide(0);
 			if($blockUp->isReplaceable === false or $blockDown->isTransparent === true){
 				return false;
 			}
@@ -44,52 +44,50 @@ class DoorBlock extends TransparentBlock{
 				2 => 2,
 				3 => 5,
 			);
-			$next = $level->getBlockFace($block, $face[(($direction + 2) % 4)]);
-			$next2 = $level->getBlockFace($block, $face[$direction]);
+			$next = $this->getSide($face[(($direction + 2) % 4)]);
+			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;
 			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
-			$level->setBlock($blockUp, $this->id, $metaUp); //Top
+			$this->level->setBlock($blockUp, BlockAPI::get($this->id, $metaUp)); //Top
 			
 			$this->meta = $direction & 0x03;
-			$level->setBlock($block, $this->id, $this->meta); //Bottom
+			$this->level->setBlock($block, $this); //Bottom
 			return true;			
 		}
 		return false;
 	}
 	
-	public function onBreak(BlockAPI $level, Item $item, Player $player){
-		if($this->inWorld === true){
+	public function onBreak(Item $item, Player $player){
 			if(($this->meta & 0x08) === 0x08){
-				$down = $level->getBlockFace($this, 0);
+				$down = $this->getSide(0);
 				if($down->getID() === $this->id){
-					$level->setBlock($down, 0, 0);
+					$this->level->setBlock($down, new AirBlock());
 				}
 			}else{
-				$up = $level->getBlockFace($this, 1);
+				$up = $this->getSide(1);
 				if($up->getID() === $this->id){
-					$level->setBlock($up, 0, 0);
+					$this->level->setBlock($up, new AirBlock());
 				}
 			}
-			$level->setBlock($this, 0, 0);
+			$this->level->setBlock($this, new AirBlock());
 			return true;
-		}
 		return false;
 	}
 	
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if(($this->meta & 0x08) === 0x08){ //Top
-			$down = $level->getBlockFace($this, 0);
+			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
 				$meta = $down->getMetadata() ^ 0x04;
-				$level->setBlock($down, $this->id, $meta);
+				$this->level->setBlock($down, BlockAPI::get($this->id, $meta));
 				return true;
 			}
 			return false;
 		}else{
 			$this->meta ^= 0x04;
-			$level->setBlock($this, $this->id, $this->meta);
+			$this->level->setBlock($this, $this);
 		}
 		return true;
 	}

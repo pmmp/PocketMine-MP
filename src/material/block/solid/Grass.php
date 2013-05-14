@@ -36,13 +36,13 @@ class GrassBlock extends SolidBlock{
 		);
 	}
 
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){
 			for($c = 0; $c < 15; ++$c){
 				$x = mt_rand($this->x - 2, $this->x + 2);
 				$z = mt_rand($this->z - 2, $this->z + 2);
-				$b = $level->getBlock(new Vector3($x, $this->y + 1, $z));
-				$d = $level->getBlock(new Vector3($x, $this->y, $z));
+				$b = $this->level->getBlock(new Vector3($x, $this->y + 1, $z));
+				$d = $this->level->getBlock(new Vector3($x, $this->y, $z));
 				if($b->getID() === AIR and $d->getID() === GRASS){
 					$arr = array(
 						array(DANDELION, 0),
@@ -54,12 +54,12 @@ class GrassBlock extends SolidBlock{
 						array(AIR, 0),
 					);
 					$t = $arr[mt_rand(0, count($arr) - 1)];
-					$level->setBlock($b, $t[0], $t[1]);
+					$this->level->setBlock($b, BlockAPI::get($t[0], $t[1]));
 				}
 			}
 			return true;
 		}elseif($item->isHoe()){
-			$level->setBlock($this, FARMLAND, 0);
+			$this->level->setBlock($this, new FarmlandBlock());
 			return true;
 		}
 		return false;

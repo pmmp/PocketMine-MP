@@ -43,7 +43,8 @@ class SaplingBlock extends TransparentBlock{
 		$this->name = $names[$this->meta & 0x03];
 	}
 	
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		console("SAPLING SAPLING SAPLING");return false; //Placeholder
 		if($block->inWorld === true){
 			$down = $level->getBlockFace($block, 0);
 			if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
@@ -54,7 +55,8 @@ class SaplingBlock extends TransparentBlock{
 		return false;
 	}
 	
-	public function onActivate(BlockAPI $level, Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
+		console("SAPLING SAPLING SAPLING");return false; //Placeholder
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			TreeObject::growTree($level, $this);
 			return true;
@@ -62,7 +64,8 @@ class SaplingBlock extends TransparentBlock{
 		return false;
 	}
 	
-	public function onUpdate(BlockAPI $level, $type){
+	public function onUpdate($type){
+		console("SAPLING SAPLING SAPLING");return false; //Placeholder
 		if($this->inWorld !== true){
 			return false;
 		}

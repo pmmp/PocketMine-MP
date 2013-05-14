@@ -30,14 +30,12 @@ class DandelionBlock extends FlowableBlock{
 		parent::__construct(DANDELION, 0, "Dandelion");
 		$this->isFlowable = true;
 	}
-	public function place(BlockAPI $level, Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->inWorld === true){
-			$down = $level->getBlockFace($block, 0);
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+			$down = $this->getSide(0);
 			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
-				$level->setBlock($block, $this->id, $this->getMetadata());
+				$this->level->setBlock($block, $this);
 				return true;
 			}
-		}
 		return false;
 	}	
 }

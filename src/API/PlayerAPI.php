@@ -243,21 +243,34 @@ class PlayerAPI{
 			return false;
 		}
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";", true);
-		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
+		$CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
 		}
 		return false;
 	}
 
-	public function getAll(){
+	public function getAll($level = null){
+		if($level instanceof Level){
+			$clients = array();
+			$l = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."' AND class = '".ENTITY_PLAYER."';");
+			if($l !== false and $l !== true){
+				while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
+					$e = $this->getByEID($e["EID"]);
+					if($e instanceof Player){
+						$clients[$e->clientID] = $e->player;
+					}
+				}
+			}
+			return $clients;
+		}
 		return $this->server->clients;
 	}
 
 	public function getByEID($eid){
 		$eid = (int) $eid;
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE EID = '".$eid."';", true);
-		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
+		$CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
 		}
@@ -267,7 +280,7 @@ class PlayerAPI{
 	public function getByClientID($clientID){
 		$clientID = (int) $clientID;
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE clientID = '".$clientID."';", true);
-		$CID = $this->server->clientID($CID["ip"], $CID["port"]);
+		$CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
 		}
