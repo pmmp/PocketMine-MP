@@ -658,7 +658,6 @@ class Player{
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
-							++$cnt;
 							$this->directDataPacket($d["id"], $d, $count);
 						}
 					}
