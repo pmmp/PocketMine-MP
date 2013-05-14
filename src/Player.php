@@ -106,7 +106,7 @@ class Player{
 	}
 	
 	public function orderChunks(){
-		if(!($this->entity instanceof Entity)){
+		if(!($this->entity instanceof Entity) or $this->connected === false){
 			return false;
 		}
 		$X = $this->entity->x / 16;
@@ -128,6 +128,9 @@ class Player{
 	}
 	
 	public function getNextChunk($repeat = false){
+		if($this->connected === false){
+			return false;
+		}
 		$c = key($this->chunksOrder);
 		$d = $this->chunksOrder[$c];
 		if($c === null or $d > $this->server->api->getProperty("view-distance")){
@@ -1301,6 +1304,9 @@ class Player{
 	}
 	
 	public function directDataPacket($id, $data = array(), $count = false){
+		if($this->connected === false){
+			return false;
+		}
 		$data["id"] = $id;
 		$data["sendtime"] = microtime(true);
 		if($count === false){
