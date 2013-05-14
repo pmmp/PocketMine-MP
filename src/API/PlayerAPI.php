@@ -253,12 +253,12 @@ class PlayerAPI{
 	public function getAll($level = null){
 		if($level instanceof Level){
 			$clients = array();
-			$l = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."' AND class = '".ENTITY_PLAYER."';");
+			$l = $this->server->query("SELECT EID FROM entities WHERE level = '".$level->getName()."' AND class = '".ENTITY_PLAYER."';");
 			if($l !== false and $l !== true){
 				while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
 					$e = $this->getByEID($e["EID"]);
 					if($e instanceof Player){
-						$clients[$e->clientID] = $e->player;
+						$clients[$e->clientID] = $e;
 					}
 				}
 			}

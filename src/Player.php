@@ -167,7 +167,7 @@ class Player{
 	}
 
 	public function onTick($time, $event){
-		if($event !== "server.tick"){ //WTF??
+		if($event !== "server.tick" or $this->connected === false){
 			return;
 		}
 		if($time > $this->timeout){
@@ -394,7 +394,16 @@ class Player{
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
 				break;
 			case "block.change":
-				$this->dataPacket(MC_UPDATE_BLOCK, $data);
+				if($data["position"]->level !== $this->level){
+					break;
+				}
+				$this->dataPacket(MC_UPDATE_BLOCK, array(
+					"x" => $data["position"]->x,
+					"y" => $data["position"]->y,
+					"z" => $data["position"]->z,
+					"block" => $data["block"]->getID(),
+					"meta" => $data["block"]->getMetadata(),
+				));
 				break;
 			case "entity.move":
 				if($data->eid === $this->eid){
@@ -875,7 +884,7 @@ class Player{
 									}
 									$this->spawned = true;						
 									$this->server->api->entity->spawnAll($this);
-									$this->server->api->entity->spawnToAll($this->eid);
+									$this->server->api->entity->spawnToAll($this->level, $this->eid);
 									$this->server->schedule(5, array($this->entity, "update"), array(), true);
 									$this->sendArmor();
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
@@ -1123,7 +1132,7 @@ class Player{
 									$t->data["Text3"] = $data["line2"];
 									$t->data["Text4"] = $data["line3"];
 									$this->server->handle("tile.update", $t);
-									$this->server->api->tileentity->spawnToAll($t);
+									$this->server->api->tileentity->spawnToAll($this->level, $t);
 								}
 							}
 							break;

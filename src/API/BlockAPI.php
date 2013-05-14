@@ -282,34 +282,10 @@ class BlockAPI{
 		
 		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
-				$this->drop($target, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
+				$this->server->api->entity->drop($target, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF));
 			}
 		}
 		return false;
-	}
-
-	public function drop(Position $pos, Item $item){
-		if($item->getID() === AIR or $item->count <= 0){
-			return;
-		}
-		$data = array(
-			"x" => $pos->x + mt_rand(2, 8) / 10,
-			"y" => $pos->y + 0.19,
-			"z" => $pos->z + mt_rand(2, 8) / 10,
-			"item" => $item,
-		);
-		if($this->server->api->handle("item.drop", $data) !== false){
-			for($count = $item->count; $count > 0; ){
-				$item->count = min($item->getMaxStackSize(), $count);
-				$count -= $item->count;
-				$server = ServerAPI::request();
-				$e = $server->api->entity->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
-				//$e->speedX = mt_rand(-10, 10) / 100;
-				//$e->speedY = mt_rand(0, 5) / 100;
-				//$e->speedZ = mt_rand(-10, 10) / 100;
-				$server->api->entity->spawnToAll($e->eid);
-			}
-		}
 	}
 
 	public function playerBlockAction(Player $player, Vector3 $vector, $face, $fx, $fy, $fz){
@@ -351,6 +327,7 @@ class BlockAPI{
 
 		if($item->isPlaceable()){
 			$hand = $item->getBlock();
+			$hand->position($block);
 		}else{
 			return $this->cancelAction($block, $player);
 		}
@@ -368,7 +345,7 @@ class BlockAPI{
 		}elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
 			return $this->cancelAction($block, $player);
 		}
-		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_POST){
+		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
 			$t = $this->server->api->tileentity->addSign($player->level, $block->x, $block->y, $block->z);
 			$t->data["creator"] = $player->username;
 		}

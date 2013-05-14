@@ -334,7 +334,7 @@ class PMFLevel extends PMF{
 		$bindex = $aY + ($aX << 5) + ($aZ << 9);
 		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
 		$old_b = $this->chunks[$index][$Y]{$bindex};		
-		$old_m = ord($this->map[$X][$Z][1][$index]{$y >> 1});
+		$old_m =  $this->chunks[$index][$Y]{$mindex};
 		if(($y & 1) === 0){
 			$old_m = $old_m & 0x0F;
 			$m = ($old_m << 4) | ($meta & 0x0F);

@@ -39,7 +39,7 @@ class GenericBlock extends Block{
 	}
 	
 	public function onBreak(Item $item, Player $player){
-		return $this->level->setBlock($this, BlockAPI::getBlock(AIR, 0));
+		return $this->level->setBlock($this, new AirBlock());
 	}
 	
 	public function onUpdate($type){

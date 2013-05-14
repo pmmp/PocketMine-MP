@@ -68,7 +68,7 @@ class TileEntityAPI{
 	public function getAll($level = null){
 		if($level instanceof Level){
 			$tileEntities = array();
-			$l = $this->server->query("SELECT ID FROM tileentities WHERE level = '".$this->level->getName()."';");
+			$l = $this->server->query("SELECT ID FROM tileentities WHERE level = '".$level->getName()."';");
 			if($l !== false and $l !== true){
 				while(($t = $l->fetchArray(SQLITE3_ASSOC)) !== false){
 					$t = $this->get($e["ID"]);
@@ -115,15 +115,15 @@ class TileEntityAPI{
 		if($t === false){
 			return false;
 		}
-		foreach($this->server->api->player->getAll() as $player){
+		foreach($this->server->api->player->getAll($level) as $player){
 			if($player->eid !== false){
 				$t->spawn($player);
 			}
 		}
 	}
 
-	public function spawnAll($player){
-		foreach($this->getAll() as $t){
+	public function spawnAll(Player $player){
+		foreach($this->getAll($player->level) as $t){
 			$t->spawn($player);
 		}
 	}
