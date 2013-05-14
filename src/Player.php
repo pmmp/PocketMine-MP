@@ -633,6 +633,9 @@ class Player{
 	}
 	
 	public function measureLag(){
+		if($this->connected === false){
+			return false;
+		}
 		$this->lag[0] = microtime(true) * 1000;
 		$this->dataPacket(MC_PING, array(
 			"time" => (int) $this->lag[0],
@@ -1121,7 +1124,7 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							$t = $this->server->api->tileentity->get($data["x"], $data["y"], $data["z"]);
+							$t = $this->server->api->tileentity->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
 							if(($t[0] instanceof TileEntity) and $t[0]->class === TILE_SIGN){
 								$t = $t[0];
 								if($t->data["creator"] !== $this->username){
