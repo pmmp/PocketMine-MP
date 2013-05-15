@@ -44,11 +44,11 @@ class BigTreeObject extends TreeObject{
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
 
-	public function canPlaceObject(BlockAPI $level, $x, $y, $z){
+	public function canPlaceObject(Level $level, $x, $y, $z){
 		return false;
 	}
 
-	public function placeObject(BlockAPI $level, $x, $y, $z, $type){
+	public function placeObject(Level $level, $x, $y, $z, $type){
 
 		$this->trunkHeight = (int) ($this->totalHeight * $this->trunkHeightMultiplier);
 		$leaves = $this->getLeafGroupPoints($level, $x, $y, $z);

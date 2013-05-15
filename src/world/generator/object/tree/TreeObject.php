@@ -33,7 +33,7 @@ class TreeObject{
 		17 => true,
 		18 => true,
 	);
-	public static function growTree(BlockAPI $level, Block $block){
+	public static function growTree(Level $level, Block $block){
 		switch($block->getMetadata() & 0x03){
 			case SaplingBlock::SPRUCE:
 				if(mt_rand(0,1) == 1){

@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Level{
 	public $entities, $tileEntities;
-	private $level, $time, $startCheck, $startTime, $server, $name;
+	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
 		$this->server = ServerAPI::request();

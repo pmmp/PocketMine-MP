@@ -35,7 +35,7 @@ class PineTreeObject extends TreeObject{
 	private $leavesSizeY = -1;
 	private $leavesAbsoluteMaxRadius = -1;
 
-	public function canPlaceObject(BlockAPI $level, $x, $y, $z){
+	public function canPlaceObject(Level $level, $x, $y, $z){
 		$this->findRandomLeavesSize();
 		$checkRadius = 0;
 		for($yy = 0; $yy < $this->totalHeight; ++$yy) {
@@ -44,7 +44,7 @@ class PineTreeObject extends TreeObject{
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
 				for($zz = -$checkRadius; $zz < ($checkRadius + 1); ++$zz){
-					$block = $level->getBlock($x + $xx, $y + $yy, $z + $zz);
+					$block = $level->getBlock(new Vector3($x + $xx, $y + $yy, $z + $zz));
 					if(!isset($this->overridable[$block->getID()])){
 						return false;
 					}
@@ -60,11 +60,11 @@ class PineTreeObject extends TreeObject{
 		$this->leavesAbsoluteMaxRadius = 2 + mt_rand(0, 2);
 	}
 
-	public function placeObject(BlockAPI $level, $x, $y, $z){
+	public function placeObject(Level $level, $x, $y, $z){
 		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
-		$level->setBlock(new Vector3($x, $y - 1, $z), 3, 0);
+		$level->setBlock(new Vector3($x, $y - 1, $z), new DirtBlock());
 		$leavesRadius = mt_rand(0,2);
 		$leavesMaxRadius = 1;
 		$leavesBottomY = $this->totalHeight - $this->leavesSizeY;
@@ -74,7 +74,7 @@ class PineTreeObject extends TreeObject{
 			for ($xx = -$leavesRadius; $xx < ($leavesRadius + 1); ++$xx) {
 				for ($zz = -$leavesRadius; $zz < ($leavesRadius + 1); ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
-						$level->setBlock(New Vector3($x + $xx, $y + $yy, $z + $zz), 18, $this->type);
+						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), new LeavesBlock($this->type));
 					}
 				}
 			}
@@ -90,7 +90,7 @@ class PineTreeObject extends TreeObject{
 		}
 		$trunkHeightReducer = mt_rand(0,3);
 		for($yy = 0; $yy < ($this->totalHeight - $trunkHeightReducer); ++$yy){
-			$level->setBlock(new Vector3($x, $y + $yy, $z), 17, $this->type);
+			$level->setBlock(new Vector3($x, $y + $yy, $z), new WoodBlock($this->type));
 		}
 	}
 

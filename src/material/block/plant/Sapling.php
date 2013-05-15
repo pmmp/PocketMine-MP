@@ -44,32 +44,29 @@ class SaplingBlock extends TransparentBlock{
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		console("SAPLING SAPLING SAPLING");return false; //Placeholder
-			$down = $this->getSide(0);
-			if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
-				$level->setBlock($block, $this->id, $this->getMetadata());
-				return true;
-			}
+		$down = $this->getSide(0);
+		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
+			$this->level->setBlock($block, $this);
+			return true;
+		}
 		return false;
 	}
 	
 	public function onActivate(Item $item, Player $player){
-		console("SAPLING SAPLING SAPLING");return false; //Placeholder
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			TreeObject::growTree($level, $this);
+			TreeObject::growTree($this->level, $this);
 			return true;
 		}
 		return false;
 	}
 	
 	public function onUpdate($type){
-		console("SAPLING SAPLING SAPLING");return false; //Placeholder
 		if($type === BLOCK_UPDATE_RANDOM and mt_rand(0,2) === 0){ //Growth
 			if(($this->meta & 0x08) === 0x08){
-				TreeObject::growTree($level, $this);
+				TreeObject::growTree($this->level, $this);
 			}else{
 				$this->meta |= 0x08;
-				$this->level->setBlock($this->x, $this->y, $this->z, $this->id, $this->meta);
+				$this->level->setBlock($this, $this);
 			}
 			return true;
 		}
