@@ -224,6 +224,9 @@ class PMFLevel extends PMF{
 		}elseif($save !== false){
 			$this->saveChunk($X, $Z);
 		}
+		$index = $this->getIndex($X, $Z);
+		$this->chunks[$index] = null;
+		$this->chunkChange[$index] = null;
 		unset($this->chunks[$index], $this->chunkChange[$index]);
 		return true;
 	}

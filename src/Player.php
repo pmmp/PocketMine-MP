@@ -133,7 +133,7 @@ class Player{
 			return false;
 		}
 		$c = key($this->chunksOrder);
-		$d = $this->chunksOrder[$c];
+		$d = @$this->chunksOrder[$c];
 		if($c === null or $d > $this->server->api->getProperty("view-distance")){
 			if($this->freedChunks === false){
 				foreach($this->chunksOrder as $c => $d){

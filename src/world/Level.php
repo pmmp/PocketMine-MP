@@ -35,7 +35,8 @@ class Level{
 		$this->entities = $entities;
 		$this->tileEntities = $tileEntities;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
-		$this->startCheck = microtime(true);
+		$this->lastSave = $this->startCheck = microtime(true);
+		$this->nextSave += 30;
 		$this->server->schedule(15, array($this, "checkThings"), array(), true);
 		$this->server->event("server.close", array($this, "save"));
 		$this->name = $name;
@@ -73,6 +74,11 @@ class Level{
 				$Z = array_pop($X);
 				$this->level->unloadChunk((int) $X, (int) $Z);
 			}
+		}
+		
+		if($this->lastSave < $now){
+			$this->save();
+			$this->lastSave = $now + 30;
 		}
 	}
 	
