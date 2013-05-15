@@ -180,7 +180,7 @@ class Level{
 		)) !== false){
 			$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
 			if($update === true){
-				$this->server->api->block->blockUpdate($pos, BLOCK_UPDATE_NORMAL); //????? water?
+				$this->server->api->block->blockUpdate($this->getBlock($pos), BLOCK_UPDATE_NORMAL); //????? water?
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL);
 			}
 			if($tiles === true){
@@ -255,5 +255,9 @@ class Level{
 	
 	public function getSeed(){
 		return (int) $this->level->getData("seed");
+	}
+	
+	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
+		return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}
 }
