@@ -45,22 +45,26 @@ class TimeAPI{
 		$output = "";
 		switch($cmd){
 			case "time":
+				$level = false;
+				if($issuer instanceof Player){
+					$level = $issuer->level;
+				}
 				$p = strtolower(array_shift($params));
 				switch($p){
 					case "check":
-						$output .= "Time: ".$this->getDate().", ".$this->getPhase()." (".$this->get(true).")\n";
+						$output .= "Time: ".$this->getDate($level).", ".$this->getPhase($level)." (".$this->get(true, $level).")\n";
 						break;
 					case "add":
-						$output .= "Set the time to ".$this->add(array_shift($params))."\n";
+						$output .= "Set the time to ".$this->add(array_shift($params), $level)."\n";
 						break;
 					case "set":
-						$output .= "Set the time to ".$this->set(array_shift($params))."\n";
+						$output .= "Set the time to ".$this->set(array_shift($params), $level)."\n";
 						break;
 					case "sunrise":
 					case "day":
 					case "sunset":
 					case "night":
-						$output .= "Set the time to ".$this->set($p)."\n";
+						$output .= "Set the time to ".$this->set($p, $level)."\n";
 						break;
 					default:
 						$output .= "Usage: /time <check|set|add> [time]\n";
@@ -84,22 +88,28 @@ class TimeAPI{
 		return $this->set("sunset");
 	}
 
-	public function get($raw = false){
-		return $raw === true ? $this->server->time:abs($this->server->time) % 19200;
+	public function get($raw = false, $level = false){
+		if(!($level instanceof Level)){
+			$level = $this->server->api->level->getDefault();
+		}
+		return $raw === true ? $level->getTime():abs($level->getTime()) % 19200;
 	}
 
-	public function add($time){
-		$this->server->time += (int) $time;
+	public function add($time, $level = false){
+		if(!($level instanceof Level)){
+			$level = $this->server->api->level->getDefault();
+		}
+		$level->setTime($level->getTime() + (int) $time);
 		return $this->server->time;
 	}
 
 	public function getDate($time = false){
-		$time = $time === false ? $this->get():$time;
+		$time = !is_integer($time) ? $this->get(false, $time):$time;
 		return str_pad(strval((floor($time /800) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
 	}
 
 	public function getPhase($time = false){
-		$time = $time === false ? $this->get():$time;
+		$time = !is_integer($time) ? $this->get(false, $time):$time;
 		if($time < $this->phase["sunset"]){
 			$time = "day";
 		}elseif($time < $this->phase["night"]){
@@ -112,13 +122,16 @@ class TimeAPI{
 		return $time;
 	}
 
-	public function set($time){
-		if(is_string($time) and isset($this->phases[$time])){
-			$this->server->time = $this->phases[$time];
-		}else{
-			$this->server->time = (int) $time;
+	public function set($time, $level = false){
+		if(($level instanceof Level)){
+			$level = $this->server->api->level->getDefault();
 		}
-		return $this->server->time;
+		if(is_string($time) and isset($this->phases[$time])){
+			$level->setTime($this->phases[$time]);
+		}else{
+			$level->setTime((int) $time);
+		}
+		return $level->getTime();
 	}
 
 

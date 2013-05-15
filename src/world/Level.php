@@ -36,7 +36,7 @@ class Level{
 		$this->tileEntities = $tileEntities;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->startCheck = microtime(true);
-		$this->server->schedule(15, array($this, "checkThings"));
+		$this->server->schedule(15, array($this, "checkThings"), array(), true);
 		$this->server->event("server.close", array($this, "save"));
 		$this->name = $name;
 	}
@@ -55,7 +55,7 @@ class Level{
 	}
 	
 	public function save(){
-		$this->level->setData("time", $this->time);
+		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound();
 		$this->level->saveData();
 	}
@@ -138,7 +138,7 @@ class Level{
 	}
 	
 	public function getTime(){
-		return ($this->time);
+		return (int) ($this->time);
 	}
 	
 	public function getName(){
