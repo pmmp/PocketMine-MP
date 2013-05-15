@@ -113,29 +113,29 @@ class Utils{
 			$m .= chr(($d["type"] << 5) & (0xE0 | $bottom));
 			switch($d["type"]){
 				case 0:
-					$m .= Utils::writeByte($data["value"]);
+					$m .= Utils::writeByte($d["value"]);
 					break;
 				case 1:
-					$m .= Utils::writeLShort($data["value"]);
+					$m .= Utils::writeLShort($d["value"]);
 					break;
 				case 2:
-					$m .= Utils::writeLInt($data["value"]);
+					$m .= Utils::writeLInt($d["value"]);
 					break;
 				case 3:
-					$m .= Utils::writeLFloat($data["value"]);
+					$m .= Utils::writeLFloat($d["value"]);
 					break;
 				case 4:
-					$m .= Utils::writeLShort(strlen($data["value"]));
+					$m .= Utils::writeLShort(strlen($d["value"]));
 					$m .= $data["value"];
 					break;
 				case 5:
-					$m .= Utils::writeLShort($data["value"][0]);
-					$m .= Utils::writeByte($data["value"][1]);
-					$m .= Utils::writeLShort($data["value"][2]);
+					$m .= Utils::writeLShort($d["value"][0]);
+					$m .= Utils::writeByte($d["value"][1]);
+					$m .= Utils::writeLShort($d["value"][2]);
 					break;
 				case 6:
 					for($i=0; $i < 3; ++$i){
-						$m .= Utils::writeLInt($data["value"][$i]);
+						$m .= Utils::writeLInt($d["value"][$i]);
 					}
 					break;
 
