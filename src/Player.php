@@ -375,7 +375,7 @@ class Player{
 						}
 					}
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
-				}else{
+				}elseif($data["player"]->level === $this->level){
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}
 				break;
@@ -386,15 +386,16 @@ class Player{
 					if(($this->gamemode & 0x01) === 0x00){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
-				}else{
+				}elseif($data["entity"]->level === $this->level){
 					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				}
 				break;
 			case "player.equipment.change":
-				if($data["eid"] === $this->eid){
+				if($data["eid"] === $this->eid or $data["player"]->level !== $this->level){
 					break;
 				}
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
+
 				break;
 			case "block.change":
 				if($data["position"]->level !== $this->level){
@@ -409,7 +410,7 @@ class Player{
 				));
 				break;
 			case "entity.move":
-				if($data->eid === $this->eid){
+				if($data->eid === $this->eid or $data->level !== $this->level){
 					break;
 				}
 				$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
@@ -422,7 +423,7 @@ class Player{
 				));
 				break;
 			case "entity.motion":
-				/*if($data->eid === $this->eid){
+				/*if($data->eid === $this->eid or $data->level !== $this->level){
 					break;
 				}
 				$this->dataPacket(MC_SET_ENTITY_MOTION, array(
@@ -433,7 +434,7 @@ class Player{
 				));
 				break;*/
 			case "entity.remove":
-				if($data->eid === $this->eid){
+				if($data->eid === $this->eid or $data->level !== $this->level){
 					break;
 				}
 				$this->dataPacket(MC_REMOVE_ENTITY, array(
@@ -446,7 +447,7 @@ class Player{
 				));
 				break;
 			case "entity.animate":
-				if($data["eid"] === $this->eid){
+				if($data["eid"] === $this->eid or $data["entity"]->level !== $this->level){
 					break;
 				}
 				$this->dataPacket(MC_ANIMATE, array(
@@ -460,10 +461,12 @@ class Player{
 				}else{
 					$eid = $data->eid;
 				}
-				$this->dataPacket(MC_SET_ENTITY_DATA, array(
-					"eid" => $eid,
-					"metadata" => $data->getMetadata(),
-				));
+				if($data->level === $this->level){
+					$this->dataPacket(MC_SET_ENTITY_DATA, array(
+						"eid" => $eid,
+						"metadata" => $data->getMetadata(),
+					));
+				}
 				break;
 			case "entity.event":
 				if($data["entity"]->eid === $this->eid){
@@ -471,10 +474,12 @@ class Player{
 				}else{
 					$eid = $data["entity"]->eid;
 				}
-				$this->dataPacket(MC_ENTITY_EVENT, array(
-					"eid" => $eid,
-					"event" => $data["event"],
-				));
+				if($data["entity"]->level === $this->level){
+					$this->dataPacket(MC_ENTITY_EVENT, array(
+						"eid" => $eid,
+						"event" => $data["event"],
+					));
+				}
 				break;
 			case "server.chat":
 				if(($data instanceof Container) === true){
@@ -1090,7 +1095,7 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "action" => $data["action"]));
+							$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "entity" => $this->entity, "action" => $data["action"]));
 							break;
 						case MC_RESPAWN:
 							if($this->spawned === false){
@@ -1260,7 +1265,7 @@ class Player{
 	}
 	
 	public function sendArmor(){
-		$this->server->api->dhandle("player.armor", array("eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
+		$this->server->api->dhandle("player.armor", array("player" => $this, "eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
 	}
 	
 	public function sendInventory(){
