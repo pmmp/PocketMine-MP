@@ -41,6 +41,14 @@ class Level{
 		$this->name = $name;
 	}
 	
+	public function checkThings(){
+		$now = microtime(true);
+		$time = $this->startTime + ($now - $this->startCheck) * 20;
+		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
+			$this->time = $time;
+		}
+	}
+	
 	public function __destruct(){
 		$this->save();
 		unset($this->level);
@@ -140,11 +148,6 @@ class Level{
 	public function setTime($time){
 		$this->startTime = $this->time = (int) $time;
 		$this->startCheck = microtime(true);
-	}
-	
-	public function checkThings(){
-		$now = microtime(true);
-		$this->time = $this->startTime + ($now - $this->startCheck) * 20;
 	}
 	
 	public function getSeed(){

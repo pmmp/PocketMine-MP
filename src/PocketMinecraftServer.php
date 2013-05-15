@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PocketMinecraftServer{
 	public $tCnt;
-	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $timePerSecond;
+	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd;
 	private $port, $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick;
 	
 	private function load(){
@@ -65,8 +65,6 @@ class PocketMinecraftServer{
 		$this->whitelist = false;
 		$this->clients = array();
 		$this->spawn = false;
-		$this->time = 0;
-		$this->timePerSecond = 20;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false, $this->serverip);
@@ -102,7 +100,6 @@ class PocketMinecraftServer{
 		if(ENABLE_ANSI === true){
 			$this->action(1500000, '$this->titleTick();');
 		}
-		$this->action(500000, '$this->time += (int) ($this->timePerSecond / 2);$this->api->dhandle("server.time", $this->time);');
 		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
 		$this->action(1000000 * 15, 'if($this->getTPS() < 15){console("[WARNING] Can\'t keep up! Is the server overloaded?");}');
 		$this->action(1000000 * 60 * 10, '$this->custom = array();');
