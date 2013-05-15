@@ -32,6 +32,13 @@ class Position extends Vector3{
 		parent::__construct($x, $y, $z);
 		$this->level = $level;
 	}
+	
+	public function distance($x = 0, $y = 0, $z = 0){
+		if($x instanceof Position and $x->level !== $this->level){
+			return PHP_INT_MAX;
+		}
+		return parent::distance($x, $y, $z);
+	}
 
 	public function __toString(){
 		return "Position(level=".$this->level->getName().",x=".$this->x.",y=".$this->y.",z=".$this->z.")";

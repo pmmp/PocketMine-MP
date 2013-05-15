@@ -197,11 +197,9 @@ class ConsoleAPI{
 			$end = strpos($line, " ");
 			if($end === false){
 				$end = strlen($line);
-			}else{
-				++$end;
 			}
-			$cmd = strtolower(substr($line, 0, $end - 1));
-			$params = substr($line, $end);
+			$cmd = strtolower(substr($line, 0, $end));
+			$params = substr($line, $end + 1);
 			
 			if(isset($this->alias[$cmd])){
 				$this->run($this->alias[$cmd] . " " .$params, $issuer, $cmd);

@@ -60,7 +60,7 @@ class ServerAPI{
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
 			"server-name" => "Minecraft PE Server",
 			"description" => "Server made using PocketMine-MP",
-			"motd" => "Welcome @username to this server!",
+			"motd" => "Welcome @player to this server!",
 			"server-invisible" => false,
 			"server-ip" => "0.0.0.0",
 			"server-port" => 19132,

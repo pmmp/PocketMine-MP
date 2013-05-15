@@ -156,7 +156,7 @@ class Player{
 			));
 		}
 		
-		$tiles = $this->server->query("SELECT * FROM tileentities WHERE spawnable = 1 AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
+		$tiles = $this->server->query("SELECT ID FROM tileentities WHERE spawnable = 1 AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
 				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
@@ -511,8 +511,7 @@ class Player{
 					}
 				}
 			}
-			$this->dataPacket(MC_CHAT, array(
-				
+			$this->dataPacket(MC_CHAT, array(				
 				"message" => $m,
 			));	
 		}
@@ -579,6 +578,7 @@ class Player{
 			if($pos instanceof Position and $pos->level !== $this->level){
 				$this->level = $pos->level;
 				$this->chunksLoaded = array();
+				$terrain = true;
 			}
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
@@ -899,7 +899,7 @@ class Player{
 							$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->server->schedule(40, array($this, "measureLag"), array(), true);
-							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
+							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 							break;
 						case MC_READY:
 							if($this->loggedIn === false){
@@ -986,7 +986,7 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 8){
+							if($this->blocked === true or $this->entity->distance(new Vector3($data["x"], $data["y"], $data["z"])) > 8){
 								break;
 							}
 							$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
@@ -1002,7 +1002,7 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							if($this->gamemode !== VIEW and $this->blocked === false and isset($this->server->entities[$data["target"]]) and Utils::distance($this->entity->position, $this->server->entities[$data["target"]]->position) <= 8){
+							if($this->gamemode !== VIEW and $this->blocked === false and isset($this->server->entities[$data["target"]]) and $this->entity->distance($this->server->entities[$data["target"]]) <= 8){
 								$target = $this->server->api->entity->get($data["target"]);
 								$data["targetentity"] = $target;
 								$data["entity"] = $this->entity;
