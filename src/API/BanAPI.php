@@ -326,7 +326,7 @@ class BanAPI{
 		$username = strtolower($username);
 		if($this->isOp($username)){
 			return true;
-		}elseif($this->server->api->dhandle("api.ban.whitelist.check", $ip) === false){
+		}elseif($this->server->api->dhandle("api.ban.whitelist.check", $username) === false){
 			return true;
 		}elseif($this->whitelist->exists($username)){
 			return true;

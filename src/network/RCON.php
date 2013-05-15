@@ -123,7 +123,7 @@ class RCONInstance extends Thread{
 		}
 		@socket_set_block($client);
 		$size = Utils::readLInt($d);
-		if($size < 0){
+		if($size < 0 or $size > 65535){
 			return false;
 		}
 		$requestID = Utils::readLInt(socket_read($client, 4));

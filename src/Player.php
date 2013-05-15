@@ -576,11 +576,6 @@ class Player{
 			if($pitch === false){
 				$pitch = $this->entity->yaw;
 			}
-			if($pos instanceof Position and $pos->level !== $this->level){
-				$this->level = $pos->level;
-				$this->chunksLoaded = array();
-				$terrain = true;
-			}
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
@@ -588,6 +583,20 @@ class Player{
 			$this->entity->resetSpeed();
 			$this->entity->updateLast();
 			$this->entity->calculateVelocity();
+			if($pos instanceof Position and $pos->level !== $this->level){
+				foreach($this->server->api->entity->getAll($this->level) as $e){
+					if($e !== $this->entity){
+						$this->dataPacket(MC_REMOVE_ENTITY, array(
+							"eid" => $e->eid,
+						));
+					}
+				}
+				$this->level = $pos->level;
+				$this->chunksLoaded = array();
+				$this->server->api->entity->spawnToAll($this->level, $this->eid);
+				$this->server->api->entity->spawnAll($this);
+				$terrain = true;
+			}
 			if($terrain === true){
 				$this->orderChunks();
 				$this->getNextChunk();
