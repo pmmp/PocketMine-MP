@@ -716,7 +716,6 @@ class BlockAPI{
 
 	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL){
 		if(!($pos instanceof Block)){
-			$pos = $pos->floor();
 			$block = $pos->level->getBlock($pos);
 		}else{
 			$block = $pos;
@@ -731,7 +730,6 @@ class BlockAPI{
 	
 	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
 		if(!($pos instanceof Block)){
-			$pos = $pos->floor();
 			$block = $pos->level->getBlock($pos);
 		}else{
 			$block = $pos;
@@ -748,7 +746,7 @@ class BlockAPI{
 		if($delay < 0){
 			return false;
 		}
-		$pos = $pos->floor();
+
 		$index = $pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName();
 		$delay = microtime(true) + $delay * 0.05;		
 		if(!isset($this->scheduledUpdates[$index])){

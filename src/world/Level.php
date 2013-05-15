@@ -39,6 +39,24 @@ class Level{
 		$this->server->schedule(15, array($this, "checkThings"), array(), true);
 		$this->server->event("server.close", array($this, "save"));
 		$this->name = $name;
+		$this->usedChunks = array();
+	}
+	
+	public function useChunk($X, $Z, Player $player){
+		if(!isset($this->usedChunks[$X.".".$Z])){
+			$this->usedChunks[$X.".".$Z] = array();
+		}
+		$this->usedChunks[$X.".".$Z][$player->CID] = true;
+		$this->level->loadChunk($X, $Z);
+	}
+	
+	public function freeAllChunks(Player $player){
+		foreach($this->usedChunks as $i => $c){
+			unset($this->usedChunks[$i][$player->CID]);
+		}
+	}
+	public function freeChunk($X, $Z, Player $player){
+		unset($this->usedChunks[$X.".".$Z][$player->CID]);
 	}
 	
 	public function checkThings(){
@@ -46,6 +64,15 @@ class Level{
 		$time = $this->startTime + ($now - $this->startCheck) * 20;
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
+		}
+
+		foreach($this->usedChunks as $i => $c){
+			if(count($c) === 0){
+				unset($this->usedChunks[$i]);
+				$X = explode(".", $i);
+				$Z = array_pop($X);
+				$this->level->unloadChunk((int) $X, (int) $Z);
+			}
 		}
 	}
 	
@@ -68,10 +95,14 @@ class Level{
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 	
-	public function setBlock(Position $pos, Block $block, $update = true, $tiles = false){
+	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
-		}elseif($this->server->api->dhandle("block.change", array(
+		}elseif(!($pos instanceof Position)){
+			$pos = new Position($pos->x, $pos->y, $pos->z, $this);
+		}
+		
+		if($this->server->api->dhandle("block.change", array(
 			"position" => $pos,
 			"block" => $block,
 		)) !== false){

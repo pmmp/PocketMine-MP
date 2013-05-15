@@ -62,6 +62,7 @@ class Player{
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
 	private $spawnPosition;
+	private $freedChunks = true;
 	public $itemEnforcement;
 	public $lastCorrect;
 	
@@ -118,7 +119,7 @@ class Player{
 			for($z = 0; $z < 16; ++$z){
 				for($y = 0; $y < 8; ++$y){
 					$d = $x.":".$y.":".$z;
-					if(!isset($this->chunksLoaded[$d])){				
+					if(!isset($this->chunksLoaded[$d])){
 						$this->chunksOrder[$d] = $v->distance(new Vector3($x + 0.5, $y / 4, $z + 0.5));
 					}
 				}
@@ -134,9 +135,19 @@ class Player{
 		$c = key($this->chunksOrder);
 		$d = $this->chunksOrder[$c];
 		if($c === null or $d > $this->server->api->getProperty("view-distance")){
+			if($this->freedChunks === false){
+				foreach($this->chunksOrder as $c => $d){
+					$id = explode(":", $c);
+					$X = $id[0];
+					$Z = $id[2];
+					$this->level->freeChunk($X, $Z, $this);
+				}
+				$this->freedChunks = true;
+			}
 			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
+		$this->freedChunks = false;
 		array_shift($this->chunksOrder);
 		$this->chunksLoaded[$c] = true;
 		$id = explode(":", $c);
@@ -147,6 +158,7 @@ class Player{
 		$z = $Z << 4;
 		$y = $Y << 4;
 		$MTU = $this->MTU - 16;
+		$this->level->useChunk($X, $Z, $this);
 		$chunk = $this->level->getOrderedMiniChunk($X, $Z, $Y, $MTU);
 		foreach($chunk as $d){
 			$this->dataPacket(MC_CHUNK_DATA, array(
@@ -233,6 +245,7 @@ class Player{
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
 			$this->directDataPacket(MC_DISCONNECT);
 			$this->sendBuffer();
+			$this->level->freeAllChunks($this);
 			$this->buffer = null;
 			unset($this->buffer);
 			$this->recovery = null;
@@ -589,7 +602,7 @@ class Player{
 			$this->entity->setPosition($pos, $yaw, $pitch);
 			$this->entity->resetSpeed();
 			$this->entity->updateLast();
-			$this->entity->calculateVelocity();
+			$this->entity->calculateVelocity();			
 			if($pos instanceof Position and $pos->level !== $this->level){
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
@@ -603,6 +616,7 @@ class Player{
 						));
 					}
 				}
+				$this->level->freeAllChunks($this);
 				$this->level = $pos->level;
 				$this->chunksLoaded = array();
 				$this->server->api->entity->spawnToAll($this->level, $this->eid);

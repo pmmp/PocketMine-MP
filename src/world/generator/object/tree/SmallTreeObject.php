@@ -66,7 +66,7 @@ class SmallTreeObject extends TreeObject{
 			for($xx = -$xzRadius; $xx < ($xzRadius + 1); ++$xx){
 				for($zz = -$xzRadius; $zz < ($xzRadius + 1); ++$zz){
 					if((abs($xx) != $xzRadius or abs($zz) != $xzRadius) and $yRadius != 0){
-						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), new LeavesBlck($this->type));
+						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), new LeavesBlock($this->type));
 					}
 				}
 			}
