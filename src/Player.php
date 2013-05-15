@@ -569,6 +569,7 @@ class Player{
 	
 	public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true){
 		if($this->entity instanceof Entity){
+			$this->entity->check = false;
 			if($yaw === false){
 				$yaw = $this->entity->yaw;
 			}
@@ -591,6 +592,7 @@ class Player{
 				$this->orderChunks();
 				$this->getNextChunk();
 			}
+			$this->entity->check = true;
 		}
 		$this->dataPacket(MC_MOVE_PLAYER, array(
 			"eid" => 0,

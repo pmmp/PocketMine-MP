@@ -250,7 +250,7 @@ class PMFLevel extends PMF{
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
-		if($X >= 32 or $Z >= 32){
+		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"]){
 			return array(AIR, 0);
 		}
 		$index = $this->getIndex($X, $Z);
@@ -317,7 +317,7 @@ class PMFLevel extends PMF{
 		$Y = $y >> 4;
 		$block &= 0xFF;
 		$meta &= 0x0F;
-		if($X >= 32 or $Z >= 32){
+		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"]){
 			return false;
 		}
 		$index = $this->getIndex($X, $Z);

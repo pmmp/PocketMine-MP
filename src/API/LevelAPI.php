@@ -50,7 +50,6 @@ class LevelAPI{
 			$this->loadLevel($this->default);
 		}
 		$this->server->spawn = $this->getDefault()->getSpawn();
-		$this->loadLevel("other");
 	}
 	
 	public function generateLevel($name, $seed = false){
@@ -69,6 +68,9 @@ class LevelAPI{
 	}
 	
 	public function loadLevel($name){
+		if($this->get($name) !== false){
+			return false;
+		}
 		$path = DATA_PATH."worlds/".$name."/";
 		if(!file_exists($path."level.pmf")){
 			$level = new LevelImport($path);

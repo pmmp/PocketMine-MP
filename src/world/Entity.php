@@ -75,6 +75,8 @@ class Entity extends Position{
 	private $speedMeasure = array(0, 0, 0, 0, 0);
 	private $server;
 	public $level;
+	public $check;
+
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->level = $level;
 		$this->fallY = false;
@@ -298,6 +300,10 @@ class Entity extends Position{
 			return false;
 		}
 		
+		if($this->check === false){
+			return;
+		}
+		
 		if($this->tickCounter === 0){
 			$this->tickCounter = 1;
 			$this->environmentUpdate();
@@ -305,7 +311,7 @@ class Entity extends Position{
 			$this->tickCounter = 0;
 		}
 		
-		if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER){
+		if($this->check === true and ($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 			$startX = ((int) round($this->x - 0.5)) - 1;
 			$y = (int) round($this->y - 1);
 			$startZ = ((int) round($this->z - 0.5)) - 1;
