@@ -143,36 +143,6 @@ class LevelAPI{
 		return $this->server->spawn;
 	}
 	
-	/*
-		if(file_exists(DATA_PATH."worlds/level.dat")){
-			console("[NOTICE] Detected unimported map data. Importing...");
-			$this->importMap(DATA_PATH."worlds/", true);
-		}
-
-		$this->server->mapName = $this->getProperty("level-name");
-		$this->server->mapDir = DATA_PATH."worlds/".$this->server->mapName."/";
-		if($this->server->mapName === false or trim($this->server->mapName) === "" or (!file_exists($this->server->mapDir."chunks.dat") and !file_exists($this->server->mapDir."chunks.dat.gz") and !file_exists($this->server->mapDir."level.pmf"))){
-			if($this->server->mapName === false or trim($this->server->mapName) === ""){
-				$this->server->mapName = "world";
-			}
-			$this->server->mapDir = DATA_PATH."worlds/".$this->server->mapName."/";
-			$generator = "SuperflatGenerator";
-			if($this->getProperty("generator") !== false and class_exists($this->getProperty("generator"))){
-				$generator = $this->getProperty("generator");
-			}
-			$this->gen = new WorldGenerator($generator, $this->server->seed);
-			if($this->getProperty("generator-settings") !== false and trim($this->getProperty("generator-settings")) != ""){
-				$this->gen->set("preset", $this->getProperty("generator-settings"));
-			}
-			$this->gen->init();
-			$this->gen->generate();
-			$this->gen->save($this->server->mapDir, $this->server->mapName);
-			$this->setProperty("level-name", $this->server->mapName);
-			$this->setProperty("gamemode", SURVIVAL);
-		}
-		$this->server->loadMap();
-	*/
-	
 	public function loadMap(){
 		if($this->mapName !== false and trim($this->mapName) !== ""){
 			if(!file_exists($this->mapDir."level.pmf")){

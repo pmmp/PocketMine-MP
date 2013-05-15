@@ -71,7 +71,7 @@ class TileEntityAPI{
 			$l = $this->server->query("SELECT ID FROM tileentities WHERE level = '".$level->getName()."';");
 			if($l !== false and $l !== true){
 				while(($t = $l->fetchArray(SQLITE3_ASSOC)) !== false){
-					$t = $this->get($e["ID"]);
+					$t = $this->getByID($t["ID"]);
 					if($t instanceof TileEntity){
 						$tileEntities[$t->id] = $t;
 					}

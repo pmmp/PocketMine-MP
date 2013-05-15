@@ -159,6 +159,10 @@ class Config{
 		$this->config[$k] = $v;
 	}
 	
+	public function setAll($v){
+		$this->config = $v;
+	}
+	
 	public function exists($k){
 		return isset($this->config[$k]);
 	}

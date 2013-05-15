@@ -36,7 +36,7 @@ class Level{
 		$this->tileEntities = $tileEntities;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
-		$this->nextSave += 30;
+		$this->nextSave += 90;
 		$this->server->schedule(15, array($this, "checkThings"), array(), true);
 		$this->server->event("server.close", array($this, "save"));
 		$this->name = $name;
@@ -78,7 +78,7 @@ class Level{
 		
 		if($this->nextSave < $now){
 			$this->save();
-			$this->lastSave = $now + 30;
+			$this->lastSave = $now + 90;
 		}
 	}
 	
@@ -88,6 +88,72 @@ class Level{
 	}
 	
 	public function save(){
+		$entities = array();
+		foreach($this->server->api->entity->getAll($this) as $entity){
+			if($entity->class === ENTITY_MOB){
+				$entities[] = array(
+					"id" => $entity->type,
+					"Color" => @$entity->data["Color"],
+					"Sheared" => @$entity->data["Sheared"],
+					"Health" => $entity->health,
+					"Pos" => array(
+						0 => $entity->x,
+						1 => $entity->y,
+						2 => $entity->z,
+					),
+					"Rotation" => array(
+						0 => $entity->yaw,
+						1 => $entity->pitch,
+					),
+				);
+			}elseif($entity->class === ENTITY_OBJECT){
+				$entities[] = array(
+					"id" => $entity->type,
+					"TileX" => $entity->x,
+					"TileX" => $entity->y,
+					"TileX" => $entity->z,
+					"Health" => $entity->health,
+					"Motive" => $entity->data["Motive"],
+					"Pos" => array(
+						0 => $entity->x,
+						1 => $entity->y,
+						2 => $entity->z,
+					),
+					"Rotation" => array(
+						0 => $entity->yaw,
+						1 => $entity->pitch,
+					),
+				);
+			}elseif($entity->class === ENTITY_ITEM){
+				$entities[] = array(
+					"id" => 64,
+					"Item" => array(
+						"id" => $entity->type,
+						"Damage" => $entity->meta,
+						"Count" => $entity->stack,
+					),
+					"Health" => $entity->health,
+					"Pos" => array(
+						0 => $entity->x,
+						1 => $entity->y,
+						2 => $entity->z,
+					),
+					"Rotation" => array(
+						0 => 0,
+						1 => 0,
+					),
+				);
+			}
+		}
+		$this->entities->setAll($entities);
+		$this->entities->save();
+		$tiles = array();
+		foreach($this->server->api->tileentity->getAll($this) as $tile){		
+			$tiles[] = $tile->data;
+		}
+		$this->tileEntities->setAll($tiles);
+		$this->tileEntities->save();
+		
 		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound();
 		$this->level->saveData();
