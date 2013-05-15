@@ -47,8 +47,8 @@ class RCON{
 		if($this->socket === false or !socket_bind($this->socket, $interface, (int) $port) or !socket_listen($this->socket)){
 			console("[ERROR] RCON can't be started: ".socket_strerror(socket_last_error()));
 			return;
-		}		
-		@socket_set_nonblock($this->socket);
+		}
+		@socket_set_block($this->socket);
 		for($n = 0; $n < $this->threads; ++$n){
 			$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 		}
@@ -139,21 +139,26 @@ class RCONInstance extends Thread{
 	public function run(){
 		while($this->stop !== true){
 			usleep(1);
-			if(($client = socket_accept($this->socket)) !== false){
-				socket_set_block($client);
-				socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
-				$done = false;
-				for($n = 0; $n < $this->maxClients; ++$n){
-					if($this->{"client".$n} === null){
-						$this->{"client".$n} = $client;
-						$this->{"status".$n} = 0;
-						$this->{"timeout".$n} = microtime(true) + 5;
-						$done = true;
-						break;
+			$r = array($socket = $this->socket);
+			$w = null;
+			$e = null;
+			if(socket_select($r, $w, $e, 0) === 1){
+				if(($client = socket_accept($this->socket)) !== false){
+					socket_set_block($client);
+					socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
+					$done = false;
+					for($n = 0; $n < $this->maxClients; ++$n){
+						if($this->{"client".$n} === null){
+							$this->{"client".$n} = $client;
+							$this->{"status".$n} = 0;
+							$this->{"timeout".$n} = microtime(true) + 5;
+							$done = true;
+							break;
+						}
 					}
-				}
-				if($done === false){
-					@socket_close($client);
+					if($done === false){
+						@socket_close($client);
+					}
 				}
 			}
 
