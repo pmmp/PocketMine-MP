@@ -591,6 +591,11 @@ class Player{
 			if($pos instanceof Position and $pos->level !== $this->level){
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
+						if($e->player instanceof Player){
+							$e->player->dataPacket(MC_REMOVE_ENTITY, array(
+								"eid" => $this->eid,
+							));
+						}
 						$this->dataPacket(MC_REMOVE_ENTITY, array(
 							"eid" => $e->eid,
 						));
