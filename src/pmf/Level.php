@@ -219,7 +219,7 @@ class PMFLevel extends PMF{
 	public function unloadChunk($X, $Z, $save = true){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		if($this->isChunkLoaded($X, $Z)){
+		if(!$this->isChunkLoaded($X, $Z)){
 			return false;
 		}elseif($save !== false){
 			$this->saveChunk($X, $Z);

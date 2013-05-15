@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Level{
 	public $entities, $tileEntities;
-	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks;
+	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $nextSave;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
 		$this->server = ServerAPI::request();
@@ -35,7 +35,7 @@ class Level{
 		$this->entities = $entities;
 		$this->tileEntities = $tileEntities;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
-		$this->lastSave = $this->startCheck = microtime(true);
+		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 30;
 		$this->server->schedule(15, array($this, "checkThings"), array(), true);
 		$this->server->event("server.close", array($this, "save"));
@@ -72,11 +72,11 @@ class Level{
 				unset($this->usedChunks[$i]);
 				$X = explode(".", $i);
 				$Z = array_pop($X);
-				$this->level->unloadChunk((int) $X, (int) $Z);
+				$this->level->unloadChunk((int) array_pop($X), (int) $Z);
 			}
 		}
 		
-		if($this->lastSave < $now){
+		if($this->nextSave < $now){
 			$this->save();
 			$this->lastSave = $now + 30;
 		}
