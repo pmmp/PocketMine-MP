@@ -44,12 +44,30 @@ class LevelAPI{
 	}
 
 	public function init(){
+		$this->server->api->console->register("seed", "[world]", array($this, "commandHandler"));
 		$this->default = $this->server->api->getProperty("level-name");
 		if($this->loadLevel($this->default) === false){
 			$this->generateLevel($this->default);
 			$this->loadLevel($this->default);
 		}
 		$this->server->spawn = $this->getDefault()->getSpawn();
+	}
+	
+	public function commandHandler($cmd, $params, $issuer, $alias){
+		$output = "";
+		switch($cmd){
+			case "seed":
+				if(!isset($params[0]) and ($issuer instanceof Player)){
+					$output .= "Seed: ".$issuer->level->getSeed()."\n";
+				}elseif(isset($params[0])){
+					if(($lv = $this->server->api->level->get(trim(implode(" ", $params)))) !== false){
+						$output .= "Seed: ".$lv->getSeed()."\n";
+					}
+				}else{
+					$output .= "Seed: ".$this->server->api->level->getDefault()->getSeed()."\n";
+				}
+		}
+		return $output;			
 	}
 	
 	public function generateLevel($name, $seed = false){
