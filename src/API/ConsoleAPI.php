@@ -194,17 +194,66 @@ class ConsoleAPI{
 	
 	public function run($line = "", $issuer = "console", $alias = false){
 		if($line != ""){
-			$params = explode(" ", $line);
-			$cmd = strtolower(array_shift($params));
+			$end = strpos($line, " ");
+			if($end === false){
+				$end = strlen($line);
+			}else{
+				++$end;
+			}
+			$cmd = strtolower(substr($line, 0, $end - 1));
+			$params = substr($line, $end);
+			
 			if(isset($this->alias[$cmd])){
-				$this->run($this->alias[$cmd] . " " .implode(" ", $params), $issuer, $cmd);
+				$this->run($this->alias[$cmd] . " " .$params, $issuer, $cmd);
 				return;
 			}
 			if($issuer instanceof Player){
-				console("[DEBUG] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params), true, true, 2);
+				console("[DEBUG] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}else{
-				console("[DEBUG] \x1b[33m*".$issuer."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".implode(" ", $params), true, true, 2);
+				console("[DEBUG] \x1b[33m*".$issuer."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}
+			
+			if(preg_match_all('#@([@A-Za-z_]{1,})#', $params, $matches, PREG_OFFSET_CAPTURE) > 0){
+				$offsetshift = 0;
+				foreach($matches[1] as $selector){
+					if($selector[0]{0} === "@"){ //Escape!
+						$params = substr_replace($params, $selector[0], $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
+						--$offsetshift;
+						continue;
+					}
+					switch(strtolower($selector[0])){
+						case "player":
+						case "username":
+							$p = ($issuer instanceof Player) ? $issuer->username:$issuer;
+							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
+							$offsetshift += strlen($selector[0]) - strlen($p) + 1;
+							break;
+						case "all":
+							foreach($this->server->api->player->getAll() as $p){
+								$this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+							}
+							return;
+						case "random":
+							$l = array();
+							foreach($this->server->api->player->getAll() as $p){
+								if($p !== $issuer){
+									$l[] = $p;
+								}
+							}
+							if(count($l) === 0){
+								return;
+							}
+							
+							$p = $l[mt_rand(0, count($l) - 1)]->username;
+							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
+							$offsetshift += strlen($selector[0]) - strlen($p) + 1;
+							break;
+					}
+				}
+			}
+			
+			$params = explode(" ", $params);
+			
 			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false
 			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false){
 				$output = "You don't have permission to use this command.\n";

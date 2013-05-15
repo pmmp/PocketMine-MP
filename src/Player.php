@@ -209,7 +209,7 @@ class Player{
 				"z" => $this->entity->z,
 			));
 			$this->data->set("spawn", array(
-				"level" => $this->entity->level->getName(),
+				"level" => $this->spawnPosition->level->getName(),
 				"x" => $this->spawnPosition->x,
 				"y" => $this->spawnPosition->y,
 				"z" => $this->spawnPosition->z,
@@ -557,6 +557,10 @@ class Player{
 			}
 			if($pitch === false){
 				$pitch = $this->entity->yaw;
+			}
+			if($pos instanceof Position and $pos->level !== $this->level){
+				$this->level = $pos->level;
+				$this->chunksLoaded = array();
 			}
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;

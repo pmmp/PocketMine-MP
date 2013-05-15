@@ -46,21 +46,26 @@ class LevelAPI{
 	public function init(){
 		$this->default = $this->server->api->getProperty("level-name");
 		if($this->loadLevel($this->default) === false){
-			$path = DATA_PATH."worlds/".$this->default."/";
-			$generator = "SuperflatGenerator";
-			if($this->server->api->getProperty("generator") !== false and class_exists($this->server->api->getProperty("generator"))){
-				$generator = $this->server->api->getProperty("generator");
-			}
-			$gen = new WorldGenerator($generator, $this->server->seed);
-			if($this->server->api->getProperty("generator-settings") !== false and trim($this->server->api->getProperty("generator-settings")) != ""){
-				$gen->set("preset", $this->server->api->getProperty("generator-settings"));
-			}
-			$gen->init();
-			$gen->generate();
-			$gen->save($path, $this->default);
+			$this->generateLevel($this->default);
 			$this->loadLevel($this->default);
 		}
 		$this->server->spawn = $this->getDefault()->getSpawn();
+		$this->loadLevel("other");
+	}
+	
+	public function generateLevel($name, $seed = false){
+		$path = DATA_PATH."worlds/".$name."/";
+		$generator = "SuperflatGenerator";
+		if($this->server->api->getProperty("generator") !== false and class_exists($this->server->api->getProperty("generator"))){
+			$generator = $this->server->api->getProperty("generator");
+		}
+		$gen = new WorldGenerator($generator, ($seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed));
+		if($this->server->api->getProperty("generator-settings") !== false and trim($this->server->api->getProperty("generator-settings")) != ""){
+			$gen->set("preset", $this->server->api->getProperty("generator-settings"));
+		}
+		$gen->init();
+		$gen->generate();
+		$gen->save($path, $name);
 	}
 	
 	public function loadLevel($name){
