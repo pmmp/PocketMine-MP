@@ -138,7 +138,6 @@ class Utils{
 						$m .= Utils::writeLInt($d["value"][$i]);
 					}
 					break;
-
 			}
 		}
 		$m .= "\x7f";

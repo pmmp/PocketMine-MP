@@ -199,7 +199,7 @@ class ConsoleAPI{
 				$end = strlen($line);
 			}
 			$cmd = strtolower(substr($line, 0, $end));
-			$params = substr($line, $end + 1);
+			$params = (string) substr($line, $end + 1);
 			
 			if(isset($this->alias[$cmd])){
 				$this->run($this->alias[$cmd] . " " .$params, $issuer, $cmd);
@@ -249,8 +249,10 @@ class ConsoleAPI{
 					}
 				}
 			}
-			
 			$params = explode(" ", $params);
+			if(count($params) === 1 and $params[0] === ""){
+				$params = array();
+			}
 			
 			if($this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false
 			or $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias)) === false){

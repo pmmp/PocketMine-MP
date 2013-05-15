@@ -39,6 +39,7 @@ class PlayerAPI{
 		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
 		$this->server->api->console->register("tppos", "[target player] <x> <y> <z>", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "[target player] <destination player>", array($this, "commandHandler"));
+		$this->server->api->console->register("spawn", "[world]", array($this, "commandHandler"));
 		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
 		$this->server->api->ban->cmdWhitelist("list");
@@ -114,6 +115,29 @@ class PlayerAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "spawn":
+				if(count($params) > 1){
+					$player = $this->server->api->player->get(array_pop($params));
+				}else{
+					$player = $issuer;
+				}
+				if(isset($params[0])){
+					$lv = $this->server->api->level->get(trim(implode(" ",$params)));
+					if($lv === false){
+						$output .= "Couldn't respawn.\n";
+						break;
+					}
+					$spawn = $lv->getSpawn();
+				}else{
+					$spawn = $this->server->api->level->getDefault()->getSpawn();
+				}
+
+				if(!($player instanceof Player)){
+					$output .= "Couldn't respawn.\n";
+					break;
+				}
+				$player->teleport($spawn);
+				break;
 			case "lag":
 				if(!($issuer instanceof Player)){					
 					$output .= "Please run this command in-game.\n";
@@ -161,13 +185,13 @@ class PlayerAPI{
 					$name = $params[0];
 					$target = $params[1];
 				}else{
-					$output .= "Usage: /$cmd [player] <target>\n";
+					$output .= "Usage: /$cmd [target player] <destination player>\n";
 					break;
 				}
 				if($this->teleport($name, $target)){
 					$output .= "\"$name\" teleported to \"$target\"\n";
 				}else{
-					$output .= "Couldn't teleport\n";
+					$output .= "Couldn't teleport.\n";
 				}
 				break;
 			case "tppos":
@@ -188,7 +212,7 @@ class PlayerAPI{
 				if($this->tppos($name, $x, $y, $z)){
 					$output .= "\"$name\" teleported to ($x, $y, $z)\n";
 				}else{
-					$output .= "Couldn't teleport\n";
+					$output .= "Couldn't teleport.\n";
 				}
 				break;
 			case "kill":
