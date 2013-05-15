@@ -180,7 +180,7 @@ class PMFLevel extends PMF{
 		@ftruncate($this->fp, $this->payloadOffset);
 		$this->seek($this->payloadOffset);
 		for($index = 0; $index < $cnt; ++$index){
-			$this->write(Utils::writeShort($this->locationTable[$index]));
+			$this->write(Utils::writeShort($this->locationTable[$index][0]));
 		}
 	}
 	
@@ -246,36 +246,6 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
-	public function getBlock($x, $y, $z){
-		$X = $x >> 4;
-		$Z = $z >> 4;
-		$Y = $y >> 4;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"]){
-			return array(AIR, 0);
-		}
-		$index = $this->getIndex($X, $Z);
-		if($this->chunks[$index] === false){
-			if($this->loadChunk($X, $Z) === false){
-				return array(AIR, 0);
-			}
-		}elseif($this->chunks[$index][$Y] === false){
-			return array(AIR, 0);
-		}
-		$aX = $x - ($X << 4);
-		$aZ = $z - ($Z << 4);
-		$aY = $y - ($Y << 4);
-		$bindex = $aY + ($aX << 5) + ($aZ << 9);
-		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
-		$b = ord($this->chunks[$index][$Y]{$bindex});
-		$m = ord($this->chunks[$index][$Y]{$mindex});
-		if(($y & 1) === 0){
-			$m = $m & 0x0F;
-		}else{
-			$m = $m >> 4;
-		}
-		return array($b, $m);		
-	}
-	
 	protected function fillMiniChunk($X, $Z, $Y){
 		if($this->isChunkLoaded($X, $Z) === false){
 			return false;
@@ -311,13 +281,43 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
+	public function getBlock($x, $y, $z){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
+		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+			return array(AIR, 0);
+		}
+		$index = $this->getIndex($X, $Z);
+		if($this->chunks[$index] === false){
+			if($this->loadChunk($X, $Z) === false){
+				return array(AIR, 0);
+			}
+		}elseif($this->chunks[$index][$Y] === false){
+			return array(AIR, 0);
+		}
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$aY = $y - ($Y << 4);
+		$bindex = $aY + ($aX << 5) + ($aZ << 9);
+		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
+		$b = ord($this->chunks[$index][$Y]{$bindex});
+		$m = ord($this->chunks[$index][$Y]{$mindex});
+		if(($y & 1) === 0){
+			$m = $m & 0x0F;
+		}else{
+			$m = $m >> 4;
+		}
+		return array($b, $m);		
+	}
+	
 	public function setBlock($x, $y, $z, $block, $meta = 0){
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$block &= 0xFF;
 		$meta &= 0x0F;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"]){
+		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
 			return false;
 		}
 		$index = $this->getIndex($X, $Z);
@@ -333,7 +333,7 @@ class PMFLevel extends PMF{
 		$aY = $y - ($Y << 4);
 		$bindex = $aY + ($aX << 5) + ($aZ << 9);
 		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
-		$old_b = $this->chunks[$index][$Y]{$bindex};		
+		$old_b = $this->chunks[$index][$Y]{$bindex};
 		$old_m =  $this->chunks[$index][$Y]{$mindex};
 		if(($y & 1) === 0){
 			$old_m = $old_m & 0x0F;

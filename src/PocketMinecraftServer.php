@@ -169,7 +169,6 @@ class PocketMinecraftServer{
 					$this->api->chat->broadcast("Stopping server...");
 				}
 			}
-			$this->save(true);
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
 			$this->interface->close();

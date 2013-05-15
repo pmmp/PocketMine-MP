@@ -100,7 +100,7 @@ class LevelAPI{
 		$level = new PMFLevel($path."level.pmf");
 		$entities = new Config($path."entities.yml", CONFIG_YAML);
 		$tileEntities = new Config($path."tileEntities.yml", CONFIG_YAML);
-		$this->levels[$name] = new Level($level, $entities, $tileEntities);
+		$this->levels[$name] = new Level($level, $entities, $tileEntities, $name);
 		foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;

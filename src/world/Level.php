@@ -27,9 +27,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Level{
 	public $entities, $tileEntities;
-	private $level, $time, $startCheck, $startTime, $server;
+	private $level, $time, $startCheck, $startTime, $server, $name;
 	
-	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities){
+	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->entities = $entities;
@@ -37,6 +37,8 @@ class Level{
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->startCheck = microtime(true);
 		$this->server->schedule(15, array($this, "checkThings"));
+		$this->server->event("server.close", array($this, "save"));
+		$this->name = $name;
 	}
 	
 	public function __destruct(){
@@ -132,7 +134,7 @@ class Level{
 	}
 	
 	public function getName(){
-		return $this->level->getData("name");
+		return $this->name;//return $this->level->getData("name");
 	}
 	
 	public function setTime($time){
