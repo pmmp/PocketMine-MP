@@ -218,7 +218,7 @@ class ConsoleAPI{
 						case "username":
 							$p = ($issuer instanceof Player) ? $issuer->username:$issuer;
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
-							$offsetshift += strlen($selector[0]) - strlen($p) + 1;
+							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
 						case "all":
 							$output = "";
@@ -239,7 +239,7 @@ class ConsoleAPI{
 							
 							$p = $l[mt_rand(0, count($l) - 1)]->username;
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
-							$offsetshift += strlen($selector[0]) - strlen($p) + 1;
+							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
 					}
 				}
