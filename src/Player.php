@@ -597,7 +597,7 @@ class Player{
 				$yaw = $this->entity->yaw;
 			}
 			if($pitch === false){
-				$pitch = $this->entity->yaw;
+				$pitch = $this->entity->pitch;
 			}
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
