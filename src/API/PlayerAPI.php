@@ -136,7 +136,7 @@ class PlayerAPI{
 				if(count($params) === 3){
 					$spawn = new Position(floatval(array_shift($params)), floatval(array_shift($params)), floatval(array_shift($params)), $issuer->level);
 				}else{
-					$spawn = new Position($issuer->x, $issuer->y, $issuer->z, $issuer->level);
+					$spawn = new Position($issuer->entity->x, $issuer->entity->y, $issuer->entity->z, $issuer->entity->level);
 				}
 				
 				$target->setSpawn($spawn);

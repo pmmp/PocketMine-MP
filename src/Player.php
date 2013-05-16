@@ -968,7 +968,6 @@ class Player{
 									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 									$this->blocked = false;
 									$this->teleport(new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level));
-									$this->setSpawn(new Vector3($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"]), $this->data->get("spawn")["level"]);
 									break;
 								case 2://Chunk loaded?
 									break;
