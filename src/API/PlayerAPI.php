@@ -197,14 +197,14 @@ class PlayerAPI{
 				}else{
 					if(!isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
 						$name = $issuer->username;
-						$x = (float) $params[0];
-						$y = (float) $params[1];
-						$z = (float) $params[2];
+						$x = $params[0];
+						$y = $params[1];
+						$z = $params[2];
 					}elseif(isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0])){
 						$name = $params[0];
-						$x = (float) $params[1];
-						$y = (float) $params[2];
-						$z = (float) $params[3];
+						$x = $params[1];
+						$y = $params[2];
+						$z = $params[3];
 					}else{
 						$output .= "Usage: /$cmd [player] <x> <y> <z>\n";
 						break;
@@ -254,10 +254,13 @@ class PlayerAPI{
 		return false;
 	}
 
-	public function tppos(&$name, $x, $y, $z){
+	public function tppos(&$name, &$x, &$y, &$z){
 		$player = $this->get($name);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
 			$name = $player->username;
+			$x = $x{0} === "~" ? $player->entity->x + floatval(substr($x, 1)):floatval($x);
+			$y = $y{0} === "~" ? $player->entity->y + floatval(substr($y, 1)):floatval($y);
+			$z = $z{0} === "~" ? $player->entity->z + floatval(substr($z, 1)):floatval($z);
 			$player->teleport(new Vector3($x, $y, $z));
 			return true;
 		}
