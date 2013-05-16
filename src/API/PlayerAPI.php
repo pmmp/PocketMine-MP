@@ -189,7 +189,7 @@ class PlayerAPI{
 						$output .= "Usage: /$cmd [target player] <destination player>\n";
 						break;
 					}
-					if($this->teleport($name, $target)){
+					if($this->teleport($name, $target) !== false){
 						$output .= "\"$name\" teleported to \"$target\"\n";
 					}else{
 						$output .= "Couldn't teleport.\n";
