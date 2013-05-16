@@ -94,6 +94,10 @@ class Player{
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
 	
+	public function getSpawn(){
+		return $this->spawnPosition;
+	}
+	
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Level)){
 			$level = $this->level;

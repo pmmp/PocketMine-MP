@@ -157,7 +157,7 @@ class PlayerAPI{
 					}
 					$spawn = $lv->getSpawn();
 				}else{
-					$spawn = $this->server->api->level->getDefault()->getSpawn();
+					$spawn = $issuer->getSpawn();
 				}
 
 				$issuer->teleport($spawn);
