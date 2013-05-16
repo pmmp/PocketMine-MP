@@ -148,7 +148,7 @@ class Player{
 			return false;
 		}
 		$this->freedChunks = false;
-		array_shift($this->chunksOrder);
+		unset($this->chunksOrder[$c]);
 		$this->chunksLoaded[$c] = true;
 		$id = explode(":", $c);
 		$X = $id[0];
@@ -190,17 +190,14 @@ class Player{
 		}else{
 			if(!empty($this->queue)){
 				$maxtime = $time + 0.0025;
-				while(microtime(true) < $maxtime){
-					$p = array_shift($this->queue);
-					if($p === null){
-						break;
-					}
-					switch($p[0]){
+				while(microtime(true) < $maxtime and ($p = each($this->queue)) !== false){
+					unset($this->queue[$p[0]]);
+					switch($p[1][0]){
 						case 0:
-							$this->dataPacket($p[1]["id"], $p[1], false);
+							$this->dataPacket($p[1][1]["id"], $p[1][1], false);
 							break;
 						case 1:
-							eval($p[1]);
+							eval($p[1][1]);
 							break;
 					}
 				}

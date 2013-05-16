@@ -324,7 +324,7 @@ class PocketMinecraftServer{
 	public function tick(){
 		$time = microtime(true);
 		if($this->lastTick <= ($time - 0.05)){
-			array_shift($this->tickMeasure);
+			unset($this->tickMeasure[key($this->tickMeasure)]);
 			$this->tickMeasure[] = $this->lastTick = $time;
 			$this->tickerFunction($time);
 			$this->trigger("server.tick", $time);
