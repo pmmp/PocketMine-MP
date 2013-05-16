@@ -622,7 +622,7 @@ class Entity extends Position{
 		$this->speedY = $speedY;
 		$this->speedZ = $speedZ;		
 		$this->speed = $origin->distance($final) / $diffTime;
-		array_shift($this->speedMeasure);
+		unset($this->speedMeasure[key($this->speedMeasure)]);
 		$this->speedMeasure[] = $this->speed;
 	}
 	
