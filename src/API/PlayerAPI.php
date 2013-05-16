@@ -39,12 +39,13 @@ class PlayerAPI{
 		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "[target player] <destination player> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
 		$this->server->api->console->register("spawnpoint", "[player] [x] [y] [z]", array($this, "commandHandler"));
-		$this->server->api->console->register("spawn", "[world]", array($this, "commandHandler"));
+		$this->server->api->console->register("spawn", "", array($this, "commandHandler"));
 		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
 		$this->server->api->console->alias("tppos", "tp");
 		$this->server->api->ban->cmdWhitelist("list");
 		$this->server->api->ban->cmdWhitelist("lag");
+		$this->server->api->ban->cmdWhitelist("spawn");
 	}
 
 	public function handle($data, $event){
@@ -148,18 +149,7 @@ class PlayerAPI{
 					$output .= "Please run this command in-game.\n";
 					break;
 				}
-				
-				if(isset($params[0])){
-					$lv = $this->server->api->level->get(trim(implode(" ",$params)));
-					if($lv === false){
-						$output .= "Couldn't respawn.\n";
-						break;
-					}
-					$spawn = $lv->getSpawn();
-				}else{
-					$spawn = $issuer->getSpawn();
-				}
-
+				$spawn = $issuer->getSpawn();
 				$issuer->teleport($spawn);
 				break;
 			case "lag":
@@ -202,13 +192,13 @@ class PlayerAPI{
 				}
 				break;
 			case "tp":
-				if(count($params) <= 2){
-					if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+				if(count($params) <= 2 or substr($params[0], 0, 2) === "w:"){
+					if((!isset($params[1]) or substr($params[0], 0, 2) === "w:") and isset($params[0]) and ($issuer instanceof Player)){
 						$name = $issuer->username;
-						$target = $params[1];
+						$target = implode(" ", $params);
 					}elseif(isset($params[1]) and isset($params[0])){
-						$name = $params[0];
-						$target = $params[1];
+						$name = array_shift($params);
+						$target = implode(" ", $params);
 					}else{
 						$output .= "Usage: /$cmd [target player] <destination player>\n";
 						break;
@@ -268,12 +258,26 @@ class PlayerAPI{
 	}
 
 	public function teleport(&$name, &$target){
+		if(substr($target, 0, 2) === "w:"){
+			$lv = $this->server->api->level->get(substr($target, 2));
+			if($lv instanceof Level){
+				$origin = $this->get($name);
+				if($origin instanceof Player){
+					$name = $origin->username;
+					return $origin->teleport($lv->getSpawn());
+				}
+			}else{
+				return false;
+			}
+		}
 		$player = $this->get($target);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
 			$target = $player->username;
 			$origin = $this->get($name);
-			$name = $origin->username;
-			return $origin->teleport($player->entity);
+			if($origin instanceof Player){
+				$name = $origin->username;
+				return $origin->teleport($player->entity);
+			}
 		}
 		return false;
 	}
