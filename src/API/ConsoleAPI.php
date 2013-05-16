@@ -302,9 +302,6 @@ class ConsoleLoop extends Thread{
 	
 	public function stop(){
 		$this->stop = true;
-		if(HAS_EVENT and false){
-			$this->base->stop();
-		}
 	}
 	
 	public function readLine($fp, $events = null){
@@ -315,24 +312,11 @@ class ConsoleLoop extends Thread{
 	}
 	
 	public function run(){
-		$fp = fopen("php://stdin", "r");
-		if(HAS_EVENT and false){
-			$this->base = new EventBase();
-			$this->ev = new Event($this->base, $fp, Event::READ | Event::PERSIST, array($this, "readLine"));
-			$this->ev->add();
-			while($this->stop === false){
-				$this->base->loop(EventBase::LOOP_ONCE);
-				if($this->line !== false){
-					$this->wait();
-					$this->line = false;
-				}
-			}
-		}else{			
-			while($this->stop === false and ($line = fgets($fp)) !== false){
-				$this->line = $line;
-				$this->wait();
-				$this->line = false;
-			}
+		$fp = fopen("php://stdin", "r");		
+		while($this->stop === false and ($line = fgets($fp)) !== false){
+			$this->line = $line;
+			$this->wait();
+			$this->line = false;
 		}
 		@fclose($fp);
 		exit(0);
