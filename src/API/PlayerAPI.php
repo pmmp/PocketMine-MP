@@ -37,11 +37,11 @@ class PlayerAPI{
 		$this->server->api->console->register("list", "", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
 		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
-		$this->server->api->console->register("tppos", "[target player] <x> <y> <z>", array($this, "commandHandler"));
-		$this->server->api->console->register("tp", "[target player] <destination player>", array($this, "commandHandler"));
+		$this->server->api->console->register("tp", "[target player] <destination player> OR [target player] <x> <y> <z>", array($this, "commandHandler"));
 		$this->server->api->console->register("spawn", "[world]", array($this, "commandHandler"));
 		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
+		$this->server->api->console->alias("tppos", "tp");
 		$this->server->api->ban->cmdWhitelist("list");
 		$this->server->api->ban->cmdWhitelist("lag");
 	}
@@ -178,41 +178,42 @@ class PlayerAPI{
 				}
 				break;
 			case "tp":
-				if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
-					$name = $issuer->username;
-					$target = $params[1];
-				}elseif(isset($params[1]) and isset($params[0])){
-					$name = $params[0];
-					$target = $params[1];
+				if(count($params) <= 2){
+					if(!isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+						$name = $issuer->username;
+						$target = $params[1];
+					}elseif(isset($params[1]) and isset($params[0])){
+						$name = $params[0];
+						$target = $params[1];
+					}else{
+						$output .= "Usage: /$cmd [target player] <destination player>\n";
+						break;
+					}
+					if($this->teleport($name, $target)){
+						$output .= "\"$name\" teleported to \"$target\"\n";
+					}else{
+						$output .= "Couldn't teleport.\n";
+					}
 				}else{
-					$output .= "Usage: /$cmd [target player] <destination player>\n";
-					break;
-				}
-				if($this->teleport($name, $target)){
-					$output .= "\"$name\" teleported to \"$target\"\n";
-				}else{
-					$output .= "Couldn't teleport.\n";
-				}
-				break;
-			case "tppos":
-				if(!isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
-					$name = $issuer->username;
-					$x = (float) $params[0];
-					$y = (float) $params[1];
-					$z = (float) $params[2];
-				}elseif(isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0])){
-					$name = $params[0];
-					$x = (float) $params[1];
-					$y = (float) $params[2];
-					$z = (float) $params[3];
-				}else{
-					$output .= "Usage: /$cmd [player] <x> <y> <z>\n";
-					break;
-				}
-				if($this->tppos($name, $x, $y, $z)){
-					$output .= "\"$name\" teleported to ($x, $y, $z)\n";
-				}else{
-					$output .= "Couldn't teleport.\n";
+					if(!isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
+						$name = $issuer->username;
+						$x = (float) $params[0];
+						$y = (float) $params[1];
+						$z = (float) $params[2];
+					}elseif(isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0])){
+						$name = $params[0];
+						$x = (float) $params[1];
+						$y = (float) $params[2];
+						$z = (float) $params[3];
+					}else{
+						$output .= "Usage: /$cmd [player] <x> <y> <z>\n";
+						break;
+					}
+					if($this->tppos($name, $x, $y, $z)){
+						$output .= "\"$name\" teleported to ($x, $y, $z)\n";
+					}else{
+						$output .= "Couldn't teleport.\n";
+					}
 				}
 				break;
 			case "kill":
@@ -246,7 +247,9 @@ class PlayerAPI{
 		$player = $this->get($target);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
 			$target = $player->username;
-			return $this->tppos($name, $player->entity->x, $player->entity->y, $player->entity->z);
+			$origin = $this->get($name);
+			$name = $origin->username;
+			return $origin->teleport($player->entity);
 		}
 		return false;
 	}

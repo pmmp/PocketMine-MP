@@ -158,7 +158,7 @@ class Level{
 		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound();
 		$this->level->saveData();
-		$this->lastSave = microtime(true) + 90;
+		$this->nextSave = microtime(true) + 90;
 	}
 	
 	public function getBlock(Vector3 $pos){
