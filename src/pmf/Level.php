@@ -292,7 +292,7 @@ class PMFLevel extends PMF{
 			return array(AIR, 0);
 		}
 		$index = $this->getIndex($X, $Z);
-		if($this->chunks[$index] === false){
+		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
 			if($this->loadChunk($X, $Z) === false){
 				return array(AIR, 0);
 			}
@@ -324,7 +324,7 @@ class PMFLevel extends PMF{
 			return false;
 		}
 		$index = $this->getIndex($X, $Z);
-		if($this->chunks[$index] === false){
+		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
 			if($this->loadChunk($X, $Z) === false){
 				return false;
 			}
