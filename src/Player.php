@@ -599,13 +599,17 @@ class Player{
 			if($pitch === false){
 				$pitch = $this->entity->pitch;
 			}
+			if($this->server->api->dhandle("player.teleport", array("player" => $this, "target" => $pos)) === false){
+				return false;
+			}
+			
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
 			$this->entity->setPosition($pos, $yaw, $pitch);
 			$this->entity->resetSpeed();
 			$this->entity->updateLast();
-			$this->entity->calculateVelocity();			
+			$this->entity->calculateVelocity();
 			if($pos instanceof Position and $pos->level !== $this->level){
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
