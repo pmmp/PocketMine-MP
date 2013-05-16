@@ -179,7 +179,7 @@ class Entity extends Position{
 	
 	private function spawnDrops(){
 		foreach($this->getDrops() as $drop){
-			$this->server->api->block->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
+			$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 		}
 	}
 	

@@ -1039,8 +1039,8 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							if($this->gamemode !== VIEW and $this->blocked === false and isset($this->server->entities[$data["target"]]) and $this->entity->distance($this->server->entities[$data["target"]]) <= 8){
-								$target = $this->server->api->entity->get($data["target"]);
+							$target = $this->server->api->entity->get($data["target"]);
+							if($this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 								$data["targetentity"] = $target;
 								$data["entity"] = $this->entity;
 								if(!($target instanceof Entity)){

@@ -34,7 +34,7 @@ class Position extends Vector3{
 	}
 	
 	public function distance($x = 0, $y = 0, $z = 0){
-		if($x instanceof Position and $x->level !== $this->level){
+		if(($x instanceof Position) and $x->level !== $this->level){
 			return PHP_INT_MAX;
 		}
 		return parent::distance($x, $y, $z);

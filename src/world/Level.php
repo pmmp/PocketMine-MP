@@ -66,19 +66,17 @@ class Level{
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
 		}
-
-		foreach($this->usedChunks as $i => $c){
-			if(count($c) === 0){
-				unset($this->usedChunks[$i]);
-				$X = explode(".", $i);
-				$Z = array_pop($X);
-				$this->level->unloadChunk((int) array_pop($X), (int) $Z);
-			}
-		}
 		
-		if($this->nextSave < $now){
+		if($this->nextSave < $now and $this->server->saveEnabled === true){
+			foreach($this->usedChunks as $i => $c){
+				if(count($c) === 0){
+					unset($this->usedChunks[$i]);
+					$X = explode(".", $i);
+					$Z = array_pop($X);
+					$this->level->unloadChunk((int) array_pop($X), (int) $Z);
+				}
+			}
 			$this->save();
-			$this->lastSave = $now + 90;
 		}
 	}
 	
@@ -88,6 +86,9 @@ class Level{
 	}
 	
 	public function save(){
+		if($this->server->saveEnabled === false){
+			return;
+		}
 		$entities = array();
 		foreach($this->server->api->entity->getAll($this) as $entity){
 			if($entity->class === ENTITY_MOB){
@@ -157,6 +158,7 @@ class Level{
 		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound();
 		$this->level->saveData();
+		$this->lastSave = microtime(true) + 90;
 	}
 	
 	public function getBlock(Vector3 $pos){

@@ -45,6 +45,9 @@ class LevelAPI{
 
 	public function init(){
 		$this->server->api->console->register("seed", "[world]", array($this, "commandHandler"));
+		$this->server->api->console->register("save-all", "", array($this, "commandHandler"));
+		$this->server->api->console->register("save-on", "", array($this, "commandHandler"));
+		$this->server->api->console->register("save-off", "", array($this, "commandHandler"));
 		$this->default = $this->server->api->getProperty("level-name");
 		if($this->loadLevel($this->default) === false){
 			$this->generateLevel($this->default);
@@ -56,6 +59,18 @@ class LevelAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
+			case "save-all":
+				$save = $this->server->saveEnabled;
+				$this->server->saveEnabled = true;
+				$this->saveAll();
+				$this->server->saveEnabled = $save;
+				break;
+			case "save-on":
+				$this->server->saveEnabled = true;
+				break;
+			case "save-off":
+				$this->server->saveEnabled = false;
+				break;
 			case "seed":
 				if(!isset($params[0]) and ($issuer instanceof Player)){
 					$output .= "Seed: ".$issuer->level->getSeed()."\n";
@@ -138,6 +153,12 @@ class LevelAPI{
 		switch($event){
 		}
 	}
+	
+	public function saveAll(){
+		foreach($this->levels as $level){
+			$level->save();
+		}
+	}
 
 	public function getSpawn(){
 		return $this->server->spawn;
@@ -154,82 +175,6 @@ class LevelAPI{
 			$this->time = (int) $this->level->getData("time");
 			$this->seed = (int) $this->level->getData("seed");
 			$this->spawn = $this->level->getSpawn();
-		}
-	}
-
-	public function save($final = false){
-		if($this->mapName !== false){
-			$this->levelData["Time"] = $this->time;
-			file_put_contents($this->mapDir."level.dat", serialize($this->levelData));
-			$this->map->saveMap($final);
-			$this->trigger("server.save", $final);
-			if(count($this->entities) > 0){
-				$entities = array();
-				foreach($this->entities as $entity){
-					if($entity->class === ENTITY_MOB){
-						$entities[] = array(
-							"id" => $entity->type,
-							"Color" => @$entity->data["Color"],
-							"Sheared" => @$entity->data["Sheared"],
-							"Health" => $entity->health,
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => $entity->yaw,
-								1 => $entity->pitch,
-							),
-						);
-					}elseif($entity->class === ENTITY_OBJECT){
-						$entities[] = array(
-							"id" => $entity->type,
-							"TileX" => $entity->x,
-							"TileX" => $entity->y,
-							"TileX" => $entity->z,
-							"Health" => $entity->health,
-							"Motive" => $entity->data["Motive"],
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => $entity->yaw,
-								1 => $entity->pitch,
-							),
-						);
-					}elseif($entity->class === ENTITY_ITEM){
-						$entities[] = array(
-							"id" => 64,
-							"Item" => array(
-								"id" => $entity->type,
-								"Damage" => $entity->meta,
-								"Count" => $entity->stack,
-							),
-							"Health" => $entity->health,
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => 0,
-								1 => 0,
-							),
-						);
-					}
-				}
-				file_put_contents($this->mapDir."entities.dat", serialize($entities));
-			}
-			if(count($this->tileEntities) > 0){
-				$tiles = array();
-				foreach($this->tileEntities as $tile){
-					$tiles[] = $tile->data;
-				}
-				file_put_contents($this->mapDir."tileEntities.dat", serialize($tiles));
-			}
 		}
 	}
 	

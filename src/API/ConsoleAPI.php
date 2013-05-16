@@ -42,7 +42,6 @@ class ConsoleAPI{
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1|2>", array($this, "defaultCommands"));
 		$this->register("invisible", "<on|off>", array($this, "defaultCommands"));
-		$this->register("save-all", "", array($this, "defaultCommands"));
 		$this->register("stop", "", array($this, "defaultCommands"));
 		$this->register("defaultgamemode", "<mode>", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
@@ -126,10 +125,6 @@ class ConsoleAPI{
 						$this->server->api->setProperty("difficulty", (int) $s);
 						$output .= "Difficulty changed to ".$this->server->difficulty."\n";
 						break;
-					case "save-all":
-						$this->server->save();
-						break;
-						
 					case "?":
 						if($issuer !== "console" and $issuer !== "rcon"){
 							break;
@@ -202,8 +197,7 @@ class ConsoleAPI{
 			$params = (string) substr($line, $end + 1);
 			
 			if(isset($this->alias[$cmd])){
-				$this->run($this->alias[$cmd] . " " .$params, $issuer, $cmd);
-				return;
+				return $this->run($this->alias[$cmd] . " " .$params, $issuer, $cmd);
 			}
 			if($issuer instanceof Player){
 				console("[DEBUG] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
@@ -227,10 +221,11 @@ class ConsoleAPI{
 							$offsetshift += strlen($selector[0]) - strlen($p) + 1;
 							break;
 						case "all":
+							$output = "";
 							foreach($this->server->api->player->getAll() as $p){
-								$this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+								$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 							}
-							return;
+							return $output;
 						case "random":
 							$l = array();
 							foreach($this->server->api->player->getAll() as $p){
