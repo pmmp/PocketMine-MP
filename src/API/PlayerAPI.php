@@ -37,7 +37,7 @@ class PlayerAPI{
 		$this->server->api->console->register("list", "", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
 		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
-		$this->server->api->console->register("tp", "[target player] <destination player> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
+		$this->server->api->console->register("tp", "[target player] <destination player|w:world> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
 		$this->server->api->console->register("spawnpoint", "[player] [x] [y] [z]", array($this, "commandHandler"));
 		$this->server->api->console->register("spawn", "", array($this, "commandHandler"));
 		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
