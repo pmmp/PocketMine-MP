@@ -205,7 +205,7 @@ class ConsoleAPI{
 				console("[DEBUG] \x1b[33m*".$issuer."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}
 			
-			if(preg_match_all('#@([@A-Za-z_]{1,})#', $params, $matches, PREG_OFFSET_CAPTURE) > 0){
+			if(preg_match_all('#@([@a-z]{1,})#', $params, $matches, PREG_OFFSET_CAPTURE) > 0){
 				$offsetshift = 0;
 				foreach($matches[1] as $selector){
 					if($selector[0]{0} === "@"){ //Escape!
@@ -214,18 +214,27 @@ class ConsoleAPI{
 						continue;
 					}
 					switch(strtolower($selector[0])){
+						case "u":
 						case "player":
 						case "username":
 							$p = ($issuer instanceof Player) ? $issuer->username:$issuer;
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
+						case "w":
+						case "world":
+							$p = ($issuer instanceof Player) ? $issuer->level->getName():$this->server->api->level->getDefault()->getName();
+							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
+							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
+							break;
+						case "a":
 						case "all":
 							$output = "";
 							foreach($this->server->api->player->getAll() as $p){
 								$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 							}
 							return $output;
+						case "r":
 						case "random":
 							$l = array();
 							foreach($this->server->api->player->getAll() as $p){

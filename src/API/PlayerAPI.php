@@ -37,7 +37,8 @@ class PlayerAPI{
 		$this->server->api->console->register("list", "", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
 		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
-		$this->server->api->console->register("tp", "[target player] <destination player> OR [target player] <x> <y> <z>", array($this, "commandHandler"));
+		$this->server->api->console->register("tp", "[target player] <destination player> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
+		$this->server->api->console->register("spawnpoint", "[player] [x] [y] [z]", array($this, "commandHandler"));
 		$this->server->api->console->register("spawn", "[world]", array($this, "commandHandler"));
 		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
 		$this->server->api->console->alias("suicide", "kill");
@@ -115,12 +116,39 @@ class PlayerAPI{
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
-			case "spawn":
-				if(count($params) > 1){
-					$player = $this->server->api->player->get(array_pop($params));
-				}else{
-					$player = $issuer;
+			case "spawnpoint":
+				if(!($issuer instanceof Player)){					
+					$output .= "Please run this command in-game.\n";
+					break;
 				}
+
+				if(count($params) === 1 or count($params) === 4){
+					$target = $this->server->api->player->get(array_shift($params));
+				}else{
+					$target = $issuer;
+				}
+				
+				if(!($target instanceof Player)){
+					$output .= "That player cannot be found.\n";
+					break;
+				}
+				
+				if(count($params) === 3){
+					$spawn = new Position(floatval(array_shift($params)), floatval(array_shift($params)), floatval(array_shift($params)), $issuer->level);
+				}else{
+					$spawn = new Position($issuer->x, $issuer->y, $issuer->z, $issuer->level);
+				}
+				
+				$target->setSpawn($spawn);
+				
+				$output .= "Spawnpoint set correctly!\n";
+				break;
+			case "spawn":
+				if(!($issuer instanceof Player)){					
+					$output .= "Please run this command in-game.\n";
+					break;
+				}
+				
 				if(isset($params[0])){
 					$lv = $this->server->api->level->get(trim(implode(" ",$params)));
 					if($lv === false){
@@ -132,11 +160,7 @@ class PlayerAPI{
 					$spawn = $this->server->api->level->getDefault()->getSpawn();
 				}
 
-				if(!($player instanceof Player)){
-					$output .= "Couldn't respawn.\n";
-					break;
-				}
-				$player->teleport($spawn);
+				$issuer->teleport($spawn);
 				break;
 			case "lag":
 				if(!($issuer instanceof Player)){					
