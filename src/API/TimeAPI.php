@@ -123,7 +123,7 @@ class TimeAPI{
 	}
 
 	public function set($time, $level = false){
-		if(($level instanceof Level)){
+		if(!($level instanceof Level)){
 			$level = $this->server->api->level->getDefault();
 		}
 		if(is_string($time) and isset($this->phases[$time])){

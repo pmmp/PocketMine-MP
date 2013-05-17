@@ -1184,7 +1184,7 @@ class Player{
 							$data["item"] = $item;
 							if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
 								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->itemEnforcement !== true){
-									$this->server->api->block->drop(new Vector3($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5), $item);
+									$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $item);
 								}
 							}
 							break;
