@@ -267,7 +267,7 @@ class Utils{
 				(string) mt_rand(),
 				(string) rand(),
 				function_exists("zend_thread_id") ? ((string) zend_thread_id()):microtime(),
-				function_exists("sys_getloadavg") ? implode(";", sys_getloadavg()):microtime(),
+				function_exists("sys_getloadavg") ? print_r(sys_getloadavg(), true):microtime(),
 				serialize(get_loaded_extensions()),
 				sys_get_temp_dir(),
 				(string) disk_free_space("."),
