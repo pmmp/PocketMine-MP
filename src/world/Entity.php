@@ -75,7 +75,8 @@ class Entity extends Position{
 	private $speedMeasure = array(0, 0, 0, 0, 0);
 	private $server;
 	public $level;
-	public $check;
+	public $check = true;
+	public $size = 1;
 
 	function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 		$this->level = $level;
@@ -116,6 +117,7 @@ class Entity extends Position{
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
 				$this->setHealth($this->health, "generic");
+				$this->size = 1;
 				break;
 			case ENTITY_ITEM:
 				if(isset($data["item"]) and ($data["item"] instanceof Item)){
@@ -127,11 +129,13 @@ class Entity extends Position{
 				}
 				$this->setHealth(5, "generic");
 				$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->size = 0.25;
 				break;
 			case ENTITY_MOB:
 				$this->setHealth($this->data["Health"], "generic");
 				$this->server->schedule(5, array($this, "update"), array(), true);
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
+				$this->size = 1;
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"]:$this->x;
@@ -139,6 +143,7 @@ class Entity extends Position{
 				$this->z = isset($this->data["TileZ"]) ? $this->data["TileZ"]:$this->z;
 				$this->setHealth(1, "generic");
 				//$this->setName((isset($objects[$this->type]) ? $objects[$this->type]:$this->type));
+				$this->size = 1;
 				break;
 		}
 	}
@@ -321,7 +326,7 @@ class Entity extends Position{
 			for($z = $startZ; $z <= $endZ; ++$z){
 				for($x = $startX; $x <= $endX; ++$x){
 					$v = new Vector3($x, $y, $z);
-					if($this->isSupport($v)){
+					if($this->isSupport($v, $this->size)){
 						$b = $this->level->getBlock($v);
 						if($b->isFlowable !== true){
 							$support = true;
