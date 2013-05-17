@@ -102,7 +102,7 @@ class LevelAPI{
 	
 	public function loadLevel($name){
 		if($this->get($name) !== false){
-			return false;
+			return true;
 		}
 		$path = DATA_PATH."worlds/".$name."/";
 		if(!file_exists($path."level.pmf")){
