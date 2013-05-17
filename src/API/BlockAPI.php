@@ -229,7 +229,7 @@ class BlockAPI{
 						break;
 					}
 					if($this->server->api->getProperty("item-enforcement") === false){
-						$this->drop(new Vector3($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5), $item, true);
+						$this->server->api->entity->drop(new Position($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $player->level), $item, true);
 					}else{
 						$player->addItem($item->getID(), $item->getMetadata(), $item->count);
 					}
