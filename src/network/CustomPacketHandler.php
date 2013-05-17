@@ -244,6 +244,15 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
+			case MC_REMOVE_PLAYER:
+				if($this->c === false){
+					$this->data["clientID"] = Utils::readLong($this->get(8));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeLong($this->data["clientID"]);
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+				}
+				break;
 			case MC_ADD_ENTITY: //Not used?
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
