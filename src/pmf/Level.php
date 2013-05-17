@@ -193,6 +193,8 @@ class PMFLevel extends PMF{
 		$Z = (int) $Z;
 		if($this->isChunkLoaded($X, $Z)){
 			return true;
+		}elseif(!isset($this->locationTable[$index])){
+			return false;
 		}
 		$index = $this->getIndex($X, $Z);
 		$info = $this->locationTable[$index];

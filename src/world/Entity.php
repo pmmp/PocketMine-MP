@@ -118,7 +118,7 @@ class Entity extends Position{
 				$this->setHealth($this->health, "generic");
 				break;
 			case ENTITY_ITEM:
-				if($data["item"] instanceof Item){
+				if(isset($data["item"]) and ($data["item"] instanceof Item)){
 					$this->meta = $this->data["item"]->getMetadata();
 					$this->stack = $this->data["item"]->count;			
 				}else{
