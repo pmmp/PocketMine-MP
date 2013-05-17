@@ -910,7 +910,7 @@ class Player{
 								"status" => 0,
 							));
 							$this->dataPacket(MC_START_GAME, array(
-								"seed" => $this->server->seed,
+								"seed" => $this->level->getSeed(),
 								"x" => $this->data->get("position")["x"],
 								"y" => $this->data->get("position")["y"],
 								"z" => $this->data->get("position")["z"],
