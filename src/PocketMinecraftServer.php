@@ -291,7 +291,7 @@ class PocketMinecraftServer{
 		$er = error_get_last();
 		$dump .= "Error: ".var_export($er, true)."\r\n\r\n";
 		$dump .= "Code: \r\n";
-		$file = file($er["file"], FILE_IGNORE_NEW_LINES);
+		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
 		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
 			$dump .= "[".($l + 1)."] ".$file[$l]."\r\n";
 		}
