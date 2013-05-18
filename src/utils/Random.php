@@ -57,5 +57,9 @@ class Random{
 	public function nextBoolean(){
 		return $this->random->rangeint(0, 1) === 1;
 	}
+	
+	public function nextRange($start = 0, $end = PHP_INT_MAX){
+		return $this->random->rangeint($start, $end);
+	}
 
 }

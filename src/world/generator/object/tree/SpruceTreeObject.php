@@ -35,7 +35,7 @@ class SpruceTreeObject extends TreeObject{
 	private $leavesBottomY = -1;
 	private $leavesMaxRadius = -1;
 
-	public function canPlaceObject(Level $level, $x, $y, $z){
+	public function canPlaceObject(Level $level, Vector3 $pos){
 		$this->findRandomLeavesSize();
 		$checkRadius = 0;
 		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
@@ -44,7 +44,7 @@ class SpruceTreeObject extends TreeObject{
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
 				for($zz = -$checkRadius; $zz < ($checkRadius + 1); ++$zz){
-					$block = $level->getBlock(new Vector3($x + $xx, $y + $yy, $z + $zz));
+					$block = $level->getBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz));
 					if(!isset($this->overridable[$block->getID()])){
 						return false;
 					}
@@ -60,28 +60,28 @@ class SpruceTreeObject extends TreeObject{
 		$this->leavesMaxRadius = 1 + mt_rand(0, 1);
 	}
 
-	public function placeObject(Level $level, $x, $y, $z){
+	public function placeObject(Level $level, Vector3 $pos){
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
-		$level->setBlock(new Vector3($x, $y - 1, $z), new DirtBlock());
+		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
 			for ($xx = -$leavesRadius; $xx < ($leavesRadius + 1); ++$xx) {
 				for ($zz = -$leavesRadius; $zz < ($leavesRadius + 1); ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
-						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), new LeavesBLock($this->type));
+						$level->setBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBLock($this->type));
 					}
 				}
 			}
-			if ($leavesRadius > 0 and $yy === ($y + $this->leavesBottomY + 1)) {
+			if ($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)) {
 				--$leavesRadius;
 			}elseif($leavesRadius < $this->leavesMaxRadius){
 				++$leavesRadius;
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlock(new Vector3($x, $y + $yy, $z), new WoodBlock($this->type));
+			$level->setBlock(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
 		}
 	}
 

@@ -54,7 +54,7 @@ class SaplingBlock extends TransparentBlock{
 	
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			TreeObject::growTree($this->level, $this);
+			TreeObject::growTree($this->level, $this, $this->meta);
 			return true;
 		}
 		return false;

@@ -44,14 +44,14 @@ class BigTreeObject extends TreeObject{
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
 
-	public function canPlaceObject(Level $level, $x, $y, $z){
+	public function canPlaceObject(Level $level, Vector3 $pos){
 		return false;
 	}
 
-	public function placeObject(Level $level, $x, $y, $z, $type){
+	public function placeObject(Level $level, Vector3 $pos, $type){
 
 		$this->trunkHeight = (int) ($this->totalHeight * $this->trunkHeightMultiplier);
-		$leaves = $this->getLeafGroupPoints($level, $x, $y, $z);
+		$leaves = $this->getLeafGroupPoints($level, $pos);
 		foreach($leaves as $leafGroup){
 			$groupX = $leafGroup->getBlockX();
 			$groupY = $leafGrou->getBlockY();
@@ -66,7 +66,7 @@ class BigTreeObject extends TreeObject{
 		}
 		generateBranches(w, x, y, z, leaves);
 
-		$level->setBlock($x, $y - 1, $z, 3, 0);
+		$level->setBlock($x, $pos->y - 1, $z, 3, 0);
 		$this->totalHeight += mt_rand(-1, 3);
 		$this->leavesHeight += mt_rand(0, 1);
 		for($yy = ($this->totalHeight - $this->leavesHeight); $yy < ($this->totalHeight + 1); ++$yy){
@@ -75,13 +75,13 @@ class BigTreeObject extends TreeObject{
 			for($xx = -$xzRadius; $xx < ($xzRadius + 1); ++$xx){
 				for($zz = -$xzRadius; $zz < ($xzRadius + 1); ++$zz){
 					if((abs($xx) != $xzRadius or abs($zz) != $xzRadius) and $yRadius != 0){
-						$level->setBlock($x + $xx, $y + $yy, $z + $zz, 18, $type);
+						$level->setBlock($pos->x + $xx, $pos->y + $yy, $pos->z + $zz, 18, $type);
 					}
 				}
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlock($x, $y + $yy, $z, 17, $type);
+			$level->setBlock($x, $pos->y + $yy, $z, 17, $type);
 		}
 		*/
 	}

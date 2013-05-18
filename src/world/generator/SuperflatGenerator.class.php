@@ -130,6 +130,18 @@ class SuperflatGenerator implements LevelGenerator{
 				}
 			}
 		}
+		
+		if(isset($this->options["decoration"])){
+			$treecount = 150;
+			if(isset($this->options["spawn"]["treecount"])){
+				$treecount = intval($this->options["spawn"]["treecount"]);
+			}
+			for($t = 0; $t < $treecount; ++$t){
+				$centerX = $random->nextRange(0, 256);
+				$centerZ = $random->nextRange(0, 256);
+				TreeObject::growTree($level, new Vector3($centerX, $this->floorLevel, $centerZ), $random->nextRange(0,3));
+			}
+		}
 	}
 	
 	public function getSpawn(Random $random){

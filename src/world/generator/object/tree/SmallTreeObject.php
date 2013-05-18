@@ -38,7 +38,7 @@ class SmallTreeObject extends TreeObject{
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
 
-	public function canPlaceObject(Level $level, $x, $y, $z){
+	public function canPlaceObject(Level $level, Vector3 $pos){
 		$radiusToCheck = $this->radiusIncrease;
 		for ($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
 			if ($yy == 1 or $yy === $this->totalHeight - 1) {
@@ -46,7 +46,7 @@ class SmallTreeObject extends TreeObject{
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
 				for($zz = -$radiusToCheck; $zz < ($radiusToCheck + 1); ++$zz){
-					$block = $level->getBlock(new Vector3($x + $xx, $y + $yy, $z + $zz));
+					$block = $level->getBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz));
 					if(!isset($this->overridable[$block->getID()])){
 						return false;
 					}
@@ -56,8 +56,8 @@ class SmallTreeObject extends TreeObject{
 		return true;
 	}
 
-	public function placeObject(Level $level, $x, $y, $z){
-		$level->setBlock(new Vector3($x, $y - 1, $z), new DirtBlock());
+	public function placeObject(Level $level, Vector3 $pos){
+		$level->setBlock(new Vector3($x, $pos->y - 1, $z), new DirtBlock());
 		$this->totalHeight += mt_rand(-1, 3);
 		$this->leavesHeight += mt_rand(0, 1);
 		for($yy = ($this->totalHeight - $this->leavesHeight); $yy < ($this->totalHeight + 1); ++$yy){
@@ -66,13 +66,13 @@ class SmallTreeObject extends TreeObject{
 			for($xx = -$xzRadius; $xx < ($xzRadius + 1); ++$xx){
 				for($zz = -$xzRadius; $zz < ($xzRadius + 1); ++$zz){
 					if((abs($xx) != $xzRadius or abs($zz) != $xzRadius) and $yRadius != 0){
-						$level->setBlock(new Vector3($x + $xx, $y + $yy, $z + $zz), new LeavesBlock($this->type));
+						$level->setBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBlock($this->type));
 					}
 				}
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlock(new Vector3($x, $y + $yy, $z), new WoodBlock($this->type));
+			$level->setBlock(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
 		}
 	}
 
