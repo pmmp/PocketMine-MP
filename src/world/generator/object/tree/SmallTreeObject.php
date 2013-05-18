@@ -57,7 +57,7 @@ class SmallTreeObject extends TreeObject{
 	}
 
 	public function placeObject(Level $level, Vector3 $pos){
-		$level->setBlock(new Vector3($x, $pos->y - 1, $z), new DirtBlock());
+		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$this->totalHeight += mt_rand(-1, 3);
 		$this->leavesHeight += mt_rand(0, 1);
 		for($yy = ($this->totalHeight - $this->leavesHeight); $yy < ($this->totalHeight + 1); ++$yy){

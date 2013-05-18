@@ -64,7 +64,7 @@ class PineTreeObject extends TreeObject{
 		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
-		$level->setBlock(new Vector3($x, $pos->y - 1, $z), new DirtBlock());
+		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$leavesRadius = mt_rand(0,2);
 		$leavesMaxRadius = 1;
 		$leavesBottomY = $this->totalHeight - $this->leavesSizeY;
