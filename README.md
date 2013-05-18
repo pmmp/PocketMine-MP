@@ -1,6 +1,6 @@
 ![](http://www.pocketmine.net/favicon.png)
 
-# PocketMine-MP [![Build Status](https://travis-ci.org/shoghicp/PocketMine-MP.png?branch=master)](https://travis-ci.org/shoghicp/PocketMine-MP)
+# PocketMine-MP [![Build Status](https://travis-ci.org/PocketMine/PocketMine-MP.png?branch=master)](https://travis-ci.org/PocketMine/PocketMine-MP)
 
 ```
 This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Plugin Repository](http://plugins.pocketmine.net/)
 
-### [FAQ: Frequently Asked Questions](https://github.com/shoghicp/PocketMine-MP/wiki/Frequently-Asked-Questions)
+### [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
 ### [Help Page](http://www.pocketmine.net/help.php)
 
