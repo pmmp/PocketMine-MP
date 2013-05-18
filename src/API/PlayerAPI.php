@@ -362,6 +362,12 @@ class PlayerAPI{
 			$player->gamemode = $player->data->get("gamemode");
 			if(($player->level = $this->server->api->level->get($player->data->get("position")["level"])) === false){
 				$player->level = $this->server->api->level->getDefault();
+				$player->data->set("position", array(
+				"level" => $player->level->getName(),
+				"x" => $player->level->getSpawn()->x,
+				"y" => $player->level->getSpawn()->y,
+				"z" => $player->level->getSpawn()->z,
+			));
 			}
 			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
 		}
