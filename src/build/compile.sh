@@ -5,7 +5,7 @@ PHP_VERSION="5.4.15"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
-PTHREADS_VERSION="80b4445eab6ad9b7419afedda41ea4f9a23ab6b8"
+PTHREADS_VERSION="e5d95dfb847c8963c100bd4fb601dde41e0b75d1"
 CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
