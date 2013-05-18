@@ -86,6 +86,9 @@ class LevelAPI{
 	}
 	
 	public function generateLevel($name, $seed = false, $generator = false){
+		if($this->levelExists($name)){
+			return false;
+		}
 		$options = array();
 		if($this->server->api->getProperty("generator-settings") !== false and trim($this->server->api->getProperty("generator-settings")) != ""){
 			$options["preset"] = $this->server->api->getProperty("generator-settings");
@@ -101,19 +104,28 @@ class LevelAPI{
 		}
 		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
 		$gen->generate();
+		return true;
 	}
 	
-	public function loadLevel($name){
-		if($this->get($name) !== false){
-			return true;
-		}
+	public function levelExists($name){
 		$path = DATA_PATH."worlds/".$name."/";
-		if(!file_exists($path."level.pmf")){
+		if($this->get($name) === false and !file_exists($path."level.pmf")){
 			$level = new LevelImport($path);
 			if($level->import() === false){
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	public function loadLevel($name){
+		if($this->get($name) !== false){
+			return true;
+		}elseif($this->levelExists($name) === false){
+			console("[NOTICE] Level \"".$name."\" not found");
+			return false;
+		}
+		$path = DATA_PATH."worlds/".$name."/";
 		console("[INFO] Preparing level \"".$name."\"");
 		$level = new PMFLevel($path."level.pmf");
 		$entities = new Config($path."entities.yml", CONFIG_YAML);

@@ -195,9 +195,8 @@ class ConsoleAPI{
 			}
 			$cmd = strtolower(substr($line, 0, $end));
 			$params = (string) substr($line, $end + 1);
-			
 			if(isset($this->alias[$cmd])){
-				return $this->run($this->alias[$cmd] . " " .$params, $issuer, $cmd);
+				return $this->run($this->alias[$cmd] . ($params !== "" ? " " .$params:""), $issuer, $cmd);
 			}
 			if($issuer instanceof Player){
 				console("[DEBUG] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
