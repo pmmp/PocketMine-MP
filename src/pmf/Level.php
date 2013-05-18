@@ -341,15 +341,13 @@ class PMFLevel extends PMF{
 		$old_b = ord($this->chunks[$index][$Y]{$bindex});
 		$old_m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
-			$o_m = $old_m & 0x0F;
-			$m = ($o_m << 4) | $meta;
+			$m = ($old_m & 0xF0) | $meta;
 		}else{
-			$o_m = $old_m >> 4;
-			$m = ($meta << 4) | $o_m;
+			$m = ($meta << 4) | ($old_m & 0x0F);
 		}
 		if($old_b !== $block or $old_m !== $m){
 			$this->chunks[$index][$Y]{$bindex} = chr($block);
-			$this->chunks[$index][$Y]{$mindex} = chr($m);		
+			$this->chunks[$index][$Y]{$mindex} = chr($m);
 			if(!isset($this->chunkChange[$index][$Y])){
 				$this->chunkChange[$index][$Y] = 1;
 			}else{
