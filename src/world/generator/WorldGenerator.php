@@ -51,17 +51,18 @@ class WorldGenerator{
 	}
 	
 	public function generate(){
+		$this->generator->init($this->level, $this->random);
 		for($Z = 0; $Z < $this->width; ++$Z){
 			for($X = 0; $X < $this->width; ++$X){
 				for($Y = 0; $Y < $this->height; ++$Y){
-					$this->generator->generateChunk($this->level, $X, $Y, $Z, $this->random);
-					$this->generator->populateChunk($this->level, $X, $Y, $Z, $this->random);
+					$this->generator->generateChunk($X, $Y, $Z);
+					$this->generator->populateChunk($X, $Y, $Z);
 				}
 			}
 			console("[NOTICE] Generating level ".ceil((($Z + 1)/$this->width) * 100)."%");
 		}
-		$this->generator->populateLevel($this->level, $this->random);
-		$this->level->setSpawn($this->generator->getSpawn($this->random));
+		$this->generator->populateLevel();
+		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true);
 	}
 

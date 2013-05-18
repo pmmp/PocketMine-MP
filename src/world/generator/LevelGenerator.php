@@ -27,12 +27,14 @@ the Free Software Foundation, either version 3 of the License, or
 
 interface LevelGenerator{
 	public function __construct(array $options = array());
+	
+	public function init(Level $level, Random $random);
 
-	public function generateChunk(Level $level, $chunkX, $chunkY, $chunkZ, Random $random);
+	public function generateChunk($chunkX, $chunkY, $chunkZ);
 	
-	public function populateChunk(Level $level, $chunkX, $chunkY, $chunkZ, Random $random);
+	public function populateChunk($chunkX, $chunkY, $chunkZ);
 	
-	public function populateLevel(Level $level, Random $random);
+	public function populateLevel();
 	
-	public function getSpawn(Random $random);
+	public function getSpawn();
 }

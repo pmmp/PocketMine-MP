@@ -30,7 +30,7 @@ require_once("LevelGenerator.php");
 /***REM_END***/
 
 class SuperflatGenerator implements LevelGenerator{
-	private $config, $structure, $chunks, $options, $floorLevel;
+	private $level, $random, $structure, $chunks, $options, $floorLevel;
 	
 	public function __construct(array $options = array()){
 		$this->preset = "2;7,2x3,2;1;spawn(radius=10 block=24)";
@@ -101,16 +101,21 @@ class SuperflatGenerator implements LevelGenerator{
 			$this->options[$option] = $params;
 		}
 	}
+	
+	public function init(Level $level, Random $random){
+		$this->level = $level;
+		$this->random = $random;
+	}
 		
-	public function generateChunk(Level $level, $chunkX, $chunkY, $chunkZ, Random $random){
-		$level->setMiniChunk($chunkX, $chunkZ, $chunkY, $this->chunks[$chunkY]);
+	public function generateChunk($chunkX, $chunkY, $chunkZ){
+		$this->level->setMiniChunk($chunkX, $chunkZ, $chunkY, $this->chunks[$chunkY]);
 	}
 	
-	public function populateChunk(Level $level, $chunkX, $chunkY, $chunkZ, Random $random){
+	public function populateChunk($chunkX, $chunkY, $chunkZ){
 
 	}
 	
-	public function populateLevel(Level $level, Random $random){
+	public function populateLevel(){
 		if(isset($this->options["spawn"])){
 			$spawn = array(10, new SandstoneBlock());
 			if(isset($this->options["spawn"]["radius"])){
@@ -128,7 +133,7 @@ class SuperflatGenerator implements LevelGenerator{
 			for($x = $start; $x <= $end; ++$x){
 				for($z = $start; $z <= $end; ++$z){
 					if(floor(sqrt(pow($x - 128, 2) + pow($z - 128, 2))) <= $spawn[0]){
-						$level->setBlockRaw(new Vector3($x, $this->floorLevel - 1, $z), $spawn[1]);
+						$this->level->setBlockRaw(new Vector3($x, $this->floorLevel - 1, $z), $spawn[1]);
 					}
 				}
 			}
@@ -140,14 +145,14 @@ class SuperflatGenerator implements LevelGenerator{
 				$treecount = intval($this->options["spawn"]["treecount"]);
 			}
 			for($t = 0; $t < $treecount; ++$t){
-				$centerX = $random->nextRange(0, 256);
-				$centerZ = $random->nextRange(0, 256);
-				TreeObject::growTree($level, new Vector3($centerX, $this->floorLevel, $centerZ), $random->nextRange(0,3));
+				$centerX = $this->random->nextRange(0, 256);
+				$centerZ = $this->random->nextRange(0, 256);
+				TreeObject::growTree($this->level, new Vector3($centerX, $this->floorLevel, $centerZ), $this->random->nextRange(0,3));
 			}
 		}
 	}
 	
-	public function getSpawn(Random $random){
+	public function getSpawn(){
 		return new Vector3(128, $this->floorLevel, 128);
 	}
 }
