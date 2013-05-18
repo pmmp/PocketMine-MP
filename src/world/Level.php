@@ -85,8 +85,8 @@ class Level{
 		unset($this->level);
 	}
 	
-	public function save(){
-		if($this->server->saveEnabled === false){
+	public function save($force = false){
+		if($this->server->saveEnabled === false and $force === false){
 			return;
 		}
 		$entities = array();
@@ -169,6 +169,10 @@ class Level{
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 	
+	public function setBlockRaw(Vector3 $pos, Block $block){
+		return $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
+	}
+	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
@@ -195,12 +199,12 @@ class Level{
 		return false;
 	}
 	
-	public function getMiniChunk($X, $Z){
+	public function getMiniChunk($X, $Y, $Z){
 		return $this->level->getMiniChunk($X, $Z);
 	}
 	
-	public function setMiniChunk($X, $Z, $data){
-		return $this->level->setMiniChunk($X, $Z, $data);
+	public function setMiniChunk($X, $Y, $Z, $data){
+		return $this->level->setMiniChunk($X, $Y, $Z, $data);
 	}
 	
 	public function loadChunk($X, $Z){
