@@ -31,7 +31,7 @@ require_once("SignPost.php");
 
 class WallSignBlock extends SignPostBlock{
 	public function __construct($meta = 0){
-		parent::__construct(WALL_SIGN, $meta, "Wall Sign");
+		TransparentBlock::__construct(WALL_SIGN, $meta, "Wall Sign");
 	}
 	
 }
