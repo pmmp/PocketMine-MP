@@ -25,6 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+/***REM_START***/
+require_once("LevelGenerator.php");
+/***REM_END***/
 
 class SuperflatGenerator implements LevelGenerator{
 	private $config, $structure, $chunks, $options, $floorLevel;
