@@ -40,8 +40,12 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		$this->xCoord = $random->nextFloat() * 256;
 		$this->yCoord = $random->nextFloat() * 256;
 		$this->zCoord = $random->nextFloat() * 256;
+
+		for($i = 0; $i < 512; ++$i){
+			$this->permutations[$i] = 0;
+		}
 		for($i = 0; $i < 256; ++$i){
-			$this->permutations[] = $i;
+			$this->permutations[$i] = $i;
 		}
 		
 		for($i = 0; $i < 256; ++$i){
@@ -54,14 +58,15 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		
 	}
 	
-	public final function lerp($par1, $par2, $par3){
-		return $par2 + $par1 * ($par2 - $par2);
+	public final function curve($par1, $par2, $par3){
+		return $par2 + $par1 * ($par3 - $par2);
 	}
 	
 	public function grad2D($int, $par1, $par2){
 		$i = $int & 0x0F;
 		$d1 = (1 - (($i & 0x08) >> 3)) * $par1;
 		$d2 = ($i === 12 or $i === 14) ? $par1:($i < 4 ? 0:$par2);
+		
 		return (($i & 0x01) === 0 ? $d1:-$d1) + (($i & 0x02) === 0 ? $d2:-$d2);
 	}
 	
@@ -69,6 +74,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		$i = $int & 0x0F;
 		$d1 = $i < 8 ? $par1 : $par2;
 		$d2 = ($i === 12 or $i === 14) ? $par1:($i < 4 ? $par2:$par3);
+		
 		return (($i & 0x01) === 0 ? $d1:-$d1) + (($i & 0x02) === 0 ? $d2:-$d2);
 	}
 	
@@ -100,17 +106,16 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 					$j = $this->permutations[$i] + $i6;
 					$k = $this->permutations[$i3 + 1];
 					$m = $this->permutations[$k] + $i6;
-					$d1 = $this->lerp($d5, $this->grad2D($this->permutations[$j], $d4, $d6), $this->grad3D($this->permutations[$m], $d4 - 1, 0, $d6));
-					$d2 = $this->lerp($d5, $this->grad3D($this->permutations[$j + 1], $d4, 0, $d6 - 1), $this->grad3D($this->permutations[$m + 1], $d4 - 1, 0, $d6 - 1));
+					$d1 = $this->curve($d5, $this->grad2D($this->permutations[$j], $d4, $d6), $this->grad3D($this->permutations[$m], $d4 - 1, 0, $d6));
+					$d2 = $this->curve($d5, $this->grad3D($this->permutations[$j + 1], $d4, 0, $d6 - 1), $this->grad3D($this->permutations[$m + 1], $d4 - 1, 0, $d6 - 1));
 					
-					$d8 = $this->lerp($d7, $d1, $d2);
-					
+					$d8 = $this->curve($d7, $d1, $d2);
 					$floats[$n++] += $d8 * $d3;
 				}
 			}
 			return;
 		}
-		
+
 		$d9 = 1 / $par7;
 		$m = -1;
 		$n = 0;
@@ -153,15 +158,15 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 						$i10 = $this->permutations[$i6 + 1] + $i17;
 						$n = $this->permutations[$i10] + $i14;
 						$i11 = $this->permutations[$i10 + 1] + $i14;
-						$d10 = $this->lerp($d7, $this->grad3D($this->permutations[$i8], $d6, $d14, $d12), $this->grad3D($this->permutations[$n], $d6 - 1, $d14, $d12));
-						$d4 = $this->lerp($d7, $this->grad3D($this->permutations[$i9], $d6, $d14 - 1, $d12), $this->grad3D($this->permutations[$i11], $d6 - 1, $d14 - 1, $d12));
-						$d11 = $this->lerp($d7, $this->grad3D($this->permutations[$i8 + 1], $d6, $d14, $d12 - 1), $this->grad3D($this->permutations[$n + 1], $d6 - 1, $d14, $d12 - 1));
-						$d5 = $this->lerp($d7, $this->grad3D($this->permutations[$i9 + 1], $d6, $d14 - 1, $d12 - 1), $this->grad3D($this->permutations[$i11 + 1], $d6 - 1, $d14 - 1, $d12 - 1));
+						$d10 = $this->curve($d7, $this->grad3D($this->permutations[$i8], $d6, $d14, $d12), $this->grad3D($this->permutations[$n], $d6 - 1, $d14, $d12));
+						$d4 = $this->curve($d7, $this->grad3D($this->permutations[$i9], $d6, $d14 - 1, $d12), $this->grad3D($this->permutations[$i11], $d6 - 1, $d14 - 1, $d12));
+						$d11 = $this->curve($d7, $this->grad3D($this->permutations[$i8 + 1], $d6, $d14, $d12 - 1), $this->grad3D($this->permutations[$n + 1], $d6 - 1, $d14, $d12 - 1));
+						$d5 = $this->curve($d7, $this->grad3D($this->permutations[$i9 + 1], $d6, $d14 - 1, $d12 - 1), $this->grad3D($this->permutations[$i11 + 1], $d6 - 1, $d14 - 1, $d12 - 1));
 					}
 					
-					$d16 = $this->lerp($d15, $d10, $d4);
-					$d17 = $this->lerp($d15, $d11, $d5);
-					$d18 = $this->lerp($d13, $d16, $d17);
+					$d16 = $this->curve($d15, $d10, $d4);
+					$d17 = $this->curve($d15, $d11, $d5);
+					$d18 = $this->curve($d13, $d16, $d17);
 					$floats[$i++] += $d18 * $d9;
 				}
 			}

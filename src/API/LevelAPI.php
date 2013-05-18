@@ -85,12 +85,15 @@ class LevelAPI{
 		return $output;			
 	}
 	
-	public function generateLevel($name, $seed = false){
+	public function generateLevel($name, $seed = false, $generator = false){
 		$options = array();
 		if($this->server->api->getProperty("generator-settings") !== false and trim($this->server->api->getProperty("generator-settings")) != ""){
 			$options["preset"] = $this->server->api->getProperty("generator-settings");
 		}
-		if($this->server->api->getProperty("generator") !== false and class_exists($this->server->api->getProperty("generator"))){
+
+		if($generator !== false and class_exists($generator)){
+			$generator = new $generator($options);
+		}elseif($this->server->api->getProperty("generator") !== false and class_exists($this->server->api->getProperty("generator"))){
 			$generator = $this->server->api->getProperty("generator");
 			$generator = new $generator($options);
 		}else{

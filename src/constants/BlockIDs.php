@@ -122,6 +122,7 @@ define("ICE", 79);
 define("SNOW_BLOCK", 80);
 define("CACTUS", 81);
 define("CLAY_BLOCK", 82);
+define("REEDS", 83);
 define("SUGARCANE_BLOCK", 83);
 
 define("FENCE", 85);

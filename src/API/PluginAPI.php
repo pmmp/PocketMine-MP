@@ -86,11 +86,11 @@ class PluginAPI extends stdClass{
 			return false;
 		}
 		console("[INFO] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0mby \x1b[36m".$info["author"]."\x1b[0m");
-		if(class_exists($info["class"])){
+		if($info["class"] !== "none" and class_exists($info["class"])){
 			console("[ERROR] Failed loading plugin: class already exists");
 			return false;
 		}
-		if(eval($info["code"]) === false or !class_exists($info["class"])){
+		if(eval($info["code"]) === false or ($info["class"] !== "none" and !class_exists($info["class"]))){
 			console("[ERROR] Failed loading plugin: evaluation error");
 			return false;
 		}
@@ -100,17 +100,21 @@ class PluginAPI extends stdClass{
 		if(!in_array((string) CURRENT_API_VERSION, $apiversion)){
 			console("[WARNING] Plugin \"".$info["name"]."\" may not be compatible with the API (".$info["apiversion"]." != ".CURRENT_API_VERSION.")! It can crash or corrupt the server!");
 		}
-
-		$object = new $className($this->server->api, false);
-		if(!($object instanceof Plugin)){
-			console("[ERROR] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
-			if(method_exists($object, "__destruct")){
-				$object->__destruct();
+		
+		if($info["class"] !== "none"){			
+			$object = new $className($this->server->api, false);
+			if(!($object instanceof Plugin)){
+				console("[ERROR] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
+				if(method_exists($object, "__destruct")){
+					$object->__destruct();
+				}
+				$object = null;
+				unset($object);
+			}else{
+				$this->plugins[$className] = array($object, $info);
 			}
-			$object = null;
-			unset($object);
 		}else{
-			$this->plugins[$className] = array($object, $info);
+			$this->plugins[md5($info["name"])] = array(new DummyPlugin($this->server->api, false), $info);
 		}
 	}
 
@@ -196,4 +200,15 @@ interface Plugin{
 	public function __construct(ServerAPI $api, $server = false);
 	public function init();
 	public function __destruct();
+}
+
+class DummyPlugin implements Plugin{
+	public function __construct(ServerAPI $api, $server = false){	
+	}
+	
+	public function init(){
+	}
+	
+	public function __destruct(){
+	}
 }
