@@ -362,9 +362,6 @@ class Player{
 	public function eventHandler($data, $event){
 		switch($event){
 			case "tile.container.slot":
-				if($player === $this){
-					break;
-				}
 				foreach($this->windows as $id => $w){
 					if($w === $data["tile"]){
 						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
@@ -650,7 +647,7 @@ class Player{
 			return false;
 		}
 		
-		if($this->server->api->dhandle("player.gamemode.change", array("player" => $player, "gamemode" => $gm)) === false){
+		if($this->server->api->dhandle("player.gamemode.change", array("player" => $this, "gamemode" => $gm)) === false){
 			return false;
 		}
 		
@@ -1211,7 +1208,7 @@ class Player{
 							}
 							unset($this->windows[$data["windowid"]]);
 							$this->dataPacket(MC_CONTAINER_CLOSE, array(
-								"windowid" => $id,
+								"windowid" => $data["windowid"],
 							));
 							break;
 						case MC_CONTAINER_SET_SLOT:
