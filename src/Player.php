@@ -39,7 +39,7 @@ class Player{
 	private $clientID;
 	private $ip;
 	private $port;
-	private $counter = array(0, 0, 0, 0, 0);
+	private $counter = array(0, 0, 0, 0);
 	private $username;
 	private $iusername;
 	private $eid = false;
@@ -1002,7 +1002,7 @@ class Player{
 							if(($this->hasItem($data["block"], $data["meta"]) or $this->itemEnforcement !== true) and $this->server->handle("player.equipment.change", $data) !== false){
 								$this->equipment = $data["item"];
 							}elseif($this->itemEnforcement === true){
-								$this->sendSettings();
+								$this->sendInventory();
 							}
 							break;
 						case MC_REQUEST_CHUNK:
@@ -1377,8 +1377,7 @@ class Player{
 		);
 		$size = $this->MTU - 32;
 		$buffer = str_split(chr($id).$buffer, $size);
-		$h = strrev(Utils::writeTriad($this->counter[4]++))."\x00".Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
-		$this->counter[4] %= 0x1000000;
+		$h = Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
 		foreach($buffer as $i => $buf){
 			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
@@ -1394,7 +1393,7 @@ class Player{
 			$this->recovery[$count] = $data;
 			$this->send(0x80, array(
 				$count,
-				0x70,
+				0x50, //0b01010000
 				$data,
 			));
 		}
