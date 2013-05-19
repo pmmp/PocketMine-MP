@@ -192,7 +192,7 @@ class PlayerAPI{
 				}
 				break;
 			case "tp":
-				if(count($params) <= 2 or substr($params[0], 0, 2) === "w:"){
+				if(count($params) <= 2 or substr($params[0], 0, 2) === "w:" or substr($params[1], 0, 2) === "w:"){
 					if((!isset($params[1]) or substr($params[0], 0, 2) === "w:") and isset($params[0]) and ($issuer instanceof Player)){
 						$name = $issuer->username;
 						$target = implode(" ", $params);
