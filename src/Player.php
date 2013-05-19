@@ -440,13 +440,6 @@ class Player{
 					"eid" => $data->eid,
 				));
 				break;
-			case "time.change":
-				if($data["level"] === $this->level){
-					$this->dataPacket(MC_SET_TIME, array(
-						"time" => $data["time"],
-					));
-				}
-				break;
 			case "entity.animate":
 				if($data["eid"] === $this->eid or $data["entity"]->level !== $this->level){
 					break;
@@ -912,7 +905,6 @@ class Player{
 							$this->entity->z = $this->data->get("position")["z"];
 							$this->entity->setName($this->username);
 							$this->entity->data["clientID"] = $this->clientID;
-							$this->evid[] = $this->server->event("time.change", array($this, "eventHandler"));  
 							$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));

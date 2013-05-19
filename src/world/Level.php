@@ -63,14 +63,17 @@ class Level{
 	}
 	
 	public function checkThings(){
+		$players = $this->server->api->player->getAll($this);
 		$now = microtime(true);
 		$time = $this->startTime + ($now - $this->startCheck) * 20;
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
+			$this->server->api->player->broadcastPacket($players, MC_SET_TIME, array(
+				"time" => $this->time,
+			));
 		}
 		
 		if(count($this->changedCount) > 0){
-			$players = $this->server->api->player->getAll($this);
 			arsort($this->changedCount);
 			$resendChunks = array();
 			foreach($this->changedCount as $index => $count){
