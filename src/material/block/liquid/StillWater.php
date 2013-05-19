@@ -25,9 +25,14 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class StillWaterBlock extends LiquidBlock{
+
+/***REM_START***/
+require_once("Water.php");
+/***REM_END***/
+
+class StillWaterBlock extends WaterBlock{
 	public function __construct($meta = 0){
-		parent::__construct(STILL_WATER, $meta, "Still Water");
+		LiquidBlock::__construct(STILL_WATER, $meta, "Still Water");
 	}
 	
 }

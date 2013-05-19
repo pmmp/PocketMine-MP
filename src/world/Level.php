@@ -215,23 +215,15 @@ class Level{
 		return $this->level->unloadChunk($X, $Z);
 	}
 	
-	public function getOrderedMiniChunk($X, $Z, $Y, $MTU){
+	public function getOrderedMiniChunk($X, $Z, $Y){
 		$raw = $this->level->getMiniChunk($X, $Z, $Y);
-		$ordered = array();
-		$i = 0;
-		$ordered[$i] = "";
-		$cnt = 0;
+		$ordered = "";
 		$flag = chr(1 << $Y);
 		for($j = 0; $j < 256; ++$j){
-			if((strlen($ordered[$i]) + 16 + 8 + 1) > $MTU){
-				++$i;
-				$ordered[$i] = str_repeat("\x00", $cnt);
-			}
 			$index = $j << 5;
-			$ordered[$i] .= $flag;
-			$ordered[$i] .= substr($raw, $index, 16);
-			$ordered[$i] .= substr($raw, $index + 16, 8);
-			++$cnt;
+			$ordered .= $flag;
+			$ordered .= substr($raw, $index, 16);
+			$ordered .= substr($raw, $index + 16, 8);
 		}
 		return $ordered;
 	}

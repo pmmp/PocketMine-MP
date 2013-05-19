@@ -39,7 +39,7 @@ class Player{
 	private $clientID;
 	private $ip;
 	private $port;
-	private $counter = array(0, 0, 0);
+	private $counter = array(0, 0, 0, 0, 0);
 	private $username;
 	private $iusername;
 	private $eid = false;
@@ -65,6 +65,7 @@ class Player{
 	private $freedChunks = true;
 	public $itemEnforcement;
 	public $lastCorrect;
+	private $bigCnt;
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -74,6 +75,7 @@ class Player{
 	}
 	
 	public function __construct($clientID, $ip, $port, $MTU){
+		$this->bigCnt = 0;
 		$this->MTU = $MTU;
 		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
@@ -163,18 +165,10 @@ class Player{
 		$x = $X << 4;
 		$z = $Z << 4;
 		$y = $Y << 4;
-		$MTU = $this->MTU - 16;
 		$this->level->useChunk($X, $Z, $this);
-		$chunk = $this->level->getOrderedMiniChunk($X, $Z, $Y, $MTU);
-		foreach($chunk as $d){
-			$this->dataPacket(MC_CHUNK_DATA, array(
-				"x" => $X,
-				"z" => $Z,
-				"data" => $d,
-			));
-		}
+		$this->directBigRawPacket(MC_CHUNK_DATA, Utils::writeInt($X) . Utils::writeInt($Z) . $this->level->getOrderedMiniChunk($X, $Z, $Y));
 		
-		$tiles = $this->server->query("SELECT ID FROM tileentities WHERE spawnable = 1 AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
+		$tiles = $this->server->query("SELECT ID FROM tileentities WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
 				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
@@ -1368,6 +1362,40 @@ class Player{
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
+	public function directBigRawPacket($id, $buffer){
+		if($this->connected === false){
+			return false;
+		}
+		$data = array(
+			"id" => false,
+			"sendtime" => microtime(true),
+			"raw" => "",
+		);
+		$size = $this->MTU - 32;
+		$buffer = str_split(chr($id).$buffer, $size);
+		$h = strrev(Utils::writeTriad($this->counter[4]++))."\x00".Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
+		$this->counter[4] %= 0x1000000;
+		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
+		foreach($buffer as $i => $buf){
+			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
+			$this->counter[3] %= 0x1000000;
+			$count = $this->counter[0]++;
+			if(count($this->recovery) >= 1024){
+				reset($this->recovery);
+				$k = key($this->recovery);
+				$this->recovery[$k] = null;
+				unset($this->recovery[$k]);
+				end($this->recovery);
+			}
+			$this->recovery[$count] = $data;
+			$this->send(0x80, array(
+				$count,
+				0x70,
+				$data,
+			));
+		}
+	}
+	
 	public function directDataPacket($id, $data = array(), $count = false){
 		if($this->connected === false){
 			return false;
@@ -1375,8 +1403,7 @@ class Player{
 		$data["id"] = $id;
 		$data["sendtime"] = microtime(true);
 		if($count === false){
-			$count = $this->counter[0];
-			++$this->counter[0];
+			$count = $this->counter[0]++;
 			if(count($this->recovery) >= 1024){
 				reset($this->recovery);
 				$k = key($this->recovery);

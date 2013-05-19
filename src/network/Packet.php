@@ -102,7 +102,7 @@ class Packet{
 						case 0x40:
 							$reply = new CustomPacketHandler($this->data[2]["id"], "", $this->data[2], true);
 							$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
-							$this->addRaw(Utils::writeTriad(strrev($this->data[2]["count"])));
+							$this->addRaw(strrev(Utils::writeTriad($this->data[2]["count"])));
 							$this->addRaw(chr($this->data[2]["id"]));
 							$this->addRaw($reply->raw);
 							break;
@@ -114,6 +114,11 @@ class Packet{
 								$this->addRaw(chr($this->data[2]["id"]));
 								$this->addRaw($raw);
 							}else{
+								$this->addRaw($this->data[2]["raw"]);
+							}
+							break;
+						default:
+							if($this->data[2]["id"] === false){
 								$this->addRaw($this->data[2]["raw"]);
 							}
 							break;
@@ -251,6 +256,8 @@ class Packet{
 							$offset += 2;
 							$splitIndex = Utils::readInt(substr($raw, $offset, 4));
 							$offset += 4;
+							//error! no split packets allowed!
+							break;
 						}else{
 							$splitCount = 0;
 							$splitID = 0;

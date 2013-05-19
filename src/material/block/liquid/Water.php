@@ -30,4 +30,26 @@ class WaterBlock extends LiquidBlock{
 		parent::__construct(WATER, $meta, "Water");
 	}
 	
+	public function onUpdate($type){
+		return false;
+		$level = $this->meta & 0x03;
+		if($type !== BLOCK_UPDATE_NORMAL or $level === 0){
+			return false;
+		}
+		
+		$falling = $this->meta >> 3;
+		$down = $this->getSide(0);
+		if($down->isFlowable){
+			$this->level->setBlock($down, new WaterBlock(9), true); //1001
+			return;
+		}elseif($down instanceof WaterBlock and $down->getMetadata() === 9){
+			$level = 1;
+		}
+		
+		$up = $this->getSide(1);
+		if($up instanceof WaterBlock){
+			
+		}
+	}
+	
 }
