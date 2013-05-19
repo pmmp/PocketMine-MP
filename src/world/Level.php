@@ -176,15 +176,17 @@ class Level{
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
-		}elseif(!($pos instanceof Position)){
-			$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 		}
 		
-		if($this->server->api->dhandle("block.change", array(
-			"position" => $pos,
-			"block" => $block,
-		)) !== false){
-			$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
+		$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
+		if($ret === true){
+			if(!($pos instanceof Position)){
+				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
+			}
+			$this->server->trigger("block.change", array(
+				"position" => $pos,
+				"block" => $block,
+			));
 			if($update === true){
 				$this->server->api->block->blockUpdate($this->getBlock($pos), BLOCK_UPDATE_NORMAL); //????? water?
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL);
@@ -194,9 +196,8 @@ class Level{
 					$t[0]->close();
 				}
 			}
-			return $ret;
 		}
-		return false;
+		return $ret;
 	}
 	
 	public function getMiniChunk($X, $Y, $Z){
