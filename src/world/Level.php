@@ -207,6 +207,7 @@ class Level{
 	
 	public function setBlockRaw(Vector3 $pos, Block $block){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true){
+			$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
 			if(!isset($this->changedBlocks[$i])){
 				$this->changedBlocks[$i] = array();
 				$this->changedCount[$i] = 0;
