@@ -55,7 +55,7 @@ class SlabBlock extends TransparentBlock{
 					$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta));
 					return true;
 				}
-			}elseif(!$player->entity->inBlock($block->x, $block->y, $block->z)){
+			}elseif(!$player->entity->inBlock($block)){
 				if($block->getID() === SLAB){
 					if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 						$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta));
