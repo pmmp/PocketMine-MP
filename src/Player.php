@@ -166,7 +166,11 @@ class Player{
 		$z = $Z << 4;
 		$y = $Y << 4;
 		$this->level->useChunk($X, $Z, $this);
-		$this->directBigRawPacket(MC_CHUNK_DATA, Utils::writeInt($X) . Utils::writeInt($Z) . $this->level->getOrderedMiniChunk($X, $Z, $Y));
+		$this->dataPacket(MC_CHUNK_DATA, array(
+			"x" => $X,
+			"z" => $Z,
+			"data" => $this->level->getOrderedMiniChunk($X, $Z, $Y),
+		));
 		
 		$tiles = $this->server->query("SELECT ID FROM tileentities WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
 		if($tiles !== false and $tiles !== true){
@@ -1380,7 +1384,7 @@ class Player{
 			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
 			$this->counter[3] %= 0x1000000;
 			$count = $this->counter[0]++;
-			if(count($this->recovery) >= 1024){
+			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 				reset($this->recovery);
 				$k = key($this->recovery);
 				$this->recovery[$k] = null;
@@ -1404,7 +1408,7 @@ class Player{
 		$data["sendtime"] = microtime(true);
 		if($count === false){
 			$count = $this->counter[0]++;
-			if(count($this->recovery) >= 1024){
+			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 				reset($this->recovery);
 				$k = key($this->recovery);
 				$this->recovery[$k] = null;
@@ -1427,7 +1431,11 @@ class Player{
 		}else{
 			$data = new CustomPacketHandler($id, "", $data, true);
 			$len = strlen($data->raw) + 1;
-			$MTU = $this->MTU - 7;
+			$MTU = $this->MTU - 32;
+			if($len > $MTU){
+				$this->directBigRawPacket($id, $data->raw);
+				return;
+			}
 			
 			if((strlen($this->buffer) + $len) >= $MTU){
 				$this->sendBuffer();

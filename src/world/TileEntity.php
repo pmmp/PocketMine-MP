@@ -25,13 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
-define("TILE_SIGN", "Sign");
-define("TILE_CHEST", "Chest");
-	define("CHEST_SLOTS", 27);
-define("TILE_FURNACE", "Furnace");
-	define("FURNACE_SLOTS", 3);
-
 class TileEntity extends Position{
 	public $name;
 	public $normal;
