@@ -108,6 +108,9 @@ class LevelAPI{
 	}
 	
 	public function levelExists($name){
+		if($name === ""){
+			return false;
+		}
 		$path = DATA_PATH."worlds/".$name."/";
 		if($this->get($name) === false and !file_exists($path."level.pmf")){
 			$level = new LevelImport($path);
