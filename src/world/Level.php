@@ -206,7 +206,15 @@ class Level{
 	}
 	
 	public function setBlockRaw(Vector3 $pos, Block $block){
-		return $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
+		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true){
+			if(!isset($this->changedBlocks[$i])){
+				$this->changedBlocks[$i] = array();
+				$this->changedCount[$i] = 0;
+			}
+			$this->changedBlocks[$i][] = $block;
+			++$this->changedCount[$i];
+		}
+		return $ret;
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false){
@@ -250,6 +258,7 @@ class Level{
 	}
 	
 	public function setMiniChunk($X, $Y, $Z, $data){
+		$this->changedCount[$X.":".$Y.":".$Z] = 4096;
 		return $this->level->setMiniChunk($X, $Y, $Z, $data);
 	}
 	
