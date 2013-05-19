@@ -116,7 +116,7 @@ class SuperflatGenerator implements LevelGenerator{
 	}
 	
 	public function populateLevel(){
-		$this->random->seed($this->level->getSeed());
+		$this->random->setSeed($this->level->getSeed());
 		if(isset($this->options["spawn"])){
 			$spawn = array(10, new SandstoneBlock());
 			if(isset($this->options["spawn"]["radius"])){
