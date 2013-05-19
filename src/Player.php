@@ -58,7 +58,7 @@ class Player{
 	public $windowCnt = 0;
 	public $windows = array();
 	public $blocked = true;
-	private $chunksLoaded = array();
+	public $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
 	private $spawnPosition;
@@ -410,18 +410,6 @@ class Player{
 				}
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
 
-				break;
-			case "block.change":
-				if($data["position"]->level !== $this->level){
-					break;
-				}
-				$this->dataPacket(MC_UPDATE_BLOCK, array(
-					"x" => $data["position"]->x,
-					"y" => $data["position"]->y,
-					"z" => $data["position"]->z,
-					"block" => $data["block"]->getID(),
-					"meta" => $data["block"]->getMetadata(),
-				));
 				break;
 			case "entity.move":
 				if($data->eid === $this->eid or $data->level !== $this->level){
@@ -938,7 +926,6 @@ class Player{
 							$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
-							$this->evid[] = $this->server->event("block.change", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->server->schedule(40, array($this, "measureLag"), array(), true);
 							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
@@ -1376,7 +1363,7 @@ class Player{
 			"raw" => "",
 		);
 		$size = $this->MTU - 31;
-		$buffer = str_split(chr($id).$buffer, $size);
+		$buffer = str_split(($id === false ? "":chr($id)).$buffer, $size);
 		$h = Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
 		foreach($buffer as $i => $buf){
@@ -1427,11 +1414,16 @@ class Player{
 		if($queue === true){
 			$this->queue[] = array(0, $data);
 		}else{
-			$data = new CustomPacketHandler($id, "", $data, true);
-			$len = strlen($data->raw) + 1;
+			if($id === false){
+				$raw = $data["raw"];
+			}else{
+				$data = new CustomPacketHandler($id, "", $data, true);
+				$raw = chr($id).$data->raw;
+			}
+			$len = strlen($raw);
 			$MTU = $this->MTU - 21;
 			if($len > $MTU){
-				$this->directBigRawPacket($id, $data->raw);
+				$this->directBigRawPacket(false, $raw);
 				return;
 			}
 			
@@ -1439,7 +1431,7 @@ class Player{
 				$this->sendBuffer();
 			}
 
-			$this->buffer .= ($this->buffer === "" ? "":"\x00").Utils::writeShort($len << 3) . chr($id) . $data->raw;
+			$this->buffer .= ($this->buffer === "" ? "":"\x00").Utils::writeShort($len << 3).$raw;
 			
 		}
 	}

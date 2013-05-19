@@ -52,6 +52,9 @@ class CustomPacketHandler{
 		$this->data = $data;
 		$this->offset = 0;
 		$this->c = (bool) $create;
+		if($pid === false){
+			return;
+		}
 		switch($pid){
 			case MC_PING:
 				if($this->c === false){

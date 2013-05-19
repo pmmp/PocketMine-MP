@@ -324,6 +324,14 @@ class PlayerAPI{
 		}
 		return $this->server->clients;
 	}
+	
+	public function broadcastPacket(array $players, $id, $data = array()){
+		$data = new CustomPacketHandler($id, "", $data, true);
+		$packet = array("raw" => chr($id).$data->raw);
+		foreach($players as $p){
+			$p->dataPacket(false, $packet);
+		}
+	}
 
 	public function getByEID($eid){
 		$eid = (int) $eid;

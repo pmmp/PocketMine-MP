@@ -27,7 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Level{
 	public $entities, $tileEntities;
-	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $nextSave;
+	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $nextSave, $changedBlocks, $changedCount;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
 		$this->server = ServerAPI::request();
@@ -41,6 +41,8 @@ class Level{
 		$this->server->event("server.close", array($this, "save"));
 		$this->name = $name;
 		$this->usedChunks = array();
+		$this->changedBlocks = array();
+		$this->changedCount = array();
 	}
 	
 	public function useChunk($X, $Z, Player $player){
@@ -65,6 +67,37 @@ class Level{
 		$time = $this->startTime + ($now - $this->startCheck) * 20;
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
+		}
+		
+		if(count($this->changedCount) > 0){
+			$players = $this->server->api->player->getAll($this);
+			arsort($this->changedCount);
+			$resendChunks = array();
+			foreach($this->changedCount as $index => $count){
+				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
+					break;
+				}
+				foreach($players as $p){
+					unset($p->chunksLoaded[$index]);
+				}
+				unset($this->changedBlocks[$index]);
+			}
+			$this->changedCount = array();
+
+			if(count($this->changedBlocks) > 0){
+				foreach($this->changedBlocks as $blocks){
+					foreach($blocks as $b){
+						$this->server->api->player->broadcastPacket($players, MC_UPDATE_BLOCK, array(
+							"x" => $b->x,
+							"y" => $b->y,
+							"z" => $b->z,
+							"block" => $b->getID(),
+							"meta" => $b->getMetadata(),
+						));
+					}
+				}
+				$this->changedBlocks = array();
+			}
 		}
 		
 		if($this->nextSave < $now and $this->server->saveEnabled === true){
@@ -183,12 +216,21 @@ class Level{
 			if(!($pos instanceof Position)){
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 			}
-			$this->server->trigger("block.change", array(
+			$block = $this->getBlock($pos);
+			
+			$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
+			if(!isset($this->changedBlocks[$i])){
+				$this->changedBlocks[$i] = array();
+				$this->changedCount[$i] = 0;
+			}
+			$this->changedBlocks[$i][] = $block;
+			++$this->changedCount[$i];
+			/*$this->server->trigger("block.change", array(
 				"position" => $pos,
 				"block" => $block,
-			));
+			));*/
 			if($update === true){
-				$this->server->api->block->blockUpdate($this->getBlock($pos), BLOCK_UPDATE_NORMAL); //????? water?
+				$this->server->api->block->blockUpdate($block, BLOCK_UPDATE_NORMAL); //????? water?
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL);
 			}
 			if($tiles === true){
