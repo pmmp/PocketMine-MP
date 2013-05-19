@@ -1375,13 +1375,12 @@ class Player{
 			"sendtime" => microtime(true),
 			"raw" => "",
 		);
-		$size = $this->MTU - 32;
+		$size = $this->MTU - 31;
 		$buffer = str_split(chr($id).$buffer, $size);
 		$h = Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
 		foreach($buffer as $i => $buf){
-			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
-			$this->counter[3] %= 0x1000000;
+			$data["raw"] = Utils::writeShort(strlen($buf) << 3).$h.Utils::writeInt($i).$buf;
 			$count = $this->counter[0]++;
 			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 				reset($this->recovery);
@@ -1393,7 +1392,7 @@ class Player{
 			$this->recovery[$count] = $data;
 			$this->send(0x80, array(
 				$count,
-				0x50, //0b01010000
+				0x10, //0b01010000
 				$data,
 			));
 		}
@@ -1430,7 +1429,7 @@ class Player{
 		}else{
 			$data = new CustomPacketHandler($id, "", $data, true);
 			$len = strlen($data->raw) + 1;
-			$MTU = $this->MTU - 32;
+			$MTU = $this->MTU - 21;
 			if($len > $MTU){
 				$this->directBigRawPacket($id, $data->raw);
 				return;
