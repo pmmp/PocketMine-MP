@@ -97,7 +97,7 @@ class Entity extends Position{
 			case ENTITY_PLAYER:
 				$this->player = $this->data["player"];
 				$this->setHealth($this->health, "generic");
-				$this->size = 1;
+				$this->size = 1.2;
 				break;
 			case ENTITY_ITEM:
 				if(isset($data["item"]) and ($data["item"] instanceof Item)){
@@ -109,7 +109,7 @@ class Entity extends Position{
 				}
 				$this->setHealth(5, "generic");
 				$this->server->schedule(5, array($this, "update"), array(), true);
-				$this->size = 0.25;
+				$this->size = 0.5;
 				break;
 			case ENTITY_MOB:
 				$this->setHealth($this->data["Health"], "generic");
