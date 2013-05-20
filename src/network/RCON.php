@@ -118,7 +118,7 @@ class RCONInstance extends Thread{
 			return false;
 		}elseif($d === false){
 			return null;
-		}elseif($d === ""){
+		}elseif($d === "" or strlen($d) < 4){
 			return false;
 		}
 		@socket_set_block($client);
