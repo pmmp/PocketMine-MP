@@ -297,31 +297,44 @@ class ConsoleLoop extends Thread{
 	public $stop;
 	public $base;
 	public $ev;
+   public $fp;
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
 		$this->start();
 	}
-	
+
 	public function stop(){
 		$this->stop = true;
 	}
-	
-	public function readLine($fp, $events = null){
-		$line = trim(fgets($fp));
-		if($line != ""){
-			$this->line = $line;
-		}
-	}
-	
+
+   private function readLine(){
+      if( $this->fp ){
+         $line = trim( fgets( $this->fp ) );
+      } else {
+         $line = trim( readline( "" ) );
+         if( $line != "" ){
+            readline_add_history( $line );
+         }
+      }
+
+      return $line;
+   }
+
 	public function run(){
-		$fp = fopen("php://stdin", "r");		
-		while($this->stop === false and ($line = fgets($fp)) !== false){
-			$this->line = $line;
-			$this->wait();
-			$this->line = false;
+      if( ! extension_loaded( 'readline' ) ){
+         $this->fp = fopen( "php://stdin", "r" );
+      }
+
+		while( $this->stop === false ) {
+         $this->line = $this->readLine();
+         $this->wait();
+         $this->line = false;
 		}
-		@fclose($fp);
+
+      if( ! $this->haveReadline ) {
+         @fclose($fp);
+      }
 		exit(0);
 	}
 }
