@@ -30,6 +30,11 @@ class IceBlock extends TransparentBlock{
 		parent::__construct(ICE, 0, "Ice");
 	}
 	
+	public function onBreak(Item $item, Player $player){
+		$this->level->setBlock($this, new WaterBlock());
+		return true;
+	}
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;

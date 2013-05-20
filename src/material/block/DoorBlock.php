@@ -60,20 +60,19 @@ class DoorBlock extends TransparentBlock{
 	}
 	
 	public function onBreak(Item $item, Player $player){
-			if(($this->meta & 0x08) === 0x08){
-				$down = $this->getSide(0);
-				if($down->getID() === $this->id){
-					$this->level->setBlock($down, new AirBlock());
-				}
-			}else{
-				$up = $this->getSide(1);
-				if($up->getID() === $this->id){
-					$this->level->setBlock($up, new AirBlock());
-				}
+		if(($this->meta & 0x08) === 0x08){
+			$down = $this->getSide(0);
+			if($down->getID() === $this->id){
+				$this->level->setBlock($down, new AirBlock());
 			}
-			$this->level->setBlock($this, new AirBlock());
-			return true;
-		return false;
+		}else{
+			$up = $this->getSide(1);
+			if($up->getID() === $this->id){
+				$this->level->setBlock($up, new AirBlock());
+			}
+		}
+		$this->level->setBlock($this, new AirBlock());
+		return true;
 	}
 	
 	public function onActivate(Item $item, Player $player){

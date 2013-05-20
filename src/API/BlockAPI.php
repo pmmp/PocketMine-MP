@@ -273,7 +273,9 @@ class BlockAPI{
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
 			$drops = $target->getDrops($item, $player);
-			$target->onBreak($item, $player);
+			if($target->onBreak($item, $player) === false){
+				return $this->cancelAction($target, $player);
+			}
 		}else{
 			return $this->cancelAction($target, $player);
 		}
