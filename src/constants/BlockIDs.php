@@ -129,6 +129,7 @@ define("FENCE", 85);
 
 define("NETHERRACK", 87);
 define("SOUL_SAND", 88);
+define("GLOWSTONE", 89);
 define("GLOWSTONE_BLOCK", 89);
 
 define("CAKE_BLOCK", 92);

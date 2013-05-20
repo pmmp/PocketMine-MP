@@ -29,5 +29,10 @@ class GlowstoneBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(GLOWSTONE_BLOCK, 0, "Glowstone");
 	}
-	
+
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array(GLOWSTONE_DUST, 0, mt_rand(2, 4)),
+		);
+	}
 }
