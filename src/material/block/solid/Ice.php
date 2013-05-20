@@ -30,4 +30,27 @@ class IceBlock extends TransparentBlock{
 		parent::__construct(ICE, 0, "Ice");
 	}
 	
+	public function getBreakTime(Item $item, Player $player){
+		if(($player->gamemode & 0x01) === 0x01){
+			return 0.20;
+		}		
+		switch($item->isPickaxe()){
+			case 5:
+				return 0.1;
+			case 4:
+				return 0.15;
+			case 3:
+				return 0.2;
+			case 2:
+				return 0.1;
+			case 1:
+				return 0.4;
+			default:
+				return 0.75;
+		}
+	}
+
+	public function getDrops(Item $item, Player $player){
+		return array();
+	}
 }

@@ -37,5 +37,4 @@ class FurnaceBlock extends BurningFurnaceBlock{
 		$this->name = "Furnace";
 		$this->isActivable = true;
 	}
-	
 }

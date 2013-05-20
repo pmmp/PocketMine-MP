@@ -110,6 +110,26 @@ class BurningFurnaceBlock extends SolidBlock{
 		return true;
 	}
 	
+	public function getBreakTime(Item $item, Player $player){
+		if(($player->gamemode & 0x01) === 0x01){
+			return 0.20;
+		}		
+		switch($item->isPickaxe()){
+			case 5:
+				return 0.7;
+			case 4:
+				return 0.9;
+			case 3:
+				return 1.35;
+			case 2:
+				return 0.45;
+			case 1:
+				return 2.65;
+			default:
+				return 17.5;
+		}
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(

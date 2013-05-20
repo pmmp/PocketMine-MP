@@ -266,13 +266,12 @@ class BlockAPI{
 			return $this->cancelAction($target, $player);
 		}
 		
-		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or ($player->lastBreak + $target->getBreakTime($item, $player)) >= microtime(true)){
+		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - 0.02) + $target->getBreakTime($item, $player)) >= microtime(true)){
 			return $this->cancelAction($target, $player);
 		}
-		
+		$player->lastBreak = microtime(true);		
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
-			$player->lastBreak = microtime(true);
 			$drops = $target->getDrops($item, $player);
 			$target->onBreak($item, $player);
 		}else{

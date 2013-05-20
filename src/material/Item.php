@@ -108,15 +108,15 @@ class Item{
 	final public function isPickaxe(){ //Returns false or level of the pickaxe
 		switch($this->id){
 			case IRON_PICKAXE:
-				return 3;
+				return 4;
 			case WOODEN_PICKAXE:
 				return 1;
 			case STONE_PICKAXE:
-				return 2;
-			case DIAMOND_PICKAXE:
-				return 4;
-			case GOLD_PICKAXE:
 				return 3;
+			case DIAMOND_PICKAXE:
+				return 5;
+			case GOLD_PICKAXE:
+				return 2;
 			default:
 				return false;
 		}

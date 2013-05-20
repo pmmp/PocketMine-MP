@@ -30,10 +30,30 @@ class CoalOreBlock extends SolidBlock{
 		parent::__construct(COAL_ORE, 0, "Coal Ore");
 	}
 	
+	public function getBreakTime(Item $item, Player $player){
+		if(($player->gamemode & 0x01) === 0x01){
+			return 0.20;
+		}		
+		switch($item->isPickaxe()){
+			case 5:
+				return 0.6;
+			case 4:
+				return 0.75;
+			case 3:
+				return 1.15;
+			case 2:
+				return 0.4;
+			case 1:
+				return 2.25;
+			default:
+				return 15;
+		}
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(263, 0, 1), //Coal
+				array(COAL, 0, 1),
 			);
 		}else{
 			return array();

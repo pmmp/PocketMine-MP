@@ -188,7 +188,7 @@ abstract class Block extends Position{
 	
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
-			return 0.25;
+			return 0.20;
 		}
 		return $this->breakTime;
 	}

@@ -40,10 +40,35 @@ class DoubleSlabBlock extends SolidBlock{
 		);
 		$this->name = "Double " . $names[$this->meta & 0x07] . " Slab";
 	}
+
+	public function getBreakTime(Item $item, Player $player){
+		if(($player->gamemode & 0x01) === 0x01){
+			return 0.20;
+		}		
+		switch($item->isPickaxe()){
+			case 5:
+				return 0.4;
+			case 4:
+				return 0.5;
+			case 3:
+				return 0.75;
+			case 2:
+				return 0.25;
+			case 1:
+				return 1.5;
+			default:
+				return 10;
+		}
+	}
+	
 	public function getDrops(Item $item, Player $player){
-		return array(
-			array(SLAB, $this->meta & 0x07, 2),
-		);
+		if($item->isPickaxe() >= 1){
+			return array(
+				array(SLAB, $this->meta & 0x07, 2),
+			);
+		}else{
+			return array();
+		}
 	}
 	
 }
