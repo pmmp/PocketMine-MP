@@ -44,9 +44,14 @@ echo -n " checking..."
 cd libedit
 CFLAGS=-fPIC ./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-make >> "$DIR/install.log" 2>&1
-echo -n " installing..."
-make install >> "$DIR/install.log" 2>&1
+if make >> "$DIR/install.log" 2>&1; then
+	echo -n " installing..."
+	make install >> "$DIR/install.log" 2>&1
+	HAVE_LIBEDIT="--with-libedit=$DIR/install_data/php/ext/libedit"
+else
+	echo -n " disabling..."
+	HAVE_LIBEDIT="--without-libedit"
+fi
 echo -n " cleaning..."
 cd ..
 rm -r -f ./libedit
@@ -119,7 +124,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --exec-prefix="$DIR/php5" \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
---with-libedit="$DIR/install_data/php/ext/libedit" \
+"$HAVE_LIBEDIT" \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
