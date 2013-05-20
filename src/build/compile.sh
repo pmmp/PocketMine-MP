@@ -4,6 +4,7 @@ COMPILER_VERSION="0.12"
 PHP_VERSION="5.4.15"
 ZEND_VM="GOTO"
 
+LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="e5d95dfb847c8963c100bd4fb601dde41e0b75d1"
 CURL_VERSION="curl-7_30_0"
@@ -34,6 +35,26 @@ set -e
 echo -n "[PHP] downloading $PHP_VERSION..."
 wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -zx >> "$DIR/install.log" 2>&1
 mv php-$PHP_VERSION php
+echo " done!"
+
+#libedit
+echo -n "[libedit] downloading $LIBEDIT_VERSION..."
+wget http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+echo -n " checking..."
+cd libedit
+CFLAGS=-fPIC ./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+if make >> "$DIR/install.log" 2>&1; then
+	echo -n " installing..."
+	make install >> "$DIR/install.log" 2>&1
+	HAVE_LIBEDIT="--with-libedit=$DIR/install_data/php/ext/libedit"
+else
+	echo -n " disabling..."
+	HAVE_LIBEDIT="--without-libedit"
+fi
+echo -n " cleaning..."
+cd ..
+rm -r -f ./libedit
 echo " done!"
 
 #zlib
@@ -103,6 +124,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --exec-prefix="$DIR/php5" \
 --with-curl="$DIR/install_data/php/ext/curl" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
+"$HAVE_LIBEDIT" \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
