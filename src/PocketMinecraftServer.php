@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class PocketMinecraftServer{
 	public $tCnt;
 	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $saveEnabled;
-	private $port, $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick;
+	private $port, $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticks;
 	
 	private function load(){
 		$this->version = new VersionString();
@@ -71,6 +71,7 @@ class PocketMinecraftServer{
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, true, false, $this->serverip);
 		$this->reloadConfig();
 		$this->stop = false;
+		$this->ticks = 0;
 	}
 
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
@@ -265,10 +266,50 @@ class PocketMinecraftServer{
 
 
 
-	public function init(){
-		$this->loadEvents();
-		declare(ticks=40);
+	public function init(){		
 		register_tick_function(array($this, "tick"));
+		console("[INFO] Starting internal ticker calculation");
+		$t = 0;
+		while(true){
+			switch($t){
+				case 0:
+					declare(ticks=100);
+					break;
+				case 1:
+					declare(ticks=60);
+					break;
+				case 2:
+					declare(ticks=40);
+					break;
+				case 3:
+					declare(ticks=30);
+					break;
+				case 4:
+					declare(ticks=20);
+					break;
+				case 5:
+					declare(ticks=15);
+					break;
+				default:
+					declare(ticks=10);
+					break;
+			}
+			if($t > 5){
+				break;
+			}
+			$this->ticks = 0;
+			while($this->ticks < 20){
+				usleep(1);
+			}
+			
+			if($this->getTPS() < 19.5){
+				++$t;
+			}else{
+				break;
+			}
+		}
+
+		$this->loadEvents();
 		register_shutdown_function(array($this, "dumpError"));
 		register_shutdown_function(array($this, "close"));
 		if(function_exists("pcntl_signal")){
@@ -326,6 +367,7 @@ class PocketMinecraftServer{
 		if($this->lastTick <= ($time - 0.05)){
 			$this->tickMeasure[] = $this->lastTick = $time;
 			unset($this->tickMeasure[key($this->tickMeasure)]);
+			++$this->ticks;
 			$this->tickerFunction($time);
 			$this->trigger("server.tick", $time);
 		}
