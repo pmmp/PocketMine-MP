@@ -46,10 +46,6 @@ if(version_compare("5.4.0", PHP_VERSION) > 0){
 	++$errors;
 }
 
-if(version_compare(CURRENT_PHP_VERSION, PHP_VERSION) > 0){
-	console("[NOTICE] This PocketMine-MP version has not been tested with PHP < ".CURRENT_PHP_VERSION, true, true, 0);
-}
-
 if(php_sapi_name() !== "cli"){
 	console("[ERROR] You must run PocketMine-MP using the CLI.", true, true, 0);
 	++$errors;
