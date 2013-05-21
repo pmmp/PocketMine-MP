@@ -296,7 +296,7 @@ class Entity extends Position{
 			$this->tickCounter = 0;
 		}
 		
-		if($this->check === true and ($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+		if(($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 			$startX = ((int) round($this->x - 0.5)) - 1;
 			$y = (int) round($this->y - 1);
 			$startZ = ((int) round($this->z - 0.5)) - 1;
@@ -526,19 +526,6 @@ class Entity extends Position{
 		$this->server->query("UPDATE entities SET pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
-	public function setCoords(Vector3 $pos){
-		if($pos instanceof Position){
-			$this->level = $pos->level;
-			$this->server->query("UPDATE entities SET level = '".$this->level->getName()."' WHERE EID = ".$this->eid.";");
-		}
-		$this->x = $pos->x;
-		$this->y = $pos->y;
-		$this->z = $pos->z;
-		$this->yaw = $yaw;
-		$this->pitch = $pitch;
-		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE EID = ".$this->eid.";");
-	}
-
 	public function move(Vector3 $pos, $yaw = 0, $pitch = 0){
 		$this->x += $pos->x;
 		$this->y += $pos->y;
@@ -550,7 +537,7 @@ class Entity extends Position{
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
-	public function setPosition(Vector3 $pos, $yaw, $pitch){
+	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false){
 		if($pos instanceof Position){
 			$this->level = $pos->level;
 			$this->server->query("UPDATE entities SET level = '".$this->level->getName()."' WHERE EID = ".$this->eid.";");
@@ -558,8 +545,12 @@ class Entity extends Position{
 		$this->x = $pos->x;
 		$this->y = $pos->y;
 		$this->z = $pos->z;
-		$this->yaw = $yaw;
-		$this->pitch = $pitch;
+		if($yaw !== false){
+			$this->yaw = $yaw;
+		}
+		if($pitch !== false){
+			$this->pitch = $pitch;
+		}
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 	

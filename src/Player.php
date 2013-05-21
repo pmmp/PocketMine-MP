@@ -903,6 +903,7 @@ class Player{
 							$this->entity->x = $this->data->get("position")["x"];
 							$this->entity->y = $this->data->get("position")["y"];
 							$this->entity->z = $this->data->get("position")["z"];
+							$this->entity->check = false;
 							$this->entity->setName($this->username);
 							$this->entity->data["clientID"] = $this->clientID;
 							$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
