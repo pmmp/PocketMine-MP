@@ -27,8 +27,8 @@ the Free Software Foundation, either version 3 of the License, or
 
 class PocketMinecraftServer{
 	public $tCnt;
-	public $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $saveEnabled;
-	private $port, $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticks;
+	public $serverID, $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
+	private $serverip, $database, $interface, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticks;
 	
 	private function load(){
 		$this->version = new VersionString();
