@@ -329,6 +329,7 @@ class twister {
 
     return $rand;
   }
+}
 
 function signed2unsigned($signed_integer) {
   ## assert(is_integer($signed_integer));
