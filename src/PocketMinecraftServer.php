@@ -328,7 +328,7 @@ class PocketMinecraftServer{
 			return;
 		}
 		console("[ERROR] An Unrecovereable has ocurred and the server has Crashed. Creating an Error Dump");
-		$dump = "# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
+		$dump = "```\r\n# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
 		$er = error_get_last();
 		$dump .= "Error: ".var_export($er, true)."\r\n\r\n";
 		$dump .= "Code: \r\n";
@@ -356,7 +356,7 @@ class PocketMinecraftServer{
 			}
 			$dump .= "\r\n\r\n";
 		}
-		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n";
+		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n```";
 		$name = "error_dump_".time();
 		logg($dump, $name, true, 0, true);
 		console("[ERROR] Please submit the \"logs/{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
