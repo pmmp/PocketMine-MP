@@ -1133,12 +1133,20 @@ class Player{
 								case 9: //Eating
 									$items = array(
 										APPLE => 2, //Apples
-										282 => 10, //Stew
+										MUSHROOM_STEW => 10, //Stew
 										BREAD => 5, //Bread
-										319 => 3,
-										320 => 8,
-										363 => 3,
-										364 => 8,
+										RAW_PORKCHOP => 3,
+										COOKED_PORKCHOP => 8,
+										RAW_BEEF => 3,
+										STEAK => 8,
+										COOKED_CHICKEN => 6,
+										RAW_CHICKEN => 2,
+										MELON_SLICE => 2,
+										GOLDEN_APPLE => 10,
+										COOKIE => 2,
+										COOKED_FISH => 5,
+										RAW_FISH => 2,
+										
 									);
 									if(isset($items[$this->equipment->getID()])){
 										if($this->removeItem($this->equipment->getID(), $this->equipment->getMetadata(), 1) === true or $this->itemEnforcement !== true){
