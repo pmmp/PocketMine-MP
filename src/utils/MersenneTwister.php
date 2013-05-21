@@ -194,26 +194,22 @@ class twister {
 
   /* generates a random number on [0,1]-real-interval */
   function real_closed() {
-    return
-      signed2unsigned($this->int32()) * (1.0 / 4294967295.0); 
+    return signed2unsigned($this->int32()) * (1.0 / 4294967295.0); 
   }
 
   /* generates a random number on [0,1)-real-interval */
   function real_halfopen() {
-    return
-      signed2unsigned($this->int32()) * (1.0 / 4294967296.0); 
+    return signed2unsigned($this->int32()) * (1.0 / 4294967296.0); 
   }
 
   /* generates a random number on (0,1)-real-interval */
   function real_open() {
-    return (signed2unsigned($this->int32()) + .5) *
-      (1.0 / 4294967296.0); 
+    return (signed2unsigned($this->int32()) + .5) * (1.0 / 4294967296.0); 
   }
 
   /* generates a random number on [0,1) with 53-bit resolution */
   function real_halfopen2() { 
-    return 
-      ((($this->int32() & MASK27) * 67108864.0) +
+    return ((($this->int32() & MASK27) * 67108864.0) +
         ($this->int32() & MASK26)) *
       (1.0 / 9007199254740992.0);
   } 
@@ -386,8 +382,7 @@ function force_32_bit_int($x) {
 function add_2($n1, $n2) {
   $x = ($n1 & 0xffff) + ($n2 & 0xffff);
 
-  return 
-    (((($n1 >> 16) & 0xffff) + 
+  return (((($n1 >> 16) & 0xffff) + 
     (($n2 >> 16) & 0xffff) + 
     ($x >> 16)) << 16) | ($x & 0xffff);
 }
@@ -400,8 +395,7 @@ function add_2($n1, $n2) {
 function add_3($n1, $n2, $n3) {
   $x = ($n1 & 0xffff) + ($n2 & 0xffff) + ($n3 & 0xffff);
 
-  return 
-    (((($n1 >> 16) & 0xffff) + 
+  return (((($n1 >> 16) & 0xffff) + 
     (($n2 >> 16) & 0xffff) + 
     (($n3 >> 16) & 0xffff) + 
     ($x >> 16)) << 16) | ($x & 0xffff);
@@ -443,8 +437,7 @@ function mul($a, $b) {
     variables, but that would probably hurt performance.
   */
 
-  return
-    unsigned2signed(
+  return unsigned2signed(
       fmod(
 	TWO_TO_THE_16 *
 	  /*

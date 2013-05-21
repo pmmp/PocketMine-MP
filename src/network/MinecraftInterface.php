@@ -90,11 +90,13 @@ class MinecraftInterface{
 				"ip" => $source,
 				"port" => $port
 			)) !== true){
-				console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);			
-				$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: Error, bad packet id 0x".Utils::strToHex(chr($pid))." [length ".strlen($buf)."]".PHP_EOL;
-				$p .= Utils::hexdump($buf);
-				$p .= PHP_EOL;
-				logg($p, "packets", true, 2);
+				if(LOG === true and DEBUG >= 3){
+					console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);			
+					$p = "[".(microtime(true) - $this->start)."] [CLIENT->SERVER ".$source.":".$port."]: Error, bad packet id 0x".Utils::strToHex(chr($pid))." [length ".strlen($buf)."]".PHP_EOL;
+					$p .= Utils::hexdump($buf);
+					$p .= PHP_EOL;
+					logg($p, "packets", true, 2);
+				}
 			}
 			return false;
 		}
