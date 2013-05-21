@@ -194,6 +194,7 @@ class ServerAPI{
 		}
 		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
 			"serverid" => $this->server->serverID,
+			"port" => $this->server->port,
 			"os" => Utils::getOS(),
 			"memory_total" => $this->getProperty("memory-limit"),
 			"memory_usage" => memory_get_usage(true),
