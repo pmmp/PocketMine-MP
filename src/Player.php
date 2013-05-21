@@ -1108,13 +1108,13 @@ class Player{
 							if($this->entity->dead === false){
 								break;
 							}
-							$this->blocked = false;
 							$this->entity->fire = 0;
 							$this->entity->air = 300;
 							$this->entity->setHealth(20, "respawn");
 							$this->entity->updateMetadata();
 							$this->sendInventory();
 							$this->teleport($this->spawnPosition);
+							$this->blocked = false;
 							break;
 						case MC_SET_HEALTH:
 							if($this->spawned === false){

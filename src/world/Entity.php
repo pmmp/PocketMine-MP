@@ -589,8 +589,8 @@ class Entity extends Position{
 	
 	public function calculateVelocity(){
 		$diffTime = max(0.05, abs(microtime(true) - $this->last[5]));
-		$origin = new Vector3($this->last[0], $this->last[2]);
-		$final = new Vector3($this->x, $this->z);
+		$origin = new Vector2($this->last[0], $this->last[2]);
+		$final = new Vector2($this->x, $this->z);
 		$speedX = ($this->last[0] - $this->x) / $diffTime;
 		$speedY = ($this->last[1] - $this->y) / $diffTime;
 		$speedZ = ($this->last[2] - $this->z) / $diffTime;
