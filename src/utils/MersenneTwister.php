@@ -21,35 +21,25 @@
 
 */
 
-namespace mersenne_twister;
-
 const N = 624;
 const M = 397;
 const MATRIX_A = 0x9908b0df;
 const UPPER_MASK = 0x80000000;
 const LOWER_MASK = 0x7fffffff;
 
-function define_constants() {
-  $code = "";
-  $namespace = __NAMESPACE__;
-
   foreach (array(10, 11, 12, 14, 20, 21, 22, 26, 27, 31) as $n) {
     $val = ~((~0) << $n);
-    $code .= "namespace $namespace { const MASK$n = $val; }\n";
+	define("MASK$n", $val);
   }
 
   foreach (array(16, 31, 32) as $n) {
     $val = pow(2, $n);
-    $code .= "namespace $namespace { const TWO_TO_THE_$n = $val; }\n";
+	define("TWO_TO_THE_$n",$val);
   }
 
-  eval($code);
-
   $val = MASK31 | (MASK31 << 1);
-  eval("namespace $namespace { const MASK32 = $val; }");
-}
+  define("MASK32", $val);
 
-define_constants();
 
 class twister {
   const N = N;
@@ -86,7 +76,7 @@ class twister {
 
   function init_with_array(array $integer_array) {
     $integer_array =
-      array_map(__NAMESPACE__ . "\\force_32_bit_int", $integer_array);
+      array_map("force_32_bit_int", $integer_array);
 
     $mt = &$this->mt;
     $mti = &$this->mti;
@@ -482,7 +472,7 @@ function do_bc_op($bc_op, array $numbers) {
 
   $result =
     call_user_func_array($bc_op,
-      array_map(__NAMESPACE__ . "\\signed2unsigned", $numbers));
+      array_map("signed2unsigned", $numbers));
 
   $result = bcmod($result, $modulus);
 

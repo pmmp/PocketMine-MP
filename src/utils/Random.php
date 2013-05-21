@@ -30,7 +30,7 @@ the Free Software Foundation, either version 3 of the License, or
 class Random{
 	private $random;
 	public function __construct($seed = false){
-		$this->random = new mersenne_twister\twister(0);
+		$this->random = new twister(0);
 		$this->setSeed($seed);
 	}
 	
