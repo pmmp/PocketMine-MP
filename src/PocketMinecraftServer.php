@@ -74,13 +74,13 @@ class PocketMinecraftServer{
 		$this->ticks = 0;
 	}
 
-	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverID = false, $serverip = "0.0.0.0"){
+	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port; //19132 - 19135
 		$this->doTick = true;
 		$this->gamemode = (int) $gamemode;
 		$this->name = $name;
 		$this->motd = "Welcome to ".$name;
-		$this->serverID = $serverID;
+		$this->serverID = false;
 		$this->seed = $seed;
 		$this->serverip = $serverip;
 		$this->load();

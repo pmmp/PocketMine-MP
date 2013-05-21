@@ -36,7 +36,7 @@ class Query{
 	public function __construct(){
 		console("[INFO] Starting GS4 status listener");
 		$this->server = ServerAPI::request();
-		$addr = $this->server->api->getProperty("server-ip", "0.0.0.0");
+		$addr = ($ip = $this->server->api->getProperty("server-ip")) != "" ? $ip:"0.0.0.0";
 		$port = $this->server->api->getProperty("server-port");
 		console("[INFO] Setting query port to $port");
 		/*

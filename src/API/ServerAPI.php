@@ -62,9 +62,9 @@ class ServerAPI{
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",
 			"server-invisible" => false,
-			"server-ip" => "0.0.0.0",
+			"server-ip" => "",
 			"server-port" => 19132,
-			"memory-limit" => "256M",
+			"memory-limit" => "128M",
 			"last-update" => false,
 			"white-list" => false,
 			"spawn-protection" => 16,
@@ -79,12 +79,14 @@ class ServerAPI{
 			"generator" => "",
 			"generator-settings" => "",
 			"level-name" => "world",
-			"server-id" => false,
+			"level-seed" => "",
+			"level-type" => "FLAT",
 			"enable-query" => false,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"send-usage" => true,
 		));
+		
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug", 1));
 		if($this->getProperty("port") !== false){
@@ -92,11 +94,8 @@ class ServerAPI{
 			$this->config->remove("port");
 			$this->config->remove("invisible");
 		}
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), false, $this->getProperty("server-port"), $this->getProperty("server-id"), $this->getProperty("server-ip", "0.0.0.0"));
+		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		self::$serverRequest = $this->server;
-		if($this->getProperty("server-id") != $this->server->serverID){
-			$this->setProperty("server-id", $this->server->serverID);
-		}
 		$this->server->api = $this;
 		
 		if($this->getProperty("upnp-forwarding") === true){
@@ -223,7 +222,7 @@ class ServerAPI{
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				console("[WARNING] PocketMine-MP doesn't work right with less than 128MB of RAM", true, true, 0);
+				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -284,7 +283,7 @@ class ServerAPI{
 		}
 
 		if($this->getProperty("enable-rcon") === true){
-			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), $this->getProperty("server-ip", "0.0.0.0"), $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
+			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}
 
 		if($this->getProperty("enable-query") === true){
@@ -337,50 +336,6 @@ class ServerAPI{
 
 	public function deleteEvent($id){
 		return $this->server->deleteEvent($id);
-	}
-
-	public function importMap($dir, $remove = false){
-		if(file_exists($dir."level.dat")){
-			$nbt = new NBT();
-			$level = parseNBTData($nbt->loadFile($dir."level.dat"));
-			if($level["LevelName"] == ""){
-				$level["LevelName"] = "world".time();
-			}
-			console("[DEBUG] Importing level \"".$level["LevelName"]."\" gamemode ".$level["GameType"]." with seed ".$level["RandomSeed"], true, true, 2);
-			unset($level["Player"]);
-			$lvName = $level["LevelName"]."/";
-			@mkdir(DATA_PATH."worlds/".$lvName, 0755);
-			file_put_contents(DATA_PATH."worlds/".$lvName."level.dat", serialize($level));
-			$entities = parseNBTData($nbt->loadFile($dir."entities.dat"));
-			file_put_contents(DATA_PATH."worlds/".$lvName."entities.dat", serialize($entities["Entities"]));
-			if(!isset($entities["TileEntities"])){
-				$entities["TileEntities"] = array();
-			}
-			file_put_contents(DATA_PATH."worlds/".$lvName."tileEntities.dat", serialize($entities["TileEntities"]));
-			console("[DEBUG] Imported ".count($entities["Entities"])." Entities and ".count($entities["TileEntities"])." TileEntities", true, true, 2);
-
-			if($remove === true){
-				rename($dir."chunks.dat", DATA_PATH."worlds/".$lvName."chunks.dat");
-				unlink($dir."level.dat");
-				@unlink($dir."level.dat_old");
-				@unlink($dir."player.dat");
-				unlink($dir."entities.dat");
-			}else{
-				copy($dir."chunks.dat", DATA_PATH."worlds/".$lvName."chunks.dat");
-			}
-			if($this->getProperty("level-name") === false){
-				console("[INFO] Setting default level to \"".$level["LevelName"]."\"");
-				$this->setProperty("level-name", $level["LevelName"]);
-				$this->setProperty("gamemode", $level["GameType"]);
-				$this->server->seed = $level["RandomSeed"];
-				$this->server->spawn = array("x" => $level["SpawnX"], "y" => $level["SpawnY"], "z" => $level["SpawnZ"]);
-				$this->writeProperties();
-			}
-			console("[INFO] Level \"".$level["LevelName"]."\" importing done!");
-			unset($level, $entities, $nbt);
-			return true;
-		}
-		return false;
 	}
 	
 	public function getProperties(){

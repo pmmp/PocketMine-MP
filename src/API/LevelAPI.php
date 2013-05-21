@@ -50,7 +50,7 @@ class LevelAPI{
 		$this->server->api->console->register("save-off", "", array($this, "commandHandler"));
 		$this->default = $this->server->api->getProperty("level-name");
 		if($this->loadLevel($this->default) === false){
-			$this->generateLevel($this->default);
+			$this->generateLevel($this->default, $this->server->seed);
 			$this->loadLevel($this->default);
 		}
 		$this->server->spawn = $this->getDefault()->getSpawn();
