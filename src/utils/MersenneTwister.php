@@ -106,7 +106,7 @@ class twister {
         */
         $i++; $j++;
         if ($i>=N) { $mt[0] = $mt[N-1]; $i=1; }
-        if ($j>=$key_length) $j=0;
+        if ($j>=$key_length){ $j=0; }
     }
     for ($k=N-1; $k; $k--) {
         $mt[$i] = sub($mt[$i] ^
@@ -125,8 +125,9 @@ class twister {
   function init_with_string($string) {
     $remainder = strlen($string) % 4;
 
-    if($remainder > 0)
+    if($remainder > 0){
       $string .= str_repeat("\0", 4 - $remainder);
+	}
 
     $integer_array = array_values(unpack("N*", $string));
 
@@ -136,9 +137,9 @@ class twister {
   function init_with_files(array $filenames, $max_ints = -1) {
     $limit_applies = $max_ints !== -1;
 
-    if($limit_applies)
+    if($limit_applies){
       $limit = $max_ints * 4;   # 32 bits is 4 characters
-
+    }
     $data = "";
 
     foreach ($filenames as $filename) {
@@ -329,38 +330,6 @@ class twister {
     return $rand;
   }
 
-  function test() {
-    ob_start();
-    $this->exercise();
-    $output = ob_get_clean();
-
-    if(md5($output) !== "cb33e6acc162cbe20f7fcac26adddd02") {
-      print "Test failed.\n";
-    }
-  }
-
-  private function exercise() {
-    /*
-      we keep the names "genrand_int32" and "genrand_real2" because
-      we want the output of this function to be identical to that
-      produced by mtTest.c.  (The file mtTest.c is part of the archive
-      mt19937ar.sep.tgz, mentioned above.)
-    */
-
-    $this->init_with_array(array(0x123, 0x234, 0x345, 0x456));
-    printf("1000 outputs of genrand_int32()\n");
-    for ($i=0; $i<1000; $i++) {
-      printf("%10lu ", $this->int32());
-      if ($i%5==4) printf("\n");
-    }
-    printf("\n1000 outputs of genrand_real2()\n");
-    for ($i=0; $i<1000; $i++) {
-      printf("%10.8f ", $this->real_halfopen());
-      if ($i%5==4) printf("\n");
-    }
-  }
-}
-
 function signed2unsigned($signed_integer) {
   ## assert(is_integer($signed_integer));
   ## assert(($signed_integer & ~MASK32) === 0);
@@ -403,8 +372,9 @@ function force_32_bit_int($x) {
 
     $x = fmod($x, TWO_TO_THE_32);
 
-    if($x < 0)
+    if($x < 0){
       $x += TWO_TO_THE_32;
+	}
 
     return unsigned2signed($x);
   }

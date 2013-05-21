@@ -962,7 +962,9 @@ class Player{
 									if($this->lastCorrect instanceof Vector3){
 										$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 									}
-									console("[WARNING] ".$this->username." moved too quickly!");
+									if($this->blocked !== true){
+										console("[WARNING] ".$this->username." moved too quickly!");
+									}
 								}else{
 									$this->entity->setPosition(new Vector3($data["x"], $data["y"], $data["z"]), $data["yaw"], $data["pitch"]);
 								}
