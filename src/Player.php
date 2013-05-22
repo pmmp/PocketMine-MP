@@ -140,6 +140,7 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
+
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
 		if($c === null or $d > $this->server->api->getProperty("view-distance")){
@@ -178,6 +179,7 @@ class Player{
 				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
 			}
 		}
+		
 		if($repeat === false){
 			$this->getNextChunk(true);
 		}
@@ -699,7 +701,7 @@ class Player{
 				case 0xa0: //NACK
 					foreach($data[0] as $count){
 						if(isset($this->recovery[$count])){
-							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $count);
+							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $count, $this->recovery[$count]["pid"]);
 						}
 					}
 					break;
@@ -715,7 +717,7 @@ class Player{
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
-							$this->directDataPacket($d["id"], $d, $count);
+							$this->directDataPacket($d["id"], $d, $count, $d["pid"]);
 						}
 					}
 					break;
@@ -1360,6 +1362,7 @@ class Player{
 		}
 		$data = array(
 			"id" => false,
+			"pid" => 0x10,
 			"sendtime" => microtime(true),
 			"raw" => "",
 		);
@@ -1386,11 +1389,12 @@ class Player{
 		}
 	}
 	
-	public function directDataPacket($id, $data = array(), $count = false){
+	public function directDataPacket($id, $data = array(), $count = false, $pid = 0x00){
 		if($this->connected === false){
 			return false;
 		}
 		$data["id"] = $id;
+		$data["pid"] = $pid;
 		$data["sendtime"] = microtime(true);
 		if($count === false){
 			$count = $this->counter[0]++;
@@ -1401,11 +1405,11 @@ class Player{
 				unset($this->recovery[$k]);
 				end($this->recovery);
 			}
+			$this->recovery[$count] = $data;
 		}
-		$this->recovery[$count] = $data;
 		$this->send(0x80, array(
 			$count,
-			0x00,
+			$pid,
 			$data,
 		));
 	}
