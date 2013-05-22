@@ -56,7 +56,12 @@ class MinecraftInterface{
 			$p .= Utils::hexdump($raw);
 			if(is_array($data)){
 				foreach($data as $i => $d){
-					$p .= $i ." => ".(!is_array($d) ? Protocol::$raknet[$pid][$i]."(".((Protocol::$raknet[$pid][$i] === "magic" or substr(Protocol::$raknet[$pid][$i], 0, 7) === "special" or is_int(Protocol::$raknet[$pid][$i])) ? Utils::strToHex($d):Utils::printable($d)).")":Protocol::$raknet[$pid][$i]."(\"".serialize(array_map("Utils::printable", $d))."\")").PHP_EOL;
+					if(!isset(Protocol::$raknet[$pid][$i])){
+						$ty = "special";
+					}else{
+						$ty = Protocol::$raknet[$pid][$i];
+					}
+					$p .= $i ." => ".(!is_array($d) ? $ty."(".(($ty === "magic" or substr($ty, 0, 7) === "special" or is_int($ty)) ? Utils::strToHex($d):Utils::printable((string) $d)).")":$ty."(\"".serialize(array_map("Utils::printable", $d))."\")").PHP_EOL;
 				}
 			}
 			$p .= PHP_EOL;

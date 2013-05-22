@@ -701,7 +701,8 @@ class Player{
 				case 0xa0: //NACK
 					foreach($data[0] as $count){
 						if(isset($this->recovery[$count])){
-							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $count, $this->recovery[$count]["pid"]);
+							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $this->recovery[$count]["pid"]);
+							unset($this->recovery[$count]);
 						}
 					}
 					break;
@@ -710,14 +711,14 @@ class Player{
 						if($count > $this->counter[2]){
 							$this->counter[2] = $count;
 						}
-						$this->recovery[$count] = null;
 						unset($this->recovery[$count]);
 					}
-					$limit = microtime(true) - 2; //max lag
+					$limit = microtime(true) - 8; //max lag
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
-							$this->directDataPacket($d["id"], $d, $count, $d["pid"]);
+							$this->directDataPacket($d["id"], $d, $d["pid"]);
+							unset($this->recovery[$count]);
 						}
 					}
 					break;
@@ -1376,7 +1377,6 @@ class Player{
 			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 				reset($this->recovery);
 				$k = key($this->recovery);
-				$this->recovery[$k] = null;
 				unset($this->recovery[$k]);
 				end($this->recovery);
 			}
@@ -1389,24 +1389,22 @@ class Player{
 		}
 	}
 	
-	public function directDataPacket($id, $data = array(), $count = false, $pid = 0x00){
+	public function directDataPacket($id, $data = array(), $pid = 0x00){
 		if($this->connected === false){
 			return false;
 		}
 		$data["id"] = $id;
 		$data["pid"] = $pid;
 		$data["sendtime"] = microtime(true);
-		if($count === false){
-			$count = $this->counter[0]++;
-			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
-				reset($this->recovery);
-				$k = key($this->recovery);
-				$this->recovery[$k] = null;
-				unset($this->recovery[$k]);
-				end($this->recovery);
-			}
-			$this->recovery[$count] = $data;
+		$count = $this->counter[0]++;
+		if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
+			reset($this->recovery);
+			$k = key($this->recovery);
+			unset($this->recovery[$k]);
+			end($this->recovery);
 		}
+		$this->recovery[$count] = $data;
+
 		$this->send(0x80, array(
 			$count,
 			$pid,
