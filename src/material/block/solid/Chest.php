@@ -134,5 +134,5 @@ class ChestBlock extends TransparentBlock{
 		return array(
 			array($this->id, 0, 1),
 		);
-	}	
+	}
 }
