@@ -49,6 +49,8 @@ class TileEntity extends Position{
 			$this->closed = true;
 		}
 		$this->name = "";
+		$this->lastUpdate = microtime(true);
+		$this->scheduledUpdate = false;
 		$this->id = (int) $id;
 		$this->x = (int) $x;
 		$this->y = (int) $y;
@@ -57,7 +59,21 @@ class TileEntity extends Position{
 		switch($this->class){
 			case TILE_SIGN:
 				$this->server->query("UPDATE tileentities SET spawnable = 1 WHERE ID = ".$this->id.";");
-				
+				break;
+			case TILE_FURNACE:
+				if(!isset($this->data["BurnTime"]) or $this->data["BurnTime"] < 0){
+					$this->data["BurnTime"] = 0;
+				}
+				if(!isset($this->data["CookTime"]) or $this->data["CookTime"] < 0 or ($this->data["BurnTime"] === 0 and $this->data["CookTime"] > 0)){
+					$this->data["CookTime"] = 0;
+				}
+				if(!isset($this->data["MaxTime"])){
+					$this->data["MaxTime"] = $this->data["BurnTime"];
+					$this->data["BurnTicks"] = 0;
+				}
+				if($this->data["BurnTime"] > 0){
+					$this->update();
+				}
 				break;
 		}
 	}
@@ -65,7 +81,67 @@ class TileEntity extends Position{
 	public function update(){
 		if($this->closed === true){
 			return false;
+		}	
+		
+		if($this->class === TILE_FURNACE){
+			$fuel = $this->getSlot(1);
+			$raw = $this->getSlot(0);
+			$product = $this->getSlot(2);
+			$smelt = $raw->getSmeltItem();
+			$canSmelt = $smelt !== false and $raw->count > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->count < $product->getMaxStackSize()) or $product->getID() === AIR);
+			if($this->data["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->count > 0){
+				$this->lastUpdate = microtime(true);
+				$this->data["MaxTime"] = $this->data["BurnTime"] = floor($fuel->getFuelTime() * 20);
+				$this->data["BurnTicks"] = 0;
+				--$fuel->count;
+				if($fuel->count === 0){
+					$fuel = BlockAPI::getItem(AIR, 0, 0);
+				}
+				$this->setSlot(1, $fuel, false);
+				$current = $this->level->getBlock($this);
+				if($current->getID() === FURNACE){
+					$this->level->setBlock($this, BlockAPI::get(BURNING_FURNACE, $current->getMetadata()));
+				}
+			}
+			if($this->data["BurnTime"] > 0){
+				$ticks = (microtime(true) - $this->lastUpdate) * 20;
+				$this->data["BurnTime"] -= $ticks;
+				$this->data["BurnTicks"] = ceil(($this->data["BurnTime"] / $this->data["MaxTime"]) * 200);
+				if($smelt !== false and $canSmelt){
+					$this->data["CookTime"] += $ticks;
+					if($this->data["CookTime"] >= 200){ //10 seconds
+						$product = BlockAPI::getItem($smelt->getID(), $smelt->getMetadata(), $product->count + 1);
+						$this->setSlot(2, $product, false);
+						--$raw->count;
+						if($raw->count === 0){
+							$raw = BlockAPI::getItem(AIR, 0, 0);
+						}
+						$this->setSlot(0, $raw, false);
+						$this->data["CookTime"] -= 200;
+					}
+				}elseif($this->data["BurnTime"] <= 0){
+					$this->data["BurnTime"] = 0;
+					$this->data["CookTime"] = 0;
+					$this->data["BurnTicks"] = 0;
+				}else{
+					$this->data["CookTime"] = 0;
+				}
+				
+				$this->server->schedule(2, array($this, "update"));
+				$this->scheduledUpdate = true;
+			}else{
+				$current = $this->level->getBlock($this);
+				if($current->getID() === BURNING_FURNACE){
+					$this->level->setBlock($this, BlockAPI::get(FURNACE, $current->getMetadata()));
+				}
+				$this->data["CookTime"] = 0;
+				$this->data["BurnTime"] = 0;
+				$this->data["BurnTicks"] = 0;
+				$this->scheduledUpdate = false;
+			}
 		}
+		$this->server->handle("tile.update", $this);
+		$this->lastUpdate = microtime(true);
 	}
 	
 	public function getSlotIndex($s){
@@ -89,7 +165,7 @@ class TileEntity extends Position{
 		}
 	}
 	
-	public function setSlot($s, Item $item){
+	public function setSlot($s, Item $item, $update = true){
 		$i = $this->getSlotIndex($s);
 		$d = array(
 			"Count" => $item->count,
@@ -113,7 +189,10 @@ class TileEntity extends Position{
 			"slot" => $s,
 			"slotdata" => $item,
 		));
-		$this->server->handle("tile.update", $this);
+
+		if($update === true and $this->scheduledUpdate === false){
+			$this->update();
+		}
 		return true;
 	}
 

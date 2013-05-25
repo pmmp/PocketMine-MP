@@ -365,16 +365,36 @@ class Player{
 	
 	public function eventHandler($data, $event){
 		switch($event){
+			case "tile.update":
+				if($data->level === $this->level and $data->class === TILE_FURNACE){
+					foreach($this->windows as $id => $w){
+						if($w === $data){
+							$this->dataPacket(MC_CONTAINER_SET_DATA, array(
+								"windowid" => $id,
+								"property" => 0, //Smelting
+								"value" => floor($data->data["CookTime"]),
+							));
+							$this->dataPacket(MC_CONTAINER_SET_DATA, array(
+								"windowid" => $id,
+								"property" => 1, //Fire icon
+								"value" => $data->data["BurnTicks"],
+							));
+						}
+					}
+				}
+				break;
 			case "tile.container.slot":
-				foreach($this->windows as $id => $w){
-					if($w === $data["tile"]){
-						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-							"windowid" => $id,
-							"slot" => $data["slot"],
-							"block" => $data["slotdata"]->getID(),
-							"stack" => $data["slotdata"]->count,
-							"meta" => $data["slotdata"]->getMetadata(),
-						));
+				if($data["tile"]->level === $this->level){
+					foreach($this->windows as $id => $w){
+						if($w === $data["tile"]){
+							$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+								"windowid" => $id,
+								"slot" => $data["slot"],
+								"block" => $data["slotdata"]->getID(),
+								"stack" => $data["slotdata"]->count,
+								"meta" => $data["slotdata"]->getMetadata(),
+							));
+						}
 					}
 				}
 				break;
@@ -924,6 +944,7 @@ class Player{
 							$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 							$this->server->schedule(40, array($this, "measureLag"), array(), true);
 							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 							break;

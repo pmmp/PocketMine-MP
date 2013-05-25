@@ -113,10 +113,12 @@ class ChestBlock extends TransparentBlock{
 			"title" => "Chest",
 		));
 		$slots = array();
-		for($s = 0; $s < CHEST_SLOTS; ++$s){
+		for($s = 0; $s <= CHEST_SLOTS; ++$s){
 			$slot = $chest->getSlot($s);
 			if($slot->getID() > 0 and $slot->count > 0){
 				$slots[] = $slot;
+			}else{
+				$slots[] = BlockAPI::getItem(AIR, 0, 0);
 			}
 		}
 		$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(

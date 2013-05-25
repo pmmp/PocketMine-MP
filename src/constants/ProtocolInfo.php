@@ -87,7 +87,7 @@ define("MC_DROP_ITEM", 0xad);
 define("MC_CONTAINER_OPEN", 0xae);
 define("MC_CONTAINER_CLOSE", 0xaf);
 define("MC_CONTAINER_SET_SLOT", 0xb0);
-//define("MC_CONTAINER_SET_DATA", 0xb1);
+define("MC_CONTAINER_SET_DATA", 0xb1);
 define("MC_CONTAINER_SET_CONTENT", 0xb2);
 //define("MC_CONTAINER_ACK", 0xb3);
 define("MC_CLIENT_MESSAGE", 0xb4);

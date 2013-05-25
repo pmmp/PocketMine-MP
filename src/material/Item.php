@@ -105,6 +105,30 @@ class Item{
 		return $this->maxStackSize;
 	}
 	
+	final public function getFuelTime(){
+		if(!isset(FuelData::$duration[$this->id])){
+			return false;
+		}
+		return FuelData::$duration[$this->id];
+	}
+	
+	final public function getSmeltItem(){
+		if(!isset(SmeltingData::$product[$this->id])){
+			return false;
+		}
+		
+		if(isset(SmeltingData::$product[$this->id][0]) and !is_array(SmeltingData::$product[$this->id][0])){
+			return BlockAPI::getItem(SmeltingData::$product[$this->id][0], SmeltingData::$product[$this->id][1]);
+		}
+		
+		if(!isset(SmeltingData::$product[$this->id][$this->meta])){
+			return false;
+		}
+		
+		return BlockAPI::getItem(SmeltingData::$product[$this->id][$this->meta][0], SmeltingData::$product[$this->id][$this->meta][1]);
+		
+	}
+	
 	final public function isPickaxe(){ //Returns false or level of the pickaxe
 		switch($this->id){
 			case IRON_PICKAXE:

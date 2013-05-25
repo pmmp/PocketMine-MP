@@ -25,9 +25,22 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class CoalItem extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(COAL, $meta & 0x01, $count, "Coal");
-	}
+
+class SmeltingData{
+	public static $product = array(
+		COBBLESTONE => array(STONE, 0),
+		SAND => array(GLASS, 0),
+		TRUNK => array(COAL, 1), //Charcoal
+		GOLD_ORE => array(GOLD_INGOT, 0),
+		IRON_ORE => array(IRON_INGOT, 0),
+		NETHERRACK => array(NETHER_BRICK, 0),
+		RAW_PORKCHOP => array(COOKED_PORKCHOP, 0),
+		CLAY => array(BRICK, 0),
+		RAW_FISH => array(COOKED_FISH, 0),
+		CACTUS => array(DYE, 2),
+		RED_MUSHROOM => array(DYE, 1),
+		RAW_BEEF => array(STEAK, 0),
+		RAW_CHICKEN => array(COOKED_CHICKEN, 0),
+	);
 
 }

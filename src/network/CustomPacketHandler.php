@@ -718,6 +718,17 @@ class CustomPacketHandler{
 					}
 				}
 				break;
+			case MC_CONTAINER_SET_DATA:
+				if($this->c === false){
+					$this->data["windowid"] = ord($this->get(1));
+					$this->data["property"] = Utils::readShort($this->get(2));
+					$this->data["value"] = Utils::readShort($this->get(2));
+				}else{
+					$this->raw .= chr($this->data["windowid"]);
+					$this->raw .= Utils::writeShort($this->data["property"]);
+					$this->raw .= Utils::writeShort($this->data["value"]);
+				}
+				break;
 			case MC_CLIENT_MESSAGE:
 				if($this->c === false){
 					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
