@@ -73,7 +73,6 @@ class Entity extends Position{
 		$this->health = 20;
 		$this->dmgcounter = array(0, 0, 0);
 		$this->air = 300;
-		$this->onground = true;
 		$this->fire = 0;
 		$this->crouched = false;
 		$this->invincible = false;
@@ -129,7 +128,18 @@ class Entity extends Position{
 	}
 	
 	public function getDrops(){
-		if($this->class === ENTITY_OBJECT){
+		if($this->class === ENTITY_PLAYER){
+			$inv = array();
+			$air = BlockAPI::getItem(AIR, 0, 0);
+			for($i = 0; $i < 36; ++$i){
+				$slot = $this->player->getSlot($i);
+				$this->player->setSlot($i, $air);
+				if($slot->getID() !== AIR and $slot->count > 0){
+					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+				}
+			}
+			return $inv;
+		}elseif($this->class === ENTITY_OBJECT){
 			switch($this->type){
 				case OBJECT_PAINTING:
 					return array(
