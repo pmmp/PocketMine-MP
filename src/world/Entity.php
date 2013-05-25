@@ -196,6 +196,8 @@ class Entity extends Position{
 							$this->close();
 							return false;
 						}
+					}else{
+						$this->close();
 					}
 					return true;
 				}
