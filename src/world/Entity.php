@@ -148,6 +148,27 @@ class Entity extends Position{
 			}
 		}elseif($this->class === ENTITY_MOB){
 			switch($this->type){
+				case MOB_ZOMBIE:
+					return array(
+						array(FEATHER, 0, mt_rand(0,2)),
+					);
+				case MOB_SPIDER:
+					return array(
+						array(STRING, 0, mt_rand(0,2)),
+					);
+				case MOB_PIGMAN:
+					return array(
+						array(COOKED_PORKCHOP, 0, mt_rand(0,2)),
+					);
+				case MOB_CREEPER:
+					return array(
+						array(GUNPOWDER, 0, mt_rand(0,2)),
+					);
+				case MOB_SKELETON:
+					return array(
+						array(ARROW, 0, mt_rand(0,2)),
+						array(BONE, 0, mt_rand(0,2)),
+					);
 				case MOB_CHICKEN:
 					return array(
 						array(FEATHER, 0, mt_rand(0,2)),
