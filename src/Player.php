@@ -66,6 +66,7 @@ class Player{
 	public $itemEnforcement;
 	public $lastCorrect;
 	private $bigCnt;
+	private $packetStats;
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -91,6 +92,7 @@ class Player{
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
 		$this->equipment = BlockAPI::getItem(AIR);
+		$this->packetStats = array(0,0);
 		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
@@ -702,6 +704,7 @@ class Player{
 					foreach($data[0] as $count){
 						if(isset($this->recovery[$count])){
 							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $this->recovery[$count]["pid"]);
+							++$this->packetStats[1];
 							unset($this->recovery[$count]);
 						}
 					}
@@ -718,6 +721,7 @@ class Player{
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
 							$this->directDataPacket($d["id"], $d, $d["pid"]);
+							++$this->packetStats[1];
 							unset($this->recovery[$count]);
 						}
 					}
@@ -1342,6 +1346,7 @@ class Player{
 	public function send($pid, $data = array(), $raw = false){
 		if($this->connected === true){
 			$this->server->send($pid, $data, $raw, $this->ip, $this->port);
+			++$this->packetStats[0];
 		}
 	}
 
@@ -1351,7 +1356,7 @@ class Player{
 	
 	public function sendBuffer(){
 		if(strlen($this->buffer) > 0){
-			$this->directDataPacket(false, array("raw" => $this->buffer));
+			$this->directDataPacket(false, array("raw" => $this->buffer), 0x40);
 		}
 		$this->buffer = "";
 		$this->nextBuffer = microtime(true) + 0.1;
@@ -1363,16 +1368,16 @@ class Player{
 		}
 		$data = array(
 			"id" => false,
-			"pid" => 0x10,
+			"pid" => 0x50,
 			"sendtime" => microtime(true),
 			"raw" => "",
 		);
-		$size = $this->MTU - 31;
+		$size = $this->MTU - 34;
 		$buffer = str_split(($id === false ? "":chr($id)).$buffer, $size);
 		$h = Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
 		foreach($buffer as $i => $buf){
-			$data["raw"] = Utils::writeShort(strlen($buf) << 3).$h.Utils::writeInt($i).$buf;
+			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
 			$count = $this->counter[0]++;
 			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 				reset($this->recovery);
@@ -1383,7 +1388,7 @@ class Player{
 			$this->recovery[$count] = $data;
 			$this->send(0x80, array(
 				$count,
-				0x10, //0b01010000
+				0x50, //0b01010000
 				$data,
 			));
 		}
@@ -1424,7 +1429,7 @@ class Player{
 				$raw = chr($id).$data->raw;
 			}
 			$len = strlen($raw);
-			$MTU = $this->MTU - 21;
+			$MTU = $this->MTU - 24;
 			if($len > $MTU){
 				$this->directBigRawPacket(false, $raw);
 				return;
@@ -1434,7 +1439,7 @@ class Player{
 				$this->sendBuffer();
 			}
 
-			$this->buffer .= ($this->buffer === "" ? "":"\x00").Utils::writeShort($len << 3).$raw;
+			$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
 			
 		}
 	}

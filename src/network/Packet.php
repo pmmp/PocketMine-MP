@@ -98,31 +98,27 @@ class Packet{
 					break;
 				case "customData":
 					$this->addRaw(chr($this->data[1]));
-					switch($this->data[1]){
-						case 0x40:
-							$reply = new CustomPacketHandler($this->data[2]["id"], "", $this->data[2], true);
-							$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
-							$this->addRaw(strrev(Utils::writeTriad($this->data[2]["count"])));
-							$this->addRaw(chr($this->data[2]["id"]));
-							$this->addRaw($reply->raw);
-							break;
-						case 0x00:
-							if($this->data[2]["id"] !== false){
+					if($this->data[2]["id"] === false){
+						$this->addRaw($this->data[2]["raw"]);
+					}else{
+						switch($this->data[1]){
+							case 0x40:
+								$reply = new CustomPacketHandler($this->data[2]["id"], "", $this->data[2], true);
+								$this->addRaw(Utils::writeShort((strlen($reply->raw) + 1) << 3));
+								$this->addRaw(strrev(Utils::writeTriad($this->data[2]["count"])));
+								$this->addRaw(chr($this->data[2]["id"]));
+								$this->addRaw($reply->raw);
+								break;
+							case 0x00:
 								$raw = new CustomPacketHandler($this->data[2]["id"], "", $this->data[2], true);
 								$raw = $raw->raw;
 								$this->addRaw(Utils::writeShort((strlen($raw) + 1) << 3));
 								$this->addRaw(chr($this->data[2]["id"]));
 								$this->addRaw($raw);
-							}else{
-								$this->addRaw($this->data[2]["raw"]);
-							}
-							break;
-						default:
-							if($this->data[2]["id"] === false){
-								$this->addRaw($this->data[2]["raw"]);
-							}
-							break;
+								break;
+						}
 					}
+					
 					break;
 				case "magic":
 					$this->addRaw(RAKNET_MAGIC);
