@@ -496,7 +496,7 @@ class Player{
 				}
 				$this->dataPacket(MC_ANIMATE, array(
 					"eid" => $data["eid"],
-					"action" => $data["action"],
+					"action" => $data["action"], //1 swing arm,
 				));
 				break;
 			case "entity.metadata":

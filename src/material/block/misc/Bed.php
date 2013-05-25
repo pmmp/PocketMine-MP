@@ -31,6 +31,13 @@ class BedBlock extends TransparentBlock{
 		$this->isActivable = true;
 	}
 	
+	public function onActivate(Item $item, Player $player){
+		$player->dataPacket(MC_CLIENT_MESSAGE, array(
+			"message" => "This bed has been corrupted by your hands!"
+		));
+		return true;
+	}
+	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);
 			if($down->isTransparent === false){
