@@ -658,7 +658,7 @@ class Player{
 			}
 			if($terrain === true){
 				$this->orderChunks();
-				$this->getNextChunk();
+				$this->getNextChunk(false);
 			}
 			$this->entity->check = true;
 		}

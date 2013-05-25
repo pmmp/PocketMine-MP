@@ -121,6 +121,28 @@ class LevelAPI{
 		return true;
 	}
 	
+	public function unloadLevel(Level $level){
+		$name = $level->getName();
+		if($name === $this->default){
+			return false;
+		}
+		$level->nextSave = PHP_INT_MAX;
+		$level->save();
+		foreach($this->server->api->player->getAll($level) as $player){
+			$player->teleport($this->server->spawn);
+		}
+		foreach($this->server->api->entity->getAll($level) as $entity){
+			if($entity->class !== ENTITY_PLAYER){
+				$entity->close();
+			}
+		}
+		foreach($this->server->api->tileentity->getAll($level) as $tile){
+			$tile->close();
+		}
+		unset($this->levels[$name]);
+		return true;
+	}
+	
 	public function loadLevel($name){
 		if($this->get($name) !== false){
 			return true;

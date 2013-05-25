@@ -26,8 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class Level{
-	public $entities, $tileEntities;
-	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $nextSave, $changedBlocks, $changedCount;
+	public $entities, $tileEntities, $nextSave;
+	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
 		$this->server = ServerAPI::request();
@@ -103,13 +103,13 @@ class Level{
 			}
 		}
 		
-		if($this->nextSave < $now and $this->server->saveEnabled === true){
+		if($this->nextSave < $now){
 			foreach($this->usedChunks as $i => $c){
 				if(count($c) === 0){
 					unset($this->usedChunks[$i]);
 					$X = explode(".", $i);
 					$Z = array_pop($X);
-					$this->level->unloadChunk((int) array_pop($X), (int) $Z);
+					$this->level->unloadChunk((int) array_pop($X), (int) $Z, $this->server->saveEnabled);
 				}
 			}
 			$this->save();
