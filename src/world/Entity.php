@@ -183,17 +183,19 @@ class Entity extends Position{
 				}else{
 					return false;
 				}
-				if(($player instanceof Player) and ($player->gamemode & 0x01) === 0x00 and $player->spawned === true){
-					if($this->server->api->dhandle("player.pickup", array(
-						"eid" => $player->eid,
-						"player" => $player,
-						"entity" => $this,
-						"block" => $this->type,
-						"meta" => $this->meta,
-						"target" => $this->eid
-					)) !== false){
-						$this->close();
-						return false;
+				if(($player instanceof Player) and $player->spawned === true){
+					if(($player->gamemode & 0x01) === 0x00){
+						if($player->hasSpace($this->type, $this->meta, $this->stack) === true and $this->server->api->dhandle("player.pickup", array(
+							"eid" => $player->eid,
+							"player" => $player,
+							"entity" => $this,
+							"block" => $this->type,
+							"meta" => $this->meta,
+							"target" => $this->eid
+						)) !== false){
+							$this->close();
+							return false;
+						}
 					}
 					return true;
 				}

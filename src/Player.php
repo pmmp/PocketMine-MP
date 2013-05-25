@@ -265,6 +265,32 @@ class Player{
 			$this->server->api->player->remove($this->CID);
 		}
 	}
+	
+	public function hasSpace($type, $damage, $count){
+		$inv = $this->inventory;
+		while($count > 0){
+			$add = 0;
+			foreach($inv as $s => $data){
+				if($data[0] === AIR){
+					$add = min(64, $count);
+					$inv[$s] = array($type, $damage, $add);
+					break;
+				}elseif($data[0] === $type and $data[1] === $damage){
+					$add = min(64 - $data[2], $count);
+					if($add <= 0){
+						continue;
+					}
+					$inv[$s] = array($type, $damage, $data[2] + $add);
+					break;
+				}
+			}
+			if($add === 0){
+				return false;
+			}
+			$count -= $add;
+		}
+		return true;
+	}
 
 	public function addItem($type, $damage, $count){
 		while($count > 0){
