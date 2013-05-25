@@ -117,7 +117,7 @@ class ServerAPI{
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info["development"]["commit"]){
 						console("[NOTICE] \x1b[33mA new DEVELOPMENT version of PocketMine-MP has been released");
 						console("[NOTICE] \x1b[33mVersion \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
-						console("[NOTICE] \x1b[36mIf you want to update, get the latest version at ".$info["development"]["download"]);
+						console("[NOTICE] \x1b[36mGet it at PocketMine.net or ".$info["development"]["download"]);
 						console("[NOTICE] This message will dissapear after issuing the command \"/update-done\"");
 						sleep(3);
 					}else{
@@ -136,7 +136,7 @@ class ServerAPI{
 					if($updateN > $newestN){
 						console("[NOTICE] \x1b[33mA new STABLE version of PocketMine-MP has been released");
 						console("[NOTICE] \x1b[36mVersion \"".$info["stable"]["version"]."\" #".$updateN);
-						console("[NOTICE] Download it at ".$info["stable"]["download"]);
+						console("[NOTICE] Get it at PocketMine.net or ".$info["stable"]["download"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
 						sleep(5);
 					}else{
