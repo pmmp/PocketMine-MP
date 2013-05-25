@@ -209,7 +209,11 @@ class PMFLevel extends PMF{
 		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
 			$t = 1 << $Y;
 			if(($info[0] & $t) === $t){
-				$this->chunks[$index][$Y] = gzread($chunk, 8192); // 4096 + 2048 + 2048, Block Data, Meta, Light
+				// 4096 + 2048 + 2048, Block Data, Meta, Light
+				if(strlen($this->chunks[$index][$Y] = gzread($chunk, 8192)) < 8192){
+					console("[NOTICE] Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents");
+					$this->fillMiniChunk($X, $Z, $Y);
+				}
 			}else{
 				$this->chunks[$index][$Y] = false;
 			}
@@ -280,7 +284,7 @@ class PMFLevel extends PMF{
 			return false;
 		}
 		$index = $this->getIndex($X, $Z);
-		$this->chunks[$index][$Y] = $data;
+		$this->chunks[$index][$Y] = (string) $data;
 		$this->chunkChange[$index][$Y] = 8192;
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
