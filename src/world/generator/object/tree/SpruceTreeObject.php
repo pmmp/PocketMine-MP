@@ -67,14 +67,14 @@ class SpruceTreeObject extends TreeObject{
 		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
-			for ($xx = -$leavesRadius; $xx < ($leavesRadius + 1); ++$xx) {
-				for ($zz = -$leavesRadius; $zz < ($leavesRadius + 1); ++$zz) {
+			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
+				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
 						$level->setBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBLock($this->type));
 					}
 				}
 			}
-			if ($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)) {
+			if($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)) {
 				--$leavesRadius;
 			}elseif($leavesRadius < $this->leavesMaxRadius){
 				++$leavesRadius;
