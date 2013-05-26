@@ -138,7 +138,9 @@ class BanAPI{
 				$user = strtolower($params[0]);
 				$player = $this->server->api->player->get($user);
 				if(!($player instanceof Player)){
-					$output .= "Player not connected.\n";
+					$this->ops->set($user, false);
+					$this->ops->save($user);
+					$output .= $user." is not longer op\n";
 					break;
 				}
 				$this->ops->remove($player->iusername);
