@@ -123,14 +123,17 @@ class Player{
 		$X = $this->entity->x / 16;
 		$Z = $this->entity->z / 16;
 		$Y = $this->entity->y / 16;
-		$v = new Vector3($X, $Y / 4, $Z);
+		
 		$this->chunksOrder = array();
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				for($y = 0; $y < 8; ++$y){
+		for($y = 0; $y < 8; ++$y){
+			$distY = abs($Y - $y) / 4;
+			for($x = 0; $x < 16; ++$x){
+				$distX = abs($X - $x);
+				for($z = 0; $z < 16; ++$z){
+					$distZ = abs($Z - $z);				
 					$d = $x.":".$y.":".$z;
 					if(!isset($this->chunksLoaded[$d])){
-						$this->chunksOrder[$d] = $v->distance(new Vector3($x + 0.5, $y / 4, $z + 0.5));
+						$this->chunksOrder[$d] = $distX + $distY + $distZ;
 					}
 				}
 			}
