@@ -140,13 +140,13 @@ class BanAPI{
 				if(!($player instanceof Player)){
 					$this->ops->set($user, false);
 					$this->ops->save($user);
-					$output .= $user." is not longer op\n";
+					$output .= $user." is no longer op\n";
 					break;
 				}
 				$this->ops->remove($player->iusername);
 				$this->ops->save();
 				$output .= $player->iusername." is not longer op\n";
-				$this->server->api->chat->sendTo(false, "You are not longer op.", $player->iusername);
+				$this->server->api->chat->sendTo(false, "You are no longer op.", $player->iusername);
 				break;
 			case "kick":
 				if(!isset($params[0])){
