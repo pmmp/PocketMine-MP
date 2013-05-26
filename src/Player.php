@@ -1070,7 +1070,7 @@ class Player{
 								break;
 							}
 							$data["eid"] = $this->eid;
-							$data["player"] = $this->eid;
+							$data["player"] = $this;
 							$this->server->handle("player.armor", $data);
 							break;
 						case MC_INTERACT:
