@@ -472,16 +472,16 @@ class Player{
 				));
 				break;
 			case "entity.motion":
-				/*if($data->eid === $this->eid or $data->level !== $this->level){
+				if($data->eid === $this->eid or $data->level !== $this->level){
 					break;
 				}
 				$this->dataPacket(MC_SET_ENTITY_MOTION, array(
 					"eid" => $data->eid,
-					"speedX" => (int) ($data->speedX * 32000),
-					"speedY" => (int) ($data->speedY * 32000),
-					"speedZ" => (int) ($data->speedZ * 32000),
+					"speedX" => (int) ($data->speedX * 400),
+					"speedY" => (int) ($data->speedY * 400),
+					"speedZ" => (int) ($data->speedZ * 400),
 				));
-				break;*/
+				break;
 			case "entity.remove":
 				if($data->eid === $this->eid or $data->level !== $this->level){
 					break;

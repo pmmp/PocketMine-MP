@@ -354,25 +354,33 @@ class Entity extends Position{
 				}
 			}
 			if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
+				$update = false;
 				if($this->speedX != 0){
 					$this->x += $this->speedX * 5;
+					$update = true;
 				}
 				if($this->speedY != 0){
 					$this->y += $this->speedY * 5;
+					$update = true;
 				}
 				if($this->speedZ != 0){
 					$this->z += $this->speedZ * 5;
+					$update = true;
 				}
 				if($support === false){
 					$this->speedY -= 0.04 * 5;
-					//$this->server->api->handle("entity.motion", $this);
+					$update = true;
 				}elseif($this->speedY < 0){
 					$this->y = $y + 1;
 					$this->speedX = 0;
 					$this->speedY = 0;
 					$this->speedZ = 0;
-					//$this->server->api->handle("entity.motion", $this);
+					$update = true;
 				}
+				if($update === true){
+					$this->server->api->handle("entity.motion", $this);
+				}
+				
 			}elseif($this->class === ENTITY_PLAYER){
 				if($support === false and ($this->player->gamemode & 0x01) === 0x00){
 					if($this->fallY === false or $this->fallStart === false){
@@ -399,9 +407,6 @@ class Entity extends Position{
 					$this->fallStart = false;
 					
 				}
-			}
-			
-			if($this->class === ENTITY_PLAYER){
 				$this->calculateVelocity();
 				if($this->speed <= 5 or ($this->speed <= 12 and ($this->player->gamemode & 0x01) === 0x01)){
 					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
@@ -415,9 +420,6 @@ class Entity extends Position{
 					$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
 				}else{
 					$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
-				}
-				if($this->class === ENTITY_PLAYER){
-					$this->calculateVelocity();
 				}
 				return;
 			}
@@ -629,9 +631,12 @@ class Entity extends Position{
 		$speedX = ($this->last[0] - $this->x) / $diffTime;
 		$speedY = ($this->last[1] - $this->y) / $diffTime;
 		$speedZ = ($this->last[2] - $this->z) / $diffTime;
-		$this->speedX = $speedX;
-		$this->speedY = $speedY;
-		$this->speedZ = $speedZ;		
+		if($this->speedX != $speedX or $this->speedY = $speedY or $this->speedZ = $speedZ){
+			$this->speedX = $speedX;
+			$this->speedY = $speedY;
+			$this->speedZ = $speedZ;
+			$this->server->api->handle("entity.motion", $this);
+		}
 		$this->speed = $origin->distance($final) / $diffTime;
 		unset($this->speedMeasure[key($this->speedMeasure)]);
 		$this->speedMeasure[] = $this->speed;
