@@ -276,10 +276,7 @@ class Level{
 		$ordered = "";
 		$flag = chr(1 << $Y);
 		for($j = 0; $j < 256; ++$j){
-			$index = $j << 5;
-			$ordered .= $flag;
-			$ordered .= substr($raw, $index, 16);
-			$ordered .= substr($raw, $index + 16, 8);
+			$ordered .= $flag . substr($raw, $j << 5, 24); //16 + 8
 		}
 		return $ordered;
 	}
