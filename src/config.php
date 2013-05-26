@@ -43,7 +43,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 ini_set("memory_limit", "128M"); //Default
 define("LOG", true);
 define("START_TIME", microtime(true));
-define("MAJOR_VERSION", "Alpha_1.3");
+define("MAJOR_VERSION", "Alpha_1.3.1dev");
 define("CURRENT_STRUCTURE", 5);
 define("CURRENT_PROTOCOL", 9);
 define("CURRENT_MINECRAFT_VERSION", "0.6.1 alpha");
