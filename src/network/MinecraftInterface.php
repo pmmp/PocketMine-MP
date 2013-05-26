@@ -114,7 +114,10 @@ class MinecraftInterface{
 
 	public function popPacket(){
 		if(count($this->data) > 0){
-			$p = array_shift($this->data);
+			$p = each($this->data);
+			unset($this->data[$p[0]]);
+			$p = $p[1];
+			
 			if(isset($p[1]["packets"]) and is_array($p[1]["packets"])){
 				foreach($p[1]["packets"] as $d){
 					$this->data[] = array($p[0], $d[1], $d[2], $p[3], $p[4]);
