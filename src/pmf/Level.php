@@ -261,6 +261,7 @@ class PMFLevel extends PMF{
 		}
 		$index = $this->getIndex($X, $Z);
 		$this->chunks[$index][$Y] = str_repeat("\x00", 8192);
+		$this->chunkChange[$index][$Y] = 8192;
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
 	}
