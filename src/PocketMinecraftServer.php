@@ -347,7 +347,11 @@ class PocketMinecraftServer{
 		$dump .= "Debug Info: ".var_export($this->debugInfo(false), true)."\r\n\r\n\r\n";
 		global $arguments;
 		$dump .= "Parameters: ".var_export($arguments, true)."\r\n\r\n\r\n";
-		$dump .= "server.properties: ".var_export($this->api->getProperties(), true)."\r\n\r\n\r\n";
+		$p = $this->api->getProperties();
+		if($p["rcon.password"] != ""){
+			$p["rcon.password"] = "******";
+		}
+		$dump .= "server.properties: ".var_export($p, true)."\r\n\r\n\r\n";
 		if($this->api->plugin instanceof PluginAPI){
 			$plist = $this->api->plugin->getList();
 			$dump .= "Loaded plugins:\r\n";
