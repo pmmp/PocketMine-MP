@@ -38,25 +38,7 @@ class GrassBlock extends SolidBlock{
 
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){
-			for($c = 0; $c < 15; ++$c){
-				$x = mt_rand($this->x - 2, $this->x + 2);
-				$z = mt_rand($this->z - 2, $this->z + 2);
-				$b = $this->level->getBlock(new Vector3($x, $this->y + 1, $z));
-				$d = $this->level->getBlock(new Vector3($x, $this->y, $z));
-				if($b->getID() === AIR and $d->getID() === GRASS){
-					$arr = array(
-						array(DANDELION, 0),
-						array(CYAN_FLOWER, 0),
-						array(TALL_GRASS, 1),
-						array(TALL_GRASS, 1),
-						array(TALL_GRASS, 1),
-						array(TALL_GRASS, 1),
-						array(AIR, 0),
-					);
-					$t = $arr[mt_rand(0, count($arr) - 1)];
-					$this->level->setBlock($b, BlockAPI::get($t[0], $t[1]));
-				}
-			}
+			TallGrassObject::growGrass($this->level, $this, new Random());
 			return true;
 		}elseif($item->isHoe()){
 			$this->level->setBlock($this, new FarmlandBlock());

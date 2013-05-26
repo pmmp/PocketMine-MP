@@ -67,7 +67,7 @@ class BigTreeObject extends TreeObject{
 		generateBranches(w, x, y, z, leaves);
 
 		$level->setBlock($x, $pos->y - 1, $z, 3, 0);
-		$this->totalHeight += mt_rand(-1, 3);
+		$this->totalHeight += $random->nextRange(0, 2);
 		$this->leavesHeight += mt_rand(0, 1);
 		for($yy = ($this->totalHeight - $this->leavesHeight); $yy < ($this->totalHeight + 1); ++$yy){
 			$yRadius = ($yy - $this->totalHeight);

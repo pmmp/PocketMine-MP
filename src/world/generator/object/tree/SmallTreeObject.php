@@ -30,16 +30,16 @@ require_once("src/world/generator/object/tree/TreeObject.php");
 /***REM_END***/
 
 class SmallTreeObject extends TreeObject{
-	var $type = 0;
+	public $type = 0;
 	private $trunkHeight = 5;
-   private static $leavesHeight = 4; // All trees appear to be 4 tall
-   private static $leafRadii = array( 1, 1.41, 2.83, 2.24 );
+	private static $leavesHeight = 4; // All trees appear to be 4 tall
+	private static $leafRadii = array( 1, 1.41, 2.83, 2.24 );
 
 	private $addLeavesVines = false;
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
 
-	public function canPlaceObject(Level $level, Vector3 $pos){
+	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$radiusToCheck = 0;
 		for ($yy = 0; $yy < $this->trunkHeight + 3; ++$yy) {
 			if ($yy == 1 or $yy === $this->trunkHeight) {
@@ -57,7 +57,7 @@ class SmallTreeObject extends TreeObject{
 		return true;
 	}
 
-	public function placeObject(Level $level, Vector3 $pos){
+	public function placeObject(Level $level, Vector3 $pos, Random $random){
       // The base dirt block
       $dirtpos = new Vector3( $pos->x, $pos->y -1, $pos->z );
 		$level->setBlock( $dirtpos, new DirtBlock() );
@@ -67,13 +67,13 @@ class SmallTreeObject extends TreeObject{
       //    - min=4 (all leaves are 4 tall, some trunk must show)
       //    - max=6 (top leaves are within ground-level whacking range
       //             on all small trees)
-      $heightPre = mt_rand( -14, 11 ); // (TODO: seed may apply)
+      $heightPre = $random->nextRange(-14, 11);
       $this->trunkHeight = intval( $heightPre / 8 ) + 5;
 
       // Adjust the starting leaf density using the trunk height as a
       // starting position (tall trees with skimpy leaves don't look
       // too good)
-      $leafPre = mt_rand( $this->trunkHeight, 10 ) / 20.0; // (TODO: seed may apply)
+      $leafPre = $random->nextRange($this->trunkHeight, 10) / 20; // (TODO: seed may apply)
 
       // Now build the tree (from the top down)
       $leaflevel = 0;

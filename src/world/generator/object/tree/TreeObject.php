@@ -27,16 +27,17 @@ the Free Software Foundation, either version 3 of the License, or
 
 
 class TreeObject{
-	var $overridable = array(
+	public $overridable = array(
 		0 => true,
 		6 => true,
 		17 => true,
 		18 => true,
 	);
-	public static function growTree(Level $level, Vector3 $pos, $type = 0){
+
+	public static function growTree(Level $level, Vector3 $pos, Random $random, $type = 0){
 		switch($type & 0x03){
 			case SaplingBlock::SPRUCE:
-				if(mt_rand(0,1) == 1){
+				if($random->nextRange(0, 1) === 1){
 					$tree = new SpruceTreeObject();
 				}else{
 					$tree = new PineTreeObject();
@@ -48,15 +49,15 @@ class TreeObject{
 				break;
 			default:
 			case SaplingBlock::OAK:
-				if(mt_rand(0,9) === 0){
+				/*if($random->nextRange(0, 9) === 0){
 					$tree = new BigTreeObject();
-				}else{
+				}else{*/
 					$tree = new SmallTreeObject();
-				}
+				//}
 				break;
 		}
-		if($tree->canPlaceObject($level, $pos)){
-			$tree->placeObject($level, $pos);
+		if($tree->canPlaceObject($level, $pos, $random)){
+			$tree->placeObject($level, $pos, $random);
 		}
 	}
 }

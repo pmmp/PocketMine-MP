@@ -35,8 +35,8 @@ class PineTreeObject extends TreeObject{
 	private $leavesSizeY = -1;
 	private $leavesAbsoluteMaxRadius = -1;
 
-	public function canPlaceObject(Level $level, Vector3 $pos){
-		$this->findRandomLeavesSize();
+	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
+		$this->findRandomLeavesSize($random);
 		$checkRadius = 0;
 		for($yy = 0; $yy < $this->totalHeight; ++$yy) {
 			if($yy === $this->leavesSizeY) {
@@ -54,18 +54,18 @@ class PineTreeObject extends TreeObject{
 		return true;
 	}
 
-	private function findRandomLeavesSize(){
-		$this->totalHeight += mt_rand(-1, 2);
-		$this->leavesSizeY = 1 + mt_rand(0,2);
-		$this->leavesAbsoluteMaxRadius = 2 + mt_rand(0, 2);
+	private function findRandomLeavesSize(Random $random){
+		$this->totalHeight += $random->nextRange(-1, 2);
+		$this->leavesSizeY = 1 + $random->nextRange(0, 2);
+		$this->leavesAbsoluteMaxRadius = 2 + $random->nextRange(0, 2);
 	}
 
-	public function placeObject(Level $level, Vector3 $pos){
+	public function placeObject(Level $level, Vector3 $pos, Random $random){
 		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
 		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
-		$leavesRadius = mt_rand(0,2);
+		$leavesRadius = $random->nextRange(0, 2);
 		$leavesMaxRadius = 1;
 		$leavesBottomY = $this->totalHeight - $this->leavesSizeY;
 		$firstMaxedRadius = false;
@@ -88,7 +88,7 @@ class PineTreeObject extends TreeObject{
 				++$leavesRadius;
 			}
 		}
-		$trunkHeightReducer = mt_rand(0,3);
+		$trunkHeightReducer = $random->nextRange(0, 3);
 		for($yy = 0; $yy < ($this->totalHeight - $trunkHeightReducer); ++$yy){
 			$level->setBlock(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
 		}

@@ -61,6 +61,7 @@ class WorldGenerator{
 			}
 			console("[NOTICE] Generating level ".ceil((($Z + 1)/$this->width) * 100)."%");
 		}
+		console("[NOTICE] Populating level");
 		$this->generator->populateLevel();
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true);

@@ -33,7 +33,7 @@ class SuperflatGenerator implements LevelGenerator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel;
 	
 	public function __construct(array $options = array()){
-		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=65)";
+		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=120)";
 		$this->options = $options;
 		if(isset($options["preset"])){
 			$this->parsePreset($options["preset"]);
@@ -141,16 +141,28 @@ class SuperflatGenerator implements LevelGenerator{
 		}
 		
 		if(isset($this->options["decoration"])){
-			$treecount = 32;
+			$treecount = 80;
+			$grasscount = 120;
 			if(isset($this->options["spawn"]["treecount"])){
 				$treecount = intval($this->options["spawn"]["treecount"]);
+			}
+			if(isset($this->options["spawn"]["grasscount"])){
+				$grasscount = intval($this->options["spawn"]["grasscount"]);
 			}
 			for($t = 0; $t < $treecount; ++$t){
 				$centerX = $this->random->nextRange(0, 256);
 				$centerZ = $this->random->nextRange(0, 256);
 				$down = $this->level->getBlock(new Vector3($centerX, $this->floorLevel - 1, $centerZ))->getID();
 				if($down === DIRT or $down === GRASS or $down === FARMLAND){
-					TreeObject::growTree($this->level, new Vector3($centerX, $this->floorLevel, $centerZ), $this->random->nextRange(0,3));
+					TreeObject::growTree($this->level, new Vector3($centerX, $this->floorLevel, $centerZ), $this->random, $this->random->nextRange(0,3));
+				}
+			}
+			for($t = 0; $t < $grasscount; ++$t){
+				$centerX = $this->random->nextRange(0, 256);
+				$centerZ = $this->random->nextRange(0, 256);
+				$down = $this->level->getBlock(new Vector3($centerX, $this->floorLevel - 1, $centerZ))->getID();
+				if($down === GRASS){
+					TallGrassObject::growGrass($this->level, new Vector3($centerX, $this->floorLevel - 1, $centerZ), $this->random, $this->random->nextRange(8, 40));
 				}
 			}
 		}

@@ -54,7 +54,7 @@ class SaplingBlock extends TransparentBlock{
 	
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			TreeObject::growTree($this->level, $this, $this->meta);
+			TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			return true;
 		}
 		return false;
@@ -63,7 +63,7 @@ class SaplingBlock extends TransparentBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_RANDOM and mt_rand(0,2) === 0){ //Growth
 			if(($this->meta & 0x08) === 0x08){
-				TreeObject::growTree($this->level, $this);
+				TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			}else{
 				$this->meta |= 0x08;
 				$this->level->setBlock($this, $this);
