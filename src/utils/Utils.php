@@ -31,6 +31,7 @@ define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE
 
 class Utils{
 	public static $online = true;
+	public static $ip = false;
 	public function run(){
 	
 	}
@@ -39,31 +40,34 @@ class Utils{
 		return ((@fsockopen("google.com", 80) !== false or @fsockopen("www.linux.org", 80) !== false or @fsockopen("www.php.net", 80) !== false) ? true:false);
 	}
 	
-	public static function getIP(){
+	public static function getIP($force = false){
 		if(Utils::$online === false){
 			return false;
+		}elseif(Utils::$ip !== false and $force !== true){
+			return Utils::$ip;
 		}
 		$ip = trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
 		if(preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
-			return $matches[1];
+			Utils::$ip = $matches[1];
 		}else{
 			$ip = Utils::curl_get("http://www.checkip.org/");
 			if(preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
-				return $matches[1];
+				Utils::$ip = $matches[1];
 			}else{
 				$ip = Utils::curl_get("http://checkmyip.org/");
 				if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
-					return $matches[1];
+					Utils::$ip = $matches[1];
 				}else{
 					$ip = trim(Utils::curl_get("http://ifconfig.me/ip"));
 					if($ip != ""){
-						return $ip;
+						Utils::$ip = $ip;
 					}else{
 						return false;
 					}
 				}
 			}
 		}
+		return Utils::$ip;
 		
 	}
 
