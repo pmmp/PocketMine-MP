@@ -28,7 +28,7 @@ type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wge
 [ -z "$mcpu" ] && mcpu="native";
 [ -z "$CFLAGS" ] && CFLAGS="";
 
-gcc -O3 -march="$march" -mcpu="$mcpu" -mtune="$mtune" -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+gcc -O3 -march=$march -mcpu=$mcpu -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 if [ $? -ne 0 ]; then
 	gcc -O3 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 	if [ $? -ne 0 ]; then
@@ -37,7 +37,7 @@ if [ $? -ne 0 ]; then
 		export CFLAGS="-O3 -fno-gcse $CFLAGS"
 	fi
 else
-	export CFLAGS="-O3 -march=\"$march\" -mcpu=\"$mcpu\" -mtune=\"$mtune\" -fno-gcse $CFLAGS"
+	export CFLAGS="-O3 -march=$march -mcpu=$mcpu -mtune=$mtune -fno-gcse $CFLAGS"
 fi
 
 
