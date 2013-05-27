@@ -11,11 +11,6 @@ CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
 DIR="$(pwd)"
-if gcc -O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe -Q --help=target >> "$DIR/install.log" 2>&1; then
-	export CFLAGS="-O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe"
-else
-	export CFLAGS="-O3 -pipe"
-fi
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
 echo "[INFO] Checking dependecies"
@@ -26,6 +21,13 @@ type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"
 type gcc >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
+
+if gcc -O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe -Q --help=target >> "$DIR/install.log" 2>&1; then
+	export CFLAGS="-O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe"
+else
+	export CFLAGS="-O3 -pipe"
+fi
+
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f php5/ >> "$DIR/install.log" 2>&1
