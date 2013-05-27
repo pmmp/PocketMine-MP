@@ -11,10 +11,10 @@ CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
 DIR="$(pwd)"
-if gcc -O3 -march=native -mcpu=native -mtune=native -fno-gcse -Q --help=target >> "$DIR/install.log" 2>&1; then
-	export CFLAGS="-O3 -march=native -mcpu=native -mtune=native -fno-gcse"
+if gcc -O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe -Q --help=target >> "$DIR/install.log" 2>&1; then
+	export CFLAGS="-O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe"
 else
-	export CFLAGS="-O3"
+	export CFLAGS="-O3 -pipe"
 fi
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
@@ -86,7 +86,17 @@ mv curl-$CURL_VERSION curl
 echo -n " checking..."
 cd curl
 ./buildconf >> "$DIR/install.log" 2>&1
-./configure --prefix="$DIR/install_data/php/ext/curl" \
+./configure --enable-ipv6 \
+--disable-dict \
+--disable-file \
+--disable-gopher \
+--disable-imap \
+--disable-pop3 \
+--disable-rtsp \
+--disable-smtp \
+--disable-telnet \
+--disable-tftp \
+--prefix="$DIR/install_data/php/ext/curl" \
 --disable-shared >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make >> "$DIR/install.log" 2>&1
