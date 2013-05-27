@@ -22,6 +22,7 @@ type gcc >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
 
+[ -z "$THREADS" ] && THREADS=1;
 [ -z "$march" ] && march="native";
 [ -z "$mcpu" ] && mcpu="native";
 [ -z "$mtune" ] && mtune="native";
@@ -63,7 +64,7 @@ echo -n " checking..."
 cd libedit
 ./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-if make >> "$DIR/install.log" 2>&1; then
+if make -j $THREADS >> "$DIR/install.log" 2>&1; then
 	echo -n " installing..."
 	make install >> "$DIR/install.log" 2>&1
 	HAVE_LIBEDIT="--with-libedit=$DIR/install_data/php/ext/libedit"
@@ -85,7 +86,7 @@ cd zlib
 ./configure --prefix="$DIR/install_data/php/ext/zlib" \
 --static >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-make >> "$DIR/install.log" 2>&1
+make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 echo -n " cleaning..."
@@ -113,7 +114,7 @@ cd curl
 --prefix="$DIR/install_data/php/ext/curl" \
 --disable-shared >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-make >> "$DIR/install.log" 2>&1
+make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 echo -n " cleaning..."
@@ -183,7 +184,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --without-pdo-sqlite \
 --with-zend-vm=$ZEND_VM >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-make >> "$DIR/install.log" 2>&1
+make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 echo " done!"
