@@ -11,6 +11,11 @@ CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
 DIR="$(pwd)"
+if gcc -O3 -march=native -mcpu=native -mtune=native -fno-gcse -Q --help=target >> "$DIR/install.log" 2>&1; then
+	export CFLAGS="-O3 -march=native -mcpu=native -mtune=native -fno-gcse"
+else
+	export CFLAGS="-O3"
+fi
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
 echo "[INFO] Checking dependecies"
@@ -42,7 +47,7 @@ echo -n "[libedit] downloading $LIBEDIT_VERSION..."
 wget http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
 echo -n " checking..."
 cd libedit
-CFLAGS=-fPIC ./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
+./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 if make >> "$DIR/install.log" 2>&1; then
 	echo -n " installing..."
