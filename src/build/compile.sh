@@ -22,10 +22,22 @@ type gcc >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
 
-if gcc -O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe -Q --help=target >> "$DIR/install.log" 2>&1; then
-	export CFLAGS="-O3 -march=native -mcpu=native -mtune=native -fno-gcse -pipe"
+[ -z "$march" ] && march="native";
+[ -z "$mcpu" ] && mcpu="native";
+[ -z "$mtune" ] && mtune="native";
+[ -z "$mcpu" ] && mcpu="native";
+[ -z "$CFLAGS" ] && CFLAGS="";
+
+gcc -O3 -march="$march" -mcpu="$mcpu" -mtune="$mtune" -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+if [ $? -ne 0 ]; then
+	gcc -O3 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+	if [ $? -ne 0 ]; then
+		export CFLAGS="-O3 -fno-gcse "
+	else
+		export CFLAGS="-O3 -fno-gcse $CFLAGS"
+	fi
 else
-	export CFLAGS="-O3 -pipe"
+	export CFLAGS="-O3 -march=\"$march\" -mcpu=\"$mcpu\" -mtune=\"$mtune\" -fno-gcse $CFLAGS"
 fi
 
 
