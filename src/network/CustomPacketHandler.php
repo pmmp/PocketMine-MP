@@ -256,20 +256,31 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 				}
 				break;
-			case MC_ADD_ENTITY: //Not used?
+			case MC_ADD_ENTITY:
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["type"] = ord($this->get(1));
 					$this->data["x"] = Utils::readFloat($this->get(4));
 					$this->data["y"] = Utils::readFloat($this->get(4));
 					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["did"] = Utils::readInt($this->get(4));
+					if($this->data["did"] > 0){
+						$this->data["speedX"] = Utils::readShort($this->get(2));
+						$this->data["speedY"] = Utils::readShort($this->get(2));
+						$this->data["speedZ"] = Utils::readShort($this->get(2));
+					}
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= chr($this->data["type"]);
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
-					$this->raw .= Utils::hexToStr("000000020000ffd30000");//Utils::writeInt(0);
+					$this->raw .= Utils::writeInt($this->data["did"]);
+					if($this->data["did"] > 0){
+						$this->raw .= Utils::writeShort($this->data["speedX"]);
+						$this->raw .= Utils::writeShort($this->data["speedY"]);
+						$this->raw .= Utils::writeShort($this->data["speedZ"]);
+					}
 				}
 				break;
 			case MC_REMOVE_ENTITY:
@@ -379,7 +390,7 @@ class CustomPacketHandler{
 					$this->raw .= chr($this->data["face"]);
 				}
 				break;
-			case MC_REMOVE_BLOCK:
+			case MC_REMOVE_BLOCK: //Sent when a player removes a block, not used
 				if($this->c === false){
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["x"] = Utils::readInt($this->get(4));

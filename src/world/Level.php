@@ -242,8 +242,8 @@ class Level{
 				"block" => $block,
 			));*/
 			if($update === true){
-				$this->server->api->block->blockUpdate($block, BLOCK_UPDATE_NORMAL); //????? water?
-				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL);
+				$this->server->api->block->scheduleBlockUpdate($block, 1, BLOCK_UPDATE_NORMAL); //????? water?
+				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){
 				if(($t = $this->server->api->tileentity->get($pos)) !== false){

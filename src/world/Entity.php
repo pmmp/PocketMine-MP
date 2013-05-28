@@ -55,6 +55,7 @@ class Entity extends Position{
 	private $speedMeasure = array(0, 0, 0, 0, 0);
 	private $server;
 	public $level;
+	public $lastUpdate;
 	public $check = true;
 	public $size = 1;
 
@@ -76,7 +77,7 @@ class Entity extends Position{
 		$this->fire = 0;
 		$this->crouched = false;
 		$this->invincible = false;
-		$this->spawntime = microtime(true);
+		$this->lastUpdate = $this->spawntime = microtime(true);
 		$this->dead = false;
 		$this->closed = false;
 		$this->name = "";
@@ -115,6 +116,11 @@ class Entity extends Position{
 				$this->server->schedule(5, array($this, "update"), array(), true);
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				$this->size = 1;
+				break;
+			case ENTITY_FALLING:
+				$this->setHealth(PHP_INT_MAX, "generic");
+				$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->size = 0.98;
 				break;
 			case ENTITY_OBJECT:
 				$this->x = isset($this->data["TileX"]) ? $this->data["TileX"]:$this->x;
@@ -320,9 +326,12 @@ class Entity extends Position{
 			return false;
 		}
 		
+		$now = microtime(true);
 		if($this->check === false){
+			$this->lastUpdate = $now;
 			return;
 		}
+		$tdiff = $now - $this->lastUpdate;
 		
 		if($this->tickCounter === 0){
 			$this->tickCounter = 1;
@@ -331,7 +340,7 @@ class Entity extends Position{
 			$this->tickCounter = 0;
 		}
 		
-		if(($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+		if(($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER or $this->class === ENTITY_FALLING)){
 			$startX = ((int) round($this->x - 0.5)) - 1;
 			$y = (int) round($this->y - 1);
 			$startZ = ((int) round($this->z - 0.5)) - 1;
@@ -353,30 +362,60 @@ class Entity extends Position{
 					break;
 				}
 			}
-			if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB){
+			if($this->class === ENTITY_ITEM or $this->class === ENTITY_MOB or $this->class === ENTITY_FALLING){
 				$update = false;
+				$drag = 0.4 * $tdiff;
 				if($this->speedX != 0){
-					$this->x += $this->speedX * 5;
-					$update = true;
-				}
-				if($this->speedY != 0){
-					$this->y += $this->speedY * 5;
+					$this->speedX -= $this->speedX * $drag;
+					$this->x += $this->speedX * $tdiff;
 					$update = true;
 				}
 				if($this->speedZ != 0){
-					$this->z += $this->speedZ * 5;
+					$this->speedZ -= $this->speedZ * $drag;
+					$this->z += $this->speedZ * $tdiff;
+					$update = true;
+				}
+				if($this->speedY != 0){
+					$this->speedY -= $this->speedY * $drag;
+					$ny = $this->y + $this->speedY * $tdiff;
+					if($ny < $this->y){
+						$x = (int) ($this->x - 0.5);
+						$z = (int) ($this->z - 0.5);
+						$lim = (int) floor($ny);
+						for($y = (int) ceil($this->y); $y >= $lim; --$y){
+							if($this->level->getBlock(new Vector3($x, $y, $z))->isFlowable !== true){
+								$ny = $y + 1;
+								$this->speedY = 0;
+								$this->support = true;
+								break;
+							}
+						}
+					}
+					$this->y = $ny;
 					$update = true;
 				}
 				if($support === false){
-					$this->speedY -= 0.04 * 5;
+					$this->speedY -= ($this->class === ENTITY_FALLING ? 16:32) * $tdiff;
 					$update = true;
-				}elseif($this->speedY < 0){
-					$this->y = $y + 1;
-					$this->speedX = 0;
-					$this->speedY = 0;
-					$this->speedZ = 0;
-					$update = true;
+				}else{
+					if($this->speedY < 0){
+						$this->speedX = 0;
+						$this->speedY = 0;
+						$this->speedZ = 0;
+						$update = true;
+					}
+					if($this->class === ENTITY_FALLING){
+						$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
+						if($fall->getID() !== AIR and $fall->isFlowable){
+							$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
+						}else{
+							$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]));
+						}
+						$this->server->api->handle("entity.motion", $this);
+						$this->close();
+					}
 				}
+				
 				if($update === true){
 					$this->server->api->handle("entity.motion", $this);
 				}
@@ -421,10 +460,11 @@ class Entity extends Position{
 				}else{
 					$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
 				}
-				return;
+			}else{
+				$this->updateLast();
 			}
-			$this->updateLast();
 		}
+		$this->lastUpdate = $now;
 	}
 
 	public function getDirection(){
@@ -527,6 +567,16 @@ class Entity extends Position{
 						"title" => $this->data["Motive"],
 					));
 				}
+				break;
+			case ENTITY_FALLING:
+				$player->dataPacket(MC_ADD_ENTITY, array(
+					"eid" => $this->eid,
+					"type" => $this->type,
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"did" => -$this->data["Tile"],
+				));
 				break;
 		}
 	}

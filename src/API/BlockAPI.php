@@ -715,18 +715,28 @@ class BlockAPI{
 		}
 	}*/
 
-	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL){
+	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){
 		if(!($pos instanceof Block)){
 			$block = $pos->level->getBlock($pos);
 		}else{
 			$block = $pos;
 		}
-		$this->blockUpdate($block->getSide(0), $type);
-		$this->blockUpdate($block->getSide(1), $type);
-		$this->blockUpdate($block->getSide(2), $type);
-		$this->blockUpdate($block->getSide(3), $type);
-		$this->blockUpdate($block->getSide(4), $type);
-		$this->blockUpdate($block->getSide(5), $type);
+		
+		if($delay !== false){
+			$this->scheduleBlockUpdate($block->getSide(0), $delay, $type);
+			$this->scheduleBlockUpdate($block->getSide(1), $delay, $type);
+			$this->scheduleBlockUpdate($block->getSide(2), $delay, $type);
+			$this->scheduleBlockUpdate($block->getSide(3), $delay, $type);
+			$this->scheduleBlockUpdate($block->getSide(4), $delay, $type);
+			$this->scheduleBlockUpdate($block->getSide(5), $delay, $type);
+		}else{
+			$this->blockUpdate($block->getSide(0), $type);
+			$this->blockUpdate($block->getSide(1), $type);
+			$this->blockUpdate($block->getSide(2), $type);
+			$this->blockUpdate($block->getSide(3), $type);
+			$this->blockUpdate($block->getSide(4), $type);
+			$this->blockUpdate($block->getSide(5), $type);
+		}
 	}
 	
 	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){

@@ -6,7 +6,7 @@ ZEND_VM="GOTO"
 
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
-PTHREADS_VERSION="e5d95dfb847c8963c100bd4fb601dde41e0b75d1"
+PTHREADS_VERSION="0b863ea34e1f5c0a0eef6d50a7cbca58d39435cc"
 CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"

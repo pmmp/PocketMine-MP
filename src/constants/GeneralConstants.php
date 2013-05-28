@@ -57,6 +57,9 @@ define("ENTITY_OBJECT", 2);
 
 define("ENTITY_ITEM", 3);
 
+define("ENTITY_FALLING", 4);
+	define("FALLING_SAND", 66);
+
 
 //TileEntities
 define("TILE_SIGN", "Sign");
