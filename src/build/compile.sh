@@ -26,7 +26,6 @@ type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wge
 [ -z "$march" ] && march="native";
 [ -z "$mcpu" ] && mcpu="native";
 [ -z "$mtune" ] && mtune="native";
-[ -z "$mcpu" ] && mcpu="native";
 [ -z "$CFLAGS" ] && CFLAGS="";
 
 gcc -O3 -march=$march -mcpu=$mcpu -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
