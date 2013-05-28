@@ -20,7 +20,7 @@ elif [ "$1" == "rpi" ]; then
     mtune="arm1176jzf-s"
     CFLAGS="-mfloat-abi=hard -mfpu=vfp"
 else
-    echo "Please suuply a proper platform"
+    echo "Please supply a proper platform"
     exit 1
 fi
 
