@@ -150,7 +150,6 @@ rm -rf ./aclocal.m4 >> "$DIR/install.log" 2>&1
 rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
 rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
-sed 's/pthreads_working=no/#pthreads_working=no/' ./configure # Force pthreads
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
 --with-curl="$DIR/install_data/php/ext/curl" \
