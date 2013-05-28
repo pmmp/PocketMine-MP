@@ -395,20 +395,24 @@ class Player{
 	public function eventHandler($data, $event){
 		switch($event){
 			case "tile.update":
-				if($data->level === $this->level and $data->class === TILE_FURNACE){
-					foreach($this->windows as $id => $w){
-						if($w === $data){
-							$this->dataPacket(MC_CONTAINER_SET_DATA, array(
-								"windowid" => $id,
-								"property" => 0, //Smelting
-								"value" => floor($data->data["CookTime"]),
-							));
-							$this->dataPacket(MC_CONTAINER_SET_DATA, array(
-								"windowid" => $id,
-								"property" => 1, //Fire icon
-								"value" => $data->data["BurnTicks"],
-							));
+				if($data->level === $this->level){
+					if($data->class === TILE_FURNACE){
+						foreach($this->windows as $id => $w){
+							if($w === $data){
+								$this->dataPacket(MC_CONTAINER_SET_DATA, array(
+									"windowid" => $id,
+									"property" => 0, //Smelting
+									"value" => floor($data->data["CookTime"]),
+								));
+								$this->dataPacket(MC_CONTAINER_SET_DATA, array(
+									"windowid" => $id,
+									"property" => 1, //Fire icon
+									"value" => $data->data["BurnTicks"],
+								));
+							}
 						}
+					}elseif($data->class === TILE_SIGN){
+						$data->spawn($this);
 					}
 				}
 				break;
@@ -1241,12 +1245,7 @@ class Player{
 								if($t->data["creator"] !== $this->username){
 									$t->spawn($this);
 								}else{
-									$t->data["Text1"] = $data["line0"];
-									$t->data["Text2"] = $data["line1"];
-									$t->data["Text3"] = $data["line2"];
-									$t->data["Text4"] = $data["line3"];
-									$this->server->handle("tile.update", $t);
-									$this->server->api->tileentity->spawnToAll($this->level, $t);
+									$t->setText($data["line0"], $data["line1"], $data["line2"], $data["line3"]);
 								}
 							}
 							break;

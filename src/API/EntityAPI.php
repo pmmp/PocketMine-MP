@@ -117,9 +117,9 @@ class EntityAPI{
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
 				$e = $this->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
-				//$e->speedX = mt_rand(-10, 10) / 100;
-				//$e->speedY = mt_rand(0, 5) / 100;
-				//$e->speedZ = mt_rand(-10, 10) / 100;
+				$e->speedX = mt_rand(-10, 10) / 100;
+				$e->speedY = mt_rand(0, 5) / 100;
+				$e->speedZ = mt_rand(-10, 10) / 100;
 				$this->spawnToAll($pos->level, $e->eid);
 			}
 		}

@@ -218,6 +218,18 @@ class TileEntity extends Position{
 				break;
 		}
 	}
+	
+	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
+		if($this->class !== TILE_SIGN){
+			return false;
+		}
+		$this->data["Text1"] = $line1;
+		$this->data["Text2"] = $line2;
+		$this->data["Text3"] = $line3;
+		$this->data["Text4"] = $line4;
+		$this->server->handle("tile.update", $this);
+		return true;
+	}
 
 	public function close(){
 		if($this->closed === false){
