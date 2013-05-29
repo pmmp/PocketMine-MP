@@ -117,7 +117,6 @@ class ServerAPI{
 						console("[NOTICE] \x1b[33mVersion \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
 						console("[NOTICE] \x1b[36mGet it at PocketMine.net or ".$info["development"]["download"]);
 						console("[NOTICE] This message will dissapear after issuing the command \"/update-done\"");
-						sleep(3);
 					}else{
 						$this->setProperty("last-update", time());
 						console("[INFO] \x1b[36mThis is the latest DEVELOPMENT version");
@@ -136,7 +135,6 @@ class ServerAPI{
 						console("[NOTICE] \x1b[36mVersion \"".$info["stable"]["version"]."\" #".$updateN);
 						console("[NOTICE] Get it at PocketMine.net or ".$info["stable"]["download"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
-						sleep(5);
 					}else{
 						$this->setProperty("last-update", time());
 						console("[INFO] \x1b[36mThis is the latest STABLE version");
