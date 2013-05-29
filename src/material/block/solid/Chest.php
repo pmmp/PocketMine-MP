@@ -59,19 +59,7 @@ class ChestBlock extends TransparentBlock{
 	
 	public function onBreak(Item $item, Player $player){
 			$server = ServerAPI::request();
-			$t = $server->api->tileentity->get($this);
-			if($t !== false){
-				if(is_array($t)){
-					foreach($t as $ts){
-						if($ts->class === TILE_CHEST){
-							$server->api->tileentity->remove($ts->id);
-						}
-					}
-				}elseif($t->class === TILE_CHEST){
-					$server->api->tileentity->remove($t->id);
-				}
-			}
-			$this->level->setBlock($this, new AirBlock());
+			$this->level->setBlock($this, new AirBlock(), true, true);
 			return true;
 	}
 	
@@ -85,11 +73,7 @@ class ChestBlock extends TransparentBlock{
 		$t = $server->api->tileentity->get($this);
 		$chest = false;
 		if($t !== false){
-			if(is_array($t)){
-				$chest = array_shift($t);
-			}else{
-				$chest = $t;
-			}
+			$chest = $t;
 		}else{
 			$chest = $server->api->tileentity->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
 				"Items" => array(),

@@ -1240,8 +1240,7 @@ class Player{
 								break;
 							}
 							$t = $this->server->api->tileentity->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
-							if(($t[0] instanceof TileEntity) and $t[0]->class === TILE_SIGN){
-								$t = $t[0];
+							if(($t instanceof TileEntity) and $t->class === TILE_SIGN){
 								if($t->data["creator"] !== $this->username){
 									$t->spawn($this);
 								}else{

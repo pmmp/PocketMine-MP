@@ -247,7 +247,7 @@ class Level{
 			}
 			if($tiles === true){
 				if(($t = $this->server->api->tileentity->get($pos)) !== false){
-					$t[0]->close();
+					$t->close();
 				}
 			}
 		}

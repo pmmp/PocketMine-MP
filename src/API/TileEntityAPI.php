@@ -35,21 +35,11 @@ class TileEntityAPI{
 	}
 	
 	public function get(Position $pos){
-		$tiles = $this->server->query("SELECT * FROM tileentities WHERE level = '".$pos->level->getName()."' AND x = {$pos->x} AND y = {$pos->y} AND z = {$pos->z};");
-		$ret = array();
-		if($tiles !== false and $tiles !== true){
-			while(($t = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-				if(($tile = $this->getByID($t["ID"])) !== false){
-					if($tile->normal === true){					
-						$ret[] = $tile;
-					}
-				}
-			}
+		$tile = $this->server->query("SELECT * FROM tileentities WHERE level = '".$pos->level->getName()."' AND x = {$pos->x} AND y = {$pos->y} AND z = {$pos->z};", true);
+		if($tile !== false and $tile !== true and ($tile = $this->getByID($tile["ID"])) !== false){				
+			return $tile;
 		}
-		if(count($ret) === 0){
-			return false;
-		}
-		return $ret;
+		return false;
 	}
 
 	public function getByID($id){

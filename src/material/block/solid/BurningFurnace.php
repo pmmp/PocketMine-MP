@@ -46,19 +46,7 @@ class BurningFurnaceBlock extends SolidBlock{
 	
 	public function onBreak(Item $item, Player $player){
 			$server = ServerAPI::request();
-			$t = $server->api->tileentity->get($this);
-			if($t !== false){
-				if(is_array($t)){
-					foreach($t as $ts){
-						if($ts->class === TILE_FURNACE){
-							$server->api->tileentity->remove($ts->id);
-						}
-					}
-				}elseif($t->class === TILE_FURNACE){
-					$server->api->tileentity->remove($t->id);
-				}
-			}
-			$this->level->setBlock($this, new AirBlock());
+			$this->level->setBlock($this, new AirBlock(), true, true);
 			return true;
 	}
 
@@ -68,11 +56,7 @@ class BurningFurnaceBlock extends SolidBlock{
 		$t = $server->api->tileentity->get($this);
 		$furnace = false;
 		if($t !== false){
-			if(is_array($t)){
-				$furnace = array_shift($t);
-			}else{
-				$furnace = $t;
-			}
+			$furnace = $t;
 		}else{
 			$furnace = $server->api->tileentity->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
