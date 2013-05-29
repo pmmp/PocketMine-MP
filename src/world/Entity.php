@@ -398,7 +398,7 @@ class Entity extends Position{
 					$this->speedY -= ($this->class === ENTITY_FALLING ? 16:32) * $tdiff;
 					$update = true;
 				}else{
-					if($this->speedY < 0){
+					if($this->speedY <= 0){
 						$this->speedX = 0;
 						$this->speedY = 0;
 						$this->speedZ = 0;
