@@ -797,6 +797,9 @@ class Entity extends Position{
 				if($this->player instanceof Player){
 					$this->player->blocked = true;
 					$this->server->api->dhandle("player.death", array("player" => $this->player, "cause" => $cause));
+					if(($this->player->gamemode & 0x01) === 0 and $this->server->api->getProperty("hardcore") == 1){
+						$this->server->api->ban->ban($this->player->username);
+					}
 				}else{
 					$this->close();
 				}

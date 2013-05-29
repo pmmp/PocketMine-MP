@@ -69,7 +69,7 @@ class Query{
 		$KVdata = array(
 			"splitnum" => chr(128),
 			"hostname" => $this->server->name,
-			"gametype" => "SMP",
+			"gametype" => ($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP",
 			"game_id" => "MINECRAFTPE",
 			"version" => CURRENT_MINECRAFT_VERSION,
 			"plugins" => $plist,
@@ -127,7 +127,7 @@ class Query{
 					}
 					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->longData, true, $packet["ip"], $packet["port"]);				
 				}else{
-					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00SMP\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00", true, $packet["ip"], $packet["port"]);
+					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00", true, $packet["ip"], $packet["port"]);
 				}
 				break;
 		}

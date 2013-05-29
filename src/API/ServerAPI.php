@@ -74,6 +74,7 @@ class ServerAPI{
 			"allow-flight" => false,
 			"item-enforcement" => false,
 			"gamemode" => SURVIVAL,
+			"hardcore" => false,
 			"pvp" => true,
 			"difficulty" => 1,
 			"generator" => "",
