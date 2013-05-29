@@ -48,6 +48,17 @@ class WheatBlock extends FlowableBlock{
 		}
 		return false;
 	}
+
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(WHEAT_SEEDS, 0, 1));
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
 	
 	public function getDrops(Item $item, Player $player){
 		$drops = array();

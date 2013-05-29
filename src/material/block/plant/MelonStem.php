@@ -38,6 +38,17 @@ class MelonStemBlock extends TransparentBlock{
 			}
 		return false;
 	}
+
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
 	
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal

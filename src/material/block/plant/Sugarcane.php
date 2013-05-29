@@ -35,6 +35,17 @@ class SugarcaneBlock extends TransparentBlock{
 			array(SUGARCANE, 0, 1),
 		);
 	}
+
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SUGARCANE));
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);

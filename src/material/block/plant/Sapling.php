@@ -59,9 +59,14 @@ class SaplingBlock extends TransparentBlock{
 		}
 		return false;
 	}
-	
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_RANDOM and mt_rand(0,2) === 0){ //Growth
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}elseif($type === BLOCK_UPDATE_RANDOM and mt_rand(0,2) === 0){ //Growth
 			if(($this->meta & 0x08) === 0x08){
 				TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			}else{

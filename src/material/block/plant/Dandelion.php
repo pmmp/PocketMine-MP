@@ -30,6 +30,7 @@ class DandelionBlock extends FlowableBlock{
 		parent::__construct(DANDELION, 0, "Dandelion");
 		$this->isFlowable = true;
 	}
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);
 			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
@@ -37,5 +38,16 @@ class DandelionBlock extends FlowableBlock{
 				return true;
 			}
 		return false;
-	}	
+	}
+
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
 }

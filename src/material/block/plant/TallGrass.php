@@ -37,11 +37,21 @@ class TallGrassBlock extends FlowableBlock{
 		);
 		$this->name = $names[$this->meta & 0x03];
 	}
+
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
 	
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if(mt_rand(1,10) === 1){//Seeds
-			$drops[] = array(295, 0, 1);
+			$drops[] = array(WEATH_SEEDS, 0, 1);
 		}
 		return $drops;
 	}
