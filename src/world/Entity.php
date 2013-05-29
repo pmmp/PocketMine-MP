@@ -382,7 +382,7 @@ class Entity extends Position{
 						$x = (int) ($this->x - 0.5);
 						$z = (int) ($this->z - 0.5);
 						$lim = (int) floor($ny);
-						for($y = (int) ceil($this->y); $y >= $lim; --$y){
+						for($y = (int) ceil($this->y) - 1; $y >= $lim; --$y){
 							if($this->level->getBlock(new Vector3($x, $y, $z))->isFlowable !== true){
 								$ny = $y + 1;
 								$this->speedY = 0;
