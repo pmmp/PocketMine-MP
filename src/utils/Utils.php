@@ -32,9 +32,6 @@ define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE
 class Utils{
 	public static $online = true;
 	public static $ip = false;
-	public function run(){
-	
-	}
 	
 	public static function isOnline(){
 		return ((@fsockopen("google.com", 80) !== false or @fsockopen("www.linux.org", 80) !== false or @fsockopen("www.php.net", 80) !== false) ? true:false);
@@ -73,11 +70,11 @@ class Utils{
 
 	public static function getOS(){
 		$uname = trim(strtoupper(php_uname("s")));
-		if(strpos($uname, "DARWIN") !== false or $uname === "DARWIN"){
+		if(strpos($uname, "DARWIN") !== false){
 			return "mac";
-		}elseif(strpos($uname, "WIN") !== false or $uname === "WIN"){
+		}elseif(strpos($uname, "WIN") !== false){
 			return "win";
-		}elseif(strpos($uname, "LINUX") !== false or $uname === "LINUX"){
+		}elseif(strpos($uname, "LINUX") !== false){
 			return "linux";
 		}else{
 			return "other";

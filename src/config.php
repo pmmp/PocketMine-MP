@@ -26,7 +26,29 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 set_time_limit(0);
-date_default_timezone_set(@date_default_timezone_get());
+
+date_default_timezone_set("GMT");
+if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
+	$time = time();
+	$time -= $time % 60;
+	exec("time.exe /T", $hour);
+	$i = array_map("intval", explode(":", trim($hour[0])));
+	exec("date.exe /T", $date);
+	$j = array_map("intval", explode("/", trim($date[0])));
+	$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
+}else{
+	exec("date +%s", trim($t[0]));
+	$offset = round((intval($t) - time()) / 60) * 60;
+}
+
+$daylight = (int) date("I");
+
+if($daylight === 0){
+	$offset -= 3600;
+}
+
+date_default_timezone_set(timezone_name_from_abbr("", $offset, $daylight));
+
 gc_enable();
 error_reporting(E_ALL ^ E_NOTICE);
 ini_set("allow_url_fopen", 1);

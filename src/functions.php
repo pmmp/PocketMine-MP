@@ -73,16 +73,12 @@ function safe_var_dump($var, $cnt = 0){
 function kill($pid){
 	switch(Utils::getOS()){
 		case "win":
-			ob_start();
-			passthru("%WINDIR%\\System32\\taskkill.exe /F /PID ".((int) $pid)." > NUL");
-			ob_end_clean();
+			exec("taskkill.exe /F /PID ".((int) $pid)." > NUL");
 			break;
 		case "mac":
 		case "linux":
 		default:
-			ob_start();
-			passthru("kill -9 ".((int) $pid)." > /dev/null 2>&1");
-			ob_end_clean();
+			exec("kill -9 ".((int) $pid)." > /dev/null 2>&1");
 	}
 }
 
