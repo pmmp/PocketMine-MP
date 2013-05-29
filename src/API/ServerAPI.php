@@ -270,6 +270,9 @@ class ServerAPI{
 			}
 			$this->config->set($n, $v);
 		}
+		if($this->getProperty("hardcore") == 1 and $this->getProperty("difficulty") < 3){
+			$this->setProperty("difficulty", 3);
+		}
 	}
 
 	public function init(){
