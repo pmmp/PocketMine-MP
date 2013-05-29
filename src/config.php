@@ -69,7 +69,7 @@ define("MAJOR_VERSION", "Alpha_1.3.1dev");
 define("CURRENT_STRUCTURE", 5);
 define("CURRENT_PROTOCOL", 9);
 define("CURRENT_MINECRAFT_VERSION", "0.6.1 alpha");
-define("CURRENT_API_VERSION", 7);
+define("CURRENT_API_VERSION", 8);
 define("CURRENT_PHP_VERSION", "5.5");
 $gitsha1 = false;
 if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!
