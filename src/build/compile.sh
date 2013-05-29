@@ -93,33 +93,38 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-#curl
-echo -n "[cURL] downloading $CURL_VERSION..."
-wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
-mv curl-$CURL_VERSION curl
-echo -n " checking..."
-cd curl
-./buildconf >> "$DIR/install.log" 2>&1
-./configure --enable-ipv6 \
---disable-dict \
---disable-file \
---disable-gopher \
---disable-imap \
---disable-pop3 \
---disable-rtsp \
---disable-smtp \
---disable-telnet \
---disable-tftp \
---prefix="$DIR/install_data/php/ext/curl" \
---disable-shared >> "$DIR/install.log" 2>&1
-echo -n " compiling..."
-make -j $THREADS >> "$DIR/install.log" 2>&1
-echo -n " installing..."
-make install >> "$DIR/install.log" 2>&1
-echo -n " cleaning..."
-cd ..
-rm -r -f ./curl
-echo " done!"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+   WITH_CURL="--with-curl=shared,/usr/local"
+else
+	#curl
+	echo -n "[cURL] downloading $CURL_VERSION..."
+	wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+	mv curl-$CURL_VERSION curl
+	echo -n " checking..."
+	cd curl
+	./buildconf >> "$DIR/install.log" 2>&1
+	./configure --enable-ipv6 \
+	--disable-dict \
+	--disable-file \
+	--disable-gopher \
+	--disable-imap \
+	--disable-pop3 \
+	--disable-rtsp \
+	--disable-smtp \
+	--disable-telnet \
+	--disable-tftp \
+	--prefix="$DIR/install_data/php/ext/curl" \
+	--disable-shared >> "$DIR/install.log" 2>&1
+	echo -n " compiling..."
+	make -j $THREADS >> "$DIR/install.log" 2>&1
+	echo -n " installing..."
+	make install >> "$DIR/install.log" 2>&1
+	echo -n " cleaning..."
+	cd ..
+	rm -r -f ./curl
+	echo " done!"
+	WITH_CURL="--with-curl=\"$DIR/install_data/php/ext/curl\""
+fi
 
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
@@ -151,7 +156,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
---with-curl="$DIR/install_data/php/ext/curl" \
+"$WITH_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
 "$HAVE_LIBEDIT" \
 --disable-libxml \
