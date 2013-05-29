@@ -196,7 +196,7 @@ cd "$DIR"
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 mv php5/bin/php bin/php
-rm -r -f php/ >> "$DIR/install.log" 2>&1
+rm -r -f php5/ >> "$DIR/install.log" 2>&1
 date >> "$DIR/install.log" 2>&1
 echo " done!"
 echo "[PocketMine] You should start the server now using \"./start.sh\""
