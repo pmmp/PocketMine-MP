@@ -9,7 +9,7 @@ ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="0b863ea34e1f5c0a0eef6d50a7cbca58d39435cc"
 CURL_VERSION="curl-7_30_0"
 
-echo "[PocketMine] PHP installer and compiler for Linux & Mac - v$COMPILER_VERSION"
+echo "[PocketMine] PHP installer and compiler for Linux & Mac"
 DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
@@ -93,7 +93,7 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
+if [ "$(uname -s)" == "Darwin" ]; then
    WITH_CURL="--with-curl=shared,/usr/local"
 else
 	#curl
