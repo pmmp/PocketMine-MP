@@ -69,7 +69,7 @@ class ServerAPI{
 			"last-update" => false,
 			"white-list" => false,
 			"spawn-protection" => 16,
-			"view-distance" => 7,
+			"view-distance" => 10,
 			"max-players" => 20,
 			"allow-flight" => false,
 			"item-enforcement" => false,
