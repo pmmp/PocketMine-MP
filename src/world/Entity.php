@@ -131,6 +131,7 @@ class Entity extends Position{
 				$this->size = 1;
 				break;
 		}
+		$this->updateLast();
 	}
 	
 	public function getDrops(){
@@ -421,7 +422,7 @@ class Entity extends Position{
 					$this->server->api->handle("entity.motion", $this);
 				}
 				
-			}elseif($this->class === ENTITY_PLAYER){
+			}elseif($this->class === ENTITY_PLAYER and ($this->player instanceof Player)){
 				if($support === false and ($this->player->gamemode & 0x01) === 0x00){
 					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;

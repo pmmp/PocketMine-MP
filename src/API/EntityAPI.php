@@ -107,9 +107,12 @@ class EntityAPI{
 			return;
 		}
 		$data = array(
-			"x" => $pos->x + mt_rand(2, 8) / 10,
+			"x" => $pos->x,
 			"y" => $pos->y + 0.19,
-			"z" => $pos->z + mt_rand(2, 8) / 10,
+			"z" => $pos->z,
+			"speedX" => mt_rand(-2, 2) / 6,
+			"speedY" => mt_rand(5, 8) / 2,
+			"speedZ" => mt_rand(-2, 2) / 6,
 			"item" => $item,
 		);
 		if($this->server->api->handle("item.drop", $data) !== false){
@@ -117,10 +120,8 @@ class EntityAPI{
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
 				$e = $this->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
-				$e->speedX = mt_rand(-10, 10) / 100;
-				$e->speedY = mt_rand(0, 5) / 100;
-				$e->speedZ = mt_rand(-10, 10) / 100;
 				$this->spawnToAll($pos->level, $e->eid);
+				$this->server->api->handle("entity.motion", $e);
 			}
 		}
 	}

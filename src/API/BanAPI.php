@@ -298,13 +298,13 @@ class BanAPI{
 	}
 	
 	public function kick($username, $reason = "No Reason"){
-		$this->commandHandler("kick", array($username, $reason));
+		$this->commandHandler("kick", array($username, $reason), "console", "");
 	}
 	
 	public function reload(){
-		$this->commandHandler("ban", array("reload"));
-		$this->commandHandler("banip", array("reload"));
-		$this->commandHandler("whitelist", array("reload"));
+		$this->commandHandler("ban", array("reload"), "console", "");
+		$this->commandHandler("banip", array("reload"), "console", "");
+		$this->commandHandler("whitelist", array("reload"), "console", "");
 	}
 	
 	public function isIPBanned($ip){
