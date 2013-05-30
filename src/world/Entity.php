@@ -393,7 +393,7 @@ class Entity extends Position{
 									$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
 									$down = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
 									if($fall->isFullBlock === false or $down->isFullBlock === false){
-										$this->server->api->entity->drop(new Position(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5), $this->level), BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
+										$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
 									}else{
 										$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]));
 									}
