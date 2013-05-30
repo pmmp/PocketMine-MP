@@ -18,26 +18,69 @@ type make >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"mak
 type autoconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"autoconf\""; read -p "Press [Enter] to continue..."; exit 1; }
 type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"automake\""; read -p "Press [Enter] to continue..."; exit 1; }
 type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; read -p "Press [Enter] to continue..."; exit 1; }
-type gcc >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"gcc\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
 
-[ -z "$THREADS" ] && THREADS=1;
-[ -z "$march" ] && march="native";
-[ -z "$mcpu" ] && mcpu="native";
-[ -z "$mtune" ] && mtune="native";
-[ -z "$CFLAGS" ] && CFLAGS="";
+export CC="gcc"
+if [ "$1" == "rpi" ]; then
+	[ -z "$march" ] && march=armv6zk;
+	[ -z "$mtune" ] && mtune=arm1176jzf-s;
+	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
+elif [ "$1" == "mac" ]; then
+	[ -z "$march" ] && march=prescott;
+	[ -z "$mtune" ] && mtune=generic;
+	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
+	echo "[INFO] Compiling for Intel MacOS"
+elif [ "$1" == "crosscompile" ]; then
+	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
+		[ -z "$march" ] && march=armv6;
+		[ -z "$mtune" ] && mtune=generic;
+		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		echo "[INFO] Cross-compiling for Android ARMv6"
+	elif [ "$2" == "android-armv7" ]; then
+		[ -z "$march" ] && march=armv7;
+		[ -z "$mtune" ] && mtune=generic;
+		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		echo "[INFO] Cross-compiling for Android ARMv7"
+	elif [ "$2" == "rpi" ]; then
+		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
+		[ -z "$march" ] && march=armv6zk;
+		[ -z "$mtune" ] && mtune=arm1176jzf-s;
+		[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
+	else
+		echo "Please supply a proper platform [android rpi] to cross-compile"
+		exit 1
+	fi
+else
+	echo "[INFO] Compiling for current machine"
+fi
 
-gcc -O3 -march=$march -mcpu=$mcpu -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
+
+[ -z "$THREADS" ] && THREADS=1;
+[ -z "$march" ] && march=native;
+[ -z "$mtune" ] && mtune=native;
+[ -z "$CFLAGS" ] && CFLAGS="";
+[ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
+
+$CC -O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 if [ $? -ne 0 ]; then
-	gcc -O3 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+	$CC -O3 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 	if [ $? -ne 0 ]; then
 		export CFLAGS="-O3 -fno-gcse "
 	else
 		export CFLAGS="-O3 -fno-gcse $CFLAGS"
 	fi
 else
-	export CFLAGS="-O3 -march=$march -mcpu=$mcpu -mtune=$mtune -fno-gcse $CFLAGS"
+	export CFLAGS="-O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 fi
 
 
@@ -56,25 +99,29 @@ wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -
 mv php-$PHP_VERSION php
 echo " done!"
 
-#libedit
-echo -n "[libedit] downloading $LIBEDIT_VERSION..."
-wget http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
-echo -n " checking..."
-cd libedit
-./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
-echo -n " compiling..."
-if make -j $THREADS >> "$DIR/install.log" 2>&1; then
-	echo -n " installing..."
-	make install >> "$DIR/install.log" 2>&1
-	HAVE_LIBEDIT="--with-libedit=$DIR/install_data/php/ext/libedit"
-else
-	echo -n " disabling..."
+if [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
 	HAVE_LIBEDIT="--without-libedit"
+else
+	#libedit
+	echo -n "[libedit] downloading $LIBEDIT_VERSION..."
+	wget http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+	echo -n " checking..."
+	cd libedit
+	./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
+	echo -n " compiling..."
+	if make -j $THREADS >> "$DIR/install.log" 2>&1; then
+		echo -n " installing..."
+		make install >> "$DIR/install.log" 2>&1
+		HAVE_LIBEDIT="--with-libedit=\"$DIR/install_data/php/ext/libedit\""
+	else
+		echo -n " disabling..."
+		HAVE_LIBEDIT="--without-libedit"
+	fi
+	echo -n " cleaning..."
+	cd ..
+	rm -r -f ./libedit
+	echo " done!"
 fi
-echo -n " cleaning..."
-cd ..
-rm -r -f ./libedit
-echo " done!"
 
 #zlib
 echo -n "[zlib] downloading $ZLIB_VERSION..."
@@ -93,8 +140,8 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-if [ "$(uname -s)" == "Darwin" ]; then
-   WITH_CURL="--with-curl=shared,/usr/local"
+if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+   HAVE_CURL="shared,/usr/local"
 else
 	#curl
 	echo -n "[cURL] downloading $CURL_VERSION..."
@@ -104,8 +151,11 @@ else
 	cd curl
 	./buildconf >> "$DIR/install.log" 2>&1
 	./configure --enable-ipv6 \
+	--enable-optimize \
+	--enable-http \
+	--enable-ftp \
 	--disable-dict \
-	--disable-file \
+	--enable-file \
 	--disable-gopher \
 	--disable-imap \
 	--disable-pop3 \
@@ -114,7 +164,8 @@ else
 	--disable-telnet \
 	--disable-tftp \
 	--prefix="$DIR/install_data/php/ext/curl" \
-	--disable-shared >> "$DIR/install.log" 2>&1
+	--disable-shared \
+	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
 	echo -n " installing..."
@@ -123,7 +174,7 @@ else
 	cd ..
 	rm -r -f ./curl
 	echo " done!"
-	WITH_CURL="--with-curl=\"$DIR/install_data/php/ext/curl\""
+	HAVE_CURL="$DIR/install_data/php/ext/curl"
 fi
 
 #pthreads
@@ -140,12 +191,11 @@ if which free >/dev/null; then
 else
     MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
 fi
-if [ $MAX_MEMORY -gt 512 ]
-then
-  echo -n " enabling optimizations..."
-  OPTIMIZATION="--enable-inline-optimization "
+if [ $MAX_MEMORY -gt 512 ] && [ "$1" != "crosscompile" ]; then
+	echo -n " enabling optimizations..."
+	OPTIMIZATION="--enable-inline-optimization "
 else
-  OPTIMIZATION="--disable-inline-optimization "
+	OPTIMIZATION="--disable-inline-optimization "
 fi
 set -e
 echo -n " checking..."
@@ -154,11 +204,15 @@ rm -rf ./aclocal.m4 >> "$DIR/install.log" 2>&1
 rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
 rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
+if [ "$1" == "crosscompile" ]; then
+	sed -i 's/pthreads_working=no/pthreads_working=yes/' ./configure
+	export LIBS="-lpthread -ldl"
+fi
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
-"$WITH_CURL" \
+--with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
-"$HAVE_LIBEDIT" \
+$HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
@@ -186,8 +240,14 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 --without-iconv \
 --without-pdo \
 --without-pdo-sqlite \
---with-zend-vm=$ZEND_VM >> "$DIR/install.log" 2>&1
+--with-zend-vm=$ZEND_VM \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
+if [ "$1" == "android" ]; then
+	sed -i 's/-export-dynamic/-all-static/g' Makefile
+elif [ "$1" == "crosscompile" ] && [ "$1" == "android" ]; then
+	sed -i 's/-export-dynamic/-all-static/g' Makefile
+fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
