@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class StairBlock extends TransparentBlock{
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
+		$this->isFullBlock = false;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

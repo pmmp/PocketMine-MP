@@ -31,5 +31,7 @@ class LiquidBlock extends TransparentBlock{
 		$this->isLiquid = true;
 		$this->breakable = false;
 		$this->isReplaceable = true;
+		$this->isSolid = false;
+		$this->isFullBlock = true;
 	}
 }

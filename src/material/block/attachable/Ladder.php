@@ -28,6 +28,8 @@ the Free Software Foundation, either version 3 of the License, or
 class LadderBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(LADDER, $meta, "Ladder");
+		$this->isSolid = false;
+		$this->isFullBlock = false;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false){

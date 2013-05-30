@@ -28,5 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class SolidBlock extends GenericBlock{
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
+		$this->isSolid = true;
+		$this->isFullBlock = true;
 	}
 }

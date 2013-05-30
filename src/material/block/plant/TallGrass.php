@@ -28,7 +28,6 @@ the Free Software Foundation, either version 3 of the License, or
 class TallGrassBlock extends FlowableBlock{
 	public function __construct($meta = 1){
 		parent::__construct(TALL_GRASS, $meta, "Tall Grass");
-		$this->isFlowable = true;
 		$this->isReplaceable = true;
 		$names = array(
 			0 => "Dead Shrub",
@@ -40,7 +39,7 @@ class TallGrassBlock extends FlowableBlock{
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+			if($this->getSide(0)->isTransparent === true){ //Replace wit common break method
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
 			}

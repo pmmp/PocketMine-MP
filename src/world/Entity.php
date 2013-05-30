@@ -352,7 +352,7 @@ class Entity extends Position{
 					$v = new Vector3($x, $y, $z);
 					if($this->isSupport($v, $this->size)){
 						$b = $this->level->getBlock($v);
-						if($b->isFlowable !== true){
+						if($b->isSolid === true){
 							$support = true;
 							break;
 						}
@@ -383,7 +383,7 @@ class Entity extends Position{
 						$z = (int) ($this->z - 0.5);
 						$lim = (int) floor($ny);
 						for($y = (int) ceil($this->y) - 1; $y >= $lim; --$y){
-							if($this->level->getBlock(new Vector3($x, $y, $z))->isFlowable !== true){
+							if($this->level->getBlock(new Vector3($x, $y, $z))->isSolid === true){
 								$ny = $y + 1;
 								$this->speedY = 0;
 								$this->support = true;
@@ -406,7 +406,8 @@ class Entity extends Position{
 					}
 					if($this->class === ENTITY_FALLING){
 						$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
-						if($fall->getID() !== AIR and $fall->isFlowable){
+						$down = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
+						if($fall->isFullBlock === false or $down->isFullBlock === false){
 							$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
 						}else{
 							$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]));

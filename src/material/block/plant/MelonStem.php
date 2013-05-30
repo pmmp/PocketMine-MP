@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class MelonStemBlock extends TransparentBlock{
+class MelonStemBlock extends FlowableBlock{
 	public function __construct($meta = 0){
 		parent::__construct(MELON_STEM, $meta, "Melon Stem");
 		$this->isActivable = true;
@@ -41,7 +41,7 @@ class MelonStemBlock extends TransparentBlock{
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+			if($this->getSide(0)->isTransparent === true){ //Replace wit common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;

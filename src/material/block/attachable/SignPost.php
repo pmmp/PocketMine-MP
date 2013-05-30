@@ -28,6 +28,8 @@ the Free Software Foundation, either version 3 of the License, or
 class SignPostBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
+		$this->isSolid = false;
+		$this->isFullBlock = false;
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

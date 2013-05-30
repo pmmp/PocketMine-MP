@@ -33,6 +33,7 @@ class TransparentBlock extends GenericBlock{
 		$this->isFlowable = false;
 		$this->isTransparent = true;
 		$this->isReplaceable = false;
-		$this->isPlaceable = true;
+		$this->isPlaceable = true;		
+		$this->isSolid = true;
 	}
 }

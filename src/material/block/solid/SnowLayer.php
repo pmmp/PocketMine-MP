@@ -29,6 +29,7 @@ class SnowLayerBlock extends FlowableBlock{
 	public function __construct($meta = 0){
 		parent::__construct(SNOW_LAYER, $meta, "Snow Layer");
 		$this->isReplaceable = true;
+		$this->isSolid = false;
 	}
 	
 }

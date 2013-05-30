@@ -337,7 +337,7 @@ class BlockAPI{
 			return $this->cancelAction($block, $player);
 		}
 		
-		if($hand->isFlowable === false and $player->entity->inBlock($block)){
+		if($hand->isSolid === true and $player->entity->inBlock($block)){
 			return $this->cancelAction($block, $player); //Entity in block
 		}
 		

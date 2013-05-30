@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class CakeBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(CAKE_BLOCK, 0, "Cake Block");
+		$this->isFullBlock = false;
 	}
 	
 }

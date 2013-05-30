@@ -29,6 +29,7 @@ class FenceGateBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(FENCE_GATE, $meta, "Fence Gate");
 		$this->isActivable = true;
+		$this->isFullBlock = false;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(

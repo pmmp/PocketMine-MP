@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class SaplingBlock extends TransparentBlock{
+class SaplingBlock extends FlowableBlock{
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
@@ -34,7 +34,6 @@ class SaplingBlock extends TransparentBlock{
 	public function __construct($meta = Sapling::OAK){
 		parent::__construct(SAPLING, $meta, "Sapling");
 		$this->isActivable = true;
-		$this->isFlowable = true;
 		$names = array(
 			0 => "Oak Sapling",
 			1 => "Spruce Sapling",
@@ -61,7 +60,7 @@ class SaplingBlock extends TransparentBlock{
 	}
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+			if($this->getSide(0)->isTransparent === true){ //Replace wit common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;

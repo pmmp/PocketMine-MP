@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class FenceBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(FENCE, 0, "Fence");
+		$this->isFullBlock = false;
 	}
 	
 }

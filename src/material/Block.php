@@ -140,12 +140,14 @@ abstract class Block extends Position{
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;
+	public $isSolid = true;
 	public $isTransparent = false;
 	public $isReplaceable = false;
 	public $isPlaceable = true;
 	public $level = false;
 	public $hasPhysics = false;
 	public $isLiquid = false;
+	public $isFullBlock = true;
 	public $x = 0;
 	public $y = 0;
 	public $z = 0;

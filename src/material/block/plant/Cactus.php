@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class CactusBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(CACTUS, 0, "Cactus");
+		$this->isFullBlock = false;
 	}
 
 	public function onUpdate($type){
@@ -49,7 +50,7 @@ class CactusBlock extends TransparentBlock{
 			$block1 = $this->getSide(3);
 			$block2 = $this->getSide(4);
 			$block3 = $this->getSide(5);
-			if($block0->isFlowable === true and $block1->isFlowable === true and $block2->isFlowable === true and $block3->isFlowable === true){
+			if($block0->isTransparent === true and $block1->isTransparent === true and $block2->isTransparent === true and $block3->isTransparent === true){
 				$this->level->setBlock($block, $this);
 				return true;
 			}

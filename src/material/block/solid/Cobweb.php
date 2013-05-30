@@ -25,9 +25,11 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class CobwebBlock extends TransparentBlock{
+class CobwebBlock extends FlowableBlock{
 	public function __construct(){
-		parent::__construct(COBWEB, 0, "Cobweb");
+		parent::__construct(COBWEB, 0, "Cobweb");		
+		$this->isSolid = true;
+		$this->isFullBlock = false;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array();

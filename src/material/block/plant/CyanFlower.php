@@ -28,7 +28,6 @@ the Free Software Foundation, either version 3 of the License, or
 class CyanFlowerBlock extends FlowableBlock{
 	public function __construct(){
 		parent::__construct(CYAN_FLOWER, 0, "Cyan Flower");
-		$this->isFlowable = true;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
@@ -42,7 +41,7 @@ class CyanFlowerBlock extends FlowableBlock{
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isFlowable === true){ //Replace wit common break method
+			if($this->getSide(0)->isTransparent === true){ //Replace wit common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
