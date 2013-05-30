@@ -378,7 +378,7 @@ class Entity extends Position{
 				if($this->speedY != 0){
 					$this->speedY -= $this->speedY * $drag;
 					$ny = $this->y + $this->speedY * $tdiff;
-					if($ny < $this->y){
+					if($ny <= $this->y){
 						$x = (int) ($this->x - 0.5);
 						$z = (int) ($this->z - 0.5);
 						$lim = (int) floor($ny);
@@ -387,6 +387,19 @@ class Entity extends Position{
 								$ny = $y + 1;
 								$this->speedY = 0;
 								$this->support = true;
+								if($this->class === ENTITY_FALLING){
+									$this->y = $ny;
+									$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
+									$down = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
+									if($fall->isFullBlock === false or $down->isFullBlock === false){
+										$this->server->api->entity->drop(new Position(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5), $this->level), BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
+									}else{
+										$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]));
+									}
+									$this->server->api->handle("entity.motion", $this);
+									$this->close();
+									return;
+								}
 								break;
 							}
 						}
@@ -397,24 +410,11 @@ class Entity extends Position{
 				if($support === false){
 					$this->speedY -= ($this->class === ENTITY_FALLING ? 16:32) * $tdiff;
 					$update = true;
-				}else{
-					if($this->speedY <= 0){
-						$this->speedX = 0;
-						$this->speedY = 0;
-						$this->speedZ = 0;
-						$update = true;
-					}
-					if($this->class === ENTITY_FALLING){
-						$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
-						$down = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
-						if($fall->isFullBlock === false or $down->isFullBlock === false){
-							$this->server->api->entity->drop(new Position(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5), $this->level), BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
-						}else{
-							$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]));
-						}
-						$this->server->api->handle("entity.motion", $this);
-						$this->close();
-					}
+				}elseif($this->speedY <= 0){
+					$this->speedX = 0;
+					$this->speedY = 0;
+					$this->speedZ = 0;
+					$update = true;
 				}
 				
 				if($update === true){
