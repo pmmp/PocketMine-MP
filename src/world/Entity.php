@@ -454,7 +454,7 @@ class Entity extends Position{
 			}
 		}
 		
-		if($this->class !== ENTITY_OBJECT and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
+		if($this->class !== ENTITY_OBJECT and ($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now) and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
 			if($this->server->api->handle("entity.move", $this) === false){
 				if($this->class === ENTITY_PLAYER){
 					$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
