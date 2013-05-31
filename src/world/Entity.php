@@ -400,7 +400,7 @@ class Entity extends Position{
 									if($fall->isFullBlock === false or $down->isFullBlock === false){
 										$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
 									}else{
-										$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]));
+										$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]), true, false, true);
 									}
 									$this->server->api->handle("entity.motion", $this);
 									$this->close();

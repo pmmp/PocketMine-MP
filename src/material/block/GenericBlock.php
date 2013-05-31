@@ -31,7 +31,7 @@ class GenericBlock extends Block{
 		parent::__construct($id, $meta, $name);
 	}	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		return $this->level->setBlock($block, $this);
+		return $this->level->setBlock($this, $this, true, false, true);
 	}
 	
 	public function isBreakable(Item $item, Player $player){

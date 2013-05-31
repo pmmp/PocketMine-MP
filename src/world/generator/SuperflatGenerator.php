@@ -134,7 +134,7 @@ class SuperflatGenerator implements LevelGenerator{
 			for($x = $start; $x <= $end; ++$x){
 				for($z = $start; $z <= $end; ++$z){
 					if(floor(sqrt(pow($x - 128, 2) + pow($z - 128, 2))) <= $spawn[0]){
-						$this->level->setBlockRaw(new Vector3($x, $this->floorLevel - 1, $z), $spawn[1]);
+						$this->level->setBlockRaw(new Vector3($x, $this->floorLevel - 1, $z), $spawn[1], null);
 					}
 				}
 			}

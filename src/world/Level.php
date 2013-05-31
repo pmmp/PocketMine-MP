@@ -26,7 +26,7 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class Level{
-	public $entities, $tileEntities, $nextSave;
+	public $entities, $tileEntities, $nextSave, $players = array();
 	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
@@ -63,12 +63,12 @@ class Level{
 	}
 	
 	public function checkThings(){
-		$players = $this->server->api->player->getAll($this);
+		$this->players = $this->server->api->player->getAll($this);
 		$now = microtime(true);
 		$time = $this->startTime + ($now - $this->startCheck) * 20;
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
-			$this->server->api->player->broadcastPacket($players, MC_SET_TIME, array(
+			$this->server->api->player->broadcastPacket($this->players, MC_SET_TIME, array(
 				"time" => $this->time,
 			));
 		}
@@ -80,7 +80,7 @@ class Level{
 				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
 					break;
 				}
-				foreach($players as $p){
+				foreach($this->players as $p){
 					unset($p->chunksLoaded[$index]);
 				}
 				unset($this->changedBlocks[$index]);
@@ -90,7 +90,7 @@ class Level{
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $blocks){
 					foreach($blocks as $b){
-						$this->server->api->player->broadcastPacket($players, MC_UPDATE_BLOCK, array(
+						$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
 							"x" => $b->x,
 							"y" => $b->y,
 							"z" => $b->z,
@@ -205,20 +205,33 @@ class Level{
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 	
-	public function setBlockRaw(Vector3 $pos, Block $block){
+	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true){
-			$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
-			if(!isset($this->changedBlocks[$i])){
-				$this->changedBlocks[$i] = array();
-				$this->changedCount[$i] = 0;
+			if($direct === true){
+				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
+					"x" => $pos->x,
+					"y" => $pos->y,
+					"z" => $pos->z,
+					"block" => $block->getID(),
+					"meta" => $block->getMetadata(),
+				));
+			}elseif($direct === false){
+				if(!($block->level instanceof Level)){
+					$block->position($pos);
+				}
+				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
+				if(!isset($this->changedBlocks[$i])){
+					$this->changedBlocks[$i] = array();
+					$this->changedCount[$i] = 0;
+				}
+				$this->changedBlocks[$i][] = $block;
+				++$this->changedCount[$i];
 			}
-			$this->changedBlocks[$i][] = $block;
-			++$this->changedCount[$i];
 		}
 		return $ret;
 	}
 	
-	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false){
+	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
@@ -228,21 +241,29 @@ class Level{
 			if(!($pos instanceof Position)){
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 			}
-			$block = $this->getBlock($pos);
-			
-			$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
-			if(!isset($this->changedBlocks[$i])){
-				$this->changedBlocks[$i] = array();
-				$this->changedCount[$i] = 0;
+			if(!($block->level instanceof Level)){
+				$block->position($pos);
 			}
-			$this->changedBlocks[$i][] = $block;
-			++$this->changedCount[$i];
-			/*$this->server->trigger("block.change", array(
-				"position" => $pos,
-				"block" => $block,
-			));*/
+			if($direct === true){
+				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
+					"x" => $pos->x,
+					"y" => $pos->y,
+					"z" => $pos->z,
+					"block" => $block->getID(),
+					"meta" => $block->getMetadata(),
+				));
+			}else{
+				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
+				if(!isset($this->changedBlocks[$i])){
+					$this->changedBlocks[$i] = array();
+					$this->changedCount[$i] = 0;
+				}
+				$this->changedBlocks[$i][] = $block;
+				++$this->changedCount[$i];
+			}
+
 			if($update === true){
-				$this->server->api->block->scheduleBlockUpdate($block, 1, BLOCK_UPDATE_NORMAL); //????? water?
+				
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){

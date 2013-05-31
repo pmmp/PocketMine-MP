@@ -37,10 +37,18 @@ define("VIEWER", 3);
 define("PLAYER_RECOVERY_BUFFER", 2048);
 
 
-//Entities
-define("ENTITY_PLAYER", 0);
+//Block Updates
+define("BLOCK_UPDATE_NORMAL", 1);
+define("BLOCK_UPDATE_RANDOM", 2);
+define("BLOCK_UPDATE_SCHEDULED", 3);
+define("BLOCK_UPDATE_WEAK", 4);
+define("BLOCK_UPDATE_TOUCH", 5);
 
-define("ENTITY_MOB", 1);
+
+//Entities
+define("ENTITY_PLAYER", 1);
+
+define("ENTITY_MOB", 2);
 	define("MOB_CHICKEN", 10);
 	define("MOB_COW", 11);
 	define("MOB_PIG", 12);
@@ -52,10 +60,10 @@ define("ENTITY_MOB", 1);
 	define("MOB_SPIDER", 35);
 	define("MOB_PIGMAN", 36);
 
-define("ENTITY_OBJECT", 2);
+define("ENTITY_OBJECT", 3);
 	define("OBJECT_PAINTING", 83);
 
-define("ENTITY_ITEM", 3);
+define("ENTITY_ITEM", 4);
 
 define("ENTITY_FALLING", 4);
 	define("FALLING_SAND", 66);

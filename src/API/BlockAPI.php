@@ -25,17 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-
-define("BLOCK_UPDATE_NORMAL", 0);
-define("BLOCK_UPDATE_RANDOM", 1);
-define("BLOCK_UPDATE_SCHEDULED", 2);
-define("BLOCK_UPDATE_WEAK", 3);
-define("BLOCK_UPDATE_TOUCH", 4);
-
-
-
-
-
 class BlockAPI{
 	private $server;
 	private $scheduledUpdates = array();
