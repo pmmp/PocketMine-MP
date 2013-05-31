@@ -245,7 +245,7 @@ $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 if [ "$1" == "android" ]; then
 	sed -i 's/-export-dynamic/-all-static/g' Makefile
-elif [ "$1" == "crosscompile" ] && [ "$1" == "android" ]; then
+elif [ "$1" == "crosscompile" ] && [ "$2" == "android" ]; then
 	sed -i 's/-export-dynamic/-all-static/g' Makefile
 fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
