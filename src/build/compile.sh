@@ -41,6 +41,7 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
@@ -49,6 +50,7 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Android ARMv7"
 	elif [ "$2" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
@@ -57,6 +59,7 @@ elif [ "$1" == "crosscompile" ]; then
 		[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
 	else
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi] to cross-compile"
