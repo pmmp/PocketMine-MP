@@ -230,7 +230,6 @@ class Entity extends Position{
 								"target" => $item->eid
 							)) !== false){
 								$item->close();
-								return false;
 							}
 						}else{
 							$item->close();
