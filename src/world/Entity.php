@@ -212,28 +212,21 @@ class Entity extends Position{
 		$hasUpdate = false;
 		$time = microtime(true);
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true){
-			$items = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."' AND class = ".ENTITY_ITEM." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5;");
-			if($items instanceof SQLite3Result){
-				while(($item = $items->fetchArray(SQLITE3_NUM)) !== false){
-					$item = $this->server->api->entity->get($item[0]);
-					if(!($item instanceof Entity)){
-						continue;
-					}
-					if(($time - $item->spawntime) >= 0.6){
-						if(($this->player->gamemode & 0x01) === 0x00){
-							if($this->player->hasSpace($item->type, $item->meta, $item->stack) === true and $this->server->api->dhandle("player.pickup", array(
-								"eid" => $this->player->eid,
-								"player" => $this->player,
-								"entity" => $item,
-								"block" => $item->type,
-								"meta" => $item->meta,
-								"target" => $item->eid
-							)) !== false){
-								$item->close();
-							}
-						}else{
+			foreach($this->server->api->entity->getRadius($this, 1.5, ENTITY_ITEM) as $item){
+				if(($time - $item->spawntime) >= 0.6){
+					if(($this->player->gamemode & 0x01) === 0x00){
+						if($this->player->hasSpace($item->type, $item->meta, $item->stack) === true and $this->server->api->dhandle("player.pickup", array(
+							"eid" => $this->player->eid,
+							"player" => $this->player,
+							"entity" => $item,
+							"block" => $item->type,
+							"meta" => $item->meta,
+							"target" => $item->eid
+						)) !== false){
 							$item->close();
 						}
+					}else{
+						$item->close();
 					}
 				}
 			}
