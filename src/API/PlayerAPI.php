@@ -32,7 +32,7 @@ class PlayerAPI{
 	}
 
 	public function init(){
-		$this->server->addHandler("server.regeneration", array($this, "handle"));
+		$this->server->schedule(20 * 15, array($this, "handle"), 1, true, "server.regeneration");
 		$this->server->addHandler("player.death", array($this, "handle"), 1);
 		$this->server->api->console->register("list", "", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));

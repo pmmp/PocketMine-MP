@@ -100,11 +100,15 @@ class PocketMinecraftServer{
 
 	public function loadEvents(){
 		if(ENABLE_ANSI === true){
-			$this->action(1500000, '$this->titleTick();');
+			$this->schedule(30, array($this, "titleTick"), array(), true);
 		}
-		$this->action(5000000, 'if($this->difficulty < 2){$this->api->dhandle("server.regeneration", 1);}');
-		$this->action(1000000 * 15, 'if($this->getTPS() < 15){console("[WARNING] Can\'t keep up! Is the server overloaded?");}');
-		$this->action(1000000 * 60 * 10, '$this->custom = array();');
+		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
+	}
+	
+	public function checkTicks(){
+		if($this->getTPS() < 12){
+			console("[WARNING] Can\'t keep up! Is the server overloaded?");
+		}
 	}
 
 	public function startDatabase(){
@@ -490,7 +494,7 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function schedule($ticks,callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
+	public function schedule($ticks, callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
 		if(!is_callable($callback)){
 			return false;
 		}
@@ -500,12 +504,8 @@ class PocketMinecraftServer{
 			$add = '$this->schedule['.$chcnt.']=null;unset($this->schedule['.$chcnt.']);';
 		}
 		$this->schedule[$chcnt] = array($callback, $data, $eventName);
-		$this->action(50000 * $ticks, '$schedule=$this->schedule['.$chcnt.'];'.$add.'if(!is_callable($schedule[0])){$this->schedule['.$chcnt.']=null;unset($this->schedule['.$chcnt.']);return false;}return call_user_func($schedule[0],$schedule[1],$schedule[2]);', (bool) $repeat);
+		$this->query("INSERT INTO actions (ID, interval, last, repeat) VALUES(".$chcnt.", ".($ticks / 20).", ".microtime(true).", ".(((bool) $repeat) === true ? 1:0).");");
 		return $chcnt;
-	}
-
-	public function action($microseconds, $code, $repeat = true){
-		$this->query("INSERT INTO actions (interval, last, code, repeat) VALUES(".($microseconds / 1000000).", ".microtime(true).", '".base64_encode($code)."', ".($repeat === true ? 1:0).");");
 	}
 
 	public function tickerFunction($time){
@@ -519,9 +519,18 @@ class PocketMinecraftServer{
 			return;
 		}
 		while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
-			$return = eval(base64_decode($action["code"]));
+			$cid = $action["ID"];
+			$schedule = $this->schedule[$cid];
+			if(!is_callable($schedule[0])){
+				$return = false;
+			}else{
+				$return = call_user_func($schedule[0],$schedule[1],$schedule[2]);
+			}
+
 			if($action["repeat"] === 0 or $return === false){
 				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
+				$this->schedule[$cid] = null;
+				unset($this->schedule[$cid]);
 			}
 		}
 		$actions->finalize();

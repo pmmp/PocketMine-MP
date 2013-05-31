@@ -318,10 +318,6 @@ class ServerAPI{
 		return $this->server->handle($e, $d);
 	}
 
-	public function action($t, $c, $r = true){
-		return $this->server->action($t, $c, $r);
-	}
-
 	public function schedule($t, $c, $d, $r = false, $e = "server.schedule"){
 		return $this->server->schedule($t, $c, $d, $r, $e);
 	}
