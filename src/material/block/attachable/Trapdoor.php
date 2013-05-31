@@ -29,7 +29,11 @@ class TrapdoorBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(TRAPDOOR, $meta, "Trapdoor");
 		$this->isActivable = true;
-		$this->isFullBlock = false;
+		if(($this->meta & 0x04) === 0x04){
+			$this->isFullBlock = false;
+		}else{
+			$this->isFullBlock = true;
+		}
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			if(($target->isTransparent === false or $target->getID() === SLAB) and $face !== 0 and $face !== 1){

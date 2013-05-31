@@ -39,7 +39,11 @@ class SlabBlock extends TransparentBlock{
 			7 => "Quartz",
 		);
 		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . $names[$this->meta & 0x07] . " Slab";	
-		$this->isFullBlock = false;
+		if(($this->meta & 0x08) === 0x08){
+			$this->isFullBlock = true;
+		}else{
+			$this->isFullBlock = false;
+		}
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

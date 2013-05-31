@@ -108,18 +108,19 @@ class Entity extends Position{
 					$this->stack = (int) $this->data["stack"];
 				}
 				$this->setHealth(5, "generic");
-				$this->server->schedule(10, array($this, "update"), array(), true);
+				$this->server->schedule(6010, array($this, "update")); //Despawn
+				$this->update();
 				$this->size = 0.5;
 				break;
 			case ENTITY_MOB:
 				$this->setHealth($this->data["Health"], "generic");
-				$this->server->schedule(10, array($this, "update"), array(), true);
+				$this->update();
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				$this->size = 1;
 				break;
 			case ENTITY_FALLING:
 				$this->setHealth(PHP_INT_MAX, "generic");
-				$this->server->schedule(10, array($this, "update"), array(), true);
+				$this->update();
 				$this->size = 0.98;
 				break;
 			case ENTITY_OBJECT:
@@ -132,6 +133,7 @@ class Entity extends Position{
 				break;
 		}
 		$this->updateLast();
+		$this->updatePosition();
 	}
 	
 	public function getDrops(){
@@ -207,49 +209,51 @@ class Entity extends Position{
 	}
 	
 	public function environmentUpdate(){
-		if($this->class === ENTITY_ITEM){
-			$time = microtime(true);
+		$hasUpdate = false;
+		$time = microtime(true);
+		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true){
+			$items = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."' AND class = ".ENTITY_ITEM." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5;");
+			if($items instanceof SQLite3Result){
+				while(($item = $items->fetchArray(SQLITE3_NUM)) !== false){
+					$item = $this->server->api->entity->get($item[0]);
+					if(!($item instanceof Entity)){
+						continue;
+					}
+					if(($time - $item->spawntime) >= 0.6){
+						if(($this->player->gamemode & 0x01) === 0x00){
+							if($this->player->hasSpace($item->type, $item->meta, $item->stack) === true and $this->server->api->dhandle("player.pickup", array(
+								"eid" => $this->player->eid,
+								"player" => $this->player,
+								"entity" => $item,
+								"block" => $item->type,
+								"meta" => $item->meta,
+								"target" => $item->eid
+							)) !== false){
+								$item->close();
+								return false;
+							}
+						}else{
+							$item->close();
+						}
+					}
+				}
+			}
+		}elseif($this->class === ENTITY_ITEM){
 			if(($time - $this->spawntime) >= 300){
 				$this->close(); //Despawn timer
 				return false;
-			}
-			if(($time - $this->spawntime) >= 0.6){ //TODO: set this on Player class, updates things when it moves
-				$player = $this->server->query("SELECT EID FROM entities WHERE level = '".$this->level->getName()."' AND class = ".ENTITY_PLAYER." AND abs(x - {$this->x}) <= 1.5 AND abs(y - {$this->y}) <= 1.5 AND abs(z - {$this->z}) <= 1.5 LIMIT 1;", true);
-				$player = $this->server->api->entity->get($player["EID"]);
-				if($player instanceof Entity){
-					$player = $player->player;
-				}else{
-					return false;
-				}
-				if(($player instanceof Player) and $player->spawned === true){
-					if(($player->gamemode & 0x01) === 0x00){
-						if($player->hasSpace($this->type, $this->meta, $this->stack) === true and $this->server->api->dhandle("player.pickup", array(
-							"eid" => $player->eid,
-							"player" => $player,
-							"entity" => $this,
-							"block" => $this->type,
-							"meta" => $this->meta,
-							"target" => $this->eid
-						)) !== false){
-							$this->close();
-							return false;
-						}
-					}else{
-						$this->close();
-					}
-					return true;
-				}
 			}
 		}
 		
 		if($this->dead === true){
 			$this->fire = 0;
 			$this->air = 300;
-			return;
+			return false;
 		}
 		
 		if($this->y < -16){
 			$this->harm(8, "void", true);
+			$hasUpdate = true;
 		}
 		
 		if($this->fire > 0){
@@ -260,6 +264,8 @@ class Entity extends Position{
 			if($this->fire <= 0){
 				$this->fire = 0;
 				$this->updateMetadata();
+			}else{
+				$hasUpdate = true;
 			}
 		}
 		
@@ -283,10 +289,12 @@ class Entity extends Position{
 							}
 							if($this->air <= 0){
 								$this->harm(2, "water");
+								$hasUpdate = true;
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1) and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER) and $waterDone === false){
 								$this->air -= 10;
 								$waterDone = true;
 								$this->updateMetadata();
+								$hasUpdate = true;
 							}
 							break;
 						case LAVA: //Lava damage
@@ -295,6 +303,7 @@ class Entity extends Position{
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
+								$hasUpdate = true;
 							}
 							break;
 						case FIRE: //Fire block damage
@@ -302,16 +311,19 @@ class Entity extends Position{
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
+								$hasUpdate = true;
 							}
 							break;
 						case CACTUS: //Cactus damage
 							if($this->touchingBlock(new Vector3($x, $y, $z))){
 								$this->harm(1, "cactus");
+								$hasUpdate = true;
 							}
 							break;
 						default:
 							if($this->inBlock(new Vector3($x, $y, $z), 0.7) and $y == $endY and $b->isTransparent === false and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->harm(1, "suffocation"); //Suffocation
+								$hasUpdate = true;
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
 								$this->air = 300; //Breathing
 							}
@@ -320,13 +332,14 @@ class Entity extends Position{
 				}
 			}		
 		}
+		return $hasUpdate;
 	}
 
 	public function update(){
 		if($this->closed === true){
 			return false;
 		}
-		
+		$hasUpdate = false;
 		$now = microtime(true);
 		if($this->check === false){
 			$this->lastUpdate = $now;
@@ -336,7 +349,7 @@ class Entity extends Position{
 		
 		if($this->tickCounter === 0){
 			$this->tickCounter = 1;
-			$this->environmentUpdate();
+			$hasUpdate = $this->environmentUpdate();
 		}else{
 			$this->tickCounter = 0;
 		}
@@ -408,17 +421,20 @@ class Entity extends Position{
 					$this->y = $ny;
 					$update = true;
 				}
+				
 				if($support === false){
 					$this->speedY -= ($this->class === ENTITY_FALLING ? 16:32) * $tdiff;
 					$update = true;
-				}elseif($this->speedY <= 0){
+				}elseif($this->speedY <= 0.1){
 					$this->speedX = 0;
 					$this->speedY = 0;
 					$this->speedZ = 0;
-					$update = true;
+					$update = false;
+					$this->server->api->handle("entity.motion", $this);
 				}
 				
 				if($update === true){
+					$hasUpdate = true;
 					$this->server->api->handle("entity.motion", $this);
 				}
 				
@@ -455,18 +471,25 @@ class Entity extends Position{
 			}
 		}
 		
-		if($this->class !== ENTITY_OBJECT and ($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now) and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
-			if($this->server->api->handle("entity.move", $this) === false){
-				if($this->class === ENTITY_PLAYER){
-					$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
+		if($this->class !== ENTITY_OBJECT and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
+			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){			
+				if($this->server->api->handle("entity.move", $this) === false){
+					if($this->class === ENTITY_PLAYER){
+						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
+					}else{
+						$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
+					}
 				}else{
-					$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
+					$this->updateLast();
 				}
 			}else{
-				$this->updateLast();
+				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
 			}
 		}
 		$this->lastUpdate = $now;
+		if($this->class !== ENTITY_PLAYER and $hasUpdate === true){
+			$this->server->schedule(5, array($this, "update"));
+		}
 	}
 
 	public function getDirection(){
@@ -642,6 +665,10 @@ class Entity extends Position{
 		$this->pitch += $pitch;
 		$this->pitch %= 90;
 		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
+	}
+	
+	public function updatePosition(){
+		$this->server->query("UPDATE entities SET level = '".$this->level->getName()."', x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false){

@@ -40,9 +40,9 @@ class FallableBlock extends SolidBlock{
 				"Tile" => $this->id,
 			);
 			$server = ServerAPI::request();
+			$this->level->setBlock($this, new AirBlock());
 			$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
 			$server->api->entity->spawnToAll($this->level, $e->eid);
-			$this->level->setBlock($this, new AirBlock());
 		}
 	}
 }
