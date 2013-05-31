@@ -22,6 +22,7 @@ type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
 
 export CC="gcc"
+COMPILE_FOR_ANDROID=no
 if [ "$1" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
@@ -34,6 +35,7 @@ elif [ "$1" == "mac" ]; then
 	echo "[INFO] Compiling for Intel MacOS"
 elif [ "$1" == "crosscompile" ]; then
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
+		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=generic;
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
@@ -41,6 +43,7 @@ elif [ "$1" == "crosscompile" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
+		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7;
 		[ -z "$mtune" ] && mtune=generic;
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
@@ -56,7 +59,7 @@ elif [ "$1" == "crosscompile" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
 	else
-		echo "Please supply a proper platform [android rpi] to cross-compile"
+		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi] to cross-compile"
 		exit 1
 	fi
 else
@@ -243,9 +246,7 @@ $HAVE_LIBEDIT \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-if [ "$1" == "android" ]; then
-	sed -i 's/-export-dynamic/-all-static/g' Makefile
-elif [ "$1" == "crosscompile" ] && [ "$2" == "android" ]; then
+if [ COMPILE_FOR_ANDROID == "yes" ]; then
 	sed -i 's/-export-dynamic/-all-static/g' Makefile
 fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
