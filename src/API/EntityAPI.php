@@ -110,9 +110,9 @@ class EntityAPI{
 			"x" => $pos->x,
 			"y" => $pos->y + 0.19,
 			"z" => $pos->z,
-			"speedX" => mt_rand(-1, 1) / 6,
-			"speedY" => mt_rand(5, 8) / 2,
-			"speedZ" => mt_rand(-1, 1) / 6,
+			"speedX" => mt_rand(-3, 3) / 8,
+			"speedY" => mt_rand(5, 8) / 1.5,
+			"speedZ" => mt_rand(-3, 3) / 8,
 			"item" => $item,
 		);
 		if($this->server->api->handle("item.drop", $data) !== false){

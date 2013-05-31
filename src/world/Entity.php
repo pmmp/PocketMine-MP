@@ -547,6 +547,12 @@ class Entity extends Position{
 					"meta" => $this->meta,
 					"stack" => $this->stack,
 				));
+				$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+					"eid" => $this->eid,
+					"speedX" => (int) ($this->speedX * 400),
+					"speedY" => (int) ($this->speedY * 400),
+					"speedZ" => (int) ($this->speedZ * 400),
+				));
 				break;
 			case ENTITY_MOB:
 				$player->dataPacket(MC_ADD_MOB, array(
@@ -556,6 +562,12 @@ class Entity extends Position{
 					"y" => $this->y,
 					"z" => $this->z,
 					"metadata" => $this->getMetadata(),
+				));
+				$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+					"eid" => $this->eid,
+					"speedX" => (int) ($this->speedX * 400),
+					"speedY" => (int) ($this->speedY * 400),
+					"speedZ" => (int) ($this->speedZ * 400),
 				));
 				break;
 			case ENTITY_OBJECT:
@@ -578,6 +590,12 @@ class Entity extends Position{
 					"y" => $this->y,
 					"z" => $this->z,
 					"did" => -$this->data["Tile"],
+				));
+				$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+					"eid" => $this->eid,
+					"speedX" => (int) ($this->speedX * 400),
+					"speedY" => (int) ($this->speedY * 400),
+					"speedZ" => (int) ($this->speedZ * 400),
 				));
 				break;
 		}
