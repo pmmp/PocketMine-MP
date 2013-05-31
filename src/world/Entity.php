@@ -108,18 +108,18 @@ class Entity extends Position{
 					$this->stack = (int) $this->data["stack"];
 				}
 				$this->setHealth(5, "generic");
-				$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->server->schedule(10, array($this, "update"), array(), true);
 				$this->size = 0.5;
 				break;
 			case ENTITY_MOB:
 				$this->setHealth($this->data["Health"], "generic");
-				$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->server->schedule(10, array($this, "update"), array(), true);
 				//$this->setName((isset($mobs[$this->type]) ? $mobs[$this->type]:$this->type));
 				$this->size = 1;
 				break;
 			case ENTITY_FALLING:
 				$this->setHealth(PHP_INT_MAX, "generic");
-				$this->server->schedule(5, array($this, "update"), array(), true);
+				$this->server->schedule(10, array($this, "update"), array(), true);
 				$this->size = 0.98;
 				break;
 			case ENTITY_OBJECT:

@@ -62,7 +62,6 @@ class Player{
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
 	private $spawnPosition;
-	private $freedChunks = true;
 	public $itemEnforcement;
 	public $lastCorrect;
 	private $bigCnt;
@@ -149,19 +148,9 @@ class Player{
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
 		if($c === null or $d > $this->server->api->getProperty("view-distance")){
-			if($this->freedChunks === false){
-				foreach($this->chunksOrder as $c => $d){
-					$id = explode(":", $c);
-					$X = $id[0];
-					$Z = $id[2];
-					$this->level->freeChunk($X, $Z, $this);
-				}
-				$this->freedChunks = true;
-			}
 			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
-		$this->freedChunks = false;
 		unset($this->chunksOrder[$c]);
 		$this->chunksLoaded[$c] = true;
 		$id = explode(":", $c);
