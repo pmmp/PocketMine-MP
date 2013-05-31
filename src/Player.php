@@ -28,7 +28,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Player{
 	private $server;
-	private $queue = array();
 	private $buffer = "";
 	private $nextBuffer = 0;
 	private $recovery = array();
@@ -92,7 +91,7 @@ class Player{
 		$this->level = $this->server->api->level->getDefault();
 		$this->equipment = BlockAPI::getItem(AIR);
 		$this->packetStats = array(0,0);
-		$this->evid[] = $this->server->event("server.tick", array($this, "onTick"));
+		$this->server->schedule(2, array($this, "onTick"), array(), true);
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
@@ -181,28 +180,14 @@ class Player{
 		$this->server->schedule(1, array($this, "getNextChunk"));
 	}
 
-	public function onTick($time, $event){
-		if($event !== "server.tick" or $this->connected === false){
+	public function onTick(){
+		if($this->connected === false){
 			return;
 		}
+		$time = microtime(true);
 		if($time > $this->timeout){
 			$this->close("timeout");
 		}else{
-			if(!empty($this->queue)){
-				$maxtime = $time + 0.0025;
-				while(microtime(true) < $maxtime and ($p = each($this->queue)) !== false){
-					unset($this->queue[$p[0]]);
-					switch($p[1][0]){
-						case 0:
-							$this->dataPacket($p[1][1]["id"], $p[1][1], false);
-							break;
-						case 1:
-							eval($p[1][1]);
-							break;
-					}
-				}
-			}
-
 			if($this->nextBuffer <= $time and strlen($this->buffer) > 0){
 				$this->sendBuffer();
 			}
@@ -247,8 +232,6 @@ class Player{
 			unset($this->buffer);
 			$this->recovery = null;
 			unset($this->recovery);
-			$this->queue = null;
-			unset($this->queue);
 			$this->connected = false;
 			if($msg === true and $this->username != ""){
 				$this->server->api->chat->broadcast($this->username." left the game");
@@ -1386,10 +1369,6 @@ class Player{
 			++$this->packetStats[0];
 		}
 	}
-
-	public function actionQueue($code){
-		$this->queue[] = array(1, $code);
-	}
 	
 	public function sendBuffer(){
 		if(strlen($this->buffer) > 0){
@@ -1454,31 +1433,26 @@ class Player{
 		));
 	}
 
-	public function dataPacket($id, $data = array(), $queue = false){
+	public function dataPacket($id, $data = array()){
 		$data["id"] = $id;
-		if($queue === true){
-			$this->queue[] = array(0, $data);
+		if($id === false){
+			$raw = $data["raw"];
 		}else{
-			if($id === false){
-				$raw = $data["raw"];
-			}else{
-				$data = new CustomPacketHandler($id, "", $data, true);
-				$raw = chr($id).$data->raw;
-			}
-			$len = strlen($raw);
-			$MTU = $this->MTU - 24;
-			if($len > $MTU){
-				$this->directBigRawPacket(false, $raw);
-				return;
-			}
-			
-			if((strlen($this->buffer) + $len) >= $MTU){
-				$this->sendBuffer();
-			}
-
-			$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
-			
+			$data = new CustomPacketHandler($id, "", $data, true);
+			$raw = chr($id).$data->raw;
 		}
+		$len = strlen($raw);
+		$MTU = $this->MTU - 24;
+		if($len > $MTU){
+			$this->directBigRawPacket(false, $raw);
+			return;
+		}
+		
+		if((strlen($this->buffer) + $len) >= $MTU){
+			$this->sendBuffer();
+		}
+			$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
+		
 	}
 	
 	function __toString(){

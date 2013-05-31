@@ -196,7 +196,7 @@ class TileEntity extends Position{
 		return true;
 	}
 
-	public function spawn($player, $queue = false){
+	public function spawn($player){
 		if($this->closed){
 			return false;
 		}
@@ -214,7 +214,7 @@ class TileEntity extends Position{
 					"line1" => $this->data["Text2"],
 					"line2" => $this->data["Text3"],
 					"line3" => $this->data["Text4"],
-				), $queue);
+				));
 				break;
 		}
 	}
