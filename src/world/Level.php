@@ -216,15 +216,13 @@ class Level{
 					"meta" => $block->getMetadata(),
 				));
 			}elseif($direct === false){
-				if(!($block->level instanceof Level)){
-					$block->position($pos);
-				}
+				$block->position($pos);
 				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
 				if(!isset($this->changedBlocks[$i])){
 					$this->changedBlocks[$i] = array();
 					$this->changedCount[$i] = 0;
 				}
-				$this->changedBlocks[$i][] = $block;
+				$this->changedBlocks[$i][] = clone $block;
 				++$this->changedCount[$i];
 			}
 		}
@@ -241,9 +239,8 @@ class Level{
 			if(!($pos instanceof Position)){
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 			}
-			if(!($block->level instanceof Level)){
-				$block->position($pos);
-			}
+			$block->position($pos);
+
 			if($direct === true){
 				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
 					"x" => $pos->x,
@@ -258,12 +255,11 @@ class Level{
 					$this->changedBlocks[$i] = array();
 					$this->changedCount[$i] = 0;
 				}
-				$this->changedBlocks[$i][] = $block;
+				$this->changedBlocks[$i][] = clone $block;
 				++$this->changedCount[$i];
 			}
 
-			if($update === true){
-				
+			if($update === true){				
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){

@@ -415,7 +415,7 @@ class Entity extends Position{
 				}
 				
 				if($support === false){
-					$this->speedY -= ($this->class === ENTITY_FALLING ? 16:32) * $tdiff;
+					$this->speedY -= ($this->class === ENTITY_FALLING ? 18:32) * $tdiff;
 					$update = true;
 				}elseif($this->speedY <= 0.1){
 					$this->speedX = 0;

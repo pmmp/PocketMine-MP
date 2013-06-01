@@ -33,24 +33,7 @@ class FallableBlock extends SolidBlock{
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
-		ServerAPI::request()->api->block->blockUpdate($this, BLOCK_UPDATE_NORMAL);
+		ServerAPI::request()->api->block->blockUpdate(clone $this, BLOCK_UPDATE_NORMAL);
 		return $ret;
-	}
-	
-	public function onUpdate($type){
-		if($this->getSide(0)->getID() === AIR){
-			$data = array(
-				"x" => $this->x + 0.5,
-				"y" => $this->y + 0.5,
-				"z" => $this->z + 0.5,
-				"Tile" => $this->id,
-			);
-			$server = ServerAPI::request();
-			$this->level->setBlock($this, new AirBlock(), false, false, true);
-			$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
-			$server->api->entity->spawnToAll($this->level, $e->eid);
-			return BLOCK_UPDATE_NORMAL;
-		}
-		return false;
 	}
 }

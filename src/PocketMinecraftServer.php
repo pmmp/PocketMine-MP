@@ -107,7 +107,7 @@ class PocketMinecraftServer{
 	
 	public function checkTicks(){
 		if($this->getTPS() < 12){
-			console("[WARNING] Can\'t keep up! Is the server overloaded?");
+			console("[WARNING] Can't keep up! Is the server overloaded?");
 		}
 	}
 

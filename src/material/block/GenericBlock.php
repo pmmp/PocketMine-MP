@@ -39,14 +39,30 @@ class GenericBlock extends Block{
 	}
 	
 	public function onBreak(Item $item, Player $player){
-		return $this->level->setBlock($this, new AirBlock());
+		return $this->level->setBlock($this, new AirBlock(), true, false, true);
 	}
 	
 	public function onUpdate($type){
+		if($this->hasPhysics === true){
+			if($this->getSide(0)->getID() === AIR){
+				$data = array(
+					"x" => $this->x + 0.5,
+					"y" => $this->y + 0.5,
+					"z" => $this->z + 0.5,
+					"Tile" => $this->id,
+				);
+				$server = ServerAPI::request();
+				$this->level->setBlock($this, new AirBlock(), false, false, true);
+				$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
+				$server->api->entity->spawnToAll($this->level, $e->eid);
+				$server->api->block->blockUpdateAround(clone $this, BLOCK_UPDATE_NORMAL, 1);
+			}
+			return false;
+		}
 		return false;
 	}
 
 	public function onActivate(Item $item, Player $player){
-		return ($this->isActivable);
+		return $this->isActivable;
 	}
 }
