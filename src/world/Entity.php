@@ -353,6 +353,7 @@ class Entity extends Position{
 			$endX = $startX + 2;
 			$endZ = $startZ + 2;
 			$support = false;
+			$isFlying = true;
 			for($z = $startZ; $z <= $endZ; ++$z){
 				for($x = $startX; $x <= $endX; ++$x){
 					$v = new Vector3($x, $y, $z);
@@ -360,7 +361,10 @@ class Entity extends Position{
 						$b = $this->level->getBlock($v);
 						if($b->isSolid === true){
 							$support = true;
+							$isFlying = false;
 							break;
+						}elseif(($b instanceof LiquidBlock) or $b->getID() === COBWEB or $b->getID() === LADDER){
+							$isFlying = false;
 						}
 					}
 				}
@@ -431,12 +435,12 @@ class Entity extends Position{
 				}
 				
 			}elseif($this->class === ENTITY_PLAYER and ($this->player instanceof Player)){
-				if($support === false and ($this->player->gamemode & 0x01) === 0x00){
+				if($isFlying === true and ($this->player->gamemode & 0x01) === 0x00){
 					if($this->fallY === false or $this->fallStart === false){
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
 					}elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
-						if($this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true and $this->level->getBlock(new Vector3($x, $y - 1, $z)) !== WATER){
+						if($this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true){
 							$this->player->close("flying");
 							return;
 						}
@@ -448,7 +452,7 @@ class Entity extends Position{
 						$d = $this->level->getBlock(new Vector3($x, $y + 1, $z));
 						$d2 = $this->level->getBlock(new Vector3($x, $y + 2, $z));
 						$dmg = ($this->fallY - $y) - 3;
-						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER and !($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER){
+						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER and $d->getID() !== COBWEB and !($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER and $d2->getID() !== COBWEB){
 							$this->harm($dmg, "fall");
 						}
 					}
