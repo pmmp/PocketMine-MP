@@ -426,6 +426,7 @@ class Entity extends Position{
 					$this->speedY = 0;
 					$this->speedZ = 0;
 					$update = false;
+					$this->server->api->handle("entity.move", $this);
 					$this->server->api->handle("entity.motion", $this);
 				}
 				
@@ -830,7 +831,7 @@ class Entity extends Position{
 					$this->x = 0;
 					$this->y = -10;
 					$this->z = 0;
-					$this->server->api->dhandle("entity.move", $this);
+					$this->server->api->trigger("entity.move", $this);
 					$this->x = $x;
 					$this->y = $y;
 					$this->z = $z;
