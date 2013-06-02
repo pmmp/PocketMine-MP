@@ -436,7 +436,7 @@ class Entity extends Position{
 						$this->fallY = $y;
 						$this->fallStart = microtime(true);
 					}elseif($this->class === ENTITY_PLAYER and ($this->fallStart + 5) < microtime(true)){
-						if($this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true){
+						if($this->server->api->getProperty("allow-flight") !== true and $this->server->handle("player.flying", $this->player) !== true and $this->level->getBlock(new Vector3($x, $y - 1, $z)) !== WATER){
 							$this->player->close("flying");
 							return;
 						}
