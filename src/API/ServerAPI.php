@@ -58,7 +58,7 @@ class ServerAPI{
 
 		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
-			"server-name" => "Minecraft PE Server",
+			"server-name" => "Minecraft: PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",
 			"server-ip" => "",
