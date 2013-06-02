@@ -37,8 +37,8 @@ if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
 	$j = array_map("intval", explode("/", trim($date[0])));
 	$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
 }else{
-	exec("date +%s", trim($t[0]));
-	$offset = round((intval($t) - time()) / 60) * 60;
+	exec("date +%s", $t);
+	$offset = round((intval(trim($t[0])) - time()) / 60) * 60;
 }
 
 $daylight = (int) date("I");
