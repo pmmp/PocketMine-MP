@@ -34,7 +34,7 @@ class Position extends Vector3{
 	}
 	
 	public function getSide($side){
-		return new Position(parent::side($side), 0, 0, $this->level);
+		return new Position(parent::getSide($side), 0, 0, $this->level);
 	}
 	
 	public function distance($x = 0, $y = 0, $z = 0){
