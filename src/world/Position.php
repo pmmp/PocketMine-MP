@@ -33,6 +33,10 @@ class Position extends Vector3{
 		$this->level = $level;
 	}
 	
+	public function getSide($side){
+		return new Position(parent::side($side), 0, 0, $this->level);
+	}
+	
 	public function distance($x = 0, $y = 0, $z = 0){
 		if(($x instanceof Position) and $x->level !== $this->level){
 			return PHP_INT_MAX;
