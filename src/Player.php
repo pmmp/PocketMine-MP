@@ -875,7 +875,7 @@ class Player{
 								$this->close("Incorrect protocol", false);
 								break;
 							}
-							if(preg_match('#^[a-zA-Z0-9_]{2,16}$#', $data["username"])){
+							if(preg_match('#[^a-zA-Z0-9_]#', $data["username"]) == 0){
 								$this->username = $data["username"];
 								$this->iusername = strtolower($this->username);
 							}else{
@@ -1304,7 +1304,7 @@ class Player{
 								break;
 							}
 							$message = $data["message"];
-							if(trim($data["message"]) != ""){
+							if(trim($data["message"]) != "" and preg_match('#[^\\x20-\\xff]#', $message) == 0){
 								if($message{0} === "/"){ //Command
 									$this->server->api->console->run(substr($message, 1), $this);
 								}else{
