@@ -61,6 +61,7 @@ define("ENTITY_MOB", 2);
 	define("MOB_PIGMAN", 36);
 
 define("ENTITY_OBJECT", 3);
+	define("OBJECT_ARROW", 80);
 	define("OBJECT_PAINTING", 83);
 
 define("ENTITY_ITEM", 4);

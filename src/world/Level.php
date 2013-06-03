@@ -144,21 +144,52 @@ class Level{
 					),
 				);
 			}elseif($entity->class === ENTITY_OBJECT){
+				if($entity->type === OBJECT_PAINTING){
+					$entities[] = array(
+						"id" => $entity->type,
+						"TileX" => $entity->x,
+						"TileX" => $entity->y,
+						"TileX" => $entity->z,
+						"Health" => $entity->health,
+						"Motive" => $entity->data["Motive"],
+						"Pos" => array(
+							0 => $entity->x,
+							1 => $entity->y,
+							2 => $entity->z,
+						),
+						"Rotation" => array(
+							0 => $entity->yaw,
+							1 => $entity->pitch,
+						),
+					);
+				}else{
+					$entities[] = array(
+						"id" => $entity->type,
+						"Health" => $entity->health,
+						"Pos" => array(
+							0 => $entity->x,
+							1 => $entity->y,
+							2 => $entity->z,
+						),
+						"Rotation" => array(
+							0 => $entity->yaw,
+							1 => $entity->pitch,
+						),
+					);
+				}
+			}elseif($entity->class === ENTITY_FALLING){
 				$entities[] = array(
 					"id" => $entity->type,
-					"TileX" => $entity->x,
-					"TileX" => $entity->y,
-					"TileX" => $entity->z,
 					"Health" => $entity->health,
-					"Motive" => $entity->data["Motive"],
+					"Tile" => $entity->data["Tile"],
 					"Pos" => array(
 						0 => $entity->x,
 						1 => $entity->y,
 						2 => $entity->z,
 					),
 					"Rotation" => array(
-						0 => $entity->yaw,
-						1 => $entity->pitch,
+						0 => 0,
+						1 => 0,
 					),
 				);
 			}elseif($entity->class === ENTITY_ITEM){

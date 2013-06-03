@@ -554,13 +554,34 @@ class CustomPacketHandler{
 					$this->data["fy"] = Utils::readFloat($this->get(4));
 					$this->data["fz"] = Utils::readFloat($this->get(4));
 				}else{
-					/*$this->raw .= Utils::writeByte($this->data["action"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= Utils::writeInt($this->data["face"]);
+					$this->raw .= Utils::writeShort($this->data["block"]);
+					$this->raw .= Utils::writeByte($this->data["meta"]);
 					$this->raw .= Utils::writeInt($this->data["eid"]);
-					$this->raw .= Utils::writeInt($this->data["target"]);*/
+					$this->raw .= Utils::writeFloat($this->data["fx"]);
+					$this->raw .= Utils::writeFloat($this->data["fy"]);
+					$this->raw .= Utils::writeFloat($this->data["fz"]);	
 				}
 				break;
 			case MC_PLAYER_ACTION:
-				//TODO
+				if($this->c === false){
+					$this->data["action"] = Utils::readInt($this->get(4));
+					$this->data["x"] = Utils::readInt($this->get(4));
+					$this->data["y"] = Utils::readInt($this->get(4));
+					$this->data["z"] = Utils::readInt($this->get(4));
+					$this->data["face"] = Utils::readInt($this->get(4));
+					$this->data["eid"] = Utils::readInt($this->get(4));
+				}else{
+					$this->raw .= Utils::writeInt($this->data["action"]);
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
+					$this->raw .= Utils::writeInt($this->data["face"]);
+					$this->raw .= Utils::writeInt($this->data["eid"]);
+				}
 				break;
 			case MC_SET_ENTITY_DATA:
 				if($this->c === false){

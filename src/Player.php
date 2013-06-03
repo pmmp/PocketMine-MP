@@ -42,6 +42,7 @@ class Player{
 	private $username;
 	private $iusername;
 	private $eid = false;
+	private $startAction = false;
 	public $data;
 	public $entity = false;
 	public $auth = false;
@@ -435,6 +436,12 @@ class Player{
 				}
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
 
+				break;
+			case "player.action":
+				if($data["eid"] === $this->eid or $data["player"]->level !== $this->level){
+					break;
+				}
+				$this->dataPacket(MC_USE_ITEM, $data);
 				break;
 			case "entity.move":
 				if($data->eid === $this->eid or $data->level !== $this->level){
@@ -946,6 +953,7 @@ class Player{
 							$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.equipment.change", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.armor", array($this, "eventHandler"));
+							$this->evid[] = $this->server->event("player.action", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
@@ -1015,6 +1023,10 @@ class Player{
 							}elseif($this->itemEnforcement === true){
 								$this->sendInventory();
 							}
+							if($this->entity->inAction === true){
+								$this->entity->inAction = false;
+								$this->entity->updateMetadata();
+							}
 							break;
 						case MC_REQUEST_CHUNK:
 							if($this->spawned === false){
@@ -1026,13 +1038,50 @@ class Player{
 								break;
 							}
 							$data["eid"] = $this->eid;
-							if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
-								break;
-							}elseif(!$this->hasItem($data["block"], $data["meta"]) and $this->itemEnforcement === true){
-								$this->sendInventory();
+							$data["player"] = $this;
+							if($data["face"] >= 0 and $data["face"] <= 5){ //Use Block, place
+								if($this->entity->inAction === true){
+									$this->entity->inAction = false;
+									$this->entity->updateMetadata();
+								}
+								if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
+									break;
+								}elseif(!$this->hasItem($data["block"], $data["meta"]) and $this->itemEnforcement === true){
+									$this->sendInventory();
+									break;
+								}
+								$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
+							}elseif($data["face"] === 0xFF and $this->server->handle("player.action", $data) !== false){
+								$this->entity->inAction = true;
+								$this->startAction = microtime(true);
+								$this->entity->updateMetadata();
+							}
+							break;
+						case MC_PLAYER_ACTION:
+							if($this->spawned === false){
 								break;
 							}
-							$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
+							if($this->entity->inAction === true){
+								switch($data["action"]){
+									case 5: //Shot arrow
+										if($this->equipment->getID() === BOW){
+											if($this->startAction !== false){
+												$time = microtime(true) - $this->startAction;
+												$d = array(
+													"x" => $this->entity->x,
+													"y" => $this->entity->y + 1.6,
+													"z" => $this->entity->z,
+												);
+												$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
+												$this->server->api->entity->spawnToAll($this->level, $e->eid);
+											}
+										}
+										break;
+								}
+							}
+							$this->startAction = false;
+							$this->entity->inAction = false;
+							$this->entity->updateMetadata();
 							break;
 						case MC_REMOVE_BLOCK:
 							if($this->spawned === false){
@@ -1050,6 +1099,10 @@ class Player{
 							$data["eid"] = $this->eid;
 							$data["player"] = $this;
 							$this->server->handle("player.armor", $data);
+							if($this->entity->inAction === true){
+								$this->entity->inAction = false;
+								$this->entity->updateMetadata();
+							}
 							break;
 						case MC_INTERACT:
 							if($this->spawned === false){
@@ -1163,6 +1216,10 @@ class Player{
 								break;
 							}
 							$data["eid"] = $this->eid;
+							if($this->entity->inAction === true){
+								$this->entity->inAction = false;
+								$this->entity->updateMetadata();
+							}
 							switch($data["event"]){
 								case 9: //Eating
 									$items = array(
@@ -1204,6 +1261,10 @@ class Player{
 								if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === true or $this->itemEnforcement !== true){
 									$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $item);
 								}
+							}
+							if($this->entity->inAction === true){
+								$this->entity->inAction = false;
+								$this->entity->updateMetadata();
 							}
 							break;
 						case MC_SIGN_UPDATE:
