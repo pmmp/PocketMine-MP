@@ -127,6 +127,9 @@ class Level{
 	}
 	
 	public function save($force = false){
+		if(!isset($this->level)){
+			return false;
+		}
 		if($this->server->saveEnabled === false and $force === false){
 			return;
 		}
