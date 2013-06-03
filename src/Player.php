@@ -1304,11 +1304,13 @@ class Player{
 								break;
 							}
 							$message = $data["message"];
-							if($message{0} === "/"){ //Command
-								$this->server->api->console->run(substr($message, 1), $this);
-							}else{
-								if($this->server->api->dhandle("player.chat", array("player" => $this, "message" => $message)) !== false){
-									$this->server->api->chat->send($this, $message);
+							if(trim($data["message"]) != ""){
+								if($message{0} === "/"){ //Command
+									$this->server->api->console->run(substr($message, 1), $this);
+								}else{
+									if($this->server->api->dhandle("player.chat", array("player" => $this, "message" => $message)) !== false){
+										$this->server->api->chat->send($this, $message);
+									}
 								}
 							}
 							break;
