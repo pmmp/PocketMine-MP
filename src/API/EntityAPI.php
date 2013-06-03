@@ -112,21 +112,9 @@ class EntityAPI{
 		return $this->entities[$eid];
 	}
 
-	public function spawnTo($eid, $player){
-		$e = $this->get($eid);
-		if($e === false){
-			return false;
-		}
-		$e->spawn($player);
-	}
-
-	public function spawnToAll(Level $level, $eid){
-		$e = $this->get($eid);
-		if($e === false){
-			return false;
-		}
-		foreach($this->server->api->player->getAll($level) as $player){
-			if($player->eid !== false and $player->eid !== $eid){
+	public function spawnToAll(Entity $e){
+		foreach($this->server->api->player->getAll($e->level) as $player){
+			if($player->eid !== false and $player->eid !== $e->eid){
 				$e->spawn($player);
 			}
 		}
@@ -150,7 +138,7 @@ class EntityAPI{
 				$item->count = min($item->getMaxStackSize(), $count);
 				$count -= $item->count;
 				$e = $this->add($pos->level, ENTITY_ITEM, $item->getID(), $data);
-				$this->spawnToAll($pos->level, $e->eid);
+				$this->spawnToAll($e);
 				$this->server->api->handle("entity.motion", $e);
 			}
 		}

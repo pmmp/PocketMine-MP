@@ -171,7 +171,10 @@ class Player{
 		$tiles = $this->server->query("SELECT ID FROM tileentities WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-				$this->server->api->tileentity->spawnTo($tile["ID"], $this);
+				$tile = $this->server->api->tileentitiy->getByID($tile["ID"]);
+				if($tile instanceof TileEntity){
+					$tile->spawn($this);
+				}
 			}
 		}
 		
@@ -636,7 +639,7 @@ class Player{
 				$this->level->freeAllChunks($this);
 				$this->level = $pos->level;
 				$this->chunksLoaded = array();
-				$this->server->api->entity->spawnToAll($this->level, $this->eid);
+				$this->server->api->entity->spawnToAll($this->entity);
 				$this->server->api->entity->spawnAll($this);
 				$terrain = true;
 			}
@@ -987,7 +990,7 @@ class Player{
 									}
 									$this->spawned = true;						
 									$this->server->api->entity->spawnAll($this);
-									$this->server->api->entity->spawnToAll($this->level, $this->eid);
+									$this->server->api->entity->spawnToAll($this->entity);
 									$this->server->schedule(5, array($this->entity, "update"), array(), true);
 									$this->sendArmor();
 									$this->eventHandler(new Container($this->server->motd), "server.chat");
@@ -1089,7 +1092,7 @@ class Player{
 													"z" => $this->entity->z,
 												);
 												$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
-												$this->server->api->entity->spawnToAll($this->level, $e->eid);
+												$this->server->api->entity->spawnToAll($e);
 											}
 										}
 										break;
@@ -1396,7 +1399,7 @@ class Player{
 					"meta" => $data[1],
 					"stack" => $data[2],
 				));
-				$this->server->api->entity->spawnTo($e->eid, $this);
+				$e->spawn($this);
 			}
 			$this->inventory[$s] = array(AIR, 0, 0);
 		}*/

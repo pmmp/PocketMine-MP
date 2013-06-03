@@ -75,7 +75,7 @@ class TileEntityAPI{
 	public function add(Level $level, $class, $x, $y, $z, $data = array()){
 		$id = $this->tCnt++;
 		$this->tileEntities[$id] = new TileEntity($level, $id, $class, $x, $y, $z, $data);
-		$this->spawnToAll($level, $id);
+		$this->spawnToAll($this->tileEntities[$id]);
 		return $this->tileEntities[$id];
 	}
 	
@@ -92,20 +92,8 @@ class TileEntityAPI{
 		));
 	}
 
-	public function spawnTo($id, $player){
-		$t = $this->getByID($id);
-		if($t === false){
-			return false;
-		}
-		$t->spawn($player);
-	}
-
-	public function spawnToAll(Level $level, $id){
-		$t = $this->getByID($id);
-		if($t === false){
-			return false;
-		}
-		foreach($this->server->api->player->getAll($level) as $player){
+	public function spawnToAll(TileEntity $t){
+		foreach($this->server->api->player->getAll($t->level) as $player){
 			if($player->eid !== false){
 				$t->spawn($player);
 			}
@@ -126,6 +114,7 @@ class TileEntityAPI{
 			$t->closed = true;
 			$t->close();
 			$this->server->query("DELETE FROM tileentities WHERE ID = ".$id.";");
+			$this->server->api->dhandle("tile.remove", $t);
 			$t = null;
 			unset($t);			
 		}

@@ -79,7 +79,7 @@ class PaintingItem extends Item{
 				"Motive" => $motive[0],
 			);
 			$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			$server->api->entity->spawnToAll($level, $e->eid);
+			$server->api->entity->spawnToAll($e);
 			if(($player->gamemode & 0x01) === 0x00){
 				$player->removeItem($this->getID(), $this->getMetadata(), 1);
 			}
