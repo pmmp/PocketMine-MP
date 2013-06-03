@@ -612,17 +612,15 @@ class Player{
 				$pitch = $this->entity->pitch;
 			}
 			if($this->server->api->dhandle("player.teleport", array("player" => $this, "target" => $pos)) === false){
+				$this->entity->check = true;
 				return false;
 			}
 			
-			$this->lastCorrect = $pos;
-			$this->entity->fallY = false;
-			$this->entity->fallStart = false;
-			$this->entity->setPosition($pos, $yaw, $pitch);
-			$this->entity->resetSpeed();
-			$this->entity->updateLast();
-			$this->entity->calculateVelocity();
 			if($pos instanceof Position and $pos->level !== $this->level){
+				if($this->server->api->dhandle("player.teleport.level", array("player" => $this, "origin" => $this->level, "target" => $pos->level)) === false){
+					$this->entity->check = true;
+					return false;
+				}
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
 						if($e->player instanceof Player){
@@ -642,6 +640,13 @@ class Player{
 				$this->server->api->entity->spawnAll($this);
 				$terrain = true;
 			}
+			$this->lastCorrect = $pos;
+			$this->entity->fallY = false;
+			$this->entity->fallStart = false;
+			$this->entity->setPosition($pos, $yaw, $pitch);
+			$this->entity->resetSpeed();
+			$this->entity->updateLast();
+			$this->entity->calculateVelocity();
 			if($terrain === true){
 				$this->orderChunks();
 				$this->getNextChunk(false);
