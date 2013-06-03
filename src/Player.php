@@ -1006,6 +1006,7 @@ class Player{
 									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 									$this->blocked = false;
 									$this->teleport(new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level));
+									$this->server->handle("player.spawn", $this);
 									break;
 								case 2://Chunk loaded?
 									break;
@@ -1220,6 +1221,7 @@ class Player{
 							$this->sendInventory();
 							$this->teleport($this->spawnPosition);
 							$this->blocked = false;
+							$this->server->handle("player.respawn", $this);
 							break;
 						case MC_SET_HEALTH:
 							if($this->spawned === false){
