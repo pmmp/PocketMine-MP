@@ -230,6 +230,15 @@ class Tile extends Position{
 		$this->server->handle("tile.update", $this);
 		return true;
 	}
+	
+	public function getText(){
+		return array(
+			$this->data["Text1"],
+			$this->data["Text2"],
+			$this->data["Text3"],
+			$this->data["Text4"]
+		);
+	}
 
 	public function close(){
 		if($this->closed === false){
