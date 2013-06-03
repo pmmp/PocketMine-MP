@@ -326,7 +326,6 @@ class Player{
 	public function getSlot($slot){
 		$slot = $this->inventory[(int) $slot];
 		return BlockAPI::getItem($slot[0], $slot[1], $slot[2]);
-		return true;
 	}
 	
 	public function sendInventorySlot($s){
