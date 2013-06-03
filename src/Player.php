@@ -1304,7 +1304,7 @@ class Player{
 								break;
 							}
 							$message = $data["message"];
-							if(trim($data["message"]) != "" and preg_match('#[^\\x20-\\xff]#', $message) == 0){
+							if(trim($data["message"]) != "" and strlen($data["message"]) <= 100 and preg_match('#[^\\x20-\\xff]#', $message) == 0){
 								if($message{0} === "/"){ //Command
 									$this->server->api->console->run(substr($message, 1), $this);
 								}else{
