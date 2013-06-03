@@ -62,6 +62,7 @@ class Player{
 	private $chunksOrder = array();
 	private $lag = array(0, 0);
 	private $spawnPosition;
+	private $packetLoss = 0;
 	public $itemEnforcement;
 	public $lastCorrect;
 	private $bigCnt;
@@ -716,15 +717,25 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
+		$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0]);
+		$this->packetStats = array(0, 0);
 		$this->lag[0] = microtime(true) * 1000;
 		$this->dataPacket(MC_PING, array(
 			"time" => (int) $this->lag[0],
 		));
 		$this->sendBuffer();
+		if($this->packetLoss >= PLAYER_MAX_PACKET_LOSS){
+			$this->sendChat("Your connection suffers high packet loss");
+			$this->close("packet.loss");
+		}
 	}
 	
 	public function getLag(){
 		return $this->lag[1] - $this->lag[0];
+	}
+	
+	public function getPacketLoss(){
+		return $this->packetLoss;
 	}
 
 	public function handle($pid, $data){
@@ -957,7 +968,7 @@ class Player{
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
-							$this->server->schedule(40, array($this, "measureLag"), array(), true);
+							$this->server->schedule(100, array($this, "measureLag"), array(), true);
 							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 							break;
 						case MC_READY:
