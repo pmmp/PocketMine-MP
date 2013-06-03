@@ -43,7 +43,23 @@ class EntityAPI{
 	}
 	
 	public function init(){
+		$this->server->schedule(25, array($this, "updateEntities"), array(), true);
+	}
 	
+	public function updateEntities(){
+		$l = $this->server->query("SELECT EID FROM entities WHERE hasUpdate = 1;");
+		if($l !== false and $l !== true){
+			while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
+				$e = $this->get($e["EID"]);
+				if($e instanceof Entity){
+					$e->update();
+				}
+			}
+		}
+	}
+	
+	public function updateRadius(Position $center, $radius = 15, $class = false){
+		$this->server->query("UPDATE entities SET hasUpdate = 1 WHERE level = '".$center->level->getName()."' ".($class !== false ? "AND class = $class ":"")."AND abs(x - {$center->x}) <= $radius AND abs(y - {$center->y}) <= $radius AND abs(z - {$center->z}) <= $radius;");
 	}
 
 	public function getRadius(Position $center, $radius = 15, $class = false){

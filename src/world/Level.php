@@ -261,6 +261,7 @@ class Level{
 
 			if($update === true){				
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
+				$this->server->api->entity->updateRadius($pos, 3);
 			}
 			if($tiles === true){
 				if(($t = $this->server->api->tileentity->get($pos)) !== false){

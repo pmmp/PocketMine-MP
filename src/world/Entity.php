@@ -82,7 +82,7 @@ class Entity extends Position{
 		$this->closed = false;
 		$this->name = "";
 		$this->tickCounter = 0;
-		$this->server->query("INSERT OR REPLACE INTO entities (EID, level, type, class, health) VALUES (".$this->eid.", '".$this->level->getName()."', ".$this->type.", ".$this->class.", ".$this->health.");");
+		$this->server->query("INSERT OR REPLACE INTO entities (EID, level, type, class, health, hasUpdate) VALUES (".$this->eid.", '".$this->level->getName()."', ".$this->type.", ".$this->class.", ".$this->health.", 0);");
 		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
 		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
 		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
