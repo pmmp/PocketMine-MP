@@ -157,7 +157,7 @@ class PlayerAPI{
 					$output .= "Please run this command in-game.\n";
 					break;
 				}
-				$output .= "Lag: ".round($issuer->getLag(), 2)."\n";
+				$output .= "ping ".round($issuer->getLag(), 2)."ms, packet loss ".round($issuer->getPacketLoss() * 100, 2)."%\n";
 				break;
 			case "gamemode":
 				$player = false;

@@ -60,7 +60,8 @@ class Player{
 	public $blocked = true;
 	public $chunksLoaded = array();
 	private $chunksOrder = array();
-	private $lag = array(0, 0);
+	private $lag = array();
+	private $lagStat = 0;
 	private $spawnPosition;
 	private $packetLoss = 0;
 	public $itemEnforcement;
@@ -727,10 +728,8 @@ class Player{
 		}
 		$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0]);
 		$this->packetStats = array(0, 0);
-		$this->lag[0] = microtime(true) * 1000;
-		$this->dataPacket(MC_PING, array(
-			"time" => (int) $this->lag[0],
-		));
+		$this->lagStat = array_sum($this->lag) / max(1, count($this->lag));
+		$this->lag = array();
 		$this->sendBuffer();
 		if($this->packetLoss >= PLAYER_MAX_PACKET_LOSS){
 			$this->sendChat("Your connection suffers high packet loss");
@@ -739,7 +738,7 @@ class Player{
 	}
 	
 	public function getLag(){
-		return $this->lag[1] - $this->lag[0];
+		return $this->lagStat * 1000;
 	}
 	
 	public function getPacketLoss(){
@@ -755,6 +754,7 @@ class Player{
 						if(isset($this->recovery[$count])){
 							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $this->recovery[$count]["pid"]);
 							++$this->packetStats[1];
+							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
 							unset($this->recovery[$count]);
 						}
 					}
@@ -763,15 +763,19 @@ class Player{
 					foreach($data[0] as $count){
 						if($count > $this->counter[2]){
 							$this->counter[2] = $count;
+						}						
+						if(isset($this->recovery[$count])){
+							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
+							unset($this->recovery[$count]);
 						}
-						unset($this->recovery[$count]);
 					}
-					$limit = microtime(true) - 8; //max lag
+					$limit = microtime(true) - 3; //max lag
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
 							$this->directDataPacket($d["id"], $d, $d["pid"]);
 							++$this->packetStats[1];
+							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
 							unset($this->recovery[$count]);
 						}
 					}
@@ -826,7 +830,6 @@ class Player{
 						case 0x01:
 							break;
 						case MC_PONG:
-							$this->lag[1] = microtime(true) * 1000;
 							break;
 						case MC_PING:
 							$t = (int) (microtime(true) * 1000);
@@ -976,7 +979,7 @@ class Player{
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
-							$this->server->schedule(100, array($this, "measureLag"), array(), true);
+							$this->server->schedule(50, array($this, "measureLag"), array(), true);
 							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 							break;
 						case MC_READY:
@@ -1223,14 +1226,7 @@ class Player{
 							$this->blocked = false;
 							$this->server->handle("player.respawn", $this);
 							break;
-						case MC_SET_HEALTH:
-							if($this->spawned === false){
-								break;
-							}
-							if(($this->gamemode & 0x01) === 0x01){
-								break;
-							}
-							//$this->entity->setHealth($data["health"], "client");
+						case MC_SET_HEALTH: //Not used
 							break;
 						case MC_ENTITY_EVENT:
 							if($this->spawned === false){
@@ -1244,9 +1240,9 @@ class Player{
 							switch($data["event"]){
 								case 9: //Eating
 									$items = array(
-										APPLE => 2, //Apples
-										MUSHROOM_STEW => 10, //Stew
-										BREAD => 5, //Bread
+										APPLE => 2,
+										MUSHROOM_STEW => 10,
+										BREAD => 5,
 										RAW_PORKCHOP => 3,
 										COOKED_PORKCHOP => 8,
 										RAW_BEEF => 3,
