@@ -52,7 +52,7 @@ class PocketMinecraftServer{
 		$this->invisible = false;
 		$this->levelData = false;
 		$this->difficulty = 1;
-		$this->tileEntities = array();
+		$this->tiles = array();
 		$this->entities = array();
 		$this->custom = array();
 		$this->evCnt = 1;
@@ -119,7 +119,7 @@ class PocketMinecraftServer{
 		$this->query("PRAGMA secure_delete = OFF;");
 		$this->query("CREATE TABLE players (clientID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE COLLATE NOCASE);");
 		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, level TEXT, type NUMERIC, class NUMERIC, hasUpdate NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
-		$this->query("CREATE TABLE tileentities (ID INTEGER PRIMARY KEY, level TEXT, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
+		$this->query("CREATE TABLE tiles (ID INTEGER PRIMARY KEY, level TEXT, class TEXT, x NUMERIC, y NUMERIC, z NUMERIC, spawnable NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		$this->query("CREATE TABLE blockUpdates (level TEXT, x INTEGER, y INTEGER, z INTEGER, delay NUMERIC);");

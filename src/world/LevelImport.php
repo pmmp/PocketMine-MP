@@ -32,13 +32,13 @@ class LevelImport{
 	}
 	
 	public function import(){
-		if(file_exists($this->path."tileEntities.dat")){ //OldPM
+		if(file_exists($this->path."tiles.dat")){ //OldPM
 			$level = unserialize(file_get_contents($this->path."level.dat"));
 			console("[INFO] Importing OldPM level \"".$level["LevelName"]."\" to PMF format");
 			$entities = new Config($this->path."entities.yml", CONFIG_YAML, unserialize(file_get_contents($this->path."entities.dat")));
 			$entities->save();
-			$tileEntities = new Config($this->path."tileEntities.yml", CONFIG_YAML, unserialize(file_get_contents($this->path."tileEntities.dat")));
-			$tileEntities->save();
+			$tiles = new Config($this->path."tiles.yml", CONFIG_YAML, unserialize(file_get_contents($this->path."tiles.dat")));
+			$tiles->save();
 		}elseif(file_exists($this->path."chunks.dat") and file_exists($this->path."level.dat")){ //Pocket
 			$nbt = new NBT();
 			$level = parseNBTData($nbt->loadFile($this->path."level.dat"));
@@ -51,12 +51,12 @@ class LevelImport{
 			if(!isset($entities["TileEntities"])){
 				$entities["TileEntities"] = array();
 			}
-			$tileEntities = $entities["TileEntities"];
+			$tiles = $entities["TileEntities"];
 			$entities = $entities["Entities"];
 			$entities = new Config($this->path."entities.yml", CONFIG_YAML, $entities);
 			$entities->save();
-			$tileEntities = new Config($this->path."tileEntities.yml", CONFIG_YAML, $tileEntities);
-			$tileEntities->save();
+			$tiles = new Config($this->path."tiles.yml", CONFIG_YAML, $tiles);
+			$tiles->save();
 		}else{
 			return false;
 		}
@@ -113,8 +113,8 @@ class LevelImport{
 		@unlink($this->path."entities.dat");
 		@unlink($this->path."chunks.dat");
 		@unlink($this->path."chunks.dat.gz");
-		@unlink($this->path."tileEntities.dat");
-		unset($chunks, $level, $entities, $tileEntities, $nbt);
+		@unlink($this->path."tiles.dat");
+		unset($chunks, $level, $entities, $tiles, $nbt);
 		return true;
 	}
 

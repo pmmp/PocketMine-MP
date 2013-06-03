@@ -52,12 +52,12 @@ class BurningFurnaceBlock extends SolidBlock{
 	public function onActivate(Item $item, Player $player){
 
 		$server = ServerAPI::request();
-		$t = $server->api->tileentity->get($this);
+		$t = $server->api->tile->get($this);
 		$furnace = false;
 		if($t !== false){
 			$furnace = $t;
 		}else{
-			$furnace = $server->api->tileentity->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, array(
+			$furnace = $server->api->tile->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
 				"id" => TILE_FURNACE,
 				"x" => $this->x,

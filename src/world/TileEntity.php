@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class TileEntity extends Position{
+class Tile extends Position{
 	public $name;
 	public $normal;
 	public $id;
@@ -55,10 +55,10 @@ class TileEntity extends Position{
 		$this->x = (int) $x;
 		$this->y = (int) $y;
 		$this->z = (int) $z;
-		$this->server->query("INSERT OR REPLACE INTO tileentities (ID, level, class, x, y, z) VALUES (".$this->id.", '".$this->level->getName()."', '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
+		$this->server->query("INSERT OR REPLACE INTO tiles (ID, level, class, x, y, z) VALUES (".$this->id.", '".$this->level->getName()."', '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
 		switch($this->class){
 			case TILE_SIGN:
-				$this->server->query("UPDATE tileentities SET spawnable = 1 WHERE ID = ".$this->id.";");
+				$this->server->query("UPDATE tiles SET spawnable = 1 WHERE ID = ".$this->id.";");
 				break;
 			case TILE_FURNACE:
 				if(!isset($this->data["BurnTime"]) or $this->data["BurnTime"] < 0){
@@ -234,7 +234,7 @@ class TileEntity extends Position{
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
-			$this->server->api->tileentity->remove($this->id);
+			$this->server->api->tile->remove($this->id);
 		}
 	}
 
@@ -250,12 +250,12 @@ class TileEntity extends Position{
 	public function setPosition(Vector3 $pos){
 		if($pos instanceof Position){
 			$this->level = $pos->level;
-			$this->server->query("UPDATE tileentities SET level = '".$this->level->getName()."' WHERE ID = ".$this->id.";");
+			$this->server->query("UPDATE tiles SET level = '".$this->level->getName()."' WHERE ID = ".$this->id.";");
 		}
 		$this->x = (int) $pos->x;
 		$this->y = (int) $pos->y;
 		$this->z = (int) $pos->z;
-		$this->server->query("UPDATE tileentities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE ID = ".$this->id.";");
+		$this->server->query("UPDATE tiles SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z." WHERE ID = ".$this->id.";");
 	}
 
 }

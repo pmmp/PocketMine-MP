@@ -338,7 +338,7 @@ class BlockAPI{
 			return $this->cancelAction($block, $player);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
-			$t = $this->server->api->tileentity->addSign($player->level, $block->x, $block->y, $block->z);
+			$t = $this->server->api->tile->addSign($player->level, $block->x, $block->y, $block->z);
 			$t->data["creator"] = $player->username;
 		}
 

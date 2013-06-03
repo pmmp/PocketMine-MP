@@ -45,7 +45,7 @@ class ChestBlock extends TransparentBlock{
 				$this->meta = $faces[$player->entity->getDirection()];
 				$this->level->setBlock($block, $this);
 				$server = ServerAPI::request();
-				$server->api->tileentity->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
+				$server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
 					"Items" => array(),
 					"id" => TILE_CHEST,
 					"x" => $this->x,
@@ -70,12 +70,12 @@ class ChestBlock extends TransparentBlock{
 		}
 	
 		$server = ServerAPI::request();
-		$t = $server->api->tileentity->get($this);
+		$t = $server->api->tile->get($this);
 		$chest = false;
 		if($t !== false){
 			$chest = $t;
 		}else{
-			$chest = $server->api->tileentity->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
+			$chest = $server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
 				"id" => TILE_CHEST,
 				"x" => $this->x,

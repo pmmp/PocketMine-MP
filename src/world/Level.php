@@ -26,14 +26,14 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class Level{
-	public $entities, $tileEntities, $nextSave, $players = array();
+	public $entities, $tiles, $nextSave, $players = array();
 	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount;
 	
-	public function __construct(PMFLevel $level, Config $entities, Config $tileEntities, $name){
+	public function __construct(PMFLevel $level, Config $entities, Config $tiles, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->entities = $entities;
-		$this->tileEntities = $tileEntities;
+		$this->tiles = $tiles;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
@@ -216,11 +216,11 @@ class Level{
 		$this->entities->setAll($entities);
 		$this->entities->save();
 		$tiles = array();
-		foreach($this->server->api->tileentity->getAll($this) as $tile){		
+		foreach($this->server->api->tile->getAll($this) as $tile){		
 			$tiles[] = $tile->data;
 		}
-		$this->tileEntities->setAll($tiles);
-		$this->tileEntities->save();
+		$this->tiles->setAll($tiles);
+		$this->tiles->save();
 		
 		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound();
@@ -295,7 +295,7 @@ class Level{
 				$this->server->api->entity->updateRadius($pos, 3);
 			}
 			if($tiles === true){
-				if(($t = $this->server->api->tileentity->get($pos)) !== false){
+				if(($t = $this->server->api->tile->get($pos)) !== false){
 					$t->close();
 				}
 			}

@@ -153,7 +153,7 @@ class ServerAPI{
 		$this->loadAPI("chat", "ChatAPI");
 		$this->loadAPI("ban", "BanAPI");		
 		$this->loadAPI("entity", "EntityAPI");		
-		$this->loadAPI("tileentity", "TileEntityAPI");
+		$this->loadAPI("tile", "TileAPI");
 		$this->loadAPI("player", "PlayerAPI");
 		$this->loadAPI("time", "TimeAPI");
 		$this->loadAPI("mob", "MobAPI");

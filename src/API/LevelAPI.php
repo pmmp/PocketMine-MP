@@ -136,7 +136,7 @@ class LevelAPI{
 				$entity->close();
 			}
 		}
-		foreach($this->server->api->tileentity->getAll($level) as $tile){
+		foreach($this->server->api->tile->getAll($level) as $tile){
 			$tile->close();
 		}
 		unset($this->levels[$name]);
@@ -154,8 +154,8 @@ class LevelAPI{
 		console("[INFO] Preparing level \"".$name."\"");
 		$level = new PMFLevel($path."level.pmf");
 		$entities = new Config($path."entities.yml", CONFIG_YAML);
-		$tileEntities = new Config($path."tileEntities.yml", CONFIG_YAML);
-		$this->levels[$name] = new Level($level, $entities, $tileEntities, $name);
+		$tiles = new Config($path."tiles.yml", CONFIG_YAML);
+		$this->levels[$name] = new Level($level, $entities, $tiles, $name);
 		foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
@@ -185,11 +185,11 @@ class LevelAPI{
 			}
 		}
 			
-		foreach($tileEntities->getAll() as $tile){
+		foreach($tiles->getAll() as $tile){
 			if(!isset($tile["id"])){
 				break;
 			}
-			$t = $this->server->api->tileentity->add($this->levels[$name], $tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
+			$t = $this->server->api->tile->add($this->levels[$name], $tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
 		}
 	}
 

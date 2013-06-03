@@ -115,9 +115,9 @@ class PMFLevel extends PMF{
 			$entities = new Config(dirname($this->file)."/entities.yml", CONFIG_YAML);
 			$entities->save();
 		}
-		if(!file_exists(dirname($this->file)."/tileEntities.yml")){
-			$tileEntities = new Config(dirname($this->file)."/tileEntities.yml", CONFIG_YAML);
-			$tileEntities->save();
+		if(!file_exists(dirname($this->file)."/tiles.yml")){
+			$tiles = new Config(dirname($this->file)."/tiles.yml", CONFIG_YAML);
+			$tiles->save();
 		}
 	}
 	

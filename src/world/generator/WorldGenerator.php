@@ -46,8 +46,8 @@ class WorldGenerator{
 			"height" => $this->height
 		));
 		$entities = new Config($this->path."entities.yml", CONFIG_YAML);
-		$tileEntities = new Config($this->path."tileEntities.yml", CONFIG_YAML);
-		$this->level = new Level($level, $entities, $tileEntities, $name);
+		$tiles = new Config($this->path."tiles.yml", CONFIG_YAML);
+		$this->level = new Level($level, $entities, $tiles, $name);
 	}
 	
 	public function generate(){

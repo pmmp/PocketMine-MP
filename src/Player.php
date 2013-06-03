@@ -168,11 +168,11 @@ class Player{
 			"data" => $this->level->getOrderedMiniChunk($X, $Z, $Y),
 		));
 		
-		$tiles = $this->server->query("SELECT ID FROM tileentities WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
+		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-				$tile = $this->server->api->tileentitiy->getByID($tile["ID"]);
-				if($tile instanceof TileEntity){
+				$tile = $this->server->api->tile->getByID($tile["ID"]);
+				if($tile instanceof Tile){
 					$tile->spawn($this);
 				}
 			}
@@ -1290,8 +1290,8 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-							$t = $this->server->api->tileentity->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
-							if(($t instanceof TileEntity) and $t->class === TILE_SIGN){
+							$t = $this->server->api->tile->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
+							if(($t instanceof Tile) and $t->class === TILE_SIGN){
 								if($t->data["creator"] !== $this->username){
 									$t->spawn($this);
 								}else{
