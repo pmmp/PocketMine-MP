@@ -51,6 +51,12 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
+	public function close(){
+		$chunks = null;
+		unset($chunks, $chunkChange, $locationTable);
+		parent::close();
+	}
+	
 	public function __construct($file, $blank = false){
 		if(is_array($blank)){
 			$this->create($file, 0);

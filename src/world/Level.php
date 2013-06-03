@@ -45,6 +45,10 @@ class Level{
 		$this->changedCount = array();
 	}
 	
+	public function close(){
+		$this->__destruct();
+	}
+	
 	public function useChunk($X, $Z, Player $player){
 		if(!isset($this->usedChunks[$X.".".$Z])){
 			$this->usedChunks[$X.".".$Z] = array();
@@ -118,6 +122,7 @@ class Level{
 	
 	public function __destruct(){
 		$this->save();
+		$this->level->close();
 		unset($this->level);
 	}
 	
