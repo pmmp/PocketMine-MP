@@ -70,7 +70,7 @@ class PlayerAPI{
 					if($e instanceof Entity){
 						switch($e->class){
 							case ENTITY_PLAYER:
-								$message .= " was killed by ".$e->name;
+								$message = " was killed by ".$e->name;
 								break;
 							default:
 								$message = " was killed";
