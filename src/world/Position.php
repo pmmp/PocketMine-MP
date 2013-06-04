@@ -29,7 +29,13 @@ class Position extends Vector3{
 	public $level;
 
 	public function __construct($x = 0, $y = 0, $z = 0, Level $level){
-		parent::__construct($x, $y, $z);
+		if(($x instanceof Vector3) === true){
+			$this->__construct($x->x, $x->y, $x->z, $level);
+		}else{
+			$this->x = $x;
+			$this->y = $y;
+			$this->z = $z;
+		}
 		$this->level = $level;
 	}
 	
