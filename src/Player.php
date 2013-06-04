@@ -1445,7 +1445,6 @@ class Player{
 	public function send($pid, $data = array(), $raw = false){
 		if($this->connected === true){
 			$this->server->send($pid, $data, $raw, $this->ip, $this->port);
-			++$this->packetStats[0];
 		}
 	}
 	
@@ -1486,6 +1485,7 @@ class Player{
 				0x50, //0b01010000
 				$data,
 			));
+			++$this->packetStats[0];
 		}
 	}
 	
@@ -1510,6 +1510,7 @@ class Player{
 			$pid,
 			$data,
 		));
+		++$this->packetStats[0];
 	}
 
 	public function dataPacket($id, $data = array()){

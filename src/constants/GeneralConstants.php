@@ -35,7 +35,7 @@ define("VIEWER", 3);
 
 //Players
 define("PLAYER_RECOVERY_BUFFER", 2048);
-define("PLAYER_MAX_PACKET_LOSS", 0.40);
+define("PLAYER_MAX_PACKET_LOSS", 0.20);
 
 
 //Block Updates
