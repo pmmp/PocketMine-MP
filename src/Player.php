@@ -828,12 +828,14 @@ class Player{
 							$arr = array();
 							for($i = $this->counter[1]; $i < $data[0]; ++$i){
 								$arr[] = $i;
+								++$this->packetStats[1];
 							}
 							$this->send(0xa0, array($arr));
 							$this->counter[1] = $data[0];
 						}elseif($diff === 1){
-							$this->counter[1] = $data[0];
+							$this->counter[1] = $data[0];							
 						}
+						++$this->packetStats[0];
 						$this->send(0xc0, array(array($data[0])));
 					}
 					

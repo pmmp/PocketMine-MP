@@ -56,7 +56,7 @@ class PluginAPI extends stdClass{
 		}else{
 			$content = file_get_contents($file);
 			$info = strstr($content, "*/", true);
-			$content = substr(strstr($content, "*/"),2);
+			$content = str_repeat(PHP_EOL, substr_count($info, "\n")).substr(strstr($content, "*/"),2);
 			if(preg_match_all('#([a-zA-Z0-9\-_]*)=([^\r\n]*)#u', $info, $matches) == 0){ //false or 0 matches
 				console("[ERROR] Failed parsing of ".basename($file));
 				return false;
