@@ -61,13 +61,13 @@ class LeavesBlock extends TransparentBlock{
 	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if(($this->meta & 0x04) === 0){
+			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;
 				$this->level->setBlock($this, $this, false);
 				return BLOCK_UPDATE_RANDOM;
 			}
 		}elseif($type === BLOCK_UPDATE_RANDOM){
-			if(($this->meta & 0x04) === 0 and ($this->meta & 0x08) > 0){
+			if(($this->meta & 0b00001100) === 0x08){
 				$this->meta &= 0x03;
 				if($this->findLog($this, array(), 0) === true){
 					$this->level->setBlock($this, $this, false);
