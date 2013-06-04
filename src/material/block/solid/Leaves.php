@@ -35,16 +35,68 @@ class LeavesBlock extends TransparentBlock{
 			LeavesBlock::OAK => "Oak Leaves",
 			LeavesBlock::SPRUCE => "Spruce Leaves",
 			LeavesBlock::BIRCH => "Birch Leaves",
+			3 => "",
 		);
 		$this->name = $names[$this->meta & 0x03];
 	}
+	
+	private function findLog(Block $pos, array $visited, $distance){
+		$index = $pos->x.".".$pos->y.".".$pos->z;
+		if(isset($visited[$index])){
+			return false;
+		}
+		if($pos->getID() === WOOD){
+			return true;
+		}elseif($pos->getID() === LEAVES and $distance < 4){
+			$visited[$index] = true;
+			for($side = 0; $side <= 5; ++$side){
+				if($this->findLog($pos->getSide($side), $visited, $distance + 1) === true){
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if(($this->meta & 0x04) === 0){
+				$this->meta |= 0x08;
+				$this->level->setBlock($this, $this, false);
+				return BLOCK_UPDATE_RANDOM;
+			}
+		}elseif($type === BLOCK_UPDATE_RANDOM){
+			if(($this->meta & 0x04) === 0 and ($this->meta & 0x08) > 0){
+				$this->meta &= 0x03;
+				if($this->findLog($this, array(), 0) === true){
+					$this->level->setBlock($this, $this, false);
+				}else{
+					$this->level->setBlock($this, new AirBlock());
+					if(mt_rand(1,20) === 1){ //Saplings
+						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SAPLING, $this->meta & 0x03, 1));
+					}
+					if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1,200) === 1){ //Apples
+						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(APPLE, 0, 1));
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		$this->meta |= 0x04;
+		$this->level->setBlock($this, $this);
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if(mt_rand(1,20) === 1){ //Saplings
 			$drops[] = array(SAPLING, $this->meta & 0x03, 1);
 		}
 		if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1,200) === 1){ //Apples
-			$drops[] = array(260, 0, 1);
+			$drops[] = array(APPLE, 0, 1);
 		}
 		return $drops;
 	}
