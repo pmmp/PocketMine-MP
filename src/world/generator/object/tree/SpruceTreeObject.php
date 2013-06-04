@@ -64,13 +64,13 @@ class SpruceTreeObject extends TreeObject{
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
 			$this->findRandomLeavesSize();
 		}
-		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
+		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
 			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
 				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
-						$level->setBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBLock($this->type));
+						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBlock($this->type));
 					}
 				}
 			}
@@ -81,7 +81,7 @@ class SpruceTreeObject extends TreeObject{
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlock(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
+			$level->setBlockRaw(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
 		}
 	}
 

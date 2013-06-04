@@ -45,7 +45,7 @@ class TallGrassObject{
 			$d = $level->getBlock(new Vector3($x, $pos->y, $z));
 			if($b->getID() === AIR and $d->getID() === GRASS){
 				$t = $arr[$random->nextRange(0, count($arr) - 1)];
-				$level->setBlock($b, BlockAPI::get($t[0], $t[1]));
+				$level->setBlockRaw($b, BlockAPI::get($t[0], $t[1]));
 			}
 		}
 	}

@@ -64,7 +64,7 @@ class PineTreeObject extends TreeObject{
 		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1) {
 			$this->findRandomLeavesSize($random);
 		}
-		$level->setBlock(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
+		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$leavesRadius = 0;
 		$leavesMaxRadius = 1;
 		$leavesBottomY = $this->totalHeight - $this->leavesSizeY;
@@ -74,7 +74,7 @@ class PineTreeObject extends TreeObject{
 			for ($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
 				for ($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
 					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
-						$level->setBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBlock($this->type));
+						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBlock($this->type));
 					}
 				}
 			}
@@ -90,7 +90,7 @@ class PineTreeObject extends TreeObject{
 		}
 		$trunkHeightReducer = $random->nextRange(0, 3);
 		for($yy = 0; $yy < ($this->totalHeight - $trunkHeightReducer); ++$yy){
-			$level->setBlock(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
+			$level->setBlockRaw(new Vector3($pos->x, $pos->y + $yy, $pos->z), new WoodBlock($this->type));
 		}
 	}
 

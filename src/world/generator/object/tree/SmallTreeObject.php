@@ -60,7 +60,7 @@ class SmallTreeObject extends TreeObject{
 	public function placeObject(Level $level, Vector3 $pos, Random $random){
       // The base dirt block
       $dirtpos = new Vector3( $pos->x, $pos->y -1, $pos->z );
-		$level->setBlock( $dirtpos, new DirtBlock() );
+		$level->setBlockRaw( $dirtpos, new DirtBlock() );
 
       // Adjust the tree trunk's height randomly
       //    plot [-14:11] int( x / 8 ) + 5
@@ -93,7 +93,7 @@ class SmallTreeObject extends TreeObject{
                      $leafpos = new Vector3( $pos->x + $xx,
                                              $pos->y + $yy,
                                              $pos->z + $zz );
-                     $level->setBlock( $leafpos, new LeavesBlock( $this->type ) );
+                     $level->setBlockRaw($leafpos, new LeavesBlock( $this->type ) );
                   }
                }
             }
@@ -104,7 +104,7 @@ class SmallTreeObject extends TreeObject{
          if( $leaflevel > 1 )
          {
             $trunkpos = new Vector3( $pos->x, $pos->y + $yy, $pos->z );
-            $level->setBlock( $trunkpos, new WoodBlock( $this->type ) );
+            $level->setBlockRaw($trunkpos, new WoodBlock( $this->type ) );
          }
       }
    }
