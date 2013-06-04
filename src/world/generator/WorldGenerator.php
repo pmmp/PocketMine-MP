@@ -47,7 +47,8 @@ class WorldGenerator{
 		));
 		$entities = new Config($this->path."entities.yml", CONFIG_YAML);
 		$tiles = new Config($this->path."tiles.yml", CONFIG_YAML);
-		$this->level = new Level($level, $entities, $tiles, $name);
+		$blockUpdates = new Config($this->path."bupdates.yml", CONFIG_YAML);
+		$this->level = new Level($level, $entities, $tiles, $blockUpdates, $name);
 	}
 	
 	public function generate(){
@@ -65,6 +66,10 @@ class WorldGenerator{
 		$this->generator->populateLevel();
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true);
+	}
+	
+	public function close(){
+		$this->level->close();
 	}
 
 }

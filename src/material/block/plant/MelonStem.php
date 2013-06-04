@@ -34,6 +34,7 @@ class MelonStemBlock extends FlowableBlock{
 			$down = $this->getSide(0);
 			if($down->getID() === FARMLAND){
 				$this->level->setBlock($block, $this);
+				$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 				return true;
 			}
 		return false;
@@ -46,6 +47,27 @@ class MelonStemBlock extends FlowableBlock{
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
 			}
+		}elseif($type === BLOCK_UPDATE_RANDOM){
+			if(mt_rand(0, 2) == 1){
+				if($this->meta < 0x07){
+					++$this->meta;
+					$this->level->setBlock($this, $this);
+					return BLOCK_UPDATE_RANDOM;
+				}else{
+					for($side = 2; $side <= 5; ++$side){
+						$b = $this->getSide($side);
+						if($b->getID() === MELON_BLOCK){
+							return BLOCK_UPDATE_RANDOM;
+						}
+					}
+					$side = $this->getSide(mt_rand(2,5));
+					$d = $side->getSide(0);
+					if($side->getID() === AIR and ($d->getID() === FARMLAND or $d->getID() === GRASS or $d->getID() === DIRT)){
+						$this->level->setBlock($side, new MelonBlock());
+					}
+				}
+			}
+			return BLOCK_UPDATE_RANDOM;
 		}
 		return false;
 	}

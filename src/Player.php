@@ -742,8 +742,8 @@ class Player{
 		$this->lag = array();
 		$this->sendBuffer();
 		if($this->packetLoss >= PLAYER_MAX_PACKET_LOSS){
-			$this->sendChat("Your connection suffers high packet loss");
-			$this->close("packet.loss");
+			//$this->sendChat("Your connection suffers high packet loss");
+			//$this->close("packet.loss");
 		}
 		$this->lastMeasure = microtime(true);
 	}

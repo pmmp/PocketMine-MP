@@ -107,6 +107,10 @@ class Utils{
 	public static function writeTriad($value){
 		return substr(pack("N", $value), 1);
 	}
+	
+	public static function getRandomUpdateTicks(){
+		return -log(lcg_value())*1365.4; //Poisson distribution (1/(68.27 * 20))
+	}
 
 	public static function writeMetadata($data){
 		$m = "";

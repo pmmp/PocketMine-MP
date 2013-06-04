@@ -26,14 +26,15 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class Level{
-	public $entities, $tiles, $nextSave, $players = array();
+	public $entities, $tiles, $blockUpdates, $nextSave, $players = array();
 	private $level, $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount;
 	
-	public function __construct(PMFLevel $level, Config $entities, Config $tiles, $name){
+	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->entities = $entities;
 		$this->tiles = $tiles;
+		$this->blockUpdates = $blockUpdates;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
@@ -116,7 +117,7 @@ class Level{
 					$this->level->unloadChunk((int) array_pop($X), (int) $Z, $this->server->saveEnabled);
 				}
 			}
-			$this->save();
+			$this->save(false, false);
 		}
 	}
 	
@@ -126,40 +127,23 @@ class Level{
 		unset($this->level);
 	}
 	
-	public function save($force = false){
+	public function save($force = false, $extra = true){
 		if(!isset($this->level)){
 			return false;
 		}
 		if($this->server->saveEnabled === false and $force === false){
 			return;
 		}
-		$entities = array();
-		foreach($this->server->api->entity->getAll($this) as $entity){
-			if($entity->class === ENTITY_MOB){
-				$entities[] = array(
-					"id" => $entity->type,
-					"Color" => @$entity->data["Color"],
-					"Sheared" => @$entity->data["Sheared"],
-					"Health" => $entity->health,
-					"Pos" => array(
-						0 => $entity->x,
-						1 => $entity->y,
-						2 => $entity->z,
-					),
-					"Rotation" => array(
-						0 => $entity->yaw,
-						1 => $entity->pitch,
-					),
-				);
-			}elseif($entity->class === ENTITY_OBJECT){
-				if($entity->type === OBJECT_PAINTING){
+		
+		if($extra !== false){
+			$entities = array();
+			foreach($this->server->api->entity->getAll($this) as $entity){
+				if($entity->class === ENTITY_MOB){
 					$entities[] = array(
 						"id" => $entity->type,
-						"TileX" => $entity->x,
-						"TileX" => $entity->y,
-						"TileX" => $entity->z,
+						"Color" => @$entity->data["Color"],
+						"Sheared" => @$entity->data["Sheared"],
 						"Health" => $entity->health,
-						"Motive" => $entity->data["Motive"],
 						"Pos" => array(
 							0 => $entity->x,
 							1 => $entity->y,
@@ -170,9 +154,63 @@ class Level{
 							1 => $entity->pitch,
 						),
 					);
-				}else{
+				}elseif($entity->class === ENTITY_OBJECT){
+					if($entity->type === OBJECT_PAINTING){
+						$entities[] = array(
+							"id" => $entity->type,
+							"TileX" => $entity->x,
+							"TileX" => $entity->y,
+							"TileX" => $entity->z,
+							"Health" => $entity->health,
+							"Motive" => $entity->data["Motive"],
+							"Pos" => array(
+								0 => $entity->x,
+								1 => $entity->y,
+								2 => $entity->z,
+							),
+							"Rotation" => array(
+								0 => $entity->yaw,
+								1 => $entity->pitch,
+							),
+						);
+					}else{
+						$entities[] = array(
+							"id" => $entity->type,
+							"Health" => $entity->health,
+							"Pos" => array(
+								0 => $entity->x,
+								1 => $entity->y,
+								2 => $entity->z,
+							),
+							"Rotation" => array(
+								0 => $entity->yaw,
+								1 => $entity->pitch,
+							),
+						);
+					}
+				}elseif($entity->class === ENTITY_FALLING){
 					$entities[] = array(
 						"id" => $entity->type,
+						"Health" => $entity->health,
+						"Tile" => $entity->data["Tile"],
+						"Pos" => array(
+							0 => $entity->x,
+							1 => $entity->y,
+							2 => $entity->z,
+						),
+						"Rotation" => array(
+							0 => 0,
+							1 => 0,
+						),
+					);
+				}elseif($entity->class === ENTITY_ITEM){
+					$entities[] = array(
+						"id" => 64,
+						"Item" => array(
+							"id" => $entity->type,
+							"Damage" => $entity->meta,
+							"Count" => $entity->stack,
+						),
 						"Health" => $entity->health,
 						"Pos" => array(
 							0 => $entity->x,
@@ -180,55 +218,35 @@ class Level{
 							2 => $entity->z,
 						),
 						"Rotation" => array(
-							0 => $entity->yaw,
-							1 => $entity->pitch,
+							0 => 0,
+							1 => 0,
 						),
 					);
 				}
-			}elseif($entity->class === ENTITY_FALLING){
-				$entities[] = array(
-					"id" => $entity->type,
-					"Health" => $entity->health,
-					"Tile" => $entity->data["Tile"],
-					"Pos" => array(
-						0 => $entity->x,
-						1 => $entity->y,
-						2 => $entity->z,
-					),
-					"Rotation" => array(
-						0 => 0,
-						1 => 0,
-					),
-				);
-			}elseif($entity->class === ENTITY_ITEM){
-				$entities[] = array(
-					"id" => 64,
-					"Item" => array(
-						"id" => $entity->type,
-						"Damage" => $entity->meta,
-						"Count" => $entity->stack,
-					),
-					"Health" => $entity->health,
-					"Pos" => array(
-						0 => $entity->x,
-						1 => $entity->y,
-						2 => $entity->z,
-					),
-					"Rotation" => array(
-						0 => 0,
-						1 => 0,
-					),
-				);
 			}
+			$this->entities->setAll($entities);
+			$this->entities->save();
+			$tiles = array();
+			foreach($this->server->api->tile->getAll($this) as $tile){		
+				$tiles[] = $tile->data;
+			}
+			$this->tiles->setAll($tiles);
+			$this->tiles->save();
+			
+			$blockUpdates = array();
+			$updates = $this->server->query("SELECT x,y,z,type,delay FROM blockUpdates WHERE level = '".$this->getName()."';");
+			if($updates !== false and $updates !== true){
+				$timeu = microtime(true);
+				while(($bupdate = $updates->fetchArray(SQLITE3_ASSOC)) !== false){
+					$bupdate["delay"] = max(1, ($bupdate["delay"] - $timeu) * 20);					
+					$blockUpdates[] = $bupdate;
+				}
+			}
+
+			$this->blockUpdates->setAll($blockUpdates);
+			$this->blockUpdates->save();
+		
 		}
-		$this->entities->setAll($entities);
-		$this->entities->save();
-		$tiles = array();
-		foreach($this->server->api->tile->getAll($this) as $tile){		
-			$tiles[] = $tile->data;
-		}
-		$this->tiles->setAll($tiles);
-		$this->tiles->save();
 		
 		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound();
@@ -272,7 +290,7 @@ class Level{
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
-		
+
 		$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
 		if($ret === true){
 			if(!($pos instanceof Position)){

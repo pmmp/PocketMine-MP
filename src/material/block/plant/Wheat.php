@@ -35,6 +35,7 @@ class WheatBlock extends FlowableBlock{
 		$down = $this->getSide(0);
 		if($down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this);
+			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 			return true;
 		}
 		return false;
@@ -55,6 +56,16 @@ class WheatBlock extends FlowableBlock{
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(WHEAT_SEEDS, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
+			}
+		}elseif($type === BLOCK_UPDATE_RANDOM){
+			if(mt_rand(0, 2) == 1){
+				if($this->meta < 0x07){
+					++$this->meta;
+					$this->level->setBlock($this, $this);
+					return BLOCK_UPDATE_RANDOM;
+				}
+			}else{
+				return BLOCK_UPDATE_RANDOM;
 			}
 		}
 		return false;

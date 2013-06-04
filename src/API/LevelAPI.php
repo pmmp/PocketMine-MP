@@ -104,6 +104,7 @@ class LevelAPI{
 		}
 		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
 		$gen->generate();
+		$gen->close();
 		return true;
 	}
 	
@@ -159,7 +160,8 @@ class LevelAPI{
 			@rename($path."tileEntities.yml", $path."tiles.yml");
 		}
 		$tiles = new Config($path."tiles.yml", CONFIG_YAML);
-		$this->levels[$name] = new Level($level, $entities, $tiles, $name);
+		$blockUpdates = new Config($path."bupdates.yml", CONFIG_YAML);
+		$this->levels[$name] = new Level($level, $entities, $tiles, $blockUpdates, $name);
 		foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
@@ -194,6 +196,11 @@ class LevelAPI{
 				break;
 			}
 			$t = $this->server->api->tile->add($this->levels[$name], $tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
+		}
+		
+		$timeu = microtime(true);
+		foreach($blockUpdates->getAll() as $bupdate){
+			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"],(int) $bupdate["y"],(int) $bupdate["z"], $this->levels[$name]), $bupdate["delay"], (int) $bupdate["type"]);
 		}
 		return true;
 	}

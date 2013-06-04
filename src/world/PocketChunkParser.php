@@ -25,7 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-class ChunkParser{
+class PocketChunkParser{
 	private $location, $raw = b"", $file;
 	var $sectorLength = 4096; //16 * 16 * 16
 	var $chunkLength = 86016; //21 * $sectorLength

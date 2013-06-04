@@ -72,7 +72,7 @@ class LevelImport{
 			"width" => 16,
 			"height" => 8				
 		));
-		$chunks = new ChunkParser();
+		$chunks = new PocketChunkParser();
 		$chunks->loadFile($this->path."chunks.dat");
 		$chunks->loadMap();
 		for($Z = 0; $Z < 16; ++$Z){

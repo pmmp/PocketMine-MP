@@ -356,6 +356,7 @@ class PMFLevel extends PMF{
 		}else{
 			$m = ($meta << 4) | ($old_m & 0x0F);
 		}
+
 		if($old_b !== $block or $old_m !== $m){
 			$this->chunks[$index][$Y]{$bindex} = chr($block);
 			$this->chunks[$index][$Y]{$mindex} = chr($m);

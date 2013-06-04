@@ -191,7 +191,7 @@ class BlockAPI{
 	}
 
 	public function init(){
-		$this->server->event("server.tick", array($this, "blockUpdateTick"));
+		$this->server->schedule(1, array($this, "blockUpdateTick"), array(), true);
 		$this->server->api->console->register("give", "<player> <item[:damage]> [amount]", array($this, "commandHandler"));
 	}
 
@@ -728,11 +728,14 @@ class BlockAPI{
 		if(!($pos instanceof Block)){
 			$block = $pos->level->getBlock($pos);
 		}else{
-			$block = $pos;
+			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
+			$block = $pos->level->getBlock($pos);
 		}
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
+		}elseif($level === BLOCK_UPDATE_RANDOM){
+			$this->scheduleBlockUpdate($pos, Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 		}
 		return $level;
 	}
@@ -743,33 +746,27 @@ class BlockAPI{
 			return false;
 		}
 
-		$index = $pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName();
+		$index = $pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName().".".$type;
 		$delay = microtime(true) + $delay * 0.05;		
 		if(!isset($this->scheduledUpdates[$index])){
-			$this->scheduledUpdates[$index] = array(
-				$pos,
-				$type,
-				$delay,
-			);
-			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", '".$pos->level->getName()."', ".$delay.");");
+			$this->scheduledUpdates[$index] = $pos;
+			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, type, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", '".$pos->level->getName()."', ".$type.", ".$delay.");");
 			return true;
 		}
 		return false;
 	}
 	
-	public function blockUpdateTick($time, $event){
-		if($event !== "server.tick"){ //WTF??
-			return;
-		}
+	public function blockUpdateTick(){
+		$time = microtime(true);
 		if(count($this->scheduledUpdates) > 0){
-			$update = $this->server->query("SELECT x,y,z,level FROM blockUpdates WHERE delay <= ".$time.";");
+			$update = $this->server->query("SELECT x,y,z,level,type FROM blockUpdates WHERE delay <= ".$time.";");
 			if($update !== false and $update !== true){
 				while(($up = $update->fetchArray(SQLITE3_ASSOC)) !== false){
-					$index = $up["x"].".".$up["y"].".".$up["z"].".".$up["level"];
+					$index = $up["x"].".".$up["y"].".".$up["z"].".".$up["level"].".".$up["type"];
 					if(isset($this->scheduledUpdates[$index])){
-						$up = $this->scheduledUpdates[$index];
+						$upp = $this->scheduledUpdates[$index];
 						unset($this->scheduledUpdates[$index]);
-						$this->blockUpdate($up[0], $up[1]);
+						$this->blockUpdate($upp, (int) $up["type"]);
 					}
 				}
 			}

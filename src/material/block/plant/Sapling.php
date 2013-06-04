@@ -46,6 +46,7 @@ class SaplingBlock extends FlowableBlock{
 		$down = $this->getSide(0);
 		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this);
+			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 			return true;
 		}
 		return false;
@@ -65,12 +66,17 @@ class SaplingBlock extends FlowableBlock{
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
 			}
-		}elseif($type === BLOCK_UPDATE_RANDOM and mt_rand(0,2) === 0){ //Growth
-			if(($this->meta & 0x08) === 0x08){
-				TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
+		}elseif($type === BLOCK_UPDATE_RANDOM){ //Growth
+			if(mt_rand(1,7) === 1){
+				if(($this->meta & 0x08) === 0x08){
+					TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
+				}else{
+					$this->meta |= 0x08;
+					$this->level->setBlock($this, $this);
+					return BLOCK_UPDATE_RANDOM;
+				}
 			}else{
-				$this->meta |= 0x08;
-				$this->level->setBlock($this, $this);
+				return BLOCK_UPDATE_RANDOM;
 			}
 			return true;
 		}
