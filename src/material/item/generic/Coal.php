@@ -28,6 +28,9 @@ the Free Software Foundation, either version 3 of the License, or
 class CoalItem extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(COAL, $meta & 0x01, $count, "Coal");
+		if($this->metadata === 1){
+			$this->name = "Charcoal";
+		}
 	}
 
 }

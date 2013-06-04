@@ -426,11 +426,15 @@ class PlayerAPI{
 			"lastIP" => "",
 			"lastID" => 0,
 		);
-		$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
+		
 		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
 			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
+			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
 			$data->save();
+		}else{
+			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
 		}
+
 		if(($this->server->gamemode & 0x01) === 0x01){
 			$data->set("health", 20);
 		}

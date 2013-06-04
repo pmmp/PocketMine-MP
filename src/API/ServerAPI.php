@@ -81,7 +81,7 @@ class ServerAPI{
 			"generator-settings" => "",
 			"level-name" => "world",
 			"level-seed" => "",
-			"level-type" => "FLAT",
+			"level-type" => "DEFAULT",
 			"enable-query" => true,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),

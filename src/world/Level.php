@@ -383,6 +383,10 @@ class Level{
 		return (int) $this->level->getData("seed");
 	}
 	
+	public function setSeed($seed){
+		$this->level->setData("seed", (int) $seed);
+	}
+	
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}

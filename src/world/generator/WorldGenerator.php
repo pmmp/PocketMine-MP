@@ -65,7 +65,7 @@ class WorldGenerator{
 		console("[NOTICE] Populating level");
 		$this->generator->populateLevel();
 		$this->level->setSpawn($this->generator->getSpawn());
-		$this->level->save(true);
+		$this->level->save(true, true);
 	}
 	
 	public function close(){
