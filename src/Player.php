@@ -737,6 +737,7 @@ class Player{
 		$this->packetStats = array(0, 0);
 		array_shift($this->bandwidthStats);
 		$this->bandwidthStats[] = $this->bandwidthRaw / max(0.00001, microtime(true) - $this->lastMeasure);
+		$this->bandwidthRaw = 0;
 		$this->lagStat = array_sum($this->lag) / max(1, count($this->lag));
 		$this->lag = array();
 		$this->sendBuffer();
