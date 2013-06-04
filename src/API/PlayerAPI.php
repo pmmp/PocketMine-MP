@@ -40,19 +40,21 @@ class PlayerAPI{
 		$this->server->api->console->register("tp", "[target player] <destination player|w:world> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
 		$this->server->api->console->register("spawnpoint", "[player] [x] [y] [z]", array($this, "commandHandler"));
 		$this->server->api->console->register("spawn", "", array($this, "commandHandler"));
-		$this->server->api->console->register("lag", "", array($this, "commandHandler"));
+		$this->server->api->console->register("ping", "", array($this, "commandHandler"));
+		$this->server->api->console->alias("lag", "ping");
 		$this->server->api->console->alias("suicide", "kill");
 		$this->server->api->console->alias("tppos", "tp");
 		$this->server->api->ban->cmdWhitelist("list");
-		$this->server->api->ban->cmdWhitelist("lag");
+		$this->server->api->ban->cmdWhitelist("ping");
 		$this->server->api->ban->cmdWhitelist("spawn");
+		$this->server->preparedSQL->selectPlayersToHeal = $this->server->database->prepare("SELECT EID FROM entities WHERE class = ".ENTITY_PLAYER." AND health < 20;");
 	}
 
 	public function handle($data, $event){
 		switch($event){
 			case "server.regeneration":
-				$result = $this->server->query("SELECT EID FROM entities WHERE class = ".ENTITY_PLAYER." AND health < 20;");
-				if($result !== true and $result !== false){
+				$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
+				if($result !== false){
 					while(($player = $result->fetchArray()) !== false){
 						if(($player = $this->server->api->entity->get($player["EID"])) !== false){
 							if($player->getHealth() <= 0){
@@ -152,12 +154,12 @@ class PlayerAPI{
 				$spawn = $issuer->getSpawn();
 				$issuer->teleport($spawn);
 				break;
-			case "lag":
+			case "ping":
 				if(!($issuer instanceof Player)){					
 					$output .= "Please run this command in-game.\n";
 					break;
 				}
-				$output .= "ping ".round($issuer->getLag(), 2)."ms, packet loss ".round($issuer->getPacketLoss() * 100, 2)."%\n";
+				$output .= "ping ".round($issuer->getLag(), 2)."ms, packet loss ".round($issuer->getPacketLoss() * 100, 2)."%, ".round($issuer->getBandwidth() / 1024, 2)." KB/s\n";
 				break;
 			case "gamemode":
 				$player = false;

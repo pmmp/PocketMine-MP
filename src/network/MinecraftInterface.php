@@ -143,7 +143,7 @@ class MinecraftInterface{
 			$write = $this->socket->write($data, $dest, $port);
 			$this->writeDump($pid, $data, false, "client", $dest, $port);
 		}
-		return true;
+		return $write;
 	}
 
 }

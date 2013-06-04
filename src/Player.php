@@ -60,6 +60,9 @@ class Player{
 	public $blocked = true;
 	public $chunksLoaded = array();
 	private $chunksOrder = array();
+	private $lastMeasure = 0;
+	private $bandwidthRaw = 0;
+	private $bandwidthStats = array(0, 0, 0);
 	private $lag = array();
 	private $lagStat = 0;
 	private $spawnPosition;
@@ -726,8 +729,14 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
-		$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0]);
+		if($this->packetStats[1] > 2){
+			$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0]);
+		}else{
+			$this->packetLoss = 0;
+		}
 		$this->packetStats = array(0, 0);
+		array_shift($this->bandwidthStats);
+		$this->bandwidthStats[] = $this->bandwidthRaw / max(0.00001, microtime(true) - $this->lastMeasure);
 		$this->lagStat = array_sum($this->lag) / max(1, count($this->lag));
 		$this->lag = array();
 		$this->sendBuffer();
@@ -735,6 +744,7 @@ class Player{
 			$this->sendChat("Your connection suffers high packet loss");
 			$this->close("packet.loss");
 		}
+		$this->lastMeasure = microtime(true);
 	}
 	
 	public function getLag(){
@@ -743,6 +753,10 @@ class Player{
 	
 	public function getPacketLoss(){
 		return $this->packetLoss;
+	}
+	
+	public function getBandwidth(){
+		return array_sum($this->bandwidthStats) / max(1, count($this->bandwidthStats));
 	}
 
 	public function handle($pid, $data){
@@ -769,7 +783,7 @@ class Player{
 							unset($this->recovery[$count]);
 						}
 					}
-					$limit = microtime(true) - 3; //max lag
+					$limit = microtime(true) - 6; //max lag
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
@@ -979,6 +993,7 @@ class Player{
 							$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
+							$this->lastMeasure = microtime(true);
 							$this->server->schedule(50, array($this, "measureLag"), array(), true);
 							console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 							break;
@@ -1444,7 +1459,7 @@ class Player{
 
 	public function send($pid, $data = array(), $raw = false){
 		if($this->connected === true){
-			$this->server->send($pid, $data, $raw, $this->ip, $this->port);
+			$this->bandwidthRaw += $this->server->send($pid, $data, $raw, $this->ip, $this->port);
 		}
 	}
 	
