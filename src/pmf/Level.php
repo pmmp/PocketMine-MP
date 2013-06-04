@@ -211,7 +211,7 @@ class PMFLevel extends PMF{
 			return false;
 		}
 		$this->chunks[$index] = array();
-		$this->chunkChange[$index] = array();
+		$this->chunkChange[$index] = array(-1 => false);
 		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
 			$t = 1 << $Y;
 			if(($info[0] & $t) === $t){
@@ -267,6 +267,7 @@ class PMFLevel extends PMF{
 		}
 		$index = $this->getIndex($X, $Z);
 		$this->chunks[$index][$Y] = str_repeat("\x00", 8192);
+		$this->chunkChange[$index][-1] = true;
 		$this->chunkChange[$index][$Y] = 8192;
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
@@ -292,6 +293,7 @@ class PMFLevel extends PMF{
 		}
 		$index = $this->getIndex($X, $Z);
 		$this->chunks[$index][$Y] = (string) $data;
+		$this->chunkChange[$index][-1] = true;
 		$this->chunkChange[$index][$Y] = 8192;
 		$this->locationTable[$index][0] |= 1 << $Y;
 		return true;
@@ -365,6 +367,7 @@ class PMFLevel extends PMF{
 			}else{
 				++$this->chunkChange[$index][$Y];
 			}
+			$this->chunkChange[$index][-1] = true;
 			return true;
 		}
 		return false;
@@ -377,6 +380,10 @@ class PMFLevel extends PMF{
 			return false;
 		}
 		$index = $this->getIndex($X, $Z);
+		if(!isset($this->chunkChange[$index]) or $this->chunkChange[$index][-1] === false){//No changes in chunk
+			return true;
+		}
+		
 		$chunk = @gzopen($this->getChunkPath($X, $Z), "wb9");
 		$bitmap = 0;
 		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
@@ -388,9 +395,11 @@ class PMFLevel extends PMF{
 			}
 			$this->chunkChange[$index][$Y] = 0;
 		}
+		$this->chunkChange[$index][-1] = false;
 		$this->locationTable[$index][0] = $bitmap;
 		$this->seek($this->payloadOffset + ($index << 1));
 		$this->write(Utils::writeShort($this->locationTable[$index][0]));
+		return true;
 	}
 	
 	public function doSaveRound(){

@@ -35,8 +35,10 @@ class WoodBlock extends SolidBlock{
 			WoodBlock::OAK => "Oak Wood",
 			WoodBlock::SPRUCE => "Spruce Wood",
 			WoodBlock::BIRCH => "Birch Wood",
+			3 => "",
 		);
-		$this->name = $names[$this->meta & 0x03];
+		$this->meta &= 0x03;
+		$this->name = $names[$this->meta];
 	}
 	
 }
