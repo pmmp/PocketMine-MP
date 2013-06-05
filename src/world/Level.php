@@ -68,7 +68,7 @@ class Level{
 	}
 	
 	public function checkThings(){
-		if(!isset($this->level){
+		if(!isset($this->level)){
 			return false;
 		}
 		$this->players = $this->server->api->player->getAll($this);
