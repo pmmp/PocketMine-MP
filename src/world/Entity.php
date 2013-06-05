@@ -354,11 +354,11 @@ class Entity extends Position{
 		}
 		
 		if($this->isStatic === false){
-			$startX = ((int) round($this->x - 0.5)) - 1;
+			$startX = floor($this->x - 0.5 - $this->size);
 			$y = (int) round($this->y - 1);
-			$startZ = ((int) round($this->z - 0.5)) - 1;
-			$endX = $startX + 2;
-			$endZ = $startZ + 2;
+			$startZ = floor($this->z - 0.5 - $this->size);
+			$endX = ceil($startX + $this->size);
+			$endZ = ceil($startZ + $this->size);
 			$support = false;
 			$isFlying = true;
 			for($z = $startZ; $z <= $endZ; ++$z){
@@ -430,13 +430,15 @@ class Entity extends Position{
 				if($support === false){
 					$this->speedY -= ($this->class === ENTITY_FALLING ? 18:32) * $tdiff;
 					$update = true;
-				}elseif($this->class === ENTITY_OBJECT or $this->speedY <= 0.1){
+				}else{
 					$this->speedX = 0;
 					$this->speedY = 0;
 					$this->speedZ = 0;
-					$update = false;
 					$this->server->api->handle("entity.move", $this);
-					$this->server->api->handle("entity.motion", $this);
+					if($this->class === ENTITY_OBJECT or $this->speedY <= 0.1){
+						$update = false;						
+						$this->server->api->handle("entity.motion", $this);
+					}
 				}
 				
 				if($update === true){
@@ -494,8 +496,6 @@ class Entity extends Position{
 		}
 		$this->lastUpdate = $now;
 		if($this->class !== ENTITY_PLAYER and $hasUpdate === true){
-			console($this->eid);
-			var_dump($this->speedX, $this->speedY, $this->speedZ);
 			$this->server->schedule(5, array($this, "update"));
 		}
 	}
