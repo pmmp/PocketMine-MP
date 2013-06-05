@@ -54,7 +54,6 @@ class EntityAPI{
 			while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
 				$e = $this->get($e["EID"]);
 				if($e instanceof Entity){
-					console($e->eid);
 					$e->update();
 					$q .= "UPDATE entities SET hasUpdate = 0 WHERE EID = ".$e->eid.";";
 				}
