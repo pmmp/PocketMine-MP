@@ -59,7 +59,7 @@ class EntityAPI{
 				}
 			}
 			if($q !== ""){
-				$this->server->query("BEGIN TRANSACTION;".$q.";COMMIT;");
+				$this->server->query("BEGIN TRANSACTION;".$q."COMMIT;");
 			}
 		}
 	}
