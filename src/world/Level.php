@@ -68,6 +68,9 @@ class Level{
 	}
 	
 	public function checkThings(){
+		if(!isset($this->level){
+			return false;
+		}
 		$this->players = $this->server->api->player->getAll($this);
 		$now = microtime(true);
 		$time = $this->startTime + ($now - $this->startCheck) * 20;
