@@ -50,16 +50,12 @@ class EntityAPI{
 		$l = $this->server->query("SELECT EID FROM entities WHERE hasUpdate = 1;");
 		
 		if($l !== false and $l !== true){
-			$q = "";
 			while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
 				$e = $this->get($e["EID"]);
 				if($e instanceof Entity){
 					$e->update();
-					$q .= "UPDATE entities SET hasUpdate = 0 WHERE EID = ".$e->eid.";";
+					$this->server->query("UPDATE entities SET hasUpdate = 0 WHERE EID = ".$e->eid.";");
 				}
-			}
-			if($q !== ""){
-				$this->server->query("BEGIN TRANSACTION;".$q."COMMIT;");
 			}
 		}
 	}
