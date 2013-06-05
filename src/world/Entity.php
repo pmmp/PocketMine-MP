@@ -337,6 +337,7 @@ class Entity extends Position{
 		if($this->closed === true){
 			return false;
 		}
+
 		$hasUpdate = false;
 		$now = microtime(true);
 		if($this->check === false){
@@ -415,7 +416,7 @@ class Entity extends Position{
 										}
 										$this->server->api->handle("entity.motion", $this);
 										$this->close();
-										return;
+										return false;
 									}
 									break;
 								}
@@ -493,6 +494,8 @@ class Entity extends Position{
 		}
 		$this->lastUpdate = $now;
 		if($this->class !== ENTITY_PLAYER and $hasUpdate === true){
+			console($this->eid);
+			var_dump($this->speedX, $this->speedY, $this->speedZ);
 			$this->server->schedule(5, array($this, "update"));
 		}
 	}

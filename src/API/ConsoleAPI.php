@@ -36,7 +36,7 @@ class ConsoleAPI{
 	}
 
 	public function init(){
-		$this->event = $this->server->event("server.tick", array($this, "handle"));
+		$this->server->schedule(2, array($this, "handle"), array(), true);
 		$this->loop = new ConsoleLoop();
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));

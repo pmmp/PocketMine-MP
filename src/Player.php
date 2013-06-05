@@ -191,7 +191,7 @@ class Player{
 
 	public function onTick(){
 		if($this->connected === false){
-			return;
+			return false;
 		}
 		$time = microtime(true);
 		if($time > $this->timeout){

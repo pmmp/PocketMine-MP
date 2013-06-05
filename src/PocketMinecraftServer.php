@@ -377,7 +377,6 @@ class PocketMinecraftServer{
 			unset($this->tickMeasure[key($this->tickMeasure)]);
 			++$this->ticks;
 			$this->tickerFunction($time);
-			$this->trigger("server.tick", $time);
 		}
 	}
 
