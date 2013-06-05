@@ -48,6 +48,7 @@ class EntityAPI{
 	
 	public function updateEntities(){
 		$l = $this->server->query("SELECT EID FROM entities WHERE hasUpdate = 1;");
+		$this->server->query("UPDATE entities SET hasUpdate = 0;");
 		if($l !== false and $l !== true){
 			while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
 				$e = $this->get($e["EID"]);
@@ -128,9 +129,9 @@ class EntityAPI{
 			"x" => $pos->x,
 			"y" => $pos->y + 0.19,
 			"z" => $pos->z,
-			"speedX" => mt_rand(-3, 3) / 8,
-			"speedY" => mt_rand(5, 8) / 1.5,
-			"speedZ" => mt_rand(-3, 3) / 8,
+			//"speedX" => mt_rand(-3, 3) / 8,
+			"speedY" => mt_rand(5, 8) / 2,
+			//"speedZ" => mt_rand(-3, 3) / 8,
 			"item" => $item,
 		);
 		if($this->server->api->handle("item.drop", $data) !== false){
