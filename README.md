@@ -43,7 +43,6 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * __[PHP NBT](https://github.com/TheFrozenFire/PHP-NBT-Decoder-Encoder/blob/master/nbt.class.php)__ by _[TheFrozenFire](https://github.com/TheFrozenFire)_: Class for reading in NBT-format files (modified to handle Little-Endian files).
 * __[Spyc](https://github.com/mustangostang/spyc/blob/master/Spyc.php)__ by _[Vlad Andersen](https://github.com/mustangostang)_: A simple YAML loader/dumper class for PHP.
 * __[ANSICON](https://github.com/adoxa/ansicon)__ by _[Jason Hood](https://github.com/adoxa)_: Process ANSI escape sequences for Windows console programs.
-* __[phpseclib](http://phpseclib.sourceforge.net/)__: Pure-PHP cryptography.
 * __[cURL](http://curl.haxx.se/)__: cURL is a command line tool for transferring data with URL syntax
 * __[Zlib](http://www.zlib.net/)__: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
 * __[Source RCON Protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol)__
