@@ -6,7 +6,7 @@ ZEND_VM="GOTO"
 
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
-PTHREADS_VERSION="e5d95dfb847c8963c100bd4fb601dde41e0b75d1"
+PTHREADS_VERSION="0.0.44"
 CURL_VERSION="curl-7_30_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
@@ -185,7 +185,7 @@ fi
 
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
-wget https://github.com/krakjoe/pthreads/archive/$PTHREADS_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+wget http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
