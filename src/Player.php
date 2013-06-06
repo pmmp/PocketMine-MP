@@ -890,8 +890,6 @@ class Player{
 						}elseif($diff === 1){
 							$this->counter[1] = $data[0];
 							++$this->packetStats[0];
-						}else{
-							break;
 						}
 					}
 					
@@ -1539,6 +1537,10 @@ class Player{
 						$d = $this->queue[$this->counter[1] + 1];
 						unset($this->queue[$this->counter[1] + 1]);
 						$this->handle($d["pid"], $d);
+					}elseif(count($this->queue) > 25){
+						$q = array_shift($this->queue);
+						$this->counter[1] = $q[0];
+						$this->handle($q["pid"], $q);
 					}
 					break;
 			}
