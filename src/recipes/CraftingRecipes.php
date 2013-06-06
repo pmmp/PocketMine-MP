@@ -268,7 +268,7 @@ class CraftingRecipes{
 						break;
 					}
 					$oitem = $recipeItems[$item[0]];
-					if(($oitem[1] != $item[1] and $item[2] !== false) or $oitem[2] != $item[2]){
+					if(($oitem[1] != $item[1] and $item[1] !== false) or $oitem[2] != $item[2]){
 						$continue = false;
 						break;
 					}
