@@ -45,7 +45,7 @@ class FuelData{
 		WORKBENCH => 15,
 		BOOKSHELF => 15,
 		CHEST => 15,
-		LAVA_BUCKET => 1000,
+		BUCKET => 1000,
 	
 	);
 

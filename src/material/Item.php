@@ -107,7 +107,10 @@ class Item{
 		if(!isset(FuelData::$duration[$this->id])){
 			return false;
 		}
-		return FuelData::$duration[$this->id];
+		if($this->id !== BUCKET or $this->meta === 10){
+			return FuelData::$duration[$this->id];
+		}
+		return false;
 	}
 	
 	final public function getSmeltItem(){
