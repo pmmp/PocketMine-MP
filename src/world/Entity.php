@@ -530,6 +530,10 @@ class Entity extends Position{
 			17 => array("type" => 6, "value" => array(0, 0, 0)),
 		);
 		if($this->class === ENTITY_MOB and $this->type === MOB_SHEEP){
+			if(!isset($this->data["Sheared"])){
+				$this->data["Sheared"] = 0;
+				$this->data["Color"] = mt_rand(0,15);
+			}
 			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 5) | ($this->data["Color"] & 0x0F);
 		}
 		return $d;

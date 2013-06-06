@@ -37,19 +37,25 @@ class BucketItem extends Item{
 		if($this->meta === AIR){
 			if($target instanceof LiquidBlock){
 				$level->setBlock($target, new AirBlock());
-				$this->meta = ($target instanceof WaterBlock) ? WATER:LAVA;
+				if(($player->gamemode & 0x01) === 0){
+					$this->meta = ($target instanceof WaterBlock) ? WATER:LAVA;
+				}
 				return true;
 			}
 		}elseif($this->meta === WATER){
 			if($block->getID() === AIR){
 				$level->setBlock($block, new StillWaterBLock());
-				$this->meta = 0;
+				if(($player->gamemode & 0x01) === 0){
+					$this->meta = 0;
+				}
 				return true;
 			}
 		}elseif($this->meta === LAVA){
 			if($block->getID() === AIR){
 				$level->setBlock($block, new StillLavaBlock());
-				$this->meta = 0;
+				if(($player->gamemode & 0x01) === 0){
+					$this->meta = 0;
+				}
 				return true;
 			}
 		}
