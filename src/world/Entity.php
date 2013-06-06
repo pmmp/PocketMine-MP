@@ -534,7 +534,7 @@ class Entity extends Position{
 				$this->data["Sheared"] = 0;
 				$this->data["Color"] = mt_rand(0,15);
 			}
-			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 5) | ($this->data["Color"] & 0x0F);
+			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 4) | ($this->data["Color"] & 0x0F);
 		}
 		return $d;
 	}
