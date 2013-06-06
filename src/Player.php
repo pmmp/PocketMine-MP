@@ -74,6 +74,7 @@ class Player{
 	private $packetStats;
 	public $craftingItems = array();
 	public $toCraft = array();
+	public $lastCraft = 0;
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -642,7 +643,7 @@ class Player{
 		}
 	
 		$res = CraftingRecipes::canCraft($craftItem, $recipeItems, $type);
-		
+
 		if(!is_array($res) and $type === 1){
 			$res2 = CraftingRecipes::canCraft($craftItem, $recipeItems, 0);
 			if(is_array($res2)){
@@ -663,7 +664,7 @@ class Player{
 				if($s->count <= 0 or $s->getID() === AIR){				
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count));
 				}else{
-					$s->count += $item->count;
+					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count));
 				}
 			}
 		}
@@ -1460,6 +1461,15 @@ class Player{
 						case MC_CONTAINER_SET_SLOT:
 							if($this->spawned === false){
 								break;
+							}
+							
+							if($this->lastCraft <= (microtime(true) - 1)){
+								if(isset($this->toCraft[-1])){
+									$this->toCraft = array(-1 => $this->toCraft[-1]);
+								}else{
+									$this->toCraft = array();
+								}
+								$this->craftingItems = array();								
 							}
 							
 							if($data["windowid"] === 0){
