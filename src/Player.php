@@ -1496,6 +1496,10 @@ class Player{
 									$this->toCraft[$data["slot"]] = $craftItem;
 									$craft = true;
 								}
+								
+								if($craft = true){
+									$this->lastCraft = microtime(true);
+								}
 
 								if($craft === true and count($this->craftingItems) > 0 and count($this->toCraft) > 0 and ($recipe = $this->craftItems($this->toCraft, $this->craftingItems, $this->toCraft[-1])) !== true){
 									if($recipe === false){
