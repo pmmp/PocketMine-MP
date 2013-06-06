@@ -320,7 +320,7 @@ class BlockAPI{
 		
 		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
 			if($item->count <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false)
+				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false);
 			}
 			return false;
 		}
