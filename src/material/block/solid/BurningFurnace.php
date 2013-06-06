@@ -70,7 +70,7 @@ class BurningFurnaceBlock extends SolidBlock{
 			return true;
 		}
 		$player->windowCnt++;
-		$player->windowCnt = $id = max(1, $player->windowCnt % 255);
+		$player->windowCnt = $id = max(2, $player->windowCnt % 255);
 		$player->windows[$id] = $furnace;
 		$player->dataPacket(MC_CONTAINER_OPEN, array(
 			"windowid" => $id,

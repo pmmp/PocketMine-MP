@@ -100,6 +100,9 @@ class BlockAPI{
 		array(LADDER, 0),
 		array(TORCH, 0),
 		array(GLASS_PANE, 0),
+		array(BUCKET, 0),
+		array(BUCKET, 8),
+		array(BUCKET, 10),
 		array(WOODEN_DOOR, 0),
 		array(TRAPDOOR, 0),
 		array(FENCE, 0),
@@ -129,9 +132,15 @@ class BlockAPI{
 		array(MELON_SEEDS, 0),
 		array(DYE, 15), //Bonemeal
 		array(IRON_HOE, 0),
+		array(CAKE, 0),
+		array(EGG, 0),
 		array(IRON_SWORD, 0),
 		array(BOW, 0),
 		array(SIGN, 0),
+		array(SPAWN_EGG, MOB_CHICKEN),
+		array(SPAWN_EGG, MOB_COW),
+		array(SPAWN_EGG, MOB_PIG),
+		array(SPAWN_EGG, MOB_SHEEP),		
 	);
 	
 	public static function fromString($str, $multiple = false){
@@ -217,11 +226,7 @@ class BlockAPI{
 						$output .= "Player is in creative mode.\n";
 						break;
 					}
-					if($this->server->api->getProperty("item-enforcement") === false){
-						$this->server->api->entity->drop(new Position($player->entity->x - 0.5, $player->entity->y, $player->entity->z - 0.5, $player->level), $item, true);
-					}else{
-						$player->addItem($item->getID(), $item->getMetadata(), $item->count);
-					}
+					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username."\n";
 				}else{
 					$output .= "Unknown player.\n";
@@ -240,16 +245,14 @@ class BlockAPI{
 			"block" => $block->getID(),
 			"meta" => $block->getMetadata()		
 		));
-		if($player->itemEnforcement === true){
-			$player->sendInventory();
-		}
+		$player->sendInventorySlot($player->slot);
 		return false;
 	}
 
 	public function playerBlockBreak(Player $player, Vector3 $vector){
 
 		$target = $player->level->getBlock($vector);
-		$item = $player->equipment;
+		$item = $player->getSlot($player->slot);
 		
 		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
 			return $this->cancelAction($target, $player);
@@ -287,7 +290,7 @@ class BlockAPI{
 
 		$target = $player->level->getBlock($vector);		
 		$block = $target->getSide($face);
-		$item = $player->equipment;
+		$item = $player->getSlot($player->slot);
 		
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
 			$this->cancelAction($target, $player);
@@ -343,7 +346,10 @@ class BlockAPI{
 		}
 
 		if(($player->gamemode & 0x01) === 0x00){
-			$player->removeItem($item->getID(), $item->getMetadata(), 1);
+			--$item->count;
+			if($item->count <= 0){
+				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
+			}
 		}
 
 		return false;

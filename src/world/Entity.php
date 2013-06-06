@@ -143,10 +143,10 @@ class Entity extends Position{
 	}
 	
 	public function getDrops(){
-		if($this->class === ENTITY_PLAYER){
+		if($this->class === ENTITY_PLAYER and ($this->player->gamemode & 0x00) === 0){
 			$inv = array();
 			$air = BlockAPI::getItem(AIR, 0, 0);
-			for($i = 0; $i < 36; ++$i){
+			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 				$slot = $this->player->getSlot($i);
 				$this->player->setSlot($i, $air);
 				if($slot->getID() !== AIR and $slot->count > 0){
@@ -562,8 +562,9 @@ class Entity extends Position{
 				));
 				$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
 					"eid" => $this->eid,
-					"block" => $this->player->equipment->getID(),
-					"meta" => $this->player->equipment->getMetadata(),
+					"block" => $this->player->getSlot($this->player->slot)->getID(),
+					"meta" => $this->player->getSlot($this->player->slot)->getMetadata(),
+					"slot" => 0,
 				));
 				break;
 			case ENTITY_ITEM:
@@ -799,19 +800,19 @@ class Entity extends Position{
 					LEATHER_BOOTS => 1,
 					CHAIN_HELMET => 1,
 					CHAIN_CHESTPLATE => 5,
-					CHAIN_LEGGINS => 4,
+					CHAIN_LEGGINGS => 4,
 					CHAIN_BOOTS => 1,
 					GOLD_HELMET => 1,
 					GOLD_CHESTPLATE => 5,
-					GOLD_LEGGINS => 3,
+					GOLD_LEGGINGS => 3,
 					GOLD_BOOTS => 1,
 					IRON_HELMET => 2,
 					IRON_CHESTPLATE => 6,
-					IRON_LEGGINS => 5,
+					IRON_LEGGINGS => 5,
 					IRON_BOOTS => 2,
 					DIAMOND_HELMET => 3,
 					DIAMOND_CHESTPLATE => 8,
-					DIAMOND_LEGGINS => 6,
+					DIAMOND_LEGGINGS => 6,
 					DIAMOND_BOOTS => 3,
 				);
 				foreach($this->player->armor as $part){

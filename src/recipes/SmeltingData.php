@@ -41,6 +41,7 @@ class SmeltingData{
 		RED_MUSHROOM => array(DYE, 1),
 		RAW_BEEF => array(STEAK, 0),
 		RAW_CHICKEN => array(COOKED_CHICKEN, 0),
+		RED_MUSHROOM => array(DYE, 1),
 	);
 
 }

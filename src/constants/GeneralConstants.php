@@ -37,6 +37,9 @@ define("VIEWER", 3);
 define("PLAYER_RECOVERY_BUFFER", 2048);
 define("PLAYER_MAX_PACKET_LOSS", 0.20);
 
+define("PLAYER_SURVIVAL_SLOTS", 36);
+define("PLAYER_CREATIVE_SLOTS", 111);
+
 
 //Block Updates
 define("BLOCK_UPDATE_NORMAL", 1);

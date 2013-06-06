@@ -88,7 +88,7 @@ class ChestBlock extends TransparentBlock{
 			return true;
 		}
 		$player->windowCnt++;
-		$player->windowCnt = $id = max(1, $player->windowCnt % 255);
+		$player->windowCnt = $id = max(2, $player->windowCnt % 255);
 		$player->windows[$id] = $chest;
 		$player->dataPacket(MC_CONTAINER_OPEN, array(
 			"windowid" => $id,

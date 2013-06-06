@@ -27,17 +27,31 @@ the Free Software Foundation, either version 3 of the License, or
 
 class BucketItem extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(BUCKET, 0, $count, "Empty Bucket");
+		parent::__construct(BUCKET, 0, $count, "Bucket");
+		$this->meta = $meta;
 		$this->isActivable = true;
 		$this->maxStackSize = 1;
 	}
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->getID() === STILL_WATER or $target->getID() === STILL_LAVA){
-			$level->setBlock($target, new AirBlock());
-			$player->removeItem($this->getID(), $this->getMetadata(), $this->count);
-			$player->addItem(($target->getID() === STILL_LAVA ? LAVA_BUCKET:WATER_BUCKET), 0, 1);
-			return true;
+		if($this->meta === AIR){
+			if($block->getID() === STILL_WATER or $block->getID() === STILL_LAVA){
+				$level->setBlock($block, new AirBlock());
+				$this->meta = $block->getID();
+				return true;
+			}
+		}elseif($this->meta === STILL_WATER){
+			if($block->getID() === AIR){
+				$level->setBlock($block, new StillWaterBLock());
+				$this->meta = 0;
+				return true;
+			}
+		}elseif($this->meta === STILL_LAVA){
+			if($block->getID() === AIR){
+				$level->setBlock($block, new StillLavaBlock());
+				$this->meta = 0;
+				return true;
+			}
 		}
 		return false;
 	}

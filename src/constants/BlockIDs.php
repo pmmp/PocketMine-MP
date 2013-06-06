@@ -150,6 +150,7 @@ define("BRICK_STAIRS", 108);
 define("STONE_BRICK_STAIRS", 109);
 
 define("NETHER_BRICKS", 112);
+define("NETHER_BRICK_BLOCK", 112);
 
 define("NETHER_BRICKS_STAIRS", 114);
 

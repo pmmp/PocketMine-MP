@@ -25,6 +25,10 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+
+define("CURRENT_STRUCTURE", 5);
+define("CURRENT_PROTOCOL", 11);
+
 define("RAKNET_MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 
 define("MC_PING", 0x00);
@@ -78,21 +82,22 @@ define("MC_PLAYER_ACTION", 0xa3);
 define("MC_HURT_ARMOR", 0xa5);
 define("MC_SET_ENTITY_DATA", 0xa6);
 define("MC_SET_ENTITY_MOTION", 0xa7);
-define("MC_SET_HEALTH", 0xa8);
-define("MC_SET_SPAWN_POSITION", 0xa9);
-define("MC_ANIMATE", 0xaa);
-define("MC_RESPAWN", 0xab);
-define("MC_SEND_INVENTORY", 0xac);
-define("MC_DROP_ITEM", 0xad);
-define("MC_CONTAINER_OPEN", 0xae);
-define("MC_CONTAINER_CLOSE", 0xaf);
-define("MC_CONTAINER_SET_SLOT", 0xb0);
-define("MC_CONTAINER_SET_DATA", 0xb1);
-define("MC_CONTAINER_SET_CONTENT", 0xb2);
-//define("MC_CONTAINER_ACK", 0xb3);
-define("MC_CLIENT_MESSAGE", 0xb4);
-define("MC_SIGN_UPDATE", 0xb5);
-define("MC_ADVENTURE_SETTINGS", 0xb6);
+//define("MC_SET_RIDING_PACKET", 0xa8);
+define("MC_SET_HEALTH", 0xa9);
+define("MC_SET_SPAWN_POSITION", 0xaa);
+define("MC_ANIMATE", 0xab);
+define("MC_RESPAWN", 0xac);
+define("MC_SEND_INVENTORY", 0xad);
+define("MC_DROP_ITEM", 0xae);
+define("MC_CONTAINER_OPEN", 0xaf);
+define("MC_CONTAINER_CLOSE", 0xb0);
+define("MC_CONTAINER_SET_SLOT", 0xb1);
+define("MC_CONTAINER_SET_DATA", 0xb2);
+define("MC_CONTAINER_SET_CONTENT", 0xb3);
+//define("MC_CONTAINER_ACK", 0xb4);
+define("MC_CLIENT_MESSAGE", 0xb5);
+define("MC_SIGN_UPDATE", 0xb6);
+define("MC_ADVENTURE_SETTINGS", 0xb7);
 
 
 class Protocol{

@@ -159,9 +159,14 @@ class CustomPacketHandler{
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
 					$this->data["protocol1"] = Utils::readInt($this->get(4));
 					$this->data["protocol2"] = Utils::readInt($this->get(4));
+					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["unknown2"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
 					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
-					$this->raw .= Utils::writeInt(CURRENT_PROTOCOL).Utils::writeInt(CURRENT_PROTOCOL);
+					$this->raw .= Utils::writeInt(CURRENT_PROTOCOL).
+									Utils::writeInt(CURRENT_PROTOCOL).
+									Utils::writeInt($this->data["unknown1"]);
+					$this->raw .= Utils::writeShort(strlen($this->data["unknown2"])).$this->data["unknown2"];
 				}
 				break;
 			case MC_LOGIN_STATUS:
@@ -187,9 +192,9 @@ class CustomPacketHandler{
 				break;
 			case MC_SET_TIME:
 				if($this->c === false){
-					$this->data["time"] = Utils::readInt($this->get(4));
+					$this->data["time"] = Utils::readLong($this->get(4));
 				}else{
-					$this->raw .= Utils::writeInt($this->data["time"]);
+					$this->raw .= Utils::writeLong($this->data["time"]);
 				}
 				break;
 			case MC_START_GAME:
@@ -509,10 +514,12 @@ class CustomPacketHandler{
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["block"] = Utils::readShort($this->get(2), false);
 					$this->data["meta"] = Utils::readShort($this->get(2), false);
+					$this->data["slot"] = ord($this->get(1));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeShort($this->data["block"]);
 					$this->raw .= Utils::writeShort($this->data["meta"]);
+					$this->raw .= chr($this->data["slot"]);
 				}
 				break;
 			case MC_PLAYER_ARMOR_EQUIPMENT:
@@ -553,6 +560,9 @@ class CustomPacketHandler{
 					$this->data["fx"] = Utils::readFloat($this->get(4));
 					$this->data["fy"] = Utils::readFloat($this->get(4));
 					$this->data["fz"] = Utils::readFloat($this->get(4));
+					$this->data["posX"] = Utils::readFloat($this->get(4));
+					$this->data["posY"] = Utils::readFloat($this->get(4));
+					$this->data["posZ"] = Utils::readFloat($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["x"]);
 					$this->raw .= Utils::writeInt($this->data["y"]);
@@ -564,6 +574,9 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["fx"]);
 					$this->raw .= Utils::writeFloat($this->data["fy"]);
 					$this->raw .= Utils::writeFloat($this->data["fz"]);	
+					$this->raw .= Utils::writeFloat($this->data["posX"]);
+					$this->raw .= Utils::writeFloat($this->data["posY"]);
+					$this->raw .= Utils::writeFloat($this->data["posZ"]);	
 				}
 				break;
 			case MC_PLAYER_ACTION:

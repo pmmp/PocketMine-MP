@@ -72,7 +72,6 @@ class ServerAPI{
 			"view-distance" => 10,
 			"max-players" => 20,
 			"allow-flight" => false,
-			"item-enforcement" => false,
 			"gamemode" => SURVIVAL,
 			"hardcore" => false,
 			"pvp" => true,
@@ -289,7 +288,7 @@ class ServerAPI{
 		if($this->getProperty("enable-query") === true){
 			$this->query = new Query();
 		}
-
+		CraftingRecipes::init();
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
 		$this->console->__destruct();

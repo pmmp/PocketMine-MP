@@ -50,12 +50,17 @@ define("DIAMOND_SHOVEL", 277);
 define("DIAMOND_PICKAXE", 278);
 define("DIAMOND_AXE", 279);
 define("STICK", 280);//Implemented
+define("STICKS", 280);
 define("BOWL", 281);//Implemented
 define("MUSHROOM_STEW", 282);
 define("GOLD_SWORD", 283);
 define("GOLD_SHOVEL", 284);
 define("GOLD_PICKAXE", 285);
 define("GOLD_AXE", 286);
+define("GOLDEN_SWORD", 283);
+define("GOLDEN_SHOVEL", 284);
+define("GOLDEN_PICKAXE", 285);
+define("GOLDEN_AXE", 286);
 define("STRING", 287);
 define("FEATHER", 288);//Implemented
 define("GUNPOWDER", 289);
@@ -64,6 +69,7 @@ define("STONE_HOE", 291);
 define("IRON_HOE", 292);//Implemented
 define("DIAMOND_HOE", 293);
 define("GOLD_HOE", 294);
+define("GOLDEN_HOE", 294);
 define("SEEDS", 295);
 define("WHEAT_SEEDS", 295);
 define("WHEAT", 296);
@@ -74,19 +80,19 @@ define("LEATHER_PANTS", 300);
 define("LEATHER_BOOTS", 301);
 define("CHAIN_HELMET", 302);
 define("CHAIN_CHESTPLATE", 303);
-define("CHAIN_LEGGINS", 304);
+define("CHAIN_LEGGINGS", 304);
 define("CHAIN_BOOTS", 305);
 define("IRON_HELMET", 306);
 define("IRON_CHESTPLATE", 307);
-define("IRON_LEGGINS", 308);
+define("IRON_LEGGINGS", 308);
 define("IRON_BOOTS", 309);
 define("DIAMOND_HELMET", 310);
 define("DIAMOND_CHESTPLATE", 311);
-define("DIAMOND_LEGGINS", 312);
+define("DIAMOND_LEGGINGS", 312);
 define("DIAMOND_BOOTS", 313);
 define("GOLD_HELMET", 314);
 define("GOLD_CHESTPLATE", 315);
-define("GOLD_LEGGINS", 316);
+define("GOLD_LEGGINGS", 316);
 define("GOLD_BOOTS", 317);
 define("FLINT", 318);
 define("RAW_PORKCHOP", 319);
@@ -96,8 +102,6 @@ define("GOLDEN_APPLE", 322);
 define("SIGN", 323);
 define("WOODEN_DOOR", 324);
 define("BUCKET", 325);
-define("WATER_BUCKET", 326);
-define("LAVA_BUCKET", 327);
 
 
 define("IRON_DOOR", 330);
@@ -141,6 +145,8 @@ define("COOKED_BEEF", 364);
 
 define("RAW_CHICKEN", 365);
 define("COOKED_CHICKEN", 366);
+
+define("SPAWN_EGG", 383);
 
 define("NETHER_BRICK", 405);
 define("QUARTZ", 406);
