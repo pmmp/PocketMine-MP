@@ -616,13 +616,16 @@ class Player{
 		$craftItem = array(0, true, 0);
 		unset($craft[-1]);
 		foreach($craft as $slot => $item){
-			$craftItem[0] = $item->getID();
-			if($item->getMetadata() !== $craftItem[1] and $craftItem[0] !== true){
-				$craftItem[1] = false;
-			}else{
-				$craftItem[1] = $item->getMetadata();
+			if($item instanceof Item){
+				$craftItem[0] = $item->getID();
+				if($item->getMetadata() !== $craftItem[1] and $craftItem[1] !== true){
+					$craftItem[1] = false;
+				}else{
+					$craftItem[1] = $item->getMetadata();
+				}
+				$craftItem[2] += $item->count;
 			}
-			$craftItem[2] += $item->count;
+			
 		}
 
 		$recipeItems = array();
@@ -638,6 +641,7 @@ class Player{
 		}
 	
 		$res = CraftingRecipes::canCraft($craftItem, $recipeItems, $type);
+		
 		if(!is_array($res) and $type === 1){
 			$res2 = CraftingRecipes::canCraft($craftItem, $recipeItems, 0);
 			if(is_array($res2)){
@@ -646,19 +650,19 @@ class Player{
 		}
 		
 		if(is_array($res)){
+			foreach($recipe as $slot => $item){
+				$s = $this->getSlot($slot);
+				$s->count -= $item->count;
+				if($s->count <= 0){				
+					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0));
+				}
+			}
 			foreach($craft as $slot => $item){
 				$s = $this->getSlot($slot);				
 				if($s->count <= 0 or $s->getID() === AIR){				
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count));
 				}else{
 					$s->count += $item->count;
-				}
-			}
-			foreach($recipe as $slot => $item){
-				$s = $this->getSlot($slot);
-				$s->count -= $item->count;
-				if($s->count <= 0){				
-					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0));
 				}
 			}
 		}
@@ -1467,6 +1471,15 @@ class Player{
 									}
 									$this->toCraft[$data["slot"]] = $craftItem;
 									$craft = true;
+								}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() !== AIR and ($slot->getID() !== $data["block"] or $slot->getMetadata() !== $data["meta"])){ //Crafting final
+									$craftItem = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+									if(count($this->toCraft) === 0){
+										$this->toCraft[-1] = 0;
+									}
+									$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count);
+									$this->craftingItems[$data["slot"]] = $use;
+									$this->toCraft[$data["slot"]] = $craftItem;
+									$craft = true;
 								}
 
 								if($craft === true and count($this->craftingItems) > 0 and count($this->toCraft) > 0 and ($recipe = $this->craftItems($this->toCraft, $this->craftingItems, $this->toCraft[-1])) !== true){
@@ -1475,9 +1488,10 @@ class Player{
 											"windowid" => 0,
 										));
 										$this->sendInventory();
-										$this->toCraft[-1] = 0;
+										$this->toCraft = array();
+									}else{
+										$this->toCraft = array(-1 => $this->toCraft[-1]);
 									}
-									$this->toCraft = array(-1 => $this->toCraft[-1]);
 									$this->craftingItems = array();									
 								}
 							}
