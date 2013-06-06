@@ -451,6 +451,7 @@ class Player{
 				if($data["eid"] === $this->eid or $data["player"]->level !== $this->level){
 					break;
 				}
+				$data["slot"] = 0;
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
 
 				break;
@@ -1119,16 +1120,20 @@ class Player{
 							if($this->spawned === false){
 								break;
 							}
-
+							$data["eid"] = $this->eid;
+							$data["player"] = $this;
+							
 							if($data["slot"] === 0){
-								$this->slot = -1;
+								$data["slot"] = -1;
+								$data["item"] = BlockAPI::getItem(AIR, 0, 0);
+								if($this->server->handle("player.equipment.change", $data) !== false){
+									$this->slot = -1;
+								}
 								break;
 							}else{
 								$data["slot"] -= 9;
 							}
 							
-							$data["eid"] = $this->eid;
-							$data["player"] = $this;
 							$data["item"] = $this->getSlot($data["slot"]);
 							if(!($data["item"] instanceof Item)){
 								break;
