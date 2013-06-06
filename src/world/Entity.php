@@ -570,6 +570,7 @@ class Entity extends Position{
 					"meta" => $this->player->getSlot($this->player->slot)->getMetadata(),
 					"slot" => 0,
 				));
+				$this->player->sendArmor($player);
 				break;
 			case ENTITY_ITEM:
 				$player->dataPacket(MC_ADD_ITEM_ENTITY, array(
@@ -820,8 +821,8 @@ class Entity extends Position{
 					DIAMOND_BOOTS => 3,
 				);
 				foreach($this->player->armor as $part){
-					if(isset($values[$part[0]])){
-						$points += $values[$part[0]];
+					if($part instanceof Item and isset($values[$part->getID()])){
+						$points += $values[$part->getID()];
 					}
 				}
 				$dmg = (int) ($dmg - ($dmg * $points * 0.04));

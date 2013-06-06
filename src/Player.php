@@ -53,7 +53,7 @@ class Player{
 	public $spawned = false;
 	public $inventory;
 	public $slot;
-	public $armor;
+	public $armor = array();
 	public $loggedIn = false;
 	public $gamemode;
 	public $lastBreak;
@@ -95,7 +95,7 @@ class Player{
 		$this->spawnPosition = $this->server->spawn;
 		$this->timeout = microtime(true) + 20;
 		$this->inventory = array();
-		$this->armor = array_fill(0, 4, array(AIR, 0, 0));
+		$this->armor = array();
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
 		$this->slot = 0;
@@ -220,13 +220,17 @@ class Player{
 				"y" => $this->spawnPosition->y,
 				"z" => $this->spawnPosition->z,
 			));
-			$inv = array();
-			
+			$inv = array();			
 			foreach($this->inventory as $slot => $item){
 				$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
 			}
 			$this->data->set("inventory", $inv);
-			$this->data->set("armor", $this->armor);
+			
+			$armor = array();
+			foreach($this->armor as $slot => $item){
+				$armor[$slot] = array($item->getID(), $item->getMetadata());
+			}
+			$this->data->set("armor", $armor);
 			$this->data->set("gamemode", $this->gamemode);
 		}
 	}
@@ -378,7 +382,7 @@ class Player{
 	public function hasItem($type, $damage = false){
 		foreach($this->inventory as $s => $item){
 			if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false) and $item->count > 0){
-				return true;
+				return $s;
 			}
 		}
 		return false;
@@ -424,18 +428,10 @@ class Player{
 				}
 				break;
 			case "player.armor":
-				if($data["eid"] === $this->eid){
-					$data["eid"] = 0;
-					$this->armor = array();
-					for($i = 0; $i < 4; ++$i){
-						if($data["slot".$i] > 0){
-							$this->armor[$i] = array($data["slot".$i] + 256, 0, 1);
-						}else{
-							$this->armor[$i] = array(AIR, 0, 0);
-						}
+				if($data["player"]->level === $this->level){
+					if($data["eid"] === $this->eid){
+						$data["eid"] = 0;
 					}
-					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
-				}elseif($data["player"]->level === $this->level){
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}
 				break;
@@ -1017,7 +1013,10 @@ class Player{
 								$this->inventory[$slot] = BlockAPI::getItem($item[0], $item[1], $item[2]);
 							}
 
-							$this->armor = $this->data->get("armor");
+							$this->armor = array();					
+							foreach($this->data->get("armor") as $slot => $item){
+								$this->armor[$slot] = BlockAPI::getItem($item[0], $item[1], 1);
+							}
 							
 							$this->data->set("lastIP", $this->ip);
 							$this->data->set("lastID", $this->clientID);
@@ -1248,6 +1247,25 @@ class Player{
 							$this->toCraft = array();
 							$data["eid"] = $this->eid;
 							$data["player"] = $this;
+							for($i = 0; $i < 4; ++$i){
+								$s = $data["slot$i"];
+								if($s === 0){
+									$s = BlockAPI::getItem(AIR, 0, 0);
+								}else{
+									$s = BlockAPI::getItem($s + 256, 0, 1);
+								}
+								$slot = $this->armor[$i];
+								if($slot->getID() !== AIR and $s->getID() === AIR){
+									$this->addItem($slot->getID(), $slot->getMetadata(), 1);
+									$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
+								}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
+									$this->armor[$i] = $this->getSlot($sl);
+									$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0));
+								}else{
+									$data["slot$i"] = 0;
+								}
+								
+							}							
 							$this->server->handle("player.armor", $data);
 							if($this->entity->inAction === true){
 								$this->entity->inAction = false;
@@ -1581,8 +1599,24 @@ class Player{
 		}
 	}
 	
-	public function sendArmor(){
-		$this->server->api->dhandle("player.armor", array("player" => $this, "eid" => $this->eid, "slot0" => ($this->armor[0][0] > 0 ? ($this->armor[0][0] - 256):AIR), "slot1" => ($this->armor[1][0] > 0 ? ($this->armor[1][0] - 256):AIR), "slot2" => ($this->armor[2][0] > 0 ? ($this->armor[2][0] - 256):AIR), "slot3" => ($this->armor[3][0] > 0 ? ($this->armor[3][0] - 256):AIR)));
+	public function sendArmor($player = false){
+		$data = array(
+			"player" => $this,
+			"eid" => $this->eid
+		);
+		for($i = 0; $i < 4; ++$i){
+			if($this->armor[$i] instanceof Item){
+				$data["slot$i"] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
+			}else{
+				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
+				$data["slot$i"] = 0;
+			}
+		}
+		if($player instanceof Player){
+			$player->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
+		}else{
+			$this->server->api->dhandle("player.armor", $data);
+		}
 	}
 	
 	public function sendInventory(){
