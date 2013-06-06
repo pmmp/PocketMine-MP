@@ -237,7 +237,7 @@ class BlockAPI{
 		return $output;
 	}
 
-	private function cancelAction(Block $block, Player $player){
+	private function cancelAction(Block $block, Player $player, $send = true){
 		$player->dataPacket(MC_UPDATE_BLOCK, array(
 			"x" => $block->x,
 			"y" => $block->y,
@@ -245,7 +245,9 @@ class BlockAPI{
 			"block" => $block->getID(),
 			"meta" => $block->getMetadata()		
 		));
-		$player->sendInventorySlot($player->slot);
+		if($send === true){
+			$player->sendInventorySlot($player->slot);
+		}
 		return false;
 	}
 
@@ -255,21 +257,21 @@ class BlockAPI{
 		$item = $player->getSlot($player->slot);
 		
 		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
-			return $this->cancelAction($target, $player);
+			return $this->cancelAction($target, $player, false);
 		}
 		
 		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - 0.02) + $target->getBreakTime($item, $player)) >= microtime(true)){
-			return $this->cancelAction($target, $player);
+			return $this->cancelAction($target, $player, false);
 		}
 		$player->lastBreak = microtime(true);		
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
 			$drops = $target->getDrops($item, $player);
 			if($target->onBreak($item, $player) === false){
-				return $this->cancelAction($target, $player);
+				return $this->cancelAction($target, $player, false);
 			}
 		}else{
-			return $this->cancelAction($target, $player);
+			return $this->cancelAction($target, $player, false);
 		}
 		
 		
@@ -324,15 +326,15 @@ class BlockAPI{
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}else{
-			return $this->cancelAction($block, $player);
+			return $this->cancelAction($block, $player, false);
 		}
 		
 		if(!($block->isReplaceable === true or ($hand->getID() === SLAB and $block->getID() === SLAB))){
-			return $this->cancelAction($block, $player);
+			return $this->cancelAction($block, $player, false);
 		}
 		
 		if($hand->isSolid === true and $player->entity->inBlock($block)){
-			return $this->cancelAction($block, $player); //Entity in block
+			return $this->cancelAction($block, $player, false); //Entity in block
 		}
 		
 		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){

@@ -217,7 +217,7 @@ class Entity extends Position{
 	public function environmentUpdate(){
 		$hasUpdate = false;
 		$time = microtime(true);
-		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true){
+		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true){
 			foreach($this->server->api->entity->getRadius($this, 1.5, ENTITY_ITEM) as $item){
 				if(($time - $item->spawntime) >= 0.6){
 					if(($this->player->gamemode & 0x01) === 0x00){
