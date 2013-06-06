@@ -91,20 +91,17 @@ class Tile extends Position{
 			$canSmelt = $smelt !== false and $raw->count > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->count < $product->getMaxStackSize()) or $product->getID() === AIR);
 			if($this->data["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->count > 0)
 			{
-				if(!($fuel->getID === BUCKET and $fuel->getMetaData() !== LAVA))
-				{
-					$this->lastUpdate = microtime(true);
-					$this->data["MaxTime"] = $this->data["BurnTime"] = floor($fuel->getFuelTime() * 20);
-					$this->data["BurnTicks"] = 0;
-					--$fuel->count;
-					if($fuel->count === 0){
-						$fuel = BlockAPI::getItem(AIR, 0, 0);
-					}
-					$this->setSlot(1, $fuel, false);
-					$current = $this->level->getBlock($this);
-					if($current->getID() === FURNACE){
-						$this->level->setBlock($this, BlockAPI::get(BURNING_FURNACE, $current->getMetadata()));
-					}
+				$this->lastUpdate = microtime(true);
+				$this->data["MaxTime"] = $this->data["BurnTime"] = floor($fuel->getFuelTime() * 20);
+				$this->data["BurnTicks"] = 0;
+				--$fuel->count;
+				if($fuel->count === 0){
+					$fuel = BlockAPI::getItem(AIR, 0, 0);
+				}
+				$this->setSlot(1, $fuel, false);
+				$current = $this->level->getBlock($this);
+				if($current->getID() === FURNACE){
+					$this->level->setBlock($this, BlockAPI::get(BURNING_FURNACE, $current->getMetadata()));
 				}
 			}
 			if($this->data["BurnTime"] > 0){
