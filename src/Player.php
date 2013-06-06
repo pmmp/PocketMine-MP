@@ -885,7 +885,7 @@ class Player{
 								$this->need[$i] = true;
 							}
 							$this->send(0xa0, $arr);
-							$this->queue[$data[0]] = $data;
+							$this->queue[$data[0]] = array($pid, $data);
 							break;
 						}elseif($diff === 1){
 							$this->counter[1] = $data[0];
@@ -1536,11 +1536,11 @@ class Player{
 					if(isset($this->queue[$this->counter[1] + 1])){
 						$d = $this->queue[$this->counter[1] + 1];
 						unset($this->queue[$this->counter[1] + 1]);
-						$this->handle($d["pid"], $d);
+						$this->handle($d0, $d[1]);
 					}elseif(count($this->queue) > 25){
 						$q = array_shift($this->queue);
-						$this->counter[1] = $q[0];
-						$this->handle($q["pid"], $q);
+						$this->counter[1] = $q[1][0];
+						$this->handle($q[0], $q[1]);
 					}
 					break;
 			}
