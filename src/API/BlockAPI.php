@@ -318,8 +318,11 @@ class BlockAPI{
 			return false;
 		}
 		
-		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz)){
-			return $this->cancelAction($block, $player);
+		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
+			if($item->count <= 0){
+				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false)
+			}
+			return false;
 		}
 
 		if($item->isPlaceable()){

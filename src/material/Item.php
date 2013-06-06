@@ -39,6 +39,7 @@ class Item{
 		PAINTING => "PaintingItem",
 		COAL => "CoalItem",
 		APPLE => "AppleItem",
+		SPAWN_EGG => "SpawnEggItem",
 		DIAMOND => "DiamondItem",
 		STICK => "StickItem",
 		BOWL => "BowlItem",
