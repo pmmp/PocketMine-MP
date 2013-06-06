@@ -32,4 +32,11 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->isSolid = false;
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		if($item->isShovel() !== false){
+			return array(
+				array(SNOWBALL, 0, 1),
+			);
+		}
+	}
 }

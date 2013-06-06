@@ -147,6 +147,23 @@ class Item{
 		}
 	}
 	
+	final public function isShovel(){
+		switch($this->id){
+			case IRON_SHOVEL:
+				return 4;
+			case WOODEN_SHOVEL:
+				return 1;
+			case STONE_SHOVEL:
+				return 3;
+			case DIAMOND_SHOVEL:
+				return 5;
+			case GOLD_SHOVEL:
+				return 2;
+			default:
+				return false;
+		}
+	}
+	
 	public function isHoe(){
 		switch($this->id){
 			case IRON_HOE:

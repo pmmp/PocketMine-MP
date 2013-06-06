@@ -33,6 +33,10 @@ class CakeBlock extends TransparentBlock{
 		$this->meta = $meta & 0x07;
 	}
 	
+	public function getDrops(Item $item, Player $player){
+		return array();
+	}
+	
 	public function onActivate(Item $item, Player $player){
 		if($player->entity->getHealth() < 20){
 			++$this->meta;

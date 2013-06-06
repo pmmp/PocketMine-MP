@@ -41,11 +41,11 @@ class BucketItem extends Item{
 				return true;
 			}
 		}elseif($this->meta === STILL_WATER){
-			if($block->getID() === AIR){
+			//if($block->getID() === AIR){
 				$level->setBlock($block, new StillWaterBLock());
 				$this->meta = 0;
 				return true;
-			}
+			//}
 		}elseif($this->meta === STILL_LAVA){
 			if($block->getID() === AIR){
 				$level->setBlock($block, new StillLavaBlock());
