@@ -35,18 +35,18 @@ class BucketItem extends Item{
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($this->meta === AIR){
-			if($block->getID() === STILL_WATER or $block->getID() === STILL_LAVA){
-				$level->setBlock($block, new AirBlock());
-				$this->meta = $block->getID();
+			if($target instanceof LiquidBlock){
+				$level->setBlock($target, new AirBlock());
+				$this->meta = ($target instanceof WaterBlock) ? WATER:LAVA;
 				return true;
 			}
-		}elseif($this->meta === STILL_WATER){
-			//if($block->getID() === AIR){
+		}elseif($this->meta === WATER){
+			if($block->getID() === AIR){
 				$level->setBlock($block, new StillWaterBLock());
 				$this->meta = 0;
 				return true;
-			//}
-		}elseif($this->meta === STILL_LAVA){
+			}
+		}elseif($this->meta === LAVA){
 			if($block->getID() === AIR){
 				$level->setBlock($block, new StillLavaBlock());
 				$this->meta = 0;
