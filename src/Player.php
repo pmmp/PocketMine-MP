@@ -1568,7 +1568,7 @@ class Player{
 					if(isset($this->queue[$this->counter[1] + 1])){
 						$d = $this->queue[$this->counter[1] + 1];
 						unset($this->queue[$this->counter[1] + 1]);
-						$this->handle($d0, $d[1]);
+						$this->handle($d[0], $d[1]);
 					}elseif(count($this->queue) > 25){
 						$q = array_shift($this->queue);
 						$this->counter[1] = $q[1][0];
