@@ -260,10 +260,10 @@ class BlockAPI{
 			return $this->cancelAction($target, $player, false);
 		}
 		
-		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - 0.02) + $target->getBreakTime($item, $player)) >= microtime(true)){
+		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - 0.05) + $target->getBreakTime($item, $player)) >= microtime(true)){
 			return $this->cancelAction($target, $player, false);
 		}
-		$player->lastBreak = microtime(true);		
+		$player->lastBreak = microtime(true);
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
 			$drops = $target->getDrops($item, $player);
@@ -350,7 +350,7 @@ class BlockAPI{
 		if(($player->gamemode & 0x01) === 0x00){
 			--$item->count;
 			if($item->count <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
+				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false);
 			}
 		}
 

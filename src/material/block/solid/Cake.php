@@ -26,9 +26,25 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 class CakeBlock extends TransparentBlock{
-	public function __construct(){
+	public function __construct($meta = 0){
 		parent::__construct(CAKE_BLOCK, 0, "Cake Block");
 		$this->isFullBlock = false;
+		$this->isActivable = true;
+		$this->meta = $meta & 0x07;
+	}
+	
+	public function onActivate(Item $item, Player $player){
+		if($player->entity->getHealth() < 20){
+			++$this->meta;
+			$player->entity->heal(3, "cake");
+			if($this->meta >= 0x06){
+				$this->level->setBlock($this, new AirBlock());
+			}else{
+				$this->level->setBlock($this, $this);
+			}
+			return true;
+		}
+		return false;
 	}
 	
 }

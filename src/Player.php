@@ -340,9 +340,11 @@ class Player{
 		return true;
 	}
 	
-	public function setSlot($slot, Item $item){
+	public function setSlot($slot, Item $item, $send = true){
 		$this->inventory[(int) $slot] = $item;
-		$this->sendInventorySlot((int) $slot);
+		if($send === true){
+			$this->sendInventorySlot((int) $slot);
+		}
 		return true;
 	}
 	
@@ -1387,7 +1389,7 @@ class Player{
 										RAW_FISH => 2,
 										
 									);
-									if(isset($items[$this->getSlot($this->slot)->getID()])){
+									if($this->entity->getHealth() < 20 and isset($items[$this->getSlot($this->slot)->getID()])){
 										if($this->removeItem($this->getSlot($this->slot)->getID(), $this->getSlot($this->slot)->getMetadata(), 1, false) === true){
 											$this->dataPacket(MC_ENTITY_EVENT, array(
 												"eid" => 0,
