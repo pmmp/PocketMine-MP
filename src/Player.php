@@ -753,18 +753,20 @@ class Player{
 			if(($gm & 0x01) === 0x01 and ($gm & 0x02) === 0x02){
 				$inv = array();
 				foreach(BlockAPI::$creative as $item){
-					$inv[] = array(DANDELION, 0, 1);
+					$inv[] = BlockAPI::getItem(DANDELION, 0, 1);
 				}
 			}elseif(($gm & 0x01) === 0x01){
 				$inv = array();
 				foreach(BlockAPI::$creative as $item){
-					$inv[] = array($item[0], $item[1], 1);
+					$inv[] = BlockAPI::getItem($item[0], $item[1], 1);
 				}
 			}
 			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
 		}else{
-			$inv = array_fill(0, ($gamemode & 0x01) > 0 ? PLAYER_CREATIVE_SLOTS:PLAYER_SURVIVAL_SLOTS, array(AIR, 0, 0));
+			foreach($this->inventory as $slot => $item){
+				$inv[$slot] = BlockAPI::getItem(AIR, 0, 0);
+			}
 			$this->blocked = true;
 			$this->gamemode = $gm;
 			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
