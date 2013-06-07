@@ -1348,11 +1348,9 @@ class Player{
 										default:
 											$damage = 1;//$this->server->difficulty;
 									}
-									$this->server->api->entity->harm($data["target"], $damage, $this->eid);
-									if($slot->isSword() !== false){
-										$slot->meta++;
-									}elseif($slot->isTool() === true){
-										$slot->meta += 2;
+									$target->harm($damage, $this->eid);
+									if($slot->isTool() === true){
+										$slot->useOn($target);
 									}
 								}
 							}

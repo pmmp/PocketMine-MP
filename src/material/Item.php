@@ -131,6 +131,12 @@ class Item{
 		
 	}
 	
+	public function useOn($object){
+		if($this->isTool()){
+			$this->meta++;
+		}
+	}
+	
 	final public function isTool(){
 		return ($this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false or $this->isHoe() !== false);
 	}
