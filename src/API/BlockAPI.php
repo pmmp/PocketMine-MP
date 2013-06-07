@@ -741,6 +741,10 @@ class BlockAPI{
 			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
 			$block = $pos->level->getBlock($pos);
 		}
+		if($block === false){
+			return false;
+		}
+		
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
