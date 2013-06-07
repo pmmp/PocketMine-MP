@@ -782,7 +782,7 @@ class Entity extends Position{
 	}
 	
 	public function harm($dmg, $cause = "generic", $force = false){
-		return $this->setHealth($this->getHealth() - ((int) $dmg), $cause, $force);
+		return $this->setHealth(max(-128, $this->getHealth() - ((int) $dmg)), $cause, $force);
 	}
 
 	public function heal($health, $cause = "generic"){
