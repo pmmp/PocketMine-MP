@@ -1524,7 +1524,7 @@ class Player{
 									$craft = true;
 								}
 								
-								if($craft = true){
+								if($craft === true){
 									$this->lastCraft = microtime(true);
 								}
 
