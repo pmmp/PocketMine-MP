@@ -33,7 +33,9 @@ class DirtBlock extends SolidBlock{
 
 	public function onActivate(Item $item, Player $player){
 		if($item->isHoe()){
-			$item->useOn($this);
+			if(($this->gamemode & 0x01) === 0){
+				$item->useOn($this);
+			}
 			$this->level->setBlock($this, BlockAPI::get(FARMLAND, 0));
 			return true;
 		}

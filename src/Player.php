@@ -365,13 +365,19 @@ class Player{
 		return;
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
-			return false;
+			$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+				"windowid" => 0,
+				"slot" => (int) $s,
+				"block" => AIR,
+				"stack" => 0,
+				"meta" => 0,
+			));
 		}
 		
 		$slot = $this->inventory[$s];
 		$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
 			"windowid" => 0,
-			"slot" => ((int) $s) + 9,
+			"slot" => (int) $s,
 			"block" => $slot->getID(),
 			"stack" => $slot->count,
 			"meta" => $slot->getMetadata(),
@@ -1349,7 +1355,7 @@ class Player{
 											$damage = 1;//$this->server->difficulty;
 									}
 									$target->harm($damage, $this->eid);
-									if($slot->isTool() === true){
+									if($slot->isTool() === true and ($this->gamemode & 0x01) === 0){
 										$slot->useOn($target);
 									}
 								}
@@ -1630,7 +1636,7 @@ class Player{
 		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 			"windowid" => 0,
 			"count" => count($this->inventory),
-			"slots" => $this->inventory
+			"slots" => $this->inventory,
 		));
 	}
 
