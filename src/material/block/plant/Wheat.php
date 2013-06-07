@@ -45,6 +45,7 @@ class WheatBlock extends FlowableBlock{
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this);
+			$item->count--;
 			return true;
 		}
 		return false;
