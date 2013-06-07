@@ -55,7 +55,9 @@ class Level{
 			$this->usedChunks[$X.".".$Z] = array();
 		}
 		$this->usedChunks[$X.".".$Z][$player->CID] = true;
-		$this->level->loadChunk($X, $Z);
+		if(isset($this->level)){
+			$this->level->loadChunk($X, $Z);
+		}
 	}
 	
 	public function freeAllChunks(Player $player){
@@ -125,9 +127,11 @@ class Level{
 	}
 	
 	public function __destruct(){
-		$this->save();
-		$this->level->close();
-		unset($this->level);
+		if(isset($this->level)){
+			$this->save();
+			$this->level->close();
+			unset($this->level);
+		}
 	}
 	
 	public function save($force = false, $extra = true){
@@ -258,7 +262,7 @@ class Level{
 	}
 	
 	public function getBlock(Vector3 $pos){
-		if(($pos instanceof Position) and $pos->level !== $this){
+		if(!isset($this->level) or ($pos instanceof Position) and $pos->level !== $this){
 			return false;
 		}
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
@@ -266,6 +270,9 @@ class Level{
 	}
 	
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true){
+		if(!isset($this->level)){
+			return false;
+		}
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true){
 			if($direct === true){
 				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
@@ -290,7 +297,7 @@ class Level{
 	}
 	
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
-		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
+		if(!isset($this->level) or (($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
 
@@ -333,23 +340,38 @@ class Level{
 	}
 	
 	public function getMiniChunk($X, $Y, $Z){
+		if(!isset($this->level)){
+			return false;
+		}
 		return $this->level->getMiniChunk($X, $Z);
 	}
 	
 	public function setMiniChunk($X, $Y, $Z, $data){
+		if(!isset($this->level)){
+			return false;
+		}
 		$this->changedCount[$X.":".$Y.":".$Z] = 4096;
 		return $this->level->setMiniChunk($X, $Y, $Z, $data);
 	}
 	
 	public function loadChunk($X, $Z){
+		if(!isset($this->level)){
+			return false;
+		}
 		return $this->level->loadChunk($X, $Z);
 	}
 	
 	public function unloadChunk($X, $Z){
+		if(!isset($this->level)){
+			return false;
+		}
 		return $this->level->unloadChunk($X, $Z);
 	}
 	
 	public function getOrderedMiniChunk($X, $Z, $Y){
+		if(!isset($this->level)){
+			return false;
+		}
 		$raw = $this->level->getMiniChunk($X, $Z, $Y);
 		$ordered = "";
 		$flag = chr(1 << $Y);
@@ -360,10 +382,16 @@ class Level{
 	}
 	
 	public function getSpawn(){
+		if(!isset($this->level)){
+			return false;
+		}
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
 	}
 	
 	public function setSpawn(Vector3 $pos){
+		if(!isset($this->level)){
+			return false;
+		}
 		$this->level->setData("spawnX", $pos->x);
 		$this->level->setData("spawnY", $pos->y);
 		$this->level->setData("spawnZ", $pos->z);
@@ -383,14 +411,23 @@ class Level{
 	}
 	
 	public function getSeed(){
+		if(!isset($this->level)){
+			return false;
+		}
 		return (int) $this->level->getData("seed");
 	}
 	
 	public function setSeed($seed){
+		if(!isset($this->level)){
+			return false;
+		}
 		$this->level->setData("seed", (int) $seed);
 	}
 	
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
+		if(!isset($this->level)){
+			return false;
+		}
 		return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}
 }
