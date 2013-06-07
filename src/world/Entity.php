@@ -566,6 +566,10 @@ class Entity extends Position{
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
+					"yaw" => 0,
+					"pitch" => 0,
+					"unknown1" => 0,
+					"unknown2" => 0,
 					"metadata" => $this->getMetadata(),
 				));
 				$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
