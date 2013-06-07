@@ -1171,7 +1171,7 @@ class Player{
 									$this->entity->updateMetadata();
 								}
 								if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
-								}elseif($this->getSlot($this->slot)->getID() !== $data["block"] or $this->getSlot($this->slot)->getMetadata() !== $data["meta"]){
+								}elseif($this->getSlot($this->slot)->getID() !== $data["block"] or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $data["meta"])){
 									$this->sendInventorySlot($this->slot);
 								}else{
 									$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
@@ -1287,7 +1287,8 @@ class Player{
 								}elseif($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
 									break;
 								}elseif($this->server->handle("player.interact", $data) !== false){
-									switch($this->getSlot($this->slot)->getID()){
+									$slot = $this->getSlot($this->slot);
+									switch($slot->getID()){
 										case WOODEN_SWORD:
 										case GOLD_SWORD:
 											$damage = 4;
@@ -1348,6 +1349,11 @@ class Player{
 											$damage = 1;//$this->server->difficulty;
 									}
 									$this->server->api->entity->harm($data["target"], $damage, $this->eid);
+									if($slot->isSword() !== false){
+										$slot->meta++;
+									}elseif($slot->isTool() === true){
+										$slot->meta += 2;
+									}
 								}
 							}
 							break;
@@ -1407,7 +1413,8 @@ class Player{
 										RAW_FISH => 2,
 										
 									);
-									if($this->entity->getHealth() < 20 and isset($items[($slot = $this->getSlot($this->slot))->getID()])){
+									$slot = $this->getSlot($this->slot);
+									if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
 										$this->dataPacket(MC_ENTITY_EVENT, array(
 											"eid" => 0,
 											"event" => 9,

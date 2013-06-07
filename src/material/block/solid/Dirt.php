@@ -33,6 +33,7 @@ class DirtBlock extends SolidBlock{
 
 	public function onActivate(Item $item, Player $player){
 		if($item->isHoe()){
+			$item->meta++;
 			$this->level->setBlock($this, BlockAPI::get(FARMLAND, 0));
 			return true;
 		}

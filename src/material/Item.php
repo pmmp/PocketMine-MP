@@ -131,6 +131,10 @@ class Item{
 		
 	}
 	
+	final public function isTool(){
+		return ($this->isPickaxe !== false or $this->isAxe !== false or $this->isShovel !== false or $this->isSword !== false or $this->isHoe !== false);
+	}
+	
 	final public function isPickaxe(){ //Returns false or level of the pickaxe
 		switch($this->id){
 			case IRON_PICKAXE:
@@ -142,6 +146,40 @@ class Item{
 			case DIAMOND_PICKAXE:
 				return 5;
 			case GOLD_PICKAXE:
+				return 2;
+			default:
+				return false;
+		}
+	}
+	
+	final public function isAxe(){
+		switch($this->id){
+			case IRON_AXE:
+				return 4;
+			case WOODEN_AXE:
+				return 1;
+			case STONE_AXE:
+				return 3;
+			case DIAMOND_AXE:
+				return 5;
+			case GOLD_AXE:
+				return 2;
+			default:
+				return false;
+		}
+	}
+
+	final public function isSword(){
+		switch($this->id){
+			case IRON_SWORD:
+				return 4;
+			case WOODEN_SWORD:
+				return 1;
+			case STONE_SWORD:
+				return 3;
+			case DIAMOND_SWORD:
+				return 5;
+			case GOLD_SWORD:
 				return 2;
 			default:
 				return false;
