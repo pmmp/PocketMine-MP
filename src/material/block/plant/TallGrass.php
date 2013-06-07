@@ -50,7 +50,7 @@ class TallGrassBlock extends FlowableBlock{
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if(mt_rand(1,10) === 1){//Seeds
-			$drops[] = array(WEATH_SEEDS, 0, 1);
+			$drops[] = array(WHEAT_SEEDS, 0, 1);
 		}
 		return $drops;
 	}
