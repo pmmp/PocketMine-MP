@@ -254,6 +254,7 @@ class Player{
 			$this->recovery = null;
 			unset($this->recovery);
 			$this->connected = false;
+			$this->server->interface->stopChunked($this->CID);
 			if($msg === true and $this->username != ""){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
