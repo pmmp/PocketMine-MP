@@ -30,7 +30,7 @@ class Player{
 	private $server;
 	private $buffer = "";
 	private $nextBuffer = 0;
-	private $recovery = array();
+	public $recovery = array();
 	private $evid = array();
 	private $lastMovement = 0;
 	private $timeout;
