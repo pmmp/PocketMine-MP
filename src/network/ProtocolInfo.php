@@ -26,6 +26,8 @@ the Free Software Foundation, either version 3 of the License, or
 */
 
 
+define("DEFLATEPACKET_LEVEL", 1);
+
 define("CURRENT_STRUCTURE", 5);
 define("CURRENT_PROTOCOL", 11);
 
@@ -320,6 +322,11 @@ class Protocol{
 			"itriad",
 			"ubyte",
 			"customData",
+		),
+		
+		0x99 => array(
+			"byte",
+			"special1",
 		),
 
 		0xa0 => array(

@@ -58,6 +58,16 @@ class Packet{
 			switch($type){
 				case "special1":
 					switch($this->pid){
+						case 0x99:
+							if($this->data[0] >= 2){
+								$this->addRaw(Utils::writeShort($this->data[1]["id"]));
+								$this->addRaw(Utils::writeShort($this->data[1]["index"]));
+								if($this->data[0] === 2){
+									$this->addRaw(Utils::writeShort($this->data[1]["count"]));
+									$this->addRaw(Utils::writeShort(strlen($this->data[1]["data"])).$this->data[1]["data"]);
+								}
+							}
+							break;
 						case 0xc0:
 						case 0xa0:
 							$payload = "";
@@ -188,6 +198,18 @@ class Packet{
 			switch($type){
 				case "special1":
 					switch($this->pid){
+						case 0x99:
+							if($this->data[0] >= 2){ //
+								$messageID = Utils::readShort($this->get(2), false);
+								$messageIndex = Utils::readShort($this->get(2), false);
+								$this->data[1] = array("id" => $messageID, "index" => $messageIndex);
+								if($this->data[0] === 2){
+									$this->data[1]["count"] = Utils::readShort($this->get(2), false);
+									$dataLength = Utils::readShort($this->get(2), false);
+									$this->data[1]["data"] = $this->get($dataLength);
+								}
+							}
+							break;
 						case 0xc0:
 						case 0xa0:
 							$cnt = Utils::readShort($this->get(2), false);

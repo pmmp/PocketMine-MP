@@ -29,7 +29,10 @@ class MinecraftInterface{
 	public $client;
 	private $socket;
 	private $data;
-	function __construct($server, $port = 25565, $listen = false, $client = false, $serverip = "0.0.0.0"){
+	private $chunked;
+	private $toChunk;
+	private $needCheck;
+	function __construct($object, $server, $port = 25565, $listen = false, $client = false, $serverip = "0.0.0.0"){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen, $serverip);
 		if($this->socket->connected === false){
 			console("[ERROR] Couldn't bind to $serverip:".$port, true, true, 0);
@@ -37,6 +40,10 @@ class MinecraftInterface{
 		}
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
+		$this->chunked = array();
+		$this->toChunk = array();
+		$this->needCheck = array();
+		$object->schedule(1, array($this, "checkChunked"), array(), true);
 	}
 
 	public function close(){
@@ -71,20 +78,22 @@ class MinecraftInterface{
 	}
 
 	public function readPacket(){
-		$p = $this->popPacket();
-		if($p !== false){
-			return $p;
-		}
+		$pk = $this->popPacket();
 		if($this->socket->connected === false){
-			return false;
+			return $pk;
 		}
 		$buf = "";
 		$source = false;
 		$port = 1;
 		$len = $this->socket->read($buf, $source, $port);
 		if($len === false){
-			return false;
+			return $pk;
 		}
+		$this->parsePacket($buf, $source, $port);
+		return ($pk !== false ? $pk : $this->popPacket());
+	}
+	
+	private function parsePacket($buf, $source, $port){
 		$pid = ord($buf{0});
 		$struct = $this->getStruct($pid);
 		if($struct === false){
@@ -96,7 +105,7 @@ class MinecraftInterface{
 				"port" => $port
 			)) !== true){
 				if(LOG === true and DEBUG >= 3){
-					console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 0);			
+					console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 2);			
 					$p = "[".(microtime(true) - $this->start)."] [CLIENT->SERVER ".$source.":".$port."]: Error, bad packet id 0x".Utils::strToHex(chr($pid))." [length ".strlen($buf)."]".PHP_EOL;
 					$p .= Utils::hexdump($buf);
 					$p .= PHP_EOL;
@@ -108,8 +117,132 @@ class MinecraftInterface{
 
 		$packet = new Packet($pid, $struct, $buf);
 		@$packet->parse();
+		if($pid === 0x99){
+			$CID = PocketMinecraftServer::clientID($source, $port);
+			if(!isset($this->chunked[$CID]) and $packet->data[0] !== 0){ //Drop packet
+				return $this->popPacket();
+			}
+			switch($packet->data[0]){
+				case 0:
+					$this->initChunked($CID, $source, $port);
+					return false;
+				case 1:
+					$this->stopChunked($CID);
+					return false;
+				case 3:
+					$this->ackChunked($CID, $data[1]["id"], $data[1]["index"]);
+					return false;
+				case 4:
+					$this->receiveChunked($CID, $data[1]["id"], $data[1]["index"], $data[1]["count"], $data[1]["data"]);
+					return true;
+			}
+		}
 		$this->data[] = array($pid, $packet->data, $buf, $source, $port);
-		return $this->popPacket();
+		return true;
+	}
+	
+	public function checkChunked($CID){
+		$time = microtime(true);
+		foreach($this->needCheck as $CID => $packets){
+			if($packets[-1] < $time){
+				$d = $this->chunked[$CID];
+				unset($packets[-1]);
+				foreach($packets as $packet){
+					$this->writePacket(0x99, $packet, true, $d[1], $d[2], true);
+				}
+				$this->needCheck[$CID][-1] = $time + 5;
+			}
+		}
+		foreach($this->toChunk as $CID => $packets){
+			$d = $this->chunked[$CID];
+			$raw = "";
+			$MTU = 0;
+			foreach($packets as $packet){
+				$raw .= $packet;
+				if(($len = strlen($packet)) > $MTU){
+					$MTU = $len;
+				}
+			}
+			if($MTU > $d[0][2]){
+				$this->chunked[$CID][0][2] = $MTU;
+			}else{
+				$MTU = $d[0][2];
+			}
+			$raw = str_split(gzdeflate($raw, DEFLATEPACKET_LEVEL), $MTU - 9); // - 1 - 2 - 2 - 2 - 2
+			$count = count($raw);
+			$messageID = $this->chunked[$CID][0][0]++;
+			if(!isset($this->needCheck[$CID])){
+				$this->needCheck[$CID] = array();
+			}
+			$this->needCheck[$CID][$messageID] = array(-1 => $time + 1);
+			foreach($raw as $index => $r){
+				$p = "\x99\x02".Utils::writeShort($messageID).Utils::writeShort($index).Utils::writeShort($count).Utils::writeShort(strlen($r)).$r;
+				$this->needCheck[$CID][$messageID][$index] = $p;
+				$this->writePacket(0x99, $p, true, $d[1], $d[2], true);
+			}			
+			unset($this->toChunk[$CID]);
+		}
+	}
+	
+	public function isChunked($CID){
+		return isset($this->chunked[$CID]);
+	}
+	
+	private function initChunked($CID, $source, $port){
+		console("[DEBUG] Starting DEFLATEPacket for $source:$port", true, true, 2);
+		$this->chunked[$CID] = array(
+			0 => array(0, 0, 0), //index, sent/received; MTU
+			1 => $source,
+			2 => $port,
+			3 => array(), //Received packets
+		);
+		$this->writePacket(0x99, array(
+			0 => 0, //start
+		), false, $source, $port);
+	}
+	
+	public function stopChunked($CID){
+		if(!isset($this->chunked[$CID])){
+			return false;
+		}
+		$this->writePacket(0x99, array(
+			0 => 1, //stop
+		), false, $this->chunked[$CID][1], $this->chunked[$CID][2]);
+		console("[DEBUG] Stopping DEFLATEPacket for ".$this->chunked[$CID][1].":".$this->chunked[$CID][2], true, true, 2);
+		$this->chunked[$CID][3] = null;
+		$this->chunked[$CID][4] = null;
+		unset($this->chunked[$CID]);
+		unset($this->toChunk[$CID]);
+		unset($this->needCheck[$CID]);
+	}
+	
+	private function ackChunked($CID, $ID, $index){
+		unset($this->needCheck[$CID][$ID][$index]);
+		if(count($this->needCheck[$CID][$ID]) <= 1){
+			unset($this->needCheck[$CID][$ID]);
+		}
+	}
+	
+	private function receiveChunked($CID, $ID, $index, $count, $data){
+		if(!isset($this->chunked[$CID][3][$ID])){
+			$this->chunked[$CID][3][$ID] = array();
+		}
+		$this->chunked[$CID][3][$ID][$index] = $data;
+		
+		if(count($this->chunked[$CID][3][$ID]) === $count){
+			ksort($this->chunked[$CID][3][$ID]);
+			$data = gzinflate(implode($this->chunked[$CID][3][$ID]));
+			unset($this->chunked[$CID][3][$ID]);
+			if($data === false or strlen($data) === 0){
+				console("[ERROR] Invalid DEFLATEPacket for ".$this->chunked[$CID][1].":".$this->chunked[$CID][2], true, true, 2);
+			}
+			$offset = 0;
+			while(($plen = Utils::readShort(substr($data, $offset, 2), false)) !== 0xFFFF or $offset >= $len){
+				$offset += 2;
+				$packet = substr($data, $offset, $plen);
+				$this->parsePacket($packet, $this->chunked[$CID][1], $this->chunked[$CID][2]);
+			}
+		}
 	}
 
 	public function popPacket(){
@@ -131,17 +264,33 @@ class MinecraftInterface{
 		return false;
 	}
 
-	public function writePacket($pid, $data = array(), $raw = false, $dest = false, $port = false){
-		$struct = $this->getStruct($pid);
+	public function writePacket($pid, $data = array(), $raw = false, $dest = false, $port = false, $force = false){
+		$CID = PocketMinecraftServer::clientID($dest, $port);
 		if($raw === false){
-			$packet = new Packet($pid, $struct);
+			$packet = new Packet($pid, $this->getStruct($pid));
 			$packet->data = $data;
-			@$packet->create();
-			$write = $this->socket->write($packet->raw, $dest, $port);
-			$this->writeDump($pid, $packet->raw, $data, "client", $dest, $port);
+			@$packet->create();			
+			if($force === false and $this->isChunked($CID)){
+				if(!isset($this->toChunk[$CID])){
+					$this->toChunk[$CID] = array();
+				}
+				$this->toChunk[$CID][] = $packet->raw;
+				$write = strlen($packet->raw);
+			}else{
+				$write = $this->socket->write($packet->raw, $dest, $port);
+				$this->writeDump($pid, $packet->raw, $data, "client", $dest, $port);
+			}
 		}else{
-			$write = $this->socket->write($data, $dest, $port);
-			$this->writeDump($pid, $data, false, "client", $dest, $port);
+			if($force === false and $this->isChunked($CID)){
+				if(!isset($this->toChunk[$CID])){
+					$this->toChunk[$CID] = array();
+				}
+				$this->toChunk[$CID][] = $dest;
+				$write = strlen($packet->raw);
+			}else{
+				$write = $this->socket->write($data, $dest, $port);
+				$this->writeDump($pid, $data, false, "client", $dest, $port);
+			}
 		}
 		return $write;
 	}

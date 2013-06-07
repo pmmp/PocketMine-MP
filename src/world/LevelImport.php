@@ -70,7 +70,7 @@ class LevelImport{
 			"spawnZ" => $level["SpawnZ"],
 			"extra" => "",
 			"width" => 16,
-			"height" => 8				
+			"height" => 8
 		));
 		$chunks = new PocketChunkParser();
 		$chunks->loadFile($this->path."chunks.dat");
