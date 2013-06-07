@@ -1407,13 +1407,15 @@ class Player{
 										RAW_FISH => 2,
 										
 									);
-									if($this->entity->getHealth() < 20 and isset($items[$this->getSlot($this->slot)->getID()])){
-										if($this->removeItem($this->getSlot($this->slot)->getID(), $this->getSlot($this->slot)->getMetadata(), 1, false) === true){
-											$this->dataPacket(MC_ENTITY_EVENT, array(
-												"eid" => 0,
-												"event" => 9,
-											));
-											$this->entity->heal($items[$this->getSlot($this->slot)->getID()], "eating");
+									if($this->entity->getHealth() < 20 and isset($items[($slot = $this->getSlot($this->slot))->getID()])){
+										$this->dataPacket(MC_ENTITY_EVENT, array(
+											"eid" => 0,
+											"event" => 9,
+										));
+										$this->entity->heal($items[$slot->getID()], "eating");
+										--$slot->count;
+										if($slot->count <= 0){
+											$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
 										}
 									}
 									break;
