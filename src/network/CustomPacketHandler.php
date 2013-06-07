@@ -223,6 +223,8 @@ class CustomPacketHandler{
 					$this->data["x"] = Utils::readFloat($this->get(4));
 					$this->data["y"] = Utils::readFloat($this->get(4));
 					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["pitch"] = Utils::readByte($this->get(1));
+					$this->data["yaw"] = Utils::readByte($this->get(1));
 					$this->data["metadata"] = Utils::readMetadata($this->get(true));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["eid"]);
@@ -230,6 +232,8 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeByte($this->data["pitch"]);
+					$this->raw .= Utils::writeByte($this->data["yaw"]);
 					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;
@@ -241,6 +245,10 @@ class CustomPacketHandler{
 					$this->data["x"] = Utils::readFloat($this->get(4));
 					$this->data["y"] = Utils::readFloat($this->get(4));
 					$this->data["z"] = Utils::readFloat($this->get(4));
+					$this->data["pitch"] = Utils::readByte($this->get(1));
+					$this->data["yaw"] = Utils::readByte($this->get(1));
+					$this->data["unknown1"] = Utils::readShort($this->get(2));
+					$this->data["unknown2"] = Utils::readShort($this->get(2));
 					$this->data["metadata"] = Utils::readMetadata($this->get(true));
 				}else{
 					$this->raw .= Utils::writeLong($this->data["clientID"]);
@@ -249,6 +257,10 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeFloat($this->data["x"]);
 					$this->raw .= Utils::writeFloat($this->data["y"]);
 					$this->raw .= Utils::writeFloat($this->data["z"]);
+					$this->raw .= Utils::writeByte($this->data["pitch"]);
+					$this->raw .= Utils::writeByte($this->data["yaw"]);
+					$this->raw .= Utils::writeShort($this->data["unknown1"]);
+					$this->raw .= Utils::writeShort($this->data["unknown2"]);
 					$this->raw .= Utils::writeMetadata($this->data["metadata"]);
 				}
 				break;

@@ -603,6 +603,8 @@ class Entity extends Position{
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
+					"yaw" => 0,
+					"pitch" => 0,
 					"metadata" => $this->getMetadata(),
 				));
 				$player->dataPacket(MC_SET_ENTITY_MOTION, array(

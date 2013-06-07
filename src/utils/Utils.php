@@ -115,7 +115,7 @@ class Utils{
 	public static function writeMetadata($data){
 		$m = "";
 		foreach($data as $bottom => $d){
-			$m .= chr(($d["type"] << 5) & (0xE0 | $bottom));
+			$m .= chr(($d["type"] << 5) | ($bottom & 0b00011111));
 			switch($d["type"]){
 				case 0:
 					$m .= Utils::writeByte($d["value"]);
