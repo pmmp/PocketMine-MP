@@ -847,7 +847,7 @@ class Player{
 						if($diff > 16 and $d["sendtime"] < $limit){
 							$this->directDataPacket($d["id"], $d, $d["pid"]);
 							++$this->packetStats[1];
-							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
+							$this->lag[] = microtime(true) - $d["sendtime"];
 							unset($this->recovery[$count]);
 						}
 					}
