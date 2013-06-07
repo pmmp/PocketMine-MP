@@ -25,6 +25,9 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
+
+define("PMF_LEVEL_DEFLATE_LEVEL", 6);
+
 //Gamemodes
 define("SURVIVAL", 0);
 define("CREATIVE", 1);

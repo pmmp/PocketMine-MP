@@ -92,7 +92,7 @@ class PMFLevel extends PMF{
 		$this->write(Utils::writeFloat($this->levelData["spawnZ"]));
 		$this->write(chr($this->levelData["width"]));
 		$this->write(chr($this->levelData["height"]));
-		$extra = gzdeflate($this->levelData["extra"], 9);
+		$extra = gzdeflate($this->levelData["extra"], PMF_LEVEL_DEFLATE_LEVEL);
 		$this->write(Utils::writeShort(strlen($extra)).$extra);
 		$this->payloadOffset = ftell($this->fp);
 		
@@ -115,7 +115,7 @@ class PMFLevel extends PMF{
 			$this->write(Utils::writeShort(0));
 			$X = $Z = null;
 			$this->getXZ($index, $X, $Z);
-			@file_put_contents($this->getChunkPath($X, $Z), gzdeflate("", 9));
+			@file_put_contents($this->getChunkPath($X, $Z), gzdeflate("", PMF_LEVEL_DEFLATE_LEVEL));
 		}
 		if(!file_exists(dirname($this->file)."/entities.yml")){
 			$entities = new Config(dirname($this->file)."/entities.yml", CONFIG_YAML);
@@ -384,7 +384,7 @@ class PMFLevel extends PMF{
 			return true;
 		}
 		
-		$chunk = @gzopen($this->getChunkPath($X, $Z), "wb9");
+		$chunk = @gzopen($this->getChunkPath($X, $Z), "wb".PMF_LEVEL_DEFLATE_LEVEL);
 		$bitmap = 0;
 		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
 			if($this->chunks[$index][$Y] !== false and ((isset($this->chunkChange[$index][$Y]) and $this->chunkChange[$index][$Y] === 0) or !$this->isMiniChunkEmpty($X, $Z, $Y))){
