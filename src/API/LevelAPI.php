@@ -126,11 +126,12 @@ class LevelAPI{
 		return true;
 	}
 	
-	public function unloadLevel(Level $level){
+	public function unloadLevel(Level $level, $force = false){
 		$name = $level->getName();
-		if($name === $this->default){
+		if($name === $this->default and $force !== true){
 			return false;
 		}
+		console("[INFO] Unloading level \"".$name."\"");
 		$level->nextSave = PHP_INT_MAX;
 		$level->save();
 		foreach($this->server->api->player->getAll($level) as $player){
@@ -217,6 +218,12 @@ class LevelAPI{
 	public function saveAll(){
 		foreach($this->levels as $level){
 			$level->save();
+		}
+	}
+	
+	public function __destruct(){
+		foreach($this->levels as $level){
+			$this->unloadLevel($level, true);
 		}
 	}
 
