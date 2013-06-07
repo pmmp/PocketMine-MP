@@ -204,10 +204,10 @@ class ServerAPI{
 	}
 
 	public function __destruct(){
-		foreach($this->apiList as $ob){
-			if(is_callable($ob, "__destruct")){
+		foreach($this->apiList as $i => $ob){
+			if(method_exists($ob, "__destruct")){
 				$ob->__destruct();
-				unset($this->apiList[$ob]);
+				unset($this->apiList[$i]);
 			}
 		}
 	}
