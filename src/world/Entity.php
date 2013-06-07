@@ -241,6 +241,11 @@ class Entity extends Position{
 				return false;
 			}
 		}
+	
+		if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
+			$this->close();
+			return false;
+		}
 		
 		if($this->dead === true){
 			$this->fire = 0;
@@ -344,7 +349,7 @@ class Entity extends Position{
 			return;
 		}
 		$tdiff = $now - $this->lastUpdate;
-		
+
 		if($this->tickCounter === 0){
 			$this->tickCounter = 1;
 			$hasUpdate = $this->environmentUpdate();
@@ -353,11 +358,11 @@ class Entity extends Position{
 		}
 		
 		if($this->isStatic === false){
-			$startX = floor($this->x - 0.5 - $this->size);
+			$startX = floor($this->x - 0.5 - $this->size - 1);
 			$y = (int) round($this->y - 1);
-			$startZ = floor($this->z - 0.5 - $this->size);
-			$endX = ceil($startX + $this->size);
-			$endZ = ceil($startZ + $this->size);
+			$startZ = floor($this->z - 0.5 - $this->size - 1);
+			$endX = ceil($this->x - 0.5 + $this->size + 1);
+			$endZ = ceil($this->z - 0.5 + $this->size + 1);
 			$support = false;
 			$isFlying = true;
 			for($z = $startZ; $z <= $endZ; ++$z){

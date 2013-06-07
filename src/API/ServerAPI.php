@@ -95,8 +95,8 @@ class ServerAPI{
 			$this->config->remove("invisible");
 		}
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
-		self::$serverRequest = $this->server;
 		$this->server->api = $this;
+		self::$serverRequest = $this->server;
 		
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");

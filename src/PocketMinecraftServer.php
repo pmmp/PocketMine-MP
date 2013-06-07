@@ -124,10 +124,10 @@ class PocketMinecraftServer{
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		$this->query("CREATE TABLE blockUpdates (level TEXT, x INTEGER, y INTEGER, z INTEGER, type INTEGER, delay NUMERIC);");
 		$this->query("CREATE TABLE recipes (id INTEGER PRIMARY KEY, type NUMERIC, recipe TEXT);");
-		//$this->query("PRAGMA synchronous = OFF;");
+		$this->query("PRAGMA synchronous = OFF;");
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
-		$this->preparedSQL->updateActions = $this->database->prepare("UPDATE actions SET last = :time WHERE last <= (:time - interval);");
+		$this->preparedSQL->updateAction = $this->database->prepare("UPDATE actions SET last = :time WHERE ID = :id;");
 	}
 
 	public function query($sql, $fetch = false){
@@ -507,7 +507,6 @@ class PocketMinecraftServer{
 	public function tickerFunction($time){
 		//actions that repeat every x time will go here
 		$this->preparedSQL->selectActions->reset();
-		$this->preparedSQL->selectActions->clear();
 		$this->preparedSQL->selectActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$actions = $this->preparedSQL->selectActions->execute();
 
@@ -516,11 +515,16 @@ class PocketMinecraftServer{
 		}
 		while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
 			$cid = $action["ID"];
+			$this->preparedSQL->updateAction->reset();
+			$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
+			$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
+			$this->preparedSQL->updateAction->execute();
 			$schedule = $this->schedule[$cid];
 			if(!is_callable($schedule[0])){
 				$return = false;
 			}else{
 				$return = call_user_func($schedule[0],$schedule[1],$schedule[2]);
+				console(get_class($schedule[0][0])."::".$schedule[0][1]);
 			}
 
 			if($action["repeat"] === 0 or $return === false){
@@ -530,10 +534,6 @@ class PocketMinecraftServer{
 			}
 		}
 		$actions->finalize();
-		$this->preparedSQL->updateActions->reset();
-		$this->preparedSQL->updateActions->clear();
-		$this->preparedSQL->updateActions->bindValue(":time", $time, SQLITE3_FLOAT);
-		$this->preparedSQL->updateActions->execute();
 	}
 
 	public function event($event,callable $func){
