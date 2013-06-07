@@ -131,7 +131,7 @@ class CraftingRecipes{
 		"WOODEN_PLANKS:?x2,STICK:?x1=>WOODEN_SWORD:0x1",
 		
 		//Food & protection
-		"WEATH:?x3=>BREAD:0x1",
+		"WHEAT:?x3=>BREAD:0x1",
 		"WHEATH:?x3,BUCKET:1x3,EGG:?x1,SUGAR:?x2=>CAKE:0x1",
 		"DIAMOND:?x4=>DIAMOND_BOOTS:0x1",
 		"DIAMOND:?x8=>DIAMOND_CHESTPLATE:0x1",
