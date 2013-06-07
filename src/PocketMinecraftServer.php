@@ -131,7 +131,6 @@ class PocketMinecraftServer{
 	}
 
 	public function query($sql, $fetch = false){
-		console("[INTERNAL] [SQL] ".$sql, true, true, 3);
 		$result = $this->database->query($sql) or console("[ERROR] [SQL Error] ".$this->database->lastErrorMsg().". Query: ".$sql, true, true, 0);
 		if($fetch === true and ($result !== false and $result !== true)){
 			$result = $result->fetchArray(SQLITE3_ASSOC);
@@ -524,7 +523,6 @@ class PocketMinecraftServer{
 				$return = false;
 			}else{
 				$return = call_user_func($schedule[0],$schedule[1],$schedule[2]);
-				console(get_class($schedule[0][0])."::".$schedule[0][1]);
 			}
 
 			if($action["repeat"] === 0 or $return === false){
