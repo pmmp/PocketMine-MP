@@ -32,21 +32,21 @@ class BurningFurnaceBlock extends SolidBlock{
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$faces = array(
-				0 => 4,
-				1 => 2,
-				2 => 5,
-				3 => 3,
-			);
-			$this->meta = $faces[$player->entity->getDirection()];
-			$this->level->setBlock($block, $this);
-			return true;
+		$faces = array(
+			0 => 4,
+			1 => 2,
+			2 => 5,
+			3 => 3,
+		);
+		$this->meta = $faces[$player->entity->getDirection()];
+		$this->level->setBlock($block, $this);
+		return true;
 	}
 	
 	public function onBreak(Item $item, Player $player){
-			$server = ServerAPI::request();
-			$this->level->setBlock($this, new AirBlock(), true, true);
-			return true;
+		$server = ServerAPI::request();
+		$this->level->setBlock($this, new AirBlock(), true, true);
+		return true;
 	}
 
 	public function onActivate(Item $item, Player $player){
@@ -116,12 +116,19 @@ class BurningFurnaceBlock extends SolidBlock{
 	}
 	
 	public function getDrops(Item $item, Player $player){
+		$drops = array();
 		if($item->isPickaxe() >= 1){
-			return array(
-				array(FURNACE, 0, 1),
-			);
-		}else{
-			return array();
+			$drops[] = array(FURNACE, 0, 1);
 		}
+		$t = ServerAPI::request()->api->tile->get($this);
+		if($t !== false and $t->class === TILE_FURNACE){
+			for($s = 0; $s < FURNACE_SLOTS; ++$s){
+				$slot = $t->getSlot($s);
+				if($slot->getID() > AIR and $slot->count > 0){
+					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+				}
+			}
+		}
+		return $drops;
 	}
 }

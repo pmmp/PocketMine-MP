@@ -99,7 +99,7 @@ class ChestBlock extends TransparentBlock{
 		$slots = array();
 		for($s = 0; $s < CHEST_SLOTS; ++$s){
 			$slot = $chest->getSlot($s);
-			if($slot->getID() > 0 and $slot->count > 0){
+			if($slot->getID() > AIR and $slot->count > 0){
 				$slots[] = $slot;
 			}else{
 				$slots[] = BlockAPI::getItem(AIR, 0, 0);
@@ -115,8 +115,18 @@ class ChestBlock extends TransparentBlock{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		return array(
+		$drops = array(
 			array($this->id, 0, 1),
 		);
+		$t = ServerAPI::request()->api->tile->get($this);
+		if($t !== false and $t->class === TILE_CHEST){
+			for($s = 0; $s < CHEST_SLOTS; ++$s){
+				$slot = $t->getSlot($s);
+				if($slot->getID() > AIR and $slot->count > 0){
+					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+				}
+			}
+		}
+		return $drops;
 	}
 }
