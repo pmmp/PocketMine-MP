@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class Deprecation{
 	public static $events = array(
+		"server.tick" => "ServerAPI::schedule()",
 		"server.time" => "time.change",
 		"world.block.change" => "block.change",
 		"block.drop" => "item.drop",
