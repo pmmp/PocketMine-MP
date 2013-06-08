@@ -96,9 +96,6 @@ class LevelAPI{
 
 		if($generator !== false and class_exists($generator)){
 			$generator = new $generator($options);
-		}elseif($this->server->api->getProperty("generator") !== false and class_exists($this->server->api->getProperty("generator"))){
-			$generator = $this->server->api->getProperty("generator");
-			$generator = new $generator($options);
 		}else{
 			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
 				$generator = new SuperflatGenerator($options);

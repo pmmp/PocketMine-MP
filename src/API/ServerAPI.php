@@ -78,7 +78,6 @@ class ServerAPI{
 			"hardcore" => false,
 			"pvp" => true,
 			"difficulty" => 1,
-			"generator" => "",
 			"generator-settings" => "",
 			"level-name" => "world",
 			"level-seed" => "",
