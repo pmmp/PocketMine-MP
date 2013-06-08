@@ -100,7 +100,6 @@ class TimeAPI{
 			$level = $this->server->api->level->getDefault();
 		}
 		$level->setTime($level->getTime() + (int) $time);
-		return $this->server->time;
 	}
 
 	public function getDate($time = false){

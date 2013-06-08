@@ -416,6 +416,7 @@ class Level{
 	public function setTime($time){
 		$this->startTime = $this->time = (int) $time;
 		$this->startCheck = microtime(true);
+		$this->checkTime();
 	}
 	
 	public function getSeed(){
