@@ -712,6 +712,9 @@ class Player{
 				$this->chunksLoaded = array();
 				$this->server->api->entity->spawnToAll($this->entity);
 				$this->server->api->entity->spawnAll($this);
+				$this->dataPacket(MC_SET_TIME, array(
+					"time" => $this->level->getTime(),
+				));
 				$terrain = true;
 			}
 			$this->lastCorrect = $pos;
@@ -1102,6 +1105,9 @@ class Player{
 									$this->sendSettings();
 									$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 									$this->blocked = false;
+									$this->dataPacket(MC_SET_TIME, array(
+										"time" => $this->level->getTime(),
+									));
 									$this->teleport(new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level));
 									$this->server->handle("player.spawn", $this);
 									break;

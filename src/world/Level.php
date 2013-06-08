@@ -39,7 +39,7 @@ class Level{
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
 		$this->server->schedule(15, array($this, "checkThings"), array(), true);
-		$this->server->event("server.close", array($this, "save"));
+		$this->server->schedule(20 * 13, array($this, "checkTime"), array(), true);
 		$this->name = $name;
 		$this->usedChunks = array();
 		$this->changedBlocks = array();
@@ -65,23 +65,31 @@ class Level{
 			unset($this->usedChunks[$i][$player->CID]);
 		}
 	}
+
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[$X.".".$Z][$player->CID]);
+	}
+	
+	public function checkTime(){
+		if(!isset($this->level)){
+			return false;
+		}
+		$now = microtime(true);
+		$time = $this->startTime + ($now - $this->startCheck) * 20;
+		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
+			$this->time = $time;
+			$this->server->api->player->broadcastPacket($this->players, MC_SET_TIME, array(
+				"time" => (int) $this->time,
+			));
+		}
 	}
 	
 	public function checkThings(){
 		if(!isset($this->level)){
 			return false;
 		}
-		$this->players = $this->server->api->player->getAll($this);
 		$now = microtime(true);
-		$time = $this->startTime + ($now - $this->startCheck) * 20;
-		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
-			$this->time = $time;
-			$this->server->api->player->broadcastPacket($this->players, MC_SET_TIME, array(
-				"time" => $this->time,
-			));
-		}
+		$this->players = $this->server->api->player->getAll($this);
 		
 		if(count($this->changedCount) > 0){
 			arsort($this->changedCount);

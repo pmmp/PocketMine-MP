@@ -192,9 +192,9 @@ class CustomPacketHandler{
 				break;
 			case MC_SET_TIME:
 				if($this->c === false){
-					$this->data["time"] = Utils::readLong($this->get(4));
+					$this->data["time"] = Utils::readInt($this->get(4));
 				}else{
-					$this->raw .= Utils::writeLong($this->data["time"]);
+					$this->raw .= Utils::writeInt($this->data["time"]);
 				}
 				break;
 			case MC_START_GAME:
