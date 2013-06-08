@@ -120,7 +120,7 @@ class MinecraftInterface{
 		if($pid === 0x99){
 			$CID = PocketMinecraftServer::clientID($source, $port);
 			if(!isset($this->chunked[$CID]) and $packet->data[0] !== 0){ //Drop packet
-				return $this->popPacket();
+				return false;
 			}
 			switch($packet->data[0]){
 				case 0:
@@ -286,8 +286,8 @@ class MinecraftInterface{
 				if(!isset($this->toChunk[$CID])){
 					$this->toChunk[$CID] = array();
 				}
-				$this->toChunk[$CID][] = $dest;
-				$write = strlen($packet->raw);
+				$this->toChunk[$CID][] = $data;
+				$write = strlen($data);
 			}else{
 				$write = $this->socket->write($data, $dest, $port);
 				$this->writeDump($pid, $data, false, "client", $dest, $port);
