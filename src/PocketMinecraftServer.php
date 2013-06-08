@@ -115,7 +115,10 @@ class PocketMinecraftServer{
 	
 	public function checkMemory(){
 		$info = $this->debugInfo();
-		$this->memoryStats[] = $info["memory_usage"].",".$info["players"].",".$info["entities"];
+		$data = $info["memory_usage"].",".$info["players"].",".$info["entities"];
+		if($this->memoryStats[count($this->memoryStats) - 1] !== $data){
+			$this->memoryStats[] = $data;
+		}
 	}
 
 	public function startDatabase(){
