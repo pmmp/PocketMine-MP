@@ -831,9 +831,9 @@ class Player{
 				case 0xa0: //NACK
 					foreach($data[0] as $count){
 						if(isset($this->recovery[$count])){
-							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $this->recovery[$count]["pid"]);
-							++$this->packetStats[1];
 							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
+							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $this->recovery[$count]["pid"]);
+							++$this->packetStats[1];							
 							unset($this->recovery[$count]);
 						}
 					}
@@ -852,9 +852,9 @@ class Player{
 					foreach($this->recovery as $count => $d){
 						$diff = $this->counter[2] - $count;
 						if($diff > 16 and $d["sendtime"] < $limit){
-							$this->directDataPacket($d["id"], $d, $d["pid"]);
-							++$this->packetStats[1];
 							$this->lag[] = microtime(true) - $d["sendtime"];
+							$this->directDataPacket($d["id"], $d, $d["pid"]);
+							++$this->packetStats[1];							
 							unset($this->recovery[$count]);
 						}
 					}
