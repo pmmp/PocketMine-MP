@@ -53,17 +53,19 @@ class PlayerAPI{
 	public function handle($data, $event){
 		switch($event){
 			case "server.regeneration":
-				$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
-				if($result !== false){
-					while(($player = $result->fetchArray()) !== false){
-						if(($player = $this->server->api->entity->get($player["EID"])) !== false){
-							if($player->getHealth() <= 0){
-								continue;
+				if($this->server->difficulty === 0){
+					$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
+					if($result !== false){
+						while(($player = $result->fetchArray()) !== false){
+							if(($player = $this->server->api->entity->get($player["EID"])) !== false){
+								if($player->getHealth() <= 0){
+									continue;
+								}
+								$player->setHealth(min(20, $player->getHealth() + $data), "regeneration");
 							}
-							$player->setHealth(min(20, $player->getHealth() + $data), "regeneration");
 						}
+						return true;
 					}
-					return true;
 				}
 				break;
 			case "player.death":
