@@ -41,7 +41,6 @@ class ConsoleAPI{
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1|2>", array($this, "defaultCommands"));
-		$this->register("invisible", "<on|off>", array($this, "defaultCommands"));
 		$this->register("stop", "", array($this, "defaultCommands"));
 		$this->register("defaultgamemode", "<mode>", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
@@ -80,26 +79,6 @@ class ConsoleAPI{
 						}
 						$this->server->api->setProperty("gamemode", $gms[strtolower($params[0])]);
 						$output .= "Default Gamemode is now ".strtoupper($this->server->getGamemode()).".\n";
-						break;
-					case "invisible":
-						$p = strtolower(array_shift($params));
-						switch($p){
-							case "on":
-							case "true":
-							case "1":
-								$output .= "Server is invisible\n";
-								$this->server->api->setProperty("server-invisible", true);
-								break;
-							case "off":
-							case "false":
-							case "0":
-								$output .= "Server is visible\n";
-								$this->server->api->setProperty("server-invisible", false);
-								break;
-							default:
-								$output .= "Usage: /invisible <on | off>\n";
-								break;
-						}
 						break;
 					case "status":
 						if(!($issuer instanceof Player) and $issuer === "console"){

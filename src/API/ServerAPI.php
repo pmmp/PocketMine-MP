@@ -64,7 +64,6 @@ class ServerAPI{
 			"server-ip" => "",
 			"server-port" => 19132,
 			"server-type" => "normal",
-			"server-invisible" => false,
 			"memory-limit" => "128M",
 			"last-update" => false,
 			"white-list" => false,
@@ -226,12 +225,8 @@ class ServerAPI{
 			$this->setProperty("memory-limit", "128M");
 		}
 
-		if(!$this->config->exists("server-invisible")){
-			$this->config->set("server-invisible", false);
-		}
 		if($this->server instanceof PocketMinecraftServer){
 			$this->server->setType($this->getProperty("server-type"));
-			$this->server->invisible = $this->getProperty("server-invisible");
 			$this->server->maxClients = $this->getProperty("max-players");
 			$this->server->description = $this->getProperty("description");
 			$this->server->motd = $this->getProperty("motd");
