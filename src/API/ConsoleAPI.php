@@ -40,7 +40,7 @@ class ConsoleAPI{
 		$this->loop = new ConsoleLoop();
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
-		$this->register("difficulty", "<0|1|2>", array($this, "defaultCommands"));
+		$this->register("difficulty", "<0|1|2|3>", array($this, "defaultCommands"));
 		$this->register("stop", "", array($this, "defaultCommands"));
 		$this->register("defaultgamemode", "<mode>", array($this, "defaultCommands"));
 		$this->server->api->ban->cmdWhitelist("help");
@@ -98,7 +98,7 @@ class ConsoleAPI{
 					case "difficulty":
 						$s = trim(array_shift($params));
 						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
-							$output .= "Usage: /difficulty <0|1>\n";
+							$output .= "Usage: /difficulty <0|1|2|3>\n";
 							break;
 						}
 						$this->server->api->setProperty("difficulty", (int) $s);
