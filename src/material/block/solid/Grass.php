@@ -44,7 +44,7 @@ class GrassBlock extends SolidBlock{
 			TallGrassObject::growGrass($this->level, $this, new Random());
 			return true;
 		}elseif($item->isHoe()){
-			if(($this->gamemode & 0x01) === 0){
+			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}
 			$this->level->setBlock($this, new FarmlandBlock());

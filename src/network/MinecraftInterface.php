@@ -171,6 +171,7 @@ class MinecraftInterface{
 			$raw = str_split(gzdeflate($raw, DEFLATEPACKET_LEVEL), $MTU - 9); // - 1 - 2 - 2 - 2 - 2
 			$count = count($raw);
 			$messageID = $this->chunked[$CID][0][0]++;
+			$this->chunked[$CID][0][0] &= 0xFFFF;
 			if(!isset($this->needCheck[$CID])){
 				$this->needCheck[$CID] = array();
 			}
