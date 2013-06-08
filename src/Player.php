@@ -833,7 +833,8 @@ class Player{
 						if(isset($this->recovery[$count])){
 							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
 							$this->directDataPacket($this->recovery[$count]["id"], $this->recovery[$count], $this->recovery[$count]["pid"]);
-							++$this->packetStats[1];							
+							++$this->packetStats[1];
+							$this->recovery[$count] = null;
 							unset($this->recovery[$count]);
 						}
 					}
@@ -845,6 +846,7 @@ class Player{
 						}						
 						if(isset($this->recovery[$count])){
 							$this->lag[] = microtime(true) - $this->recovery[$count]["sendtime"];
+							$this->recovery[$count] = null;
 							unset($this->recovery[$count]);
 						}
 					}
@@ -854,7 +856,8 @@ class Player{
 						if($diff > 16 and $d["sendtime"] < $limit){
 							$this->lag[] = microtime(true) - $d["sendtime"];
 							$this->directDataPacket($d["id"], $d, $d["pid"]);
-							++$this->packetStats[1];							
+							++$this->packetStats[1];
+							$this->recovery[$count] = null;
 							unset($this->recovery[$count]);
 						}
 					}
@@ -1676,6 +1679,8 @@ class Player{
 			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 				reset($this->recovery);
 				$k = key($this->recovery);
+				$this->recovery[$k] = null;
+				unset($this->recovery[$k]);
 				unset($this->recovery[$k]);
 				end($this->recovery);
 			}
@@ -1700,6 +1705,7 @@ class Player{
 		if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
 			reset($this->recovery);
 			$k = key($this->recovery);
+			$this->recovery[$k] = null;
 			unset($this->recovery[$k]);
 			end($this->recovery);
 		}
