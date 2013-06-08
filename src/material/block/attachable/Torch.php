@@ -44,7 +44,7 @@ class TorchBlock extends FlowableBlock{
 			);
 
 			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === FENCE)){ //Replace wit common break method
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
+				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
 			}
