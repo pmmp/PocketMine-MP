@@ -253,6 +253,8 @@ class Player{
 			unset($this->buffer);
 			$this->recovery = null;
 			unset($this->recovery);
+			$this->queue = null;
+			unset($this->queue);
 			$this->connected = false;
 			$this->server->interface->stopChunked($this->CID);
 			if($msg === true and $this->username != ""){
@@ -1611,12 +1613,18 @@ class Player{
 					
 					if(isset($this->queue[$this->counter[1] + 1])){
 						$d = $this->queue[$this->counter[1] + 1];
+						$this->queue[$this->counter[1] + 1] = null;
 						unset($this->queue[$this->counter[1] + 1]);
 						$this->handle($d[0], $d[1]);
-					}elseif(count($this->queue) > 25){
+					}elseif(($cnt = count($this->queue)) > 25){
+						if($cnt >= 1024){
+							$this->close("end of stream");
+							break;
+						}
 						$q = array_shift($this->queue);
 						$this->counter[1] = $q[1][0];
 						$this->handle($q[0], $q[1]);
+						
 					}
 					break;
 			}
