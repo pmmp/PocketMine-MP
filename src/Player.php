@@ -1617,7 +1617,7 @@ class Player{
 						unset($this->queue[$this->counter[1] + 1]);
 						$this->handle($d[0], $d[1]);
 					}elseif(($cnt = count($this->queue)) > 25){
-						if($cnt >= 1024){
+						if($cnt >= 256){
 							$this->close("end of stream");
 							break;
 						}
