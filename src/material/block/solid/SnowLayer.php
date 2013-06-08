@@ -32,6 +32,16 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->isSolid = false;
 	}
 	
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->getID() === AIR){ //Replace wit common break method
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		if($item->isShovel() !== false){
 			return array(

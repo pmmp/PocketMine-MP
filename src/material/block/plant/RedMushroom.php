@@ -42,11 +42,11 @@ class RedMushroomBlock extends FlowableBlock{
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$down = $this->getSide(0);
-			if($down->isTransparent === false){
-				$this->level->setBlock($block, $this);
-				return true;
-			}
+		$down = $this->getSide(0);
+		if($down->isTransparent === false){
+			$this->level->setBlock($block, $this);
+			return true;
+		}
 		return false;
 	}	
 }
