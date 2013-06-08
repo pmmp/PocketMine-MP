@@ -241,6 +241,30 @@ class Entity extends Position{
 				return false;
 			}
 		}
+		
+		if($this->class === ENTITY_MOB){
+			switch($this->type){
+				case MOB_CHICKEN:
+				case MOB_SHEEP:
+				case MOB_COW:
+				case MOB_PIG:
+					if($this->server->api->getProperty("spawn-animals") !== true){
+						$this->close();
+						return false;
+					}
+					break;
+				case MOB_ZOMBIE:
+				case MOB_CREEPER:
+				case MOB_PIGMAN:
+				case MOB_SKELETON:
+				case MOB_SPIDER:
+					if($this->server->api->getProperty("spawn-mobs") !== true){
+						$this->close();
+						return false;
+					}
+					break;
+			}
+		}
 	
 		if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
 			$this->close();

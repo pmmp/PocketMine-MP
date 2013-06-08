@@ -72,6 +72,8 @@ class ServerAPI{
 			"view-distance" => 10,
 			"max-players" => 20,
 			"allow-flight" => false,
+			"spawn-animals" => true,
+			"spawn-mobs" => true,
 			"gamemode" => SURVIVAL,
 			"hardcore" => false,
 			"pvp" => true,
