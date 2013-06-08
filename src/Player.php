@@ -1509,7 +1509,7 @@ class Player{
 							if($data["windowid"] === 0){
 								$craft = false;
 								$slot = $this->getSlot($data["slot"]);
-								if($slot->count >= $data["stack"] and $slot->getID() === $data["block"] and $slot->getMetadata() === $data["meta"] and !isset($this->craftingItems[$data["slot"]])){ //Crafting recipe
+								if($slot->count >= $data["stack"] and (($slot->getID() === $data["block"] and $slot->getMetadata() === $data["meta"]) or ($data["block"] === AIR and $data["stack"] === 0)) and !isset($this->craftingItems[$data["slot"]])){ //Crafting recipe
 									$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $data["stack"]);
 									$this->craftingItems[$data["slot"]] = $use;
 									$craft = true;
@@ -1531,6 +1531,7 @@ class Player{
 									$craft = true;
 								}
 								
+						
 								if($craft === true){
 									$this->lastCraft = microtime(true);
 								}
