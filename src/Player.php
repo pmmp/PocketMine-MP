@@ -565,9 +565,9 @@ class Player{
 					}
 				}
 			}
-			$this->dataPacket(MC_CHAT, array(				
+			$this->directdataPacket(MC_CHAT, array(				
 				"message" => $m,
-			));	
+			), 0x00, false);	
 		}
 	}
 	
@@ -1708,7 +1708,7 @@ class Player{
 		}
 	}
 	
-	public function directDataPacket($id, $data = array(), $pid = 0x00){
+	public function directDataPacket($id, $data = array(), $pid = 0x00, $recover = true){
 		if($this->connected === false){
 			return false;
 		}
@@ -1716,14 +1716,17 @@ class Player{
 		$data["pid"] = $pid;
 		$data["sendtime"] = microtime(true);
 		$count = $this->counter[0]++;
-		if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
-			reset($this->recovery);
-			$k = key($this->recovery);
-			$this->recovery[$k] = null;
-			unset($this->recovery[$k]);
-			end($this->recovery);
+		if($recover !== false){
+			if(count($this->recovery) >= PLAYER_RECOVERY_BUFFER){
+				reset($this->recovery);
+				$k = key($this->recovery);
+				$this->recovery[$k] = null;
+				unset($this->recovery[$k]);
+				end($this->recovery);
+			}
+			$this->recovery[$count] = $data;
 		}
-		$this->recovery[$count] = $data;
+		
 
 		$this->send(0x80, array(
 			$count,
