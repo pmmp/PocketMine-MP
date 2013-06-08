@@ -908,7 +908,7 @@ class Player{
 							$this->send(0xa0, $arr);
 							$this->queue[$data[0]] = array($pid, $data);
 							break;
-						}elseif($diff === 1){
+						}else{
 							$this->counter[1] = $data[0];
 							++$this->packetStats[0];
 						}
