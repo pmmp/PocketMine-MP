@@ -28,7 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class PocketMinecraftServer{
 	public $tCnt;
 	public $serverID, $interface, $database, $version, $invisible, $api, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
-	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticks;
+	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticks, $memoryStats;
 	
 	private function load(){
 		$this->version = new VersionString();
@@ -63,6 +63,7 @@ class PocketMinecraftServer{
 		$this->scheduleCnt = 1;
 		$this->description = "";
 		$this->whitelist = false;
+		$this->memoryStats = array();
 		$this->clients = array();
 		$this->spawn = false;
 		$this->saveEnabled = true;
@@ -103,12 +104,18 @@ class PocketMinecraftServer{
 			$this->schedule(30, array($this, "titleTick"), array(), true);
 		}
 		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
+		$this->schedule(20 * 60 * 10, array($this, "checkMemory"), array(), true);
 	}
 	
 	public function checkTicks(){
 		if($this->getTPS() < 12){
 			console("[WARNING] Can't keep up! Is the server overloaded?");
 		}
+	}
+	
+	public function checkMemory(){
+		$info = $this->debugInfo();
+		$this->memoryStats[] = $info["memory_usage"].",".$info["players"].",".$info["entities"];
 	}
 
 	public function startDatabase(){
@@ -149,6 +156,8 @@ class PocketMinecraftServer{
 		$info["memory_peak_usage"] = round((memory_get_peak_usage() / 1024) / 1024, 2)."MB";
 		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
 		$info["entities"] = $info["entities"]["count"];
+		$info["players"] = $this->query("SELECT count(CID) as count FROM players;", true);
+		$info["players"] = $info["players"]["count"];
 		$info["events"] = count($this->eventsID);
 		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
 		$info["handlers"] = $info["handlers"]["count"];
@@ -364,7 +373,9 @@ class PocketMinecraftServer{
 			}
 			$dump .= "\r\n\r\n";
 		}
-		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n\r\n```";
+		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n";
+		$dump .= "Memory Usage Tracking: \r\n".base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))."\r\n";
+		$dump .= "\r\n```";
 		$name = "error_dump_".time();
 		logg($dump, $name, true, 0, true);
 		console("[ERROR] Please submit the \"logs/{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
