@@ -39,9 +39,11 @@ class LadderBlock extends TransparentBlock{
 					4 => 4,
 					5 => 5,
 				);
-			$this->meta = $faces[$face];
-			$this->level->setBlock($block, $this);
-			return true;
+			if(isset($faces[$face])){
+				$this->meta = $faces[$face];
+				$this->level->setBlock($block, $this);
+				return true;
+			}
 		}
 		return false;
 	}

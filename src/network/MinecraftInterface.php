@@ -232,7 +232,7 @@ class MinecraftInterface{
 		
 		if(count($this->chunked[$CID][3][$ID]) === $count){
 			ksort($this->chunked[$CID][3][$ID]);
-			$data = gzinflate(implode($this->chunked[$CID][3][$ID]));
+			$data = gzinflate(implode($this->chunked[$CID][3][$ID]), 524280);
 			unset($this->chunked[$CID][3][$ID]);
 			if($data === false or strlen($data) === 0){
 				console("[ERROR] Invalid DEFLATEPacket for ".$this->chunked[$CID][1].":".$this->chunked[$CID][2], true, true, 2);

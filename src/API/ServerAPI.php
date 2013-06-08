@@ -222,8 +222,9 @@ class ServerAPI{
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
-			$this->setProperty("memory-limit", "256M");
+			$this->setProperty("memory-limit", "128M");
 		}
+
 		if(!$this->config->exists("server-invisible")){
 			$this->config->set("server-invisible", false);
 		}
