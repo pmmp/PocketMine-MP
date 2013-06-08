@@ -44,7 +44,6 @@ class Player{
 	private $eid = false;
 	private $startAction = false;
 	private $queue = array();
-	private $need = array();
 	public $data;
 	public $entity = false;
 	public $auth = false;
@@ -898,14 +897,7 @@ class Player{
 					if(isset($data[0])){
 						$this->send(0xc0, array(array($data[0])));
 						$diff = $data[0] - $this->counter[1];
-						unset($this->need[$data[0]]);
 						if($diff > 1){ //Packet recovery
-							$arr = array();
-							for($i = $this->counter[1]; $i < $data[0]; ++$i){
-								$arr[] = $i;
-								$this->need[$i] = true;
-							}
-							$this->send(0xa0, $arr);
 							$this->queue[$data[0]] = array($pid, $data);
 							break;
 						}else{
