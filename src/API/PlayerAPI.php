@@ -319,7 +319,7 @@ class PlayerAPI{
 				while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
 					$e = $this->getByEID($e["EID"]);
 					if($e instanceof Player){
-						$clients[$e->clientID] = $e;
+						$clients[$e->CID] = $e;
 					}
 				}
 			}
@@ -346,16 +346,6 @@ class PlayerAPI{
 		return false;
 	}
 
-	public function getByClientID($clientID){
-		$clientID = (int) $clientID;
-		$CID = $this->server->query("SELECT ip,port FROM players WHERE clientID = '".$clientID."';", true);
-		$CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
-		if(isset($this->server->clients[$CID])){
-			return $this->server->clients[$CID];
-		}
-		return false;
-	}
-
 	public function online(){
 		$o = array();
 		foreach($this->server->clients as $p){
@@ -374,13 +364,13 @@ class PlayerAPI{
 			if(($player->level = $this->server->api->level->get($player->data->get("position")["level"])) === false){
 				$player->level = $this->server->api->level->getDefault();
 				$player->data->set("position", array(
-				"level" => $player->level->getName(),
-				"x" => $player->level->getSpawn()->x,
-				"y" => $player->level->getSpawn()->y,
-				"z" => $player->level->getSpawn()->z,
-			));
+					"level" => $player->level->getName(),
+					"x" => $player->level->getSpawn()->x,
+					"y" => $player->level->getSpawn()->y,
+					"z" => $player->level->getSpawn()->z,
+				));
 			}
-			$this->server->query("INSERT OR REPLACE INTO players (clientID, ip, port, name) VALUES (".$player->clientID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
+			$this->server->query("INSERT OR REPLACE INTO players (CID, ip, port, name) VALUES (".$player->CID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
 		}
 	}
 

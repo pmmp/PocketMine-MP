@@ -89,7 +89,7 @@ class Player{
 		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
-		$this->CID = $this->server->clientID($ip, $port);
+		$this->CID = PocketMinecraftServer::clientID($ip, $port);
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = $this->server->spawn;
@@ -1050,13 +1050,13 @@ class Player{
 							}
 							$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, array("player" => $this));
 							$this->eid = $this->entity->eid;
-							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE clientID = ".$this->clientID.";");
+							$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE CID = ".$this->CID.";");
 							$this->entity->x = $this->data->get("position")["x"];
 							$this->entity->y = $this->data->get("position")["y"];
 							$this->entity->z = $this->data->get("position")["z"];
 							$this->entity->check = false;
 							$this->entity->setName($this->username);
-							$this->entity->data["clientID"] = $this->clientID;
+							$this->entity->data["CID"] = $this->CID;
 							$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 							$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
