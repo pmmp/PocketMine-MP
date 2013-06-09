@@ -37,6 +37,7 @@ define("VIEWER", 3);
 
 
 //Players
+define("PLAYER_RECOVERY_BUFFER", 1024);
 define("PLAYER_MAX_PACKET_LOSS", 0.20);
 
 define("PLAYER_SURVIVAL_SLOTS", 36);

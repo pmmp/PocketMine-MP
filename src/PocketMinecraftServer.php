@@ -384,7 +384,7 @@ class PocketMinecraftServer{
 		$dump .= "\r\nphpinfo(): \r\n".base64_encode(gzdeflate(ob_get_contents(), 9))."\r\n";
 		ob_end_clean();
 		$dump .= "\r\n```";
-		$name = "Error_Dump_".date("D_M_j-H:i:s-T_Y");
+		$name = "Error_Dump_".date("D_M_j-H.i.s-T_Y");
 		logg($dump, $name, true, 0, true);
 		console("[ERROR] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
