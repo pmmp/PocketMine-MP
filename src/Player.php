@@ -1628,19 +1628,19 @@ class Player{
 				}
 				if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 					if($slot->count < $item->count){
-						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count) === false){
+						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
 							break;
 						}
 					}elseif($slot->count > $item->count){
-						$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count);
+						$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
 					}
 				}else{
-					if($this->removeItem($item->getID(), $item->getMetadata(), $item->count) === false){
+					if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
 						break;
 					}
-					$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count);
+					$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
 				}
-				$tile->setSlot($data["slot"], $item, false);
+				$tile->setSlot($data["slot"], $item);
 				break;
 			case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
