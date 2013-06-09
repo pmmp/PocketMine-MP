@@ -378,10 +378,10 @@ class PocketMinecraftServer{
 			$dump .= "\r\n\r\n";
 		}
 		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n";
-		$dump .= "Memory Usage Tracking: \r\n".base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))."\r\n";
+		$dump .= "Memory Usage Tracking: \r\n".chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9)))."\r\n";
 		ob_start();
 		phpinfo();
-		$dump .= "\r\nphpinfo(): \r\n".base64_encode(gzdeflate(ob_get_contents(), 9))."\r\n";
+		$dump .= "\r\nphpinfo(): \r\n".chunk_split(base64_encode(gzdeflate(ob_get_contents(), 9)))."\r\n";
 		ob_end_clean();
 		$dump .= "\r\n```";
 		$name = "Error_Dump_".date("D_M_j-H.i.s-T_Y");
