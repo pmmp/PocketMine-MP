@@ -887,7 +887,7 @@ class Player{
 			$this->sendBuffer();
 		}
 		
-		$limit = $time - 8; //max lag
+		$limit = $time - 5; //max lag
 		foreach($this->recoveryQueue as $count => $data){
 			if($data["sendtime"] > $limit){
 				break;
