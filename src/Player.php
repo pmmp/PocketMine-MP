@@ -155,7 +155,7 @@ class Player{
 
 		foreach($this->chunkCount as $i => $count){
 			if(isset($this->recoveryQueue[$count])){
-				$this->server->schedule(1, array($this, "getNextChunk"));
+				$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
 				return;
 			}else{
 				unset($this->chunkCount[$i]);
@@ -207,7 +207,7 @@ class Player{
 			}
 		}
 		
-		$this->server->schedule(1, array($this, "getNextChunk"));
+		$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
 	}
 
 	public function save(){
