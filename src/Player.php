@@ -253,8 +253,8 @@ class Player{
 				$this->server->api->handle("player.quit", $this);
 				$this->save();
 			}
-			$reason = $reason == "" ? "server stop":$reason;			
-			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
+			$reason = $reason == "" ? "server stop":$reason;
+			$this->sendChat("You have been kicked. Reason: ".$reason."\n");
 			$this->sendBuffer();
 			$this->directDataPacket(MC_DISCONNECT);
 			$this->connected = false;
@@ -786,14 +786,14 @@ class Player{
 				}
 			}
 			$this->gamemode = $gm;
-			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().".", "server.chat");
+			$this->sendChat("Your gamemode has been changed to ".$this->getGamemode().".\n");
 		}else{
 			foreach($this->inventory as $slot => $item){
 				$inv[$slot] = BlockAPI::getItem(AIR, 0, 0);
 			}
 			$this->blocked = true;
 			$this->gamemode = $gm;
-			$this->eventHandler("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.", "server.chat");
+			$this->sendChat("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.\n");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
 		}
 		$this->inventory = $inv;
@@ -1143,7 +1143,7 @@ class Player{
 						$this->server->api->entity->spawnToAll($this->entity);
 						$this->server->schedule(5, array($this->entity, "update"), array(), true);
 						$this->sendArmor();
-						$this->eventHandler(new Container($this->server->motd), "server.chat");
+						$this->sendChat($this->server->motd."\n");
 						
 						if($this->iusername === "steve" or $this->iusername === "stevie"){
 							$this->sendChat("You're using the default username. Please change it on the Minecraft PE settings.\n");
