@@ -219,6 +219,7 @@ class LevelAPI{
 	}
 	
 	public function __destruct(){
+		$this->saveAll();
 		foreach($this->levels as $level){
 			$this->unloadLevel($level, true);
 		}
