@@ -650,15 +650,15 @@ class Player{
 				$s = $this->getSlot($slot);
 				$s->count -= $item->count;
 				if($s->count <= 0){				
-					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0));
+					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0), false);
 				}
 			}
 			foreach($craft as $slot => $item){
 				$s = $this->getSlot($slot);				
 				if($s->count <= 0 or $s->getID() === AIR){				
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count));
+					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
 				}else{
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count));
+					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
 				}
 			}
 		}
@@ -1305,7 +1305,7 @@ class Player{
 						$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
 					}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						$this->armor[$i] = $this->getSlot($sl);
-						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0));
+						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0), false);
 					}else{
 						$data["slot$i"] = 0;
 					}
@@ -1479,7 +1479,7 @@ class Player{
 				$data["item"] = $this->getSlot($this->slot);
 				if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
 					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $data["item"]);
-					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0));
+					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -1625,7 +1625,7 @@ class Player{
 					}
 					$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count);
 				}
-				$tile->setSlot($data["slot"], $item);
+				$tile->setSlot($data["slot"], $item, false);
 				break;
 			case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
