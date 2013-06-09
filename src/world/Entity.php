@@ -366,7 +366,6 @@ class Entity extends Position{
 			return false;
 		}
 
-		$hasUpdate = false;
 		$now = microtime(true);
 		if($this->check === false){
 			$this->lastUpdate = $now;
@@ -378,6 +377,7 @@ class Entity extends Position{
 			$this->tickCounter = 1;
 			$hasUpdate = $this->environmentUpdate();
 		}else{
+			$hasUpdate = true;
 			$this->tickCounter = 0;
 		}
 		
