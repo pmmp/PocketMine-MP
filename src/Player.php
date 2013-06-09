@@ -849,7 +849,6 @@ class Player{
 				unset($this->receiveQueue[$count]);
 				foreach($packets as $p){
 					if(isset($p["counter"])){
-						console($p["counter"]);
 						if($p["counter"] > $this->receiveCount){
 							$this->receiveCount = $p["counter"];
 						}elseif($p["counter"] !== 0){
