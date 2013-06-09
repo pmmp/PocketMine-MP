@@ -43,7 +43,7 @@ class GenericBlock extends Block{
 	}
 	
 	public function onUpdate($type){
-		if($this->hasPhysics === true){
+		if($this->hasPhysics === true and $type === BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() === AIR or ($down instanceof LiquidBlock)){
 				$data = array(
