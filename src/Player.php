@@ -1052,6 +1052,9 @@ class Player{
 				$this->data->set("caseusername", $this->username);
 				$this->inventory = array();		
 				foreach($this->data->get("inventory") as $slot => $item){
+					if(!is_array($item)){
+						$item = array(AIR, 0, 0);
+					}
 					$this->inventory[$slot] = BlockAPI::getItem($item[0], $item[1], $item[2]);
 				}
 
