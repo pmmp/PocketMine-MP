@@ -327,6 +327,9 @@ class BlockAPI{
 		if($item->isPlaceable()){
 			$hand = $item->getBlock();
 			$hand->position($block);
+		}elseif($block->getID() === FIRE){
+			$player->level->setBlock($block, new AirBlock());
+			return false;
 		}else{
 			return $this->cancelAction($block, $player, false);
 		}

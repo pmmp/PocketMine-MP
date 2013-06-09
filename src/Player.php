@@ -1084,9 +1084,9 @@ class Player{
 					"eid" => 0,
 				));
 				if(($this->gamemode & 0x01) === 0x01){
-					$this->slot = 7;
+					$this->slot = -1;//7
 				}else{
-					$this->slot = 0;
+					$this->slot = -1;//0
 				}
 				$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, array("player" => $this));
 				$this->eid = $this->entity->eid;
