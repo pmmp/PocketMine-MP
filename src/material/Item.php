@@ -55,6 +55,7 @@ class Item{
 		WOODEN_SHOVEL => "WoodenShovelItem",
 		WOODEN_PICKAXE => "WoodenPickaxeItem",
 		WOODEN_AXE => "WoodenAxeItem",
+		FLINT_STEEL => "FlintSteelItem",
 	);
 	protected $block;
 	protected $id;
@@ -73,6 +74,9 @@ class Item{
 		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$class[$this->id])){
 			$this->block = BlockAPI::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
+		}
+		if($this->isTool() !== false){
+			$this->maxStackSize = 1;
 		}
 	}
 	
@@ -138,7 +142,7 @@ class Item{
 	}
 	
 	final public function isTool(){
-		return ($this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false or $this->isHoe() !== false);
+		return ($this->id === FLINT_STEEL or $this->id === SHEARS or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false or $this->isHoe() !== false);
 	}
 	
 	final public function isPickaxe(){ //Returns false or level of the pickaxe

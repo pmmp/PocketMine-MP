@@ -29,6 +29,7 @@ define("IRON_SHOVEL", 256);//Implemented
 define("IRON_PICKAXE", 257);//Implemented
 define("IRON_AXE", 258);//Implemented
 define("FLINT_STEEL", 259);
+define("FLINT_AND_STEEL", 259);
 define("APPLE", 260);//Implemented
 define("BOW", 261);
 define("ARROW", 262);

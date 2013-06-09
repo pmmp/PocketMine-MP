@@ -210,7 +210,9 @@ class Player{
 			));
 			$inv = array();			
 			foreach($this->inventory as $slot => $item){
-				$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
+				if($slot < (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS)){
+					$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
+				}
 			}
 			$this->data->set("inventory", $inv);
 			
