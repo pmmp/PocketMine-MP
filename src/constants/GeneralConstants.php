@@ -37,6 +37,8 @@ define("VIEWER", 3);
 
 
 //Players
+define("PLAYER_MAX_RECOVERY_BUFFER", 1024);
+
 define("PLAYER_SURVIVAL_SLOTS", 36);
 define("PLAYER_CREATIVE_SLOTS", 111);
 
