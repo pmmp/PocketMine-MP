@@ -52,7 +52,7 @@ class Entity extends Position{
 	public $fallY;
 	public $fallStart;
 	private $tickCounter;
-	private $speedMeasure = array(0, 0, 0, 0, 0);
+	private $speedMeasure = array(0, 0, 0);
 	private $server;
 	private $isStatic;
 	public $level;
@@ -778,7 +778,7 @@ class Entity extends Position{
 	}
 
 	public function resetSpeed(){
-		$this->speedMeasure = array(0, 0, 0, 0, 0);	
+		$this->speedMeasure = array(0, 0, 0);	
 	}
 
 	public function getSpeed(){

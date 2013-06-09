@@ -188,7 +188,10 @@ class Player{
 		}
 		
 		if($repeat === false){
-			$this->getNextChunk(true);
+			$r = (int) ((PLAYER_CHUNKS_PER_SECOND - 20) / 20);
+			for($i = 0; $i < $r; ++$i){
+				$this->getNextChunk(true);
+			}
 		}
 		
 		$this->server->schedule(1, array($this, "getNextChunk"));
@@ -1152,7 +1155,7 @@ class Player{
 				}
 				if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 					$this->lastMovement = $data["counter"];
-					$speed = $this->entity->speed;
+					$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 7 and ($this->gamemode & 0x01) === 0x00) or $speed > 15)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
