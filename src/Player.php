@@ -803,8 +803,8 @@ class Player{
 		$this->lag = array();
 		$this->sendBuffer();
 		if($this->packetLoss >= PLAYER_MAX_PACKET_LOSS){
-			//$this->sendChat("Your connection suffers high packet loss");
-			//$this->close("packet.loss");
+			$this->sendChat("Your connection suffers a high packet loss of ".round($this->packetLoss * 100, 2)."%");
+			$this->close("packet loss");
 		}
 		$this->lastMeasure = microtime(true);
 	}
@@ -892,7 +892,7 @@ class Player{
 				unset($this->resendQueue[$count]);
 				$this->packetStats[1]++;
 				$this->lag[] = microtime(true) - $data["sendtime"];
-				$this->directDataPacket($data["id"], $data, $data["pid"], false);
+				$this->directDataPacket($data["id"], $data, $data["pid"]);
 			}
 		}
 	}
