@@ -112,7 +112,44 @@ class SuperflatGenerator implements LevelGenerator{
 	}
 	
 	public function populateChunk($chunkX, $chunkY, $chunkZ){
-
+		$this->random->setSeed((int) ($chunkX * 0xdead + $chunkZ * 0xbeef));
+		if(isset($this->options["decoration"])){
+			//Ore spawning algorithm
+			$ores = array(
+				array(new CoalOreBlock(),  1, 70, 143),
+				array(new IronOreBlock(),  1, 64, 77),
+				array(new LapisOreBlock(),  1, 31, 3),
+				array(new GoldOreBlock(),  1, 32, 8),
+				array(new DiamondOreBlock(),  1, 14, 3),
+				array(new RedstoneOreBlock(),  1, 14, 25),
+			);
+			$minX = $chunkX << 4;
+			$maxX = $minX + 16;
+			$minZ = $chunkZ << 4;
+			$maxZ = $minZ + 16;
+			$y = $chunkY << 4;
+			
+			foreach($ores as $data){
+				$minY = max($y, $data[1]);
+				$maxY = min($y + 16, min($this->floorLevel - 1, $data[2]));
+				if($minY > ($y + 16) or $maxY < $y){
+					continue;
+				}
+				$nRange = $data[2] - $data[1] + 1;
+				$factor = ($maxY - $minY + 1) / $nRange;
+				$count = (int) ($this->random->nextRange($data[3] - 1, $data[3] + 1) * $factor);
+				for($c = 0; $c < $count; ++$c){
+					$block = $this->level->getBlock(new Vector3(
+						$this->random->nextRange($minX, $maxX),
+						$this->random->nextRange($minY, $maxY),
+						$this->random->nextRange($minZ, $maxZ)
+					));
+					if($block->getID() === STONE){
+						$this->level->setBlockRaw($block, $data[0]);
+					}
+				}
+			}
+		}
 	}
 	
 	public function populateLevel(){
