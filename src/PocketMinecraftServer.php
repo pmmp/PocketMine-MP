@@ -379,10 +379,14 @@ class PocketMinecraftServer{
 		}
 		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n";
 		$dump .= "Memory Usage Tracking: \r\n".base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))."\r\n";
+		ob_start();
+		phpinfo();
+		$dump .= "\r\nphpinfo(): \r\n".base64_encode(gzdeflate(ob_get_contents(), 9))."\r\n";
+		ob_end_clean();
 		$dump .= "\r\n```";
-		$name = "error_dump_".time();
+		$name = "Error_Dump_".date("D_M_j-H:i:s-T_Y");
 		logg($dump, $name, true, 0, true);
-		console("[ERROR] Please submit the \"logs/{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
+		console("[ERROR] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
 	public function tick(){
@@ -404,7 +408,7 @@ class PocketMinecraftServer{
 		$data =& $packet["data"];
 		$CID = PocketMinecraftServer::clientID($packet["ip"], $packet["port"]);
 		if(isset($this->clients[$CID])){
-			$this->clients[$CID]->handle($packet["pid"], $data);
+			$this->clients[$CID]->handlePacket($packet["pid"], $data);
 		}else{
 			if($this->handle("server.noauthpacket", $packet) === false){
 				return;
@@ -464,7 +468,13 @@ class PocketMinecraftServer{
 					$MTU = $data[3];
 					$clientID = $data[4];
 					$this->clients[$CID] = new Player($clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
-					$this->clients[$CID]->handle(0x07, $data);
+					$this->send(0x08, array(
+						RAKNET_MAGIC,
+						$this->serverID,
+						$this->port,
+						$data[3],
+						0,
+					), false, $packet["ip"], $packet["port"]);
 					break;
 			}
 		}

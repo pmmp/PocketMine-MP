@@ -51,10 +51,6 @@ class Packet{
 				$this->addRaw($this->data[$field]);
 				continue;
 			}
-			if(is_int($type)){
-				$this->addRaw($this->data[$field]);
-				continue;
-			}
 			switch($type){
 				case "special1":
 					switch($this->pid){
@@ -191,13 +187,12 @@ class Packet{
 
 	public function parse(){
 		foreach($this->struct as $field => $type){
-			if(is_int($type)){
-				$this->data[] = $this->get($type);
-				continue;
-			}
 			switch($type){
 				case "special1":
 					switch($this->pid){
+						case 0x07:
+							$this->data[] = $this->get(5);
+							break;
 						case 0x99:
 							if($this->data[0] >= 2){ //
 								$messageID = Utils::readShort($this->get(2), false);
@@ -238,7 +233,7 @@ class Packet{
 					$this->data["packets"] = array();
 					while($len > $offset){
 						$pid = ord($raw{$offset});
-						++$offset;						
+						++$offset;
 						$reliability = ($pid & 0b11100000) >> 5;
 						$hasSplit = ($pid & 0b00010000) >> 4;
 						$length = Utils::readShort(substr($raw, $offset, 2), false);

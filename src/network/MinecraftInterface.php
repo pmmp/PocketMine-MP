@@ -57,26 +57,6 @@ class MinecraftInterface{
 		return false;
 	}
 
-	protected function writeDump($pid, $raw, $data, $origin = "client", $ip = "", $port = 0){
-		if(LOG === true and DEBUG >= 3){
-			$p = "[".(microtime(true) - $this->start)."] [".((($origin === "client" and $this->client === true) or ($origin === "server" and $this->client === false)) ? "CLIENT->SERVER":"SERVER->CLIENT")." ".$ip.":".$port."]: ".(isset($data["id"]) ? "MC Packet ".Protocol::$dataName[$pid]:Protocol::$packetName[$pid])." (0x".Utils::strTohex(chr($pid)).") [length ".strlen($raw)."]".PHP_EOL;
-			$p .= Utils::hexdump($raw);
-			if(is_array($data)){
-				foreach($data as $i => $d){
-					if(!isset(Protocol::$raknet[$pid][$i])){
-						$ty = "special";
-					}else{
-						$ty = Protocol::$raknet[$pid][$i];
-					}
-					$p .= $i ." => ".(!is_array($d) ? $ty."(".(($ty === "magic" or substr($ty, 0, 7) === "special" or is_int($ty)) ? Utils::strToHex($d):Utils::printable((string) $d)).")":$ty."(\"".serialize(array_map("Utils::printable", $d))."\")").PHP_EOL;
-				}
-			}
-			$p .= PHP_EOL;
-			logg($p, "packets", false);
-		}
-
-	}
-
 	public function readPacket(){
 		$pk = $this->popPacket();
 		if($this->socket->connected === false){
@@ -104,13 +84,7 @@ class MinecraftInterface{
 				"ip" => $source,
 				"port" => $port
 			)) !== true){
-				if(LOG === true and DEBUG >= 3){
-					console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 2);			
-					$p = "[".(microtime(true) - $this->start)."] [CLIENT->SERVER ".$source.":".$port."]: Error, bad packet id 0x".Utils::strToHex(chr($pid))." [length ".strlen($buf)."]".PHP_EOL;
-					$p .= Utils::hexdump($buf);
-					$p .= PHP_EOL;
-					logg($p, "packets", true, 2);
-				}
+				console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 2);
 			}
 			return false;
 		}
@@ -251,15 +225,6 @@ class MinecraftInterface{
 			$p = each($this->data);
 			unset($this->data[$p[0]]);
 			$p = $p[1];
-			
-			if(isset($p[1]["packets"]) and is_array($p[1]["packets"])){
-				foreach($p[1]["packets"] as $d){
-					$this->data[] = array($p[0], $d[1], $d[2], $p[3], $p[4]);
-				}
-			}
-			$c = (isset($p[1]["id"]) ? true:false);
-			$p[2] = $c ? chr($p[1]["id"]).$p[2]:$p[2];
-			$this->writeDump(($c ? $p[1]["id"]:$p[0]), $p[2], $p[1], "server", $p[3], $p[4]);
 			return array("pid" => $p[0], "data" => $p[1], "raw" => $p[2], "ip" => $p[3], "port" => $p[4]);
 		}
 		return false;
@@ -279,7 +244,6 @@ class MinecraftInterface{
 				$write = strlen($packet->raw);
 			}else{
 				$write = $this->socket->write($packet->raw, $dest, $port);
-				$this->writeDump($pid, $packet->raw, $data, "client", $dest, $port);
 			}
 		}else{
 			if($force === false and $this->isChunked($CID)){
@@ -290,7 +254,6 @@ class MinecraftInterface{
 				$write = strlen($data);
 			}else{
 				$write = $this->socket->write($data, $dest, $port);
-				$this->writeDump($pid, $data, false, "client", $dest, $port);
 			}
 		}
 		return $write;

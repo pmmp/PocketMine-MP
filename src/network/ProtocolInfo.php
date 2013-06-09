@@ -208,7 +208,7 @@ class Protocol{
 
 		0x07 => array(
 			"magic",
-			5, //Security Cookie (idk why it's sent here)
+			"special1", //Security Cookie
 			"short", //Server UDP Port
 			"short", //MTU Size
 			"long", //Client GUID

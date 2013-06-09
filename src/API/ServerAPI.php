@@ -50,7 +50,6 @@ class ServerAPI{
 	}
 	
 	public function load(){
-		@mkdir(DATA_PATH."logs/", 0755, true);
 		@mkdir(DATA_PATH."players/", 0755);
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
