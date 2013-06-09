@@ -501,7 +501,7 @@ class Entity extends Position{
 					
 				}
 				$this->calculateVelocity();
-				if($this->speed <= 5 or ($this->speed <= 12 and ($this->player->gamemode & 0x01) === 0x01)){
+				if($this->speed <= 7 or ($this->speed <= 15 and ($this->player->gamemode & 0x01) === 0x01)){
 					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
 				}
 			}
@@ -782,6 +782,10 @@ class Entity extends Position{
 	}
 
 	public function getSpeed(){
+		return $this->speed;		
+	}
+	
+	public function getSpeedMeasure(){
 		return array_sum($this->speedMeasure) / count($this->speedMeasure);		
 	}
 	
