@@ -37,10 +37,6 @@ define("VIEWER", 3);
 
 
 //Players
-define("PLAYER_CHUNKS_PER_SECOND", 60);
-define("PLAYER_RECOVERY_BUFFER", 1024);
-define("PLAYER_MAX_PACKET_LOSS", 0.20);
-
 define("PLAYER_SURVIVAL_SLOTS", 36);
 define("PLAYER_CREATIVE_SLOTS", 111);
 

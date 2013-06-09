@@ -375,7 +375,29 @@ class Level{
 		}
 		return $this->level->unloadChunk($X, $Z);
 	}
-	
+
+	public function getOrderedChunk($X, $Z, $Yndex){
+		if(!isset($this->level)){
+			return false;
+		}
+		$raw = array();
+		for($Y = 0; $Y < 8; ++$Y){
+			if(($Yndex & (1 << $Y)) > 0){
+				$raw[$Y] = $this->level->getMiniChunk($X, $Z, $Y);
+			}
+		}
+		
+		$ordered = "";
+		$flag = chr($Yndex);
+		for($j = 0; $j < 256; ++$j){
+			$ordered .= $flag;
+			foreach($raw as $mini){
+				$ordered .= substr($mini, $j << 5, 24); //16 + 8
+			}
+		}
+		return $ordered;
+	}
+
 	public function getOrderedMiniChunk($X, $Z, $Y){
 		if(!isset($this->level)){
 			return false;

@@ -77,6 +77,7 @@ class Player{
 	public $craftingItems = array();
 	public $toCraft = array();
 	public $lastCraft = 0;
+	private $chunkCount = array();
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -155,6 +156,15 @@ class Player{
 			return false;
 		}
 
+		foreach($this->chunkCount as $i => $count){
+			if(isset($this->recoveryQueue[$count])){
+				$this->server->schedule(1, array($this, "getNextChunk"));
+				return;
+			}else{
+				unset($this->chunkCount[$i]);
+			}
+		}
+
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
 		if($c === null or $d > $this->server->api->getProperty("view-distance")){
@@ -171,26 +181,32 @@ class Player{
 		$z = $Z << 4;
 		$y = $Y << 4;
 		$this->level->useChunk($X, $Z, $this);
-		$this->dataPacket(MC_CHUNK_DATA, array(
+		$Yndex = 1 << $Y;
+		for($iY = 0; $iY < 8; ++$iY){
+			if(isset($this->chunksOrder["$X:$iY:$Z"])){
+				unset($this->chunksOrder["$X:$iY:$Z"]);
+				$this->chunksLoaded["$X:$iY:$Z"] = true;
+				$Yndex |= 1 << $iY;
+			}
+		}
+		$this->chunkCount = $this->dataPacket(MC_CHUNK_DATA, array(
+			"x" => $X,
+			"z" => $Z,
+			"data" => $this->level->getOrderedChunk($X, $Z, $Yndex),
+		));
+		/*$this->chunkCount = $this->dataPacket(MC_CHUNK_DATA, array(
 			"x" => $X,
 			"z" => $Z,
 			"data" => $this->level->getOrderedMiniChunk($X, $Z, $Y),
-		));
+		));*/
 		
-		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17)." AND y >= ".($y - 1)." AND y < ".($y + 17).";");
+		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17).";");
 		if($tiles !== false and $tiles !== true){
 			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
 				$tile = $this->server->api->tile->getByID($tile["ID"]);
 				if($tile instanceof Tile){
 					$tile->spawn($this);
 				}
-			}
-		}
-		
-		if($repeat === false){
-			$r = (int) ((PLAYER_CHUNKS_PER_SECOND - 20) / 20);
-			for($i = 0; $i < $r; ++$i){
-				$this->getNextChunk(true);
 			}
 		}
 		
@@ -239,8 +255,8 @@ class Player{
 			}
 			$reason = $reason == "" ? "server stop":$reason;			
 			$this->eventHandler(new Container("You have been kicked. Reason: ".$reason), "server.chat");
-			$this->directDataPacket(MC_DISCONNECT);
 			$this->sendBuffer();
+			$this->directDataPacket(MC_DISCONNECT);
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
 			$this->buffer = null;
@@ -791,7 +807,7 @@ class Player{
 			return false;
 		}
 		if($this->packetStats[1] > 2){
-			$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0]);
+			$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0] + $this->packetStats[1]);
 		}else{
 			$this->packetLoss = 0;
 		}
@@ -802,10 +818,6 @@ class Player{
 		$this->lagStat = array_sum($this->lag) / max(1, count($this->lag));
 		$this->lag = array();
 		$this->sendBuffer();
-		if($this->packetLoss >= PLAYER_MAX_PACKET_LOSS){
-			$this->sendChat("Your connection suffers a high packet loss of ".round($this->packetLoss * 100, 2)."%");
-			$this->close("packet loss");
-		}
 		$this->lastMeasure = microtime(true);
 	}
 	
@@ -907,8 +919,8 @@ class Player{
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
 							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]["sendtime"];
 							unset($this->recoveryQueue[$count]);
-							$this->packetStats[1]++;
 						}
+						++$this->packetStats[1];
 					}
 					break;
 
@@ -917,8 +929,9 @@ class Player{
 						if(isset($this->recoveryQueue[$count])){	
 							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]["sendtime"];
 							unset($this->recoveryQueue[$count]);
-							unset($this->resendQueue[$count]);
+							unset($this->resendQueue[$count]);							
 						}
+						++$this->packetStats[0];
 					}
 					break;
 
@@ -1699,17 +1712,18 @@ class Player{
 		$buffer = str_split(($id === false ? "":chr($id)).$buffer, $size);
 		$h = Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
+		$cnts = array();
 		foreach($buffer as $i => $buf){
 			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
-			$count = $this->counter[0]++;
+			$cnts[] = $count = $this->counter[0]++;
 			$this->recoveryQueue[$count] = $data;
 			$this->send(0x80, array(
 				$count,
 				0x50, //0b01010000
 				$data,
 			));
-			++$this->packetStats[0];
 		}
+		return $cnts;
 	}
 	
 	public function directDataPacket($id, $data = array(), $pid = 0x00, $recover = true){
@@ -1728,7 +1742,7 @@ class Player{
 			$pid,
 			$data,
 		));
-		++$this->packetStats[0];
+		return array($count);
 	}
 
 	public function dataPacket($id, $data = array()){
@@ -1742,15 +1756,14 @@ class Player{
 		$len = strlen($raw);
 		$MTU = $this->MTU - 24;
 		if($len > $MTU){
-			$this->directBigRawPacket(false, $raw);
-			return;
+			return $this->directBigRawPacket(false, $raw);
 		}
 		
 		if((strlen($this->buffer) + $len) >= $MTU){
 			$this->sendBuffer();
 		}
 		$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
-		
+		return array();
 	}
 	
 	function __toString(){
