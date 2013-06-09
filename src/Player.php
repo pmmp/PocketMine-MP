@@ -130,20 +130,17 @@ class Player{
 		if(!($this->entity instanceof Entity) or $this->connected === false){
 			return false;
 		}
-		$X = $this->entity->x / 16;
-		$Z = $this->entity->z / 16;
-		$Y = $this->entity->y / 16;
-		
+		$X = ($this->entity->x - 0.5) / 16;
+		$Z = ($this->entity->z - 0.5) / 16;
+		$v = new Vector2($X, $Z);		
 		$this->chunksOrder = array();
-		for($y = 0; $y < 8; ++$y){
-			$distY = abs($Y - $y) / 4;
-			for($x = 0; $x < 16; ++$x){
-				$distX = abs($X - $x);
-				for($z = 0; $z < 16; ++$z){
-					$distZ = abs($Z - $z);				
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$dist = $v->distance(new Vector2($x, $z));
+				for($y = 0; $y < 8; ++$y){
 					$d = $x.":".$y.":".$z;
 					if(!isset($this->chunksLoaded[$d])){
-						$this->chunksOrder[$d] = $distX + $distY + $distZ;
+						$this->chunksOrder[$d] = $dist;
 					}
 				}
 			}
@@ -151,7 +148,7 @@ class Player{
 		asort($this->chunksOrder);
 	}
 	
-	public function getNextChunk($repeat = false){
+	public function getNextChunk(){
 		if($this->connected === false){
 			return false;
 		}
