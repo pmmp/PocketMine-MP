@@ -29,8 +29,11 @@ class FireBlock extends FlowableBlock{
 	public function __construct($meta = 0){
 		parent::__construct(FIRE, $meta, "Fire");
 		$this->isReplaceable = true;
-		$this->breakable = false;
 		$this->isFullBlock = true;
+	}
+	
+	public function getDrops(Item $item, Player $player){
+		return array();
 	}
 	
 	public function onUpdate($type){
