@@ -143,7 +143,7 @@ class PocketMinecraftServer{
 
 	public function query($sql, $fetch = false){
 		$result = $this->database->query($sql) or console("[ERROR] [SQL Error] ".$this->database->lastErrorMsg().". Query: ".$sql, true, true, 0);
-		if($fetch === true and ($result !== false and $result !== true)){
+		if($fetch === true and ($result instanceof SQLite3Result)){
 			$result = $result->fetchArray(SQLITE3_ASSOC);
 		}
 		return $result;
@@ -228,7 +228,7 @@ class PocketMinecraftServer{
 		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
 		$handlers = $this->preparedSQL->selectHandlers->execute();
 		$result = null;
-		if($handlers !== false and $handlers !== true){
+		if($handlers instanceof SQLite3Result){
 			$call = array();
 			while(($hn = $handlers->fetchArray(SQLITE3_ASSOC)) !== false){
 				$call[(int) $hn["ID"]] = true;
@@ -534,29 +534,28 @@ class PocketMinecraftServer{
 		$this->preparedSQL->selectActions->bindValue(":time", $time, SQLITE3_FLOAT);
 		$actions = $this->preparedSQL->selectActions->execute();
 
-		if($actions === false or $actions === true){
-			return;
-		}
-		while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
-			$cid = $action["ID"];
-			$this->preparedSQL->updateAction->reset();
-			$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
-			$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
-			$this->preparedSQL->updateAction->execute();
-			$schedule = $this->schedule[$cid];
-			if(!is_callable($schedule[0])){
-				$return = false;
-			}else{
-				$return = call_user_func($schedule[0],$schedule[1],$schedule[2]);
-			}
+		if($actions instanceof SQLite3Result){
+			while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
+				$cid = $action["ID"];
+				$this->preparedSQL->updateAction->reset();
+				$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
+				$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
+				$this->preparedSQL->updateAction->execute();
+				$schedule = $this->schedule[$cid];
+				if(!is_callable($schedule[0])){
+					$return = false;
+				}else{
+					$return = call_user_func($schedule[0],$schedule[1],$schedule[2]);
+				}
 
-			if($action["repeat"] === 0 or $return === false){
-				$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
-				$this->schedule[$cid] = null;
-				unset($this->schedule[$cid]);
+				if($action["repeat"] === 0 or $return === false){
+					$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
+					$this->schedule[$cid] = null;
+					unset($this->schedule[$cid]);
+				}
 			}
+			$actions->finalize();
 		}
-		$actions->finalize();
 	}
 
 	public function event($event,callable $func){
