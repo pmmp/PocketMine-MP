@@ -97,6 +97,14 @@ class Vector3{
 			return $this->add(-$x, -$y, -$z);
 		}
 	}
+	
+	public function multiply($number){
+		return new Vector3($this->x * $number, $this->y * $number, $this->z * $number);
+	}
+	
+	public function divide($number){
+		return new Vector3($this->x / $number, $this->y / $number, $this->z / $number);
+	}
 
 	public function ceil(){
 		return new Vector3((int) ($this->x + 1), (int) ($this->y + 1), (int) ($this->z + 1));

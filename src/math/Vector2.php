@@ -86,6 +86,14 @@ class Vector2{
 	public function abs(){
 		return new Vector2(abs($this->x), abs($this->y));
 	}
+	
+	public function multiply($number){
+		return new Vector2($this->x * $number, $this->y * $number);
+	}
+	
+	public function divide($number){
+		return new Vector2($this->x / $number, $this->y / $number);
+	}
 
 	public function distance($x = 0, $y = 0){
 		if(($x instanceof Vector2) === true){
