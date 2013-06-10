@@ -240,6 +240,11 @@ class Entity extends Position{
 				$this->close(); //Despawn timer
 				return false;
 			}
+		}elseif($this->class === ENTITY_OBJECT and $this->type === OBJECT_ARROW){
+			if(($time - $this->spawntime) >= 60){
+				$this->close(); //Despawn timer
+				return false;
+			}
 		}
 		
 		if($this->class === ENTITY_MOB){
