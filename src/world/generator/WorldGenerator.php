@@ -63,7 +63,7 @@ class WorldGenerator{
 		$this->generator->populateLevel();
 		for($Z = 0; $Z < $this->width; ++$Z){
 			for($X = 0; $X < $this->width; ++$X){
-					$this->generator->populateChunk($X, $Z);
+				$this->generator->populateChunk($X, $Z);
 			}
 			console("[NOTICE] Populating level ".ceil((($Z + 1)/$this->width) * 100)."%");
 		}
