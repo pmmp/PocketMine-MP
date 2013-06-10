@@ -219,18 +219,14 @@ class Entity extends Position{
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true){
 			foreach($this->server->api->entity->getRadius($this, 1.5, ENTITY_ITEM) as $item){
 				if(($time - $item->spawntime) >= 0.6){
-					if(($this->player->gamemode & 0x01) === 0x00){
-						if($this->player->hasSpace($item->type, $item->meta, $item->stack) === true and $this->server->api->dhandle("player.pickup", array(
-							"eid" => $this->player->eid,
-							"player" => $this->player,
-							"entity" => $item,
-							"block" => $item->type,
-							"meta" => $item->meta,
-							"target" => $item->eid
-						)) !== false){
-							$item->close();
-						}
-					}else{
+					if((($this->player->gamemode & 0x01) === 1 or $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) and $this->server->api->dhandle("player.pickup", array(
+						"eid" => $this->player->eid,
+						"player" => $this->player,
+						"entity" => $item,
+						"block" => $item->type,
+						"meta" => $item->meta,
+						"target" => $item->eid
+					)) !== false){
 						$item->close();
 					}
 				}
