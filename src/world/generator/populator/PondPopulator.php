@@ -34,7 +34,7 @@ class PondPopulator extends Populator{
 			$v = new Vector3(
 				$random->nextRange($chunkX << 4, ($chunkX << 4) + 16),
 				$random->nextRange(0, 128),
-				$random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16),
+				$random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16)
 			);
 			$pond = new PondObject($random, new WaterBlock());
 			if($pond->canPlaceObject($level, $v)){
