@@ -25,16 +25,17 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-interface LevelGenerator{
-	public function __construct(array $options = array());
+class MineshaftPopulator extends Populator{
+	private static $DISTANCE = 256;
+	private static $VARIATION = 16;
+	private static $ODD = 3;
+	private static $BASE_Y = 35;
+	private static $RAND_Y = 11;
 	
-	public function init(Level $level, Random $random);
-
-	public function generateChunk($chunkX, $chunkZ);
+	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
+		if($random->nextRange(0, MineshaftPopulator::$ODD) === 0){
+			//$mineshaft = new Mineshaft($random);
+		}
+	}
 	
-	public function populateChunk($chunkX, $chunkZ);
-	
-	public function populateLevel();
-	
-	public function getSpawn();
 }

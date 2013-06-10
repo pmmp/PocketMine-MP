@@ -25,16 +25,14 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-interface LevelGenerator{
-	public function __construct(array $options = array());
+class OreType{
+	public $material, $clusterCount, $clusterSize, $maxHeight, $minHeight;
 	
-	public function init(Level $level, Random $random);
-
-	public function generateChunk($chunkX, $chunkZ);
-	
-	public function populateChunk($chunkX, $chunkZ);
-	
-	public function populateLevel();
-	
-	public function getSpawn();
+	public function __construct(Block $material, $clusterCount, $clusterSize, $minHeight, $maxHeight){
+		$this->material = $material;
+		$this->clusterCount = (int) $clusterCount;
+		$this->clusterSize = (int) $clusterSize;
+		$this->maxHeight = (int) $maxHeight;
+		$this->minHeight = (int) $minHeight;
+	}
 }

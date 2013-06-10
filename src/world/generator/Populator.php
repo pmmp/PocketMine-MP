@@ -25,16 +25,6 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-interface LevelGenerator{
-	public function __construct(array $options = array());
-	
-	public function init(Level $level, Random $random);
-
-	public function generateChunk($chunkX, $chunkZ);
-	
-	public function populateChunk($chunkX, $chunkZ);
-	
-	public function populateLevel();
-	
-	public function getSpawn();
+abstract class Populator{
+	public abstract function populate(Level $level, $chunkX, $chunkZ, Random $random);
 }

@@ -30,7 +30,7 @@ require_once("LevelGenerator.php");
 /***REM_END***/
 
 class SuperflatGenerator implements LevelGenerator{
-	private $level, $random, $structure, $chunks, $options, $floorLevel;
+	private $level, $random, $structure, $chunks, $options, $floorLevel, $populators = array();
 	
 	public function __construct(array $options = array()){
 		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=120)";
@@ -40,6 +40,24 @@ class SuperflatGenerator implements LevelGenerator{
 		}else{
 			$this->parsePreset($this->preset);
 		}
+		if(isset($this->options["decoration"])){
+			$ores = new OrePopulator();
+			$ores->setOreTypes(array(
+				new OreType(new DirtBlock(), 20, 32, 0, 128),
+				new OreType(new GravelBlock(), 10, 16, 0, 128),
+				new OreType(new CoalOreBlock(), 20, 16, 0, 128),
+				new OreType(New IronOreBlock(), 20, 8, 0, 64),
+				new OreType(new RedstoneOreBlock(), 8, 7, 0, 16),
+				new OreType(new LapisOreBlock(), 1, 6, 0, 32),
+				new OreType(new GoldOreBlock(), 2, 8, 0, 32),
+				new OreType(new DiamondOreBlock(), 1, 7, 0, 16),
+			));
+			$this->populators[] = $ores;			
+		}
+		
+		/*if(isset($this->options["mineshaft"])){
+			$this->populators[] = new MineshaftPopulator(isset($this->options["mineshaft"]["chance"]) ? floatval($this->options["mineshaft"]["chance"]) : 0.01);
+		}*/
 	}
 	
 	public function parsePreset($preset){
@@ -107,48 +125,16 @@ class SuperflatGenerator implements LevelGenerator{
 		$this->random = $random;
 	}
 		
-	public function generateChunk($chunkX, $chunkY, $chunkZ){
-		$this->level->setMiniChunk($chunkX, $chunkZ, $chunkY, $this->chunks[$chunkY]);
+	public function generateChunk($chunkX, $chunkZ){
+		for($Y = 0; $Y < 8; ++$Y){
+			$this->level->setMiniChunk($chunkX, $chunkZ, $Y, $this->chunks[$Y]);
+		}
 	}
 	
-	public function populateChunk($chunkX, $chunkY, $chunkZ){
-		$this->random->setSeed((int) ($chunkX * 0xdead + $chunkZ * 0xbeef));
-		if(isset($this->options["decoration"])){
-			//Ore spawning algorithm
-			$ores = array(
-				array(new CoalOreBlock(),  1, 70, 143),
-				array(new IronOreBlock(),  1, 64, 77),
-				array(new LapisOreBlock(),  1, 31, 3),
-				array(new GoldOreBlock(),  1, 32, 8),
-				array(new DiamondOreBlock(),  1, 14, 3),
-				array(new RedstoneOreBlock(),  1, 14, 25),
-			);
-			$minX = $chunkX << 4;
-			$maxX = $minX + 16;
-			$minZ = $chunkZ << 4;
-			$maxZ = $minZ + 16;
-			$y = $chunkY << 4;
-			
-			foreach($ores as $data){
-				$minY = max($y, $data[1]);
-				$maxY = min($y + 16, min($this->floorLevel - 1, $data[2]));
-				if($minY > ($y + 16) or $maxY < $y){
-					continue;
-				}
-				$nRange = $data[2] - $data[1] + 1;
-				$factor = ($maxY - $minY + 1) / $nRange;
-				$count = (int) ($this->random->nextRange($data[3] - 1, $data[3] + 1) * $factor);
-				for($c = 0; $c < $count; ++$c){
-					$block = $this->level->getBlock(new Vector3(
-						$this->random->nextRange($minX, $maxX),
-						$this->random->nextRange($minY, $maxY),
-						$this->random->nextRange($minZ, $maxZ)
-					));
-					if($block->getID() === STONE){
-						$this->level->setBlockRaw($block, $data[0]);
-					}
-				}
-			}
+	public function populateChunk($chunkX, $chunkZ){		
+		foreach($this->populators as $populator){
+			$this->random->setSeed((int) ($chunkX * 0xdead + $chunkZ * 0xbeef));
+			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
 	}
 	

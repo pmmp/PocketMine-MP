@@ -52,11 +52,11 @@ class TemporalGenerator implements LevelGenerator{
 		$this->level->setSeed(TemporalGenerator::$levels[$this->index][0]);
 	}
 		
-	public function generateChunk($chunkX, $chunkY, $chunkZ){
+	public function generateChunk($chunkX, $chunkZ){
 
 	}
 	
-	public function populateChunk($chunkX, $chunkY, $chunkZ){
+	public function populateChunk($chunkX, $chunkZ){
 
 	}
 	

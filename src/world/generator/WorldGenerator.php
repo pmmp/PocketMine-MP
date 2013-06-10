@@ -55,15 +55,19 @@ class WorldGenerator{
 		$this->generator->init($this->level, $this->random);
 		for($Z = 0; $Z < $this->width; ++$Z){
 			for($X = 0; $X < $this->width; ++$X){
-				for($Y = 0; $Y < $this->height; ++$Y){
-					$this->generator->generateChunk($X, $Y, $Z);
-					$this->generator->populateChunk($X, $Y, $Z);
-				}
+				$this->generator->generateChunk($X, $Z);
 			}
 			console("[NOTICE] Generating level ".ceil((($Z + 1)/$this->width) * 100)."%");
 		}
 		console("[NOTICE] Populating level");
 		$this->generator->populateLevel();
+		for($Z = 0; $Z < $this->width; ++$Z){
+			for($X = 0; $X < $this->width; ++$X){
+					$this->generator->populateChunk($X, $Z);
+			}
+			console("[NOTICE] Populating level ".ceil((($Z + 1)/$this->width) * 100)."%");
+		}
+		
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true, true);
 	}
