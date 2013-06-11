@@ -195,7 +195,6 @@ class Entity extends Position{
 					);
 				case MOB_PIG:
 					return array(
-						array(LEATHER, 0, mt_rand(0,2)),
 						array(($this->fire > 0 ? COOKED_PORKCHOP:RAW_PORKCHOP), 0, 1),
 					);
 				case MOB_SHEEP:
