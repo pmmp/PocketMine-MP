@@ -27,6 +27,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 class MinecraftInterface{
 	public $client;
+	public $bandwidth;
 	private $socket;
 	private $data;
 	private $chunked;
@@ -38,6 +39,7 @@ class MinecraftInterface{
 			console("[ERROR] Couldn't bind to $serverip:".$port, true, true, 0);
 			exit(1);
 		}
+		$this->bandwidth = array(0, 0, microtime(true));
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
 		$this->chunked = array();
@@ -69,6 +71,7 @@ class MinecraftInterface{
 		if($len === false){
 			return $pk;
 		}
+		$this->bandwidth[0] += $len;
 		$this->parsePacket($buf, $source, $port);
 		return ($pk !== false ? $pk : $this->popPacket());
 	}
@@ -244,6 +247,7 @@ class MinecraftInterface{
 				$write = strlen($packet->raw);
 			}else{
 				$write = $this->socket->write($packet->raw, $dest, $port);
+				$this->bandwidth[1] += $write;
 			}
 		}else{
 			if($force === false and $this->isChunked($CID)){
@@ -254,6 +258,7 @@ class MinecraftInterface{
 				$write = strlen($data);
 			}else{
 				$write = $this->socket->write($data, $dest, $port);
+				$this->bandwidth[1] += $write;
 			}
 		}
 		return $write;

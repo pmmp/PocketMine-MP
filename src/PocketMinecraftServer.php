@@ -94,9 +94,11 @@ class PocketMinecraftServer{
 	}
 	
 	public function titleTick(){
+		$time = microtime(true);
 		if(ENABLE_ANSI === true){
-			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)."/".$this->maxClients." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | TPS ".$this->getTPS()."\x07";
+			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)."/".$this->maxClients." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | U ".round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." D ".round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." kB/s | TPS ".$this->getTPS()."\x07";
 		}
+		$this->interface->bandwidth = array(0, 0, $time);
 	}
 
 	public function loadEvents(){
