@@ -119,7 +119,7 @@ class PocketMinecraftServer{
 		$info = $this->debugInfo();
 		$data = $info["memory_usage"].",".$info["players"].",".$info["entities"];
 		$i = count($this->memoryStats) - 1;
-		if($i > -1 and $this->memoryStats[$i] !== $data){
+		if($i === -1 or $this->memoryStats[$i] !== $data){
 			$this->memoryStats[] = $data;
 		}
 	}
