@@ -105,7 +105,7 @@ wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -
 mv php-$PHP_VERSION php
 echo " done!"
 
-if [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
+if [ 1 ] || [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
 	HAVE_LIBEDIT="--without-libedit"
 else
 	#libedit
