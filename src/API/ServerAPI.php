@@ -199,7 +199,7 @@ class ServerAPI{
 			"online" => count($this->server->clients),
 			"max" => $this->server->maxClients,
 			"plugins" => $plist,
-		), 10);
+		), 2);
 	}
 
 	public function __destruct(){
