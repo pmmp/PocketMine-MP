@@ -469,14 +469,16 @@ class PocketMinecraftServer{
 					$port = $data[2];
 					$MTU = $data[3];
 					$clientID = $data[4];
-					$this->clients[$CID] = new Player($clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
-					$this->send(0x08, array(
-						RAKNET_MAGIC,
-						$this->serverID,
-						$this->port,
-						$data[3],
-						0,
-					), false, $packet["ip"], $packet["port"]);
+					if(count($this->server->clients) < $this->server->maxClients){
+						$this->clients[$CID] = new Player($clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
+						$this->send(0x08, array(
+							RAKNET_MAGIC,
+							$this->serverID,
+							$this->port,
+							$data[3],
+							0,
+						), false, $packet["ip"], $packet["port"]);
+					}
 					break;
 			}
 		}
