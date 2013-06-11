@@ -1044,7 +1044,7 @@ class Player{
 				}
 				
 				if(!($this->data instanceof Config)){
-					$u->close("no config created", false);
+					$this->close("no config created", false);
 					return;
 				}
 				
