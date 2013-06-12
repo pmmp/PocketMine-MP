@@ -220,7 +220,7 @@ class PocketMinecraftServer{
 				$d .= Utils::writeShort(strlen($data["url"])).$data["url"].(isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10));
 				$d .= Utils::writeShort(count($data["data"]));
 				foreach($data["data"] as $key => $value){
-					$d .= Utils::writeInt(strlen($key)).$key . Utils::writeInt(strlen($value)).$value;
+					$d .= Utils::writeShort(strlen($key)).$key . Utils::writeInt(strlen($value)).$value;
 				}
 				break;
 			default:
