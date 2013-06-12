@@ -76,7 +76,7 @@ class BanAPI{
 		switch($event){
 			case "player.flying"://OPs can fly around the server.
 				if($this->isOp($data->iusername)){
-					return;
+					return true;
 				}
 				break;
 			case "player.block.break":
