@@ -873,6 +873,9 @@ class Player{
 						if($p["counter"] > $this->receiveCount){
 							$this->receiveCount = $p["counter"];
 						}elseif($p["counter"] !== 0){
+							if(($p["counter"] - $this->receiveCount) > 16){
+								continue;
+							}
 							switch($p["id"]){
 								case 0x01:
 								case MC_PONG:
@@ -883,8 +886,6 @@ class Player{
 								case MC_SET_HEALTH:
 									continue;
 							}
-						}elseif(($p["counter"] - $this->receiveCount) > 16){
-							continue;
 						}
 					}
 					$this->handleDataPacket($p["id"], $p);
