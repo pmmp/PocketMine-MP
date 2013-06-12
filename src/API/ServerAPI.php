@@ -188,7 +188,7 @@ class ServerAPI{
 		}
 		
 		$this->asyncOperation(ASYNC_CURL_POST, array(
-			"url" => "http://stats.pocketmine.org/usage.php",
+			"url" => "http://stats.pocketmine.net/usage.php",
 			"data" => array(
 				"serverid" => $this->server->serverID,
 				"port" => $this->server->port,
