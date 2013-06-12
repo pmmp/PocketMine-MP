@@ -108,7 +108,7 @@ class PocketMinecraftServer{
 		}
 		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
 		$this->schedule(20 * 60 * 10, array($this, "checkMemory"), array(), true);
-		$this->schedule(20 * 5, array($this, "asyncOperationChecker"), array(), true);
+		$this->schedule(20, array($this, "asyncOperationChecker"), array(), true);
 	}
 	
 	public function checkTicks(){
