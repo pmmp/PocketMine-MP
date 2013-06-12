@@ -153,12 +153,12 @@ class Player{
 			return false;
 		}
 
-		foreach($this->chunkCount as $i => $count){
-			if(isset($this->recoveryQueue[$count])){
+		foreach($this->chunkCount as $count => $t){
+			if(isset($this->recoveryQueue[$count]) or isset($this->resendQueue[$count])){
 				$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
 				return;
 			}else{
-				unset($this->chunkCount[$i]);
+				unset($this->chunkCount[$count]);
 			}
 		}
 
@@ -186,11 +186,15 @@ class Player{
 				$Yndex |= 1 << $iY;
 			}
 		}
-		$this->chunkCount = $this->dataPacket(MC_CHUNK_DATA, array(
+		$cnt = $this->dataPacket(MC_CHUNK_DATA, array(
 			"x" => $X,
 			"z" => $Z,
 			"data" => $this->level->getOrderedChunk($X, $Z, $Yndex),
 		));
+		$this->chunkCount = array();
+		foreach($cnt as $i => $count){
+			$this->chunkCount[$count] = true;
+		}
 		/*$this->chunkCount = $this->dataPacket(MC_CHUNK_DATA, array(
 			"x" => $X,
 			"z" => $Z,
@@ -900,11 +904,15 @@ class Player{
 		}
 
 		if(($resendCnt = count($this->resendQueue)) > 0){
-			foreach($this->resendQueue as $count => $data){
+			foreach($this->resendQueue as $count => $data){				
 				unset($this->resendQueue[$count]);
 				$this->packetStats[1]++;
 				$this->lag[] = microtime(true) - $data["sendtime"];
-				$this->directDataPacket($data["id"], $data, $data["pid"]);
+				$cnt = $this->directDataPacket($data["id"], $data, $data["pid"]);
+				if(isset($this->chunkCount[$count])){
+					unset($this->chunkCount[$count]);
+					$this->chunkCount[$cnt] = true;
+				}
 			}
 		}
 	}
