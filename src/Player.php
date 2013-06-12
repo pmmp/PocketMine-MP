@@ -1615,6 +1615,9 @@ class Player{
 						}
 						$this->craftingItems = array();				
 					}
+				}else{
+					$this->toCraft = array();
+					$this->craftingItems = array();
 				}
 				if(!isset($this->windows[$data["windowid"]])){
 					break;
