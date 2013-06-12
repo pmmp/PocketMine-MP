@@ -74,7 +74,7 @@ class AsyncMultipleQueue extends Thread{
 						$d = array();
 						for($c = 0; $c < $cnt; ++$c){
 							$key = $this->get(Utils::readShort($this->get(2), false));
-							$d[$key] = $this->get(Utils::readInt($this->get(2), false));
+							$d[$key] = $this->get(Utils::readInt($this->get(4), false));
 						}
 						$res = (string) Utils::curl_post($url, $d, $timeout);
 						$this->lock();
