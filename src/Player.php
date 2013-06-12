@@ -911,7 +911,7 @@ class Player{
 				$cnt = $this->directDataPacket($data["id"], $data, $data["pid"]);
 				if(isset($this->chunkCount[$count])){
 					unset($this->chunkCount[$count]);
-					$this->chunkCount[$cnt] = true;
+					$this->chunkCount[$cnt[0]] = true;
 				}
 			}
 		}
