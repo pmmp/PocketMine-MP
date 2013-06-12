@@ -54,7 +54,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 ini_set("allow_url_fopen", 1);
 ini_set("display_errors", 1);
 ini_set("display_startup_errors", 1);
-ini_set('default_charset', 'utf-8');
+ini_set("default_charset", "utf-8");
 if(defined("POCKETMINE_COMPILE") and POCKETMINE_COMPILE === true){
 	define("FILE_PATH", realpath(dirname(__FILE__))."/");
 }else{
@@ -65,7 +65,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 ini_set("memory_limit", "128M"); //Default
 define("LOG", true);
 define("START_TIME", microtime(true));
-define("MAJOR_VERSION", "Alpha_1.3.1dev");
+define("MAJOR_VERSION", "Alpha_1.3.1");
 define("CURRENT_MINECRAFT_VERSION", "0.7.1 alpha");
 define("CURRENT_API_VERSION", 9);
 define("CURRENT_PHP_VERSION", "5.5");
