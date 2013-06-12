@@ -883,6 +883,8 @@ class Player{
 								case MC_SET_HEALTH:
 									continue;
 							}
+						}elseif(($p["counter"] - $this->receiveCount) > 16){
+							continue;
 						}
 					}
 					$this->handleDataPacket($p["id"], $p);
