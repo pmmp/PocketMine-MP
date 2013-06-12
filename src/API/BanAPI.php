@@ -76,7 +76,7 @@ class BanAPI{
 		switch($event){
 			case "player.flying"://OPs can fly around the server.
 				if($this->isOp($data->iusername)){
-					return true;
+					return;
 				}
 				break;
 			case "player.block.break":
@@ -92,15 +92,15 @@ class BanAPI{
 				break;
 			case "console.command"://Checks if a command is allowed with the current user permissions.
 				if(isset($this->cmdWhitelist[$data["cmd"]])){
-					return true;
+					return;
 				}
 				
 				if($data["issuer"] instanceof Player){
 					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
-						return true;
+						return;
 					}
 				}elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
-					return true;
+					return;
 				}
 				return false;
 			break;

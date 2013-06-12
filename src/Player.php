@@ -1216,6 +1216,22 @@ class Player{
 				break;
 			case MC_USE_ITEM:
 				if($this->spawned === false or $this->blocked === true){
+					$target = $this->level->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
+					$block = $target->getSide($data["face"]);
+					$this->dataPacket(MC_UPDATE_BLOCK, array(
+						"x" => $target->x,
+						"y" => $target->y,
+						"z" => $target->z,
+						"block" => $target->getID(),
+						"meta" => $target->getMetadata()		
+					));
+					$this->dataPacket(MC_UPDATE_BLOCK, array(
+						"x" => $block->x,
+						"y" => $block->y,
+						"z" => $block->z,
+						"block" => $block->getID(),
+						"meta" => $block->getMetadata()		
+					));
 					break;
 				}
 				$this->craftingItems = array();
@@ -1287,6 +1303,14 @@ class Player{
 				break;
 			case MC_REMOVE_BLOCK:
 				if($this->spawned === false or $this->blocked === true or $this->entity->distance(new Vector3($data["x"], $data["y"], $data["z"])) > 8){
+					$target = $this->level->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
+					$this->dataPacket(MC_UPDATE_BLOCK, array(
+						"x" => $target->x,
+						"y" => $target->y,
+						"z" => $target->z,
+						"block" => $target->getID(),
+						"meta" => $target->getMetadata()		
+					));
 					break;
 				}
 				$this->craftingItems = array();
