@@ -570,9 +570,12 @@ class Player{
 					}
 				}
 			}
-			$this->dataPacket(MC_CHAT, array(				
-				"message" => $m,
-			));	
+			
+			if($m !== ""){			
+				$this->dataPacket(MC_CHAT, array(				
+					"message" => $m,
+				));
+			}
 		}
 	}
 	

@@ -245,6 +245,8 @@ class ConsoleAPI{
 				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
 					$output = $this->defaultCommands($cmd, $params, $issuer, $alias);
 				}
+			}else{
+				$output = "";
 			}
 			if($output != "" and ($issuer instanceof Player)){
 				$issuer->sendChat(trim($output));
