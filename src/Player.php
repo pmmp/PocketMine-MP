@@ -1213,12 +1213,9 @@ class Player{
 				}
 				break;
 			case MC_REQUEST_CHUNK:
-				if($this->spawned === false){
-					break;
-				}
 				break;
 			case MC_USE_ITEM:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1261,7 +1258,7 @@ class Player{
 				}
 				break;
 			case MC_PLAYER_ACTION:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1289,10 +1286,7 @@ class Player{
 				$this->entity->updateMetadata();
 				break;
 			case MC_REMOVE_BLOCK:
-				if($this->spawned === false){
-					break;
-				}
-				if($this->blocked === true or $this->entity->distance(new Vector3($data["x"], $data["y"], $data["z"])) > 8){
+				if($this->spawned === false or $this->blocked === true or $this->entity->distance(new Vector3($data["x"], $data["y"], $data["z"])) > 8){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1300,7 +1294,7 @@ class Player{
 				$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
 				break;
 			case MC_PLAYER_ARMOR_EQUIPMENT:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1333,7 +1327,7 @@ class Player{
 				}
 				break;
 			case MC_INTERACT:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1442,7 +1436,7 @@ class Player{
 			case MC_SET_HEALTH: //Not used
 				break;
 			case MC_ENTITY_EVENT:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1486,7 +1480,7 @@ class Player{
 				}
 				break;
 			case MC_DROP_ITEM:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1502,7 +1496,7 @@ class Player{
 				}
 				break;
 			case MC_SIGN_UPDATE:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1545,7 +1539,7 @@ class Player{
 				));
 				break;
 			case MC_CONTAINER_SET_SLOT:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				
