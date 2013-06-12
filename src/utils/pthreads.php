@@ -48,7 +48,7 @@ class AsyncMultipleQueue extends Thread{
 		$str = "";
 		while(!isset($str{$len - 1})){
 			$str .= $this->input{0};
-			$this->input = substr($this->input, 1);
+			$this->input = (string) substr($this->input, 1);
 		}
 		return $str;
 	}
