@@ -186,20 +186,24 @@ class ServerAPI{
 		foreach($this->plugin->getList() as $p){
 			$plist .= str_replace(array(";", ":"), "", $p["name"]).":".str_replace(array(";", ":"), "", $p["version"]).";";
 		}
-		Utils::curl_post("http://stats.pocketmine.net/usage.php", array(
-			"serverid" => $this->server->serverID,
-			"port" => $this->server->port,
-			"os" => Utils::getOS(),
-			"memory_total" => $this->getProperty("memory-limit"),
-			"memory_usage" => memory_get_usage(true),
-			"php_version" => PHP_VERSION,
-			"version" => MAJOR_VERSION,
-			"mc_version" => CURRENT_MINECRAFT_VERSION,
-			"protocol" => CURRENT_PROTOCOL,
-			"online" => count($this->server->clients),
-			"max" => $this->server->maxClients,
-			"plugins" => $plist,
-		), 2);
+		
+		$this->asyncOperation(ASYNC_CURL_POST, array(
+			"url" => "http://stats.pocketmine.org/usage.php",
+			"data" => array(
+				"serverid" => $this->server->serverID,
+				"port" => $this->server->port,
+				"os" => Utils::getOS(),
+				"memory_total" => $this->getProperty("memory-limit"),
+				"memory_usage" => memory_get_usage(true),
+				"php_version" => PHP_VERSION,
+				"version" => MAJOR_VERSION,
+				"mc_version" => CURRENT_MINECRAFT_VERSION,
+				"protocol" => CURRENT_PROTOCOL,
+				"online" => count($this->server->clients),
+				"max" => $this->server->maxClients,
+				"plugins" => $plist,
+			),
+		), NULL);
 	}
 
 	public function __destruct(){
@@ -301,6 +305,10 @@ class ServerAPI{
 
 	/*-------------------------------------------------------------*/
 
+	public function asyncOperation($t, $d, $c = null){
+		return $this->server->asyncOperation($t, $d, $c);
+	}
+	
 	public function addHandler($e, $c, $p = 5){
 		return $this->server->addHandler($e, $c, $p);
 	}

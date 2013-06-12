@@ -36,6 +36,10 @@ if(!function_exists("cli_set_process_title")){
 	}
 }
 
+function dummy(){
+	
+}
+
 function safe_var_dump($var, $cnt = 0){
 	switch(true){
 		case is_array($var):
