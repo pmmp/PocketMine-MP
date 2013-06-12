@@ -276,8 +276,7 @@ class ServerAPI{
 
 	public function init(){
 		if($this->getProperty("send-usage") !== false){
-			$this->server->schedule(36000, array($this, "sendUsage"), array(), true); //Send usage data every 30 minutes
-			$this->server->schedule(6000, array($this, "sendUsage")); //Send the info after 5 minutes have passed
+			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
 		}
 
