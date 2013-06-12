@@ -472,19 +472,6 @@ class Player{
 				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
 
 				break;
-			case "entity.move":
-				if($data->eid === $this->eid or $data->level !== $this->level){
-					break;
-				}
-				$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-					"eid" => $data->eid,
-					"x" => $data->x,
-					"y" => $data->y,
-					"z" => $data->z,
-					"yaw" => $data->yaw,
-					"pitch" => $data->pitch,
-				));
-				break;
 			case "entity.motion":
 				if($data->eid === $this->eid or $data->level !== $this->level){
 					break;
@@ -1126,7 +1113,6 @@ class Player{
 				$this->entity->data["CID"] = $this->CID;
 				$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("entity.move", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));

@@ -508,7 +508,7 @@ class Entity extends Position{
 		}
 		
 		if($this->isStatic === false and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
-			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){			
+			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
 				if($this->server->api->handle("entity.move", $this) === false){
 					if($this->class === ENTITY_PLAYER){
 						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
@@ -517,6 +517,18 @@ class Entity extends Position{
 					}
 				}else{
 					$this->updateLast();
+					$players = $this->server->api->player->getAll($this->level);
+					if($this->player instanceof Player){
+						unset($players[$this->player->CID]);
+					}
+					$this->server->api->player->broadcastPacket($players, MC_MOVE_ENTITY_POSROT, array(
+						"eid" => $this->eid,
+						"x" => $this->x,
+						"y" => $this->y,
+						"z" => $this->z,
+						"yaw" => $this->yaw,
+						"pitch" => $this->pitch,
+					));
 				}
 			}else{
 				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
