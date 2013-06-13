@@ -280,11 +280,11 @@ class Player{
 			$add = 0;
 			foreach($inv as $s => $item){
 				if($item->getID() === AIR){
-					$add = min(64, $count);
+					$add = min($item->getMaxStackSize(), $count);
 					$inv[$s] = BlockAPI::getItem($type, $damage, $add);
 					break;
 				}elseif($item->getID() === $type and $item->getMetadata() === $damage){
-					$add = min(64 - $item->count, $count);
+					$add = min($item->getMaxStackSize() - $item->count, $count);
 					if($add <= 0){
 						continue;
 					}
@@ -305,14 +305,14 @@ class Player{
 			$add = 0;
 			foreach($this->inventory as $s => $item){
 				if($item->getID() === AIR){
-					$add = min(64, $count);
+					$add = min($item->getMaxStackSize(), $count);
 					$this->inventory[$s] = BlockAPI::getItem($type, $damage, $add);
 					if($send === true){
 						$this->sendInventorySlot($s);
 					}
 					break;
 				}elseif($item->getID() === $type and $item->getMetadata() === $damage){
-					$add = min(64 - $item->count, $count);
+					$add = min($item->getMaxStackSize() - $item->count, $count);
 					if($add <= 0){
 						continue;
 					}
