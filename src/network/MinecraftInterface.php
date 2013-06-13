@@ -133,7 +133,7 @@ class MinecraftInterface{
 		foreach($this->toChunk as $CID => $packets){
 			$d = $this->chunked[$CID];
 			$raw = "";
-			$MTU = 0;
+			$MTU = 512;
 			foreach($packets as $packet){
 				$raw .= $packet;
 				if(($len = strlen($packet)) > $MTU){
