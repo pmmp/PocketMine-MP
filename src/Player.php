@@ -78,6 +78,7 @@ class Player{
 	public $toCraft = array();
 	public $lastCraft = 0;
 	private $chunkCount = array();
+	private $received = array();
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -103,7 +104,8 @@ class Player{
 		$this->level = $this->server->api->level->getDefault();
 		$this->slot = 0;
 		$this->packetStats = array(0,0);
-		$this->server->schedule(1, array($this, "handlePacketQueues"), array(), true);
+		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
+		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
 		$this->evid[] = $this->server->event("server.close", array($this, "close"));
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
@@ -824,6 +826,19 @@ class Player{
 		return array_sum($this->bandwidthStats) / max(1, count($this->bandwidthStats));
 	}
 	
+	public function clearQueue(){
+		ksort($this->received);
+		if(($cnt = count($this->received)) > PLAYER_MAX_QUEUE){
+			foreach($this->received as $c => $t){
+				unset($this->received[$c]);
+				--$cnt;
+				if($cnt <= PLAYER_MAX_QUEUE){
+					break;
+				}
+			}
+		}
+	}
+	
 	public function handlePacketQueues(){
 		if($this->connected === false){
 			return false;
@@ -860,7 +875,7 @@ class Player{
 						if($p["counter"] > $this->receiveCount){
 							$this->receiveCount = $p["counter"];
 						}elseif($p["counter"] !== 0){
-							if(($p["counter"] - $this->receiveCount) > 16){
+							if(isset($this->received[$p["counter"]])){
 								continue;
 							}
 							switch($p["id"]){
@@ -874,6 +889,7 @@ class Player{
 									continue;
 							}
 						}
+						$this->received[$p["counter"]] = true;
 					}
 					$this->handleDataPacket($p["id"], $p);
 				}
