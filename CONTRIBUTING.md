@@ -15,7 +15,8 @@ Before contributing to PocketMine-MP, please read this.
 * Is your issue related to a Plugin? If so, please contact their original author instead of reporting it here.
  * And no, we won't update a Plugin because you need it.
 * When reporting, give as much info as you can, and if the Issue is a crash, give the Crash Dump.
-* Issues should be written in English or in any of the language that any of our team members navtively speak.(Currently includes Spanish and Korean)
+* Issues should be written in English or in any of the language that any of our team members navtively speak.
+* (Currently includes Spanish and Korean)
 
 ## I want to contribute code
 * Use the [Pull Request](https://github.com/PocketMine/PocketMine-MP/pull/new) system, your request will be checked and discussed.
