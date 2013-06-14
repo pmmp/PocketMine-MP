@@ -778,17 +778,20 @@ class BlockAPI{
 		$time = microtime(true);
 		if(count($this->scheduledUpdates) > 0){
 			$update = $this->server->query("SELECT x,y,z,level,type FROM blockUpdates WHERE delay <= ".$time.";");
-			if($update !== false and $update !== true){
+			if($update instanceof SQLite3Result){
+				$upp = array();
 				while(($up = $update->fetchArray(SQLITE3_ASSOC)) !== false){
 					$index = $up["x"].".".$up["y"].".".$up["z"].".".$up["level"].".".$up["type"];
 					if(isset($this->scheduledUpdates[$index])){
-						$upp = $this->scheduledUpdates[$index];
+						$upp[] = array((int) $up["type"], $this->scheduledUpdates[$index]);
 						unset($this->scheduledUpdates[$index]);
-						$this->blockUpdate($upp, (int) $up["type"]);
 					}
 				}
+				$this->server->query("DELETE FROM blockUpdates WHERE delay <= ".$time.";");
+				foreach($upp as $b){
+					$this->blockUpdate($b[1], $b[0]);
+				}
 			}
-			$this->server->query("DELETE FROM blockUpdates WHERE delay <= ".$time.";");
 		}
 	}
 

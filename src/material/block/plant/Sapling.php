@@ -81,7 +81,6 @@ class SaplingBlock extends FlowableBlock{
 			}else{
 				return BLOCK_UPDATE_RANDOM;
 			}
-			return true;
 		}
 		return false;
 	}
