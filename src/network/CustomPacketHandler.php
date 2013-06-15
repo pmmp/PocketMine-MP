@@ -159,14 +159,14 @@ class CustomPacketHandler{
 					$this->data["username"] = $this->get(Utils::readShort($this->get(2), false));
 					$this->data["protocol1"] = Utils::readInt($this->get(4));
 					$this->data["protocol2"] = Utils::readInt($this->get(4));
-					$this->data["unknown1"] = Utils::readInt($this->get(4));
-					$this->data["unknown2"] = $this->get(Utils::readShort($this->get(2), false));
+					$this->data["clientId"] = Utils::readInt($this->get(4));
+					$this->data["realms_data"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
 					$this->raw .= Utils::writeShort(strlen($this->data["username"])).$this->data["username"];
 					$this->raw .= Utils::writeInt(CURRENT_PROTOCOL).
 									Utils::writeInt(CURRENT_PROTOCOL).
-									Utils::writeInt($this->data["unknown1"]);
-					$this->raw .= Utils::writeShort(strlen($this->data["unknown2"])).$this->data["unknown2"];
+									Utils::writeInt($this->data["clientId"]);
+					$this->raw .= Utils::writeShort(strlen($this->data["realms_data"])).$this->data["realms_data"];
 				}
 				break;
 			case MC_LOGIN_STATUS:

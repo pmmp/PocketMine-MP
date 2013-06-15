@@ -110,6 +110,26 @@ class Vector2{
 			return pow($this->x - $x, 2) + pow($this->y - $y, 2);
 		}
 	}
+	
+	public function length(){
+		return sqrt($this->lengthSquared());
+	}
+	
+	public function lengthSquared(){
+		return $this->x * $this->x + $this->y * $this->y;
+	}
+	
+	public function normalize(){
+		$len = $this->length();
+		if($len != 0){
+			return $this->divide($len);
+		}
+		return new Vector2(0, 0);
+	}
+	
+	public function dot(Vector2 $v){
+		return $this->x * $v->x + $this->y * $v->y;
+	}
 
 	public function __toString(){
 		return "Vector2(x=".$this->x.",y=".$this->y.")";

@@ -164,6 +164,34 @@ class Vector3{
 			return max(abs($this->x - $x), abs($this->z - $z));
 		}	
 	}
+	
+	public function length(){
+		return sqrt($this->lengthSquared());
+	}
+	
+	public function lengthSquared(){
+		return $this->x * $this->x + $this->y * $this->y + $this->z * $this->z;
+	}
+	
+	public function normalize(){
+		$len = $this->length();
+		if($len != 0){
+			return $this->divide($len);
+		}
+		return new Vector3(0, 0, 0);
+	}
+	
+	public function dot(Vector3 $v){
+		return $this->x * $v->x + $this->y * $v->y + $this->z * $v->z;
+	}
+	
+	public function cross(Vector3 $v){
+		return new Vector3(
+			$this->y * $v->z - $this->z * $v->y,
+			$this->z * $v->x - $this->x * $v->z,
+			$this->x * $v->y - $this->y * $v->x
+		);
+	}
 
 	public function __toString(){
 		return "Vector3(x=".$this->x.",y=".$this->y.",z=".$this->z.")";

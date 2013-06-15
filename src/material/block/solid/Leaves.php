@@ -47,9 +47,13 @@ class LeavesBlock extends TransparentBlock{
 		}
 		if($pos->getID() === WOOD){
 			return true;
-		}elseif($pos->getID() === LEAVES and $distance < 4){
+		}elseif($pos->getID() === LEAVES and $distance < 5){
 			$visited[$index] = true;
-			for($side = 0; $side <= 5; ++$side){
+			$down = $pos->getSide(0)->getID();
+			if($down === WOOD or $down == LEAVES){
+				return true;
+			}
+			for($side = 2; $side <= 5; ++$side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1) === true){
 					return true;
 				}
@@ -69,16 +73,18 @@ class LeavesBlock extends TransparentBlock{
 		}elseif($type === BLOCK_UPDATE_RANDOM){
 			if(($this->meta & 0b00001100) === 0x08){
 				$this->meta &= 0x03;
-				if($this->findLog($this, array(), 0) === true){
+				$visited = array();
+				if($this->findLog($this, $visited, 0) === true){
 					$this->level->setBlock($this, $this, false);
 				}else{
-					$this->level->setBlock($this, new AirBlock());
+					$this->level->setBlock($this, new AirBlock(), false);
 					if(mt_rand(1,20) === 1){ //Saplings
 						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SAPLING, $this->meta & 0x03, 1));
 					}
 					if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1,200) === 1){ //Apples
 						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(APPLE, 0, 1));
 					}
+					return BLOCK_UPDATE_NORMAL;
 				}
 			}
 		}

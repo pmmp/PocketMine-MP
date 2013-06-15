@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 class BlockAPI{
 	private $server;
 	private $scheduledUpdates = array();
+	private $randomUpdates = array();
 	public static $creative = array(
 		array(COBBLESTONE, 0),
 		array(STONE_BRICKS, 0),
@@ -753,7 +754,7 @@ class BlockAPI{
 			$this->blockUpdateAround($block, $level);
 			$this->server->api->entity->updateRadius($pos, 3);
 		}elseif($level === BLOCK_UPDATE_RANDOM){
-			$this->scheduleBlockUpdate($pos, Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
+			$this->nextRandomUpdate($pos);
 		}
 		return $level;
 	}
@@ -772,6 +773,31 @@ class BlockAPI{
 			return true;
 		}
 		return false;
+	}
+	
+	public function nextRandomUpdate(Position $pos){
+		if(!isset($this->scheduledUpdates[$pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName().".".BLOCK_UPDATE_RANDOM])){
+			$X = (($pos->x >> 4) << 4);
+			$Y = (($pos->y >> 4) << 4);
+			$Z = (($pos->z >> 4) << 4);
+			$time = microtime(true);
+			$i = 0;
+			$offset = 0;
+			while(true){
+				$t = $offset + Utils::getRandomUpdateTicks() * 0.05;
+				$update = $this->server->query("SELECT COUNT(*) FROM blockUpdates WHERE level = '".$pos->level->getName()."' AND type = ".BLOCK_UPDATE_RANDOM." AND delay >= ".($time + $t - 1.5)." AND delay <= ".($time + $t + 1.5).";");
+				if($update instanceof SQLite3Result){
+					$update = $update->fetchArray(SQLITE3_NUM);
+					if($update[0] == 0){
+						break;
+					}
+				}else{
+					break;
+				}
+				$offset += 10;
+			}
+			$this->scheduleBlockUpdate($pos, $t / 0.05, BLOCK_UPDATE_RANDOM);
+		}
 	}
 	
 	public function blockUpdateTick(){
