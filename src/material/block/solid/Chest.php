@@ -58,7 +58,6 @@ class ChestBlock extends TransparentBlock{
 	}
 	
 	public function onBreak(Item $item, Player $player){
-			$server = ServerAPI::request();
 			$this->level->setBlock($this, new AirBlock(), true, true);
 			return true;
 	}

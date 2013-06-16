@@ -609,7 +609,7 @@ class PocketMinecraftServer{
 				if(!is_callable($schedule[0])){
 					$return = false;
 				}else{
-					$return = call_user_func($schedule[0],$schedule[1],$schedule[2]);
+					$return = call_user_func($schedule[0], $schedule[1], $schedule[2]);
 				}
 
 				if($action["repeat"] === 0 or $return === false){

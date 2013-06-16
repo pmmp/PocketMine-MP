@@ -752,7 +752,7 @@ class BlockAPI{
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
-			$this->server->api->entity->updateRadius($pos, 3);
+			$this->server->api->entity->updateRadius($pos, 1);
 		}elseif($level === BLOCK_UPDATE_RANDOM){
 			$this->nextRandomUpdate($pos);
 		}
@@ -794,7 +794,7 @@ class BlockAPI{
 				}else{
 					break;
 				}
-				$offset += 5;
+				$offset += mt_rand(25, 75);
 			}
 			$this->scheduleBlockUpdate($pos, $t / 0.05, BLOCK_UPDATE_RANDOM);
 		}
