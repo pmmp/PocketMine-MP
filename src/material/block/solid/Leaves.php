@@ -40,22 +40,63 @@ class LeavesBlock extends TransparentBlock{
 		$this->name = $names[$this->meta & 0x03];
 	}
 	
-	private function findLog(Block $pos, array $visited, $distance){
+	private function findLog(Block $pos, array $visited, $distance, $fromSide = null){
 		$index = $pos->x.".".$pos->y.".".$pos->z;
 		if(isset($visited[$index])){
 			return false;
 		}
 		if($pos->getID() === WOOD){
 			return true;
-		}elseif($pos->getID() === LEAVES and $distance < 5){
+		}elseif($pos->getID() === LEAVES and $distance < 4){
 			$visited[$index] = true;
 			$down = $pos->getSide(0)->getID();
 			if($down === WOOD or $down == LEAVES){
 				return true;
 			}
-			for($side = 2; $side <= 5; ++$side){
-				if($this->findLog($pos->getSide($side), $visited, $distance + 1) === true){
-					return true;
+			if($fromSide === null){
+				for($side = 2; $side <= 5; ++$side){
+					if($this->findLog($pos->getSide($side), $visited, $distance + 1, $side) === true){
+						return true;
+					}
+				}
+			}else{ //No more loops
+				switch($fromSide){
+					case 2:
+						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}
+						break;
+					case 3:
+						if($this->findLog($pos->getSide(3), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}
+						break;
+					case 4:
+						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}
+						break;
+					case 5:
+						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $fromSide) === true){
+							return true;
+						}
+						break;
 				}
 			}
 		}
