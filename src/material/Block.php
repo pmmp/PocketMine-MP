@@ -156,7 +156,7 @@ abstract class Block extends Position{
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 		$this->name = $name;
-		$this->breakTime = 0.25;
+		$this->breakTime = 0.20;
 	}
 	
 	final public function getName(){
@@ -190,7 +190,7 @@ abstract class Block extends Position{
 	
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
+			return 0.15;
 		}
 		return $this->breakTime;
 	}
