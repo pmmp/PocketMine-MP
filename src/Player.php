@@ -1231,7 +1231,10 @@ class Player{
 			case MC_REQUEST_CHUNK:
 				break;
 			case MC_USE_ITEM:
-				if($this->spawned === false or $this->blocked === true){
+				if(!($this->entity instanceof Entity)){
+					break;
+				}
+				if(($this->spawned === false or $this->blocked === true) and $data["face"] >= 0 and $data["face"] <= 5){
 					$target = $this->level->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
 					$block = $target->getSide($data["face"]);
 					$this->dataPacket(MC_UPDATE_BLOCK, array(
