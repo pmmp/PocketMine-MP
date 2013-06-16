@@ -135,7 +135,10 @@ class Entity extends Position{
 				$this->size = 1;
 				if($this->type === OBJECT_PAINTING){
 					$this->isStatic = true;
+				}elseif($this->type === OBJECT_ARROW){
+					$this->server->schedule(1210, array($this, "update")); //Despawn
 				}
+				$this->update();
 				break;
 		}
 		$this->updateLast();
