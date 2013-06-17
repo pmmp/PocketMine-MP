@@ -277,11 +277,11 @@ class Level{
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 	
-	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true){
+	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(!isset($this->level)){
 			return false;
 		}
-		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true){
+		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
 				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
 					"x" => $pos->x,
@@ -291,6 +291,9 @@ class Level{
 					"meta" => $block->getMetadata(),
 				));
 			}elseif($direct === false){
+				if(!($pos instanceof Position)){
+					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
+				}
 				$block->position($pos);
 				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
 				if(!isset($this->changedBlocks[$i])){
