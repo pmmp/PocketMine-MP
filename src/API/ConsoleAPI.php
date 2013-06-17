@@ -97,7 +97,7 @@ class ConsoleAPI{
 						break;
 					case "difficulty":
 						$s = trim(array_shift($params));
-						if($s == "" or (((int) $s) !== 0 and ((int) $s) !== 1)){
+						if($s == "" or (((int) $s) <= 3 and ((int) $s) >= 0)){
 							$output .= "Usage: /difficulty <0|1|2|3>\n";
 							break;
 						}
