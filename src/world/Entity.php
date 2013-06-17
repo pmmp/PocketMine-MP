@@ -785,7 +785,7 @@ class Entity extends Position{
 	public function isSupport(Vector3 $pos, $radius = 1){
 		$me = new Vector2($this->x - 0.5, $this->z - 0.5);
 		$diff = $this->y - $pos->y;
-		if($me->distance(new Vector2($pos->x, $pos->z)) < $radius and $diff > 0 and $diff < 1.6){
+		if($me->distance(new Vector2($pos->x, $pos->z)) < $radius and $diff > -0.7 and $diff < 1.6){
 			return true;
 		}
 		return false;
