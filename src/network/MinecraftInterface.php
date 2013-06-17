@@ -176,7 +176,7 @@ class MinecraftInterface{
 		);
 		$this->writePacket(0x99, array(
 			0 => 0, //start
-		), false, $source, $port);
+		), false, $source, $port, true);
 	}
 	
 	public function stopChunked($CID){
@@ -185,7 +185,7 @@ class MinecraftInterface{
 		}
 		$this->writePacket(0x99, array(
 			0 => 1, //stop
-		), false, $this->chunked[$CID][1], $this->chunked[$CID][2]);
+		), false, $this->chunked[$CID][1], $this->chunked[$CID][2], true);
 		console("[DEBUG] Stopping DEFLATEPacket for ".$this->chunked[$CID][1].":".$this->chunked[$CID][2], true, true, 2);
 		$this->chunked[$CID][3] = null;
 		$this->chunked[$CID][4] = null;
