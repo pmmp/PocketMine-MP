@@ -107,7 +107,7 @@ class PocketMinecraftServer{
 			$this->schedule(30, array($this, "titleTick"), array(), true);
 		}
 		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
-		$this->schedule(20 * 60 * 10, array($this, "checkMemory"), array(), true);
+		$this->schedule(20 * 60, array($this, "checkMemory"), array(), true);
 		$this->schedule(20, array($this, "asyncOperationChecker"), array(), true);
 	}
 	
@@ -121,7 +121,7 @@ class PocketMinecraftServer{
 		$info = $this->debugInfo();
 		$data = $info["memory_usage"].",".$info["players"].",".$info["entities"];
 		$i = count($this->memoryStats) - 1;
-		if($i === -1 or $this->memoryStats[$i] !== $data){
+		if($i < 0 or $this->memoryStats[$i] !== $data){
 			$this->memoryStats[] = $data;
 		}
 	}
@@ -413,7 +413,7 @@ class PocketMinecraftServer{
 		$dump .= "Code: \r\n";
 		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
 		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
-			$dump .= "[".($l + 1)."] ".$file[$l]."\r\n";
+			$dump .= "[".($l + 1)."] ".@$file[$l]."\r\n";
 		}
 		$dump .= "\r\n\r\n";
 		$version = new VersionString();
