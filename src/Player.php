@@ -232,15 +232,19 @@ class Player{
 			));
 			$inv = array();			
 			foreach($this->inventory as $slot => $item){
-				if($slot < (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS)){
-					$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
+				if($item instanceof Item){
+					if($slot < (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS)){
+						$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
+					}
 				}
 			}
 			$this->data->set("inventory", $inv);
 			
 			$armor = array();
 			foreach($this->armor as $slot => $item){
-				$armor[$slot] = array($item->getID(), $item->getMetadata());
+				if($item instanceof Item){
+					$armor[$slot] = array($item->getID(), $item->getMetadata());
+				}
 			}
 			$this->data->set("armor", $armor);
 			$this->data->set("gamemode", $this->gamemode);
