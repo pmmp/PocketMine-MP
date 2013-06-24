@@ -244,7 +244,7 @@ class PocketMinecraftServer{
 				case ASYNC_CURL_GET:
 				case ASYNC_CURL_POST:
 					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
-					$offset += 2;
+					$offset += 4;
 					$data["result"] = substr($this->asyncThread->output, $offset, $len);
 					$offset += $len;
 					break;
