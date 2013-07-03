@@ -77,7 +77,8 @@ class Query{
 			"map" => $this->server->api->level->getDefault()->getName(),
 			"numplayers" => count($this->server->clients),
 			"maxplayers" => $this->server->maxClients,
-			"hostport" => $this->server->api->getProperty("server-port"),
+			"whitelist" => $this->server->api->getProperty("server-port"),
+			"hostport" => $this->server->api->getProperty("white-list") === true ? "on":"off",
 			//"hostip" => $this->server->api->getProperty("server-ip", "0.0.0.0")
 		);
 		foreach($KVdata as $key => $value){
