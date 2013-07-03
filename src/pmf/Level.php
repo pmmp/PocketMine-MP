@@ -317,8 +317,8 @@ class PMFLevel extends PMF{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
-		$bindex = $aY + ($aX << 5) + ($aZ << 9);
-		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
+		$bindex = (int) ($aY + ($aX << 5) + ($aZ << 9));
+		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
 		$b = ord($this->chunks[$index][$Y]{$bindex});
 		$m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
@@ -349,8 +349,8 @@ class PMFLevel extends PMF{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
-		$bindex = $aY + ($aX << 5) + ($aZ << 9);
-		$mindex = ($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9);
+		$bindex = (int) ($aY + ($aX << 5) + ($aZ << 9));
+		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
 		$old_b = ord($this->chunks[$index][$Y]{$bindex});
 		$old_m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
