@@ -1703,7 +1703,7 @@ class Player{
 		);
 		$armor = array();
 		for($i = 0; $i < 4; ++$i){
-			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item)){
+			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > AIR){
 				$data["slot$i"] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
 			}else{
 				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
