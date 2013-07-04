@@ -1701,20 +1701,22 @@ class Player{
 			"player" => $this,
 			"eid" => $this->eid
 		);
+		$armor = array();
 		for($i = 0; $i < 4; ++$i){
-			if($this->armor[$i] instanceof Item){
+			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item)){
 				$data["slot$i"] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
 			}else{
 				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
 				$data["slot$i"] = 0;
 			}
+			$armor[] = $this->armor[$i];
 		}
 		if($player instanceof Player){
 			if($player === $this){
 				$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 					"windowid" => 0x78,
 					"count" => 4,
-					"slots" => $this->armor,
+					"slots" => $armor,
 				));
 			}else{
 				$player->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
