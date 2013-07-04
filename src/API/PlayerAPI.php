@@ -413,7 +413,7 @@ class PlayerAPI{
 				"z" => $this->server->spawn->z,
 			),
 			"inventory" => array_fill(0, PLAYER_SURVIVAL_SLOTS, array(AIR, 0, 0)),
-			"armor" => array_fill(0, 4, array(AIR, 0, 0)),
+			"armor" => array_fill(0, 4, array(AIR, 0)),
 			"gamemode" => $this->server->gamemode,
 			"health" => 20,
 			"lastIP" => "",

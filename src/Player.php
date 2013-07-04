@@ -1097,7 +1097,7 @@ class Player{
 
 				$this->armor = array();
 				foreach($this->data->get("armor") as $slot => $item){
-					$this->armor[$slot] = BlockAPI::getItem($item[0], $item[1], 1);
+					$this->armor[$slot] = BlockAPI::getItem($item[0], $item[1], $item[0] === 0 ? 0:1);
 				}
 				
 				$this->data->set("lastIP", $this->ip);
@@ -1365,7 +1365,7 @@ class Player{
 						$this->armor[$i] = $this->getSlot($sl);
 						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0), false);
 					}else{
-						$data["slot$i"] = 0;
+						$data["slot$i"] = 255;
 					}
 					
 				}		
@@ -1708,7 +1708,7 @@ class Player{
 				$data["slot$i"] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
 			}else{
 				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
-				$data["slot$i"] = 0;
+				$data["slot$i"] = 255;
 			}
 			$armor[] = $this->armor[$i];
 		}
