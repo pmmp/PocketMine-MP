@@ -1347,11 +1347,12 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
+
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				for($i = 0; $i < 4; ++$i){
 					$s = $data["slot$i"];
-					if($s === 0){
+					if($s === 0 or $s === 255){
 						$s = BlockAPI::getItem(AIR, 0, 0);
 					}else{
 						$s = BlockAPI::getItem($s + 256, 0, 1);
@@ -1368,7 +1369,7 @@ class Player{
 					}
 					
 				}		
-				$this->server->handle("player.armor", $data);
+				$this->sendArmor();
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
 					$this->entity->updateMetadata();
