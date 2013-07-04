@@ -476,6 +476,7 @@ class PocketMinecraftServer{
 				return;
 			}
 			switch($packet["pid"]){
+				case 0x01:
 				case 0x02:
 					if($this->invisible === true){
 						$this->send(0x1c, array(

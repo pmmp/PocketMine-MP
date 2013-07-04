@@ -454,7 +454,8 @@ class Player{
 			case "player.armor":
 				if($data["player"]->level === $this->level){
 					if($data["eid"] === $this->eid){
-						$data["eid"] = 0;
+						$this->sendArmor($this);
+						break;
 					}
 					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
 				}
@@ -1709,7 +1710,15 @@ class Player{
 			}
 		}
 		if($player instanceof Player){
-			$player->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
+			if($player === $this){
+				$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+					"windowid" => 0x78,
+					"count" => 4,
+					"slots" => $this->armor,
+				));
+			}else{
+				$player->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
+			}
 		}else{
 			$this->server->api->dhandle("player.armor", $data);
 		}
