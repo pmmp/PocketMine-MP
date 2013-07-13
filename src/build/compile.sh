@@ -146,7 +146,7 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
    HAVE_CURL="shared,/usr/local"
 else
 	#curl
@@ -244,7 +244,7 @@ $HAVE_LIBEDIT \
 --enable-cli \
 --without-pear \
 --without-iconv \
---without-pdo \
+--disable-pdo \
 --without-pdo-sqlite \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
