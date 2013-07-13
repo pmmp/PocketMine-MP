@@ -403,6 +403,22 @@ class Player{
 		return true;
 	}
 	
+	public function setArmor($slot, Item $armor, $send = true){
+		$this->armor[(int) $slot] = $item;
+		if($send === true){
+			$this->sendArmor($this);
+		}
+		return true;
+	}
+	
+	public function getArmor($slot){
+		if(isset($this->armor[(int) $slot])){
+			return $this->armor[(int) $slot];
+		}else{
+			return BlockAPI::getItem(AIR, 0, 0);
+		}
+	}
+	
 	public function hasItem($type, $damage = false){
 		foreach($this->inventory as $s => $item){
 			if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false) and $item->count > 0){
