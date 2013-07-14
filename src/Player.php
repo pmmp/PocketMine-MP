@@ -404,7 +404,7 @@ class Player{
 	}
 	
 	public function setArmor($slot, Item $armor, $send = true){
-		$this->armor[(int) $slot] = $item;
+		$this->armor[(int) $slot] = $armor;
 		if($send === true){
 			$this->sendArmor($this);
 		}
