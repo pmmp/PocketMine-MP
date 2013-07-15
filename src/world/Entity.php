@@ -752,7 +752,11 @@ class Entity extends Position{
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false){
 		if($pos instanceof Position){
 			$this->level = $pos->level;
-			$this->server->query("UPDATE entities SET level = '".$this->level->getName()."' WHERE EID = ".$this->eid.";");
+			$this->server->preparedSQL->entity->setLevel->reset();
+			$this->server->preparedSQL->entity->setLevel->clear();
+			$this->server->preparedSQL->entity->setLevel->bindValue(":level", $this->level->getName(), SQLITE3_TEXT);
+			$this->server->preparedSQL->entity->setLevel->bindValue(":eid", $this->eid, SQLITE3_TEXT);
+			$this->server->preparedSQL->entity->setLevel->execute();
 		}
 		$this->x = $pos->x;
 		$this->y = $pos->y;
@@ -763,7 +767,15 @@ class Entity extends Position{
 		if($pitch !== false){
 			$this->pitch = $pitch;
 		}
-		$this->server->query("UPDATE entities SET x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
+		$this->server->preparedSQL->entity->setPosition->reset();
+		$this->server->preparedSQL->entity->setPosition->clear();
+		$this->server->preparedSQL->entity->setPosition->bindValue(":x", $this->x, SQLITE3_TEXT);
+		$this->server->preparedSQL->entity->setPosition->bindValue(":y", $this->y, SQLITE3_TEXT);
+		$this->server->preparedSQL->entity->setPosition->bindValue(":z", $this->z, SQLITE3_TEXT);
+		$this->server->preparedSQL->entity->setPosition->bindValue(":pitch", $this->pitch, SQLITE3_TEXT);
+		$this->server->preparedSQL->entity->setPosition->bindValue(":yaw", $this->yaw, SQLITE3_TEXT);
+		$this->server->preparedSQL->entity->setPosition->bindValue(":eid", $this->eid, SQLITE3_TEXT);
+		$this->server->preparedSQL->entity->setPosition->execute();
 	}
 	
 	public function inBlock(Vector3 $block, $radius = 0.8){
