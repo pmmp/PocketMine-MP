@@ -35,6 +35,7 @@ class Deprecation{
 		"api.op.check" => "op.check",
 		"api.player.offline.get" => "player.offline.get",
 		"api.player.offline.save" => "player.offline.save",
+		"console.check" => "command.check",
 	);
 
 
