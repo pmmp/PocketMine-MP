@@ -276,6 +276,8 @@ class Player{
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
 			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged out due to ".$reason);
+			$this->spawned = false;
+			$this->loggedIn = false;
 			$this->server->api->player->remove($this->CID);
 		}
 	}
