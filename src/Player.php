@@ -268,17 +268,17 @@ class Player{
 			$this->level->freeAllChunks($this);
 			$this->spawned = false;
 			$this->loggedIn = false;
+			if($msg === true and $this->username != ""){
+				$this->server->api->chat->broadcast($this->username." left the game");
+			}
 			$this->buffer = null;
 			unset($this->buffer);
 			$this->recoveryQueue = array();
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->server->interface->stopChunked($this->CID);
-			if($msg === true and $this->username != ""){
-				$this->server->api->chat->broadcast($this->username." left the game");
-			}
-			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 			$this->server->api->player->remove($this->CID);
+			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 		}
 	}
 	
