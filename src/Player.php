@@ -79,6 +79,7 @@ class Player{
 	public $lastCraft = 0;
 	private $chunkCount = array();
 	private $received = array();
+	public $realmsData = array();
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -1034,6 +1035,7 @@ class Player{
 				if($this->loggedIn === true){
 					break;
 				}
+				$this->realmsData = array("clientId" => $data["clientId"], "realms_data" => $data["realms_data"]);
 				if(count($this->server->clients) > $this->server->maxClients){
 					$this->close("server is full!", false);
 					return;
