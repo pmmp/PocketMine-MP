@@ -52,8 +52,7 @@ class BanAPI{
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
 		$this->server->api->console->alias("pardon-ip", "banip remove");
-		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);
-		$this->server->addHandler("console.check", array($this, "permissionsCheck"), 1);//Event handler when commands are issued. Used to check permissions of commands that go through the server.
+		$this->server->addHandler("console.command", array($this, "permissionsCheck"), 1);//Event handler when commands are issued. Used to check permissions of commands that go through the server.
 		$this->server->addHandler("player.block.break", array($this, "permissionsCheck"), 1);//Event handler for blocks
 		$this->server->addHandler("player.block.place", array($this, "permissionsCheck"), 1);//Event handler for blocks
 		$this->server->addHandler("player.flying", array($this, "permissionsCheck"), 1);//Flying Event
@@ -97,20 +96,14 @@ class BanAPI{
 				}
 				
 				if($data["issuer"] instanceof Player){
-					if($this->server->api->handle("console.check", $data) === true){
+					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
 						return;
 					}
 				}elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
 					return;
 				}
 				return false;
-				break;
-			case "console.check":
-				 if($this->isOp($data["issuer"]->iusername))
-				 	return true;
-				 else
-				 	return false;
-				break;
+			break;
 		}
 	}
 	
