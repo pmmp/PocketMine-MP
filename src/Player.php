@@ -1034,7 +1034,7 @@ class Player{
 				if($this->loggedIn === true){
 					break;
 				}
-				if(count($this->server->clients) >= $this->server->maxClients){
+				if(count($this->server->clients) > $this->server->maxClients){
 					$this->close("server is full!", false);
 					return;
 				}
