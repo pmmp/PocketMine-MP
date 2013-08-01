@@ -1402,12 +1402,12 @@ class Player{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 				$target = $this->server->api->entity->get($data["target"]);
-				if($this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
+				if($target instanceof Entity and $this->entity instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
 					$data["entity"] = $this->entity;
-					if($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
-						break;
-					}elseif($this->server->handle("player.interact", $data) !== false){
+				if($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
+					break;
+				}elseif($this->server->handle("player.interact", $data) !== false){
 						$slot = $this->getSlot($this->slot);
 						switch($slot->getID()){
 							case WOODEN_SWORD:
@@ -1475,6 +1475,7 @@ class Player{
 						}
 					}
 				}
+				
 				break;
 			case MC_ANIMATE:
 				if($this->spawned === false){
