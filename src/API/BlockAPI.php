@@ -227,6 +227,10 @@ class BlockAPI{
 						$output .= "Player is in creative mode.\n";
 						break;
 					}
+					if($item->getID() == 0) {
+						$output .= "You cannot give an air block to a player.\n";
+						break;
+					}
 					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
 					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username."\n";
 				}else{
