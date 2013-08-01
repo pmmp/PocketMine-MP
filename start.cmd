@@ -1,5 +1,5 @@
 @echo off
-chcp 850
+chcp 65001
 TITLE PocketMine-MP Minecraft PE server
 COLOR 0F
 mode con: cols=90
