@@ -1492,10 +1492,14 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$this->entity->fire = 0;
-				$this->entity->air = 300;
-				$this->entity->setHealth(20, "respawn");
-				$this->entity->updateMetadata();
+				if($this->entity instanceof Entity){
+					$this->entity->fire = 0;
+					$this->entity->air = 300;
+					$this->entity->setHealth(20, "respawn");
+					$this->entity->updateMetadata();
+				} else {
+					break;
+				}
 				$this->sendInventory();
 				$this->teleport($this->spawnPosition);
 				$this->blocked = false;
