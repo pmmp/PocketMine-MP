@@ -31,8 +31,8 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-## IRC #mcpedevs @ irc.freenode.net
-* [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4)
+## IRC #pocketmine @ irc.freenode.net
+* [WebIRC](http://webchat.freenode.net?channels=pocketmine,mcpedevs&uio=d4)
 
 
 ## Third-party Libraries/Protocols Used
