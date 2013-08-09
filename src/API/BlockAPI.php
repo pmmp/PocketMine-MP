@@ -311,6 +311,8 @@ class BlockAPI{
 		if($target->isActivable === true){
 			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($item, $player) === true){
 				return false;
+			} else {
+				return $this->cancelAction($target, $player);
 			}
 		}
 		
