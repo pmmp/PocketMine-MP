@@ -181,7 +181,7 @@ class ServerAPI{
 		return $ob;
 	}
 	public function autoSave(){
-		console("[DEBUG] Saving...", true, true, 2);
+		console("[DEBUG] Saving....", true, true, 2);
 		$this->server->api->level->saveAll();
 	}
 		
