@@ -409,7 +409,7 @@ class PocketMinecraftServer{
 		if($this->stop === true){
 			return;
 		}
-		console("[ERROR] An Unrecovereable has ocurred and the server has Crashed. Creating an Error Dump");
+		console("[ERROR] An unrecoverable error has occurred and the server has crashed. Creating an error dump...");
 		$dump = "```\r\n# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
 		$er = error_get_last();
 		$dump .= "Error: ".var_export($er, true)."\r\n\r\n";
