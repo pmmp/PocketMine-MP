@@ -84,6 +84,7 @@ class ServerAPI{
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"send-usage" => true,
+			"auto-save" => true,
 		));
 		
 		$this->parseProperties();
@@ -178,6 +179,10 @@ class ServerAPI{
 		$ob = $this->asyncCalls[$id];
 		unset($this->asyncCalls[$id]);
 		return $ob;
+	}
+	public function autoSave(){
+		console("[DEBUG] Saving....", true, true, 2);
+		$this->server->api->level->saveAll();
 	}
 		
 	public function sendUsage(){
@@ -279,7 +284,9 @@ class ServerAPI{
 			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
 		}
-
+		if($this->getProperty("auto-save") === true){
+			$this->server->schedule(18000, array($this, "autoSave"), array(), true);	
+		}
 		if($this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}
