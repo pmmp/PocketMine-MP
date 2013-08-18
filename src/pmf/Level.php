@@ -147,11 +147,22 @@ class PMFLevel extends PMF{
 		if(($this->levelData["width"] !== 16 and $this->levelData["width"] !== 32) or $this->levelData["height"] !== 8){
 			return false;
 		}
-		$this->levelData["extra"] = gzinflate($this->read(Utils::readShort($this->read(2), false))); //Additional custom plugin data
-		if($this->levelData["extra"] === false){
-			return false;
+		$lastseek = ftell($this->fp);
+		if(($len = $this->read(2)) === false or ($this->levelData["extra"] = @gzinflate($this->read(Utils::readShort($len, false)))) === false){ //Corruption protection
+			console("[NOTICE] Empty/corrupt location table detected, forcing recovery");
+			fseek($this->fp, $lastseek);
+			$c = gzdeflate("");
+			$this->write(Utils::writeShort(strlen($c)).$c);
+			$this->payloadOffset = ftell($this->fp);
+			$this->levelData["extra"] = "";
+			$cnt = pow($this->levelData["width"], 2);			
+			for($index = 0; $index < $cnt; ++$index){
+				$this->write("\x00\xFF"); //Force index recreation
+			}
+			fseek($this->fp, $this->payloadOffset);
+		}else{
+			$this->payloadOffset = ftell($this->fp);
 		}
-		$this->payloadOffset = ftell($this->fp);
 		return $this->readLocationTable();
 	}
 	
