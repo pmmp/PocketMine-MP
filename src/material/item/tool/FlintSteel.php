@@ -39,6 +39,9 @@ class FlintSteelItem extends Item{
 			return true;
 		}
 		$this->useOn($block);
+		if($this->getMetadata() >= $this->getMaxDurability()){
+			$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
+		}
 		return false;
 	}
 }

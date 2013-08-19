@@ -135,14 +135,48 @@ class Item{
 		
 	}
 	
-	public function useOn($object){
-		if($this->isTool()){
-			$this->meta++;
+	public function useOn($object, $force = false){
+		if($this->isTool() or $force === true){
+			if(($object instanceof Entity) and !$this->isSword()){
+				$this->meta += 2;
+			}else{
+				$this->meta++;
+			}
 		}
 	}
 	
 	final public function isTool(){
-		return ($this->id === FLINT_STEEL or $this->id === SHEARS or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false or $this->isHoe() !== false);
+		return ($this->id === FLINT_STEEL or $this->id === SHEARS or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
+	}
+	
+	final public function getMaxDurability(){
+		if(!$this->isTool() and $this->isHoe() === false and $this->id !== BOW){
+			return false;
+		}
+		
+		$levels = array(
+			2 => 33,
+			1 => 60,
+			3 => 132,
+			4 => 251,
+			5 => 1562,
+			FLINT_STEEL => 65,
+			SHEARS => 239,
+			BOW => 385,
+		);
+
+		if(($type = $this->isPickaxe()) === false){			
+			if(($type = $this->isAxe()) === false){			
+				if(($type = $this->isSword()) === false){				
+					if(($type = $this->isShovel()) === false){					
+						if(($type = $this->isHoe()) === false){
+							$type = $this->id;
+						}
+					}	
+				}
+			}
+		}
+		return $levels[$type];
 	}
 	
 	final public function isPickaxe(){ //Returns false or level of the pickaxe

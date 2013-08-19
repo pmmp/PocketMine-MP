@@ -275,6 +275,9 @@ class BlockAPI{
 				return $this->cancelAction($target, $player, false);
 			}
 			$item->useOn($target);
+			if($item->getMetadata() >= $item->getMaxDurability()){
+				$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
+			}
 			$drops = $target->getDrops($item, $player);
 		}else{
 			return $this->cancelAction($target, $player, false);

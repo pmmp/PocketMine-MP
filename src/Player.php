@@ -1473,6 +1473,9 @@ class Player{
 						$target->harm($damage, $this->eid);
 						if($slot->isTool() === true and ($this->gamemode & 0x01) === 0){
 							$slot->useOn($target);
+							if($slot->getMetadata() >= $slot->getMaxDurability()){
+								$this->setSlot($this->slot, new Item(AIR, 0, 0), false);
+							}
 						}
 					}
 				}
