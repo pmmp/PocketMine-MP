@@ -71,7 +71,7 @@ define("MC_UPDATE_BLOCK", 0x97);
 define("MC_ADD_PAINTING", 0x98);
 define("MC_EXPLOSION", 0x99);
 define("MC_LEVEL_EVENT", 0x9a);
-//define("MC_TILE_EVENT", 0x9b);
+define("MC_TILE_EVENT", 0x9b);
 define("MC_ENTITY_EVENT", 0x9c);
 define("MC_REQUEST_CHUNK", 0x9d);
 define("MC_CHUNK_DATA", 0x9e);

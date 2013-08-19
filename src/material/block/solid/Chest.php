@@ -31,30 +31,51 @@ class ChestBlock extends TransparentBlock{
 		$this->isActivable = true;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$block0 = $this->getSide(2);
-			$block1 = $this->getSide(3);
-			$block2 = $this->getSide(4);
-			$block3 = $this->getSide(5);
-			if($block0->getID() !== CHEST and $block1->getID() !== CHEST and $block2->getID() !== CHEST and $block3->getID() !== CHEST){
-				$faces = array(
-					0 => 4,
-					1 => 2,
-					2 => 5,
-					3 => 3,
-				);
-				$this->meta = $faces[$player->entity->getDirection()];
-				$this->level->setBlock($block, $this);
-				$server = ServerAPI::request();
-				$server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
-					"Items" => array(),
-					"id" => TILE_CHEST,
-					"x" => $this->x,
-					"y" => $this->y,
-					"z" => $this->z
-				));
-				return true;
+
+		$faces = array(
+			0 => 4,
+			1 => 2,
+			2 => 5,
+			3 => 3,
+		);
+		$facesc = array(
+			2 => 4,
+			3 => 2,
+			4 => 5,
+			5 => 3,
+		);
+		$chest = false;
+		for($side = 2; $side <= 5; ++$side){
+			$c = $this->getSide($side);
+			if($c instanceof ChestBlock){
+				/*if($chest !== false){ //No chests in the middle
+					return false;
+				}*/
+				$chest = array($side, $c);
+				break;
 			}
-		return false;
+		}
+		
+		if($chest !== false and ($chest[1]->getSide($chest[0]) instanceof ChestBlock)){ //Already double chest
+			return false;
+		}
+		
+		if($chest !== false){			
+			$this->meta = $facesc[$chest[0]];
+			$this->level->setBlock($chest[1], new ChestBlock($this->meta));
+		}else{
+			$this->meta = $faces[$player->entity->getDirection()];
+		}
+		$this->level->setBlock($block, $this);
+		$server = ServerAPI::request();
+		$server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
+			"Items" => array(),
+			"id" => TILE_CHEST,
+			"x" => $this->x,
+			"y" => $this->y,
+			"z" => $this->z
+		));
+		return true;
 	}
 	
 	public function onBreak(Item $item, Player $player){
@@ -94,6 +115,13 @@ class ChestBlock extends TransparentBlock{
 			"type" => WINDOW_CHEST,
 			"slots" => CHEST_SLOTS,
 			"title" => "Chest",
+		));
+		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+			"x" => $this->x,
+			"y" => $this->y,
+			"z" => $this->z,
+			"case1" => 1,
+			"case2" => 2,
 		));
 		$slots = array();
 		for($s = 0; $s < CHEST_SLOTS; ++$s){
