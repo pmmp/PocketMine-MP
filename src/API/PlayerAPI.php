@@ -375,6 +375,42 @@ class PlayerAPI{
 			$this->server->query("INSERT OR REPLACE INTO players (CID, ip, port, name) VALUES (".$player->CID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
 		}
 	}
+	
+	public function spawnAllPlayers(Player $player){
+		foreach($this->getAll() as $p){
+			if($p !== $player){
+				$p->entity->spawn($player);
+				if($p->level !== $player->level){
+					$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+						"eid" => $p->entity->eid,
+						"x" => -256,
+						"y" => 128,
+						"z" => -256,
+						"yaw" => 0,
+						"pitch" => 0,
+					));
+				}
+			}
+		}
+	}
+	
+	public function spawnToAllPlayers(Player $player){
+		foreach($this->getAll() as $p){
+			if($p !== $player){
+				$player->entity->spawn($p);
+				if($p->level !== $player->level){
+					$p->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+						"eid" => $player->entity->eid,
+						"x" => -256,
+						"y" => 128,
+						"z" => -256,
+						"yaw" => 0,
+						"pitch" => 0,
+					));
+				}
+			}
+		}
+	}
 
 	public function remove($CID){
 		if(isset($this->server->clients[$CID])){

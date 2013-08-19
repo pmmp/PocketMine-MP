@@ -269,16 +269,13 @@ class Player{
 			$this->level->freeAllChunks($this);
 			$this->spawned = false;
 			$this->loggedIn = false;
-			if($msg === true and $this->username != ""){
-				$this->server->api->chat->broadcast($this->username." left the game");
-			}
 			$this->buffer = null;
 			unset($this->buffer);
 			$this->recoveryQueue = array();
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
-			$this->server->interface->stopChunked($this->CID);
-			$this->server->api->player->remove($this->CID);
+			$this->server->interface->stopChunked($this->CID);					
+			$this->server->api->player->remove($this->CID);	
 			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 		}
 	}
@@ -509,14 +506,6 @@ class Player{
 					"speedZ" => (int) ($data->speedZ * 400),
 				));
 				break;
-			case "entity.remove":
-				if($data->eid === $this->eid or $data->level !== $this->level){
-					break;
-				}
-				$this->dataPacket(MC_REMOVE_ENTITY, array(
-					"eid" => $data->eid,
-				));
-				break;
 			case "entity.animate":
 				if($data["eid"] === $this->eid or $data["entity"]->level !== $this->level){
 					break;
@@ -725,15 +714,31 @@ class Player{
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
 						if($e->player instanceof Player){
-							$e->player->dataPacket(MC_REMOVE_ENTITY, array(
-								"eid" => $this->eid,
+							$e->player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+								"eid" => $this->entity->eid,
+								"x" => -256,
+								"y" => 128,
+								"z" => -256,
+								"yaw" => 0,
+								"pitch" => 0,
+							));
+							$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+								"eid" => $e->eid,
+								"x" => -256,
+								"y" => 128,
+								"z" => -256,
+								"yaw" => 0,
+								"pitch" => 0,
+							));
+						}else{
+							$this->dataPacket(MC_REMOVE_ENTITY, array(
+								"eid" => $e->eid,
 							));
 						}
-						$this->dataPacket(MC_REMOVE_ENTITY, array(
-							"eid" => $e->eid,
-						));
 					}
 				}
+				
+
 				$this->level->freeAllChunks($this);
 				$this->level = $pos->level;
 				$this->chunksLoaded = array();
@@ -743,6 +748,38 @@ class Player{
 					"time" => $this->level->getTime(),
 				));
 				$terrain = true;
+				foreach($this->server->api->player->getAll($this->level) as $player){
+					$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+						"eid" => $this->entity->eid,
+						"x" => $pos->x,
+						"y" => $pos->y,
+						"z" => $pos->z,
+						"yaw" => $yaw,
+						"pitch" => $pitch,
+					));
+					$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+						"eid" => $player->entity->eid,
+						"x" => $player->entity->x,
+						"y" => $player->entity->y,
+						"z" => $player->entity->z,
+						"yaw" => $player->entity->yaw,
+						"pitch" => $player->entity->pitch,
+					));
+					$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
+						"eid" => $this->eid,
+						"block" => $this->getSlot($this->slot)->getID(),
+						"meta" => $this->getSlot($this->slot)->getMetadata(),
+						"slot" => 0,
+					));
+					$this->sendArmor($player);
+					$this->dataPacket(MC_PLAYER_EQUIPMENT, array(
+						"eid" => $player->eid,
+						"block" => $player->getSlot($player->slot)->getID(),
+						"meta" => $player->getSlot($player->slot)->getMetadata(),
+						"slot" => 0,
+					));
+					$player->sendArmor($this);
+				}
 			}
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
@@ -1153,7 +1190,6 @@ class Player{
 				$this->entity->setName($this->username);
 				$this->entity->data["CID"] = $this->CID;
 				$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("entity.remove", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
@@ -1175,10 +1211,13 @@ class Player{
 					case 1: //Spawn!!
 						if($this->spawned !== false){
 							break;
-						}
+						}						
+						$this->server->api->player->spawnAllPlayers($this);
+						$this->server->api->player->spawnToAllPlayers($this);
 						$this->spawned = true;	
 						$this->server->api->entity->spawnAll($this);
 						$this->server->api->entity->spawnToAll($this->entity);
+						
 						$this->server->schedule(5, array($this->entity, "update"), array(), true);
 						$this->sendArmor();
 						$this->sendChat($this->server->motd."\n");
