@@ -1379,7 +1379,7 @@ class Player{
 					}
 					$slot = $this->armor[$i];
 					if($slot->getID() !== AIR and $s->getID() === AIR){
-						$this->addItem($slot->getID(), $slot->getMetadata(), 1);
+						$this->addItem($slot->getID(), $slot->getMetadata(), 1, false);
 						$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
 					}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						$this->armor[$i] = $this->getSlot($sl);
@@ -1614,7 +1614,7 @@ class Player{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				
+
 				if($this->lastCraft <= (microtime(true) - 1)){
 					if(isset($this->toCraft[-1])){
 						$this->toCraft = array(-1 => $this->toCraft[-1]);
@@ -1638,7 +1638,7 @@ class Player{
 						}
 						$this->toCraft[$data["slot"]] = $craftItem;
 						$craft = true;
-					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() !== AIR and ($slot->getID() !== $data["block"] or $slot->getMetadata() !== $data["meta"])){ //Crafting final
+					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() > AIR and ($slot->getID() !== $data["block"] or $slot->getMetadata() !== $data["meta"])){ //Crafting final
 						$craftItem = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
@@ -1648,7 +1648,6 @@ class Player{
 						$this->toCraft[$data["slot"]] = $craftItem;
 						$craft = true;
 					}
-					
 			
 					if($craft === true){
 						$this->lastCraft = microtime(true);
