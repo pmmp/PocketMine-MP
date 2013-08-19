@@ -1223,6 +1223,7 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
+
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
