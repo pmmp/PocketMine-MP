@@ -383,6 +383,10 @@ class Entity extends Position{
 			$this->tickCounter = 0;
 		}
 		
+		if($this->closed === true){
+			return false;
+		}
+		
 		if($this->isStatic === false){
 			$startX = floor($this->x - 0.5 - $this->size - 1);
 			$y = (int) round($this->y - 1);

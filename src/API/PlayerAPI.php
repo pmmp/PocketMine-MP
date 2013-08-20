@@ -415,7 +415,6 @@ class PlayerAPI{
 	public function remove($CID){
 		if(isset($this->server->clients[$CID])){
 			$player = $this->server->clients[$CID];
-			$this->server->clients[$CID] = null;
 			unset($this->server->clients[$CID]);
 			$player->close();
 			if($player->username != "" and ($player->data instanceof Config)){
@@ -423,8 +422,8 @@ class PlayerAPI{
 			}
 			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
 			if($player->entity instanceof Entity){
-				$player->entity->player = null;
-				$player->entity = null;
+				unset($player->entity->player);
+				unset($player->entity);
 			}
 			$this->server->api->entity->remove($player->eid);
 			$player = null;

@@ -1432,6 +1432,10 @@ class Player{
 					}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						$this->armor[$i] = $this->getSlot($sl);
 						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0), false);
+					}elseif($s->getID() !== AIR and $slot->getID() !== AIR and ($sl = $this->hasItem($s->getID())) !== false){
+						$item = $this->armor[$i];
+						$this->armor[$i] = $this->getSlot($sl);
+						$this->setSlot($sl, $item, false);
 					}else{
 						$data["slot$i"] = 255;
 					}
