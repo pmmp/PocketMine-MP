@@ -142,7 +142,9 @@ class Item{
 			}else{
 				$this->meta++;
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	final public function isTool(){
