@@ -378,7 +378,7 @@ class PlayerAPI{
 	
 	public function spawnAllPlayers(Player $player){
 		foreach($this->getAll() as $p){
-			if($p !== $player){
+			if($p !== $player and ($p->entity instanceof Entity)){
 				$p->entity->spawn($player);
 				if($p->level !== $player->level){
 					$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
@@ -396,7 +396,7 @@ class PlayerAPI{
 	
 	public function spawnToAllPlayers(Player $player){
 		foreach($this->getAll() as $p){
-			if($p !== $player){
+			if($p !== $player and ($p->entity instanceof Entity)){
 				$player->entity->spawn($p);
 				if($p->level !== $player->level){
 					$p->dataPacket(MC_MOVE_ENTITY_POSROT, array(
