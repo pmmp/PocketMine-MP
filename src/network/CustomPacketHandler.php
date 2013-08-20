@@ -266,11 +266,11 @@ class CustomPacketHandler{
 				break;
 			case MC_REMOVE_PLAYER:
 				if($this->c === false){
-					$this->data["clientID"] = Utils::readLong($this->get(8));
 					$this->data["eid"] = Utils::readInt($this->get(4));
+					$this->data["clientID"] = Utils::readLong($this->get(8));
 				}else{
-					$this->raw .= Utils::writeLong($this->data["clientID"]);
 					$this->raw .= Utils::writeInt($this->data["eid"]);
+					$this->raw .= Utils::writeLong($this->data["clientID"]);
 				}
 				break;
 			case MC_ADD_ENTITY:

@@ -706,7 +706,9 @@ class Player{
 				return false;
 			}
 			
+			$newlevel = false;
 			if($pos instanceof Position and $pos->level !== $this->level){
+				$newLevel = true;
 				if($this->server->api->dhandle("player.teleport.level", array("player" => $this, "origin" => $this->level, "target" => $pos->level)) === false){
 					$this->entity->check = true;
 					return false;
@@ -722,7 +724,7 @@ class Player{
 								"yaw" => 0,
 								"pitch" => 0,
 							));
-							$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+							$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
 								"eid" => $e->eid,
 								"x" => -256,
 								"y" => 128,
@@ -748,37 +750,40 @@ class Player{
 					"time" => $this->level->getTime(),
 				));
 				$terrain = true;
-				foreach($this->server->api->player->getAll($this->level) as $player){
-					$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-						"eid" => $this->entity->eid,
-						"x" => $pos->x,
-						"y" => $pos->y,
-						"z" => $pos->z,
-						"yaw" => $yaw,
-						"pitch" => $pitch,
-					));
-					$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-						"eid" => $player->entity->eid,
-						"x" => $player->entity->x,
-						"y" => $player->entity->y,
-						"z" => $player->entity->z,
-						"yaw" => $player->entity->yaw,
-						"pitch" => $player->entity->pitch,
-					));
-					$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
-						"eid" => $this->eid,
-						"block" => $this->getSlot($this->slot)->getID(),
-						"meta" => $this->getSlot($this->slot)->getMetadata(),
-						"slot" => 0,
-					));
-					$this->sendArmor($player);
-					$this->dataPacket(MC_PLAYER_EQUIPMENT, array(
-						"eid" => $player->eid,
-						"block" => $player->getSlot($player->slot)->getID(),
-						"meta" => $player->getSlot($player->slot)->getMetadata(),
-						"slot" => 0,
-					));
-					$player->sendArmor($this);
+				
+				if($newLevel === true){
+					foreach($this->server->api->player->getAll($this->level) as $player){
+						$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+							"eid" => $this->entity->eid,
+							"x" => $pos->x,
+							"y" => $pos->y,
+							"z" => $pos->z,
+							"yaw" => $yaw,
+							"pitch" => $pitch,
+						));
+						$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+							"eid" => $player->entity->eid,
+							"x" => $player->entity->x,
+							"y" => $player->entity->y,
+							"z" => $player->entity->z,
+							"yaw" => $player->entity->yaw,
+							"pitch" => $player->entity->pitch,
+						));
+						$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
+							"eid" => $this->eid,
+							"block" => $this->getSlot($this->slot)->getID(),
+							"meta" => $this->getSlot($this->slot)->getMetadata(),
+							"slot" => 0,
+						));
+						$this->sendArmor($player);
+						$this->dataPacket(MC_PLAYER_EQUIPMENT, array(
+							"eid" => $player->eid,
+							"block" => $player->getSlot($player->slot)->getID(),
+							"meta" => $player->getSlot($player->slot)->getMetadata(),
+							"slot" => 0,
+						));
+						$player->sendArmor($this);
+					}
 				}
 			}
 			$this->lastCorrect = $pos;

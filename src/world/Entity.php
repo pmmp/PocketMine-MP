@@ -594,7 +594,7 @@ class Entity extends Position{
 		}
 		switch($this->class){
 			case ENTITY_PLAYER:
-				if($this->player->connected !== true or $this->spawned === false){
+				if($this->player->connected !== true or $this->player->spawned === false){
 					return false;
 				}
 				$player->dataPacket(MC_ADD_PLAYER, array(
