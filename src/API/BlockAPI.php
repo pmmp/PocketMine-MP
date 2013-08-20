@@ -64,6 +64,7 @@ class BlockAPI{
 		array(SLAB, 3),
 		array(SLAB, 4),
 		array(SLAB, 5),
+		array(SLAB, 6),
 		array(QUARTZ_BLOCK, 0),
 		array(QUARTZ_BLOCK, 1),
 		array(QUARTZ_BLOCK, 2),
