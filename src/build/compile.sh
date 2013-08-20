@@ -249,7 +249,7 @@ $HAVE_LIBEDIT \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-if [ COMPILE_FOR_ANDROID == "yes" ]; then
+if [ $COMPILE_FOR_ANDROID == "yes" ]; then
 	sed -i 's/-export-dynamic/-all-static/g' Makefile
 fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
