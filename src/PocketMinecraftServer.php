@@ -553,12 +553,17 @@ class PocketMinecraftServer{
 	}
 
 	public function process(){
+		$lastLoop = 0;
 		while($this->stop === false){
 			$packet = $this->interface->readPacket();
 			if($packet !== false){
 				$this->packetHandler($packet);
+				$lastLoop = 0;
 			}else{
-				usleep(1);
+				++$lastLoop;
+				if($lastLoop >= 16){
+					usleep(5000);
+				}
 			}
 		}
 	}
