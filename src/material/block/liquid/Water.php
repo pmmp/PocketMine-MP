@@ -37,6 +37,7 @@ class WaterBlock extends LiquidBlock{
 	}
 
 	public function onUpdate($type){
+		return false;
 		$newId = $this->id;
 		$level = $this->meta & 0x07;
 		if($type !== BLOCK_UPDATE_NORMAL){
