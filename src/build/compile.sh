@@ -23,6 +23,7 @@ type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wge
 
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
+RANLIB=ranlib
 if [ "$1" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
@@ -61,8 +62,18 @@ elif [ "$1" == "crosscompile" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
+	elif [ "$2" == "mac" ]; then
+		[ -z "$march" ] && march=prescott;
+		[ -z "$mtune" ] && mtune=generic;
+		[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
+		TOOLCHAIN_PREFIX="i686-apple-darwin10"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
+		#zlib doesn't use the correct ranlib
+		RANLIB=$TOOLCHAIN_PREFIX-ranlib
+		echo "[INFO] Cross-compiling for Intel MacOS"
 	else
-		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi] to cross-compile"
+		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac] to cross-compile"
 		exit 1
 	fi
 else
@@ -135,7 +146,7 @@ wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/instal
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
-./configure --prefix="$DIR/install_data/php/ext/zlib" \
+RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/zlib" \
 --static >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
@@ -193,9 +204,9 @@ echo " done!"
 echo -n "[PHP]"
 set +e
 if which free >/dev/null; then
-    MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
+	MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
 else
-    MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
+	MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
 fi
 if [ $MAX_MEMORY -gt 512 ] && [ "$1" != "crosscompile" ]; then
 	echo -n " enabling optimizations..."
