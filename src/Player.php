@@ -718,13 +718,12 @@ class Player{
 				return false;
 			}
 			
-			$newlevel = false;
 			if($pos instanceof Position and $pos->level !== $this->level){
-				$newLevel = true;
 				if($this->server->api->dhandle("player.teleport.level", array("player" => $this, "origin" => $this->level, "target" => $pos->level)) === false){
 					$this->entity->check = true;
 					return false;
 				}
+
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
 						if($e->player instanceof Player){
@@ -763,16 +762,8 @@ class Player{
 				));
 				$terrain = true;
 				
-				if($newLevel === true){
-					foreach($this->server->api->player->getAll($this->level) as $player){
-						$player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-							"eid" => $this->entity->eid,
-							"x" => $pos->x,
-							"y" => $pos->y,
-							"z" => $pos->z,
-							"yaw" => $yaw,
-							"pitch" => $pitch,
-						));
+				foreach($this->server->api->player->getAll($this->level) as $player){
+					if($player !== $this and $player->entity instanceof Entity){
 						$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
 							"eid" => $player->entity->eid,
 							"x" => $player->entity->x,
@@ -798,6 +789,7 @@ class Player{
 					}
 				}
 			}
+
 			$this->lastCorrect = $pos;
 			$this->entity->fallY = false;
 			$this->entity->fallStart = false;
