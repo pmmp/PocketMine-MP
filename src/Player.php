@@ -1588,7 +1588,7 @@ class Player{
 							RAW_CHICKEN => 2,
 							MELON_SLICE => 2,
 							GOLDEN_APPLE => 10,
-							COOKIE => 2,
+							//COOKIE => 2,
 							COOKED_FISH => 5,
 							RAW_FISH => 2,
 						);

@@ -132,7 +132,7 @@ define("CAKE", 354);
 define("BED", 355);
 
 
-define("COOKIE", 357);
+//define("COOKIE", 357);
 
 
 define("SHEARS", 359);
