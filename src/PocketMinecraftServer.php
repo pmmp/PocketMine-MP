@@ -621,7 +621,7 @@ class PocketMinecraftServer{
 					$return = call_user_func($schedule[0], $schedule[1], $schedule[2]);
 				}
 
-				if($action["repeat"] === 0 or $return === false){
+				if($action["repeat"] == 0 or $return === false){
 					$this->query("DELETE FROM actions WHERE ID = ".$action["ID"].";");
 					$this->schedule[$cid] = null;
 					unset($this->schedule[$cid]);
