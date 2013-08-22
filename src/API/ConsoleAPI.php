@@ -248,6 +248,10 @@ class ConsoleAPI{
 			}else{
 				$output = "";
 			}
+			
+			if($output == "")
+				$output = "";
+				
 			if($output != "" and ($issuer instanceof Player)){
 				$issuer->sendChat(trim($output));
 			}
