@@ -168,6 +168,7 @@ class ConsoleAPI{
 	
 	public function run($line = "", $issuer = "console", $alias = false){
 		if($line != ""){
+			$output = "";
 			$end = strpos($line, " ");
 			if($end === false){
 				$end = strlen($line);
@@ -246,9 +247,6 @@ class ConsoleAPI{
 					$output = $this->defaultCommands($cmd, $params, $issuer, $alias);
 				}
 			}
-			
-			if(!(isset($output)))
-				$output = "";
 				
 			if($output != "" and ($issuer instanceof Player)){
 				$issuer->sendChat(trim($output));
