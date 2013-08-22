@@ -61,8 +61,12 @@ class Config{
 	}
 	
 	public function reload()
-	{
-		$this->load($this->file, $this->type, array());
+	{	
+		unset($this->config);
+		unset($this->correct);
+		unset($this->type);
+		$this->load($this->file);
+		$correct = $this->check();
 	}
 	
 	public function load($file, $type = CONFIG_DETECT, $default = array()){
