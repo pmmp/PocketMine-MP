@@ -141,11 +141,15 @@ class LeavesBlock extends TransparentBlock{
 	
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
-		if(mt_rand(1,20) === 1){ //Saplings
-			$drops[] = array(SAPLING, $this->meta & 0x03, 1);
-		}
-		if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1,200) === 1){ //Apples
-			$drops[] = array(APPLE, 0, 1);
+		if($item->isShears()){
+			$drops[] = array(LEAVES, $this->meta & 0x03, 1);
+		}else{
+			if(mt_rand(1,20) === 1){ //Saplings
+				$drops[] = array(SAPLING, $this->meta & 0x03, 1);
+			}
+			if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1,200) === 1){ //Apples
+				$drops[] = array(APPLE, 0, 1);
+			}
 		}
 		return $drops;
 	}

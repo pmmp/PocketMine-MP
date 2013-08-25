@@ -261,6 +261,10 @@ class Item{
 				return false;
 		}
 	}
+
+	public function isShears(){
+		return ($this->id === SHEARS);
+	}
 	
 	final public function __toString(){
 		return "Item ". $this->name ." (".$this->id.":".$this->meta.")";
