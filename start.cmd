@@ -1,7 +1,7 @@
 @echo off
 TITLE PocketMine-MP server software for Minecraft: Pocket Edition
 COLOR 0F
-mode con: cols=90
+mode con: cols=110
 cd /d %~dp0
 FOR /F "tokens=*" %%i in ('php -r "echo 1;"') do SET PHPOUTPUT=%%i
 if not "%PHPOUTPUT%"=="1" (
