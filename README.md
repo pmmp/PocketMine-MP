@@ -23,11 +23,13 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Homepage](http://www.pocketmine.net/)
 
-### [Plugin Repository](http://plugins.pocketmine.net/)
+### [Forums](http://forums.pocketmine.net/)
+
+### [Wiki](https://github.com/PocketMine/PocketMine-MP/wiki/)
 
 ### [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
-### [Help Page](http://www.pocketmine.net/help.php)
+
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
