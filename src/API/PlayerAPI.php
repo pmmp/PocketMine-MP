@@ -269,7 +269,7 @@ class PlayerAPI{
 				$origin = $this->get($name);
 				if($origin instanceof Player){
 					$name = $origin->username;
-					return $origin->teleport($lv->getSpawn());
+					return $origin->teleport($lv->getSafeSpawn());
 				}
 			}else{
 				return false;

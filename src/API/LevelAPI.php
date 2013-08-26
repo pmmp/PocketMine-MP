@@ -53,7 +53,7 @@ class LevelAPI{
 			$this->generateLevel($this->default, $this->server->seed);
 			$this->loadLevel($this->default);
 		}
-		$this->server->spawn = $this->getDefault()->getSpawn();
+		$this->server->spawn = $this->getDefault()->getSafeSpawn();
 	}
 	
 	public function commandHandler($cmd, $params, $issuer, $alias){
