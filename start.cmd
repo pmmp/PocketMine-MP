@@ -1,6 +1,5 @@
 @echo off
-chcp 65001
-TITLE PocketMine-MP Minecraft PE server
+TITLE PocketMine-MP server software for Minecraft: Pocket Edition
 COLOR 0F
 mode con: cols=90
 cd /d %~dp0
