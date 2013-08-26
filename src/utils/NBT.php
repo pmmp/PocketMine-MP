@@ -32,7 +32,7 @@ class NBT {
 			trigger_error("First parameter must be a filename", E_USER_WARNING);
 			return false;
 		}
-		switch(basename($filename, ".dat")){
+		switch(basename(strtolower($filename), ".dat")){
 			case "level":
 				$version = Utils::readLInt(fread($fp, 4));
 				$lenght = Utils::readLInt(fread($fp, 4));

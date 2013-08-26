@@ -113,8 +113,7 @@ class ConsoleAPI{
 							$c = trim(strtolower($params[0]));
 							if(isset($this->help[$c]) or isset($this->alias[$c])){
 								$c = isset($this->help[$c]) ? $c : $this->alias[$c];
-								if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false
-								or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
+								if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
 									break;
 								}
 								$output .= "Usage: /$c ".$this->help[$c]."\n";
@@ -123,8 +122,7 @@ class ConsoleAPI{
 						}
 						$cmds = array();
 						foreach($this->help as $c => $h){
-							if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false
-							or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
+							if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
 								continue;
 							}
 							$cmds[$c] = $h;
@@ -289,33 +287,32 @@ class ConsoleLoop extends Thread{
 		$this->stop = true;
 	}
 
-   private function readLine(){
-      if( $this->fp ){
-         $line = trim( fgets( $this->fp ) );
-      } else {
-         $line = trim( readline( "" ) );
-         if( $line != "" ){
-            readline_add_history( $line );
-         }
-      }
-
-      return $line;
-   }
+	private function readLine(){
+		if($this->fp){
+			$line = trim(fgets($this->fp));
+		}else{
+			$line = trim(readline(""));
+			if($line != ""){
+				readline_add_history( $line );
+			}
+		}
+		return $line;
+	}
 
 	public function run(){
-      if( ! extension_loaded( 'readline' ) ){
-         $this->fp = fopen( "php://stdin", "r" );
-      }
-
-		while( $this->stop === false ) {
-         $this->line = $this->readLine();
-         $this->wait();
-         $this->line = false;
+		if(!extension_loaded("readline")){
+			$this->fp = fopen( "php://stdin", "r" );
 		}
 
-      if( ! $this->haveReadline ) {
-         @fclose($fp);
-      }
+		while($this->stop === false){
+			$this->line = $this->readLine();
+			$this->wait();
+			$this->line = false;
+		}
+
+		if(!$this->haveReadline){
+			@fclose($fp);
+		}
 		exit(0);
 	}
 }
