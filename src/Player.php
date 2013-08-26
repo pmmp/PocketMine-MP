@@ -248,6 +248,9 @@ class Player{
 				}
 			}
 			$this->data->set("armor", $armor);
+			if($this->entity instanceof Entity){
+				$this->data->set("health", $this->entity->getHealth());
+			}
 			$this->data->set("gamemode", $this->gamemode);
 		}
 	}
@@ -1220,7 +1223,8 @@ class Player{
 					case 1: //Spawn!!
 						if($this->spawned !== false){
 							break;
-						}						
+						}
+						$this->entity->setHealth($this->data->get("health"));
 						$this->spawned = true;	
 						$this->server->api->player->spawnAllPlayers($this);
 						$this->server->api->player->spawnToAllPlayers($this);

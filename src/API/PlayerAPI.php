@@ -463,7 +463,7 @@ class PlayerAPI{
 			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
 		}
 
-		if(($this->server->gamemode & 0x01) === 0x01){
+		if(($data->get("gamemode") & 0x01) === 1){
 			$data->set("health", 20);
 		}
 		$this->server->handle("player.offline.get", $data);
