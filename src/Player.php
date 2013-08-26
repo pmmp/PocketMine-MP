@@ -71,6 +71,7 @@ class Player{
 	private $lagStat = 0;
 	private $spawnPosition;
 	private $packetLoss = 0;
+	private $lastChunk = false;
 	public $lastCorrect;
 	private $bigCnt;
 	private $packetStats;
@@ -164,6 +165,19 @@ class Player{
 				unset($this->chunkCount[$count]);
 			}
 		}
+		
+		if(is_array($this->lastChunk)){
+			$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($this->lastChunk[0] - 1)." AND x < ".($this->lastChunk[0] + 17)." AND z >= ".($this->lastChunk[1] - 1)." AND z < ".($this->lastChunk[1] + 17).";");
+			$this->lastChunk = false;
+			if($tiles !== false and $tiles !== true){
+				while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
+					$tile = $this->server->api->tile->getByID($tile["ID"]);
+					if($tile instanceof Tile){
+						$tile->spawn($this);
+					}
+				}
+			}			
+		}
 
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
@@ -198,21 +212,8 @@ class Player{
 		foreach($cnt as $i => $count){
 			$this->chunkCount[$count] = true;
 		}
-		/*$this->chunkCount = $this->dataPacket(MC_CHUNK_DATA, array(
-			"x" => $X,
-			"z" => $Z,
-			"data" => $this->level->getOrderedMiniChunk($X, $Z, $Y),
-		));*/
 		
-		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17).";");
-		if($tiles !== false and $tiles !== true){
-			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-				$tile = $this->server->api->tile->getByID($tile["ID"]);
-				if($tile instanceof Tile){
-					$tile->spawn($this);
-				}
-			}
-		}
+		$this->lastChunk = array($x, $z);
 		
 		$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
 	}
@@ -462,8 +463,6 @@ class Player{
 								));
 							}
 						}
-					}elseif($data->class === TILE_SIGN){
-						$data->spawn($this);
 					}
 				}
 				break;
@@ -562,7 +561,7 @@ class Player{
 						return;
 					}else{
 						$message = $data->get();
-						$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message["message"]), $message["author"]); //Remove ANSI codes from chat
+						$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message["message"]), $message["player"]); //Remove ANSI codes from chat
 					}
 				}else{
 					$message = (string) $data;
@@ -1650,7 +1649,8 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255 and preg_match('#[^\\x20-\\xff]#', $message) == 0){
+				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255 and preg_match('#[^\\x20-\\xff]#', $data["message"]) == 0){
+					$message = $data["message"];
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					}else{
