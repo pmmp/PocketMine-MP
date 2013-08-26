@@ -166,8 +166,8 @@ class Protocol{
 		MC_CONTAINER_SET_SLOT => "Set Container Slot",
 
 		MC_CLIENT_MESSAGE => "Client Message",
-		//MC_SIGN_UPDATE => "Sign Update",
 		MC_ADVENTURE_SETTINGS => "Adventure Settings",
+		MC_ENTITY_DATA => "Entity Data",
 	);
 	
 	public static $packetName = array(

@@ -834,6 +834,19 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeInt($this->data["flags"]);
 				}
 				break;
+			case MC_ENTITY_DATA:
+				if($this->c === false){
+					$this->data["x"] = Utils::readShort($this->get(2));
+					$this->data["y"] = ord($this->get(1));
+					$this->data["z"] = Utils::readShort($this->get(2));
+					$this->data["namedtag"] = $this->get(true);
+				}else{
+					$this->raw .= Utils::writeShort($this->data["x"]);
+					$this->raw .= chr($this->data["y"]);
+					$this->raw .= Utils::writeShort($this->data["z"]);
+					$this->raw .= Utils::writeShort($this->data["namedtag"]);
+				}
+				break;
 			default:
 				if($this->c === false){
 					console("[DEBUG] Received unknown Data Packet ID 0x".dechex($pid), true, true, 2);
