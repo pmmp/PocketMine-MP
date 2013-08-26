@@ -60,8 +60,7 @@ class Config{
 		$correct = $this->check();
 	}
 	
-	public function reload()
-	{	
+	public function reload(){	
 		unset($this->config);
 		unset($this->correct);
 		unset($this->type);

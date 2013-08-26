@@ -76,10 +76,7 @@ class SugarcaneBlock extends FlowableBlock{
 				$block1 = $down->getSide(3);
 				$block2 = $down->getSide(4);
 				$block3 = $down->getSide(5);
-				if(($block0 instanceof WaterBlock)
-				or ($block1 instanceof WaterBlock)
-				or ($block2 instanceof WaterBlock)
-				or ($block3 instanceof WaterBlock)){
+				if(($block0 instanceof WaterBlock) or ($block1 instanceof WaterBlock) or ($block2 instanceof WaterBlock) or ($block3 instanceof WaterBlock)){
 					$this->level->setBlock($block, new SugarcaneBlock());
 					$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 					return true;
