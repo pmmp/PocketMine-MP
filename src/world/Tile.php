@@ -244,24 +244,24 @@ class Tile extends Position{
 				
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("x");
-				$nbt->writeTAG_String((int) $this->x);
+				$nbt->writeTAG_Int((int) $this->x);
 				
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("y");
-				$nbt->writeTAG_String((int) $this->y);
+				$nbt->writeTAG_Int((int) $this->y);
 				
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("z");
-				$nbt->writeTAG_String((int) $this->z);
+				$nbt->writeTAG_Int((int) $this->z);
 				
 				if($this->isPaired()){
 					$nbt->write(chr(NBT::TAG_INT));
 					$nbt->writeTAG_String("pairx");
-					$nbt->writeTAG_String((int) $this->data["pairx"]);
+					$nbt->writeTAG_Int((int) $this->data["pairx"]);
 					
 					$nbt->write(chr(NBT::TAG_INT));
 					$nbt->writeTAG_String("pairz");
-					$nbt->writeTAG_String((int) $this->data["pairz"]);
+					$nbt->writeTAG_Int((int) $this->data["pairz"]);
 				}
 				
 				$nbt->write(chr(NBT::TAG_END));				
@@ -299,15 +299,15 @@ class Tile extends Position{
 				
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("x");
-				$nbt->writeTAG_String((int) $this->x);
+				$nbt->writeTAG_Int((int) $this->x);
 				
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("y");
-				$nbt->writeTAG_String((int) $this->y);
+				$nbt->writeTAG_Int((int) $this->y);
 				
 				$nbt->write(chr(NBT::TAG_INT));
 				$nbt->writeTAG_String("z");
-				$nbt->writeTAG_String((int) $this->z);
+				$nbt->writeTAG_Int((int) $this->z);
 				
 				$nbt->write(chr(NBT::TAG_END));				
 				

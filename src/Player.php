@@ -1628,21 +1628,6 @@ class Player{
 					$this->entity->updateMetadata();
 				}
 				break;
-			/*case MC_SIGN_UPDATE:
-				if($this->spawned === false or $this->blocked === true){
-					break;
-				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
-				$t = $this->server->api->tile->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
-				if(($t instanceof Tile) and $t->class === TILE_SIGN){
-					if($t->data["creator"] !== $this->username){
-						$t->spawn($this);
-					}else{
-						$t->setText($data["line0"], $data["line1"], $data["line2"], $data["line3"]);
-					}
-				}
-				break;*/
 			case MC_CHAT:
 				if($this->spawned === false){
 					break;
@@ -1784,6 +1769,28 @@ class Player{
 			case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
 					break;
+				}
+				break;
+			case MC_ENTITY_DATA:
+				if($this->spawned === false or $this->blocked === true){
+					break;
+				}
+				$this->craftingItems = array();
+				$this->toCraft = array();
+				$t = $this->server->api->tile->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
+				if(($t instanceof Tile) and $t->class === TILE_SIGN){
+					if($t->data["creator"] !== $this->username){
+						$t->spawn($this);
+					}else{
+						$nbt = new NBT();
+						$nbt->load($data["namedtag"]);
+						$d = array_shift($nbt->tree);
+						if($d["id"] !== TILE_SIGN){
+							$t->spawn($this);
+						}else{
+							$t->setText($d["Text1"], $d["Text2"], $d["Text3"], $d["Text4"]);
+						}
+					}
 				}
 				break;
 			default:

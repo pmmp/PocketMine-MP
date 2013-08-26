@@ -844,7 +844,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort($this->data["x"]);
 					$this->raw .= chr($this->data["y"]);
 					$this->raw .= Utils::writeShort($this->data["z"]);
-					$this->raw .= Utils::writeShort($this->data["namedtag"]);
+					$this->raw .= $this->data["namedtag"];
 				}
 				break;
 			default:
