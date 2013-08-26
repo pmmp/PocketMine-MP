@@ -57,6 +57,7 @@ class Tile extends Position{
 		$this->z = (int) $z;
 		$this->server->query("INSERT OR REPLACE INTO tiles (ID, level, class, x, y, z) VALUES (".$this->id.", '".$this->level->getName()."', '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
 		switch($this->class){
+			case TILE_CHEST:
 			case TILE_SIGN:
 				$this->server->query("UPDATE tiles SET spawnable = 1 WHERE ID = ".$this->id.";");
 				break;
@@ -76,6 +77,35 @@ class Tile extends Position{
 				}
 				break;
 		}
+	}
+	
+	public function isPaired(){
+		if($this->class !== TILE_CHEST){
+			return false;
+		}
+		if(!isset($this->data["pairx"]) or !isset($this->data["pairz"])){
+			return false;
+		}
+		return true;
+	}
+	
+	public function getPair(){
+		if($this->isPaired()){
+			return $this->server->api->tile->get(new Position((int) $this->data["pairx"], $this->y, (int) $this->data["pairz"], $this->level));
+		}
+		return false;
+	}
+	
+	public function pairWith(Tile $tile){
+		if($this->isPaired()or $tile->isPaired()){
+			return false;
+		}
+		
+		$this->data["pairx"] = $tile->x;
+		$this->data["pairz"] = $tile->z;
+		
+		$tile->data["pairx"] = $this->x;
+		$tile->data["pairz"] = $this->z;
 	}
 
 	public function update(){
@@ -204,16 +234,88 @@ class Tile extends Position{
 			$player = $this->server->api->player->get($player);
 		}
 		switch($this->class){
-			case TILE_SIGN:
-				$player->dataPacket(MC_SIGN_UPDATE, array(
-					"level" => $this->level,
+			case TILE_CHEST:
+				$nbt = new NBT();
+				$nbt->write(chr(NBT::TAG_COMPOUND)."\x00\x00");
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("id");
+				$nbt->writeTAG_String($this->class);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("x");
+				$nbt->writeTAG_String((int) $this->x);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("y");
+				$nbt->writeTAG_String((int) $this->y);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("z");
+				$nbt->writeTAG_String((int) $this->z);
+				
+				if($this->isPaired()){
+					$nbt->write(chr(NBT::TAG_INT));
+					$nbt->writeTAG_String("pairx");
+					$nbt->writeTAG_String((int) $this->data["pairx"]);
+					
+					$nbt->write(chr(NBT::TAG_INT));
+					$nbt->writeTAG_String("pairz");
+					$nbt->writeTAG_String((int) $this->data["pairz"]);
+				}
+				
+				$nbt->write(chr(NBT::TAG_END));				
+				
+				$player->dataPacket(MC_ENTITY_DATA, array(
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
-					"line0" => $this->data["Text1"],
-					"line1" => $this->data["Text2"],
-					"line2" => $this->data["Text3"],
-					"line3" => $this->data["Text4"],
+					"namedtag" => $nbt->binary,
+				));
+				break;
+			case TILE_SIGN:
+				$nbt = new NBT();
+				$nbt->write(chr(NBT::TAG_COMPOUND)."\x00\x00");
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text1");
+				$nbt->writeTAG_String($this->data["Text1"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text2");
+				$nbt->writeTAG_String($this->data["Text2"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text3");
+				$nbt->writeTAG_String($this->data["Text3"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text4");
+				$nbt->writeTAG_String($this->data["Text4"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("id");
+				$nbt->writeTAG_String($this->class);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("x");
+				$nbt->writeTAG_String((int) $this->x);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("y");
+				$nbt->writeTAG_String((int) $this->y);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("z");
+				$nbt->writeTAG_String((int) $this->z);
+				
+				$nbt->write(chr(NBT::TAG_END));				
+				
+				$player->dataPacket(MC_ENTITY_DATA, array(
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"namedtag" => $nbt->binary,
 				));
 				break;
 		}
