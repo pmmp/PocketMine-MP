@@ -30,6 +30,19 @@ class IronDoorBlock extends DoorBlock{
 		parent::__construct(IRON_DOOR_BLOCK, $meta, "Iron Door Block");
 		//$this->isActivable = true;
 	}
+	
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->getID() === AIR){ //Replace wit common break method
+				$this->level->setBlock($this, new AirBlock(), false);
+				if($this->getSide(1) instanceof DoorBlock){
+					$this->level->setBlock($this->getSide(1), new AirBlock(), false);
+				}
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
 
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){

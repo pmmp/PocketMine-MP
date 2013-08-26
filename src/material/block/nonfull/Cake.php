@@ -33,6 +33,16 @@ class CakeBlock extends TransparentBlock{
 		$this->meta = $meta & 0x07;
 	}
 	
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->getID() === AIR){ //Replace wit common break method
+				$this->level->setBlock($this, new AirBlock(), false);
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
+	
 	public function getDrops(Item $item, Player $player){
 		return array();
 	}
