@@ -104,23 +104,26 @@ class ChatAPI{
 	
 	public function send($owner, $text, $whitelist = false, $blacklist = false){
 		$message = array(
-			"owner" => $owner,
+			"player" => $owner,
 			"message" => $text,
-		}
+		);
 		if($owner !== false){
 			if($owner instanceof Player){
-				console("[INFO] <".$owner->username."> ".$text);
+				if($whitelist === false){
+					console("[INFO] <".$owner->username."> ".$text);
+				}
 			}else{
-				console("[INFO] <".$owner."> ".$text);
+				if($whitelist === false){
+					console("[INFO] <".$owner."> ".$text);
+				}
 			}
 		}else{
-			console("[INFO] $text");
-			$message["owner"] = "";
+			if($whitelist === false){
+				console("[INFO] $text");
+			}
+			$message["player"] = "";
 		}
 
-		if($whitelist === false){
-			console("[INFO] ".$message);
-		}
 		$this->server->handle("server.chat", new Container($message, $whitelist, $blacklist));
 	}
 }
