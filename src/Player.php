@@ -562,16 +562,17 @@ class Player{
 						return;
 					}else{
 						$message = $data->get();
+						$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message["message"]), $message["author"]); //Remove ANSI codes from chat
 					}
 				}else{
 					$message = (string) $data;
+					$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", (string) $data)); //Remove ANSI codes from chat
 				}
-				$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message)); //Remove ANSI codes from chat
 				break;
 		}
 	}
 	
-	public function sendChat($message){
+	public function sendChat($message, $author = ""){
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if(preg_match_all('#@([@A-Za-z_]{1,})#', $m, $matches, PREG_OFFSET_CAPTURE) > 0){
@@ -593,7 +594,8 @@ class Player{
 			}
 			
 			if($m !== ""){			
-				$this->dataPacket(MC_CHAT, array(				
+				$this->dataPacket(MC_CHAT, array(
+					"player" => ($author instanceof Player) ? $author->username:$author,
 					"message" => $m,
 				));
 			}
@@ -1627,7 +1629,7 @@ class Player{
 					$this->entity->updateMetadata();
 				}
 				break;
-			case MC_SIGN_UPDATE:
+			/*case MC_SIGN_UPDATE:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1641,15 +1643,14 @@ class Player{
 						$t->setText($data["line0"], $data["line1"], $data["line2"], $data["line3"]);
 					}
 				}
-				break;
+				break;*/
 			case MC_CHAT:
 				if($this->spawned === false){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$message = preg_replace('#^<.*> #', "", $data["message"]);
-				if(trim($data["message"]) != "" and strlen($data["message"]) <= 100 and preg_match('#[^\\x20-\\xff]#', $message) == 0){
+				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255 and preg_match('#[^\\x20-\\xff]#', $message) == 0){
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					}else{

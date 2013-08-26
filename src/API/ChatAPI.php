@@ -103,15 +103,21 @@ class ChatAPI{
 	}
 	
 	public function send($owner, $text, $whitelist = false, $blacklist = false){
-		$message = "";
+		$message = array(
+			"owner" => $owner,
+			"message" => $text,
+		}
 		if($owner !== false){
 			if($owner instanceof Player){
-				$message = "<".$owner->username."> ";
+				console("[INFO] <".$owner->username."> ".$text);
 			}else{
-				$message = "<".$owner."> ";
+				console("[INFO] <".$owner."> ".$text);
 			}
+		}else{
+			console("[INFO] $text");
+			$message["owner"] = "";
 		}
-		$message .= $text;
+
 		if($whitelist === false){
 			console("[INFO] ".$message);
 		}

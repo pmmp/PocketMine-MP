@@ -185,8 +185,10 @@ class CustomPacketHandler{
 				break;
 			case MC_CHAT:
 				if($this->c === false){
+					$this->data["player"] = $this->get(Utils::readShort($this->get(2), false));
 					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
+					$this->raw .= Utils::writeShort(strlen($this->data["player"])).$this->data["player"];
 					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
@@ -808,7 +810,7 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
-			case MC_SIGN_UPDATE:
+			/*case MC_SIGN_UPDATE:
 				if($this->c === false){
 					$this->data["x"] = Utils::readShort($this->get(2));
 					$this->data["y"] = ord($this->get(1));
@@ -824,7 +826,7 @@ class CustomPacketHandler{
 						$this->raw .= Utils::writeLShort(strlen($this->data["line$i"])).$this->data["line$i"];
 					}
 				}
-				break;
+				break;*/
 			case MC_ADVENTURE_SETTINGS:
 				if($this->c === false){
 					$this->data["flags"] = Utils::readInt($this->get(4));

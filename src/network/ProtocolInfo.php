@@ -29,7 +29,7 @@ the Free Software Foundation, either version 3 of the License, or
 define("DEFLATEPACKET_LEVEL", 1);
 
 define("CURRENT_STRUCTURE", 5);
-define("CURRENT_PROTOCOL", 11);
+define("CURRENT_PROTOCOL", 12);
 
 define("RAKNET_MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 
@@ -98,8 +98,8 @@ define("MC_CONTAINER_SET_DATA", 0xb2);
 define("MC_CONTAINER_SET_CONTENT", 0xb3);
 //define("MC_CONTAINER_ACK", 0xb4);
 define("MC_CLIENT_MESSAGE", 0xb5);
-define("MC_SIGN_UPDATE", 0xb6);
-define("MC_ADVENTURE_SETTINGS", 0xb7);
+define("MC_ADVENTURE_SETTINGS", 0xb6);
+define("MC_ENTITY_DATA", 0xb7);
 
 
 class Protocol{
@@ -166,7 +166,7 @@ class Protocol{
 		MC_CONTAINER_SET_SLOT => "Set Container Slot",
 
 		MC_CLIENT_MESSAGE => "Client Message",
-		MC_SIGN_UPDATE => "Sign Update",
+		//MC_SIGN_UPDATE => "Sign Update",
 		MC_ADVENTURE_SETTINGS => "Adventure Settings",
 	);
 	
