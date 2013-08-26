@@ -1,17 +1,34 @@
 <?php
-/**
- * Class for reading in NBT-format files.
- *
- * @author  Justin Martin <frozenfire@thefrozenfire.com>
- * @version 1.0
- * MODIFIED BY @shoghicp
- *
- * Dependencies:
- *  PHP 4.3+ (5.3+ recommended)
- */
 
-class NBT {
-	public $root = array();
+/*
+
+           -
+         /   \
+      /         \
+   /   PocketMine  \
+/          MP         \
+|\     @shoghicp     /|
+|.   \           /   .|
+| ..     \   /     .. |
+|    ..    |    ..    |
+|       .. | ..       |
+\          |          /
+   \       |       /
+      \    |    /
+         \ | /
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+
+*/
+
+class NBT{
+	public $tree = array();
+	public $binary = b"";
+	private $offset = 0;
 
 	const TAG_END = 0;
 	const TAG_BYTE = 1;
@@ -24,79 +41,173 @@ class NBT {
 	const TAG_STRING = 8;
 	const TAG_LIST = 9;
 	const TAG_COMPOUND = 10;
-
-	public function loadFile($filename) {
-		if(is_file($filename)) {
-			$fp = fopen($filename, "rb");
-		}else{
-			trigger_error("First parameter must be a filename", E_USER_WARNING);
-			return false;
+	
+	public function read($n){
+		if($n <= 0){
+			return "";		
 		}
-		switch(basename(strtolower($filename), ".dat")){
-			case "level":
-				$version = Utils::readLInt(fread($fp, 4));
-				$lenght = Utils::readLInt(fread($fp, 4));
-				break;
-			case "entities":
-				fread($fp, 12);
-				break;
-		}
-		$this->traverseTag($fp, $this->root);
-		return end($this->root);
+		$this->offset += $n;
+		return substr($this->binary, $this->offset - $n, $n);
+	}
+	
+	public function write($bin){
+		$this->binary .= $bin;
+	}
+	
+	public function load($str){
+		$this->offset = 0;
+		$this->binary = (string) $str;
+		$this->parseTree($this->tree);
+	}
+	
+	public function readTAG_BYTE(){
+		return Utils::readByte($this->read(1));
+	}
+	
+	public function readTAG_SHORT(){
+		return Utils::readLShort($this->read(2));
+	}
+	
+	public function readTAG_INT(){
+		return Utils::readLInt($this->read(4));
+	}
+	
+	public function readTAG_LONG(){
+		return Utils::readLLong($this->read(8));
+	}
+	
+	public function readTAG_FLOAT(){
+		return Utils::readLFloat($this->read(4));
+	}
+	
+	public function readTAG_DOUBLE(){
+		return Utils::readLDouble($this->read(8));
+	}
+	
+	public function readTAG_BYTE_ARRAY(){
+		return $this->read($this->readTAG_INT());
+	}
+	
+	public function readTAG_STRING(){
+		return $this->read(Utils::readLShort($this->read(2), false));
+	}
+	
+	public function writeTAG_BYTE($v){
+		$this->binary .= chr($v);
+	}
+	
+	public function writeTAG_SHORT($v){
+		$this->binary .= Utils::writeLShort($v);
+	}
+	
+	public function writeTAG_INT($v){
+		$this->binary .= Utils::writeLInt($v);
+	}
+	
+	public function writeTAG_LONG($v){
+		$this->binary .= Utils::writeLLong($v);
+	}
+	
+	public function writeTAG_FLOAT($v){
+		$this->binary .= Utils::writeLFloar($v);
+	}
+	
+	public function writeTAG_DOUBLE($v){
+		$this->binary .= Utils::writeLDouble($v);
+	}
+	
+	public function writeTAG_BYTE_ARRAY($v){
+		$this->binary .= $this->writeTAG_INT(strlen($v)).$v;
+	}
+	
+	public function writeTAG_STRING($v){
+		$this->binary .= $this->writeTAG_SHORT(strlen($v)).$v;
 	}
 
-	public function traverseTag($fp, &$tree) {
-		if(feof($fp)) {
-			return false;
-		}
-		$tagType = $this->readType($fp, self::TAG_BYTE); // Read type byte.
-		if($tagType == self::TAG_END) {
-			return false;
-		} else {
-			$tagName = $this->readType($fp, self::TAG_STRING);
-			$tagData = $this->readType($fp, $tagType);
-			$tree[] = array("type"=>$tagType, "name"=>$tagName, "value"=>$tagData);
-			return true;
+	private function parseList(&$node, $tag, $cnt){
+		for($i = 0; $i < $cnt; ++$i){
+			switch($tag){
+				case self::TAG_BYTE:				
+					$value = $this->readTAG_BYTE();
+					break;
+				case self::TAG_SHORT:
+					$value = $this->readTAG_SHORT();
+					break;
+				case self::TAG_INT:
+					$value = $this->readTAG_INT();
+					break;
+				case self::TAG_LONG:
+					$value = $this->readTAG_LONG();
+					break;
+				case self::TAG_FLOAT:
+					$value = $this->readTAG_FLOAT();
+					break;
+				case self::TAG_DOUBLE:
+					$value = $this->readTAG_DOUBLE();
+					break;
+				case self::TAG_BYTE_ARRAY:
+					$value = $this->readTAG_BYTE_ARRAY();
+					break;
+				case self::TAG_STRING:
+					$value = $this->readTAG_STRING();
+					break;
+				case self::TAG_LIST:
+					$value = array();
+					$this->parseList($value, ord($this->read(1)), Utils::readLInt($this->read(4)));
+					break;
+				case self::TAG_COMPOUND:
+					$value = array();
+					$this->parseTree($value);
+					break;
+				default:
+					die("Invalid NBT Tag $tag");
+					break;
+			}
+			$node[] = $value;
 		}
 	}
-
-	public function readType($fp, $tagType) {
-		switch($tagType) {
-			case self::TAG_BYTE: // Signed byte (8 bit)
-				return Utils::readByte(fread($fp, 1));
-			case self::TAG_SHORT: // Signed short (16 bit, big endian)
-				return Utils::readLShort(fread($fp, 2));
-			case self::TAG_INT: // Signed integer (32 bit, big endian)
-				return Utils::readLInt(fread($fp, 4));
-			case self::TAG_LONG: // Signed long (64 bit, big endian)
-				return Utils::readLLong(fread($fp, 8));
-			case self::TAG_FLOAT: // Floating point value (32 bit, big endian, IEEE 754-2008)
-				return Utils::readLFloat(fread($fp, 4));
-			case self::TAG_DOUBLE: // Double value (64 bit, big endian, IEEE 754-2008)
-				return Utils::readLDouble(fread($fp, 8));
-			case self::TAG_BYTE_ARRAY: // Byte array
-				$arrayLength = $this->readType($fp, self::TAG_INT);
-				$array = array();
-				for($i = 0; $i < $arrayLength; $i++) $array[] = $this->readType($fp, self::TAG_BYTE);
-				return $array;
-			case self::TAG_STRING: // String
-				if(!$stringLength = $this->readType($fp, self::TAG_SHORT)) return "";
-				$string = fread($fp, $stringLength); // Read in number of bytes specified by string length, and decode from utf8.
-				return $string;
-			case self::TAG_LIST: // List
-				$tagID = $this->readType($fp, self::TAG_BYTE);
-				$listLength = $this->readType($fp, self::TAG_INT);
-				$list = array("type"=>$tagID, "value"=>array());
-				for($i = 0; $i < $listLength; $i++) {
-					if(feof($fp)) break;
-					$list["value"][] = $this->readType($fp, $tagID);
-				}
-				return $list;
-			case self::TAG_COMPOUND: // Compound
-				$tree = array();
-				while($this->traverseTag($fp, $tree));
-				return $tree;
+	
+	private function parseTree(&$node){
+		while(($tag = ord($this->read(1))) !== self::TAG_END){
+			$name = $this->readTAG_STRING();
+			switch($tag){
+				case self::TAG_BYTE:				
+					$value = $this->readTAG_BYTE();
+					break;
+				case self::TAG_SHORT:
+					$value = $this->readTAG_SHORT();
+					break;
+				case self::TAG_INT:
+					$value = $this->readTAG_INT();
+					break;
+				case self::TAG_LONG:
+					$value = $this->readTAG_LONG();
+					break;
+				case self::TAG_FLOAT:
+					$value = $this->readTAG_FLOAT();
+					break;
+				case self::TAG_DOUBLE:
+					$value = $this->readTAG_DOUBLE();
+					break;
+				case self::TAG_BYTE_ARRAY:
+					$value = $this->readTAG_BYTE_ARRAY();
+					break;
+				case self::TAG_STRING:
+					$value = $this->readTAG_STRING();
+					break;
+				case self::TAG_LIST:
+					$value = array();
+					$this->parseList($value, ord($this->read(1)), Utils::readLInt($this->read(4)));
+					break;
+				case self::TAG_COMPOUND:
+					$value = array();
+					$this->parseTree($value);
+					break;
+				default:
+					die("Invalid NBT Tag $tag");
+					break;
+			}
+			$node[$name] = $value;
 		}
 	}
 }
-?>
