@@ -117,7 +117,7 @@ class Tile extends Position{
 		}
 		
 		$tile = $this->getPair();
-		unset($this->data["pairx"], $this->data["pairz"], $ile->data["pairx"], $tile->data["pairz"]);
+		unset($this->data["pairx"], $this->data["pairz"], $tile->data["pairx"], $tile->data["pairz"]);
 		
 		$this->server->api->tile->spawnToAll($this);		
 		if($tile instanceof Tile){
@@ -330,7 +330,8 @@ class Tile extends Position{
 		}
 		$this->server->api->dhandle("tile.container.slot", array(
 			"tile" => $this,
-			"slot" => $s + $offset,
+			"slot" => $s,
+			"offset" => $offset,
 			"slotdata" => $item,
 		));
 

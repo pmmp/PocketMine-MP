@@ -472,7 +472,7 @@ class Player{
 						if($w === $data["tile"]){
 							$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
 								"windowid" => $id,
-								"slot" => $data["slot"],
+								"slot" => $data["slot"] + (isset($data["offset"]) ? $data["offset"]:0),
 								"block" => $data["slotdata"]->getID(),
 								"stack" => $data["slotdata"]->count,
 								"meta" => $data["slotdata"]->getMetadata(),
@@ -1758,6 +1758,7 @@ class Player{
 					if($this->server->api->dhandle("player.container.slot", array(
 						"tile" => $tile,
 						"slot" => $data["slot"],
+						"offset" => $offset,
 						"slotdata" => $slot,
 						"itemdata" => $item,
 						"player" => $this,
