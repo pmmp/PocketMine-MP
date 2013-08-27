@@ -27,13 +27,14 @@ class FlintSteelItem extends Item{
 	}
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($block->getID() === AIR){
+		if($this->useOn($block) and ($player->gamemode & 0x01) === 0 and $this->getMetadata() >= $this->getMaxDurability()){
+			$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
+		}
+
+		if($block->getID() === AIR and ($target instanceof SolidBlock)){
 			$level->setBlock($block, new FireBlock(), true, false, true);
 			$block->level->scheduleBlockUpdate(new Position($block, 0, 0, $block->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 			return true;
-		}
-		if($this->useOn($block) and ($player->gamemode & 0x01) === 0 and $this->getMetadata() >= $this->getMaxDurability()){
-			$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
 		}
 		return false;
 	}

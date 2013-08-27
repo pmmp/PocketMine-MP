@@ -19,7 +19,7 @@
  *
 */
 
-class GlowstoneBlock extends SolidBlock{
+class GlowstoneBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(GLOWSTONE_BLOCK, 0, "Glowstone");
 	}
