@@ -899,8 +899,11 @@ class Player{
 	public function getBandwidth(){
 		return array_sum($this->bandwidthStats) / max(1, count($this->bandwidthStats));
 	}
-	
+
 	public function clearQueue(){
+		if($this->connected === false){
+			return false;
+		}
 		ksort($this->received);
 		if(($cnt = count($this->received)) > PLAYER_MAX_QUEUE){
 			foreach($this->received as $c => $t){
