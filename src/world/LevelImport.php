@@ -41,15 +41,14 @@ class LevelImport{
 			$tiles->save();
 		}elseif(file_exists($this->path."chunks.dat") and file_exists($this->path."level.dat")){ //Pocket
 			$nbt = new NBT();
-			$nbt->load(substr(file_get_contents($this->path."level.dat"), 12));
+			$nbt->load(substr(file_get_contents($this->path."level.dat"), 8));
 			$level = array_shift($nbt->tree);
-			var_dump($level);
 			if($level["LevelName"] == ""){
 				$level["LevelName"] = "world".time();
 			}
 			console("[INFO] Importing Pocket level \"".$level["LevelName"]."\" to PMF format");
 			unset($level["Player"]);
-			$nbt->load(file_get_contents($this->path."entities.dat"));
+			$nbt->load(substr(file_get_contents($this->path."entities.dat"), 12));
 			$entities = array_shift($nbt->tree);
 			if(!isset($entities["TileEntities"])){
 				$entities["TileEntities"] = array();

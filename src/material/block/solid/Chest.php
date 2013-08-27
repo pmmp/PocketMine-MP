@@ -65,10 +65,12 @@ class ChestBlock extends TransparentBlock{
 			"y" => $this->y,
 			"z" => $this->z
 		));
+		
+		/* 0.7.4 bug, waiting for Mojang...
 		if($chest instanceof Tile){
 			$chest->pairWith($tile);
 			$tile->pairWith($chest);
-		}
+		}*/
 		return true;
 	}
 	
