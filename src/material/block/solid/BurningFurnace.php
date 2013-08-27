@@ -65,32 +65,11 @@ class BurningFurnaceBlock extends SolidBlock{
 			));
 		}
 		
-		if($furnace->class !== TILE_FURNACE or ($player->gamemode & 0x01) === 0x01){
+		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
-		$player->windowCnt++;
-		$player->windowCnt = $id = max(2, $player->windowCnt % 99);
-		$player->windows[$id] = $furnace;
-		$player->dataPacket(MC_CONTAINER_OPEN, array(
-			"windowid" => $id,
-			"type" => WINDOW_FURNACE,
-			"slots" => FURNACE_SLOTS,
-			"title" => "Furnace",
-		));
-		$slots = array();
-		for($s = 0; $s < FURNACE_SLOTS; ++$s){
-			$slot = $furnace->getSlot($s);
-			if($slot->getID() > 0 and $slot->count > 0){
-				$slots[] = $slot;
-			}else{
-				$slots[] = BlockAPI::getItem(AIR, 0, 0);
-			}
-		}
-		$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
-			"windowid" => $id,
-			"count" => count($slots),
-			"slots" => $slots
-		));
+		
+		$furnace->openInventory($player);
 		return true;
 	}
 	

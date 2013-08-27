@@ -1184,7 +1184,7 @@ class Player{
 					"x" => $this->data->get("position")["x"],
 					"y" => $this->data->get("position")["y"],
 					"z" => $this->data->get("position")["z"],
-					"unknown1" => 0,
+					"generator" => 0,
 					"gamemode" => ($this->gamemode & 0x01),
 					"eid" => 0,
 				));
@@ -1651,14 +1651,27 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				if(isset($this->windows[$data["windowid"]]) and $this->windows[$data["windowid"]]->class === TILE_CHEST){
-					$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
-						"x" => $this->windows[$data["windowid"]]->x,
-						"y" => $this->windows[$data["windowid"]]->y,
-						"z" => $this->windows[$data["windowid"]]->z,
-						"case1" => 1,
-						"case2" => 0,
-					));
+				if(isset($this->windows[$data["windowid"]])){
+					if(is_array($this->windows[$data["windowid"]])){
+						$all = $this->server->api->player->getAll($this->level);
+						foreach($this->windows[$data["windowid"]] as $ob){
+							$this->server->api->player->broadcastPacket($all, MC_TILE_EVENT, array(
+								"x" => $ob->x,
+								"y" => $ob->y,
+								"z" => $ob->z,
+								"case1" => 1,
+								"case2" => 0,
+							));
+						}
+					}elseif($this->windows[$data["windowid"]]->class === TILE_CHEST){
+						$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+							"x" => $this->windows[$data["windowid"]]->x,
+							"y" => $this->windows[$data["windowid"]]->y,
+							"z" => $this->windows[$data["windowid"]]->z,
+							"case1" => 1,
+							"case2" => 0,
+						));
+					}
 				}
 				unset($this->windows[$data["windowid"]]);
 
@@ -1725,46 +1738,94 @@ class Player{
 				if(!isset($this->windows[$data["windowid"]])){
 					break;
 				}
-				$tile = $this->windows[$data["windowid"]];
-				if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $data["slot"] < 0 or ($tile->class === TILE_CHEST and $data["slot"] >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $data["slot"] >= FURNACE_SLOTS)){
-					break;
-				}
-				$done = false;
-				$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
-				
-				$slot = $tile->getSlot($data["slot"]);
-				$done = true;
-				if($this->server->api->dhandle("player.container.slot", array(
-					"tile" => $tile,
-					"slot" => $data["slot"],
-					"slotdata" => $slot,
-					"itemdata" => $item,
-					"player" => $this,
-				)) === false){
-					$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-						"windowid" => $data["windowid"],
-						"slot" => $data["slot"],
-						"block" => $slot->getID(),
-						"stack" => $slot->count,
-						"meta" => $slot->getMetadata(),
-					));
-					break;
-				}
-				if($item->getID() !== AIR and $slot->getID() == $item->getID()){
-					if($slot->count < $item->count){
-						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
-							break;
-						}
-					}elseif($slot->count > $item->count){
-						$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
-					}
-				}else{
-					if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+				if(is_array($this->windows[$data["windowid"]])){
+					$tiles = $this->windows[$data["windowid"]];
+					if($data["slot"] > 0 and $data["slot"] < CHEST_SLOTS){
+						$tile = $tiles[0];
+						$slotn = $data["slot"];
+						$offset = 0;
+					}elseif($data["slot"] >= CHEST_SLOTS and $data["slot"] <= (CHEST_SLOTS << 1)){
+						$tile = $tiles[1];
+						$slotn = $data["slot"] - CHEST_SLOTS;
+						$offset = CHEST_SLOTS;
+					}else{
 						break;
 					}
-					$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+
+					$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					
+					$slot = $tile->getSlot($slotn);
+					if($this->server->api->dhandle("player.container.slot", array(
+						"tile" => $tile,
+						"slot" => $data["slot"],
+						"slotdata" => $slot,
+						"itemdata" => $item,
+						"player" => $this,
+					)) === false){
+						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+							"windowid" => $data["windowid"],
+							"slot" => $data["slot"],
+							"block" => $slot->getID(),
+							"stack" => $slot->count,
+							"meta" => $slot->getMetadata(),
+						));
+						break;
+					}
+					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
+						if($slot->count < $item->count){
+							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								break;
+							}
+						}elseif($slot->count > $item->count){
+							$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
+						}
+					}else{
+						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							break;
+						}
+						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+					}
+					$tile->setSlot($slotn, $item, true, $offset);
+				}else{
+					$tile = $this->windows[$data["windowid"]];
+					if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $data["slot"] < 0 or ($tile->class === TILE_CHEST and $data["slot"] >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $data["slot"] >= FURNACE_SLOTS)){
+						break;
+					}
+					$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					
+					$slot = $tile->getSlot($data["slot"]);
+					if($this->server->api->dhandle("player.container.slot", array(
+						"tile" => $tile,
+						"slot" => $data["slot"],
+						"slotdata" => $slot,
+						"itemdata" => $item,
+						"player" => $this,
+					)) === false){
+						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+							"windowid" => $data["windowid"],
+							"slot" => $data["slot"],
+							"block" => $slot->getID(),
+							"stack" => $slot->count,
+							"meta" => $slot->getMetadata(),
+						));
+						break;
+					}
+					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
+						if($slot->count < $item->count){
+							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								break;
+							}
+						}elseif($slot->count > $item->count){
+							$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
+						}
+					}else{
+						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							break;
+						}
+						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+					}
+					$tile->setSlot($data["slot"], $item);
 				}
-				$tile->setSlot($data["slot"], $item);
 				break;
 			case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){

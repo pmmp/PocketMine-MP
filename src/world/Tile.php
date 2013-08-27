@@ -106,6 +106,120 @@ class Tile extends Position{
 		
 		$tile->data["pairx"] = $this->x;
 		$tile->data["pairz"] = $this->z;
+		
+		$this->server->api->tile->spawnToAll($this);
+		$this->server->api->tile->spawnToAll($tile);
+	}
+	
+	public function unpair(){
+		if(!$this->isPaired()){
+			return false;
+		}
+		
+		$tile = $this->getPair();
+		unset($this->data["pairx"], $this->data["pairz"], $ile->data["pairx"], $tile->data["pairz"]);
+		
+		$this->server->api->tile->spawnToAll($this);		
+		if($tile instanceof Tile){
+			$this->server->api->tile->spawnToAll($tile);
+		}
+	}
+	
+	public function openInventory(Player $player){
+		if($this->class === TILE_CHEST){
+			$player->windowCnt++;
+			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
+			if(($pair = $this->getPair()) !== false){				
+				if(($pair->x + ($pair->z << 13)) > ($this->x + ($this->z << 13))){ //Order them correctly
+					$player->windows[$id] = array(
+						$pair,
+						$this
+					);
+				}else{
+					$player->windows[$id] = array(
+						$this,
+						$pair
+					);
+				}
+			}else{
+				$player->windows[$id] = $this;
+			}
+			$player->dataPacket(MC_CONTAINER_OPEN, array(
+				"windowid" => $id,
+				"type" => WINDOW_CHEST,
+				"slots" => is_array($player->windows[$id]) ? CHEST_SLOTS << 1:CHEST_SLOTS,
+				"title" => "Chest",
+			));
+			$slots = array();
+			
+			if(is_array($player->windows[$id])){
+				$all = $this->server->api->player->getAll($this->level);
+				foreach($player->windows[$id] as $ob){
+					$this->server->api->player->broadcastPacket($all, MC_TILE_EVENT, array(
+						"x" => $ob->x,
+						"y" => $ob->y,
+						"z" => $ob->z,
+						"case1" => 1,
+						"case2" => 2,
+					));
+					for($s = 0; $s < CHEST_SLOTS; ++$s){
+						$slot = $ob->getSlot($s);
+						if($slot->getID() > AIR and $slot->count > 0){
+							$slots[] = $slot;
+						}else{
+							$slots[] = BlockAPI::getItem(AIR, 0, 0);
+						}
+					}
+				}
+			}else{
+				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"case1" => 1,
+					"case2" => 2,
+				));
+				for($s = 0; $s < CHEST_SLOTS; ++$s){
+					$slot = $this->getSlot($s);
+					if($slot->getID() > AIR and $slot->count > 0){
+						$slots[] = $slot;
+					}else{
+						$slots[] = BlockAPI::getItem(AIR, 0, 0);
+					}
+				}
+			}
+			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+				"windowid" => $id,
+				"count" => count($slots),
+				"slots" => $slots
+			));
+			return true;
+		}elseif($this->class === TILE_FURNACE){
+			$player->windowCnt++;
+			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
+			$player->windows[$id] = $this;
+			$player->dataPacket(MC_CONTAINER_OPEN, array(
+				"windowid" => $id,
+				"type" => WINDOW_FURNACE,
+				"slots" => FURNACE_SLOTS,
+				"title" => "Furnace",
+			));
+			$slots = array();
+			for($s = 0; $s < FURNACE_SLOTS; ++$s){
+				$slot = $this->getSlot($s);
+				if($slot->getID() > AIR and $slot->count > 0){
+					$slots[] = $slot;
+				}else{
+					$slots[] = BlockAPI::getItem(AIR, 0, 0);
+				}
+			}
+			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+				"windowid" => $id,
+				"count" => count($slots),
+				"slots" => $slots
+			));
+			return true;
+		}
 	}
 
 	public function update(){
@@ -195,7 +309,7 @@ class Tile extends Position{
 		}
 	}
 	
-	public function setSlot($s, Item $item, $update = true){
+	public function setSlot($s, Item $item, $update = true, $offset = 0){
 		$i = $this->getSlotIndex($s);
 		$d = array(
 			"Count" => $item->count,
@@ -216,7 +330,7 @@ class Tile extends Position{
 		}
 		$this->server->api->dhandle("tile.container.slot", array(
 			"tile" => $this,
-			"slot" => $s,
+			"slot" => $s + $offset,
 			"slotdata" => $item,
 		));
 

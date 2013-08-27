@@ -202,7 +202,7 @@ class CustomPacketHandler{
 			case MC_START_GAME:
 				if($this->c === false){
 					$this->data["seed"] = Utils::readInt($this->get(4));
-					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["generator"] = Utils::readInt($this->get(4));
 					$this->data["gamemode"] = Utils::readInt($this->get(4));
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["x"] = Utils::readFloat($this->get(4));
@@ -210,7 +210,7 @@ class CustomPacketHandler{
 					$this->data["z"] = Utils::readFloat($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["seed"]);
-					$this->raw .= Utils::writeInt($this->data["unknown1"]);
+					$this->raw .= Utils::writeInt($this->data["generator"]);
 					$this->raw .= Utils::writeInt($this->data["gamemode"]);
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeFloat($this->data["x"]);
