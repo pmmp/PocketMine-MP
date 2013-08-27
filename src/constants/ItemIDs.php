@@ -117,8 +117,8 @@ define("EGG", 344);
 define("COMPASS", 345);
 
 define("GLOWSTONE_DUST", 348);
-define("RAW_FISH", 349);
-define("COOKED_FISH", 350);
+//define("RAW_FISH", 349);
+//define("COOKED_FISH", 350);
 define("DYE", 351);
 define("BONE", 352);
 define("SUGAR", 353);
