@@ -108,7 +108,7 @@ class ChestBlock extends TransparentBlock{
 			return true;
 		}
 		$player->windowCnt++;
-		$player->windowCnt = $id = max(2, $player->windowCnt % 16);
+		$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 		$player->windows[$id] = $chest;
 		$player->dataPacket(MC_CONTAINER_OPEN, array(
 			"windowid" => $id,
@@ -116,13 +116,13 @@ class ChestBlock extends TransparentBlock{
 			"slots" => CHEST_SLOTS,
 			"title" => "Chest",
 		));
-		/*$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_TILE_EVENT, array(
 			"x" => $this->x,
 			"y" => $this->y,
 			"z" => $this->z,
 			"case1" => 1,
 			"case2" => 2,
-		));*/
+		));
 		$slots = array();
 		for($s = 0; $s < CHEST_SLOTS; ++$s){
 			$slot = $chest->getSlot($s);

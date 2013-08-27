@@ -28,6 +28,7 @@ the Free Software Foundation, either version 3 of the License, or
 define("WINDOW_CHEST", 0);
 define("WINDOW_WORKBENCH", 1);
 define("WINDOW_FURNACE", 2);
+define("WINDOW_STONECUTTER", 3);
 
 class Window{
 	private $server;

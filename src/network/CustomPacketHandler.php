@@ -745,12 +745,12 @@ class CustomPacketHandler{
 				if($this->c === false){
 					$this->data["windowid"] = ord($this->get(1));
 					$this->data["type"] = ord($this->get(1));
-					$this->data["slots"] = Utils::readShort($this->get(2), false);
+					$this->data["slots"] = ord($this->get(1));
 					$this->data["title"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
 					$this->raw .= chr($this->data["windowid"]);
 					$this->raw .= chr($this->data["type"]);
-					$this->raw .= Utils::writeShort($this->data["slots"]);
+					$this->raw .= chr($this->data["slots"]);
 					$this->raw .= Utils::writeShort(strlen($this->data["title"])).$this->data["title"];
 				}
 				break;
@@ -810,23 +810,6 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
-			/*case MC_SIGN_UPDATE:
-				if($this->c === false){
-					$this->data["x"] = Utils::readShort($this->get(2));
-					$this->data["y"] = ord($this->get(1));
-					$this->data["z"] = Utils::readShort($this->get(2));
-					for($i = 0; $i < 4; ++$i){
-						$this->data["line$i"] = $this->get(Utils::readLShort($this->get(2), false));
-					}
-				}else{
-					$this->raw .= Utils::writeShort($this->data["x"]);
-					$this->raw .= chr($this->data["y"]);
-					$this->raw .= Utils::writeShort($this->data["z"]);
-					for($i = 0; $i < 4; ++$i){
-						$this->raw .= Utils::writeLShort(strlen($this->data["line$i"])).$this->data["line$i"];
-					}
-				}
-				break;*/
 			case MC_ADVENTURE_SETTINGS:
 				if($this->c === false){
 					$this->data["flags"] = Utils::readInt($this->get(4));

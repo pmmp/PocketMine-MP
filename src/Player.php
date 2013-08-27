@@ -1651,7 +1651,7 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				/*if(isset($this->windows[$data["windowid"]]) and $this->windows[$data["windowid"]]->class === TILE_CHEST){
+				if(isset($this->windows[$data["windowid"]]) and $this->windows[$data["windowid"]]->class === TILE_CHEST){
 					$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
 						"x" => $this->windows[$data["windowid"]]->x,
 						"y" => $this->windows[$data["windowid"]]->y,
@@ -1659,7 +1659,7 @@ class Player{
 						"case1" => 1,
 						"case2" => 0,
 					));
-				}*/
+				}
 				unset($this->windows[$data["windowid"]]);
 
 				$this->dataPacket(MC_CONTAINER_CLOSE, array(
