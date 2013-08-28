@@ -4,8 +4,11 @@ class ServerSuiteTest extends PHPUnit_Framework_TestCase{
 	private $server;
 	public function hook(){
 		$this->assertTrue(true);
+		$server = ServerAPI::request();
 		
-		$this->server->close();
+		
+		//Everything done!
+		$server->close();
 	}
 
 	public function testRead(){
