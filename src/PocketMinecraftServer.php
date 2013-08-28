@@ -66,7 +66,9 @@ class PocketMinecraftServer{
 		$this->reloadConfig();
 		$this->stop = false;
 		$this->ticks = 0;
-		$this->asyncThread = new AsyncMultipleQueue();
+		if(!defined("NO_THREADS")){
+			$this->asyncThread = new AsyncMultipleQueue();
+		}
 	}
 
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
@@ -188,7 +190,10 @@ class PocketMinecraftServer{
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
 			$this->interface->close();
-			@$this->asyncThread->stop = true;
+			
+			if(!defined("NO_THREADS")){
+				@$this->asyncThread->stop = true;
+			}
 		}
 	}
 
@@ -206,6 +211,9 @@ class PocketMinecraftServer{
 	}
 	
 	public function asyncOperation($type, array $data, callable $callable = null){
+		if(defined("NO_THREADS")){
+			return false;
+		}
 		$d = "";
 		$type = (int) $type;
 		switch($type){
@@ -229,6 +237,9 @@ class PocketMinecraftServer{
 	}
 	
 	public function asyncOperationChecker(){
+		if(defined("NO_THREADS")){
+			return false;
+		}
 		if(isset($this->asyncThread->output{5})){
 			$offset = 0;
 			$ID = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
