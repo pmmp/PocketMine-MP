@@ -28,8 +28,6 @@ class ServerSuiteTest extends PHPUnit_Framework_TestCase{
 		$this->server->load();
 		$this->assertTrue(is_integer($this->server->event("server.start", array($this, "hook"))));
 		$this->server->init();
-		
-		kill(getmypid()); //Fix for ConsoleAPI being blocked
 		exit(0);
 	}
 }
