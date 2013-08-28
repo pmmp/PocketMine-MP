@@ -1,7 +1,0 @@
-<phpunit backupGlobals="false" backupStaticAttributes="false" syntaxCheck="true">
-  <testsuites>
-    <testsuite name="PocketMine-MP">
-      <directory suffix=".php">src/tests</directory>
-    </testsuite>
-  </testsuites>
-</phpunit>

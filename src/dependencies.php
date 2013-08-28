@@ -20,10 +20,6 @@
 */
 
 /***REM_START***/
-if(!class_exists("PHPUnit_Framework_TestCase", false)){
-	class PHPUnit_Framework_TestCase{
-	}
-}
 require_once(dirname(__FILE__)."/config.php");
 require_once(FILE_PATH."/src/functions.php");
 /***REM_END***/
