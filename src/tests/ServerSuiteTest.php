@@ -7,7 +7,7 @@
 				console("[TEST] $name: \x1b[32mOk.");
 			}else{
 				console("[TEST] $name: \x1b[31mError.");
-				console("Expected ".safe_var_dump($expected).", got ".$output);
+				console("Expected ".safe_var_dump($expected).", got ".safe_var_dump($output));
 				++$testErrors;
 			}
 		}
