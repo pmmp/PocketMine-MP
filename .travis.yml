@@ -13,3 +13,7 @@ script:
 notifications:
  email: false
  webhooks: http://n.tkte.ch/h/214/wsNvmG43-ncxUVRrFPwSM-r0
+
+branches:
+ except:
+  - tests
