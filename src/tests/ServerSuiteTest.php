@@ -1,8 +1,8 @@
 <?php
-
-if(!class_exists("PHPUnit_Framework_TestCase", false)){
-	class PHPUnit_Framework_TestCase{} //Normal include
-}
+/***REM_START***/
+	if(class_exists("PocketMinecraftServer", false)){
+		return;
+	}
 
 	class ServerSuiteTest extends PHPUnit_Framework_TestCase{
 		private $server;
@@ -37,3 +37,4 @@ if(!class_exists("PHPUnit_Framework_TestCase", false)){
 			exit(0);
 		}
 	}
+/***REM_END***/
