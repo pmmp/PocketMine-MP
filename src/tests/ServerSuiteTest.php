@@ -22,8 +22,9 @@ class ServerSuiteTest extends PHPUnit_Framework_TestCase{
 		
 		//PocketMine-MP server startup
 		$this->server = new ServerAPI();
+		$this->server->load();
 		$this->assertTrue(is_integer($this->server->event("server.start", array($this, "hook"))));
-		$this->server->start();
+		$this->server->init();
 		
 		kill(getmypid()); //Fix for ConsoleAPI being blocked
 		exit(0);
