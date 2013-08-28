@@ -15,6 +15,7 @@ if(class_exists("PHPUnit_Framework_TestCase", false)){
 
 		public function testRead(){
 			define("NO_THREADS", true);
+			define("DEBUG", -1); //No output
 			require_once(dirname(__FILE__)."/../dependencies.php");
 			require_once(FILE_PATH."/src/functions.php");
 			require_once(FILE_PATH."/src/dependencies.php");
