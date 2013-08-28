@@ -21,6 +21,7 @@
 				$server->load();
 				$this->assertTrue(is_integer($server->event("server.start", array($this, "hook"))));
 				$server->init();
+				exit(0);
 			}
 			
 			public function hook(){				
