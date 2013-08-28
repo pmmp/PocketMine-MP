@@ -5,15 +5,10 @@ php:
   
 before_script:
  - pecl install channel://pecl.php.net/pthreads-0.0.44
- - git clone --depth=100 --quiet --branch=tests git://github.com/PocketMine/PocketMine-MP.git $(pwd)/tests/
 
 script:
- - phpunit tests/
+ - phpunit src/tests/
  
 notifications:
  email: false
  webhooks: http://n.tkte.ch/h/214/wsNvmG43-ncxUVRrFPwSM-r0
-
-branches:
- except:
-  - tests
