@@ -1,8 +1,7 @@
 <?php
 /***REM_START***/
-	if(!class_exists("PocketMinecraftServer", false)){
+	
 		class ServerSuiteTest extends PHPUnit_Framework_TestCase{
-			private $server;
 			public function testStart(){
 				define("NO_THREADS", true);
 				define("DEBUG", -1); //No output
@@ -29,5 +28,4 @@
 				ServerAPI::request()->close();
 			}
 		}
-	}
 /***REM_END***/
