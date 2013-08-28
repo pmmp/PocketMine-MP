@@ -7,7 +7,7 @@
 				console("[TEST] $name: \x1b[32mOk.");
 			}else{
 				console("[TEST] $name: \x1b[31mError.");
-				console("Expected ".safe_var_dump($expected).", got ".safe_var_dump($output));
+				console("Expected ".print_r($expected, true).", got ".print_r($output, true));
 				++$testErrors;
 			}
 		}
@@ -50,7 +50,7 @@
 			public function hook(){
 				testCase("event fired", true, true);
 				$server = ServerAPI::request();
-				testCase("defaultgamemode", $server->getGamemode(), "creative");
+				testCase("defaultgamemode", $server->getGamemode(), "survival");
 				
 				
 				//Everything done!
