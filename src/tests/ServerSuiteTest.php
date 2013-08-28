@@ -12,6 +12,7 @@ class ServerSuiteTest extends PHPUnit_Framework_TestCase{
 	}
 
 	public function testRead(){
+		define("NO_THREADS", true);
 		require_once(dirname(__FILE__)."/../dependencies.php");
 		require_once(FILE_PATH."/src/functions.php");
 		require_once(FILE_PATH."/src/dependencies.php");

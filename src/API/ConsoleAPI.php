@@ -31,7 +31,9 @@ class ConsoleAPI{
 
 	public function init(){
 		$this->server->schedule(2, array($this, "handle"), array(), true);
-		$this->loop = new ConsoleLoop();
+		if(!defined("NO_THREADS")){
+			$this->loop = new ConsoleLoop();
+		}
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1|2|3>", array($this, "defaultCommands"));
@@ -42,9 +44,11 @@ class ConsoleAPI{
 
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
-		$this->loop->stop();
-		$this->loop->notify();
-		//$this->loop->join();
+		if(!defined("NO_THREADS")){
+			$this->loop->stop();
+			$this->loop->notify();
+			//$this->loop->join();
+		}
 	}
 
 	public function defaultCommands($cmd, $params, $issuer, $alias){
@@ -248,6 +252,9 @@ class ConsoleAPI{
 	}
 
 	public function handle($time){
+		if(defined("NO_THREADS")){
+			return;
+		}
 		if($this->loop->line !== false){
 			$line = trim($this->loop->line);
 			$this->loop->line = false;
