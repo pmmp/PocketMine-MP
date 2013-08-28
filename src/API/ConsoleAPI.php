@@ -1,22 +1,28 @@
 <?php
 
-/**
- *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
- *
+/*
+
+           -
+         /   \
+      /         \
+   /   PocketMine  \
+/          MP         \
+|\     @shoghicp     /|
+|.   \           /   .|
+| ..     \   /     .. |
+|    ..    |    ..    |
+|       .. | ..       |
+\          |          /
+   \       |       /
+      \    |    /
+         \ | /
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+
 */
 
 class ConsoleAPI{
@@ -31,9 +37,7 @@ class ConsoleAPI{
 
 	public function init(){
 		$this->server->schedule(2, array($this, "handle"), array(), true);
-		if(!defined("NO_THREADS")){
-			$this->loop = new ConsoleLoop();
-		}
+		$this->loop = new ConsoleLoop();
 		$this->register("help", "[page|command name]", array($this, "defaultCommands"));
 		$this->register("status", "", array($this, "defaultCommands"));
 		$this->register("difficulty", "<0|1|2|3>", array($this, "defaultCommands"));
@@ -44,11 +48,9 @@ class ConsoleAPI{
 
 	function __destruct(){
 		$this->server->deleteEvent($this->event);
-		if(!defined("NO_THREADS")){
-			$this->loop->stop();
-			$this->loop->notify();
-			//$this->loop->join();
-		}
+		$this->loop->stop();
+		$this->loop->notify();
+		//$this->loop->join();
 	}
 
 	public function defaultCommands($cmd, $params, $issuer, $alias){
@@ -252,9 +254,6 @@ class ConsoleAPI{
 	}
 
 	public function handle($time){
-		if(defined("NO_THREADS")){
-			return;
-		}
 		if($this->loop->line !== false){
 			$line = trim($this->loop->line);
 			$this->loop->line = false;

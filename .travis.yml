@@ -5,9 +5,10 @@ php:
   
 before_script:
  - pecl install channel://pecl.php.net/pthreads-0.0.44
+ - git clone --depth=100 --quiet --branch=tests git://github.com/PocketMine/PocketMine-MP.git $(pwd)/tests/
 
 script:
- - phpunit src/tests/
+ - phpunit tests/
  
 notifications:
  email: false

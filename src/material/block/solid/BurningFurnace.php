@@ -1,22 +1,28 @@
 <?php
 
-/**
- *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
- *
+/*
+
+           -
+         /   \
+      /         \
+   /   PocketMine  \
+/          MP         \
+|\     @shoghicp     /|
+|.   \           /   .|
+| ..     \   /     .. |
+|    ..    |    ..    |
+|       .. | ..       |
+\          |          /
+   \       |       /
+      \    |    /
+         \ | /
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+
 */
 
 class BurningFurnaceBlock extends SolidBlock{
@@ -59,11 +65,32 @@ class BurningFurnaceBlock extends SolidBlock{
 			));
 		}
 		
-		if(($player->gamemode & 0x01) === 0x01){
+		if($furnace->class !== TILE_FURNACE or ($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
-		
-		$furnace->openInventory($player);
+		$player->windowCnt++;
+		$player->windowCnt = $id = max(2, $player->windowCnt % 16);
+		$player->windows[$id] = $furnace;
+		$player->dataPacket(MC_CONTAINER_OPEN, array(
+			"windowid" => $id,
+			"type" => WINDOW_FURNACE,
+			"slots" => FURNACE_SLOTS,
+			"title" => "Furnace",
+		));
+		$slots = array();
+		for($s = 0; $s < FURNACE_SLOTS; ++$s){
+			$slot = $furnace->getSlot($s);
+			if($slot->getID() > 0 and $slot->count > 0){
+				$slots[] = $slot;
+			}else{
+				$slots[] = BlockAPI::getItem(AIR, 0, 0);
+			}
+		}
+		$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+			"windowid" => $id,
+			"count" => count($slots),
+			"slots" => $slots
+		));
 		return true;
 	}
 	
