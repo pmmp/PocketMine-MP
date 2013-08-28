@@ -18,6 +18,7 @@
 			require_once(FILE_PATH."/src/functions.php");
 			require_once(FILE_PATH."/src/dependencies.php");
 			console("\x1b[36m[TEST] Starting tests");
+			testCase("dummy", dummy(), null);
 			$t = new ServerSuiteTest;
 			echo PHP_EOL;
 			if($testErrors === 0){
@@ -48,8 +49,12 @@
 			
 			public function hook(){
 				testCase("event fired", true, true);
+				$server = ServerAPI::request();
+				testCase("defaultgamemode", $server->getGamemode(), "creative");
+				
+				
 				//Everything done!
-				ServerAPI::request()->close();
+				$server->close();
 			}
 		}
 /***REM_END***/

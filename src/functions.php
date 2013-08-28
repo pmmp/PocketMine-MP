@@ -122,32 +122,6 @@ function hard_unset(&$var){
 	}
 }
 
-
-function parseNBTData($data){
-	$x = array();
-	if(isset($data["value"])){
-		return parseNBTData($data["value"]);
-	}
-	foreach($data as $d){
-		if(!isset($d["value"]) and is_array($d) and count($d) == 1){
-			return parseNBTData(array_pop($d));
-		}elseif(!isset($d["value"]) and is_array($d)){
-			$x[] = parseNBTData($d);
-		}elseif(is_array($d["value"]) and isset($d["name"])){
-			$x[$d["name"]] = parseNBTData($d["value"]);
-		}elseif(is_array($d["value"]) and $d["type"] == 10){
-			return parseNBTData($d["value"]);
-		}elseif($d["name"] != ""){
-			$x[$d["name"]] = $d["value"];
-		}
-	}
-	if(count($x) == 0){
-		$x = $data;
-	}
-	return $x;
-}
-
-
 function arg($name, $default = false){
 	global $arguments, $argv;
 	if(!isset($arguments)){
