@@ -1,28 +1,22 @@
 <?php
 
-/*
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
+/**
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
 */
 
 define("IRON_SHOVEL", 256);//Implemented
@@ -123,8 +117,8 @@ define("EGG", 344);
 define("COMPASS", 345);
 
 define("GLOWSTONE_DUST", 348);
-define("RAW_FISH", 349);
-define("COOKED_FISH", 350);
+//define("RAW_FISH", 349);
+//define("COOKED_FISH", 350);
 define("DYE", 351);
 define("BONE", 352);
 define("SUGAR", 353);

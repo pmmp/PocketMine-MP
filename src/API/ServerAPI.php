@@ -1,28 +1,22 @@
 <?php
 
-/*
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
+/**
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
 */
 
 class ServerAPI{
@@ -287,7 +281,7 @@ class ServerAPI{
 		if($this->getProperty("auto-save") === true){
 			$this->server->schedule(18000, array($this, "autoSave"), array(), true);	
 		}
-		if($this->getProperty("enable-rcon") === true){
+		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}
 

@@ -1,13 +1,13 @@
 #!/bin/bash
-COMPILER_VERSION="0.12"
+COMPILER_VERSION="0.13"
 
-PHP_VERSION="5.4.16"
+PHP_VERSION="5.5.3"
 ZEND_VM="GOTO"
 
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="0.0.44"
-CURL_VERSION="curl-7_30_0"
+CURL_VERSION="curl-7_32_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
 DIR="$(pwd)"

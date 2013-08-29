@@ -1,28 +1,22 @@
 <?php
 
-/*
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
+/**
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
 */
 
 
@@ -71,6 +65,7 @@ class Player{
 	private $lagStat = 0;
 	private $spawnPosition;
 	private $packetLoss = 0;
+	private $lastChunk = false;
 	public $lastCorrect;
 	private $bigCnt;
 	private $packetStats;
@@ -164,6 +159,19 @@ class Player{
 				unset($this->chunkCount[$count]);
 			}
 		}
+		
+		if(is_array($this->lastChunk)){
+			$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($this->lastChunk[0] - 1)." AND x < ".($this->lastChunk[0] + 17)." AND z >= ".($this->lastChunk[1] - 1)." AND z < ".($this->lastChunk[1] + 17).";");
+			$this->lastChunk = false;
+			if($tiles !== false and $tiles !== true){
+				while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
+					$tile = $this->server->api->tile->getByID($tile["ID"]);
+					if($tile instanceof Tile){
+						$tile->spawn($this);
+					}
+				}
+			}			
+		}
 
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
@@ -198,21 +206,8 @@ class Player{
 		foreach($cnt as $i => $count){
 			$this->chunkCount[$count] = true;
 		}
-		/*$this->chunkCount = $this->dataPacket(MC_CHUNK_DATA, array(
-			"x" => $X,
-			"z" => $Z,
-			"data" => $this->level->getOrderedMiniChunk($X, $Z, $Y),
-		));*/
 		
-		$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($x - 1)." AND x < ".($x + 17)." AND z >= ".($z - 1)." AND z < ".($z + 17).";");
-		if($tiles !== false and $tiles !== true){
-			while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-				$tile = $this->server->api->tile->getByID($tile["ID"]);
-				if($tile instanceof Tile){
-					$tile->spawn($this);
-				}
-			}
-		}
+		$this->lastChunk = array($x, $z);
 		
 		$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
 	}
@@ -462,8 +457,6 @@ class Player{
 								));
 							}
 						}
-					}elseif($data->class === TILE_SIGN){
-						$data->spawn($this);
 					}
 				}
 				break;
@@ -473,7 +466,7 @@ class Player{
 						if($w === $data["tile"]){
 							$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
 								"windowid" => $id,
-								"slot" => $data["slot"],
+								"slot" => $data["slot"] + (isset($data["offset"]) ? $data["offset"]:0),
 								"block" => $data["slotdata"]->getID(),
 								"stack" => $data["slotdata"]->count,
 								"meta" => $data["slotdata"]->getMetadata(),
@@ -562,16 +555,17 @@ class Player{
 						return;
 					}else{
 						$message = $data->get();
+						$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message["message"]), $message["player"]); //Remove ANSI codes from chat
 					}
 				}else{
 					$message = (string) $data;
+					$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", (string) $data)); //Remove ANSI codes from chat
 				}
-				$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message)); //Remove ANSI codes from chat
 				break;
 		}
 	}
 	
-	public function sendChat($message){
+	public function sendChat($message, $author = ""){
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if(preg_match_all('#@([@A-Za-z_]{1,})#', $m, $matches, PREG_OFFSET_CAPTURE) > 0){
@@ -593,7 +587,8 @@ class Player{
 			}
 			
 			if($m !== ""){			
-				$this->dataPacket(MC_CHAT, array(				
+				$this->dataPacket(MC_CHAT, array(
+					"player" => ($author instanceof Player) ? $author->username:$author,
 					"message" => $m,
 				));
 			}
@@ -898,8 +893,11 @@ class Player{
 	public function getBandwidth(){
 		return array_sum($this->bandwidthStats) / max(1, count($this->bandwidthStats));
 	}
-	
+
 	public function clearQueue(){
+		if($this->connected === false){
+			return false;
+		}
 		ksort($this->received);
 		if(($cnt = count($this->received)) > PLAYER_MAX_QUEUE){
 			foreach($this->received as $c => $t){
@@ -1183,7 +1181,7 @@ class Player{
 					"x" => $this->data->get("position")["x"],
 					"y" => $this->data->get("position")["y"],
 					"z" => $this->data->get("position")["z"],
-					"unknown1" => 0,
+					"generator" => 0,
 					"gamemode" => ($this->gamemode & 0x01),
 					"eid" => 0,
 				));
@@ -1627,29 +1625,14 @@ class Player{
 					$this->entity->updateMetadata();
 				}
 				break;
-			case MC_SIGN_UPDATE:
-				if($this->spawned === false or $this->blocked === true){
-					break;
-				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
-				$t = $this->server->api->tile->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
-				if(($t instanceof Tile) and $t->class === TILE_SIGN){
-					if($t->data["creator"] !== $this->username){
-						$t->spawn($this);
-					}else{
-						$t->setText($data["line0"], $data["line1"], $data["line2"], $data["line3"]);
-					}
-				}
-				break;
 			case MC_CHAT:
 				if($this->spawned === false){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$message = preg_replace('#^<.*> #', "", $data["message"]);
-				if(trim($data["message"]) != "" and strlen($data["message"]) <= 100 and preg_match('#[^\\x20-\\xff]#', $message) == 0){
+				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255 and preg_match('#[^\\x20-\\xff]#', $data["message"]) == 0){
+					$message = $data["message"];
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					}else{
@@ -1665,14 +1648,27 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				if(isset($this->windows[$data["windowid"]]) and $this->windows[$data["windowid"]]->class === TILE_CHEST){
-					$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
-						"x" => $this->windows[$data["windowid"]]->x,
-						"y" => $this->windows[$data["windowid"]]->y,
-						"z" => $this->windows[$data["windowid"]]->z,
-						"case1" => 1,
-						"case2" => 0,
-					));
+				if(isset($this->windows[$data["windowid"]])){
+					if(is_array($this->windows[$data["windowid"]])){
+						$all = $this->server->api->player->getAll($this->level);
+						foreach($this->windows[$data["windowid"]] as $ob){
+							$this->server->api->player->broadcastPacket($all, MC_TILE_EVENT, array(
+								"x" => $ob->x,
+								"y" => $ob->y,
+								"z" => $ob->z,
+								"case1" => 1,
+								"case2" => 0,
+							));
+						}
+					}elseif($this->windows[$data["windowid"]]->class === TILE_CHEST){
+						$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+							"x" => $this->windows[$data["windowid"]]->x,
+							"y" => $this->windows[$data["windowid"]]->y,
+							"z" => $this->windows[$data["windowid"]]->z,
+							"case1" => 1,
+							"case2" => 0,
+						));
+					}
 				}
 				unset($this->windows[$data["windowid"]]);
 
@@ -1739,50 +1735,121 @@ class Player{
 				if(!isset($this->windows[$data["windowid"]])){
 					break;
 				}
-				$tile = $this->windows[$data["windowid"]];
-				if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $data["slot"] < 0 or ($tile->class === TILE_CHEST and $data["slot"] >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $data["slot"] >= FURNACE_SLOTS)){
-					break;
-				}
-				$done = false;
-				$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
-				
-				$slot = $tile->getSlot($data["slot"]);
-				$done = true;
-				if($this->server->api->dhandle("player.container.slot", array(
-					"tile" => $tile,
-					"slot" => $data["slot"],
-					"slotdata" => $slot,
-					"itemdata" => $item,
-					"player" => $this,
-				)) === false){
-					$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-						"windowid" => $data["windowid"],
-						"slot" => $data["slot"],
-						"block" => $slot->getID(),
-						"stack" => $slot->count,
-						"meta" => $slot->getMetadata(),
-					));
-					break;
-				}
-				if($item->getID() !== AIR and $slot->getID() == $item->getID()){
-					if($slot->count < $item->count){
-						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
-							break;
-						}
-					}elseif($slot->count > $item->count){
-						$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
-					}
-				}else{
-					if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+				if(is_array($this->windows[$data["windowid"]])){
+					$tiles = $this->windows[$data["windowid"]];
+					if($data["slot"] > 0 and $data["slot"] < CHEST_SLOTS){
+						$tile = $tiles[0];
+						$slotn = $data["slot"];
+						$offset = 0;
+					}elseif($data["slot"] >= CHEST_SLOTS and $data["slot"] <= (CHEST_SLOTS << 1)){
+						$tile = $tiles[1];
+						$slotn = $data["slot"] - CHEST_SLOTS;
+						$offset = CHEST_SLOTS;
+					}else{
 						break;
 					}
-					$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+
+					$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					
+					$slot = $tile->getSlot($slotn);
+					if($this->server->api->dhandle("player.container.slot", array(
+						"tile" => $tile,
+						"slot" => $data["slot"],
+						"offset" => $offset,
+						"slotdata" => $slot,
+						"itemdata" => $item,
+						"player" => $this,
+					)) === false){
+						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+							"windowid" => $data["windowid"],
+							"slot" => $data["slot"],
+							"block" => $slot->getID(),
+							"stack" => $slot->count,
+							"meta" => $slot->getMetadata(),
+						));
+						break;
+					}
+					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
+						if($slot->count < $item->count){
+							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								break;
+							}
+						}elseif($slot->count > $item->count){
+							$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
+						}
+					}else{
+						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							break;
+						}
+						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+					}
+					$tile->setSlot($slotn, $item, true, $offset);
+				}else{
+					$tile = $this->windows[$data["windowid"]];
+					if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $data["slot"] < 0 or ($tile->class === TILE_CHEST and $data["slot"] >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $data["slot"] >= FURNACE_SLOTS)){
+						break;
+					}
+					$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					
+					$slot = $tile->getSlot($data["slot"]);
+					if($this->server->api->dhandle("player.container.slot", array(
+						"tile" => $tile,
+						"slot" => $data["slot"],
+						"slotdata" => $slot,
+						"itemdata" => $item,
+						"player" => $this,
+					)) === false){
+						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
+							"windowid" => $data["windowid"],
+							"slot" => $data["slot"],
+							"block" => $slot->getID(),
+							"stack" => $slot->count,
+							"meta" => $slot->getMetadata(),
+						));
+						break;
+					}
+					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
+						if($slot->count < $item->count){
+							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								break;
+							}
+						}elseif($slot->count > $item->count){
+							$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
+						}
+					}else{
+						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							break;
+						}
+						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+					}
+					$tile->setSlot($data["slot"], $item);
 				}
-				$tile->setSlot($data["slot"], $item);
 				break;
 			case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
 					break;
+				}
+				break;
+			case MC_ENTITY_DATA:
+				if($this->spawned === false or $this->blocked === true){
+					break;
+				}
+				$this->craftingItems = array();
+				$this->toCraft = array();
+				$t = $this->server->api->tile->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
+				if(($t instanceof Tile) and $t->class === TILE_SIGN){
+					if($t->data["creator"] !== $this->username){
+						$t->spawn($this);
+					}else{
+						$nbt = new NBT();
+						$nbt->load($data["namedtag"]);
+						$d = array_shift($nbt->tree);
+						if($d["id"] !== TILE_SIGN){
+							$t->spawn($this);
+						}else{
+							$t->setText($d["Text1"], $d["Text2"], $d["Text3"], $d["Text4"]);
+						}
+					}
 				}
 				break;
 			default:

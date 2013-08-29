@@ -1,28 +1,22 @@
 <?php
 
-/*
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
+/**
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
 */
 
 class Level{
@@ -419,6 +413,26 @@ class Level{
 			return false;
 		}
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
+	}
+	
+	public function getSafeSpawn(){
+		if(($spawn = $this->getSpawn()) !== false){
+			$x = (int) round($spawn->x);
+			$y = (int) round($spawn->y);
+			$z = (int) round($spawn->z);
+			for(; $y < 128; ++$y){
+				$v = new Vector3($x, $y, $z);
+				if($this->getBlock($v->getSide(1)) instanceof AirBlock){
+					if($this->getBlock($v) instanceof AirBlock){
+						return new Position($x, $y, $z, $this);
+					}
+				}else{
+					++$y;
+				}
+			}
+			return new Position($x, $y, $z, $this);
+		}
+		return false;
 	}
 	
 	public function setSpawn(Vector3 $pos){

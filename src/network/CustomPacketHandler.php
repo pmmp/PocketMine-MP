@@ -1,28 +1,22 @@
 <?php
 
-/*
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
+/**
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
 */
 
 class CustomPacketHandler{
@@ -185,8 +179,10 @@ class CustomPacketHandler{
 				break;
 			case MC_CHAT:
 				if($this->c === false){
+					$this->data["player"] = $this->get(Utils::readShort($this->get(2), false));
 					$this->data["message"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
+					$this->raw .= Utils::writeShort(strlen($this->data["player"])).$this->data["player"];
 					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
@@ -200,7 +196,7 @@ class CustomPacketHandler{
 			case MC_START_GAME:
 				if($this->c === false){
 					$this->data["seed"] = Utils::readInt($this->get(4));
-					$this->data["unknown1"] = Utils::readInt($this->get(4));
+					$this->data["generator"] = Utils::readInt($this->get(4));
 					$this->data["gamemode"] = Utils::readInt($this->get(4));
 					$this->data["eid"] = Utils::readInt($this->get(4));
 					$this->data["x"] = Utils::readFloat($this->get(4));
@@ -208,7 +204,7 @@ class CustomPacketHandler{
 					$this->data["z"] = Utils::readFloat($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["seed"]);
-					$this->raw .= Utils::writeInt($this->data["unknown1"]);
+					$this->raw .= Utils::writeInt($this->data["generator"]);
 					$this->raw .= Utils::writeInt($this->data["gamemode"]);
 					$this->raw .= Utils::writeInt($this->data["eid"]);
 					$this->raw .= Utils::writeFloat($this->data["x"]);
@@ -743,12 +739,12 @@ class CustomPacketHandler{
 				if($this->c === false){
 					$this->data["windowid"] = ord($this->get(1));
 					$this->data["type"] = ord($this->get(1));
-					$this->data["slots"] = Utils::readShort($this->get(2), false);
+					$this->data["slots"] = ord($this->get(1));
 					$this->data["title"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
 					$this->raw .= chr($this->data["windowid"]);
 					$this->raw .= chr($this->data["type"]);
-					$this->raw .= Utils::writeShort($this->data["slots"]);
+					$this->raw .= chr($this->data["slots"]);
 					$this->raw .= Utils::writeShort(strlen($this->data["title"])).$this->data["title"];
 				}
 				break;
@@ -808,28 +804,24 @@ class CustomPacketHandler{
 					$this->raw .= Utils::writeShort(strlen($this->data["message"])).$this->data["message"];
 				}
 				break;
-			case MC_SIGN_UPDATE:
-				if($this->c === false){
-					$this->data["x"] = Utils::readShort($this->get(2));
-					$this->data["y"] = ord($this->get(1));
-					$this->data["z"] = Utils::readShort($this->get(2));
-					for($i = 0; $i < 4; ++$i){
-						$this->data["line$i"] = $this->get(Utils::readLShort($this->get(2), false));
-					}
-				}else{
-					$this->raw .= Utils::writeShort($this->data["x"]);
-					$this->raw .= chr($this->data["y"]);
-					$this->raw .= Utils::writeShort($this->data["z"]);
-					for($i = 0; $i < 4; ++$i){
-						$this->raw .= Utils::writeLShort(strlen($this->data["line$i"])).$this->data["line$i"];
-					}
-				}
-				break;
 			case MC_ADVENTURE_SETTINGS:
 				if($this->c === false){
 					$this->data["flags"] = Utils::readInt($this->get(4));
 				}else{
 					$this->raw .= Utils::writeInt($this->data["flags"]);
+				}
+				break;
+			case MC_ENTITY_DATA:
+				if($this->c === false){
+					$this->data["x"] = Utils::readShort($this->get(2));
+					$this->data["y"] = ord($this->get(1));
+					$this->data["z"] = Utils::readShort($this->get(2));
+					$this->data["namedtag"] = $this->get(true);
+				}else{
+					$this->raw .= Utils::writeShort($this->data["x"]);
+					$this->raw .= chr($this->data["y"]);
+					$this->raw .= Utils::writeShort($this->data["z"]);
+					$this->raw .= $this->data["namedtag"];
 				}
 				break;
 			default:

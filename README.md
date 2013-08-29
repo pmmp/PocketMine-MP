@@ -33,7 +33,7 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-## IRC #pocketmine @ irc.freenode.net
+## IRC #pocketmine (or #mcpedevs) @ irc.freenode.net
 * [WebIRC](http://webchat.freenode.net?channels=pocketmine,mcpedevs&uio=d4)
 
 
@@ -42,7 +42,6 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * __[PHP SQLite3](http://php.net/manual/en/book.sqlite3.php)__
 * __[PHP BCMath](http://php.net/manual/en/book.bc.php)__
 * __[PHP pthreads](https://github.com/krakjoe/pthreads)__ by _[krakjoe](https://github.com/krakjoe)_: Threading for PHP - Share Nothing, Do Everything.
-* __[PHP NBT](https://github.com/TheFrozenFire/PHP-NBT-Decoder-Encoder/blob/master/nbt.class.php)__ by _[TheFrozenFire](https://github.com/TheFrozenFire)_: Class for reading in NBT-format files (modified to handle Little-Endian files).
 * __[Spyc](https://github.com/mustangostang/spyc/blob/master/Spyc.php)__ by _[Vlad Andersen](https://github.com/mustangostang)_: A simple YAML loader/dumper class for PHP.
 * __[ANSICON](https://github.com/adoxa/ansicon)__ by _[Jason Hood](https://github.com/adoxa)_: Process ANSI escape sequences for Windows console programs.
 * __[cURL](http://curl.haxx.se/)__: cURL is a command line tool for transferring data with URL syntax

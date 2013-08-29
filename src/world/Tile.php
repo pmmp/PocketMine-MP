@@ -1,28 +1,22 @@
 <?php
 
-/*
-
-           -
-         /   \
-      /         \
-   /   PocketMine  \
-/          MP         \
-|\     @shoghicp     /|
-|.   \           /   .|
-| ..     \   /     .. |
-|    ..    |    ..    |
-|       .. | ..       |
-\          |          /
-   \       |       /
-      \    |    /
-         \ | /
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-
+/**
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
 */
 
 class Tile extends Position{
@@ -57,6 +51,7 @@ class Tile extends Position{
 		$this->z = (int) $z;
 		$this->server->query("INSERT OR REPLACE INTO tiles (ID, level, class, x, y, z) VALUES (".$this->id.", '".$this->level->getName()."', '".$this->class."', ".$this->x.", ".$this->y.", ".$this->z.");");
 		switch($this->class){
+			case TILE_CHEST:
 			case TILE_SIGN:
 				$this->server->query("UPDATE tiles SET spawnable = 1 WHERE ID = ".$this->id.";");
 				break;
@@ -75,6 +70,149 @@ class Tile extends Position{
 					$this->update();
 				}
 				break;
+		}
+	}
+	
+	public function isPaired(){
+		if($this->class !== TILE_CHEST){
+			return false;
+		}
+		if(!isset($this->data["pairx"]) or !isset($this->data["pairz"])){
+			return false;
+		}
+		return true;
+	}
+	
+	public function getPair(){
+		if($this->isPaired()){
+			return $this->server->api->tile->get(new Position((int) $this->data["pairx"], $this->y, (int) $this->data["pairz"], $this->level));
+		}
+		return false;
+	}
+	
+	public function pairWith(Tile $tile){
+		if($this->isPaired()or $tile->isPaired()){
+			return false;
+		}
+		
+		$this->data["pairx"] = $tile->x;
+		$this->data["pairz"] = $tile->z;
+		
+		$tile->data["pairx"] = $this->x;
+		$tile->data["pairz"] = $this->z;
+		
+		$this->server->api->tile->spawnToAll($this);
+		$this->server->api->tile->spawnToAll($tile);
+	}
+	
+	public function unpair(){
+		if(!$this->isPaired()){
+			return false;
+		}
+		
+		$tile = $this->getPair();
+		unset($this->data["pairx"], $this->data["pairz"], $tile->data["pairx"], $tile->data["pairz"]);
+		
+		$this->server->api->tile->spawnToAll($this);		
+		if($tile instanceof Tile){
+			$this->server->api->tile->spawnToAll($tile);
+		}
+	}
+	
+	public function openInventory(Player $player){
+		if($this->class === TILE_CHEST){
+			$player->windowCnt++;
+			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
+			if(($pair = $this->getPair()) !== false){				
+				if(($pair->x + ($pair->z << 13)) > ($this->x + ($this->z << 13))){ //Order them correctly
+					$player->windows[$id] = array(
+						$pair,
+						$this
+					);
+				}else{
+					$player->windows[$id] = array(
+						$this,
+						$pair
+					);
+				}
+			}else{
+				$player->windows[$id] = $this;
+			}
+			$player->dataPacket(MC_CONTAINER_OPEN, array(
+				"windowid" => $id,
+				"type" => WINDOW_CHEST,
+				"slots" => is_array($player->windows[$id]) ? CHEST_SLOTS << 1:CHEST_SLOTS,
+				"title" => "Chest",
+			));
+			$slots = array();
+			
+			if(is_array($player->windows[$id])){
+				$all = $this->server->api->player->getAll($this->level);
+				foreach($player->windows[$id] as $ob){
+					$this->server->api->player->broadcastPacket($all, MC_TILE_EVENT, array(
+						"x" => $ob->x,
+						"y" => $ob->y,
+						"z" => $ob->z,
+						"case1" => 1,
+						"case2" => 2,
+					));
+					for($s = 0; $s < CHEST_SLOTS; ++$s){
+						$slot = $ob->getSlot($s);
+						if($slot->getID() > AIR and $slot->count > 0){
+							$slots[] = $slot;
+						}else{
+							$slots[] = BlockAPI::getItem(AIR, 0, 0);
+						}
+					}
+				}
+			}else{
+				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"case1" => 1,
+					"case2" => 2,
+				));
+				for($s = 0; $s < CHEST_SLOTS; ++$s){
+					$slot = $this->getSlot($s);
+					if($slot->getID() > AIR and $slot->count > 0){
+						$slots[] = $slot;
+					}else{
+						$slots[] = BlockAPI::getItem(AIR, 0, 0);
+					}
+				}
+			}
+			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+				"windowid" => $id,
+				"count" => count($slots),
+				"slots" => $slots
+			));
+			return true;
+		}elseif($this->class === TILE_FURNACE){
+			$player->windowCnt++;
+			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
+			$player->windows[$id] = $this;
+			$player->dataPacket(MC_CONTAINER_OPEN, array(
+				"windowid" => $id,
+				"type" => WINDOW_FURNACE,
+				"slots" => FURNACE_SLOTS,
+				"title" => "Furnace",
+			));
+			$slots = array();
+			for($s = 0; $s < FURNACE_SLOTS; ++$s){
+				$slot = $this->getSlot($s);
+				if($slot->getID() > AIR and $slot->count > 0){
+					$slots[] = $slot;
+				}else{
+					$slots[] = BlockAPI::getItem(AIR, 0, 0);
+				}
+			}
+			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+				"windowid" => $id,
+				"count" => count($slots),
+				"slots" => $slots
+			));
+			return true;
 		}
 	}
 
@@ -165,7 +303,7 @@ class Tile extends Position{
 		}
 	}
 	
-	public function setSlot($s, Item $item, $update = true){
+	public function setSlot($s, Item $item, $update = true, $offset = 0){
 		$i = $this->getSlotIndex($s);
 		$d = array(
 			"Count" => $item->count,
@@ -187,6 +325,7 @@ class Tile extends Position{
 		$this->server->api->dhandle("tile.container.slot", array(
 			"tile" => $this,
 			"slot" => $s,
+			"offset" => $offset,
 			"slotdata" => $item,
 		));
 
@@ -204,16 +343,88 @@ class Tile extends Position{
 			$player = $this->server->api->player->get($player);
 		}
 		switch($this->class){
-			case TILE_SIGN:
-				$player->dataPacket(MC_SIGN_UPDATE, array(
-					"level" => $this->level,
+			case TILE_CHEST:
+				$nbt = new NBT();
+				$nbt->write(chr(NBT::TAG_COMPOUND)."\x00\x00");
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("id");
+				$nbt->writeTAG_String($this->class);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("x");
+				$nbt->writeTAG_Int((int) $this->x);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("y");
+				$nbt->writeTAG_Int((int) $this->y);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("z");
+				$nbt->writeTAG_Int((int) $this->z);
+				
+				if($this->isPaired()){
+					$nbt->write(chr(NBT::TAG_INT));
+					$nbt->writeTAG_String("pairx");
+					$nbt->writeTAG_Int((int) $this->data["pairx"]);
+					
+					$nbt->write(chr(NBT::TAG_INT));
+					$nbt->writeTAG_String("pairz");
+					$nbt->writeTAG_Int((int) $this->data["pairz"]);
+				}
+				
+				$nbt->write(chr(NBT::TAG_END));				
+				
+				$player->dataPacket(MC_ENTITY_DATA, array(
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
-					"line0" => $this->data["Text1"],
-					"line1" => $this->data["Text2"],
-					"line2" => $this->data["Text3"],
-					"line3" => $this->data["Text4"],
+					"namedtag" => $nbt->binary,
+				));
+				break;
+			case TILE_SIGN:
+				$nbt = new NBT();
+				$nbt->write(chr(NBT::TAG_COMPOUND)."\x00\x00");
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text1");
+				$nbt->writeTAG_String($this->data["Text1"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text2");
+				$nbt->writeTAG_String($this->data["Text2"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text3");
+				$nbt->writeTAG_String($this->data["Text3"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("Text4");
+				$nbt->writeTAG_String($this->data["Text4"]);
+				
+				$nbt->write(chr(NBT::TAG_STRING));
+				$nbt->writeTAG_String("id");
+				$nbt->writeTAG_String($this->class);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("x");
+				$nbt->writeTAG_Int((int) $this->x);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("y");
+				$nbt->writeTAG_Int((int) $this->y);
+				
+				$nbt->write(chr(NBT::TAG_INT));
+				$nbt->writeTAG_String("z");
+				$nbt->writeTAG_Int((int) $this->z);
+				
+				$nbt->write(chr(NBT::TAG_END));				
+				
+				$player->dataPacket(MC_ENTITY_DATA, array(
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"namedtag" => $nbt->binary,
 				));
 				break;
 		}
