@@ -103,6 +103,8 @@ class Tile extends Position{
 		
 		$this->server->api->tile->spawnToAll($this);
 		$this->server->api->tile->spawnToAll($tile);
+		$this->server->handle("tile.update", $this);
+		$this->server->handle("tile.update", $tile);
 	}
 	
 	public function unpair(){
@@ -113,9 +115,11 @@ class Tile extends Position{
 		$tile = $this->getPair();
 		unset($this->data["pairx"], $this->data["pairz"], $tile->data["pairx"], $tile->data["pairz"]);
 		
-		$this->server->api->tile->spawnToAll($this);		
+		$this->server->api->tile->spawnToAll($this);
+		$this->server->handle("tile.update", $this);
 		if($tile instanceof Tile){
 			$this->server->api->tile->spawnToAll($tile);
+			$this->server->handle("tile.update", $tile);
 		}
 	}
 	
@@ -438,6 +442,7 @@ class Tile extends Position{
 		$this->data["Text2"] = $line2;
 		$this->data["Text3"] = $line3;
 		$this->data["Text4"] = $line4;
+		$this->server->api->tile->spawnToAll($this);	
 		$this->server->handle("tile.update", $this);
 		return true;
 	}

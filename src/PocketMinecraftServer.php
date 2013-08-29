@@ -26,7 +26,9 @@ class PocketMinecraftServer{
 	
 	private function load(){
 		$this->version = new VersionString();
-		@cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
+		if(defined("DEBUG") and DEBUG >= 0){
+			@cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
+		}
 		if($this->version->isDev()){
 			console("[INFO] \x1b[31;1mThis is a Development version");
 		}
@@ -64,7 +66,9 @@ class PocketMinecraftServer{
 		$this->reloadConfig();
 		$this->stop = false;
 		$this->ticks = 0;
-		$this->asyncThread = new AsyncMultipleQueue();
+		if(!defined("NO_THREADS")){
+			$this->asyncThread = new AsyncMultipleQueue();
+		}
 	}
 
 	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
@@ -87,7 +91,7 @@ class PocketMinecraftServer{
 	
 	public function titleTick(){
 		$time = microtime(true);
-		if(ENABLE_ANSI === true){
+		if(defined("DEBUG") and DEBUG >= 0 and ENABLE_ANSI === true){
 			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)."/".$this->maxClients." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | U ".round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." D ".round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." kB/s | TPS ".$this->getTPS()."\x07";
 		}
 		$this->interface->bandwidth = array(0, 0, $time);
@@ -186,7 +190,10 @@ class PocketMinecraftServer{
 			$this->stop = true;
 			$this->trigger("server.close", $reason);
 			$this->interface->close();
-			@$this->asyncThread->stop = true;
+			
+			if(!defined("NO_THREADS")){
+				@$this->asyncThread->stop = true;
+			}
 		}
 	}
 
@@ -204,6 +211,9 @@ class PocketMinecraftServer{
 	}
 	
 	public function asyncOperation($type, array $data, callable $callable = null){
+		if(defined("NO_THREADS")){
+			return false;
+		}
 		$d = "";
 		$type = (int) $type;
 		switch($type){
@@ -227,6 +237,9 @@ class PocketMinecraftServer{
 	}
 	
 	public function asyncOperationChecker(){
+		if(defined("NO_THREADS")){
+			return false;
+		}
 		if(isset($this->asyncThread->output{5})){
 			$offset = 0;
 			$ID = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
@@ -552,8 +565,12 @@ class PocketMinecraftServer{
 				$lastLoop = 0;
 			}else{
 				++$lastLoop;
-				if($lastLoop >= 16){
-					usleep(5000);
+				if($lastLoop < 16){
+					usleep(1);
+				}elseif($lastLoop >= 128){
+					usleep(100);
+				}elseif($lastLoop >= 256){
+					usleep(512);
 				}
 			}
 		}

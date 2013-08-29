@@ -149,7 +149,6 @@ class ServerAPI{
 		$this->loadAPI("tile", "TileAPI");
 		$this->loadAPI("player", "PlayerAPI");
 		$this->loadAPI("time", "TimeAPI");
-		$this->loadAPI("mob", "MobAPI");
 		
 		foreach($this->apiList as $ob){
 			if(is_callable(array($ob, "init"))){

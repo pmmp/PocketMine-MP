@@ -6,6 +6,7 @@ cd /d %~dp0
 FOR /F "tokens=*" %%i in ('php -r "echo 1;"') do SET PHPOUTPUT=%%i
 if not "%PHPOUTPUT%"=="1" (
 echo [ERROR] Couldn't find PHP binary in PATH.
+echo [INFO] Please use the Windows installer from the homepage
 ) else (
 	if exist php.cmd (
 		if exist bin\ansicon.exe (
