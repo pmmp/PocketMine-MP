@@ -565,8 +565,12 @@ class PocketMinecraftServer{
 				$lastLoop = 0;
 			}else{
 				++$lastLoop;
-				if($lastLoop >= 16){
-					usleep(5000);
+				if($lastLoop < 16){
+					usleep(1);
+				}elseif($lastLoop >= 128){
+					usleep(100);
+				}elseif($lastLoop >= 256){
+					usleep(512);
 				}
 			}
 		}
