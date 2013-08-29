@@ -1631,7 +1631,7 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255 and preg_match('#[^\\x20-\\xff]#', $data["message"]) == 0){
+				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255){
 					$message = $data["message"];
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
