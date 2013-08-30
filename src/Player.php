@@ -1735,9 +1735,10 @@ class Player{
 				if(!isset($this->windows[$data["windowid"]])){
 					break;
 				}
+
 				if(is_array($this->windows[$data["windowid"]])){
 					$tiles = $this->windows[$data["windowid"]];
-					if($data["slot"] > 0 and $data["slot"] < CHEST_SLOTS){
+					if($data["slot"] >= 0 and $data["slot"] < CHEST_SLOTS){
 						$tile = $tiles[0];
 						$slotn = $data["slot"];
 						$offset = 0;
