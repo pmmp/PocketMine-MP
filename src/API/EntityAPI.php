@@ -121,9 +121,9 @@ class EntityAPI{
 			return;
 		}
 		$data = array(
-			"x" => $pos->x + mt_rand(-10, 10) / 10,
+			"x" => $pos->x + mt_rand(-10, 10) / 50,
 			"y" => $pos->y + 0.19,
-			"z" => $pos->z + mt_rand(-10, 10) / 10,
+			"z" => $pos->z + mt_rand(-10, 10) / 50,
 			//"speedX" => mt_rand(-3, 3) / 8,
 			"speedY" => mt_rand(5, 8) / 2,
 			//"speedZ" => mt_rand(-3, 3) / 8,
