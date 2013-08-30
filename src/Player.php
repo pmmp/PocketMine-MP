@@ -1591,8 +1591,8 @@ class Player{
 							MELON_SLICE => 2,
 							GOLDEN_APPLE => 10,
 							//COOKIE => 2,
-							COOKED_FISH => 5,
-							RAW_FISH => 2,
+							//COOKED_FISH => 5,
+							//RAW_FISH => 2,
 						);
 						$slot = $this->getSlot($this->slot);
 						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
