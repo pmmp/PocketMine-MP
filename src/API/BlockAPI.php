@@ -266,13 +266,13 @@ class BlockAPI{
 		$player->lastBreak = microtime(true);
 		
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
+			$drops = $target->getDrops($item, $player);
 			if($target->onBreak($item, $player) === false){
 				return $this->cancelAction($target, $player, false);
 			}
 			if($item->useOn($target) and ($player->gamemode & 0x01) === 0 and $item->getMetadata() >= $item->getMaxDurability()){
 				$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
 			}
-			$drops = $target->getDrops($item, $player);
 		}else{
 			return $this->cancelAction($target, $player, false);
 		}
