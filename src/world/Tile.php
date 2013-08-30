@@ -146,7 +146,9 @@ class Tile extends Position{
 				"windowid" => $id,
 				"type" => WINDOW_CHEST,
 				"slots" => is_array($player->windows[$id]) ? CHEST_SLOTS << 1:CHEST_SLOTS,
-				"title" => "Chest",
+				"x" => $this->x,
+				"y" => $this->y,
+				"z" => $this->z,
 			));
 			$slots = array();
 			
@@ -189,7 +191,10 @@ class Tile extends Position{
 			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 				"windowid" => $id,
 				"count" => count($slots),
-				"slots" => $slots
+				"slots" => $slots,
+				"x" => $this->x,
+				"y" => $this->y,
+				"z" => $this->z
 			));
 			return true;
 		}elseif($this->class === TILE_FURNACE){
@@ -200,7 +205,6 @@ class Tile extends Position{
 				"windowid" => $id,
 				"type" => WINDOW_FURNACE,
 				"slots" => FURNACE_SLOTS,
-				"title" => "Furnace",
 			));
 			$slots = array();
 			for($s = 0; $s < FURNACE_SLOTS; ++$s){

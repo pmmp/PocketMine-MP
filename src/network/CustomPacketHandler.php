@@ -740,12 +740,15 @@ class CustomPacketHandler{
 					$this->data["windowid"] = ord($this->get(1));
 					$this->data["type"] = ord($this->get(1));
 					$this->data["slots"] = ord($this->get(1));
-					$this->data["title"] = $this->get(Utils::readShort($this->get(2), false));
+					
+					//$this->data["title"] = $this->get(Utils::readShort($this->get(2), false));
 				}else{
 					$this->raw .= chr($this->data["windowid"]);
 					$this->raw .= chr($this->data["type"]);
 					$this->raw .= chr($this->data["slots"]);
-					$this->raw .= Utils::writeShort(strlen($this->data["title"])).$this->data["title"];
+					$this->raw .= Utils::writeInt($this->data["x"]);
+					$this->raw .= Utils::writeInt($this->data["y"]);
+					$this->raw .= Utils::writeInt($this->data["z"]);
 				}
 				break;
 			case MC_CONTAINER_CLOSE:
