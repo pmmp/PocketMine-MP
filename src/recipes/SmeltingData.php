@@ -30,7 +30,7 @@ class SmeltingData{
 		NETHERRACK => array(NETHER_BRICK, 0),
 		RAW_PORKCHOP => array(COOKED_PORKCHOP, 0),
 		CLAY => array(BRICK, 0),
-		RAW_FISH => array(COOKED_FISH, 0),
+		//RAW_FISH => array(COOKED_FISH, 0),
 		CACTUS => array(DYE, 2),
 		RED_MUSHROOM => array(DYE, 1),
 		RAW_BEEF => array(STEAK, 0),
