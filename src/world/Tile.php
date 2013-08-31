@@ -192,9 +192,6 @@ class Tile extends Position{
 				"windowid" => $id,
 				"count" => count($slots),
 				"slots" => $slots,
-				"x" => $this->x,
-				"y" => $this->y,
-				"z" => $this->z
 			));
 			return true;
 		}elseif($this->class === TILE_FURNACE){
@@ -205,6 +202,9 @@ class Tile extends Position{
 				"windowid" => $id,
 				"type" => WINDOW_FURNACE,
 				"slots" => FURNACE_SLOTS,
+				"x" => $this->x,
+				"y" => $this->y,
+				"z" => $this->z
 			));
 			$slots = array();
 			for($s = 0; $s < FURNACE_SLOTS; ++$s){
