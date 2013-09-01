@@ -224,6 +224,8 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 if [ "$1" == "crosscompile" ]; then
 	sed -i 's/pthreads_working=no/pthreads_working=yes/' ./configure
 	export LIBS="-lpthread -ldl"
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
+
 fi
 ./configure $OPTIMIZATION--prefix="$DIR/php5" \
 --exec-prefix="$DIR/php5" \
