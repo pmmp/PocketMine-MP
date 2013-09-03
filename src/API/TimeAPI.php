@@ -103,11 +103,11 @@ class TimeAPI{
 
 	public function getPhase($time = false){
 		$time = !is_integer($time) ? $this->get(false, $time):$time;
-		if($time < $this->phase["sunset"]){
+		if($time < TimeAPI::$phases["sunset"]){
 			$time = "day";
-		}elseif($time < $this->phase["night"]){
+		}elseif($time < TimeAPI::$phase["night"]){
 			$time = "sunset";
-		}elseif($time < $this->phase["sunrise"]){
+		}elseif($time < TimeAPI::$phases["sunrise"]){
 			$time = "night";
 		}else{
 			$time = "sunrise";
@@ -119,8 +119,8 @@ class TimeAPI{
 		if(!($level instanceof Level)){
 			$level = $this->server->api->level->getDefault();
 		}
-		if(is_string($time) and isset($this->phases[$time])){
-			$level->setTime($this->phases[$time]);
+		if(is_string($time) and isset(TimeAPI::$phases[$time])){
+			$level->setTime(TimeAPI::$phases[$time]);
 		}else{
 			$level->setTime((int) $time);
 		}
