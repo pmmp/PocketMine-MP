@@ -1281,6 +1281,7 @@ class Player{
 							"time" => $this->level->getTime(),
 						));
 						$this->teleport(new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level));
+						$this->server->schedule(30, array($this, "teleport"), new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level));
 						$this->server->handle("player.spawn", $this);
 						break;
 					case 2://Chunk loaded?
