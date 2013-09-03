@@ -1232,6 +1232,11 @@ class Player{
 				$this->entity->z = $this->data->get("position")["z"];
 				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
 					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
+					$this->dataPacket(MC_SET_SPAWN_POSITION, array(
+						"x" => (int) $this->spawnPosition->x,
+						"y" => (int) $this->spawnPosition->y,
+						"z" => (int) $this->spawnPosition->z,
+					));
 				}
 				$this->entity->check = false;
 				$this->entity->setName($this->username);
