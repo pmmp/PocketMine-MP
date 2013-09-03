@@ -31,6 +31,7 @@ class Player{
 	private $nextBuffer = 0;
 	private $evid = array();
 	private $lastMovement = 0;
+	private $forceMovement = false;
 	private $timeout;
 	private $connected = true;
 	private $clientID;
@@ -736,7 +737,7 @@ class Player{
 		return $res;
 	}
 	
-	public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true){
+	public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true, $force = true){
 		if($this->entity instanceof Entity){
 			$this->entity->check = false;
 			if($yaw === false){
@@ -834,6 +835,9 @@ class Player{
 				$this->getNextChunk();
 			}
 			$this->entity->check = true;
+			if($force === true){
+				$this->forceMovement = $pos;
+			}
 		}
 		$this->dataPacket(MC_MOVE_PLAYER, array(
 			"eid" => 0,
@@ -1301,6 +1305,13 @@ class Player{
 				}
 				if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
 					$this->lastMovement = $data["counter"];
+					if($this->forceMovement instanceof Vector3){
+						if($this->forceMovement->distance(new Vector3($data["x"], $data["y"], $data["z"])) <= 0.7){
+							$this->forceMovement = false;
+						}else{
+							$this->teleport($this->forceMovement, $this->entity->yaw, $this->entity->pitch, false);
+						}
+					}
 					$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 7 and ($this->gamemode & 0x01) === 0x00) or $speed > 15)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
