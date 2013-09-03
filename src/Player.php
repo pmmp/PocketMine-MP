@@ -41,6 +41,7 @@ class Player{
 	private $iusername;
 	private $eid = false;
 	private $startAction = false;
+	private $isSleeping = false;
 	public $data;
 	public $entity = false;
 	public $auth = false;
@@ -287,6 +288,39 @@ class Player{
 			$this->chunkCount = array();
 			$this->cratingItems = array();
 			$this->received = array();
+		}
+	}
+	
+	public function sleepOn(Vector3 $pos){
+		$this->isSleeping = $pos;
+		$this->teleport(new Position($pos->x, $pos->y, $pos->z, $this->level));
+		if($this->entity instanceof Entity){
+			$this->entity->updateMetadata();
+		}
+		$this->setSpawn($pos);
+		$this->server->schedule(30, array($this, "checkSleep"));
+	}
+	
+	public function stopSleep(){
+		$this->isSleeping = false;
+		if($this->entity instanceof Entity){
+			$this->entity->updateMetadata();
+		}
+	}
+	
+	public function checkSleep(){
+		if($this->isSleeping !== false){
+			if($this->server->api->time->getPhase($this->level) === "night"){
+				foreach($this->server->api->player->getAll($this->level) as $p){
+					if($p->isSleeping === false){
+						return false;
+					}
+				}
+				$this->server->api->time->set("day", $this->level);
+				foreach($this->server->api->player->getAll($this->level) as $p){
+					$p->stopSleep();
+				}
+			}
 		}
 	}
 	
@@ -1196,6 +1230,9 @@ class Player{
 				$this->entity->x = $this->data->get("position")["x"];
 				$this->entity->y = $this->data->get("position")["y"];
 				$this->entity->z = $this->data->get("position")["z"];
+				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
+					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
+				}
 				$this->entity->check = false;
 				$this->entity->setName($this->username);
 				$this->entity->data["CID"] = $this->CID;
@@ -1373,10 +1410,11 @@ class Player{
 					break;
 				}
 				$this->craftingItems = array();
-				$this->toCraft = array();
-				if($this->entity->inAction === true){
-					switch($data["action"]){
-						case 5: //Shot arrow
+				$this->toCraft = array();				
+				
+				switch($data["action"]){
+					case 5: //Shot arrow
+						if($this->entity->inAction === true){
 							if($this->getSlot($this->slot)->getID() === BOW){
 								if($this->startAction !== false){
 									$time = microtime(true) - $this->startAction;
@@ -1389,12 +1427,14 @@ class Player{
 									$this->server->api->entity->spawnToAll($e);
 								}
 							}
-							break;
-					}
+						}
+						$this->startAction = false;
+						$this->entity->inAction = false;
+						$this->entity->updateMetadata();
+						break;
+					case 6: //get out of the bed
+						$this->stopSleep();
 				}
-				$this->startAction = false;
-				$this->entity->inAction = false;
-				$this->entity->updateMetadata();
 				break;
 			case MC_REMOVE_BLOCK:
 				if($this->spawned === false or $this->blocked === true or $this->entity->distance(new Vector3($data["x"], $data["y"], $data["z"])) > 8){

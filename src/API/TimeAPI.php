@@ -20,7 +20,7 @@
 */
 
 class TimeAPI{
-	var $phases = array(
+	public static $phases = array(
 		"day" => 0,
 		"sunset" => 9500,
 		"night" => 10900,
@@ -105,7 +105,7 @@ class TimeAPI{
 		$time = !is_integer($time) ? $this->get(false, $time):$time;
 		if($time < TimeAPI::$phases["sunset"]){
 			$time = "day";
-		}elseif($time < TimeAPI::$phase["night"]){
+		}elseif($time < TimeAPI::$phases["night"]){
 			$time = "sunset";
 		}elseif($time < TimeAPI::$phases["sunrise"]){
 			$time = "night";

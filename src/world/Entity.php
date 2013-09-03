@@ -575,6 +575,11 @@ class Entity extends Position{
 				$this->data["Color"] = mt_rand(0,15);
 			}
 			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 4) | ($this->data["Color"] & 0x0F);
+		}elseif($this->class === ENTITY_PLAYER){
+			if($this->player->isSleeping !== false){
+				$d[16]["value"] = 2;
+				$d[17]["value"] = array($this->player->isSleeping->x, $this->player->isSleeping->y, $this->player->isSleeping->z);
+			}
 		}
 		return $d;
 	}

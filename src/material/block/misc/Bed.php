@@ -27,9 +27,10 @@ class BedBlock extends TransparentBlock{
 	}
 	
 	public function onActivate(Item $item, Player $player){
-		$player->dataPacket(MC_CLIENT_MESSAGE, array(
+		$player->sleepOn($this);
+		/*$player->dataPacket(MC_CLIENT_MESSAGE, array(
 			"message" => "This bed has been corrupted by your hands!"
-		));
+		));*/
 		return true;
 	}
 	
