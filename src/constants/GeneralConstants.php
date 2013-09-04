@@ -31,7 +31,7 @@ define("VIEWER", 3);
 
 
 //Players
-define("MAX_CHUNK_RATE", 20 / arg("max-chunks-per-second", 3.5)); //Default rate ~172 kB/s
+define("MAX_CHUNK_RATE", 20 / arg("max-chunks-per-second", 4)); //Default rate ~256 kB/s
 define("PLAYER_MAX_QUEUE", 1024);
 
 define("PLAYER_SURVIVAL_SLOTS", 36);
