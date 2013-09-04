@@ -25,6 +25,19 @@ class DoorBlock extends TransparentBlock{
 		$this->isSolid = false;
 	}
 
+	public function onUpdate($type){
+		if($type === BLOCK_UPDATE_NORMAL){
+			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
+				$this->level->setBlock($this, new AirBlock(), false);
+				if($this->getSide(1) instanceof DoorBlock){
+					$this->level->setBlock($this->getSide(1), new AirBlock(), false);
+				}
+				return BLOCK_UPDATE_NORMAL;
+			}
+		}
+		return false;
+	}
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($face === 1){
 			$blockUp = $this->getSide(1);
