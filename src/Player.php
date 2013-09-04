@@ -632,7 +632,7 @@ class Player{
 			if($m !== ""){			
 				$this->dataPacket(MC_CHAT, array(
 					"player" => ($author instanceof Player) ? $author->username:$author,
-					"message" => $m,
+					"message" => TextFormat::clean($m), //Colors not implemented :(
 				));
 			}
 		}
@@ -1284,6 +1284,7 @@ class Player{
 						$this->server->api->entity->spawnToAll($this->entity);
 						
 						$this->server->schedule(5, array($this->entity, "update"), array(), true);
+						$this->server->schedule(2, array($this->entity, "checkMovement"), array(), true);
 						$this->sendArmor();
 						$this->sendChat($this->server->motd."\n");
 						

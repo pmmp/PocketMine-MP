@@ -507,6 +507,19 @@ class Entity extends Position{
 			}
 		}
 		
+		$this->lastUpdate = $now;
+		if($this->class !== ENTITY_PLAYER){
+			$this->updateMovement();
+			if($hasUpdate === true){
+				$this->server->schedule(5, array($this, "update"));
+			}
+		}
+	}
+	
+	public function updateMovement(){
+		if($this->closed === true){
+			return false;
+		}
 		if($this->isStatic === false and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
 			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
 				if($this->server->api->handle("entity.move", $this) === false){
@@ -533,10 +546,6 @@ class Entity extends Position{
 			}else{
 				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
 			}
-		}
-		$this->lastUpdate = $now;
-		if($this->class !== ENTITY_PLAYER and $hasUpdate === true){
-			$this->server->schedule(5, array($this, "update"));
 		}
 	}
 
