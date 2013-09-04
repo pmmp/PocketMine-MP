@@ -293,13 +293,21 @@ class Player{
 	}
 	
 	public function sleepOn(Vector3 $pos){
+		foreach($this->server->api->player->getAll($this->level) as $p){
+			if($p->isSleeping instanceof Vector3){
+				if($p->distance($pos) <= 0.1){
+					return false;
+				}
+			}
+		}
 		$this->isSleeping = $pos;
 		$this->teleport(new Position($pos->x, $pos->y, $pos->z, $this->level));
 		if($this->entity instanceof Entity){
 			$this->entity->updateMetadata();
 		}
 		$this->setSpawn($pos);
-		$this->server->schedule(30, array($this, "checkSleep"));
+		$this->server->schedule(60, array($this, "checkSleep"));
+		return true;
 	}
 	
 	public function stopSleep(){

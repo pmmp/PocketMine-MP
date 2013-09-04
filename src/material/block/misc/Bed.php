@@ -29,11 +29,15 @@ class BedBlock extends TransparentBlock{
 	public function onActivate(Item $item, Player $player){
 		if(ServerAPI::request()->api->time->getPhase($player->level) !== "night"){
 			$player->dataPacket(MC_CLIENT_MESSAGE, array(
-				"message" => "You can only sleep at night."
+				"message" => "You can only sleep at night"
 			));
 			return true;
 		}
-		$player->sleepOn($this);
+		if($player->sleepOn($this) === false){
+			$player->dataPacket(MC_CLIENT_MESSAGE, array(
+				"message" => "This bed is occupied"
+			));
+		}
 		return true;
 	}
 	
