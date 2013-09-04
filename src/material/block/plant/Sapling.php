@@ -39,7 +39,7 @@ class SaplingBlock extends FlowableBlock{
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
-			$this->level->setBlock($block, $this);
+			$this->level->setBlock($block, $this, true, false, true);
 			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 			return true;
 		}
@@ -58,9 +58,9 @@ class SaplingBlock extends FlowableBlock{
 	}
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace wit common break method
+			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
-				$this->level->setBlock($this, new AirBlock(), false);
+				$this->level->setBlock($this, new AirBlock(), false, false, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === BLOCK_UPDATE_RANDOM){ //Growth
@@ -69,7 +69,7 @@ class SaplingBlock extends FlowableBlock{
 					TreeObject::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 				}else{
 					$this->meta |= 0x08;
-					$this->level->setBlock($this, $this);
+					$this->level->setBlock($this, $this, true, false, true);
 					return BLOCK_UPDATE_RANDOM;
 				}
 			}else{

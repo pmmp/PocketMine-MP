@@ -28,7 +28,7 @@ class CactusBlock extends TransparentBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() !== SAND and $down->getID() !== CACTUS){ //Replace wit common break method
+			if($down->getID() !== SAND and $down->getID() !== CACTUS){ //Replace with common break method
 				$this->level->setBlock($this, new AirBlock(), false);
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				return BLOCK_UPDATE_NORMAL;
@@ -39,15 +39,15 @@ class CactusBlock extends TransparentBlock{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->level->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getID() === AIR){
-							$this->level->setBlock($b, new CactusBlock());							
+							$this->level->setBlock($b, new CactusBlock(), true, false, true);							
 							break;
 						}
 					}
 					$this->meta = 0;
-					$this->level->setBlock($this, $this);
+					$this->level->setBlock($this, $this, false);
 				}else{
 					++$this->meta;
-					$this->level->setBlock($this, $this);
+					$this->level->setBlock($this, $this, false);
 				}
 				return BLOCK_UPDATE_RANDOM;
 			}
@@ -63,7 +63,7 @@ class CactusBlock extends TransparentBlock{
 			$block2 = $this->getSide(4);
 			$block3 = $this->getSide(5);
 			if($block0->isTransparent === true and $block1->isTransparent === true and $block2->isTransparent === true and $block3->isTransparent === true){
-				$this->level->setBlock($this, $this);
+				$this->level->setBlock($this, $this, true, false, true);
 				$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 				return true;
 			}

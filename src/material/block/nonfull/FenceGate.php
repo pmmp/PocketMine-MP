@@ -37,7 +37,7 @@ class FenceGateBlock extends TransparentBlock{
 			3 => 2,
 		);
 		$this->meta = $faces[$player->entity->getDirection()] & 0x03;
-		$this->level->setBlock($block, $this);
+		$this->level->setBlock($block, $this, true, false, true);
 		return true;
 	}
 	public function getDrops(Item $item, Player $player){
@@ -53,7 +53,12 @@ class FenceGateBlock extends TransparentBlock{
 			3 => 2,
 		);
 		$this->meta = ($faces[$player->entity->getDirection()] & 0x03) | ((~$this->meta) & 0x04);
-		$this->level->setBlock($this, $this);
+		if(($this->meta & 0x04) === 0x04){
+			$this->isFullBlock = true;
+		}else{
+			$this->isFullBlock = false;
+		}
+		$this->level->setBlock($this, $this, true, false, true);
 		return true;
 	}	
 }

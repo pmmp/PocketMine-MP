@@ -29,8 +29,8 @@ class SnowLayerBlock extends FlowableBlock{
 	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === AIR){ //Replace wit common break method
-				$this->level->setBlock($this, new AirBlock(), false);
+			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
+				$this->level->setBlock($this, new AirBlock(), true, false, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}

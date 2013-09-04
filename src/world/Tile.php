@@ -246,7 +246,7 @@ class Tile extends Position{
 				$this->setSlot(1, $fuel, false);
 				$current = $this->level->getBlock($this);
 				if($current->getID() === FURNACE){
-					$this->level->setBlock($this, BlockAPI::get(BURNING_FURNACE, $current->getMetadata()));
+					$this->level->setBlock($this, BlockAPI::get(BURNING_FURNACE, $current->getMetadata()), true, false, true);
 				}
 			}
 			if($this->data["BurnTime"] > 0){
@@ -278,7 +278,7 @@ class Tile extends Position{
 			}else{
 				$current = $this->level->getBlock($this);
 				if($current->getID() === BURNING_FURNACE){
-					$this->level->setBlock($this, BlockAPI::get(FURNACE, $current->getMetadata()));
+					$this->level->setBlock($this, BlockAPI::get(FURNACE, $current->getMetadata()), true, false, true);
 				}
 				$this->data["CookTime"] = 0;
 				$this->data["BurnTime"] = 0;

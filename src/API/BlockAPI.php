@@ -330,7 +330,7 @@ class BlockAPI{
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}elseif($block->getID() === FIRE){
-			$player->level->setBlock($block, new AirBlock());
+			$player->level->setBlock($block, new AirBlock(), true, false, true);
 			return false;
 		}else{
 			return $this->cancelAction($block, $player, false);

@@ -39,11 +39,11 @@ class FireBlock extends FlowableBlock{
 					return false;
 				}
 			}
-			$this->level->setBlock($this, new AirBlock(), false);
+			$this->level->setBlock($this, new AirBlock(), true, false, true);
 			return BLOCK_UPDATE_NORMAL;
 		}elseif($type === BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== NETHERRACK){
-				$this->level->setBlock($this, new AirBlock(), false);
+				$this->level->setBlock($this, new AirBlock(), true, false, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}

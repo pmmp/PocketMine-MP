@@ -33,12 +33,12 @@ class BurningFurnaceBlock extends SolidBlock{
 			3 => 3,
 		);
 		$this->meta = $faces[$player->entity->getDirection()];
-		$this->level->setBlock($block, $this);
+		$this->level->setBlock($block, $this, true, false, true);
 		return true;
 	}
 	
 	public function onBreak(Item $item, Player $player){
-		$this->level->setBlock($this, new AirBlock(), true, true);
+		$this->level->setBlock($this, new AirBlock(), true, true, true);
 		return true;
 	}
 

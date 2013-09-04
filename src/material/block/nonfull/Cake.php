@@ -29,8 +29,8 @@ class CakeBlock extends TransparentBlock{
 	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === AIR){ //Replace wit common break method
-				$this->level->setBlock($this, new AirBlock(), false);
+			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
+				$this->level->setBlock($this, new AirBlock(), true, false, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
@@ -46,9 +46,9 @@ class CakeBlock extends TransparentBlock{
 			++$this->meta;
 			$player->entity->heal(3, "cake");
 			if($this->meta >= 0x06){
-				$this->level->setBlock($this, new AirBlock());
+				$this->level->setBlock($this, new AirBlock(), true, false, true);
 			}else{
-				$this->level->setBlock($this, $this);
+				$this->level->setBlock($this, $this, true, false, true);
 			}
 			return true;
 		}

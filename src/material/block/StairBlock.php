@@ -40,7 +40,7 @@ class StairBlock extends TransparentBlock{
 		if(($fy > 0.5 and $face !== 1) or $face === 0){
 			$this->meta |= 0x04; //Upside-down stairs
 		}
-		$this->level->setBlock($block, $this);
+		$this->level->setBlock($block, $this, true, false, true);
 		return true;
 	}
 	

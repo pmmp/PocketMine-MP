@@ -51,7 +51,7 @@ class ChestBlock extends TransparentBlock{
 			}
 		}
 
-		$this->level->setBlock($block, $this);
+		$this->level->setBlock($block, $this, true, false, true);
 		$tile = $server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
 			"Items" => array(),
 			"id" => TILE_CHEST,
@@ -72,7 +72,7 @@ class ChestBlock extends TransparentBlock{
 		if($t !== false){
 			$t->unpair();
 		}
-		$this->level->setBlock($this, new AirBlock(), true, true);
+		$this->level->setBlock($this, new AirBlock(), true, true, true);
 		return true;
 	}
 	

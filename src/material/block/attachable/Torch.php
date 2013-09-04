@@ -37,9 +37,9 @@ class TorchBlock extends FlowableBlock{
 					0 => 0,
 			);
 
-			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === FENCE)){ //Replace wit common break method
+			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === FENCE)){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), false);
+				$this->level->setBlock($this, new AirBlock(), true, false, true);
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
@@ -56,11 +56,11 @@ class TorchBlock extends FlowableBlock{
 				5 => 1,
 			);
 			$this->meta = $faces[$face];
-			$this->level->setBlock($block, $this);
+			$this->level->setBlock($block, $this, true, false, true);
 			return true;
 		}elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === FENCE){
 			$this->meta = 0;
-			$this->level->setBlock($block, $this);
+			$this->level->setBlock($block, $this, true, false, true);
 			return true;
 		}
 		return false;

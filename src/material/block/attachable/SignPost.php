@@ -49,7 +49,7 @@ class SignPostBlock extends TransparentBlock{
 	
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === AIR){ //Replace wit common break method
+			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SIGN, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), true, true, true);
 				return BLOCK_UPDATE_NORMAL;

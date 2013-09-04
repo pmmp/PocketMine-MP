@@ -103,7 +103,7 @@ class LeavesBlock extends TransparentBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;
-				$this->level->setBlock($this, $this, false);
+				$this->level->setBlock($this, $this, false, false, true);
 				return BLOCK_UPDATE_RANDOM;
 			}
 		}elseif($type === BLOCK_UPDATE_RANDOM){
@@ -112,9 +112,9 @@ class LeavesBlock extends TransparentBlock{
 				$visited = array();
 				$check = 0;
 				if($this->findLog($this, $visited, 0, $check) === true){
-					$this->level->setBlock($this, $this, false);
+					$this->level->setBlock($this, $this, false, false, true);
 				}else{
-					$this->level->setBlock($this, new AirBlock(), false);
+					$this->level->setBlock($this, new AirBlock(), false, false, true);
 					if(mt_rand(1,20) === 1){ //Saplings
 						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SAPLING, $this->meta & 0x03, 1));
 					}
@@ -130,7 +130,7 @@ class LeavesBlock extends TransparentBlock{
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$this->meta |= 0x04;
-		$this->level->setBlock($this, $this);
+		$this->level->setBlock($this, $this, true, false, true);
 	}
 	
 	public function getDrops(Item $item, Player $player){

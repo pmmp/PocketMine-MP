@@ -29,7 +29,7 @@ class BucketItem extends Item{
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($this->meta === AIR){
 			if($target instanceof LiquidBlock){
-				$level->setBlock($target, new AirBlock());
+				$level->setBlock($target, new AirBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = ($target instanceof WaterBlock) ? WATER:LAVA;
 				}
@@ -37,7 +37,7 @@ class BucketItem extends Item{
 			}
 		}elseif($this->meta === WATER){
 			if($block->getID() === AIR){
-				$level->setBlock($block, new StillWaterBLock());
+				$level->setBlock($block, new StillWaterBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}
@@ -45,7 +45,7 @@ class BucketItem extends Item{
 			}
 		}elseif($this->meta === LAVA){
 			if($block->getID() === AIR){
-				$level->setBlock($block, new StillLavaBlock());
+				$level->setBlock($block, new StillLavaBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}

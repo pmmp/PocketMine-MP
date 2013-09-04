@@ -26,7 +26,7 @@ class RedMushroomBlock extends FlowableBlock{
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace wit common break method
+			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				$this->level->setBlock($this, new AirBlock(), false);
 				return BLOCK_UPDATE_NORMAL;
@@ -38,7 +38,7 @@ class RedMushroomBlock extends FlowableBlock{
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
-			$this->level->setBlock($block, $this);
+			$this->level->setBlock($block, $this, true, false, true);
 			return true;
 		}
 		return false;
