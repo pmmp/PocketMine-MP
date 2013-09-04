@@ -185,7 +185,7 @@ function console($message, $EOL = true, $log = true, $level = 1){
 		$time = (ENABLE_ANSI === true ? "\x1b[36m".date("H:i:s")."\x1b[0m":date("H:i:s")) . " ";
 		$replaced = preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message);
 		if($log === true and (!defined("LOG") or LOG === true)){
-			logg($replaced, "console", false, $level);
+			logg(date("Y-m-d")." ".$replaced, "console", false, $level);
 		}
 		if(ENABLE_ANSI === true){
 			$add = "";
