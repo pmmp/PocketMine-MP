@@ -31,7 +31,7 @@ class BedBlock extends TransparentBlock{
 			$player->dataPacket(MC_CLIENT_MESSAGE, array(
 				"message" => "You can only sleep at night."
 			));
-			return false;
+			return true;
 		}
 		$player->sleepOn($this);
 		return true;
