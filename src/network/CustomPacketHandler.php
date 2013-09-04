@@ -475,17 +475,17 @@ class CustomPacketHandler{
 				break;
 			case MC_LEVEL_EVENT:
 				if($this->c === false){
-					$this->data["unknown1"] = Utils::readShort($this->get(2));
-					$this->data["unknown2"] = Utils::readShort($this->get(2));
-					$this->data["unknown3"] = Utils::readShort($this->get(2));
-					$this->data["unknown4"] = Utils::readShort($this->get(2));
-					$this->data["unknown5"] = Utils::readInt($this->get(4));
+					$this->data["evid"] = Utils::readShort($this->get(2));
+					$this->data["x"] = Utils::readShort($this->get(2));
+					$this->data["y"] = Utils::readShort($this->get(2));
+					$this->data["z"] = Utils::readShort($this->get(2));
+					$this->data["data"] = Utils::readInt($this->get(4));
 				}else{
-					$this->raw .= Utils::writeShort($this->data["unknown1"]);
-					$this->raw .= Utils::writeShort($this->data["unknown2"]);
-					$this->raw .= Utils::writeShort($this->data["unknown3"]);
-					$this->raw .= Utils::writeShort($this->data["unknown4"]);
-					$this->raw .= Utils::writeInt($this->data["unknown5"]);
+					$this->raw .= Utils::writeShort($this->data["evid"]);
+					$this->raw .= Utils::writeShort($this->data["x"]);
+					$this->raw .= Utils::writeShort($this->data["y"]);
+					$this->raw .= Utils::writeShort($this->data["z"]);
+					$this->raw .= Utils::writeInt($this->data["data"]);
 				}
 				break;
 			case MC_TILE_EVENT:

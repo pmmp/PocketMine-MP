@@ -1718,9 +1718,8 @@ class Player{
 				$this->toCraft = array();
 				if(isset($this->windows[$data["windowid"]])){
 					if(is_array($this->windows[$data["windowid"]])){
-						$all = $this->server->api->player->getAll($this->level);
 						foreach($this->windows[$data["windowid"]] as $ob){
-							$this->server->api->player->broadcastPacket($all, MC_TILE_EVENT, array(
+							$this->server->api->player->broadcastPacket($this->level->players, MC_TILE_EVENT, array(
 								"x" => $ob->x,
 								"y" => $ob->y,
 								"z" => $ob->z,

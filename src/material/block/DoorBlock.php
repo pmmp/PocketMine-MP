@@ -89,12 +89,30 @@ class DoorBlock extends TransparentBlock{
 			if($down->getID() === $this->id){
 				$meta = $down->getMetadata() ^ 0x04;
 				$this->level->setBlock($down, BlockAPI::get($this->id, $meta), true, false, true);
+				$players = ServerAPI::request()->api->player->getAll($this->level);
+				unset($players[$player->CID]);
+				ServerAPI::request()->api->player->broadcastPacket($players, MC_LEVEL_EVENT, array(
+					"x" => $this->x,
+					"y" => $this->y,
+					"z" => $this->z,
+					"evid" => 1003,
+					"data" => 0
+				));
 				return true;
 			}
 			return false;
 		}else{
 			$this->meta ^= 0x04;
 			$this->level->setBlock($this, $this, true, false, true);
+			$players = ServerAPI::request()->api->player->getAll($this->level);
+			unset($players[$player->CID]);
+			ServerAPI::request()->api->player->broadcastPacket($players, MC_LEVEL_EVENT, array(
+				"x" => $this->x,
+				"y" => $this->y,
+				"z" => $this->z,
+				"evid" => 1003,
+				"data" => 0
+			));
 		}
 		return true;
 	}
