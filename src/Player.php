@@ -1322,7 +1322,7 @@ class Player{
 						}
 					}
 					$speed = $this->entity->getSpeedMeasure();
-					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 7 and ($this->gamemode & 0x01) === 0x00) or $speed > 15)) or $this->server->api->handle("player.move", $this->entity) === false){
+					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}

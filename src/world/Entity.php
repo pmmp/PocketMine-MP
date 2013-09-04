@@ -507,13 +507,14 @@ class Entity extends Position{
 			}
 		}
 		
-		$this->lastUpdate = $now;
+		
 		if($this->class !== ENTITY_PLAYER){
 			$this->updateMovement();
 			if($hasUpdate === true){
 				$this->server->schedule(5, array($this, "update"));
 			}
 		}
+		$this->lastUpdate = $now;
 	}
 	
 	public function updateMovement(){
@@ -548,6 +549,7 @@ class Entity extends Position{
 				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
 			}
 		}
+		$this->lastUpdate = $now;
 	}
 
 	public function getDirection(){
