@@ -25,7 +25,11 @@ class IceBlock extends TransparentBlock{
 	}
 	
 	public function onBreak(Item $item, Player $player){
-		$this->level->setBlock($this, new WaterBlock());
+		if(($player->gamemode & 0x01) === 0){
+			$this->level->setBlock($this, new WaterBlock(), true, false, true);
+		}else{
+			$this->level->setBlock($this, new AirBlock(), true, false, true);
+		}
 		return true;
 	}
 
