@@ -29,10 +29,7 @@ class PocketMinecraftServer{
 		if(defined("DEBUG") and DEBUG >= 0){
 			@cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
 		}
-		if($this->version->isDev()){
-			console("[INFO] \x1b[31;1mThis is a Development version");
-		}
-		console("[INFO] Starting server for Minecraft: PE \x1b[36;1m".CURRENT_MINECRAFT_VERSION."\x1b[0m #".CURRENT_PROTOCOL." at ".$this->serverip.":".$this->port);
+		console("[INFO] Starting Minecraft PE server on ".($this->serverip === "0.0.0.0" ? "*":$this->serverip).":".$this->port);
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8, false)):$this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
@@ -354,7 +351,7 @@ class PocketMinecraftServer{
 
 	public function init(){		
 		register_tick_function(array($this, "tick"));
-		console("[INFO] Starting internal ticker calculation");
+		console("[DEBUG] Starting internal ticker calculation", true, true, 2);
 		$t = 0;
 		while(true){
 			switch($t){

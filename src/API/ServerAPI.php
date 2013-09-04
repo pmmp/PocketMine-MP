@@ -47,8 +47,9 @@ class ServerAPI{
 		@mkdir(DATA_PATH."players/", 0755);
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
-		console("[INFO] \x1b[33;1mPocketMine-MP ".MAJOR_VERSION." API #".CURRENT_API_VERSION.", LGPL License", true, true, 0);
-
+		$version = new VersionString();
+		console("[INFO] Starting Minecraft PE server version \x1b[36;1m".CURRENT_MINECRAFT_VERSION);
+		
 		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
 			"server-name" => "Minecraft: PE Server",
@@ -91,7 +92,9 @@ class ServerAPI{
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
-		
+		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? "\x1b[31;1m":"").MAJOR_VERSION."\x1b[0m (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
+		console("[INFO] PocketMine-MP is distibuted under the LGPL License", true, true, 0);
+
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
 			UPnP_PortForward($this->getProperty("server-port"));
