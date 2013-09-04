@@ -147,8 +147,7 @@ class PlayerAPI{
 					$output .= "Please run this command in-game.\n";
 					break;
 				}
-				$spawn = $issuer->getSpawn();
-				$issuer->teleport($spawn);
+				$issuer->teleport($this->server->spawn);
 				break;
 			case "ping":
 				if(!($issuer instanceof Player)){					
