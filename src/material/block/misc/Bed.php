@@ -71,26 +71,26 @@ class BedBlock extends TransparentBlock{
 			
 			if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed			
 				if($blockNorth->getID() === $this->id and $blockNorth->meta !== 0x08){ //Checks if the block ID and meta are right
-					$this->level->setBlock($blockNorth, new AirBlock());
+					$this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
 				}elseif($blockSouth->getID() === $this->id and $blockSouth->meta !== 0x08){
-					$this->level->setBlock($blockSouth, new AirBlock());
+					$this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
 				}elseif($blockEast->getID() === $this->id and $blockEast->meta !== 0x08){
-					$this->level->setBlock($blockEast, new AirBlock());
+					$this->level->setBlock($blockEast, new AirBlock(), true, false, true);
 				}elseif($blockWest->getID() === $this->id and $blockWest->meta !== 0x08){
-					$this->level->setBlock($blockWest, new AirBlock());
+					$this->level->setBlock($blockWest, new AirBlock(), true, false, true);
 				}
 			}else{ //Bottom Part of Bed
 				if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
-					$this->level->setBlock($blockNorth, new AirBlock());
+					$this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
 				}elseif($blockSouth->getID() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
-					$this->level->setBlock($blockSouth, new AirBlock());
+					$this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
 				}elseif($blockEast->getID() === $this->id and ($blockEast->meta & 0x08) === 0x08){
-					$this->level->setBlock($blockEast, new AirBlock());
+					$this->level->setBlock($blockEast, new AirBlock(), true, false, true);
 				}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
-					$this->level->setBlock($blockWest, new AirBlock());
+					$this->level->setBlock($blockWest, new AirBlock(), true, false, true);
 				}				
 			}
-			$this->level->setBlock($this, new AirBlock());
+			$this->level->setBlock($this, new AirBlock(), true, false, true);
 			return true;
 	}
 	
