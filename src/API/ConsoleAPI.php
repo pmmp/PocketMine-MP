@@ -128,7 +128,7 @@ class ConsoleAPI{
 						
 						$max = ceil(count($cmds) / 5);
 						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
-						$output .= "- Showing help page $page of $max (/help <page>) -\n";
+						$output .= "\x1b[31;1m-\x1b[0m Showing help page $page of $max (/help <page>) \x1b[31;1m-\x1b[0m\n";
 						$current = 1;
 						foreach($cmds as $c => $h){
 							$curpage = (int) ceil($current / 5);
@@ -175,9 +175,9 @@ class ConsoleAPI{
 				return $this->run($this->alias[$cmd] . ($params !== "" ? " " .$params:""), $issuer, $cmd);
 			}
 			if($issuer instanceof Player){
-				console("[DEBUG] \x1b[33m".$issuer->username."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
+				console("[DEBUG] ".FORMAT_AQUA.$issuer->username.FORMAT_RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}else{
-				console("[DEBUG] \x1b[33m*".$issuer."\x1b[0m issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
+				console("[DEBUG] ".FORMAT_YELLOW."*".$issuer.FORMAT_RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}
 			
 			if(preg_match_all('#@([@a-z]{1,})#', $params, $matches, PREG_OFFSET_CAPTURE) > 0){

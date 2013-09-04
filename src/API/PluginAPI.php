@@ -79,7 +79,7 @@ class PluginAPI extends stdClass{
 			console("[ERROR] Failed parsing of ".basename($file));
 			return false;
 		}
-		console("[INFO] Loading plugin \"\x1b[32m".$info["name"]."\x1b[0m\" \x1b[35m".$info["version"]." \x1b[0mby \x1b[36m".$info["author"]."\x1b[0m");
+		console("[INFO] Loading plugin \"".FORMAT_GREEN.$info["name"].FORMAT_RESET."\" ".FORMAT_AQUA.$info["version"].FORMAT_RESET." by ".FORMAT_AQUA.$info["author"].FORMAT_RESET);
 		if($info["class"] !== "none" and class_exists($info["class"])){
 			console("[ERROR] Failed loading plugin: class already exists");
 			return false;
@@ -98,7 +98,7 @@ class PluginAPI extends stdClass{
 		if($info["class"] !== "none"){			
 			$object = new $className($this->server->api, false);
 			if(!($object instanceof Plugin)){
-				console("[ERROR] Plugin \"\x1b[36m".$info["name"]."\x1b[0m\" doesn't use the Plugin Interface");
+				console("[ERROR] Plugin \"".$info["name"]."\" doesn't use the Plugin Interface");
 				if(method_exists($object, "__destruct")){
 					$object->__destruct();
 				}

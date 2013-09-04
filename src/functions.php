@@ -182,7 +182,7 @@ function arguments ( $args ){
 function console($message, $EOL = true, $log = true, $level = 1){
 	if(!defined("DEBUG") or DEBUG >= $level){
 		$message .= $EOL === true ? PHP_EOL:"";
-		$time = (ENABLE_ANSI === true ? "\x1b[36m".date("H:i:s")."\x1b[0m":date("H:i:s")) . " ";
+		$time = (ENABLE_ANSI === true ? FORMAT_AQUA . date("H:i:s") . FORMAT_RESET:date("H:i:s")) . " ";
 		$replaced = preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message);
 		if($log === true and (!defined("LOG") or LOG === true)){
 			logg(date("Y-m-d")." ".$replaced, "console", false, $level);
@@ -190,27 +190,26 @@ function console($message, $EOL = true, $log = true, $level = 1){
 		if(ENABLE_ANSI === true){
 			$add = "";
 			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
-				$add .= "\x1b";
 				switch($matches[1]){
 					case "ERROR":
-						$add .= "[31;1m";
+						$add .= FORMAT_RED;
 						break;
 					case "INTERNAL":
 					case "DEBUG":
-						$add .= "[30;1m";
+						$add .= FORMAT_GRAY;
 						break;
 					case "WARNING":
-						$add .= "[33;1m";
+						$add .= FORMAT_YELLOW;
 						break;
 					case "NOTICE":
-						$add .= "[37;1m";
+						$add .= FORMAT_AQUA;
 						break;
 					default:
 						$add = "";
 						break;
 				}
 			}
-			$message = $time . $add . $message . "\x1b[0m";
+			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
 		}else{
 			$message = $replaced;
 		}

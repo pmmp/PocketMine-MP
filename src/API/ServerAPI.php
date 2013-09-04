@@ -48,7 +48,7 @@ class ServerAPI{
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
 		$version = new VersionString();
-		console("[INFO] Starting Minecraft PE server version \x1b[36;1m".CURRENT_MINECRAFT_VERSION);
+		console("[INFO] Starting Minecraft PE server version ".FORMAT_AQUA.CURRENT_MINECRAFT_VERSION);
 		
 		console("[INFO] Loading properties...");
 		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
@@ -92,7 +92,7 @@ class ServerAPI{
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
-		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? "\x1b[31;1m":"").MAJOR_VERSION."\x1b[0m (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
+		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? FORMAT_YELLOW:"").MAJOR_VERSION.FORMAT_RESET." (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
 		console("[INFO] PocketMine-MP is distibuted under the LGPL License", true, true, 0);
 
 		if($this->getProperty("upnp-forwarding") === true){
@@ -102,7 +102,7 @@ class ServerAPI{
 
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
-			console("[INFO] Last check: \x1b[36m".date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
+			console("[INFO] Last check: ".FORMAT_AQUA.date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
 			$info = json_decode(Utils::curl_get("http://www.pocketmine.net/latest"), true);
 			if($this->server->version->isDev()){
 				if($info === false or !isset($info["development"])){
@@ -110,13 +110,13 @@ class ServerAPI{
 				}else{
 					$last = $info["development"]["date"];
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info["development"]["commit"]){
-						console("[NOTICE] \x1b[33mA new DEVELOPMENT version of PocketMine-MP has been released");
-						console("[NOTICE] \x1b[33mVersion \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
-						console("[NOTICE] \x1b[36mGet it at PocketMine.net or ".$info["development"]["download"]);
+						console("[NOTICE] ".FORMAT_YELLOW."A new DEVELOPMENT version of PocketMine-MP has been released");
+						console("[NOTICE] ".FORMAT_YELLOW."Version \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
+						console("[NOTICE] ".FORMAT_YELLOW."Get it at PocketMine.net or ".$info["development"]["download"]);
 						console("[NOTICE] This message will dissapear after issuing the command \"/update-done\"");
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] \x1b[36mThis is the latest DEVELOPMENT version");
+						console("[INFO] ".FORMAT_AQUA."This is the latest DEVELOPMENT version");
 					}
 				}
 			}else{
@@ -128,13 +128,13 @@ class ServerAPI{
 					$update = new VersionString($info["stable"]["version"]);
 					$updateN = $update->getNumber();
 					if($updateN > $newestN){
-						console("[NOTICE] \x1b[33mA new STABLE version of PocketMine-MP has been released");
-						console("[NOTICE] \x1b[36mVersion \"".$info["stable"]["version"]."\" #".$updateN);
+						console("[NOTICE] ".FORMAT_GREEN."A new STABLE version of PocketMine-MP has been released");
+						console("[NOTICE] ".FORMAT_GREEN."Version \"".$info["stable"]["version"]."\" #".$updateN);
 						console("[NOTICE] Get it at PocketMine.net or ".$info["stable"]["download"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] \x1b[36mThis is the latest STABLE version");
+						console("[INFO] ".FORMAT_AQUA."This is the latest STABLE version");
 					}
 				}
 			}

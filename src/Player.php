@@ -280,7 +280,7 @@ class Player{
 			if($msg === true and $this->username != ""){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
-			console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged out due to ".$reason);
+			console("[INFO] ".FORMAT_AQUA.$this->username.FORMAT_RESET."[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 			$this->windows = array();
 			$this->armor = array();
 			$this->inventory = array();
@@ -1265,7 +1265,7 @@ class Player{
 				$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 				$this->lastMeasure = microtime(true);
 				$this->server->schedule(50, array($this, "measureLag"), array(), true);
-				console("[INFO] \x1b[33m".$this->username."\x1b[0m[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
+				console("[INFO] ".FORMAT_AQUA.$this->username.FORMAT_RESET."[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 				break;
 			case MC_READY:
 				if($this->loggedIn === false){
@@ -1284,7 +1284,7 @@ class Player{
 						$this->server->api->entity->spawnToAll($this->entity);
 						
 						$this->server->schedule(5, array($this->entity, "update"), array(), true);
-						$this->server->schedule(2, array($this->entity, "checkMovement"), array(), true);
+						$this->server->schedule(2, array($this->entity, "updateMovement"), array(), true);
 						$this->sendArmor();
 						$this->sendChat($this->server->motd."\n");
 						
