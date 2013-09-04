@@ -351,7 +351,7 @@ class Player{
 					break;
 				}
 			}
-			if($add === 0){
+			if($add <= 0){
 				return false;
 			}
 			$count -= $add;
