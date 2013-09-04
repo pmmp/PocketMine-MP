@@ -1618,6 +1618,7 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
+				$this->teleport($this->spawnPosition);
 				if($this->entity instanceof Entity){
 					$this->entity->fire = 0;
 					$this->entity->air = 300;
@@ -1627,7 +1628,6 @@ class Player{
 					break;
 				}
 				$this->sendInventory();
-				$this->teleport($this->spawnPosition);
 				$this->blocked = false;
 				$this->server->handle("player.respawn", $this);
 				break;
