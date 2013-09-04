@@ -295,7 +295,7 @@ class Player{
 	public function sleepOn(Vector3 $pos){
 		foreach($this->server->api->player->getAll($this->level) as $p){
 			if($p->isSleeping instanceof Vector3){
-				if($p->distance($pos) <= 0.1){
+				if($pos->distance($p->isSleeping) <= 0.1){
 					return false;
 				}
 			}
