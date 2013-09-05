@@ -301,7 +301,7 @@ class Player{
 			}
 		}
 		$this->isSleeping = $pos;
-		$this->teleport(new Position($pos->x, $pos->y, $pos->z, $this->level));
+		$this->teleport(new Position($pos->x + 0.5, $pos->y, $pos->z + 0.5, $this->level));
 		if($this->entity instanceof Entity){
 			$this->entity->updateMetadata();
 		}
