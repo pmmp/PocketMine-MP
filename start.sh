@@ -8,5 +8,6 @@ rm -r -f ./php5/
 fi
 if [ -f ./bin/php ]; then
 ./bin/php -d enable_dl=On PocketMine-MP.php $@
-fi
+else
 php -d enable_dl=On PocketMine-MP.php $@
+fi
