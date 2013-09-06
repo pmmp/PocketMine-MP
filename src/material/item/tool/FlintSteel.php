@@ -27,7 +27,7 @@ class FlintSteelItem extends Item{
 	}
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($this->useOn($block) and ($player->gamemode & 0x01) === 0 and $this->getMetadata() >= $this->getMaxDurability()){
+		if(($player->gamemode & 0x01) === 0 and $this->useOn($block) and $this->getMetadata() >= $this->getMaxDurability()){
 			$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
 		}
 
