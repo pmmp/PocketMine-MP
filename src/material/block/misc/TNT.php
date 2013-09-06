@@ -31,7 +31,7 @@ class TNTBlock extends SolidBlock{
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}
-			$explosion = new Explosion($this->level, $this, 4);
+			$explosion = new Explosion($this->level, $this, 3);
 			$explosion->explode();
 			return true;
 		}
