@@ -127,16 +127,16 @@ class BlockAPI{
 		array(SEEDS, 0),
 		array(MELON_SEEDS, 0),
 		array(DYE, 15), //Bonemeal
-		array(IRON_HOE, 0),
+		array(DIAMOND_HOE, 0),
 		array(CAKE, 0),
-		array(EGG, 0),
-		array(IRON_SWORD, 0),
+		array(FLINT_STEEL, 0),
+		array(DIAMOND_SWORD, 0),
 		array(BOW, 0),
 		array(SIGN, 0),
 		array(SPAWN_EGG, MOB_CHICKEN),
 		array(SPAWN_EGG, MOB_COW),
 		array(SPAWN_EGG, MOB_PIG),
-		array(SPAWN_EGG, MOB_SHEEP),		
+		array(SPAWN_EGG, MOB_SHEEP),
 	);
 	
 	public static function fromString($str, $multiple = false){
