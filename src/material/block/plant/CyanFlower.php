@@ -22,6 +22,7 @@
 class CyanFlowerBlock extends FlowableBlock{
 	public function __construct(){
 		parent::__construct(CYAN_FLOWER, 0, "Cyan Flower");
+		$this->hardness = 0;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

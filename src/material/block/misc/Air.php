@@ -31,6 +31,7 @@ class AirBlock extends TransparentBlock{
 		$this->hasPhysics = false;
 		$this->isSolid = false;
 		$this->isFullBlock = true;
+		$this->hardness = 0;
 		
 	}
 	

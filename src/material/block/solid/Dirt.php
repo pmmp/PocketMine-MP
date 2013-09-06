@@ -23,6 +23,7 @@ class DirtBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(DIRT, 0, "Dirt");
 		$this->isActivable = true;
+		$this->hardness = 2.5;
 	}
 
 	public function onActivate(Item $item, Player $player){

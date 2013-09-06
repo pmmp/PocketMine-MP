@@ -22,6 +22,7 @@
 class LapisBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(LAPIS_BLOCK, 0, "Lapis Block");
+		$this->hardness = 15;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

@@ -23,6 +23,7 @@ class IronDoorBlock extends DoorBlock{
 	public function __construct($meta = 0){
 		parent::__construct(IRON_DOOR_BLOCK, $meta, "Iron Door Block");
 		//$this->isActivable = true;
+		$this->hardness = 25;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

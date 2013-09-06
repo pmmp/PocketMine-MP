@@ -24,6 +24,7 @@ class CobwebBlock extends FlowableBlock{
 		parent::__construct(COBWEB, 0, "Cobweb");		
 		$this->isSolid = true;
 		$this->isFullBlock = false;
+		$this->hardness = 25;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array();

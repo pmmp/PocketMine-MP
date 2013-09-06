@@ -33,6 +33,7 @@ class WoodBlock extends SolidBlock{
 		);
 		$this->meta &= 0x03;
 		$this->name = $names[$this->meta];
+		$this->hardness = 10;
 	}
 	
 }

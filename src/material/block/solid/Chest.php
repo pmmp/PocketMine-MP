@@ -23,6 +23,7 @@ class ChestBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(CHEST, $meta, "Chest");
 		$this->isActivable = true;
+		$this->hardness = 15;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$server = ServerAPI::request();

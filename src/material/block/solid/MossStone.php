@@ -22,6 +22,7 @@
 class MossStoneBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(MOSS_STONE, 0, "Moss Stone");
+		$this->hardness = 30;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

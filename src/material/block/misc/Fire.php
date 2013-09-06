@@ -25,6 +25,7 @@ class FireBlock extends FlowableBlock{
 		$this->isReplaceable = true;
 		$this->breakable = false;
 		$this->isFullBlock = true;
+		$this->hardness = 0;
 	}
 	
 	public function getDrops(Item $item, Player $player){

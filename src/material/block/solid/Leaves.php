@@ -32,6 +32,7 @@ class LeavesBlock extends TransparentBlock{
 			3 => "",
 		);
 		$this->name = $names[$this->meta & 0x03];
+		$this->hardness = 1;
 	}
 	
 	private function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){

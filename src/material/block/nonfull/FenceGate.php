@@ -28,6 +28,7 @@ class FenceGateBlock extends TransparentBlock{
 		}else{
 			$this->isFullBlock = false;
 		}
+		$this->hardness = 15;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(

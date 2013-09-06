@@ -22,6 +22,7 @@
 class BrownMushroomBlock extends FlowableBlock{
 	public function __construct(){
 		parent::__construct(BROWN_MUSHROOM, 0, "Brown Mushroom");
+		$this->hardness = 0;
 	}
 
 	public function onUpdate($type){

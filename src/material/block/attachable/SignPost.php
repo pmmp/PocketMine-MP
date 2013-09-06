@@ -24,6 +24,7 @@ class SignPostBlock extends TransparentBlock{
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
 		$this->isSolid = false;
 		$this->isFullBlock = false;
+		$this->hardness = 5;
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

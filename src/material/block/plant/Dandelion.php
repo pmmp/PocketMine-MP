@@ -22,6 +22,7 @@
 class DandelionBlock extends FlowableBlock{
 	public function __construct(){
 		parent::__construct(DANDELION, 0, "Dandelion");
+		$this->hardness = 0;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

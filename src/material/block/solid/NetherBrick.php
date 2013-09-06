@@ -22,6 +22,7 @@
 class NetherBricksBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(NETHER_BRICKS, 0, "Nether Bricks");
+		$this->hardness = 30;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

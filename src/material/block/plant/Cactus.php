@@ -23,6 +23,7 @@ class CactusBlock extends TransparentBlock{
 	public function __construct($meta = 0){
 		parent::__construct(CACTUS, $meta, "Cactus");
 		$this->isFullBlock = false;
+		$this->hardness = 2;
 	}
 
 	public function onUpdate($type){

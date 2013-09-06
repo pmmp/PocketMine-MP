@@ -41,6 +41,7 @@ class WoolBlock extends SolidBlock{
 			15 => "Black Wool",
 		);
 		$this->name = $names[$this->meta];
+		$this->hardness = 4;
 	}
 	
 }

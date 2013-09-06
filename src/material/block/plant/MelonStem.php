@@ -23,6 +23,7 @@ class MelonStemBlock extends FlowableBlock{
 	public function __construct($meta = 0){
 		parent::__construct(MELON_STEM, $meta, "Melon Stem");
 		$this->isActivable = true;
+		$this->hardness = 0;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			$down = $this->getSide(0);

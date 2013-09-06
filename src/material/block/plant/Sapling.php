@@ -34,6 +34,7 @@ class SaplingBlock extends FlowableBlock{
 			2 => "Birch Sapling",
 		);
 		$this->name = $names[$this->meta & 0x03];
+		$this->hardness = 0;
 	}
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

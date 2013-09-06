@@ -24,6 +24,7 @@ class BedBlock extends TransparentBlock{
 		parent::__construct(BED_BLOCK, $type, "Bed Block");
 		$this->isActivable = true;
 		$this->isFullBlock = false;
+		$this->hardness = 1;
 	}
 	
 	public function onActivate(Item $item, Player $player){

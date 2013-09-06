@@ -101,6 +101,9 @@ class PlayerAPI{
 						case "fall":
 							$message = " hit the ground too hard";
 							break;
+						case "explosion":
+							$message = " blew up";
+							break;
 						default:
 							$message = " died";
 							break;

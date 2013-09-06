@@ -22,6 +22,7 @@
 class TorchBlock extends FlowableBlock{
 	public function __construct($meta = 0){
 		parent::__construct(TORCH, $meta, "Torch");
+		$this->hardness = 0;
 	}
 	
 	public function onUpdate($type){

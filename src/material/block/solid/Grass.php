@@ -23,6 +23,7 @@ class GrassBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(GRASS, 0, "Grass");
 		$this->isActivable = true;
+		$this->hardness = 3;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array(

@@ -131,6 +131,7 @@ abstract class Block extends Position{
 	protected $meta;
 	protected $name;
 	protected $breakTime;
+	protected $hardness;
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;
@@ -151,6 +152,11 @@ abstract class Block extends Position{
 		$this->meta = (int) $meta;
 		$this->name = $name;
 		$this->breakTime = 0.20;
+		$this->hardness = 10;
+	}
+	
+	final public function getHardness(){
+		return ($this->hardness);
 	}
 	
 	final public function getName(){

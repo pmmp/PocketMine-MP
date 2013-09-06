@@ -29,6 +29,7 @@ class TallGrassBlock extends FlowableBlock{
 			2 => "Fern",
 		);
 		$this->name = $names[$this->meta & 0x03];
+		$this->hardness = 0;
 	}
 
 	public function onUpdate($type){

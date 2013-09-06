@@ -24,6 +24,7 @@ class LadderBlock extends TransparentBlock{
 		parent::__construct(LADDER, $meta, "Ladder");
 		$this->isSolid = false;
 		$this->isFullBlock = false;
+		$this->hardness = 2;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false){

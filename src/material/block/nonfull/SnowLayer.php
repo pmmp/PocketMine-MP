@@ -25,6 +25,7 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->isReplaceable = true;
 		$this->isSolid = false;
 		$this->isFullBlock = false;
+		$this->hardness = 0.5;
 	}
 	
 	public function onUpdate($type){

@@ -22,6 +22,7 @@
 class GlowingRedstoneOreBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(GLOWING_REDSTONE_ORE, 0, "Glowing Redstone Ore");
+		$this->hardness = 15;
 	}
 
 	public function onUpdate($type){

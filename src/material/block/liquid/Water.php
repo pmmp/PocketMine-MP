@@ -22,6 +22,7 @@
 class WaterBlock extends LiquidBlock{
 	public function __construct($meta = 0){
 		parent::__construct(WATER, $meta, "Water");
+		$this->hardness = 500;
 	}	
 	
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

@@ -25,6 +25,7 @@ class CakeBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->isActivable = true;
 		$this->meta = $meta & 0x07;
+		$this->hardness = 2.5;
 	}
 	
 	public function onUpdate($type){

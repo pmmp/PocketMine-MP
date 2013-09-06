@@ -22,6 +22,7 @@
 class StoneBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(STONE, 0, "Stone");
+		$this->hardness = 30;
 	}
 
 	public function getBreakTime(Item $item, Player $player){

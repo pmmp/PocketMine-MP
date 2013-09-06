@@ -28,6 +28,7 @@ class TrapdoorBlock extends TransparentBlock{
 		}else{
 			$this->isFullBlock = true;
 		}
+		$this->hardness = 15;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 			if(($target->isTransparent === false or $target->getID() === SLAB) and $face !== 0 and $face !== 1){

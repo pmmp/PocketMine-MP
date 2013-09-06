@@ -27,6 +27,7 @@ require_once("Water.php");
 class StillWaterBlock extends WaterBlock{
 	public function __construct($meta = 0){
 		LiquidBlock::__construct(STILL_WATER, $meta, "Still Water");
+		$this->hardness = 500;
 	}
 	
 }

@@ -22,6 +22,7 @@
 class DiamondOreBlock extends SolidBlock{
 	public function __construct(){
 		parent::__construct(DIAMOND_ORE, 0, "Diamond Ore");
+		$this->hardness = 15;
 	}
 	
 	public function getBreakTime(Item $item, Player $player){

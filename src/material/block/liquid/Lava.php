@@ -22,6 +22,7 @@
 class LavaBlock extends LiquidBlock{
 	public function __construct($meta = 0){
 		parent::__construct(LAVA, $meta, "Lava");
+		$this->hardness = 0;
 	}
 	
 }

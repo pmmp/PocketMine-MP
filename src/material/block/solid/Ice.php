@@ -22,6 +22,7 @@
 class IceBlock extends TransparentBlock{
 	public function __construct(){
 		parent::__construct(ICE, 0, "Ice");
+		$this->hardness = 2.5;
 	}
 	
 	public function onBreak(Item $item, Player $player){

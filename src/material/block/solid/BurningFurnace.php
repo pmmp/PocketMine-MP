@@ -23,6 +23,7 @@ class BurningFurnaceBlock extends SolidBlock{
 	public function __construct($meta = 0){
 		parent::__construct(BURNING_FURNACE, $meta, "Burning Furnace");
 		$this->isActivable = true;
+		$this->hardness = 17.5;
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
