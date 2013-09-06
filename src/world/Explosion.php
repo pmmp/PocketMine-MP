@@ -20,14 +20,14 @@
 */
 
 class Explosion{
-	private $i = 8; //Rays
+	private $i = 12; //Rays
 	public $level;
 	public $source;
 	public $size;
 	public $affectedBlocks = array();
 	
-	public function __construct(Level $level, Vector3 $center, $size){
-		$this->level = $level;
+	public function __construct(Position $center, $size){
+		$this->level = $center->level;
 		$this->source = $center;
 		$this->size = max($size, 0);
 	}
@@ -41,7 +41,7 @@ class Explosion{
 		))){
 			return false;
 		}
-		$airblock = new AirBlock();
+
 		$drops = array();
 		for($i = 0; $i < $this->i; ++$i){
 			for($j = 0; $j < $this->i; ++$j){
@@ -55,50 +55,58 @@ class Explosion{
 						$d4 /= $d6;
 						$d5 /= $d6;
 						
-						$f1 = $this->size * (0.7 + (mt_rand(0, 1000000) / 1000000) * 0.6);
-						$d0 = $this->source->x;
-						$d1 = $this->source->y;
-						$d2 = $this->source->z;
+						$blastForce = $this->size * (mt_rand(700, 1300) / 1000);
+						$X = $this->source->x;
+						$Y = $this->source->y;
+						$Z = $this->source->z;
 						
-						for($f2 = 0.3; $f1 > 0; $f1 -= $f2 * 0.75){
-							$l = (int) $d0;
-							$i1 = (int) $d1;
-							$j1 = (int) $d2;
-							$k1 = $this->level->getBlock(new Vector3($l, $i1, $j1));
-							
-							$f1 -= ($k1->getHardness() / 5 + 0.3) * $f2;
-							
-							if(!($k1 instanceof AirBlock) and $f1 > 0 and $i1 < 128 and $i1 >= 0){
-								$this->level->setBlockRaw(new Vector3($l, $i1, $j1), $airblock, false, false); //Do not send record
-								$this->affectedBlocks[$l.$i1.$j1] = new Vector3($l - $this->source->x, $i1 - $this->source->y, $j1 - $this->source->z);
-								if(mt_rand(0, 100) < 30){
-									$drops[] = array(new Position($l, $i1, $j1, $this->level), BlockAPI::getItem($k1->getID(), $k1->getMetadata()));
+						for($stepLen = 0.3; $blastForce > 0; $blastForce -= $stepLen * 0.75){
+							$x = (int) $X;
+							$y = (int) $Y;
+							$z = (int) $Z;
+							$block = $this->level->getBlock(new Vector3($x, $y, $z));
+			
+							if(!($block instanceof AirBlock) and $y < 128 and $y >= 0){
+								$blastForce -= ($block->getHardness() / 5 + 0.3) * $stepLen;
+								if($blastForce > 0){
+									$this->affectedBlocks[$x.":".$y.":".$z] = $block;
 								}
 							}
 							
-							$d0 += $d3 * $f2;
-							$d1 += $d4 * $f2;
-							$d2 += $d5 * $f2;
+							$X += $d3 * $stepLen;
+							$Y += $d4 * $stepLen;
+							$Z += $d5 * $stepLen;
 						}
 					}
 				}
 			}
 		}
 		
-		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_EXPLOSION, array(
-			"x" => $this->source->x,
-			"y" => $this->source->y,
-			"z" => $this->source->z,
-			"radius" => $this->size,
-			"records" => $this->affectedBlocks,
-		));
+		$send = array();
+		$airblock = new AirBlock();
+		$source = $this->source->floor();
+		
 		foreach($server->api->entity->getRadius($this->source, 10) as $entity){
 			$impact = (1 - $this->source->distance($entity) / 10);
 			$damage = (int) (($impact * $impact + $impact) * 4 * $this->size + 1);
 			$entity->harm($damage, "explosion");
 		}
-		foreach($drops as $drop){
-			$server->api->entity->drop($drop[0], $drop[1]);
+
+		foreach($this->affectedBlocks as $block){
+			$this->level->setBlockRaw($block, $airblock, false, false); //Do not send record
+			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
+			if(mt_rand(0, 100) < 30){
+				$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $block->getMetadata()));
+			}
 		}
+
+		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_EXPLOSION, array(
+			"x" => $this->source->x,
+			"y" => $this->source->y,
+			"z" => $this->source->z,
+			"radius" => $this->size,
+			"records" => $send,
+		));
+
 	}
 }
