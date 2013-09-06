@@ -270,7 +270,7 @@ class BlockAPI{
 			if($target->onBreak($item, $player) === false){
 				return $this->cancelAction($target, $player, false);
 			}
-			if($item->useOn($target) and ($player->gamemode & 0x01) === 0 and $item->getMetadata() >= $item->getMaxDurability()){
+			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
 				$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
 			}
 		}else{
