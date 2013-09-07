@@ -35,7 +35,7 @@ class TNTBlock extends SolidBlock{
 				"x" => $this->x + 0.5,
 				"y" => $this->y + 0.5,
 				"z" => $this->z + 0.5,
-				"power" => 4,
+				"power" => 3,
 				"fuse" => 20 * 4, //4 seconds
 			);
 			$this->level->setBlock($this, new AirBlock(), false, false, true);
