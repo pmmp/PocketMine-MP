@@ -148,9 +148,8 @@ class Entity extends Position{
 			return false;
 		}
 		if($this->type === OBJECT_PRIMEDTNT){
-			$this->data["fuse"] -= 5;
 			$this->updateMetadata();
-			if($this->data["fuse"] <= 0){
+			if(((microtime(true) - $this->spawntime) * 20) >= $this->data["fuse"]){
 				$this->close();
 				$explosion = new Explosion($this, $this->data["power"]);
 				$explosion->explode();
@@ -607,7 +606,7 @@ class Entity extends Position{
 			}
 			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 4) | ($this->data["Color"] & 0x0F);
 		}elseif($this->type === OBJECT_PRIMEDTNT){
-			$d[16]["value"] = $this->data["fuse"];
+			$d[16]["value"] = (int) max(0, $this->data["fuse"] - (microtime(true) - $this->spawntime) * 20);
 		}elseif($this->class === ENTITY_PLAYER){
 			if($this->player->isSleeping !== false){
 				$d[16]["value"] = 2;
