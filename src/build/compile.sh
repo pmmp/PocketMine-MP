@@ -21,7 +21,7 @@ type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
 
-export CC="gcc"
+export CC="gcc -mx32"
 COMPILE_FOR_ANDROID=no
 RANLIB=ranlib
 if [ "$1" == "rpi" ]; then
