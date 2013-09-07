@@ -94,12 +94,22 @@ class Explosion{
 
 		foreach($this->affectedBlocks as $block){
 			$this->level->setBlockRaw($block, $airblock, false, false); //Do not send record
+			if($block instanceof TNTBlock){
+				$data = array(
+					"x" => $block->x + 0.5,
+					"y" => $block->y + 0.5,
+					"z" => $block->z + 0.5,
+					"power" => 4,
+					"fuse" => mt_rand(10, 30), //0.5 to 3 seconds
+				);
+				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
+				$server->api->entity->spawnToAll($e);
+			}
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 			if(mt_rand(0, 100) < 30){
 				$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $block->getMetadata()));
 			}
 		}
-
 		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_EXPLOSION, array(
 			"x" => $this->source->x,
 			"y" => $this->source->y,
