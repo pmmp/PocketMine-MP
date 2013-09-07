@@ -129,6 +129,10 @@ class Entity extends Position{
 				$this->size = 1;
 				if($this->type === OBJECT_PAINTING){
 					$this->isStatic = true;
+				}elseif($this->type === OBJECT_PRIMEDTNT){
+					$this->setHealth(10000000, "generic");
+					$this->server->schedule(5, array($this, "updateFuse"), array(), true);
+					$this->update();
 				}elseif($this->type === OBJECT_ARROW){
 					$this->server->schedule(1210, array($this, "update")); //Despawn
 					$this->update();
@@ -137,6 +141,21 @@ class Entity extends Position{
 		}
 		$this->updateLast();
 		$this->updatePosition();
+	}
+	
+	public function updateFuse(){
+		if($this->closed === true){
+			return false;
+		}
+		if($this->type === OBJECT_PRIMEDTNT){
+			$this->data["fuse"] -= 5;
+			$this->updateMetadata();
+			if($this->data["fuse"] <= 0){
+				$this->close();
+				$explosion = new Explosion($this, $this->data["power"]);
+				$explosion->explode();
+			}
+		}
 	}
 	
 	public function getDrops(){
@@ -409,7 +428,7 @@ class Entity extends Position{
 			}
 			if($this->class !== ENTITY_PLAYER){
 				$update = false;
-				if($this->class !== ENTITY_OBJECT or $support === false){
+				if(($this->class !== ENTITY_OBJECT and $this->type !== OBJECT_PRIMEDTNT) or $support === false){
 					$drag = 0.4 * $tdiff;
 					if($this->speedX != 0){
 						$this->speedX -= $this->speedX * $drag;
@@ -463,7 +482,7 @@ class Entity extends Position{
 					$this->speedY = 0;
 					$this->speedZ = 0;
 					$this->server->api->handle("entity.move", $this);
-					if($this->class === ENTITY_OBJECT or $this->speedY <= 0.1){
+					if(($this->class === ENTITY_OBJECT and $this->type !== OBJECT_PRIMEDTNT) or $this->speedY <= 0.1){
 						$update = false;						
 						$this->server->api->handle("entity.motion", $this);
 					}
@@ -587,6 +606,8 @@ class Entity extends Position{
 				$this->data["Color"] = mt_rand(0,15);
 			}
 			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 4) | ($this->data["Color"] & 0x0F);
+		}elseif($this->type === OBJECT_PRIMEDTNT){
+			$d[16]["value"] = $this->data["fuse"];
 		}elseif($this->class === ENTITY_PLAYER){
 			if($this->player->isSleeping !== false){
 				$d[16]["value"] = 2;
@@ -680,6 +701,15 @@ class Entity extends Position{
 						"z" => (int) $this->z,
 						"direction" => $this->getDirection(),
 						"title" => $this->data["Motive"],
+					));
+				}elseif($this->type === OBJECT_PRIMEDTNT){
+					$player->dataPacket(MC_ADD_ENTITY, array(
+						"eid" => $this->eid,
+						"type" => $this->type,
+						"x" => $this->x,
+						"y" => $this->y,
+						"z" => $this->z,
+						"did" => 0,
 					));
 				}elseif($this->type === OBJECT_ARROW){
 					$player->dataPacket(MC_ADD_ENTITY, array(
