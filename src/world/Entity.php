@@ -866,7 +866,7 @@ class Entity extends Position{
 		$speedX = ($this->last[0] - $this->x) / $diffTime;
 		$speedY = ($this->last[1] - $this->y) / $diffTime;
 		$speedZ = ($this->last[2] - $this->z) / $diffTime;
-		if($this->speedX != $speedX or $this->speedY = $speedY or $this->speedZ = $speedZ){
+		if($this->speedX != $speedX or $this->speedY != $speedY or $this->speedZ != $speedZ){
 			$this->speedX = $speedX;
 			$this->speedY = $speedY;
 			$this->speedZ = $speedZ;
