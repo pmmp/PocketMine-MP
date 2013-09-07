@@ -20,7 +20,7 @@
 */
 
 class Explosion{
-	private $i = 12; //Rays
+	private $i = 16; //Rays
 	public $level;
 	public $source;
 	public $size;
@@ -100,7 +100,7 @@ class Explosion{
 					"y" => $block->y + 0.5,
 					"z" => $block->z + 0.5,
 					"power" => 4,
-					"fuse" => mt_rand(10, 30), //0.5 to 3 seconds
+					"fuse" => mt_rand(10, 30), //0.5 to 1.5 seconds
 				);
 				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				$server->api->entity->spawnToAll($e);
