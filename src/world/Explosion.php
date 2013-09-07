@@ -48,7 +48,7 @@ class Explosion{
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
 					if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
-						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1);
+						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
 						$vector = $vector->normalize()->multiply($this->stepLen);
 						$pointer = clone $this->source;
 						
@@ -57,12 +57,15 @@ class Explosion{
 							if($vBlock->y >= 128 or $vBlock->y < 0){
 								break;
 							}
-							$block = $this->level->getBlock($vBlock);
+							$block = $this->level->getBlockRaw($vBlock);
 			
 							if(!($block instanceof AirBlock)){
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									$this->affectedBlocks[$vBlock->x.":".$vBlock->y.":".$vBlock->z] = $block;
+									$index = ($vBlock->x << 15) + ($vBlock->z << 7) +  $vBlock->y;
+									if(!isset($this->affectedBlocks[$index])){
+										$this->affectedBlocks[$index] = $block;
+									}
 								}
 							}
 							$pointer = $pointer->add($vector);
@@ -75,10 +78,10 @@ class Explosion{
 		$send = array();
 		$airblock = new AirBlock();
 		$source = $this->source->floor();
-		
-		foreach($server->api->entity->getRadius($this->source, 10) as $entity){
-			$impact = (1 - $this->source->distance($entity) / 10);
-			$damage = (int) (($impact * $impact + $impact) * 4 * $this->size + 1);
+		$radius = 2 * $this->size;
+		foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
+			$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //placeholder, 0.7 should be exposure
+			$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
 			$entity->harm($damage, "explosion");
 		}
 
