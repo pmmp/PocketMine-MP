@@ -106,7 +106,7 @@ class Explosion{
 				$server->api->entity->spawnToAll($e);
 			}
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
-			if(mt_rand(0, 100) < 30){
+			if(mt_rand(0, 10000) < ((1/$this->size) * 10000)){
 				$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $block->getMetadata()));
 			}
 		}
