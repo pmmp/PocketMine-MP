@@ -1167,7 +1167,7 @@ class Player{
 				}
 				$this->loggedIn = true;
 				
-				$u = $this->server->api->player->get($this->iusername);
+				$u = $this->server->api->player->get($this->iusername, false);
 				if($u !== false){
 					$u->close("logged in from another location");
 				}
