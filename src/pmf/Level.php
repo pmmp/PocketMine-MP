@@ -304,6 +304,91 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
+	public function getBlockID($x, $y, $z){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
+		$index = $this->getIndex($X, $Z);
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$aY = $y - ($Y << 4);
+		$b = ord($this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))});
+		return $b;		
+	}
+	
+	public function setBlockID($x, $y, $z, $block){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
+		$block &= 0xFF;
+		$meta &= 0x0F;
+		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+			return false;
+		}
+		$index = $this->getIndex($X, $Z);
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$aY = $y - ($Y << 4);
+		$this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))} = chr($block);
+		if(!isset($this->chunkChange[$index][$Y])){
+			$this->chunkChange[$index][$Y] = 1;
+		}else{
+			++$this->chunkChange[$index][$Y];
+		}
+		$this->chunkChange[$index][-1] = true;
+		return true;
+	}
+	
+	public function getBlockDamage($x, $y, $z){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
+		$index = $this->getIndex($X, $Z);
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$aY = $y - ($Y << 4);
+		$m = ord($this->chunks[$index][$Y]{(int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))});
+		if(($y & 1) === 0){
+			$m = $m & 0x0F;
+		}else{
+			$m = $m >> 4;
+		}
+		return $m;		
+	}
+	
+	public function setBlockDamage($x, $y, $z, $damage){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$Y = $y >> 4;
+		$damage &= 0x0F;
+		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+			return false;
+		}
+		$index = $this->getIndex($X, $Z);
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$aY = $y - ($Y << 4);
+		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
+		$old_m = ord($this->chunks[$index][$Y]{$mindex});
+		if(($y & 1) === 0){
+			$m = ($old_m & 0xF0) | $meta;
+		}else{
+			$m = ($meta << 4) | ($old_m & 0x0F);
+		}
+
+		if($old_m != $m){
+			$this->chunks[$index][$Y]{$mindex} = chr($m);
+			if(!isset($this->chunkChange[$index][$Y])){
+				$this->chunkChange[$index][$Y] = 1;
+			}else{
+				++$this->chunkChange[$index][$Y];
+			}
+			$this->chunkChange[$index][-1] = true;
+			return true;
+		}
+		return false;
+	}
+
 	public function getBlock($x, $y, $z){
 		$X = $x >> 4;
 		$Z = $z >> 4;
@@ -322,10 +407,8 @@ class PMFLevel extends PMF{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
-		$bindex = (int) ($aY + ($aX << 5) + ($aZ << 9));
-		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
-		$b = ord($this->chunks[$index][$Y]{$bindex});
-		$m = ord($this->chunks[$index][$Y]{$mindex});
+		$b = ord($this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))});
+		$m = ord($this->chunks[$index][$Y]{(int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))});
 		if(($y & 1) === 0){
 			$m = $m & 0x0F;
 		}else{

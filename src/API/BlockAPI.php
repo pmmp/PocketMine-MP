@@ -167,12 +167,11 @@ class BlockAPI{
 	}
 
 	public static function get($id, $meta = 0, $v = false){
-		$id = (int) $id;
 		if(isset(Block::$class[$id])){
 			$classname = Block::$class[$id];
 			$b = new $classname($meta);
 		}else{
-			$b = new GenericBlock($id, $meta);
+			$b = new GenericBlock((int) $id, $meta);
 		}
 		if($v instanceof Position){
 			$b->position($v);
