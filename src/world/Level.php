@@ -415,11 +415,20 @@ class Level{
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
 	}
 	
-	public function getSafeSpawn(){
-		if(($spawn = $this->getSpawn()) !== false){
+	public function getSafeSpawn($spawn = false){
+		if($spawn === false){
+			$spawn = $this->getSpawn();
+		}
+		if($spawn instanceof Vector3){
 			$x = (int) round($spawn->x);
 			$y = (int) round($spawn->y);
 			$z = (int) round($spawn->z);
+			for(; $y > 0; --$y){
+				$v = new Vector3($x, $y, $z);
+				if(!($this->getBlock($v->getSide(0)) instanceof AirBlock)){
+					break;
+				}
+			}
 			for(; $y < 128; ++$y){
 				$v = new Vector3($x, $y, $z);
 				if($this->getBlock($v->getSide(1)) instanceof AirBlock){
