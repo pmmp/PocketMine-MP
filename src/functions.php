@@ -183,7 +183,7 @@ function console($message, $EOL = true, $log = true, $level = 1){
 	if(!defined("DEBUG") or DEBUG >= $level){
 		$message .= $EOL === true ? PHP_EOL:"";
 		$time = (ENABLE_ANSI === true ? FORMAT_AQUA . date("H:i:s") . FORMAT_RESET:date("H:i:s")) . " ";
-		$replaced = preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message);
+		$replaced = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
 		if($log === true and (!defined("LOG") or LOG === true)){
 			logg(date("Y-m-d")." ".$replaced, "console", false, $level);
 		}
@@ -211,7 +211,7 @@ function console($message, $EOL = true, $log = true, $level = 1){
 			}
 			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
 		}else{
-			$message = TextFormat::clean($replaced);
+			$message = $replaced;
 		}
 		echo $message;
 	}
