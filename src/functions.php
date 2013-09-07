@@ -211,7 +211,7 @@ function console($message, $EOL = true, $log = true, $level = 1){
 			}
 			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
 		}else{
-			$message = $replaced;
+			$message = TextFormat::clean($replaced);
 		}
 		echo $message;
 	}
