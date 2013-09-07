@@ -20,11 +20,12 @@
 */
 
 class Explosion{
-	private $i = 16; //Rays
+	private $rays = 16; //Rays
 	public $level;
 	public $source;
 	public $size;
 	public $affectedBlocks = array();
+	public $stepLen = 0.3;
 	
 	public function __construct(Position $center, $size){
 		$this->level = $center->level;
@@ -42,40 +43,29 @@ class Explosion{
 			return false;
 		}
 
-		$drops = array();
-		for($i = 0; $i < $this->i; ++$i){
-			for($j = 0; $j < $this->i; ++$j){
-				for($k = 0; $k < $this->i; ++$k){
-					if($i === 0 or $i === ($this->i - 1) or $j === 0 or $j === ($this->i - 1) or $k === 0 or $k === ($this->i - 1)){
-						$vectorX = $i / ($this->i - 1) * 2 - 1;
-						$vectorY = $j / ($this->i - 1) * 2 - 1;
-						$vectorZ = $k / ($this->i - 1) * 2 - 1;
-						$d6 = sqrt($vectorX * $vectorX + $vectorY * $vectorY + $vectorZ * $vectorZ);
-						$vectorX /= $d6;
-						$vectorY /= $d6;
-						$vectorZ /= $d6;
+		$mRays = $this->rays - 1;
+		for($i = 0; $i < $this->rays; ++$i){
+			for($j = 0; $j < $this->rays; ++$j){
+				for($k = 0; $k < $this->rays; ++$k){
+					if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
+						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1);
+						$vector = $vector->normalize()->multiply($this->stepLen);
+						$pointer = clone $this->source;
 						
-						$blastForce = $this->size * (mt_rand(700, 1300) / 1000);
-						$X = $this->source->x;
-						$Y = $this->source->y;
-						$Z = $this->source->z;
-						
-						for($stepLen = 0.3; $blastForce > 0; $blastForce -= $stepLen * 0.75){
-							$x = (int) $X;
-							$y = (int) $Y;
-							$z = (int) $Z;
-							$block = $this->level->getBlock(new Vector3($x, $y, $z));
+						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
+							$vBlock = $pointer->floor();
+							if($vBlock->y >= 128 or $vBlock->y < 0){
+								break;
+							}
+							$block = $this->level->getBlock($vBlock);
 			
-							if(!($block instanceof AirBlock) and $y < 128 and $y >= 0){
-								$blastForce -= ($block->getHardness() / 5 + 0.3) * $stepLen;
+							if(!($block instanceof AirBlock)){
+								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									$this->affectedBlocks[$x.":".$y.":".$z] = $block;
+									$this->affectedBlocks[$vBlock->x.":".$vBlock->y.":".$vBlock->z] = $block;
 								}
 							}
-							
-							$X += $vectorX * $stepLen;
-							$Y += $vectorY * $stepLen;
-							$Z += $vectorZ * $stepLen;
+							$pointer = $pointer->add($vector);
 						}
 					}
 				}
