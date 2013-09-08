@@ -113,7 +113,7 @@ class Player{
 	}
 	
 	public function setSpawn(Vector3 $pos){
-		if(!($pos instanceof Level)){
+		if(!($pos instanceof Position)){
 			$level = $this->level;
 		}else{
 			$level = $pos->level;
