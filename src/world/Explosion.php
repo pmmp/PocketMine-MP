@@ -54,15 +54,16 @@ class Explosion{
 						
 						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
 							$vBlock = $pointer->floor();
-							if($vBlock->y >= 128 or $vBlock->y < 0){
-								break;
-							}
-							$block = $this->level->getBlockRaw($vBlock);
+							$blockID = $this->level->level->getBlockID($vBlock->x, $vBlock->y, $vBlock->z);
 			
-							if(!($block instanceof AirBlock)){
+							if($blockID > 0){
+								$block = BlockAPI::get($blockID, 0);
+								$block->x = $vBlock->x;
+								$block->y = $vBlock->y;
+								$block->z = $vBlock->z;
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									$index = ($vBlock->x << 15) + ($vBlock->z << 7) +  $vBlock->y;
+									$index = ($block->x << 15) + ($block->z << 7) +  $block->y;
 									if(!isset($this->affectedBlocks[$index])){
 										$this->affectedBlocks[$index] = $block;
 									}
@@ -76,7 +77,6 @@ class Explosion{
 		}
 		
 		$send = array();
-		$airblock = new AirBlock();
 		$source = $this->source->floor();
 		$radius = 2 * $this->size;
 		foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
@@ -86,7 +86,7 @@ class Explosion{
 		}
 
 		foreach($this->affectedBlocks as $block){
-			$this->level->setBlockRaw($block, $airblock, false, false); //Do not send record
+
 			if($block instanceof TNTBlock){
 				$data = array(
 					"x" => $block->x + 0.5,
@@ -97,11 +97,11 @@ class Explosion{
 				);
 				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				$server->api->entity->spawnToAll($e);
+			}elseif(mt_rand(0, 10000) < ((1/$this->size) * 10000)){
+				$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));
 			}
+			$this->level->level->setBlockID($block->x, $block->y, $block->z, 0);
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
-			if(mt_rand(0, 10000) < ((1/$this->size) * 10000)){
-				$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $block->getMetadata()));
-			}
 		}
 		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_EXPLOSION, array(
 			"x" => $this->source->x,

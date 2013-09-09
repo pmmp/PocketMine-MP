@@ -329,7 +329,6 @@ class PMFLevel extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$block &= 0xFF;
-		$meta &= 0x0F;
 		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
 			return false;
 		}
@@ -348,6 +347,9 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getBlockDamage($x, $y, $z){
+		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+			return 0;
+		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
@@ -365,6 +367,9 @@ class PMFLevel extends PMF{
 	}
 	
 	public function setBlockDamage($x, $y, $z, $damage){
+		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+			return false;
+		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
@@ -379,9 +384,9 @@ class PMFLevel extends PMF{
 		$mindex = (int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9));
 		$old_m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
-			$m = ($old_m & 0xF0) | $meta;
+			$m = ($old_m & 0xF0) | $damage;
 		}else{
-			$m = ($meta << 4) | ($old_m & 0x0F);
+			$m = ($damage << 4) | ($old_m & 0x0F);
 		}
 
 		if($old_m != $m){
