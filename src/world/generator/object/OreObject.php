@@ -32,13 +32,13 @@ class OreObject{
 		return $this->type;
 	}
 	
-	public function canPlaceObject(Level $level, Vector3 $pos){
-		return ($level->getBlock($pos)->getID() !== AIR);
+	public function canPlaceObject(Level $level, $x, $y, $z){
+		return ($level->level->getBlockID($x, $y, $z) != AIR);
 	}
 	
 	public function placeObject(Level $level, Vector3 $pos){
 		$clusterSize = (int) $this->type->clusterSize;
-		$angle = $this->random->nextFloat() * pi();
+		$angle = $this->random->nextFloat() * M_PI;
 		$offset = VectorMath::getDirection2D($angle)->multiply($clusterSize)->divide(8);
 		$x1 = $pos->x + 8 + $offset->x;
 		$x2 = $pos->x + 8 - $offset->x;
@@ -50,7 +50,7 @@ class OreObject{
 			$seedX = $x1 + ($x2 - $x1) * $count / $clusterSize;
 			$seedY = $y1 + ($y2 - $y1) * $count / $clusterSize;
 			$seedZ = $z1 + ($z2 - $z1) * $count / $clusterSize;
-			$size = ((sin($count * (pi() / $clusterSize)) + 1) * $this->random->nextFloat() * $clusterSize / 16 + 1) / 2;
+			$size = ((sin($count * (M_PI / $clusterSize)) + 1) * $this->random->nextFloat() * $clusterSize / 16 + 1) / 2;
 			
 			$startX = (int) ($seedX - $size);
 			$startY = (int) ($seedY - $size);
@@ -67,9 +67,8 @@ class OreObject{
 						if($y > 0 and ($sizeX + $sizeY) < 1){
 							for($z = $startZ; $z <= $endZ; ++$z){
 								$sizeZ = pow(($z + 0.5 - $seedZ) / $size, 2);
-								$v = new Vector3($x, $y, $z);
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlock($v)->getID() === STONE){
-									$level->setBlockRaw($v, $this->type->material);
+								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->level->getBlockID($x, $y, $z) === STONE){
+									$level->setBlockRaw(new Vector3($x, $y, $z), $this->type->material);
 								}
 							}
 						}

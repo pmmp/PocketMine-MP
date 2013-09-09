@@ -305,6 +305,9 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getBlockID($x, $y, $z){
+		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+			return 0;
+		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
@@ -312,11 +315,16 @@ class PMFLevel extends PMF{
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
-		$b = ord($this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))});
+		$b = ord($this->chunks[$index]
+		[$Y]
+		{(int) ($aY + ($aX << 5) + ($aZ << 9))});
 		return $b;		
 	}
 	
 	public function setBlockID($x, $y, $z, $block){
+		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+			return false;
+		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;

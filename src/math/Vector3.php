@@ -23,13 +23,9 @@ class Vector3{
 	public $x, $y, $z;
 
 	public function __construct($x = 0, $y = 0, $z = 0){
-		if(($x instanceof Vector3) === true){
-			$this->__construct($x->x, $x->y, $x->z);
-		}else{
-			$this->x = $x;
-			$this->y = $y;
-			$this->z = $z;
-		}
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
 	}
 
 	public function getX(){

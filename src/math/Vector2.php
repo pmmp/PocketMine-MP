@@ -23,12 +23,8 @@ class Vector2{
 	public $x, $y;
 
 	public function __construct($x = 0, $y = 0){
-		if(($x instanceof Vector2) === true){
-			$this->__construct($x->x, $x->y);
-		}else{
-			$this->x = $x;
-			$this->y = $y;
-		}
+		$this->x = $x;
+		$this->y = $y;
 	}
 
 	public function getX(){

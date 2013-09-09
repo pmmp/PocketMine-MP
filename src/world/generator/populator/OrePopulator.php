@@ -25,13 +25,11 @@ class OrePopulator extends Populator{
 		foreach($this->oreTypes as $type){
 			$ore = new OreObject($random, $type);
 			for($i = 0; $i < $ore->type->clusterCount; ++$i){
-				$v = new Vector3(
-					$random->nextRange($chunkX << 4, ($chunkX << 4) + 16),
-					$random->nextRange($ore->type->minHeight, $ore->type->maxHeight),
-					$random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16)
-				);
-				if($ore->canPlaceObject($level, $v)){
-					$ore->placeObject($level, $v);
+				$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 16);
+				$y = $random->nextRange($ore->type->minHeight, $ore->type->maxHeight);
+				$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16);
+				if($ore->canPlaceObject($level, $x, $y, $z)){
+					$ore->placeObject($level, new Vector3($x, $y, $z));
 				}
 			}
 		}

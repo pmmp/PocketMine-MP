@@ -41,8 +41,7 @@ class SmallTreeObject extends TreeObject{
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
 				for($zz = -$radiusToCheck; $zz < ($radiusToCheck + 1); ++$zz){
-					$block = $level->getBlock(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz));
-					if(!isset($this->overridable[$block->getID()])){
+					if(!isset($this->overridable[$level->level->getBlockID($pos->x + $xx, $pos->y + $yy, $pos->z + $zz)])){
 						return false;
 					}
 				}
@@ -53,7 +52,7 @@ class SmallTreeObject extends TreeObject{
 
 	public function placeObject(Level $level, Vector3 $pos, Random $random){
       // The base dirt block
-      $dirtpos = new Vector3( $pos->x, $pos->y -1, $pos->z );
+      $dirtpos = new Vector3( $pos->x, $pos->y - 1, $pos->z );
 		$level->setBlockRaw( $dirtpos, new DirtBlock() );
 
       // Adjust the tree trunk's height randomly
