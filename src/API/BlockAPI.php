@@ -127,7 +127,7 @@ class BlockAPI{
 		array(SEEDS, 0),
 		array(MELON_SEEDS, 0),
 		array(DYE, 15), //Bonemeal
-		array(DIAMOND_HOE, 0),
+		array(IRON_HOE, 0),
 		array(CAKE, 0),
 		array(FLINT_STEEL, 0),
 		array(DIAMOND_SWORD, 0),
