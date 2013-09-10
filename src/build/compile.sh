@@ -27,12 +27,12 @@ RANLIB=ranlib
 if [ "$1" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
-	[ -z "$CFLAGS" ] && CFLAGS="-mx32 -mfloat-abi=hard -mfpu=vfp";
+	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
 elif [ "$1" == "mac" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-mx32 -fomit-frame-pointer";
+	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 	echo "[INFO] Compiling for Intel MacOS"
 elif [ "$1" == "crosscompile" ]; then
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
@@ -42,7 +42,7 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-mx32 -uclibc";
+		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
@@ -51,21 +51,21 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-mx32 -uclibc";
+		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Android ARMv7"
 	elif [ "$2" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
 		[ -z "$march" ] && march=armv6zk;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
-		[ -z "$CFLAGS" ] && CFLAGS="-mx32 -mfloat-abi=hard -mfpu=vfp";
+		[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-mx32 -uclibc";
+		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
 	elif [ "$2" == "mac" ]; then
 		[ -z "$march" ] && march=prescott;
 		[ -z "$mtune" ] && mtune=generic;
-		[ -z "$CFLAGS" ] && CFLAGS="-mx32 -fomit-frame-pointer";
+		[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 		TOOLCHAIN_PREFIX="i686-apple-darwin10"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
@@ -78,6 +78,9 @@ elif [ "$1" == "crosscompile" ]; then
 	fi
 else
 	echo "[INFO] Compiling for current machine"
+	if [ $(uname -m) == "x86_64" ]; then
+		CFLAGS="-mx32 $CFLAGS"
+	fi
 fi
 
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
