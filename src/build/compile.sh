@@ -88,7 +88,7 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$THREADS" ] && THREADS=1;
 [ -z "$march" ] && march=native;
 [ -z "$mtune" ] && mtune=native;
-[ -z "$CFLAGS" ] && CFLAGS="-mx32";
+[ -z "$CFLAGS" ] && CFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
 $CC -O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
