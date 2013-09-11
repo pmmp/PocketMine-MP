@@ -3,6 +3,7 @@ worlds/*
 plugins/*
 logs/*
 bin/*
+.idea/*
 *.log
 *.pmf
 *.txt
