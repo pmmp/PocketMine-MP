@@ -1454,6 +1454,53 @@ class Player{
 										"z" => $this->entity->z,
 									);
 									$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
+									$e->yaw = $this->entity->yaw;
+									$e->pitch = $this->entity->pitch;
+									$rotation = ($this->entity->yaw - 90) % 360;
+									if($rotation < 0){
+										$rotation = (360 + $rotation);
+									}
+									$rotation = ($rotation + 180);
+									if($rotation >= 360){
+										$rotation = ($rotation - 360);
+									}
+									$X = 1;
+									$Z = 1;
+									$overturn = false;
+									if(0 <= $rotation and $rotation < 90){
+										
+									}
+									elseif(90 <= $rotation and $rotation < 180){
+										$rotation -= 90;
+										$X = (-1);
+										$overturn = true;
+									}
+									elseif(180 <= $rotation and $rotation < 270){
+										$rotation -= 180;
+										$X = (-1);
+										$Z = (-1);
+									}
+									elseif(270 <= $rotation and $rotation < 360){
+										$rotation -= 270;
+										$Z = (-1);
+										$overturn = true;
+									}
+									$rad = deg2rad($rotation);
+									$pitch = (-($this->entity->pitch));
+									$speed = 80;
+									$speedY = (sin(deg2rad($pitch)) * $speed);
+									$speedXZ = (cos(deg2rad($pitch)) * $speed);
+									if($overturn){
+										$speedX = (sin($rad) * $speedXZ * $X);
+										$speedZ = (cos($rad) * $speedXZ * $Z);
+									}
+									else{
+										$speedX = (cos($rad) * $speedXZ * $X);
+										$speedZ = (sin($rad) * $speedXZ * $Z);
+									}
+									$e->speedX = $speedX;
+									$e->speedZ = $speedZ;
+									$e->speedY = $speedY;
 									$this->server->api->entity->spawnToAll($e);
 								}
 							}
