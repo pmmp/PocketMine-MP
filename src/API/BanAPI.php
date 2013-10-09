@@ -139,7 +139,7 @@ class BanAPI{
 				}
 				$this->ops->remove($player->iusername);
 				$this->ops->save();
-				$output .= $player->iusername." is not longer op\n";
+				$output .= $player->iusername." is no longer op\n";
 				$this->server->api->chat->sendTo(false, "You are no longer op.", $player->iusername);
 				break;
 			case "kick":
