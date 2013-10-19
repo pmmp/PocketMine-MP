@@ -23,5 +23,10 @@ class WoodStairsBlock extends StairBlock{
 	public function __construct($meta = 0){
 		parent::__construct(WOOD_STAIRS, $meta, "Wood Stairs");
 	}
-	
+
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array($this->id, 0, 1),
+		);
+	}
 }
