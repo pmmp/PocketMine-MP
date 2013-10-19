@@ -746,7 +746,7 @@ class Player{
 	}
 	
 	public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true, $force = true){
-		if($this->entity instanceof Entity){
+		if($this->entity instanceof Entity and $this->level instanceof Level){
 			$this->entity->check = false;
 			if($yaw === false){
 				$yaw = $this->entity->yaw;
