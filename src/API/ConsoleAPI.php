@@ -204,16 +204,26 @@ class ConsoleAPI{
 							break;
 						case "a":
 						case "all":
-							if($this->server->api->ban->isOp($issuer->username))
+							if($issuer instanceof Player)
+							{
+								if($this->server->api->ban->isOp($issuer->username))
+								{
+									$output = "";
+									foreach($this->server->api->player->getAll() as $p){
+										$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+									}
+								}
+								else
+								{
+									$issuer->sendChat("You don't have permissions to use this command.\n");
+								}
+							}
+							else
 							{
 								$output = "";
 								foreach($this->server->api->player->getAll() as $p){
 									$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 								}
-							}
-							else
-							{
-								$issuer->sendChat("You don't have permissions to use this command.\n");
 							}
 							return $output;
 						case "r":
