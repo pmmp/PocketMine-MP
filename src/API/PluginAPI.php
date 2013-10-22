@@ -175,7 +175,7 @@ class PluginAPI extends stdClass{
 			if($file{0} !== "."){
 				$ext = strtolower(substr($file, -3));
 				if($ext === "php" or $ext === "pmf"){
-					$this->load($dir . $file);
+					$this->load($dir->path . $file);
 				}
 			}
 		}
