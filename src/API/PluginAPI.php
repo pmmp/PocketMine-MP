@@ -122,7 +122,7 @@ class PluginAPI extends stdClass{
 	}
 	
 	public function pluginsPath(){
-		$path = join(DIRECTORY_SEPARATOR, array(DATA_PATH."plugins", $p[1]["name"], ""));
+		$path = join(DIRECTORY_SEPARATOR, array(DATA_PATH."plugins", ""));
 		@mkdir($path);
 		return $path;
 	}
