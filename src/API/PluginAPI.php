@@ -85,7 +85,7 @@ class PluginAPI extends stdClass{
 			return false;
 		}
 		if(eval($info["code"]) === false or ($info["class"] !== "none" and !class_exists($info["class"]))){
-			console("[ERROR] Failed loading plugin: evaluation error");
+			console("[ERROR] Failed loading {$info['name']}: evaluation error");
 			return false;
 		}
 		
