@@ -49,6 +49,29 @@ class WaterBlock extends LiquidBlock{
 		return $count;
 	}
 	
+	public function checkLava()
+	{
+		for($side = 0; $side <= 5; ++$side)
+		{
+			if($side == 1) { continue; }
+			$b = $this->getSide($side);
+			if($b instanceof LavaBlock)
+			{
+				$level = $b->meta & 0x07;
+				if($level == 0x00)
+				{
+					$this->level->setBlock($b, new ObsidianBlock(), false, false, true);
+				}
+				else
+				{
+					$this->level->setBlock($b, new CobblestoneBlock(), false, false, true);
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public function getFrom()
 	{
 		for($side = 0; $side <= 5; ++$side)
@@ -74,6 +97,8 @@ class WaterBlock extends LiquidBlock{
 		if($type !== BLOCK_UPDATE_NORMAL){
 			return false;
 		}
+		
+		$this->checkLava();
 		
 		$falling = $this->meta >> 3;
 		$down = $this->getSide(0);
