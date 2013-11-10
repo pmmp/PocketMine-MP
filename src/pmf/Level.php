@@ -469,6 +469,12 @@ class PMFLevel extends PMF{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
+			$pos = new Position($x, $y, $z, $this->level);
+			for($side = 0; $side <= 5; ++$side)
+			{
+				$b = $pos->getSide($side);
+				ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
+			}
 			return true;
 		}
 		return false;
