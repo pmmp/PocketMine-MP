@@ -410,7 +410,8 @@ class Entity extends Position{
 		
 		if($this->isStatic === false){
 			$startX = floor($this->x - 0.5 - $this->size - 1);
-			$y = (int) round($this->y - 1);
+			//prefix for flying when player on fence
+			$y = (int) floor($this->y - 1);
 			$startZ = floor($this->z - 0.5 - $this->size - 1);
 			$endX = ceil($this->x - 0.5 + $this->size + 1);
 			$endZ = ceil($this->z - 0.5 + $this->size + 1);
