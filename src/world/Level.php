@@ -26,6 +26,7 @@ class Level{
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
+		$this->level->level = $this;
 		$this->entities = $entities;
 		$this->tiles = $tiles;
 		$this->blockUpdates = $blockUpdates;

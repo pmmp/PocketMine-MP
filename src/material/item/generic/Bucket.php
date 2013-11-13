@@ -36,8 +36,11 @@ class BucketItem extends Item{
 				return true;
 			}
 		}elseif($this->meta === WATER){
-			if($block->getID() === AIR){
-				$level->setBlock($block, new StillWaterBlock(), true, false, true);
+			//Support Make Non-Support Water to Support Water
+			if($block->getID() === AIR || ( $block instanceof WaterBlock && ($block->getMetadata() & 0x07) != 0x00 ) ){
+				$water = new WaterBlock();
+				$level->setBlock($block, $water, true, false, true);
+				$water->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}
@@ -45,7 +48,7 @@ class BucketItem extends Item{
 			}
 		}elseif($this->meta === LAVA){
 			if($block->getID() === AIR){
-				$level->setBlock($block, new StillLavaBlock(), true, false, true);
+				$level->setBlock($block, new LavaBlock(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}
