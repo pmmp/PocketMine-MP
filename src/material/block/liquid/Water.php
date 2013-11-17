@@ -121,7 +121,7 @@ class WaterBlock extends LiquidBlock{
 						$b = $this->getSide($side);
 						if($b instanceof WaterBlock)
 						{
-							if( $this->getSourceCount() >= 2)
+							if( $this->getSourceCount() >= 2 && $level != 0x00)
 							{
 								$this->level->setBlock($this, new WaterBlock(0), false, false, true);
 							}
