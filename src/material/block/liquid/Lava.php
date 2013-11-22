@@ -101,7 +101,6 @@ class LavaBlock extends LiquidBlock{
 		$down = $this->getSide(0);
 		
 		$from = $this->getFrom();
-		//출처가 있거나 이 자체가 출처이면
 		if($from !== null || $level == 0x00)
 		{
 			if($level !== 0x07)
@@ -131,30 +130,14 @@ class LavaBlock extends LiquidBlock{
 		}
 		else
 		{
-			//Extend Remove for Left Lavas
+			//Extend Request for Left Lavas
 			for($side = 2; $side <= 5; ++$side)
 			{
 				$sb = $this->getSide($side);
-				if($sb instanceof LavaBlock)
-				{
-					$tlevel = $sb->meta & 0x07;
-					if($tlevel != 0x00)
-					{
-						$this->level->setBlock($sb, new AirBlock(), false, false, true);
-					}
-				}
 				$b = $this->getSide(0)->getSide($side);
-				if($b instanceof LavaBlock)
-				{
-					$tlevel = $b->meta & 0x07;
-					if($tlevel != 0x00)
-					{
-						$this->level->setBlock($b, new AirBlock(), false, false, true);
-					}
-				}
-				//ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
+				ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($sb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+				ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 			}
-			//출처가 제거된 경우 이 블록 제거	
 			$this->level->setBlock($this, new AirBlock(), false, false, true);
 		}
 		return false;

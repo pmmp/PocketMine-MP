@@ -35,13 +35,13 @@ class BanAPI{
 		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);//Open Banned IPs list file
 		$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);//Open Banned Usernames list file
 		$this->ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);//Open list of OPs
-		$this->server->api->console->register("banip", "<add|remove|list|reload> [IP|player]", array($this, "commandHandler"));
-		$this->server->api->console->register("ban", "<add|remove|list|reload> [username]", array($this, "commandHandler"));
-		$this->server->api->console->register("kick", "<player> [reason ...]", array($this, "commandHandler"));
-		$this->server->api->console->register("whitelist", "<on|off|list|add|remove|reload> [username]", array($this, "commandHandler"));
-		$this->server->api->console->register("op", "<player>", array($this, "commandHandler"));
-		$this->server->api->console->register("deop", "<player>", array($this, "commandHandler"));
-		$this->server->api->console->register("sudo", "<player>", array($this, "commandHandler"));
+		$this->server->api->console->register("banip", CMD_BANIP_DESC, array($this, "commandHandler"));
+		$this->server->api->console->register("ban", CMD_BAN_DESC, array($this, "commandHandler"));
+		$this->server->api->console->register("kick", CMD_KICK_DESC, array($this, "commandHandler"));
+		$this->server->api->console->register("whitelist", CMD_WHITELIST_DESC, array($this, "commandHandler"));
+		$this->server->api->console->register("op", CMD_OP_DESC, array($this, "commandHandler"));
+		$this->server->api->console->register("deop", CMD_DEOP_DESC, array($this, "commandHandler"));
+		$this->server->api->console->register("sudo", CMD_SUDO_DESC, array($this, "commandHandler"));
 		$this->server->api->console->alias("ban-ip", "banip add");
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
@@ -108,11 +108,11 @@ class BanAPI{
 				$target = strtolower(array_shift($params));
 				$player = $this->server->api->player->get($target);
 				if(!($player instanceof Player)){
-					$output .= "Player not connected.\n";
+					$output .= API_BAN_PLAYER_NOT_CONNECTED . "\n";
 					break;
 				}
 				$this->server->api->console->run(implode(" ", $params), $player);
-				$output .= "Command ran as ".$player->username.".\n";
+				$output .= str_replace( "{player}", $player->username, API_BAN_CMD_RUN_AS ) . ".\n";
 				break;
 			case "op":
 				$user = strtolower($params[0]);
@@ -120,13 +120,13 @@ class BanAPI{
 				if(!($player instanceof Player)){
 					$this->ops->set($user);
 					$this->ops->save($user);
-					$output .= $user." is now op\n";
+					$output .= str_replace( "{player}", $user, API_BAN_NOW_OP) . "\n";
 					break;
 				}
 				$this->ops->set($player->iusername);
 				$this->ops->save();
-				$output .= $player->iusername." is now op\n";
-				$this->server->api->chat->sendTo(false, "You are now op.", $player->iusername);
+				$output .= str_replace( "{player}", $player->iusername, API_BAN_NOW_OP) . "\n";
+				$this->server->api->chat->sendTo(false, API_BAN_YOU_NOW_OP, $player->iusername);
 				break;
 			case "deop":
 				$user = strtolower($params[0]);

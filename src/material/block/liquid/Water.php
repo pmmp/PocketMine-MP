@@ -121,7 +121,7 @@ class WaterBlock extends LiquidBlock{
 						$b = $this->getSide($side);
 						if($b instanceof WaterBlock)
 						{
-							if( $this->getSourceCount() >= 2)
+							if( $this->getSourceCount() >= 2 && $level != 0x00)
 							{
 								$this->level->setBlock($this, new WaterBlock(0), false, false, true);
 							}
@@ -141,24 +141,9 @@ class WaterBlock extends LiquidBlock{
 			for($side = 2; $side <= 5; ++$side)
 			{
 				$sb = $this->getSide($side);
-				if($sb instanceof WaterBlock)
-				{
-					$tlevel = $sb->meta & 0x07;
-					if($tlevel != 0x00)
-					{
-						$this->level->setBlock($sb, new AirBlock(), false, false, true);
-					}
-				}
 				$b = $this->getSide(0)->getSide($side);
-				if($b instanceof WaterBlock)
-				{
-					$tlevel = $b->meta & 0x07;
-					if($tlevel != 0x00)
-					{
-						$this->level->setBlock($b, new AirBlock(), false, false, true);
-					}
-				}
-				//ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
+				ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($sb, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
+				ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 			}
 			$this->level->setBlock($this, new AirBlock(), false, false, true);
 		}

@@ -19,18 +19,20 @@
  *
 */
 
-/***REM_START***/
-require_once(dirname(__FILE__)."/src/config.php");
+//Command Language
+const CMD_BANIP_DESC = "<add|remove|list|reload> [IP|player]";
+const CMD_BAN_DESC = "<add|remove|list|reload> [username]";
+const CMD_KICK_DESC = "<player> [reason ...]";
+const CMD_WHITELIST_DESC = "<on|off|list|add|remove|reload> [username]";
+const CMD_OP_DESC = "<player>";
+const CMD_DEOP_DESC = "<player>";
+const CMD_SUDO_DESC = "<player>";
 
-//Language Support
-require_once(FILE_PATH . "/src/lang/en_us.php");
+//Ban API Language
+const API_BAN_PLAYER_NOT_CONNECTED = "Player not connected.";
+const API_BAN_CMD_RUN_AS = "Command ran as {player}";
+const API_BAN_NOW_OP = "{player} is now op";
+const API_BAN_YOU_NOW_OP = "you are now op.";
+const API_BAN_NOW_DEOP = "{player} is no longer op";
 
-require_once(FILE_PATH."/src/functions.php");
-require_once(FILE_PATH."/src/dependencies.php");
-/***REM_END***/
-
-$server = new ServerAPI();
-$server->start();
-
-kill(getmypid()); //Fix for ConsoleAPI being blocked
-exit(0);
+?>
