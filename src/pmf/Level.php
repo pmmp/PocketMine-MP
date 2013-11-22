@@ -475,7 +475,8 @@ class PMFLevel extends PMF{
 				for($side = 0; $side <= 5; ++$side)
 				{
 					$b = $pos->getSide($side);
-					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
+					if($b instanceof LavaBlock) { ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL); }
+					else { ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL); }
 				}
 			}
 			return true;
