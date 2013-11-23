@@ -150,7 +150,7 @@ class Config{
 		}
 	}
 	
-	public function __get($k){
+	public function &__get($k){
 		return $this->get($k);
 	}
 	
@@ -166,11 +166,11 @@ class Config{
 		return $this->remove($k);
 	}
 	
-	public function get($k){
+	public function &get($k){
 		if($this->correct === false or !isset($this->config[$k])){
 			return false;
 		}
-		return ($this->config[$k]);
+		return $this->config[$k];
 	}
 	
 	public function set($k, $v = true){

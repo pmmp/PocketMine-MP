@@ -58,6 +58,7 @@ class Player{
 	public $windowCnt = 2;
 	public $windows = array();
 	public $blocked = true;
+	public $achievements = array();
 	public $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
@@ -78,9 +79,9 @@ class Player{
 	private $received = array();
 	public $realmsData = array();
 	
-	public function __get($name){
+	public function &__get($name){
 		if(isset($this->{$name})){
-			return ($this->{$name});
+			return $this->{$name};
 		}
 		return null;
 	}
@@ -216,6 +217,7 @@ class Player{
 
 	public function save(){
 		if($this->entity instanceof Entity){
+			$this->data->set("achievements", $this->achievements);
 			$this->data->set("position", array(
 				"level" => $this->entity->level->getName(),
 				"x" => $this->entity->x,
@@ -534,6 +536,11 @@ class Player{
 					if(($this->gamemode & 0x01) === 0x00){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
 					}
+					switch($data["entity"]->type){
+						case WOOD:
+							AchievementAPI::grantAchievement($this, "mineWood");
+							break;
+					}
 				}elseif($data["entity"]->level === $this->level){
 					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				}
@@ -739,6 +746,19 @@ class Player{
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
 				}else{
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
+				}
+
+				switch($item->getID()){
+					case WORKBENCH:
+						AchievementAPI::grantAchievement($this, "buildWorkBench");
+						break;
+					case WOODEN_PICKAXE:
+						AchievementAPI::grantAchievement($this, "buildPickaxe");
+						break;
+					case FURNACE:
+						AchievementAPI::grantAchievement($this, "buildFurnace");
+						break;
+						
 				}
 			}
 		}
@@ -1200,6 +1220,7 @@ class Player{
 					}
 					$this->data->set("inventory", $inv);
 				}
+				$this->achievements = $this->data->get("achievements");
 				$this->data->set("caseusername", $this->username);
 				$this->inventory = array();		
 				foreach($this->data->get("inventory") as $slot => $item){
@@ -1217,9 +1238,8 @@ class Player{
 				$this->data->set("lastIP", $this->ip);
 				$this->data->set("lastID", $this->clientID);
 
-				if($this->data instanceof Config){
-					$this->server->api->player->saveOffline($this->data);
-				}
+				$this->server->api->player->saveOffline($this->data);
+
 				$this->dataPacket(MC_LOGIN_STATUS, array(
 					"status" => 0,
 				));
@@ -1940,6 +1960,15 @@ class Player{
 						));
 						break;
 					}
+					
+					if($tile->class === TILE_FURNACE and $data["slot"] == 2){
+						switch($slot->getID()){
+							case IRON_INGOT:
+								AchievementAPI::grantAchievement($this, "acquireIron");
+								break;
+						}
+					}
+					
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 						if($slot->count < $item->count){
 							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){

@@ -449,6 +449,7 @@ class PlayerAPI{
 			"health" => 20,
 			"lastIP" => "",
 			"lastID" => 0,
+			"achievements" => array(),
 		);
 		
 		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
