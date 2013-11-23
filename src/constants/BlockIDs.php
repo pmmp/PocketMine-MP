@@ -171,7 +171,7 @@ define("QUARTZ_STAIRS", 156);
 
 define("HAY_BALE", 170);
 
-define("COAL_BLOCK", 170);
+define("COAL_BLOCK", 173);
 
 define("STONECUTTER", 245);
 define("GLOWING_OBSIDIAN", 246);
