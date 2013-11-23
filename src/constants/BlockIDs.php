@@ -169,6 +169,8 @@ define("COBBLESTONE_WALL", 139);
 define("QUARTZ_BLOCK", 155);
 define("QUARTZ_STAIRS", 156);
 
+define("HAY_BALE", 170);
+
 define("STONECUTTER", 245);
 define("GLOWING_OBSIDIAN", 246);
 define("NETHER_REACTOR", 247);

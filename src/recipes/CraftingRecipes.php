@@ -63,6 +63,7 @@ class CraftingRecipes{
 		"BROWN_MUSHROOM:?x1,RED_MUSHROOM:?x1,BOWL:?x1=>MUSHROOM_STEW:0x1",
 		"SUGARCANE:?x1=>SUGAR:0x1",
 		"MELON_SLICE:?x1=>MELON_SEEDS:0x1",
+		"HAY_BALE:?x1=>WHEATH:0x9",
 		
 		//Items
 		"DIAMOND_BLOCK:?x1=>DIAMOND:0x9",
@@ -140,7 +141,7 @@ class CraftingRecipes{
 		"WOODEN_PLANKS:?x2,STICK:?x1=>WOODEN_SWORD:0x1",
 		
 		//Food & protection
-		"WHEAT:?x3=>BREAD:0x1",
+		"WHEATH:?x3=>BREAD:0x1",
 		"WHEATH:?x3,BUCKET:1x3,EGG:?x1,SUGAR:?x2=>CAKE:0x1",
 		"DIAMOND:?x4=>DIAMOND_BOOTS:0x1",
 		"DIAMOND:?x8=>DIAMOND_CHESTPLATE:0x1",
@@ -167,6 +168,7 @@ class CraftingRecipes{
 		"DIAMOND:?x9=>DIAMOND_BLOCK:0x1",
 		"GOLD_INGOT:?x9=>GOLD_BLOCK:0x1",
 		"IRON_INGOT:?x9=>IRON_BLOCK:0x1",
+		"WHEATH:?x9=>HAY_BALE:0x1",
 		"PAPER:?x3=>BOOK:0x1",
 		"WOODEN_PLANKS:?x6,BOOK:?x3=>BOOKSHELF:0x1",
 		"DYE:4x9=>LAPIS_BLOCK:0x1",

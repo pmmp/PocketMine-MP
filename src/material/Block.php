@@ -130,6 +130,8 @@ abstract class Block extends Position{
 
 			QUARTZ_BLOCK => "QuartzBlock",
 			QUARTZ_STAIRS => "QuartzStairsBlock",
+			
+			HAY_BALE => "HayBaleBlock",
 
 			STONECUTTER => "StonecutterBlock",
 			GLOWING_OBSIDIAN => "GlowingObsidianBlock",
