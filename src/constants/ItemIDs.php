@@ -100,7 +100,7 @@ define("BUCKET", 325);
 
 
 define("IRON_DOOR", 330);
-
+define("REDSTONE_DUST", 331);
 define("SNOWBALL", 332);
 
 define("LEATHER", 334);
@@ -116,6 +116,7 @@ define("SLIMEBALL", 341);
 define("EGG", 344);
 define("COMPASS", 345);
 
+define("CLOCK", 347);
 define("GLOWSTONE_DUST", 348);
 //define("RAW_FISH", 349);
 //define("COOKED_FISH", 350);
