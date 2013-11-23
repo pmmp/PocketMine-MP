@@ -167,9 +167,7 @@ class Entity extends Position{
 					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
 				}
 			}
-			for($re = 0; $re < 3; $re++)
-			{
-				//TODO: Test this
+			for($re = 0; $re < 3; $re++){
 				$slot = $this->player->getArmor($re);
 				$this->player->setArmor($re, BlockAPI::getItem(AIR, 0, 0));
 				if($slot->getID() !== AIR and $slot->count > 0){
