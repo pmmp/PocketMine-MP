@@ -276,6 +276,10 @@ class ServerAPI{
 	}
 
 	public function init(){
+		if(!(self::$serverRequest instanceof PocketMinecraftServer)){
+			self::$serverRequest = $this->server;
+		}
+
 		if($this->getProperty("send-usage") !== false){
 			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
