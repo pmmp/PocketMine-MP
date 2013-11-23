@@ -19,32 +19,39 @@
  *
 */
 
+class CoalBlock extends SolidBlock{
+	public function __construct(){
+		parent::__construct(COAL_BLOCK, 0, "Coal Block");
+		$this->hardness = 30;
+	}
 
-class FuelData{
-	public static $duration = array(
-		COAL => 80,
-		COAL_BLOCK => 800,
-		TRUNK => 15,
-		WOODEN_PLANKS => 15,
-		SAPLING => 5,
-		WOODEN_AXE => 10,
-		WOODEN_PICKAXE => 10,
-		WOODEN_SWORD => 10,
-		WOODEN_SHOVEL => 10,
-		WOODEN_HOE => 10,
-		STICK => 5,
-		FENCE => 15,
-		FENCE_GATE => 15,
-		WOODEN_STAIRS => 15,
-		SPRUCE_WOOD_STAIRS => 15,
-		BIRCH_WOOD_STAIRS => 15,
-		JUNGLE_WOOD_STAIRS => 15,
-		TRAPDOOR => 15,
-		WORKBENCH => 15,
-		BOOKSHELF => 15,
-		CHEST => 15,
-		BUCKET => 1000,
+	public function getBreakTime(Item $item, Player $player){
+		if(($player->gamemode & 0x01) === 0x01){
+			return 0.20;
+		}		
+		switch($item->isPickaxe()){
+			case 5:
+				return 0.95;
+			case 4:
+				return 1.25;
+			case 3:
+				return 1.9;
+			case 2:
+				return 0.65;
+			case 1:
+				return 3.75;
+			default:
+				return 25;
+		}
+	}
 	
-	);
-
+	public function getDrops(Item $item, Player $player){
+		if($item->isPickaxe() >= 1){
+			return array(
+				array(COAL_BLOCK, 0, 1),
+			);
+		}else{
+			return array();
+		}
+	}
 }

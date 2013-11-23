@@ -176,6 +176,8 @@ class CraftingRecipes{
 		"SUGARCANE:?x3=>PAPER:0x1",
 		"WOODEN_PLANKS:?x6,STICK:?x1=>SIGN:0x1",
 		"IRON_INGOT:?x6=>IRON_BARS:0x16",
+		"COAL:0x9=>COAL_BLOCK:0x1",
+		"COAL_BLOCK:?x1=>COAL:0x9",
 	);
 	
 	private static $stone = array(
