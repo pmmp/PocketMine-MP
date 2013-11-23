@@ -120,6 +120,10 @@ abstract class Block extends Position{
 			NETHER_BRICKS_STAIRS => "NetherBricksStairsBlock",
 
 			SANDSTONE_STAIRS => "SandstoneStairsBlock",
+			
+			SPRUCE_WOOD_STAIRS => "SpruceWoodStairsBlock",
+			BIRCH_WOOD_STAIRS => "BirchWoodStairsBlock",
+			JUNGLE_WOOD_STAIRS => "JungleWoodStairsBlock",
 
 			QUARTZ_BLOCK => "QuartzBlock",
 			QUARTZ_STAIRS => "QuartzStairsBlock",

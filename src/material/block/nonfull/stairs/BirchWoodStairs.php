@@ -19,17 +19,14 @@
  *
 */
 
-class PlanksBlock extends SolidBlock{
+class BirchWoodStairsBlock extends StairBlock{
 	public function __construct($meta = 0){
-		parent::__construct(PLANKS, $meta, "Wooden Planks");
-		$names = array(
-			WoodBlock::OAK => "Oak Wooden Planks",
-			WoodBlock::SPRUCE => "Spruce Wooden Planks",
-			WoodBlock::BIRCH => "Birch Wooden Planks",
-			WoodBlock::JUNGLE => "Jungle Wooden Planks",
-		);
-		$this->name = $names[$this->meta & 0x03];
-		$this->hardness = 15;
+		parent::__construct(BIRCH_WOOD_STAIRS, $meta, "Birch Wood Stairs");
 	}
-	
+
+	public function getDrops(Item $item, Player $player){
+		return array(
+			array($this->id, 0, 1),
+		);
+	}
 }
