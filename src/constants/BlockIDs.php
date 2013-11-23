@@ -45,7 +45,7 @@ define("WOOD", 17);
 define("TRUNK", 17);
 define("LEAVES", 18);
 define("LEAVE", 18);
-
+define("SPONGE", 19);
 define("GLASS", 20);
 define("LAPIS_ORE", 21);
 define("LAPIS_BLOCK", 22);

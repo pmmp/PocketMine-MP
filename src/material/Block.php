@@ -40,6 +40,7 @@ abstract class Block extends Position{
 			COAL_ORE => "CoalOreBlock",
 			WOOD => "WoodBlock",
 			LEAVES => "LeavesBlock",
+			SPONGE => "SpongeBlock",
 			GLASS => "GlassBlock",
 			LAPIS_ORE => "LapisOreBlock",
 			LAPIS_BLOCK => "LapisBlock",
