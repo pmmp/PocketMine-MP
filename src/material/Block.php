@@ -95,20 +95,22 @@ abstract class Block extends Position{
 			SUGARCANE_BLOCK => "SugarcaneBlock",
 
 			FENCE => "FenceBlock",
-
+			PUMPKIN => "PumpkinBlock",
 			NETHERRACK => "NetherrackBlock",
 			SOUL_SAND => "SoulSandBlock",
 			GLOWSTONE_BLOCK => "GlowstoneBlock",
 
+			LIT_PUMPKIN => "LitPumpkinBlock",
 			CAKE_BLOCK => "CakeBlock",
 			
 			TRAPDOOR => "TrapdoorBlock",
 
 			STONE_BRICKS => "StoneBricksBlock",
 
+			IRON_BARS => "IronBarsBlock",
 			GLASS_PANE => "GlassPaneBlock",
 			MELON_BLOCK => "MelonBlock",
-
+			PUMPKIN_STEM => "PumpkinStemBlock",
 			MELON_STEM => "MelonStemBlock",
 
 			FENCE_GATE => "FenceGateBlock",

@@ -19,10 +19,10 @@
  *
 */
 
-class SpongeBlock extends SolidBlock{
+class PumpkinBlock extends SolidBlock{
 	public function __construct(){
-		parent::__construct(SPONGE, "Sponge");
-		$this->hardness = 3;
+		parent::__construct(PUMPKIN, "Pumpkin");
+		$this->hardness = 5;
 	}
 	
 }

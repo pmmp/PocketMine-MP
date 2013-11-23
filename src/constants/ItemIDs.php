@@ -132,7 +132,7 @@ define("BED", 355);
 define("SHEARS", 359);
 define("MELON", 360);
 define("MELON_SLICE", 360);
-
+define("PUMPKIN_SEEDS", 361);
 define("MELON_SEEDS", 362);
 define("RAW_BEEF", 363);
 define("STEAK", 364);
@@ -142,6 +142,8 @@ define("RAW_CHICKEN", 365);
 define("COOKED_CHICKEN", 366);
 
 define("SPAWN_EGG", 383);
+
+define("PUMPKIN_PIE", 400);
 
 define("NETHER_BRICK", 405);
 define("QUARTZ", 406);

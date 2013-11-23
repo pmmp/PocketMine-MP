@@ -120,12 +120,15 @@ define("REEDS", 83);
 define("SUGARCANE_BLOCK", 83);
 
 define("FENCE", 85);
-
+define("PUMPKIN", 86);
 define("NETHERRACK", 87);
 define("SOUL_SAND", 88);
 define("GLOWSTONE", 89);
 define("GLOWSTONE_BLOCK", 89);
 
+
+define("LIT_PUMPKIN", 91);
+define("JACK_O_LANTERN", 91);
 define("CAKE_BLOCK", 92);
 
 define("TRAPDOOR", 96);
@@ -133,10 +136,12 @@ define("TRAPDOOR", 96);
 define("STONE_BRICKS", 98);
 define("STONE_BRICK", 98);
 
+define("IRON_BAR", 101);
+define("IRON_BARS", 101);
 define("GLASS_PANE", 102);
 define("GLASS_PANEL", 102);
 define("MELON_BLOCK", 103);
-
+define("PUMPKIN_STEM", 104);
 define("MELON_STEM", 105);
 
 define("FENCE_GATE", 107);

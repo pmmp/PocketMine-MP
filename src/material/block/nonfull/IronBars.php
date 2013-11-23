@@ -19,10 +19,9 @@
  *
 */
 
-class SpongeBlock extends SolidBlock{
+class IronBarsBlock extends TransparentBlock{
 	public function __construct(){
-		parent::__construct(SPONGE, "Sponge");
-		$this->hardness = 3;
+		parent::__construct(IRON_BARS, 0, "Iron Bars");
 	}
 	
 }
