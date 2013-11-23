@@ -162,6 +162,10 @@ define("BIRCH_WOODEN_STAIRS", 135);
 define("JUNGLE_WOOD_STAIRS", 136);
 define("JUNGLE_WOODEN_STAIRS", 136);
 
+define("COBBLE_WALL", 139);
+define("STONE_WALL", 139);
+define("COBBLESTONE_WALL", 139);
+
 define("QUARTZ_BLOCK", 155);
 define("QUARTZ_STAIRS", 156);
 
