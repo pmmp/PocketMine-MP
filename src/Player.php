@@ -852,8 +852,9 @@ class Player{
 			"x" => $pos->x,
 			"y" => $pos->y,
 			"z" => $pos->z,
-			"yaw" => $yaw,
+			"bodyYaw" => $yaw,
 			"pitch" => $pitch,
+			"yaw" => $yaw,
 		));
 	}
 	
@@ -1310,6 +1311,20 @@ class Player{
 						break;
 				}
 				break;
+			case MC_ROTATE_HEAD:
+				if($this->spawned === false){
+					break;
+				}
+				if(($this->entity instanceof Entity)){
+					if($this->blocked === true or $this->server->api->handle("player.move", $this->entity) === false){
+						if($this->lastCorrect instanceof Vector3){
+							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
+						}
+					}else{
+						$this->entity->setPosition($this->entity, $data["yaw"], $data["pitch"]);
+					}
+				}
+				break;
 			case MC_MOVE_PLAYER:
 				if($this->spawned === false){
 					break;
@@ -1340,7 +1355,6 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
-
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
