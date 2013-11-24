@@ -79,9 +79,9 @@ class Player{
 	private $received = array();
 	public $realmsData = array();
 	
-	public function &__get($name){
+	public function __get($name){
 		if(isset($this->{$name})){
-			return $this->{$name};
+			return ($this->{$name});
 		}
 		return null;
 	}
