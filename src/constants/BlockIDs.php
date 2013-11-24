@@ -83,6 +83,8 @@ define("FIRE", 51);
 
 define("WOOD_STAIRS", 53);
 define("WOODEN_STAIRS", 53);
+define("OAK_WOOD_STAIRS", 53);
+define("OAK_WOODEN_STAIRS", 53);
 define("CHEST", 54);
 
 define("DIAMOND_ORE", 56);
@@ -165,6 +167,9 @@ define("JUNGLE_WOODEN_STAIRS", 136);
 define("COBBLE_WALL", 139);
 define("STONE_WALL", 139);
 define("COBBLESTONE_WALL", 139);
+
+define("CARROT_BLOCK", 141);
+define("POTATO_BLOCK", 141);
 
 define("QUARTZ_BLOCK", 155);
 define("QUARTZ_STAIRS", 156);

@@ -1402,6 +1402,7 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
+
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
@@ -1416,9 +1417,26 @@ class Player{
 					$data["slot"] -= 9;
 				}
 				
-				$data["item"] = $this->getSlot($data["slot"]);
-				if(!($data["item"] instanceof Item)){
-					break;
+				
+				if(($this->gamemode & 0x01) === SURVIVAL){
+					$data["item"] = $this->getSlot($data["slot"]);
+					if(!($data["item"] instanceof Item)){
+						break;
+					}
+				}elseif(($this->gamemode & 0x01) === CREATIVE){
+					$data["slot"] = false;
+					foreach(BlockAPI::$creative as $i => $d){
+						if($d[0] === $data["block"] and $d[1] === $data["meta"]){
+							$data["slot"] = $i;
+						}
+					}
+					if($data["slot"] !== false){
+						$data["item"] = $this->getSlot($data["slot"]);
+					}else{
+						break;
+					}
+				}else{
+					break;//?????
 				}
 				$data["block"] = $data["item"]->getID();
 				$data["meta"] = $data["item"]->getMetadata();
@@ -1769,6 +1787,9 @@ class Player{
 							MELON_SLICE => 2,
 							GOLDEN_APPLE => 10,
 							PUMPKIN_PIE => 8,
+							CARROT => 4,
+							POTATO => 1,
+							BAKED_POTATO => 6,
 							//COOKIE => 2,
 							//COOKED_FISH => 5,
 							//RAW_FISH => 2,
@@ -2077,6 +2098,9 @@ class Player{
 	}
 	
 	public function sendInventory(){
+		if(($this->gamemode & 0x01) === CREATIVE){
+			return;
+		}
 		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 			"windowid" => 0,
 			"count" => count($this->inventory),

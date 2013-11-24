@@ -144,6 +144,13 @@ define("COOKED_CHICKEN", 366);
 
 define("SPAWN_EGG", 383);
 
+define("CARROT", 391);
+define("CARROTS", 391);
+define("POTATO", 392);
+define("POTATOES", 392);
+define("BAKED_POTATO", 393);
+define("BAKED_POTATOES", 393);
+
 define("PUMPKIN_PIE", 400);
 
 define("NETHER_BRICK", 405);

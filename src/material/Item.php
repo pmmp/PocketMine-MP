@@ -25,6 +25,8 @@ class Item{
 		WHEAT_SEEDS => "WheatSeedsItem",
 		PUMPKIN_SEEDS => "PumpkinSeedsItem",
 		MELON_SEEDS => "MelonSeedsItem",
+		CARROT => "CarrotItem",
+		POTATO => "PotatoItem",
 		SIGN => "SignItem",
 		WOODEN_DOOR => "WoodenDoorItem",
 		BUCKET => "BucketItem",
@@ -138,6 +140,10 @@ class Item{
 				$this->meta++;
 			}
 			return true;
+		}elseif($this->isHoe()){
+			if(($object instanceof Block) and ($object->getID() === GRASS or $object->getID() === DIRT)){
+				$this->meta++;
+			}
 		}
 		return false;
 	}

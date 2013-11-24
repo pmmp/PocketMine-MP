@@ -27,6 +27,7 @@ class StoneWallBlock extends TransparentBlock{
 			$this->name = "Mossy Cobblestone Wall";
 		}
 		$this->isFullBlock = false;
+		$this->isSolid = false;
 		$this->hardness = 30;
 	}
 	
