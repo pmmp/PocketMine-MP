@@ -98,11 +98,18 @@ class AchievementAPI{
 	}
 	
 	public static function broadcastAchievement(Player $player, $achievementId){
-		if(ServerAPI::request()->api->getProperty("announce-player-achievements") == true){
-			ServerAPI::request()->api->chat->broadcast($player->username." has just earned the achievement ".self::$achievements[$achievementId]["name"]);
-		}else{
-			$player->sendChat("You have just earned the achievement ".self::$achievements[$achievementId]["name"]);
+		if(isset(self::$achievements[$achievementId])){
+			$result = ServerAPI::request()->api->dhandle("achievement.broadcast", array("player" => $player, "achievementId" => $achievementId));
+			if($result !== false and $result !== true){
+				if(ServerAPI::request()->api->getProperty("announce-player-achievements") == true){
+					ServerAPI::request()->api->chat->broadcast($player->username." has just earned the achievement ".self::$achievements[$achievementId]["name"]);
+				}else{
+					$player->sendChat("You have just earned the achievement ".self::$achievements[$achievementId]["name"]);
+				}			
+			}
+			return true;
 		}
+		return false;
 	}
 	
 	public static function addAchievement($achievementId, $achievementName, array $requires = array()){
@@ -135,9 +142,13 @@ class AchievementAPI{
 					return false;
 				}
 			}
-			$player->achievements[$achievementId] = true;
-			self::broadcastAchievement($player, $achievementId);
-			return true;
+			if(ServerAPI::request()->api->dhandle("achievement.grant", array("player" => $player, "achievementId" => $achievementId)) !== false){
+				$player->achievements[$achievementId] = true;
+				self::broadcastAchievement($player, $achievementId);
+				return true;
+			}else{
+				return false;
+			}
 		}
 		return false;
 	}
