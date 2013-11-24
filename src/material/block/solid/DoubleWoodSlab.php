@@ -19,9 +19,17 @@
  *
 */
 
-class WoodStairsBlock extends StairBlock{
+class DoubleWoodSlabBlock extends SolidBlock{
 	public function __construct($meta = 0){
-		parent::__construct(WOOD_STAIRS, $meta, "Wood Stairs");
+		parent::__construct(DOUBLE_WOOD_SLAB, $meta, "Double Wooden Slab");
+		$names = array(
+			0 => "Oak",
+			1 => "Spruce",
+			2 => "Birch",
+			3 => "Jungle",
+		);
+		$this->name = "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
+		$this->hardness = 15;
 	}
 
 	public function getBreakTime(Item $item, Player $player){
@@ -43,10 +51,11 @@ class WoodStairsBlock extends StairBlock{
 				return 3;
 		}
 	}
-
+	
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array($this->id, 0, 1),
+			array(WOOD_SLAB, $this->meta & 0x07, 2),
 		);
 	}
+	
 }
