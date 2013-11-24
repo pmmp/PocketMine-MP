@@ -178,6 +178,7 @@ define("WOOD_SLABS", 158);
 define("WOODEN_SLABS", 158);
 
 define("HAY_BALE", 170);
+define("CARPET", 171);
 
 define("COAL_BLOCK", 173);
 

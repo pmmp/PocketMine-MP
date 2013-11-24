@@ -134,6 +134,7 @@ abstract class Block extends Position{
 			WOOD_SLAB => "WoodSlabBlock",
 		
 			HAY_BALE => "HayBaleBlock",
+			CARPET => "CarpetBlock",
 			
 			COAL_BLOCK => "CoalBlock",
 
