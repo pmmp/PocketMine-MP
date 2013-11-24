@@ -1280,7 +1280,7 @@ class Player{
 					"eid" => 0,
 				));
 				if(($this->gamemode & 0x01) === 0x01){
-					$this->slot = -1;//7
+					$this->slot = 0;
 				}else{
 					$this->slot = -1;//0
 				}
