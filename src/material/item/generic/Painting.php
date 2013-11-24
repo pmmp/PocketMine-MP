@@ -75,7 +75,7 @@ class PaintingItem extends Item{
 			$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
 			$server->api->entity->spawnToAll($e);
 			if(($player->gamemode & 0x01) === 0x00){
-				$player->removeItem($this->getID(), $this->getMetadata(), 1);
+				$player->removeItem($this->getID(), $this->getMetadata(), 1, false);
 			}
 			return true;
 		}
