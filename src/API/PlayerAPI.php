@@ -185,12 +185,10 @@ class PlayerAPI{
                     if($this->server->api->player->get($params[1]) instanceof Player){
                         $player = $this->server->api->player->get($params[1]);
                         $setgm = $params[0];
-                    }
-                    else if($this->server->api->player->get($params[0]) instanceof Player){
+                    }else if($this->server->api->player->get($params[0]) instanceof Player){
                         $player = $this->server->api->player->get($params[0]);
                         $setgm = $params[1];
-                    }
-                    else{
+                    }else{
                         $output .= "Usage: /$cmd <mode> [player] or /$cmd [player] <mode>\n";
                         break;
                     }
