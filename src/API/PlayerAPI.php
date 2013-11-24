@@ -161,6 +161,7 @@ class PlayerAPI{
                 break;
             case "gamemode":
                 $player = false;
+                $setgm = false;
                 $gms = array(
                     "0" => SURVIVAL,
                     "survival" => SURVIVAL,
@@ -181,13 +182,24 @@ class PlayerAPI{
                     $player = $issuer;
                 }
                 if(isset($params[1])){
-                    $player = $this->server->api->player->get($params[1]);
+                    if($this->server->api->player->get($params[1]) instanceof Player){
+                        $player = $this->server->api->player->get($params[1]);
+                        $setgm = $params[0];
+                    }
+                    else if($this->server->api->player->get($params[0]) instanceof Player){
+                        $player = $this->server->api->player->get($params[0]);
+                        $setgm = $params[1];
+                    }
+                    else{
+                        $output .= "Usage: /$cmd <mode> [player] or /$cmd [player] <mode>\n";
+                        break;
+                    }
                 }
-                if(!($player instanceof Player) or !isset($gms[strtolower($params[0])])){
-                    $output .= "Usage: /$cmd <mode> [player]\n";
+                if(!($player instanceof Player) or !isset($gms[strtolower($setgm)])){
+                    $output .= "Usage: /$cmd <mode> [player] or /$cmd [player] <mode>\n";
                     break;
                 }
-                if($player->setGamemode($gms[strtolower($params[0])])){
+                if($player->setGamemode($gms[strtolower($setgm)])){
                     $output .= "Gamemode of ".$player->username." changed to ".$player->getGamemode()."\n";
                 }
                 break;
