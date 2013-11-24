@@ -31,17 +31,13 @@ class WaterBlock extends LiquidBlock{
 		return $ret;
 	}
 	
-	public function getSourceCount()
-	{
+	public function getSourceCount(){
 		$count = 0;
-		for($side = 2; $side <= 5; ++$side)
-		{
-			if( $this->getSide($side) instanceof WaterBlock )
-			{
+		for($side = 2; $side <= 5; ++$side){
+			if( $this->getSide($side) instanceof WaterBlock ){
 				$b = $this->getSide($side);
 				$level = $b->meta & 0x07;
-				if($level == 0x00)
-				{
+				if($level == 0x00){
 					$count++;
 				}
 			}
@@ -49,21 +45,17 @@ class WaterBlock extends LiquidBlock{
 		return $count;
 	}
 	
-	public function checkLava()
-	{
-		for($side = 0; $side <= 5; ++$side)
-		{
-			if($side == 1) { continue; }
+	public function checkLava(){
+		for($side = 0; $side <= 5; ++$side){
+			if($side == 1){
+				continue;
+			}
 			$b = $this->getSide($side);
-			if($b instanceof LavaBlock)
-			{
+			if($b instanceof LavaBlock){
 				$level = $b->meta & 0x07;
-				if($level == 0x00)
-				{
+				if($level == 0x00){
 					$this->level->setBlock($b, new ObsidianBlock(), false, false, true);
-				}
-				else
-				{
+				}else{
 					$this->level->setBlock($b, new CobblestoneBlock(), false, false, true);
 				}
 				return true;
@@ -72,17 +64,13 @@ class WaterBlock extends LiquidBlock{
 		return false;
 	}
 	
-	public function getFrom()
-	{
-		for($side = 0; $side <= 5; ++$side)
-		{
+	public function getFrom(){
+		for($side = 0; $side <= 5; ++$side){
 			$b = $this->getSide($side);
-			if($b instanceof WaterBlock)
-			{
+			if($b instanceof WaterBlock){
 				$tlevel = $b->meta & 0x07;
 				$level = $this->meta & 0x07;
-				if( ($tlevel + 1) == $level || ($side == 0x01 && $level == 0x01 ) )
-				{
+				if( ($tlevel + 1) == $level || ($side == 0x01 && $level == 0x01 )){
 					return $b;
 				}
 			}
@@ -105,56 +93,39 @@ class WaterBlock extends LiquidBlock{
 		
 		$from = $this->getFrom();
 		//Has Source or Its Source
-		if($from !== null || $level == 0x00)
-		{
-			if($level !== 0x07)
-			{
-				if($down instanceof AirBlock || $down instanceof WaterBlock)
-				{
+		if($from !== null || $level == 0x00){
+			if($level !== 0x07){
+				if($down instanceof AirBlock || $down instanceof WaterBlock){
 					$this->level->setBlock($down, new WaterBlock(0x01), false, false, true);
 					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($down, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
-				}
-				else
-				{
-					for($side = 2; $side <= 5; ++$side)
-					{
+				}else{
+					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
-						if($b instanceof WaterBlock)
-						{
-							if( $this->getSourceCount() >= 2 && $level != 0x00)
-							{
+						if($b instanceof WaterBlock){
+							if( $this->getSourceCount() >= 2 && $level != 0x00){
 								$this->level->setBlock($this, new WaterBlock(0), false, false, true);
 							}
-						}
-						else if($b->isFlowable === true)
-						{
+						}elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new WaterBlock($level + 1), false, false, true);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
 			}
-		}
-		else
-		{
+		}else{
 			//Extend Remove for Left Waters
-			for($side = 2; $side <= 5; ++$side)
-			{
+			for($side = 2; $side <= 5; ++$side){
 				$sb = $this->getSide($side);
-				if($sb instanceof WaterBlock)
-				{
+				if($sb instanceof WaterBlock){
 					$tlevel = $sb->meta & 0x07;
-					if($tlevel != 0x00)
-					{
+					if($tlevel != 0x00){
 						$this->level->setBlock($sb, new AirBlock(), false, false, true);
 					}
 				}
 				$b = $this->getSide(0)->getSide($side);
-				if($b instanceof WaterBlock)
-				{
+				if($b instanceof WaterBlock){
 					$tlevel = $b->meta & 0x07;
-					if($tlevel != 0x00)
-					{
+					if($tlevel != 0x00){
 						$this->level->setBlock($b, new AirBlock(), false, false, true);
 					}
 				}

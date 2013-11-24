@@ -45,7 +45,7 @@ define("WOOD", 17);
 define("TRUNK", 17);
 define("LEAVES", 18);
 define("LEAVE", 18);
-
+define("SPONGE", 19);
 define("GLASS", 20);
 define("LAPIS_ORE", 21);
 define("LAPIS_BLOCK", 22);
@@ -120,12 +120,15 @@ define("REEDS", 83);
 define("SUGARCANE_BLOCK", 83);
 
 define("FENCE", 85);
-
+define("PUMPKIN", 86);
 define("NETHERRACK", 87);
 define("SOUL_SAND", 88);
 define("GLOWSTONE", 89);
 define("GLOWSTONE_BLOCK", 89);
 
+
+define("LIT_PUMPKIN", 91);
+define("JACK_O_LANTERN", 91);
 define("CAKE_BLOCK", 92);
 
 define("TRAPDOOR", 96);
@@ -133,10 +136,12 @@ define("TRAPDOOR", 96);
 define("STONE_BRICKS", 98);
 define("STONE_BRICK", 98);
 
+define("IRON_BAR", 101);
+define("IRON_BARS", 101);
 define("GLASS_PANE", 102);
 define("GLASS_PANEL", 102);
 define("MELON_BLOCK", 103);
-
+define("PUMPKIN_STEM", 104);
 define("MELON_STEM", 105);
 
 define("FENCE_GATE", 107);
@@ -150,8 +155,23 @@ define("NETHER_BRICKS_STAIRS", 114);
 
 define("SANDSTONE_STAIRS", 128);
 
+define("SPRUCE_WOOD_STAIRS", 134);
+define("SPRUCE_WOODEN_STAIRS", 134);
+define("BIRCH_WOOD_STAIRS", 135);
+define("BIRCH_WOODEN_STAIRS", 135);
+define("JUNGLE_WOOD_STAIRS", 136);
+define("JUNGLE_WOODEN_STAIRS", 136);
+
+define("COBBLE_WALL", 139);
+define("STONE_WALL", 139);
+define("COBBLESTONE_WALL", 139);
+
 define("QUARTZ_BLOCK", 155);
 define("QUARTZ_STAIRS", 156);
+
+define("HAY_BALE", 170);
+
+define("COAL_BLOCK", 173);
 
 define("STONECUTTER", 245);
 define("GLOWING_OBSIDIAN", 246);

@@ -40,6 +40,7 @@ abstract class Block extends Position{
 			COAL_ORE => "CoalOreBlock",
 			WOOD => "WoodBlock",
 			LEAVES => "LeavesBlock",
+			SPONGE => "SpongeBlock",
 			GLASS => "GlassBlock",
 			LAPIS_ORE => "LapisOreBlock",
 			LAPIS_BLOCK => "LapisBlock",
@@ -94,20 +95,22 @@ abstract class Block extends Position{
 			SUGARCANE_BLOCK => "SugarcaneBlock",
 
 			FENCE => "FenceBlock",
-
+			PUMPKIN => "PumpkinBlock",
 			NETHERRACK => "NetherrackBlock",
 			SOUL_SAND => "SoulSandBlock",
 			GLOWSTONE_BLOCK => "GlowstoneBlock",
 
+			LIT_PUMPKIN => "LitPumpkinBlock",
 			CAKE_BLOCK => "CakeBlock",
 			
 			TRAPDOOR => "TrapdoorBlock",
 
 			STONE_BRICKS => "StoneBricksBlock",
 
+			IRON_BARS => "IronBarsBlock",
 			GLASS_PANE => "GlassPaneBlock",
 			MELON_BLOCK => "MelonBlock",
-
+			PUMPKIN_STEM => "PumpkinStemBlock",
 			MELON_STEM => "MelonStemBlock",
 
 			FENCE_GATE => "FenceGateBlock",
@@ -119,9 +122,18 @@ abstract class Block extends Position{
 			NETHER_BRICKS_STAIRS => "NetherBricksStairsBlock",
 
 			SANDSTONE_STAIRS => "SandstoneStairsBlock",
+			
+			SPRUCE_WOOD_STAIRS => "SpruceWoodStairsBlock",
+			BIRCH_WOOD_STAIRS => "BirchWoodStairsBlock",
+			JUNGLE_WOOD_STAIRS => "JungleWoodStairsBlock",
+			STONE_WALL => "StoneWallBlock",
 
 			QUARTZ_BLOCK => "QuartzBlock",
 			QUARTZ_STAIRS => "QuartzStairsBlock",
+			
+			HAY_BALE => "HayBaleBlock",
+			
+			COAL_BLOCK => "CoalBlock",
 
 			STONECUTTER => "StonecutterBlock",
 			GLOWING_OBSIDIAN => "GlowingObsidianBlock",

@@ -58,6 +58,7 @@ class Player{
 	public $windowCnt = 2;
 	public $windows = array();
 	public $blocked = true;
+	public $achievements = array();
 	public $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
@@ -216,6 +217,7 @@ class Player{
 
 	public function save(){
 		if($this->entity instanceof Entity){
+			$this->data->set("achievements", $this->achievements);
 			$this->data->set("position", array(
 				"level" => $this->entity->level->getName(),
 				"x" => $this->entity->x,
@@ -534,6 +536,14 @@ class Player{
 					if(($this->gamemode & 0x01) === 0x00){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
 					}
+					switch($data["entity"]->type){
+						case WOOD:
+							AchievementAPI::grantAchievement($this, "mineWood");
+							break;
+						case DIAMOND:
+							AchievementAPI::grantAchievement($this, "diamond");
+							break;
+					}
 				}elseif($data["entity"]->level === $this->level){
 					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
 				}
@@ -740,6 +750,40 @@ class Player{
 				}else{
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
 				}
+
+				switch($item->getID()){
+					case WORKBENCH:
+						AchievementAPI::grantAchievement($this, "buildWorkBench");
+						break;
+					case WOODEN_PICKAXE:
+						AchievementAPI::grantAchievement($this, "buildPickaxe");
+						break;
+					case FURNACE:
+						AchievementAPI::grantAchievement($this, "buildFurnace");
+						break;
+					case WOODEN_HOE:
+						AchievementAPI::grantAchievement($this, "buildHoe");
+						break;
+					case BREAD:
+						AchievementAPI::grantAchievement($this, "makeBread");
+						break;
+					case CAKE:
+						AchievementAPI::grantAchievement($this, "bakeCake");
+						break;
+					case STONE_PICKAXE:
+					case GOLD_PICKAXE:
+					case IRON_PICKAXE:
+					case DIAMOND_PICKAXE:
+						AchievementAPI::grantAchievement($this, "buildBetterPickaxe");
+						break;
+					case WOODEN_SWORD:
+						AchievementAPI::grantAchievement($this, "buildSword");
+						break;
+					case DIAMOND:
+						AchievementAPI::grantAchievement($this, "diamond");
+						break;
+						
+				}
 			}
 		}
 		return $res;
@@ -852,8 +896,9 @@ class Player{
 			"x" => $pos->x,
 			"y" => $pos->y,
 			"z" => $pos->z,
-			"yaw" => $yaw,
+			"bodyYaw" => $yaw,
 			"pitch" => $pitch,
+			"yaw" => $yaw,
 		));
 	}
 	
@@ -1199,6 +1244,7 @@ class Player{
 					}
 					$this->data->set("inventory", $inv);
 				}
+				$this->achievements = $this->data->get("achievements");
 				$this->data->set("caseusername", $this->username);
 				$this->inventory = array();		
 				foreach($this->data->get("inventory") as $slot => $item){
@@ -1216,9 +1262,8 @@ class Player{
 				$this->data->set("lastIP", $this->ip);
 				$this->data->set("lastID", $this->clientID);
 
-				if($this->data instanceof Config){
-					$this->server->api->player->saveOffline($this->data);
-				}
+				$this->server->api->player->saveOffline($this->data);
+
 				$this->dataPacket(MC_LOGIN_STATUS, array(
 					"status" => 0,
 				));
@@ -1310,6 +1355,20 @@ class Player{
 						break;
 				}
 				break;
+			case MC_ROTATE_HEAD:
+				if($this->spawned === false){
+					break;
+				}
+				if(($this->entity instanceof Entity)){
+					if($this->blocked === true or $this->server->api->handle("player.move", $this->entity) === false){
+						if($this->lastCorrect instanceof Vector3){
+							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
+						}
+					}else{
+						$this->entity->setPosition($this->entity, $data["yaw"], $data["pitch"]);
+					}
+				}
+				break;
 			case MC_MOVE_PLAYER:
 				if($this->spawned === false){
 					break;
@@ -1340,7 +1399,6 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
-
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
@@ -1707,6 +1765,7 @@ class Player{
 							RAW_CHICKEN => 2,
 							MELON_SLICE => 2,
 							GOLDEN_APPLE => 10,
+							PUMPKIN_PIE => 8,
 							//COOKIE => 2,
 							//COOKED_FISH => 5,
 							//RAW_FISH => 2,
@@ -1925,6 +1984,15 @@ class Player{
 						));
 						break;
 					}
+
+					if($tile->class === TILE_FURNACE and $data["slot"] == 2){
+						switch($slot->getID()){
+							case IRON_INGOT:
+								AchievementAPI::grantAchievement($this, "acquireIron");
+								break;
+						}
+					}
+					
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 						if($slot->count < $item->count){
 							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){

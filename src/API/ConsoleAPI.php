@@ -273,7 +273,7 @@ class ConsoleAPI{
 			return;
 		}
 		if($this->loop->line !== false){
-			$line = trim($this->loop->line);
+			$line = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($this->loop->line));
 			$this->loop->line = false;
 			$output = $this->run($line, "console");
 			if($output != ""){

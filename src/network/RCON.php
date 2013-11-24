@@ -132,7 +132,7 @@ class RCONInstance extends Thread{
 	
 	public function run(){
 		while($this->stop !== true){
-			usleep(1);
+			usleep(2000);
 			$r = array($socket = $this->socket);
 			$w = null;
 			$e = null;

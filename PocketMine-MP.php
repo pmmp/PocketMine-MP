@@ -22,7 +22,6 @@
 
 /***REM_START***/
 require_once(dirname(__FILE__)."/src/config.php");
-require_once(FILE_PATH . "/src/language/en_us.php");
 
 require_once(FILE_PATH."/src/functions.php");
 require_once(FILE_PATH."/src/dependencies.php");

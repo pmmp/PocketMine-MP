@@ -59,9 +59,9 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 ini_set("memory_limit", "128M"); //Default
 define("LOG", true);
 define("START_TIME", microtime(true));
-define("MAJOR_VERSION", "Alpha_1.3.10dev");
-define("CURRENT_MINECRAFT_VERSION", "0.7.6 alpha");
-define("CURRENT_API_VERSION", 10);
+define("MAJOR_VERSION", "Alpha_1.3.11dev");
+define("CURRENT_MINECRAFT_VERSION", "v0.8.0 alpha build 2");
+define("CURRENT_API_VERSION", 11);
 define("CURRENT_PHP_VERSION", "5.5");
 $gitsha1 = false;
 if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!

@@ -23,6 +23,7 @@ class Item{
 	public static $class = array(
 		SUGARCANE => "SugarcaneItem",	
 		WHEAT_SEEDS => "WheatSeedsItem",
+		PUMPKIN_SEEDS => "PumpkinSeedsItem",
 		MELON_SEEDS => "MelonSeedsItem",
 		SIGN => "SignItem",
 		WOODEN_DOOR => "WoodenDoorItem",

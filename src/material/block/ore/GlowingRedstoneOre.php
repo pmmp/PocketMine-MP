@@ -53,7 +53,7 @@ class GlowingRedstoneOreBlock extends SolidBlock{
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
-				//array(331, 4, mt_rand(4, 5)),
+				array(REDSTONE_DUST, 0, mt_rand(4, 5)),
 			);
 		}else{
 			return array();

@@ -150,11 +150,27 @@ class Config{
 		}
 	}
 	
-	public function get($k){
+	public function &__get($k){
+		return $this->get($k);
+	}
+	
+	public function __set($k, $v){
+		return $this->set($k, $v);
+	}
+	
+	public function __isset($k){
+		return $this->exists($k);
+	}
+	
+	public function __unset($k){
+		return $this->remove($k);
+	}
+	
+	public function &get($k){
 		if($this->correct === false or !isset($this->config[$k])){
 			return false;
 		}
-		return ($this->config[$k]);
+		return $this->config[$k];
 	}
 	
 	public function set($k, $v = true){

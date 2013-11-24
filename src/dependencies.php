@@ -26,7 +26,7 @@ require_once(FILE_PATH."/src/functions.php");
 /***REM_END***/
 define(DATA_PATH, realpath(arg("data-path", FILE_PATH))."/");
 
-if(arg("enable-ansi", strpos(strtoupper(php_uname("s")), "WIN") === 0 ? false:true) === true){
+if(arg("enable-ansi", strpos(strtoupper(php_uname("s")), "WIN") === 0 ? false:true) === true and arg("disable-ansi", false) !== true){
 	define("ENABLE_ANSI", true);
 }else{
 	define("ENABLE_ANSI", false);
