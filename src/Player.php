@@ -540,6 +540,9 @@ class Player{
 						case WOOD:
 							AchievementAPI::grantAchievement($this, "mineWood");
 							break;
+						case DIAMOND:
+							AchievementAPI::grantAchievement($this, "diamond");
+							break;
 					}
 				}elseif($data["entity"]->level === $this->level){
 					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
@@ -757,6 +760,27 @@ class Player{
 						break;
 					case FURNACE:
 						AchievementAPI::grantAchievement($this, "buildFurnace");
+						break;
+					case WOODEN_HOE:
+						AchievementAPI::grantAchievement($this, "buildHoe");
+						break;
+					case BREAD:
+						AchievementAPI::grantAchievement($this, "makeBread");
+						break;
+					case CAKE:
+						AchievementAPI::grantAchievement($this, "bakeCake");
+						break;
+					case STONE_PICKAXE:
+					case GOLD_PICKAXE:
+					case IRON_PICKAXE:
+					case DIAMOND_PICKAXE:
+						AchievementAPI::grantAchievement($this, "buildBetterPickaxe");
+						break;
+					case WOODEN_SWORD:
+						AchievementAPI::grantAchievement($this, "buildSword");
+						break;
+					case DIAMOND:
+						AchievementAPI::grantAchievement($this, "diamond");
 						break;
 						
 				}
@@ -1960,7 +1984,7 @@ class Player{
 						));
 						break;
 					}
-					
+
 					if($tile->class === TILE_FURNACE and $data["slot"] == 2){
 						switch($slot->getID()){
 							case IRON_INGOT:

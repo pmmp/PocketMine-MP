@@ -79,6 +79,18 @@ class AchievementAPI{
 				"buildWorkBench",
 			),
 		),
+		"buildSword" => array(
+			"name" => "Time to Strike!",
+			"requires" => array(
+				"buildWorkBench",
+			),
+		),
+		"diamonds" => array(
+			"name" => "DIAMONDS!",
+			"requires" => array(
+				"acquireIron",
+			),
+		),
 		
 	);
 
