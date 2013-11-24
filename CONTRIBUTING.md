@@ -19,6 +19,7 @@ Before contributing to PocketMine-MP, please read this.
 
 ## I want to contribute code
 * Use the [Pull Request](https://github.com/PocketMine/PocketMine-MP/pull/new) system, your request will be checked and discussed.
+* __Create a single branch for that pull request__
 * If you want to be part of PocketMine-MP, we will ask you to.
 * Code using the syntax as in PocketMine-MP.
 * The code must be clear and written in English, comments included.
