@@ -183,6 +183,7 @@ class BlockAPI{
 		array(FLINT_AND_STEEL, 0),
 		array(CLOCK, 0),
 		array(COMPASS, 0),
+		//array(MINECART, 0),
 		array(SPAWN_EGG, MOB_CHICKEN),
 		array(SPAWN_EGG, MOB_COW),
 		array(SPAWN_EGG, MOB_PIG),

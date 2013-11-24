@@ -72,6 +72,8 @@ class CraftingRecipes{
 		"LAPIS_BLOCK:?x1=>DYE:4x9",
 		"DANDELION:?x1=>DYE:11x2",
 		"BONE:?x1=>DYE:15x3",
+		"DYE:0x1,DYE:14x1=>DYE:3x2",
+		"DYE:0x1,DYE:1x1,DYE:11x1=>DYE:3x3",
 		"DYE:1x1,DYE:15x1=>DYE:9x2",
 		"DYE:1x1,DYE:11x1=>DYE:14x2",
 		"DYE:2x1,DYE:15x1=>DYE:10x2",
