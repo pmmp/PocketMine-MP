@@ -76,7 +76,7 @@ class AchievementAPI{
 		"buildBetterPickaxe" => array(
 			"name" => "Getting an Upgrade",
 			"requires" => array(
-				"buildWorkBench",
+				"buildPickaxe",
 			),
 		),
 		"buildSword" => array(
