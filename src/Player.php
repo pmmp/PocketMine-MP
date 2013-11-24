@@ -736,6 +736,9 @@ class Player{
 		}
 		
 		if(is_array($res)){
+			if($this->server->api->dhandle("player.craft", array("player" => $this, "recipe" => $recipe, "craft" => $craft, "type" => $type)) === false){
+				return false;
+			}
 			foreach($recipe as $slot => $item){
 				$s = $this->getSlot($slot);
 				$s->count -= $item->count;

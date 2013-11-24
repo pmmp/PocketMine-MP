@@ -272,7 +272,7 @@ class Packet{
 						}
 						
 						if($length == 0
-						or $orderingChannel >= 32
+						or $orderChannel >= 32
 						or ($hasSplit === 1 and $splitIndex >= $splitCount)){
 							continue;
 						}
