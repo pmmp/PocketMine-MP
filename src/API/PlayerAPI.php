@@ -185,7 +185,7 @@ class PlayerAPI{
                     if($this->server->api->player->get($params[1]) instanceof Player){
                         $player = $this->server->api->player->get($params[1]);
                         $setgm = $params[0];
-                    }else if($this->server->api->player->get($params[0]) instanceof Player){
+                    }elseif($this->server->api->player->get($params[0]) instanceof Player){
                         $player = $this->server->api->player->get($params[0]);
                         $setgm = $params[1];
                     }else{
