@@ -195,7 +195,7 @@ class BlockAPI{
 		array(MELON_SEEDS, 0),
 		array(PUMPKIN_SEEDS, 0),
 		array(CARROT, 0),
-		array(POTATOE, 0),
+		array(POTATO, 0),
 		//array(BEETROOT_SEEDS, 0),
 		array(DYE, 15), //Bonemeal
 		array(EGG, 0),
