@@ -81,7 +81,7 @@ class ChatAPI{
 					$target = $target->username;
 				}else{
 					$target = strtolower($n);
-					if($t === "server" or $t === "console" or $t === "rcon"){
+					if($target === "server" or $target === "console" or $target === "rcon"){
 						$target = "Console";
 					}
 				}
