@@ -1832,7 +1832,7 @@ class Player{
 						$items = array(
 							APPLE => 2,
 							MUSHROOM_STEW => 10,
-							//BEETROOT_SOUP => ??,
+							BEETROOT_SOUP => 10,
 							BREAD => 5,
 							RAW_PORKCHOP => 3,
 							COOKED_PORKCHOP => 8,
