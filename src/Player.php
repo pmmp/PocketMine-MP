@@ -86,7 +86,13 @@ class Player{
 		}
 		return null;
 	}
-	
+
+	/**
+	 * @param integer $clientID
+	 * @param string $ip
+	 * @param integer $port
+	 * @param integer $MTU
+	 */
 	public function __construct($clientID, $ip, $port, $MTU){
 		$this->bigCnt = 0;
 		$this->MTU = $MTU;
@@ -113,7 +119,10 @@ class Player{
 	public function getSpawn(){
 		return $this->spawnPosition;
 	}
-	
+
+	/**
+	 * @param Vector3 $pos
+	 */
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Position)){
 			$level = $this->level;
@@ -255,6 +264,10 @@ class Player{
 		}
 	}
 
+	/**
+	 * @param string $reason Reason for closing connection
+	 * @param boolean $msg Set to false to silently disconnect player. No broadcast.
+	 */
 	public function close($reason = "", $msg = true){
 		if($this->connected === true){
 			foreach($this->evid as $ev){
@@ -294,8 +307,13 @@ class Player{
 			$this->received = array();
 		}
 	}
-	
-	public function sleepOn(Vector3 $pos){
+
+    /**
+     * @param Vector3 $pos
+     *
+     * @return boolean
+     */
+    public function sleepOn(Vector3 $pos){
 		foreach($this->server->api->player->getAll($this->level) as $p){
 			if($p->isSleeping instanceof Vector3){
 				if($pos->distance($p->isSleeping) <= 0.1){
@@ -335,8 +353,15 @@ class Player{
 			}
 		}
 	}
-	
-	public function hasSpace($type, $damage, $count){
+
+    /**
+     * @param $type
+     * @param $damage
+     * @param $count
+     *
+     * @return boolean
+     */
+    public function hasSpace($type, $damage, $count){
 		$inv = $this->inventory;
 		while($count > 0){
 			$add = 0;
@@ -362,7 +387,15 @@ class Player{
 		return true;
 	}
 
-	public function addItem($type, $damage, $count, $send = true){
+    /**
+     * @param $type
+     * @param $damage
+     * @param integer $count
+     * @param boolean $send
+     *
+     * @return boolean
+     */
+    public function addItem($type, $damage, $count, $send = true){
 		while($count > 0){
 			$add = 0;
 			foreach($this->inventory as $s => $item){
@@ -417,16 +450,28 @@ class Player{
 		}
 		return true;
 	}
-	
-	public function setSlot($slot, Item $item, $send = true){
+
+    /**
+     * @param integer $slot
+     * @param Item $item
+     * @param boolean $send
+     *
+     * @return boolean
+     */
+    public function setSlot($slot, Item $item, $send = true){
 		$this->inventory[(int) $slot] = $item;
 		if($send === true){
 			$this->sendInventorySlot((int) $slot);
 		}
 		return true;
 	}
-	
-	public function getSlot($slot){
+
+    /**
+     * @param integer $slot
+     *
+     * @return Item
+     */
+    public function getSlot($slot){
 		if(isset($this->inventory[(int) $slot])){
 			return $this->inventory[(int) $slot];
 		}else{
@@ -466,8 +511,13 @@ class Player{
 		}
 		return true;
 	}
-	
-	public function getArmor($slot){
+
+    /**
+     * @param integer $slot
+     *
+     * @return Item
+     */
+    public function getArmor($slot){
 		if(isset($this->armor[(int) $slot])){
 			return $this->armor[(int) $slot];
 		}else{
@@ -483,8 +533,12 @@ class Player{
 		}
 		return false;
 	}
-	
-	public function eventHandler($data, $event){
+
+    /**
+     * @param mixed $data
+     * @param string $event
+     */
+    public function eventHandler($data, $event){
 		switch($event){
 			case "tile.update":
 				if($data->level === $this->level){

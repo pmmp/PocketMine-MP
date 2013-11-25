@@ -32,8 +32,16 @@ class ChatAPI{
 		$this->server->api->ban->cmdWhitelist("tell");
 		$this->server->api->ban->cmdWhitelist("me");
 	}
-	
-	public function commandHandler($cmd, $params, $issuer, $alias){
+
+    /**
+     * @param string $cmd
+     * @param array $params
+     * @param string $issuer
+     * @param string $alias
+     *
+     * @return string
+     */
+    public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
 			case "say":
@@ -87,16 +95,30 @@ class ChatAPI{
 		}
 		return $output;
 	}
-	
-	public function broadcast($message){
+
+    /**
+     * @param string $message
+     */
+    public function broadcast($message){
 		$this->send(false, $message);
 	}
-	
-	public function sendTo($owner, $text, $player){
+
+    /**
+     * @param string $owner
+     * @param string $text
+     * @param mixed $player Can be either Player object or string username. Boolean false for broadcast.
+     */
+    public function sendTo($owner, $text, $player){
 		$this->send($owner, $text, array($player));
 	}
-	
-	public function send($owner, $text, $whitelist = false, $blacklist = false){
+
+    /**
+     * @param mixed $owner Can be either Player object or string username. Boolean false for broadcast.
+     * @param string $text
+     * @param $whitelist
+     * @param $blacklist
+     */
+    public function send($owner, $text, $whitelist = false, $blacklist = false){
 		$message = array(
 			"player" => $owner,
 			"message" => $text,
