@@ -38,46 +38,32 @@
  */
 class PermissionsAPI
 {
-	function __construct()
+	public function __construct()
 	{
 
 	}
 
-	function __destruct()
+	public function __destruct()
 	{
 
 	}
 
+	/**
+	 * @access public
+	 */
 	public function init()
 	{
-
-	}
-
-	/**
-	 * @param string $username Username of the user to check permissions
-	 * @param integer $permission Permission to check the user for.
-	 *
-	 * @return boolean Whether the person has permissions or not.
-	 */
-	public static function isPermissionGranted($username, $permission)
-	{
-
-	}
-
-	/**
-	 * @param Player $player Username of the user to check permissions
-	 * @param integer $permission Permission to check the user for.
-	 *
-	 * @return boolean True ons set. False on failure.
-	 */
-	public static function setPermission($player, $permission)
-	{
-		if(!isset($player->permissions) or !($player->permissions instanceof stdClass))
+		ServerAPI::request()->api->addHandler("player.connect", function ($player)//Use a better event than player.connect. Player.create maybe?
 		{
-			$player->permission = new stdClass();
-		}//Check if the permission variable is set, and initialise it if not.
-
-
+			if($permission = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player)) instanceof Permission)
+			{
+				$player->permissions = $permission;//This is a class with functions in it. So now plugins can call $player->permissions->isGranted().
+			}
+			else
+			{
+				//TODO: Give out default permission. Fall back to OP system maybe? Checking for a permissions receiver would be nice.
+			}
+		}, 1);//Experimental. Use Closure / Anonymous Functions to assign new functions from each API rather than hard-coding them to Player.php.
 	}
 }
 
@@ -87,23 +73,22 @@ class PermissionsAPI
  * Each Permission object will be given a level in integer, and it will be this permission object that will be assigned to players.
  * Not just an integer variable. Plugins can extend this to have their own Permissions assigned to players.
  */
-abstract class Permission
+interface Permission
 {
 	/**
-	 * @var integer
+	 * @return integer
 	 */
-	private $permissionLevel;
+	public function getPermissionLevel();
 
 	/**
-	 * @param integer $permissionLevel Integer form of Permission Level. Lower has more permissions.
+	 * @param integer $permissionLevel Integer based value of permission.
 	 */
-	public function __construct($permissionLevel)
-	{
-		$this->permissionLevel = $permissionLevel;
-	}
+	public function __construct($permissionLevel);
 
 	/**
-	 * @return mixed
+	 * @param Permission $permission Permission to check the user for. Must be a an object implementing Permission class.
+	 *
+	 * @return boolean Whether the person has permissions or not.
 	 */
-	public abstract function getPermissionLevel();
+	public static function isGranted($permission);
 }
