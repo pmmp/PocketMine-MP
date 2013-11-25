@@ -159,3 +159,6 @@ define("NETHER_QUARTZ", 406);
 
 define("CAMERA", 456);
 define("BEETROOT", 457);
+define("BEETROOT_SEEDS", 458);
+define("BEETROOT_SEED", 458);
+define("BEETROOT_SOUP", 459);

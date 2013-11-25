@@ -140,7 +140,8 @@ abstract class Block extends Position{
 			CARPET => "CarpetBlock",
 			
 			COAL_BLOCK => "CoalBlock",
-
+			
+			BEETROOT_BLOCK => "BeetrootBlock",
 			STONECUTTER => "StonecutterBlock",
 			GLOWING_OBSIDIAN => "GlowingObsidianBlock",
 			NETHER_REACTOR => "NetherReactorBlock",
