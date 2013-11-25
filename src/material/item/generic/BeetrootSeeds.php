@@ -19,8 +19,9 @@
  *
 */
 
-class BeetrootSoupItem extends Item{
+class BeetrootSeedsItem extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(BEETROOT_SOUP, 0, $count, "Beetroot Soup");
+		$this->block = BlockAPI::get(BEETROOT_BLOCK);
+		parent::__construct(BEETROOT_SEEDS, 0, $count, "Beetroot Seeds");
 	}
 }
