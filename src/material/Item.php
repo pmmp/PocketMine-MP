@@ -26,6 +26,7 @@ class Item{
 		PUMPKIN_SEEDS => "PumpkinSeedsItem",
 		MELON_SEEDS => "MelonSeedsItem",
 		CARROT => "CarrotItem",
+		BEETROOT_SOUP => "BeetrootSoupItem",
 		POTATO => "PotatoItem",
 		SIGN => "SignItem",
 		WOODEN_DOOR => "WoodenDoorItem",

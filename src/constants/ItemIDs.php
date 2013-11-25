@@ -25,6 +25,7 @@ define("IRON_AXE", 258);//Implemented
 define("FLINT_STEEL", 259);
 define("FLINT_AND_STEEL", 259);
 define("APPLE", 260);//Implemented
+define("BEETROOT_SOUP", 260);//TODO: Change Item ID
 define("BOW", 261);
 define("ARROW", 262);
 define("COAL", 263);//Implemented
