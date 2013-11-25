@@ -1,6 +1,6 @@
 ![](http://www.pocketmine.net/favicon.png)
 
-# PocketMine-MP Contribution Gidelines
+# PocketMine-MP Contribution Guidelines
 
 Before contributing to PocketMine-MP, please read this.
 
@@ -25,6 +25,7 @@ Before contributing to PocketMine-MP, please read this.
 
 
 __Thanks for contributing to PocketMine-MP!__
+
 
 
 
