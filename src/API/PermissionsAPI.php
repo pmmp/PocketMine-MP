@@ -91,7 +91,21 @@ class PermissionsAPI
  */
 abstract class Permission
 {
+	/**
+	 * @var integer
+	 */
 	private $permissionLevel;
 
+	/**
+	 * @param integer $permissionLevel Integer form of Permission Level. Lower has more permissions.
+	 */
+	public function __construct($permissionLevel)
+	{
+		$this->permissionLevel = $permissionLevel;
+	}
+
+	/**
+	 * @return mixed
+	 */
 	public abstract function getPermissionLevel();
 }
