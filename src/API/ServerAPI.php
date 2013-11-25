@@ -61,7 +61,6 @@ class ServerAPI{
 			"memory-limit" => "128M",
 			"last-update" => false,
 			"white-list" => false,
-			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
 			"view-distance" => 10,
 			"max-players" => 20,

@@ -58,7 +58,6 @@ class Player{
 	public $windowCnt = 2;
 	public $windows = array();
 	public $blocked = true;
-	public $achievements = array();
 	public $chunksLoaded = array();
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
@@ -217,7 +216,6 @@ class Player{
 
 	public function save(){
 		if($this->entity instanceof Entity){
-			$this->data->set("achievements", $this->achievements);
 			$this->data->set("position", array(
 				"level" => $this->entity->level->getName(),
 				"x" => $this->entity->x,
@@ -538,10 +536,8 @@ class Player{
 					}
 					switch($data["entity"]->type){
 						case WOOD:
-							AchievementAPI::grantAchievement($this, "mineWood");
 							break;
 						case DIAMOND:
-							AchievementAPI::grantAchievement($this, "diamond");
 							break;
 					}
 				}elseif($data["entity"]->level === $this->level){
@@ -752,40 +748,6 @@ class Player{
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
 				}else{
 					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
-				}
-
-				switch($item->getID()){
-					case WORKBENCH:
-						AchievementAPI::grantAchievement($this, "buildWorkBench");
-						break;
-					case WOODEN_PICKAXE:
-						AchievementAPI::grantAchievement($this, "buildPickaxe");
-						break;
-					case FURNACE:
-						AchievementAPI::grantAchievement($this, "buildFurnace");
-						break;
-					case WOODEN_HOE:
-						AchievementAPI::grantAchievement($this, "buildHoe");
-						break;
-					case BREAD:
-						AchievementAPI::grantAchievement($this, "makeBread");
-						break;
-					case CAKE:
-						AchievementAPI::grantAchievement($this, "bakeCake");
-						break;
-					case STONE_PICKAXE:
-					case GOLD_PICKAXE:
-					case IRON_PICKAXE:
-					case DIAMOND_PICKAXE:
-						AchievementAPI::grantAchievement($this, "buildBetterPickaxe");
-						break;
-					case WOODEN_SWORD:
-						AchievementAPI::grantAchievement($this, "buildSword");
-						break;
-					case DIAMOND:
-						AchievementAPI::grantAchievement($this, "diamond");
-						break;
-						
 				}
 			}
 		}
@@ -1247,7 +1209,6 @@ class Player{
 					}
 					$this->data->set("inventory", $inv);
 				}
-				$this->achievements = $this->data->get("achievements");
 				$this->data->set("caseusername", $this->username);
 				$this->inventory = array();		
 				foreach($this->data->get("inventory") as $slot => $item){
@@ -2007,14 +1968,6 @@ class Player{
 							"meta" => $slot->getMetadata(),
 						));
 						break;
-					}
-
-					if($tile->class === TILE_FURNACE and $data["slot"] == 2){
-						switch($slot->getID()){
-							case IRON_INGOT:
-								AchievementAPI::grantAchievement($this, "acquireIron");
-								break;
-						}
 					}
 					
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
