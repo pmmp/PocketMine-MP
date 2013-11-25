@@ -30,6 +30,50 @@ class ServerAPI{
 	private $rcon;
 	private $query;
 
+	/**
+	 * @var ConsoleAPI
+	 */
+	public $console;
+
+	/**
+	 * @var LevelAPI
+	 */
+	public $level;
+
+	/**
+	 * @var BlockAPI
+	 */
+	public $block;
+
+	/**
+	 * @var ChatAPI
+	 */
+	public $chat;
+
+	/**
+	 * @var BanAPI
+	 */
+	public $ban;
+
+	/**
+	 * @var EntityAPI
+	 */
+	public $entity;
+
+	/**
+	 * @var TimeAPI
+	 */
+	public $time;
+
+	/**
+	 * @var PlayerAPI
+	 */
+	public $player;
+
+	/**
+	 * @var TileAPI
+	 */
+	public $tile;
 
 	/**
 	 * @return PocketMinecraftServer
