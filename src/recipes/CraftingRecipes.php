@@ -20,7 +20,7 @@
 */
 
 class CraftingRecipes{
-	private static $small = array(
+	private static $small = array(//Probably means craftable on crafting bench and in inventory. Name it better!
 		//Building
 		"CLAY:?x4=>CLAY_BLOCK:0x1",
 		"WOODEN_PLANKS:?x4=>WORKBENCH:0x1",
@@ -88,7 +88,7 @@ class CraftingRecipes{
 		"DYE:0x1,DYE:8x1=>DYE:7x2",//
 	);
 	
-	private static $big = array(
+	private static $big = array(//Probably means only craftable on crafting bench. Name it better!
 		//Building
 		"WOOL:?x3,WOODEN_PLANKS:?x3=>BED:0x1",
 		"WOODEN_PLANKS:?x8=>CHEST:0x1",
