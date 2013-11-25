@@ -45,9 +45,6 @@ class PermissionsAPI{
 
 	}
 
-	/**
-	 * @access public
-	 */
 	public function init()
 	{
 		ServerAPI::request()->api->addHandler("player.connect", function ($player)//Use a better event than player.connect. Player.create maybe?
@@ -60,6 +57,11 @@ class PermissionsAPI{
 				$player->permission = new DefaultPermission();
 			}
 		}, 1);//Experimental. Use Closure / Anonymous Functions to assign new functions from each API rather than hard-coding them to Player.php.
+
+        ServerAPI::request()->api->addHandler("player.connect", function ($player)
+            {
+
+            }, 1);
 	}
 }
 

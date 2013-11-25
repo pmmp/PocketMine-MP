@@ -30,6 +30,8 @@ class ServerAPI{
 	private $rcon;
 	private $query;
 
+    //TODO: Instead of hard-coding functions, use PHPDoc-compatible methods to load APIs.
+
 	/**
 	 * @var ConsoleAPI
 	 */
