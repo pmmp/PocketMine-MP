@@ -85,9 +85,7 @@ class PermissionsAPI
  * Class Permission
  *
  * Each Permission object will be given a level in integer, and it will be this permission object that will be assigned to players.
- * Not just an integer variable.
- *
- * Plugins can extend this to have their own Permissions assigned to players.
+ * Not just an integer variable. Plugins can extend this to have their own Permissions assigned to players.
  */
 abstract class Permission
 {
