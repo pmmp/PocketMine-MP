@@ -6,9 +6,8 @@ Before contributing to PocketMine-MP, please read this.
 
 
 ## I've a question
-* For questions, please refer to the _#mcpedevs_ IRC
- channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=mcpedevs&uio=d4) if you want.
-* You can ask directly to _[@PocketMine](https://twitter.com/PocketMine)_ in Twitter.
+* For questions, please refer to the _#pocketmine_ or _#mcpedevs_ IRC channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=pockdetmine,mcpedevs&uio=d4) if you want.
+* You can ask directly to _[@PocketMine](https://twitter.com/PocketMine)_ in Twitter, but don't expect an inmediate reply.
 
 ## I want to create an issue
 * First, use the [Issue Search](https://github.com/PocketMine/PocketMine-MP/search?ref=cmdform&type=Issues) to check if anyone has reported it.
