@@ -29,7 +29,11 @@ class ServerAPI{
 	private $asyncCnt = 0;
 	private $rcon;
 	private $query;
-	
+
+
+	/**
+	 * @return PocketMinecraftServer
+	 */
 	public static function request(){
 		return self::$serverRequest;
 	}
