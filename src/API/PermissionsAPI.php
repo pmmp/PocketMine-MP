@@ -83,8 +83,7 @@ interface Permission{
 	public function isGranted($permission);
 }
 
-class DefaultPermission implements Permission//TODO: Remove this in the future for a better system than a default permission.
-{
+class DefaultPermission implements Permission{//TODO: Remove this in the future for a better system than a default permission.
 	/**
 	 * @var integer
 	 */
@@ -95,14 +94,10 @@ class DefaultPermission implements Permission//TODO: Remove this in the future f
 	 *
 	 * @return boolean
 	 */
-	public function isGranted($permissionToCheckGranted)
-	{
-		if($this->getPermissionLevel() >= $permissionToCheckGranted->getPermissionLevel())
-		{
+	public function isGranted($permissionToCheckGranted){
+		if($this->getPermissionLevel() >= $permissionToCheckGranted->getPermissionLevel()){
 			return true;
-		}
-		else
-		{
+		}else{
 			return false;
 		}
 	}
@@ -110,8 +105,7 @@ class DefaultPermission implements Permission//TODO: Remove this in the future f
 	/**
 	 * @return integer
 	 */
-	public function getPermissionLevel()
-	{
+	public function getPermissionLevel(){
 		return $this->permissionLevel;
 	}
 }
