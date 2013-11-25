@@ -36,31 +36,24 @@
  * Add enable-op argument to allow disabling OP systems. OP system should override this permission system, and this API
  * Will determine whether that option is set or not.</p>
  */
-class PermissionsAPI
-{
-	public function __construct()
-	{
+class PermissionsAPI{
+	public function __construct(){
 
 	}
 
-	public function __destruct()
-	{
+	public function __destruct(){
 
 	}
 
 	/**
 	 * @access public
 	 */
-	public function init()
-	{
-		ServerAPI::request()->api->addHandler("player.connect", function ($player)//Use a better event than player.connect. Player.create maybe?
-		{
-			if($permission = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player)) instanceof Permission)
-			{
+	public function init(){
+		ServerAPI::request()->api->addHandler("player.connect", function ($player){//Use a better event than player.connect. Player.create maybe?
+		
+			if($permission = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player)) instanceof Permission){
 				$player->permissions = $permission;//This is a class with functions in it. So now plugins can call $player->permissions->isGranted().
-			}
-			else
-			{
+			}else{
 				//TODO: Give out default permission. Fall back to OP system maybe? Checking for a permissions receiver would be nice.
 			}
 		}, 1);//Experimental. Use Closure / Anonymous Functions to assign new functions from each API rather than hard-coding them to Player.php.
@@ -73,8 +66,7 @@ class PermissionsAPI
  * Each Permission object will be given a level in integer, and it will be this permission object that will be assigned to players.
  * Not just an integer variable. Plugins can extend this to have their own Permissions assigned to players.
  */
-interface Permission
-{
+interface Permission{
 	/**
 	 * @return integer
 	 */
