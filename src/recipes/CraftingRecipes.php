@@ -80,7 +80,8 @@ class CraftingRecipes{
 		"DYE:4x1,DYE:15x1=>DYE:12x2",
 		"DYE:2x1,DYE:4x1=>DYE:6x2",
 		"DYE:1x1,DYE:4x1=>DYE:5x2",
-		"DYE:1x1,DYE:4x1,DYE:15x1=>DYE:13x3",
+		"DYE:1x1,DYE:4x1,DYE:15x1=>DYE:13x3",		
+		"BEETROOT:?x1=>DYE:1x1",
 		"DYE:15x1,DYE:1x2,DYE:4x1=>DYE:13x4",//
 		"DYE:5x1,DYE:9x1=>DYE:13x2",//		
 		"DYE:0x1,DYE:15x1=>DYE:8x2",//		
