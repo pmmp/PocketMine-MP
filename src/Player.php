@@ -60,7 +60,7 @@ class Player{
 	public $blocked = true;
 	public $achievements = array();
 	public $chunksLoaded = array();
-	public $permissions = false;
+	public $permission = false;
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
