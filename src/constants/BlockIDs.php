@@ -187,6 +187,7 @@ define("CARPET", 171);
 
 define("COAL_BLOCK", 173);
 
+define("BEETROOT_BLOCK", 244);
 define("STONECUTTER", 245);
 define("GLOWING_OBSIDIAN", 246);
 define("NETHER_REACTOR", 247);
