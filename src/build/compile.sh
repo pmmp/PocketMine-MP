@@ -234,6 +234,7 @@ fi
 --exec-prefix="$DIR/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
+--with-zlib-dir="$DIR/install_data/php/ext/zlib" \
 $HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
@@ -243,9 +244,12 @@ $HAVE_LIBEDIT \
 --disable-xmlwriter \
 --disable-cgi \
 --disable-session \
---disable-zip \
 --disable-debug \
 --disable-phar \
+--disable-pdo \
+--without-pear \
+--without-iconv \
+--without-pdo-sqlite \
 --enable-ctype \
 --enable-sockets \
 --enable-shared=no \
@@ -258,10 +262,7 @@ $HAVE_LIBEDIT \
 --enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
---without-pear \
---without-iconv \
---disable-pdo \
---without-pdo-sqlite \
+--enable-zip \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
