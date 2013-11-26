@@ -802,6 +802,7 @@ class Player{
 		}
 		
 		if(is_array($res)){
+
 			if($this->server->api->dhandle("player.craft", array("player" => $this, "recipe" => $recipe, "craft" => $craft, "type" => $type)) === false){
 				return false;
 			}
@@ -850,6 +851,9 @@ class Player{
 						break;
 					case DIAMOND:
 						AchievementAPI::grantAchievement($this, "diamond");
+						break;
+					case CAKE:
+						$this->addItem(BUCKET, 0, 3, false);
 						break;
 						
 				}
@@ -1852,7 +1856,7 @@ class Player{
 						$items = array(
 							APPLE => 2,
 							MUSHROOM_STEW => 10,
-							//BEETROOT_SOUP => ??,
+							BEETROOT_SOUP => 10,
 							BREAD => 5,
 							RAW_PORKCHOP => 3,
 							COOKED_PORKCHOP => 8,
