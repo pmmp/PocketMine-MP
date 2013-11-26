@@ -69,9 +69,9 @@ class PermissionsAPI{
 			$newPermissions = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player));
 			if($newPermissions){
 				//array_push($player->permissions, $newPermissions);
-                array_walk($newPermissions, function ($value, $key, $player) {
+                array_walk($newPermissions, function ($value, $key) use ($player) {
                         $player->permissions[] = $value;
-                    }, $player);
+                    });
 			}else{
 				//TODO: Give out default permission. Fall back to OP system maybe? Checking for a permissions receiver would be nice.
 			}
