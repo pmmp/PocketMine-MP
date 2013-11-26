@@ -52,15 +52,85 @@ class PermissionsAPI{
 	{
 		ServerAPI::request()->api->addHandler("player.connect", function ($player)//Use a better event than player.connect. Player.create maybe?
 		{
+            /** @var Player $player */
+            $player->permissions = new PlayerPermissions();
+
+            /**
+             * @param string $event
+             * @param array $data
+             */
+            $player->emitEvent = function ($event, $data) use ($player) {
+                $player->permissions->emitEvent($event, $data);
+            };
+
+            //Now instead of doing api->handle, doing emitEvent will handle permissions automatically.
+
             /** @var array $newPermission */
-			$newPermission = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player));
-			if($newPermission instanceof Permission){
-				$player->permission = $newPermission;//This is a class with functions in it. So now plugins can call $player->permissions->isGranted(). Symfony2 Style!
+			$newPermissions = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player));
+			if($newPermissions){
+				//array_push($player->permissions, $newPermissions);
+                array_walk($newPermissions, function ($value, $key, $player) {
+                        $player->permissions[] = $value;
+                    }, $player);
 			}else{
 				//TODO: Give out default permission. Fall back to OP system maybe? Checking for a permissions receiver would be nice.
 			}
 		}, 1);//Experimental. Use Closure / Anonymous Functions to assign new functions from each API rather than hard-coding them to Player.php.
 	}
+}
+
+class PlayerPermissions implements ArrayAccess
+{
+    private $Permissions = array();
+
+    public function __construct()
+    {
+
+    }
+
+    public function __destruct()
+    {
+
+    }
+
+    public function __invoke()
+    {
+
+    }
+
+    private function testRestrictions()
+    {
+        //TODO: Test Restrictions Here
+    }
+
+    public function emitEvent($event, $data)
+    {
+        //TODO: Emit event here
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->Permissions[] = $value;
+        } else {
+            $this->Permissions[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->Permissions[$offset]);
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->Permissions[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return isset($this->Permissions[$offset]) ? $this->Permissions[$offset] : null;
+    }
 }
 
 /**
@@ -86,6 +156,9 @@ class PermissionsAPI{
 //Thinking of doing $player->permissions[] = new EventRestriction("player.move");
 //$player->permissions->apply(new EventRestriction("player.move"));
 
+/**
+ * Class EventRestriction
+ */
 class EventRestriction
 {
     /**
@@ -94,15 +167,45 @@ class EventRestriction
     private $event;
 
     /**
-     * @param array $event
+     * @param string $event
      */
     public function __construct($event)
     {
         $this->event = trim($event);
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->event;
+    }
+}
+
+/**
+ * Class CommandRestriction
+ */
+class CommandRestriction
+{
+    /**
+     * @var string $command
+     */
+    private $command;
+
+    /**
+     * @param string $command
+     */
+    public function __construct($command)
+    {
+        $this->command = strtolower(trim($command));
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->command;
     }
 }

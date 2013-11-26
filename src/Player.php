@@ -62,6 +62,8 @@ class Player{
 	public $chunksLoaded = array();
     /** @var mixed Permissions Object */
 	public $permissions = false;
+    /** @var callable */
+    public $emitEvent = false;
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
