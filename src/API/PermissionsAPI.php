@@ -67,7 +67,7 @@ class PermissionsAPI{
 
             /** @var array $newPermission */
 			$newPermissions = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player));
-			if($newPermissions){
+			if(is_array($newPermissions)){
 				//array_push($player->permissions, $newPermissions);
                 array_walk($newPermissions, function ($value, $key) use ($player) {
                         $player->permissions[] = $value;
