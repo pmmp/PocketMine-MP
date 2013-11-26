@@ -37,7 +37,10 @@
  * Will determine whether that option is set or not.</p>
  */
 class PermissionsAPI{
-	public function __construct(){
+    /**
+     *
+     */
+    public function __construct(){
 
 	}
 
@@ -66,16 +69,40 @@ class PermissionsAPI{
  * Each Permission object will be given a level in integer, and it will be this permission object that will be assigned to players.
  * Not just an integer variable. Plugins can extend this to have their own Permissions assigned to players.
  */
-interface Permission{
-	/**
-	 * @return integer
-	 */
-	public function getPermissionLevel();
+//interface RoleInterface{
+//	/**
+//	 * @return integer
+//	 */
+//	public function getPermissionLevel();
+//
+//	/**
+//	 * @param RoleInterface $permission Permission to check the user for. Must be a an object implementing Permission class.
+//	 *
+//	 * @return boolean Whether the person has permissions or not.
+//	 */
+//	public function isGranted($permission);
+//}
 
-	/**
-	 * @param Permission $permission Permission to check the user for. Must be a an object implementing Permission class.
-	 *
-	 * @return boolean Whether the person has permissions or not.
-	 */
-	public function isGranted($permission);
+//Thinking of doing $player->permissions[] = new EventRestriction("player.move");
+//$player->permissions->apply(new EventRestriction("player.move"));
+
+class EventRestriction
+{
+    /**
+     * @var string $event
+     */
+    private $event;
+
+    /**
+     * @param array $event
+     */
+    public function __construct($event)
+    {
+        $this->event = trim($event);
+    }
+
+    public function __toString()
+    {
+        return (string) $this->event;
+    }
 }
