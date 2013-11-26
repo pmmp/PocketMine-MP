@@ -162,7 +162,7 @@ class Utils{
 		$m = array();
 		$b = ord($value{$offset});
 		++$offset;
-		while($b !== 127){
+		while($b !== 127 and isset($value{$offset})){
 			$bottom = $b & 0x1F;
 			$type = $b >> 5;
 			switch($type){
@@ -220,7 +220,7 @@ class Utils{
 	public static function readDataArray($str, $len = 10, &$offset = null){
 		$data = array();
 		$offset = 0;
-		for($i = 1; $i <= $len; ++$i){
+		for($i = 1; $i <= $len and isset($str{$offset}); ++$i){
 			$l = Utils::readTriad(substr($str, $offset, 3));
 			$offset += 3;
 			$data[] = substr($str, $offset, $l);

@@ -173,6 +173,10 @@ class Packet{
 		$this->offset += $len;
 		return $data;
 	}
+	
+	private function feof(){
+		return !isset($this->raw{$this->offset});
+	}
 
 	protected function addRaw($str){
 		$this->raw .= $str;
@@ -203,10 +207,10 @@ class Packet{
 						case 0xa0:
 							$cnt = Utils::readShort($this->get(2), false);
 							$this->data[$field] = array();
-							for($i = 0; $i < $cnt; ++$i){
+							for($i = 0; $i < $cnt and !$this->feof(); ++$i){
 								if(Utils::readBool($this->get(1)) === false){
 									$start = Utils::readTriad(strrev($this->get(3)));
-									$end = Utils::readTriad(strrev($this->get(3)));
+									$end = min(Utils::readTriad(strrev($this->get(3))), $start + 4096);
 									for($c = $start; $c <= $end; ++$c){
 										$this->data[$field][] = $c;
 									}

@@ -40,6 +40,10 @@ class CustomPacketHandler{
 		}
 		return $data;
 	}
+	
+	private function feof(){
+		return !isset($this->raw{$this->offset});
+	}
 
 	public function __construct($pid, $raw = "", $data = array(), $create = false){
 		$this->raw = $raw;
@@ -469,7 +473,7 @@ class CustomPacketHandler{
 					$this->data["radius"] = Utils::readFloat($this->get(4));
 					$this->data["count"] = Utils::readInt($this->get(4));
 					$this->data["records"] = array();
-					for($r = 0; $r < $this->data["count"]; ++$r){
+					for($r = 0; $r < $this->data["count"] and !$this->feof(); ++$r){
 						$this->data["records"][] = new Vector3(Utils::readByte($this->get(1)), Utils::readByte($this->get(1)), Utils::readByte($this->get(1)));
 					}
 				}else{
@@ -707,7 +711,7 @@ class CustomPacketHandler{
 					$this->data["windowid"] = ord($this->get(1));
 					$this->data["count"] = Utils::readShort($this->get(2), false);
 					$this->data["slots"] = array();
-					for($s = 0; $s < $this->data["count"]; ++$s){
+					for($s = 0; $s < $this->data["count"] and !$this->feof(); ++$s){
 						$this->data["slots"][$s] = Utils::readSlot($this);
 					}
 					if($this->data["windowid"] === 1){ //Armor is also sent
@@ -791,7 +795,7 @@ class CustomPacketHandler{
 					$this->data["windowid"] = ord($this->get(1));
 					$this->data["count"] = Utils::readShort($this->get(2), false);
 					$this->data["slots"] = array();
-					for($s = 0; $s < $this->data["count"]; ++$s){
+					for($s = 0; $s < $this->data["count"] and !$this->feof(); ++$s){
 						$this->data["slots"][$s] = Utils::readSlot($this);
 					}
 				}else{

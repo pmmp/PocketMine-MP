@@ -65,6 +65,9 @@ class MinecraftInterface{
 		if($len === false){
 			return $pk;
 		}
+		echo "received packet [".strtoupper(bin2hex(Utils::writeInt(crc32($buf))))."]".PHP_EOL;
+		global $lastPacketSent;
+		$lastPacketSent = bin2hex($buf);
 		$this->bandwidth[0] += $len;
 		$this->parsePacket($buf, $source, $port);
 		return ($pk !== false ? $pk : $this->popPacket());
