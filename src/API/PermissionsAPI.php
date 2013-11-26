@@ -156,10 +156,17 @@ class PlayerPermissions implements ArrayAccess
 //Thinking of doing $player->permissions[] = new EventRestriction("player.move");
 //$player->permissions->apply(new EventRestriction("player.move"));
 
+interface Restriction
+{
+    public function __construct($restriction);
+
+    public function __toString();
+}
+
 /**
  * Class EventRestriction
  */
-class EventRestriction
+class EventRestriction implements Restriction
 {
     /**
      * @var string $event
@@ -186,7 +193,7 @@ class EventRestriction
 /**
  * Class CommandRestriction
  */
-class CommandRestriction
+class CommandRestriction implements Restriction
 {
     /**
      * @var string $command
