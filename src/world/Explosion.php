@@ -20,6 +20,13 @@
 */
 
 class Explosion{
+	public static $specialDrops = array(
+		GRASS => DIRT,
+		STONE => COBBLESTONE,
+		COAL_ORE => COAL,
+		DIAMOND_ORE => DIAMOND,
+		REDSTONE_ORE => REDSTONE,
+	);
 	private $rays = 16; //Rays
 	public $level;
 	public $source;
@@ -98,27 +105,10 @@ class Explosion{
 				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				$server->api->entity->spawnToAll($e);
 			}elseif(mt_rand(0, 10000) < ((1/$this->size) * 10000)){
-				switch ($block->getID()) {
-
-					case GRASS:
-						$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem(DIRT, $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));
-						break;
-					
-					case STONE:
-						$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem(COBBLESTONE, $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));
-						break;
-
-					case COAL_ORE:
-						$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), new CoalItem());
-						break;
-
-					case DIAMOND_ORE:
-						$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), new DiamondItem());
-						break;
-
-					default:
-						$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));
-						break;
+				if(isset(self::$specialDrops[$block->getID()])){
+					$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem(self::$specialDrops[$block->getID()], 0));				
+				}else{
+					$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));				
 				}
 			}
 			$this->level->level->setBlockID($block->x, $block->y, $block->z, 0);
