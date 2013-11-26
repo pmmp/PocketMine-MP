@@ -842,12 +842,7 @@ class Player{
 						AchievementAPI::grantAchievement($this, "diamond");
 						break;
 					case CAKE:
-						if($this->hasSpace(AIR, 0, 0) == true){
-							$this->addItem(BUCKET, 0, 3, false);
-						}
-						else{
-							$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), BlockAPI::getItem(BUCKET, 0, 3));
-						}
+						$this->addItem(BUCKET, 0, 3, false);
 						break;
 						
 				}
