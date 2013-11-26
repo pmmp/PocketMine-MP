@@ -1888,6 +1888,9 @@ class Player{
 							if($slot->count <= 0){
 								$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
 							}
+							if($slot->getID() === MUSHROOM_STEW or $slot->getID() === BEETROOT_SOUP){
+								$this->addItem(BOWL, 0, 1, false);
+							}
 						}
 						break;
 				}
