@@ -21,7 +21,7 @@
 
 
 class TallGrassObject{
-	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15){
+	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = array(
 			BlockAPI::get(DANDELION, 0),
 			BlockAPI::get(CYAN_FLOWER, 0),
@@ -30,7 +30,6 @@ class TallGrassObject{
 			BlockAPI::get(TALL_GRASS, 1),
 			BlockAPI::get(TALL_GRASS, 1)
 		);
-		$radius = 10;
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($pos->x - $radius, $pos->x + $radius);

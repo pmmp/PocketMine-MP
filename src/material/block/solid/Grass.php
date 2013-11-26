@@ -36,7 +36,7 @@ class GrassBlock extends SolidBlock{
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}
-			TallGrassObject::growGrass($this->level, $this, new Random());
+			TallGrassObject::growGrass($this->level, $this, new Random(), 8, 2);
 			return true;
 		}elseif($item->isHoe()){
 			if(($player->gamemode & 0x01) === 0){
