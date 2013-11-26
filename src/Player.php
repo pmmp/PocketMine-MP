@@ -60,7 +60,7 @@ class Player{
 	public $blocked = true;
 	public $achievements = array();
 	public $chunksLoaded = array();
-	public $permission = false;
+	public $permissions = array();
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
@@ -672,8 +672,12 @@ class Player{
 				break;
 		}
 	}
-	
-	public function sendChat($message, $author = ""){
+
+    /**
+     * @param string $message
+     * @param string $author
+     */
+    public function sendChat($message, $author = ""){
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if(preg_match_all('#@([@A-Za-z_]{1,})#', $m, $matches, PREG_OFFSET_CAPTURE) > 0){
@@ -752,8 +756,15 @@ class Player{
 			"flags" => $flags,
 		));
 	}
-	
-	public function craftItems(array $craft, array $recipe, $type){
+
+    /**
+     * @param array $craft
+     * @param array $recipe
+     * @param $type
+     *
+     * @return array|bool
+     */
+    public function craftItems(array $craft, array $recipe, $type){
 		$craftItem = array(0, true, 0);
 		unset($craft[-1]);
 		foreach($craft as $slot => $item){
@@ -846,8 +857,17 @@ class Player{
 		}
 		return $res;
 	}
-	
-	public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true, $force = true){
+
+    /**
+     * @param Vector3 $pos
+     * @param float|boolean $yaw
+     * @param float|boolean $pitch
+     * @param float|boolean $terrain
+     * @param float|boolean $force
+     *
+     * @return boolean
+     */
+    public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true, $force = true){
 		if($this->entity instanceof Entity and $this->level instanceof Level){
 			$this->entity->check = false;
 			if($yaw === false){
@@ -2122,8 +2142,11 @@ class Player{
 				break;
 		}
 	}
-	
-	public function sendArmor($player = false){
+
+    /**
+     * @param Player|string|boolean|void $player
+     */
+    public function sendArmor($player = false){
 		$data = array(
 			"player" => $this,
 			"eid" => $this->eid
@@ -2225,7 +2248,13 @@ class Player{
 		return array($count);
 	}
 
-	public function dataPacket($id, $data = array()){
+    /**
+     * @param integer $id
+     * @param array $data
+     *
+     * @return array|bool
+     */
+    public function dataPacket($id, $data = array()){
 		$data["id"] = $id;
 		if($id === false){
 			$raw = $data["raw"];
@@ -2245,8 +2274,11 @@ class Player{
 		$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
 		return array();
 	}
-	
-	function __toString(){
+
+    /**
+     * @return string
+     */
+    function __toString(){
 		if($this->username != ""){
 			return $this->username;
 		}

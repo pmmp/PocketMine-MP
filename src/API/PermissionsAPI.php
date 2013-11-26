@@ -49,19 +49,14 @@ class PermissionsAPI{
 	{
 		ServerAPI::request()->api->addHandler("player.connect", function ($player)//Use a better event than player.connect. Player.create maybe?
 		{
+            /** @var array $newPermission */
 			$newPermission = ServerAPI::request()->api->dhandle("permissions.request", array('player' => $player));
 			if($newPermission instanceof Permission){
-				$player->permission = $newPermission;//This is a class with functions in it. So now plugins can call $player->permissions->isGranted().
+				$player->permission = $newPermission;//This is a class with functions in it. So now plugins can call $player->permissions->isGranted(). Symfony2 Style!
 			}else{
 				//TODO: Give out default permission. Fall back to OP system maybe? Checking for a permissions receiver would be nice.
-				$player->permission = new DefaultPermission();
 			}
 		}, 1);//Experimental. Use Closure / Anonymous Functions to assign new functions from each API rather than hard-coding them to Player.php.
-
-        ServerAPI::request()->api->addHandler("player.connect", function ($player)
-            {
-
-            }, 1);
 	}
 }
 
@@ -78,36 +73,9 @@ interface Permission{
 	public function getPermissionLevel();
 
 	/**
-	 * @param object $permission Permission to check the user for. Must be a an object implementing Permission class.
+	 * @param Permission $permission Permission to check the user for. Must be a an object implementing Permission class.
 	 *
 	 * @return boolean Whether the person has permissions or not.
 	 */
 	public function isGranted($permission);
-}
-
-class DefaultPermission implements Permission{//TODO: Remove this in the future for a better system than a default permission.
-	/**
-	 * @var integer
-	 */
-	private $permissionLevel = 0;//Highest permission possible.
-
-	/**
-	 * @param Permission $permissionToCheckGranted
-	 *
-	 * @return boolean
-	 */
-	public function isGranted($permissionToCheckGranted){
-		if($this->getPermissionLevel() >= $permissionToCheckGranted->getPermissionLevel()){
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	/**
-	 * @return integer
-	 */
-	public function getPermissionLevel(){
-		return $this->permissionLevel;
-	}
 }
