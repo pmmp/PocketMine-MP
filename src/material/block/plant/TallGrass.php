@@ -56,6 +56,12 @@ class TallGrassBlock extends FlowableBlock{
 		if(mt_rand(1,15) === 1){//Beetroot Seeds
 			$drops[] = array(BEETROOT_SEEDS, 0, 1);
 		}
+		if(mt_rand(1,20) === 1){//Melon Seeds
+			$drops[] = array(MELON_SEEDS, 0, 1);
+		}
+		if(mt_rand(1,15) === 1){//Melon Seeds
+			$drops[] = array(PUMPKIN_SEEDS, 0, 1);
+		}
 		return $drops;
 	}
 
