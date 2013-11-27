@@ -419,6 +419,12 @@ class BlockAPI{
 			return $this->cancelAction($block, $player, false);
 		}
 		
+		if($target->isReplaceable === true){
+			$block = $target;
+			$hand->position($block);			
+			$face = -1;
+		}
+		
 		if($hand->isSolid === true and $player->entity->inBlock($block)){
 			return $this->cancelAction($block, $player, false); //Entity in block
 		}
