@@ -315,6 +315,9 @@ class Entity extends Position{
 			}else{
 				$hasUpdate = true;
 			}
+			if(($this->player instanceof Player) and ($this->player->gamemode & 0x01) === CREATIVE){ //Remove fire effects in next tick
+				$this->fire = 1;
+			}
 		}
 		
 		$startX = (int) (round($this->x - 0.5) - 1);
