@@ -22,8 +22,20 @@
 define("ASYNC_CURL_GET", 1);
 define("ASYNC_CURL_POST", 2);
 
-class StackableArray{
-	public $counter = 0;
+class StackableArray extends Stackable{
+	public function __construct(){
+		foreach(func_get_args() as $n => $value){
+			if(is_array($value)){
+				$this->{$n} = new StackableArray();
+				call_user_func_array(array($this->{$n}, "__construct"), $value);
+			}else{
+				$this->{$n} = $value;
+			}
+		}
+	}
+	
+	public function __destruct(){}
+	
 	public function run(){}
 }
 
