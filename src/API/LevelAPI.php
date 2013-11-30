@@ -32,6 +32,18 @@ class LevelAPI{
 		}
 		return false;
 	}
+
+    public function isLoaded($name)
+    {
+        if(isset($this->levels[$name]))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 	
 	public function getDefault(){
 		return $this->levels[$this->default];
