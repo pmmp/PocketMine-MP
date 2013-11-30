@@ -315,6 +315,9 @@ class Entity extends Position{
 			}else{
 				$hasUpdate = true;
 			}
+			if(($this->player instanceof Player) and ($this->player->gamemode & 0x01) === CREATIVE){ //Remove fire effects in next tick
+				$this->fire = 1;
+			}
 		}
 		
 		$startX = (int) (round($this->x - 0.5) - 1);
@@ -424,7 +427,7 @@ class Entity extends Position{
 							$support = true;
 							$isFlying = false;
 							break;
-						}elseif(($b instanceof LiquidBlock) or $b->getID() === COBWEB or $b->getID() === LADDER or $b->getID() === FENCE){
+						}elseif(($b instanceof LiquidBlock) or $b->getID() === COBWEB or $b->getID() === LADDER or $b->getID() === FENCE or $b->getID() === STONE_WALL){
 							$isFlying = false;
 						}
 					}

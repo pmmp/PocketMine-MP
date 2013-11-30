@@ -22,7 +22,7 @@
 class TallGrassBlock extends FlowableBlock{
 	public function __construct($meta = 1){
 		parent::__construct(TALL_GRASS, $meta, "Tall Grass");
-		$this->isReplaceable = true;
+		//$this->isReplaceable = true;
 		$names = array(
 			0 => "Dead Shrub",
 			1 => "Tall Grass",

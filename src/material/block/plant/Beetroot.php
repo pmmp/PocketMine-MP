@@ -21,7 +21,7 @@
 
 class BeetrootBlock extends FlowableBlock{
 	public function __construct($meta = 0){
-		parent::__construct(BETROOT_BLOCK, $meta, "Beetroot Block");
+		parent::__construct(BEETROOT_BLOCK, $meta, "Beetroot Block");
 		$this->isActivable = true;
 		$this->hardness = 0;
 	}

@@ -22,7 +22,7 @@
 class DeadBushBlock extends FlowableBlock{
 	public function __construct(){
 		parent::__construct(DEAD_BUSH, 0, "Dead Bush");
-		$this->isReplaceable = true;
+		//$this->isReplaceable = true;
 		$this->hardness = 0;
 	}
 

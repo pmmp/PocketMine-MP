@@ -100,6 +100,7 @@ define("BUCKET", 325);
 
 
 define("IRON_DOOR", 330);
+define("REDSTONE", 331);
 define("REDSTONE_DUST", 331);
 define("SNOWBALL", 332);
 
