@@ -92,7 +92,7 @@ class SuperflatGenerator implements LevelGenerator{
 						$blocks .= chr($this->structure[$y]->getID());
 						$metas .= substr(dechex($this->structure[$y]->getMetadata()), -1);
 					}
-					$this->chunks[$Y] .= $blocks.Utils::hexToStr($metas)."\x00\x00\x00\x00\x00\x00\x00\x00";
+					$this->chunks[$Y] .= $blocks.hex2bin($metas)."\x00\x00\x00\x00\x00\x00\x00\x00";
 				}
 			}
 		}
