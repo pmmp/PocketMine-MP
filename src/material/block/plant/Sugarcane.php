@@ -30,6 +30,27 @@ class SugarcaneBlock extends FlowableBlock{
 			array(SUGARCANE, 0, 1),
 		);
 	}
+	
+	public function onActivate(Item $item, Player $player){
+		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+			if($this->getSide(0)->getID() !== SUGARCANE_BLOCK){
+				for($y = 1; $y < 3; ++$y){
+					$b = $this->level->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+					if($b->getID() === AIR){
+						$this->level->setBlock($b, new SugarcaneBlock(), true, false, true);							
+						break;
+					}
+				}
+				$this->meta = 0;
+				$this->level->setBlock($this, $this, true, false, true);
+			}
+			if(($player->gamemode & 0x01) === 0){
+				$item->count--;
+			}
+			return true;
+		}
+		return false;
+	}
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
