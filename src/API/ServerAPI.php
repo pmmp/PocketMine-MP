@@ -154,16 +154,17 @@ class ServerAPI{
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
 			console("[INFO] Last check: ".FORMAT_AQUA.date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
-			$info = json_decode(Utils::curl_get("http://www.pocketmine.net/latest"), true);
 			if($this->server->version->isDev()){
-				if($info === false or !isset($info["development"])){
-					console("[ERROR] PocketMine API error");
+				$info = json_decode(Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
+				if($info === false or !isset($info[0])){
+					console("[ERROR] Github API error");
 				}else{
-					$last = $info["development"]["date"];
-					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info["development"]["commit"]){
-						console("[NOTICE] ".FORMAT_YELLOW."A new DEVELOPMENT version of PocketMine-MP has been released");
-						console("[NOTICE] ".FORMAT_YELLOW."Version \"".$info["development"]["version"]."\" [".substr($info["development"]["commit"], 0, 10)."]");
-						console("[NOTICE] ".FORMAT_YELLOW."Get it at PocketMine.net or ".$info["development"]["download"]);
+					$last = new DateTime($info[0]["commit"]["committer"]["date"]);
+					$last = $last->getTimestamp();
+					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info[0]["sha"]){
+						console("[NOTICE] ".FORMAT_YELLOW."A new DEVELOPMENT version of PocketMine-MP has been released!");
+						console("[NOTICE] ".FORMAT_YELLOW."Commit \"".$info[0]["commit"]["message"]."\" [".substr($info[0]["sha"], 0, 10)."] by ".$info[0]["commit"]["committer"]["name"]);
+						console("[NOTICE] ".FORMAT_YELLOW."Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/".$info[0]["sha"].".zip");
 						console("[NOTICE] This message will dissapear after issuing the command \"/update-done\"");
 					}else{
 						$this->setProperty("last-update", time());
@@ -171,17 +172,18 @@ class ServerAPI{
 					}
 				}
 			}else{
-				if($info === false or !isset($info["stable"])){
-					console("[ERROR] PocketMine API error");
+				$info = json_decode(Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
+				if($info === false or !isset($info[0])){
+					console("[ERROR] Github API error");
 				}else{
 					$newest = new VersionString(MAJOR_VERSION);
 					$newestN = $newest->getNumber();
-					$update = new VersionString($info["stable"]["version"]);
+					$update = new VersionString($info[0]["name"]);
 					$updateN = $update->getNumber();
 					if($updateN > $newestN){
-						console("[NOTICE] ".FORMAT_GREEN."A new STABLE version of PocketMine-MP has been released");
-						console("[NOTICE] ".FORMAT_GREEN."Version \"".$info["stable"]["version"]."\" #".$updateN);
-						console("[NOTICE] Get it at PocketMine.net or ".$info["stable"]["download"]);
+						console("[NOTICE] ".FORMAT_GREEN."A new STABLE version of PocketMine-MP has been released!");
+						console("[NOTICE] ".FORMAT_GREEN."Version \"".$info[0]["name"]."\" #".$updateN);
+						console("[NOTICE] Get it at PocketMine.net or at ".$info[0]["zipball_url"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
 					}else{
 						$this->setProperty("last-update", time());
