@@ -168,7 +168,8 @@ class Config{
 	
 	public function &get($k){
 		if($this->correct === false or !isset($this->config[$k])){
-			return false;
+			$false = false;
+			return $false;
 		}
 		return $this->config[$k];
 	}
