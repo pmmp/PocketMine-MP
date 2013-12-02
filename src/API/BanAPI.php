@@ -175,7 +175,9 @@ class BanAPI{
 					}else{
 						$reason = implode(" ", $params);
 						$reason = $reason == "" ? "No reason":$reason;
-						$player->close("You have been kicked: ".$reason);
+						
+						$this->server->schedule(60, array($player, "close"), "You have been kicked: ".$reason); //Forces a kick
+						$player->blocked = true;
 						if($issuer instanceof Player){
 							$this->server->api->chat->broadcast($player->username." has been kicked by ".$issuer->username.": $reason\n");
 						}else{
