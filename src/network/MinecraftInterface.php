@@ -62,7 +62,7 @@ class MinecraftInterface{
 		$source = false;
 		$port = 1;
 		$len = $this->socket->read($buf, $source, $port);
-		if($len === false){
+		if($len === false and $len > 0){
 			return $pk;
 		}
 		$this->bandwidth[0] += $len;
