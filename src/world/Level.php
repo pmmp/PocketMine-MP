@@ -347,14 +347,14 @@ class Level{
 		return $ret;
 	}
 	
-	public function getMiniChunk($X, $Y, $Z){
+	public function getMiniChunk($X, $Z, $Y){
 		if(!isset($this->level)){
 			return false;
 		}
 		return $this->level->getMiniChunk($X, $Z, $Y);
 	}
 	
-	public function setMiniChunk($X, $Y, $Z, $data){
+	public function setMiniChunk($X, $Z, $Y, $data){
 		if(!isset($this->level)){
 			return false;
 		}
