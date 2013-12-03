@@ -1924,7 +1924,11 @@ class Player{
 					}else{
 						$data = array("player" => $this, "message" => $message);
 						if($this->server->api->handle("player.chat", $data) !== false){
-							$this->server->api->chat->send($this, $data["message"]);
+							if(isset($data["message"])){
+								$this->server->api->chat->send($this, $data["message"]);
+							}else{
+								$this->server->api->chat->send($this, $message);
+							}
 						}
 					}
 				}
