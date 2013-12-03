@@ -956,7 +956,7 @@ class Entity extends Position{
 		}elseif($health === $this->health){
 			return false;
 		}
-		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false){
+		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false or $force === true){
 			$this->health = min(127, max(-127, $health));
 			$this->server->query("UPDATE entities SET health = ".$this->health." WHERE EID = ".$this->eid.";");
 			if($harm === true){
