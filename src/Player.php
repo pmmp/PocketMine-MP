@@ -1922,8 +1922,13 @@ class Player{
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					}else{
-						if($this->server->api->dhandle("player.chat", array("player" => $this, "message" => $message)) !== false){
-							$this->server->api->chat->send($this, $message);
+						$data = array("player" => $this, "message" => $message);
+						if($this->server->api->handle("player.chat", $data) !== false){
+							if(isset($data["message"])){
+								$this->server->api->chat->send($this, $data["message"]);
+							}else{
+								$this->server->api->chat->send($this, $message);
+							}
 						}
 					}
 				}
