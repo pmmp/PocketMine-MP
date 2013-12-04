@@ -154,6 +154,7 @@ class NBT{
 					$this->parseTree($value);
 					break;
 				default:
+					echo bin2hex(substr($this->binary, $this->offset - 1)).PHP_EOL.PHP_EOL;
 					die("Invalid NBT Tag $tag");
 					break;
 			}
@@ -198,6 +199,7 @@ class NBT{
 					$this->parseTree($value);
 					break;
 				default:
+					echo bin2hex(substr($this->binary, $this->offset - 1)).PHP_EOL.PHP_EOL;
 					die("Invalid NBT Tag $tag");
 					break;
 			}
