@@ -1229,10 +1229,10 @@ class Player{
 			case MC_PONG:
 				break;
 			case MC_PING:
-				$t = (int) (microtime(true) * 1000);
+				$t = abs(microtime(true) * 1000);
 				$this->dataPacket(MC_PONG, array(
 					"ptime" => $data["time"],
-					"time" => (int) (microtime(true) * 1000),
+					"time" => $t,
 				));
 				$this->sendBuffer();
 				break;
