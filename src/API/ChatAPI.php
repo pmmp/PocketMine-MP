@@ -90,7 +90,9 @@ class ChatAPI{
 				if($target !== "Console" and $target !== "Rcon"){
 					$this->sendTo(false, "[".$sender." -> me] ".$mes, $target);
 				}
-				console("[INFO] [".$sender." -> ".$target."] ".$mes);
+				if($target === "Console" or $sender === "Console"){
+					console("[INFO] [".$sender." -> ".$target."] ".$mes);
+				}
 				break;
 		}
 		return $output;
