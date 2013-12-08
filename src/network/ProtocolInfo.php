@@ -23,7 +23,7 @@
 define("DEFLATEPACKET_LEVEL", 1);
 
 define("CURRENT_STRUCTURE", 5);
-define("CURRENT_PROTOCOL", 13);
+define("CURRENT_PROTOCOL", 14);
 
 define("RAKNET_MAGIC", "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78");
 
