@@ -81,7 +81,7 @@ class PluginAPI extends stdClass{
 			console("[ERROR] Failed loading plugin: class already exists");
 			return false;
 		}
-		if(eval($info["code"]) === false or ($info["class"] !== "none" and !class_exists($info["class"]))){
+		if(((!isset($pmf) and (include $file) === false) or (isset($pmf) and eval($info["code"]) === false)) and $info["class"] !== "none" and !class_exists($info["class"])){
 			console("[ERROR] Failed loading {$info['name']}: evaluation error");
 			return false;
 		}
