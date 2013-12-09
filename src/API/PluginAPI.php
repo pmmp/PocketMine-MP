@@ -41,6 +41,10 @@ class PluginAPI extends stdClass{
 	}
 
 	public function load($file){
+		if(is_link($file) or is_dir($file) or !file_exists($file)){
+			console("[ERROR] ".basename($file)." is not a file");
+			return false;
+		}
 		if(strtolower(substr($file, -3)) === "pmf"){
 			$pmf = new PMFPlugin($file);
 			$info = $pmf->getPluginInfo();
