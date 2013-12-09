@@ -140,11 +140,12 @@ class PluginAPI extends stdClass{
 	
 	public function configPath(Plugin $plugin){
 		$p = $this->get($plugin);
+		$identifier = $this->getIdentifier($p[1]["name"], $p[1]["author"]);
 		if($p === false){
 			return false;
 		}
 		$path = $this->pluginsPath() . $p[1]["name"] . DIRECTORY_SEPARATOR;
-		$this->plugins[$p[1]["class"]][1]["path"] = $path;
+		$this->plugins[$identifier][1]["path"] = $path;
 		@mkdir($path);
 		return $path;
 	}
