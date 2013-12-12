@@ -98,6 +98,7 @@ define("SIGN", 323);
 define("WOODEN_DOOR", 324);
 define("BUCKET", 325);
 
+define("MINECART", 329);
 
 define("IRON_DOOR", 330);
 define("REDSTONE", 331);
