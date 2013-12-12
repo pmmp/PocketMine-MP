@@ -194,7 +194,7 @@ class CustomPacketHandler{
 				if($this->c === false){
 					$this->data["time"] = Utils::readInt($this->get(4));
 				}else{
-					$this->raw .= Utils::writeInt($this->data["time"]);
+					$this->raw .= Utils::writeInt($this->data["time"])."\x80";
 				}
 				break;
 			case MC_START_GAME:
