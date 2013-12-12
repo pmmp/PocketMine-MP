@@ -137,6 +137,7 @@ class BlockAPI{
 		array(MELON_BLOCK, 0),
 		array(PUMPKIN, 0),
 		array(LIT_PUMPKIN, 0),
+		array(COBWEB, 0),
 		array(HAY_BALE, 0),
 		array(TALL_GRASS, 1),
 		array(TALL_GRASS, 2),
