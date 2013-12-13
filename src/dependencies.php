@@ -24,7 +24,7 @@ require_once(dirname(__FILE__)."/config.php");
 require_once(FILE_PATH."/src/utils/TextFormat.php");
 require_once(FILE_PATH."/src/functions.php");
 /***REM_END***/
-define(DATA_PATH, realpath(arg("data-path", FILE_PATH))."/");
+define("DATA_PATH", realpath(arg("data-path", FILE_PATH))."/");
 
 if(arg("enable-ansi", strpos(strtoupper(php_uname("s")), "WIN") === 0 ? false:true) === true and arg("disable-ansi", false) !== true){
 	define("ENABLE_ANSI", true);
@@ -76,10 +76,22 @@ if($errors > 0){
 	exit(1); //Exit with error
 }
 
+$sha1sum = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 /***REM_START***/
 require_once(FILE_PATH."/src/math/Vector3.php");
 require_once(FILE_PATH."/src/world/Position.php");
 require_once(FILE_PATH."/src/pmf/PMF.php");
 
 require_all(FILE_PATH . "src/");
+
+$inc = get_included_files();
+$inc[] = array_shift($inc);
+$srcdir = realpath(FILE_PATH."src/");
+foreach($inc as $s){
+	if(strpos(realpath(dirname($s)), $srcdir) === false and strtolower(basename($s)) !== "pocketmine-mp.php"){
+		continue;
+	}
+	$sha1sum ^= sha1_file($s, true);
+}
 /***REM_END***/
+define("SOURCE_SHA1SUM", bin2hex($sha1sum));

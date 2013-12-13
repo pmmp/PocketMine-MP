@@ -442,8 +442,9 @@ class PocketMinecraftServer{
 		}
 		$dump .= "\r\n\r\n";
 		$version = new VersionString();
-		$dump .= "PM Version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."]\r\n";
-		$dump .= "Commit: ".GIT_COMMIT."\r\n";
+		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."; API ".CURRENT_API_VERSION."]\r\n";
+		$dump .= "Git commit: ".GIT_COMMIT."\r\n";
+		$dump .= "Source SHA1 sum: ".SOURCE_SHA1SUM."\r\n";
 		$dump .= "uname -a: ".php_uname("a")."\r\n";
 		$dump .= "PHP Version: " .phpversion()."\r\n";
 		$dump .= "Zend version: ".zend_version()."\r\n";
