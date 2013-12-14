@@ -167,7 +167,7 @@ class Config{
 	}
 	
 	public function &get($k){
-		if($this->correct === false or !isset($this->config[$k])){
+		if(isset($this->correct) and ($this->correct === false or !isset($this->config[$k]))){
 			$false = false;
 			return $false;
 		}
