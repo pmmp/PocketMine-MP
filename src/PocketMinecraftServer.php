@@ -533,10 +533,10 @@ class PocketMinecraftServer{
 				case 0x05:
 					$version = $data[1];
 					$size = strlen($data[2]);
-					if($version !== CURRENT_STRUCTURE){
+					if($version !== RAKNET_STRUCTURE){
 						console("[DEBUG] Incorrect structure #$version from ".$packet["ip"].":".$packet["port"], true, true, 2);
 						$this->send(0x1a, array(
-							CURRENT_STRUCTURE,
+							RAKNET_STRUCTURE,
 							RAKNET_MAGIC,
 							$this->serverID,
 						), false, $packet["ip"], $packet["port"]);
