@@ -36,6 +36,9 @@ class RakNetParser{
 	}
 	
 	private function get($len){
+		if($len <= 0){
+			return "";
+		}
 		if($len === true){
 			return substr($this->buffer, $this->offset);
 		}
@@ -47,8 +50,16 @@ class RakNetParser{
 		return Utils::readLong($this->get(8), $unsigned);
 	}
 	
+	private function getInt($unsigned = false){
+		return Utils::readInt($this->get(4), $unsigned);
+	}
+	
 	private function getShort($unsigned = false){
 		return Utils::readShort($this->get(2), $unsigned);
+	}
+	
+	private function getLTriad(){
+		return Utils::readTriad(strrev($this->get(3)));
 	}
 	
 	private function getByte(){
@@ -65,9 +76,6 @@ class RakNetParser{
 		$this->packet->length = strlen($this->buffer);
 		switch($packetID){
 			case RAKNET_UNCONNECTED_PING:
-				$this->packet->pingID = $this->getLong();
-				$this->offset += 16; //Magic
-				break;
 			case RAKNET_UNCONNECTED_PING_OPEN_CONNECTIONS:
 				$this->packet->pingID = $this->getLong();
 				$this->offset += 16; //Magic
@@ -79,15 +87,87 @@ class RakNetParser{
 				break;
 			case RAKNET_OPEN_CONNECTION_REQUEST_2:
 				$this->offset += 16; //Magic
-				$this->packet->securoty = $this->get(5);
+				$this->packet->security = $this->get(5);
 				$this->packet->port = $this->getShort(false);
 				$this->packet->MTU = $this->getShort(false);
 				$this->packet->clientGUID = $this->getLong();
+				break;
+			case RAKNET_DATA_PACKET_0:
+			case RAKNET_DATA_PACKET_1:
+			case RAKNET_DATA_PACKET_2:
+			case RAKNET_DATA_PACKET_3:
+			case RAKNET_DATA_PACKET_4:
+			case RAKNET_DATA_PACKET_5:
+			case RAKNET_DATA_PACKET_6:
+			case RAKNET_DATA_PACKET_7:
+			case RAKNET_DATA_PACKET_8:
+			case RAKNET_DATA_PACKET_9:
+			case RAKNET_DATA_PACKET_A:
+			case RAKNET_DATA_PACKET_B:
+			case RAKNET_DATA_PACKET_C:
+			case RAKNET_DATA_PACKET_D:
+			case RAKNET_DATA_PACKET_E:
+			case RAKNET_DATA_PACKET_F:
+				$this->seqNumber = $this->getLTriad();
+				$this->data = array();
+				while(!$this->feof()){
+					$this->data[] = $this->parseDataPacket();				
+				}
 				break;
 			default:
 				$this->packet = false;
 				break;
 		}
+	}
+	
+	private function parseDataPacket(){
+		$data = new stdClass;
+		$data->pid = $this->getByte();
+		$data->reliability = ($data->pid & 0b11100000) >> 5;
+		$data->hasSplit = ($data->pid & 0b00010000) > 0;
+		$data->length = (int) ceil($this->getShort() / 8);
+		if($data->reliability === 2
+		or $data->reliability === 3
+		or $data->reliability === 4
+		or $data->reliability === 6
+		or $data->reliability === 7){
+			$data->messageIndex = $this->getLTriad();
+		}else{
+			$data->messageIndex = 0;
+		}
+		
+		if($reliability === 1
+		or $reliability === 3
+		or $reliability === 4
+		or $reliability === 7){
+			$data->orderIndex = $this->getLTriad();
+			$data->orderChannel = $this->getByte();
+		}else{
+			$data->orderIndex = 0;
+			$data->orderChannel = 0;
+		}
+		
+		if($data->hasSplit == true){
+			$data->splitCount = $this->getInt();
+			$data->splitID = $this->getShort();
+			$data->splitIndex = $this->getInt();
+			//error! no split packets allowed!
+			return;
+		}else{
+			$data->splitCount = 0;
+			$data->splitID = 0;
+			$data->splitIndex = 0;
+		}
+		
+		if($data->length <= 0
+		or $this->orderChannel >= 32
+		or ($hasSplit === 1 and $splitIndex >= $splitCount)){
+			return;
+		}
+		
+		$data->id = $this->getByte();
+		$data->payload = $this->get($len - 1);
+		
 	}
 
 }
