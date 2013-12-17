@@ -121,7 +121,7 @@ class RakNetParser{
 	}
 	
 	private function parseDataPacket(){
-		$data = new stdClass;
+		$data = new DataPacket;
 		$data->pid = $this->getByte();
 		$data->reliability = ($data->pid & 0b11100000) >> 5;
 		$data->hasSplit = ($data->pid & 0b00010000) > 0;
@@ -152,7 +152,7 @@ class RakNetParser{
 			$data->splitID = $this->getShort();
 			$data->splitIndex = $this->getInt();
 			//error! no split packets allowed!
-			return;
+			return false;
 		}else{
 			$data->splitCount = 0;
 			$data->splitID = 0;
@@ -162,12 +162,12 @@ class RakNetParser{
 		if($data->length <= 0
 		or $this->orderChannel >= 32
 		or ($hasSplit === 1 and $splitIndex >= $splitCount)){
-			return;
+			return false;
 		}
 		
 		$data->id = $this->getByte();
-		$data->payload = $this->get($len - 1);
-		
+		$data->raw = $this->get($len - 1);
+		return $data;
 	}
 
 }
