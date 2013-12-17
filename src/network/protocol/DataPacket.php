@@ -54,7 +54,7 @@ class DataPacket extends stdClass{
 		return Utils::readShort($this->get(2), $unsigned);
 	}
 
-	private function getLTriad(){
+	private function getTriad(){
 		return Utils::readTriad($this->get(3));
 	}
 	
