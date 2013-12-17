@@ -21,9 +21,16 @@
 
 class BanAPI{
 	private $server;
+    /*
+     * I would use PHPDoc Template here but PHPStorm does not recognise it. - @sekjun9878
+     */
+    /** @var Config */
 	private $whitelist;
+    /** @var Config */
 	private $banned;
+    /** @var Config */
 	private $ops;
+    /** @var Config */
 	private $bannedIPs;
 	private $cmdWL = array();//Command WhiteList
 	function __construct(){
@@ -349,10 +356,13 @@ class BanAPI{
     public function isIPBanned($ip){
 		if($this->server->api->dhandle("api.ban.ip.check", $ip) === false){
 			return true;
-		}elseif($this->bannedIPs->exists($ip)){
+		}elseif($this->bannedIPs->exists($ip, true)){
 			return true;
 		}
-		return false;
+        else
+        {
+		    return false;
+        }
 	}
 
     /**
@@ -364,10 +374,13 @@ class BanAPI{
 		$username = strtolower($username);
 		if($this->server->api->dhandle("api.ban.check", $username) === false){
 			return true;
-		}elseif($this->banned->exists($username)){
+		}elseif($this->banned->exists($username, true)){
 			return true;
 		}
-		return false;	
+        else
+        {
+		    return false;
+        }
 	}
 
     /**
@@ -381,7 +394,7 @@ class BanAPI{
 			return true;
 		}elseif($this->server->api->dhandle("api.ban.whitelist.check", $username) === false){
 			return true;
-		}elseif($this->whitelist->exists($username)){
+		}elseif($this->whitelist->exists($username, true)){
 			return true;
 		}
 		return false;	

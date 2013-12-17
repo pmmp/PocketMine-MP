@@ -149,7 +149,7 @@ define("SPAWN_EGG", 383);
 define("CARROT", 391);
 define("CARROTS", 391);
 define("POTATO", 392);
-define("POTATOES", 392);
+define("POTATOES", 392);//@shoghicp Why the heck do we need plural redundant Item ID here????
 define("BAKED_POTATO", 393);
 define("BAKED_POTATOES", 393);
 

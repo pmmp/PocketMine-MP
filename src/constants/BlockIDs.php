@@ -169,7 +169,7 @@ define("STONE_WALL", 139);
 define("COBBLESTONE_WALL", 139);
 
 define("CARROT_BLOCK", 141);
-define("POTATO_BLOCK", 141);
+define("POTATO_BLOCK", 142);
 
 define("QUARTZ_BLOCK", 155);
 define("QUARTZ_STAIRS", 156);

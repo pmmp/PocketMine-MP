@@ -167,7 +167,7 @@ class Config{
 	}
 	
 	public function &get($k){
-		if($this->correct === false or !isset($this->config[$k])){
+		if(isset($this->correct) and ($this->correct === false or !isset($this->config[$k]))){
 			$false = false;
 			return $false;
 		}
@@ -181,9 +181,21 @@ class Config{
 	public function setAll($v){
 		$this->config = $v;
 	}
-	
-	public function exists($k){
-		return isset($this->config[$k]);
+
+    /**
+     * @param mixed $k
+     * @param bool $lowercase If set, searches Config in single-case / lowercase.
+     *
+     * @return boolean
+     */
+    public function exists($k, $lowercase = false){
+        if($lowercase === true)://Take this ridiculously retarded IF formatting! - @sekjun98888877777778888888888888
+            $k = strtolower($k);//Convert requested  key to lower
+            $array = array_change_key_case($this->config, CASE_LOWER);//Change all keys in array to lower
+            return isset($array[$k]);//Find $k in modified array
+        else:
+		    return isset($this->config[$k]);
+        endif;
 	}
 	
 	public function remove($k){
