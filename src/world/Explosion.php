@@ -46,7 +46,7 @@ class Explosion{
 			"level" => $this->level,
 			"source" => $this->source,
 			"size" => $this->size
-		))){
+		)) === false){
 			return false;
 		}
 
