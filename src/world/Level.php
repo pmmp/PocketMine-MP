@@ -21,7 +21,7 @@
 
 class Level{
 	public $entities, $tiles, $blockUpdates, $nextSave, $players = array(), $level;
-	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount;
+	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
@@ -33,6 +33,7 @@ class Level{
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
+		$this->stopTime = false;
 		$this->server->schedule(15, array($this, "checkThings"), array(), true);
 		$this->server->schedule(20 * 13, array($this, "checkTime"), array(), true);
 		$this->name = $name;
@@ -70,11 +71,16 @@ class Level{
 			return false;
 		}
 		$now = microtime(true);
-		$time = $this->startTime + ($now - $this->startCheck) * 20;
+		if($this->stopTime == true){
+
+		}else{
+			$time = $this->startTime + ($now - $this->startCheck) * 20;
+		}
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
 			$this->server->api->player->broadcastPacket($this->players, MC_SET_TIME, array(
 				"time" => (int) $this->time,
+				"started" => $this->stopTime == false,
 			));
 		}
 	}
@@ -466,6 +472,18 @@ class Level{
 	
 	public function setTime($time){
 		$this->startTime = $this->time = (int) $time;
+		$this->startCheck = microtime(true);
+		$this->checkTime();
+	}
+	
+	public function stopTime(){
+		$this->stopTime = true;
+		$this->startCheck = 0;
+		$this->checkTime();
+	}
+	
+	public function startTime(){
+		$this->stopTime = false;
 		$this->startCheck = microtime(true);
 		$this->checkTime();
 	}
