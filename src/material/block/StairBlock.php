@@ -20,7 +20,12 @@
 */
 
 class StairBlock extends TransparentBlock{
-	public function __construct($id, $meta = 0, $name = "Unknown"){
+    /**
+     * @param int $id
+     * @param int $meta
+     * @param string $name
+     */
+    public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
 		if(($this->meta & 0x04) === 0x04){
 			$this->isFullBlock = true;
@@ -30,7 +35,19 @@ class StairBlock extends TransparentBlock{
 		$this->hardness = 30;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+    /**
+     * @param Item $item
+     * @param Player $player
+     * @param Block $block
+     * @param Block $target
+     * @param int $face
+     * @param int $fx
+     * @param int $fy
+     * @param int $fz
+     *
+     * @return bool|mixed
+     */
+    public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 0,
 			1 => 2,
@@ -44,8 +61,14 @@ class StairBlock extends TransparentBlock{
 		$this->level->setBlock($block, $this, true, false, true);
 		return true;
 	}
-	
-	public function getDrops(Item $item, Player $player){
+
+    /**
+     * @param Item $item
+     * @param Player $player
+     *
+     * @return array
+     */
+    public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array($this->id, 0, 1),

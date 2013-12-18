@@ -20,12 +20,22 @@
 */
 
 class DoorBlock extends TransparentBlock{
-	public function __construct($id, $meta = 0, $name = "Unknown"){
+    /**
+     * @param int $id
+     * @param int $meta
+     * @param string $name
+     */
+    public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
 		$this->isSolid = false;
 	}
 
-	public function onUpdate($type){
+    /**
+     * @param int $type
+     *
+     * @return bool|int
+     */
+    public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
 				$this->level->setBlock($this, new AirBlock(), false);
@@ -38,7 +48,19 @@ class DoorBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+    /**
+     * @param Item $item
+     * @param Player $player
+     * @param Block $block
+     * @param Block $target
+     * @param integer $face
+     * @param integer $fx
+     * @param integer $fy
+     * @param integer $fz
+     *
+     * @return boolean
+     */
+    public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($face === 1){
 			$blockUp = $this->getSide(1);
 			$blockDown = $this->getSide(0);
@@ -66,8 +88,14 @@ class DoorBlock extends TransparentBlock{
 		}
 		return false;
 	}
-	
-	public function onBreak(Item $item, Player $player){
+
+    /**
+     * @param Item $item
+     * @param Player $player
+     *
+     * @return boolean
+     */
+    public function onBreak(Item $item, Player $player){
 		if(($this->meta & 0x08) === 0x08){
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
@@ -82,8 +110,14 @@ class DoorBlock extends TransparentBlock{
 		$this->level->setBlock($this, new AirBlock(), true, false, true);
 		return true;
 	}
-	
-	public function onActivate(Item $item, Player $player){
+
+    /**
+     * @param Item $item
+     * @param Player $player
+     *
+     * @return boolean
+     */
+    public function onActivate(Item $item, Player $player){
 		if(($this->meta & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
