@@ -1484,7 +1484,7 @@ class Player{
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
-				if($data["slot"] === 0){
+				if($data["slot"] === 0x28 or $data["slot"] === 0){ //0 for 0.8.0 compatibility
 					$data["slot"] = -1;
 					$data["item"] = BlockAPI::getItem(AIR, 0, 0);
 					if($this->server->handle("player.equipment.change", $data) !== false){
