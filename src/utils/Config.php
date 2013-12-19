@@ -28,11 +28,29 @@ define("CONFIG_YAML", 2); // .yml, .yaml
 define("CONFIG_SERIALIZED", 4); // .sl
 define("CONFIG_LIST", 5); // .txt, .list
 
+/**
+ * Class Config
+ *
+ * Config Class for simple config manipulation of multiple formats.
+ */
 class Config{
-	private $config;
-	private $file;
-	private $correct;
-	private $type = CONFIG_DETECT;
+    /**
+     * @var array
+     */
+    private $config;
+    /**
+     * @var string
+     */
+    private $file;
+    /**
+     * @var boolean
+     */
+    private $correct;
+    /**
+     * @var integer
+     */
+    private $type = CONFIG_DETECT;
+
 	public static $formats = array(
 		"properties" => CONFIG_PROPERTIES,
 		"cnf" => CONFIG_CNF,
@@ -49,7 +67,14 @@ class Config{
 		"txt" => CONFIG_LIST,
 		"list" => CONFIG_LIST,	
 	);
-	public function __construct($file, $type = CONFIG_DETECT, $default = array(), &$correct = null){
+
+    /**
+     * @param string $file
+     * @param int $type
+     * @param array $default
+     * @param null|boolean $correct
+     */
+    public function __construct($file, $type = CONFIG_DETECT, $default = array(), &$correct = null){
 		$this->load($file, $type, $default);
 		$correct = $this->check();
 	}
@@ -61,8 +86,15 @@ class Config{
 		$this->load($this->file);
 		$correct = $this->check();
 	}
-	
-	public function load($file, $type = CONFIG_DETECT, $default = array()){
+
+    /**
+     * @param string $file
+     * @param int $type
+     * @param array $default
+     *
+     * @return boolean
+     */
+    public function load($file, $type = CONFIG_DETECT, $default = array()){
 		$this->correct = true;
 		$this->type = (int) $type;
 		$this->file = $file;
@@ -118,12 +150,18 @@ class Config{
 		}
 		return true;
 	}
-	
-	public function check(){
+
+    /**
+     * @return boolean
+     */
+    public function check(){
 		return $this->correct === true;
 	}
-	
-	public function save(){
+
+    /**
+     * @return boolean
+     */
+    public function save(){
 		if($this->correct === true){
 			switch($this->type){
 				case CONFIG_PROPERTIES:
@@ -149,41 +187,70 @@ class Config{
 			return false;
 		}
 	}
-	
-	public function &__get($k){
+
+    /**
+     * @param $k
+     *
+     * @return boolean|mixed
+     */
+    public function &__get($k){
 		return $this->get($k);
 	}
-	
-	public function __set($k, $v){
-		return $this->set($k, $v);
+
+    /**
+     * @param $k
+     * @param $v
+     */
+    public function __set($k, $v){
+		$this->set($k, $v);
 	}
-	
-	public function __isset($k){
+
+    /**
+     * @param $k
+     *
+     * @return boolean
+     */
+    public function __isset($k){
 		return $this->exists($k);
 	}
-	
-	public function __unset($k){
-		return $this->remove($k);
+
+    /**
+     * @param $k
+     */
+    public function __unset($k){
+		$this->remove($k);
 	}
-	
-	public function &get($k){
+
+    /**
+     * @param $k
+     *
+     * @return boolean|mixed
+     */
+    public function &get($k){
 		if(isset($this->correct) and ($this->correct === false or !isset($this->config[$k]))){
 			$false = false;
 			return $false;
 		}
 		return $this->config[$k];
 	}
-	
-	public function set($k, $v = true){
+
+    /**
+     * @param $k
+     * @param bool $v
+     */
+    public function set($k, $v = true){
 		$this->config[$k] = $v;
 	}
-	
-	public function setAll($v){
+
+    /**
+     * @param array $v
+     */
+    public function setAll($v){
 		$this->config = $v;
 	}
 
     /**
-     * @param mixed $k
+     * @param $k
      * @param bool $lowercase If set, searches Config in single-case / lowercase.
      *
      * @return boolean
@@ -197,16 +264,30 @@ class Config{
 		    return isset($this->config[$k]);
         endif;
 	}
-	
-	public function remove($k){
+
+    /**
+     * @param $k
+     */
+    public function remove($k){
 		unset($this->config[$k]);
 	}
-	
-	public function getAll($keys = false){
+
+    /**
+     * @param bool $keys
+     *
+     * @return array
+     */
+    public function getAll($keys = false){
 		return ($keys === true ? array_keys($this->config):$this->config);
 	}
-	
-	private function fillDefaults($default, &$data){
+
+    /**
+     * @param $default
+     * @param $data
+     *
+     * @return integer
+     */
+    private function fillDefaults($default, &$data){
 		$changed = 0;
 		foreach($default as $k => $v){
 			if(is_array($v)){
@@ -222,7 +303,10 @@ class Config{
 		return $changed;
 	}
 
-	private function parseList($content){
+    /**
+     * @param $content
+     */
+    private function parseList($content){
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
@@ -231,8 +315,11 @@ class Config{
 			$this->config[$v] = true;
 		}
 	}
-	
-	private function writeProperties(){
+
+    /**
+     * @return string
+     */
+    private function writeProperties(){
 		$content = "#Properties Config file\r\n#".date("D M j H:i:s T Y")."\r\n";
 		foreach($this->config as $k => $v){
 			if(is_bool($v) === true){
@@ -244,8 +331,11 @@ class Config{
 		}
 		return $content;
 	}
-	
-	private function parseProperties($content){
+
+    /**
+     * @param $content
+     */
+    private function parseProperties($content){
 		if(preg_match_all('/([a-zA-Z0-9\-_\.]*)=([^\r\n]*)/u', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
