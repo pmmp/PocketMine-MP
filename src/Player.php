@@ -44,6 +44,7 @@ class Player{
 	private $startAction = false;
 	private $isSleeping = false;
 	public $data;
+    /** @var \Entity */
 	public $entity = false;
 	public $auth = false;
 	public $CID;
@@ -78,6 +79,8 @@ class Player{
 	private $chunkCount = array();
 	private $received = array();
 	public $realmsData = array();
+    /** @var \Level */
+    public $level;
 	
 	public function __get($name){
 		if(isset($this->{$name})){
