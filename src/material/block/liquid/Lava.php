@@ -115,7 +115,7 @@ class LavaBlock extends LiquidBlock{
 					if($tlevel != 0x00){
 						for ($s = 0; $s <= 5; $s++) {
                 					$ssb = $sb->getSide($s);
-                					rAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+                					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($sb, new AirBlock(), false, false, true);
 					}
