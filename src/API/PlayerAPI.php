@@ -402,7 +402,7 @@ class PlayerAPI{
 
     public function spawnToAllPlayers(Player $player){
         foreach($this->getAll() as $p){
-            if($p !== $player and ($p->entity instanceof Entity)){
+            if($p !== $player and ($p->entity instanceof Entity) and ($player->entity instanceof Entity)){
                 $player->entity->spawn($p);
                 if($p->level !== $player->level){
                     $p->dataPacket(MC_MOVE_ENTITY_POSROT, array(
