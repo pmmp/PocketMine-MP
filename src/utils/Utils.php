@@ -28,7 +28,7 @@ class Utils{
 	public static $ip = false;
 	
 	public static function isOnline(){
-		return ((@fsockopen("google.com", 80) !== false or @fsockopen("www.linux.org", 80) !== false or @fsockopen("www.php.net", 80) !== false) ? true:false);
+		return ((@fsockopen("google.com", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.linux.org", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.php.net", 80, $e = null, $n = null, 2) !== false) ? true:false);
 	}
 	
 	public static function getIP($force = false){
