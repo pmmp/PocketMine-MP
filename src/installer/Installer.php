@@ -199,6 +199,20 @@ LICENSE;
 		public static $languages = array(
 			"en" => "English",
 			"es" => "Español",
+			//"zh" => "中文",
+			"ru" => "Pyccĸий",
+			//"ja" => "日本語",
+			"de" => "Deutsch",
+			//"vi" => "Tiếng Việt",
+			"ko" => "한국어",
+			//"fr" => "Français",
+			//"it" => "Italiano",	
+			//"lv" => "Latviešu",
+			"nl" => "Nederlands",
+			//"pt" => "Português",
+			//"sv" => "Svenska",
+			"tr" => "Türkçe",
+			//"et" => "Eesti",
 		);
 		private $texts = array();
 		private $lang;
