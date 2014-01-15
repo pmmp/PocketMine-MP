@@ -95,3 +95,9 @@ foreach($inc as $s){
 }
 /***REM_END***/
 define("SOURCE_SHA1SUM", bin2hex($sha1sum));
+
+/***REM_START***/
+if(true or !file_exists(DATA_PATH."server.properties") and arg("no-installer", false) != true){
+	$installer = new Installer();
+}
+/***REM_END***/
