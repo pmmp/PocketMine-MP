@@ -142,7 +142,7 @@ LICENSE;
 			$config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES);
 			echo "[!] ".$this->lang->query_warning1."\n";
 			echo "[!] ".$this->lang->query_warning2."\n";
-			echo "[?] ".$this->lang->query_disable." (y/N):\n";
+			echo "[?] ".$this->lang->query_disable." (y/N): ";
 			if(strtolower($this->getInput("n")) === "y"){
 				$config->set("enable-query", false);
 			}else{
