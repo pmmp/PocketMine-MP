@@ -211,6 +211,7 @@ LICENSE;
 			"nl" => "Nederlands",
 			//"pt" => "Português",
 			//"sv" => "Svenska",
+			"fi" => "Suomi",
 			"tr" => "Türkçe",
 			//"et" => "Eesti",
 		);
