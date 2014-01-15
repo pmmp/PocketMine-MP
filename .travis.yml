@@ -7,7 +7,7 @@ before_script:
  - pecl install channel://pecl.php.net/pthreads-0.0.44
 
 script:
- - php src/tests/ServerSuiteTest.php
+ - php src/tests/ServerSuiteTest.php --no-wizard
  
 notifications:
  email: false
