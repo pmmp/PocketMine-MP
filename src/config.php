@@ -59,8 +59,8 @@ set_include_path(get_include_path() . PATH_SEPARATOR . FILE_PATH);
 ini_set("memory_limit", "128M"); //Default
 define("LOG", true);
 define("START_TIME", microtime(true));
-define("MAJOR_VERSION", "Alpha_1.3.11");
-define("CODENAME", "甘いビートルート");
+define("MAJOR_VERSION", "Alpha_1.3.12dev");
+define("CODENAME", "変梃(Henteko)マインカート(Minecart)");
 define("CURRENT_MINECRAFT_VERSION", "v0.8.1 alpha");
 define("CURRENT_API_VERSION", 11);
 define("CURRENT_PHP_VERSION", "5.5");
