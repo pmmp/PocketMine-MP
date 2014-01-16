@@ -205,7 +205,7 @@ LICENSE;
 			"de" => "Deutsch",
 			//"vi" => "Tiếng Việt",
 			"ko" => "한국어",
-			//"fr" => "Français",
+			"fr" => "Français",
 			"it" => "Italiano",	
 			//"lv" => "Latviešu",
 			"nl" => "Nederlands",
