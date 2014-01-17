@@ -62,7 +62,7 @@ define("START_TIME", microtime(true));
 define("MAJOR_VERSION", "Alpha_1.3.12dev");
 define("CODENAME", "変梃(Henteko)マインカート(Minecart)");
 define("CURRENT_MINECRAFT_VERSION", "v0.8.1 alpha");
-define("CURRENT_API_VERSION", 11);
+define("CURRENT_API_VERSION", 12);
 define("CURRENT_PHP_VERSION", "5.5");
 $gitsha1 = false;
 if(file_exists(FILE_PATH.".git/refs/heads/master")){ //Found Git information!
