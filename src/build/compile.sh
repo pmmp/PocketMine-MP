@@ -20,6 +20,7 @@ type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \
 type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
+type getconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"getconf\""; read -p "Press [Enter] to continue..."; exit 1; }
 
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
@@ -84,10 +85,6 @@ else
 		echo "[INFO] Compiling for current machine using 32-bit"
 		CFLAGS="-m32 $CFLAGS"
 	fi
-	#echo "[INFO] Compiling for current machine"
-	#if [ $(uname -m) == "x86_64" ]; then
-	#	CFLAGS="-mx32 $CFLAGS"
-	#fi
 fi
 
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
