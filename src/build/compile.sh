@@ -77,10 +77,17 @@ elif [ "$1" == "crosscompile" ]; then
 		exit 1
 	fi
 else
-	echo "[INFO] Compiling for current machine"
-	if [ $(uname -m) == "x86_64" ]; then
-		CFLAGS="-mx32 $CFLAGS"
+	if [ `getconf LONG_BIT` = "64" ]; then
+		echo "[INFO] Compiling for current machine using 64-bit"
+		CFLAGS="-m64 $CFLAGS"
+	else
+		echo "[INFO] Compiling for current machine using 32-bit"
+		CFLAGS="-m32 $CFLAGS"
 	fi
+	#echo "[INFO] Compiling for current machine"
+	#if [ $(uname -m) == "x86_64" ]; then
+	#	CFLAGS="-mx32 $CFLAGS"
+	#fi
 fi
 
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
