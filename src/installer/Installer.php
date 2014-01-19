@@ -199,7 +199,7 @@ LICENSE;
 		public static $languages = array(
 			"en" => "English",
 			"es" => "Español",
-			//"zh" => "中文",
+			"zh" => "中文",
 			"ru" => "Pyccĸий",
 			"ja" => "日本語",
 			"de" => "Deutsch",
