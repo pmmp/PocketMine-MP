@@ -130,6 +130,9 @@ class Entity extends Position{
 				if($this->type === OBJECT_PAINTING){
 					$this->isStatic = true;
 				}elseif($this->type === OBJECT_PRIMEDTNT){
+					if(!isset($this->data["fuse"])){
+						$this->data["fuse"] = 0;
+					}
 					$this->setHealth(10000000, "generic");
 					$this->server->schedule(5, array($this, "updateFuse"), array(), true);
 					$this->update();
