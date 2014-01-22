@@ -1300,7 +1300,11 @@ class Player{
 				if($u !== false){
 					$u->close("logged in from another location");
 				}
-				
+				if(!isset($this->CID) or $this->CID == null){
+					console("[DEBUG] Player ".$this->username." does not have a CID", true, true, 2);
+					$this->CID = Utils::readLong(Utils::getRandomBytes(8, false));
+				}
+
 				$this->server->api->player->add($this->CID);
 				if($this->server->api->handle("player.join", $this) === false){
 					$this->close("join cancelled", false);
