@@ -44,6 +44,7 @@ class Player{
 	private $startAction = false;
 	private $isSleeping = false;
 	public $data;
+    /** @var \Entity */
 	public $entity = false;
 	public $auth = false;
 	public $CID;
@@ -78,6 +79,8 @@ class Player{
 	private $chunkCount = array();
 	private $received = array();
 	public $realmsData = array();
+    /** @var \Level */
+    public $level;
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -1297,7 +1300,11 @@ class Player{
 				if($u !== false){
 					$u->close("logged in from another location");
 				}
-				
+				if(!isset($this->CID) or $this->CID == null){
+					console("[DEBUG] Player ".$this->username." does not have a CID", true, true, 2);
+					$this->CID = Utils::readLong(Utils::getRandomBytes(8, false));
+				}
+
 				$this->server->api->player->add($this->CID);
 				if($this->server->api->handle("player.join", $this) === false){
 					$this->close("join cancelled", false);
@@ -1484,7 +1491,7 @@ class Player{
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
-				if($data["slot"] === 0){
+				if($data["slot"] === 0x28 or $data["slot"] === 0){ //0 for 0.8.0 compatibility
 					$data["slot"] = -1;
 					$data["item"] = BlockAPI::getItem(AIR, 0, 0);
 					if($this->server->handle("player.equipment.change", $data) !== false){

@@ -1,13 +1,13 @@
 #!/bin/bash
 COMPILER_VERSION="0.14"
 
-PHP_VERSION="5.5.7"
+PHP_VERSION="5.5.8"
 ZEND_VM="GOTO"
 
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="0.0.45"
-CURL_VERSION="curl-7_33_0"
+CURL_VERSION="curl-7_34_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
 DIR="$(pwd)"
@@ -20,6 +20,7 @@ type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \
 type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
 type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
+type getconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"getconf\""; read -p "Press [Enter] to continue..."; exit 1; }
 
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
@@ -77,9 +78,12 @@ elif [ "$1" == "crosscompile" ]; then
 		exit 1
 	fi
 else
-	echo "[INFO] Compiling for current machine"
-	if [ $(uname -m) == "x86_64" ]; then
-		CFLAGS="-mx32 $CFLAGS"
+	if [ `getconf LONG_BIT` = "64" ]; then
+		echo "[INFO] Compiling for current machine using 64-bit"
+		CFLAGS="-m64 $CFLAGS"
+	else
+		echo "[INFO] Compiling for current machine using 32-bit"
+		CFLAGS="-m32 $CFLAGS"
 	fi
 fi
 
@@ -280,5 +284,5 @@ mv php5/bin/php bin/php
 rm -r -f php5/ >> "$DIR/install.log" 2>&1
 date >> "$DIR/install.log" 2>&1
 echo " done!"
-echo "[PocketMine] You should start the server now using \"./start.sh\""
-echo "[PocketMine] If it doesn't works, please send the \"install.log\" file to the Bug Tracker"
+echo "[PocketMine] You should start the server now using \"./start.sh.\""
+echo "[PocketMine] If it doesn't work, please send the \"install.log\" file to the Bug Tracker."

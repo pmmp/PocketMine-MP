@@ -336,11 +336,15 @@ class BlockAPI{
 		$item = $player->getSlot($player->slot);
 		
 		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
-			return $this->cancelAction($target, $player, false);
+			if($this->server->api->dhandle("player.block.break.bypass", array("player" => $player, "target" => $target, "item" => $item)) !== true){
+				return $this->cancelAction($target, $player, false);
+			}
 		}
 		
 		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - $player->getLag() / 1000) + $target->getBreakTime($item, $player) - 0.1) >= microtime(true)){
-			return $this->cancelAction($target, $player, false);
+			if($this->server->api->dhandle("player.block.break.bypass", array("player" => $player, "target" => $target, "item" => $item)) !== true){
+				return $this->cancelAction($target, $player, false);			
+			}
 		}
 		$player->lastBreak = microtime(true);
 		
@@ -375,12 +379,16 @@ class BlockAPI{
 		$item = $player->getSlot($player->slot);
 		
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
-			$this->cancelAction($target, $player);
-			return $this->cancelAction($block, $player);
+			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
+				$this->cancelAction($target, $player);
+				return $this->cancelAction($block, $player);
+			}
 		}
 		
 		if($this->server->api->dhandle("player.block.touch", array("type" => "place", "player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
-			return $this->cancelAction($block, $player);
+			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
+				return $this->cancelAction($block, $player);
+			}
 		}
 		$this->blockUpdate($target, BLOCK_UPDATE_TOUCH);
 
@@ -391,7 +399,9 @@ class BlockAPI{
 		}
 		
 		if(($player->gamemode & 0x02) === 0x02){ //Adventure mode!!
-			return $this->cancelAction($block, $player, false);
+			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
+				return $this->cancelAction($block, $player, false);
+			}
 		}
 
 		if($block->y > 127 or $block->y < 0){
@@ -422,7 +432,7 @@ class BlockAPI{
 		if($target->isReplaceable === true){
 			$block = $target;
 			$hand->position($block);			
-			$face = -1;
+			//$face = -1;
 		}
 		
 		if($hand->isSolid === true and $player->entity->inBlock($block)){

@@ -113,6 +113,10 @@ class LavaBlock extends LiquidBlock{
 				if($sb instanceof LavaBlock){
 					$tlevel = $sb->meta & 0x07;
 					if($tlevel != 0x00){
+						for ($s = 0; $s <= 5; $s++) {
+                					$ssb = $sb->getSide($s);
+                					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+						}
 						$this->level->setBlock($sb, new AirBlock(), false, false, true);
 					}
 				}
@@ -120,6 +124,10 @@ class LavaBlock extends LiquidBlock{
 				if($b instanceof LavaBlock){
 					$tlevel = $b->meta & 0x07;
 					if($tlevel != 0x00){
+				              	for ($s = 0; $s <= 5; $s++) {
+				              		$ssb = $sb->getSide($s);
+                					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+              					}
 						$this->level->setBlock($b, new AirBlock(), false, false, true);
 					}
 				}
