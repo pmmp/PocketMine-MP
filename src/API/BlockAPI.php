@@ -432,7 +432,7 @@ class BlockAPI{
 		if($target->isReplaceable === true){
 			$block = $target;
 			$hand->position($block);			
-			$face = -1;
+			//$face = -1;
 		}
 		
 		if($hand->isSolid === true and $player->entity->inBlock($block)){
