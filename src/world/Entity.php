@@ -820,7 +820,7 @@ class Entity extends Position{
 	}
 
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false){
-		if($pos instanceof Position and $this->level !== $pos->level){
+		if($pos instanceof Position and $pos->level instanceof Level and $this->level !== $pos->level){
 			$this->level = $pos->level;
 			$this->server->preparedSQL->entity->setLevel->reset();
 			$this->server->preparedSQL->entity->setLevel->clear();
