@@ -145,6 +145,10 @@ class BanAPI{
 				break;
 			case "op":
 				$user = strtolower($params[0]);
+				if($user == NULL){
+				  $output .= "Usage: /op <player>\n";
+				  break;
+				}
 				$player = $this->server->api->player->get($user);
 				if(!($player instanceof Player)){
 					$this->ops->set($user);
