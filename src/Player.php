@@ -52,6 +52,7 @@ class Player{
 	public $spawned = false;
 	public $inventory;
 	public $slot;
+	public $hotbar;
 	public $armor = array();
 	public $loggedIn = false;
 	public $gamemode;
@@ -111,6 +112,7 @@ class Player{
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
 		$this->slot = 0;
+		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
 		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
 		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
@@ -251,7 +253,7 @@ class Player{
 				}
 			}
 			$this->data->set("inventory", $inv);
-			$this->data->set("slot", $this->slot);
+			$this->data->set("hotbar", $this->hotbar);
 			
 			$armor = array();
 			foreach($this->armor as $slot => $item){
@@ -1367,10 +1369,13 @@ class Player{
 				));
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
-				}elseif($this->data->exists("slot")){
-					$this->slot = (int) $this->data->get("slot");
+					$this->hotbar = array();
+				}elseif($this->data->exists("hotbar")){
+					$this->hotbar = $this->data->get("hotbar");
+					$this->slot = $this->hotbar[0];
 				}else{
 					$this->slot = -1;//0
+					$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 				}
 				$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, array("player" => $this));
 				$this->eid = $this->entity->eid;
@@ -1529,8 +1534,15 @@ class Player{
 				$data["meta"] = $data["item"]->getMetadata();
 				if($this->server->handle("player.equipment.change", $data) !== false){
 					$this->slot = $data["slot"];
+					if(($this->gamemode & 0x01) === SURVIVAL){
+						if(!in_array($this->slot, $this->hotbar)){
+							array_pop($this->hotbar);
+							array_unshift($this->hotbar, $this->slot);
+						}
+					}
 				}else{
-					$this->sendInventorySlot($data["slot"]);
+					//$this->sendInventorySlot($data["slot"]);
+					$this->sendInventory();
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -2201,10 +2213,10 @@ class Player{
 			return;
 		}
 		$hotbar = array();
-		$hotbar[] = $this->slot == -1 ? -1:($this->slot + 9);
-		for($i = 1; $i < 9; ++$i){
-			$hotbar[] = -1;
+		foreach($this->hotbar as $slot){
+			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
 		}
+
 		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 			"windowid" => 0,
 			"count" => count($this->inventory),
