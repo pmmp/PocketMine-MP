@@ -434,7 +434,10 @@ class Level{
 			$z = (int) round($spawn->z);
 			for(; $y > 0; --$y){
 				$v = new Vector3($x, $y, $z);
-				if(!($this->getBlock($v->getSide(0)) instanceof AirBlock)){
+				$b = $this->getBlock($v->getSide(0));
+				if($b === false){
+					return $spawn;
+				}elseif(!($b instanceof AirBlock)){
 					break;
 				}
 			}
