@@ -234,7 +234,7 @@ class Tile extends Position{
 			$raw = $this->getSlot(0);
 			$product = $this->getSlot(2);
 			$smelt = $raw->getSmeltItem();
-			$canSmelt = $smelt !== false and $raw->count > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->count < $product->getMaxStackSize()) or $product->getID() === AIR);
+			$canSmelt = ($smelt !== false and $raw->count > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->count < $product->getMaxStackSize()) or $product->getID() === AIR));
 			if($this->data["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->count > 0){
 				$this->lastUpdate = microtime(true);
 				$this->data["MaxTime"] = $this->data["BurnTime"] = floor($fuel->getFuelTime() * 20);
