@@ -1,12 +1,12 @@
 #!/bin/bash
-COMPILER_VERSION="0.14"
+COMPILER_VERSION="0.15"
 
 PHP_VERSION="5.5.8"
 ZEND_VM="GOTO"
 
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
-PTHREADS_VERSION="0.0.45"
+PTHREADS_VERSION="0.1.0"
 CURL_VERSION="curl-7_34_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"

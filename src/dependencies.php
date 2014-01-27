@@ -54,6 +54,11 @@ if(!extension_loaded("sockets") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"")
 if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "pthreads." . PHP_SHLIB_SUFFIX) === false){
 	console("[ERROR] Unable to find the pthreads extension.", true, true, 0);
 	++$errors;
+}else{
+	if(version_compare(phpversion("pthreads"), "0.1.0") < 0){
+		console("[ERROR] pthreads >= 0.1.0 is required.", true, true, 0);
+		++$errors;
+	}	
 }
 
 if(!extension_loaded("curl") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "curl." . PHP_SHLIB_SUFFIX) === false){

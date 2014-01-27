@@ -47,6 +47,9 @@ class ConsoleAPI{
 		if(!defined("NO_THREADS")){
 			$this->loop->stop();
 			$this->loop->notify();
+			//@fclose($this->loop->fp);
+			usleep(50000);
+			$this->loop->kill();
 			//$this->loop->join();
 		}
 	}
@@ -294,7 +297,7 @@ class ConsoleLoop extends Thread{
 	public $stop;
 	public $base;
 	public $ev;
-   public $fp;
+	public $fp;
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
@@ -319,7 +322,7 @@ class ConsoleLoop extends Thread{
 
 	public function run(){
 		if(!extension_loaded("readline")){
-			$this->fp = fopen( "php://stdin", "r" );
+			$this->fp = fopen("php://stdin", "r");
 		}
 
 		while($this->stop === false){
@@ -328,7 +331,7 @@ class ConsoleLoop extends Thread{
 			$this->line = false;
 		}
 
-		if(!$this->haveReadline){
+		if(!extension_loaded("readline")){
 			@fclose($fp);
 		}
 		exit(0);
