@@ -55,7 +55,11 @@ if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":""
 	console("[ERROR] Unable to find the pthreads extension.", true, true, 0);
 	++$errors;
 }else{
-	if(version_compare(phpversion("pthreads"), "0.1.0") < 0){
+	$pthreads_version = phpversion("pthreads");
+	if(substr_count($pthreads_version, ".") < 3){
+		$pthreads_version = "0.$pthreads_version";
+	}
+	if(version_compare($pthreads_version, "0.1.0") < 0){
 		console("[ERROR] pthreads >= 0.1.0 is required.", true, true, 0);
 		++$errors;
 	}	
