@@ -77,7 +77,7 @@ elif [ "$1" == "crosscompile" ]; then
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac] to cross-compile"
 		exit 1
 	fi
-else
+elif [ -z "$CFLAGS" ]; then
 	if [ `getconf LONG_BIT` = "64" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
 		CFLAGS="-m64 $CFLAGS"
