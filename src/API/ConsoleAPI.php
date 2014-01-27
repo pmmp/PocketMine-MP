@@ -131,7 +131,7 @@ class ConsoleAPI{
 						
 						$max = ceil(count($cmds) / 5);
 						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
-						$output .= "\x1b[31;1m-\x1b[0m Showing help page $page of $max (/help <page>) \x1b[31;1m-\x1b[0m\n";
+						$output .= FORMAT_RED."-".FORMAT_RESET." Showing help page $page of $max (/help <page>) ".FORMAT_RED."-".FORMAT_RESET."\n";
 						$current = 1;
 						foreach($cmds as $c => $h){
 							$curpage = (int) ceil($current / 5);
