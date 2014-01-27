@@ -251,6 +251,7 @@ class Player{
 				}
 			}
 			$this->data->set("inventory", $inv);
+			$this->data->set("slot", $this->slot);
 			
 			$armor = array();
 			foreach($this->armor as $slot => $item){
@@ -1366,6 +1367,8 @@ class Player{
 				));
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
+				}elseif($this->data->exists("slot")){
+					$this->slot = (int) $this->data->get("slot");
 				}else{
 					$this->slot = -1;//0
 				}
@@ -1487,7 +1490,6 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
-
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
@@ -2198,10 +2200,16 @@ class Player{
 		if(($this->gamemode & 0x01) === CREATIVE){
 			return;
 		}
+		$hotbar = array();
+		$hotbar[] = $this->slot == -1 ? -1:($this->slot + 9);
+		for($i = 1; $i < 9; ++$i){
+			$hotbar[] = -1;
+		}
 		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 			"windowid" => 0,
 			"count" => count($this->inventory),
 			"slots" => $this->inventory,
+			"hotbar" => $hotbar,
 		));
 	}
 

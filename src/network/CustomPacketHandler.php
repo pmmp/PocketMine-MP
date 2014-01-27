@@ -800,11 +800,28 @@ class CustomPacketHandler{
 					for($s = 0; $s < $this->data["count"] and !$this->feof(); ++$s){
 						$this->data["slots"][$s] = Utils::readSlot($this);
 					}
+					if($this->data["windowid"] == 0){
+						$slots = min(9, Utils::readShort($this->get(2), false));
+						$this->data["hotbar"] = array();
+						if($slots > 0){
+							for($s = 0; $s < $slots; ++$s){
+								$this->data["hotbar"][$s] = Utils::readInt($this->get(4));
+							}
+						}
+					}
 				}else{
 					$this->raw .= chr($this->data["windowid"]);
 					$this->raw .= Utils::writeShort(count($this->data["slots"]));
 					foreach($this->data["slots"] as $slot){
 						$this->raw .= Utils::writeSlot($slot);
+					}
+					if($this->data["windowid"] == 0 and isset($this->data["hotbar"])){
+						if(count($this->data["hotbar"]) > 0){
+							$this->raw .= Utils::writeShort(count($this->data["hotbar"]));
+							foreach($this->data["hotbar"] as $slot){
+								$this->raw .= Utils::writeInt($slot);
+							}
+						}
 					}
 				}
 				break;
