@@ -37,10 +37,6 @@ if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
 
 $daylight = (int) date("I");
 
-if($daylight === 0){
-	$offset -= 3600;
-}
-
 date_default_timezone_set(timezone_name_from_abbr("", $offset, $daylight));
 
 gc_enable();
