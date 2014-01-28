@@ -192,6 +192,7 @@ function console($message, $EOL = true, $log = true, $level = 1){
 			if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
 				switch($matches[1]){
 					case "ERROR":
+					case "SEVERE":
 						$add .= FORMAT_RED;
 						break;
 					case "INTERNAL":

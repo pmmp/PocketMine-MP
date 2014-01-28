@@ -431,10 +431,32 @@ class PocketMinecraftServer{
 		if($this->stop === true){
 			return;
 		}
-		console("[ERROR] An Unrecovereable has ocurred and the server has Crashed. Creating an Error Dump");
+		console("[SEVERE] An unrecovereable has ocurred and the server has crashed. Creating an error dump");
 		$dump = "```\r\n# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
 		$er = error_get_last();
+		$errorConversion = array(
+			E_ERROR => "E_ERROR",
+			E_WARNING => "E_WARNING",
+			E_PARSE => "E_PARSE",
+			E_NOTICE => "E_NOTICE",
+			E_CORE_ERROR => "E_CORE_ERROR",
+			E_CORE_WARNING => "E_CORE_WARNING",
+			E_COMPILE_ERROR => "E_COMPILE_ERROR",
+			E_COMPILE_WARNING => "E_COMPILE_WARNING",
+			E_USER_ERROR => "E_USER_ERROR",
+			E_USER_WARNING => "E_USER_WARNING",
+			E_USER_NOTICE => "E_USER_NOTICE",
+			E_STRICT => "E_STRICT",
+			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+			E_DEPRECATED => "E_DEPRECATED",
+			E_USER_DEPRECATED => "E_USER_DEPRECATED",
+		);
+		$er["type"] = isset($errorConversion[$er["type"]]) ? $errorConversion[$er["type"]]:$er["type"];
 		$dump .= "Error: ".var_export($er, true)."\r\n\r\n";
+		if(stripos($er["file"], "plugin") !== false){
+			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";
+		}
+		
 		$dump .= "Code: \r\n";
 		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
 		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
@@ -465,7 +487,13 @@ class PocketMinecraftServer{
 			}
 			$dump .= "\r\n\r\n";
 		}
-		$dump .= "Loaded Modules: ".var_export(get_loaded_extensions(), true)."\r\n";
+		
+		$extensions = array();
+		foreach(get_loaded_extensions() as $ext){
+			$extensions[$ext] = phpversion($ext);
+		}
+		
+		$dump .= "Loaded Modules: ".var_export($extensions, true)."\r\n";
 		$dump .= "Memory Usage Tracking: \r\n".chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9)))."\r\n";
 		ob_start();
 		phpinfo();
@@ -474,7 +502,7 @@ class PocketMinecraftServer{
 		$dump .= "\r\n```";
 		$name = "Error_Dump_".date("D_M_j-H.i.s-T_Y");
 		logg($dump, $name, true, 0, true);
-		console("[ERROR] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
+		console("[SEVERE] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
 	public function tick(){
