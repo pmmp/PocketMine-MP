@@ -256,13 +256,13 @@ class Config{
      * @return boolean
      */
     public function exists($k, $lowercase = false){
-        if($lowercase === true)://Take this ridiculously retarded IF formatting! - @sekjun98888877777778888888888888
+        if($lowercase === true){
             $k = strtolower($k);//Convert requested  key to lower
             $array = array_change_key_case($this->config, CASE_LOWER);//Change all keys in array to lower
             return isset($array[$k]);//Find $k in modified array
-        else:
+        }else{
 		    return isset($this->config[$k]);
-        endif;
+        }
 	}
 
     /**
