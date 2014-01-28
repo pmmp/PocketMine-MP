@@ -1851,7 +1851,7 @@ class Player{
 					$this->entity->air = 300;
 					$this->entity->setHealth(20, "respawn");
 					$this->entity->updateMetadata();
-				} else {
+				}else{
 					break;
 				}
 				$this->sendInventory();

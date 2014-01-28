@@ -99,7 +99,7 @@ class LavaBlock extends LiquidBlock{
 						$b = $this->getSide($side);
 						if($b instanceof LavaBlock){
 							
-						}else if($b->isFlowable === true){
+						}elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new LavaBlock( min($level + 2,7) ), false, false, true);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 						}

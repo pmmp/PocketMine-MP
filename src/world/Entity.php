@@ -598,7 +598,7 @@ class Entity extends Position{
 
 	public function getDirection(){
 		$rotation = ($this->yaw - 90) % 360;
-		if ($rotation < 0) {
+		if($rotation < 0) {
 			$rotation += 360.0;
 		}
 		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)){

@@ -36,7 +36,7 @@ class SmallTreeObject extends TreeObject{
 	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$radiusToCheck = 0;
 		for ($yy = 0; $yy < $this->trunkHeight + 3; ++$yy) {
-			if ($yy == 1 or $yy === $this->trunkHeight) {
+			if($yy == 1 or $yy === $this->trunkHeight) {
 				++$radiusToCheck;
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
