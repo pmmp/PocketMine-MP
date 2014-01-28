@@ -25,6 +25,8 @@ date_default_timezone_set("GMT");
 if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
 	$time = time();
 	$time -= $time % 60;
+	//TODO: Parse different time & date formats by region. ¬¬ world
+	//Example: USA
 	exec("time.exe /T", $hour);
 	$i = array_map("intval", explode(":", trim($hour[0])));
 	exec("date.exe /T", $date);
