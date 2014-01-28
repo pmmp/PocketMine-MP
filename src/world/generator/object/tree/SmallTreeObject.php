@@ -94,7 +94,7 @@ class SmallTreeObject extends TreeObject{
          }
 
          // Place the trunk last
-         if( $leaflevel > 1 )
+         if($leaflevel > 1)
          {
             $trunkpos = new Vector3( $pos->x, $pos->y + $yy, $pos->z );
             $level->setBlockRaw($trunkpos, new WoodBlock( $this->type ) );
