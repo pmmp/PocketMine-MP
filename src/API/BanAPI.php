@@ -362,10 +362,8 @@ class BanAPI{
 			return true;
 		}elseif($this->bannedIPs->exists($ip, true)){
 			return true;
-		}
-        else
-        {
-		    return false;
+		}else{
+			return false;
         }
 	}
 
@@ -380,10 +378,8 @@ class BanAPI{
 			return true;
 		}elseif($this->banned->exists($username, true)){
 			return true;
-		}
-        else
-        {
-		    return false;
+		}else{
+			return false;
         }
 	}
 
