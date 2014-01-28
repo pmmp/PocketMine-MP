@@ -379,7 +379,7 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
-		return $this->level->unloadChunk($X, $Z);
+		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
 
 	public function getOrderedChunk($X, $Z, $Yndex){
