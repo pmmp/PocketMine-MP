@@ -5,7 +5,7 @@ php:
   
 before_script:
  - pecl install channel://pecl.php.net/pthreads-0.1.0
- - printf "\n" | pecl install channel://pecl.php.net/yaml-1.1.1
+ - echo | pecl install channel://pecl.php.net/yaml-1.1.1
 
 script:
  - php src/tests/ServerSuiteTest.php --no-wizard
