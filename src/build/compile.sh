@@ -7,6 +7,8 @@ ZEND_VM="GOTO"
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="0.1.0"
+PHPYAML_VERSION="1.1.1"
+YAML_VERSION="0.1.4"
 CURL_VERSION="curl-7_34_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
@@ -205,6 +207,28 @@ wget http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz --no-check-certifica
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
+#PHP YAML
+echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
+wget http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
+echo " done!"
+
+#YAML
+echo -n "[YAML] downloading $YAML_VERSION..."
+wget http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+mv yaml-$YAML_VERSION yaml
+echo -n " checking..."
+cd yaml
+RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/yaml" \
+--enable-static --disable-shared >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make -j $THREADS >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+echo -n " cleaning..."
+cd ..
+rm -r -f ./yaml
+echo " done!"
 
 echo -n "[PHP]"
 set +e
@@ -237,6 +261,7 @@ fi
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
 --with-zlib-dir="$DIR/install_data/php/ext/zlib" \
+--with-yaml="$DIR/install_data/php/ext/yaml" \
 $HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
