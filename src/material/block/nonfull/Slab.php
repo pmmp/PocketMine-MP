@@ -30,6 +30,7 @@ class SlabBlock extends TransparentBlock{
 			4 => "Brick",
 			5 => "Stone Brick",
 			6 => "Quartz",
+			7 => "",
 		);
 		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . $names[$this->meta & 0x07] . " Slab";	
 		if(($this->meta & 0x08) === 0x08){
