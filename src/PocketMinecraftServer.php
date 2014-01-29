@@ -629,11 +629,10 @@ class PocketMinecraftServer{
 				$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
 				$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
 				$this->preparedSQL->updateAction->execute();
-				$schedule = $this->schedule[$cid];
-				if(!is_callable($schedule[0])){
+				if(!@is_callable($this->schedule[$cid][0])){
 					$return = false;
 				}else{
-					$return = call_user_func($schedule[0], $schedule[1], $schedule[2]);
+					$return = call_user_func($this->schedule[$cid][0], $this->schedule[$cid][1], $this->schedule[$cid][2]);
 				}
 
 				if($action["repeat"] == 0 or $return === false){
