@@ -109,7 +109,6 @@ fi
 
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
-rm -r -f php5/ >> "$DIR/install.log" 2>&1
 rm -r -f bin/ >> "$DIR/install.log" 2>&1
 mkdir -m 0777 install_data >> "$DIR/install.log" 2>&1
 mkdir -m 0777 php5 >> "$DIR/install.log" 2>&1
@@ -234,8 +233,8 @@ if [ "$1" == "crosscompile" ]; then
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 
 fi
-./configure $OPTIMIZATION--prefix="$DIR/bin/php" \
---exec-prefix="$DIR/bin/php" \
+./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
+--exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
 --with-zlib-dir="$DIR/install_data/php/ext/zlib" \
@@ -280,10 +279,6 @@ echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
-mv php5/bin/php bin/php
-mv php5/bin/phpize bin/phpize
-mv php5/bin/php-config bin/php-config 
-rm -r -f php5/ >> "$DIR/install.log" 2>&1
 date >> "$DIR/install.log" 2>&1
 echo " done!"
 echo "[PocketMine] You should start the server now using \"./start.sh.\""
