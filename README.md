@@ -1,6 +1,6 @@
 ![](http://www.pocketmine.net/favicon.png)
 
-# PocketMine-MP [![Build Status](https://travis-ci.org/PocketMine/PocketMine-MP.png?branch=master)](https://travis-ci.org/PocketMine/PocketMine-MP) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/PocketMine/pocketmine-mp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+# PocketMine-MP [![Build Status](https://travis-ci.org/PocketMine/PocketMine-MP.png?branch=master)](https://travis-ci.org/PocketMine/PocketMine-MP)
 
 ```
 This program is free software: you can redistribute it and/or modify
