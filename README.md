@@ -1,6 +1,6 @@
 ![](http://www.pocketmine.net/favicon.png)
 
-# PocketMine-MP [![Build Status](https://travis-ci.org/PocketMine/PocketMine-MP.png?branch=master)](https://travis-ci.org/PocketMine/PocketMine-MP)
+# PocketMine-MP [![Build Status](https://travis-ci.org/PocketMine/PocketMine-MP.png?branch=master)](https://travis-ci.org/PocketMine/PocketMine-MP) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/PocketMine/pocketmine-mp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ```
 This program is free software: you can redistribute it and/or modify
@@ -48,7 +48,3 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * __[Zlib](http://www.zlib.net/)__: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
 * __[Source RCON Protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol)__
 * __[UT3 Query Protocol](http://wiki.unrealadmin.org/UT3_query_protocol)__
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/PocketMine/pocketmine-mp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
