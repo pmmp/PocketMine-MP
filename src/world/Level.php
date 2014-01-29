@@ -299,6 +299,9 @@ class Level{
 				}
 				$block->position($pos);
 				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
+				if(ADVANCED_CACHE == true){
+					Cache::remove("world:{$this->name}:".($pos->x >> 4).":".($pos->z >> 4));
+				}
 				if(!isset($this->changedBlocks[$i])){
 					$this->changedBlocks[$i] = array();
 					$this->changedCount[$i] = 0;
@@ -336,6 +339,9 @@ class Level{
 					$this->changedBlocks[$i] = array();
 					$this->changedCount[$i] = 0;
 				}
+				if(ADVANCED_CACHE == true){
+					Cache::remove("world:{$this->name}:".($pos->x >> 4).":".($pos->z >> 4));
+				}
 				$this->changedBlocks[$i][] = clone $block;
 				++$this->changedCount[$i];
 			}
@@ -365,6 +371,9 @@ class Level{
 			return false;
 		}
 		$this->changedCount[$X.":".$Y.":".$Z] = 4096;
+		if(ADVANCED_CACHE == true){
+			Cache::remove("world:{$this->name}:$X:$Z");
+		}
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
 	
@@ -379,6 +388,7 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
+		Cache::remove("world:{$this->name}:$X:$Z");
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
 
@@ -386,6 +396,14 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
+		if(ADVANCED_CACHE == true and $Yndex == 0xff){
+			$identifier = "world:{$this->name}:$X:$Z";
+			if(($cache = Cache::get($identifier)) !== false){
+				return $cache;
+			}
+		}
+		
+		
 		$raw = array();
 		for($Y = 0; $Y < 8; ++$Y){
 			if(($Yndex & (1 << $Y)) > 0){
@@ -401,6 +419,9 @@ class Level{
 				$ordered .= substr($mini, $j << 5, 24); //16 + 8
 			}
 		}
+		if(ADVANCED_CACHE == true and $Yndex == 0xff){
+			Cache::add($identifier, $ordered, 60);
+		}		
 		return $ordered;
 	}
 
