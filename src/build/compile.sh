@@ -111,7 +111,6 @@ fi
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f bin/ >> "$DIR/install.log" 2>&1
 mkdir -m 0777 install_data >> "$DIR/install.log" 2>&1
-mkdir -m 0777 php5 >> "$DIR/install.log" 2>&1
 mkdir -m 0777 bin >> "$DIR/install.log" 2>&1
 cd install_data
 set -e
@@ -262,6 +261,7 @@ $HAVE_LIBEDIT \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
+--with-mysqli=mysqlnd \
 --enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
