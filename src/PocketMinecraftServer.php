@@ -373,46 +373,7 @@ class PocketMinecraftServer{
 
 	public function init(){		
 		register_tick_function(array($this, "tick"));
-		console("[DEBUG] Starting internal ticker calculation", true, true, 2);
-		$t = 0;
-		while(true){
-			switch($t){
-				case 0:
-					declare(ticks=100);
-					break;
-				case 1:
-					declare(ticks=60);
-					break;
-				case 2:
-					declare(ticks=40);
-					break;
-				case 3:
-					declare(ticks=30);
-					break;
-				case 4:
-					declare(ticks=20);
-					break;
-				case 5:
-					declare(ticks=15);
-					break;
-				default:
-					declare(ticks=10);
-					break;
-			}
-			if($t > 5){
-				break;
-			}
-			$this->ticks = 0;
-			while($this->ticks < 20){
-				usleep(1);
-			}
-			
-			if($this->getTPS() < 19.5){
-				++$t;
-			}else{
-				break;
-			}
-		}
+		declare(ticks=5000); //Minimum TPS for main thread locks
 
 		$this->loadEvents();
 		register_shutdown_function(array($this, "dumpError"));
@@ -623,6 +584,7 @@ class PocketMinecraftServer{
 					usleep(10000);
 				}
 			}
+			$this->tick();
 		}
 	}
 
