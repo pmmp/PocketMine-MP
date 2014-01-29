@@ -95,16 +95,16 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$CFLAGS" ] && CFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-$CC -O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+$CC -O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 if [ $? -ne 0 ]; then
-	$CC -O3 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+	$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 	if [ $? -ne 0 ]; then
-		export CFLAGS="-O3 -fno-gcse "
+		export CFLAGS="-O2 -fno-gcse "
 	else
-		export CFLAGS="-O3 -fno-gcse $CFLAGS"
+		export CFLAGS="-O2 -fno-gcse $CFLAGS"
 	fi
 else
-	export CFLAGS="-O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+	export CFLAGS="-O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 fi
 
 
