@@ -446,9 +446,11 @@ class ServerAPI{
 		return ($this->config->exists($name) ? $this->config->get($name):$default);
 	}
 
-	public function setProperty($name, $value){
+	public function setProperty($name, $value, $save = true){
 		$this->config->set($name, $value);
-		$this->writeProperties();
+		if($save == true){
+			$this->writeProperties();
+		}
 		$this->loadProperties();
 	}
 
