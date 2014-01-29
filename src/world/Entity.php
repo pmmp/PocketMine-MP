@@ -144,6 +144,9 @@ class Entity extends Position{
 		}
 		$this->updateLast();
 		$this->updatePosition();
+		if($this->y < 0 and $this->class !== ENTITY_PLAYER){
+			$this->close();
+		}
 	}
 	
 	public function updateFuse(){
