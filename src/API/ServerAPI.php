@@ -295,7 +295,6 @@ class ServerAPI{
 			$this->server->gamemode = $this->getProperty("gamemode");
 			$this->server->difficulty = $this->getProperty("difficulty");
 			$this->server->whitelist = $this->getProperty("white-list");
-			$this->server->reloadConfig();
 		}
 	}
 

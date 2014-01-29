@@ -36,7 +36,7 @@ class PocketMinecraftServer{
 		}*/
 		console("[INFO] Starting Minecraft PE server on ".($this->serverip === "0.0.0.0" ? "*":$this->serverip).":".$this->port);
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
-		$this->serverID = $this->serverID === false ? Utils::readLong(Utils::getRandomBytes(8, false)):$this->serverID;
+		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true), 8)):$this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
 		$this->startDatabase();
 		$this->api = false;
@@ -65,7 +65,6 @@ class PocketMinecraftServer{
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface($this, "255.255.255.255", $this->port, true, false, $this->serverip);
-		$this->reloadConfig();
 		$this->stop = false;
 		$this->ticks = 0;
 		if(!defined("NO_THREADS")){
@@ -155,10 +154,6 @@ class PocketMinecraftServer{
 			$result = $result->fetchArray(SQLITE3_ASSOC);
 		}
 		return $result;
-	}
-
-	public function reloadConfig(){
-
 	}
 
 	public function debugInfo($console = false){
