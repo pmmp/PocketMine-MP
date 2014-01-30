@@ -36,7 +36,7 @@ class PocketMinecraftServer{
 		}*/
 		console("[INFO] Starting Minecraft PE server on ".($this->serverip === "0.0.0.0" ? "*":$this->serverip).":".$this->port);
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
-		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true), 8)):$this->serverID;
+		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true, $this->serverip . $this->port), 8)):$this->serverID;
 		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
 		$this->startDatabase();
 		$this->api = false;

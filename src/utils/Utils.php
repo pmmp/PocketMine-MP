@@ -31,10 +31,11 @@ class Utils{
 		return ((@fsockopen("google.com", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.linux.org", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.php.net", 80, $e = null, $n = null, 2) !== false) ? true:false);
 	}
 	
-	public static function getUniqueID($raw = false){
+	public static function getUniqueID($raw = false, $extra = ""){
 		$machine = php_uname("a");
 		$machine .= file_exists("/proc/cpuinfo") ? file_get_contents("/proc/cpuinfo") : "";		
 		$machine .= sys_get_temp_dir();
+		$machine .= $extra;
 		if(Utils::getOS() == "win"){
 			exec("ipconfig /ALL", $mac);
 			$mac = implode("\n", $mac);
