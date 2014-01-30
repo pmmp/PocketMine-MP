@@ -21,8 +21,22 @@ type autoconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \
 type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"automake\""; read -p "Press [Enter] to continue..."; exit 1; }
 type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
-type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
+type wget >> "$DIR/install.log" 2>&1 || type curl >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\" or \"curl\""; read -p "Press [Enter] to continue..."; exit 1; }
 type getconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"getconf\""; read -p "Press [Enter] to continue..."; exit 1; }
+
+function download_file {
+	type wget >> "$DIR/install.log" 2>&1
+	if [ $? -eq 1 ]; then
+		wget "$1" --no-check-certificate -q -O -
+	else
+		type curl >> "$DIR/install.log" 2>&1
+		if [ $? -eq 0 ]; then
+			curl --insecure --silent --location "$1" 
+		else
+			echo "error, curl or wget not found"
+		fi
+	fi
+}
 
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
@@ -119,7 +133,7 @@ set -e
 
 #PHP 5
 echo -n "[PHP] downloading $PHP_VERSION..."
-wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror | tar -zx >> "$DIR/install.log" 2>&1
 mv php-$PHP_VERSION php
 echo " done!"
 
@@ -128,7 +142,7 @@ if [ 1 ] || [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
 else
 	#libedit
 	echo -n "[libedit] downloading $LIBEDIT_VERSION..."
-	wget http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+	download_file http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
 	echo -n " checking..."
 	cd libedit
 	./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
@@ -149,7 +163,7 @@ fi
 
 #zlib
 echo -n "[zlib] downloading $ZLIB_VERSION..."
-wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file http://zlib.net/zlib-$ZLIB_VERSION.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
@@ -169,7 +183,7 @@ if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "cur
 else
 	#curl
 	echo -n "[cURL] downloading $CURL_VERSION..."
-	wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+	download_file https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
 	mv curl-$CURL_VERSION curl
 	echo -n " checking..."
 	cd curl
@@ -203,19 +217,19 @@ fi
 
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
-wget http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz | tar -zx >> "$DIR/install.log" 2>&1
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
 #PHP YAML
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
-wget http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz | tar -zx >> "$DIR/install.log" 2>&1
 mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
 echo " done!"
 
 #YAML
 echo -n "[YAML] downloading $YAML_VERSION..."
-wget http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
 mv yaml-$YAML_VERSION yaml
 echo -n " checking..."
 cd yaml
