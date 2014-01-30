@@ -64,17 +64,17 @@ class PineTreeObject extends TreeObject{
 		$firstMaxedRadius = false;
 		for($leavesY = 0; $leavesY <= $leavesBottomY; ++$leavesY) {
 			$yy = $this->totalHeight - $leavesY;
-			for ($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
-				for ($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
-					if (abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
+			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
+				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
+					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
 						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new LeavesBlock($this->type));
 					}
 				}
 			}
-			if ($leavesRadius >= $leavesMaxRadius) {
+			if($leavesRadius >= $leavesMaxRadius) {
 				$leavesRadius = $firstMaxedRadius ? 1 : 0;
 				$firstMaxedRadius = true;
-				if (++$leavesMaxRadius > $this->leavesAbsoluteMaxRadius) {
+				if(++$leavesMaxRadius > $this->leavesAbsoluteMaxRadius) {
 					$leavesMaxRadius = $this->leavesAbsoluteMaxRadius;
 				}
 			}else{

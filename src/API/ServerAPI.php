@@ -135,6 +135,7 @@ class ServerAPI{
 		
 		$this->parseProperties();
 		define("DEBUG", $this->getProperty("debug", 1));
+		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
 		if($this->getProperty("port") !== false){
 			$this->setProperty("server-port", $this->getProperty("port"));
 			$this->config->remove("port");
@@ -145,6 +146,10 @@ class ServerAPI{
 		self::$serverRequest = $this->server;
 		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? FORMAT_YELLOW:"").MAJOR_VERSION.FORMAT_RESET." \"".CODENAME."\" (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
 		console("[INFO] PocketMine-MP is distibuted under the LGPL License", true, true, 0);
+
+		if(ADVANCED_CACHE == true){
+			console("[INFO] Advanced cache enabled");
+		}
 
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Trying to port forward...");
@@ -290,7 +295,6 @@ class ServerAPI{
 			$this->server->gamemode = $this->getProperty("gamemode");
 			$this->server->difficulty = $this->getProperty("difficulty");
 			$this->server->whitelist = $this->getProperty("white-list");
-			$this->server->reloadConfig();
 		}
 	}
 
@@ -441,9 +445,11 @@ class ServerAPI{
 		return ($this->config->exists($name) ? $this->config->get($name):$default);
 	}
 
-	public function setProperty($name, $value){
+	public function setProperty($name, $value, $save = true){
 		$this->config->set($name, $value);
-		$this->writeProperties();
+		if($save == true){
+			$this->writeProperties();
+		}
 		$this->loadProperties();
 	}
 

@@ -1,12 +1,14 @@
 #!/bin/bash
-COMPILER_VERSION="0.14"
+COMPILER_VERSION="0.15"
 
 PHP_VERSION="5.5.8"
 ZEND_VM="GOTO"
 
 LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
-PTHREADS_VERSION="0.0.45"
+PTHREADS_VERSION="0.1.0"
+PHPYAML_VERSION="1.1.1"
+YAML_VERSION="0.1.4"
 CURL_VERSION="curl-7_34_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
@@ -77,7 +79,7 @@ elif [ "$1" == "crosscompile" ]; then
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac] to cross-compile"
 		exit 1
 	fi
-else
+elif [ -z "$CFLAGS" ]; then
 	if [ `getconf LONG_BIT` = "64" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
 		CFLAGS="-m64 $CFLAGS"
@@ -95,24 +97,22 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$CFLAGS" ] && CFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-$CC -O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+$CC -O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 if [ $? -ne 0 ]; then
-	$CC -O3 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+	$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 	if [ $? -ne 0 ]; then
-		export CFLAGS="-O3 -fno-gcse "
+		export CFLAGS="-O2 -fno-gcse "
 	else
-		export CFLAGS="-O3 -fno-gcse $CFLAGS"
+		export CFLAGS="-O2 -fno-gcse $CFLAGS"
 	fi
 else
-	export CFLAGS="-O3 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+	export CFLAGS="-O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 fi
 
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
-rm -r -f php5/ >> "$DIR/install.log" 2>&1
 rm -r -f bin/ >> "$DIR/install.log" 2>&1
 mkdir -m 0777 install_data >> "$DIR/install.log" 2>&1
-mkdir -m 0777 php5 >> "$DIR/install.log" 2>&1
 mkdir -m 0777 bin >> "$DIR/install.log" 2>&1
 cd install_data
 set -e
@@ -207,6 +207,28 @@ wget http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz --no-check-certifica
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
+#PHP YAML
+echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
+wget http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
+echo " done!"
+
+#YAML
+echo -n "[YAML] downloading $YAML_VERSION..."
+wget http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+mv yaml-$YAML_VERSION yaml
+echo -n " checking..."
+cd yaml
+RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/yaml" \
+--enable-static --disable-shared >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make -j $THREADS >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+echo -n " cleaning..."
+cd ..
+rm -r -f ./yaml
+echo " done!"
 
 echo -n "[PHP]"
 set +e
@@ -234,11 +256,12 @@ if [ "$1" == "crosscompile" ]; then
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 
 fi
-./configure $OPTIMIZATION--prefix="$DIR/php5" \
---exec-prefix="$DIR/php5" \
+./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
+--exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
 --with-zlib-dir="$DIR/install_data/php/ext/zlib" \
+--with-yaml="$DIR/install_data/php/ext/yaml" \
 $HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
@@ -263,6 +286,7 @@ $HAVE_LIBEDIT \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
+--with-mysqli=mysqlnd \
 --enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
@@ -280,8 +304,6 @@ echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
-mv php5/bin/php bin/php
-rm -r -f php5/ >> "$DIR/install.log" 2>&1
 date >> "$DIR/install.log" 2>&1
 echo " done!"
 echo "[PocketMine] You should start the server now using \"./start.sh.\""

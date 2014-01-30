@@ -41,8 +41,9 @@ The entire server is done in PHP, and has been tested, profiled and optimized to
 * __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
 * __[PHP SQLite3](http://php.net/manual/en/book.sqlite3.php)__
 * __[PHP BCMath](http://php.net/manual/en/book.bc.php)__
-* __[PHP pthreads](https://github.com/krakjoe/pthreads)__ by _[krakjoe](https://github.com/krakjoe)_: Threading for PHP - Share Nothing, Do Everything.
-* __[Spyc](https://github.com/mustangostang/spyc/blob/master/Spyc.php)__ by _[Vlad Andersen](https://github.com/mustangostang)_: A simple YAML loader/dumper class for PHP.
+* __[PHP pthreads](http://pthreads.org/)__ by _[krakjoe](https://github.com/krakjoe)_: Threading for PHP - Share Nothing, Do Everything.
+* __[PHP YAML](https://code.google.com/p/php-yaml/)__ by _Bryan Davis_: The Yaml PHP Extension provides a wrapper to the LibYAML library.
+* __[LibYAML](http://pyyaml.org/wiki/LibYAML)__ by _Kirill Simonov_: A YAML 1.1 parser and emitter written in C.
 * __[mintty](https://code.google.com/p/mintty/)__ : xterm Terminal Emulator
 * __[cURL](http://curl.haxx.se/)__: cURL is a command line tool for transferring data with URL syntax
 * __[Zlib](http://www.zlib.net/)__: A Massively Spiffy Yet Delicately Unobtrusive Compression Library

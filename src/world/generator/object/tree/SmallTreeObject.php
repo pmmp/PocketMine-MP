@@ -36,7 +36,7 @@ class SmallTreeObject extends TreeObject{
 	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$radiusToCheck = 0;
 		for ($yy = 0; $yy < $this->trunkHeight + 3; ++$yy) {
-			if ($yy == 1 or $yy === $this->trunkHeight) {
+			if($yy == 1 or $yy === $this->trunkHeight) {
 				++$radiusToCheck;
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
@@ -94,7 +94,7 @@ class SmallTreeObject extends TreeObject{
          }
 
          // Place the trunk last
-         if( $leaflevel > 1 )
+         if($leaflevel > 1)
          {
             $trunkpos = new Vector3( $pos->x, $pos->y + $yy, $pos->z );
             $level->setBlockRaw($trunkpos, new WoodBlock( $this->type ) );

@@ -299,6 +299,9 @@ class Level{
 				}
 				$block->position($pos);
 				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
+				if(ADVANCED_CACHE == true){
+					Cache::remove("world:{$this->name}:".($pos->x >> 4).":".($pos->z >> 4));
+				}
 				if(!isset($this->changedBlocks[$i])){
 					$this->changedBlocks[$i] = array();
 					$this->changedCount[$i] = 0;
@@ -336,6 +339,9 @@ class Level{
 					$this->changedBlocks[$i] = array();
 					$this->changedCount[$i] = 0;
 				}
+				if(ADVANCED_CACHE == true){
+					Cache::remove("world:{$this->name}:".($pos->x >> 4).":".($pos->z >> 4));
+				}
 				$this->changedBlocks[$i][] = clone $block;
 				++$this->changedCount[$i];
 			}
@@ -365,6 +371,9 @@ class Level{
 			return false;
 		}
 		$this->changedCount[$X.":".$Y.":".$Z] = 4096;
+		if(ADVANCED_CACHE == true){
+			Cache::remove("world:{$this->name}:$X:$Z");
+		}
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
 	
@@ -379,13 +388,22 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
-		return $this->level->unloadChunk($X, $Z);
+		Cache::remove("world:{$this->name}:$X:$Z");
+		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
 
 	public function getOrderedChunk($X, $Z, $Yndex){
 		if(!isset($this->level)){
 			return false;
 		}
+		if(ADVANCED_CACHE == true and $Yndex == 0xff){
+			$identifier = "world:{$this->name}:$X:$Z";
+			if(($cache = Cache::get($identifier)) !== false){
+				return $cache;
+			}
+		}
+		
+		
 		$raw = array();
 		for($Y = 0; $Y < 8; ++$Y){
 			if(($Yndex & (1 << $Y)) > 0){
@@ -401,6 +419,9 @@ class Level{
 				$ordered .= substr($mini, $j << 5, 24); //16 + 8
 			}
 		}
+		if(ADVANCED_CACHE == true and $Yndex == 0xff){
+			Cache::add($identifier, $ordered, 60);
+		}		
 		return $ordered;
 	}
 
@@ -434,7 +455,10 @@ class Level{
 			$z = (int) round($spawn->z);
 			for(; $y > 0; --$y){
 				$v = new Vector3($x, $y, $z);
-				if(!($this->getBlock($v->getSide(0)) instanceof AirBlock)){
+				$b = $this->getBlock($v->getSide(0));
+				if($b === false){
+					return $spawn;
+				}elseif(!($b instanceof AirBlock)){
 					break;
 				}
 			}

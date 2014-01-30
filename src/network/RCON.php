@@ -55,6 +55,8 @@ class RCON{
 		for($n = 0; $n < $this->threads; ++$n){
 			$this->workers[$n]->close();
 			$this->workers[$n]->join();
+			usleep(50000);
+			$this->workers[$n]->kill();
 		}
 		@socket_close($this->socket);
 		$this->threads = 0;

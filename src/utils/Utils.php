@@ -31,6 +31,33 @@ class Utils{
 		return ((@fsockopen("google.com", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.linux.org", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.php.net", 80, $e = null, $n = null, 2) !== false) ? true:false);
 	}
 	
+	public static function getUniqueID($raw = false, $extra = ""){
+		$machine = php_uname("a");
+		$machine .= file_exists("/proc/cpuinfo") ? file_get_contents("/proc/cpuinfo") : "";		
+		$machine .= sys_get_temp_dir();
+		$machine .= $extra;
+		if(Utils::getOS() == "win"){
+			exec("ipconfig /ALL", $mac);
+			$mac = implode("\n", $mac);
+			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\-]{17})#", $mac, $matches)){
+				foreach($matches[1] as $i => $v){
+					if($v == "00-00-00-00-00-00"){
+						unset($matches[1][$i]);
+					}
+				}
+				$machine .= implode(" ", $matches[1]); //Mac Addresses
+			}
+		}
+		$data = $machine . PHP_MAXPATHLEN;
+		$data .= PHP_INT_MAX;
+		$data .= PHP_INT_SIZE;
+		$data .= get_current_user();
+		foreach(get_loaded_extensions() as $ext){
+			$data .= $ext.":".phpversion($ext);
+		}
+		return hash("md5", $machine, $raw).hash("sha512", $data, $raw);
+	}
+	
 	public static function getIP($force = false){
 		if(Utils::$online === false){
 			return false;

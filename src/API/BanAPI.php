@@ -145,6 +145,10 @@ class BanAPI{
 				break;
 			case "op":
 				$user = strtolower($params[0]);
+				if($user == NULL){
+				  $output .= "Usage: /op <player>\n";
+				  break;
+				}
 				$player = $this->server->api->player->get($user);
 				if(!($player instanceof Player)){
 					$this->ops->set($user);
@@ -358,10 +362,8 @@ class BanAPI{
 			return true;
 		}elseif($this->bannedIPs->exists($ip, true)){
 			return true;
-		}
-        else
-        {
-		    return false;
+		}else{
+			return false;
         }
 	}
 
@@ -376,10 +378,8 @@ class BanAPI{
 			return true;
 		}elseif($this->banned->exists($username, true)){
 			return true;
-		}
-        else
-        {
-		    return false;
+		}else{
+			return false;
         }
 	}
 

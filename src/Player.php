@@ -52,6 +52,7 @@ class Player{
 	public $spawned = false;
 	public $inventory;
 	public $slot;
+	public $hotbar;
 	public $armor = array();
 	public $loggedIn = false;
 	public $gamemode;
@@ -111,6 +112,7 @@ class Player{
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
 		$this->slot = 0;
+		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
 		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
 		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
@@ -251,6 +253,7 @@ class Player{
 				}
 			}
 			$this->data->set("inventory", $inv);
+			$this->data->set("hotbar", $this->hotbar);
 			
 			$armor = array();
 			foreach($this->armor as $slot => $item){
@@ -887,7 +890,7 @@ class Player{
 				return false;
 			}
 			
-			if($pos instanceof Position and $pos->level !== $this->level){
+			if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
 				if($this->server->api->dhandle("player.teleport.level", array("player" => $this, "origin" => $this->level, "target" => $pos->level)) === false){
 					$this->entity->check = true;
 					return false;
@@ -1366,8 +1369,13 @@ class Player{
 				));
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
+					$this->hotbar = array();
+				}elseif($this->data->exists("hotbar")){
+					$this->hotbar = $this->data->get("hotbar");
+					$this->slot = $this->hotbar[0];
 				}else{
 					$this->slot = -1;//0
+					$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 				}
 				$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, array("player" => $this));
 				$this->eid = $this->entity->eid;
@@ -1487,7 +1495,6 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
-
 				$data["eid"] = $this->eid;
 				$data["player"] = $this;
 				
@@ -1527,8 +1534,15 @@ class Player{
 				$data["meta"] = $data["item"]->getMetadata();
 				if($this->server->handle("player.equipment.change", $data) !== false){
 					$this->slot = $data["slot"];
+					if(($this->gamemode & 0x01) === SURVIVAL){
+						if(!in_array($this->slot, $this->hotbar)){
+							array_pop($this->hotbar);
+							array_unshift($this->hotbar, $this->slot);
+						}
+					}
 				}else{
-					$this->sendInventorySlot($data["slot"]);
+					//$this->sendInventorySlot($data["slot"]);
+					$this->sendInventory();
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -1837,7 +1851,7 @@ class Player{
 					$this->entity->air = 300;
 					$this->entity->setHealth(20, "respawn");
 					$this->entity->updateMetadata();
-				} else {
+				}else{
 					break;
 				}
 				$this->sendInventory();
@@ -2198,10 +2212,16 @@ class Player{
 		if(($this->gamemode & 0x01) === CREATIVE){
 			return;
 		}
+		$hotbar = array();
+		foreach($this->hotbar as $slot){
+			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
+		}
+
 		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
 			"windowid" => 0,
 			"count" => count($this->inventory),
 			"slots" => $this->inventory,
+			"hotbar" => $hotbar,
 		));
 	}
 

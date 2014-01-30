@@ -86,6 +86,10 @@ class Config{
 		$this->load($this->file);
 		$correct = $this->check();
 	}
+	
+	public function fixYAMLIndexes($str){
+		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[^\:]*)\:#m", "$1\"$2\":", $str);
+	}
 
     /**
      * @param string $file
@@ -125,7 +129,8 @@ class Config{
 						$this->config = @json_decode($content, true);
 						break;
 					case CONFIG_YAML:
-						$this->config = Spyc::YAMLLoad($content);
+						$content = $this->fixYAMLIndexes($content);
+						$this->config = yaml_parse($content);
 						break;
 					case CONFIG_SERIALIZED:
 						$this->config = @unserialize($content);
@@ -172,7 +177,7 @@ class Config{
 					$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
 					break;
 				case CONFIG_YAML:
-					$content = Spyc::YAMLDump($this->config);
+					$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
 					break;
 				case CONFIG_SERIALIZED:
 					$content = @serialize($this->config);
@@ -256,13 +261,13 @@ class Config{
      * @return boolean
      */
     public function exists($k, $lowercase = false){
-        if($lowercase === true)://Take this ridiculously retarded IF formatting! - @sekjun98888877777778888888888888
+        if($lowercase === true){
             $k = strtolower($k);//Convert requested  key to lower
             $array = array_change_key_case($this->config, CASE_LOWER);//Change all keys in array to lower
             return isset($array[$k]);//Find $k in modified array
-        else:
+        }else{
 		    return isset($this->config[$k]);
-        endif;
+        }
 	}
 
     /**

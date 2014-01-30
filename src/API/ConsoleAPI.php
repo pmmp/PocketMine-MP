@@ -47,6 +47,9 @@ class ConsoleAPI{
 		if(!defined("NO_THREADS")){
 			$this->loop->stop();
 			$this->loop->notify();
+			//@fclose($this->loop->fp);
+			usleep(50000);
+			$this->loop->kill();
 			//$this->loop->join();
 		}
 	}
@@ -128,7 +131,7 @@ class ConsoleAPI{
 						
 						$max = ceil(count($cmds) / 5);
 						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
-						$output .= "\x1b[31;1m-\x1b[0m Showing help page $page of $max (/help <page>) \x1b[31;1m-\x1b[0m\n";
+						$output .= FORMAT_RED."-".FORMAT_RESET." Showing help page $page of $max (/help <page>) ".FORMAT_RED."-".FORMAT_RESET."\n";
 						$current = 1;
 						foreach($cmds as $c => $h){
 							$curpage = (int) ceil($current / 5);
@@ -204,22 +207,16 @@ class ConsoleAPI{
 							break;
 						case "a":
 						case "all":
-							if($issuer instanceof Player)
-							{
-								if($this->server->api->ban->isOp($issuer->username))
-								{
+							if($issuer instanceof Player){
+								if($this->server->api->ban->isOp($issuer->username)){
 									$output = "";
 									foreach($this->server->api->player->getAll() as $p){
 										$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 									}
-								}
-								else
-								{
+								}else{
 									$issuer->sendChat("You don't have permissions to use this command.\n");
 								}
-							}
-							else
-							{
+							}else{
 								$output = "";
 								foreach($this->server->api->player->getAll() as $p){
 									$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
@@ -294,7 +291,7 @@ class ConsoleLoop extends Thread{
 	public $stop;
 	public $base;
 	public $ev;
-   public $fp;
+	public $fp;
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
@@ -319,7 +316,7 @@ class ConsoleLoop extends Thread{
 
 	public function run(){
 		if(!extension_loaded("readline")){
-			$this->fp = fopen( "php://stdin", "r" );
+			$this->fp = fopen("php://stdin", "r");
 		}
 
 		while($this->stop === false){
@@ -328,7 +325,7 @@ class ConsoleLoop extends Thread{
 			$this->line = false;
 		}
 
-		if(!$this->haveReadline){
+		if(!extension_loaded("readline")){
 			@fclose($fp);
 		}
 		exit(0);

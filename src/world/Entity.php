@@ -144,6 +144,9 @@ class Entity extends Position{
 		}
 		$this->updateLast();
 		$this->updatePosition();
+		if($this->y < 0 and $this->class !== ENTITY_PLAYER){
+			$this->close();
+		}
 	}
 	
 	public function updateFuse(){
@@ -598,7 +601,7 @@ class Entity extends Position{
 
 	public function getDirection(){
 		$rotation = ($this->yaw - 90) % 360;
-		if ($rotation < 0) {
+		if($rotation < 0) {
 			$rotation += 360.0;
 		}
 		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)){
@@ -820,7 +823,7 @@ class Entity extends Position{
 	}
 
 	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false){
-		if($pos instanceof Position and $this->level !== $pos->level){
+		if($pos instanceof Position and $pos->level instanceof Level and $this->level !== $pos->level){
 			$this->level = $pos->level;
 			$this->server->preparedSQL->entity->setLevel->reset();
 			$this->server->preparedSQL->entity->setLevel->clear();
