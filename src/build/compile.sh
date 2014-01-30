@@ -26,7 +26,7 @@ type getconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"
 
 function download_file {
 	type wget >> "$DIR/install.log" 2>&1
-	if [ $? -eq 1 ]; then
+	if [ $? -eq 0 ]; then
 		wget "$1" --no-check-certificate -q -O -
 	else
 		type curl >> "$DIR/install.log" 2>&1
