@@ -1840,7 +1840,7 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
-				if($this->entity->dead === false){
+				if(@$this->entity->dead === false){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1850,7 +1850,8 @@ class Player{
 					$this->entity->fire = 0;
 					$this->entity->air = 300;
 					$this->entity->setHealth(20, "respawn");
-					$this->entity->updateMetadata();
+					$this->entity->updateMetadata();					
+					$this->entity->dead = false;
 				}else{
 					break;
 				}
