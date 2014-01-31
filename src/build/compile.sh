@@ -338,6 +338,9 @@ if [ "$1" != "crosscompile" ]; then
 	echo "opcache.memory_consumption=128" >> "$DIR/bin/php5/lib/php.ini"
 	echo "opcache.optimization_level=0xffffffff" >> "$DIR/bin/php5/lib/php.ini"
 fi
+if [ "$HAVE_CURL" == "shared,/usr" ]; then
+	echo "extension=curl.so" >> "$DIR/bin/php5/lib/php.ini"
+fi
 echo "date.timezone=$TIMEZONE" >> "$DIR/bin/php5/lib/php.ini"
 echo "short_open_tag=0" >> "$DIR/bin/php5/lib/php.ini"
 echo "asp_tags=0" >> "$DIR/bin/php5/lib/php.ini"
