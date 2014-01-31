@@ -47,7 +47,7 @@ if [ "$1" == "rpi" ]; then
 	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
 elif [ "$1" == "mac" ]; then
-	[ -z "$march" ] && march=prescott;
+	[ -z "$march" ] && march=i386;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 	echo "[INFO] Compiling for Intel MacOS"
@@ -187,8 +187,11 @@ else
 	mv curl-$CURL_VERSION curl
 	echo -n " checking..."
 	cd curl
-	./buildconf >> "$DIR/install.log" 2>&1
-	./configure --enable-ipv6 \
+	if [ ! -f ./configure ]; then
+		./buildconf --force >> "$DIR/install.log" 2>&1
+	fi
+	./configure --disable-dependency-tracking \
+	--enable-ipv6 \
 	--enable-optimize \
 	--enable-http \
 	--enable-ftp \
@@ -201,8 +204,13 @@ else
 	--disable-smtp \
 	--disable-telnet \
 	--disable-tftp \
+	--disable-ldap \
+	--disable-ldaps \
+	--without-libidn \
+	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
 	--disable-shared \
+	--enable-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
