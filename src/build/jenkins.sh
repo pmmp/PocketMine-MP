@@ -36,7 +36,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
     cd $COMPILEDIR/mac
     
-    $SCRIPT mac
+    $SCRIPT mac curl
     
     cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
 fi
