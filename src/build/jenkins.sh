@@ -47,7 +47,7 @@ then
 	cd libtool-2.4.2
 	./configure && make
 	cd ../
-	LIBTOOL=$(find "./libtool-2.4.2" -name libtool)
+	export LIBTOOL=$(find "./libtool-2.4.2" -name libtool)
 	$LIBTOOL --version
     $SCRIPT mac curl
     
