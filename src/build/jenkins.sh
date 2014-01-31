@@ -49,9 +49,8 @@ then
 	mv libtool $COMPILEDIR/mac/libtool
 	cd ../
 	rm -rf libtool-2.4.2
-	export LIBTOOL="$COMPILEDIR/mac/libtool"
-	export LIBTOOLIZE="glibtoolize"
-	$LIBTOOL --version
+	alias libtool="$COMPILEDIR/mac/libtool"
+	alias libtoolize="glibtoolize"
     $SCRIPT mac curl
     
     cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
