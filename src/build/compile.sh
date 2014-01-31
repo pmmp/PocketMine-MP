@@ -47,7 +47,7 @@ if [ "$1" == "rpi" ]; then
 	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
 elif [ "$1" == "mac" ]; then
-	[ -z "$march" ] && march=i386;
+	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 	echo "[INFO] Compiling for Intel MacOS"
@@ -179,7 +179,7 @@ rm -r -f ./zlib
 echo " done!"
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
-   HAVE_CURL="shared,/usr/local"
+   HAVE_CURL="shared,/usr"
 else
 	#curl
 	echo -n "[cURL] downloading $CURL_VERSION..."
