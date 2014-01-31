@@ -18,7 +18,7 @@ then
     
     CFLAGS=-m32 march=i686 mtune=generic $SCRIPT
     
-    cp $COMPILEDIR/linux/32bit/{install.log,bin/php5/bin/php} $ARCHIVE/linux/32bit/
+    cp -r $COMPILEDIR/linux/32bit/{install.log,bin/*} $ARCHIVE/linux/32bit/
 fi
 
 if [ "$COMPILE_LINUX_64BIT" = "true" ];
@@ -28,7 +28,7 @@ then
     
     $SCRIPT
     
-    cp $COMPILEDIR/linux/64bit/{install.log,bin/php5/bin/php} $ARCHIVE/linux/64bit/
+    cp -r $COMPILEDIR/linux/64bit/{install.log,bin/*} $ARCHIVE/linux/64bit/
 fi
 
 if [ "$COMPILE_MAC" = "true" ];
@@ -38,7 +38,7 @@ then
     
     $SCRIPT mac
     
-    cp $COMPILEDIR/mac/{install.log,bin/php5/bin/php} $ARCHIVE/mac/
+    cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
 fi
 
 if [ "$COMPILE_RPI" = "true" ];
@@ -48,7 +48,7 @@ then
     
     $SCRIPT rpi
     
-    cp $COMPILEDIR/rpi/{install.log,bin/php5/bin/php} $ARCHIVE/rpi/
+    cp -r $COMPILEDIR/rpi/{install.log,bin/*} $ARCHIVE/rpi/
 fi
 
 if [ "$CROSSCOMPILE_ANDROID_ARMV6" = "true" ];
@@ -58,7 +58,7 @@ then
     
     $SCRIPT crosscompile android-armv6
     
-    cp $COMPILEDIR/crosscompile/android-armv6/{install.log,bin/php5/bin/php} $ARCHIVE/crosscompile/android-armv6/
+    cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,bin/*} $ARCHIVE/crosscompile/android-armv6/
 fi
 
 if [ "$CROSSCOMPILE_ANDROID_ARMV7" = "true" ];
@@ -68,7 +68,7 @@ then
     
     $SCRIPT crosscompile android-armv7
     
-    cp $COMPILEDIR/crosscompile/android-armv7/{install.log,bin/php5/bin/php} $ARCHIVE/crosscompile/android-armv7/
+    cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,bin/*} $ARCHIVE/crosscompile/android-armv7/
 fi
 
 if [ "$CROSSCOMPILE_RPI" = "true" ];
@@ -78,7 +78,7 @@ then
     
     $SCRIPT crosscompile rpi
     
-    cp $COMPILEDIR/crosscompile/rpi/{install.log,bin/php5/bin/php} $ARCHIVE/crosscompile/rpi/
+    cp -r $COMPILEDIR/crosscompile/rpi/{install.log,bin/*} $ARCHIVE/crosscompile/rpi/
 fi
 
 if [ "$CROSSCOMPILE_MAC" = "true" ];
@@ -88,5 +88,5 @@ then
     
     $SCRIPT crosscompile mac
     
-    cp $COMPILEDIR/crosscompile/mac/{install.log,bin/php5/bin/php} $ARCHIVE/crosscompile/mac/
+    cp -r $COMPILEDIR/crosscompile/mac/{install.log,bin/*} $ARCHIVE/crosscompile/mac/
 fi
