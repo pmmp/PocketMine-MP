@@ -50,6 +50,7 @@ then
 	cd ../
 	rm -rf libtool-2.4.2
 	export LIBTOOL="$COMPILEDIR/mac/libtool"
+	export LIBTOOLIZE="glibtoolize"
 	$LIBTOOL --version
     $SCRIPT mac curl
     
