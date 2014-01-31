@@ -44,14 +44,13 @@ then
     
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
-	./configure > /dev/null
+	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
 	make > /dev/null
-	mv libtool $COMPILEDIR/mac/libtool
-	mv libtoolize $COMPILEDIR/mac/libtoolize
-	cd ../
+	make install > /dev/null
+	cd ../	
 	rm -rf libtool-2.4.2
-	export LIBTOOL="$COMPILEDIR/mac/libtool"
-	export LIBTOOLIZE="$COMPILEDIR/mac/libtoolize"
+	export LIBTOOL="$COMPILEDIR/mac/libtool/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/libtoolize"
     $SCRIPT mac curl
     
     cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
