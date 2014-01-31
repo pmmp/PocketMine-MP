@@ -42,7 +42,6 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
     cd $COMPILEDIR/mac
     
-	if 
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
 	./configure && make
