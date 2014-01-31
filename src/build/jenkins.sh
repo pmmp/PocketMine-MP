@@ -44,9 +44,12 @@ then
     
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
-	./configure && make
+	./configure > /dev/null
+	make > /dev/null
+	mv libtool $COMPILEDIR/mac/libtool
 	cd ../
-	export LIBTOOL=$(find "./libtool-2.4.2" -name libtool)
+	rm -rf libtool-2.4.2
+	export LIBTOOL="$COMPILEDIR/mac/libtool"
 	$LIBTOOL --version
     $SCRIPT mac curl
     
