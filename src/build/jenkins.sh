@@ -36,7 +36,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
     cd $COMPILEDIR/mac
     
-    $SCRIPT mac curl
+    $SCRIPT mac
     
     cp $COMPILEDIR/mac/{install.log,bin/php5/bin/php} $ARCHIVE/mac/
 fi
