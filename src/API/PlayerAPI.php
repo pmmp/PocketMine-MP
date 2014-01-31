@@ -429,7 +429,7 @@ class PlayerAPI{
             $this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
             if($player->entity instanceof Entity){
                 unset($player->entity->player);
-                unset($player->entity);
+                //unset($player->entity);
             }
             $this->server->api->entity->remove($player->eid);
             $player = null;
