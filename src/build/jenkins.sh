@@ -47,10 +47,11 @@ then
 	./configure > /dev/null
 	make > /dev/null
 	mv libtool $COMPILEDIR/mac/libtool
+	mv libtoolize $COMPILEDIR/mac/libtoolize
 	cd ../
 	rm -rf libtool-2.4.2
-	alias libtool="$COMPILEDIR/mac/libtool"
-	alias libtoolize="glibtoolize"
+	export LIBTOOL="$COMPILEDIR/mac/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/mac/libtoolize"
     $SCRIPT mac curl
     
     cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
