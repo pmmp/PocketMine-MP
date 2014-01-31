@@ -42,6 +42,13 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
     cd $COMPILEDIR/mac
     
+	if 
+	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
+	cd libtool-2.4.2
+	./configure && make
+	cd ../
+	LIBTOOL=$(find "./libtool-2.4.2" -name libtool)
+	$LIBTOOL --version
     $SCRIPT mac curl
     
     cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
