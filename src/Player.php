@@ -1874,7 +1874,7 @@ class Player{
 				switch($data["event"]){
 					case 9: //Eating
 						$items = array(
-							APPLE => 2,
+							APPLE => 4,
 							MUSHROOM_STEW => 10,
 							BEETROOT_SOUP => 10,
 							BREAD => 5,
