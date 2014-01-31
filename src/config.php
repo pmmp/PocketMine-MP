@@ -21,25 +21,27 @@
 
 set_time_limit(0);
 
-date_default_timezone_set("GMT");
-if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
-	$time = time();
-	$time -= $time % 60;
-	//TODO: Parse different time & date formats by region. ¬¬ world
-	//Example: USA
-	exec("time.exe /T", $hour);
-	$i = array_map("intval", explode(":", trim($hour[0])));
-	exec("date.exe /T", $date);
-	$j = array_map("intval", explode(substr($date[0], 2, 1), trim($date[0])));
-	$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
-}else{
-	exec("date +%s", $t);
-	$offset = round((intval(trim($t[0])) - time()) / 60) * 60;
+if(ini_get("date.timezone") == ""){ //No Timezone set
+	date_default_timezone_set("GMT");
+	if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
+		$time = time();
+		$time -= $time % 60;
+		//TODO: Parse different time & date formats by region. ¬¬ world
+		//Example: USA
+		exec("time.exe /T", $hour);
+		$i = array_map("intval", explode(":", trim($hour[0])));
+		exec("date.exe /T", $date);
+		$j = array_map("intval", explode(substr($date[0], 2, 1), trim($date[0])));
+		$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
+	}else{
+		exec("date +%s", $t);
+		$offset = round((intval(trim($t[0])) - time()) / 60) * 60;
+	}
+
+	$daylight = (int) date("I");
+
+	date_default_timezone_set(timezone_name_from_abbr("", $offset, $daylight));
 }
-
-$daylight = (int) date("I");
-
-date_default_timezone_set(timezone_name_from_abbr("", $offset, $daylight));
 
 gc_enable();
 error_reporting(E_ALL | E_STRICT);
