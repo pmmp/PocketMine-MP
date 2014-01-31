@@ -46,11 +46,11 @@ then
 	cd libtool-2.4.2
 	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
 	make > /dev/null
-	make install > /dev/null
+	make install
 	cd ../	
 	rm -rf libtool-2.4.2
-	export LIBTOOL="$COMPILEDIR/mac/libtool/libtool"
-	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/libtoolize"
+	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
     $SCRIPT mac curl
     
     cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
