@@ -24,19 +24,19 @@ type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""
 type wget >> "$DIR/install.log" 2>&1 || type curl >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\" or \"curl\""; read -p "Press [Enter] to continue..."; exit 1; }
 type getconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"getconf\""; read -p "Press [Enter] to continue..."; exit 1; }
 
-function download_file {
-	type wget >> "$DIR/install.log" 2>&1
+#Needed to use aliases
+shopt -s expand_aliases
+type wget >> "$DIR/install.log" 2>&1
+if [ $? -eq 0 ]; then
+	alias download_file="wget --no-check-certificate -q -O -"
+else
+	type curl >> "$DIR/install.log" 2>&1
 	if [ $? -eq 0 ]; then
-		wget "$1" --no-check-certificate -q -O -
+		alias download_file="curl --insecure --silent --location"
 	else
-		type curl >> "$DIR/install.log" 2>&1
-		if [ $? -eq 0 ]; then
-			curl --insecure --silent --location "$1" 
-		else
-			echo "error, curl or wget not found"
-		fi
+		echo "error, curl or wget not found"
 	fi
-}
+fi
 
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
