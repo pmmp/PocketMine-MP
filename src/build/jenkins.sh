@@ -2,7 +2,7 @@
 export PATH=/opt/arm-2013.05/bin:/opt/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:$PATH
 export THREADS=2
 rm -rf $WORKSPACE/compile.sh
-curl -L https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh > $WORKSPACE/compile.sh
+curl --insecure --location https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh > $WORKSPACE/compile.sh
 chmod +x $WORKSPACE/compile.sh
 SCRIPT="$WORKSPACE/compile.sh"
 ARCHIVE=$WORKSPACE/archive
