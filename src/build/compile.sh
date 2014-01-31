@@ -301,6 +301,7 @@ $HAVE_LIBEDIT \
 --enable-maintainer-zts \
 --enable-zend-signals \
 --with-mysqli=mysqlnd \
+--enable-opcache \
 --enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
@@ -314,6 +315,23 @@ fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
+echo " generating php.ini..."
+
+OPCACHE_PATH=$(find "$DIR/bin/php5" -name opcache.so)
+TIMEZONE=$(date +%Z)
+echo "zend_extension=\"$OPCACHE_PATH\"" > "$DIR/bin/php5/lib/php.ini"
+echo "opcache.enable=1" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.enable_cli=1" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.save_comments=0" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.fast_shutdown=1" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.max_accelerated_files=4096" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.interned_strings_buffer=8" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.memory_consumption=128" >> "$DIR/bin/php5/lib/php.ini"
+echo "opcache.optimization_level=0xffffffff" >> "$DIR/bin/php5/lib/php.ini"
+echo "date.timezone=$TIMEZONE" >> "$DIR/bin/php5/lib/php.ini"
+echo "short_open_tag=0" >> "$DIR/bin/php5/lib/php.ini"
+echo "asp_tags=0" >> "$DIR/bin/php5/lib/php.ini"
+
 echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
