@@ -33,7 +33,7 @@ then
     
     CFLAGS=-m32 march=i686 mtune=generic $SCRIPT
     
-    cp -r $COMPILEDIR/linux/32bit/{install.log,bin/*} $ARCHIVE/linux/32bit/
+    cp -r $COMPILEDIR/linux/32bit/{install.log,bin/*,install_data/*} $ARCHIVE/linux/32bit/
 	if [ ! -f $COMPILEDIR/linux/32bit/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -46,7 +46,7 @@ then
     
     $SCRIPT
     
-    cp -r $COMPILEDIR/linux/64bit/{install.log,bin/*} $ARCHIVE/linux/64bit/
+    cp -r $COMPILEDIR/linux/64bit/{install.log,bin/*,install_data/*} $ARCHIVE/linux/64bit/
 	if [ ! -f $COMPILEDIR/linux/64bit/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -68,7 +68,7 @@ then
 	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
     $SCRIPT mac curl
     
-    cp -r $COMPILEDIR/mac/{install.log,bin/*} $ARCHIVE/mac/
+    cp -r $COMPILEDIR/mac/{install.log,bin/*,install_data/*} $ARCHIVE/mac/
 	if [ ! -f $COMPILEDIR/mac/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -81,7 +81,7 @@ then
     
     $SCRIPT rpi
     
-    cp -r $COMPILEDIR/rpi/{install.log,bin/*} $ARCHIVE/rpi/
+    cp -r $COMPILEDIR/rpi/{install.log,bin/*,install_data/*} $ARCHIVE/rpi/
 	if [ ! -f $COMPILEDIR/rpi/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -94,7 +94,7 @@ then
     
     $SCRIPT crosscompile android-armv6
     
-    cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,bin/*} $ARCHIVE/crosscompile/android-armv6/
+    cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/android-armv6/
 	if [ ! -f $COMPILEDIR/crosscompile/android-armv6/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -107,7 +107,7 @@ then
     
     $SCRIPT crosscompile android-armv7
     
-    cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,bin/*} $ARCHIVE/crosscompile/android-armv7/
+    cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/android-armv7/
 	if [ ! -f $COMPILEDIR/crosscompile/android-armv7/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -120,7 +120,7 @@ then
     
     $SCRIPT crosscompile rpi
     
-    cp -r $COMPILEDIR/crosscompile/rpi/{install.log,bin/*} $ARCHIVE/crosscompile/rpi/
+    cp -r $COMPILEDIR/crosscompile/rpi/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/rpi/
 	if [ ! -f $COMPILEDIR/crosscompile/rpi/bin/php5/bin/php ]; then
 		exit 1
 	fi
@@ -133,7 +133,7 @@ then
     
     $SCRIPT crosscompile mac curl
     
-    cp -r $COMPILEDIR/crosscompile/mac/{install.log,bin/*} $ARCHIVE/crosscompile/mac/
+    cp -r $COMPILEDIR/crosscompile/mac/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/mac/
 	if [ ! -f $COMPILEDIR/crosscompile/mac/bin/php5/bin/php ]; then
 		exit 1
 	fi
