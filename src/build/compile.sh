@@ -241,8 +241,11 @@ download_file "http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz" | t
 mv yaml-$YAML_VERSION yaml
 echo -n " checking..."
 cd yaml
-RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/yaml" \
---enable-static --disable-shared >> "$DIR/install.log" 2>&1
+RANLIB=$RANLIB ./configure \
+--prefix="$DIR/install_data/php/ext/yaml" \
+--enable-static \
+--disable-shared \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
