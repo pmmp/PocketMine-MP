@@ -57,20 +57,22 @@ elif [ "$1" == "crosscompile" ]; then
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=generic;
+		[ -z "$mtune" ] && mtune=generic-armv6;
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
+		[ -z "$CFLAGS" ] && CFLAGS="-mcpu=armv6 -uclibc -static";
+		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
-		[ -z "$march" ] && march=armv7;
+		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=generic-armv7-a;
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
+		[ -z "$CFLAGS" ] && CFLAGS="-mcpu=armv7-a -uclibc -static";
+		LDFLAGS="-static"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 	elif [ "$2" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
@@ -111,6 +113,7 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$march" ] && march=native;
 [ -z "$mtune" ] && mtune=native;
 [ -z "$CFLAGS" ] && CFLAGS="";
+[ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
 $CC -O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
@@ -125,6 +128,9 @@ else
 	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 fi
 
+
+export CFLAGS="$CFLAGS"
+export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f bin/ >> "$DIR/install.log" 2>&1
