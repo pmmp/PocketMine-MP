@@ -58,7 +58,7 @@ elif [ "$1" == "crosscompile" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=generic-armv6;
-		TOOLCHAIN_PREFIX="arm-none-linux-uclibcgnueabi"
+		TOOLCHAIN_PREFIX="arm-none-linux-uclibceabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
 		CFLAGS="-uclibc --static $CFLAGS";
@@ -68,7 +68,7 @@ elif [ "$1" == "crosscompile" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=generic-armv7-a;
-		TOOLCHAIN_PREFIX="arm-none-linux-uclibcgnueabi"
+		TOOLCHAIN_PREFIX="arm-none-linux-uclibceabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
 		CFLAGS="-uclibc --static $CFLAGS";
