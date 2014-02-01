@@ -145,7 +145,7 @@ class ServerAPI{
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
 		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? FORMAT_YELLOW:"").MAJOR_VERSION.FORMAT_RESET." \"".CODENAME."\" (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
-		console("[INFO] PocketMine-MP is distibuted under the LGPL License", true, true, 0);
+		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
 
 		if(ADVANCED_CACHE == true){
 			console("[INFO] Advanced cache enabled");
