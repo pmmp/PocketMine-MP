@@ -113,7 +113,7 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$CFLAGS" ] && CFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-$CC -O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+$CC -O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 if [ $? -ne 0 ]; then
 	$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 	if [ $? -ne 0 ]; then
