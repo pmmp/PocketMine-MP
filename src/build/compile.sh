@@ -41,6 +41,7 @@ fi
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
 RANLIB=ranlib
+HAVE_MYSQLI="--with-mysqli=mysqlnd"
 if [ "$1" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
@@ -52,6 +53,7 @@ elif [ "$1" == "mac" ]; then
 	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 	echo "[INFO] Compiling for Intel MacOS"
 elif [ "$1" == "crosscompile" ]; then
+	HAVE_MYSQLI="--without-mysqli"
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
@@ -311,7 +313,7 @@ $HAVE_LIBEDIT \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
---with-mysqli=mysqlnd \
+$HAVE_MYSQLI \
 --enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
