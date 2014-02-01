@@ -1,8 +1,23 @@
 #!/bin/bash -x
 export PATH=/opt/arm-2013.05/bin:/opt/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:$PATH
 export THREADS=2
+
+#Needed to use aliases
+shopt -s expand_aliases
+type wget > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	alias download_file="wget --no-check-certificate -q -O -"
+else
+	type curl >> /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		alias download_file="curl --insecure --silent --location"
+	else
+		echo "error, curl or wget not found"
+	fi
+fi
+
 rm -rf $WORKSPACE/compile.sh
-curl --insecure --location "https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh" > $WORKSPACE/compile.sh
+download_file "https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh" > $WORKSPACE/compile.sh
 chmod +x $WORKSPACE/compile.sh
 SCRIPT="$WORKSPACE/compile.sh"
 ARCHIVE=$WORKSPACE/archive
