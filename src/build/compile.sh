@@ -122,7 +122,7 @@ if [ $? -ne 0 ]; then
 		export CFLAGS="-O2 -fno-gcse $CFLAGS"
 	fi
 else
-	export CFLAGS="-O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 fi
 
 
