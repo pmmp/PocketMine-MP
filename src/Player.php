@@ -1417,7 +1417,7 @@ class Player{
 						if($this->spawned !== false){
 							break;
 						}
-						$this->entity->setHealth($this->data->get("health"));
+						$this->entity->setHealth($this->data->get("health"), "spawn", true);
 						$this->spawned = true;	
 						$this->server->api->player->spawnAllPlayers($this);
 						$this->server->api->player->spawnToAllPlayers($this);
@@ -1849,9 +1849,8 @@ class Player{
 				if($this->entity instanceof Entity){
 					$this->entity->fire = 0;
 					$this->entity->air = 300;
-					$this->entity->setHealth(20, "respawn");
-					$this->entity->updateMetadata();					
-					$this->entity->dead = false;
+					$this->entity->setHealth(20, "respawn", true);
+					$this->entity->updateMetadata();
 				}else{
 					break;
 				}

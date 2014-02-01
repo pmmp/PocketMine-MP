@@ -971,7 +971,7 @@ class Entity extends Position{
 			}else{
 				return false; //Entity inmunity
 			}
-		}elseif($health === $this->health){
+		}elseif($health === $this->health and !$this->dead){
 			return false;
 		}
 		if($this->server->api->dhandle("entity.health.change", array("entity" => $this, "eid" => $this->eid, "health" => $health, "cause" => $cause)) !== false or $force === true){
