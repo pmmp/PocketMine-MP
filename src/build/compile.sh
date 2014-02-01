@@ -60,8 +60,8 @@ elif [ "$1" == "crosscompile" ]; then
 		[ -z "$mtune" ] && mtune=generic-armv6;
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-mcpu=armv6 -uclibc -static";
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
+		[ -z "$CFLAGS" ] && CFLAGS="-mcpu=armv6 -uclibc --static";
 		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
@@ -70,9 +70,9 @@ elif [ "$1" == "crosscompile" ]; then
 		[ -z "$mtune" ] && mtune=generic-armv7-a;
 		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-mcpu=armv7-a -uclibc -static";
-		LDFLAGS="-static"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
+		[ -z "$CFLAGS" ] && CFLAGS="-mcpu=armv7-a -uclibc --static";
+		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 	elif [ "$2" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
