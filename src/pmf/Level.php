@@ -283,7 +283,7 @@ class PMFLevel extends PMF{
 			return str_repeat("\x00", 8192);
 		}
 		$index = $this->getIndex($X, $Z);
-		if($this->chunks[$index][$Y] === false){
+		if(!isset($this->chunks[$index][$Y]) or $this->chunks[$index][$Y] === false){
 			return str_repeat("\x00", 8192);
 		}
 		return $this->chunks[$index][$Y];
