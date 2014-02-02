@@ -96,9 +96,11 @@ elif [ "$1" == "crosscompile" ]; then
 	elif [ "$2" == "ios" ] || [ "$2" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=generic-armv6;
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
 	elif [ "$2" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=generic-armv7-a;
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
 	else
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
 		exit 1
