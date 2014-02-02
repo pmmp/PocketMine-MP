@@ -113,6 +113,32 @@ then
 	fi
 fi
 
+if [ "$CROSSCOMPILE_IOS_ARMV6" = "true" ];
+then
+    mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/ios-armv6
+    cd $COMPILEDIR/crosscompile/ios-armv6
+    
+    $SCRIPT crosscompile ios-armv6
+    
+    cp -r $COMPILEDIR/crosscompile/ios-armv6/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv6/
+	if [ ! -f $COMPILEDIR/crosscompile/ios-armv6/bin/php5/bin/php ]; then
+		exit 1
+	fi
+fi
+
+if [ "$CROSSCOMPILE_IOS_ARMV7" = "true" ];
+then
+    mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/ios-armv7
+    cd $COMPILEDIR/crosscompile/ios-armv7
+    
+    $SCRIPT crosscompile ios-armv7
+    
+    cp -r $COMPILEDIR/crosscompile/ios-armv7/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv7/
+	if [ ! -f $COMPILEDIR/crosscompile/ios-armv7/bin/php5/bin/php ]; then
+		exit 1
+	fi
+fi
+
 if [ "$CROSSCOMPILE_RPI" = "true" ];
 then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/rpi
