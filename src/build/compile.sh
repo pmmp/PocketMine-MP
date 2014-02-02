@@ -124,13 +124,17 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-$CC -O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
-if [ $? -ne 0 ]; then
-	$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+if [ "$1" != "crosscompile" ]; then
+	$CC -O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
 	if [ $? -ne 0 ]; then
-		export CFLAGS="-O2 -fno-gcse "
+		$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
+		if [ $? -ne 0 ]; then
+			export CFLAGS="-O2 -fno-gcse "
+		else
+			export CFLAGS="-O2 -fno-gcse $CFLAGS"
+		fi
 	else
-		export CFLAGS="-O2 -fno-gcse $CFLAGS"
+		export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 	fi
 else
 	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"

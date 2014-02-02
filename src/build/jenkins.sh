@@ -62,7 +62,7 @@ then
 	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
 	make > /dev/null
 	make install
-	cd ../	
+	cd ../
 	rm -rf libtool-2.4.2
 	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
 	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
@@ -117,7 +117,15 @@ if [ "$CROSSCOMPILE_IOS_ARMV6" = "true" ];
 then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/ios-armv6
     cd $COMPILEDIR/crosscompile/ios-armv6
-    
+	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
+	cd libtool-2.4.2
+	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
+	make > /dev/null
+	make install
+	cd ../
+	rm -rf libtool-2.4.2
+	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
     PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/:$PATH" $SCRIPT crosscompile ios-armv6
     
     cp -r $COMPILEDIR/crosscompile/ios-armv6/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv6/
@@ -130,6 +138,15 @@ if [ "$CROSSCOMPILE_IOS_ARMV7" = "true" ];
 then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/ios-armv7
     cd $COMPILEDIR/crosscompile/ios-armv7
+	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
+	cd libtool-2.4.2
+	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
+	make > /dev/null
+	make install
+	cd ../
+	rm -rf libtool-2.4.2
+	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
     PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/:$PATH" $SCRIPT crosscompile ios-armv7
     
     cp -r $COMPILEDIR/crosscompile/ios-armv7/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv7/
