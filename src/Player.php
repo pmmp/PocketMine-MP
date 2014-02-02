@@ -219,6 +219,9 @@ class Player{
 			"z" => $Z,
 			"data" => $this->level->getOrderedChunk($X, $Z, $Yndex),
 		));
+		if($cnt === false){
+			return false;
+		}
 		$this->chunkCount = array();
 		foreach($cnt as $i => $count){
 			$this->chunkCount[$count] = true;
