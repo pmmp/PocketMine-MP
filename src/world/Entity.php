@@ -80,15 +80,15 @@ class Entity extends Position{
 		$this->name = "";
 		$this->tickCounter = 0;
 		$this->server->query("INSERT OR REPLACE INTO entities (EID, level, type, class, health, hasUpdate) VALUES (".$this->eid.", '".$this->level->getName()."', ".$this->type.", ".$this->class.", ".$this->health.", 0);");
-		$this->x = isset($this->data["x"]) ? $this->data["x"]:0;
-		$this->y = isset($this->data["y"]) ? $this->data["y"]:0;
-		$this->z = isset($this->data["z"]) ? $this->data["z"]:0;
-		$this->speedX = isset($this->data["speedX"]) ? $this->data["speedX"]:0;
-		$this->speedY = isset($this->data["speedY"]) ? $this->data["speedY"]:0;
-		$this->speedZ = isset($this->data["speedZ"]) ? $this->data["speedZ"]:0;
+		$this->x = isset($this->data["x"]) ? (float) $this->data["x"]:0;
+		$this->y = isset($this->data["y"]) ? (float) $this->data["y"]:0;
+		$this->z = isset($this->data["z"]) ? (float) $this->data["z"]:0;
+		$this->speedX = isset($this->data["speedX"]) ? (float) $this->data["speedX"]:0;
+		$this->speedY = isset($this->data["speedY"]) ? (float) $this->data["speedY"]:0;
+		$this->speedZ = isset($this->data["speedZ"]) ? (float) $this->data["speedZ"]:0;
 		$this->speed = 0;
-		$this->yaw = isset($this->data["yaw"]) ? $this->data["yaw"]:0;
-		$this->pitch = isset($this->data["pitch"]) ? $this->data["pitch"]:0;
+		$this->yaw = isset($this->data["yaw"]) ? (float) $this->data["yaw"]:0;
+		$this->pitch = isset($this->data["pitch"]) ? (float) $this->data["pitch"]:0;
 		$this->position = array("level" => $this->level, "x" => &$this->x, "y" => &$this->y, "z" => &$this->z, "yaw" => &$this->yaw, "pitch" => &$this->pitch);
 		switch($this->class){
 			case ENTITY_PLAYER:
