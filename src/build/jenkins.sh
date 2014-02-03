@@ -119,14 +119,14 @@ then
     cd $COMPILEDIR/crosscompile/ios-armv6
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
-	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
+	./configure --prefix="$COMPILEDIR/crosscompile/ios-armv6/libtool" > /dev/null
 	make > /dev/null
 	make install
 	cd ../
 	rm -rf libtool-2.4.2
-	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
-	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
-    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/:$PATH" $SCRIPT crosscompile ios-armv6
+	export LIBTOOL="$COMPILEDIR/crosscompile/ios-armv6/libtool/bin/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/crosscompile/ios-armv6/libtool/bin/libtoolize"
+    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:$PATH" $SCRIPT crosscompile ios-armv6
     
     cp -r $COMPILEDIR/crosscompile/ios-armv6/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv6/
 	if [ ! -f $COMPILEDIR/crosscompile/ios-armv6/bin/php5/bin/php ]; then
@@ -140,14 +140,14 @@ then
     cd $COMPILEDIR/crosscompile/ios-armv7
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
-	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
+	./configure --prefix="$COMPILEDIR/crosscompile/ios-armv7/libtool" > /dev/null
 	make > /dev/null
 	make install
 	cd ../
 	rm -rf libtool-2.4.2
-	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
-	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
-    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/:$PATH" $SCRIPT crosscompile ios-armv7
+	export LIBTOOL="$COMPILEDIR/crosscompile/ios-armv7/libtool/bin/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/crosscompile/ios-armv7/libtool/bin/libtoolize"
+    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:$PATH" $SCRIPT crosscompile ios-armv7
     
     cp -r $COMPILEDIR/crosscompile/ios-armv7/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv7/
 	if [ ! -f $COMPILEDIR/crosscompile/ios-armv7/bin/php5/bin/php ]; then

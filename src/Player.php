@@ -1285,6 +1285,8 @@ class Player{
 					$this->username = $data["username"];
 					$this->iusername = strtolower($this->username);
 				}else{
+					$this->username = $data["username"];
+					$this->iusername = strtolower($this->username);
 					$this->close("Bad username", false);
 					break;
 				}
