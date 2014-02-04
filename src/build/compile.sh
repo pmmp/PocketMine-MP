@@ -66,8 +66,8 @@ elif [ "$1" == "crosscompile" ]; then
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
-		[ -z "$march" ] && march=armv7-a;
-		[ -z "$mtune" ] && mtune=generic-armv7-a;
+		[ -z "$march" ] && march=armv7;
+		[ -z "$mtune" ] && mtune=generic-armv7;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
