@@ -61,7 +61,7 @@ elif [ "$1" == "crosscompile" ]; then
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=arm1136jf-s ;
+		[ -z "$mtune" ] && mtune=arm1136jf-s;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
@@ -70,8 +70,8 @@ elif [ "$1" == "crosscompile" ]; then
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
-		[ -z "$march" ] && march=armv7;
-		[ -z "$mtune" ] && mtune=none;
+		[ -z "$march" ] && march=armv7-a;
+		[ -z "$mtune" ] && mtune=cortex-a8;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
