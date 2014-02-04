@@ -52,25 +52,29 @@ elif [ "$1" == "mac" ]; then
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 	echo "[INFO] Compiling for Intel MacOS"
+elif [ "$1" == "ios" ]; then
+	[ -z "$march" ] && march=armv6;
+	[ -z "$mtune" ] && mtune=generic-armv6;
+	echo "[INFO] Compiling for iOS ARMv6"
 elif [ "$1" == "crosscompile" ]; then
 	HAVE_MYSQLI="--without-mysqli"
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=generic-armv6;
+		[ -z "$mtune" ] && mtune=generic;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
 		CFLAGS="-uclibc --static $CFLAGS";
 		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7;
-		[ -z "$mtune" ] && mtune=generic-armv7;
+		[ -z "$mtune" ] && mtune=generic;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
 		CFLAGS="-uclibc --static $CFLAGS";
 		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv7"
@@ -124,24 +128,7 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-if [ "$1" != "crosscompile" ]; then
-	$CC -O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
-	if [ $? -ne 0 ]; then
-		$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
-		if [ $? -ne 0 ]; then
-			export CFLAGS="-O2 -fno-gcse "
-		else
-			export CFLAGS="-O2 -fno-gcse $CFLAGS"
-		fi
-	else
-		export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
-	fi
-else
-	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
-fi
-
-
-export CFLAGS="$CFLAGS"
+export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
