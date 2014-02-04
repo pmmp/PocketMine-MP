@@ -54,14 +54,14 @@ elif [ "$1" == "mac" ]; then
 	echo "[INFO] Compiling for Intel MacOS"
 elif [ "$1" == "ios" ]; then
 	[ -z "$march" ] && march=armv6;
-	[ -z "$mtune" ] && mtune=generic-armv6;
+	[ -z "$mtune" ] && mtune=cortex-a8;
 	echo "[INFO] Compiling for iOS ARMv6"
 elif [ "$1" == "crosscompile" ]; then
 	HAVE_MYSQLI="--without-mysqli"
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=generic;
+		[ -z "$mtune" ] && mtune="";
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
@@ -71,7 +71,7 @@ elif [ "$1" == "crosscompile" ]; then
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7;
-		[ -z "$mtune" ] && mtune=generic;
+		[ -z "$mtune" ] && mtune="";
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
@@ -128,7 +128,11 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+if [ "$mtune" != "" ]; then 
+	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+else
+	export CFLAGS="-O2 -march=$march -fno-gcse $CFLAGS"
+fi
 export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
