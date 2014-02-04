@@ -65,7 +65,7 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
-		CFLAGS="-mfpu=vfp -mfloat-abi=hard -uclibc --static $CFLAGS";
+		CFLAGS="-uclibc --static $CFLAGS";
 		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
