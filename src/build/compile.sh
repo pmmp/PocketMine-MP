@@ -61,7 +61,7 @@ elif [ "$1" == "crosscompile" ]; then
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune="";
+		[ -z "$mtune" ] && mtune=none;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
@@ -71,7 +71,7 @@ elif [ "$1" == "crosscompile" ]; then
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7;
-		[ -z "$mtune" ] && mtune="";
+		[ -z "$mtune" ] && mtune=none;
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
@@ -128,7 +128,7 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-if [ "$mtune" != "" ]; then 
+if [ "$mtune" != "none" ]; then 
 	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 else
 	export CFLAGS="-O2 -march=$march -fno-gcse $CFLAGS"
