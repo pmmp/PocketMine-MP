@@ -9,7 +9,7 @@ ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="0.1.0"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
-CURL_VERSION="curl-7_34_0"
+CURL_VERSION="curl-7_35_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
 DIR="$(pwd)"
