@@ -119,6 +119,14 @@ elif [ -z "$CFLAGS" ]; then
 	fi
 fi
 
+cat > test.c <<'CTEST'
+#include <stdio.h>
+main(){
+	printf("Hello world\n");
+}
+CTEST
+
+
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
 
 [ -z "$THREADS" ] && THREADS=1;
@@ -128,11 +136,23 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-if [ "$mtune" != "none" ]; then 
-	export CFLAGS="-O2 -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+
+if [ "$mtune" != "none" ]; then
+	$CC -march=$march -mtune=$mtune $CFLAGS -o test test.c >> "$DIR/install.log" 2>&1
+	if [ $? -eq 0 ]; then
+		CFLAGS="-march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+	fi
 else
-	export CFLAGS="-O2 -march=$march -fno-gcse $CFLAGS"
+	$CC -march=$march $CFLAGS -o test test.c >> "$DIR/install.log" 2>&1
+	if [ $? -eq 0 ]; then
+		CFLAGS="-march=$march -fno-gcse $CFLAGS"
+	fi
 fi
+
+rm test >> "$DIR/install.log" 2>&1
+rm test.c >> "$DIR/install.log" 2>&1
+
+export CFLAGS="-O2 $CFLAGS"
 export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
