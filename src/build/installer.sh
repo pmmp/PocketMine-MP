@@ -71,7 +71,7 @@ else
 	echo " detecting if build is available..."
 	if [ "$(uname -s)" == "Darwin" ]; then
 		if ["$(uname -s)" == iPhone*] || ["$(uname -s)" == iPod*] || ["$(uname -s)" == iPad*]; then
-		
+			echo -n "[3/3] No binaries for iOS available"
 		else
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] Mac OSX PHP build available, downloading $MAC_BUILD.tar.gz..."
