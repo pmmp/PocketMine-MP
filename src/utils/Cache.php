@@ -23,11 +23,12 @@ class Cache{
 	public static $cached = array();
 	
 	public static function add($identifier, $blob, $minTTL = 30){
-		self::$cached[$identifier] = array($blob, microtime(true) + $minTTL);
+		self::$cached[$identifier] = array($blob, microtime(true) + $minTTL, $minTTL);
 	}
 	
 	public static function get($identifier){
 		if(isset(self::$cached[$identifier])){
+			self::$cached[$identifier][1] += $minTTL;
 			return self::$cached[$identifier][0];
 		}
 		return false;
