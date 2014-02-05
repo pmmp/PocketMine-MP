@@ -113,6 +113,7 @@ define("SUGARCANE", 338);
 define("SUGAR_CANE", 338);
 define("SUGAR_CANES", 338);
 define("PAPER", 339);
+define("BOOK", 340);
 define("SLIMEBALL", 341);
 
 define("EGG", 344);
