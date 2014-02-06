@@ -511,7 +511,7 @@ class PocketMinecraftServer{
 					$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
 					$pk->pingID = $packet->pingID;
 					$pk->serverID = $this->serverID;
-					$pk->serverType = $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt;
+					$pk->serverType = $this->serverType . $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt;
 					$pk->ip = $packet->ip;
 					$pk->port = $packet->port;
 					$this->send($pk);

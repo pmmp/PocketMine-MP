@@ -20,7 +20,6 @@
 */
 
 class RakNetParser{
-	private $id = -1;
 	private $buffer;
 	private $offset;
 	public $packet;
@@ -29,15 +28,10 @@ class RakNetParser{
 		$this->buffer =& $buffer;
 		$this->offset = 0;
 		if(strlen($this->buffer) > 0){
-			$this->id = ord($this->get(1));
 			$this->parse();
 		}else{
 			$this->packet = false;
 		}
-	}
-	
-	public function pid(){
-		return (int) $this->id;
 	}
 	
 	private function get($len){
@@ -77,10 +71,10 @@ class RakNetParser{
 	}
 	
 	private function parse(){
-		$this->packet = new RakNetPacket($this->pid());
+		$this->packet = new RakNetPacket(ord($this->get(1)));
 		$this->packet->buffer =& $this->buffer;
 		$this->packet->length = strlen($this->buffer);
-		switch($this->pid()){
+		switch($this->packet->pid()){
 			case RakNetInfo::UNCONNECTED_PING:
 			case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
 				$this->packet->pingID = $this->getLong();
@@ -89,13 +83,13 @@ class RakNetParser{
 			case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
 				$this->offset += 16; //Magic
 				$this->packet->structure = $this->getByte();
-				$this->packet->MTU = strlen($this->get(true));
+				$this->packet->mtuSize = strlen($this->get(true));
 				break;
 			case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
 				$this->offset += 16; //Magic
 				$this->packet->security = $this->get(5);
 				$this->packet->port = $this->getShort(false);
-				$this->packet->MTU = $this->getShort(false);
+				$this->packet->mtuSize = $this->getShort(false);
 				$this->packet->clientGUID = $this->getLong();
 				break;
 			case RakNetInfo::DATA_PACKET_0:
