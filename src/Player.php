@@ -27,7 +27,8 @@ class Player{
 	private $resendQueue = array();
 	private $ackQueue = array();
 	private $receiveCount = -1;
-	private $buffer = "";
+	private $buffer;
+	private $bufferLen = 0;
 	private $nextBuffer = 0;
 	private $evid = array();
 	private $lastMovement = 0;
@@ -114,9 +115,11 @@ class Player{
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
+		$this->buffer = new RakNetDataPacket(RakNetInfo::DATA_PACKET_0);
+		$this->buffer->data = array();
 		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
 		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
-		$this->evid[] = $this->server->event("server.close", array($this, "close"));
+		$this->evid[] = $this->server->event("server.close", array($this, "close"));		
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
 	
@@ -1106,14 +1109,15 @@ class Player{
 			$safeCount = (int) (($this->MTU - 1) / 4);
 			$packetCnt = (int) ($ackCnt / $safeCount + 1);
 			for($p = 0; $p < $packetCnt; ++$p){
-				$acks = array();
+				$pk = new RakNetPacket(RakNetInfo::ACK);
+				$pk->packets = array();
 				for($c = 0; $c < $safeCount; ++$c){
 					if(($k = array_pop($this->ackQueue)) === null){
 						break;
 					}
-					$acks[] = $k;
+					$pk->packets[] = $k;
 				}
-				$this->send(0xc0, array($acks));
+				$this->send($pk);
 			}
 			$this->ackQueue = array();
 		}
@@ -1154,7 +1158,7 @@ class Player{
 		
 		$limit = $time - 5; //max lag
 		foreach($this->recoveryQueue as $count => $data){
-			if($data["sendtime"] > $limit){
+			if($data->sendtime > $limit){
 				break;
 			}
 			unset($this->recoveryQueue[$count]);
@@ -1165,8 +1169,8 @@ class Player{
 			foreach($this->resendQueue as $count => $data){				
 				unset($this->resendQueue[$count]);
 				$this->packetStats[1]++;
-				$this->lag[] = microtime(true) - $data["sendtime"];
-				$cnt = $this->directDataPacket($data["id"], $data, $data["pid"]);
+				$this->lag[] = microtime(true) - $data->sendtime;
+				$cnt = $this->directDataPacket($data);
 				if(isset($this->chunkCount[$count])){
 					unset($this->chunkCount[$count]);
 					$this->chunkCount[$cnt[0]] = true;
@@ -2230,17 +2234,20 @@ class Player{
 		));
 	}
 
-	public function send($pid, $data = array(), $raw = false){
+	public function send(RakNetPacket $packet){
 		if($this->connected === true){
-			$this->bandwidthRaw += $this->server->send($pid, $data, $raw, $this->ip, $this->port);
+			$packet->ip = $this->ip;
+			$packet->port = $this->port;
+			$this->bandwidthRaw += $this->server->send($packet);
 		}
 	}
 	
 	public function sendBuffer(){
-		if(strlen($this->buffer) > 0){
-			$this->directDataPacket(false, array("raw" => $this->buffer), 0x40);
+		if(strlen($this->buffer) > 0){			
+			$this->directDataPacket($this->buffer);
 		}
-		$this->buffer = "";
+		$this->buffer = new RakNetDataPacket(RakNetInfo::DATA_PACKET_0);
+		$this->buffer->data = array();
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
@@ -2272,22 +2279,20 @@ class Player{
 		return $cnts;
 	}
 	
-	public function directDataPacket($id, $data = array(), $pid = 0x00, $recover = true){
+	public function directDataPacket(RakNetDataPacket $packet, $reliability = 0, $recover = true){
 		if($this->connected === false){
 			return false;
 		}
-		$data["id"] = $id;
-		$data["pid"] = $pid;
-		$data["sendtime"] = microtime(true);
-		$count = $this->counter[0]++;
+		$packet->encode();
+		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$pk->data[] = $packet;
+		$pk->seqNumber = $this->counter[0]++;
+		$pk->sendtime = microtime(true);
 		if($recover !== false){
-			$this->recoveryQueue[$count] = $data;
+			$this->recoveryQueue[$pk->seqNumber] = $packet;
 		}
-		$this->send(0x80, array(
-			$count,
-			$pid,
-			$data,
-		));
+		
+		$this->send($pk);
 		return array($count);
 	}
 
@@ -2297,24 +2302,21 @@ class Player{
      *
      * @return array|bool
      */
-    public function dataPacket($id, $data = array()){
-		$data["id"] = $id;
-		if($id === false){
-			$raw = $data["raw"];
-		}else{
-			$data = new CustomPacketHandler($id, "", $data, true);
-			$raw = chr($id).$data->raw;
-		}
-		$len = strlen($raw);
+    public function dataPacket(RakNetDataPacket $packet){
+		$packet->encode();
+		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
 		if($len > $MTU){
-			return $this->directBigRawPacket(false, $raw);
+			return $this->directBigRawPacket($packet);
 		}
 		
-		if((strlen($this->buffer) + $len) >= $MTU){
+		if(($this->bufferLen + $len) >= $MTU){
 			$this->sendBuffer();
 		}
-		$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
+		
+		$packet->messageIndex = $this->counter[3]++;
+		$this->buffer->data[] .= $packet;
+		$this->bufferLen += 6 + $len;
 		return array();
 	}
 

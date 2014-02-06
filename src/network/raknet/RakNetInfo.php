@@ -57,35 +57,35 @@ class RakNetInfo{
 
 	
 	
-	public static function isRakNet($pid){
+	public static function isValid($pid){
 		switch((int) $pid){
-			case UNCONNECTED_PING:
-			case UNCONNECTED_PING_OPEN_CONNECTIONS:
-			case OPEN_CONNECTION_REQUEST_1:
-			case OPEN_CONNECTION_REPLY_1:
-			case OPEN_CONNECTION_REQUEST_2:
-			case OPEN_CONNECTION_REPLY_2:
-			case INCOMPATIBLE_PROTOCOL_VERSION:
-			case UNCONNECTED_PONG:
-			case ADVERTISE_SYSTEM:
-			case DATA_PACKET_0:
-			case DATA_PACKET_1:
-			case DATA_PACKET_2:
-			case DATA_PACKET_3:
-			case DATA_PACKET_4:
-			case DATA_PACKET_5:
-			case DATA_PACKET_6:
-			case DATA_PACKET_7:
-			case DATA_PACKET_8:
-			case DATA_PACKET_9:
-			case DATA_PACKET_A:
-			case DATA_PACKET_B:
-			case DATA_PACKET_C:
-			case DATA_PACKET_D:
-			case DATA_PACKET_E:
-			case DATA_PACKET_F:
-			case NACK:
-			case ACK:
+			case RakNetInfo::UNCONNECTED_PING:
+			case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
+			case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
+			case RakNetInfo::OPEN_CONNECTION_REPLY_1:
+			case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
+			case RakNetInfo::OPEN_CONNECTION_REPLY_2:
+			case RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION:
+			case RakNetInfo::UNCONNECTED_PONG:
+			case RakNetInfo::ADVERTISE_SYSTEM:
+			case RakNetInfo::DATA_PACKET_0:
+			case RakNetInfo::DATA_PACKET_1:
+			case RakNetInfo::DATA_PACKET_2:
+			case RakNetInfo::DATA_PACKET_3:
+			case RakNetInfo::DATA_PACKET_4:
+			case RakNetInfo::DATA_PACKET_5:
+			case RakNetInfo::DATA_PACKET_6:
+			case RakNetInfo::DATA_PACKET_7:
+			case RakNetInfo::DATA_PACKET_8:
+			case RakNetInfo::DATA_PACKET_9:
+			case RakNetInfo::DATA_PACKET_A:
+			case RakNetInfo::DATA_PACKET_B:
+			case RakNetInfo::DATA_PACKET_C:
+			case RakNetInfo::DATA_PACKET_D:
+			case RakNetInfo::DATA_PACKET_E:
+			case RakNetInfo::DATA_PACKET_F:
+			case RakNetInfo::NACK:
+			case RakNetInfo::ACK:
 				return true;
 			default:
 				return false;

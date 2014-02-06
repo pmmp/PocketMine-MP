@@ -37,7 +37,7 @@ class RakNetParser{
 	}
 	
 	public function pid(){
-		return (int) $this->pid;
+		return (int) $this->id;
 	}
 	
 	private function get($len){
@@ -118,6 +118,25 @@ class RakNetParser{
 				$this->data = array();
 				while(!$this->feof()){
 					$this->data[] = $this->parseDataPacket();				
+				}
+				break;
+			case RakNetInfo::NACK:
+			case RakNetInfo::ACK:
+				$count = $this->getShort();
+				$this->packets = array();
+				for($i = 0; $i < $count and !$this->feof(); ++$i){
+					if($this->getByte() === 0){
+						$start = $this->getLTriad();
+						$end = $this->getLTriad();
+						if(($end - $start) > 4096){
+							$end = $start + 4096;
+						}
+						for($c = $start; $c <= $end; ++$c){
+							$this->packets[] = $c;
+						}
+					}else{
+						$this->packets[] = $this->getLTriad();
+					}
 				}
 				break;
 			default:

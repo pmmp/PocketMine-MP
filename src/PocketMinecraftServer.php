@@ -421,7 +421,7 @@ class PocketMinecraftServer{
 		}
 		$dump .= "\r\n\r\n";
 		$version = new VersionString();
-		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."; API ".CURRENT_API_VERSION."]\r\n";
+		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".ProtocolInfo::CURRENT_PROTOCOL."; API ".CURRENT_API_VERSION."]\r\n";
 		$dump .= "Git commit: ".GIT_COMMIT."\r\n";
 		$dump .= "Source SHA1 sum: ".SOURCE_SHA1SUM."\r\n";
 		$dump .= "uname -a: ".php_uname("a")."\r\n";
@@ -473,29 +473,30 @@ class PocketMinecraftServer{
 	}
 
 	public static function clientID($ip, $port){
-		//faster than string indexes in PHP
-		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
+		//return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
+		return md5($ip . ":" . $port . BOOTUP_RANDOM, true);
 	}
 
-	public function packetHandler($packet){
-		$data =& $packet["data"];
-		$CID = PocketMinecraftServer::clientID($packet["ip"], $packet["port"]);
+	public function packetHandler(Packet $packet){
+		$data =& $packet;
+		$CID = PocketMinecraftServer::clientID($packet->ip, $packet->port);
 		if(isset($this->clients[$CID])){
-			$this->clients[$CID]->handlePacket($packet["pid"], $data);
+			$this->clients[$CID]->handlePacket($packet);
 		}else{
-			if($this->handle("server.noauthpacket", $packet) === false){
+			if($this->handle("server.noauthpacket.".$packet->pid(), $packet) === false){
 				return;
 			}
-			switch($packet["pid"]){
-				case 0x01:
-				case 0x02:
+			switch($packet->pid()){
+				case RakNetInfo::UNCONNECTED_PING:
+				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
 					if($this->invisible === true){
-						$this->send(0x1c, array(
-							$data[0],
-							$this->serverID,
-							RAKNET_MAGIC,
-							$this->serverType,
-						), false, $packet["ip"], $packet["port"]);
+						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
+						$pk->pingID = $packet->pingID;
+						$pk->serverID = $this->serverID;
+						$pk->serverType = $this->serverType;
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->send($pk);
 						break;
 					}
 					if(!isset($this->custom["times_".$CID])){
@@ -507,12 +508,13 @@ class PocketMinecraftServer{
 					}
 					$txt = substr($this->description, $this->custom["times_".$CID], $ln);
 					$txt .= substr($this->description, 0, $ln - strlen($txt));
-					$this->send(0x1c, array(
-						$data[0],
-						$this->serverID,
-						RAKNET_MAGIC,
-						$this->serverType. $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt,
-					), false, $packet["ip"], $packet["port"]);
+					$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
+					$pk->pingID = $packet->pingID;
+					$pk->serverID = $this->serverID;
+					$pk->serverType = $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt;
+					$pk->ip = $packet->ip;
+					$pk->port = $packet->port;
+					$this->send($pk);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
 				case 0x05:
@@ -556,8 +558,8 @@ class PocketMinecraftServer{
 		}
 	}
 
-	public function send($pid, $data = array(), $raw = false, $dest = false, $port = false){
-		return $this->interface->writePacket($pid, $data, $raw, $dest, $port);
+	public function send(Packet $packet){
+		return $this->interface->writePacket($packet);
 	}
 
 	public function process(){

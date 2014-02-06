@@ -353,9 +353,7 @@ class PlayerAPI{
         return $this->server->clients;
     }
 
-    public function broadcastPacket(array $players, $id, $data = array()){
-        $data = new CustomPacketHandler($id, "", $data, true);
-        $packet = array("raw" => chr($id).$data->raw);
+    public function broadcastPacket(array $players, RakNetDataPacket $packet){
         foreach($players as $p){
             $p->dataPacket(false, $packet);
         }

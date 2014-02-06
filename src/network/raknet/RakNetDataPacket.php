@@ -21,7 +21,7 @@
 
 abstract class RakNetDataPacket extends stdClass{
 	private $offset = 0;
-	private $buffer = b"";
+	public $buffer = b"";
 	
 	public $reliability = 0;
 	public $hasSplit = false;
