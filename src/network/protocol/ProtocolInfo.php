@@ -20,75 +20,141 @@
 */
 
 
-define("CURRENT_PROTOCOL", 14);
+class ProtocolInfo{
 
-define("MC_PING", 0x00);
+	const CURRENT_PROTOCOL = 14;
+	
+	
 
-define("MC_PONG", 0x03);
+	const PING_PACKET = 0x00;
 
-define("MC_CLIENT_CONNECT", 0x09);
-define("MC_SERVER_HANDSHAKE", 0x10);
+	const PONG_PACKET = 0x03;
 
-define("MC_CLIENT_HANDSHAKE", 0x13);
+	const CLIENT_CONNECT_PACKET = 0x09;
+	const SERVER_HANDSHAKE_PACKET = 0x10;
 
-define("MC_SERVER_FULL", 0x14);
-define("MC_DISCONNECT", 0x15);
+	const CLIENT_HANDSHAKE_PACKET = 0x13;
+	//const SERVER_FULL_PACKET = 0x14;
+	const DISCONNECT_PACKET = 0x15;
 
-define("MC_BANNED", 0x17);
+	//const BANNED_PACKET = 0x17;
 
 
-define("MC_LOGIN", 0x82);
-define("MC_LOGIN_STATUS", 0x83);
-define("MC_READY", 0x84);
-define("MC_CHAT", 0x85);
-define("MC_SET_TIME", 0x86);
-define("MC_START_GAME", 0x87);
-define("MC_ADD_MOB", 0x88);
-define("MC_ADD_PLAYER", 0x89);
-define("MC_REMOVE_PLAYER", 0x8a);
+	const LOGIN_PACKET = 0x82;
+	const LOGIN_STATUS_PACKET = 0x83;
+	const READY_PACKET = 0x84;
+	const MESSAGE_PACKET = 0x85;
+	const SET_TIME_PACKET = 0x86;
+	const START_GAME_PACKET = 0x87;
+	const ADD_MOB_PACKET = 0x88;
+	const ADD_PLAYER_PACKET = 0x89;
+	const REMOVE_PLAYER_PACKET = 0x8a;
 
-define("MC_ADD_ENTITY", 0x8c);
-define("MC_REMOVE_ENTITY", 0x8d);
-define("MC_ADD_ITEM_ENTITY", 0x8e);
-define("MC_TAKE_ITEM_ENTITY", 0x8f);
-define("MC_MOVE_ENTITY", 0x90);
+	const ADD_ENTITY_PACKET = 0x8c;
+	const REMOVE_ENTITY_PACKET = 0x8d;
+	const ADD_ITEM_ENTITY_PACKET = 0x8e;
+	const TAKE_ITEM_ENTITY_PACKET = 0x8f;
+	const MOVE_ENTITY_PACKET = 0x90;
 
-define("MC_MOVE_ENTITY_POSROT", 0x93);
-define("MC_ROTATE_HEAD", 0x94);
-define("MC_MOVE_PLAYER", 0x95);
-define("MC_PLACE_BLOCK", 0x96);
-define("MC_REMOVE_BLOCK", 0x97);
-define("MC_UPDATE_BLOCK", 0x98);
-define("MC_ADD_PAINTING", 0x99);
-define("MC_EXPLOSION", 0x9a);
-define("MC_LEVEL_EVENT", 0x9b);
-define("MC_TILE_EVENT", 0x9c);
-define("MC_ENTITY_EVENT", 0x9d);
-define("MC_REQUEST_CHUNK", 0x9e);
-define("MC_CHUNK_DATA", 0x9f);
-define("MC_PLAYER_EQUIPMENT", 0xa0);
-define("MC_PLAYER_ARMOR_EQUIPMENT", 0xa1);
-define("MC_INTERACT", 0xa2);
-define("MC_USE_ITEM", 0xa3);
-define("MC_PLAYER_ACTION", 0xa4);
+	const MOVE_ENTITY_PACKET_POSROT = 0x93;
+	const ROTATE_HEAD_PACKET = 0x94;
+	const MOVE_PLAYER_PACKET = 0x95;
+	//const PLACE_BLOCK_PACKET = 0x96;
+	const REMOVE_BLOCK_PACKET = 0x97;
+	const UPDATE_BLOCK_PACKET = 0x98;
+	const ADD_PAINTING_PACKET = 0x99;
+	const EXPLOSION_PACKET = 0x9a;
+	const LEVEL_EVENT_PACKET = 0x9b;
+	const TILE_EVENT_PACKET = 0x9c;
+	const ENTITY_EVENT_PACKET = 0x9d;
+	const REQUEST_CHUNK_PACKET = 0x9e;
+	const CHUNK_DATA_PACKET = 0x9f;
+	const PLAYER_EQUIPMENT_PACKET = 0xa0;
+	const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa1;
+	const INTERACT_PACKET = 0xa2;
+	const USE_ITEM_PACKET = 0xa3;
+	const PLAYER_ACTION_PACKET = 0xa4;
 
-define("MC_HURT_ARMOR", 0xa6);
-define("MC_SET_ENTITY_DATA", 0xa7);
-define("MC_SET_ENTITY_MOTION", 0xa8);
-//define("MC_SET_ENTITY_LINK", 0xa9);
-define("MC_SET_HEALTH", 0xaa);
-define("MC_SET_SPAWN_POSITION", 0xab);
-define("MC_ANIMATE", 0xac);
-define("MC_RESPAWN", 0xad);
-define("MC_SEND_INVENTORY", 0xae);
-define("MC_DROP_ITEM", 0xaf);
-define("MC_CONTAINER_OPEN", 0xb0);
-define("MC_CONTAINER_CLOSE", 0xb1);
-define("MC_CONTAINER_SET_SLOT", 0xb2);
-define("MC_CONTAINER_SET_DATA", 0xb3);
-define("MC_CONTAINER_SET_CONTENT", 0xb4);
-//define("MC_CONTAINER_ACK", 0xb5);
-define("MC_CLIENT_MESSAGE", 0xb6);
-define("MC_ADVENTURE_SETTINGS", 0xb7);
-define("MC_ENTITY_DATA", 0xb8);
-//define("MC_PLAYER_INPUT", 0xb9);
+	const HURT_ARMOR_PACKET = 0xa6;
+	const SET_ENTITY_DATA_PACKET = 0xa7;
+	const SET_ENTITY_MOTION_PACKET = 0xa8;
+	//const SET_ENTITY_LINK_PACKET = 0xa9;
+	const SET_HEALTH_PACKET = 0xaa;
+	const SET_SPAWN_POSITION_PACKET = 0xab;
+	const ANIMATE_PACKET = 0xac;
+	const RESPAWN_PACKET = 0xad;
+	const SEND_INVENTORY_PACKET = 0xae;
+	const DROP_ITEM_PACKET = 0xaf;
+	const CONTAINER_OPEN_PACKET = 0xb0;
+	const CONTAINER_CLOSE_PACKET = 0xb1;
+	const CONTAINER_SET_SLOT_PACKET = 0xb2;
+	const CONTAINER_SET_DATA_PACKET = 0xb3;
+	const CONTAINER_SET_CONTENT_PACKET = 0xb4;
+	//const CONTAINER_ACK_PACKET = 0xb5;
+	const CHAT_PACKET = 0xb6;
+	const ADVENTURE_SETTINGS_PACKET = 0xb7;
+	const ENTITY_DATA_PACKET = 0xb8;
+	//const PLAYER_INPUT_PACKET = 0xb9;
+	
+	public static $packets = array(
+		-1 => "UnknownPacket",
+		ProtocolInfo::PING_PACKET => "PingPacket",
+		ProtocolInfo::PONG_PACKET => "PongPacket",
+		ProtocolInfo::CLIENT_CONNECT_PACKET => "ClientConnectPacket",
+		ProtocolInfo::SERVER_HANDSHAKE_PACKET => "ServerHandshakePacket",
+		ProtocolInfo::DISCONNECT_PACKET => "DisconnectPacket",
+		ProtocolInfo::LOGIN_PACKET => "LoginPacket",
+		ProtocolInfo::LOGIN_STATUS_PACKET => "LoginStatusPacket",
+		ProtocolInfo::READY_PACKET => "ReadyPacket",
+		ProtocolInfo::MESSAGE_PACKET => "MessagePacket",
+		ProtocolInfo::SET_TIME_PACKET => "SetTimePacket",
+		ProtocolInfo::START_GAME_PACKET => "StartGamePacket",
+		ProtocolInfo::ADD_MOB_PACKET => "AddMobPacket",
+		ProtocolInfo::ADD_PLAYER_PACKET => "AddPlayerPacket",
+		ProtocolInfo::REMOVE_PLAYER_PACKET => "RemovePlayerPacket",
+		ProtocolInfo::ADD_ENTITY_PACKET => "AddEntityPacket",
+		ProtocolInfo::REMOVE_ENTITY_PACKET => "RemoveEntityPacket",
+		ProtocolInfo::ADD_ITEM_ENTITY_PACKET => "AddItemEntityPacket",
+		ProtocolInfo::TAKE_ITEM_ENTITY_PACKET => "TakeItemEntityPacket",
+		ProtocolInfo::MOVE_ENTITY_PACKET => "MoveEntityPacket",
+		ProtocolInfo::MOVE_ENTITY_PACKET_POSROT => "MoveEntityPacket_PosRot",
+		ProtocolInfo::ROTATE_HEAD_PACKET => "RotateHeadPacket",
+		ProtocolInfo::MOVE_PLAYER_PACKET => "MovePlayerPacket",
+		ProtocolInfo::REMOVE_BLOCK_PACKET => "RemoveBlockPacket",
+		ProtocolInfo::UPDATE_BLOCK_PACKET => "UpdateBlockPacket",
+		ProtocolInfo::ADD_PAINTING_PACKET => "AddPaintingPacket",
+		ProtocolInfo::EXPLOSION_PACKET => "ExplosionPacket",
+		ProtocolInfo::LEVEL_EVENT_PACKET => "LevelEventPacket",
+		ProtocolInfo::TILE_EVENT_PACKET => "TileEventPacket",
+		ProtocolInfo::ENTITY_EVENT_PACKET => "EntityEventPacket",
+		ProtocolInfo::REQUEST_CHUNK_PACKET => "RequestChunkPacket",
+		ProtocolInfo::CHUNK_DATA_PACKET => "ChunkDataPacket",
+		ProtocolInfo::PLAYER_EQUIPMENT_PACKET => "PlayerEquipmentPacket",
+		ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET => "PlayerArmorEquipmentPacket",
+		ProtocolInfo::INTERACT_PACKET => "InteractPacket",
+		ProtocolInfo::USE_ITEM_PACKET => "UseItemPacket",
+		ProtocolInfo::PLAYER_ACTION_PACKET => "PlayerActionPacket",
+		ProtocolInfo::HURT_ARMOR_PACKET => "HurtArmorPacket",
+		ProtocolInfo::SET_ENTITY_DATA_PACKET => "SetEntityDataPacket",
+		ProtocolInfo::SET_ENTITY_MOTION_PACKET => "SetEntityMotionPacket",
+		ProtocolInfo::SET_HEALTH_PACKET => "SetHealthPacket",
+		ProtocolInfo::SET_SPAWN_POSITION_PACKET => "SetSpawnPositionPacket",
+		ProtocolInfo::ANIMATE_PACKET => "AnimatePacket",
+		ProtocolInfo::RESPAWN_PACKET => "RespawnPacket",
+		ProtocolInfo::SEND_INVENTORY_PACKET => "SendInventoryPacket",
+		ProtocolInfo::DROP_ITEM_PACKET => "DropItemPacket",
+		ProtocolInfo::CONTAINER_OPEN_PACKET => "ContainerOpenPacket",
+		ProtocolInfo::CONTAINER_CLOSE_PACKET => "ContainerClosePacket",
+		ProtocolInfo::CONTAINER_SET_SLOT_PACKET => "ContainerSetSlotPacket",
+		ProtocolInfo::CONTAINER_SET_DATA_PACKET => "ContainerSetDataPacket",
+		ProtocolInfo::CONTAINER_SET_CONTENT_PACKET => "ContainerSetContentPacket",
+		ProtocolInfo::CHAT_PACKET => "ChatPacket",
+		ProtocolInfo::ADVENTURE_SETTINGS_PACKET => "AdventureSettingsPacket",
+		ProtocolInfo::ENTITY_DATA_PACKET => "EntityDataPacket",
+	);
+
+}
+
+/***REM_START***/
+require_once(FILE_PATH . "src/network/raknet/RakNetDataPacket.php");
+/***REM_END***/

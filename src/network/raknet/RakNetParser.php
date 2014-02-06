@@ -20,7 +20,7 @@
 */
 
 class RakNetParser{
-	
+	private $id = -1;
 	private $buffer;
 	private $offset;
 	private $packet;
@@ -29,10 +29,15 @@ class RakNetParser{
 		$this->buffer = $buffer;
 		$this->offset = 0;
 		if(strlen($this->buffer) > 0){
-			$this->parse(ord($this->get(1)));
+			$this->id = ord($this->get(1));
+			$this->parse();
 		}else{
 			$this->packet = false;
 		}
+	}
+	
+	public function pid(){
+		return (int) $this->pid;
 	}
 	
 	private function get($len){
@@ -71,43 +76,43 @@ class RakNetParser{
 		return !isset($this->buffer{$this->offset});
 	}
 	
-	private function parse($packetID){
-		$this->packet = new RakNetPacket($packetID);
+	private function parse(){
+		$this->packet = new RakNetPacket($this->pid());
 		$this->packet->length = strlen($this->buffer);
-		switch($packetID){
-			case RAKNET_UNCONNECTED_PING:
-			case RAKNET_UNCONNECTED_PING_OPEN_CONNECTIONS:
+		switch($this->pid()){
+			case RakNetInfo::UNCONNECTED_PING:
+			case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
 				$this->packet->pingID = $this->getLong();
 				$this->offset += 16; //Magic
 				break;
-			case RAKNET_OPEN_CONNECTION_REQUEST_1:
+			case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
 				$this->offset += 16; //Magic
 				$this->packet->structure = $this->getByte();
 				$this->packet->MTU = strlen($this->get(true));
 				break;
-			case RAKNET_OPEN_CONNECTION_REQUEST_2:
+			case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
 				$this->offset += 16; //Magic
 				$this->packet->security = $this->get(5);
 				$this->packet->port = $this->getShort(false);
 				$this->packet->MTU = $this->getShort(false);
 				$this->packet->clientGUID = $this->getLong();
 				break;
-			case RAKNET_DATA_PACKET_0:
-			case RAKNET_DATA_PACKET_1:
-			case RAKNET_DATA_PACKET_2:
-			case RAKNET_DATA_PACKET_3:
-			case RAKNET_DATA_PACKET_4:
-			case RAKNET_DATA_PACKET_5:
-			case RAKNET_DATA_PACKET_6:
-			case RAKNET_DATA_PACKET_7:
-			case RAKNET_DATA_PACKET_8:
-			case RAKNET_DATA_PACKET_9:
-			case RAKNET_DATA_PACKET_A:
-			case RAKNET_DATA_PACKET_B:
-			case RAKNET_DATA_PACKET_C:
-			case RAKNET_DATA_PACKET_D:
-			case RAKNET_DATA_PACKET_E:
-			case RAKNET_DATA_PACKET_F:
+			case RakNetInfo::DATA_PACKET_0:
+			case RakNetInfo::DATA_PACKET_1:
+			case RakNetInfo::DATA_PACKET_2:
+			case RakNetInfo::DATA_PACKET_3:
+			case RakNetInfo::DATA_PACKET_4:
+			case RakNetInfo::DATA_PACKET_5:
+			case RakNetInfo::DATA_PACKET_6:
+			case RakNetInfo::DATA_PACKET_7:
+			case RakNetInfo::DATA_PACKET_8:
+			case RakNetInfo::DATA_PACKET_9:
+			case RakNetInfo::DATA_PACKET_A:
+			case RakNetInfo::DATA_PACKET_B:
+			case RakNetInfo::DATA_PACKET_C:
+			case RakNetInfo::DATA_PACKET_D:
+			case RakNetInfo::DATA_PACKET_E:
+			case RakNetInfo::DATA_PACKET_F:
 				$this->seqNumber = $this->getLTriad();
 				$this->data = array();
 				while(!$this->feof()){
@@ -121,52 +126,65 @@ class RakNetParser{
 	}
 	
 	private function parseDataPacket(){
-		$data = new DataPacket;
-		$data->pid = $this->getByte();
-		$data->reliability = ($data->pid & 0b11100000) >> 5;
-		$data->hasSplit = ($data->pid & 0b00010000) > 0;
-		$data->length = (int) ceil($this->getShort() / 8);
-		if($data->reliability === 2
-		or $data->reliability === 3
-		or $data->reliability === 4
-		or $data->reliability === 6
-		or $data->reliability === 7){
-			$data->messageIndex = $this->getLTriad();
+		$packetFlags = $this->getByte();
+		$reliability = ($packetFlags & 0b11100000) >> 5;
+		$hasSplit = ($packetFlags & 0b00010000) > 0;
+		$length = (int) ceil($this->getShort() / 8);
+		if($reliability === 2
+		or $reliability === 3
+		or $reliability === 4
+		or $reliability === 6
+		or $reliability === 7){
+			$messageIndex = $this->getLTriad();
 		}else{
-			$data->messageIndex = 0;
+			$messageIndex = 0;
 		}
 		
 		if($reliability === 1
 		or $reliability === 3
 		or $reliability === 4
 		or $reliability === 7){
-			$data->orderIndex = $this->getLTriad();
-			$data->orderChannel = $this->getByte();
+			$orderIndex = $this->getLTriad();
+			$orderChannel = $this->getByte();
 		}else{
-			$data->orderIndex = 0;
-			$data->orderChannel = 0;
+			$orderIndex = 0;
+			$orderChannel = 0;
 		}
 		
-		if($data->hasSplit == true){
-			$data->splitCount = $this->getInt();
-			$data->splitID = $this->getShort();
-			$data->splitIndex = $this->getInt();
+		if($hasSplit == true){
+			$splitCount = $this->getInt();
+			$splitID = $this->getShort();
+			$splitIndex = $this->getInt();
 			//error! no split packets allowed!
 			return false;
 		}else{
-			$data->splitCount = 0;
-			$data->splitID = 0;
-			$data->splitIndex = 0;
+			$splitCount = 0;
+			$splitID = 0;
+			$splitIndex = 0;
 		}
 		
-		if($data->length <= 0
-		or $this->orderChannel >= 32
+		if($length <= 0
+		or $orderChannel >= 32
 		or ($hasSplit === 1 and $splitIndex >= $splitCount)){
 			return false;
 		}
 		
-		$data->id = $this->getByte();
-		$data->raw = $this->get($len - 1);
+		$pid = $this->getByte();
+		if(isset(ProtocolInfo::$packets[$pid])){
+			$data = new ProtocolInfo::$packets[$pid];
+		}else{
+			$data = new UnknownPacket();
+			$data->packetID = $pid;
+		}
+		$data->reliability = $reliability;
+		$data->hasSplit = $hasSplit == true;
+		$data->messageIndex = $messageIndex;
+		$data->orderIndex = $orderIndex;
+		$data->orderChannel = $orderChannel;
+		$data->splitCount = $splitCount;
+		$data->splitID = $splitID;
+		$data->splitIndex = $splitIndex;
+		$data->setBuffer($this->get($length - 1));
 		return $data;
 	}
 

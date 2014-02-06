@@ -23,34 +23,21 @@ class MinecraftInterface{
 	public $client;
 	public $bandwidth;
 	private $socket;
-	private $data;
-	private $chunked;
-	private $toChunk;
-	private $needCheck;
+	private $packets;
 	function __construct($object, $server, $port = 25565, $listen = false, $client = false, $serverip = "0.0.0.0"){
 		$this->socket = new UDPSocket($server, $port, (bool) $listen, $serverip);
 		if($this->socket->connected === false){
-			console("[ERROR] Couldn't bind to $serverip:".$port, true, true, 0);
+			console("[SEVERE] Couldn't bind to $serverip:".$port, true, true, 0);
 			exit(1);
 		}
 		$this->bandwidth = array(0, 0, microtime(true));
 		$this->client = (bool) $client;
 		$this->start = microtime(true);
-		$this->chunked = array();
-		$this->toChunk = array();
-		$this->needCheck = array();
-		$object->schedule(1, array($this, "checkChunked"), array(), true);
+		$this->packets = array();
 	}
 
 	public function close(){
 		return $this->socket->close(false);
-	}
-
-	protected function getStruct($pid){
-		if(isset(Protocol::$raknet[$pid])){
-			return Protocol::$raknet[$pid];
-		}
-		return false;
 	}
 
 	public function readPacket(){
@@ -73,9 +60,15 @@ class MinecraftInterface{
 	private function parsePacket($buffer, $source, $port){
 		$pid = ord($buffer{0});
 		if(RakNetInfo::isValid($pid)){
-			$packet = new RakNetParser($buffer);
-			@$packet->parse();
-			$this->data[] = array($pid, $packet->data, $buffer, $source, $port);
+			$parser = new RakNetParser($buffer);
+			if($parser->packet !== false){			
+				$this->packets[] = array(
+					"pid" => $pid,
+					"packet" => $packet,
+					"ip" => $source,
+					"port" => $port
+				);
+			}
 		}else{
 			if(ServerAPI::request()->api->dhandle("server.unknownpacket", array(
 				"pid" => $pid,
@@ -92,11 +85,10 @@ class MinecraftInterface{
 	}
 
 	public function popPacket(){
-		if(count($this->data) > 0){
-			$p = each($this->data);
-			unset($this->data[$p[0]]);
-			$p = $p[1];
-			return array("pid" => $p[0], "data" => $p[1], "raw" => $p[2], "ip" => $p[3], "port" => $p[4]);
+		if(count($this->packets) > 0){
+			$p = each($this->packets);
+			unset($this->packets[$p[0]]);
+			return $p[1];
 		}
 		return false;
 	}
