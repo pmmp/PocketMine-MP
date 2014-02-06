@@ -306,17 +306,34 @@ class PlayerAPI{
         return false;
     }
 
-    public function get($name, $alike = true){
+    public function get($name, $alike = true, $multiple = false){
         $name = trim(strtolower($name));
         if($name === ""){
             return false;
         }
-        $CID = $this->server->query("SELECT ip,port FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";", true);
-        $CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
-        if(isset($this->server->clients[$CID])){
-            return $this->server->clients[$CID];
-        }
-        return false;
+        $query = $this->server->query("SELECT ip,port,name FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";");
+		$players = array();
+        if($query !== false and $query !== true){
+            while(($d = $query->fetchArray(SQLITE3_ASSOC)) !== false){
+				$CID = PocketMinecraftServer::clientID($d["ip"], $d["port"]);
+				if(isset($this->server->clients[$CID])){
+					$players[$CID] = $this->server->clients[$CID];
+					if($multiple === false and $d["name"] === $name){
+						return $players[$CID];
+					}
+				}
+            }
+		}
+		
+		if($multiple === false){
+			if(count($players) > 0){
+				return array_shift($players);
+			}else{
+				return false;
+			}
+		}else{
+			return $players;
+		}
     }
 
     public function getAll($level = null){
