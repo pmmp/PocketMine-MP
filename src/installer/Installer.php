@@ -210,7 +210,7 @@ LICENSE;
 			//"lv" => "Latviešu",
 			"nl" => "Nederlands",
 			//"pt" => "Português",
-			//"sv" => "Svenska",
+			"sv" => "Svenska",
 			"fi" => "Suomi",
 			"tr" => "Türkçe",
 			//"et" => "Eesti",
