@@ -71,13 +71,16 @@ class MinecraftInterface{
 	}
 	
 	private function parsePacket($buffer, $source, $port){
-		$pid = ord($buf{0});
-		$struct = $this->getStruct($pid);
-		if($struct === false){
+		$pid = ord($buffer{0});
+		if(RakNetInfo::isValid($pid)){
+			$packet = new RakNetParser($buffer);
+			@$packet->parse();
+			$this->data[] = array($pid, $packet->data, $buffer, $source, $port);
+		}else{
 			if(ServerAPI::request()->api->dhandle("server.unknownpacket", array(
 				"pid" => $pid,
 				"data" => array(),
-				"raw" => $buf,
+				"raw" => $buffer,
 				"ip" => $source,
 				"port" => $port
 			)) !== true){
@@ -85,10 +88,6 @@ class MinecraftInterface{
 			}
 			return false;
 		}
-
-		$packet = new RakNetParser($buffer);
-		@$packet->parse();
-		$this->data[] = array($pid, $packet->data, $buffer, $source, $port);
 		return true;
 	}
 
