@@ -30,5 +30,3 @@ class Window{
 		$this->server = ServerAPI::request();
 	}
 }
-
-?>
