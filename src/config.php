@@ -40,13 +40,13 @@ if(ini_get("date.timezone") == ""){ //No Timezone set
 
 	$daylight = (int) date("I");
 	$d = timezone_name_from_abbr("", $offset, $daylight);
-	ini_set("date.timezone", $d)
+	ini_set("date.timezone", $d);
 	date_default_timezone_set($d);
 }else{
 	$d = @date_default_timezone_get();
 	if(strpos($d, "/") === false){
 		$d = timezone_name_from_abbr($d);
-		ini_set("date.timezone", $d)
+		ini_set("date.timezone", $d);
 		date_default_timezone_set($d);
 	}
 }
