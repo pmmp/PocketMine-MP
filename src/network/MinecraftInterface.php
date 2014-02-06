@@ -61,22 +61,17 @@ class MinecraftInterface{
 		$pid = ord($buffer{0});
 		if(RakNetInfo::isValid($pid)){
 			$parser = new RakNetParser($buffer);
-			if($parser->packet !== false){			
-				$this->packets[] = array(
-					"pid" => $pid,
-					"packet" => $packet,
-					"ip" => $source,
-					"port" => $port
-				);
+			if($parser->packet !== false){
+				$parser->packet->ip = $source;
+				$parser->packet->port = $port;
+				$this->packets[] = $parser->packet;
 			}
 		}else{
-			if(ServerAPI::request()->api->dhandle("server.unknownpacket", array(
-				"pid" => $pid,
-				"data" => array(),
-				"raw" => $buffer,
-				"ip" => $source,
-				"port" => $port
-			)) !== true){
+			$packet = new Packet();
+			$packet->ip = $source;
+			$packet->port = $port;
+			$packet->buffer = $buffer;
+			if(ServerAPI::request()->api->dhandle("server.unknownpacket.$pid", $packet) !== true){
 				console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 2);
 			}
 			return false;
@@ -92,19 +87,13 @@ class MinecraftInterface{
 		}
 		return false;
 	}
-
-	public function writePacket($pid, $data = array(), $raw = false, $dest = false, $port = false, $force = false){
-		$CID = PocketMinecraftServer::clientID($dest, $port);
-		if($raw === false){
-			$packet = new Packet($pid, $this->getStruct($pid));
-			$packet->data = $data;
-			@$packet->create();
-			$write = $this->socket->write($packet->raw, $dest, $port);
-			$this->bandwidth[1] += $write;
-		}else{
-			$write = $this->socket->write($data, $dest, $port);
-			$this->bandwidth[1] += $write;
+	
+	public function writePacket(Packet $packet){
+		if($packet instanceof RakNetPacket){
+			$codec = new RakNetCodec($packet);		
 		}
+		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);
+		$this->bandwidth[1] += $write;
 		return $write;
 	}
 

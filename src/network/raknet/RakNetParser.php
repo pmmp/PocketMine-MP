@@ -23,10 +23,10 @@ class RakNetParser{
 	private $id = -1;
 	private $buffer;
 	private $offset;
-	private $packet;
+	public $packet;
 	
-	public function __construct($buffer){
-		$this->buffer = $buffer;
+	public function __construct(&$buffer){
+		$this->buffer =& $buffer;
 		$this->offset = 0;
 		if(strlen($this->buffer) > 0){
 			$this->id = ord($this->get(1));
@@ -78,6 +78,7 @@ class RakNetParser{
 	
 	private function parse(){
 		$this->packet = new RakNetPacket($this->pid());
+		$this->packet->buffer =& $this->buffer;
 		$this->packet->length = strlen($this->buffer);
 		switch($this->pid()){
 			case RakNetInfo::UNCONNECTED_PING:
