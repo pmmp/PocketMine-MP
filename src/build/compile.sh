@@ -9,7 +9,7 @@ ZLIB_VERSION="1.2.8"
 PTHREADS_VERSION="0.1.0"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
-CURL_VERSION="curl-7_34_0"
+CURL_VERSION="curl-7_35_0"
 
 echo "[PocketMine] PHP installer and compiler for Linux & Mac"
 DIR="$(pwd)"
@@ -21,12 +21,27 @@ type autoconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \
 type automake >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"automake\""; read -p "Press [Enter] to continue..."; exit 1; }
 type libtool >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"libtool\""; read -p "Press [Enter] to continue..."; exit 1; }
 type m4 >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"m4\""; read -p "Press [Enter] to continue..."; exit 1; }
-type wget >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\""; read -p "Press [Enter] to continue..."; exit 1; }
+type wget >> "$DIR/install.log" 2>&1 || type curl >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"wget\" or \"curl\""; read -p "Press [Enter] to continue..."; exit 1; }
 type getconf >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"getconf\""; read -p "Press [Enter] to continue..."; exit 1; }
+
+#Needed to use aliases
+shopt -s expand_aliases
+type wget >> "$DIR/install.log" 2>&1
+if [ $? -eq 0 ]; then
+	alias download_file="wget --no-check-certificate -q -O -"
+else
+	type curl >> "$DIR/install.log" 2>&1
+	if [ $? -eq 0 ]; then
+		alias download_file="curl --insecure --silent --location"
+	else
+		echo "error, curl or wget not found"
+	fi
+fi
 
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
 RANLIB=ranlib
+HAVE_MYSQLI="--with-mysqli=mysqlnd"
 if [ "$1" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
@@ -37,24 +52,31 @@ elif [ "$1" == "mac" ]; then
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
 	echo "[INFO] Compiling for Intel MacOS"
+elif [ "$1" == "ios" ]; then
+	[ -z "$march" ] && march=armv6;
+	[ -z "$mtune" ] && mtune=cortex-a8;
+	echo "[INFO] Compiling for iOS ARMv6"
 elif [ "$1" == "crosscompile" ]; then
+	HAVE_MYSQLI="--without-mysqli"
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=generic;
-		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
+		[ -z "$mtune" ] && mtune=arm1136jf-s;
+		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
+		CFLAGS="-uclibc --static $CFLAGS";
+		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
-		[ -z "$march" ] && march=armv7a;
-		[ -z "$mtune" ] && mtune=generic-armv7-a;
-		TOOLCHAIN_PREFIX="arm-none-linux-gnueabi"
+		[ -z "$march" ] && march=armv7-a;
+		[ -z "$mtune" ] && mtune=cortex-a8;
+		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
-		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
+		CFLAGS="-uclibc --static $CFLAGS";
+		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 	elif [ "$2" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
@@ -75,8 +97,16 @@ elif [ "$1" == "crosscompile" ]; then
 		#zlib doesn't use the correct ranlib
 		RANLIB=$TOOLCHAIN_PREFIX-ranlib
 		echo "[INFO] Cross-compiling for Intel MacOS"
+	elif [ "$2" == "ios" ] || [ "$2" == "ios-armv6" ]; then
+		[ -z "$march" ] && march=armv6;
+		[ -z "$mtune" ] && mtune=generic-armv6;
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
+	elif [ "$2" == "ios-armv7" ]; then
+		[ -z "$march" ] && march=armv7-a;
+		[ -z "$mtune" ] && mtune=generic-armv7-a;
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
 	else
-		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac] to cross-compile"
+		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
 		exit 1
 	fi
 elif [ -z "$CFLAGS" ]; then
@@ -89,26 +119,41 @@ elif [ -z "$CFLAGS" ]; then
 	fi
 fi
 
+cat > test.c <<'CTEST'
+#include <stdio.h>
+main(){
+	printf("Hello world\n");
+}
+CTEST
+
+
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
 
 [ -z "$THREADS" ] && THREADS=1;
 [ -z "$march" ] && march=native;
 [ -z "$mtune" ] && mtune=native;
 [ -z "$CFLAGS" ] && CFLAGS="";
+[ -z "$LDFLAGS" ] && LDFLAGS="";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-$CC -O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
-if [ $? -ne 0 ]; then
-	$CC -O2 -fno-gcse $CFLAGS -Q --help=target >> "$DIR/install.log" 2>&1
-	if [ $? -ne 0 ]; then
-		export CFLAGS="-O2 -fno-gcse "
-	else
-		export CFLAGS="-O2 -fno-gcse $CFLAGS"
+
+if [ "$mtune" != "none" ]; then
+	$CC -march=$march -mtune=$mtune $CFLAGS -o test test.c >> "$DIR/install.log" 2>&1
+	if [ $? -eq 0 ]; then
+		CFLAGS="-march=$march -mtune=$mtune -fno-gcse $CFLAGS"
 	fi
 else
-	export CFLAGS="-O2 -pipe -march=$march -mtune=$mtune -fno-gcse $CFLAGS"
+	$CC -march=$march $CFLAGS -o test test.c >> "$DIR/install.log" 2>&1
+	if [ $? -eq 0 ]; then
+		CFLAGS="-march=$march -fno-gcse $CFLAGS"
+	fi
 fi
 
+rm test >> "$DIR/install.log" 2>&1
+rm test.c >> "$DIR/install.log" 2>&1
+
+export CFLAGS="-O2 $CFLAGS"
+export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f bin/ >> "$DIR/install.log" 2>&1
@@ -119,7 +164,7 @@ set -e
 
 #PHP 5
 echo -n "[PHP] downloading $PHP_VERSION..."
-wget http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file "http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror" | tar -zx >> "$DIR/install.log" 2>&1
 mv php-$PHP_VERSION php
 echo " done!"
 
@@ -128,7 +173,7 @@ if [ 1 ] || [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
 else
 	#libedit
 	echo -n "[libedit] downloading $LIBEDIT_VERSION..."
-	wget http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+	download_file "http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	echo -n " checking..."
 	cd libedit
 	./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
@@ -149,7 +194,7 @@ fi
 
 #zlib
 echo -n "[zlib] downloading $ZLIB_VERSION..."
-wget http://zlib.net/zlib-$ZLIB_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file "http://zlib.net/zlib-$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
@@ -165,16 +210,19 @@ rm -r -f ./zlib
 echo " done!"
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
-   HAVE_CURL="shared,/usr/local"
+   HAVE_CURL="shared,/usr"
 else
 	#curl
 	echo -n "[cURL] downloading $CURL_VERSION..."
-	wget https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+	download_file "https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv curl-$CURL_VERSION curl
 	echo -n " checking..."
 	cd curl
-	./buildconf >> "$DIR/install.log" 2>&1
-	./configure --enable-ipv6 \
+	if [ ! -f ./configure ]; then
+		./buildconf --force >> "$DIR/install.log" 2>&1
+	fi
+	./configure --disable-dependency-tracking \
+	--enable-ipv6 \
 	--enable-optimize \
 	--enable-http \
 	--enable-ftp \
@@ -187,8 +235,13 @@ else
 	--disable-smtp \
 	--disable-telnet \
 	--disable-tftp \
+	--disable-ldap \
+	--disable-ldaps \
+	--without-libidn \
+	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
 	--disable-shared \
+	--enable-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
@@ -203,24 +256,27 @@ fi
 
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
-wget http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file "http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
 #PHP YAML
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
-wget http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz --no-check-certificate -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file "http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
 echo " done!"
 
 #YAML
 echo -n "[YAML] downloading $YAML_VERSION..."
-wget http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz -q -O - | tar -zx >> "$DIR/install.log" 2>&1
+download_file "http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv yaml-$YAML_VERSION yaml
 echo -n " checking..."
 cd yaml
-RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/yaml" \
---enable-static --disable-shared >> "$DIR/install.log" 2>&1
+RANLIB=$RANLIB ./configure \
+--prefix="$DIR/install_data/php/ext/yaml" \
+--enable-static \
+--disable-shared \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
@@ -286,7 +342,7 @@ $HAVE_LIBEDIT \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
---with-mysqli=mysqlnd \
+$HAVE_MYSQLI \
 --enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
@@ -300,6 +356,29 @@ fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
+echo " generating php.ini..."
+
+TIMEZONE=$(date +%Z)
+touch "$DIR/bin/php5/lib/php.ini"
+if [ "$1" != "crosscompile" ]; then
+	OPCACHE_PATH=$(find "$DIR/bin/php5" -name opcache.so)
+	echo "zend_extension=\"$OPCACHE_PATH\"" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.enable=1" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.enable_cli=1" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.save_comments=0" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.fast_shutdown=1" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.max_accelerated_files=4096" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.interned_strings_buffer=8" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.memory_consumption=128" >> "$DIR/bin/php5/lib/php.ini"
+	echo "opcache.optimization_level=0xffffffff" >> "$DIR/bin/php5/lib/php.ini"
+fi
+if [ "$HAVE_CURL" == "shared,/usr" ]; then
+	echo "extension=curl.so" >> "$DIR/bin/php5/lib/php.ini"
+fi
+echo "date.timezone=$TIMEZONE" >> "$DIR/bin/php5/lib/php.ini"
+echo "short_open_tag=0" >> "$DIR/bin/php5/lib/php.ini"
+echo "asp_tags=0" >> "$DIR/bin/php5/lib/php.ini"
+
 echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."

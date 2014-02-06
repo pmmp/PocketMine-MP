@@ -219,6 +219,9 @@ class Player{
 			"z" => $Z,
 			"data" => $this->level->getOrderedChunk($X, $Z, $Yndex),
 		));
+		if($cnt === false){
+			return false;
+		}
 		$this->chunkCount = array();
 		foreach($cnt as $i => $count){
 			$this->chunkCount[$count] = true;
@@ -1282,6 +1285,8 @@ class Player{
 					$this->username = $data["username"];
 					$this->iusername = strtolower($this->username);
 				}else{
+					$this->username = $data["username"];
+					$this->iusername = strtolower($this->username);
 					$this->close("Bad username", false);
 					break;
 				}
@@ -1417,7 +1422,7 @@ class Player{
 						if($this->spawned !== false){
 							break;
 						}
-						$this->entity->setHealth($this->data->get("health"));
+						$this->entity->setHealth($this->data->get("health"), "spawn", true);
 						$this->spawned = true;	
 						$this->server->api->player->spawnAllPlayers($this);
 						$this->server->api->player->spawnToAllPlayers($this);
@@ -1840,7 +1845,7 @@ class Player{
 				if($this->spawned === false){
 					break;
 				}
-				if($this->entity->dead === false){
+				if(@$this->entity->dead === false){
 					break;
 				}
 				$this->craftingItems = array();
@@ -1849,7 +1854,7 @@ class Player{
 				if($this->entity instanceof Entity){
 					$this->entity->fire = 0;
 					$this->entity->air = 300;
-					$this->entity->setHealth(20, "respawn");
+					$this->entity->setHealth(20, "respawn", true);
 					$this->entity->updateMetadata();
 				}else{
 					break;
@@ -1874,7 +1879,7 @@ class Player{
 				switch($data["event"]){
 					case 9: //Eating
 						$items = array(
-							APPLE => 2,
+							APPLE => 4,
 							MUSHROOM_STEW => 10,
 							BEETROOT_SOUP => 10,
 							BREAD => 5,

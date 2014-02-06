@@ -32,7 +32,7 @@ class PlayerAPI{
         $this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
         $this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
         $this->server->api->console->register("tp", "[target player] <destination player|w:world> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
-        $this->server->api->console->register("spawnpoint", "[player] [x] [y] [z]", array($this, "commandHandler"));
+        $this->server->api->console->register("setspawn", "[player] [x] [y] [z]", array($this, "commandHandler"));
         $this->server->api->console->register("spawn", "", array($this, "commandHandler"));
         $this->server->api->console->register("ping", "", array($this, "commandHandler"));
         $this->server->api->console->alias("lag", "ping");
@@ -118,7 +118,7 @@ class PlayerAPI{
     public function commandHandler($cmd, $params, $issuer, $alias){
         $output = "";
         switch($cmd){
-            case "spawnpoint":
+            case "setspawn":
                 if(!($issuer instanceof Player)){
                     $output .= "Please run this command in-game.\n";
                     break;
@@ -306,17 +306,34 @@ class PlayerAPI{
         return false;
     }
 
-    public function get($name, $alike = true){
+    public function get($name, $alike = true, $multiple = false){
         $name = trim(strtolower($name));
         if($name === ""){
             return false;
         }
-        $CID = $this->server->query("SELECT ip,port FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";", true);
-        $CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
-        if(isset($this->server->clients[$CID])){
-            return $this->server->clients[$CID];
-        }
-        return false;
+        $query = $this->server->query("SELECT ip,port,name FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";");
+		$players = array();
+        if($query !== false and $query !== true){
+            while(($d = $query->fetchArray(SQLITE3_ASSOC)) !== false){
+				$CID = PocketMinecraftServer::clientID($d["ip"], $d["port"]);
+				if(isset($this->server->clients[$CID])){
+					$players[$CID] = $this->server->clients[$CID];
+					if($multiple === false and $d["name"] === $name){
+						return $players[$CID];
+					}
+				}
+            }
+		}
+		
+		if($multiple === false){
+			if(count($players) > 0){
+				return array_shift($players);
+			}else{
+				return false;
+			}
+		}else{
+			return $players;
+		}
     }
 
     public function getAll($level = null){
@@ -429,7 +446,7 @@ class PlayerAPI{
             $this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
             if($player->entity instanceof Entity){
                 unset($player->entity->player);
-                unset($player->entity);
+                //unset($player->entity);
             }
             $this->server->api->entity->remove($player->eid);
             $player = null;

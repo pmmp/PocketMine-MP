@@ -222,7 +222,25 @@ function error_handler($errno, $errstr, $errfile, $errline){
 	if(error_reporting() === 0){ //@ error-control
 		return false;
 	}
-	console("[ERROR] A level ".$errno." error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
+	$errorConversion = array(
+		E_ERROR => "E_ERROR",
+		E_WARNING => "E_WARNING",
+		E_PARSE => "E_PARSE",
+		E_NOTICE => "E_NOTICE",
+		E_CORE_ERROR => "E_CORE_ERROR",
+		E_CORE_WARNING => "E_CORE_WARNING",
+		E_COMPILE_ERROR => "E_COMPILE_ERROR",
+		E_COMPILE_WARNING => "E_COMPILE_WARNING",
+		E_USER_ERROR => "E_USER_ERROR",
+		E_USER_WARNING => "E_USER_WARNING",
+		E_USER_NOTICE => "E_USER_NOTICE",
+		E_STRICT => "E_STRICT",
+		E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+		E_DEPRECATED => "E_DEPRECATED",
+		E_USER_DEPRECATED => "E_USER_DEPRECATED",
+	);
+	$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno]:$errno;
+	console("[ERROR] A ".$errno." error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
 	return true;
 }
 
