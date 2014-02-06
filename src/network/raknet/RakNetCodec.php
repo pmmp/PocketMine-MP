@@ -77,7 +77,7 @@ class RakNetCodec{
 			case RakNetInfo::DATA_PACKET_F:
 				$this->putLTriad($this->seqNumber);
 				foreach($this->data as $pk){
-					$this->buffer .= $this->encodeDataPacket($pk);
+					$this->encodeDataPacket($pk);
 				}
 				break;
 			case RakNetInfo::NACK:
@@ -119,6 +119,38 @@ class RakNetCodec{
 				
 		}
 	
+	}
+	
+	private function encodeDataPacket(RakNetDataPacket $pk){
+		$this->putByte(($pk->reliability << 5) | ($pk->hasSplit > 0 ? 0b00010000:0));
+		$this->putShort((strlen($pk->buffer) + 1) << 3);
+		if($pk->reliability === 2
+		or $pk->reliability === 3
+		or $pk->reliability === 4
+		or $pk->reliability === 6
+		or $pk->reliability === 7){
+			$this->putLTriad($pk->messageIndex);
+		}
+		
+		if($pk->reliability === 1
+		or $pk->reliability === 3
+		or $pk->reliability === 4
+		or $pk->reliability === 7){
+			$this->putLTriad($pk->orderIndex);
+			$this->putByte($pk->orderChannel);
+		}
+		
+		if($pk->hasSplit === true){
+			$this->putInt($pk->splitCount);
+			$this->putShort($pk->splitID);
+			$this->putInt($pk->splitIndex);
+			if($pk->splitIndex === 0){
+				$this->putByte($pk->pid());
+			}
+		}else{
+			$this->putByte($pk->pid());
+		}		
+		$this->buffer .= $pk->buffer;
 	}
 
 	protected function put($str){

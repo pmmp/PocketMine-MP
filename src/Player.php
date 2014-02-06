@@ -2315,7 +2315,8 @@ class Player{
 		}
 		
 		$packet->messageIndex = $this->counter[3]++;
-		$this->buffer->data[] .= $packet;
+		$packet->reliability = 2;
+		$this->buffer->data[] = $packet;
 		$this->bufferLen += 6 + $len;
 		return array();
 	}
