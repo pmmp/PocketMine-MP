@@ -123,7 +123,7 @@ class RakNetCodec{
 	
 	private function encodeDataPacket(RakNetDataPacket $pk){
 		$this->putByte(($pk->reliability << 5) | ($pk->hasSplit > 0 ? 0b00010000:0));
-		$this->putShort((strlen($pk->buffer) + 1) << 3);
+		$this->putShort(strlen($pk->buffer) << 3);
 		if($pk->reliability === 2
 		or $pk->reliability === 3
 		or $pk->reliability === 4

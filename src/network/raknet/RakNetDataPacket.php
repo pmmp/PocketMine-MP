@@ -40,7 +40,7 @@ abstract class RakNetDataPacket extends stdClass{
 	abstract public function decode();
 
 	protected function reset(){
-		$this->setBuffer();
+		$this->setBuffer(chr($this->pid()));
 	}
 	
 	public function setBuffer($buffer = ""){
