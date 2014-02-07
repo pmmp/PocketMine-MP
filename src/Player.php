@@ -1638,7 +1638,7 @@ class Player{
 						$this->entity->updateMetadata();
 					}
 					
-					if($this->blocked === true or $blockVector->distance($this->entity->position) > 10){
+					if($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)){
 					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
 					}else{
