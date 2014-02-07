@@ -157,14 +157,14 @@ class EntityAPI{
 			$entity->closed = true;
 			$this->server->query("DELETE FROM entities WHERE EID = ".$eid.";");
 			if($entity->class === ENTITY_PLAYER){
-				$this->server->api->player->broadcastPacket($this->server->api->player->getAll(), ProtocolInfo::REMOVE_PLAYER_PACKET, array(
-					"clientID" => 0,
-					"eid" => $entity->eid,
-				));
+				$pk = new RemovePlayerPacket;
+				$pk->eid = $entity->eid;
+				$pk->clientID = 0;
+				$this->server->api->player->broadcastPacket($this->server->api->player->getAll(), $pk);
 			}else{
-				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($entity->level), ProtocolInfo::REMOVE_ENTITY_PACKET, array(
-					"eid" => $entity->eid,
-				));
+				$pk = new RemoveEntityPacket;
+				$pk->eid = $entity->eid;
+				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($entity->level), $pk);
 			}
 			$this->server->api->dhandle("entity.remove", $entity);
 			$entity = null;

@@ -561,7 +561,7 @@ class Player{
 								$pk = new ContainerSetDataPacket;
 								$pk->windowid = $id;
 								$pk->property = 1; //Fire icon
-								$pk->value = $data->data["BurnTicks"]);
+								$pk->value = $data->data["BurnTicks"];
 								$this->dataPacket($pk);
 							}
 						}
@@ -722,7 +722,7 @@ class Player{
 			if($m !== ""){
 				$pk = new MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username:$author;
-				$pk->message = TextFormat::clean($m), //Colors not implemented :(
+				$pk->message = TextFormat::clean($m); //Colors not implemented :(
 				$this->dataPacket($pk);
 			}
 		}
@@ -956,7 +956,7 @@ class Player{
 					if($player !== $this and $player->entity instanceof Entity){
 						$pk = new MoveEntityPacket_PosRot;
 						$pk->eid = $player->entity->eid;
-						$pk->x = $player->entity->x
+						$pk->x = $player->entity->x;
 						$pk->y = $player->entity->y;
 						$pk->z = $player->entity->z;
 						$pk->yaw = $player->entity->yaw;
@@ -2310,16 +2310,7 @@ class Player{
 	public function directBigRawPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
 			return false;
-		}
-		reliability 2
-		hasSplit 1
-		$data = array(
-			"id" => false,
-			"pid" => 0x50,
-			"sendtime" => microtime(true),
-			"raw" => "",
-		);
-		
+		}	
 
 		$sendtime = microtime(true);
 		

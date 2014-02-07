@@ -142,26 +142,27 @@ class Tile extends Position{
 			}else{
 				$player->windows[$id] = $this;
 			}
-			$player->dataPacket(ProtocolInfo::CONTAINER_OPEN_PACKET, array(
-				"windowid" => $id,
-				"type" => WINDOW_CHEST,
-				"slots" => is_array($player->windows[$id]) ? CHEST_SLOTS << 1:CHEST_SLOTS,
-				"x" => $this->x,
-				"y" => $this->y,
-				"z" => $this->z,
-			));
+			
+			$pk = new ContainerOpenPacket;
+			$pk->windowid = $id;
+			$pk->type = WINDOW_CHEST;
+			$pk->slots = is_array($player->windows[$id]) ? CHEST_SLOTS << 1:CHEST_SLOTS;
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$player->dataPacket($pk);
 			$slots = array();
 			
 			if(is_array($player->windows[$id])){
 				$all = $this->server->api->player->getAll($this->level);
-				foreach($player->windows[$id] as $ob){
-					$this->server->api->player->broadcastPacket($all, ProtocolInfo::TILE_EVENT_PACKET, array(
-						"x" => $ob->x,
-						"y" => $ob->y,
-						"z" => $ob->z,
-						"case1" => 1,
-						"case2" => 2,
-					));
+				foreach($player->windows[$id] as $ob){				
+					$pk = new TileEventPacket;
+					$pk->x = $ob->x;
+					$pk->y = $ob->y;
+					$pk->z = $ob->z;
+					$pk->case1 = 1;
+					$pk->case2 = 2;
+					$this->server->api->player->broadcastPacket($all, $pk);
 					for($s = 0; $s < CHEST_SLOTS; ++$s){
 						$slot = $ob->getSlot($s);
 						if($slot->getID() > AIR and $slot->count > 0){
@@ -172,13 +173,13 @@ class Tile extends Position{
 					}
 				}
 			}else{
-				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), ProtocolInfo::TILE_EVENT_PACKET, array(
-					"x" => $this->x,
-					"y" => $this->y,
-					"z" => $this->z,
-					"case1" => 1,
-					"case2" => 2,
-				));
+				$pk = new TileEventPacket;
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$pk->case1 = 1;
+				$pk->case2 = 2;
+				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), $pk);
 				for($s = 0; $s < CHEST_SLOTS; ++$s){
 					$slot = $this->getSlot($s);
 					if($slot->getID() > AIR and $slot->count > 0){
@@ -188,24 +189,26 @@ class Tile extends Position{
 					}
 				}
 			}
-			$player->dataPacket(ProtocolInfo::CONTAINER_SET_CONTENT_PACKET, array(
-				"windowid" => $id,
-				"count" => count($slots),
-				"slots" => $slots,
-			));
+			
+			$pk = new ContainerSetContentPacket;
+			$pk->windowid = $id;
+			$pk->slots = $slots;
+			$player->dataPacket($pk);
 			return true;
 		}elseif($this->class === TILE_FURNACE){
 			$player->windowCnt++;
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			$player->windows[$id] = $this;
-			$player->dataPacket(ProtocolInfo::CONTAINER_OPEN_PACKET, array(
-				"windowid" => $id,
-				"type" => WINDOW_FURNACE,
-				"slots" => FURNACE_SLOTS,
-				"x" => $this->x,
-				"y" => $this->y,
-				"z" => $this->z
-			));
+			
+			$pk = new ContainerOpenPacket;
+			$pk->windowid = $id;
+			$pk->type = WINDOW_FURNACE;
+			$pk->slots = FURNACE_SLOTS;
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$player->dataPacket($pk);
+			
 			$slots = array();
 			for($s = 0; $s < FURNACE_SLOTS; ++$s){
 				$slot = $this->getSlot($s);
@@ -215,11 +218,10 @@ class Tile extends Position{
 					$slots[] = BlockAPI::getItem(AIR, 0, 0);
 				}
 			}
-			$player->dataPacket(ProtocolInfo::CONTAINER_SET_CONTENT_PACKET, array(
-				"windowid" => $id,
-				"count" => count($slots),
-				"slots" => $slots
-			));
+			$pk = new ContainerSetContentPacket;
+			$pk->windowid = $id;
+			$pk->slots = $slots;
+			$player->dataPacket($pk);
 			return true;
 		}
 	}
@@ -383,12 +385,12 @@ class Tile extends Position{
 				
 				$nbt->write(chr(NBT::TAG_END));				
 				
-				$player->dataPacket(ProtocolInfo::ENTITY_DATA_PACKET, array(
-					"x" => $this->x,
-					"y" => $this->y,
-					"z" => $this->z,
-					"namedtag" => $nbt->binary,
-				));
+				$pk = new EntityDataPacket;
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$pk->namedtag = $nbt->binary;
+				$player->dataPacket($pk);
 				break;
 			case TILE_SIGN:
 				$nbt = new NBT();
@@ -428,12 +430,12 @@ class Tile extends Position{
 				
 				$nbt->write(chr(NBT::TAG_END));				
 				
-				$player->dataPacket(ProtocolInfo::ENTITY_DATA_PACKET, array(
-					"x" => $this->x,
-					"y" => $this->y,
-					"z" => $this->z,
-					"namedtag" => $nbt->binary,
-				));
+				$pk = new EntityDataPacket;
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$pk->namedtag = $nbt->binary;
+				$player->dataPacket($pk);
 				break;
 		}
 	}
