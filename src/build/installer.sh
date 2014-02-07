@@ -3,6 +3,7 @@ PMMP_VERSION=""
 MAC_BUILD="PHP_5.5.9_x86_MacOS"
 RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
 AND_BUILD="PHP_5.5.9_ARMv7_Android"
+IOS_BUILD="PHP_5.5.9_ARMv6_iOS"
 update=off
 
 #Needed to use aliases
@@ -71,7 +72,15 @@ else
 	echo " detecting if build is available..."
 	if [ "$(uname -s)" == "Darwin" ]; then
 		if ["$(uname -s)" == iPhone*] || ["$(uname -s)" == iPod*] || ["$(uname -s)" == iPad*]; then
-			echo -n "[3/3] No binaries for iOS available"
+			rm -r -f bin/ >> /dev/null 2>&1
+			echo -n "[3/3] iOS PHP build available, downloading $IOS_BUILD.tar.gz..."
+			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$IOS_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
+			chmod +x ./bin/php5/bin/*
+			echo -n " regenerating php.ini..."
+			echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
+			echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
+			echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+			echo " done"
 		else
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] Mac OSX PHP build available, downloading $MAC_BUILD.tar.gz..."
@@ -99,7 +108,7 @@ else
 		if [ $? -eq 0 ]; then
 			set -e
 			rm -r -f bin/ >> /dev/null 2>&1
-			echo -n "[3/3] Raspberry Pi build available, downloading $RPI_BUILD.tar.gz..."
+			echo -n "[3/3] Raspberry Pi PHP build available, downloading $RPI_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$RPI_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " regenerating php.ini..."
