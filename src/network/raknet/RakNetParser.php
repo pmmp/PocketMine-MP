@@ -90,7 +90,7 @@ class RakNetParser{
 				$this->packet->security = $this->get(5);
 				$this->packet->port = $this->getShort(false);
 				$this->packet->mtuSize = $this->getShort(false);
-				$this->packet->clientGUID = $this->getLong();
+				$this->packet->clientID = $this->getLong();
 				break;
 			case RakNetInfo::DATA_PACKET_0:
 			case RakNetInfo::DATA_PACKET_1:

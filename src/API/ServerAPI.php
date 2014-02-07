@@ -257,7 +257,7 @@ class ServerAPI{
 				"php_version" => PHP_VERSION,
 				"version" => MAJOR_VERSION,
 				"mc_version" => CURRENT_MINECRAFT_VERSION,
-				"protocol" => CURRENT_PROTOCOL,
+				"protocol" => ProtocolInfo::CURRENT_PROTOCOL,
 				"online" => count($this->server->clients),
 				"max" => $this->server->maxClients,
 				"plugins" => $plist,

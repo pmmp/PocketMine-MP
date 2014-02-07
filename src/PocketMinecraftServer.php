@@ -517,42 +517,36 @@ class PocketMinecraftServer{
 					$this->send($pk);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
-				case 0x05:
-					$version = $data[1];
-					$size = strlen($data[2]);
-					if($version !== RAKNET_STRUCTURE){
-						console("[DEBUG] Incorrect structure #$version from ".$packet["ip"].":".$packet["port"], true, true, 2);
-						$this->send(0x1a, array(
-							RAKNET_STRUCTURE,
-							RAKNET_MAGIC,
-							$this->serverID,
-						), false, $packet["ip"], $packet["port"]);
+				case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
+					if($packet->structure !== RAKNET_STRUCTURE){
+						console("[DEBUG] Incorrect structure #$version from ".$packet->ip.":".$packet->port, true, true, 2);
+						$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
+						$pk->serverID = $this->serverID;
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->send($pk);
 					}else{
-						$this->send(0x06, array(
-							RAKNET_MAGIC,
-							$this->serverID,
-							0,
-							strlen($packet["raw"]),
-						), false, $packet["ip"], $packet["port"]);
+						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
+						$pk->serverID = $this->serverID;
+						$pk->mtuSize = strlen($packet->buffer);
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->send($pk);
 					}
 					break;
-				case 0x07:
+				case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
 					if($this->invisible === true){
 						break;
 					}
-					$port = $data[2];
-					$MTU = $data[3];
-					$clientID = $data[4];
-					if(count($this->clients) < $this->maxClients){
-						$this->clients[$CID] = new Player($clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
-						$this->send(0x08, array(
-							RAKNET_MAGIC,
-							$this->serverID,
-							$this->port,
-							$data[3],
-							0,
-						), false, $packet["ip"], $packet["port"]);
-					}
+					
+					$this->clients[$CID] = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
+					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
+					$pk->serverID = $this->serverID;
+					$pk->port = $this->port;
+					$pk->mtuSize = $packet->mtuSize;
+					$pk->ip = $packet->ip;
+					$pk->port = $packet->port;
+					$this->send($pk);
 					break;
 			}
 		}
