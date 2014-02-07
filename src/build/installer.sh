@@ -71,7 +71,8 @@ else
 	echo -n "[3/3] Obtaining PHP:"
 	echo " detecting if build is available..."
 	if [ "$(uname -s)" == "Darwin" ]; then
-		if ["$(uname -s)" == iPhone*] || ["$(uname -s)" == iPod*] || ["$(uname -s)" == iPad*]; then
+		IS_IOS=$(expr match "$(uname -m)" 'iP[a-zA-Z0-9,]*')
+		if [ $IS_IOS -gt 0 ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] iOS PHP build available, downloading $IOS_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$IOS_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
