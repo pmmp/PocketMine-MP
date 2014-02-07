@@ -1,8 +1,8 @@
 #!/bin/bash
 PMMP_VERSION=""
-MAC_BUILD="PHP_5.5.8_x86_MacOS"
-RPI_BUILD="PHP_5.5.8_ARM_Raspbian_hard"
-AND_BUILD="PHP_5.5.8_ARMv7_Android"
+MAC_BUILD="PHP_5.5.9_x86_MacOS"
+RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
+AND_BUILD="PHP_5.5.9_ARMv7_Android"
 update=off
 
 #Needed to use aliases
