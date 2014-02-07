@@ -32,7 +32,7 @@ class PlayerAPI{
         $this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
         $this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
         $this->server->api->console->register("tp", "[target player] <destination player|w:world> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
-        $this->server->api->console->register("setspawn", "[player] [x] [y] [z]", array($this, "commandHandler"));
+        $this->server->api->console->register("spawnpoint", "[player] [x] [y] [z]", array($this, "commandHandler"));
         $this->server->api->console->register("spawn", "", array($this, "commandHandler"));
         $this->server->api->console->register("ping", "", array($this, "commandHandler"));
         $this->server->api->console->alias("lag", "ping");
@@ -118,7 +118,7 @@ class PlayerAPI{
     public function commandHandler($cmd, $params, $issuer, $alias){
         $output = "";
         switch($cmd){
-            case "setspawn":
+            case "spawnpoint":
                 if(!($issuer instanceof Player)){
                     $output .= "Please run this command in-game.\n";
                     break;
