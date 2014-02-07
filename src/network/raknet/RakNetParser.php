@@ -108,16 +108,16 @@ class RakNetParser{
 			case RakNetInfo::DATA_PACKET_D:
 			case RakNetInfo::DATA_PACKET_E:
 			case RakNetInfo::DATA_PACKET_F:
-				$this->seqNumber = $this->getLTriad();
-				$this->data = array();
+				$this->packet->seqNumber = $this->getLTriad();
+				$this->packet->data = array();
 				while(!$this->feof()){
-					$this->data[] = $this->parseDataPacket();				
+					$this->packet->data[] = $this->parseDataPacket();				
 				}
 				break;
 			case RakNetInfo::NACK:
 			case RakNetInfo::ACK:
 				$count = $this->getShort();
-				$this->packets = array();
+				$this->packet->packets = array();
 				for($i = 0; $i < $count and !$this->feof(); ++$i){
 					if($this->getByte() === 0){
 						$start = $this->getLTriad();
@@ -126,10 +126,10 @@ class RakNetParser{
 							$end = $start + 4096;
 						}
 						for($c = $start; $c <= $end; ++$c){
-							$this->packets[] = $c;
+							$this->packet->packets[] = $c;
 						}
 					}else{
-						$this->packets[] = $this->getLTriad();
+						$this->packet->packets[] = $this->getLTriad();
 					}
 				}
 				break;

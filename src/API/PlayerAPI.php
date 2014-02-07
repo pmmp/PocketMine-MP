@@ -355,7 +355,7 @@ class PlayerAPI{
 
     public function broadcastPacket(array $players, RakNetDataPacket $packet){
         foreach($players as $p){
-            $p->dataPacket(false, $packet);
+            $p->dataPacket($packet);
         }
     }
 

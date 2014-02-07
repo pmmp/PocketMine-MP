@@ -115,7 +115,7 @@ class Player{
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
-		$this->buffer = new RakNetDataPacket(RakNetInfo::DATA_PACKET_0);
+		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->buffer->data = array();
 		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
 		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
@@ -302,7 +302,6 @@ class Player{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			$this->server->interface->stopChunked($this->CID);
 			$this->server->api->player->remove($this->CID);
 			if($msg === true and $this->username != ""){
 				$this->server->api->chat->broadcast($this->username." left the game");
@@ -1162,6 +1161,7 @@ class Player{
 						}
 						$this->received[$p->messageIndex] = true;
 					}
+					$p->decode();
 					$this->handleDataPacket($p);
 				}
 			}
@@ -1185,8 +1185,8 @@ class Player{
 				unset($this->resendQueue[$count]);
 				$this->packetStats[1]++;
 				$this->lag[] = microtime(true) - $data->sendtime;
-				$data->decode();
-				$cnt = $this->directDataPacket($data);
+				$data->sendtime = microtime(true);
+				$cnt = $this->send($data);
 				if(isset($this->chunkCount[$count])){
 					unset($this->chunkCount[$count]);
 					$this->chunkCount[$cnt[0]] = true;
@@ -1195,15 +1195,15 @@ class Player{
 		}
 	}
 	
-	public function handlePacket($packet){
+	public function handlePacket(RakNetPacket $packet){
 		if($this->connected === true){
 			$this->timeout = microtime(true) + 20;
-			switch($pid){
+			switch($packet->pid()){
 				case RakNetInfo::NACK:
 					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]["sendtime"];
+							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 						}
 						++$this->packetStats[1];
@@ -1213,7 +1213,7 @@ class Player{
 				case RakNetInfo::ACK:
 					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){	
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]["sendtime"];
+							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 							unset($this->resendQueue[$count]);							
 						}
@@ -1239,8 +1239,8 @@ class Player{
 				case RakNetInfo::DATA_PACKET_F:
 					$this->ackQueue[] = $packet->seqNumber;
 					$this->receiveQueue[$packet->seqNumber] = array();
-					foreach($packet->data as $packet){
-						$this->receiveQueue[$packet->seqNumber][] = $packet;
+					foreach($packet->data as $pk){
+						$this->receiveQueue[$packet->seqNumber][] = $pk;
 					}
 					break;
 			}
@@ -1268,7 +1268,7 @@ class Player{
 				}
 				$pk = new ServerHandshakePacket;
 				$pk->port = $this->port;
-				$pk->session = $data["session"];
+				$pk->session = $packet->session;
 				$pk->session2 = Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
 				$this->dataPacket($pk);
 				break;
@@ -2069,19 +2069,19 @@ class Player{
 				if($packet->windowid === 0){
 					$craft = false;
 					$slot = $this->getSlot($packet->slot);
-					if($slot->count >= $packet->item->count and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->count() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $packet->item->count());
+					if($slot->count >= $packet->item->count and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->count === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $packet->item->count);
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
-					}elseif($slot->count <= $packet->item->count() and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count() - $slot->count);
+					}elseif($slot->count <= $packet->item->count and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
+						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count - $slot->count);
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
 					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count());
+						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
@@ -2126,7 +2126,7 @@ class Player{
 						break;
 					}
 
-					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count());
+					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 					
 					$slot = $tile->getSlot($slotn);
 					if($this->server->api->dhandle("player.container.slot", array(
@@ -2164,7 +2164,7 @@ class Player{
 					if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $packet->slot < 0 or ($tile->class === TILE_CHEST and $packet->slot >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $packet->slot >= FURNACE_SLOTS)){
 						break;
 					}
-					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count());
+					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 					
 					$slot = $tile->getSlot($packet->slot);
 					if($this->server->api->dhandle("player.container.slot", array(
@@ -2235,7 +2235,7 @@ class Player{
 				}
 				break;
 			default:
-				console("[DEBUG] Unhandled 0x".dechex($pid)." data packet for ".$this->username." (".$this->clientID."): ".print_r($data, true), true, true, 2);
+				console("[DEBUG] Unhandled 0x".dechex($packet->pid())." data packet for ".$this->username." (".$this->clientID."): ".print_r($data, true), true, true, 2);
 				break;
 		}
 	}
@@ -2261,7 +2261,7 @@ class Player{
 			if($player === $this){
 				$pk = new ContainerSetContentPacket;
 				$pk->windowid = 0x78; //Armor window id
-				$pk->slots = $data["slots"];
+				$pk->slots = $this->armor;
 				$this->dataPacket($pk);
 			}else{
 				$pk = new PlayerArmorEquipmentPacket;
@@ -2299,10 +2299,12 @@ class Player{
 	}
 	
 	public function sendBuffer(){
-		if(strlen($this->buffer) > 0){			
-			$this->directDataPacket($this->buffer);
+		if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){	
+			$this->buffer->seqNumber = $this->counter[0]++;
+			$this->send($this->buffer);
 		}
-		$this->buffer = new RakNetDataPacket(RakNetInfo::DATA_PACKET_0);
+		$this->bufferLen = 0;
+		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$this->buffer->data = array();
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
@@ -2315,7 +2317,7 @@ class Player{
 		$sendtime = microtime(true);
 		
 		$size = $this->MTU - 34;
-		$buffer = str_split(chr($packet->pid). $packet->buffer, $size);
+		$buffer = str_split(chr($packet->pid()). $packet->buffer, $size);
 		$bigCnt = $this->bigCnt;
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
 		$cnts = array();
@@ -2353,11 +2355,11 @@ class Player{
 		$pk->seqNumber = $this->counter[0]++;
 		$pk->sendtime = microtime(true);
 		if($recover !== false){
-			$this->recoveryQueue[$pk->seqNumber] = $packet;
+			$this->recoveryQueue[$pk->seqNumber] = $pk;
 		}
 		
 		$this->send($pk);
-		return array($count);
+		return array($pk->seqNumber);
 	}
 
     /**

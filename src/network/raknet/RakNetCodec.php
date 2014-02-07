@@ -75,8 +75,8 @@ class RakNetCodec{
 			case RakNetInfo::DATA_PACKET_D:
 			case RakNetInfo::DATA_PACKET_E:
 			case RakNetInfo::DATA_PACKET_F:
-				$this->putLTriad($this->seqNumber);
-				foreach($this->data as $pk){
+				$this->putLTriad($this->packet->seqNumber);
+				foreach($this->packet->data as $pk){
 					$this->encodeDataPacket($pk);
 				}
 				break;
@@ -170,11 +170,11 @@ class RakNetCodec{
 	}
 
 	protected function putTriad($v){
-		$this->buffer .= Utils::putTriad($v);
+		$this->buffer .= Utils::writeTriad($v);
 	}
 	
 	protected function putLTriad($v){
-		$this->buffer .= strrev(Utils::putTriad($v));
+		$this->buffer .= strrev(Utils::writeTriad($v));
 	}
 	
 	protected function putByte($v){

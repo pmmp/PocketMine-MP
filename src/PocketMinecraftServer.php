@@ -473,8 +473,8 @@ class PocketMinecraftServer{
 	}
 
 	public static function clientID($ip, $port){
-		//return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
-		return $ip . ":" . $port;
+		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
+		//return $ip . ":" . $port;
 	}
 
 	public function packetHandler(Packet $packet){
@@ -518,8 +518,8 @@ class PocketMinecraftServer{
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
 				case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
-					if($packet->structure !== RAKNET_STRUCTURE){
-						console("[DEBUG] Incorrect structure #$version from ".$packet->ip.":".$packet->port, true, true, 2);
+					if($packet->structure !== RakNetInfo::STRUCTURE){
+						console("[DEBUG] Incorrect structure #".$packet->structure." from ".$packet->ip.":".$packet->port, true, true, 2);
 						$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
 						$pk->serverID = $this->serverID;
 						$pk->ip = $packet->ip;

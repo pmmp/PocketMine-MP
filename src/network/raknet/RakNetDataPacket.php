@@ -90,21 +90,30 @@ abstract class RakNetDataPacket extends stdClass{
 	protected function putShort($v){
 		$this->buffer .= Utils::writeShort($v);
 	}
+	
+	protected function getFloat(){
+		return Utils::readFloat($this->get(4));
+	}
+
+	protected function putFloat($v){
+		$this->buffer .= Utils::writeFloat($v);
+	}
 
 	protected function getTriad(){
 		return Utils::readTriad($this->get(3));
 	}
 
 	protected function putTriad($v){
-		$this->buffer .= Utils::putTriad($v);
+		$this->buffer .= Utils::writeTriad($v);
 	}
+	
 	
 	protected function getLTriad(){
 		return Utils::readTriad(strrev($this->get(3)));
 	}
 	
 	protected function putLTriad($v){
-		$this->buffer .= strrev(Utils::putTriad($v));
+		$this->buffer .= strrev(Utils::writeTriad($v));
 	}
 	
 	protected function getByte(){
