@@ -71,7 +71,8 @@ else
 	echo -n "[3/3] Obtaining PHP:"
 	echo " detecting if build is available..."
 	if [ "$(uname -s)" == "Darwin" ]; then
-		IS_IOS=$(expr match "$(uname -m)" 'iP[a-zA-Z0-9,]*')
+		UNAME_M=$(uname -m)
+		IS_IOS=$(expr match $UNAME_M 'iP[a-zA-Z0-9,]*')
 		if [ $IS_IOS -gt 0 ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] iOS PHP build available, downloading $IOS_BUILD.tar.gz..."
