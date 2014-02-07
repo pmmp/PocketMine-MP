@@ -402,7 +402,7 @@ class PlayerAPI{
             if($p !== $player and ($p->entity instanceof Entity)){
                 $p->entity->spawn($player);
                 if($p->level !== $player->level){
-                    $player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+                    $player->dataPacket(ProtocolInfo::MOVE_ENTITY_POSROT_PACKET, array(
                         "eid" => $p->entity->eid,
                         "x" => -256,
                         "y" => 128,
@@ -420,7 +420,7 @@ class PlayerAPI{
             if($p !== $player and ($p->entity instanceof Entity) and ($player->entity instanceof Entity)){
                 $player->entity->spawn($p);
                 if($p->level !== $player->level){
-                    $p->dataPacket(MC_MOVE_ENTITY_POSROT, array(
+                    $p->dataPacket(ProtocolInfo::MOVE_ENTITY_POSROT_PACKET, array(
                         "eid" => $player->entity->eid,
                         "x" => -256,
                         "y" => 128,

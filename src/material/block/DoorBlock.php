@@ -125,7 +125,7 @@ class DoorBlock extends TransparentBlock{
 				$this->level->setBlock($down, BlockAPI::get($this->id, $meta), true, false, true);
 				$players = ServerAPI::request()->api->player->getAll($this->level);
 				unset($players[$player->CID]);
-				ServerAPI::request()->api->player->broadcastPacket($players, MC_LEVEL_EVENT, array(
+				ServerAPI::request()->api->player->broadcastPacket($players, ProtocolInfo::LEVEL_EVENT_PACKET, array(
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
@@ -140,7 +140,7 @@ class DoorBlock extends TransparentBlock{
 			$this->level->setBlock($this, $this, true, false, true);
 			$players = ServerAPI::request()->api->player->getAll($this->level);
 			unset($players[$player->CID]);
-			ServerAPI::request()->api->player->broadcastPacket($players, MC_LEVEL_EVENT, array(
+			ServerAPI::request()->api->player->broadcastPacket($players, ProtocolInfo::LEVEL_EVENT_PACKET, array(
 				"x" => $this->x,
 				"y" => $this->y,
 				"z" => $this->z,

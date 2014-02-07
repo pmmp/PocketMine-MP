@@ -29,7 +29,7 @@ class BedBlock extends TransparentBlock{
 	
 	public function onActivate(Item $item, Player $player){
 		if(ServerAPI::request()->api->time->getPhase($player->level) !== "night"){
-			$player->dataPacket(MC_CLIENT_MESSAGE, array(
+			$player->dataPacket(ProtocolInfo::CHAT_PACKET, array(
 				"message" => "You can only sleep at night"
 			));
 			return true;
@@ -51,7 +51,7 @@ class BedBlock extends TransparentBlock{
 				}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 					$b = $blockWest;
 				}else{
-					$player->dataPacket(MC_CLIENT_MESSAGE, array(
+					$player->dataPacket(ProtocolInfo::CHAT_PACKET, array(
 						"message" => "The bed is incomplete"
 					));
 					return true;
@@ -59,7 +59,7 @@ class BedBlock extends TransparentBlock{
 			}
 
 		if($player->sleepOn($b) === false){
-			$player->dataPacket(MC_CLIENT_MESSAGE, array(
+			$player->dataPacket(ProtocolInfo::CHAT_PACKET, array(
 				"message" => "This bed is occupied"
 			));
 		}

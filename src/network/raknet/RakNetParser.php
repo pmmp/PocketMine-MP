@@ -151,7 +151,7 @@ class RakNetParser{
 		or $reliability === 7){
 			$messageIndex = $this->getLTriad();
 		}else{
-			$messageIndex = 0;
+			$messageIndex = false;
 		}
 		
 		if($reliability === 1
@@ -161,8 +161,8 @@ class RakNetParser{
 			$orderIndex = $this->getLTriad();
 			$orderChannel = $this->getByte();
 		}else{
-			$orderIndex = 0;
-			$orderChannel = 0;
+			$orderIndex = false;
+			$orderChannel = false;
 		}
 		
 		if($hasSplit == true){
@@ -172,14 +172,14 @@ class RakNetParser{
 			//error! no split packets allowed!
 			return false;
 		}else{
-			$splitCount = 0;
-			$splitID = 0;
-			$splitIndex = 0;
+			$splitCount = false;
+			$splitID = false;
+			$splitIndex = false;
 		}
 		
 		if($length <= 0
 		or $orderChannel >= 32
-		or ($hasSplit === 1 and $splitIndex >= $splitCount)){
+		or ($hasSplit === true and $splitIndex >= $splitCount)){
 			return false;
 		}
 		
@@ -191,7 +191,7 @@ class RakNetParser{
 			$data->packetID = $pid;
 		}
 		$data->reliability = $reliability;
-		$data->hasSplit = $hasSplit == true;
+		$data->hasSplit = $hasSplit;
 		$data->messageIndex = $messageIndex;
 		$data->orderIndex = $orderIndex;
 		$data->orderChannel = $orderChannel;

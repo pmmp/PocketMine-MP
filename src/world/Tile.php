@@ -142,7 +142,7 @@ class Tile extends Position{
 			}else{
 				$player->windows[$id] = $this;
 			}
-			$player->dataPacket(MC_CONTAINER_OPEN, array(
+			$player->dataPacket(ProtocolInfo::CONTAINER_OPEN_PACKET, array(
 				"windowid" => $id,
 				"type" => WINDOW_CHEST,
 				"slots" => is_array($player->windows[$id]) ? CHEST_SLOTS << 1:CHEST_SLOTS,
@@ -155,7 +155,7 @@ class Tile extends Position{
 			if(is_array($player->windows[$id])){
 				$all = $this->server->api->player->getAll($this->level);
 				foreach($player->windows[$id] as $ob){
-					$this->server->api->player->broadcastPacket($all, MC_TILE_EVENT, array(
+					$this->server->api->player->broadcastPacket($all, ProtocolInfo::TILE_EVENT_PACKET, array(
 						"x" => $ob->x,
 						"y" => $ob->y,
 						"z" => $ob->z,
@@ -172,7 +172,7 @@ class Tile extends Position{
 					}
 				}
 			}else{
-				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
+				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), ProtocolInfo::TILE_EVENT_PACKET, array(
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
@@ -188,7 +188,7 @@ class Tile extends Position{
 					}
 				}
 			}
-			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+			$player->dataPacket(ProtocolInfo::CONTAINER_SET_CONTENT_PACKET, array(
 				"windowid" => $id,
 				"count" => count($slots),
 				"slots" => $slots,
@@ -198,7 +198,7 @@ class Tile extends Position{
 			$player->windowCnt++;
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			$player->windows[$id] = $this;
-			$player->dataPacket(MC_CONTAINER_OPEN, array(
+			$player->dataPacket(ProtocolInfo::CONTAINER_OPEN_PACKET, array(
 				"windowid" => $id,
 				"type" => WINDOW_FURNACE,
 				"slots" => FURNACE_SLOTS,
@@ -215,7 +215,7 @@ class Tile extends Position{
 					$slots[] = BlockAPI::getItem(AIR, 0, 0);
 				}
 			}
-			$player->dataPacket(MC_CONTAINER_SET_CONTENT, array(
+			$player->dataPacket(ProtocolInfo::CONTAINER_SET_CONTENT_PACKET, array(
 				"windowid" => $id,
 				"count" => count($slots),
 				"slots" => $slots
@@ -383,7 +383,7 @@ class Tile extends Position{
 				
 				$nbt->write(chr(NBT::TAG_END));				
 				
-				$player->dataPacket(MC_ENTITY_DATA, array(
+				$player->dataPacket(ProtocolInfo::ENTITY_DATA_PACKET, array(
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,
@@ -428,7 +428,7 @@ class Tile extends Position{
 				
 				$nbt->write(chr(NBT::TAG_END));				
 				
-				$player->dataPacket(MC_ENTITY_DATA, array(
+				$player->dataPacket(ProtocolInfo::ENTITY_DATA_PACKET, array(
 					"x" => $this->x,
 					"y" => $this->y,
 					"z" => $this->z,

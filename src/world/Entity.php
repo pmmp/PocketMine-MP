@@ -572,7 +572,7 @@ class Entity extends Position{
 					$players = $this->server->api->player->getAll($this->level);
 					if($this->player instanceof Player){
 						unset($players[$this->player->CID]);
-						$this->server->api->player->broadcastPacket($players, MC_MOVE_PLAYER, array(
+						$this->server->api->player->broadcastPacket($players, ProtocolInfo::MOVE_PLAYER_PACKET, array(
 							"eid" => $this->eid,
 							"x" => $this->x,
 							"y" => $this->y,
@@ -582,7 +582,7 @@ class Entity extends Position{
 							"bodyYaw" => $this->yaw,
 						));
 					}else{
-						$this->server->api->player->broadcastPacket($players, MC_MOVE_ENTITY_POSROT, array(
+						$this->server->api->player->broadcastPacket($players, ProtocolInfo::MOVE_ENTITY_POSROT_PACKET, array(
 							"eid" => $this->eid,
 							"x" => $this->x,
 							"y" => $this->y,
@@ -661,7 +661,7 @@ class Entity extends Position{
 				if($this->player->connected !== true or $this->player->spawned === false){
 					return false;
 				}
-				$player->dataPacket(MC_ADD_PLAYER, array(
+				$player->dataPacket(ProtocolInfo::ADD_PLAYER_PACKET, array(
 					"clientID" => 0,/*$this->player->clientID,*/
 					"username" => $this->player->username,
 					"eid" => $this->eid,
@@ -674,7 +674,7 @@ class Entity extends Position{
 					"unknown2" => 0,
 					"metadata" => $this->getMetadata(),
 				));
-				$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
+				$player->dataPacket(ProtocolInfo::PLAYER_EQUIPMENT_PACKET, array(
 					"eid" => $this->eid,
 					"block" => $this->player->getSlot($this->player->slot)->getID(),
 					"meta" => $this->player->getSlot($this->player->slot)->getMetadata(),
@@ -683,7 +683,7 @@ class Entity extends Position{
 				$this->player->sendArmor($player);
 				break;
 			case ENTITY_ITEM:
-				$player->dataPacket(MC_ADD_ITEM_ENTITY, array(
+				$player->dataPacket(ProtocolInfo::ADD_ITEM_ENTITY_PACKET, array(
 					"eid" => $this->eid,
 					"x" => $this->x,
 					"y" => $this->y,
@@ -695,7 +695,7 @@ class Entity extends Position{
 					"meta" => $this->meta,
 					"stack" => $this->stack,
 				));
-				$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+				$player->dataPacket(ProtocolInfo::SET_ENTITY_MOTION_PACKET, array(
 					"eid" => $this->eid,
 					"speedX" => (int) ($this->speedX * 400),
 					"speedY" => (int) ($this->speedY * 400),
@@ -703,7 +703,7 @@ class Entity extends Position{
 				));
 				break;
 			case ENTITY_MOB:
-				$player->dataPacket(MC_ADD_MOB, array(
+				$player->dataPacket(ProtocolInfo::ADD_MOB_PACKET, array(
 					"type" => $this->type,
 					"eid" => $this->eid,
 					"x" => $this->x,
@@ -713,7 +713,7 @@ class Entity extends Position{
 					"pitch" => 0,
 					"metadata" => $this->getMetadata(),
 				));
-				$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+				$player->dataPacket(ProtocolInfo::SET_ENTITY_MOTION_PACKET, array(
 					"eid" => $this->eid,
 					"speedX" => (int) ($this->speedX * 400),
 					"speedY" => (int) ($this->speedY * 400),
@@ -722,7 +722,7 @@ class Entity extends Position{
 				break;
 			case ENTITY_OBJECT:
 				if($this->type === OBJECT_PAINTING){
-					$player->dataPacket(MC_ADD_PAINTING, array(
+					$player->dataPacket(ProtocolInfo::ADD_PAINTING_PACKET, array(
 						"eid" => $this->eid,
 						"x" => (int) $this->x,
 						"y" => (int) $this->y,
@@ -731,7 +731,7 @@ class Entity extends Position{
 						"title" => $this->data["Motive"],
 					));
 				}elseif($this->type === OBJECT_PRIMEDTNT){
-					$player->dataPacket(MC_ADD_ENTITY, array(
+					$player->dataPacket(ProtocolInfo::ADD_ENTITY_PACKET, array(
 						"eid" => $this->eid,
 						"type" => $this->type,
 						"x" => $this->x,
@@ -740,7 +740,7 @@ class Entity extends Position{
 						"did" => 0,
 					));
 				}elseif($this->type === OBJECT_ARROW){
-					$player->dataPacket(MC_ADD_ENTITY, array(
+					$player->dataPacket(ProtocolInfo::ADD_ENTITY_PACKET, array(
 						"eid" => $this->eid,
 						"type" => $this->type,
 						"x" => $this->x,
@@ -748,7 +748,7 @@ class Entity extends Position{
 						"z" => $this->z,
 						"did" => 0,
 					));
-					$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+					$player->dataPacket(ProtocolInfo::SET_ENTITY_MOTION_PACKET, array(
 						"eid" => $this->eid,
 						"speedX" => (int) ($this->speedX * 400),
 						"speedY" => (int) ($this->speedY * 400),
@@ -757,7 +757,7 @@ class Entity extends Position{
 				}
 				break;
 			case ENTITY_FALLING:
-				$player->dataPacket(MC_ADD_ENTITY, array(
+				$player->dataPacket(ProtocolInfo::ADD_ENTITY_PACKET, array(
 					"eid" => $this->eid,
 					"type" => $this->type,
 					"x" => $this->x,
@@ -765,7 +765,7 @@ class Entity extends Position{
 					"z" => $this->z,
 					"did" => -$this->data["Tile"],
 				));
-				$player->dataPacket(MC_SET_ENTITY_MOTION, array(
+				$player->dataPacket(ProtocolInfo::SET_ENTITY_MOTION_PACKET, array(
 					"eid" => $this->eid,
 					"speedX" => (int) ($this->speedX * 400),
 					"speedY" => (int) ($this->speedY * 400),
@@ -981,7 +981,7 @@ class Entity extends Position{
 				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
 			}
 			if($this->player instanceof Player){
-				$this->player->dataPacket(MC_SET_HEALTH, array(
+				$this->player->dataPacket(ProtocolInfo::SET_HEALTH_PACKET, array(
 					"health" => $this->health,
 				));
 			}
@@ -995,7 +995,7 @@ class Entity extends Position{
 				$this->updateMetadata();
 				$this->dead = true;
 				if($this->player instanceof Player){
-					$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_MOVE_ENTITY_POSROT, array(
+					$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), ProtocolInfo::MOVE_ENTITY_POSROT_PACKET, array(
 						"eid" => $this->eid,
 						"x" => -256,
 						"y" => 128,

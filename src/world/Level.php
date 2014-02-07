@@ -78,7 +78,7 @@ class Level{
 		}
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
-			$this->server->api->player->broadcastPacket($this->players, MC_SET_TIME, array(
+			$this->server->api->player->broadcastPacket($this->players, ProtocolInfo::SET_TIME_PACKET, array(
 				"time" => (int) $this->time,
 				"started" => $this->stopTime == false,
 			));
@@ -109,7 +109,7 @@ class Level{
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $blocks){
 					foreach($blocks as $b){
-						$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
+						$this->server->api->player->broadcastPacket($this->players, ProtocolInfo::UPDATE_BLOCK_PACKET, array(
 							"x" => $b->x,
 							"y" => $b->y,
 							"z" => $b->z,
@@ -286,7 +286,7 @@ class Level{
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
-				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
+				$this->server->api->player->broadcastPacket($this->players, ProtocolInfo::UPDATE_BLOCK_PACKET, array(
 					"x" => $pos->x,
 					"y" => $pos->y,
 					"z" => $pos->z,
@@ -326,7 +326,7 @@ class Level{
 			$block->position($pos);
 
 			if($direct === true){
-				$this->server->api->player->broadcastPacket($this->players, MC_UPDATE_BLOCK, array(
+				$this->server->api->player->broadcastPacket($this->players, ProtocolInfo::UPDATE_BLOCK_PACKET, array(
 					"x" => $pos->x,
 					"y" => $pos->y,
 					"z" => $pos->z,

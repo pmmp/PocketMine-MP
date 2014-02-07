@@ -39,6 +39,7 @@ class PlayerEquipmentPacket extends RakNetDataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
+		$this->putShort($this->item);
 		$this->putShort($this->meta);
 		$this->putByte($this->slot);
 	}

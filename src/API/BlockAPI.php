@@ -317,7 +317,7 @@ class BlockAPI{
 	}
 
 	private function cancelAction(Block $block, Player $player, $send = true){
-		$player->dataPacket(MC_UPDATE_BLOCK, array(
+		$player->dataPacket(ProtocolInfo::UPDATE_BLOCK_PACKET, array(
 			"x" => $block->x,
 			"y" => $block->y,
 			"z" => $block->z,
