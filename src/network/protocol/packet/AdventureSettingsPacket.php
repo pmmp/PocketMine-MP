@@ -31,6 +31,7 @@ class AdventureSettingsPacket extends RakNetDataPacket{
 	}
 	
 	public function encode(){
+		$this->reset();
 		$this->putInt($this->flags);
 	}
 

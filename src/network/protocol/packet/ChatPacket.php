@@ -31,6 +31,7 @@ class ChatPacket extends RakNetDataPacket{
 	}
 	
 	public function encode(){
+		$this->reset();
 		$this->putString($this->message);
 	}
 

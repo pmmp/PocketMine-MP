@@ -144,9 +144,8 @@ class RakNetCodec{
 			$this->putInt($pk->splitCount);
 			$this->putShort($pk->splitID);
 			$this->putInt($pk->splitIndex);
-		}else{
-			$this->putByte($pk->pid());
-		}		
+		}
+		
 		$this->buffer .= $pk->buffer;
 	}
 

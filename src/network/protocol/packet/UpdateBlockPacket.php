@@ -35,6 +35,7 @@ class UpdateBlockPacket extends RakNetDataPacket{
 	}
 	
 	public function encode(){
+		$this->reset();
 		$this->putInt($this->x);
 		$this->putInt($this->z);
 		$this->putByte($this->y);

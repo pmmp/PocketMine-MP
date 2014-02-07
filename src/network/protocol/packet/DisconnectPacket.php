@@ -29,7 +29,7 @@ class DisconnectPacket extends RakNetDataPacket{
 	}	
 	
 	public function encode(){
-	
+		$this->reset();	
 	}
 
 }

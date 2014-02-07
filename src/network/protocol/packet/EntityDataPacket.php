@@ -37,6 +37,7 @@ class EntityDataPacket extends RakNetDataPacket{
 	}
 	
 	public function encode(){
+		$this->reset();
 		$this->putShort($this->x);
 		$this->putByte($this->y);
 		$this->putShort($this->z);

@@ -35,6 +35,7 @@ class ContainerSetSlotPacket extends RakNetDataPacket{
 	}
 	
 	public function encode(){
+		$this->reset();
 		$this->putByte($this->windowid);
 		$this->putShort($this->slot);
 		$this->putSlot($this->item);
