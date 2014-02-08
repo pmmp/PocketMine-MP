@@ -27,7 +27,7 @@ class ContainerClosePacket extends RakNetDataPacket{
 	}
 	
 	public function decode(){
-		$this->windowid = $this->getInt();
+		$this->windowid = $this->getByte();
 	}
 	
 	public function encode(){

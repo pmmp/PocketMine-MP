@@ -28,7 +28,7 @@ class Cache{
 	
 	public static function get($identifier){
 		if(isset(self::$cached[$identifier])){
-			self::$cached[$identifier][1] += $minTTL;
+			self::$cached[$identifier][1] = microtime(true) + self::$cached[$identifier][2];
 			return self::$cached[$identifier][0];
 		}
 		return false;

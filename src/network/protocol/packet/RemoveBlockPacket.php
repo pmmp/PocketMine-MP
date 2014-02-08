@@ -32,8 +32,8 @@ class RemoveBlockPacket extends RakNetDataPacket{
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->x = $this->getInt();
-		$this->y = $this->getInt();
 		$this->z = $this->getInt();
+		$this->y = $this->getByte();
 	}
 	
 	public function encode(){

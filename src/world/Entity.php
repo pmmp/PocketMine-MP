@@ -1000,9 +1000,9 @@ class Entity extends Position{
 				$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 2)); //Ouch! sound
 			}
 			if($this->player instanceof Player){
-				$this->player->dataPacket(ProtocolInfo::SET_HEALTH_PACKET, array(
-					"health" => $this->health,
-				));
+				$pk = new SetHealthPacket;
+				$pk->health = $this->health;
+				$this->player->dataPacket($pk);
 			}
 			if($this->health <= 0 and $this->dead === false){
 				$this->spawnDrops();

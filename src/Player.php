@@ -1153,7 +1153,7 @@ class Player{
 								case ProtocolInfo::PING_PACKET:
 								case ProtocolInfo::PONG_PACKET:
 								case ProtocolInfo::MOVE_PLAYER_PACKET:
-								case ProtocolInfo::MOVE_REQUEST_CHUNK:
+								case ProtocolInfo::REQUEST_CHUNK_PACKET:
 								case ProtocolInfo::ANIMATE_PACKET:
 								case ProtocolInfo::SET_HEALTH_PACKET:
 									continue;
@@ -1588,8 +1588,7 @@ class Player{
 				if(!($this->entity instanceof Entity)){
 					break;
 				}
-				
-				
+
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 				
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
@@ -1631,7 +1630,7 @@ class Player{
 				$data["posX"] = $packet->posX;
 				$data["posY"] = $packet->posY;
 				$data["posZ"] = $packet->posZ;
-				
+
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					if($this->entity->inAction === true){
 						$this->entity->inAction = false;
@@ -1639,6 +1638,7 @@ class Player{
 					}
 					
 					if($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)){
+					
 					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
 					}else{
@@ -2042,15 +2042,15 @@ class Player{
 						$pk->y = $this->windows[$packet->windowid]->y;
 						$pk->z = $this->windows[$packet->windowid]->z;
 						$pk->case1 = 1;
-						$pk->case2 = 2;
+						$pk->case2 = 0;
 						$this->server->api->player->broadcastPacket($this->level->players, $pk);
 					}
 				}
 				unset($this->windows[$packet->windowid]);
 
-				$this->dataPacket(ProtocolInfo::CONTAINER_CLOSE_PACKET, array(
-					"windowid" => $packet->windowid,
-				));
+				$pk = new ContainerClosePacket;
+				$pk->windowid = $packet->windowid;
+				$this->dataPacket($pk);
 				break;
 			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
