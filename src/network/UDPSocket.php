@@ -64,11 +64,11 @@ class UDPSocket{
 		return @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
 	}
 
-	public function write($data, $dest = false, $port = false){
+	public function write($data, $dest, $port){
 		if($this->connected === false){
 			return false;
 		}
-		return @socket_sendto($this->sock, $data, strlen($data), 0, ($dest === false ? $this->server:$dest), ($port === false ? $this->port:$port));
+		return @socket_sendto($this->sock, $data, strlen($data), 0, $dest, $port);
 	}
 
 }

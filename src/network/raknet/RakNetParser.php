@@ -111,8 +111,8 @@ class RakNetParser{
 			case RakNetInfo::DATA_PACKET_F:
 				$this->packet->seqNumber = $this->getLTriad();
 				$this->packet->data = array();
-				while(!$this->feof()){
-					$this->packet->data[] = $this->parseDataPacket();				
+				while(!$this->feof() and ($pk = $this->parseDataPacket()) instanceof RakNetDataPacket){
+					$this->packet->data[] = $pk;	
 				}
 				break;
 			case RakNetInfo::NACK:
@@ -179,16 +179,7 @@ class RakNetParser{
 		if($length <= 0
 		or $orderChannel >= 32
 		or ($hasSplit === true and $splitIndex >= $splitCount)){
-			$data = new UnknownPacket();
-			$data->reliability = $reliability;
-			$data->hasSplit = $hasSplit;
-			$data->messageIndex = $messageIndex;
-			$data->orderIndex = $orderIndex;
-			$data->orderChannel = $orderChannel;
-			$data->splitCount = $splitCount;
-			$data->splitID = $splitID;
-			$data->splitIndex = $splitIndex;
-			$data->setBuffer($this->get($length));
+			return false;
 		}else{
 			$pid = $this->getByte();
 			if(isset(ProtocolInfo::$packets[$pid])){
