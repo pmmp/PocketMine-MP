@@ -41,20 +41,18 @@ class MinecraftInterface{
 	}
 
 	public function readPacket(){
-		$pk = $this->popPacket();
 		if($this->socket->connected === false){
-			return $pk;
+			return false;
 		}
 		$buf = "";
 		$source = false;
 		$port = 1;
 		$len = $this->socket->read($buf, $source, $port);
 		if($len === false or $len === 0){
-			return $pk;
+			return false;
 		}
 		$this->bandwidth[0] += $len;
-		$this->parsePacket($buf, $source, $port);
-		return ($pk !== false ? $pk : $this->popPacket());
+		return $this->parsePacket($buf, $source, $port);
 	}
 	
 	private function parsePacket($buffer, $source, $port){
@@ -64,8 +62,9 @@ class MinecraftInterface{
 			if($parser->packet !== false){
 				$parser->packet->ip = $source;
 				$parser->packet->port = $port;
-				$this->packets[] = $parser->packet;
+				return $parser->packet;
 			}
+			return false;
 		}else{
 			$packet = new Packet();
 			$packet->ip = $source;
@@ -76,16 +75,6 @@ class MinecraftInterface{
 			}
 			return false;
 		}
-		return true;
-	}
-
-	public function popPacket(){
-		if(count($this->packets) > 0){
-			$p = each($this->packets);
-			unset($this->packets[$p[0]]);
-			return $p[1];
-		}
-		return false;
 	}
 	
 	public function writePacket(Packet $packet){

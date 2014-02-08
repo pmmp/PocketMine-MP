@@ -560,7 +560,7 @@ class PocketMinecraftServer{
 		$lastLoop = 0;
 		while($this->stop === false){
 			$packet = $this->interface->readPacket();
-			if($packet !== false){
+			if($packet instanceof Packet){
 				$this->packetHandler($packet);
 				$lastLoop = 0;
 			}else{
