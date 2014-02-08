@@ -146,7 +146,7 @@ class DoorBlock extends TransparentBlock{
 			$pk->z = $this->z;
 			$pk->evid = 1003;
 			$pk->data = 0;
-			ServerAPI::request()->api->player->broadcastPacket($players, ProtocolInfo::LEVEL_EVENT_PACKET, $pk);
+			ServerAPI::request()->api->player->broadcastPacket($players, $pk);
 		}
 		return true;
 	}
