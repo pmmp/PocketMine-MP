@@ -256,7 +256,7 @@ class ServerAPI{
 				"memory_usage" => memory_get_usage(true),
 				"php_version" => PHP_VERSION,
 				"version" => MAJOR_VERSION,
-				"ProtocolInfo::version_PACKET" => CURRENT_MINECRAFT_VERSION,
+				"mc_version" => CURRENT_MINECRAFT_VERSION,
 				"protocol" => ProtocolInfo::CURRENT_PROTOCOL,
 				"online" => count($this->server->clients),
 				"max" => $this->server->maxClients,
