@@ -63,7 +63,7 @@ class ProtocolInfo{
 	const REMOVE_BLOCK_PACKET = 0x97;
 	const UPDATE_BLOCK_PACKET = 0x98;
 	const ADD_PAINTING_PACKET = 0x99;
-	const EXPLOSION_PACKET = 0x9a;
+	const EXPLODE_PACKET = 0x9a;
 	const LEVEL_EVENT_PACKET = 0x9b;
 	const TILE_EVENT_PACKET = 0x9c;
 	const ENTITY_EVENT_PACKET = 0x9d;
@@ -123,7 +123,7 @@ class ProtocolInfo{
 		ProtocolInfo::REMOVE_BLOCK_PACKET => "RemoveBlockPacket",
 		ProtocolInfo::UPDATE_BLOCK_PACKET => "UpdateBlockPacket",
 		ProtocolInfo::ADD_PAINTING_PACKET => "AddPaintingPacket",
-		ProtocolInfo::EXPLOSION_PACKET => "ExplosionPacket",
+		ProtocolInfo::EXPLODE_PACKET => "ExplodePacket",
 		ProtocolInfo::LEVEL_EVENT_PACKET => "LevelEventPacket",
 		ProtocolInfo::TILE_EVENT_PACKET => "TileEventPacket",
 		ProtocolInfo::ENTITY_EVENT_PACKET => "EntityEventPacket",

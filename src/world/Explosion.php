@@ -114,7 +114,7 @@ class Explosion{
 			$this->level->level->setBlockID($block->x, $block->y, $block->z, 0);
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
-		$pk = new ExplosionPacket;
+		$pk = new ExplodePacket;
 		$pk->x = $this->source->x;
 		$pk->y = $this->source->y;
 		$pk->z = $this->source->z;

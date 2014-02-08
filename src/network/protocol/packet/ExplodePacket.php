@@ -19,7 +19,7 @@
  *
 */
 
-class ExplosionPacket extends RakNetDataPacket{
+class ExplodePacket extends RakNetDataPacket{
 	public $x;
 	public $y;
 	public $z;
@@ -27,7 +27,7 @@ class ExplosionPacket extends RakNetDataPacket{
 	public $records;
 	
 	public function pid(){
-		return ProtocolInfo::EXPLOSION_PACKET;
+		return ProtocolInfo::EXPLODE_PACKET;
 	}
 	
 	public function decode(){
