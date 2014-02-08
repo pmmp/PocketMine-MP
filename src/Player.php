@@ -2369,6 +2369,9 @@ class Player{
      * @return array|bool
      */
     public function dataPacket(RakNetDataPacket $packet){
+		if($this->connected === false){
+			return false;
+		}
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;
