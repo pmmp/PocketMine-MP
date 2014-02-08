@@ -1250,6 +1250,9 @@ class Player{
 	}
 
 	public function handleDataPacket(RakNetDataPacket $packet){
+		if($this->connected === false){
+			return;
+		}
 		switch($packet->pid()){
 			case 0x01:
 				break;
