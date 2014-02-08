@@ -1141,28 +1141,30 @@ class Player{
 			foreach($this->receiveQueue as $count => $packets){
 				unset($this->receiveQueue[$count]);
 				foreach($packets as $p){
-					if(isset($p->messageIndex) and $p->messageIndex !== false){
-						if($p->messageIndex > $this->receiveCount){
-							$this->receiveCount = $p->messageIndex;
-						}elseif($p->messageIndex !== 0){
-							if(isset($this->received[$p->messageIndex])){
-								continue;
-							}
-							switch($p->pid()){
-								case 0x01:
-								case ProtocolInfo::PING_PACKET:
-								case ProtocolInfo::PONG_PACKET:
-								case ProtocolInfo::MOVE_PLAYER_PACKET:
-								case ProtocolInfo::REQUEST_CHUNK_PACKET:
-								case ProtocolInfo::ANIMATE_PACKET:
-								case ProtocolInfo::SET_HEALTH_PACKET:
+					if($p instanceof RakNetDataPacket){
+						if(isset($p->messageIndex) and $p->messageIndex !== false){
+							if($p->messageIndex > $this->receiveCount){
+								$this->receiveCount = $p->messageIndex;
+							}elseif($p->messageIndex !== 0){
+								if(isset($this->received[$p->messageIndex])){
 									continue;
+								}
+								switch($p->pid()){
+									case 0x01:
+									case ProtocolInfo::PING_PACKET:
+									case ProtocolInfo::PONG_PACKET:
+									case ProtocolInfo::MOVE_PLAYER_PACKET:
+									case ProtocolInfo::REQUEST_CHUNK_PACKET:
+									case ProtocolInfo::ANIMATE_PACKET:
+									case ProtocolInfo::SET_HEALTH_PACKET:
+										continue;
+								}
 							}
+							$this->received[$p->messageIndex] = true;
 						}
-						$this->received[$p->messageIndex] = true;
+						$p->decode();
+						$this->handleDataPacket($p);
 					}
-					$p->decode();
-					$this->handleDataPacket($p);
 				}
 			}
 		}
@@ -2235,7 +2237,7 @@ class Player{
 				}
 				break;
 			default:
-				console("[DEBUG] Unhandled 0x".dechex($packet->pid())." data packet for ".$this->username." (".$this->clientID."): ".print_r($data, true), true, true, 2);
+				console("[DEBUG] Unhandled 0x".dechex($packet->pid())." data packet for ".$this->username." (".$this->clientID."): ".print_r($packet, true), true, true, 2);
 				break;
 		}
 	}
