@@ -36,6 +36,7 @@ class RakNetParser{
 	
 	private function get($len){
 		if($len <= 0){
+			$this->offset = strlen($this->buffer) - 1;
 			return "";
 		}
 		if($len === true){
