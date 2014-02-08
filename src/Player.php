@@ -303,7 +303,7 @@ class Player{
 			$this->resendQueue = array();
 			$this->ackQueue = array();
 			$this->server->api->player->remove($this->CID);
-			if($msg === true and $this->username != ""){
+			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
 			console("[INFO] ".FORMAT_AQUA.$this->username.FORMAT_RESET."[/".$this->ip.":".$this->port."] logged out due to ".$reason);
