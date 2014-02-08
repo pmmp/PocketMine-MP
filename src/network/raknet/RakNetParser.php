@@ -170,8 +170,6 @@ class RakNetParser{
 			$splitCount = $this->getInt();
 			$splitID = $this->getShort();
 			$splitIndex = $this->getInt();
-			//error! no split packets allowed!
-			return false;
 		}else{
 			$splitCount = false;
 			$splitID = false;

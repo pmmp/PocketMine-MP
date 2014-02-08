@@ -1141,7 +1141,7 @@ class Player{
 			foreach($this->receiveQueue as $count => $packets){
 				unset($this->receiveQueue[$count]);
 				foreach($packets as $p){
-					if($p instanceof RakNetDataPacket){
+					if($p instanceof RakNetDataPacket and $p->hasSplit === false){
 						if(isset($p->messageIndex) and $p->messageIndex !== false){
 							if($p->messageIndex > $this->receiveCount){
 								$this->receiveCount = $p->messageIndex;
