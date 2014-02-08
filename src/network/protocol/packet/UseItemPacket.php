@@ -44,7 +44,7 @@ class UseItemPacket extends RakNetDataPacket{
 		$this->z = $this->getInt();
 		$this->face = $this->getInt();
 		$this->item = $this->getShort();
-		$this->meta = $this->getShort();
+		$this->meta = $this->getByte(); //Mojang: fix this
 		$this->eid = $this->getInt();
 		$this->fx = $this->getFloat();
 		$this->fy = $this->getFloat();
