@@ -180,25 +180,34 @@ class RakNetParser{
 		if($length <= 0
 		or $orderChannel >= 32
 		or ($hasSplit === true and $splitIndex >= $splitCount)){
-			return false;
-		}
-		
-		$pid = $this->getByte();
-		if(isset(ProtocolInfo::$packets[$pid])){
-			$data = new ProtocolInfo::$packets[$pid];
-		}else{
 			$data = new UnknownPacket();
-			$data->packetID = $pid;
+			$data->reliability = $reliability;
+			$data->hasSplit = $hasSplit;
+			$data->messageIndex = $messageIndex;
+			$data->orderIndex = $orderIndex;
+			$data->orderChannel = $orderChannel;
+			$data->splitCount = $splitCount;
+			$data->splitID = $splitID;
+			$data->splitIndex = $splitIndex;
+			$data->setBuffer($this->get($length));
+		}else{
+			$pid = $this->getByte();
+			if(isset(ProtocolInfo::$packets[$pid])){
+				$data = new ProtocolInfo::$packets[$pid];
+			}else{
+				$data = new UnknownPacket();
+				$data->packetID = $pid;
+			}
+			$data->reliability = $reliability;
+			$data->hasSplit = $hasSplit;
+			$data->messageIndex = $messageIndex;
+			$data->orderIndex = $orderIndex;
+			$data->orderChannel = $orderChannel;
+			$data->splitCount = $splitCount;
+			$data->splitID = $splitID;
+			$data->splitIndex = $splitIndex;
+			$data->setBuffer($this->get($length - 1));
 		}
-		$data->reliability = $reliability;
-		$data->hasSplit = $hasSplit;
-		$data->messageIndex = $messageIndex;
-		$data->orderIndex = $orderIndex;
-		$data->orderChannel = $orderChannel;
-		$data->splitCount = $splitCount;
-		$data->splitID = $splitID;
-		$data->splitIndex = $splitIndex;
-		$data->setBuffer($this->get($length - 1));
 		return $data;
 	}
 
