@@ -41,7 +41,7 @@ class Query{
 		Then, the Query class handles itself sending the packets in raw form, because
 		packets can conflict with the MCPE ones.
 		*/
-		$this->server->addHandler("server.unknownpacket", array($this, "packetHandler"), 50);
+		$this->server->addHandler("server.unknownpacket.254", array($this, "packetHandler"), 50);
 		$this->server->schedule(20 * 30, array($this, "regenerateToken"), array(), true);
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
@@ -94,37 +94,45 @@ class Query{
 		$this->token = Utils::readInt("\x00".Utils::getRandomBytes(3, false));
 	}
 	
-	public function packetHandler(&$packet, $event){
-		if($event !== "server.unknownpacket"){
+	public function packetHandler($packet, $event){
+		if($event !== "server.unknownpacket.254"){
 			return;
 		}
-		$magic = substr($packet["raw"], 0, 2);
+		$magic = substr($packet->buffer, 0, 2);
 		$offset = 2;
 		if($magic !== "\xfe\xfd"){
 			return;
 		}
-		$type = ord($packet["raw"]{2});
+		$type = ord($packet->buffer{2});
 		++$offset;
-		$sessionID = Utils::readInt(substr($packet["raw"], $offset, 4));
+		$sessionID = Utils::readInt(substr($packet->buffer, $offset, 4));
 		$offset += 4;
-		$payload = substr($packet["raw"], $offset);
+		$payload = substr($packet->buffer, $offset);
 		switch($type){
 			case 9: //Handshake
-				$this->server->send(9, chr(9).Utils::writeInt($sessionID).$this->token."\x00", true, $packet["ip"], $packet["port"]);
+				$pk = new Packet;
+				$pk->ip = $packet->ip;
+				$pk->port = $packet->port;
+				$pk->buffer = chr(9).Utils::writeInt($sessionID).$this->token."\x00";
+				$this->server->send($pk);
 				break;
 			case 0: //Stat
 				$token = Utils::readInt(substr($payload, 0, 4));
 				if($token !== $this->token and $token !== $this->lastToken){
 					break;
 				}
+				$pk = new Packet;
+				$pk->ip = $packet->ip;
+				$pk->port = $packet->port;				
 				if(strlen($payload) === 8){
 					if($this->timeout < microtime(true)){
 						$this->regenerateInfo();
 					}
-					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->longData, true, $packet["ip"], $packet["port"]);				
+					$pk->buffer = chr(0).Utils::writeInt($sessionID).$this->longData;			
 				}else{
-					$this->server->send(0, chr(0).Utils::writeInt($sessionID).$this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00", true, $packet["ip"], $packet["port"]);
+					$pk->buffer = chr(0).Utils::writeInt($sessionID).$this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
 				}
+				$this->server->send($pk);
 				break;
 		}
 		return true;
