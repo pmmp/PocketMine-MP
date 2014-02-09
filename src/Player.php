@@ -218,8 +218,8 @@ class Player{
 			}
 		}
 		$pk = new ChunkDataPacket;
-		$pk->x = $X;
-		$pk->z = $Z;
+		$pk->chunkX = $X;
+		$pk->chunkZ = $Z;
 		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
 		$cnt = $this->dataPacket($pk);
 		if($cnt === false){

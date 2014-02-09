@@ -20,8 +20,8 @@
 */
 
 class ChunkDataPacket extends RakNetDataPacket{
-	public $x;
-	public $z;
+	public $chunkX;
+	public $chunkZ;
 	public $data;
 	
 	public function pid(){
@@ -34,8 +34,8 @@ class ChunkDataPacket extends RakNetDataPacket{
 	
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->x);
-		$this->putInt($this->z);
+		$this->putInt($this->chunkX);
+		$this->putInt($this->chunkZ);
 		$this->put($this->data);
 	}
 
