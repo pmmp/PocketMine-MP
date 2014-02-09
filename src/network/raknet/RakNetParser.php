@@ -182,6 +182,10 @@ class RakNetParser{
 			return false;
 		}else{
 			$pid = $this->getByte();
+			$buffer = $this->get($length - 1);
+			if(strlen($buffer) < ($length - 1)){
+				return false;
+			}
 			if(isset(ProtocolInfo::$packets[$pid])){
 				$data = new ProtocolInfo::$packets[$pid];
 			}else{
@@ -196,7 +200,7 @@ class RakNetParser{
 			$data->splitCount = $splitCount;
 			$data->splitID = $splitID;
 			$data->splitIndex = $splitIndex;
-			$data->setBuffer($this->get($length - 1));
+			$data->setBuffer($buffer);
 		}
 		return $data;
 	}
