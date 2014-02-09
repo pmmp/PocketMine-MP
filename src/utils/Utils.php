@@ -90,12 +90,16 @@ class Utils{
 	}
 
 	public static function getOS(){
-		$uname = trim(strtoupper(php_uname("s")));
-		if(strpos($uname, "DARWIN") !== false){
-			return "mac";
-		}elseif(strpos($uname, "WIN") !== false){
+		$uname = php_uname("s");
+		if(stripos($uname, "Darwin") !== false){
+			if(strpos(php_uname("m"), "iP") === 0){
+				return "ios";
+			}else{
+				return "mac";
+			}
+		}elseif(stripos($uname, "Win") !== false){
 			return "win";
-		}elseif(strpos($uname, "LINUX") !== false){
+		}elseif(stripos($uname, "Linux") !== false){
 			return "linux";
 		}else{
 			return "other";
@@ -569,7 +573,7 @@ class Utils{
 
 		for($i = 0; $i < 8; $i += 4){
 			$value = bcmul($value, "4294967296", 0); //4294967296 == 2^32
-			$value = bcadd($value, 0x1000000 * ord($x{$i}) + ((ord($x{$i + 1}) << 16) | (ord($x{$i + 2}) << 8) | ord($x{$i + 3})), 0);
+			$value = bcadd($value, 0x1000000 * ord(@$x{$i}) + ((ord(@$x{$i + 1}) << 16) | (ord(@$x{$i + 2}) << 8) | ord(@$x{$i + 3})), 0);
 		}
 		return ($negative === true ? "-".$value:$value);
 	}
