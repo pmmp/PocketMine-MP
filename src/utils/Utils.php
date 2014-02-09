@@ -97,10 +97,16 @@ class Utils{
 			}else{
 				return "mac";
 			}
-		}elseif(stripos($uname, "Win") !== false){
+		}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
 			return "win";
 		}elseif(stripos($uname, "Linux") !== false){
-			return "linux";
+			if(@file_exists("/system/build.prop")){
+				return "android";
+			}else{
+				return "linux";
+			}
+		}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+			return "bsd";
 		}else{
 			return "other";
 		}
