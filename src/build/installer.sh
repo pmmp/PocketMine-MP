@@ -59,7 +59,7 @@ rm -f start.sh
 rm -f start.bat
 echo "[1/3] Downloading PocketMine-MP $PMMP_VERSION..."
 set -e
-download_file "https://github.com/shoghicp/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
+download_file "https://github.com/PocketMine/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
 mv -f PocketMine-MP-$PMMP_VERSION/* ./
 rm -f -r PocketMine-MP-$PMMP_VERSION/
 rm -f ./start.cmd
