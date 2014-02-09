@@ -1495,7 +1495,7 @@ class Player{
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}else{
-						$this->entity->setPosition($this->entity, $data["yaw"], $data["pitch"]);
+						$this->entity->setPosition($this->entity, $packet->yaw, $packet->pitch);
 					}
 				}
 				break;
