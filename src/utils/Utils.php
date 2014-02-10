@@ -90,13 +90,23 @@ class Utils{
 	}
 
 	public static function getOS(){
-		$uname = trim(strtoupper(php_uname("s")));
-		if(strpos($uname, "DARWIN") !== false){
-			return "mac";
-		}elseif(strpos($uname, "WIN") !== false){
+		$uname = php_uname("s");
+		if(stripos($uname, "Darwin") !== false){
+			if(strpos(php_uname("m"), "iP") === 0){
+				return "ios";
+			}else{
+				return "mac";
+			}
+		}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
 			return "win";
-		}elseif(strpos($uname, "LINUX") !== false){
-			return "linux";
+		}elseif(stripos($uname, "Linux") !== false){
+			if(@file_exists("/system/build.prop")){
+				return "android";
+			}else{
+				return "linux";
+			}
+		}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+			return "bsd";
 		}else{
 			return "other";
 		}
