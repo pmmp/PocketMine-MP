@@ -1253,6 +1253,11 @@ class Player{
 		if($this->connected === false){
 			return;
 		}
+		
+		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY){
+			return;
+		}
+		
 		switch($packet->pid()){
 			case 0x01:
 				break;
@@ -2315,7 +2320,7 @@ class Player{
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
-	public function directBigRawPacket(RakNetDataPacket $packet){
+	private function directBigRawPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
 			return false;
 		}	
@@ -2355,6 +2360,11 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
+		
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
+			return array();
+		}
+		
 		$packet->encode();
 		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$pk->data[] = $packet;
@@ -2378,6 +2388,11 @@ class Player{
 		if($this->connected === false){
 			return false;
 		}
+		
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
+			return;
+		}
+		
 		$packet->encode();
 		$len = strlen($packet->buffer) + 1;
 		$MTU = $this->MTU - 24;

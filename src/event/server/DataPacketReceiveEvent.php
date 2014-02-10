@@ -19,18 +19,22 @@
  *
 */
 
-class UnknownPacketSendEvent extends ServerEvent implements CancellableEvent{
+class DataPacketReceiveEvent extends ServerEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
 	
 	private $packet;
+	private $player;	
 	
-	
-	public function __construct(Packet $packet){
+	public function __construct(Player $player, RakNetDataPacket $packet){
 		$this->packet = $packet;
 	}
 	
 	public function getPacket(){
 		return $this->packet;
+	}
+	
+	public function getPlayer(){
+		return $this->player;
 	}
 }

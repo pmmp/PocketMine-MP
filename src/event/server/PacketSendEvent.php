@@ -19,14 +19,14 @@
  *
 */
 
-class RakNetPacketReceiveEvent extends ServerEvent implements CancellableEvent{
+class PacketSendEvent extends ServerEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
 	
 	private $packet;
 	
 	
-	public function __construct(RakNetPacket $packet){
+	public function __construct(Packet $packet){
 		$this->packet = $packet;
 	}
 	
