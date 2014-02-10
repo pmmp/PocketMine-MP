@@ -33,7 +33,7 @@ class Utils{
 	
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
-			return sha1(strtolower(get_class($variable))."::".strtolower($variable[1]));
+			return sha1(strtolower(get_class($variable[0]))."::".strtolower($variable[1]));
 		}else{
 			return sha1(strtolower($variable));
 		}
