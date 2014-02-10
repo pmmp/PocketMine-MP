@@ -353,11 +353,9 @@ class PlayerAPI{
         return $this->server->clients;
     }
 
-    public function broadcastPacket(array $players, $id, $data = array()){
-        $data = new CustomPacketHandler($id, "", $data, true);
-        $packet = array("raw" => chr($id).$data->raw);
+    public function broadcastPacket(array $players, RakNetDataPacket $packet){
         foreach($players as $p){
-            $p->dataPacket(false, $packet);
+            $p->dataPacket(clone $packet);
         }
     }
 
@@ -404,14 +402,14 @@ class PlayerAPI{
             if($p !== $player and ($p->entity instanceof Entity)){
                 $p->entity->spawn($player);
                 if($p->level !== $player->level){
-                    $player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-                        "eid" => $p->entity->eid,
-                        "x" => -256,
-                        "y" => 128,
-                        "z" => -256,
-                        "yaw" => 0,
-                        "pitch" => 0,
-                    ));
+					$pk = new MoveEntityPacket_PosRot;
+					$pk->eid = $p->entity->eid;
+					$pk->x = -256;
+					$pk->y = 128;
+					$pk->z = -256;
+					$pk->yaw = 0;
+					$pk->pitch = 0;
+                    $player->dataPacket($pk);
                 }
             }
         }
@@ -422,14 +420,14 @@ class PlayerAPI{
             if($p !== $player and ($p->entity instanceof Entity) and ($player->entity instanceof Entity)){
                 $player->entity->spawn($p);
                 if($p->level !== $player->level){
-                    $p->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-                        "eid" => $player->entity->eid,
-                        "x" => -256,
-                        "y" => 128,
-                        "z" => -256,
-                        "yaw" => 0,
-                        "pitch" => 0,
-                    ));
+					$pk = new MoveEntityPacket_PosRot;
+					$pk->eid = $player->entity->eid;
+					$pk->x = -256;
+					$pk->y = 128;
+					$pk->z = -256;
+					$pk->yaw = 0;
+					$pk->pitch = 0;
+                    $p->dataPacket($pk);
                 }
             }
         }

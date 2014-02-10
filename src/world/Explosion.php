@@ -114,13 +114,13 @@ class Explosion{
 			$this->level->level->setBlockID($block->x, $block->y, $block->z, 0);
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
-		$server->api->player->broadcastPacket($server->api->player->getAll($this->level), MC_EXPLOSION, array(
-			"x" => $this->source->x,
-			"y" => $this->source->y,
-			"z" => $this->source->z,
-			"radius" => $this->size,
-			"records" => $send,
-		));
+		$pk = new ExplodePacket;
+		$pk->x = $this->source->x;
+		$pk->y = $this->source->y;
+		$pk->z = $this->source->z;
+		$pk->radius = $this->size;
+		$pk->records = $send;
+		$server->api->player->broadcastPacket($this->level->players, $pk);
 
 	}
 }

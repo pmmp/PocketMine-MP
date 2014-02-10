@@ -34,8 +34,8 @@ class UDPSocket{
 		}else{
 			if(socket_bind($this->sock, $serverip, $port) === true){
 				socket_set_option($this->sock, SOL_SOCKET, SO_REUSEADDR, 0);
-				socket_set_option($this->sock, SOL_SOCKET, SO_SNDBUF, 65535);
-				socket_set_option($this->sock, SOL_SOCKET, SO_RCVBUF, 65535);
+				socket_set_option($this->sock, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2); //2MB
+				socket_set_option($this->sock, SOL_SOCKET, SO_RCVBUF, 1024 * 1024); //1MB
 				$this->unblock();
 				$this->connected = true;
 			}else{
@@ -64,11 +64,11 @@ class UDPSocket{
 		return @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
 	}
 
-	public function write($data, $dest = false, $port = false){
+	public function write($data, $dest, $port){
 		if($this->connected === false){
 			return false;
 		}
-		return @socket_sendto($this->sock, $data, strlen($data), 0, ($dest === false ? $this->server:$dest), ($port === false ? $this->port:$port));
+		return @socket_sendto($this->sock, $data, strlen($data), 0, $dest, $port);
 	}
 
 }

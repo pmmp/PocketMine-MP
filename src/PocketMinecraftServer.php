@@ -64,7 +64,7 @@ class PocketMinecraftServer{
 		$this->saveEnabled = true;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
-		$this->interface = new MinecraftInterface($this, "255.255.255.255", $this->port, true, false, $this->serverip);
+		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, $this->serverip);
 		$this->stop = false;
 		$this->ticks = 0;
 		if(!defined("NO_THREADS")){
@@ -421,7 +421,7 @@ class PocketMinecraftServer{
 		}
 		$dump .= "\r\n\r\n";
 		$version = new VersionString();
-		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".CURRENT_PROTOCOL."; API ".CURRENT_API_VERSION."]\r\n";
+		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".ProtocolInfo::CURRENT_PROTOCOL."; API ".CURRENT_API_VERSION."]\r\n";
 		$dump .= "Git commit: ".GIT_COMMIT."\r\n";
 		$dump .= "Source SHA1 sum: ".SOURCE_SHA1SUM."\r\n";
 		$dump .= "uname -a: ".php_uname("a")."\r\n";
@@ -473,29 +473,30 @@ class PocketMinecraftServer{
 	}
 
 	public static function clientID($ip, $port){
-		//faster than string indexes in PHP
 		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
+		//return $ip . ":" . $port;
 	}
 
-	public function packetHandler($packet){
-		$data =& $packet["data"];
-		$CID = PocketMinecraftServer::clientID($packet["ip"], $packet["port"]);
+	public function packetHandler(Packet $packet){
+		$data =& $packet;
+		$CID = PocketMinecraftServer::clientID($packet->ip, $packet->port);
 		if(isset($this->clients[$CID])){
-			$this->clients[$CID]->handlePacket($packet["pid"], $data);
+			$this->clients[$CID]->handlePacket($packet);
 		}else{
-			if($this->handle("server.noauthpacket", $packet) === false){
+			if($this->handle("server.noauthpacket.".$packet->pid(), $packet) === false){
 				return;
 			}
-			switch($packet["pid"]){
-				case 0x01:
-				case 0x02:
+			switch($packet->pid()){
+				case RakNetInfo::UNCONNECTED_PING:
+				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
 					if($this->invisible === true){
-						$this->send(0x1c, array(
-							$data[0],
-							$this->serverID,
-							RAKNET_MAGIC,
-							$this->serverType,
-						), false, $packet["ip"], $packet["port"]);
+						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
+						$pk->pingID = $packet->pingID;
+						$pk->serverID = $this->serverID;
+						$pk->serverType = $this->serverType;
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->send($pk);
 						break;
 					}
 					if(!isset($this->custom["times_".$CID])){
@@ -507,64 +508,59 @@ class PocketMinecraftServer{
 					}
 					$txt = substr($this->description, $this->custom["times_".$CID], $ln);
 					$txt .= substr($this->description, 0, $ln - strlen($txt));
-					$this->send(0x1c, array(
-						$data[0],
-						$this->serverID,
-						RAKNET_MAGIC,
-						$this->serverType. $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt,
-					), false, $packet["ip"], $packet["port"]);
+					$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
+					$pk->pingID = $packet->pingID;
+					$pk->serverID = $this->serverID;
+					$pk->serverType = $this->serverType . $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt;
+					$pk->ip = $packet->ip;
+					$pk->port = $packet->port;
+					$this->send($pk);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
-				case 0x05:
-					$version = $data[1];
-					$size = strlen($data[2]);
-					if($version !== CURRENT_STRUCTURE){
-						console("[DEBUG] Incorrect structure #$version from ".$packet["ip"].":".$packet["port"], true, true, 2);
-						$this->send(0x1a, array(
-							CURRENT_STRUCTURE,
-							RAKNET_MAGIC,
-							$this->serverID,
-						), false, $packet["ip"], $packet["port"]);
+				case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
+					if($packet->structure !== RakNetInfo::STRUCTURE){
+						console("[DEBUG] Incorrect structure #".$packet->structure." from ".$packet->ip.":".$packet->port, true, true, 2);
+						$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
+						$pk->serverID = $this->serverID;
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->send($pk);
 					}else{
-						$this->send(0x06, array(
-							RAKNET_MAGIC,
-							$this->serverID,
-							0,
-							strlen($packet["raw"]),
-						), false, $packet["ip"], $packet["port"]);
+						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
+						$pk->serverID = $this->serverID;
+						$pk->mtuSize = strlen($packet->buffer);
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->send($pk);
 					}
 					break;
-				case 0x07:
+				case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
 					if($this->invisible === true){
 						break;
 					}
-					$port = $data[2];
-					$MTU = $data[3];
-					$clientID = $data[4];
-					if(count($this->clients) < $this->maxClients){
-						$this->clients[$CID] = new Player($clientID, $packet["ip"], $packet["port"], $MTU); //New Session!
-						$this->send(0x08, array(
-							RAKNET_MAGIC,
-							$this->serverID,
-							$this->port,
-							$data[3],
-							0,
-						), false, $packet["ip"], $packet["port"]);
-					}
+					
+					$this->clients[$CID] = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
+					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
+					$pk->serverID = $this->serverID;
+					$pk->port = $this->port;
+					$pk->mtuSize = $packet->mtuSize;
+					$pk->ip = $packet->ip;
+					$pk->port = $packet->port;
+					$this->send($pk);
 					break;
 			}
 		}
 	}
 
-	public function send($pid, $data = array(), $raw = false, $dest = false, $port = false){
-		return $this->interface->writePacket($pid, $data, $raw, $dest, $port);
+	public function send(Packet $packet){
+		return $this->interface->writePacket($packet);
 	}
 
 	public function process(){
 		$lastLoop = 0;
 		while($this->stop === false){
 			$packet = $this->interface->readPacket();
-			if($packet !== false){
+			if($packet instanceof Packet){
 				$this->packetHandler($packet);
 				$lastLoop = 0;
 			}else{

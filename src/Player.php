@@ -27,7 +27,8 @@ class Player{
 	private $resendQueue = array();
 	private $ackQueue = array();
 	private $receiveCount = -1;
-	private $buffer = "";
+	private $buffer;
+	private $bufferLen = 0;
 	private $nextBuffer = 0;
 	private $evid = array();
 	private $lastMovement = 0;
@@ -79,7 +80,7 @@ class Player{
 	public $lastCraft = 0;
 	private $chunkCount = array();
 	private $received = array();
-	public $realmsData = array();
+	public $loginData = array();
     /** @var \Level */
     public $level;
 	
@@ -114,9 +115,11 @@ class Player{
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
+		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->buffer->data = array();
 		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
 		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
-		$this->evid[] = $this->server->event("server.close", array($this, "close"));
+		$this->evid[] = $this->server->event("server.close", array($this, "close"));		
 		console("[DEBUG] New Session started with ".$ip.":".$port.". MTU ".$this->MTU.", Client ID ".$this->clientID, true, true, 2);
 	}
 	
@@ -134,11 +137,11 @@ class Player{
 			$level = $pos->level;
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
-		$this->dataPacket(MC_SET_SPAWN_POSITION, array(
-			"x" => (int) $this->spawnPosition->x,
-			"y" => (int) $this->spawnPosition->y,
-			"z" => (int) $this->spawnPosition->z,
-		));
+		$pk = new SetSpawnPositionPacket;
+		$pk->x = (int) $this->spawnPosition->x;
+		$pk->y = (int) $this->spawnPosition->y;
+		$pk->z = (int) $this->spawnPosition->z;
+		$this->dataPacket($pk);
 	}
 	
 	public function orderChunks(){
@@ -214,11 +217,11 @@ class Player{
 				$Yndex |= 1 << $iY;
 			}
 		}
-		$cnt = $this->dataPacket(MC_CHUNK_DATA, array(
-			"x" => $X,
-			"z" => $Z,
-			"data" => $this->level->getOrderedChunk($X, $Z, $Yndex),
-		));
+		$pk = new ChunkDataPacket;
+		$pk->chunkX = $X;
+		$pk->chunkZ = $Z;
+		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
+		$cnt = $this->dataPacket($pk);
 		if($cnt === false){
 			return false;
 		}
@@ -288,7 +291,7 @@ class Player{
 			$reason = $reason == "" ? "server stop":$reason;
 			$this->sendChat("You have been kicked. Reason: ".$reason."\n");
 			$this->sendBuffer();
-			$this->directDataPacket(MC_DISCONNECT);
+			$this->directDataPacket(new DisconnectPacket);
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
 			$this->spawned = false;
@@ -299,9 +302,8 @@ class Player{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			$this->server->interface->stopChunked($this->CID);
 			$this->server->api->player->remove($this->CID);
-			if($msg === true and $this->username != ""){
+			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
 			console("[INFO] ".FORMAT_AQUA.$this->username.FORMAT_RESET."[/".$this->ip.":".$this->port."] logged out due to ".$reason);
@@ -492,23 +494,19 @@ class Player{
 		return;
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
-			$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-				"windowid" => 0,
-				"slot" => (int) $s,
-				"block" => AIR,
-				"stack" => 0,
-				"meta" => 0,
-			));
+			$pk = new ContainerSetSlotPacket;
+			$pk->windowid = 0;
+			$pk->slot = (int) $s;
+			$pk->item = BlockAPI::getItem(AIR, 0, 0);
+			$this->dataPacket($pk);
 		}
 		
 		$slot = $this->inventory[$s];
-		$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-			"windowid" => 0,
-			"slot" => (int) $s,
-			"block" => $slot->getID(),
-			"stack" => $slot->count,
-			"meta" => $slot->getMetadata(),
-		));
+		$pk = new ContainerSetSlotPacket;
+		$pk->windowid = 0;
+		$pk->slot = (int) $s;
+		$pk->item = $slot;
+		$this->dataPacket($pk);
 		return true;
 	}
 	
@@ -553,16 +551,17 @@ class Player{
 					if($data->class === TILE_FURNACE){
 						foreach($this->windows as $id => $w){
 							if($w === $data){
-								$this->dataPacket(MC_CONTAINER_SET_DATA, array(
-									"windowid" => $id,
-									"property" => 0, //Smelting
-									"value" => floor($data->data["CookTime"]),
-								));
-								$this->dataPacket(MC_CONTAINER_SET_DATA, array(
-									"windowid" => $id,
-									"property" => 1, //Fire icon
-									"value" => $data->data["BurnTicks"],
-								));
+								$pk = new ContainerSetDataPacket;
+								$pk->windowid = $id;
+								$pk->property = 0; //Smelting
+								$pk->value = floor($data->data["CookTime"]);
+								$this->dataPacket($pk);
+
+								$pk = new ContainerSetDataPacket;
+								$pk->windowid = $id;
+								$pk->property = 1; //Fire icon
+								$pk->value = $data->data["BurnTicks"];
+								$this->dataPacket($pk);
 							}
 						}
 					}
@@ -572,13 +571,11 @@ class Player{
 				if($data["tile"]->level === $this->level){
 					foreach($this->windows as $id => $w){
 						if($w === $data["tile"]){
-							$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-								"windowid" => $id,
-								"slot" => $data["slot"] + (isset($data["offset"]) ? $data["offset"]:0),
-								"block" => $data["slotdata"]->getID(),
-								"stack" => $data["slotdata"]->count,
-								"meta" => $data["slotdata"]->getMetadata(),
-							));
+							$pk = new ContainerSetSlotPacket;
+							$pk->windowid = $id;
+							$pk->slot = $data["slot"] + (isset($data["offset"]) ? $data["offset"]:0);
+							$pk->item = $data["slotdata"];
+							$this->dataPacket($pk);
 						}
 					}
 				}
@@ -589,13 +586,19 @@ class Player{
 						$this->sendArmor($this);
 						break;
 					}
-					$this->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
+					$pk = new PlayerArmorEquipmentPacket;
+					$pk->eid = $data["eid"];
+					$pk->slots = $data["slots"];
+					$this->dataPacket($pk);
 				}
 				break;
 			case "player.pickup":
 				if($data["eid"] === $this->eid){
 					$data["eid"] = 0;
-					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
+					$pk = new TakeItemEntityPacket;
+					$pk->eid = 0;
+					$pk->target = $data["entity"]->eid;
+					$this->dataPacket($pk);
 					if(($this->gamemode & 0x01) === 0x00){
 						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
 					}
@@ -608,7 +611,10 @@ class Player{
 							break;
 					}
 				}elseif($data["entity"]->level === $this->level){
-					$this->dataPacket(MC_TAKE_ITEM_ENTITY, $data);
+					$pk = new TakeItemEntityPacket;
+					$pk->eid = $data["eid"];
+					$pk->target = $data["entity"]->eid;
+					$this->dataPacket($pk);
 				}
 				break;
 			case "player.equipment.change":
@@ -616,28 +622,34 @@ class Player{
 					break;
 				}
 				$data["slot"] = 0;
-				$this->dataPacket(MC_PLAYER_EQUIPMENT, $data);
+
+				$pk = new PlayerEquipmentPacket;
+				$pk->eid = $data["eid"];
+				$pk->item = $data["item"]->getID();
+				$pk->meta = $data["item"]->getMetadata();
+				$pk->slot = $data["slot"];
+				$this->dataPacket($pk);
 
 				break;
 			case "entity.motion":
 				if($data->eid === $this->eid or $data->level !== $this->level){
 					break;
 				}
-				$this->dataPacket(MC_SET_ENTITY_MOTION, array(
-					"eid" => $data->eid,
-					"speedX" => (int) ($data->speedX * 400),
-					"speedY" => (int) ($data->speedY * 400),
-					"speedZ" => (int) ($data->speedZ * 400),
-				));
+				$pk = new SetEntityMotionPacket;
+				$pk->eid = $data->eid;
+				$pk->speedX = $data->speedX;
+				$pk->speedY = $data->speedY;
+				$pk->speedZ = $data->speedZ;
+				$this->dataPacket($pk);
 				break;
 			case "entity.animate":
 				if($data["eid"] === $this->eid or $data["entity"]->level !== $this->level){
 					break;
 				}
-				$this->dataPacket(MC_ANIMATE, array(
-					"eid" => $data["eid"],
-					"action" => $data["action"], //1 swing arm,
-				));
+				$pk = new AnimatePacket;
+				$pk->eid = $data["eid"];
+				$pk->action = $data["action"]; //1 swing arm,
+				$this->dataPacket($pk);
 				break;
 			case "entity.metadata":
 				if($data->eid === $this->eid){
@@ -646,10 +658,10 @@ class Player{
 					$eid = $data->eid;
 				}
 				if($data->level === $this->level){
-					$this->dataPacket(MC_SET_ENTITY_DATA, array(
-						"eid" => $eid,
-						"metadata" => $data->getMetadata(),
-					));
+					$pk = new SetEntityDataPacket;
+					$pk->eid = $eid;
+					$pk->metadata = $data->getMetadata();
+					$this->dataPacket($pk);
 				}
 				break;
 			case "entity.event":
@@ -659,10 +671,10 @@ class Player{
 					$eid = $data["entity"]->eid;
 				}
 				if($data["entity"]->level === $this->level){
-					$this->dataPacket(MC_ENTITY_EVENT, array(
-						"eid" => $eid,
-						"event" => $data["event"],
-					));
+					$pk = new EntityEventPacket;
+					$pk->eid = $eid;
+					$pk->event = $data["event"];
+					$this->dataPacket($pk);
 				}
 				break;
 			case "server.chat":
@@ -706,11 +718,11 @@ class Player{
 				}
 			}
 			
-			if($m !== ""){			
-				$this->dataPacket(MC_CHAT, array(
-					"player" => ($author instanceof Player) ? $author->username:$author,
-					"message" => TextFormat::clean($m), //Colors not implemented :(
-				));
+			if($m !== ""){
+				$pk = new MessagePacket;
+				$pk->source = ($author instanceof Player) ? $author->username:$author;
+				$pk->message = TextFormat::clean($m); //Colors not implemented :(
+				$this->dataPacket($pk);
 			}
 		}
 	}
@@ -753,16 +765,16 @@ class Player{
 		*/
 		$flags = 0;
 		if(($this->gamemode & 0x02) === 0x02){
-			$flags |= 0x01; //Not allow placing/breaking blocks, adventure mode
+			$flags |= 0x01; //Do not allow placing/breaking blocks, adventure mode
 		}
 		
 		if($nametags !== false){
 			$flags |= 0x20; //Show Nametags
 		}
-
-		$this->dataPacket(MC_ADVENTURE_SETTINGS, array(
-			"flags" => $flags,
-		));
+		
+		$pk = new AdventureSettingsPacket;
+		$pk->flags = $flags;
+		$this->dataPacket($pk);
 	}
 
     /**
@@ -902,26 +914,27 @@ class Player{
 				foreach($this->server->api->entity->getAll($this->level) as $e){
 					if($e !== $this->entity){
 						if($e->player instanceof Player){
-							$e->player->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-								"eid" => $this->entity->eid,
-								"x" => -256,
-								"y" => 128,
-								"z" => -256,
-								"yaw" => 0,
-								"pitch" => 0,
-							));
-							$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-								"eid" => $e->eid,
-								"x" => -256,
-								"y" => 128,
-								"z" => -256,
-								"yaw" => 0,
-								"pitch" => 0,
-							));
+							$pk = new MoveEntityPacket_PosRot;
+							$pk->eid = $this->entity->eid;
+							$pk->x = -256;
+							$pk->y = 128;
+							$pk->z = -256;
+							$pk->yaw = 0;
+							$pk->pitch = 0;
+							$e->player->dataPacket($pk);
+							
+							$pk = new MoveEntityPacket_PosRot;
+							$pk->eid = $e->eid;
+							$pk->x = -256;
+							$pk->y = 128;
+							$pk->z = -256;
+							$pk->yaw = 0;
+							$pk->pitch = 0;
+							$this->dataPacket($pk);
 						}else{
-							$this->dataPacket(MC_REMOVE_ENTITY, array(
-								"eid" => $e->eid,
-							));
+							$pk = new RemoveEntityPacket;
+							$pk->eid = $e->eid;
+							$this->dataPacket($pk);
 						}
 					}
 				}
@@ -932,34 +945,37 @@ class Player{
 				$this->chunksLoaded = array();
 				$this->server->api->entity->spawnToAll($this->entity);
 				$this->server->api->entity->spawnAll($this);
-				$this->dataPacket(MC_SET_TIME, array(
-					"time" => $this->level->getTime(),
-				));
+				
+				$pk = new SetTimePacket;
+				$pk->time = $this->level->getTime();
+				$this->dataPacket($pk);
 				$terrain = true;
 				
 				foreach($this->server->api->player->getAll($this->level) as $player){
 					if($player !== $this and $player->entity instanceof Entity){
-						$this->dataPacket(MC_MOVE_ENTITY_POSROT, array(
-							"eid" => $player->entity->eid,
-							"x" => $player->entity->x,
-							"y" => $player->entity->y,
-							"z" => $player->entity->z,
-							"yaw" => $player->entity->yaw,
-							"pitch" => $player->entity->pitch,
-						));
-						$player->dataPacket(MC_PLAYER_EQUIPMENT, array(
-							"eid" => $this->eid,
-							"block" => $this->getSlot($this->slot)->getID(),
-							"meta" => $this->getSlot($this->slot)->getMetadata(),
-							"slot" => 0,
-						));
+						$pk = new MoveEntityPacket_PosRot;
+						$pk->eid = $player->entity->eid;
+						$pk->x = $player->entity->x;
+						$pk->y = $player->entity->y;
+						$pk->z = $player->entity->z;
+						$pk->yaw = $player->entity->yaw;
+						$pk->pitch = $player->entity->pitch;
+						$this->dataPacket($pk);
+						
+						$pk = new PlayerEquipmentPacket;
+						$pk->eid = $this->eid;
+						$pk->item = $this->getSlot($this->slot)->getID();
+						$pk->meta = $this->getSlot($this->slot)->getMetadata();
+						$pk->slot = 0;
+						$player->dataPacket($pk);
 						$this->sendArmor($player);
-						$this->dataPacket(MC_PLAYER_EQUIPMENT, array(
-							"eid" => $player->eid,
-							"block" => $player->getSlot($player->slot)->getID(),
-							"meta" => $player->getSlot($player->slot)->getMetadata(),
-							"slot" => 0,
-						));
+						
+						$pk = new PlayerEquipmentPacket;
+						$pk->eid = $player->eid;
+						$pk->item = $player->getSlot($player->slot)->getID();
+						$pk->meta = $player->getSlot($player->slot)->getMetadata();
+						$pk->slot = 0;
+						$this->dataPacket($pk);
 						$player->sendArmor($this);
 					}
 				}
@@ -981,15 +997,16 @@ class Player{
 				$this->forceMovement = $pos;
 			}
 		}
-		$this->dataPacket(MC_MOVE_PLAYER, array(
-			"eid" => 0,
-			"x" => $pos->x,
-			"y" => $pos->y,
-			"z" => $pos->z,
-			"bodyYaw" => $yaw,
-			"pitch" => $pitch,
-			"yaw" => $yaw,
-		));
+		
+		$pk = new MovePlayerPacket;
+		$pk->eid = 0;
+		$pk->x = $pos->x;
+		$pk->y = $pos->y;
+		$pk->z = $pos->z;
+		$pk->bodyYaw = $yaw;
+		$pk->pitch = $pitch;
+		$pk->yaw = $yaw;
+		$this->dataPacket($pk);
 	}
 	
 	public function getGamemode(){
@@ -1106,14 +1123,15 @@ class Player{
 			$safeCount = (int) (($this->MTU - 1) / 4);
 			$packetCnt = (int) ($ackCnt / $safeCount + 1);
 			for($p = 0; $p < $packetCnt; ++$p){
-				$acks = array();
+				$pk = new RakNetPacket(RakNetInfo::ACK);
+				$pk->packets = array();
 				for($c = 0; $c < $safeCount; ++$c){
 					if(($k = array_pop($this->ackQueue)) === null){
 						break;
 					}
-					$acks[] = $k;
+					$pk->packets[] = $k;
 				}
-				$this->send(0xc0, array($acks));
+				$this->send($pk);
 			}
 			$this->ackQueue = array();
 		}
@@ -1123,38 +1141,41 @@ class Player{
 			foreach($this->receiveQueue as $count => $packets){
 				unset($this->receiveQueue[$count]);
 				foreach($packets as $p){
-					if(isset($p["counter"])){
-						if($p["counter"] > $this->receiveCount){
-							$this->receiveCount = $p["counter"];
-						}elseif($p["counter"] !== 0){
-							if(isset($this->received[$p["counter"]])){
-								continue;
-							}
-							switch($p["id"]){
-								case 0x01:
-								case MC_PONG:
-								case MC_PING:
-								case MC_MOVE_PLAYER:
-								case MC_REQUEST_CHUNK:
-								case MC_ANIMATE:
-								case MC_SET_HEALTH:
+					if($p instanceof RakNetDataPacket and $p->hasSplit === false){
+						if(isset($p->messageIndex) and $p->messageIndex !== false){
+							if($p->messageIndex > $this->receiveCount){
+								$this->receiveCount = $p->messageIndex;
+							}elseif($p->messageIndex !== 0){
+								if(isset($this->received[$p->messageIndex])){
 									continue;
+								}
+								switch($p->pid()){
+									case 0x01:
+									case ProtocolInfo::PING_PACKET:
+									case ProtocolInfo::PONG_PACKET:
+									case ProtocolInfo::MOVE_PLAYER_PACKET:
+									case ProtocolInfo::REQUEST_CHUNK_PACKET:
+									case ProtocolInfo::ANIMATE_PACKET:
+									case ProtocolInfo::SET_HEALTH_PACKET:
+										continue;
+								}
 							}
+							$this->received[$p->messageIndex] = true;
 						}
-						$this->received[$p["counter"]] = true;
+						$p->decode();
+						$this->handleDataPacket($p);
 					}
-					$this->handleDataPacket($p["id"], $p);
 				}
 			}
 		}
 
-		if($this->nextBuffer <= $time and strlen($this->buffer) > 0){
+		if($this->nextBuffer <= $time and $this->bufferLen > 0){
 			$this->sendBuffer();
 		}
 		
 		$limit = $time - 5; //max lag
 		foreach($this->recoveryQueue as $count => $data){
-			if($data["sendtime"] > $limit){
+			if($data->sendtime > $limit){
 				break;
 			}
 			unset($this->recoveryQueue[$count]);
@@ -1165,8 +1186,9 @@ class Player{
 			foreach($this->resendQueue as $count => $data){				
 				unset($this->resendQueue[$count]);
 				$this->packetStats[1]++;
-				$this->lag[] = microtime(true) - $data["sendtime"];
-				$cnt = $this->directDataPacket($data["id"], $data, $data["pid"]);
+				$this->lag[] = microtime(true) - $data->sendtime;
+				$data->sendtime = microtime(true);
+				$cnt = $this->send($data);
 				if(isset($this->chunkCount[$count])){
 					unset($this->chunkCount[$count]);
 					$this->chunkCount[$cnt[0]] = true;
@@ -1175,25 +1197,25 @@ class Player{
 		}
 	}
 	
-	public function handlePacket($pid, $data){
+	public function handlePacket(RakNetPacket $packet){
 		if($this->connected === true){
 			$this->timeout = microtime(true) + 20;
-			switch($pid){
-				case 0xa0: //NACK
-					foreach($data[0] as $count){
+			switch($packet->pid()){
+				case RakNetInfo::NACK:
+					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]["sendtime"];
+							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 						}
 						++$this->packetStats[1];
 					}
 					break;
 
-				case 0xc0: //ACK
-					foreach($data[0] as $count){
+				case RakNetInfo::ACK:
+					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){	
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]["sendtime"];
+							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
 							unset($this->recoveryQueue[$count]);
 							unset($this->resendQueue[$count]);							
 						}
@@ -1201,91 +1223,97 @@ class Player{
 					}
 					break;
 
-				case 0x80: //Data Packet
-				case 0x81:
-				case 0x82:
-				case 0x83:
-				case 0x84:
-				case 0x85:
-				case 0x86:
-				case 0x87:
-				case 0x88:
-				case 0x89:
-				case 0x8a:
-				case 0x8b:
-				case 0x8c:
-				case 0x8d:
-				case 0x8e:
-				case 0x8f:
-					$this->ackQueue[] = $data[0];
-					$this->receiveQueue[$data[0]] = array();
-					foreach($data["packets"] as $packet){
-						$this->receiveQueue[$data[0]][] = $packet[1];
+				case RakNetInfo::DATA_PACKET_0:
+				case RakNetInfo::DATA_PACKET_1:
+				case RakNetInfo::DATA_PACKET_2:
+				case RakNetInfo::DATA_PACKET_3:
+				case RakNetInfo::DATA_PACKET_4:
+				case RakNetInfo::DATA_PACKET_5:
+				case RakNetInfo::DATA_PACKET_6:
+				case RakNetInfo::DATA_PACKET_7:
+				case RakNetInfo::DATA_PACKET_8:
+				case RakNetInfo::DATA_PACKET_9:
+				case RakNetInfo::DATA_PACKET_A:
+				case RakNetInfo::DATA_PACKET_B:
+				case RakNetInfo::DATA_PACKET_C:
+				case RakNetInfo::DATA_PACKET_D:
+				case RakNetInfo::DATA_PACKET_E:
+				case RakNetInfo::DATA_PACKET_F:
+					$this->ackQueue[] = $packet->seqNumber;
+					$this->receiveQueue[$packet->seqNumber] = array();
+					foreach($packet->data as $pk){
+						$this->receiveQueue[$packet->seqNumber][] = $pk;
 					}
 					break;
 			}
 		}
 	}
 
-	public function handleDataPacket($pid, $data){
-		switch($pid){
+	public function handleDataPacket(RakNetDataPacket $packet){
+		if($this->connected === false){
+			return;
+		}
+		
+		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === BaseEvent::DENY){
+			return;
+		}
+		
+		switch($packet->pid()){
 			case 0x01:
 				break;
-			case MC_PONG:
+			case ProtocolInfo::PONG_PACKET:
 				break;
-			case MC_PING:
-				$t = abs(microtime(true) * 1000);
-				$this->dataPacket(MC_PONG, array(
-					"ptime" => $data["time"],
-					"time" => $t,
-				));
-				$this->sendBuffer();
+			case ProtocolInfo::PING_PACKET:
+				$pk = new PongPacket;
+				$pk->ptime = $packet->time;
+				$pk->time = abs(microtime(true) * 1000);
+				$this->directDataPacket($pk);
 				break;
-			case MC_DISCONNECT:
+			case ProtocolInfo::DISCONNECT_PACKET:
 				$this->close("client disconnect");
 				break;
-			case MC_CLIENT_CONNECT:
+			case ProtocolInfo::CLIENT_CONNECT_PACKET:
 				if($this->loggedIn === true){
 					break;
 				}
-				$this->dataPacket(MC_SERVER_HANDSHAKE, array(
-					"port" => $this->port,
-					"session" => $data["session"],
-					"session2" => Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9"),
-				));
+				$pk = new ServerHandshakePacket;
+				$pk->port = $this->port;
+				$pk->session = $packet->session;
+				$pk->session2 = Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
+				$this->dataPacket($pk);
 				break;
-			case MC_CLIENT_HANDSHAKE:
+			case ProtocolInfo::CLIENT_HANDSHAKE_PACKET:
 				if($this->loggedIn === true){
 					break;
 				}
 				break;
-			case MC_LOGIN:
+			case ProtocolInfo::LOGIN_PACKET:
 				if($this->loggedIn === true){
 					break;
 				}
-				$this->realmsData = array("clientId" => $data["clientId"], "realms_data" => $data["realms_data"]);
+				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
 				if(count($this->server->clients) > $this->server->maxClients){
 					$this->close("server is full!", false);
 					return;
 				}
-				if($data["protocol1"] !== CURRENT_PROTOCOL){
-					if($data["protocol1"] < CURRENT_PROTOCOL){
-						$this->directDataPacket(MC_LOGIN_STATUS, array(
-							"status" => 1,
-						));
+				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
+					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
+						$pk = new LoginStatusPacket;
+						$pk->status = 1;
+						$this->directDataPacket($pk);
 					}else{
-						$this->directDataPacket(MC_LOGIN_STATUS, array(
-							"status" => 2,
-						));
+						$pk = new LoginStatusPacket;
+						$pk->status = 2;
+						$this->directDataPacket($pk);
 					}
-					$this->close("Incorrect protocol #".$data["protocol1"], false);
+					$this->close("Incorrect protocol #".$packet->protocol1, false);
 					break;
 				}
-				if(preg_match('#[^a-zA-Z0-9_]#', $data["username"]) == 0 and $data["username"] != ""){
-					$this->username = $data["username"];
+				if(preg_match('#[^a-zA-Z0-9_]#', $packet->username) == 0 and $packet->username != ""){
+					$this->username = $packet->username;
 					$this->iusername = strtolower($this->username);
 				}else{
-					$this->username = $data["username"];
+					$this->username = $packet->username;
 					$this->iusername = strtolower($this->username);
 					$this->close("Bad username", false);
 					break;
@@ -1360,18 +1388,21 @@ class Player{
 
 				$this->server->api->player->saveOffline($this->data);
 
-				$this->dataPacket(MC_LOGIN_STATUS, array(
-					"status" => 0,
-				));
-				$this->dataPacket(MC_START_GAME, array(
-					"seed" => $this->level->getSeed(),
-					"x" => $this->data->get("position")["x"],
-					"y" => $this->data->get("position")["y"],
-					"z" => $this->data->get("position")["z"],
-					"generator" => 0,
-					"gamemode" => ($this->gamemode & 0x01),
-					"eid" => 0,
-				));
+
+				$pk = new LoginStatusPacket;
+				$pk->status = 0;
+				$this->dataPacket($pk);
+				
+				$pk = new StartGamePacket;
+				$pk->seed = $this->level->getSeed();
+				$pk->x = $this->data->get("position")["x"];
+				$pk->y = $this->data->get("position")["y"];
+				$pk->z = $this->data->get("position")["z"];
+				$pk->generator = 0;
+				$pk->gamemode = $this->gamemode & 0x01;
+				$pk->eid = 0;
+				$this->dataPacket($pk);
+	
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
 					$this->hotbar = array();
@@ -1390,11 +1421,12 @@ class Player{
 				$this->entity->z = $this->data->get("position")["z"];
 				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
 					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
-					$this->dataPacket(MC_SET_SPAWN_POSITION, array(
-						"x" => (int) $this->spawnPosition->x,
-						"y" => (int) $this->spawnPosition->y,
-						"z" => (int) $this->spawnPosition->z,
-					));
+					
+					$pk = new SetSpawnPositionPacket;
+					$pk->x = (int) $this->spawnPosition->x;
+					$pk->y = (int) $this->spawnPosition->y;
+					$pk->z = (int) $this->spawnPosition->z;
+					$this->dataPacket($pk);
 				}
 				$this->entity->check = false;
 				$this->entity->setName($this->username);
@@ -1413,11 +1445,11 @@ class Player{
 				$this->server->schedule(50, array($this, "measureLag"), array(), true);
 				console("[INFO] ".FORMAT_AQUA.$this->username.FORMAT_RESET."[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
 				break;
-			case MC_READY:
+			case ProtocolInfo::READY_PACKET:
 				if($this->loggedIn === false){
 					break;
 				}
-				switch($data["status"]){
+				switch($packet->status){
 					case 1: //Spawn!!
 						if($this->spawned !== false){
 							break;
@@ -1441,9 +1473,11 @@ class Player{
 						$this->sendSettings();
 						$this->server->schedule(50, array($this, "orderChunks"), array(), true);
 						$this->blocked = false;
-						$this->dataPacket(MC_SET_TIME, array(
-							"time" => $this->level->getTime(),
-						));
+						
+						$pk = new SetTimePacket;
+						$pk->time = $this->level->getTime();
+						$this->dataPacket($pk);
+						
 						$pos = new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
 						$this->teleport($pos);
@@ -1456,7 +1490,7 @@ class Player{
 						break;
 				}
 				break;
-			case MC_ROTATE_HEAD:
+			case ProtocolInfo::ROTATE_HEAD_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1466,25 +1500,26 @@ class Player{
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}else{
-						$this->entity->setPosition($this->entity, $data["yaw"], $data["pitch"]);
+						$this->entity->setPosition($this->entity, $packet->yaw, $this->entity->pitch);
 					}
 				}
 				break;
-			case MC_MOVE_PLAYER:
+			case ProtocolInfo::MOVE_PLAYER_PACKET:
 				if($this->spawned === false){
 					break;
 				}
-				if(($this->entity instanceof Entity) and $data["counter"] > $this->lastMovement){
-					$this->lastMovement = $data["counter"];
+				if(($this->entity instanceof Entity) and $packet->messageIndex > $this->lastMovement){
+					$this->lastMovement = $packet->messageIndex;
+					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
 					if($this->forceMovement instanceof Vector3){
-						if($this->forceMovement->distance(new Vector3($data["x"], $data["y"], $data["z"])) <= 0.7){
+						if($this->forceMovement->distance($newPos) <= 0.7){
 							$this->forceMovement = false;
 						}else{
 							$this->teleport($this->forceMovement, $this->entity->yaw, $this->entity->pitch, false);
 						}
 					}
 					$speed = $this->entity->getSpeedMeasure();
-					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20)) or $this->server->api->handle("player.move", $this->entity) === false){
+					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
@@ -1492,18 +1527,21 @@ class Player{
 							console("[WARNING] ".$this->username." moved too quickly!");
 						}
 					}else{
-						$this->entity->setPosition(new Vector3($data["x"], $data["y"], $data["z"]), $data["yaw"], $data["pitch"]);
+						$this->entity->setPosition($newPos, $packet->yaw, $packet->pitch);
 					}
 				}
 				break;
-			case MC_PLAYER_EQUIPMENT:
+			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
-				$data["eid"] = $this->eid;
+				$packet->eid = $this->eid;
+				
+				$data = array();
+				$data["eid"] = $packet->eid;
 				$data["player"] = $this;
 				
-				if($data["slot"] === 0x28 or $data["slot"] === 0){ //0 for 0.8.0 compatibility
+				if($packet->slot === 0x28 or $packet->slot === 0){ //0 for 0.8.0 compatibility
 					$data["slot"] = -1;
 					$data["item"] = BlockAPI::getItem(AIR, 0, 0);
 					if($this->server->handle("player.equipment.change", $data) !== false){
@@ -1511,34 +1549,35 @@ class Player{
 					}
 					break;
 				}else{
-					$data["slot"] -= 9;
+					$packet->slot -= 9;
 				}
 				
 				
 				if(($this->gamemode & 0x01) === SURVIVAL){
-					$data["item"] = $this->getSlot($data["slot"]);
+					$data["item"] = $this->getSlot($packet->slot);
 					if(!($data["item"] instanceof Item)){
 						break;
 					}
 				}elseif(($this->gamemode & 0x01) === CREATIVE){
-					$data["slot"] = false;
+					$packet->slot = false;
 					foreach(BlockAPI::$creative as $i => $d){
-						if($d[0] === $data["block"] and $d[1] === $data["meta"]){
-							$data["slot"] = $i;
+						if($d[0] === $packet->item and $d[1] === $packet->meta){
+							$packet->slot = $i;
 						}
 					}
-					if($data["slot"] !== false){
-						$data["item"] = $this->getSlot($data["slot"]);
+					if($packet->slot !== false){
+						$data["item"] = $this->getSlot($packet->slot);
 					}else{
 						break;
 					}
 				}else{
 					break;//?????
 				}
-				$data["block"] = $data["item"]->getID();
-				$data["meta"] = $data["item"]->getMetadata();
+				
+				$data["slot"] = $packet->slot;
+				
 				if($this->server->handle("player.equipment.change", $data) !== false){
-					$this->slot = $data["slot"];
+					$this->slot = $packet->slot;
 					if(($this->gamemode & 0x01) === SURVIVAL){
 						if(!in_array($this->slot, $this->hotbar)){
 							array_pop($this->hotbar);
@@ -1546,7 +1585,7 @@ class Player{
 						}
 					}
 				}else{
-					//$this->sendInventorySlot($data["slot"]);
+					//$this->sendInventorySlot($packet->slot);
 					$this->sendInventory();
 				}
 				if($this->entity->inAction === true){
@@ -1554,78 +1593,103 @@ class Player{
 					$this->entity->updateMetadata();
 				}
 				break;
-			case MC_REQUEST_CHUNK:
+			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				break;
-			case MC_USE_ITEM:
+			case ProtocolInfo::USE_ITEM_PACKET:
 				if(!($this->entity instanceof Entity)){
 					break;
 				}
-				if(($this->spawned === false or $this->blocked === true) and $data["face"] >= 0 and $data["face"] <= 5){
-					$target = $this->level->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
-					$block = $target->getSide($data["face"]);
-					$this->dataPacket(MC_UPDATE_BLOCK, array(
-						"x" => $target->x,
-						"y" => $target->y,
-						"z" => $target->z,
-						"block" => $target->getID(),
-						"meta" => $target->getMetadata()		
-					));
-					$this->dataPacket(MC_UPDATE_BLOCK, array(
-						"x" => $block->x,
-						"y" => $block->y,
-						"z" => $block->z,
-						"block" => $block->getID(),
-						"meta" => $block->getMetadata()		
-					));
+
+				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
+				
+				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
+					$target = $this->level->getBlock($blockVector);
+					$block = $target->getSide($packet->face);
+					
+					$pk = new UpdateBlockPacket;
+					$pk->x = $target->x;
+					$pk->y = $target->y;
+					$pk->z = $target->z;
+					$pk->block = $target->getID();
+					$pk->meta = $target->getMetadata();
+					$this->dataPacket($pk);
+					
+					$pk = new UpdateBlockPacket;
+					$pk->x = $block->x;
+					$pk->y = $block->y;
+					$pk->z = $block->z;
+					$pk->block = $block->getID();
+					$pk->meta = $block->getMetadata();
+					$this->dataPacket($pk);
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$data["eid"] = $this->eid;
+				$packet->eid = $this->eid;
+				$data = array();
+				$data["eid"] = $packet->eid;
 				$data["player"] = $this;
-				if($data["face"] >= 0 and $data["face"] <= 5){ //Use Block, place
+				$data["face"] = $packet->face;
+				$data["x"] = $packet->x;
+				$data["y"] = $packet->y;
+				$data["z"] = $packet->z;
+				$data["item"] = $packet->item;
+				$data["meta"] = $packet->meta;
+				$data["fx"] = $packet->fx;
+				$data["fy"] = $packet->fy;
+				$data["fz"] = $packet->fz;
+				$data["posX"] = $packet->posX;
+				$data["posY"] = $packet->posY;
+				$data["posZ"] = $packet->posZ;
+
+				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					if($this->entity->inAction === true){
 						$this->entity->inAction = false;
 						$this->entity->updateMetadata();
 					}
-					if($this->blocked === true or Utils::distance($this->entity->position, $data) > 10){
-					}elseif($this->getSlot($this->slot)->getID() !== $data["block"] or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $data["meta"])){
+					
+					if($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)){
+					
+					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
 					}else{
-						$this->server->api->block->playerBlockAction($this, new Vector3($data["x"], $data["y"], $data["z"]), $data["face"], $data["fx"], $data["fy"], $data["fz"]);
+						$this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->fx, $packet->fy, $packet->fz);
 						break;
 					}
-					$target = $this->level->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
-					$block = $target->getSide($data["face"]);
-					$this->dataPacket(MC_UPDATE_BLOCK, array(
-						"x" => $target->x,
-						"y" => $target->y,
-						"z" => $target->z,
-						"block" => $target->getID(),
-						"meta" => $target->getMetadata()		
-					));
-					$this->dataPacket(MC_UPDATE_BLOCK, array(
-						"x" => $block->x,
-						"y" => $block->y,
-						"z" => $block->z,
-						"block" => $block->getID(),
-						"meta" => $block->getMetadata()		
-					));
+					$target = $this->level->getBlock($blockVector);
+					$block = $target->getSide($packet->face);
+					
+					$pk = new UpdateBlockPacket;
+					$pk->x = $target->x;
+					$pk->y = $target->y;
+					$pk->z = $target->z;
+					$pk->block = $target->getID();
+					$pk->meta = $target->getMetadata();
+					$this->dataPacket($pk);
+					
+					$pk = new UpdateBlockPacket;
+					$pk->x = $block->x;
+					$pk->y = $block->y;
+					$pk->z = $block->z;
+					$pk->block = $block->getID();
+					$pk->meta = $block->getMetadata();
+					$this->dataPacket($pk);
 					break;
-				}elseif($data["face"] === 0xFF and $this->server->handle("player.action", $data) !== false){
+				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
 					$this->entity->inAction = true;
 					$this->startAction = microtime(true);
 					$this->entity->updateMetadata();
 				}
 				break;
-			case MC_PLAYER_ACTION:
+			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+				$packet->eid = $this->eid;
 				$this->craftingItems = array();
 				$this->toCraft = array();				
 				
-				switch($data["action"]){
+				switch($packet->action){
 					case 5: //Shot arrow
 						if($this->entity->inAction === true){
 							if($this->getSlot($this->slot)->getID() === BOW){
@@ -1652,18 +1716,15 @@ class Player{
 									$overturn = false;
 									if(0 <= $rotation and $rotation < 90){
 										
-									}
-									elseif(90 <= $rotation and $rotation < 180){
+									}elseif(90 <= $rotation and $rotation < 180){
 										$rotation -= 90;
 										$X = (-1);
 										$overturn = true;
-									}
-									elseif(180 <= $rotation and $rotation < 270){
+									}elseif(180 <= $rotation and $rotation < 270){
 										$rotation -= 180;
 										$X = (-1);
 										$Z = (-1);
-									}
-									elseif(270 <= $rotation and $rotation < 360){
+									}elseif(270 <= $rotation and $rotation < 360){
 										$rotation -= 270;
 										$Z = (-1);
 										$overturn = true;
@@ -1696,33 +1757,34 @@ class Player{
 						$this->stopSleep();
 				}
 				break;
-			case MC_REMOVE_BLOCK:
-				if($this->spawned === false or $this->blocked === true or $this->entity->distance(new Vector3($data["x"], $data["y"], $data["z"])) > 8){
-					$target = $this->level->getBlock(new Vector3($data["x"], $data["y"], $data["z"]));
-					$this->dataPacket(MC_UPDATE_BLOCK, array(
-						"x" => $target->x,
-						"y" => $target->y,
-						"z" => $target->z,
-						"block" => $target->getID(),
-						"meta" => $target->getMetadata()		
-					));
+			case ProtocolInfo::REMOVE_BLOCK_PACKET:
+				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
+				if($this->spawned === false or $this->blocked === true or $this->entity->distance($blockVector) > 8){
+					$target = $this->level->getBlock($blockVector);
+					
+					$pk = new UpdateBlockPacket;
+					$pk->x = $target->x;
+					$pk->y = $target->y;
+					$pk->z = $target->z;
+					$pk->block = $target->getID();
+					$pk->meta = $target->getMetadata();
+					$this->dataPacket($pk);
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$this->server->api->block->playerBlockBreak($this, new Vector3($data["x"], $data["y"], $data["z"]));
+				$this->server->api->block->playerBlockBreak($this, $blockVector);
 				break;
-			case MC_PLAYER_ARMOR_EQUIPMENT:
+			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
 
-				$data["eid"] = $this->eid;
-				$data["player"] = $this;
+				$packet->eid = $this->eid;
 				for($i = 0; $i < 4; ++$i){
-					$s = $data["slot$i"];
+					$s = $packet->slots[$i];
 					if($s === 0 or $s === 255){
 						$s = BlockAPI::getItem(AIR, 0, 0);
 					}else{
@@ -1732,7 +1794,7 @@ class Player{
 					if($slot->getID() !== AIR and $s->getID() === AIR){
 						$this->addItem($slot->getID(), $slot->getMetadata(), 1, false);
 						$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
-						$data["slot$i"] = 255;
+						$packet->slots[$i] = 255;
 					}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						$this->armor[$i] = $this->getSlot($sl);
 						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0), false);
@@ -1741,7 +1803,7 @@ class Player{
 						$this->armor[$i] = $this->getSlot($sl);
 						$this->setSlot($sl, $item, false);
 					}else{
-						$data["slot$i"] = 255;
+						$packet->slots[$i] = 255;
 					}
 
 				}		
@@ -1751,13 +1813,18 @@ class Player{
 					$this->entity->updateMetadata();
 				}
 				break;
-			case MC_INTERACT:
+			case ProtocolInfo::INTERACT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
+				$packet->eid = $this->eid;
+				$data = array();
+				$data["target"] = $packet->target;
+				$data["eid"] = $packet->eid;
+				$data["action"] = $packet->action;
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$target = $this->server->api->entity->get($data["target"]);
+				$target = $this->server->api->entity->get($packet->target);
 				if($target instanceof Entity and $this->entity instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
 					$data["entity"] = $this->entity;
@@ -1835,13 +1902,14 @@ class Player{
 				}
 				
 				break;
-			case MC_ANIMATE:
+			case ProtocolInfo::ANIMATE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
-				$this->server->api->dhandle("entity.animate", array("eid" => $this->eid, "entity" => $this->entity, "action" => $data["action"]));
+				$packet->eid = $this->eid;
+				$this->server->api->dhandle("entity.animate", array("eid" => $packet->eid, "entity" => $this->entity, "action" => $packet->action));
 				break;
-			case MC_RESPAWN:
+			case ProtocolInfo::RESPAWN_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1863,20 +1931,20 @@ class Player{
 				$this->blocked = false;
 				$this->server->handle("player.respawn", $this);
 				break;
-			case MC_SET_HEALTH: //Not used
+			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
-			case MC_ENTITY_EVENT:
+			case ProtocolInfo::ENTITY_EVENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$data["eid"] = $this->eid;
+				$packet->eid = $this->eid;
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
 					$this->entity->updateMetadata();
 				}
-				switch($data["event"]){
+				switch($packet->event){
 					case 9: //Eating
 						$items = array(
 							APPLE => 4,
@@ -1901,10 +1969,12 @@ class Player{
 						);
 						$slot = $this->getSlot($this->slot);
 						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
-							$this->dataPacket(MC_ENTITY_EVENT, array(
-								"eid" => 0,
-								"event" => 9,
-							));
+						
+							$pk = new EntityEventPacket;
+							$pk->eid = 0;
+							$pk->event = 9;							
+							$this->dataPacket($pk);
+							
 							$this->entity->heal($items[$slot->getID()], "eating");
 							--$slot->count;
 							if($slot->count <= 0){
@@ -1917,15 +1987,20 @@ class Player{
 						break;
 				}
 				break;
-			case MC_DROP_ITEM:
+			case ProtocolInfo::DROP_ITEM_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+				$packet->eid = $this->eid;
+				$packet->item = $this->getSlot($this->slot);
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$data["item"] = $this->getSlot($this->slot);
+				$data["eid"] = $packet->eid;
+				$data["unknown"] = $packet->unknown;
+				$data["item"] = $packet->item;
+				$data["player"] = $this;
 				if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
-					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $data["item"]);
+					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $packet->item);
 					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
 				}
 				if($this->entity->inAction === true){
@@ -1933,14 +2008,14 @@ class Player{
 					$this->entity->updateMetadata();
 				}
 				break;
-			case MC_CHAT:
+			case ProtocolInfo::MESSAGE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				if(trim($data["message"]) != "" and strlen($data["message"]) <= 255){
-					$message = $data["message"];
+				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
+					$message = $packet->message;
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					}else{
@@ -1955,40 +2030,40 @@ class Player{
 					}
 				}
 				break;
-			case MC_CONTAINER_CLOSE:
+			case ProtocolInfo::CONTAINER_CLOSE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				if(isset($this->windows[$data["windowid"]])){
-					if(is_array($this->windows[$data["windowid"]])){
-						foreach($this->windows[$data["windowid"]] as $ob){
-							$this->server->api->player->broadcastPacket($this->level->players, MC_TILE_EVENT, array(
-								"x" => $ob->x,
-								"y" => $ob->y,
-								"z" => $ob->z,
-								"case1" => 1,
-								"case2" => 0,
-							));
+				if(isset($this->windows[$packet->windowid])){
+					if(is_array($this->windows[$packet->windowid])){
+						foreach($this->windows[$packet->windowid] as $ob){
+							$pk = new TileEventPacket;
+							$pk->x = $ob->x;
+							$pk->y = $ob->y;
+							$pk->z = $ob->z;
+							$pk->case1 = 1;
+							$pk->case2 = 0;
+							$this->server->api->player->broadcastPacket($this->level->players, $pk);
 						}
-					}elseif($this->windows[$data["windowid"]]->class === TILE_CHEST){
-						$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), MC_TILE_EVENT, array(
-							"x" => $this->windows[$data["windowid"]]->x,
-							"y" => $this->windows[$data["windowid"]]->y,
-							"z" => $this->windows[$data["windowid"]]->z,
-							"case1" => 1,
-							"case2" => 0,
-						));
+					}elseif($this->windows[$packet->windowid]->class === TILE_CHEST){
+						$pk = new TileEventPacket;
+						$pk->x = $this->windows[$packet->windowid]->x;
+						$pk->y = $this->windows[$packet->windowid]->y;
+						$pk->z = $this->windows[$packet->windowid]->z;
+						$pk->case1 = 1;
+						$pk->case2 = 0;
+						$this->server->api->player->broadcastPacket($this->level->players, $pk);
 					}
 				}
-				unset($this->windows[$data["windowid"]]);
+				unset($this->windows[$packet->windowid]);
 
-				$this->dataPacket(MC_CONTAINER_CLOSE, array(
-					"windowid" => $data["windowid"],
-				));
+				$pk = new ContainerClosePacket;
+				$pk->windowid = $packet->windowid;
+				$this->dataPacket($pk);
 				break;
-			case MC_CONTAINER_SET_SLOT:
+			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -2002,28 +2077,28 @@ class Player{
 					$this->craftingItems = array();			
 				}
 				
-				if($data["windowid"] === 0){
+				if($packet->windowid === 0){
 					$craft = false;
-					$slot = $this->getSlot($data["slot"]);
-					if($slot->count >= $data["stack"] and (($slot->getID() === $data["block"] and $slot->getMetadata() === $data["meta"]) or ($data["block"] === AIR and $data["stack"] === 0)) and !isset($this->craftingItems[$data["slot"]])){ //Crafting recipe
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $data["stack"]);
-						$this->craftingItems[$data["slot"]] = $use;
+					$slot = $this->getSlot($packet->slot);
+					if($slot->count >= $packet->item->count and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->count === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $packet->item->count);
+						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
-					}elseif($slot->count <= $data["stack"] and ($slot->getID() === AIR or ($slot->getID() === $data["block"] and $slot->getMetadata() === $data["meta"]))){ //Crafting final
-						$craftItem = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"] - $slot->count);
+					}elseif($slot->count <= $packet->item->count and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
+						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count - $slot->count);
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
-						$this->toCraft[$data["slot"]] = $craftItem;
+						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
-					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() > AIR and ($slot->getID() !== $data["block"] or $slot->getMetadata() !== $data["meta"])){ //Crafting final
-						$craftItem = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
+						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count);
-						$this->craftingItems[$data["slot"]] = $use;
-						$this->toCraft[$data["slot"]] = $craftItem;
+						$this->craftingItems[$packet->slot] = $use;
+						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
 					}
 			
@@ -2044,42 +2119,40 @@ class Player{
 					$this->toCraft = array();
 					$this->craftingItems = array();
 				}
-				if(!isset($this->windows[$data["windowid"]])){
+				if(!isset($this->windows[$packet->windowid])){
 					break;
 				}
 
-				if(is_array($this->windows[$data["windowid"]])){
-					$tiles = $this->windows[$data["windowid"]];
-					if($data["slot"] >= 0 and $data["slot"] < CHEST_SLOTS){
+				if(is_array($this->windows[$packet->windowid])){
+					$tiles = $this->windows[$packet->windowid];
+					if($packet->slot >= 0 and $packet->slot < CHEST_SLOTS){
 						$tile = $tiles[0];
-						$slotn = $data["slot"];
+						$slotn = $packet->slot;
 						$offset = 0;
-					}elseif($data["slot"] >= CHEST_SLOTS and $data["slot"] <= (CHEST_SLOTS << 1)){
+					}elseif($packet->slot >= CHEST_SLOTS and $packet->slot <= (CHEST_SLOTS << 1)){
 						$tile = $tiles[1];
-						$slotn = $data["slot"] - CHEST_SLOTS;
+						$slotn = $packet->slot - CHEST_SLOTS;
 						$offset = CHEST_SLOTS;
 					}else{
 						break;
 					}
 
-					$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 					
 					$slot = $tile->getSlot($slotn);
 					if($this->server->api->dhandle("player.container.slot", array(
 						"tile" => $tile,
-						"slot" => $data["slot"],
+						"slot" => $packet->slot,
 						"offset" => $offset,
 						"slotdata" => $slot,
 						"itemdata" => $item,
 						"player" => $this,
 					)) === false){
-						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-							"windowid" => $data["windowid"],
-							"slot" => $data["slot"],
-							"block" => $slot->getID(),
-							"stack" => $slot->count,
-							"meta" => $slot->getMetadata(),
-						));
+						$pk = new ContainerSetSlotPacket;
+						$pk->windowid = $packet->windowid;
+						$pk->slot = $packet->slot;
+						$pk->item = $slot;
+						$this->dataPacket($pk);
 						break;
 					}
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
@@ -2098,31 +2171,29 @@ class Player{
 					}
 					$tile->setSlot($slotn, $item, true, $offset);
 				}else{
-					$tile = $this->windows[$data["windowid"]];
-					if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $data["slot"] < 0 or ($tile->class === TILE_CHEST and $data["slot"] >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $data["slot"] >= FURNACE_SLOTS)){
+					$tile = $this->windows[$packet->windowid];
+					if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $packet->slot < 0 or ($tile->class === TILE_CHEST and $packet->slot >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $packet->slot >= FURNACE_SLOTS)){
 						break;
 					}
-					$item = BlockAPI::getItem($data["block"], $data["meta"], $data["stack"]);
+					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
 					
-					$slot = $tile->getSlot($data["slot"]);
+					$slot = $tile->getSlot($packet->slot);
 					if($this->server->api->dhandle("player.container.slot", array(
 						"tile" => $tile,
-						"slot" => $data["slot"],
+						"slot" => $packet->slot,
 						"slotdata" => $slot,
 						"itemdata" => $item,
 						"player" => $this,
 					)) === false){
-						$this->dataPacket(MC_CONTAINER_SET_SLOT, array(
-							"windowid" => $data["windowid"],
-							"slot" => $data["slot"],
-							"block" => $slot->getID(),
-							"stack" => $slot->count,
-							"meta" => $slot->getMetadata(),
-						));
+						$pk = new ContainerSetSlotPacket;
+						$pk->windowid = $packet->windowid;
+						$pk->slot = $packet->slot;
+						$pk->item = $slot;
+						$this->dataPacket($pk);
 						break;
 					}
 
-					if($tile->class === TILE_FURNACE and $data["slot"] == 2){
+					if($tile->class === TILE_FURNACE and $packet->slot == 2){
 						switch($slot->getID()){
 							case IRON_INGOT:
 								AchievementAPI::grantAchievement($this, "acquireIron");
@@ -2144,27 +2215,27 @@ class Player{
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
 					}
-					$tile->setSlot($data["slot"], $item);
+					$tile->setSlot($packet->slot, $item);
 				}
 				break;
-			case MC_SEND_INVENTORY: //TODO, Mojang, enable this ´^_^`
+			case ProtocolInfo::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
 					break;
 				}
 				break;
-			case MC_ENTITY_DATA:
+			case ProtocolInfo::ENTITY_DATA_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$t = $this->server->api->tile->get(new Position($data["x"], $data["y"], $data["z"], $this->level));
+				$t = $this->server->api->tile->get(new Position($packet->x, $packet->y, $packet->z, $this->level));
 				if(($t instanceof Tile) and $t->class === TILE_SIGN){
 					if($t->data["creator"] !== $this->username){
 						$t->spawn($this);
 					}else{
 						$nbt = new NBT();
-						$nbt->load($data["namedtag"]);
+						$nbt->load($packet->namedtag);
 						$d = array_shift($nbt->tree);
 						if($d["id"] !== TILE_SIGN){
 							$t->spawn($this);
@@ -2175,7 +2246,7 @@ class Player{
 				}
 				break;
 			default:
-				console("[DEBUG] Unhandled 0x".dechex($pid)." Data Packet for Client ID ".$this->clientID.": ".print_r($data, true), true, true, 2);
+				console("[DEBUG] Unhandled 0x".dechex($packet->pid())." data packet for ".$this->username." (".$this->clientID."): ".print_r($packet, true), true, true, 2);
 				break;
 		}
 	}
@@ -2186,27 +2257,28 @@ class Player{
     public function sendArmor($player = false){
 		$data = array(
 			"player" => $this,
-			"eid" => $this->eid
+			"eid" => $this->eid,
+			"slots" => array()
 		);
-		$armor = array();
 		for($i = 0; $i < 4; ++$i){
 			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > AIR){
-				$data["slot$i"] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
+				$data["slots"][$i] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
 			}else{
 				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
-				$data["slot$i"] = 255;
+				$data["slots"][$i] = 255;
 			}
-			$armor[] = $this->armor[$i];
 		}
 		if($player instanceof Player){
 			if($player === $this){
-				$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
-					"windowid" => 0x78,
-					"count" => 4,
-					"slots" => $armor,
-				));
+				$pk = new ContainerSetContentPacket;
+				$pk->windowid = 0x78; //Armor window id
+				$pk->slots = $this->armor;
+				$this->dataPacket($pk);
 			}else{
-				$player->dataPacket(MC_PLAYER_ARMOR_EQUIPMENT, $data);
+				$pk = new PlayerArmorEquipmentPacket;
+				$pk->eid = $this->eid;
+				$pk->slots = $data["slots"];
+				$player->dataPacket($pk);
 			}
 		}else{
 			$this->server->api->dhandle("player.armor", $data);
@@ -2222,73 +2294,88 @@ class Player{
 			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
 		}
 
-		$this->dataPacket(MC_CONTAINER_SET_CONTENT, array(
-			"windowid" => 0,
-			"count" => count($this->inventory),
-			"slots" => $this->inventory,
-			"hotbar" => $hotbar,
-		));
+		$pk = new ContainerSetContentPacket;
+		$pk->windowid = 0;
+		$pk->slots = $this->inventory;
+		$pk->hotbar = $hotbar;
+		$this->dataPacket($pk);
 	}
 
-	public function send($pid, $data = array(), $raw = false){
+	public function send(RakNetPacket $packet){
 		if($this->connected === true){
-			$this->bandwidthRaw += $this->server->send($pid, $data, $raw, $this->ip, $this->port);
+			$packet->ip = $this->ip;
+			$packet->port = $this->port;
+			$this->bandwidthRaw += $this->server->send($packet);
 		}
 	}
 	
 	public function sendBuffer(){
-		if(strlen($this->buffer) > 0){
-			$this->directDataPacket(false, array("raw" => $this->buffer), 0x40);
+		if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){	
+			$this->buffer->seqNumber = $this->counter[0]++;
+			$this->send($this->buffer);
 		}
-		$this->buffer = "";
+		$this->bufferLen = 0;
+		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$this->buffer->data = array();
 		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
-	public function directBigRawPacket($id, $buffer){
+	private function directBigRawPacket(RakNetDataPacket $packet){
 		if($this->connected === false){
 			return false;
-		}
-		$data = array(
-			"id" => false,
-			"pid" => 0x50,
-			"sendtime" => microtime(true),
-			"raw" => "",
-		);
+		}	
+
+		$sendtime = microtime(true);
+		
 		$size = $this->MTU - 34;
-		$buffer = str_split(($id === false ? "":chr($id)).$buffer, $size);
-		$h = Utils::writeInt(count($buffer)).Utils::writeShort($this->bigCnt);
+		$buffer = str_split($packet->buffer, $size);
+		$bigCnt = $this->bigCnt;
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
 		$cnts = array();
+		$bufCount = count($buffer);
 		foreach($buffer as $i => $buf){
-			$data["raw"] = Utils::writeShort(strlen($buf) << 3).strrev(Utils::writeTriad($this->counter[3]++)).$h.Utils::writeInt($i).$buf;
 			$cnts[] = $count = $this->counter[0]++;
-			$this->recoveryQueue[$count] = $data;
-			$this->send(0x80, array(
-				$count,
-				0x50, //0b01010000
-				$data,
-			));
+			
+			$pk = new UnknownPacket;
+			$pk->packetID = $packet->pid();
+			$pk->reliability = 2;
+			$pk->hasSplit = true;
+			$pk->splitCount = $bufCount;
+			$pk->splitID = $bigCnt;
+			$pk->splitIndex = $i;
+			$pk->buffer = $buf;
+			$pk->messageIndex = $this->counter[3]++;
+			
+			$rk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+			$rk->data[] = $pk;
+			$rk->seqNumber = $count;
+			$rk->sendtime = $sendtime;
+			$this->recoveryQueue[$count] = $rk;
+			$this->send($rk);
 		}
 		return $cnts;
 	}
 	
-	public function directDataPacket($id, $data = array(), $pid = 0x00, $recover = true){
+	public function directDataPacket(RakNetDataPacket $packet, $reliability = 0, $recover = true){
 		if($this->connected === false){
 			return false;
 		}
-		$data["id"] = $id;
-		$data["pid"] = $pid;
-		$data["sendtime"] = microtime(true);
-		$count = $this->counter[0]++;
-		if($recover !== false){
-			$this->recoveryQueue[$count] = $data;
+		
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
+			return array();
 		}
-		$this->send(0x80, array(
-			$count,
-			$pid,
-			$data,
-		));
-		return array($count);
+		
+		$packet->encode();
+		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+		$pk->data[] = $packet;
+		$pk->seqNumber = $this->counter[0]++;
+		$pk->sendtime = microtime(true);
+		if($recover !== false){
+			$this->recoveryQueue[$pk->seqNumber] = $pk;
+		}
+		
+		$this->send($pk);
+		return array($pk->seqNumber);
 	}
 
     /**
@@ -2297,24 +2384,30 @@ class Player{
      *
      * @return array|bool
      */
-    public function dataPacket($id, $data = array()){
-		$data["id"] = $id;
-		if($id === false){
-			$raw = $data["raw"];
-		}else{
-			$data = new CustomPacketHandler($id, "", $data, true);
-			$raw = chr($id).$data->raw;
-		}
-		$len = strlen($raw);
-		$MTU = $this->MTU - 24;
-		if($len > $MTU){
-			return $this->directBigRawPacket(false, $raw);
+    public function dataPacket(RakNetDataPacket $packet){
+		if($this->connected === false){
+			return false;
 		}
 		
-		if((strlen($this->buffer) + $len) >= $MTU){
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
+			return;
+		}
+		
+		$packet->encode();
+		$len = strlen($packet->buffer) + 1;
+		$MTU = $this->MTU - 24;
+		if($len > $MTU){
+			return $this->directBigRawPacket($packet);
+		}
+		
+		if(($this->bufferLen + $len) >= $MTU){
 			$this->sendBuffer();
 		}
-		$this->buffer .= ($this->buffer === "" ? "":"\x40").Utils::writeShort($len << 3).strrev(Utils::writeTriad($this->counter[3]++)).$raw;
+		
+		$packet->messageIndex = $this->counter[3]++;
+		$packet->reliability = 2;
+		$this->buffer->data[] = $packet;
+		$this->bufferLen += 6 + $len;
 		return array();
 	}
 
