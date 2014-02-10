@@ -19,6 +19,15 @@
  *
 */
 
-abstract class MalleableEvent extends BaseEvent{
+
+/**
+ * Plugins that create events must use one of these classes as the base
+ */
+
+abstract class PluginEvent extends BaseEvent{
+
+}
+
+abstract class CancellablePluginEvent extends CancellableEvent{
 
 }

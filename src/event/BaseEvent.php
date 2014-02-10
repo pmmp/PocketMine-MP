@@ -81,22 +81,21 @@ abstract class BaseEvent{
 	
 	public static function unregisterAll(){
 		self::$handlers = array();
-		self::$handlerPriority = array(
-			EventPriority::LOWEST => array(),
-			EventPriority::LOW => array(),
-			EventPriority::NORMAL => array(),
-			EventPriority::HIGH => array(),
-			EventPriority::HIGHEST => array(),
-			EventPriority::MONITOR => array()
-		);
+		self::$handlerPriority = array();
 	}
 	
 	public function register(callable $handler, $priority = EventPriority::NORMAL){
+		if($priority < EventPriority::MONITOR or $priority > EventPriority::LOWEST){
+			return false;
+		}
 		$identifier = Utils::getCallableIdentifier($handler);
 		if(isset(self::$handlers[$identifier])){ //Already registered
 			return false;
 		}else{
 			self::$handlers[$identifier] = $handler;
+			if(!isset(self::$handlerPriority[(int) $priority])){
+				self::$handlerPriority[(int) $priority] = array();
+			}
 			self::$handlerPriority[(int) $priority][$identifier] = $handler;
 			return true;
 		}
@@ -110,8 +109,11 @@ abstract class BaseEvent{
 			}else{
 				for($priority = EventPriority::MONITOR; $priority <= EventPriority::LOWEST; ++$priority){
 					unset(self::$handlerPriority[$priority][$identifier]);
+					if(count(self::$handlerPriority[$priority]) === 0){
+						unset(self::$handlerPriority[$priority]);
+					}
 				}
-			}			
+			}
 			unset(self::$handlers[$identifier]);
 			return true;
 		}else{

@@ -38,6 +38,7 @@ abstract class EventHandler{
 				}			
 			}
 		}
+
 		if($event instanceof CancellableEvent and $event->isCancelled()){
 			return BaseEvent::DENY;
 		}elseif($event->isAllowed()){
@@ -45,6 +46,7 @@ abstract class EventHandler{
 		}else{
 			return BaseEvent::NORMAL;
 		}
+
 	}
 
 }
