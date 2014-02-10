@@ -134,8 +134,12 @@ class ServerAPI{
 		));
 		
 		$this->parseProperties();
+		
+		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
+		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 8)); //Default rate ~512 kB/s
+		
 		if($this->getProperty("port") !== false){
 			$this->setProperty("server-port", $this->getProperty("port"));
 			$this->config->remove("port");
