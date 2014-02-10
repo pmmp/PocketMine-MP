@@ -28,6 +28,7 @@ class DataPacketSendEvent extends ServerEvent implements CancellableEvent{
 	
 	public function __construct(Player $player, RakNetDataPacket $packet){
 		$this->packet = $packet;
+		$this->player = $player;
 	}
 	
 	public function getPacket(){
