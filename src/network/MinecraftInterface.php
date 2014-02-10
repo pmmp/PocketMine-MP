@@ -20,18 +20,16 @@
 */
 
 class MinecraftInterface{
-	public $client;
 	public $bandwidth;
 	private $socket;
 	private $packets;
-	function __construct($object, $server, $port = 25565, $listen = false, $client = false, $serverip = "0.0.0.0"){
-		$this->socket = new UDPSocket($server, $port, (bool) $listen, $serverip);
+	function __construct($server, $port = 25565, $serverip = "0.0.0.0"){
+		$this->socket = new UDPSocket($server, $port, true, $serverip);
 		if($this->socket->connected === false){
 			console("[SEVERE] Couldn't bind to $serverip:".$port, true, true, 0);
 			exit(1);
 		}
 		$this->bandwidth = array(0, 0, microtime(true));
-		$this->client = (bool) $client;
 		$this->start = microtime(true);
 		$this->packets = array();
 	}
@@ -65,6 +63,12 @@ class MinecraftInterface{
 				return $parser->packet;
 			}
 			return false;
+		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
+			$packet = new QueryPacket;
+			$packet->ip = $source;
+			$packet->port = $port;
+			$packet->buffer = $buffer;
+			ServerAPI::request()->api->query->handle($packet);
 		}else{
 			$packet = new Packet();
 			$packet->ip = $source;

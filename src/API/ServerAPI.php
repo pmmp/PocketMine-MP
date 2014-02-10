@@ -28,7 +28,8 @@ class ServerAPI{
 	private $apiList = array();
 	private $asyncCnt = 0;
 	private $rcon;
-	private $query;
+	
+	public $query;
 
     //TODO: Instead of hard-coding functions, use PHPDoc-compatible methods to load APIs.
 
@@ -139,21 +140,19 @@ class ServerAPI{
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 8)); //Default rate ~512 kB/s
+		if(ADVANCED_CACHE == true){
+			console("[INFO] Advanced cache enabled");
+		}
+		if($this->getProperty("upnp-forwarding") == true){
+			console("[INFO] [UPnP] Trying to port forward...");
+			UPnP_PortForward($this->getProperty("server-port"));
+		}
 
 		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
 		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? FORMAT_YELLOW:"").MAJOR_VERSION.FORMAT_RESET." \"".CODENAME."\" (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
 		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
-
-		if(ADVANCED_CACHE == true){
-			console("[INFO] Advanced cache enabled");
-		}
-
-		if($this->getProperty("upnp-forwarding") === true){
-			console("[INFO] [UPnP] Trying to port forward...");
-			UPnP_PortForward($this->getProperty("server-port"));
-		}
 
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
@@ -348,7 +347,7 @@ class ServerAPI{
 		}
 
 		if($this->getProperty("enable-query") === true){
-			$this->query = new Query();
+			$this->query = new QueryHandler();
 		}
 		CraftingRecipes::init();
 		$this->server->init();
