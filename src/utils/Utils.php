@@ -31,6 +31,14 @@ class Utils{
 		return ((@fsockopen("8.8.8.8", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.linux.org", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.php.net", 80, $e = null, $n = null, 2) !== false) ? true:false);
 	}
 	
+	public static function getCallableIdentifier(callable $variable){
+		if(is_array($variable)){
+			return sha1(strtolower(get_class($variable))."::".strtolower($variable[1]));
+		}else{
+			return sha1(strtolower($variable));
+		}
+	}
+	
 	public static function getUniqueID($raw = false, $extra = ""){
 		$machine = php_uname("a");
 		$machine .= file_exists("/proc/cpuinfo") ? file_get_contents("/proc/cpuinfo") : "";		

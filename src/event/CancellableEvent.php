@@ -21,7 +21,7 @@
 
 abstract class CancellableEvent extends BaseEvent{
 	public function isCancelled(){
-		return $this->status === BaseEvent::DENY;
+		return ($this->status & 0x7FFFFFFF) === BaseEvent::DENY;
 	}
 	
 	public function setCancelled($forceCancel = false){

@@ -25,8 +25,18 @@ abstract class BaseEvent{
 	const NORMAL = 2;
 	const FORCE = 0x80000000;
 	
+	/**
+	 * Any callable event must declare the static variables
+	 *
+	 * private static $handlers;
+	 * private static $handlerPriority;
+	 *
+	 * Not doing so will deny the proper event initialization
+	 */
+	
 	protected $eventName = null;
 	private $status = BaseEvent::NORMAL;
+	private $prioritySlot;
 	
 	final public function getEventName(){
 		return $this->eventName !== null ? get_class($this) : $this->eventName;
@@ -42,15 +52,71 @@ abstract class BaseEvent{
 	
 	
 	public function isAllowed(){
-		return $this->status === BaseEvent::ALLOW;
+		return ($this->status & 0x7FFFFFFF) === BaseEvent::ALLOW;
 	}
 	
 	public function setAllowed($forceAllow = false){
 		$this->status = BaseEvent::ALLOW & ($forceAllow === true ? BaseEvent::FORCE : 0);
 	}
 	
+	public function isNormal(){
+		return $this->status === BaseEvent::NORMAL;
+	}
+	
+	public function setNormal(){
+		$this->status = BaseEvent::NORMAL;
+	}
+	
 	public function isForced(){
 		return ($this->status & BaseEvent::FORCE) > 0;
 	}
-
+	
+	public static function getHandlerList(){
+		return self::$handlers;
+	}
+	
+	public static function getPriorityList(){
+		return self::$handlerPriority;
+	}
+	
+	public static function unregisterAll(){
+		self::$handlers = array();
+		self::$handlerPriority = array(
+			EventPriority::LOWEST => array(),
+			EventPriority::LOW => array(),
+			EventPriority::NORMAL => array(),
+			EventPriority::HIGH => array(),
+			EventPriority::HIGHEST => array(),
+			EventPriority::MONITOR => array()
+		);
+	}
+	
+	public function register(callable $handler, $priority = EventPriority::NORMAL){
+		$identifier = Utils::getCallableIdentifier($handler);
+		if(isset(self::$handlers[$identifier])){ //Already registered
+			return false;
+		}else{
+			self::$handlers[$identifier] = $handler;
+			self::$handlerPriority[(int) $priority][$identifier] = $handler;
+			return true;
+		}
+	}
+	
+	public function unregister(callable $handler, $priority = EventPriority::NORMAL){
+		$identifier = Utils::getCallableIdentifier($handler);
+		if(isset(self::$handlers[$identifier])){
+			if(isset(self::$handlerPriority[(int) $priority][$identifier])){
+				unset(self::$handlerPriority[(int) $priority][$identifier]);
+			}else{
+				for($priority = EventPriority::MONITOR; $priority <= EventPriority::LOWEST; ++$priority){
+					unset(self::$handlerPriority[$priority][$identifier]);
+				}
+			}			
+			unset(self::$handlers[$identifier]);
+			return true;
+		}else{
+			return false;
+		}
+	}	
+	
 }

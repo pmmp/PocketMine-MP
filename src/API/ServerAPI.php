@@ -98,6 +98,15 @@ class ServerAPI{
 		@mkdir(DATA_PATH."players/", 0755);
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
+		
+		//Init all the events
+		foreach(get_declared_classes() as $class){
+			if(is_subclass_of($class, "BaseEvent") and property_exists($class, "handlers") and property_exists($class, "handlerPriority")){
+				echo $class;
+				$class::unregisterAll();
+			}
+		}
+		
 		$version = new VersionString();
 		console("[INFO] Starting Minecraft PE server version ".FORMAT_AQUA.CURRENT_MINECRAFT_VERSION);
 		
