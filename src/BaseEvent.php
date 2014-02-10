@@ -56,7 +56,7 @@ abstract class BaseEvent{
 	}
 	
 	public function setAllowed($forceAllow = false){
-		$this->status = BaseEvent::ALLOW & ($forceAllow === true ? BaseEvent::FORCE : 0);
+		$this->status = BaseEvent::ALLOW | ($forceAllow === true ? BaseEvent::FORCE : 0);
 	}
 	
 	public function isCancelled(){
@@ -65,7 +65,7 @@ abstract class BaseEvent{
 	
 	public function setCancelled($forceCancel = false){
 		if($this instanceof CancellableEvent){
-			$this->status = BaseEvent::DENY & ($forceCancel === true ? BaseEvent::FORCE : 0);		
+			$this->status = BaseEvent::DENY | ($forceCancel === true ? BaseEvent::FORCE : 0);		
 		}
 		return false;
 	}
