@@ -95,7 +95,7 @@ abstract class BaseEvent{
 		static::$handlerPriority = array();
 	}
 	
-	public function register(callable $handler, $priority = EventPriority::NORMAL){
+	public static function register(callable $handler, $priority = EventPriority::NORMAL){
 		if($priority < EventPriority::MONITOR or $priority > EventPriority::LOWEST){
 			return false;
 		}
@@ -112,7 +112,7 @@ abstract class BaseEvent{
 		}
 	}
 	
-	public function unregister(callable $handler, $priority = EventPriority::NORMAL){
+	public static function unregister(callable $handler, $priority = EventPriority::NORMAL){
 		$identifier = Utils::getCallableIdentifier($handler);
 		if(isset(static::$handlers[$identifier])){
 			if(isset(static::$handlerPriority[(int) $priority][$identifier])){
