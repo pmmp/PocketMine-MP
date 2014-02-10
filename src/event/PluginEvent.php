@@ -21,13 +21,9 @@
 
 
 /**
- * Plugins that create events must use one of these classes as the base
+ * Plugins that create events must use this class as the base
  */
 
 abstract class PluginEvent extends BaseEvent{
-
-}
-
-abstract class CancellablePluginEvent extends CancellableEvent{
 
 }

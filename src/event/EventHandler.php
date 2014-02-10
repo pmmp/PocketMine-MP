@@ -23,7 +23,7 @@ abstract class EventHandler{
 
 	public static function callEvent(BaseEvent $event){
 		$status = BaseEvent::NORMAL;
-		foreach($event::getPriorityList() as $priority => $handlerList){
+		foreach($event::$handlerPriority as $priority => $handlerList){
 			if(count($handlerList) > 0){
 				$event->setPrioritySlot($priority);
 				foreach($handlerList as $handler){

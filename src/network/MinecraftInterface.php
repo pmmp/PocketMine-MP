@@ -60,7 +60,9 @@ class MinecraftInterface{
 			if($parser->packet !== false){
 				$parser->packet->ip = $source;
 				$parser->packet->port = $port;
-				return $parser->packet;
+				if(EventHandler::callEvent(new RakNetPacketReceiveEvent($parser->packet)) !== BaseEvent::DENY){
+					return $parser->packet;
+				}
 			}
 			return false;
 		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
@@ -74,16 +76,23 @@ class MinecraftInterface{
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer = $buffer;
-			if(ServerAPI::request()->api->dhandle("server.unknownpacket.$pid", $packet) !== true){
-				console("[ERROR] Unknown Packet ID 0x".Utils::strToHex(chr($pid)), true, true, 2);
-			}
+			EventHandler::callEvent(new UnknownPacketReceiveEvent($packet));
 			return false;
 		}
 	}
 	
 	public function writePacket(Packet $packet){
 		if($packet instanceof RakNetPacket){
-			$codec = new RakNetCodec($packet);		
+			if(EventHandler::callEvent(new RakNetPacketSendEvent($packet)) === BaseEvent::DENY){
+				return 0;
+			}
+			$codec = new RakNetCodec($packet);
+		}elseif($packet instanceof QueryPacket){
+		
+		}else{
+			if(EventHandler::callEvent(new UnknownPacketSendEvent($packet)) === BaseEvent::DENY){
+				return 0;
+			}
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);
 		$this->bandwidth[1] += $write;

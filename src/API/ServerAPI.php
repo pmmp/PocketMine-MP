@@ -102,7 +102,6 @@ class ServerAPI{
 		//Init all the events
 		foreach(get_declared_classes() as $class){
 			if(is_subclass_of($class, "BaseEvent") and property_exists($class, "handlers") and property_exists($class, "handlerPriority")){
-				echo $class;
 				$class::unregisterAll();
 			}
 		}
