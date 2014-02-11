@@ -19,7 +19,7 @@
  *
 */
 
-class Entity extends Position{
+class EntityOLD extends Position{
 	public $age;
 	public $air;
 	public $spawntime;

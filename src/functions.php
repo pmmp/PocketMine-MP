@@ -80,7 +80,6 @@ function kill($pid){
 	}
 }
 
-
 function require_all($path, &$count = 0){
 	$dir = dir($path."/");
 	$dirs = array();
