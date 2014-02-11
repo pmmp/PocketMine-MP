@@ -1291,8 +1291,10 @@ class Player{
 				if($this->loggedIn === true){
 					break;
 				}
+				$this->username = $packet->username;
+				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
-				if(count($this->server->clients) > $this->server->maxClients){
+				if(count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
 					$this->close("server is full!", false);
 					return;
 				}
@@ -1307,16 +1309,11 @@ class Player{
 						$this->directDataPacket($pk);
 					}
 					$this->close("Incorrect protocol #".$packet->protocol1, false);
-					break;
+					return;
 				}
-				if(preg_match('#[^a-zA-Z0-9_]#', $packet->username) == 0 and $packet->username != ""){
-					$this->username = $packet->username;
-					$this->iusername = strtolower($this->username);
-				}else{
-					$this->username = $packet->username;
-					$this->iusername = strtolower($this->username);
+				if(preg_match('#[^a-zA-Z0-9_]#', $packet->username) > 0 or $packet->username === ""){
 					$this->close("Bad username", false);
-					break;
+					return;
 				}
 				if($this->server->api->handle("player.connect", $this) === false){
 					$this->close("Unknown reason", false);
