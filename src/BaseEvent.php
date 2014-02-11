@@ -106,6 +106,7 @@ abstract class BaseEvent{
 			static::$handlers[$identifier] = $handler;
 			if(!isset(static::$handlerPriority[(int) $priority])){
 				static::$handlerPriority[(int) $priority] = array();
+				krsort(static::$handlerPriority);
 			}
 			static::$handlerPriority[(int) $priority][$identifier] = $handler;
 			return true;
