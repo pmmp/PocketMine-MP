@@ -47,8 +47,16 @@ class Random{
 		return Utils::readInt($this->nextBytes(4)) & 0x7FFFFFFF;
 	}
 	
+	public function nextSignedInt(){
+		return Utils::readInt($this->nextBytes(4));
+	}
+	
 	public function nextFloat(){
 		return $this->nextInt() / 0x7FFFFFFF;
+	}
+	
+	public function nextSignedFloat(){
+		return $this->nextSignedInt() / 0x7FFFFFFF;
 	}
 	
 	public function nextBytes($byteCount){
