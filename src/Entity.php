@@ -46,6 +46,7 @@ abstract class Entity extends Position{
 	public $length;
 	public $fallDistance;
 	public $ticksLived;
+	public $lastUpdate;
 	public $maxFireTicks;
 	public $fireTicks;
 	protected $inWater;
@@ -64,8 +65,122 @@ abstract class Entity extends Position{
 		$this->justCreated = true;
 		$this->level = $level;
 		$this->setPosition(new Vector3(0, 0, 0));
+		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		Entity::$list[$this->id] = $this;
+		$this->lastUpdate = microtime(true);
+		$this->initEntity();
 	}
+	
+	protected abstract function initEntity();
+	
+	public abstract function spawnTo(Player $player);
+	
+	abstract function attackEntity($damage, $source = "generic");
+	
+	public function onEntityUpdate(){
+		$timeNow = microtime(true);
+		$this->ticksLived += ($now - $this->lastUpdate) * 20;
+		$this->lastUpdate = $timeNow;
+		
+		if($this->handleWaterMovement()){
+			$this->fallDistance = 0;
+			$this->inWater = true;
+			$this->extinguish();
+		}else{
+			$this->inWater = false;
+		}
+		
+		if($this->fireTicks > 0){
+			if($this->fireProof === true){
+				$this->fireTicks -= 4;
+				if($this->fireTicks < 0){
+					$this->fireTicks = 0;
+				}
+			}else{
+				if(($this->fireTicks % 20) === 0){
+					$this->attackEntity(1, "onFire");
+				}
+				--$this->fireTicks;
+			}
+		}
+		
+		if($this->handleLavaMovement()){
+			$this->attackEntity(4, "lava");
+			$this->setOnFire(15);
+			$this->fallDistance *= 0.5;
+		}
+		
+		if($this->y < -64){
+			$this->kill();
+		}
+	}
+	
+	public function setOnFire($seconds){
+		$ticks = $seconds * 20;
+		if($ticks > $this->fireTicks){
+			$this->fireTicks = $ticks;
+		}
+	}
+	
+	public function extinguish(){
+		$this->fireTicks = 0;
+	}
+	
+	public function moveEntity(Vector3 $displacement){ //TODO
+	
+	}
+	
+	public function canTriggerWalking(){
+		return true;
+	}
+	
+	protected function updateFallState($distanceThisTick, $onGround){
+		if($onGround === true){
+			if($this->fallDistance > 0){
+				if($this instanceof EntityLiving){
+					//TODO
+				}
+				
+				$this->fall($this->fallDistance);
+				$this->fallDistance = 0;
+			}
+		}elseif($distanceThisTick < 0){
+			$this->fallDistance -= $distanceThisTick;
+		}
+	}
+	
+	public function getBoundingBox(){
+		return $this->boundingBox;
+	}
+	
+	public function fall($fallDistance){ //TODO
+		
+	}
+	
+	public function handleWaterMovement(){ //TODO
+		
+	}
+	
+	public function handleLavaMovement(){ //TODO
+	
+	}
+	
+	public function getEyeHeight(){
+		return 0;
+	}
+	
+	public function moveFlying(){ //TODO
+		
+	}
+	
+	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){ //TODO
+	
+	}
+	
+	public function onCollideWithPlayer(EntityPlayer $entityPlayer){
+	
+	}
+	
 	
 	public function getPosition(){
 		return new Position($this->x, $this->y, $this->z, $this->level);
@@ -87,6 +202,10 @@ abstract class Entity extends Position{
 	
 	public function isOnGround(){
 		return $this->onGround === true;
+	}
+	
+	public function kill(){
+		$this->dead = true;
 	}
 	
 	public function getLevel(){
