@@ -44,6 +44,10 @@ class NBT{
 		return substr($this->binary, $this->offset - $n, $n);
 	}
 	
+	private function feof(){
+		return !isset($this->binary{$this->offset});
+	}
+	
 	public function write($bin){
 		$this->binary .= $bin;
 	}
@@ -119,7 +123,7 @@ class NBT{
 	}
 
 	private function parseList(&$node, $tag, $cnt){
-		for($i = 0; $i < $cnt; ++$i){
+		for($i = 0; $i < $cnt and !$this->feof(); ++$i){
 			switch($tag){
 				case self::TAG_BYTE:				
 					$value = $this->readTAG_BYTE();
@@ -163,7 +167,7 @@ class NBT{
 	}
 	
 	private function parseTree(&$node){
-		while(($tag = ord($this->read(1))) !== self::TAG_END){
+		while(($tag = ord($this->read(1))) !== self::TAG_END and !$this->feof()){
 			$name = $this->readTAG_STRING();
 			switch($tag){
 				case self::TAG_BYTE:				
