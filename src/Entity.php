@@ -20,7 +20,9 @@
 */
 
 abstract class Entity extends Position{
-	private static $entityCount = 1;
+	public static $entityCount = 1;
+	public static $list = array();
+	public static $needUpdate = array();
 	private $id;
 	
 	//public $passenger = null;
@@ -34,7 +36,7 @@ abstract class Entity extends Position{
 	public $pitch;
 	public $lastYaw;
 	public $lastPitch;
-	//public $boundingBox;
+	public $boundingBox;
 	public $onGround;
 	public $positionChanged;
 	public $velocityChanged;
@@ -52,15 +54,27 @@ abstract class Entity extends Position{
 	protected $fireProof;
 	private $invulnerable;
 	
+	public static function getEntity($entityID){
+		return isset(Entity::$list[$entityID]) ? Entity::$list[$entityID]:false;
+	}
+	
 	
 	public function __construct(Level $level){
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
 		$this->level = $level;
+		$this->setPosition(new Vector3(0, 0, 0));
+		Entity::$list[$this->id] = $this;
 	}
 	
 	public function getPosition(){
 		return new Position($this->x, $this->y, $this->z, $this->level);
+	}
+	
+	public function setPosition(Vector3 $pos){
+		$this->x = $pos->x;
+		$this->y = $pos->y;
+		$this->z = $pos->z;
 	}
 	
 	public function setVelocity(Vector3 $velocity){
