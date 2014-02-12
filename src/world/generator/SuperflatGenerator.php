@@ -127,7 +127,7 @@ class SuperflatGenerator implements LevelGenerator{
 	
 	public function populateChunk($chunkX, $chunkZ){		
 		foreach($this->populators as $populator){
-			$this->random->setSeed((int) ($chunkX * 0xdead + $chunkZ * 0xbeef) ^ $this->level->getSeed());
+			$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
 	}

@@ -94,7 +94,7 @@ class LevelAPI{
 			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
 				$generator = new SuperflatGenerator($options);
 			}else{
-				$generator = new TemporalGenerator($options);
+				$generator = new NormalGenerator($options);
 			}
 		}
 		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
