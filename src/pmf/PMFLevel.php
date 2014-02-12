@@ -110,7 +110,9 @@ class PMFLevel extends PMF{
 		}
 		$this->seek(5);
 		$this->levelData["version"] = ord($this->read(1));
+		var_dump($this->levelData["version"]);
 		if($this->levelData["version"] > PMFLevel::VERSION){
+			console("[ERROR] New unsupported PMF Level format version #".$this->levelData["version"].", current version is #".PMFLevel::VERSION);
 			return false;
 		}
 		$this->levelData["name"] = $this->read(Utils::readShort($this->read(2), false));
@@ -119,15 +121,17 @@ class PMFLevel extends PMF{
 		$this->levelData["spawnX"] = Utils::readFloat($this->read(4));
 		$this->levelData["spawnY"] = Utils::readFloat($this->read(4));
 		$this->levelData["spawnZ"] = Utils::readFloat($this->read(4));
-		$this->levelData["height"] = ord($this->read(1));
-		if($this->levelData["height"] !== 8){
-			return false;
-		}
 		if($this->levelData["version"] === 0){
 			$this->read(1);
+			$this->levelData["height"] = ord($this->read(1));
 		}else{
+			$this->levelData["height"] = ord($this->read(1));
+			if($this->levelData["height"] !== 8){
+				return false;
+			}
 			$this->levelData["generator"] = $this->read(Utils::readShort($this->read(2), false));
 			$this->levelData["generatorSettings"] = unserialize($this->read(Utils::readShort($this->read(2), false)));
+			
 		}
 		$this->levelData["extra"] = @gzinflate($this->read(Utils::readShort($this->read(2), false)));
 
@@ -137,19 +141,20 @@ class PMFLevel extends PMF{
 	}
 	
 	private function upgrade_From0_To1(){
+		console("[NOTICE] Old PMF Level format version #0 detected, upgrading to version #1");
 		for($index = 0; $index < 256; ++$index){
-			$X = $index & 0xFF;
-			$Z = $index >> 8;
+			$X = $index & 0x0F;
+			$Z = $index >> 4;
 			
 			$this->chunks[$index] = false;
 			$this->chunkChange[$index] = false;
-			$bitflags = $this->read(2);
+			$bitflags = Utils::readShort($this->read(2));
 			$oldPath = dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
-			$chunkOld = @gzopen($oldPath, "rb");
+			$chunkOld = gzopen($oldPath, "rb");
 			$newPath = dirname($this->file)."/chunks/".(($X ^ $Z) & 0xff)."/".$Z.".".$X.".pmc";
 			@mkdir(dirname($newPath));
-			$chunkNew = @gzopen($path, "wb".PMFLevel::DEFLATE_LEVEL);
-			gzwrite($chunkNew, $chunkFlags . "\x00\x00\x00\x00");
+			$chunkNew = gzopen($newPath, "wb".PMFLevel::DEFLATE_LEVEL);
+			gzwrite($chunkNew, chr($bitflags) . "\x00\x00\x00\x01");
 			while(gzeof($chunkOld) === false){
 				gzwrite($chunkNew, gzread($chunkOld, 65535));
 			}

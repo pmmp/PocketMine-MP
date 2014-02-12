@@ -64,9 +64,10 @@ class LevelImport{
 			"spawnX" => $level["SpawnX"],
 			"spawnY" => $level["SpawnY"],
 			"spawnZ" => $level["SpawnZ"],
-			"extra" => "",
-			"width" => 16,
-			"height" => 8
+			"height" => 8,
+			"generator" => "NormalGenerator",
+			"generatorSettings" => "",
+			"extra" => ""
 		));
 		$chunks = new PocketChunkParser();
 		$chunks->loadFile($this->path."chunks.dat");
