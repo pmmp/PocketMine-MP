@@ -22,12 +22,12 @@
 
 abstract class NoiseGenerator{
 	protected $perm = array();
-	protected $offsetX;
-	protected $offsetY;
-	protected $offsetZ;
+	protected $offsetX = 0;
+	protected $offsetY = 0;
+	protected $offsetZ = 0;
 	
 	public static function floor($x){
-		return $x >= 0 ? (int) $x : (int) $x - 1;
+		return $x >= 0 ? (int) $x : (int) ($x - 1);
 	}
 	
 	public static function fade($x){
@@ -64,4 +64,11 @@ abstract class NoiseGenerator{
 		}
 			
 		return $result;
+	}
+	
+	public function setOffset($x, $y, $z){
+		$this->offsetX = $x;
+		$this->offsetY = $y;
+		$this->offsetZ = $z;
+	}
 }

@@ -102,7 +102,7 @@ abstract class OctaveGenerator{
 		return $result;
 	}
 	
-	public function generateNoiseOctaves($x, $y, $z, $frequency, $amplitude){
+	/*public function generateNoiseOctaves($x, $y, $z, $frequency, $amplitude){
 		
-	}
+	}*/
 }

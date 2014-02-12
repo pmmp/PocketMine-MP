@@ -23,7 +23,7 @@
 require_once("NoiseGenerator.php");
 /***REM_END***/
 
-class NoiseGeneratorPerlin extends NoiseGenerator[
+class NoiseGeneratorPerlin extends NoiseGenerator{
 	public static $grad3 = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
@@ -37,19 +37,20 @@ class NoiseGeneratorPerlin extends NoiseGenerator[
 		$this->offsetZ = $random->nextFloat() * 256;
 
 		for($i = 0; $i < 512; ++$i){
-			$this->perm[$i} = 0;
+			$this->perm[$i] = 0;
 		}
 		
 		for($i = 0; $i < 256; ++$i){
-			$this->perm[$i} = $random->nextRange(0, 255);
+			$this->perm[$i] = $random->nextRange(0, 255);
 		}
-		for($i = 0; $i < 256; ++$i)[
+
+		for($i = 0; $i < 256; ++$i){
 			$pos = $random->nextRange(0, 255 - $i) + $i;
-			$old = $this->perm[$i};
+			$old = $this->perm[$i];
 			
-			$this->perm[$i} = $this->perm[$pos};
-			$this->perm[$pos} = $old;
-			$this->perm[$i + 256} = $this->perm[$i};
+			$this->perm[$i] = $this->perm[$pos];
+			$this->perm[$pos] = $old;
+			$this->perm[$i + 256] = $this->perm[$i];
 		}
 		
 	}
@@ -84,8 +85,8 @@ class NoiseGeneratorPerlin extends NoiseGenerator[
 		$BA = $this->perm[$B] + $Z;
 		$BB = $this->perm[$B + 1] + $Z;
 		
-		return self::lerp($fZ, self::lerp($fY, self::lerp($fX, self::grad($this->perm[$AA]), $x, $y, $z),
-			self::grad($this->perm[$BA], $x - 1, $y, $z),
+		return self::lerp($fZ, self::lerp($fY, self::lerp($fX, self::grad($this->perm[$AA], $x, $y, $z),
+			self::grad($this->perm[$BA], $x - 1, $y, $z)),
 			self::lerp($fX, self::grad($this->perm[$AB], $x, $y - 1, $z),
 			self::grad($this->perm[$BB], $x - 1, $y - 1, $z))),
 			self::lerp($fY, self::lerp($fX, self::grad($this->perm[$AA + 1], $x, $y, $z - 1),

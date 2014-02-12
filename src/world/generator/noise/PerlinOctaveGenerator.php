@@ -31,5 +31,33 @@ class PerlinOctaveGenerator extends OctaveGenerator{
 		}
 	}
 	
-	public function 
+	/*public function generateNoiseOctaves($x, $y, $z, $sizeX, $sizeY, $sizeZ, $fX, $fY, $fZ){
+		$adouble = array_fill(0, $sizeX * $sizeY * $sizeZ, 0.0);
+		
+		$d3 = 1.0;
+		
+		foreach($this->octaves as $octave){
+			$dX = $x * $d3 * $fX;
+			$dY = $y * $d3 * $fY;
+			$dZ = $x * $d3 * $fZ;
+			
+			$x1 = NoiseGenerator::floor($dX);
+			$z1 = NoiseGenerator::floor($dZ);
+			
+			$dX -= $x1;
+			$dZ -= $z1;
+			
+			$x1 %= 16777216;
+			$z1 %= 16777216;
+			//$x1 &= 0xFFFFFF;
+			//$z1 &= 0xFFFFFF;
+			
+			$dX += $x1;
+			$dZ += $z1;
+			$octave->populateNoiseArray($adouble, $dX, $dY, $dZ, $sizeX, $sizeY, $sizeZ, $fX * $d3, $fY * $d3, $fZ * $d3, $d3);
+			$d3 *= 0.5;
+		}
+		
+		return $adouble;
+	}*/
 }

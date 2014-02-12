@@ -38,28 +38,24 @@ class NormalGenerator implements LevelGenerator{
 	private $noiseGen5;
 	private $noiseGen6;
 	private $noiseArray = array();
+	private $noise;
 	
 	public function __construct(array $options = array()){
-		$this->noiseGen1 = new PerlinOctaveGenerator($rand, 16);
-		$this->noiseGen2 = new PerlinOctaveGenerator($rand, 16);
-		$this->noiseGen3 = new PerlinOctaveGenerator($rand, 8);
-		$this->noiseGen4 = new PerlinOctaveGenerator($rand, 4);
-		$this->noiseGen5 = new PerlinOctaveGenerator($rand, 10);
-		$this->noiseGen6 = new PerlinOctaveGenerator($rand, 16);
+		
 	}
 	
 	public function init(Level $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
-		$this->random->setSeed($this->level->getSeed());
-		$perlin = new PerlinNoiseGenerator($this->random, array(
-			"frequency" => 1,
-			"octaves" => 8,
-			"persistence" => 0.3,
-			"scale" => 1,
-		));
-		$this->deviations = $perlin->fillNoiseArray(256, 256);
-		
+		$this->random->setSeed($this->level->getSeed());	
+		$this->noise = new NoiseGeneratorPerlin($this->random);		
+		$this->noiseGen1 = new PerlinOctaveGenerator($this->random, 16);
+		$this->noiseGen2 = new PerlinOctaveGenerator($this->random, 16);
+		$this->noiseGen3 = new PerlinOctaveGenerator($this->random, 8);
+		$this->noiseGen4 = new PerlinOctaveGenerator($this->random, 4);
+		$this->noiseGen5 = new PerlinOctaveGenerator($this->random, 10);
+		$this->noiseGen6 = new PerlinOctaveGenerator($this->random, 16);
+
 		$ores = new OrePopulator();
 		$ores->setOreTypes(array(
 			new OreType(new CoalOreBlock(), 20, 16, 0, 128),
@@ -75,9 +71,10 @@ class NormalGenerator implements LevelGenerator{
 	}
 	
 	public function generateChunk($chunkX, $chunkZ){
-		//$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
-		$byte0 = 4;
-		$this->noiseArray = $this->initializeNoiseArray($chunkX * $byte0, 0, $chunkZ * $byte0, $byte0 + 1, ($this->worldHeight / 8) + 1, $byte0 + 1);
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+
+		//$this->noiseArray = $this->initializeNoiseArray($chunkX * $byte0, 0, $chunkZ * $byte0, $byte0 + 1, ($this->worldHeight / 8) + 1, $byte0 + 1);
+		
 		
 		$chunks = array();
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
@@ -86,7 +83,7 @@ class NormalGenerator implements LevelGenerator{
 			$endY = $startY + 16;			
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
-					$height = (int) ($this->baseHeight + $this->deviations[$z + ($chunkZ << 4)][$x + ($chunkX << 4)]);
+					$height = (int) ($this->worldHeight + $this->noise->noise3D($x + ($chunkX << 4), 0, $z + ($chunkZ << 4), 4, 0.5, 24));
 					for($y = $startY; $y < $endY; ++$y){
 						$diff = $height - $y;	
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
