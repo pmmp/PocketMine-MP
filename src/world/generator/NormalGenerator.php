@@ -83,7 +83,7 @@ class NormalGenerator implements LevelGenerator{
 			$endY = $startY + 16;			
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
-					$height = (int) ($this->worldHeight + $this->noise->noise3D($x + ($chunkX << 4), 0, $z + ($chunkZ << 4), 4, 0.5, 24));
+					$height = (int) ($this->worldHeight + $this->noise->noise3D($x + ($chunkX << 4), 0, $z + ($chunkZ << 4), 4, 0.5, 24, true));
 					for($y = $startY; $y < $endY; ++$y){
 						$diff = $height - $y;	
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
