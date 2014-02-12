@@ -45,8 +45,9 @@ class NormalGenerator implements LevelGenerator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());	
-		$this->noiseGen1 = new NoiseGeneratorPerlin($this->random, 16);
+		$this->noiseGen1 = new NoiseGeneratorPerlin($this->random, 4);
 		$this->noiseGen2 = new NoiseGeneratorPerlin($this->random, 4);
+		$this->noiseGen3 = new NoiseGeneratorPerlin($this->random, 4);
 
 		$ores = new OrePopulator();
 		$ores->setOreTypes(array(
@@ -65,14 +66,17 @@ class NormalGenerator implements LevelGenerator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
-		$baseHeight = $this->worldHeight;// + $this->noiseGen1->noise2D($chunkX, $chunkZ, 2, 1/4, true) * 35;
+		$baseHeight = $this->worldHeight;// +  * 35;
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
 			$chunk = "";
 			$startY = $chunkY << 4;
 			$endY = $startY + 16;			
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
-					$height = (int) ($baseHeight + $this->noiseGen2->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.3, 32, true) * 15);
+					$noise1 = $this->noiseGen1->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.6, 32, true) * 2;
+					$noise2 = $this->noiseGen2->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.35, 64, true) * 15;
+					$noise3 = $this->noiseGen3->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.1, 64, true) * 45;
+					$height = (int) ($baseHeight + $noise1 + $noise2);
 					for($y = $startY; $y < $endY; ++$y){
 						$diff = $height - $y;	
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
@@ -82,7 +86,11 @@ class NormalGenerator implements LevelGenerator{
 						}elseif($diff > 0){
 							$chunk .= "\x03"; //dirt
 						}elseif($y <= $this->waterHeight){
-							$chunk .= "\x09"; //still_water
+							if($diff === 0){
+								$chunk .= "\x0c"; //sand
+							}else{
+								$chunk .= "\x09"; //still_water
+							}
 						}elseif($diff === 0){
 							$chunk .= "\x02"; //grass
 						}else{
