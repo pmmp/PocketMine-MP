@@ -31,7 +31,8 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 	];
 	
 	
-	public function __construct(Random $random){
+	public function __construct(Random $random, $octaves){
+		$this->octaves = $octaves;
 		$this->offsetX = $random->nextFloat() * 256;
 		$this->offsetY = $random->nextFloat() * 256;
 		$this->offsetZ = $random->nextFloat() * 256;
@@ -55,7 +56,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		
 	}
 	
-	public function noise($x, $y, $z){
+	public function getNoise3D($x, $y, $z){
 		$x += $this->offsetX;
 		$y += $this->offsetY;
 		$z += $this->offsetZ;
@@ -93,5 +94,9 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 			self::grad($this->perm[$BA + 1], $x - 1, $y, $z - 1)),
 			self::lerp($fX, self::grad($this->perm[$AB + 1], $x, $y - 1, $z - 1),
 			self::grad($this->perm[$BB + 1], $x - 1, $y - 1, $z - 1))));
+	}
+	
+	public function getNoise2D($x, $z){
+		return $this->getNoise3D($x, 0, $z);
 	}
 }

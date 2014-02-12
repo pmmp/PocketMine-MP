@@ -30,15 +30,12 @@ class NormalGenerator implements LevelGenerator{
 	private $random;
 	private $worldHeight = 64;
 	private $waterHeight = 60;
-	private $blockLevels = array();
 	private $noiseGen1;
 	private $noiseGen2;
 	private $noiseGen3;
 	private $noiseGen4;
 	private $noiseGen5;
 	private $noiseGen6;
-	private $noiseArray = array();
-	private $noise;
 	
 	public function __construct(array $options = array()){
 		
@@ -48,13 +45,8 @@ class NormalGenerator implements LevelGenerator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());	
-		$this->noise = new NoiseGeneratorPerlin($this->random);		
-		$this->noiseGen1 = new PerlinOctaveGenerator($this->random, 16);
-		$this->noiseGen2 = new PerlinOctaveGenerator($this->random, 16);
-		$this->noiseGen3 = new PerlinOctaveGenerator($this->random, 8);
-		$this->noiseGen4 = new PerlinOctaveGenerator($this->random, 4);
-		$this->noiseGen5 = new PerlinOctaveGenerator($this->random, 10);
-		$this->noiseGen6 = new PerlinOctaveGenerator($this->random, 16);
+		$this->noiseGen1 = new NoiseGeneratorPerlin($this->random, 16);
+		$this->noiseGen2 = new NoiseGeneratorPerlin($this->random, 4);
 
 		$ores = new OrePopulator();
 		$ores->setOreTypes(array(
@@ -73,17 +65,14 @@ class NormalGenerator implements LevelGenerator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
-		//$this->noiseArray = $this->initializeNoiseArray($chunkX * $byte0, 0, $chunkZ * $byte0, $byte0 + 1, ($this->worldHeight / 8) + 1, $byte0 + 1);
-		
-		
-		$chunks = array();
+		$baseHeight = $this->worldHeight;// + $this->noiseGen1->noise2D($chunkX, $chunkZ, 2, 1/4, true) * 35;
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
 			$chunk = "";
 			$startY = $chunkY << 4;
 			$endY = $startY + 16;			
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
-					$height = (int) ($this->worldHeight + $this->noise->noise3D($x + ($chunkX << 4), 0, $z + ($chunkZ << 4), 4, 0.5, 24, true));
+					$height = (int) ($baseHeight + $this->noiseGen2->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.3, 32, true) * 15);
 					for($y = $startY; $y < $endY; ++$y){
 						$diff = $height - $y;	
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
