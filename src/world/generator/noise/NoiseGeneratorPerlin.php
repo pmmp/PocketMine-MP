@@ -96,7 +96,7 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 			self::grad($this->perm[$BB + 1], $x - 1, $y - 1, $z - 1))));
 	}
 	
-	public function getNoise2D($x, $z){
-		return $this->getNoise3D($x, 0, $z);
+	public function getNoise2D($x, $y){
+		return $this->getNoise3D($x, $y, 0);
 	}
 }

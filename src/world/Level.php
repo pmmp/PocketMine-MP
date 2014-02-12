@@ -21,11 +21,12 @@
 
 class Level{
 	public $entities, $tiles, $blockUpdates, $nextSave, $players = array(), $level;
-	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
+	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
+		$level->level = $this;
 		$this->level->level = $this;
 		$this->entities = $entities;
 		$this->tiles = $tiles;
@@ -40,6 +41,17 @@ class Level{
 		$this->usedChunks = array();
 		$this->changedBlocks = array();
 		$this->changedCount = array();
+		if(class_exists($this->level->levelData["generator"])){
+			$gen = $this->level->levelData["generator"];
+			$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
+		}else{
+			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
+				$this->generator = new SuperflatGenerator();
+			}else{
+				$this->generator = new NormalGenerator();
+			}
+		}	
+		$this->generator->init($this, new Random($this->level->levelData["seed"]));
 	}
 	
 	public function close(){
@@ -134,6 +146,13 @@ class Level{
 			}
 			$this->save(false, false);
 		}
+	}
+	
+	public function generateChunk($X, $Z){
+		$this->level->initCleanChunk($X, $Z);
+		$this->generator->generateChunk($X, $Z);
+		$this->generator->populateChunk($X, $Z);
+		$this->level->saveChunk($X, $Z);
 	}
 	
 	public function __destruct(){

@@ -28,8 +28,9 @@ class NormalGenerator implements LevelGenerator{
 	private $populators = array();
 	private $level;
 	private $random;
-	private $worldHeight = 64;
-	private $waterHeight = 60;
+	private $worldHeight = 65;
+	private $waterHeight = 62;
+	private $noiseGenBase;
 	private $noiseGen1;
 	private $noiseGen2;
 	private $noiseGen3;
@@ -41,13 +42,17 @@ class NormalGenerator implements LevelGenerator{
 		
 	}
 	
+	public function getSettings(){
+		return array();
+	}
+	
 	public function init(Level $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());	
-		$this->noiseGen1 = new NoiseGeneratorPerlin($this->random, 4);
-		$this->noiseGen2 = new NoiseGeneratorPerlin($this->random, 4);
-		$this->noiseGen3 = new NoiseGeneratorPerlin($this->random, 4);
+		$this->noiseGenBase = new NoiseGeneratorSimplex($this->random, 4);
+		$this->noiseGen1 = new NoiseGeneratorSimplex($this->random, 8);
+		//$this->noiseGen2 = new NoiseGeneratorSimplex($this->random, 8);
 
 		$ores = new OrePopulator();
 		$ores->setOreTypes(array(
@@ -66,17 +71,18 @@ class NormalGenerator implements LevelGenerator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
-		$baseHeight = $this->worldHeight;// +  * 35;
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
 			$chunk = "";
 			$startY = $chunkY << 4;
 			$endY = $startY + 16;			
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
-					$noise1 = $this->noiseGen1->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.6, 32, true) * 2;
-					$noise2 = $this->noiseGen2->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.35, 64, true) * 15;
-					$noise3 = $this->noiseGen3->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.1, 64, true) * 45;
-					$height = (int) ($baseHeight + $noise1 + $noise2);
+					$noiseBase = $this->noiseGenBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 1/5, 16, true);
+					$noise1 = $this->noiseGen1->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.7, 25, true);
+					//$noise2 = $this->noiseGen2->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.8, 1);
+					//$height = $this->worldHeight + $noiseBase + $noise1 /*+ $noise2*/;
+					$height = $this->worldHeight + $noiseBase;//$height = (int) ($height + ($height * 0.15 * $noiseBase));
+					$height = (int) $height;
 					for($y = $startY; $y < $endY; ++$y){
 						$diff = $height - $y;	
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
@@ -86,13 +92,13 @@ class NormalGenerator implements LevelGenerator{
 						}elseif($diff > 0){
 							$chunk .= "\x03"; //dirt
 						}elseif($y <= $this->waterHeight){
-							if($diff === 0){
+							if($y === $this->waterHeight and $diff === 0){
 								$chunk .= "\x0c"; //sand
 							}else{
 								$chunk .= "\x09"; //still_water
 							}
 						}elseif($diff === 0){
-							$chunk .= "\x02"; //grass
+							$chunk .= $noise1 > 0 ? "\x02":"\x01"; //grass
 						}else{
 							$chunk .= "\x00";
 						}
@@ -102,13 +108,6 @@ class NormalGenerator implements LevelGenerator{
 			}
 			$this->level->setMiniChunk($chunkX, $chunkZ, $chunkY, $chunk);
 		}
-		
-	}
-	
-	private function initializeNoiseArray($x, $y, $z, $sizeX, $sizeY, $sizeZ){
-		$noiseArray = array_fill(0, $sizeX * $sizeY * $sizeZ, 0.0);
-		
-		$noise5 = $this->noiseGen5->generateNoiseOctaves($x, $y, $z);
 		
 	}
 	
