@@ -149,10 +149,11 @@ class Level{
 	}
 	
 	public function generateChunk($X, $Z){
-		$this->level->initCleanChunk($X, $Z);
 		$this->generator->generateChunk($X, $Z);
+	}
+	
+	public function populateChunk($X, $Z){
 		$this->generator->populateChunk($X, $Z);
-		$this->level->saveChunk($X, $Z);
 	}
 	
 	public function __destruct(){

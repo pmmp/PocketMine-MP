@@ -116,6 +116,8 @@ class NormalGenerator implements LevelGenerator{
 			$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
+		
+		$this->level->level->setPopulated($chunkX, $chunkZ);
 	}
 	
 	public function populateLevel(){
