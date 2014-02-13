@@ -2,6 +2,7 @@
 
 /***REM_START***/
 require_once("NoiseGenerator.php");
+require_once("NoiseGeneratorPerlin.php");
 /***REM_END***/
 
 /**
