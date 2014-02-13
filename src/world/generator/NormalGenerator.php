@@ -32,6 +32,7 @@ class NormalGenerator implements LevelGenerator{
 	private $waterHeight = 63;
 	private $noiseHills;
 	private $noisePatches;
+	private $noisePatchesSmall;
 	private $noiseBase;
 	
 	public function __construct(array $options = array()){
@@ -48,7 +49,8 @@ class NormalGenerator implements LevelGenerator{
 		$this->random->setSeed($this->level->getSeed());	
 		$this->noiseHills = new NoiseGeneratorSimplex($this->random, 3);
 		$this->noisePatches = new NoiseGeneratorSimplex($this->random, 2);
-		$this->noiseBase = new NoiseGeneratorSimplex($this->random, 8);
+		$this->noisePatchesSmall = new NoiseGeneratorSimplex($this->random, 2);
+		$this->noiseBase = new NoiseGeneratorSimplex($this->random, 16);
 
 
 		$ores = new OrePopulator();
@@ -68,17 +70,15 @@ class NormalGenerator implements LevelGenerator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		$hills = array();
-		$patches = array();
+		$patchesSmall = array();
 		$base = array();
 		for($z = 0; $z < 16; ++$z){
 			for($x = 0; $x < 16; ++$x){
 				$i = ($z << 4) + $x;
 				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.11, 12, true);
 				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.03, 16, true);
-				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.5, 4, true);
-				if($base[$i] < 0){
-					$base[$i] *= 0.5;
-				}
+				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.5, 4, true);
+				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.7, 16, true);
 			}
 		}
 		
@@ -89,7 +89,7 @@ class NormalGenerator implements LevelGenerator{
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
 					$i = ($z << 4) + $x;
-					$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 4;
+					$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 7;
 					$height = (int) $height;
 
 					for($y = $startY; $y < $endY; ++$y){
@@ -109,6 +109,14 @@ class NormalGenerator implements LevelGenerator{
 						}elseif($y <= $this->waterHeight){
 							if(($this->waterHeight - $y) <= 1 and $diff === 0){
 								$chunk .= "\x0c"; //sand
+							}elseif($diff === 0){
+								if($patchesSmall[$i] > 0.3){
+									$chunk .= "\x0d"; //gravel
+								}elseif($patches[$i] < -0.45){
+									$chunk .= "\x0c"; //sand
+								}else{
+									$chunk .= "\x03"; //dirt
+								}	
 							}else{
 								$chunk .= "\x09"; //still_water
 							}
