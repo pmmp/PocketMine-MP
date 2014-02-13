@@ -296,7 +296,7 @@ class Entity extends Position{
 			}
 		}
 	
-		if($this->class !== ENTITY_PLAYER and ($this->x <= 0 or $this->z <= 0 or $this->x >= 256 or $this->z >= 256 or $this->y >= 128 or $this->y <= 0)){
+		if($this->class !== ENTITY_PLAYER and ($this->y >= 128 or $this->y <= 0)){
 			$this->close();
 			return false;
 		}
