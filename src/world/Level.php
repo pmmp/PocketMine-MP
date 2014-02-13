@@ -21,11 +21,12 @@
 
 class Level{
 	public $entities, $tiles, $blockUpdates, $nextSave, $players = array(), $level;
-	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
+	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
+		$level->level = $this;
 		$this->level->level = $this;
 		$this->entities = $entities;
 		$this->tiles = $tiles;
@@ -40,6 +41,17 @@ class Level{
 		$this->usedChunks = array();
 		$this->changedBlocks = array();
 		$this->changedCount = array();
+		if(class_exists($this->level->levelData["generator"])){
+			$gen = $this->level->levelData["generator"];
+			$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
+		}else{
+			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
+				$this->generator = new SuperflatGenerator();
+			}else{
+				$this->generator = new NormalGenerator();
+			}
+		}	
+		$this->generator->init($this, new Random($this->level->levelData["seed"]));
 	}
 	
 	public function close(){
@@ -93,9 +105,8 @@ class Level{
 		$now = microtime(true);
 		$this->players = $this->server->api->player->getAll($this);
 		
-		if(count($this->changedCount) > 0){
+		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
 			arsort($this->changedCount);
-			$resendChunks = array();
 			foreach($this->changedCount as $index => $count){
 				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
 					break;
@@ -134,6 +145,14 @@ class Level{
 			}
 			$this->save(false, false);
 		}
+	}
+	
+	public function generateChunk($X, $Z){
+		$this->generator->generateChunk($X, $Z);
+	}
+	
+	public function populateChunk($X, $Z){
+		$this->generator->populateChunk($X, $Z);
 	}
 	
 	public function __destruct(){

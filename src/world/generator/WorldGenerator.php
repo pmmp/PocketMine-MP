@@ -21,10 +21,9 @@
 
 class WorldGenerator{
 	private $seed, $level, $path, $random, $generator, $width;
-	public function __construct(LevelGenerator $generator, $name, $seed = false, $width = 16, $height = 8){
+	public function __construct(LevelGenerator $generator, $name, $seed = false, $height = 8){
 		$this->seed = $seed !== false ? (int) $seed:Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->random = new Random($this->seed);
-		$this->width = (int) $width;
 		$this->height = (int) $height;
 		$this->path = DATA_PATH."worlds/".$name."/";
 		$this->generator = $generator;
@@ -35,9 +34,10 @@ class WorldGenerator{
 			"spawnX" => 128,
 			"spawnY" => 128,
 			"spawnZ" => 128,
-			"extra" => "",
-			"width" => $this->width,
-			"height" => $this->height
+			"height" => $this->height,
+			"generator" => get_class($this->generator),
+			"generatorSettings" => $this->generator->getSettings(),
+			"extra" => ""
 		));
 		$entities = new Config($this->path."entities.yml", CONFIG_YAML);
 		$tiles = new Config($this->path."tiles.yml", CONFIG_YAML);
@@ -45,25 +45,25 @@ class WorldGenerator{
 		$this->level = new Level($level, $entities, $tiles, $blockUpdates, $name);
 	}
 	
-	public function generate(){
+	public function generate(){		
+		++$this->level->level->isGenerating;
 		$this->generator->init($this->level, $this->random);
-		for($Z = 0; $Z < $this->width; ++$Z){
-			for($X = 0; $X < $this->width; ++$X){
+		
+		for($Z = 7; $Z <= 9; ++$Z){
+			for($X = 7; $X <= 9; ++$X){
 				$this->generator->generateChunk($X, $Z);
 			}
-			console("[NOTICE] Generating level ".ceil((($Z + 1)/$this->width) * 100)."%");
 		}
-		console("[NOTICE] Populating level");
-		$this->generator->populateLevel();
-		for($Z = 0; $Z < $this->width; ++$Z){
-			for($X = 0; $X < $this->width; ++$X){
+		
+		for($Z = 7; $Z <= 9; ++$Z){
+			for($X = 7; $X <= 9; ++$X){
 				$this->generator->populateChunk($X, $Z);
 			}
-			console("[NOTICE] Populating level ".ceil((($Z + 1)/$this->width) * 100)."%");
 		}
 		
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true, true);
+		--$this->level->level->isGenerating;
 	}
 	
 	public function close(){

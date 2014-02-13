@@ -294,7 +294,6 @@ class Player{
 			$this->directDataPacket(new DisconnectPacket);
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
-			$this->spawned = false;
 			$this->loggedIn = false;
 			$this->buffer = null;
 			unset($this->buffer);
@@ -306,6 +305,7 @@ class Player{
 			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
+			$this->spawned = false;
 			console("[INFO] ".FORMAT_AQUA.$this->username.FORMAT_RESET."[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 			$this->windows = array();
 			$this->armor = array();
@@ -1311,7 +1311,7 @@ class Player{
 					$this->close("Incorrect protocol #".$packet->protocol1, false);
 					return;
 				}
-				if(preg_match('#[^a-zA-Z0-9_]#', $packet->username) > 0 or $packet->username === ""){
+				if(preg_match('#[^a-zA-Z0-9_]#', $this->username) > 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console"){
 					$this->close("Bad username", false);
 					return;
 				}

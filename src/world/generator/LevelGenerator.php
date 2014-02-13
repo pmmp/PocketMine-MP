@@ -20,7 +20,8 @@
 */
 
 interface LevelGenerator{
-	public function __construct(array $options = array());
+	
+	public function __construct(array $settings = array());
 	
 	public function init(Level $level, Random $random);
 
@@ -28,7 +29,9 @@ interface LevelGenerator{
 	
 	public function populateChunk($chunkX, $chunkZ);
 	
-	public function populateLevel();
+	public function getSettings();
+	
+	//public function populateLevel();
 	
 	public function getSpawn();
 }

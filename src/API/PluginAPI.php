@@ -26,6 +26,30 @@ class PluginAPI extends stdClass{
 	public function __construct(){
 		$this->server = ServerAPI::request();
 		$this->randomNonce = Utils::getRandomBytes(16, false);
+		$this->server->api->console->register("plugins", "", array($this, "commandHandler"));
+		$this->server->api->console->register("version", "", array($this, "commandHandler"));
+		$this->server->api->ban->cmdWhitelist("version");
+	}
+	
+    public function commandHandler($cmd, $params, $issuer, $alias){
+		$output = "";
+		switch($cmd){
+			case "plugins":
+				$output = "Plugins: ";
+				foreach($this->getList() as $plugin){
+					$output .= $plugin["name"] . ": ".$plugin["version"] .", ";
+				}
+				$output = $output === "Plugins: " ? "No plugins installed.\n" : substr($output, 0, -2)."\n";
+				break;
+			case "version":
+				$output = "PocketMine-MP ".MAJOR_VERSION." 「".CODENAME."」 API #".CURRENT_API_VERSION." for Minecraft: PE ".CURRENT_MINECRAFT_VERSION." protocol #".ProtocolInfo::CURRENT_PROTOCOL;
+				if(GIT_COMMIT !== str_repeat("00", 20)){
+					$output .= " (git ".GIT_COMMIT.")";
+				}
+				$output .= "\n";
+				break;
+		}
+		return $output;
 	}
 	
 	public function __destruct(){
