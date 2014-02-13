@@ -65,6 +65,10 @@ class NormalGenerator implements LevelGenerator{
 			new OreType(new GravelBlock(), 10, 16, 0, 128),
 		));
 		$this->populators[] = $ores;
+		$tallGrass = new TallGrassPopulator();
+		$tallGrass->setBaseAmount(5);
+		$tallGrass->setRandomAmount(1);
+		$this->populators[] = $tallGrass;
 	}
 	
 	public function generateChunk($chunkX, $chunkZ){
@@ -79,6 +83,10 @@ class NormalGenerator implements LevelGenerator{
 				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.03, 16, true);
 				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.5, 4, true);
 				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.7, 16, true);
+				
+				if($base[$i] < 0){
+					$base[$i] *= 0.5;
+				}
 			}
 		}
 		
