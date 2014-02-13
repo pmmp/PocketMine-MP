@@ -49,21 +49,16 @@ class WorldGenerator{
 		++$this->level->level->isGenerating;
 		$this->generator->init($this->level, $this->random);
 		
-		$i = 0;
 		for($Z = 7; $Z <= 9; ++$Z){
 			for($X = 7; $X <= 9; ++$X){
 				$this->generator->generateChunk($X, $Z);
 			}
-			++$i;
 		}
 		
-		$i = 0;
 		for($Z = 7; $Z <= 9; ++$Z){
 			for($X = 7; $X <= 9; ++$X){
 				$this->generator->populateChunk($X, $Z);
 			}
-			console("[NOTICE] Populating level".str_repeat(".", $i));
-			++$i;
 		}
 		
 		$this->level->setSpawn($this->generator->getSpawn());
