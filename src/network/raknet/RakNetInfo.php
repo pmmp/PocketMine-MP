@@ -19,7 +19,7 @@
  *
 */
 
-class RakNetInfo{
+abstract class RakNetInfo{
 	const STRUCTURE = 5;
 	const MAGIC = "\x00\xff\xff\x00\xfe\xfe\xfe\xfe\xfd\xfd\xfd\xfd\x12\x34\x56\x78";
 	const UNCONNECTED_PING = 0x01;
