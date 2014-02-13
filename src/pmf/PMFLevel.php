@@ -110,7 +110,6 @@ class PMFLevel extends PMF{
 		}
 		$this->seek(5);
 		$this->levelData["version"] = ord($this->read(1));
-		var_dump($this->levelData["version"]);
 		if($this->levelData["version"] > PMFLevel::VERSION){
 			console("[ERROR] New unsupported PMF Level format version #".$this->levelData["version"].", current version is #".PMFLevel::VERSION);
 			return false;
