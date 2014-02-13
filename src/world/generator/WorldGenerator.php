@@ -46,23 +46,20 @@ class WorldGenerator{
 	}
 	
 	public function generate(){		
-		$this->level->level->isGenerating = true;
+		++$this->level->level->isGenerating;
 		$this->generator->init($this->level, $this->random);
 		
 		$i = 0;
-		for($Z = 6; $Z <= 10; ++$Z){
-			for($X = 6; $X <= 10; ++$X){
+		for($Z = 7; $Z <= 9; ++$Z){
+			for($X = 7; $X <= 9; ++$X){
 				$this->generator->generateChunk($X, $Z);
 			}
-			console("[NOTICE] Generating level".str_repeat(".", $i));
 			++$i;
 		}
-		//console("[NOTICE] Populating level");
-		//$this->generator->populateLevel();
 		
 		$i = 0;
-		for($Z = 6; $Z <= 10; ++$Z){
-			for($X = 6; $X <= 10; ++$X){
+		for($Z = 7; $Z <= 9; ++$Z){
+			for($X = 7; $X <= 9; ++$X){
 				$this->generator->populateChunk($X, $Z);
 			}
 			console("[NOTICE] Populating level".str_repeat(".", $i));
@@ -71,7 +68,7 @@ class WorldGenerator{
 		
 		$this->level->setSpawn($this->generator->getSpawn());
 		$this->level->save(true, true);
-		$this->level->level->isGenerating = false;
+		--$this->level->level->isGenerating;
 	}
 	
 	public function close(){
