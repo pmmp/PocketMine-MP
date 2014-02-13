@@ -148,11 +148,14 @@ class Level{
 	}
 	
 	public function generateChunk($X, $Z){
+		++$this->level->isGenerating;
 		$this->generator->generateChunk($X, $Z);
+		--$this->level->isGenerating;
 	}
 	
 	public function populateChunk($X, $Z){
-		$this->generator->populateChunk($X, $Z);
+		$this->generator->populateChunk($X, $Z);		
+		$this->level->setPopulated($X, $Z);
 	}
 	
 	public function __destruct(){

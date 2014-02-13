@@ -65,10 +65,16 @@ class NormalGenerator implements LevelGenerator{
 			new OreType(new GravelBlock(), 10, 16, 0, 128),
 		));
 		$this->populators[] = $ores;
+		
+		$trees = new TreePopulator();
+		$trees->setBaseAmount(3);
+		$trees->setRandomAmount(0);
+		$this->populators[] = $trees;
+		
 		$tallGrass = new TallGrassPopulator();
 		$tallGrass->setBaseAmount(5);
-		$tallGrass->setRandomAmount(1);
-		$this->populators[] = $tallGrass;
+		$tallGrass->setRandomAmount(0);
+		$this->populators[] = $tallGrass;		
 	}
 	
 	public function generateChunk($chunkX, $chunkZ){
@@ -89,11 +95,11 @@ class NormalGenerator implements LevelGenerator{
 				}
 			}
 		}
-		
+
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
 			$chunk = "";
 			$startY = $chunkY << 4;
-			$endY = $startY + 16;		
+			$endY = $startY + 16;
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
 					$i = ($z << 4) + $x;
@@ -120,7 +126,7 @@ class NormalGenerator implements LevelGenerator{
 							}elseif($diff === 0){
 								if($patchesSmall[$i] > 0.3){
 									$chunk .= "\x0d"; //gravel
-								}elseif($patches[$i] < -0.45){
+								}elseif($patchesSmall[$i] < -0.45){
 									$chunk .= "\x0c"; //sand
 								}else{
 									$chunk .= "\x03"; //dirt
@@ -148,17 +154,12 @@ class NormalGenerator implements LevelGenerator{
 		
 	}
 	
-	public function populateChunk($chunkX, $chunkZ){		
+	public function populateChunk($chunkX, $chunkZ){
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
-		
-		$this->level->level->setPopulated($chunkX, $chunkZ);
-	}
-	
-	public function populateLevel(){
-	
 	}
 	
 	public function getSpawn(){

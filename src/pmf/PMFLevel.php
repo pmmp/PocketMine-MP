@@ -144,9 +144,7 @@ class PMFLevel extends PMF{
 		for($index = 0; $index < 256; ++$index){
 			$X = $index & 0x0F;
 			$Z = $index >> 4;
-			
-			$this->chunks[$index] = false;
-			$this->chunkChange[$index] = false;
+
 			$bitflags = Utils::readShort($this->read(2));
 			$oldPath = dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
 			$chunkOld = gzopen($oldPath, "rb");
@@ -186,13 +184,34 @@ class PMFLevel extends PMF{
 		if(!file_exists(dirname($path))){
 			@mkdir(dirname($path), 0755);
 		}
-		++$this->isGenerating;
 		$this->initCleanChunk($X, $Z);
-		$ret = $this->level->generateChunk($X, $Z);	
-		$ret = $ret and $this->level->populateChunk($X, $Z);
+		$ret = $this->level->generateChunk($X, $Z);
 		$this->saveChunk($X, $Z);
-		--$this->isGenerating;
+		$this->populateChunk($X - 1, $Z);
+		$this->populateChunk($X + 1, $Z);
+		$this->populateChunk($X, $Z - 1);
+		$this->populateChunk($X, $Z + 1);
+		$this->populateChunk($X + 1, $Z + 1);
+		$this->populateChunk($X + 1, $Z - 1);
+		$this->populateChunk($X - 1, $Z - 1);
+		$this->populateChunk($X - 1, $Z + 1);
 		return $ret;
+	}
+	
+	public function populateChunk($X, $Z){
+		if($this->isGenerating === 0 and
+		!$this->isPopulated($X, $Z) and
+		$this->isGenerated($X - 1, $Z) and
+		$this->isGenerated($X, $Z - 1) and
+		$this->isGenerated($X + 1, $Z) and
+		$this->isGenerated($X, $Z + 1) and
+		$this->isGenerated($X + 1, $Z + 1) and
+		$this->isGenerated($X - 1, $Z - 1) and
+		$this->isGenerated($X + 1, $Z - 1) and
+		$this->isGenerated($X - 1, $Z + 1)){
+			$this->level->populateChunk($X, $Z);			
+			$this->saveChunk($X, $Z);
+		}
 	}
 	
 	public function loadChunk($X, $Z){
@@ -206,16 +225,13 @@ class PMFLevel extends PMF{
 		if(!file_exists($path)){
 			if($this->isGenerating > 0){
 				$this->level->generateChunk($X, $Z);
-				$this->saveChunk($X, $Z);
 			}elseif($this->generateChunk($X, $Z) === false){
 				return false;
 			}
 		}
 		
 		if($this->isGenerating === 0 and !$this->isPopulated($X, $Z)){
-			++$this->isGenerating;
-			$this->level->populateChunk($X, $Z);
-			--$this->isGenerating;
+			$this->populateChunk($X, $Z);
 		}
 	
 		$chunk = @gzopen($path, "rb");
@@ -262,15 +278,15 @@ class PMFLevel extends PMF{
 	
 	public function isChunkLoaded($X, $Z){
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			return false;
 		}
 		return true;
 	}
 	
-	protected function isMiniChunkEmpty($X, $Z, $Y){
+	public function isMiniChunkEmpty($X, $Z, $Y){
 		$index = self::getIndex($X, $Z);
-		if($this->chunks[$index][$Y] !== false){
+		if(isset($this->chunks[$index]) and $this->chunks[$index][$Y] !== false){
 			if(substr_count($this->chunks[$index][$Y], "\x00") < 8192){
 				return false;
 			}
@@ -314,7 +330,17 @@ class PMFLevel extends PMF{
 				6 => false,
 				7 => false,		
 			);
-			$this->chunkChange[$index] = array(-1 => false);
+			$this->chunkChange[$index] = array(
+				-1 => true,
+				0 => 8192,
+				1 => 8192,
+				2 => 8192,
+				3 => 8192,
+				4 => 8192,
+				5 => 8192,
+				6 => 8192,
+				7 => 8192,
+			);
 			$this->chunkInfo[$index] = array(
 				0 => 0,
 				1 => 0,
@@ -347,7 +373,7 @@ class PMFLevel extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			return 0;
 		}
 		$aX = $x - ($X << 4);
@@ -366,7 +392,7 @@ class PMFLevel extends PMF{
 		$Y = $y >> 4;
 		$block &= 0xFF;
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			return false;
 		}
 		$aX = $x - ($X << 4);
@@ -390,7 +416,7 @@ class PMFLevel extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			return 0;
 		}
 		$aX = $x - ($X << 4);
@@ -414,7 +440,7 @@ class PMFLevel extends PMF{
 		$Y = $y >> 4;
 		$damage &= 0x0F;
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			return false;
 		}
 		$aX = $x - ($X << 4);
@@ -449,7 +475,7 @@ class PMFLevel extends PMF{
 			return array(AIR, 0);
 		}
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			if($this->loadChunk($X, $Z) === false){
 				return array(AIR, 0);
 			}
@@ -479,7 +505,7 @@ class PMFLevel extends PMF{
 		$block &= 0xFF;
 		$meta &= 0x0F;
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		if(!isset($this->chunks[$index])){
 			if($this->loadChunk($X, $Z) === false){
 				return false;
 			}
@@ -552,7 +578,7 @@ class PMFLevel extends PMF{
 		}
 		$chunk = @gzopen($path, "wb".PMFLevel::DEFLATE_LEVEL);
 		gzwrite($chunk, chr($bitmap));
-		gzwrite($chunk, Utils::writeInt($this->chunkInfo[$index][0]));
+		gzwrite($chunk, Utils::writeInt($this->chunkInfo[$index][1]));
 		for($Y = 0; $Y < 8; ++$Y){
 			$t = 1 << $Y;
 			if(($bitmap & $t) === $t){
@@ -587,6 +613,10 @@ class PMFLevel extends PMF{
 		}
 		$index = self::getIndex($X, $Z);
 		return ($this->chunkInfo[$index][1] & 0b00000000000000000000000000000001) > 0;
+	}
+	
+	public function isGenerated($X, $Z){
+		return file_exists($this->getChunkPath($X, $Z));
 	}
 	
 	public function doSaveRound(){
