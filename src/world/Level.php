@@ -105,7 +105,7 @@ class Level{
 		$now = microtime(true);
 		$this->players = $this->server->api->player->getAll($this);
 		
-		if(count($this->changedCount) > 0){
+		if($this->level->isGenerating === false and count($this->changedCount) > 0){
 			arsort($this->changedCount);
 			$resendChunks = array();
 			foreach($this->changedCount as $index => $count){
