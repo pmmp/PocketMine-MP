@@ -107,7 +107,6 @@ class Level{
 		
 		if($this->level->isGenerating === false and count($this->changedCount) > 0){
 			arsort($this->changedCount);
-			$resendChunks = array();
 			foreach($this->changedCount as $index => $count){
 				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
 					break;

@@ -186,12 +186,19 @@ class PMFLevel extends PMF{
 		if(!file_exists(dirname($path))){
 			@mkdir(dirname($path), 0755);
 		}
-		$this->isGenerating = true;		
-		$this->initCleanChunk($X, $Z);
-		$ret = $this->level->generateChunk($X, $Z);	
-		$ret = $ret and $this->level->populateChunk($X, $Z);
-		$this->saveChunk($X, $Z);
-		$this->isGenerating = false;
+		if($this->isGenerating === false){
+			$this->isGenerating = true;
+			$this->initCleanChunk($X, $Z);
+			$ret = $this->level->generateChunk($X, $Z);	
+			$ret = $ret and $this->level->populateChunk($X, $Z);
+			$this->saveChunk($X, $Z);
+			$this->isGenerating = false;
+		}else{
+			$this->initCleanChunk($X, $Z);
+			$ret = $this->level->generateChunk($X, $Z);	
+			$ret = $ret and $this->level->populateChunk($X, $Z);
+			$this->saveChunk($X, $Z);
+		}
 		return $ret;
 	}
 	
@@ -213,9 +220,13 @@ class PMFLevel extends PMF{
 		}
 		
 		if($this->isGenerating === false and !$this->isPopulated($X, $Z)){
-			$this->isGenerating = true;
-			$ret = $this->level->populateChunk($X, $Z);
-			$this->isGenerating = false;
+			if($this->isGenerating === false){
+				$this->isGenerating = true;
+				$this->level->populateChunk($X, $Z);
+				$this->isGenerating = false;
+			}else{
+				$this->level->populateChunk($X, $Z);
+			}
 		}
 	
 		$chunk = @gzopen($path, "rb");
