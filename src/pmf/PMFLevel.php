@@ -29,7 +29,7 @@ class PMFLevel extends PMF{
 	private $chunks = array();
 	private $chunkChange = array();
 	private $chunkInfo = array();
-	public $isGenerating = false;
+	public $isGenerating = 0;
 	
 	public function getData($index){
 		if(!isset($this->levelData[$index])){
@@ -186,19 +186,12 @@ class PMFLevel extends PMF{
 		if(!file_exists(dirname($path))){
 			@mkdir(dirname($path), 0755);
 		}
-		if($this->isGenerating === false){
-			$this->isGenerating = true;
-			$this->initCleanChunk($X, $Z);
-			$ret = $this->level->generateChunk($X, $Z);	
-			$ret = $ret and $this->level->populateChunk($X, $Z);
-			$this->saveChunk($X, $Z);
-			$this->isGenerating = false;
-		}else{
-			$this->initCleanChunk($X, $Z);
-			$ret = $this->level->generateChunk($X, $Z);	
-			$ret = $ret and $this->level->populateChunk($X, $Z);
-			$this->saveChunk($X, $Z);
-		}
+		++$this->isGenerating;
+		$this->initCleanChunk($X, $Z);
+		$ret = $this->level->generateChunk($X, $Z);	
+		$ret = $ret and $this->level->populateChunk($X, $Z);
+		$this->saveChunk($X, $Z);
+		--$this->isGenerating;
 		return $ret;
 	}
 	
@@ -211,7 +204,7 @@ class PMFLevel extends PMF{
 		}
 		$path = $this->getChunkPath($X, $Z);
 		if(!file_exists($path)){
-			if($this->isGenerating === true){
+			if($this->isGenerating > 0){
 				$this->level->generateChunk($X, $Z);
 				$this->saveChunk($X, $Z);
 			}elseif($this->generateChunk($X, $Z) === false){
@@ -219,14 +212,10 @@ class PMFLevel extends PMF{
 			}
 		}
 		
-		if($this->isGenerating === false and !$this->isPopulated($X, $Z)){
-			if($this->isGenerating === false){
-				$this->isGenerating = true;
-				$this->level->populateChunk($X, $Z);
-				$this->isGenerating = false;
-			}else{
-				$this->level->populateChunk($X, $Z);
-			}
+		if($this->isGenerating === 0 and !$this->isPopulated($X, $Z)){
+			++$this->isGenerating;
+			$this->level->populateChunk($X, $Z);
+			--$this->isGenerating;
 		}
 	
 		$chunk = @gzopen($path, "rb");
@@ -334,7 +323,7 @@ class PMFLevel extends PMF{
 	}
 	
 	public function setMiniChunk($X, $Z, $Y, $data){
-		if($this->isGenerating === true){
+		if($this->isGenerating > 0){
 			$this->initCleanChunk($X, $Z);
 		}elseif($this->isChunkLoaded($X, $Z) === false){
 			$this->loadChunk($X, $Z);
@@ -538,7 +527,7 @@ class PMFLevel extends PMF{
 	public function saveChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		if($this->isGenerating === true){
+		if($this->isGenerating > 0){
 			$this->initCleanChunk($X, $Z);
 		}elseif(!$this->isChunkLoaded($X, $Z)){
 			return false;

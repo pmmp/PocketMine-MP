@@ -105,7 +105,7 @@ class Level{
 		$now = microtime(true);
 		$this->players = $this->server->api->player->getAll($this);
 		
-		if($this->level->isGenerating === false and count($this->changedCount) > 0){
+		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
 			arsort($this->changedCount);
 			foreach($this->changedCount as $index => $count){
 				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
