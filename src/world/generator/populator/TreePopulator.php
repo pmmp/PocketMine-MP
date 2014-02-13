@@ -43,9 +43,9 @@ class TreePopulator extends Populator{
 				continue;
 			}			
 			if($random->nextFloat() > 0.75){
-				$meta = 1;
+				$meta = SaplingBlock::BIRCH;
 			}else{
-				$meta = 0;
+				$meta = SaplingBlock::OAK;
 			}
 			TreeObject::growTree($this->level, new Vector3($x, $y, $z), $random, $meta);
 		}
@@ -57,7 +57,7 @@ class TreePopulator extends Populator{
 			if($b->getID() !== DIRT and $b->getID() !== GRASS){
 				if(--$y <= 0){
 					return -1;
-				}				
+				}	
 			}else{
 				break;
 			}
