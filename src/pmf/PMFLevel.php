@@ -165,6 +165,7 @@ class PMFLevel extends PMF{
 		$this->levelData["version"] = 0x01;
 		$this->levelData["generator"] = "NormalGenerator";
 		$this->levelData["generatorSettings"] = "";
+		$this->saveData();
 	}
 	
 	public static function getIndex($X, $Z){
