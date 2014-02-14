@@ -147,7 +147,7 @@ class ServerAPI{
 		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
-		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 8)); //Default rate ~512 kB/s
+		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
 			console("[INFO] Advanced cache enabled");
 		}

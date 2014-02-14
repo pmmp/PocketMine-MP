@@ -45,25 +45,17 @@ class WorldGenerator{
 		$this->level = new Level($level, $entities, $tiles, $blockUpdates, $name);
 	}
 	
-	public function generate(){		
-		++$this->level->level->isGenerating;
+	public function generate(){
 		$this->generator->init($this->level, $this->random);
 		
-		for($Z = 7; $Z <= 9; ++$Z){
-			for($X = 7; $X <= 9; ++$X){
-				$this->generator->generateChunk($X, $Z);
-			}
-		}
-		
-		for($Z = 7; $Z <= 9; ++$Z){
-			for($X = 7; $X <= 9; ++$X){
-				$this->generator->populateChunk($X, $Z);
+		//Generate 4 chunks for spawning players
+		for($Z = 7; $Z <= 8; ++$Z){
+			for($X = 7; $X <= 8; ++$X){
+				$this->level->level->loadChunk($X, $Z);
 			}
 		}
 		
 		$this->level->setSpawn($this->generator->getSpawn());
-		$this->level->save(true, true);
-		--$this->level->level->isGenerating;
 	}
 	
 	public function close(){

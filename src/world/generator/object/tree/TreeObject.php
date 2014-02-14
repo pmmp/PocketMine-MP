@@ -23,6 +23,8 @@
 class TreeObject{
 	public $overridable = array(
 		0 => true,
+		2 => true,
+		3 => true,
 		6 => true,
 		17 => true,
 		18 => true,

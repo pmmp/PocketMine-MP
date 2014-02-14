@@ -30,13 +30,10 @@ class NormalGenerator implements LevelGenerator{
 	private $random;
 	private $worldHeight = 65;
 	private $waterHeight = 63;
+	private $noiseHills;
+	private $noisePatches;
+	private $noisePatchesSmall;
 	private $noiseBase;
-	private $noiseGen1;
-	private $noiseGen2;
-	private $noiseGen3;
-	private $noiseGen4;
-	private $noiseGen5;
-	private $noiseGen6;
 	
 	public function __construct(array $options = array()){
 		
@@ -50,9 +47,10 @@ class NormalGenerator implements LevelGenerator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());	
-		$this->noiseBase = new NoiseGeneratorSimplex($this->random, 4);
- 		$this->noiseGen1 = new NoiseGeneratorPerlin($this->random, 4);
-		$this->noiseGen2 = new NoiseGeneratorPerlin($this->random, 4);
+		$this->noiseHills = new NoiseGeneratorSimplex($this->random, 3);
+		$this->noisePatches = new NoiseGeneratorSimplex($this->random, 2);
+		$this->noisePatchesSmall = new NoiseGeneratorSimplex($this->random, 2);
+		$this->noiseBase = new NoiseGeneratorSimplex($this->random, 16);
 
 
 		$ores = new OrePopulator();
@@ -67,38 +65,83 @@ class NormalGenerator implements LevelGenerator{
 			new OreType(new GravelBlock(), 10, 16, 0, 128),
 		));
 		$this->populators[] = $ores;
+		
+		$trees = new TreePopulator();
+		$trees->setBaseAmount(3);
+		$trees->setRandomAmount(0);
+		$this->populators[] = $trees;
+		
+		$tallGrass = new TallGrassPopulator();
+		$tallGrass->setBaseAmount(5);
+		$tallGrass->setRandomAmount(0);
+		$this->populators[] = $tallGrass;		
 	}
 	
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
+		$hills = array();
+		$patchesSmall = array();
+		$base = array();
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				$i = ($z << 4) + $x;
+				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.11, 12, true);
+				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.03, 16, true);
+				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.5, 4, true);
+				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.7, 16, true);
+				
+				if($base[$i] < 0){
+					$base[$i] *= 0.5;
+				}
+			}
+		}
 
 		for($chunkY = 0; $chunkY < 8; ++$chunkY){
 			$chunk = "";
 			$startY = $chunkY << 4;
-			$endY = $startY + 16;			
+			$endY = $startY + 16;
 			for($z = 0; $z < 16; ++$z){
 				for($x = 0; $x < 16; ++$x){
-					$noise1 = $this->noiseGen1->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.6, 32, true) * 2;
-					$noise2 = $this->noiseGen2->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.35, 64, true) * 15;
-					$noiseBase = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 1/5, 16, true) * 3;
-					$height = (int) ($this->worldHeight + $noise1 + $noise2 + $noiseBase);
+					$i = ($z << 4) + $x;
+					$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 7;
+					$height = (int) $height;
 
 					for($y = $startY; $y < $endY; ++$y){
 						$diff = $height - $y;	
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
 							$chunk .= "\x07"; //bedrock
-						}elseif($diff > 3){
+						}elseif($diff > 2){
 							$chunk .= "\x01"; //stone
 						}elseif($diff > 0){
-							$chunk .= "\x03"; //dirt
+							if($patches[$i] > 0.7){
+								$chunk .= "\x01"; //stone
+							}elseif($patches[$i] < -0.8){
+								$chunk .= "\x0d"; //gravel
+							}else{
+								$chunk .= "\x03"; //dirt
+							}							
 						}elseif($y <= $this->waterHeight){
-							if($y === $this->waterHeight and $diff === 0){
+							if(($this->waterHeight - $y) <= 1 and $diff === 0){
 								$chunk .= "\x0c"; //sand
+							}elseif($diff === 0){
+								if($patchesSmall[$i] > 0.3){
+									$chunk .= "\x0d"; //gravel
+								}elseif($patchesSmall[$i] < -0.45){
+									$chunk .= "\x0c"; //sand
+								}else{
+									$chunk .= "\x03"; //dirt
+								}	
 							}else{
 								$chunk .= "\x09"; //still_water
 							}
 						}elseif($diff === 0){
-							$chunk .= "\x02"; //grass
+							if($patches[$i] > 0.7){
+								$chunk .= "\x01"; //stone
+							}elseif($patches[$i] < -0.8){
+								$chunk .= "\x0d"; //gravel
+							}else{
+								$chunk .= "\x02"; //grass
+							}
 						}else{
 							$chunk .= "\x00";
 						}
@@ -111,17 +154,12 @@ class NormalGenerator implements LevelGenerator{
 		
 	}
 	
-	public function populateChunk($chunkX, $chunkZ){		
+	public function populateChunk($chunkX, $chunkZ){
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
-		
-		$this->level->level->setPopulated($chunkX, $chunkZ);
-	}
-	
-	public function populateLevel(){
-	
 	}
 	
 	public function getSpawn(){
