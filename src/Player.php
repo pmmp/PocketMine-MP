@@ -2170,6 +2170,7 @@ class Player{
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 						if($slot->count < $item->count){
 							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								$this->sendInventory();
 								break;
 							}
 						}elseif($slot->count > $item->count){
@@ -2177,6 +2178,7 @@ class Player{
 						}
 					}else{
 						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							$this->sendInventory();
 							break;
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
@@ -2216,6 +2218,7 @@ class Player{
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 						if($slot->count < $item->count){
 							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								$this->sendInventory();
 								break;
 							}
 						}elseif($slot->count > $item->count){
@@ -2223,6 +2226,7 @@ class Player{
 						}
 					}else{
 						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							$this->sendInventory();
 							break;
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
