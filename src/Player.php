@@ -2322,14 +2322,16 @@ class Player{
 	}
 	
 	public function sendBuffer(){
-		if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){	
-			$this->buffer->seqNumber = $this->counter[0]++;
-			$this->send($this->buffer);
+		if($this->connected === true){
+			if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){	
+				$this->buffer->seqNumber = $this->counter[0]++;
+				$this->send($this->buffer);
+			}
+			$this->bufferLen = 0;
+			$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+			$this->buffer->data = array();
+			$this->nextBuffer = microtime(true) + 0.1;
 		}
-		$this->bufferLen = 0;
-		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
-		$this->buffer->data = array();
-		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
 	private function directBigRawPacket(RakNetDataPacket $packet){
@@ -2418,7 +2420,7 @@ class Player{
 		
 		$packet->messageIndex = $this->counter[3]++;
 		$packet->reliability = 2;
-		$this->buffer->data[] = $packet;
+		@$this->buffer->data[] = $packet;
 		$this->bufferLen += 6 + $len;
 		return array();
 	}

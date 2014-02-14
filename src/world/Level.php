@@ -138,8 +138,11 @@ class Level{
 				if(count($c) === 0){
 					unset($this->usedChunks[$i]);
 					$X = explode(".", $i);
-					$Z = array_pop($X);
-					$this->level->unloadChunk((int) array_pop($X), (int) $Z, $this->server->saveEnabled);
+					$Z = (int) array_pop($X);
+					$X = (int) array_pop($X);
+					if(!$this->isSpawnChunk($X, $Z)){
+						$this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
+					}
 				}
 			}
 			$this->save(false, false);
@@ -408,12 +411,22 @@ class Level{
 		return $this->level->loadChunk($X, $Z);
 	}
 	
-	public function unloadChunk($X, $Z){
+	public function unloadChunk($X, $Z, $force = false){
 		if(!isset($this->level)){
+			return false;
+		}
+		
+		if($force !== true and $this->isSpawnChunk($X, $Z)){
 			return false;
 		}
 		Cache::remove("world:{$this->name}:$X:$Z");
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
+	}
+	
+	public function isSpawnChunk($X, $Z){
+		$spawnX = $this->level->getData("spawnX") >> 4;
+		$spawnZ = $this->level->getData("spawnZ") >> 4;
+		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}
 
 	public function getOrderedChunk($X, $Z, $Yndex){
