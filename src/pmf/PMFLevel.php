@@ -169,12 +169,12 @@ class PMFLevel extends PMF{
 	}
 	
 	public static function getIndex($X, $Z){
-		return ($Z << 16) | ($X < 0 ? (~--$X & 0x7fff) | 0x1000 : $X & 0xFFFF);
+		return ($Z << 16) | ($X < 0 ? (~--$X & 0x7fff) | 0x8000 : $X & 0x7fff);
 	}
 	
 	public static function getXZ($index, &$X = null, &$Z = null){
 		$Z = $index >> 16;
-		$X = $index & 0xFFFF;
+		$X = ($index & 0x8000) === 0x8000 ? -($index & 0x7fff) : $index & 0x7fff;
 		return array($X, $Z);
 	}
 	
