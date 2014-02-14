@@ -164,7 +164,7 @@ class Entity extends Position{
 	}
 	
 	public function getDrops(){
-		if($this->class === ENTITY_PLAYER and ($this->player->gamemode & 0x01) === 0){
+		if($this->class === ENTITY_PLAYER and $this->player instanceof Player ($this->player->gamemode & 0x01) === 0){
 			$inv = array();
 			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 				$slot = $this->player->getSlot($i);
