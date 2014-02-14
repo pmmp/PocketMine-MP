@@ -26,7 +26,6 @@ class Level{
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
-		$level->level = $this;
 		$this->level->level = $this;
 		$this->entities = $entities;
 		$this->tiles = $tiles;
@@ -151,17 +150,19 @@ class Level{
 		++$this->level->isGenerating;
 		$this->generator->generateChunk($X, $Z);
 		--$this->level->isGenerating;
+		return true;
 	}
 	
 	public function populateChunk($X, $Z){
-		$this->generator->populateChunk($X, $Z);		
 		$this->level->setPopulated($X, $Z);
+		$this->generator->populateChunk($X, $Z);		
+		return true;
 	}
 	
 	public function __destruct(){
 		if(isset($this->level)){
 			$this->save(false, false);
-			$this->level->close();
+			$this->level->closeLevel();
 			unset($this->level);
 		}
 	}

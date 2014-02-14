@@ -46,13 +46,16 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
-	public function close(){
+	public function closeLevel(){
 		$this->chunks = null;
 		unset($this->chunks, $this->chunkChange, $this->chunkInfo, $this->level);
-		parent::close();
+		$this->close();
 	}
 	
 	public function __construct($file, $blank = false){
+		$this->chunks = array();
+		$this->chunkChange = array();
+		$this->chunkInfo = array();
 		if(is_array($blank)){
 			$this->create($file, 0);
 			$this->levelData = $blank;
@@ -166,7 +169,7 @@ class PMFLevel extends PMF{
 	}
 	
 	public static function getIndex($X, $Z){
-		return ($Z << 16) + $X;
+		return ($Z << 16) | ($X < 0 ? (~--$X & 0x7fff) | 0x1000 : $X & 0xFFFF);
 	}
 	
 	public static function getXZ($index, &$X = null, &$Z = null){
@@ -223,10 +226,11 @@ class PMFLevel extends PMF{
 		}
 		$path = $this->getChunkPath($X, $Z);
 		if(!file_exists($path)){
-			if($this->isGenerating > 0){
-				$this->level->generateChunk($X, $Z);
-			}elseif($this->generateChunk($X, $Z) === false){
+			if($this->generateChunk($X, $Z) === false){
 				return false;
+			}else{
+				$this->populateChunk($X, $Z);
+				return true;			
 			}
 		}
 		
@@ -307,7 +311,7 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getMiniChunk($X, $Z, $Y){
-		if($this->loadChunk($X, $Z) === false){
+		if($this->isChunkLoaded($X, $Z) === false and $this->loadChunk($X, $Z) === false){
 			return str_repeat("\x00", 8192);
 		}
 		$index = self::getIndex($X, $Z);
@@ -475,11 +479,9 @@ class PMFLevel extends PMF{
 			return array(AIR, 0);
 		}
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index])){
-			if($this->loadChunk($X, $Z) === false){
-				return array(AIR, 0);
-			}
-		}elseif($this->chunks[$index][$Y] === false){
+		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
+			return array(AIR, 0);
+		}elseif($this->chunks[$index][$Y] === false){			
 			return array(AIR, 0);
 		}
 		$aX = $x - ($X << 4);
@@ -505,10 +507,8 @@ class PMFLevel extends PMF{
 		$block &= 0xFF;
 		$meta &= 0x0F;
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunks[$index])){
-			if($this->loadChunk($X, $Z) === false){
-				return false;
-			}
+		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
+			return false;
 		}elseif($this->chunks[$index][$Y] === false){
 			$this->fillMiniChunk($X, $Z, $Y);
 		}
@@ -543,11 +543,7 @@ class PMFLevel extends PMF{
 		$X = (int) $X;
 		$Z = (int) $Z;
 		if(!$this->isChunkLoaded($X, $Z)){
-			if($this->isGenerating > 0){
-				$this->initCleanChunk($X, $Z);
-			}else{
-				return false;
-			}
+			return false;
 		}
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunkChange[$index]) or $this->chunkChange[$index][-1] === false){//No changes in chunk
