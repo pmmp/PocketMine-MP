@@ -228,14 +228,10 @@ class PMFLevel extends PMF{
 		if(!file_exists($path)){
 			if($this->generateChunk($X, $Z) === false){
 				return false;
-			}else{
+			}elseif($this->isGenerating === 0){
 				$this->populateChunk($X, $Z);
 				return true;			
 			}
-		}
-		
-		if($this->isGenerating === 0 and !$this->isPopulated($X, $Z)){
-			$this->populateChunk($X, $Z);
 		}
 	
 		$chunk = @gzopen($path, "rb");
@@ -261,6 +257,9 @@ class PMFLevel extends PMF{
 			}
 		}
 		@gzclose($chunk);
+		if($this->isGenerating === 0 and !$this->isPopulated($X, $Z)){
+			$this->populateChunk($X, $Z);
+		}
 		return true;
 	}
 	
