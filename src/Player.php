@@ -63,6 +63,7 @@ class Player{
 	public $blocked = true;
 	public $achievements = array();
 	public $chunksLoaded = array();
+	private $viewDistance;
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
@@ -112,6 +113,7 @@ class Player{
 		$this->armor = array();
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
+		$this->viewDistance = (int) $this->server->api->getProperty("view-distance");
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
@@ -148,22 +150,35 @@ class Player{
 		if(!($this->entity instanceof Entity) or $this->connected === false){
 			return false;
 		}
-		$X = ($this->entity->x - 0.5) / 16;
-		$Z = ($this->entity->z - 0.5) / 16;
-		$v = new Vector2($X, $Z);		
-		$this->chunksOrder = array();
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$dist = $v->distance(new Vector2($x, $z));
-				for($y = 0; $y < 8; ++$y){
-					$d = $x.":".$y.":".$z;
-					if(!isset($this->chunksLoaded[$d])){
-						$this->chunksOrder[$d] = $dist;
+		
+		$newOrder = array();
+		$lastLoaded = $this->chunksLoaded;
+		$centerX = intval(($this->entity->x - 0.5) / 16);
+		$centerZ = intval(($this->entity->z - 0.5) / 16);
+		$startX = $centerX - $this->viewDistance;
+		$startZ = $centerZ - $this->viewDistance;
+		$finalX = $centerX + $this->viewDistance;
+		$finalZ = $centerZ + $this->viewDistance;
+		for($X = $startX; $X <= $finalX; ++$X){
+			for($Z = $startZ; $Z <= $finalZ; ++$Z){
+				$distance = abs($X - $centerX) + abs($Z - $centerZ);
+				for($Y = 0; $Y < 8; ++$Y){
+					$index = "$X:$Y:$Z";
+					if(!isset($lastLoaded[$index])){
+						$newOrder[$index] = $distance;
+					}else{
+						unset($lastLoaded[$index]);
 					}
 				}
 			}
 		}
-		asort($this->chunksOrder);
+		asort($newOrder);
+		$this->chunksOrder = $newOrder;
+		foreach($lastLoaded as $index => $distance){
+			$id = explode(":", $index);
+			$this->level->freeChunk($id[0], $id[2], $this);
+			unset($this->chunksLoaded[$index]);
+		}
 	}
 	
 	public function getNextChunk(){
@@ -195,7 +210,7 @@ class Player{
 
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
-		if($c === null or $d > $this->server->api->getProperty("view-distance")){
+		if($c === null){
 			$this->server->schedule(50, array($this, "getNextChunk"));
 			return false;
 		}
@@ -1468,7 +1483,7 @@ class Player{
 						}
 						$this->sendInventory();
 						$this->sendSettings();
-						$this->server->schedule(50, array($this, "orderChunks"), array(), true);
+						$this->server->schedule(30, array($this, "orderChunks"), array(), true);
 						$this->blocked = false;
 						
 						$pk = new SetTimePacket;
