@@ -534,17 +534,6 @@ class PMFLevel extends PMF{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
-			if($old_b instanceof LiquidBlock){
-				$pos = new Position($x, $y, $z, $this->level);
-				for($side = 0; $side <= 5; ++$side){
-					$b = $pos->getSide($side);
-					if($b instanceof LavaBlock){
-						ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
-					}else{
-						ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
-					}
-				}
-			}
 			return true;
 		}
 		return false;
@@ -553,10 +542,12 @@ class PMFLevel extends PMF{
 	public function saveChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
-		if($this->isGenerating > 0){
-			$this->initCleanChunk($X, $Z);
-		}elseif(!$this->isChunkLoaded($X, $Z)){
-			return false;
+		if(!$this->isChunkLoaded($X, $Z)){
+			if($this->isGenerating > 0){
+				$this->initCleanChunk($X, $Z);
+			}else{
+				return false;
+			}
 		}
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunkChange[$index]) or $this->chunkChange[$index][-1] === false){//No changes in chunk
