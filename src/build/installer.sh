@@ -1,5 +1,7 @@
 #!/bin/bash
 PMMP_VERSION=""
+LINUX_32_BUILD="PHP_5.5.9_x86_Linux"
+LINUX_64_BUILD="PHP_5.5.9_x86-64_Linux"
 MAC_BUILD="PHP_5.5.9_x86_MacOS"
 RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
 AND_BUILD="PHP_5.5.9_ARMv7_Android"
@@ -114,6 +116,32 @@ else
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] Raspberry Pi PHP build available, downloading $RPI_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$RPI_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
+			chmod +x ./bin/php5/bin/*
+			echo -n " regenerating php.ini..."
+			OPCACHE_PATH=$(find "./bin/php5" -name opcache.so)
+			echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/lib/php.ini"
+			echo "opcache.enable=1" >> "./bin/php5/lib/php.ini"
+			echo "opcache.enable_cli=1" >> "./bin/php5/lib/php.ini"
+			echo "opcache.save_comments=0" >> "./bin/php5/lib/php.ini"
+			echo "opcache.fast_shutdown=1" >> "./bin/php5/lib/php.ini"
+			echo "opcache.max_accelerated_files=4096" >> "./bin/php5/lib/php.ini"
+			echo "opcache.interned_strings_buffer=8" >> "./bin/php5/lib/php.ini"
+			echo "opcache.memory_consumption=128" >> "./bin/php5/lib/php.ini"
+			echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/lib/php.ini"
+			echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
+			echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
+			echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+			echo " done"
+		elif [ "$(uname -s)" == "Linux" ]; then
+			rm -r -f bin/ >> /dev/null 2>&1
+			if [ `getconf LONG_BIT` = "64" ]; then
+				echo -n "[3/3] Linux 64-bit PHP build available, downloading $LINUX_64_BUILD.tar.gz..."
+				LINUX_BUILD=$LINUX_64_BUILD
+			else
+				echo -n "[3/3] Linux 32-bit PHP build available, downloading $LINUX_32_BUILD.tar.gz..."
+				LINUX_BUILD=$LINUX_32_BUILD
+			fi
+			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$LINUX_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " regenerating php.ini..."
 			OPCACHE_PATH=$(find "./bin/php5" -name opcache.so)
