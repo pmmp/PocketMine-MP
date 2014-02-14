@@ -420,6 +420,11 @@ class PocketMinecraftServer{
 			$dump .= "[".($l + 1)."] ".@$file[$l]."\r\n";
 		}
 		$dump .= "\r\n\r\n";
+		$dump .= "Backtrace: \r\n";
+		foreach(getTrace() as $line){
+			$dump .= "$line\r\n";
+		}
+		$dump .= "\r\n\r\n";
 		$version = new VersionString();
 		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".ProtocolInfo::CURRENT_PROTOCOL."; API ".CURRENT_API_VERSION."]\r\n";
 		$dump .= "Git commit: ".GIT_COMMIT."\r\n";
