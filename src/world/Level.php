@@ -77,6 +77,10 @@ class Level{
 		unset($this->usedChunks[$X.".".$Z][$player->CID]);
 	}
 	
+	public function isChunkPopulated($X, $Z){
+		return $this->level->isPopulated($X, $Z);
+	}
+	
 	public function checkTime(){
 		if(!isset($this->level)){
 			return false;

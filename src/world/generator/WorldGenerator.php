@@ -50,7 +50,7 @@ class WorldGenerator{
 		
 		//Generate 4 chunks for spawning players
 		for($Z = 7; $Z <= 8; ++$Z){
-			for($X = 7; $X <= 8; ++$X){
+			for($X = 7; $X <= 9; ++$X){
 				$this->level->level->loadChunk($X, $Z);
 			}
 		}

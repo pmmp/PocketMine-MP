@@ -212,26 +212,25 @@ class PMFLevel extends PMF{
 		$this->isGenerated($X - 1, $Z - 1) and
 		$this->isGenerated($X + 1, $Z - 1) and
 		$this->isGenerated($X - 1, $Z + 1)){
-			$this->level->populateChunk($X, $Z);			
+			$this->level->populateChunk($X, $Z);
 			$this->saveChunk($X, $Z);
 		}
 	}
 	
 	public function loadChunk($X, $Z){
-		$X = (int) $X;
-		$Z = (int) $Z;
-		$index = self::getIndex($X, $Z);
 		if($this->isChunkLoaded($X, $Z)){
 			return true;
 		}
+		$index = self::getIndex($X, $Z);
 		$path = $this->getChunkPath($X, $Z);
 		if(!file_exists($path)){
 			if($this->generateChunk($X, $Z) === false){
 				return false;
-			}elseif($this->isGenerating === 0){
-				$this->populateChunk($X, $Z);
-				return true;			
 			}
+			if($this->isGenerating === 0){
+				$this->populateChunk($X, $Z);			
+			}
+			return true;
 		}
 	
 		$chunk = @gzopen($path, "rb");
