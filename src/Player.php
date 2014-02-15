@@ -2434,7 +2434,7 @@ class Player{
 	}
 	
 	public function hasPermission($nodeName){
-		return $this->isPermissionSet($nodeName) and */PermissionsAPI::hasPermission($nodeName, $this);
+		return $this->isPermissionSet($nodeName) and PermissionsAPI::hasPermission($nodeName, $this);
 	}
 	
 	public function setPermission($nodeName, $boolean){
