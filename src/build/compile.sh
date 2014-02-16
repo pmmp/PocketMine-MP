@@ -241,7 +241,7 @@ else
 	--disable-ldap \
 	--disable-ldaps \
 	--without-libidn \
-	--with-ssl="/usr/lib" \
+	--with-ssl \
 	--with-axtls="$DIR/install_data/axTLS" \
 	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
