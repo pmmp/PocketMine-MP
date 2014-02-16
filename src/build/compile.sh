@@ -242,8 +242,9 @@ echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
-mv "$DIR/install_data/php/ext/openssl/include/openssl/"* "$DIR/install_data/php/ext/openssl/include/" 
+echo -n " cleaning..."
 cd ..
+rm -r -f ./openssh
 echo " done!"
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
@@ -258,7 +259,7 @@ else
 	if [ ! -f ./configure ]; then
 		./buildconf --force >> "$DIR/install.log" 2>&1
 	fi
-	PKG_CONFIG_PATH="$DIR/install_data/php/ext/openssl/lib/pkgconfig" ./configure --disable-dependency-tracking \
+	./configure --disable-dependency-tracking \
 	--enable-ipv6 \
 	--enable-optimize \
 	--enable-http \
@@ -276,7 +277,7 @@ else
 	--disable-ldaps \
 	--without-libidn \
 	--with-zlib="$DIR/install_data/php/ext/zlib" \
-	--with-ssl="$DIR/install_data/php/ext/openssl" \
+	--with-ssl="static,$DIR/install_data/php/ext/openssl" \
 	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
 	--disable-shared \
