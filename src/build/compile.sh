@@ -261,7 +261,8 @@ else
 	cd curl
 	if [ ! -f ./configure ]; then
 		./buildconf --force >> "$DIR/install.log" 2>&1
-	fi
+	fi	
+	sed -i 's#LIB_OPENSSL="$PREFIX_OPENSSL/lib$libsuff"#LIB_OPENSSL="$PREFIX_OPENSSL/lib$libsuff"; PREFIX_OPENSSL="static,$PREFIX_OPENSSL"#g' ./configure >> "$DIR/install.log" 2>&1
 	./configure --disable-dependency-tracking \
 	--enable-ipv6 \
 	--enable-optimize \
@@ -286,35 +287,6 @@ else
 	--disable-shared \
 	--enable-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/Solaris/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/Win32/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/Win32/cygwin/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/Linux/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/Linux/RPM/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/vms/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/AIX/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/AIX/RPM/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/packages/EPM/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/config.status" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/ltmain.sh" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/lib/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/docs/examples/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/docs/examples/Makefile.netware" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/docs/libcurl/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/docs/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/data/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/certs/scripts/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/certs/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/unit/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/libtest/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/tests/server/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/src/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/include/curl/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/include/Makefile" >> "$DIR/install.log" 2>&1
-	sed -i "s#static,$DIR#$DIR#g" "$DIR/install_data/curl/curl-config" >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
 	echo -n " installing..."
