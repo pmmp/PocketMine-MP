@@ -31,7 +31,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/32bit
     cd $COMPILEDIR/linux/32bit
     
-    OPENSSL_TARGET="linux-generic32" CFLAGS="-m32" march=i686 mtune=none $SCRIPT
+    OPENSSL_TARGET="linux-generic32" CFLAGS="-m32" march=i386 mtune=none $SCRIPT
     
     cp -r $COMPILEDIR/linux/32bit/{install.log,bin/*,install_data/*} $ARCHIVE/linux/32bit/
 	if [ ! -f $COMPILEDIR/linux/32bit/bin/php5/bin/php ]; then
