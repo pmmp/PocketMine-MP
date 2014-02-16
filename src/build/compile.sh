@@ -232,6 +232,7 @@ cd openssl
 RANLIB=$RANLIB ./Configure \
 $OPENSSL_TARGET \
 --prefix="$DIR/install_data/php/ext/openssl" \
+--openssldir="$DIR/install_data/php/ext/openssl" \
 no-zlib \
 no-shared \
 no-asm \
@@ -284,6 +285,35 @@ else
 	--disable-shared \
 	--enable-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/Solaris/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/Win32/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/Win32/cygwin/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/Linux/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/Linux/RPM/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/vms/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/AIX/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/AIX/RPM/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" packages/EPM/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" config.status
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" ltmain.sh
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" lib/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" docs/examples/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" docs/examples/Makefile.netware
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" docs/libcurl/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" docs/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/data/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/certs/scripts/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/certs/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/unit/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/libtest/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" tests/server/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" src/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" include/curl/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" include/Makefile
+	sed -i "s#static,$DIR/install_data/php/ext/openssl#$DIR/install_data/php/ext/openssl#g" curl-config
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
 	echo -n " installing..."
