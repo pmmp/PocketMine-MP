@@ -261,9 +261,8 @@ else
 	cd curl
 	if [ ! -f ./configure ]; then
 		./buildconf --force >> "$DIR/install.log" 2>&1
-	fi	
-	sed -i 's#LIB_OPENSSL="$PREFIX_OPENSSL/lib$libsuff"#LIB_OPENSSL="$PREFIX_OPENSSL/lib$libsuff"; PREFIX_OPENSSL="static,$PREFIX_OPENSSL"#g' ./configure >> "$DIR/install.log" 2>&1
-	./configure --disable-dependency-tracking \
+	fi
+	RANLIB=$RANLIB ./configure --disable-dependency-tracking \
 	--enable-ipv6 \
 	--enable-optimize \
 	--enable-http \
@@ -287,6 +286,35 @@ else
 	--disable-shared \
 	--enable-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/Solaris/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/Win32/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/Win32/cygwin/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/Linux/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/Linux/RPM/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/vms/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/AIX/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/AIX/RPM/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" packages/EPM/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" config.status >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" ltmain.sh >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" lib/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" docs/examples/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" docs/examples/Makefile.netware >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" docs/libcurl/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" docs/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/data/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/certs/scripts/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/certs/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/unit/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/libtest/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" tests/server/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" src/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" include/curl/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" include/Makefile >> "$DIR/install.log" 2>&1
+	sed -i "s#static,$DIR#$DIR#g" curl-config >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
 	echo -n " installing..."
@@ -355,7 +383,7 @@ if [ "$1" == "crosscompile" ]; then
 	export LIBS="-lpthread -ldl"
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
-./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
+RANLIB=$RANLIB ./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/install_data/php/ext/zlib" \
