@@ -3,6 +3,7 @@ PHP_VERSION="5.5.9"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
+OPENSSL_VERSION="1.0.1f"
 CURL_VERSION="curl-7_35_0"
 LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="0.1.0"
@@ -44,16 +45,19 @@ if [ "$1" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
 	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+	OPENSSL_TARGET="linux-armv4"
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
 elif [ "$1" == "mac" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
+	OPENSSL_TARGET="darwin64-x86_64-cc"
 	echo "[INFO] Compiling for Intel MacOS"
 elif [ "$1" == "ios" ]; then
 	[ -z "$march" ] && march=armv6;
 	[ -z "$mtune" ] && mtune=cortex-a8;
 	echo "[INFO] Compiling for iOS ARMv6"
+	OPENSSL_TARGET="linux-armv4"
 elif [ "$1" == "crosscompile" ]; then
 	HAVE_MYSQLI="--without-mysqli"
 	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
@@ -66,6 +70,7 @@ elif [ "$1" == "crosscompile" ]; then
 		CFLAGS="-uclibc --static $CFLAGS";
 		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv6"
+		OPENSSL_TARGET="linux-armv4"
 	elif [ "$2" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7-a;
@@ -76,6 +81,7 @@ elif [ "$1" == "crosscompile" ]; then
 		CFLAGS="-uclibc --static $CFLAGS";
 		LDFLAGS="--static"
 		echo "[INFO] Cross-compiling for Android ARMv7"
+		OPENSSL_TARGET="linux-armv4"
 	elif [ "$2" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
 		[ -z "$march" ] && march=armv6zk;
@@ -84,6 +90,7 @@ elif [ "$1" == "crosscompile" ]; then
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
+		OPENSSL_TARGET="linux-armv4"
 		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
 	elif [ "$2" == "mac" ]; then
 		[ -z "$march" ] && march=prescott;
@@ -94,15 +101,18 @@ elif [ "$1" == "crosscompile" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		#zlib doesn't use the correct ranlib
 		RANLIB=$TOOLCHAIN_PREFIX-ranlib
+		OPENSSL_TARGET="darwin64-x86_64-cc"
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$2" == "ios" ] || [ "$2" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=generic-armv6;
 		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
+		OPENSSL_TARGET="linux-armv4"
 	elif [ "$2" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=generic-armv7-a;
 		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
+		OPENSSL_TARGET="linux-armv4"
 	else
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
 		exit 1
@@ -111,9 +121,11 @@ elif [ -z "$CFLAGS" ]; then
 	if [ `getconf LONG_BIT` = "64" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
 		CFLAGS="-m64 $CFLAGS"
+		OPENSSL_TARGET="linux-x86_64"
 	else
 		echo "[INFO] Compiling for current machine using 32-bit"
 		CFLAGS="-m32 $CFLAGS"
+		OPENSSL_TARGET="linux-generic32"
 	fi
 fi
 
@@ -211,6 +223,29 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
+#OpenSSL
+echo -n "[OpenSSL] downloading $OPENSSL_VERSION..."
+download_file "http://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+mv openssl-$OPENSSL_VERSION openssl
+echo -n " checking..."
+cd openssl
+RANLIB=$RANLIB ./Configure \
+$OPENSSL_TARGET \
+--prefix="$DIR/install_data/php/ext/openssl" \
+no-zlib \
+no-shared \
+no-asm \
+no-hw \
+no-engines \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make -j $THREADS >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+mv "$DIR/install_data/php/ext/openssl/include/openssl/"* "$DIR/install_data/php/ext/openssl/include/" 
+cd ..
+echo " done!"
+
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
    HAVE_CURL="shared,/usr"
 else
@@ -223,7 +258,7 @@ else
 	if [ ! -f ./configure ]; then
 		./buildconf --force >> "$DIR/install.log" 2>&1
 	fi
-	./configure --disable-dependency-tracking \
+	PKG_CONFIG_PATH="$DIR/install_data/php/ext/openssl/lib/pkgconfig" ./configure --disable-dependency-tracking \
 	--enable-ipv6 \
 	--enable-optimize \
 	--enable-http \
@@ -241,7 +276,7 @@ else
 	--disable-ldaps \
 	--without-libidn \
 	--with-zlib="$DIR/install_data/php/ext/zlib" \
-	--with-ssl \
+	--with-ssl="$DIR/install_data/php/ext/openssl" \
 	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
 	--disable-shared \
@@ -314,7 +349,6 @@ if [ "$1" == "crosscompile" ]; then
 	sed -i 's/pthreads_working=no/pthreads_working=yes/' ./configure
 	export LIBS="-lpthread -ldl"
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
-
 fi
 ./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
@@ -322,6 +356,7 @@ fi
 --with-zlib="$DIR/install_data/php/ext/zlib" \
 --with-zlib-dir="$DIR/install_data/php/ext/zlib" \
 --with-yaml="$DIR/install_data/php/ext/yaml" \
+--with-openssl="$DIR/install_data/php/ext/openssl" \
 $HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
