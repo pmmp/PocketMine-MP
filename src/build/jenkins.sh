@@ -31,7 +31,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/32bit
     cd $COMPILEDIR/linux/32bit
     
-    CFLAGS=-m32 march=i686 mtune=none $SCRIPT
+    CFLAGS="-m32 -static" march=i686 mtune=none $SCRIPT
     
     cp -r $COMPILEDIR/linux/32bit/{install.log,bin/*,install_data/*} $ARCHIVE/linux/32bit/
 	if [ ! -f $COMPILEDIR/linux/32bit/bin/php5/bin/php ]; then
@@ -44,7 +44,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/64bit
     cd $COMPILEDIR/linux/64bit
     
-    CFLAGS=-m64 march=x86-64 mtune=none $SCRIPT
+    CFLAGS="-m64 -static" march=x86-64 mtune=none $SCRIPT
     
     cp -r $COMPILEDIR/linux/64bit/{install.log,bin/*,install_data/*} $ARCHIVE/linux/64bit/
 	if [ ! -f $COMPILEDIR/linux/64bit/bin/php5/bin/php ]; then
