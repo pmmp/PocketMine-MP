@@ -3,7 +3,6 @@ PHP_VERSION="5.5.9"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
-GNUTLS_VERSION="3.2.11"
 CURL_VERSION="curl-7_35_0"
 LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="0.1.0"
@@ -241,6 +240,7 @@ else
 	--disable-ldap \
 	--disable-ldaps \
 	--without-libidn \
+	--with-zlib="$DIR/install_data/php/ext/zlib" \
 	--with-ssl \
 	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
