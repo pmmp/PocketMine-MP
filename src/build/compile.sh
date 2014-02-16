@@ -1,17 +1,16 @@
 #!/bin/bash
-COMPILER_VERSION="0.16"
-
 PHP_VERSION="5.5.9"
 ZEND_VM="GOTO"
 
-LIBEDIT_VERSION="0.3"
 ZLIB_VERSION="1.2.8"
+GNUTLS_VERSION="3.2.11"
+CURL_VERSION="curl-7_35_0"
+LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="0.1.0"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
-CURL_VERSION="curl-7_35_0"
 
-echo "[PocketMine] PHP installer and compiler for Linux & Mac"
+echo "[PocketMine] PHP installer and compiler for Linux and Mac"
 DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
@@ -168,7 +167,7 @@ download_file "http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror" | ta
 mv php-$PHP_VERSION php
 echo " done!"
 
-if [ 1 ] || [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
+if [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ]; then
 	HAVE_LIBEDIT="--without-libedit"
 else
 	#libedit
@@ -176,15 +175,18 @@ else
 	download_file "http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	echo -n " checking..."
 	cd libedit
-	./configure --prefix="$DIR/install_data/php/ext/libedit" --enable-static >> "$DIR/install.log" 2>&1
+	./configure --prefix="$DIR/install_data/php/ext/libedit" \
+	--enable-shared=no \
+	--enable-static=yes \
+	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	if make -j $THREADS >> "$DIR/install.log" 2>&1; then
 		echo -n " installing..."
 		make install >> "$DIR/install.log" 2>&1
-		HAVE_LIBEDIT="--with-libedit=\"$DIR/install_data/php/ext/libedit\""
+		HAVE_LIBEDIT="--without-readline --with-libedit=\"$DIR/install_data/php/ext/libedit\""
 	else
 		echo -n " disabling..."
-		HAVE_LIBEDIT="--without-libedit"
+		HAVE_LIBEDIT="--without-readline --without-libedit"
 	fi
 	echo -n " cleaning..."
 	cd ..
@@ -199,7 +201,8 @@ mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
 RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/zlib" \
---static >> "$DIR/install.log" 2>&1
+--static \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
@@ -238,6 +241,8 @@ else
 	--disable-ldap \
 	--disable-ldaps \
 	--without-libidn \
+	--with-ssl="/usr/lib" \
+	--with-axtls="$DIR/install_data/axTLS" \
 	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
 	--disable-shared \
