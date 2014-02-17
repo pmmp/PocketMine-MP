@@ -224,31 +224,36 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-#OpenSSL
-echo -n "[OpenSSL] downloading $OPENSSL_VERSION..."
-download_file "http://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
-mv openssl-$OPENSSL_VERSION openssl
-echo -n " checking..."
-cd openssl
-RANLIB=$RANLIB ./Configure \
-$OPENSSL_TARGET \
---prefix="$DIR/install_data/php/ext/openssl" \
---openssldir="$DIR/install_data/php/ext/openssl" \
-no-zlib \
-no-shared \
-no-asm \
-no-hw \
-no-engines \
-$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
-echo -n " compiling..."
-make depend >> "$DIR/install.log" 2>&1
-make >> "$DIR/install.log" 2>&1
-echo -n " installing..."
-make install >> "$DIR/install.log" 2>&1
-echo -n " cleaning..."
-cd ..
-rm -r -f ./openssh
-echo " done!"
+if [ "$2" == "openssl" ]; then
+	#OpenSSL
+	WITH_OPENSSL="--with-ssl=$DIR/install_data/php/ext/openssl"
+	echo -n "[OpenSSL] downloading $OPENSSL_VERSION..."
+	download_file "http://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	mv openssl-$OPENSSL_VERSION openssl
+	echo -n " checking..."
+	cd openssl
+	RANLIB=$RANLIB ./Configure \
+	$OPENSSL_TARGET \
+	--prefix="$DIR/install_data/php/ext/openssl" \
+	--openssldir="$DIR/install_data/php/ext/openssl" \
+	no-zlib \
+	no-shared \
+	no-asm \
+	no-hw \
+	no-engines \
+	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+	echo -n " compiling..."
+	make depend >> "$DIR/install.log" 2>&1
+	make >> "$DIR/install.log" 2>&1
+	echo -n " installing..."
+	make install >> "$DIR/install.log" 2>&1
+	echo -n " cleaning..."
+	cd ..
+	rm -r -f ./openssh
+	echo " done!"
+else
+	WITH_OPENSSL="--with-ssl"
+fi
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
    HAVE_CURL="shared,/usr"
@@ -280,7 +285,7 @@ else
 	--disable-ldaps \
 	--without-libidn \
 	--with-zlib="$DIR/install_data/php/ext/zlib" \
-	--with-ssl="static,$DIR/install_data/php/ext/openssl" \
+	$WITH_OPENSSL \
 	--enable-threaded-resolver \
 	--prefix="$DIR/install_data/php/ext/curl" \
 	--disable-shared \
