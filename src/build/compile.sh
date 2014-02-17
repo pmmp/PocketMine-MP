@@ -253,6 +253,9 @@ if [ "$2" == "openssl" ]; then
 	echo " done!"
 else
 	WITH_OPENSSL="--with-ssl"
+	if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+		WITH_OPENSSL="--with-darwinssl"	
+	fi
 fi
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
