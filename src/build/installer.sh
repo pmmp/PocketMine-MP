@@ -89,11 +89,11 @@ else
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$IOS_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."
-			if [ $(./bin/php5/bin/php -r 'echo "yes";') == "yes" ]; then
+			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
-				echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
-				echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
-				echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
+				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
+				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -105,20 +105,21 @@ else
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$MAC_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."
-			if [ $(./bin/php5/bin/php -r 'echo "yes";') == "yes" ]; then
+			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
-				echo "zend_extension=opcache.so" > "./bin/php5/lib/php.ini"
-				echo "opcache.enable=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.enable_cli=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.save_comments=0" >> "./bin/php5/lib/php.ini"
-				echo "opcache.fast_shutdown=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/lib/php.ini"
-				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/lib/php.ini"
-				echo "opcache.memory_consumption=128" >> "./bin/php5/lib/php.ini"
-				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/lib/php.ini"
-				echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
-				echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
-				echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
+				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
+				echo "opcache.fast_shutdown=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/bin/php.ini"
+				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/bin/php.ini"
+				echo "opcache.memory_consumption=128" >> "./bin/php5/bin/php.ini"
+				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/bin/php.ini"
+				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
+				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
+				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -136,20 +137,21 @@ else
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$RPI_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."
-			if [ $(./bin/php5/bin/php -r 'echo "yes";') == "yes" ]; then
+			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
-				echo "zend_extension=opcache.so" > "./bin/php5/lib/php.ini"
-				echo "opcache.enable=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.enable_cli=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.save_comments=0" >> "./bin/php5/lib/php.ini"
-				echo "opcache.fast_shutdown=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/lib/php.ini"
-				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/lib/php.ini"
-				echo "opcache.memory_consumption=128" >> "./bin/php5/lib/php.ini"
-				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/lib/php.ini"
-				echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
-				echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
-				echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
+				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
+				echo "opcache.fast_shutdown=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/bin/php.ini"
+				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/bin/php.ini"
+				echo "opcache.memory_consumption=128" >> "./bin/php5/bin/php.ini"
+				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/bin/php.ini"
+				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
+				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
+				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -161,20 +163,21 @@ else
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$ODROID_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."
-			if [ $(./bin/php5/bin/php -r 'echo "yes";') == "yes" ]; then
+			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
-				echo "zend_extension=opcache.so" > "./bin/php5/lib/php.ini"
-				echo "opcache.enable=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.enable_cli=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.save_comments=0" >> "./bin/php5/lib/php.ini"
-				echo "opcache.fast_shutdown=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/lib/php.ini"
-				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/lib/php.ini"
-				echo "opcache.memory_consumption=128" >> "./bin/php5/lib/php.ini"
-				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/lib/php.ini"
-				echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
-				echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
-				echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
+				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
+				echo "opcache.fast_shutdown=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/bin/php.ini"
+				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/bin/php.ini"
+				echo "opcache.memory_consumption=128" >> "./bin/php5/bin/php.ini"
+				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/bin/php.ini"
+				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
+				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
+				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -192,20 +195,21 @@ else
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$LINUX_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."
-			if [ $(./bin/php5/bin/php -r 'echo "yes";') == "yes" ]; then
+			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
-				echo "zend_extension=opcache.so" > "./bin/php5/lib/php.ini"
-				echo "opcache.enable=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.enable_cli=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.save_comments=0" >> "./bin/php5/lib/php.ini"
-				echo "opcache.fast_shutdown=1" >> "./bin/php5/lib/php.ini"
-				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/lib/php.ini"
-				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/lib/php.ini"
-				echo "opcache.memory_consumption=128" >> "./bin/php5/lib/php.ini"
-				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/lib/php.ini"
-				echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
-				echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
-				echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
+				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
+				echo "opcache.fast_shutdown=1" >> "./bin/php5/bin/php.ini"
+				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/bin/php.ini"
+				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/bin/php.ini"
+				echo "opcache.memory_consumption=128" >> "./bin/php5/bin/php.ini"
+				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/bin/php.ini"
+				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
+				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
+				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
