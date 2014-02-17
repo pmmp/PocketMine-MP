@@ -371,7 +371,6 @@ RANLIB=$RANLIB ./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/bin/php5" \
 --with-yaml="$DIR/bin/php5" \
-$WITH_OPENSSL \
 $HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
