@@ -179,6 +179,7 @@ else
 				alldone=yes
 			else
 				echo " invalid build detected"
+			fi
 		elif [ "$forcecompile" == "off" ] && [ "$(uname -s)" == "Linux" ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			if [ `getconf LONG_BIT` = "64" ]; then
