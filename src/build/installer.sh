@@ -4,6 +4,8 @@ LINUX_32_BUILD="PHP_5.5.9_x86_Linux"
 LINUX_64_BUILD="PHP_5.5.9_x86-64_Linux"
 MAC_BUILD="PHP_5.5.9_x86_MacOS"
 RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
+# Temporal build
+ODROID_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
 AND_BUILD="PHP_5.5.9_ARMv7_Android"
 IOS_BUILD="PHP_5.5.9_ARMv6_iOS"
 update=off
@@ -125,7 +127,10 @@ else
 		fi
 	else
 		grep -q BCM2708 /proc/cpuinfo > /dev/null 2>&1
-		if  [ $? -eq 0 ] && [ "$forcecompile" == "off" ]; then
+		IS_RPI=$?
+		grep -q ODROID /proc/cpuinfo > /dev/null 2>&1
+		IS_ODROID=$?
+		if [ $IS_RPI -eq 0 ] && [ "$forcecompile" == "off" ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] Raspberry Pi PHP build available, downloading $RPI_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$RPI_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
@@ -150,6 +155,30 @@ else
 			else
 				echo " invalid build detected"
 			fi
+		elif [ $IS_ODROID -eq 0 ] && [ "$forcecompile" == "off" ]; then
+			rm -r -f bin/ >> /dev/null 2>&1
+			echo -n "[3/3] ODROID PHP build available, downloading $ODROID_BUILD.tar.gz..."
+			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$ODROID_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
+			chmod +x ./bin/php5/bin/*
+			echo -n " checking..."
+			if [ $(./bin/php5/bin/php -r 'echo "yes";') == "yes" ]; then
+				echo -n " regenerating php.ini..."
+				echo "zend_extension=opcache.so" > "./bin/php5/lib/php.ini"
+				echo "opcache.enable=1" >> "./bin/php5/lib/php.ini"
+				echo "opcache.enable_cli=1" >> "./bin/php5/lib/php.ini"
+				echo "opcache.save_comments=0" >> "./bin/php5/lib/php.ini"
+				echo "opcache.fast_shutdown=1" >> "./bin/php5/lib/php.ini"
+				echo "opcache.max_accelerated_files=4096" >> "./bin/php5/lib/php.ini"
+				echo "opcache.interned_strings_buffer=8" >> "./bin/php5/lib/php.ini"
+				echo "opcache.memory_consumption=128" >> "./bin/php5/lib/php.ini"
+				echo "opcache.optimization_level=0xffffffff" >> "./bin/php5/lib/php.ini"
+				echo "date.timezone=$TIMEZONE" >> "./bin/php5/lib/php.ini"
+				echo "short_open_tag=0" >> "./bin/php5/lib/php.ini"
+				echo "asp_tags=0" >> "./bin/php5/lib/php.ini"
+				echo " done"
+				alldone=yes
+			else
+				echo " invalid build detected"
 		elif [ "$forcecompile" == "off" ] && [ "$(uname -s)" == "Linux" ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			if [ `getconf LONG_BIT` = "64" ]; then
