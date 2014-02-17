@@ -237,7 +237,7 @@ if [ "$2" == "openssl" ]; then
 	--prefix="$DIR/install_data/php/ext/openssl" \
 	--openssldir="$DIR/install_data/php/ext/openssl" \
 	no-zlib \
-	no-shared \
+	shared \
 	no-asm \
 	no-hw \
 	no-engines \
