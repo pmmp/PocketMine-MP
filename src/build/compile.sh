@@ -143,7 +143,7 @@ type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\
 [ -z "$march" ] && march=native;
 [ -z "$mtune" ] && mtune=native;
 [ -z "$CFLAGS" ] && CFLAGS="";
-[ -z "$LDFLAGS" ] && LDFLAGS="";
+[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath='\$\$ORIGIN/../lib'";
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
 
@@ -159,16 +159,16 @@ else
 	fi
 fi
 
-rm test >> "$DIR/install.log" 2>&1
-rm test.c >> "$DIR/install.log" 2>&1
+rm test.* >> "$DIR/install.log" 2>&1
 
 export CFLAGS="-O2 $CFLAGS"
 export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 rm -r -f bin/ >> "$DIR/install.log" 2>&1
-mkdir -m 0777 install_data >> "$DIR/install.log" 2>&1
-mkdir -m 0777 bin >> "$DIR/install.log" 2>&1
+mkdir -m 0755 install_data >> "$DIR/install.log" 2>&1
+mkdir -m 0755 bin >> "$DIR/install.log" 2>&1
+mkdir -m 0755 bin/php5 >> "$DIR/install.log" 2>&1
 cd install_data
 set -e
 
@@ -179,7 +179,7 @@ mv php-$PHP_VERSION php
 echo " done!"
 
 if [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ] || [ "$1" == "mac" ]; then
-	HAVE_LIBEDIT="--without-libedit"
+	HAVE_LIBEDIT="--without-readline --without-libedit"
 else
 	#libedit
 	set +e
@@ -187,15 +187,15 @@ else
 	download_file "http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	echo -n " checking..."
 	cd libedit
-	./configure --prefix="$DIR/install_data/php/ext/libedit" \
-	--enable-shared=no \
-	--enable-static=yes \
+	./configure --prefix="$DIR/bin/php5" \
+	--enable-shared=yes \
+	--enable-static=no \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	if make -j $THREADS >> "$DIR/install.log" 2>&1; then
 		echo -n " installing..."
 		make install >> "$DIR/install.log" 2>&1
-		HAVE_LIBEDIT="--without-readline --with-libedit=\"$DIR/install_data/php/ext/libedit\""
+		HAVE_LIBEDIT="--without-readline --with-libedit=\"$DIR/bin/php5\""
 	else
 		echo -n " disabling..."
 		HAVE_LIBEDIT="--without-readline --without-libedit"
@@ -213,8 +213,8 @@ download_file "http://zlib.net/zlib-$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/ins
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
-RANLIB=$RANLIB ./configure --prefix="$DIR/install_data/php/ext/zlib" \
---static >> "$DIR/install.log" 2>&1
+RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
+--shared >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
@@ -226,7 +226,8 @@ echo " done!"
 
 if [ "$2" == "openssl" ]; then
 	#OpenSSL
-	WITH_OPENSSL="--with-ssl=$DIR/install_data/php/ext/openssl"
+	WITH_SSL="--with-ssl=$DIR/bin/php5"
+	WITH_OPENSSL="--with-openssl=$DIR/bin/php5"
 	echo -n "[OpenSSL] downloading $OPENSSL_VERSION..."
 	download_file "http://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv openssl-$OPENSSL_VERSION openssl
@@ -234,13 +235,14 @@ if [ "$2" == "openssl" ]; then
 	cd openssl
 	RANLIB=$RANLIB ./Configure \
 	$OPENSSL_TARGET \
-	--prefix="$DIR/install_data/php/ext/openssl" \
-	--openssldir="$DIR/install_data/php/ext/openssl" \
+	--prefix="$DIR/bin/php5" \
+	--openssldir="$DIR/bin/php5" \
 	no-zlib \
 	shared \
 	no-asm \
 	no-hw \
 	no-engines \
+	no-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make depend >> "$DIR/install.log" 2>&1
@@ -252,9 +254,10 @@ if [ "$2" == "openssl" ]; then
 	rm -r -f ./openssh
 	echo " done!"
 else
-	WITH_OPENSSL="--with-ssl"
+	WITH_SSL="--with-ssl"
+	WITH_OPENSSL="--without-ssl"
 	if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
-		WITH_OPENSSL="--with-darwinssl"	
+		WITH_SSL="--with-darwinssl"	
 	fi
 fi
 
@@ -277,6 +280,7 @@ else
 	--enable-ftp \
 	--disable-dict \
 	--enable-file \
+	--without-librtmp \
 	--disable-gopher \
 	--disable-imap \
 	--disable-pop3 \
@@ -287,10 +291,10 @@ else
 	--disable-ldap \
 	--disable-ldaps \
 	--without-libidn \
-	--with-zlib="$DIR/install_data/php/ext/zlib" \
-	$WITH_OPENSSL \
+	--with-zlib="$DIR/bin/php5" \
+	$WITH_SSL \
 	--enable-threaded-resolver \
-	--prefix="$DIR/install_data/php/ext/curl" \
+	--prefix="$DIR/bin/php5" \
 	--disable-shared \
 	--enable-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
@@ -302,7 +306,7 @@ else
 	cd ..
 	rm -r -f ./curl
 	echo " done!"
-	HAVE_CURL="$DIR/install_data/php/ext/curl"
+	HAVE_CURL="$DIR/bin/php5"
 fi
 
 #pthreads
@@ -324,9 +328,9 @@ mv yaml-$YAML_VERSION yaml
 echo -n " checking..."
 cd yaml
 RANLIB=$RANLIB ./configure \
---prefix="$DIR/install_data/php/ext/yaml" \
---enable-static \
---disable-shared \
+--prefix="$DIR/bin/php5" \
+--disable-static \
+--enable-shared \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
@@ -365,9 +369,9 @@ fi
 RANLIB=$RANLIB ./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
---with-zlib="$DIR/install_data/php/ext/zlib" \
---with-zlib-dir="$DIR/install_data/php/ext/zlib" \
---with-yaml="$DIR/install_data/php/ext/yaml" \
+--with-zlib="$DIR/bin/php5" \
+--with-yaml="$DIR/bin/php5" \
+$WITH_OPENSSL \
 $HAVE_LIBEDIT \
 --disable-libxml \
 --disable-xml \
@@ -409,25 +413,23 @@ make install >> "$DIR/install.log" 2>&1
 echo " generating php.ini..."
 
 TIMEZONE=$(date +%Z)
-touch "$DIR/bin/php5/lib/php.ini"
+echo "date.timezone=$TIMEZONE" > "$DIR/bin/php5/bin/php.ini"
+echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
+echo "asp_tags=0" >> "$DIR/bin/php5/bin/php.ini"
 if [ "$1" != "crosscompile" ]; then
-	OPCACHE_PATH=$(find "$DIR/bin/php5" -name opcache.so)
-	echo "zend_extension=\"$OPCACHE_PATH\"" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.enable=1" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.enable_cli=1" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.save_comments=0" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.fast_shutdown=1" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.max_accelerated_files=4096" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.interned_strings_buffer=8" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.memory_consumption=128" >> "$DIR/bin/php5/lib/php.ini"
-	echo "opcache.optimization_level=0xffffffff" >> "$DIR/bin/php5/lib/php.ini"
+	echo "zend_extension=opcache.so" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.enable=1" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.enable_cli=1" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.save_comments=0" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.fast_shutdown=1" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.max_accelerated_files=4096" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.interned_strings_buffer=8" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.memory_consumption=128" >> "$DIR/bin/php5/bin/php.ini"
+	echo "opcache.optimization_level=0xffffffff" >> "$DIR/bin/php5/bin/php.ini"
 fi
 if [ "$HAVE_CURL" == "shared,/usr" ]; then
-	echo "extension=curl.so" >> "$DIR/bin/php5/lib/php.ini"
+	echo "extension=curl.so" >> "$DIR/bin/php5/bin/php.ini"
 fi
-echo "date.timezone=$TIMEZONE" >> "$DIR/bin/php5/lib/php.ini"
-echo "short_open_tag=0" >> "$DIR/bin/php5/lib/php.ini"
-echo "asp_tags=0" >> "$DIR/bin/php5/lib/php.ini"
 
 echo " done!"
 cd "$DIR"
