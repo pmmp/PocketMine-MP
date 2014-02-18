@@ -95,7 +95,7 @@ then
     $SCRIPT mac64 curl
     
     tar -czf PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz bin/
-    cp -r $COMPILEDIR/mac64/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/64
+    cp -r $COMPILEDIR/mac64/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac64
 	if [ ! -f $COMPILEDIR/mac64/bin/php5/bin/php ]; then
 		exit 1
 	fi
