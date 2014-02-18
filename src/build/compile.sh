@@ -233,7 +233,7 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-if [ "$2" == "openssl" ]; then
+if [ "$2" == "openssl" ] || [ "$2" == "curl" ] && [ "$1" != "crosscompile" ]; then
 	#OpenSSL
 	WITH_SSL="--with-ssl=$DIR/bin/php5"
 	WITH_OPENSSL="--with-openssl=$DIR/bin/php5"
@@ -357,7 +357,7 @@ if which free >/dev/null; then
 else
 	MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
 fi
-if [ $MAX_MEMORY -gt 512 ] && [ "$1" != "crosscompile" ]; then
+if [ $MAX_MEMORY -gt 512 2>> /dev/null ] && [ "$1" != "crosscompile" ]; then
 	echo -n " enabling optimizations..."
 	OPTIMIZATION="--enable-inline-optimization "
 else
