@@ -247,7 +247,9 @@ if [ "$2" == "openssl" ] || [ "$2" == "curl" ] && [ "$1" != "crosscompile" ]; th
 	$OPENSSL_TARGET \
 	--prefix="$DIR/bin/php5" \
 	--openssldir="$DIR/bin/php5" \
-	no-zlib \
+	--with-zlib-lib="$DIR/bin/php5/lib" \
+	--with-zlib-include="$DIR/bin/php5/include" \
+	zlib-dynamic \
 	shared \
 	no-asm \
 	no-hw \
@@ -421,7 +423,13 @@ echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
-	install_name_tool -change "$DIR/bin/php5/lib" "@loader_path/../lib" "$DIR/bin/php5/bin/php"
+	set +e
+	install_name_tool -delete_rpath "$DIR/bin/php5/lib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libz.1.dylib" "@loader_path/../lib/libz.1.dylib" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libyaml-0.2.dylib" "@loader_path/../lib/libyaml-0.2.dylib" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libssl.1.0.0.dylib" "@loader_path/../lib/libssl.1.0.0.dylib" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libcrypto.1.0.0.dylib" "@loader_path/../lib/libcrypto.1.0.0.dylib" >> "$DIR/install.log" 2>&1
+	set -e
 fi
 
 echo " generating php.ini..."
