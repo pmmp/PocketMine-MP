@@ -2,7 +2,8 @@
 PMMP_VERSION=""
 LINUX_32_BUILD="PHP_5.5.9_x86_Linux"
 LINUX_64_BUILD="PHP_5.5.9_x86-64_Linux"
-MAC_BUILD="PHP_5.5.9_x86-64_MacOS"
+MAC_32_BUILD="PHP_5.5.9_x86_MacOS"
+MAC_64_BUILD="PHP_5.5.9_x86-64_MacOS"
 RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
 # Temporal build
 ODROID_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
@@ -101,7 +102,13 @@ else
 			fi
 		else
 			rm -r -f bin/ >> /dev/null 2>&1
-			echo -n "[3/3] Mac OSX PHP build available, downloading $MAC_BUILD.tar.gz..."
+			if [ `getconf LONG_BIT` = "64" ]; then
+				echo -n "[3/3] MacOS 64-bit PHP build available, downloading $MAC_64_BUILD.tar.gz..."
+				MAC_BUILD=$MAC_64_BUILD
+			else
+				echo -n "[3/3] MacOS 32-bit PHP build available, downloading $MAC_32_BUILD.tar.gz..."
+				MAC_BUILD=$MAC_32_BUILD
+			fi
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$MAC_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."

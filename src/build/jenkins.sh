@@ -55,10 +55,10 @@ then
 	fi
 fi
 
-if [ "$COMPILE_MAC" = "true" ];
+if [ "$COMPILE_MAC_32" = "true" ];
 then
-    mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
-    cd $COMPILEDIR/mac
+    mkdir -p {$COMPILEDIR,$ARCHIVE}/mac32
+    cd $COMPILEDIR/mac32
     
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
@@ -72,16 +72,16 @@ then
     $SCRIPT mac curl
     
     tar -czf PHP_${PHP_VERSION}_x86_MacOS.tar.gz bin/
-    cp -r $COMPILEDIR/mac/{install.log,PHP_${PHP_VERSION}_x86_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/
-	if [ ! -f $COMPILEDIR/mac/bin/php5/bin/php ]; then
+    cp -r $COMPILEDIR/mac32/{install.log,PHP_${PHP_VERSION}_x86_MacOS.tar.gz,install_data/*} $ARCHIVE/mac32/
+	if [ ! -f $COMPILEDIR/mac32/bin/php5/bin/php ]; then
 		exit 1
 	fi
 fi
 
 if [ "$COMPILE_MAC_64" = "true" ];
 then
-    mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
-    cd $COMPILEDIR/mac
+    mkdir -p {$COMPILEDIR,$ARCHIVE}/mac64
+    cd $COMPILEDIR/mac64
     
 	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
 	cd libtool-2.4.2
@@ -95,8 +95,8 @@ then
     $SCRIPT mac64 curl
     
     tar -czf PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz bin/
-    cp -r $COMPILEDIR/mac/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/
-	if [ ! -f $COMPILEDIR/mac/bin/php5/bin/php ]; then
+    cp -r $COMPILEDIR/mac64/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/64
+	if [ ! -f $COMPILEDIR/mac64/bin/php5/bin/php ]; then
 		exit 1
 	fi
 fi
