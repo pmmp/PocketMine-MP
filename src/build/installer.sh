@@ -81,10 +81,10 @@ else
 	echo " detecting if build is available..."
 	if [ "$forcecompile" == "off" ] && [ "$(uname -s)" == "Darwin" ]; then
 		set +e
-		UNAME_M=`uname -m`
-		IS_IOS=`expr match $UNAME_M 'iP[a-zA-Z0-9,]*'`
+		UNAME_M=$(uname -m)
+		IS_IOS=$(expr match $UNAME_M 'iP[a-zA-Z0-9,]*' 2> /dev/null)
 		set -e
-		if [ $IS_IOS -gt 0 2> /dev/null ]; then
+		if [[ $IS_IOS -gt 0 ]]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] iOS PHP build available, downloading $IOS_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$IOS_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
