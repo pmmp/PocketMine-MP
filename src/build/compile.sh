@@ -51,15 +51,16 @@ elif [ "$1" == "mac" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@executable_path/../lib";
-	export RPATH="@executable_path/../lib"
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin-i386-cc"
 	echo "[INFO] Compiling for Intel MacOS x86"
 elif [ "$1" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@executable_path/../lib";
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$1" == "ios" ]; then
@@ -418,6 +419,11 @@ fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
+
+if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+	install_name_tool -change "$DIR/bin/php5/lib" "@loader_path/../lib" "$DIR/bin/php5/bin/php"
+fi
+
 echo " generating php.ini..."
 
 TIMEZONE=$(date +%Z)
@@ -443,6 +449,10 @@ echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/curl >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/curl-config >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/c_rehash >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/openssl >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/man >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/php >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/share >> "$DIR/install.log" 2>&1
