@@ -10,7 +10,7 @@ PTHREADS_VERSION="0.1.0"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
 
-echo "[PocketMine] PHP installer and compiler for Linux and Mac"
+echo "[PocketMine] PHP compiler for Linux, MacOS and Android"
 DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
@@ -139,8 +139,9 @@ fi
 
 cat > test.c <<'CTEST'
 #include <stdio.h>
-main(){
+int main(void){
 	printf("Hello world\n");
+	return 0;
 }
 CTEST
 
@@ -168,6 +169,7 @@ else
 fi
 
 rm test.* >> "$DIR/install.log" 2>&1
+rm test >> "$DIR/install.log" 2>&1
 
 export CFLAGS="-O2 $CFLAGS"
 export LDFLAGS="$LDFLAGS"
@@ -216,8 +218,8 @@ else
 fi
 
 #zlib
+download_file "https://github.com/madler/zlib/archive/v$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 echo -n "[zlib] downloading $ZLIB_VERSION..."
-download_file "http://zlib.net/zlib-$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
