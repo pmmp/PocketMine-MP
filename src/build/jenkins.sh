@@ -34,7 +34,7 @@ then
     
     OPENSSL_TARGET="linux-generic32" CFLAGS="-m32" march=i386 mtune=none $SCRIPT linux openssl
     
-    tar -czf PHP_${PHP_VERSION}_x86_Linux.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_x86_Linux.tar.gz bin/
     cp -r $COMPILEDIR/linux/32bit/{install.log,PHP_${PHP_VERSION}_x86_Linux.tar.gz,install_data/*} $ARCHIVE/linux/32bit/
 	if [ ! -f $COMPILEDIR/linux/32bit/bin/php5/bin/php ]; then
 		exit 1
@@ -48,7 +48,7 @@ then
     
     OPENSSL_TARGET="linux-x86_64" CFLAGS="-m64" march=x86-64 mtune=none $SCRIPT linux openssl
     
-    tar -czf PHP_${PHP_VERSION}_x86-64_Linux.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_x86-64_Linux.tar.gz bin/
     cp -r $COMPILEDIR/linux/64bit/{install.log,PHP_${PHP_VERSION}_x86-64_Linux.tar.gz,install_data/*} $ARCHIVE/linux/64bit/
 	if [ ! -f $COMPILEDIR/linux/64bit/bin/php5/bin/php ]; then
 		exit 1
@@ -71,7 +71,7 @@ then
 	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
     $SCRIPT mac curl
     
-    tar -czf PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz bin/
     cp -r $COMPILEDIR/mac/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/
 	if [ ! -f $COMPILEDIR/mac/bin/php5/bin/php ]; then
 		exit 1
@@ -85,7 +85,7 @@ then
     
     $SCRIPT rpi
     
-    tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz bin/
     cp -r $COMPILEDIR/rpi/{install.log,PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz,install_data/*} $ARCHIVE/rpi/
 	if [ ! -f $COMPILEDIR/rpi/bin/php5/bin/php ]; then
 		exit 1
@@ -99,7 +99,7 @@ then
     
     $SCRIPT crosscompile android-armv6
     
-    tar -czf PHP_${PHP_VERSION}_ARMv6_Android.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_ARMv6_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,PHP_${PHP_VERSION}_ARMv6_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv6/
 	if [ ! -f $COMPILEDIR/crosscompile/android-armv6/bin/php5/bin/php ]; then
 		exit 1
@@ -113,7 +113,7 @@ then
     
     $SCRIPT crosscompile android-armv7
     
-    tar -czf PHP_${PHP_VERSION}_ARMv7_Android.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_ARMv7_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,PHP_${PHP_VERSION}_ARMv7_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv7/
 	if [ ! -f $COMPILEDIR/crosscompile/android-armv7/bin/php5/bin/php ]; then
 		exit 1
@@ -169,7 +169,7 @@ then
     
     $SCRIPT crosscompile rpi
     
-    tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz ./bin
+    tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/rpi/{install.log,PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz,install_data/*} $ARCHIVE/crosscompile/rpi/
 	if [ ! -f $COMPILEDIR/crosscompile/rpi/bin/php5/bin/php ]; then
 		exit 1
