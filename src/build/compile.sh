@@ -3,7 +3,7 @@ PHP_VERSION="5.5.9"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
-OPENSSL_VERSION="1.0.1f"
+OPENSSL_VERSION="0.9.8y"
 CURL_VERSION="curl-7_35_0"
 LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="0.1.0"
@@ -59,7 +59,7 @@ elif [ "$1" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-weak-lSystem -Wl,-rpath,@loader_path/../lib";
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
