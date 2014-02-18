@@ -71,6 +71,29 @@ then
 	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
     $SCRIPT mac curl
     
+    tar -czf PHP_${PHP_VERSION}_x86_MacOS.tar.gz bin/
+    cp -r $COMPILEDIR/mac/{install.log,PHP_${PHP_VERSION}_x86_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/
+	if [ ! -f $COMPILEDIR/mac/bin/php5/bin/php ]; then
+		exit 1
+	fi
+fi
+
+if [ "$COMPILE_MAC_64" = "true" ];
+then
+    mkdir -p {$COMPILEDIR,$ARCHIVE}/mac
+    cd $COMPILEDIR/mac
+    
+	curl -L http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz | tar -xz > /dev/null
+	cd libtool-2.4.2
+	./configure --prefix="$COMPILEDIR/mac/libtool" > /dev/null
+	make > /dev/null
+	make install
+	cd ../
+	rm -rf libtool-2.4.2
+	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
+	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
+    $SCRIPT mac64 curl
+    
     tar -czf PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz bin/
     cp -r $COMPILEDIR/mac/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac/
 	if [ ! -f $COMPILEDIR/mac/bin/php5/bin/php ]; then

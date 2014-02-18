@@ -50,9 +50,19 @@ if [ "$1" == "rpi" ]; then
 elif [ "$1" == "mac" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
+	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer";
+	[ -z "$LDFLAGS" ] && LDFLAGS=" ";
+	export RPATH="@executable_path/../lib"
+	OPENSSL_TARGET="darwin-i386-cc"
+	echo "[INFO] Compiling for Intel MacOS x86"
+elif [ "$1" == "mac64" ]; then
+	[ -z "$march" ] && march=core2;
+	[ -z "$mtune" ] && mtune=generic;
+	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer";
+	[ -z "$LDFLAGS" ] && LDFLAGS=" ";
+	export RPATH="@executable_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
-	echo "[INFO] Compiling for Intel MacOS"
+	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$1" == "ios" ]; then
 	[ -z "$march" ] && march=armv6;
 	[ -z "$mtune" ] && mtune=cortex-a8;
