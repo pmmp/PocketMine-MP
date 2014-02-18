@@ -2,7 +2,7 @@
 PMMP_VERSION=""
 LINUX_32_BUILD="PHP_5.5.9_x86_Linux"
 LINUX_64_BUILD="PHP_5.5.9_x86-64_Linux"
-MAC_BUILD="PHP_5.5.9_x86_MacOS"
+MAC_BUILD="PHP_5.5.9_x86-64_MacOS"
 RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
 # Temporal build
 ODROID_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
