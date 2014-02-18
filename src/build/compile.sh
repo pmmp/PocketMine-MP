@@ -67,8 +67,7 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
-		CFLAGS="-uclibc --static $CFLAGS";
-		LDFLAGS="--static"
+		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 		OPENSSL_TARGET="linux-armv4"
 	elif [ "$2" == "android-armv7" ]; then
@@ -78,8 +77,7 @@ elif [ "$1" == "crosscompile" ]; then
 		TOOLCHAIN_PREFIX="arm-unknown-linux-uclibcgnueabi"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
-		CFLAGS="-uclibc --static $CFLAGS";
-		LDFLAGS="--static"
+		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 		OPENSSL_TARGET="linux-armv4"
 	elif [ "$2" == "rpi" ]; then
