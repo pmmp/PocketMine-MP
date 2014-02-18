@@ -51,7 +51,7 @@ elif [ "$1" == "mac" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@executable_path/../lib";
 	export RPATH="@executable_path/../lib"
 	OPENSSL_TARGET="darwin-i386-cc"
 	echo "[INFO] Compiling for Intel MacOS x86"
@@ -59,7 +59,7 @@ elif [ "$1" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@executable_path/../lib";
 	OPENSSL_TARGET="darwin64-x86_64-cc"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$1" == "ios" ]; then
