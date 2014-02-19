@@ -19,6 +19,6 @@
  *
 */
 
-abstract class AnimalEntity extends AgeableEntity{
+abstract class AnimalEntity extends CreatureEntity implements AgeableEntity{
 
 }

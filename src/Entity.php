@@ -230,14 +230,15 @@ abstract class Entity extends Position{
 require_once("entity/DamageableEntity.php");
 require_once("entity/ProjectileSourceEntity.php");
 require_once("entity/RideableEntity.php");
+require_once("entity/TameableEntity.php");
 require_once("entity/AttachableEntity.php");
+require_once("entity/AgeableEntity.php");
 require_once("entity/ExplosiveEntity.php");
 require_once("entity/ColorableEntity.php");
 
 require_once("entity/LivingEntity.php");
 require_once("entity/CreatureEntity.php");
 require_once("entity/MonsterEntity.php");
-require_once("entity/AgeableEntity.php");
 require_once("entity/AnimalEntity.php");
 require_once("entity/HumanEntity.php");
 require_once("entity/ProjectileEntity.php");

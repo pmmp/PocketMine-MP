@@ -19,6 +19,6 @@
  *
 */
 
-interface AgeableEntity{
+class WolfEntity extends AnimalEntity implements TameableEntity{
 
 }

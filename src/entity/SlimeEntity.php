@@ -19,6 +19,6 @@
  *
 */
 
-interface AgeableEntity{
+class SlimeEntity extends LivingEntity{
 
 }

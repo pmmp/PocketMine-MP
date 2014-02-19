@@ -19,6 +19,6 @@
  *
 */
 
-interface AgeableEntity{
+class EnderPearlEntity extends ProjectileEntity{
 
 }

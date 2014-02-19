@@ -19,6 +19,6 @@
  *
 */
 
-interface AgeableEntity{
+class EndermanEntity extends MonsterEntity{
 
 }

@@ -19,6 +19,6 @@
  *
 */
 
-interface AgeableEntity{
+interface TameableEntity{
 
 }
