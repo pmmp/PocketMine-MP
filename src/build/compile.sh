@@ -50,7 +50,7 @@ if [ "$1" == "rpi" ]; then
 elif [ "$1" == "mac" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer";
+	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
 	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin-i386-cc"
@@ -58,7 +58,7 @@ elif [ "$1" == "mac" ]; then
 elif [ "$1" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer";
+	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer -mmacosx-version-min=10.5";
 	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
