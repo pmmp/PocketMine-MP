@@ -111,7 +111,6 @@ class PlayerAPI{
 				}
 				$this->server->api->chat->broadcast($data["player"]->username . $message);
 				return true;
-				break;
 		}
 	}
 

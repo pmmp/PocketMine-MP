@@ -19,14 +19,19 @@
  *
 */
 
+/**
+  * WARNING: This code is old, and only supports the file format partially (reverse engineering)
+  * It can break, lock, or hit you in the face in any moment.
+  *	
+ */
+
 class PocketChunkParser{
 	private $location, $raw = b"", $file;
-	var $sectorLength = 4096; //16 * 16 * 16
-	var $chunkLength = 86016; //21 * $sectorLength
-	var $map;
+	public $sectorLength = 4096; //16 * 16 * 16
+	public $chunkLength = 86016; //21 * $sectorLength
+	public $map = array();
 
-	function __construct(){
-		$map = array();
+	public function __construct(){
 	}
 
 	private function loadLocationTable(){

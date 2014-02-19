@@ -196,19 +196,6 @@ class PluginAPI extends stdClass{
 		return $path;
 	}
 
-	private function fillDefaults($default, &$yaml){
-		foreach($default as $k => $v){
-			if(is_array($v)){
-				if(!isset($yaml[$k]) or !is_array($yaml[$k])){
-					$yaml[$k] = array();
-				}
-				$this->fillDefaults($v, $yaml[$k]);
-			}elseif(!isset($yaml[$k])){
-				$yaml[$k] = $v;
-			}
-		}
-	}
-
 	public function readYAML($file){
 		return yaml_parse(preg_replace("#^([ ]*)([a-zA-Z_]{1}[^\:]*)\:#m", "$1\"$2\":", file_get_contents($file)));
 	}

@@ -516,13 +516,9 @@ class BlockAPI{
 	
 	public function nextRandomUpdate(Position $pos){
 		if(!isset($this->scheduledUpdates[$pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName().".".BLOCK_UPDATE_RANDOM])){
-			$X = (($pos->x >> 4) << 4);
-			$Y = (($pos->y >> 4) << 4);
-			$Z = (($pos->z >> 4) << 4);
 			$time = microtime(true);
-			$i = 0;
 			$offset = 0;
-			while(true){
+			do{
 				$t = $offset + Utils::getRandomUpdateTicks() * 0.05;
 				$update = $this->server->query("SELECT COUNT(*) FROM blockUpdates WHERE level = '".$pos->level->getName()."' AND type = ".BLOCK_UPDATE_RANDOM." AND delay >= ".($time + $t - 1)." AND delay <= ".($time + $t + 1).";");
 				if($update instanceof SQLite3Result){
@@ -534,7 +530,7 @@ class BlockAPI{
 					break;
 				}
 				$offset += mt_rand(25, 75);
-			}
+			}while(true);
 			$this->scheduleBlockUpdate($pos, $t / 0.05, BLOCK_UPDATE_RANDOM);
 		}
 	}

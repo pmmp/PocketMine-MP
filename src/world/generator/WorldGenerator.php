@@ -20,7 +20,7 @@
 */
 
 class WorldGenerator{
-	private $seed, $level, $path, $random, $generator, $width;
+	private $seed, $level, $path, $random, $generator, $height;
 	public function __construct(LevelGenerator $generator, $name, $seed = false, $height = 8){
 		$this->seed = $seed !== false ? (int) $seed:Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->random = new Random($this->seed);

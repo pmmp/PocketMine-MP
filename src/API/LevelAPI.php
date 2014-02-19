@@ -198,7 +198,6 @@ class LevelAPI{
 			$t = $this->server->api->tile->add($this->levels[$name], $tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
 		}
 		
-		$timeu = microtime(true);
 		foreach($blockUpdates->getAll() as $bupdate){
 			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"],(int) $bupdate["y"],(int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}

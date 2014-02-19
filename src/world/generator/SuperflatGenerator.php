@@ -24,7 +24,7 @@ require_once("LevelGenerator.php");
 /***REM_END***/
 
 class SuperflatGenerator implements LevelGenerator{
-	private $level, $random, $structure, $chunks, $options, $floorLevel, $populators = array();
+	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
 	
 	public function getSettings(){
 		return $this->options;

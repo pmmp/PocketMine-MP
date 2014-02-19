@@ -140,7 +140,7 @@ function arguments ( $args ){
 		$args = array();
 	}
     array_shift( $args );
-    $args = join( $args, ' ' );
+    $args = implode( $args, ' ' );
 
     preg_match_all('/ (--[\w\-]+ (?:[= ] [^-\s]+ )? ) | (-\w+) | (\w+) /x', $args, $match );
     $args = array_shift( $match );
@@ -158,7 +158,7 @@ function arguments ( $args ){
 
             $value = preg_split( '/[= ]/', $arg, 2 );
             $com   = substr( array_shift($value), 2 );
-            $value = join($value);
+            $value = implode($value);
 
             $ret['commands'][$com] = !empty($value) ? $value : true;
             continue;

@@ -43,8 +43,16 @@ class Entity extends Position{
 	public $attach;
 	public $closed;
 	public $player;
+	public $status;
 	public $fallY;
+	public $health;
+	public $fire;
+	public $crouched;
+	public $invincible;
 	public $fallStart;
+	public $stack;
+	public $meta;
+	private $position;
 	private $tickCounter;
 	private $speedMeasure = array(0, 0, 0, 0, 0, 0, 0);
 	private $server;
@@ -526,8 +534,8 @@ class Entity extends Position{
 					}					
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
-						$d = $this->level->getBlock(new Vector3($x, $y + 1, $z));
-						$d2 = $this->level->getBlock(new Vector3($x, $y + 2, $z));
+						$d = $this->level->getBlock(new Vector3($this->x, $y + 1, $this->z));
+						$d2 = $this->level->getBlock(new Vector3($this->x, $y + 2, $this->z));
 						$dmg = ($this->fallY - $y) - 3;
 						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER and $d->getID() !== COBWEB and !($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER and $d2->getID() !== COBWEB){
 							$this->harm($dmg, "fall");
@@ -562,10 +570,10 @@ class Entity extends Position{
 		if($this->isStatic === false and ($this->last[0] != $this->x or $this->last[1] != $this->y or $this->last[2] != $this->z or $this->last[3] != $this->yaw or $this->last[4] != $this->pitch)){
 			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
 				if($this->server->api->handle("entity.move", $this) === false){
-					if($this->class === ENTITY_PLAYER){
+					if($this->class === ENTITY_PLAYER and $this->player instanceof Player){
 						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
 					}else{
-						$this->setPosition($this->last[0], $this->last[1], $this->last[2], $this->last[3], $this->last[4]);
+						$this->setPosition(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
 					}
 				}else{
 					$this->updateLast();
@@ -593,7 +601,7 @@ class Entity extends Position{
 					}
 				}
 			}else{
-				$this->updatePosition($this->x, $this->y, $this->z, $this->yaw, $this->pitch);
+				$this->updatePosition();
 			}
 		}
 		$this->lastUpdate = $now;
@@ -658,7 +666,7 @@ class Entity extends Position{
 		}
 		switch($this->class){
 			case ENTITY_PLAYER:
-				if($this->player->connected !== true or $this->player->spawned === false){
+				if(!($this->player instanceof Player) or $this->player->connected !== true or $this->player->spawned === false){
 					return false;
 				}
 				

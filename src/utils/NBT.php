@@ -107,7 +107,7 @@ class NBT{
 	}
 	
 	public function writeTAG_FLOAT($v){
-		$this->binary .= Utils::writeLFloar($v);
+		$this->binary .= Utils::writeLFloat($v);
 	}
 	
 	public function writeTAG_DOUBLE($v){

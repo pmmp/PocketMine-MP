@@ -95,7 +95,7 @@ class PMFLevel extends PMF{
 	}
 	
 	private function createBlank(){
-		$this->saveData(false);
+		$this->saveData();
 		@mkdir(dirname($this->file)."/chunks/", 0755);
 		if(!file_exists(dirname($this->file)."/entities.yml")){
 			$entities = new Config(dirname($this->file)."/entities.yml", CONFIG_YAML);
