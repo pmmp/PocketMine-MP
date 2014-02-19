@@ -620,7 +620,7 @@ class Utils{
 	}
 
 	public static function writeLLong($value){
-		return strrev(Utils::writeLong($str));
+		return strrev(Utils::writeLong($value));
 	}
 
 

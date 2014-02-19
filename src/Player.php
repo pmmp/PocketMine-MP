@@ -63,6 +63,7 @@ class Player{
 	public $blocked = true;
 	public $achievements = array();
 	public $chunksLoaded = array();
+	private $viewDistance;
 	private $chunksOrder = array();
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
@@ -112,6 +113,7 @@ class Player{
 		$this->armor = array();
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
+		$this->viewDistance = (int) $this->server->api->getProperty("view-distance");
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
@@ -148,22 +150,35 @@ class Player{
 		if(!($this->entity instanceof Entity) or $this->connected === false){
 			return false;
 		}
-		$X = ($this->entity->x - 0.5) / 16;
-		$Z = ($this->entity->z - 0.5) / 16;
-		$v = new Vector2($X, $Z);		
-		$this->chunksOrder = array();
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$dist = $v->distance(new Vector2($x, $z));
-				for($y = 0; $y < 8; ++$y){
-					$d = $x.":".$y.":".$z;
-					if(!isset($this->chunksLoaded[$d])){
-						$this->chunksOrder[$d] = $dist;
+		
+		$newOrder = array();
+		$lastLoaded = $this->chunksLoaded;
+		$centerX = intval(($this->entity->x - 0.5) / 16);
+		$centerZ = intval(($this->entity->z - 0.5) / 16);
+		$startX = $centerX - $this->viewDistance;
+		$startZ = $centerZ - $this->viewDistance;
+		$finalX = $centerX + $this->viewDistance;
+		$finalZ = $centerZ + $this->viewDistance;
+		for($X = $startX; $X <= $finalX; ++$X){
+			for($Z = $startZ; $Z <= $finalZ; ++$Z){
+				$distance = abs($X - $centerX) + abs($Z - $centerZ);
+				for($Y = 0; $Y < 8; ++$Y){
+					$index = "$X:$Y:$Z";
+					if(!isset($lastLoaded[$index])){
+						$newOrder[$index] = $distance;
+					}else{
+						unset($lastLoaded[$index]);
 					}
 				}
 			}
 		}
-		asort($this->chunksOrder);
+		asort($newOrder);
+		$this->chunksOrder = $newOrder;
+		foreach($lastLoaded as $index => $distance){
+			$id = explode(":", $index);
+			$this->level->freeChunk($id[0], $id[2], $this);
+			unset($this->chunksLoaded[$index]);
+		}
 	}
 	
 	public function getNextChunk(){
@@ -195,8 +210,8 @@ class Player{
 
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
-		if($c === null or $d > $this->server->api->getProperty("view-distance")){
-			$this->server->schedule(50, array($this, "getNextChunk"));
+		if($c === null or $d === null){
+			$this->server->schedule(40, array($this, "getNextChunk"));
 			return false;
 		}
 		unset($this->chunksOrder[$c]);
@@ -207,7 +222,6 @@ class Player{
 		$Y = $id[1];
 		$x = $X << 4;
 		$z = $Z << 4;
-		$y = $Y << 4;
 		$this->level->useChunk($X, $Z, $this);
 		$Yndex = 1 << $Y;
 		for($iY = 0; $iY < 8; ++$iY){
@@ -313,7 +327,7 @@ class Player{
 			$this->chunksLoaded = array();
 			$this->chunksOrder = array();
 			$this->chunkCount = array();
-			$this->cratingItems = array();
+			$this->craftingItems = array();
 			$this->received = array();
 		}
 	}
@@ -683,11 +697,10 @@ class Player{
 						return;
 					}else{
 						$message = $data->get();
-						$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", $message["message"]), $message["player"]); //Remove ANSI codes from chat
+						$this->sendChat($message["message"], $message["player"]);
 					}
 				}else{
-					$message = (string) $data;
-					$this->sendChat(preg_replace('/\x1b\[[0-9;]*m/', "", (string) $data)); //Remove ANSI codes from chat
+					$this->sendChat((string) $data);
 				}
 				break;
 		}
@@ -1311,7 +1324,7 @@ class Player{
 					$this->close("Incorrect protocol #".$packet->protocol1, false);
 					return;
 				}
-				if(preg_match('#[^a-zA-Z0-9_]#', $this->username) > 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console"){
+				if(preg_match('#^[a-zA-Z0-9_]{3,16}$#', $this->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console"){
 					$this->close("Bad username", false);
 					return;
 				}
@@ -1362,8 +1375,8 @@ class Player{
 								$inv[] = array($item[0], $item[1], 1);
 							}
 						}
+						$this->data->set("inventory", $inv);
 					}
-					$this->data->set("inventory", $inv);
 				}
 				$this->achievements = $this->data->get("achievements");
 				$this->data->set("caseusername", $this->username);
@@ -1468,7 +1481,7 @@ class Player{
 						}
 						$this->sendInventory();
 						$this->sendSettings();
-						$this->server->schedule(50, array($this, "orderChunks"), array(), true);
+						$this->server->schedule(30, array($this, "orderChunks"), array(), true);
 						$this->blocked = false;
 						
 						$pk = new SetTimePacket;
@@ -1645,7 +1658,7 @@ class Player{
 						$this->entity->updateMetadata();
 					}
 					
-					if($this->blocked === true or ($this->entity->position instanceof Vector3 and $blockVector->distance($this->entity->position) > 10)){
+					if($this->blocked === true or ($this->entity instanceof Entity and $blockVector->distance($this->entity) > 10)){
 					
 					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
@@ -1992,6 +2005,7 @@ class Player{
 				$packet->item = $this->getSlot($this->slot);
 				$this->craftingItems = array();
 				$this->toCraft = array();
+				$data = array();
 				$data["eid"] = $packet->eid;
 				$data["unknown"] = $packet->unknown;
 				$data["item"] = $packet->item;
@@ -2155,6 +2169,7 @@ class Player{
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 						if($slot->count < $item->count){
 							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								$this->sendInventory();
 								break;
 							}
 						}elseif($slot->count > $item->count){
@@ -2162,6 +2177,7 @@ class Player{
 						}
 					}else{
 						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							$this->sendInventory();
 							break;
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
@@ -2201,6 +2217,7 @@ class Player{
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
 						if($slot->count < $item->count){
 							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+								$this->sendInventory();
 								break;
 							}
 						}elseif($slot->count > $item->count){
@@ -2208,6 +2225,7 @@ class Player{
 						}
 					}else{
 						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+							$this->sendInventory();
 							break;
 						}
 						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
@@ -2307,14 +2325,16 @@ class Player{
 	}
 	
 	public function sendBuffer(){
-		if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){	
-			$this->buffer->seqNumber = $this->counter[0]++;
-			$this->send($this->buffer);
+		if($this->connected === true){
+			if($this->bufferLen > 0 and $this->buffer instanceof RakNetPacket){	
+				$this->buffer->seqNumber = $this->counter[0]++;
+				$this->send($this->buffer);
+			}
+			$this->bufferLen = 0;
+			$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
+			$this->buffer->data = array();
+			$this->nextBuffer = microtime(true) + 0.1;
 		}
-		$this->bufferLen = 0;
-		$this->buffer = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
-		$this->buffer->data = array();
-		$this->nextBuffer = microtime(true) + 0.1;
 	}
 	
 	private function directBigRawPacket(RakNetDataPacket $packet){
@@ -2353,7 +2373,7 @@ class Player{
 		return $cnts;
 	}
 	
-	public function directDataPacket(RakNetDataPacket $packet, $reliability = 0, $recover = true){
+	public function directDataPacket(RakNetDataPacket $packet, $recover = true){
 		if($this->connected === false){
 			return false;
 		}
@@ -2361,7 +2381,6 @@ class Player{
 		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === BaseEvent::DENY){
 			return array();
 		}
-		
 		$packet->encode();
 		$pk = new RakNetPacket(RakNetInfo::DATA_PACKET_0);
 		$pk->data[] = $packet;
@@ -2403,7 +2422,7 @@ class Player{
 		
 		$packet->messageIndex = $this->counter[3]++;
 		$packet->reliability = 2;
-		$this->buffer->data[] = $packet;
+		@$this->buffer->data[] = $packet;
 		$this->bufferLen += 6 + $len;
 		return array();
 	}

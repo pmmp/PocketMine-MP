@@ -55,7 +55,7 @@ class SpruceTreeObject extends TreeObject{
 
 	public function placeObject(Level $level, Vector3 $pos, Random $random){
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
-			$this->findRandomLeavesSize();
+			$this->findRandomLeavesSize($random);
 		}
 		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new DirtBlock());
 		$leavesRadius = 0;

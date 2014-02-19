@@ -80,6 +80,7 @@ class NormalGenerator implements LevelGenerator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		$hills = array();
+		$patches = array();
 		$patchesSmall = array();
 		$base = array();
 		for($z = 0; $z < 16; ++$z){

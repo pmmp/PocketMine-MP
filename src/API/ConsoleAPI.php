@@ -26,7 +26,6 @@ class ConsoleAPI{
 		$this->cmds = array();
 		$this->alias = array();
 		$this->server = ServerAPI::request();
-		$this->last = microtime(true);
 	}
 
 	public function init(){
@@ -250,7 +249,7 @@ class ConsoleAPI{
 			if(($d1 = $this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false
 			or ($d2 = $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false){
 				$output = "You don't have permissions to use this command.\n";
-			}elseif($d1 !== true and $d2 !== true){
+			}elseif($d1 !== true and (isset($d2) and $d2 !== true)){
 				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
 					$output = @call_user_func($this->cmds[$cmd], $cmd, $params, $issuer, $alias);
 				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
@@ -326,7 +325,7 @@ class ConsoleLoop extends Thread{
 		}
 
 		if(!extension_loaded("readline")){
-			@fclose($fp);
+			@fclose($this->fp);
 		}
 		exit(0);
 	}

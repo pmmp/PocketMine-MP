@@ -95,7 +95,7 @@ class PMFLevel extends PMF{
 	}
 	
 	private function createBlank(){
-		$this->saveData(false);
+		$this->saveData();
 		@mkdir(dirname($this->file)."/chunks/", 0755);
 		if(!file_exists(dirname($this->file)."/entities.yml")){
 			$entities = new Config(dirname($this->file)."/entities.yml", CONFIG_YAML);
@@ -169,12 +169,12 @@ class PMFLevel extends PMF{
 	}
 	
 	public static function getIndex($X, $Z){
-		return ($Z << 16) | ($X < 0 ? (~--$X & 0x7fff) | 0x1000 : $X & 0xFFFF);
+		return ($Z << 16) | ($X < 0 ? (~--$X & 0x7fff) | 0x8000 : $X & 0x7fff);
 	}
 	
 	public static function getXZ($index, &$X = null, &$Z = null){
 		$Z = $index >> 16;
-		$X = $index & 0xFFFF;
+		$X = ($index & 0x8000) === 0x8000 ? -($index & 0x7fff) : $index & 0x7fff;
 		return array($X, $Z);
 	}
 	
@@ -212,26 +212,25 @@ class PMFLevel extends PMF{
 		$this->isGenerated($X - 1, $Z - 1) and
 		$this->isGenerated($X + 1, $Z - 1) and
 		$this->isGenerated($X - 1, $Z + 1)){
-			$this->level->populateChunk($X, $Z);			
+			$this->level->populateChunk($X, $Z);
 			$this->saveChunk($X, $Z);
 		}
 	}
 	
 	public function loadChunk($X, $Z){
-		$X = (int) $X;
-		$Z = (int) $Z;
-		$index = self::getIndex($X, $Z);
 		if($this->isChunkLoaded($X, $Z)){
 			return true;
 		}
+		$index = self::getIndex($X, $Z);
 		$path = $this->getChunkPath($X, $Z);
 		if(!file_exists($path)){
 			if($this->generateChunk($X, $Z) === false){
 				return false;
-			}elseif($this->isGenerating === 0){
-				$this->populateChunk($X, $Z);
-				return true;			
 			}
+			if($this->isGenerating === 0){
+				$this->populateChunk($X, $Z);			
+			}
+			return true;
 		}
 	
 		$chunk = @gzopen($path, "rb");

@@ -21,8 +21,8 @@
 
 class PocketMinecraftServer{
 	public $tCnt;
-	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $seed, $gamemode, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
-	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $ticks, $memoryStats, $async = array(), $asyncID = 0;
+	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $whitelist, $seed, $stop, $gamemode, $difficulty, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
+	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $doTick, $ticks, $memoryStats, $schedule, $asyncThread, $async = array(), $asyncID = 0;
 
 	/**
 	 * @var ServerAPI
@@ -45,10 +45,7 @@ class PocketMinecraftServer{
 		$this->eventsID = array();
 		$this->handlers = array();
 		$this->invisible = false;
-		$this->levelData = false;
 		$this->difficulty = 1;
-		$this->tiles = array();
-		$this->entities = array();
 		$this->custom = array();
 		$this->evCnt = 1;
 		$this->handCnt = 1;
@@ -57,11 +54,11 @@ class PocketMinecraftServer{
 		$this->schedule = array();
 		$this->scheduleCnt = 1;
 		$this->description = "";
-		$this->whitelist = false;
 		$this->memoryStats = array();
 		$this->clients = array();
 		$this->spawn = false;
 		$this->saveEnabled = true;
+		$this->whitelist = false;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
 		$this->interface = new MinecraftInterface("255.255.255.255", $this->port, $this->serverip);
@@ -129,7 +126,7 @@ class PocketMinecraftServer{
 	public function startDatabase(){
 		$this->preparedSQL = new stdClass();
 		$this->preparedSQL->entity = new stdClass();
-		$this->database = new SQLite3(":memory:");
+		$this->database = new SQLite3(":memory:", SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 		$this->query("PRAGMA journal_mode = OFF;");
 		$this->query("PRAGMA encoding = \"UTF-8\";");
 		$this->query("PRAGMA secure_delete = OFF;");
@@ -316,7 +313,6 @@ class PocketMinecraftServer{
 			$handlers->finalize();
 			foreach($call as $hnid => $boolean){
 				if($result !== false and $result !== true){
-					$called[$hnid] = true;
 					$handler = $this->handlers[$hnid];
 					if(is_array($handler)){
 						$method = $handler[1];

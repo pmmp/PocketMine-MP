@@ -76,8 +76,8 @@ abstract class RakNetDataPacket extends stdClass{
 		$this->buffer .= Utils::writeLong($v);
 	}
 	
-	protected function getInt($unsigned = false){
-		return Utils::readInt($this->get(4), $unsigned);
+	protected function getInt(){
+		return Utils::readInt($this->get(4));
 	}
 	
 	protected function putInt($v){

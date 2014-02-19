@@ -41,7 +41,7 @@ class SignPostBlock extends TransparentBlock{
 				return true;
 			}else{
 				$this->meta = $faces[$face];
-				$this->level->setBlock($block, BlockAPI::get(WALL_SIGN, $this->meta, true, false, true));
+				$this->level->setBlock($block, BlockAPI::get(WALL_SIGN, $this->meta), true, false, true);
 				return true;
 			}
 		}

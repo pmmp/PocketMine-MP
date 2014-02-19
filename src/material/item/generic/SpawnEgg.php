@@ -43,7 +43,6 @@ class SpawnEggItem extends Item{
 					--$this->count;
 				}
 				return true;
-				break;
 		}
 		return false;
 	}

@@ -50,8 +50,8 @@ class RakNetParser{
 		return Utils::readLong($this->get(8), $unsigned);
 	}
 	
-	private function getInt($unsigned = false){
-		return Utils::readInt($this->get(4), $unsigned);
+	private function getInt(){
+		return Utils::readInt($this->get(4));
 	}
 	
 	private function getShort($unsigned = false){

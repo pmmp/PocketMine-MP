@@ -31,6 +31,8 @@ class Tile extends Position{
 	public $attach;
 	public $metadata;
 	public $closed;
+	private $lastUpdate;
+	private $scheduledUpdate;
 	private $server;
 	function __construct(Level $level, $id, $class, $x, $y, $z, $data = array()){
 		$this->server = ServerAPI::request();

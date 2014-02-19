@@ -21,6 +21,7 @@
 
 class RakNetCodec{
 	public $packet;
+	private $buffer;
 	public function __construct(RakNetPacket $packet){
 		$this->packet = $packet;
 		$this->buffer =& $this->packet->buffer;

@@ -30,7 +30,6 @@ class MinecraftInterface{
 			exit(1);
 		}
 		$this->bandwidth = array(0, 0, microtime(true));
-		$this->start = microtime(true);
 		$this->packets = array();
 	}
 
@@ -90,7 +89,7 @@ class MinecraftInterface{
 		if(EventHandler::callEvent(new PacketSendEvent($packet)) === BaseEvent::DENY){
 			return 0;
 		}elseif($packet instanceof RakNetPacket){
-			$codec = new RakNetCodec($packet);
+			new RakNetCodec($packet);
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);
 		$this->bandwidth[1] += $write;
