@@ -21,7 +21,7 @@
 
 class PocketMinecraftServer{
 	public $tCnt;
-	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $seed, $stop, $gamemode, $difficulty$name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
+	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $seed, $stop, $gamemode, $difficulty, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $doTick, $ticks, $memoryStats, $schedule, $asyncThread, $async = array(), $asyncID = 0;
 
 	/**
