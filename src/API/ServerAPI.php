@@ -110,7 +110,7 @@ class ServerAPI{
 		console("[INFO] Starting Minecraft PE server version ".FORMAT_AQUA.CURRENT_MINECRAFT_VERSION);
 		
 		console("[INFO] Loading properties...");
-		$this->config = new Config(DATA_PATH . "server.properties", CONFIG_PROPERTIES, array(
+		$this->config = new Config(DATA_PATH . "server.properties", Config::PROPERTIES, array(
 			"server-name" => "Minecraft: PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",

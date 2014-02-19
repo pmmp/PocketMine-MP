@@ -502,10 +502,10 @@ class PlayerAPI{
 
 		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
 			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
-			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
+			$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, $default);
 			$data->save();
 		}else{
-			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
+			$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, $default);
 		}
 
 		if(($data->get("gamemode") & 0x01) === 1){

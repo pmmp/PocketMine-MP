@@ -19,14 +19,7 @@
  *
 */
 
-define("CONFIG_DETECT", -1); //Detect by file extension
-define("CONFIG_PROPERTIES", 0); // .properties
-define("CONFIG_CNF", CONFIG_PROPERTIES); // .cnf
-define("CONFIG_JSON", 1); // .js, .json
-define("CONFIG_YAML", 2); // .yml, .yaml
-//define("CONFIG_EXPORT", 3); // .export, .xport
-define("CONFIG_SERIALIZED", 4); // .sl
-define("CONFIG_LIST", 5); // .txt, .list
+
 
 /**
  * Class Config
@@ -34,6 +27,15 @@ define("CONFIG_LIST", 5); // .txt, .list
  * Config Class for simple config manipulation of multiple formats.
  */
 class Config{
+	const DETECT = -1; //Detect by file extension
+	const PROPERTIES = 0; // .properties
+	const CNF = PROPERTIES; // .cnf
+	const JSON = 1; // .js, .json
+	const YAML = 2; // .yml, .yaml
+	//const EXPORT = 3; // .export, .xport
+	const SERIALIZED = 4; // .sl
+	const LIST = 5; // .txt, .list
+	
     /**
      * @var array
      */
@@ -49,23 +51,23 @@ class Config{
     /**
      * @var integer
      */
-    private $type = CONFIG_DETECT;
+    private $type = Config::DETECT;
 
 	public static $formats = array(
-		"properties" => CONFIG_PROPERTIES,
-		"cnf" => CONFIG_CNF,
-		"conf" => CONFIG_CNF,
-		"config" => CONFIG_CNF,
-		"json" => CONFIG_JSON,
-		"js" => CONFIG_JSON,
-		"yml" => CONFIG_YAML,
-		"yaml" => CONFIG_YAML,
-		//"export" => CONFIG_EXPORT,
-		//"xport" => CONFIG_EXPORT,
-		"sl" => CONFIG_SERIALIZED,
-		"serialize" => CONFIG_SERIALIZED,
-		"txt" => CONFIG_LIST,
-		"list" => CONFIG_LIST,	
+		"properties" => Config::PROPERTIES,
+		"cnf" => Config::CNF,
+		"conf" => Config::CNF,
+		"config" => Config::CNF,
+		"json" => Config::JSON,
+		"js" => Config::JSON,
+		"yml" => Config::YAML,
+		"yaml" => Config::YAML,
+		//"export" => Config::EXPORT,
+		//"xport" => Config::EXPORT,
+		"sl" => Config::SERIALIZED,
+		"serialize" => Config::SERIALIZED,
+		"txt" => Config::LIST,
+		"list" => Config::LIST,	
 	);
 
     /**
@@ -74,8 +76,9 @@ class Config{
      * @param array $default
      * @param null|boolean $correct
      */
-    public function __construct($file, $type = CONFIG_DETECT, $default = array(), &$correct = null){
+    public function __construct($file, $type = Config::DETECT, $default = array(), &$correct = null){
 		$this->load($file, $type, $default);
+		$correct = $this->correct;
 	}
 	
 	public function reload(){	
@@ -96,7 +99,7 @@ class Config{
      *
      * @return boolean
      */
-    public function load($file, $type = CONFIG_DETECT, $default = array()){
+    public function load($file, $type = Config::DETECT, $default = array()){
 		$this->correct = true;
 		$this->type = (int) $type;
 		$this->file = $file;
@@ -107,7 +110,7 @@ class Config{
 			$this->config = $default;
 			$this->save();
 		}else{			
-			if($this->type === CONFIG_DETECT){
+			if($this->type === Config::DETECT){
 				$extension = explode(".", basename($this->file));
 				$extension = strtolower(trim(array_pop($extension)));
 				if(isset(Config::$formats[$extension])){
@@ -119,21 +122,21 @@ class Config{
 			if($this->correct === true){
 				$content = @file_get_contents($this->file);
 				switch($this->type){
-					case CONFIG_PROPERTIES:
-					case CONFIG_CNF:
+					case Config::PROPERTIES:
+					case Config::CNF:
 						$this->parseProperties($content);
 						break;
-					case CONFIG_JSON:
+					case Config::JSON:
 						$this->config = @json_decode($content, true);
 						break;
-					case CONFIG_YAML:
+					case Config::YAML:
 						$content = $this->fixYAMLIndexes($content);
 						$this->config = yaml_parse($content);
 						break;
-					case CONFIG_SERIALIZED:
+					case Config::SERIALIZED:
 						$this->config = @unserialize($content);
 						break;
-					case CONFIG_LIST:
+					case Config::LIST:
 						$this->parseList($content);
 						break;
 					default:
@@ -166,20 +169,20 @@ class Config{
     public function save(){
 		if($this->correct === true){
 			switch($this->type){
-				case CONFIG_PROPERTIES:
-				case CONFIG_CNF:
+				case Config::PROPERTIES:
+				case Config::CNF:
 					$content = $this->writeProperties();
 					break;
-				case CONFIG_JSON:
+				case Config::JSON:
 					$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
 					break;
-				case CONFIG_YAML:
+				case Config::YAML:
 					$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
 					break;
-				case CONFIG_SERIALIZED:
+				case Config::SERIALIZED:
 					$content = @serialize($this->config);
 					break;
-				case CONFIG_LIST:
+				case Config::LIST:
 					$content = implode("\r\n", array_keys($this->config));
 					break;
 				}

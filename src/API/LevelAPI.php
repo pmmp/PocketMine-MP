@@ -155,12 +155,12 @@ class LevelAPI{
 			console("[ERROR] Could not load level \"".$name."\"");
 			return false;
 		}
-		$entities = new Config($path."entities.yml", CONFIG_YAML);
+		$entities = new Config($path."entities.yml", Config::YAML);
 		if(file_exists($path."tileEntities.yml")){
 			@rename($path."tileEntities.yml", $path."tiles.yml");
 		}
-		$tiles = new Config($path."tiles.yml", CONFIG_YAML);
-		$blockUpdates = new Config($path."bupdates.yml", CONFIG_YAML);
+		$tiles = new Config($path."tiles.yml", Config::YAML);
+		$blockUpdates = new Config($path."bupdates.yml", Config::YAML);
 		$this->levels[$name] = new Level($level, $entities, $tiles, $blockUpdates, $name);
 		foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){

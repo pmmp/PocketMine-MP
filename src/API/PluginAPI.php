@@ -191,7 +191,7 @@ class PluginAPI extends stdClass{
 			return false;
 		}
 		$path = $this->configPath($plugin);
-		$cnf = new Config($path."config.yml", CONFIG_YAML, $default);
+		$cnf = new Config($path."config.yml", Config::YAML, $default);
 		$cnf->save();
 		return $path;
 	}

@@ -2426,22 +2426,6 @@ class Player{
 		$this->bufferLen += 6 + $len;
 		return array();
 	}
-	
-	public function isPermissionSet($nodeName){
-		
-	}
-	
-	public function hasPermission($nodeName){
-		return $this->isPermissionSet($nodeName) and PermissionsAPI::hasPermission($nodeName, $this);
-	}
-	
-	public function setPermission($nodeName, $boolean){
-		
-	}
-	
-	public function unsetPermission($nodeName, $boolean){
-		
-	}
 
     /**
      * @return string

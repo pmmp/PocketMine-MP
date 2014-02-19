@@ -20,16 +20,25 @@
 */
 
 class Level{
-	public $entities, $tiles, $blockUpdates, $nextSave, $players = array(), $level;
+	public $entities = array();
+	public $chunkEntities = array();
+	
+	public $tiles = array();
+	
+	public $entitiesConfig;
+	public $tilesConfig;
+	public $blockUpdatesConfig;
+	
+	public $nextSave, $players = array(), $level;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->level->level = $this;
-		$this->entities = $entities;
-		$this->tiles = $tiles;
-		$this->blockUpdates = $blockUpdates;
+		$this->entitiesConfig = $entities;
+		$this->tilesConfig = $tiles;
+		$this->blockUpdatesConfig = $blockUpdates;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
@@ -58,10 +67,11 @@ class Level{
 	}
 	
 	public function useChunk($X, $Z, Player $player){
-		if(!isset($this->usedChunks[$X.".".$Z])){
-			$this->usedChunks[$X.".".$Z] = array();
+		$index = PMFLevel::getIndex($X, $Z);
+		if(!isset($this->usedChunks[$index])){
+			$this->usedChunks[$index] = array();
 		}
-		$this->usedChunks[$X.".".$Z][$player->CID] = true;
+		$this->usedChunks[$index][$player->CID] = true;
 		if(isset($this->level)){
 			$this->level->loadChunk($X, $Z);
 		}
@@ -74,7 +84,7 @@ class Level{
 	}
 
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[$X.".".$Z][$player->CID]);
+		unset($this->usedChunks[PMFLevel::getIndex($X, $Z)][$player->CID]);
 	}
 	
 	public function isChunkPopulated($X, $Z){
@@ -183,115 +193,7 @@ class Level{
 		}
 		
 		if($extra !== false){
-			$entities = array();
-			foreach($this->server->api->entity->getAll($this) as $entity){
-				if($entity->class === ENTITY_MOB){
-					$entities[] = array(
-						"id" => $entity->type,
-						"Color" => @$entity->data["Color"],
-						"Sheared" => @$entity->data["Sheared"],
-						"Health" => $entity->health,
-						"Pos" => array(
-							0 => $entity->x,
-							1 => $entity->y,
-							2 => $entity->z,
-						),
-						"Rotation" => array(
-							0 => $entity->yaw,
-							1 => $entity->pitch,
-						),
-					);
-				}elseif($entity->class === ENTITY_OBJECT){
-					if($entity->type === OBJECT_PAINTING){
-						$entities[] = array(
-							"id" => $entity->type,
-							"TileX" => $entity->x,
-							"TileY" => $entity->y,
-							"TileZ" => $entity->z,
-							"Health" => $entity->health,
-							"Motive" => $entity->data["Motive"],
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => $entity->yaw,
-								1 => $entity->pitch,
-							),
-						);
-					}else{
-						$entities[] = array(
-							"id" => $entity->type,
-							"Health" => $entity->health,
-							"Pos" => array(
-								0 => $entity->x,
-								1 => $entity->y,
-								2 => $entity->z,
-							),
-							"Rotation" => array(
-								0 => $entity->yaw,
-								1 => $entity->pitch,
-							),
-						);
-					}
-				}elseif($entity->class === ENTITY_FALLING){
-					$entities[] = array(
-						"id" => $entity->type,
-						"Health" => $entity->health,
-						"Tile" => $entity->data["Tile"],
-						"Pos" => array(
-							0 => $entity->x,
-							1 => $entity->y,
-							2 => $entity->z,
-						),
-						"Rotation" => array(
-							0 => 0,
-							1 => 0,
-						),
-					);
-				}elseif($entity->class === ENTITY_ITEM){
-					$entities[] = array(
-						"id" => 64,
-						"Item" => array(
-							"id" => $entity->type,
-							"Damage" => $entity->meta,
-							"Count" => $entity->stack,
-						),
-						"Health" => $entity->health,
-						"Pos" => array(
-							0 => $entity->x,
-							1 => $entity->y,
-							2 => $entity->z,
-						),
-						"Rotation" => array(
-							0 => 0,
-							1 => 0,
-						),
-					);
-				}
-			}
-			$this->entities->setAll($entities);
-			$this->entities->save();
-			$tiles = array();
-			foreach($this->server->api->tile->getAll($this) as $tile){		
-				$tiles[] = $tile->data;
-			}
-			$this->tiles->setAll($tiles);
-			$this->tiles->save();
 			
-			$blockUpdates = array();
-			$updates = $this->server->query("SELECT x,y,z,type,delay FROM blockUpdates WHERE level = '".$this->getName()."';");
-			if($updates !== false and $updates !== true){
-				$timeu = microtime(true);
-				while(($bupdate = $updates->fetchArray(SQLITE3_ASSOC)) !== false){
-					$bupdate["delay"] = max(1, ($bupdate["delay"] - $timeu) * 20);					
-					$blockUpdates[] = $bupdate;
-				}
-			}
-
-			$this->blockUpdates->setAll($blockUpdates);
-			$this->blockUpdates->save();
 		
 		}
 		

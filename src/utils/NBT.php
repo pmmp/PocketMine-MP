@@ -19,7 +19,7 @@
  *
 */
 
-class NBT{
+class NBTOld{
 	public $tree = array();
 	public $binary = b"";
 	private $offset = 0;

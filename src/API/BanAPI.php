@@ -38,10 +38,10 @@ class BanAPI{
 	}
 	
 	public function init(){
-		$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);//Open whitelist list file
-		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);//Open Banned IPs list file
-		$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);//Open Banned Usernames list file
-		$this->ops = new Config(DATA_PATH."ops.txt", CONFIG_LIST);//Open list of OPs
+		$this->whitelist = new Config(DATA_PATH."white-list.txt", Config::LIST);//Open whitelist list file
+		$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", Config::LIST);//Open Banned IPs list file
+		$this->banned = new Config(DATA_PATH."banned.txt", Config::LIST);//Open Banned Usernames list file
+		$this->ops = new Config(DATA_PATH."ops.txt", Config::LIST);//Open list of OPs
 		$this->server->api->console->register("banip", "<add|remove|list|reload> [IP|player]", array($this, "commandHandler"));
 		$this->server->api->console->register("ban", "<add|remove|list|reload> [username]", array($this, "commandHandler"));
 		$this->server->api->console->register("kick", "<player> [reason ...]", array($this, "commandHandler"));
@@ -211,7 +211,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to white-list\n";
 						break;
 					case "reload":
-						$this->whitelist = new Config(DATA_PATH."white-list.txt", CONFIG_LIST);
+						$this->whitelist = new Config(DATA_PATH."white-list.txt", Config::LIST);
 						break;
 					case "list":
 						$output .= "White-list: ".implode(", ", $this->whitelist->getAll(true))."\n";
@@ -256,7 +256,7 @@ class BanAPI{
 						$output .= "IP \"$ip\" added to ban list\n";
 						break;
 					case "reload":
-						$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", CONFIG_LIST);
+						$this->bannedIPs = new Config(DATA_PATH."banned-ips.txt", Config::LIST);
 						break;
 					case "list":
 						$output .= "IP ban list: ".implode(", ", $this->bannedIPs->getAll(true))."\n";
@@ -294,7 +294,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to ban list\n";
 						break;
 					case "reload":
-						$this->banned = new Config(DATA_PATH."banned.txt", CONFIG_LIST);
+						$this->banned = new Config(DATA_PATH."banned.txt", Config::LIST);
 						break;
 					case "list":
 						$output .= "Ban list: ".implode(", ", $this->banned->getAll(true))."\n";
