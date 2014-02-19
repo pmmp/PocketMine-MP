@@ -28,6 +28,7 @@ abstract class Entity extends Position{
 	//public $passenger = null;
 	//public $vehicle = null;
 	
+	public $chunkIndex;
 	public $lastX;
 	public $lastY;
 	public $lastZ;
@@ -70,7 +71,7 @@ abstract class Entity extends Position{
 		$this->lastUpdate = microtime(true);
 		$this->initEntity();
 	}
-	
+
 	protected abstract function initEntity();
 	
 	public abstract function spawnTo(Player $player);
