@@ -126,7 +126,7 @@ elif [ "$1" == "crosscompile" ]; then
 		exit 1
 	fi
 elif [ -z "$CFLAGS" ]; then
-	if [ `getconf LONG_BIT` = "64" ]; then
+	if [ `getconf LONG_BIT` == "64" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
 		CFLAGS="-m64 $CFLAGS"
 		OPENSSL_TARGET="linux-x86_64"

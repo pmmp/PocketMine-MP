@@ -140,7 +140,7 @@ function arguments ( $args ){
 		$args = array();
 	}
     array_shift( $args );
-    $args = implode( $args, ' ' );
+    $args = implode(' ', $args);
 
     preg_match_all('/ (--[\w\-]+ (?:[= ] [^-\s]+ )? ) | (-\w+) | (\w+) /x', $args, $match );
     $args = array_shift( $match );
