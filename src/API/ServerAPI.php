@@ -79,7 +79,7 @@ class ServerAPI{
 	public $tile;
 
 	/**
-	 * @return PocketMinecraftServer
+	 * @return MainServer
 	 */
 	public static function request(){
 		return self::$serverRequest;
@@ -156,7 +156,7 @@ class ServerAPI{
 			UPnP_PortForward($this->getProperty("server-port"));
 		}
 
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
+		$this->server = new MainServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
 		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? FORMAT_YELLOW:"").MAJOR_VERSION.FORMAT_RESET." \"".CODENAME."\" (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
@@ -293,7 +293,7 @@ class ServerAPI{
 			$this->setProperty("memory-limit", "128M");
 		}
 
-		if($this->server instanceof PocketMinecraftServer){
+		if($this->server instanceof MainServer){
 			$this->server->setType($this->getProperty("server-type"));
 			$this->server->maxClients = $this->getProperty("max-players");
 			$this->server->description = $this->getProperty("description");
@@ -339,7 +339,7 @@ class ServerAPI{
 	}
 
 	public function init(){
-		if(!(self::$serverRequest instanceof PocketMinecraftServer)){
+		if(!(self::$serverRequest instanceof MainServer)){
 			self::$serverRequest = $this->server;
 		}
 

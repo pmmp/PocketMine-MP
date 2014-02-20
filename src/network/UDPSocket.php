@@ -45,7 +45,6 @@ class UDPSocket{
 	}
 
 	public function close($error = 125){
-		$this->connected = false;
 		return @socket_close($this->sock);
 	}
 
@@ -58,16 +57,10 @@ class UDPSocket{
 	}
 
 	public function read(&$buf, &$source, &$port){
-		if($this->connected === false){
-			return false;
-		}
 		return @socket_recvfrom($this->sock, $buf, 65535, 0, $source, $port);
 	}
 
 	public function write($data, $dest, $port){
-		if($this->connected === false){
-			return false;
-		}
 		return @socket_sendto($this->sock, $data, strlen($data), 0, $dest, $port);
 	}
 
