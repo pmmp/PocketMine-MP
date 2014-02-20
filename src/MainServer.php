@@ -579,7 +579,6 @@ class MainServer{
 				}
 			}
 			$this->tick();
-			$this->api->server;
 		}
 	}
 
