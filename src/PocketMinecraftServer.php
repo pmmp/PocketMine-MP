@@ -384,6 +384,7 @@ class PocketMinecraftServer{
 		if($this->stop === true){
 			return;
 		}
+		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
 		console("[SEVERE] An unrecovereable has ocurred and the server has crashed. Creating an error dump");
 		$dump = "```\r\n# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
 		$er = error_get_last();
