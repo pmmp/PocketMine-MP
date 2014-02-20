@@ -38,7 +38,10 @@ class MinecraftInterface{
 	}
 
 	public function readPacket(){
-		$len = $this->socket->read($buf = null, $source = null, $port = null);
+		$buf = null;
+		$source = null;
+		$port = null;
+		$len = $this->socket->read($buf, $source, $port);
 		if($len === false or $len === 0){
 			return false;
 		}
