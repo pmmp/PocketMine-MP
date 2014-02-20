@@ -453,6 +453,7 @@ class PocketMinecraftServer{
 		}
 		
 		$dump .= "Loaded Modules: ".var_export($extensions, true)."\r\n";
+		$this->checkMemory();
 		$dump .= "Memory Usage Tracking: \r\n".chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9)))."\r\n";
 		ob_start();
 		phpinfo();
