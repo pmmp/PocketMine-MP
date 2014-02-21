@@ -138,7 +138,6 @@ class ServerAPI{
 			"enable-query" => true,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
-			"send-usage" => true,
 			"auto-save" => true,
 		));
 		
@@ -343,7 +342,7 @@ class ServerAPI{
 			self::$serverRequest = $this->server;
 		}
 
-		if($this->getProperty("send-usage") !== false){
+		if($this->getProperty("send-usage", true) !== false){
 			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
 		}
