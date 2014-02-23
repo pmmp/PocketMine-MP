@@ -21,6 +21,7 @@
 
 define("ASYNC_CURL_GET", 1);
 define("ASYNC_CURL_POST", 2);
+define("ASYNC_FUNCTION", 3);
 
 class StackableArray extends Stackable{
 	public function __construct(){
@@ -93,6 +94,12 @@ class AsyncMultipleQueue extends Thread{
 						$this->lock();
 						$this->output .= Utils::writeInt($rID).Utils::writeShort(ASYNC_CURL_POST).Utils::writeInt(strlen($res)).$res;
 						$this->unlock();
+						break;
+					case ASYNC_FUNCTION:
+						$function = $this->get(Utils::readShort($this->get(2), false));
+						$params = unserialize($this->get(Utils::readInt($this->get(4))));
+						$res = serialize(@call_user_func_array($function, $params));
+						$this->output .= Utils::writeInt($rID).Utils::writeShort(ASYNC_FUNCTION).Utils::writeInt(strlen($res)).$res;
 						break;
 				}
 			}

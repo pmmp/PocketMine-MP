@@ -228,6 +228,10 @@ class MainServer{
 					$d .= Utils::writeShort(strlen($key)).$key . Utils::writeInt(strlen($value)).$value;
 				}
 				break;
+			case ASYNC_FUNCTION:
+				$params = serialize($data["arguments"]);
+				$d .= Utils::writeShort(strlen($data["function"])).$data["function"] . Utils::writeInt(strlen($params)) . $params;
+				break;
 			default:
 				return false;
 		}
@@ -254,6 +258,12 @@ class MainServer{
 					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
 					$offset += 4;
 					$data["result"] = substr($this->asyncThread->output, $offset, $len);
+					$offset += $len;
+					break;
+				case ASYNC_FUNCTION:
+					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
+					$offset += 4;
+					$data["result"] = unserialize(substr($this->asyncThread->output, $offset, $len));
 					$offset += $len;
 					break;
 			}
