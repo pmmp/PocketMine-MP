@@ -104,7 +104,11 @@ class RCONInstance extends Thread{
 	}
 	
 	private function writePacket($client, $requestID, $packetType, $payload){
-		return socket_write($client, Utils::writeLInt(strlen($payload)).Utils::writeLInt((int) $requestID).Utils::writeLInt((int) $packetType).($payload === "" ? "\x00":$payload)."\x00");
+		$pk = Utils::writeLInt((int) $requestID)
+			. Utils::writeLInt((int) $packetType)
+			. $payload
+			. "\x00\x00"; //Terminate payload and packet
+		return socket_write($client, Utils::writeLInt(strlen($pk)).$pk);
 	}
 	
 	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
