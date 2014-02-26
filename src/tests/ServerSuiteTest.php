@@ -4,9 +4,9 @@
 		function testCase($name, $output, $expected){
 			global $testErrors;
 			if($output === $expected){
-				console("[TEST] $name: ".FORMAT_GREEN."Ok.");
+				console("[TEST] $name: ".TextFormat::GREEN."Ok.");
 			}else{
-				console("[TEST] $name: ".FORMAT_RED."Error.");
+				console("[TEST] $name: ".TextFormat::RED."Error.");
 				console("Expected ".print_r($expected, true).", got ".print_r($output, true));
 				++$testErrors;
 			}
@@ -17,15 +17,15 @@
 			require_once(dirname(__FILE__)."/../dependencies.php");
 			require_once(FILE_PATH."/src/functions.php");
 			require_once(FILE_PATH."/src/dependencies.php");
-			console(FORMAT_GREEN . "[TEST] Starting tests");
+			console(TextFormat::GREEN . "[TEST] Starting tests");
 			testCase("dummy", dummy(), null);
 			$t = new ServerSuiteTest;
 			echo PHP_EOL;
 			if($testErrors === 0){
-				console(FORMAT_GREEN . "[TEST] No errors. Test complete.");
+				console(TextFormat::GREEN . "[TEST] No errors. Test complete.");
 				exit(0);
 			}else{
-				console(FORMAT_RED . "[TEST] Errors found.");
+				console(TextFormat::RED . "[TEST] Errors found.");
 				exit(1);
 			}
 		}

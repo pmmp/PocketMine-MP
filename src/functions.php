@@ -181,7 +181,7 @@ function arguments($args){
 function console($message, $EOL = true, $log = true, $level = 1){
 	if(!defined("DEBUG") or DEBUG >= $level){
 		$message .= $EOL === true ? PHP_EOL:"";
-		$time = (ENABLE_ANSI === true ? FORMAT_AQUA . date("H:i:s") . FORMAT_RESET:date("H:i:s")) . " ";
+		$time = (ENABLE_ANSI === true ? TextFormat::AQUA . date("H:i:s") . TextFormat::RESET:date("H:i:s")) . " ";
 		$replaced = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
 		if($log === true and (!defined("LOG") or LOG === true)){
 			logg(date("Y-m-d")." ".$replaced, "console", false, $level);
@@ -192,24 +192,24 @@ function console($message, $EOL = true, $log = true, $level = 1){
 				switch($matches[1]){
 					case "ERROR":
 					case "SEVERE":
-						$add .= FORMAT_RED;
+						$add .= TextFormat::RED;
 						break;
 					case "INTERNAL":
 					case "DEBUG":
-						$add .= FORMAT_GRAY;
+						$add .= TextFormat::GRAY;
 						break;
 					case "WARNING":
-						$add .= FORMAT_YELLOW;
+						$add .= TextFormat::YELLOW;
 						break;
 					case "NOTICE":
-						$add .= FORMAT_AQUA;
+						$add .= TextFormat::AQUA;
 						break;
 					default:
 						$add = "";
 						break;
 				}
 			}
-			$message = TextFormat::toANSI($time . $add . $message . FORMAT_RESET);
+			$message = TextFormat::toANSI($time . $add . $message . TextFormat::RESET);
 		}else{
 			$message = $replaced;
 		}

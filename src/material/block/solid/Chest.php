@@ -53,9 +53,9 @@ class ChestBlock extends TransparentBlock{
 		}
 
 		$this->level->setBlock($block, $this, true, false, true);
-		$tile = $server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
+		$tile = $server->api->tile->add($this->level, Tile::CHEST, $this->x, $this->y, $this->z, array(
 			"Items" => array(),
-			"id" => TILE_CHEST,
+			"id" => Tile::CHEST,
 			"x" => $this->x,
 			"y" => $this->y,
 			"z" => $this->z
@@ -89,9 +89,9 @@ class ChestBlock extends TransparentBlock{
 		if($t !== false){
 			$chest = $t;
 		}else{
-			$chest = $server->api->tile->add($this->level, TILE_CHEST, $this->x, $this->y, $this->z, array(
+			$chest = $server->api->tile->add($this->level, Tile::CHEST, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
-				"id" => TILE_CHEST,
+				"id" => Tile::CHEST,
 				"x" => $this->x,
 				"y" => $this->y,
 				"z" => $this->z			
@@ -113,7 +113,7 @@ class ChestBlock extends TransparentBlock{
 			array($this->id, 0, 1),
 		);
 		$t = ServerAPI::request()->api->tile->get($this);
-		if($t !== false and $t->class === TILE_CHEST){
+		if($t !== false and $t->class === Tile::CHEST){
 			for($s = 0; $s < CHEST_SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > AIR and $slot->count > 0){

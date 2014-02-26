@@ -49,7 +49,7 @@ class LevelImport{
 			}
 			$tiles = $entities->TileEntities;
 			$entities = $entities->Entities;
-			$entities = new Config($this->path."entities.yml", CONFIG_YAML, $entities);
+			$entities = new Config($this->path."entities.yml", Config::YAML, $entities);
 			$entities->save();
 			$tiles = new Config($this->path."tiles.yml", Config::YAML, $tiles);
 			$tiles->save();

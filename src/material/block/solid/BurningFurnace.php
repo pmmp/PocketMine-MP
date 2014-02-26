@@ -51,9 +51,9 @@ class BurningFurnaceBlock extends SolidBlock{
 		if($t !== false){
 			$furnace = $t;
 		}else{
-			$furnace = $server->api->tile->add($this->level, TILE_FURNACE, $this->x, $this->y, $this->z, array(
+			$furnace = $server->api->tile->add($this->level, Tile::FURNACE, $this->x, $this->y, $this->z, array(
 				"Items" => array(),
-				"id" => TILE_FURNACE,
+				"id" => Tile::FURNACE,
 				"x" => $this->x,
 				"y" => $this->y,
 				"z" => $this->z			
@@ -94,7 +94,7 @@ class BurningFurnaceBlock extends SolidBlock{
 			$drops[] = array(FURNACE, 0, 1);
 		}
 		$t = ServerAPI::request()->api->tile->get($this);
-		if($t !== false and $t->class === TILE_FURNACE){
+		if($t !== false and $t->class === Tile::FURNACE){
 			for($s = 0; $s < FURNACE_SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > AIR and $slot->count > 0){
