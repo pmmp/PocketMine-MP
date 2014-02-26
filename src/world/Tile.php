@@ -370,9 +370,9 @@ class Tile extends Position{
 				}else{
 					$nbt->setData(new NBTTag_Compound("", array(
 						new NBTTag_String("id", $this->class),
-						new NBTTag_String("x", (int) $this->x),
-						new NBTTag_String("y", (int) $this->y),
-						new NBTTag_String("z", (int) $this->z),	
+						new NBTTag_Int("x", (int) $this->x),
+						new NBTTag_Int("y", (int) $this->y),
+						new NBTTag_Int("z", (int) $this->z),	
 						new NBTTag_End
 					)));
 				}

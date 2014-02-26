@@ -26,7 +26,7 @@ class NBTTag_String extends NamedNBTTag{
 	}
 	
 	public function read(NBT $nbt){
-		$this->value = $nbt->get($this->getShort());
+		$this->value = $nbt->get($nbt->getShort());
 	}
 	
 	public function write(NBT $nbt){
