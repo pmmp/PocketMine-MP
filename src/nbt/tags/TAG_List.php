@@ -19,18 +19,72 @@
  *
 */
 
-class NBTTag_List extends NamedNBTTag{
+class NBTTag_List extends NamedNBTTag implements ArrayAccess, Iterator{
+	
+	private $tagType;
 	
 	public function getType(){
 		return NBTTag::TAG_List;
 	}
 	
-	public function __get($name){
-		return isset($this->value[$name]) ? $this->value[$name]->getValue() : false;
+	public function setTagType($type){
+		$this->tagType = $type;
+	}
+	
+	public function getTagType(){
+		return $this->tagType;
+	}
+	
+	public function rewind(){
+		reset($this->value);
+	}
+	
+	public function current(){
+		return current($this->value);
+	}
+	
+	public function key(){
+		return key($this->value);
+	}
+	
+	public function next(){
+		return next($this->value);
+	}
+	
+	public function valid(){
+		$key = key($this->value);
+		return $key !== null and $key !== false;
+	}
+	
+	public function offsetExists($name){
+		return $this->__isset($name);
+	}
+	
+	public function &offsetGet($name){
+		return $this->__get($name);
+	}
+	
+	public function offsetSet($name, $value){
+		$this->__set($name, $value);
+	}
+	
+	public function offsetUnset($name){
+		$this->__unset($name);
+	}
+	
+	public function &__get($name){
+		$ret = isset($this->value[$name]) ? $this->value[$name] : false;
+		if(!is_object($ret) or $ret instanceof ArrayAccess){
+			return $ret;
+		}else{
+			return $ret->getValue();
+		}
 	}
 
 	public function __set($name, $value){
-		if(isset($this->value[$name])){
+		if($value instanceof NBTTag){
+			$this->value[$name] = $value;
+		}elseif(isset($this->value[$name])){
 			$this->value[$name]->setValue($value);
 		}
 	}
@@ -45,11 +99,10 @@ class NBTTag_List extends NamedNBTTag{
 	
 	public function read(NBT $nbt){
 		$this->value = array();
-		$tagId = $nbt->getByte();
-		$this->value[-1] = $tagId;
+		$this->tagType = $nbt->getByte();
 		$size = $nbt->getInt();
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
-			switch($tagId){
+			switch($this->tagType){
 				case NBTTag::TAG_Byte:
 					$tag = new NBTTag_Byte(false);
 					$tag->read($nbt);
@@ -115,11 +168,11 @@ class NBTTag_List extends NamedNBTTag{
 	}
 	
 	public function write(NBT $nbt){
-		$nbt->putByte($this->value[-1]);
-		$nbt->putInt(count($this->value) - 1);
+		$nbt->putByte($this->tagType);
+		$nbt->putInt(count($this->value));
 		foreach($this->value as $tag){
 			if($tag instanceof NBTTag){
-				$nbt->writeTag($tag);
+				$tag->write($nbt);
 			}
 		}
 	}

@@ -19,7 +19,7 @@
  *
 */
 
-class NBT{	
+class NBT implements ArrayAccess{	
 	const LITTLE_ENDIAN = 0;
 	const BIG_ENDIAN = 1;
 
@@ -194,24 +194,41 @@ class NBT{
 		$this->buffer .= $v;
 	}
 	
-	public function __get($name){
-		return $this->data instanceof NBTTag_Compound ? $this->data->{$name} : false;
+	public function &__get($name){
+		$ret = $this->data instanceof NBTTag_Compound ? $this->data[$name] : false;
+		return $ret;
 	}
 
 	public function __set($name, $value){
 		if($this->data instanceof NBTTag_Compound){
-			$this->data->{$name} = $value;
+			$this->data[$name] = $value;
 		}
 	}
 	
 	public function __isset($name){
-		return $this->data instanceof NBTTag_Compound ? isset($this->data->{$name}) : false;
+		return $this->data instanceof NBTTag_Compound ? isset($this->data[$name]) : false;
 	}
 	
 	public function __unset($name){
 		if($this->data instanceof NBTTag_Compound){
-			unset($this->data->{$name});
+			unset($this->data[$name]);
 		}
+	}
+	
+	public function offsetExists($name){
+		return $this->__isset($name);
+	}
+	
+	public function &offsetGet($name){
+		return $this->__get($name);
+	}
+	
+	public function offsetSet($name, $value){
+		$this->__set($name, $value);
+	}
+	
+	public function offsetUnset($name){
+		$this->__unset($name);
 	}
 	
 	public function getData(){

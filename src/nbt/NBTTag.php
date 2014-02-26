@@ -33,9 +33,9 @@ abstract class NBTTag{
 	const TAG_Compound = 10;
 	const TAG_Int_Array = 11;
 
-	protected $value = 0;
+	protected $value;
 	
-	public function getValue(){
+	public function &getValue(){
 		return $this->value;
 	}
 	

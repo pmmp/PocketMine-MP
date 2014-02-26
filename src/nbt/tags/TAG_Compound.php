@@ -19,18 +19,62 @@
  *
 */
 
-class NBTTag_Compound extends NamedNBTTag{
+class NBTTag_Compound extends NamedNBTTag implements ArrayAccess, Iterator{
 	
 	public function getType(){
 		return NBTTag::TAG_Compound;
 	}
 	
-	public function __get($name){
-		return isset($this->value[$name]) ? $this->value[$name]->getValue() : false;
+	public function rewind(){
+		reset($this->value);
 	}
-
+	
+	public function current(){
+		return current($this->value);
+	}
+	
+	public function key(){
+		return key($this->value);
+	}
+	
+	public function next(){
+		return next($this->value);
+	}
+	
+	public function valid(){
+		$key = key($this->value);
+		return $key !== null and $key !== false;
+	}
+	
+	public function offsetExists($name){
+		return $this->__isset($name);
+	}
+	
+	public function &offsetGet($name){
+		return $this->__get($name);
+	}
+	
+	public function offsetSet($name, $value){
+		$this->__set($name, $value);
+	}
+	
+	public function offsetUnset($name){
+		$this->__unset($name);
+	}
+	
+	public function &__get($name){
+		$ret = isset($this->value[$name]) ? $this->value[$name] : false;
+		if(!is_object($ret) or $ret instanceof ArrayAccess){
+			return $ret;
+		}else{
+			return $ret->getValue();
+		}
+	}
+		
 	public function __set($name, $value){
-		if(isset($this->value[$name])){
+		if($value instanceof NBTTag){
+			$this->value[$name] = $value;
+		}elseif(isset($this->value[$name])){
 			if($value instanceof NamedNBTTag and $value->getName() !== "" and $value->getName() !== false){
 				$this->value[$value->getName()]->setValue($value);
 			}else{
