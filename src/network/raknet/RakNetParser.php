@@ -268,7 +268,7 @@ class RakNetParser{
 				case ProtocolInfo::LEVEL_EVENT_PACKET:
 					$data = new LevelEventPacket;
 					break;
-				case ProtocolInfo::Tile::EVENT_PACKET:
+				case ProtocolInfo::TILE_EVENT_PACKET:
 					$data = new TileEventPacket;
 					break;
 				case ProtocolInfo::ENTITY_EVENT_PACKET:

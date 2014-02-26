@@ -65,7 +65,7 @@ abstract class ProtocolInfo{
 	const ADD_PAINTING_PACKET = 0x99;
 	const EXPLODE_PACKET = 0x9a;
 	const LEVEL_EVENT_PACKET = 0x9b;
-	const Tile::EVENT_PACKET = 0x9c;
+	const TILE_EVENT_PACKET = 0x9c;
 	const ENTITY_EVENT_PACKET = 0x9d;
 	const REQUEST_CHUNK_PACKET = 0x9e;
 	const CHUNK_DATA_PACKET = 0x9f;
