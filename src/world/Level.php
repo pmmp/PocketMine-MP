@@ -54,7 +54,6 @@ class Level{
 			}
 		}
 		$this->generator->init($this, new Random($this->level->levelData["seed"]));
-		$this->loadChunk(8, 8);
 	}
 	
 	public function close(){
