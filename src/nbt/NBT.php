@@ -48,7 +48,7 @@ class NBT{
 		return !isset($this->buffer{$this->offset});
 	}
 
-	public function __construct($endianness = NBT::BIG_ENDIAN){
+	public function __construct($endianness = NBT::LITTLE_ENDIAN){
 		$this->offset = 0;
 		$this->endianness = $endianness & 0x01;
 	}
@@ -191,6 +191,26 @@ class NBT{
 	public function putString($v){
 		$this->putShort(strlen($v));
 		$this->buffer .= $v;
+	}
+	
+	public function __get($name){
+		return $this->data instanceof NBTTag_Compound ? $this->data->{$name} : false;
+	}
+
+	public function __set($name, $value){
+		if($this->data instanceof NBTTag_Compound){
+			$this->data->{$name} = $value;
+		}
+	}
+	
+	public function __isset($name){
+		return $this->data instanceof NBTTag_Compound ? isset($this->data->{$name}) : false;
+	}
+	
+	public function __unset($name){
+		if($this->data instanceof NBTTag_Compound){
+			unset($this->data->{$name});
+		}
 	}
 	
 	public function getData(){

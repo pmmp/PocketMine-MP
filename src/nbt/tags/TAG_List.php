@@ -22,7 +22,25 @@
 class NBTTag_List extends NamedNBTTag{
 	
 	public function getType(){
-		return self::TAG_List;
+		return NBTTag::TAG_List;
+	}
+	
+	public function __get($name){
+		return isset($this->value[$name]) ? $this->value[$name]->getValue() : false;
+	}
+
+	public function __set($name, $value){
+		if(isset($this->value[$name])){
+			$this->value[$name]->setValue($value);
+		}
+	}
+	
+	public function __isset($name){
+		return isset($this->value[$name]);
+	}
+	
+	public function __unset($name){
+		unset($this->value[$name]);
 	}
 	
 	public function read(NBT $nbt){

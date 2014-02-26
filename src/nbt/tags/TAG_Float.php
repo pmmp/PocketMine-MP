@@ -22,7 +22,7 @@
 class NBTTag_Float extends NamedNBTTag{
 	
 	public function getType(){
-		return self::TAG_Float;
+		return NBTTag::TAG_Float;
 	}
 	
 	public function read(NBT $nbt){

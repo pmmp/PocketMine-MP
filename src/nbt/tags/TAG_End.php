@@ -22,7 +22,7 @@
 class NBTTag_End extends NBTTag{
 	
 	public function getType(){
-		return self::TAG_End;
+		return NBTTag::TAG_End;
 	}
 	
 	public function read(NBT $nbt){

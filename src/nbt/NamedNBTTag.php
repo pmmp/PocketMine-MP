@@ -23,11 +23,14 @@
 require_once("NBTTag.php");
 /***REM_END***/
 
-class NamedNBTTag{
+abstract class NamedNBTTag extends NBTTag{
 	
 	protected $name;
-	public function __construct($name = ""){
+	public function __construct($name = "", $value = false){
 		$this->name = $name;
+		if($value !== false){
+			$this->value = $value;
+		}
 	}
 
 	public function getName(){

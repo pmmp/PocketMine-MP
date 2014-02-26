@@ -22,7 +22,7 @@
 class NBTTag_String extends NamedNBTTag{
 	
 	public function getType(){
-		return self::TAG_String;
+		return NBTTag::TAG_String;
 	}
 	
 	public function read(NBT $nbt){
