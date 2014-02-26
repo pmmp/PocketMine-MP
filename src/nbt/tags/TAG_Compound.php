@@ -31,7 +31,11 @@ class NBTTag_Compound extends NamedNBTTag{
 
 	public function __set($name, $value){
 		if(isset($this->value[$name])){
-			$this->value[$name]->setValue($value);
+			if($value instanceof NamedNBTTag and $value->getName() !== "" and $value->getName() !== false){
+				$this->value[$value->getName()]->setValue($value);
+			}else{
+				$this->value[$name]->setValue($value);
+			}
 		}
 	}
 	
