@@ -69,11 +69,3 @@ define("ENTITY_ITEM", 4);
 
 define("ENTITY_FALLING", 5);
 	define("FALLING_SAND", 66);
-
-
-//TileEntities
-define("TILE_SIGN", "Sign");
-define("TILE_CHEST", "Chest");
-	define("CHEST_SLOTS", 27);
-define("TILE_FURNACE", "Furnace");
-	define("FURNACE_SLOTS", 3);

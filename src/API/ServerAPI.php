@@ -74,11 +74,6 @@ class ServerAPI{
 	public $player;
 
 	/**
-	 * @var TileAPI
-	 */
-	public $tile;
-
-	/**
 	 * @return MainServer
 	 */
 	public static function request(){
@@ -211,8 +206,7 @@ class ServerAPI{
 		$this->loadAPI("block", "BlockAPI");
 		$this->loadAPI("chat", "ChatAPI");
 		$this->loadAPI("ban", "BanAPI");		
-		$this->loadAPI("entity", "EntityAPI");		
-		$this->loadAPI("tile", "TileAPI");
+		$this->loadAPI("entity", "EntityAPI");
 		$this->loadAPI("player", "PlayerAPI");
 		$this->loadAPI("time", "TimeAPI");
 		

@@ -24,21 +24,15 @@ class Level{
 	public $chunkEntities = array();
 	
 	public $tiles = array();
-	
-	public $entitiesConfig;
-	public $tilesConfig;
-	public $blockUpdatesConfig;
+	public $chunkTiles = array();
 	
 	public $nextSave, $players = array(), $level;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
 	
-	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
+	public function __construct(PMFLevel $level, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->level->level = $this;
-		$this->entitiesConfig = $entities;
-		$this->tilesConfig = $tiles;
-		$this->blockUpdatesConfig = $blockUpdates;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
@@ -58,8 +52,9 @@ class Level{
 			}else{
 				$this->generator = new NormalGenerator();
 			}
-		}	
+		}
 		$this->generator->init($this, new Random($this->level->levelData["seed"]));
+		$this->loadChunk(8, 8);
 	}
 	
 	public function close(){
@@ -69,12 +64,9 @@ class Level{
 	public function useChunk($X, $Z, Player $player){
 		$index = PMFLevel::getIndex($X, $Z);
 		if(!isset($this->usedChunks[$index])){
-			$this->usedChunks[$index] = array();
+			$this->loadChunk($X, $Z);
 		}
 		$this->usedChunks[$index][$player->CID] = true;
-		if(isset($this->level)){
-			$this->level->loadChunk($X, $Z);
-		}
 	}
 	
 	public function freeAllChunks(Player $player){
@@ -193,14 +185,36 @@ class Level{
 		}
 		
 		if($extra !== false){
-			
-		
+			$this->doSaveRoundExtra();
 		}
 		
 		$this->level->setData("time", (int) $this->time);
-		$this->level->doSaveRound();
+		$this->level->doSaveRound($force);
 		$this->level->saveData();
 		$this->nextSave = microtime(true) + 45;
+	}
+	
+	protected function doSaveRoundExtra(){
+		foreach($this->usedChunks as $index => $d){
+			PMFLevel::getXZ($index, $X, $Z);
+			$nbt = new NBT(NBT::BIG_ENDIAN);
+			$nbt->setData(new NBTTag_Compound("", array(
+				"Entities" => new NBTTag_List("Entities", array()),				
+				"TileEntities" => new NBTTag_List("TileEntities", array()),
+			)));
+			$nbt->Entities->setTagType(NBTTag::TAG_Compound);
+			$nbt->TileEntities->setTagType(NBTTag::TAG_Compound);
+			
+			$i = 0;
+			foreach($this->chunkTiles[$index] as $tile){
+				if($tile->closed !== true){
+					$nbt->TileEntities[$i] = $tile->namedtag;
+					++$i;
+				}
+			}
+			
+			$this->level->setChunkNBT($X, $Z, $nbt);
+		}
 	}
 	
 	public function getBlockRaw(Vector3 $pos){
@@ -310,11 +324,48 @@ class Level{
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
 	
+	public function getChunkEntities($X, $Z){
+		$index = PMFLevel::getIndex($X, $Z);
+		if(isset($this->usedChunks[$index]) or $this->level->loadChunk($X, $Z) === true){
+			return $this->chunkEntities[$index];
+		}
+		return array();
+	}
+	
+	public function getChunkTiles($X, $Z){
+		$index = PMFLevel::getIndex($X, $Z);
+		if(isset($this->usedChunks[$index]) or $this->level->loadChunk($X, $Z) === true){
+			return $this->chunkTiles[$index];
+		}
+		return array();
+	}
+	
 	public function loadChunk($X, $Z){
 		if(!isset($this->level)){
 			return false;
 		}
-		return $this->level->loadChunk($X, $Z);
+		$index = PMFLevel::getIndex($X, $Z);
+		if(isset($this->usedChunks[$index])){
+			return true;
+		}elseif($this->level->loadChunk($X, $Z) !== false){
+			$this->usedChunks[$index] = array();
+			$this->chunkTiles[$index] = array();
+			$this->chunkEntities[$index] = array();
+			foreach($this->level->getChunkNBT($X, $Z)->TileEntities as $nbt){
+				switch($nbt->id){
+					case Tile::CHEST:
+						new ChestTile($this, $nbt);
+						break;
+					case Tile::FURNACE:
+						new FurnaceTile($this, $nbt);
+						break;
+					case Tile::SIGN:
+						new SignTile($this, $nbt);
+						break;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public function unloadChunk($X, $Z, $force = false){
@@ -325,6 +376,9 @@ class Level{
 		if($force !== true and $this->isSpawnChunk($X, $Z)){
 			return false;
 		}
+		unset($this->usedChunks[$index]);
+		unset($this->chunkEntities[$index]);
+		unset($this->chunkTiles[$index]);
 		Cache::remove("world:{$this->name}:$X:$Z");
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}

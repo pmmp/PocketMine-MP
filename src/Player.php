@@ -562,7 +562,7 @@ class Player{
 		switch($event){
 			case "tile.update":
 				if($data->level === $this->level){
-					if($data->class === TILE_FURNACE){
+					if($data->class === Tile::FURNACE){
 						foreach($this->windows as $id => $w){
 							if($w === $data){
 								$pk = new ContainerSetDataPacket;
@@ -2058,7 +2058,7 @@ class Player{
 							$pk->case2 = 0;
 							$this->server->api->player->broadcastPacket($this->level->players, $pk);
 						}
-					}elseif($this->windows[$packet->windowid]->class === TILE_CHEST){
+					}elseif($this->windows[$packet->windowid]->class === Tile::CHEST){
 						$pk = new TileEventPacket;
 						$pk->x = $this->windows[$packet->windowid]->x;
 						$pk->y = $this->windows[$packet->windowid]->y;
@@ -2136,14 +2136,14 @@ class Player{
 
 				if(is_array($this->windows[$packet->windowid])){
 					$tiles = $this->windows[$packet->windowid];
-					if($packet->slot >= 0 and $packet->slot < CHEST_SLOTS){
+					if($packet->slot >= 0 and $packet->slot < ChestTile::SLOTS){
 						$tile = $tiles[0];
 						$slotn = $packet->slot;
 						$offset = 0;
-					}elseif($packet->slot >= CHEST_SLOTS and $packet->slot <= (CHEST_SLOTS << 1)){
+					}elseif($packet->slot >= ChestTile::SLOTS and $packet->slot <= (ChestTile::SLOTS << 1)){
 						$tile = $tiles[1];
-						$slotn = $packet->slot - CHEST_SLOTS;
-						$offset = CHEST_SLOTS;
+						$slotn = $packet->slot - ChestTile::SLOTS;
+						$offset = ChestTile::SLOTS;
 					}else{
 						break;
 					}
@@ -2185,7 +2185,7 @@ class Player{
 					$tile->setSlot($slotn, $item, true, $offset);
 				}else{
 					$tile = $this->windows[$packet->windowid];
-					if(($tile->class !== TILE_CHEST and $tile->class !== TILE_FURNACE) or $packet->slot < 0 or ($tile->class === TILE_CHEST and $packet->slot >= CHEST_SLOTS) or ($tile->class === TILE_FURNACE and $packet->slot >= FURNACE_SLOTS)){
+					if(($tile->class !== Tile::CHEST and $tile->class !== Tile::FURNACE) or $packet->slot < 0 or ($tile->class === Tile::CHEST and $packet->slot >= ChestTile::SLOTS) or ($tile->class === Tile::FURNACE and $packet->slot >= FurnaceTile::SLOTS)){
 						break;
 					}
 					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
@@ -2206,7 +2206,7 @@ class Player{
 						break;
 					}
 
-					if($tile->class === TILE_FURNACE and $packet->slot == 2){
+					if($tile->class === Tile::FURNACE and $packet->slot == 2){
 						switch($slot->getID()){
 							case IRON_INGOT:
 								AchievementAPI::grantAchievement($this, "acquireIron");
@@ -2245,13 +2245,13 @@ class Player{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 				$t = $this->server->api->tile->get(new Position($packet->x, $packet->y, $packet->z, $this->level));
-				if(($t instanceof Tile) and $t->class === TILE_SIGN){
+				if(($t instanceof Tile) and $t->class === Tile::SIGN){
 					if($t->data["creator"] !== $this->username){
 						$t->spawn($this);
 					}else{
 						$nbt = new NBT();
 						$nbt->read($packet->namedtag);
-						if($nbt->id !== TILE_SIGN){
+						if($nbt->id !== Tile::SIGN){
 							$t->spawn($this);
 						}else{
 							$t->setText($nbt->Text1, $nbt->Text2, $nbt->Text3, $nbt->Text4);

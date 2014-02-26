@@ -224,8 +224,10 @@ function getTrace($start = 1){
 	$j = 0;
 	for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
 		$params = "";
-		foreach($trace[$i]["args"] as $name => $value){
-			$params .= (is_object($value) ? get_class($value)." ".(method_exists($value, "__toString") ? $value->__toString() : "object"):gettype($value)." ".@strval($value)).", ";
+		if(isset($trace[$i]["args"])){
+			foreach($trace[$i]["args"] as $name => $value){
+				$params .= (is_object($value) ? get_class($value)." ".(method_exists($value, "__toString") ? $value->__toString() : "object"):gettype($value)." ".@strval($value)).", ";
+			}
 		}
 		$messages[] = "#$j ".(isset($trace[$i]["file"]) ? $trace[$i]["file"]:"")."(".(isset($trace[$i]["line"]) ? $trace[$i]["line"]:"")."): ".(isset($trace[$i]["class"]) ? $trace[$i]["class"].$trace[$i]["type"]:"").$trace[$i]["function"]."(".substr($params, 0, -2).")";
 	}

@@ -128,14 +128,14 @@ class LevelAPI{
 		foreach($this->server->api->player->getAll($level) as $player){
 			$player->teleport($this->server->spawn);
 		}
-		foreach($this->server->api->entity->getAll($level) as $entity){
+		/*foreach($this->server->api->entity->getAll($level) as $entity){
 			if($entity->class !== ENTITY_PLAYER){
 				$entity->close();
 			}
-		}
-		foreach($this->server->api->tile->getAll($level) as $tile){
+		}*/
+		/*foreach($this->server->api->tile->getAll($level) as $tile){
 			$tile->close();
-		}
+		}*/
 		$level->close();
 		unset($this->levels[$name]);
 		return true;
@@ -159,9 +159,8 @@ class LevelAPI{
 		if(file_exists($path."tileEntities.yml")){
 			@rename($path."tileEntities.yml", $path."tiles.yml");
 		}
-		$tiles = new Config($path."tiles.yml", Config::YAML);
 		$blockUpdates = new Config($path."bupdates.yml", Config::YAML);
-		$this->levels[$name] = new Level($level, $entities, $tiles, $blockUpdates, $name);
+		$this->levels[$name] = new Level($level, $name);
 		foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
@@ -191,11 +190,68 @@ class LevelAPI{
 			}
 		}
 			
-		foreach($tiles->getAll() as $tile){
-			if(!isset($tile["id"])){
-				break;
+		if(file_exists($path ."tiles.yml")){
+			$tiles = new Config($path."tiles.yml", Config::YAML);
+			foreach($tiles->getAll() as $tile){
+				if(!isset($tile["id"])){
+					continue;
+				}
+				$this->levels[$name]->loadChunk($tile["x"] >> 4, $tile["z"] >> 4);
+			
+				$nbt = new NBTTag_Compound(false, array());
+				foreach($tile as $index => $data){
+					switch($index){
+						case "Items":
+							$tag = new NBTTag_List("Items", array());
+							$tag->setTagType(NBTTag::TAG_Compound);
+							foreach($data as $slot => $fields){								
+								$tag->{$slot} = new NBTTag_Compound(false, array(
+									"Count" => new NBTTag_Byte("Count", $fields["Count"]),
+									"Slot" => new NBTTag_Short("Slot", $fields["Slot"]),
+									"Damage" => new NBTTag_Short("Damage", $fields["Damage"]),
+									"id" => new NBTTag_String("id", $fields["id"])
+								));
+							}
+							$nbt["Items"] = $tag;
+							break;
+							
+						case "id":
+						case "Text1":
+						case "Text2":
+						case "Text3":
+						case "Text4":
+							$nbt[$index] = new NBTTag_String($index, $data);
+							break;
+							
+						case "x":
+						case "y":
+						case "z":
+						case "pairx":
+						case "pairz":
+							$nbt[$index] = new NBTTag_Int($index, $data);
+							break;
+							
+						case "BurnTime":
+						case "CookTime":
+						case "MaxTime":
+							$nbt[$index] = new NBTTag_Short($index, $data);
+							break;
+					}
+				}
+				switch($tile["id"]){
+					case Tile::FURNACE:
+						new FurnaceTile($this->levels[$name], $nbt);
+						break;
+					case Tile::CHEST:
+						new ChestTile($this->levels[$name], $nbt);
+						break;
+					case Tile::SIGN:
+						new SignTile($this->levels[$name], $nbt);
+						break;
+				}
 			}
-			$t = $this->server->api->tile->add($this->levels[$name], $tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
+			unlink($path ."tiles.yml");
+			$this->levels[$name]->save(true, true);
 		}
 		
 		foreach($blockUpdates->getAll() as $bupdate){

@@ -176,9 +176,11 @@ class PMFLevel extends PMF{
 		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData(new NBTTag_Compound("", array(
-			new NBTTag_Compound("Entities", array()),
-			new NBTTag_Compound("TileEntities", array())
+			"Entities" => new NBTTag_List("Entities", array()),
+			"TileEntities" => new NBTTag_List("TileEntities", array())
 		)));
+		$nbt->Entities->setTagType(NBTTag::TAG_Compound);
+		$nbt->TileEntities->setTagType(NBTTag::TAG_Compound);
 		$namedtag = $nbt->write();
 		$namedtag = Utils::writeInt(strlen($namedtag)) . $namedtag;
 		foreach(glob(dirname($this->file)."/chunks/*/*.*.pmc") as $chunkFile){
@@ -273,7 +275,7 @@ class PMFLevel extends PMF{
 		$offset += 4;
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->read(substr($chunk, $offset, $len));
-		$this->chunkInfo[2] = $nbt;
+		$this->chunkInfo[$index][2] = $nbt;
 		$offset += $len;
 		$this->chunks[$index] = array();
 		$this->chunkChange[$index] = array(-1 => false);
@@ -571,14 +573,31 @@ class PMFLevel extends PMF{
 		return false;
 	}
 	
-	public function saveChunk($X, $Z){
+	public function getChunkNBT($X, $Z){	
+		if(!$this->isChunkLoaded($X, $Z) and $this->loadChunk($X, $Z) === false){
+			return false;
+		}
+		$index = self::getIndex($X, $Z);
+		return $this->chunkInfo[$index][2];
+	}
+	
+	public function setChunkNBT($X, $Z, NBT $nbt){	
+		if(!$this->isChunkLoaded($X, $Z) and $this->loadChunk($X, $Z) === false){
+			return false;
+		}
+		$index = self::getIndex($X, $Z);
+		$this->chunkChange[$index][-1] = true;
+		$this->chunkInfo[$index][2] = $nbt;
+	}
+	
+	public function saveChunk($X, $Z, $force = false){
 		$X = (int) $X;
 		$Z = (int) $Z;
 		if(!$this->isChunkLoaded($X, $Z)){
 			return false;
 		}
 		$index = self::getIndex($X, $Z);
-		if(!isset($this->chunkChange[$index]) or $this->chunkChange[$index][-1] === false){//No changes in chunk
+		if($force !== true and (!isset($this->chunkChange[$index]) or $this->chunkChange[$index][-1] === false)){//No changes in chunk
 			return true;
 		}
 		
@@ -640,10 +659,10 @@ class PMFLevel extends PMF{
 		return file_exists($this->getChunkPath($X, $Z));
 	}
 	
-	public function doSaveRound(){
+	public function doSaveRound($force = false){
 		foreach($this->chunks as $index => $chunk){
 			self::getXZ($index, $X, $Z);
-			$this->saveChunk($X, $Z);
+			$this->saveChunk($X, $Z, $force);
 		}
 	}
 
