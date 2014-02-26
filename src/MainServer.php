@@ -19,7 +19,7 @@
  *
 */
 
-class PocketMinecraftServer{
+class MainServer{
 	public $tCnt;
 	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $whitelist, $seed, $stop, $gamemode, $difficulty, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $doTick, $ticks, $memoryStats, $schedule, $asyncThread, $async = array(), $asyncID = 0;
@@ -228,6 +228,10 @@ class PocketMinecraftServer{
 					$d .= Utils::writeShort(strlen($key)).$key . Utils::writeInt(strlen($value)).$value;
 				}
 				break;
+			case ASYNC_FUNCTION:
+				$params = serialize($data["arguments"]);
+				$d .= Utils::writeShort(strlen($data["function"])).$data["function"] . Utils::writeInt(strlen($params)) . $params;
+				break;
 			default:
 				return false;
 		}
@@ -254,6 +258,12 @@ class PocketMinecraftServer{
 					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
 					$offset += 4;
 					$data["result"] = substr($this->asyncThread->output, $offset, $len);
+					$offset += $len;
+					break;
+				case ASYNC_FUNCTION:
+					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
+					$offset += 4;
+					$data["result"] = unserialize(substr($this->asyncThread->output, $offset, $len));
 					$offset += $len;
 					break;
 			}
@@ -384,6 +394,7 @@ class PocketMinecraftServer{
 		if($this->stop === true){
 			return;
 		}
+		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
 		console("[SEVERE] An unrecovereable has ocurred and the server has crashed. Creating an error dump");
 		$dump = "```\r\n# PocketMine-MP Error Dump ".date("D M j H:i:s T Y")."\r\n";
 		$er = error_get_last();
@@ -452,6 +463,7 @@ class PocketMinecraftServer{
 		}
 		
 		$dump .= "Loaded Modules: ".var_export($extensions, true)."\r\n";
+		$this->checkMemory();
 		$dump .= "Memory Usage Tracking: \r\n".chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9)))."\r\n";
 		ob_start();
 		phpinfo();
@@ -480,7 +492,7 @@ class PocketMinecraftServer{
 
 	public function packetHandler(Packet $packet){
 		$data =& $packet;
-		$CID = PocketMinecraftServer::clientID($packet->ip, $packet->port);
+		$CID = MainServer::clientID($packet->ip, $packet->port);
 		if(isset($this->clients[$CID])){
 			$this->clients[$CID]->handlePacket($packet);
 		}else{

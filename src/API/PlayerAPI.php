@@ -337,7 +337,7 @@ class PlayerAPI{
 		$players = array();
 		if($query !== false and $query !== true){
 			while(($d = $query->fetchArray(SQLITE3_ASSOC)) !== false){
-				$CID = PocketMinecraftServer::clientID($d["ip"], $d["port"]);
+				$CID = MainServer::clientID($d["ip"], $d["port"]);
 				if(isset($this->server->clients[$CID])){
 					$players[$CID] = $this->server->clients[$CID];
 					if($multiple === false and $d["name"] === $name){
@@ -384,7 +384,7 @@ class PlayerAPI{
 	public function getByEID($eid){
 		$eid = (int) $eid;
 		$CID = $this->server->query("SELECT ip,port FROM players WHERE EID = '".$eid."';", true);
-		$CID = PocketMinecraftServer::clientID($CID["ip"], $CID["port"]);
+		$CID = MainServer::clientID($CID["ip"], $CID["port"]);
 		if(isset($this->server->clients[$CID])){
 			return $this->server->clients[$CID];
 		}

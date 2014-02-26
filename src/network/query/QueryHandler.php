@@ -91,7 +91,11 @@ class QueryHandler{
 	
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
-		$this->token = Utils::readInt("\x00".Utils::getRandomBytes(3, false));
+		$this->token = Utils::getRandomBytes(16, false);
+	}
+	
+	public static function getTokenString($token, $salt){
+		return Utils::readInt(substr(hash("sha512", $salt . ":". $token, true), 7, 4));
 	}
 	
 	public function handle(QueryPacket $packet){	
@@ -103,13 +107,13 @@ class QueryHandler{
 				$pk->port = $packet->port;
 				$pk->packetType = QueryPacket::HANDSHAKE;
 				$pk->sessionID = $packet->sessionID;
-				$pk->payload = $this->token."\x00";
+				$pk->payload = self::getTokenString($this->token, $packet->ip)."\x00";
 				$pk->encode();
 				$this->server->send($pk);
 				break;
 			case QueryPacket::STATISTICS: //Stat
 				$token = Utils::readInt(substr($packet->payload, 0, 4));
-				if($token !== $this->token and $token !== $this->lastToken){
+				if($token !== self::getTokenString($this->token, $packet->ip) and $token !== self::getTokenString($this->lastToken, $packet->ip)){
 					break;
 				}
 				$pk = new QueryPacket;

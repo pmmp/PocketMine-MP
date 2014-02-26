@@ -104,7 +104,7 @@ class Player{
 		$this->server = ServerAPI::request();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
-		$this->CID = PocketMinecraftServer::clientID($ip, $port);
+		$this->CID = MainServer::clientID($ip, $port);
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = $this->server->spawn;
@@ -2250,12 +2250,11 @@ class Player{
 						$t->spawn($this);
 					}else{
 						$nbt = new NBT();
-						$nbt->load($packet->namedtag);
-						$d = array_shift($nbt->tree);
-						if($d["id"] !== TILE_SIGN){
+						$nbt->read($packet->namedtag);
+						if($nbt->id !== TILE_SIGN){
 							$t->spawn($this);
 						}else{
-							$t->setText($d["Text1"], $d["Text2"], $d["Text3"], $d["Text4"]);
+							$t->setText($nbt->Text1, $nbt->Text2, $nbt->Text3, $nbt->Text4);
 						}
 					}
 				}

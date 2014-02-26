@@ -43,7 +43,7 @@ class Level{
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
 		$this->stopTime = false;
-		$this->server->schedule(15, array($this, "checkThings"), array(), true);
+		$this->server->schedule(2, array($this, "checkThings"), array(), true);
 		$this->server->schedule(20 * 13, array($this, "checkTime"), array(), true);
 		$this->name = $name;
 		$this->usedChunks = array();

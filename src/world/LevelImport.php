@@ -34,22 +34,22 @@ class LevelImport{
 			$tiles = new Config($this->path."tiles.yml", Config::YAML, unserialize(file_get_contents($this->path."tileEntities.dat")));
 			$tiles->save();
 		}elseif(file_exists($this->path."chunks.dat") and file_exists($this->path."level.dat")){ //Pocket
-			$nbt = new NBT();
-			$nbt->load(substr(file_get_contents($this->path."level.dat"), 8));
-			$level = array_shift($nbt->tree);
-			if($level["LevelName"] == ""){
-				$level["LevelName"] = "world".time();
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$nbt->read(substr(file_get_contents($this->path."level.dat"), 8));
+			$level = $nbt->getData();
+			if($level->LevelName == ""){
+				$level->LevelName = "world".time();
 			}
-			console("[INFO] Importing Pocket level \"".$level["LevelName"]."\" to PMF format");
-			unset($level["Player"]);
-			$nbt->load(substr(file_get_contents($this->path."entities.dat"), 12));
-			$entities = array_shift($nbt->tree);
-			if(!isset($entities["TileEntities"])){
-				$entities["TileEntities"] = array();
+			console("[INFO] Importing Pocket level \"".$level->LevelName."\" to PMF format");
+			unset($level->Player);
+			$nbt->read(substr(file_get_contents($this->path."entities.dat"), 12));
+			$entities = $nbt->getData();
+			if(!isset($entities->TileEntities)){
+				$entities->TileEntities = array();
 			}
-			$tiles = $entities["TileEntities"];
-			$entities = $entities["Entities"];
-			$entities = new Config($this->path."entities.yml", Config::YAML, $entities);
+			$tiles = $entities->TileEntities;
+			$entities = $entities->Entities;
+			$entities = new Config($this->path."entities.yml", CONFIG_YAML, $entities);
 			$entities->save();
 			$tiles = new Config($this->path."tiles.yml", Config::YAML, $tiles);
 			$tiles->save();
