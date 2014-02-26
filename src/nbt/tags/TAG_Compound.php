@@ -29,7 +29,7 @@ class NBTTag_Compound extends NamedNBTTag{
 		$this->value = array();
 		do{
 			$tag = $nbt->readTag();
-			if($tag instanceof NamedNBTTag){
+			if($tag instanceof NamedNBTTag and $tag->getName() !== ""){
 				$this->value[$tag->getName()] = $tag;
 			}else{
 				$this->value[] = $tag;

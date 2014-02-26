@@ -34,62 +34,62 @@ class NBTTag_List extends NamedNBTTag{
 			switch($tagId){
 				case NBTTag::TAG_Byte:
 					$tag = new NBTTag_Byte(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Byte:
 					$tag = new NBTTag_Byte(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Short:
 					$tag = new NBTTag_Short(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Int:
 					$tag = new NBTTag_Int(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Long:
 					$tag = new NBTTag_Long(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Float:
 					$tag = new NBTTag_Float(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Double:
 					$tag = new NBTTag_Double(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Byte_Array:
 					$tag = new NBTTag_Byte_Array(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_String:
 					$tag = new NBTTag_String(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_List:
 					$tag = new NBTTag_List(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Compound:
 					$tag = new NBTTag_Compound(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBTTag::TAG_Int_Array:
 					$tag = new NBTTag_Int_Array(false);
-					$tag->read($this);
+					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 			}

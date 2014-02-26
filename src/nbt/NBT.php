@@ -26,10 +26,10 @@ class NBT{
 	private $buffer;
 	private $offset;
 	private $endianness;
-	private $data = array();
+	private $data;
 	
 	public function get($len){
-		if($len <= 0){
+		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
 			return "";
 		}
@@ -56,24 +56,21 @@ class NBT{
 	public function read($buffer){
 		$this->offset = 0;
 		$this->buffer = $buffer;
-		$this->readTag();
+		$this->data = $this->readTag();
 	}
 	
 	public function write(){
 		$this->offset = 0;
 		if($this->data instanceof NBTTag_Compound){
 			$this->writeTag($this->data);
-			return true;
+			return $this->buffer;
 		}else{
 			return false;
 		}
 	}
 	
-	protected function readTag(){
+	public function readTag(){
 		switch($this->getByte()){
-			case NBTTag::TAG_End: //No named tag
-				$tag = new NBTTag_End;
-				break;
 			case NBTTag::TAG_Byte:
 				$tag = new NBTTag_Byte($this->getString());
 				$tag->read($this);
@@ -123,8 +120,10 @@ class NBT{
 				$tag->read($this);
 				break;
 
+			case NBTTag::TAG_End: //No named tag
 			default:
-				return false;
+				$tag = new NBTTag_End;
+				break;
 		}
 		return $tag;
 	}
