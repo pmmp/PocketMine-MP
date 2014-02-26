@@ -80,11 +80,11 @@ function kill($pid){
 	}
 }
 
-function require_all($path, &$count = 0){
+function require_all($path, array $ignore = array(), &$count = 0){
 	$dir = dir($path."/");
 	$dirs = array();
 	while(false !== ($file = $dir->read())){
-		if($file !== "." and $file !== ".."){
+		if($file !== "." and $file !== ".." and !in_array($file, $ignore, true)){
 			if(!is_dir($path.$file) and strtolower(substr($file, -3)) === "php"){
 				require_once($path.$file);
 				++$count;
@@ -94,7 +94,7 @@ function require_all($path, &$count = 0){
 		}
 	}
 	foreach($dirs as $dir){
-		require_all($dir, $count);
+		require_all($dir, $ignore, $count);
 	}
 
 }
@@ -134,7 +134,7 @@ function arg($name, $default = false){
 	}
 }
 
-function arguments ( $args ){
+function arguments($args){
 	if(!is_array($args)){
 		$args = array();
 	}

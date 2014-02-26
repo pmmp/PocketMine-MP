@@ -57,6 +57,7 @@ class NBT{
 		$this->offset = 0;
 		$this->buffer = $buffer;
 		$this->data = $this->readTag();
+		$this->buffer = b"";
 	}
 	
 	public function write(){
@@ -222,4 +223,3 @@ class NBT{
 	}
 	
 }
->>>>>>> origin/master

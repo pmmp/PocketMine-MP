@@ -29,12 +29,13 @@
 class Config{
 	const DETECT = -1; //Detect by file extension
 	const PROPERTIES = 0; // .properties
-	const CNF = PROPERTIES; // .cnf
+	const CNF = Config::PROPERTIES; // .cnf
 	const JSON = 1; // .js, .json
 	const YAML = 2; // .yml, .yaml
 	//const EXPORT = 3; // .export, .xport
 	const SERIALIZED = 4; // .sl
-	const LIST = 5; // .txt, .list
+	const ENUM = 5; // .txt, .list, .enum
+	const ENUMERATION = Config::ENUM;
 	
     /**
      * @var array
@@ -66,8 +67,9 @@ class Config{
 		//"xport" => Config::EXPORT,
 		"sl" => Config::SERIALIZED,
 		"serialize" => Config::SERIALIZED,
-		"txt" => Config::LIST,
-		"list" => Config::LIST,	
+		"txt" => Config::ENUM,
+		"list" => Config::ENUM,
+		"enum" => Config::ENUM,
 	);
 
     /**
@@ -136,7 +138,7 @@ class Config{
 					case Config::SERIALIZED:
 						$this->config = @unserialize($content);
 						break;
-					case Config::LIST:
+					case Config::ENUM:
 						$this->parseList($content);
 						break;
 					default:
@@ -182,7 +184,7 @@ class Config{
 				case Config::SERIALIZED:
 					$content = @serialize($this->config);
 					break;
-				case Config::LIST:
+				case Config::ENUM:
 					$content = implode("\r\n", array_keys($this->config));
 					break;
 				}

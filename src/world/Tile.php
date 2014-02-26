@@ -364,16 +364,14 @@ class Tile extends Position{
 						new NBTTag_Int("y", (int) $this->y),
 						new NBTTag_Int("z", (int) $this->z),	
 						new NBTTag_Int("pairx", (int) $this->data["pairx"]),
-						new NBTTag_Int("pairz", (int) $this->data["pairz"]),	
-						new NBTTag_End
+						new NBTTag_Int("pairz", (int) $this->data["pairz"])
 					)));
 				}else{
 					$nbt->setData(new NBTTag_Compound("", array(
 						new NBTTag_String("id", $this->class),
 						new NBTTag_Int("x", (int) $this->x),
 						new NBTTag_Int("y", (int) $this->y),
-						new NBTTag_Int("z", (int) $this->z),	
-						new NBTTag_End
+						new NBTTag_Int("z", (int) $this->z)
 					)));
 				}
 				
@@ -394,8 +392,7 @@ class Tile extends Position{
 					new NBTTag_String("id", $this->class),
 					new NBTTag_Int("x", (int) $this->x),
 					new NBTTag_Int("y", (int) $this->y),
-					new NBTTag_Int("z", (int) $this->z),	
-					new NBTTag_End
+					new NBTTag_Int("z", (int) $this->z)
 				)));				
 				$pk = new EntityDataPacket;
 				$pk->x = $this->x;

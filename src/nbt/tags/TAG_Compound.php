@@ -49,7 +49,7 @@ class NBTTag_Compound extends NamedNBTTag{
 			$tag = $nbt->readTag();
 			if($tag instanceof NamedNBTTag and $tag->getName() !== ""){
 				$this->value[$tag->getName()] = $tag;
-			}else{
+			}elseif(!($tag instanceof NBTTag_End)){
 				$this->value[] = $tag;
 			}
 		}while(!($tag instanceof NBTTag_End) and !$nbt->feof());
@@ -57,7 +57,10 @@ class NBTTag_Compound extends NamedNBTTag{
 	
 	public function write(NBT $nbt){
 		foreach($this->value as $tag){
-			$nbt->writeTag($tag);
+			if(!($tag instanceof NBTTag_End)){
+				$nbt->writeTag($tag);
+			}
 		}
+		$nbt->writeTag(new NBTTag_End);
 	}
 }

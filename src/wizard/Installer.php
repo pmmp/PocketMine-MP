@@ -122,7 +122,7 @@ LICENSE;
 			if($op === ""){
 				echo "[!] ".$this->lang->op_warning."\n";
 			}else{
-				$ops = new Config(DATA_PATH."ops.txt", Config::LIST);
+				$ops = new Config(DATA_PATH."ops.txt", Config::ENUM);
 				$ops->set($op, true);
 				$ops->save();
 			}
