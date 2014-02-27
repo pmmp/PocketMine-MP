@@ -24,11 +24,13 @@ require_once("SpawnableTile.php");
 /***REM_END***/
 
 class SignTile extends SpawnableTile{
+	
+	public function __construct(Level $level, NBTTag_Compound $nbt){
+		$nbt->id = Tile::Sign;
+		parent::__construct($level, $nbt);
+	}
 
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
-		if($this->class !== Tile::SIGN){
-			return false;
-		}
 		$this->namedtag->Text1 = $line1;
 		$this->namedtag->Text2 = $line2;
 		$this->namedtag->Text3 = $line3;

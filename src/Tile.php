@@ -41,7 +41,6 @@ abstract class Tile extends Position{
 	public $closed;
 	public $namedtag;
 	private $lastUpdate;
-	private $scheduledUpdate;
 	private $server;
 	
 	public static function getByID($tileID){
@@ -65,7 +64,6 @@ abstract class Tile extends Position{
 		$this->closed = false;
 		$this->name = "";
 		$this->lastUpdate = microtime(true);
-		$this->scheduledUpdate = false;
 		$this->id = Tile::$tileCount++;
 		Tile::$list[$this->id] = $this;
 		$this->class = $this->namedtag->id;
@@ -82,14 +80,19 @@ abstract class Tile extends Position{
 	public function update(){
 		return false;
 	}
+	
+	public final function scheduleUpdate(){
+		Tile::$needUpdate[$this->id] = $this;
+	}
 
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
-			unset(Tile::$list[$this->id]);
 			$index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4);
-			unset($this->level->tiles[$this->id]);
-			unset($this->level->chunkTiles[$index][$this->id]);
+			unset(Tile::$needUpdate[$this->id]);
+			unset($this->level->tiles[$this->id]);	
+			unset($this->level->chunkTiles[$index][$this->id]);	
+			unset(Tile::$list[$this->id]);
 			$this->server->api->dhandle("tile.remove", $t);
 		}
 	}

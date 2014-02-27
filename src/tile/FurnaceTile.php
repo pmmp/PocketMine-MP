@@ -29,6 +29,7 @@ class FurnaceTile extends Tile{
 	const SLOTS = 3;
 	
 	public function __construct(Level $level, NBTTag_Compound $nbt){
+		$nbt->id = Tile::Furnace;
 		parent::__construct($level, $nbt);
 		if(!isset($this->namedtag->BurnTime) or $this->namedtag->BurnTime < 0){
 			$this->namedtag->BurnTime = 0;
@@ -41,14 +42,16 @@ class FurnaceTile extends Tile{
 			$this->namedtag->BurnTicks = 0;
 		}
 		if($this->namedtag->BurnTime > 0){
-			$this->update();
+			$this->scheduleUpdate();
 		}
 	}
 	
 	public function update(){
 		if($this->closed === true){
 			return false;
-		}	
+		}
+		
+		$ret = false;
 		
 		$fuel = $this->getSlot(1);
 		$raw = $this->getSlot(0);
@@ -92,8 +95,7 @@ class FurnaceTile extends Tile{
 			}else{
 				$this->namedtag->CookTime = 0;
 			}
-			$this->server->schedule(2, array($this, "update"));
-			$this->scheduledUpdate = true;	
+			$ret = true;
 		}else{
 			$current = $this->level->getBlock($this);
 			if($current->getID() === BURNING_FURNACE){
@@ -102,11 +104,11 @@ class FurnaceTile extends Tile{
 			$this->namedtag->CookTime = 0;
 			$this->namedtag->BurnTime = 0;
 			$this->namedtag->BurnTicks = 0;
-			$this->scheduledUpdate = false;
 		}
 		
 
 		$this->server->handle("tile.update", $this);
-		$this->lastUpdate = microtime(true);		
+		$this->lastUpdate = microtime(true);
+		return $ret;
 	}
 }

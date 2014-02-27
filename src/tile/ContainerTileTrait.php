@@ -170,8 +170,8 @@ trait ContainerTileTrait{
 			"slotdata" => $item,
 		));
 
-		if($update === true and $this->scheduledUpdate === false){
-			$this->update();
+		if($update === true){
+			$this->scheduleUpdate();
 		}
 		return true;
 	}

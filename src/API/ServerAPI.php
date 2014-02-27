@@ -215,8 +215,23 @@ class ServerAPI{
 				$ob->init(); //Fails sometimes!!!
 			}
 		}
+		
 		$this->loadAPI("plugin", "PluginAPI"); //fix :(
 		$this->plugin->init();
+		
+	}
+	
+	public function checkTickUpdates(){
+	
+		//Update tiles that need update
+		if(count(Tile::$needUpdate) > 0){
+			foreach(Tile::$needUpdate as $id => $tile){
+				if($tile->update() === false){					
+					unset(Tile::$needUpdate[$id]);
+				}
+			}
+		}
+		
 	}
 	
 	public function async(callable $callable, $params = array(), $remove = false){
@@ -351,6 +366,7 @@ class ServerAPI{
 			$this->query = new QueryHandler();
 		}
 		CraftingRecipes::init();
+		$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
 		$this->console->__destruct();

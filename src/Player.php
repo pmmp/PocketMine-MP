@@ -562,13 +562,13 @@ class Player{
 								$pk = new ContainerSetDataPacket;
 								$pk->windowid = $id;
 								$pk->property = 0; //Smelting
-								$pk->value = floor($data->data["CookTime"]);
+								$pk->value = floor($data->namedtag->CookTime);
 								$this->dataPacket($pk);
 
 								$pk = new ContainerSetDataPacket;
 								$pk->windowid = $id;
 								$pk->property = 1; //Fire icon
-								$pk->value = $data->data["BurnTicks"];
+								$pk->value = $data->namedtag->BurnTicks;
 								$this->dataPacket($pk);
 							}
 						}

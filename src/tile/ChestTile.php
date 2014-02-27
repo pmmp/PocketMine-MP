@@ -29,6 +29,11 @@ class ChestTile extends SpawnableTile{
 	
 	const SLOTS = 27;
 	
+	public function __construct(Level $level, NBTTag_Compound $nbt){
+		$nbt->id = Tile::Chest;
+		parent::__construct($level, $nbt);
+	}
+	
 	public function isPaired(){
 		if(!isset($this->namedtag->pairx) or !isset($this->namedtag->pairz)){
 			return false;
