@@ -2025,6 +2025,7 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
+				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
 					if($message{0} === "/"){ //Command
