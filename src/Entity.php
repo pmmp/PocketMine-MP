@@ -50,6 +50,8 @@ abstract class Entity extends Position{
 	public $lastUpdate;
 	public $maxFireTicks;
 	public $fireTicks;
+	public $namedtag;
+	
 	protected $inWater;
 	public $noDamageTicks;
 	private $justCreated;
@@ -75,7 +77,7 @@ abstract class Entity extends Position{
 		$this->level = $level;
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPosition(new Vector3($this->namedtag->x, $this->namedtag->y, $this->namedtag->z));
+		$this->setPosition(new Vector3($this->namedtag->Pos[0], $this->namedtag->Pos[1], $this->namedtag->Pos[2]));
 		$index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		Entity::$list[$this->id] = $this;
@@ -84,6 +86,12 @@ abstract class Entity extends Position{
 		$this->lastUpdate = microtime(true);
 		$this->initEntity();
 		$this->server->api->dhandle("entity.add", $this);
+	}
+	
+	public function saveNBT(){
+		$this->namedtag->Pos[0] = $this->x;
+		$this->namedtag->Pos[1] = $this->y;
+		$this->namedtag->Pos[2] = $this->z;
 	}
 
 	protected abstract function initEntity();
@@ -137,6 +145,8 @@ abstract class Entity extends Position{
 	public final function scheduleUpdate(){
 		Entity::$needUpdate[$this->id] = $this;
 	}
+	
+	public abstract function getMetadata();
 	
 	public function setOnFire($seconds){
 		$ticks = $seconds * 20;

@@ -959,7 +959,7 @@ class Player{
 				$this->dataPacket($pk);
 				$terrain = true;
 				
-				foreach($this->server->api->player->getAll($this->level) as $player){
+				foreach($this->level->getPlayers() as $player){
 					if($player !== $this and $player->entity instanceof Entity){
 						$pk = new MoveEntityPacket_PosRot;
 						$pk->eid = $player->entity->eid;

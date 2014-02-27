@@ -20,5 +20,50 @@
 */
 
 class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
+	
+	protected $nameTag;
+	
+	protected function initEntity(){
+		if(isset($this->namedtag->nameTag)){
+			$this->nameTag = $this->namedtag->nameTag;
+		}
+	}
+	
+	public function spawnTo(Player $player){
+		$pk = new AddPlayerPacket;
+		$pk->clientID = 0;
+		$pk->username = $this->nameTag;
+		$pk->eid = $this->id;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->yaw = 0;
+		$pk->pitch = 0;
+		$pk->unknown1 = 0;
+		$pk->unknown2 = 0;
+		$pk->metadata = $this->getMetadata();
+		$player->dataPacket($pk);
+				
+		/*
+		$pk = new SetEntityMotionPacket;
+		$pk->eid = $this->id;
+		$pk->speedX = $this->velocity->x;
+		$pk->speedY = $this->velocity->y;
+		$pk->speedZ = $this->velocity->z;
+		$player->dataPacket($pk);*/
 
+		$this->sendMotion($player);
+		
+		/*
+		$pk = new PlayerEquipmentPacket;
+		$pk->eid = $this->id;
+		$pk->item = $this->player->getSlot($this->player->slot)->getID();
+		$pk->meta = $this->player->getSlot($this->player->slot)->getMetadata();
+		$pk->slot = 0;
+		$player->dataPacket($pk);*/
+		
+		$this->sendEquipment($player)
+		
+		$this->sendArmor($player);
+	}
 }
