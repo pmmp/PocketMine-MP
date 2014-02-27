@@ -179,6 +179,7 @@ class PMFLevel extends PMF{
 			$oldChunk = zlib_decode(file_get_contents($chunkFile));
 			$newChunk = substr($oldChunk, 0, 5);
 			$newChunk .= $namedtag;
+			$newChunk .= str_repeat("\x01", 256); //Biome indexes (all Plains)
 			$newChunk .= substr($oldChunk, 5);
 			file_put_contents($chunkFile, zlib_encode($newChunk, PMFLevel::ZLIB_ENCODING, PMFLevel::ZLIB_LEVEL));
 		}
@@ -271,6 +272,8 @@ class PMFLevel extends PMF{
 		$offset += $len;
 		$this->chunks[$index] = array();
 		$this->chunkChange[$index] = array(-1 => false);
+		$this->chunkInfo[$index][3] = substr($chunk, $offset, 256); //Biome data
+		$offset += 256;
 		for($Y = 0; $Y < $this->chunkInfo[$index][0]; ++$Y){
 			$t = 1 << $Y;
 			if(($this->chunkInfo[$index][0] & $t) === $t){
@@ -382,6 +385,7 @@ class PMFLevel extends PMF{
 				0 => 0,
 				1 => 0,
 				2 => $nbt,
+				3 => str_repeat("\x00", 256),
 			);
 		}
 	}
@@ -419,6 +423,32 @@ class PMFLevel extends PMF{
 		$aY = $y - ($Y << 4);
 		$b = ord($this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))});
 		return $b;		
+	}
+	
+	
+	public function getBiome($x, $z){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
+			return 0;
+		}
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		return ord($this->chunkInfo[$index][3]{$aX + ($aZ << 4)});
+	}
+	
+	public function setBiome($x, $z, $biome){
+		$X = $x >> 4;
+		$Z = $z >> 4;
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
+			return false;
+		}
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+		$this->chunkInfo[$index][3]{$aX + ($aZ << 4)} = chr((int) $biome);
+		return true;
 	}
 	
 	public function setBlockID($x, $y, $z, $block){
@@ -619,6 +649,7 @@ class PMFLevel extends PMF{
 		$chunk .= Utils::writeInt($this->chunkInfo[$index][1]);
 		$namedtag = $this->chunkInfo[$index][2]->write();
 		$chunk .= Utils::writeInt(strlen($namedtag)).$namedtag;
+		$chunk .= $this->chunkInfo[$index][3]; //biomes
 		for($Y = 0; $Y < 8; ++$Y){
 			$t = 1 << $Y;
 			if(($bitmap & $t) === $t){
