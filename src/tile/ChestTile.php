@@ -38,7 +38,7 @@ class ChestTile extends SpawnableTile{
 	
 	public function getPair(){
 		if($this->isPaired()){
-			return $this->server->api->tile->get(new Position((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz, $this->level));
+			return $this->level->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
 		}
 		return false;
 	}
@@ -54,8 +54,8 @@ class ChestTile extends SpawnableTile{
 		$tile->namedtag->pairx = $this->x;
 		$tile->namedtag->pairz = $this->z;
 		
-		$this->server->api->tile->spawnToAll($this);
-		$this->server->api->tile->spawnToAll($tile);
+		$this->spawnToAll();
+		$tile->spawnToAll();
 		$this->server->handle("tile.update", $this);
 		$this->server->handle("tile.update", $tile);
 	}
@@ -68,10 +68,10 @@ class ChestTile extends SpawnableTile{
 		$tile = $this->getPair();
 		unset($this->namedtag->pairx, $this->namedtag->pairz, $tile->namedtag->pairx, $tile->namedtag->pairz);
 		
-		$this->server->api->tile->spawnToAll($this);
+		$this->spawnToAll();
 		$this->server->handle("tile.update", $this);
-		if($tile instanceof Tile){
-			$this->server->api->tile->spawnToAll($tile);
+		if($tile instanceof ChestTile){
+			$tile->spawnToAll();
 			$this->server->handle("tile.update", $tile);
 		}
 	}

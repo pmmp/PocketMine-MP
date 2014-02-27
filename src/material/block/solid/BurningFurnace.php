@@ -45,19 +45,18 @@ class BurningFurnaceBlock extends SolidBlock{
 
 	public function onActivate(Item $item, Player $player){
 
-		$server = ServerAPI::request();
-		$t = $server->api->tile->get($this);
+		$t = $this->level->getTile($this);
 		$furnace = false;
-		if($t !== false){
+		if($t instanceof FurnaceTile){
 			$furnace = $t;
 		}else{
-			$furnace = $server->api->tile->add($this->level, Tile::FURNACE, $this->x, $this->y, $this->z, array(
-				"Items" => array(),
-				"id" => Tile::FURNACE,
-				"x" => $this->x,
-				"y" => $this->y,
-				"z" => $this->z			
-			));
+			$furnace = new FurnaceTile($this->level, new NBTTag_Compound(false, array(
+				"Items" => new NBTTag_List("Items", array()),
+				"id" => new NBTTag_String("id", Tile::FURNACE),
+				"x" => new NBTTag_Int("x", $this->x),
+				"y" => new NBTTag_Int("y", $this->y),
+				"z" =>new NBTTag_Int("z",  $this->z)			
+			)));
 		}
 		
 		if(($player->gamemode & 0x01) === 0x01){
@@ -93,9 +92,9 @@ class BurningFurnaceBlock extends SolidBlock{
 		if($item->isPickaxe() >= 1){
 			$drops[] = array(FURNACE, 0, 1);
 		}
-		$t = ServerAPI::request()->api->tile->get($this);
-		if($t !== false and $t->class === Tile::FURNACE){
-			for($s = 0; $s < FURNACE_SLOTS; ++$s){
+		$t = $this->level->getTile($this);
+		if($t instanceof FurnaceTile){
+			for($s = 0; $s < FurnaceTile::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > AIR and $slot->count > 0){
 					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->count);

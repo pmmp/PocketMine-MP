@@ -297,12 +297,27 @@ class Level{
 				$this->server->api->entity->updateRadius($pos, 3);
 			}
 			if($tiles === true){
-				if(($t = $this->server->api->tile->get($pos)) !== false){
+				if(($t = $this->getTile($pos)) !== false){
 					$t->close();
 				}
 			}
 		}
 		return $ret;
+	}
+	
+	public function getTile(Vector3 $pos){
+		if($pos instanceof Position and $pos->level->getName() !== $this->getName()){
+			return false;
+		}
+		$tiles = $this->getChunkTiles($pos->x >> 4, $pos->z >> 4);
+		if(count($tiles) > 0){
+			foreach($tiles as $tile){
+				if($tile->x === (int) $pos->x and $tile->y === (int) $pos->y and $tile->z === (int) $pos->z){
+					return $tile;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public function getMiniChunk($X, $Z, $Y){

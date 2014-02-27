@@ -445,8 +445,17 @@ class BlockAPI{
 			return $this->cancelAction($block, $player, false);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
-			$t = $this->server->api->tile->addSign($player->level, $block->x, $block->y, $block->z);
-			$t->data["creator"] = $player->username;
+			new SignTile($player->level, new NBTTag_Compound(false, array(
+				"id" => new NBTTag_String("id", Tile::Sign),
+				"x" => new NBTTag_Int("x", $block->x),
+				"y" => new NBTTag_Int("y", $block->y),
+				"z" => new NBTTag_Int("z", $block->z),
+				"Text1" => new NBTTag_String("Text1", ""),
+				"Text2" => new NBTTag_String("Text2", ""),
+				"Text3" => new NBTTag_String("Text3", ""),
+				"Text4" => new NBTTag_String("Text4", ""),
+				"creator" => new NBTTag_String("creator", $player->username)
+			)));
 		}
 
 		if(($player->gamemode & 0x01) === 0x00){

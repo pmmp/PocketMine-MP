@@ -26,7 +26,6 @@ class ChestBlock extends TransparentBlock{
 		$this->hardness = 15;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$server = ServerAPI::request();
 		$faces = array(
 			0 => 4,
 			1 => 2,
@@ -45,7 +44,7 @@ class ChestBlock extends TransparentBlock{
 			}
 			$c = $this->getSide($side);
 			if(($c instanceof ChestBlock) and $c->getMetadata() === $this->meta){
-				if((($tile = $server->api->tile->get($c)) instanceof Tile) and !$tile->isPaired()){
+				if((($tile = $this->level->getTile($c)) instanceof ChestTile) and !$tile->isPaired()){
 					$chest = $tile;
 					break;
 				}
@@ -53,15 +52,15 @@ class ChestBlock extends TransparentBlock{
 		}
 
 		$this->level->setBlock($block, $this, true, false, true);
-		$tile = $server->api->tile->add($this->level, Tile::CHEST, $this->x, $this->y, $this->z, array(
-			"Items" => array(),
-			"id" => Tile::CHEST,
-			"x" => $this->x,
-			"y" => $this->y,
-			"z" => $this->z
-		));
+		$tile = new ChestTile($this->level, new NBTTag_Compound(false, array(
+			"Items" => new NBTTag_List("Items", array()),
+			"id" => new NBTTag_String("id", Tile::CHEST),
+			"x" => new NBTTag_Int("x", $this->x),
+			"y" => new NBTTag_Int("y", $this->y),
+			"z" =>new NBTTag_Int("z",  $this->z)			
+		)));
 
-		if($chest instanceof Tile){
+		if($chest instanceof ChestTile){
 			$chest->pairWith($tile);
 			$tile->pairWith($chest);
 		}
@@ -69,8 +68,8 @@ class ChestBlock extends TransparentBlock{
 	}
 	
 	public function onBreak(Item $item, Player $player){
-		$t = ServerAPI::request()->api->tile->get($this);
-		if($t !== false){
+		$t = $this->level->getTile($this);
+		if($t instanceof ChestTile){
 			$t->unpair();
 		}
 		$this->level->setBlock($this, new AirBlock(), true, true, true);
@@ -83,19 +82,18 @@ class ChestBlock extends TransparentBlock{
 			return true;
 		}
 	
-		$server = ServerAPI::request();
-		$t = $server->api->tile->get($this);
+		$t = $this->level->getTile($this);
 		$chest = false;
-		if($t !== false){
+		if($t instanceof ChestTile){
 			$chest = $t;
 		}else{
-			$chest = $server->api->tile->add($this->level, Tile::CHEST, $this->x, $this->y, $this->z, array(
-				"Items" => array(),
-				"id" => Tile::CHEST,
-				"x" => $this->x,
-				"y" => $this->y,
-				"z" => $this->z			
-			));
+			$chest = new ChestTile($this->level, new NBTTag_Compound(false, array(
+				"Items" => new NBTTag_List("Items", array()),
+				"id" => new NBTTag_String("id", Tile::CHEST),
+				"x" => new NBTTag_Int("x", $this->x),
+				"y" => new NBTTag_Int("y", $this->y),
+				"z" =>new NBTTag_Int("z",  $this->z)			
+			)));
 		}
 		
 		
@@ -112,9 +110,9 @@ class ChestBlock extends TransparentBlock{
 		$drops = array(
 			array($this->id, 0, 1),
 		);
-		$t = ServerAPI::request()->api->tile->get($this);
-		if($t !== false and $t->class === Tile::CHEST){
-			for($s = 0; $s < CHEST_SLOTS; ++$s){
+		$t = $this->level->getTile($this);
+		if($t instanceof ChestTile){
+			for($s = 0; $s < ChestTile::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > AIR and $slot->count > 0){
 					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->count);

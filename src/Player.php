@@ -196,16 +196,12 @@ class Player{
 		}
 		
 		if(is_array($this->lastChunk)){
-			$tiles = $this->server->query("SELECT ID FROM tiles WHERE spawnable = 1 AND level = '".$this->level->getName()."' AND x >= ".($this->lastChunk[0] - 1)." AND x < ".($this->lastChunk[0] + 17)." AND z >= ".($this->lastChunk[1] - 1)." AND z < ".($this->lastChunk[1] + 17).";");
-			$this->lastChunk = false;
-			if($tiles !== false and $tiles !== true){
-				while(($tile = $tiles->fetchArray(SQLITE3_ASSOC)) !== false){
-					$tile = $this->server->api->tile->getByID($tile["ID"]);
-					if($tile instanceof Tile){
-						$tile->spawn($this);
-					}
+			foreach($this->level->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
+				if($tile instanceof SpawnableTile){
+					$tile->spawn($this);
 				}
-			}			
+			}
+			$this->lastChunk = false;
 		}
 
 		$c = key($this->chunksOrder);
@@ -220,8 +216,6 @@ class Player{
 		$X = $id[0];
 		$Z = $id[2];
 		$Y = $id[1];
-		$x = $X << 4;
-		$z = $Z << 4;
 		$this->level->useChunk($X, $Z, $this);
 		$Yndex = 1 << $Y;
 		for($iY = 0; $iY < 8; ++$iY){
@@ -244,7 +238,7 @@ class Player{
 			$this->chunkCount[$count] = true;
 		}
 		
-		$this->lastChunk = array($x, $z);
+		$this->lastChunk = array($X, $Z);
 		
 		$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
 	}
@@ -2244,9 +2238,9 @@ class Player{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$t = $this->server->api->tile->get(new Position($packet->x, $packet->y, $packet->z, $this->level));
-				if(($t instanceof Tile) and $t->class === Tile::SIGN){
-					if($t->data["creator"] !== $this->username){
+				$t = $this->level->getTile(new Vector3($packet->x, $packet->y, $packet->z));
+				if($t instanceof SignTile){
+					if($t->namedtag->creator !== $this->username){
 						$t->spawn($this);
 					}else{
 						$nbt = new NBT();

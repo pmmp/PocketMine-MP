@@ -33,7 +33,7 @@ class SignTile extends SpawnableTile{
 		$this->namedtag->Text2 = $line2;
 		$this->namedtag->Text3 = $line3;
 		$this->namedtag->Text4 = $line4;
-		$this->server->api->tile->spawnToAll($this);	
+		$this->spawnToAll();	
 		$this->server->handle("tile.update", $this);
 		return true;
 	}
