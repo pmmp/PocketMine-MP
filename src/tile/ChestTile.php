@@ -81,7 +81,7 @@ class ChestTile extends SpawnableTile{
 		}
 	}
 
-	public function spawn(Player $player){
+	public function spawnTo(Player $player){
 		if($this->closed){
 			return false;
 		}

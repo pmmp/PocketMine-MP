@@ -30,7 +30,6 @@ abstract class Tile extends Position{
 
 	public $chunkIndex;
 	public $name;
-	public $normal;
 	public $id;
 	public $x;
 	public $y;
@@ -60,7 +59,6 @@ abstract class Tile extends Position{
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->namedtag = $nbt;
-		$this->normal = true;
 		$this->closed = false;
 		$this->name = "";
 		$this->lastUpdate = microtime(true);
@@ -72,12 +70,13 @@ abstract class Tile extends Position{
 		$this->z = (int) $this->namedtag->z;
 		
 		$index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4);
-		$this->level->tiles[$this->id] = $this;
 		$this->chunkIndex = $index;
-		$this->level->chunkTiles[$index][$this->id] = $this;
+		$this->level->tiles[$this->id] = $this;
+		$this->level->chunkTiles[$this->chunkIndex][$this->id] = $this;
+		$this->server->api->dhandle("tile.add", $this);
 	}
 	
-	public function update(){
+	public function onUpdate(){
 		return false;
 	}
 	
@@ -88,10 +87,9 @@ abstract class Tile extends Position{
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
-			$index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4);
 			unset(Tile::$needUpdate[$this->id]);
 			unset($this->level->tiles[$this->id]);	
-			unset($this->level->chunkTiles[$index][$this->id]);	
+			unset($this->level->chunkTiles[$this->chunkIndex][$this->id]);	
 			unset(Tile::$list[$this->id]);
 			$this->server->api->dhandle("tile.remove", $t);
 		}

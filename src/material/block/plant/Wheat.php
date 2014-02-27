@@ -51,6 +51,7 @@ class WheatBlock extends FlowableBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
+				//TODO
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(WHEAT_SEEDS, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
 				return BLOCK_UPDATE_NORMAL;

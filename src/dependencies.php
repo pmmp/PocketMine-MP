@@ -62,7 +62,7 @@ if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":""
 	if(version_compare($pthreads_version, "0.1.0") < 0){
 		console("[ERROR] pthreads >= 0.1.0 is required, while you have $pthreads_version.", true, true, 0);
 		++$errors;
-	}	
+	}
 }
 
 if(!extension_loaded("curl") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "curl." . PHP_SHLIB_SUFFIX) === false){
@@ -96,7 +96,7 @@ require_once(FILE_PATH."/src/math/Vector3.php");
 require_once(FILE_PATH."/src/math/Position.php");
 require_once(FILE_PATH."/src/pmf/PMF.php");
 
-require_all(FILE_PATH . "src/", array("entity", "Entity.php")); //REMOVE LATER!!!!
+require_all(FILE_PATH . "src/");
 
 $inc = get_included_files();
 $inc[] = array_shift($inc);

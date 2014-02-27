@@ -205,8 +205,7 @@ class ServerAPI{
 		$this->loadAPI("level", "LevelAPI");
 		$this->loadAPI("block", "BlockAPI");
 		$this->loadAPI("chat", "ChatAPI");
-		$this->loadAPI("ban", "BanAPI");		
-		$this->loadAPI("entity", "EntityAPI");
+		$this->loadAPI("ban", "BanAPI");
 		$this->loadAPI("player", "PlayerAPI");
 		$this->loadAPI("time", "TimeAPI");
 		
@@ -226,7 +225,7 @@ class ServerAPI{
 		//Update tiles that need update
 		if(count(Tile::$needUpdate) > 0){
 			foreach(Tile::$needUpdate as $id => $tile){
-				if($tile->update() === false){					
+				if($tile->onUpdate() === false){
 					unset(Tile::$needUpdate[$id]);
 				}
 			}

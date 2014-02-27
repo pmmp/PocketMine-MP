@@ -198,7 +198,7 @@ class Player{
 		if(is_array($this->lastChunk)){
 			foreach($this->level->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
 				if($tile instanceof SpawnableTile){
-					$tile->spawn($this);
+					$tile->spawnTo($this);
 				}
 			}
 			$this->lastChunk = false;
@@ -918,7 +918,7 @@ class Player{
 					return false;
 				}
 
-				foreach($this->server->api->entity->getAll($this->level) as $e){
+				foreach($this->level->getEntities() as $e){
 					if($e !== $this->entity){
 						if($e->player instanceof Player){
 							$pk = new MoveEntityPacket_PosRot;
@@ -950,7 +950,8 @@ class Player{
 				$this->level->freeAllChunks($this);
 				$this->level = $pos->level;
 				$this->chunksLoaded = array();
-				$this->server->api->entity->spawnToAll($this->entity);
+				$this->entity->spawnToAll();
+				//TODO
 				$this->server->api->entity->spawnAll($this);
 				
 				$pk = new SetTimePacket;
@@ -1459,11 +1460,14 @@ class Player{
 							break;
 						}
 						$this->entity->setHealth($this->data->get("health"), "spawn", true);
-						$this->spawned = true;	
+						$this->spawned = true;
+						//TODO
 						$this->server->api->player->spawnAllPlayers($this);
+						//TODO
 						$this->server->api->player->spawnToAllPlayers($this);
+						//TODO
 						$this->server->api->entity->spawnAll($this);
-						$this->server->api->entity->spawnToAll($this->entity);
+						$this->entity->spawnToAll();
 						
 						$this->server->schedule(5, array($this->entity, "update"), array(), true);
 						$this->server->schedule(2, array($this->entity, "updateMovement"), array(), true);
@@ -1749,7 +1753,7 @@ class Player{
 									$e->speedX = $speedX;
 									$e->speedZ = $speedZ;
 									$e->speedY = $speedY;
-									$this->server->api->entity->spawnToAll($e);
+									$e->spawnToAll();
 								}
 							}
 						}
@@ -1828,7 +1832,7 @@ class Player{
 				$data["action"] = $packet->action;
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$target = $this->server->api->entity->get($packet->target);
+				$target = Entity::get($packet->target);
 				if($target instanceof Entity and $this->entity instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
 					$data["entity"] = $this->entity;
@@ -2241,12 +2245,12 @@ class Player{
 				$t = $this->level->getTile(new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof SignTile){
 					if($t->namedtag->creator !== $this->username){
-						$t->spawn($this);
+						$t->spawnTo($this);
 					}else{
 						$nbt = new NBT();
 						$nbt->read($packet->namedtag);
 						if($nbt->id !== Tile::SIGN){
-							$t->spawn($this);
+							$t->spawnTo($this);
 						}else{
 							$t->setText($nbt->Text1, $nbt->Text2, $nbt->Text3, $nbt->Text4);
 						}

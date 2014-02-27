@@ -46,7 +46,7 @@ class FurnaceTile extends Tile{
 		}
 	}
 	
-	public function update(){
+	public function onUpdate(){
 		if($this->closed === true){
 			return false;
 		}

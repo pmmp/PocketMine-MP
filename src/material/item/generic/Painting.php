@@ -72,8 +72,9 @@ class PaintingItem extends Item{
 				"yaw" => $faces[$face] * 90,
 				"Motive" => $motive[0],
 			);
+			//TODO
 			$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			$server->api->entity->spawnToAll($e);
+			$e->spawnToAll();
 			if(($player->gamemode & 0x01) === 0x00){
 				$player->removeItem($this->getID(), $this->getMetadata(), 1, false);
 			}

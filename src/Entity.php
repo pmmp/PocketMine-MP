@@ -54,22 +54,36 @@ abstract class Entity extends Position{
 	public $noDamageTicks;
 	private $justCreated;
 	protected $fireProof;
-	private $invulnerable;
+	private $invulnerable;	
 	
-	public static function getEntity($entityID){
+	public $closed;
+	
+	public static function get($entityID){
 		return isset(Entity::$list[$entityID]) ? Entity::$list[$entityID]:false;
 	}
 	
+	public static function getAll(){
+		return $this->list;
+	}
 	
-	public function __construct(Level $level){
+	
+	public function __construct(Level $level, NBTTag_Compound $nbt){
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
+		$this->closed = false;
+		$this->namedtag = $nbt;
 		$this->level = $level;
-		$this->setPosition(new Vector3(0, 0, 0));
+
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		$this->setPosition(new Vector3($this->namedtag->x, $this->namedtag->y, $this->namedtag->z));
+		$index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4);
+		$this->chunkIndex = $index;
 		Entity::$list[$this->id] = $this;
+		$this->level->entities[$this->id] = $this;
+		$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		$this->lastUpdate = microtime(true);
 		$this->initEntity();
+		$this->server->api->dhandle("entity.add", $this);
 	}
 
 	protected abstract function initEntity();
@@ -78,7 +92,10 @@ abstract class Entity extends Position{
 	
 	abstract function attackEntity($damage, $source = "generic");
 	
-	public function onEntityUpdate(){
+	public function onUpdate(){
+		if($this->closed !== false){
+			return false;
+		}
 		$timeNow = microtime(true);
 		$this->ticksLived += ($now - $this->lastUpdate) * 20;
 		$this->lastUpdate = $timeNow;
@@ -114,6 +131,11 @@ abstract class Entity extends Position{
 		if($this->y < -64){
 			$this->kill();
 		}
+		return false;
+	}
+	
+	public final function scheduleUpdate(){
+		Entity::$needUpdate[$this->id] = $this;
 	}
 	
 	public function setOnFire($seconds){
@@ -216,13 +238,42 @@ abstract class Entity extends Position{
 	public function teleport(Position $pos){
 	
 	}
-	
-	public function equals($object){
-		return $object instanceof Entity ? $object->getID() === $this->id : false;
-	}
-	
+		
 	public function getID(){
 		return $this->id;
+	}
+
+	public function spawnToAll(){
+		foreach($this->level->getPlayers() as $player){
+			if($player->eid !== false or $player->spawned !== true){
+				$this->spawnTo($player);
+			}
+		}
+	}
+	
+	public function close(){
+		if($this->closed === false){
+			$this->closed = true;
+			unset(Entity::$needUpdate[$this->id]);
+			unset($this->level->entities[$this->id]);	
+			unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);	
+			unset(Entity::$list[$this->id]);
+			if($this instanceof HumanEntity){
+				$pk = new RemovePlayerPacket;
+				$pk->eid = $this->id;
+				$pk->clientID = 0;
+				$this->server->api->player->broadcastPacket($this->level->getPlayers(), $pk);
+			}else{
+				$pk = new RemoveEntityPacket;
+				$pk->eid = $this->id;
+				$this->server->api->player->broadcastPacket($this->level->getPlayers(), $pk);
+			}
+			$this->server->api->dhandle("entity.remove", $this);
+		}	
+	}
+	
+	public function __destruct(){
+		$this->close();
 	}
 	
 }

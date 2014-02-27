@@ -83,8 +83,9 @@ class GenericBlock extends Block{
 				);
 				$server = ServerAPI::request();
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
+				//TODO
 				$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
-				$server->api->entity->spawnToAll($e);
+				$e->spawnToAll();
 				$server->api->block->blockUpdateAround(clone $this, BLOCK_UPDATE_NORMAL, 1);
 			}
 			return false;

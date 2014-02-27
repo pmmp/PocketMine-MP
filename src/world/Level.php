@@ -20,6 +20,8 @@
 */
 
 class Level{
+	public $players = array();
+
 	public $entities = array();
 	public $chunkEntities = array();
 	
@@ -205,6 +207,14 @@ class Level{
 			$nbt->TileEntities->setTagType(NBTTag::TAG_Compound);
 			
 			$i = 0;
+			foreach($this->chunkEntities[$index] as $entity){
+				if($entity->closed !== true){
+					$nbt->Entities[$i] = $entity->namedtag;
+					++$i;
+				}
+			}
+			
+			$i = 0;
 			foreach($this->chunkTiles[$index] as $tile){
 				if($tile->closed !== true){
 					$nbt->TileEntities[$i] = $tile->namedtag;
@@ -294,7 +304,6 @@ class Level{
 
 			if($update === true){				
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
-				$this->server->api->entity->updateRadius($pos, 3);
 			}
 			if($tiles === true){
 				if(($t = $this->getTile($pos)) !== false){
@@ -303,6 +312,18 @@ class Level{
 			}
 		}
 		return $ret;
+	}
+	
+	public function getEntities(){
+		return $this->entities;
+	}
+	
+	public function getTiles(){
+		return $this->tiles;
+	}
+	
+	public function getPlayers(){
+		return $this->players;
 	}
 	
 	public function getTile(Vector3 $pos){
@@ -354,6 +375,8 @@ class Level{
 		return array();
 	}
 	
+	
+	
 	public function loadChunk($X, $Z){
 		if(!isset($this->level)){
 			return false;
@@ -365,6 +388,11 @@ class Level{
 			$this->usedChunks[$index] = array();
 			$this->chunkTiles[$index] = array();
 			$this->chunkEntities[$index] = array();
+			foreach($this->level->getChunkNBT($X, $Z)->Entities as $nbt){
+				switch($nbt->id){
+					//TODO: spawn entities
+				}
+			}
 			foreach($this->level->getChunkNBT($X, $Z)->TileEntities as $nbt){
 				switch($nbt->id){
 					case Tile::CHEST:

@@ -51,7 +51,7 @@ class PlayerAPI{
 					$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
 					if($result !== false){
 						while(($player = $result->fetchArray()) !== false){
-							if(($player = $this->server->api->entity->get($player["EID"])) !== false){
+							if(($player = Entity::get($player["EID"])) !== false){
 								if($player->getHealth() <= 0){
 									continue;
 								}
@@ -64,7 +64,7 @@ class PlayerAPI{
 				break;
 			case "player.death":
 				if(is_numeric($data["cause"])){
-					$e = $this->server->api->entity->get($data["cause"]);
+					$e = Entity::get($data["cause"]);
 					if($e instanceof Entity){
 						switch($e->class){
 							case ENTITY_PLAYER:
@@ -422,7 +422,7 @@ class PlayerAPI{
 	public function spawnAllPlayers(Player $player){
 		foreach($this->getAll() as $p){
 			if($p !== $player and ($p->entity instanceof Entity)){
-				$p->entity->spawn($player);
+				$p->entity->spawnTo($player);
 				if($p->level !== $player->level){
 					$pk = new MoveEntityPacket_PosRot;
 					$pk->eid = $p->entity->eid;
@@ -440,7 +440,7 @@ class PlayerAPI{
 	public function spawnToAllPlayers(Player $player){
 		foreach($this->getAll() as $p){
 			if($p !== $player and ($p->entity instanceof Entity) and ($player->entity instanceof Entity)){
-				$player->entity->spawn($p);
+				$player->entity->spawnTo($p);
 				if($p->level !== $player->level){
 					$pk = new MoveEntityPacket_PosRot;
 					$pk->eid = $player->entity->eid;
@@ -467,8 +467,8 @@ class PlayerAPI{
 			if($player->entity instanceof Entity){
 				unset($player->entity->player);
 				//unset($player->entity);
+				$player->entity->close();
 			}
-			$this->server->api->entity->remove($player->eid);
 			$player = null;
 			unset($player);
 		}

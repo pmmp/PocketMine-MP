@@ -500,7 +500,6 @@ class BlockAPI{
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
-			$this->server->api->entity->updateRadius($pos, 1);
 		}elseif($level === BLOCK_UPDATE_RANDOM){
 			$this->nextRandomUpdate($pos);
 		}

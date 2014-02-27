@@ -86,6 +86,7 @@ class Explosion{
 		$send = array();
 		$source = $this->source->floor();
 		$radius = 2 * $this->size;
+		//TODO
 		foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
 			$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //placeholder, 0.7 should be exposure
 			$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
@@ -102,12 +103,15 @@ class Explosion{
 					"power" => 4,
 					"fuse" => mt_rand(10, 30), //0.5 to 1.5 seconds
 				);
+				//TODO
 				$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
-				$server->api->entity->spawnToAll($e);
+				$e->spawnToAll();
 			}elseif(mt_rand(0, 10000) < ((1/$this->size) * 10000)){
 				if(isset(self::$specialDrops[$block->getID()])){
+					//TODO
 					$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem(self::$specialDrops[$block->getID()], 0));				
 				}else{
+					//TODO
 					$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));				
 				}
 			}

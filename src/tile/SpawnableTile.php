@@ -20,12 +20,12 @@
 */
 
 abstract class SpawnableTile extends Tile{
-	public abstract function spawn(Player $player);
+	public abstract function spawnTo(Player $player);
 
 	public function spawnToAll(){
 		foreach($this->level->getPlayers() as $player){
 			if($player->eid !== false or $player->spawned !== true){
-				$this->spawn($player);
+				$this->spawnTo($player);
 			}
 		}
 	}

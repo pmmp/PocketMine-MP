@@ -155,13 +155,13 @@ class LevelAPI{
 			console("[ERROR] Could not load level \"".$name."\"");
 			return false;
 		}
-		$entities = new Config($path."entities.yml", Config::YAML);
+		//$entities = new Config($path."entities.yml", Config::YAML);
 		if(file_exists($path."tileEntities.yml")){
 			@rename($path."tileEntities.yml", $path."tiles.yml");
 		}
 		$blockUpdates = new Config($path."bupdates.yml", Config::YAML);
 		$this->levels[$name] = new Level($level, $name);
-		foreach($entities->getAll() as $entity){
+		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
 			}
@@ -188,7 +188,7 @@ class LevelAPI{
 				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
 				$e->setHealth($entity["Health"]);
 			}
-		}
+		}*/
 			
 		if(file_exists($path ."tiles.yml")){
 			$tiles = new Config($path."tiles.yml", Config::YAML);
