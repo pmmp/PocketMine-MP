@@ -371,9 +371,17 @@ class PMFLevel extends PMF{
 				6 => 8192,
 				7 => 8192,
 			);
+			$nbt = new NBT(NBT::BIG_ENDIAN);
+			$nbt->setData(new NBTTag_Compound("", array(
+				"Entities" => new NBTTag_List("Entities", array()),
+				"TileEntities" => new NBTTag_List("TileEntities", array())
+			)));
+			$nbt->Entities->setTagType(NBTTag::TAG_Compound);
+			$nbt->TileEntities->setTagType(NBTTag::TAG_Compound);
 			$this->chunkInfo[$index] = array(
 				0 => 0,
 				1 => 0,
+				2 => $nbt,
 			);
 		}
 	}
