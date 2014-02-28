@@ -313,6 +313,14 @@ class Level{
 		return $ret;
 	}
 	
+	public function getBiome($x, $z){
+		return $this->level->getBiome((int) $x, (int) $z);
+	}
+	
+	public function setBiome($x, $z, $biome){
+		return $this->level->getBiome((int) $x, (int) $z, $biome);
+	}
+	
 	public function getEntities(){
 		return $this->entities;
 	}
