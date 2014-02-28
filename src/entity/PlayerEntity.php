@@ -20,5 +20,12 @@
 */
 
 class PlayerEntity extends HumanEntity{
-
+	
+	protected function initEntity(){
+		$this->level->players[$this->CID] = $this;
+	}
+	
+	public function close(){
+		unset($this->level->players[$this->CID]);
+	}
 }

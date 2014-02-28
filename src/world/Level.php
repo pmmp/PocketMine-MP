@@ -64,9 +64,7 @@ class Level{
 	
 	public function useChunk($X, $Z, Player $player){
 		$index = PMFLevel::getIndex($X, $Z);
-		if(!isset($this->usedChunks[$index])){
-			$this->loadChunk($X, $Z);
-		}
+		$this->loadChunk($X, $Z);
 		$this->usedChunks[$index][$player->CID] = true;
 	}
 	
@@ -368,7 +366,7 @@ class Level{
 	
 	public function getChunkEntities($X, $Z){
 		$index = PMFLevel::getIndex($X, $Z);
-		if(isset($this->usedChunks[$index]) or $this->level->loadChunk($X, $Z) === true){
+		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkEntities[$index];
 		}
 		return array();
@@ -376,7 +374,7 @@ class Level{
 	
 	public function getChunkTiles($X, $Z){
 		$index = PMFLevel::getIndex($X, $Z);
-		if(isset($this->usedChunks[$index]) or $this->level->loadChunk($X, $Z) === true){
+		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkTiles[$index];
 		}
 		return array();

@@ -455,25 +455,6 @@ class PlayerAPI{
 		}
 	}
 
-	public function remove($CID){
-		if(isset($this->server->clients[$CID])){
-			$player = $this->server->clients[$CID];
-			unset($this->server->clients[$CID]);
-			$player->close();
-			if($player->username != "" and ($player->data instanceof Config)){
-				$this->saveOffline($player->data);
-			}
-			$this->server->query("DELETE FROM players WHERE name = '".$player->username."';");
-			if($player->entity instanceof Entity){
-				unset($player->entity->player);
-				//unset($player->entity);
-				$player->entity->close();
-			}
-			$player = null;
-			unset($player);
-		}
-	}
-
 	public function getOffline($name){
 		$iname = strtolower($name);
 		$default = array(

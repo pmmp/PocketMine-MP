@@ -305,7 +305,11 @@ class Player extends PlayerEntity{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			$this->server->api->player->remove($this->CID);
+			unset($this->server->clients[$this->CID]);
+			if($this->username != "" and ($this->data instanceof Config)){
+				//TODO
+				//$this->saveOffline($player->data);
+			}
 			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
@@ -319,6 +323,7 @@ class Player extends PlayerEntity{
 			$this->chunkCount = array();
 			$this->craftingItems = array();
 			$this->received = array();
+			parent::close();
 		}
 	}
 
@@ -1462,7 +1467,7 @@ class Player extends PlayerEntity{
 						//$this->server->api->player->spawnToAllPlayers($this);
 						//TODO
 						//$this->server->api->entity->spawnAll($this);
-						$this->spawnToAll();
+						//$this->spawnToAll();
 						//$this->sendArmor();
 						$this->sendChat($this->server->motd."\n");
 						

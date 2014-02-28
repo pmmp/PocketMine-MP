@@ -208,7 +208,8 @@ class PMFLevel extends PMF{
 		}
 		$this->initCleanChunk($X, $Z);
 		$ret = $this->level->generateChunk($X, $Z);
-		$this->saveChunk($X, $Z);
+		$this->saveChunk($X, $Z);		
+		echo decbin($this->chunkInfo[self::getIndex($X, $Z)][0]).PHP_EOL;
 		$this->populateChunk($X - 1, $Z);
 		$this->populateChunk($X + 1, $Z);
 		$this->populateChunk($X, $Z - 1);
@@ -222,6 +223,7 @@ class PMFLevel extends PMF{
 	
 	public function populateChunk($X, $Z){
 		if($this->isGenerating === 0 and
+		$this->isChunkLoaded($X, $Z) and
 		!$this->isPopulated($X, $Z) and
 		$this->isGenerated($X - 1, $Z) and
 		$this->isGenerated($X, $Z - 1) and
@@ -231,6 +233,7 @@ class PMFLevel extends PMF{
 		$this->isGenerated($X - 1, $Z - 1) and
 		$this->isGenerated($X + 1, $Z - 1) and
 		$this->isGenerated($X - 1, $Z + 1)){
+			echo "pop $X $Z\n";
 			$this->level->populateChunk($X, $Z);
 			$this->saveChunk($X, $Z);
 		}
@@ -240,6 +243,7 @@ class PMFLevel extends PMF{
 		if($this->isChunkLoaded($X, $Z)){
 			return true;
 		}
+		echo "load $X $Z\n";
 		$index = self::getIndex($X, $Z);
 		$path = $this->getChunkPath($X, $Z);
 		if(!file_exists($path)){
@@ -644,6 +648,8 @@ class PMFLevel extends PMF{
 			}
 			$this->chunkChange[$index][$Y] = 0;
 		}
+		$this->chunkInfo[$index][0] = $bitmap;
+		$this->chunkChange[$index][-1] = false;
 		$chunk = b"";
 		$chunk .= chr($bitmap);
 		$chunk .= Utils::writeInt($this->chunkInfo[$index][1]);
@@ -657,8 +663,6 @@ class PMFLevel extends PMF{
 			}
 		}
 		file_put_contents($path, zlib_encode($chunk, PMFLevel::ZLIB_ENCODING, PMFLevel::ZLIB_LEVEL));
-		$this->chunkChange[$index][-1] = false;
-		$this->chunkInfo[$index][0] = $bitmap;
 		return true;
 	}
 	
