@@ -20,8 +20,7 @@
 */
 
 
-class Player{
-	private $server;
+class Player extends PlayerEntity{
 	private $recoveryQueue = array();
 	private $receiveQueue = array();
 	private $resendQueue = array();
@@ -41,12 +40,8 @@ class Player{
 	private $counter = array(0, 0, 0, 0);
 	private $username;
 	private $iusername;
-	private $eid = false;
 	private $startAction = false;
 	private $isSleeping = false;
-	public $data;
-    /** @var \Entity */
-	public $entity = false;
 	public $auth = false;
 	public $CID;
 	public $MTU;
@@ -82,8 +77,6 @@ class Player{
 	private $chunkCount = array();
 	private $received = array();
 	public $loginData = array();
-    /** @var \Level */
-    public $level;
 	
 	public function __get($name){
 		if(isset($this->{$name})){
@@ -147,14 +140,14 @@ class Player{
 	}
 	
 	public function orderChunks(){
-		if(!($this->entity instanceof Entity) or $this->connected === false){
+		if($this->connected === false){
 			return false;
 		}
 		
 		$newOrder = array();
 		$lastLoaded = $this->chunksLoaded;
-		$centerX = intval(($this->entity->x - 0.5) / 16);
-		$centerZ = intval(($this->entity->z - 0.5) / 16);
+		$centerX = intval(($this->x - 0.5) / 16);
+		$centerZ = intval(($this->z - 0.5) / 16);
 		$startX = $centerX - $this->viewDistance;
 		$startZ = $centerZ - $this->viewDistance;
 		$finalX = $centerX + $this->viewDistance;
@@ -556,7 +549,7 @@ class Player{
 		switch($event){
 			case "tile.update":
 				if($data->level === $this->level){
-					if($data->class === Tile::FURNACE){
+					if($data instanceof FurnaceTile){
 						foreach($this->windows as $id => $w){
 							if($w === $data){
 								$pk = new ContainerSetDataPacket;
@@ -899,22 +892,19 @@ class Player{
      * @return boolean
      */
     public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true, $force = true){
-		if($this->entity instanceof Entity and $this->level instanceof Level){
-			$this->entity->check = false;
+		if($this->level instanceof Level){
 			if($yaw === false){
-				$yaw = $this->entity->yaw;
+				$yaw = $this->yaw;
 			}
 			if($pitch === false){
-				$pitch = $this->entity->pitch;
+				$pitch = $this->pitch;
 			}
 			if($this->server->api->dhandle("player.teleport", array("player" => $this, "target" => $pos)) === false){
-				$this->entity->check = true;
 				return false;
 			}
 			
-			if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
+			/*if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
 				if($this->server->api->dhandle("player.teleport.level", array("player" => $this, "origin" => $this->level, "target" => $pos->level)) === false){
-					$this->entity->check = true;
 					return false;
 				}
 
@@ -987,20 +977,20 @@ class Player{
 						$player->sendArmor($this);
 					}
 				}
-			}
+			}*/
 
 			$this->lastCorrect = $pos;
-			$this->entity->fallY = false;
-			$this->entity->fallStart = false;
-			$this->entity->setPosition($pos, $yaw, $pitch);
-			$this->entity->resetSpeed();
+			/*$this->entity->fallY = false;
+			$this->entity->fallStart = false;*/
+			$this->setPosition($pos, $yaw, $pitch);
+			/*$this->entity->resetSpeed();
 			$this->entity->updateLast();
-			$this->entity->calculateVelocity();
+			$this->entity->calculateVelocity();*/
 			if($terrain === true){
 				$this->orderChunks();
 				$this->getNextChunk();
 			}
-			$this->entity->check = true;
+			//$this->entity->check = true;
 			if($force === true){
 				$this->forceMovement = $pos;
 			}
@@ -1418,12 +1408,16 @@ class Player{
 					$this->slot = -1;//0
 					$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 				}
-				$this->entity = $this->server->api->entity->add($this->level, ENTITY_PLAYER, 0, array("player" => $this));
-				$this->eid = $this->entity->eid;
-				$this->server->query("UPDATE players SET EID = ".$this->eid." WHERE CID = ".$this->CID.";");
-				$this->entity->x = $this->data->get("position")["x"];
-				$this->entity->y = $this->data->get("position")["y"];
-				$this->entity->z = $this->data->get("position")["z"];
+				
+				parent::__construct($this->level, new NBTTag_Compound(false, array(
+					"Pos" => new NBTTag_List("Pos", array(
+						0 => new NBTTag_Double(0, $this->data->get("position")["x"]),
+						1 => new NBTTag_Double(1, $this->data->get("position")["y"]),
+						2 => new NBTTag_Double(2, $this->data->get("position")["z"])
+					)),
+					"NameTag" => new NBTTag_String("NameTag", $this->username),						
+				)));
+				$this->namedtag->Pos->setTagType(NBTTag::TAG_Double);
 				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
 					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
 					
@@ -1433,9 +1427,7 @@ class Player{
 					$pk->z = (int) $this->spawnPosition->z;
 					$this->dataPacket($pk);
 				}
-				$this->entity->check = false;
-				$this->entity->setName($this->username);
-				$this->entity->data["CID"] = $this->CID;
+				
 				$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
@@ -1448,7 +1440,7 @@ class Player{
 				$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 				$this->lastMeasure = microtime(true);
 				$this->server->schedule(50, array($this, "measureLag"), array(), true);
-				console("[INFO] ".TextFormat::AQUA.$this->username.TextFormat::RESET."[/".$this->ip.":".$this->port."] logged in with entity id ".$this->eid." at (".$this->entity->level->getName().", ".round($this->entity->x, 2).", ".round($this->entity->y, 2).", ".round($this->entity->z, 2).")");
+				console("[INFO] ".TextFormat::AQUA.$this->username.TextFormat::RESET."[/".$this->ip.":".$this->port."] logged in with entity id ".$this->id." at (".$this->level->getName().", ".round($this->x, 4).", ".round($this->y, 4).", ".round($this->z, 4).")");
 				break;
 			case ProtocolInfo::READY_PACKET:
 				if($this->loggedIn === false){
@@ -1459,19 +1451,16 @@ class Player{
 						if($this->spawned !== false){
 							break;
 						}
-						$this->entity->setHealth($this->data->get("health"), "spawn", true);
+						$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
 						//TODO
-						$this->server->api->player->spawnAllPlayers($this);
+						//$this->server->api->player->spawnAllPlayers($this);
 						//TODO
-						$this->server->api->player->spawnToAllPlayers($this);
+						//$this->server->api->player->spawnToAllPlayers($this);
 						//TODO
-						$this->server->api->entity->spawnAll($this);
-						$this->entity->spawnToAll();
-						
-						$this->server->schedule(5, array($this->entity, "update"), array(), true);
-						$this->server->schedule(2, array($this->entity, "updateMovement"), array(), true);
-						$this->sendArmor();
+						//$this->server->api->entity->spawnAll($this);
+						$this->spawnToAll();
+						//$this->sendArmor();
 						$this->sendChat($this->server->motd."\n");
 						
 						if($this->iusername === "steve" or $this->iusername === "stevie"){
@@ -1486,19 +1475,16 @@ class Player{
 						$pk->time = $this->level->getTime();
 						$this->dataPacket($pk);
 						
-						$pos = new Position($this->data->get("position")["x"], $this->data->get("position")["y"], $this->data->get("position")["z"], $this->level);
+						$pos = new Position($this->x, $this->y, $this->z, $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
 						$this->teleport($pos);
-						$this->server->schedule(10, array($this, "teleport"), $pos);
-						$this->server->schedule(20, array($this, "teleport"), $pos);
-						$this->server->schedule(30, array($this, "teleport"), $pos);
 						$this->server->handle("player.spawn", $this);
 						break;
 					case 2://Chunk loaded?
 						break;
 				}
 				break;
-			case ProtocolInfo::ROTATE_HEAD_PACKET:
+			/*case ProtocolInfo::ROTATE_HEAD_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1511,22 +1497,22 @@ class Player{
 						$this->entity->setPosition($this->entity, $packet->yaw, $this->entity->pitch);
 					}
 				}
-				break;
+				break;*/
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
 				if($this->spawned === false){
 					break;
 				}
-				if(($this->entity instanceof Entity) and $packet->messageIndex > $this->lastMovement){
+				if($packet->messageIndex > $this->lastMovement){
 					$this->lastMovement = $packet->messageIndex;
 					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
-					if($this->forceMovement instanceof Vector3){
+					/*if($this->forceMovement instanceof Vector3){
 						if($this->forceMovement->distance($newPos) <= 0.7){
 							$this->forceMovement = false;
 						}else{
 							$this->teleport($this->forceMovement, $this->entity->yaw, $this->entity->pitch, false);
 						}
-					}
-					$speed = $this->entity->getSpeedMeasure();
+					}*/
+					/*$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
@@ -1534,16 +1520,16 @@ class Player{
 						if($this->blocked !== true){
 							console("[WARNING] ".$this->username." moved too quickly!");
 						}
-					}else{
-						$this->entity->setPosition($newPos, $packet->yaw, $packet->pitch);
-					}
+					}else{*/
+						$this->setPosition($newPos, $packet->yaw, $packet->pitch);
+					//}
 				}
 				break;
-			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
+			/*case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				
 				$data = array();
 				$data["eid"] = $packet->eid;
@@ -1600,10 +1586,10 @@ class Player{
 					$this->entity->inAction = false;
 					$this->entity->updateMetadata();
 				}
-				break;
+				break;*/
 			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				break;
-			case ProtocolInfo::USE_ITEM_PACKET:
+			/*case ProtocolInfo::USE_ITEM_PACKET:
 				if(!($this->entity instanceof Entity)){
 					break;
 				}
@@ -1688,8 +1674,8 @@ class Player{
 					$this->startAction = microtime(true);
 					$this->entity->updateMetadata();
 				}
-				break;
-			case ProtocolInfo::PLAYER_ACTION_PACKET:
+				break;*/
+			/*case ProtocolInfo::PLAYER_ACTION_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1764,8 +1750,8 @@ class Player{
 					case 6: //get out of the bed
 						$this->stopSleep();
 				}
-				break;
-			case ProtocolInfo::REMOVE_BLOCK_PACKET:
+				break;*/
+			/*case ProtocolInfo::REMOVE_BLOCK_PACKET:
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 				if($this->spawned === false or $this->blocked === true or $this->entity->distance($blockVector) > 8){
 					$target = $this->level->getBlock($blockVector);
@@ -1782,8 +1768,8 @@ class Player{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 				$this->server->api->block->playerBlockBreak($this, $blockVector);
-				break;
-			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
+				break;*/
+			/*case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1820,8 +1806,8 @@ class Player{
 					$this->entity->inAction = false;
 					$this->entity->updateMetadata();
 				}
-				break;
-			case ProtocolInfo::INTERACT_PACKET:
+				break;*/
+			/*case ProtocolInfo::INTERACT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1836,7 +1822,7 @@ class Player{
 				if($target instanceof Entity and $this->entity instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
 					$data["entity"] = $this->entity;
-				if($target->class === ENTITY_PLAYER and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
+				if($target instanceof PlayerEntity and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
 					break;
 				}elseif($this->server->handle("player.interact", $data) !== false){
 						$slot = $this->getSlot($this->slot);
@@ -1909,14 +1895,14 @@ class Player{
 					}
 				}
 				
-				break;
-			case ProtocolInfo::ANIMATE_PACKET:
+				break;*/
+			/*case ProtocolInfo::ANIMATE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				$packet->eid = $this->eid;
 				$this->server->api->dhandle("entity.animate", array("eid" => $packet->eid, "entity" => $this->entity, "action" => $packet->action));
-				break;
+				break;*/
 			case ProtocolInfo::RESPAWN_PACKET:
 				if($this->spawned === false){
 					break;
@@ -1941,7 +1927,7 @@ class Player{
 				break;
 			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
-			case ProtocolInfo::ENTITY_EVENT_PACKET:
+			/*case ProtocolInfo::ENTITY_EVENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1994,8 +1980,8 @@ class Player{
 						}
 						break;
 				}
-				break;
-			case ProtocolInfo::DROP_ITEM_PACKET:
+				break;*/
+			/*case ProtocolInfo::DROP_ITEM_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -2016,7 +2002,7 @@ class Player{
 					$this->entity->inAction = false;
 					$this->entity->updateMetadata();
 				}
-				break;
+				break;*/
 			case ProtocolInfo::MESSAGE_PACKET:
 				if($this->spawned === false){
 					break;
@@ -2056,7 +2042,7 @@ class Player{
 							$pk->case2 = 0;
 							$this->server->api->player->broadcastPacket($this->level->players, $pk);
 						}
-					}elseif($this->windows[$packet->windowid]->class === Tile::CHEST){
+					}elseif($this->windows[$packet->windowid] instanceof ChestTile){
 						$pk = new TileEventPacket;
 						$pk->x = $this->windows[$packet->windowid]->x;
 						$pk->y = $this->windows[$packet->windowid]->y;
@@ -2183,7 +2169,16 @@ class Player{
 					$tile->setSlot($slotn, $item, true, $offset);
 				}else{
 					$tile = $this->windows[$packet->windowid];
-					if(($tile->class !== Tile::CHEST and $tile->class !== Tile::FURNACE) or $packet->slot < 0 or ($tile->class === Tile::CHEST and $packet->slot >= ChestTile::SLOTS) or ($tile->class === Tile::FURNACE and $packet->slot >= FurnaceTile::SLOTS)){
+					if(
+						!($tile instanceof ChestTile or $tile instanceof FurnaceTile)
+						or $packet->slot < 0
+						or (
+							$tile instanceof ChestTile
+							and $packet->slot >= ChestTile::SLOTS
+						) or (
+							$tile instanceof FurnaceTile and $packet->slot >= FurnaceTile::SLOTS
+						)
+					){
 						break;
 					}
 					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
@@ -2204,7 +2199,7 @@ class Player{
 						break;
 					}
 
-					if($tile->class === Tile::FURNACE and $packet->slot == 2){
+					if($tile instanceof FurnaceTile and $packet->slot == 2){
 						switch($slot->getID()){
 							case IRON_INGOT:
 								AchievementAPI::grantAchievement($this, "acquireIron");

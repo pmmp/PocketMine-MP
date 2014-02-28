@@ -34,7 +34,6 @@ abstract class Tile extends Position{
 	public $x;
 	public $y;
 	public $z;
-	public $class;
 	public $attach;
 	public $metadata;
 	public $closed;
@@ -64,7 +63,6 @@ abstract class Tile extends Position{
 		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
 		Tile::$list[$this->id] = $this;
-		$this->class = $this->namedtag->id;
 		$this->x = (int) $this->namedtag->x;
 		$this->y = (int) $this->namedtag->y;
 		$this->z = (int) $this->namedtag->z;

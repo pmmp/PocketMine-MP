@@ -21,7 +21,7 @@
 
 trait ContainerTileTrait{
 	public function openInventory(Player $player){
-		if($this->class === Tile::CHEST){
+		if($this instanceof ChestTile){
 			$player->windowCnt++;
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			if(($pair = $this->getPair()) !== false){				
@@ -92,7 +92,7 @@ trait ContainerTileTrait{
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
 			return true;
-		}elseif($this->class === Tile::FURNACE){
+		}elseif($this instanceof FurnaceTile){
 			$player->windowCnt++;
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			$player->windows[$id] = $this;
@@ -124,9 +124,6 @@ trait ContainerTileTrait{
 	}
 	
 	public function getSlotIndex($s){
-		if($this->class !== Tile::CHEST and $this->class !== Tile::FURNACE){
-			return false;
-		}
 		foreach($this->namedtag->Items as $i => $slot){
 			if($slot->Slot === $s){
 				return $i;

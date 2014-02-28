@@ -28,7 +28,7 @@ class Level{
 	public $tiles = array();
 	public $chunkTiles = array();
 	
-	public $nextSave, $players = array(), $level;
+	public $nextSave, $level;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
 	
 	public function __construct(PMFLevel $level, $name){
@@ -109,7 +109,6 @@ class Level{
 			return false;
 		}
 		$now = microtime(true);
-		$this->players = $this->server->api->player->getAll($this);
 		
 		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
 			arsort($this->changedCount);

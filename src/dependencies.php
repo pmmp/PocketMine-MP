@@ -96,7 +96,7 @@ require_once(FILE_PATH."/src/math/Vector3.php");
 require_once(FILE_PATH."/src/math/Position.php");
 require_once(FILE_PATH."/src/pmf/PMF.php");
 
-require_all(FILE_PATH . "src/");
+require_all(FILE_PATH . "src/", array("notimplemented")); //REMOVE LATER!
 
 $inc = get_included_files();
 $inc[] = array_shift($inc);

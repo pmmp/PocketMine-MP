@@ -26,7 +26,7 @@ require_once("SpawnableTile.php");
 class SignTile extends SpawnableTile{
 	
 	public function __construct(Level $level, NBTTag_Compound $nbt){
-		$nbt->id = Tile::Sign;
+		$nbt->id = Tile::SIGN;
 		parent::__construct($level, $nbt);
 	}
 
@@ -60,7 +60,7 @@ class SignTile extends SpawnableTile{
 			new NBTTag_String("Text2", $this->namedtag->Text2),
 			new NBTTag_String("Text3", $this->namedtag->Text3),
 			new NBTTag_String("Text4", $this->namedtag->Text4),
-			new NBTTag_String("id", $this->class),
+			new NBTTag_String("id", Tile::SIGN),
 			new NBTTag_Int("x", (int) $this->x),
 			new NBTTag_Int("y", (int) $this->y),
 			new NBTTag_Int("z", (int) $this->z)

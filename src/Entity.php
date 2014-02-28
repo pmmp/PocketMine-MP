@@ -98,7 +98,9 @@ abstract class Entity extends Position{
 	
 	public abstract function spawnTo(Player $player);
 	
-	abstract function attackEntity($damage, $source = "generic");
+	abstract function attack($damage, $source = "generic");
+	
+	abstract function heal($amount, $source = "generic");
 	
 	public function onUpdate(){
 		if($this->closed !== false){
@@ -207,7 +209,11 @@ abstract class Entity extends Position{
 	}
 	
 	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){ //TODO
-	
+		$this->x = $pos->x;
+		$this->y = $pos->y;
+		$this->z = $pos->z;
+		$this->yaw = $yaw;
+		$this->pitch = $pitch;
 	}
 	
 	public function onCollideWithPlayer(EntityPlayer $entityPlayer){
@@ -306,4 +312,7 @@ require_once("entity/HumanEntity.php");
 require_once("entity/ProjectileEntity.php");
 require_once("entity/VehicleEntity.php");
 require_once("entity/HangingEntity.php");
+
+require_once("entity/HumanEntity.php");
+require_once("entity/PlayerEntity.php");
 /***REM_END***/

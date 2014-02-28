@@ -30,7 +30,7 @@ class ChestTile extends SpawnableTile{
 	const SLOTS = 27;
 	
 	public function __construct(Level $level, NBTTag_Compound $nbt){
-		$nbt->id = Tile::Chest;
+		$nbt->id = Tile::CHEST;
 		parent::__construct($level, $nbt);
 	}
 	
@@ -89,7 +89,7 @@ class ChestTile extends SpawnableTile{
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		if($this->isPaired()){
 			$nbt->setData(new NBTTag_Compound("", array(
-				new NBTTag_String("id", $this->class),
+				new NBTTag_String("id", Tile::CHEST),
 				new NBTTag_Int("x", (int) $this->x),
 				new NBTTag_Int("y", (int) $this->y),
 				new NBTTag_Int("z", (int) $this->z),	
@@ -98,7 +98,7 @@ class ChestTile extends SpawnableTile{
 			)));
 		}else{
 			$nbt->setData(new NBTTag_Compound("", array(
-				new NBTTag_String("id", $this->class),
+				new NBTTag_String("id", Tile::CHEST),
 				new NBTTag_Int("x", (int) $this->x),
 				new NBTTag_Int("y", (int) $this->y),
 				new NBTTag_Int("z", (int) $this->z)

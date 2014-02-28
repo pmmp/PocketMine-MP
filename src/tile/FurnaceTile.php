@@ -29,7 +29,7 @@ class FurnaceTile extends Tile{
 	const SLOTS = 3;
 	
 	public function __construct(Level $level, NBTTag_Compound $nbt){
-		$nbt->id = Tile::Furnace;
+		$nbt->id = Tile::FURNACE;
 		parent::__construct($level, $nbt);
 		if(!isset($this->namedtag->BurnTime) or $this->namedtag->BurnTime < 0){
 			$this->namedtag->BurnTime = 0;

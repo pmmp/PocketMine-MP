@@ -24,8 +24,8 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 	protected $nameTag;
 	
 	protected function initEntity(){
-		if(isset($this->namedtag->nameTag)){
-			$this->nameTag = $this->namedtag->nameTag;
+		if(isset($this->namedtag->NameTag)){
+			$this->nameTag = $this->namedtag->NameTag;
 		}
 	}
 	
@@ -62,8 +62,20 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 		$pk->slot = 0;
 		$player->dataPacket($pk);*/
 		
-		$this->sendEquipment($player)
+		$this->sendEquipment($player);
 		
 		$this->sendArmor($player);
+	}
+	
+	public function getMetadata(){
+		return array();
+	}
+	
+	public function attack($damage, $source = "generic"){
+	
+	}
+	
+	public function heal($amount, $source = "generic"){
+	
 	}
 }
