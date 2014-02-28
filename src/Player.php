@@ -19,6 +19,9 @@
  *
 */
 
+/***REM_START***/
+require_once("Entity.php");
+/***REM_END***/
 
 class Player extends PlayerEntity{
 	private $recoveryQueue = array();
