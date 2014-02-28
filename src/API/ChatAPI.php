@@ -31,6 +31,7 @@ class ChatAPI{
 		$this->server->api->console->register("say", "<message ...>", array($this, "commandHandler"));
 		$this->server->api->ban->cmdWhitelist("tell");
 		$this->server->api->ban->cmdWhitelist("me");
+		$this->server->api->console->alias("msg", "tell");
 	}
 
     /**
