@@ -52,6 +52,114 @@ class TextFormat{
 		return preg_replace("/§[0123456789abcdefklmnor]/", "", $string);
 	}
 	
+	public static function toHTML($string){
+		if(!is_array($string)){
+			$string = self::tokenize($string);
+		}
+		$newString = "";
+		$tokens = 0;
+		foreach($string as $token){
+			switch($token){
+				case TextFormat::BOLD:
+					$newString .= "<span style=font-weight:bold>";
+					++$tokens;
+					break;
+				case TextFormat::OBFUSCATED:
+					//$newString .= "<span style=text-decoration:line-through>";
+					//++$tokens;
+					break;
+				case TextFormat::ITALIC:
+					$newString .= "<span style=font-style:italic>";
+					++$tokens;
+					break;
+				case TextFormat::UNDERLINE:
+					$newString .= "<span style=text-decoration:underline>";
+					++$tokens;
+					break;
+				case TextFormat::STRIKETHROUGH:
+					$newString .= "<span style=text-decoration:line-through>";
+					++$tokens;
+					break;
+				case TextFormat::RESET:
+					$newString .= str_repeat("</span>", $tokens);
+					$tokens = 0;
+					break;
+
+				//Colors
+				case TextFormat::BLACK:
+					$newString .= "<span style=color:#000>";
+					++$tokens;
+					break;
+				case TextFormat::DARK_BLUE:
+					$newString .= "<span style=color:#00A>";
+					++$tokens;
+					break;
+				case TextFormat::DARK_GREEN:
+					$newString .= "<span style=color:#0A0>";
+					++$tokens;
+					break;
+				case TextFormat::DARK_AQUA:
+					$newString .= "<span style=color:#0AA>";
+					++$tokens;
+					break;
+				case TextFormat::DARK_RED:
+					$newString .= "<span style=color:#A00>";
+					++$tokens;
+					break;
+				case TextFormat::DARK_PURPLE:
+					$newString .= "<span style=color:#A0A>";
+					++$tokens;
+					break;
+				case TextFormat::GOLD:
+					$newString .= "<span style=color:#FA0>";
+					++$tokens;
+					break;
+				case TextFormat::GRAY:
+					$newString .= "<span style=color:#AAA>";
+					++$tokens;
+					break;
+				case TextFormat::DARK_GRAY:
+					$newString .= "<span style=color:#555>";
+					++$tokens;
+					break;
+				case TextFormat::BLUE:
+					$newString .= "<span style=color:#55F>";
+					++$tokens;
+					break;
+				case TextFormat::GREEN:
+					$newString .= "<span style=color:#5F5>";
+					++$tokens;
+					break;
+				case TextFormat::AQUA:
+					$newString .= "<span style=color:#5FF>";
+					++$tokens;
+					break;
+				case TextFormat::RED:
+					$newString .= "<span style=color:#F55>";
+					++$tokens;
+					break;
+				case TextFormat::LIGHT_PURPLE:
+					$newString .= "<span style=color:#F5F>";
+					++$tokens;
+					break;
+				case TextFormat::YELLOW:
+					$newString .= "<span style=color:#FF5>";
+					++$tokens;
+					break;
+				case TextFormat::WHITE:
+					$newString .= "<span style=color:#FFF>";
+					++$tokens;
+					break;
+				default:
+					$newString .= $token;
+					break;
+			}
+		}
+		
+		$newString .= str_repeat("</span>", $tokens);
+		return $newString;
+	}
+	
 	public static function toANSI($string){
 		if(!is_array($string)){
 			$string = self::tokenize($string);
@@ -76,6 +184,7 @@ class TextFormat{
 				case TextFormat::RESET:
 					$newString .= "\x1b[0m";
 					break;
+
 				//Colors
 				case TextFormat::BLACK:
 					$newString .= "\x1b[30m";
