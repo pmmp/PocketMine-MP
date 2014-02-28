@@ -208,8 +208,7 @@ class PMFLevel extends PMF{
 		}
 		$this->initCleanChunk($X, $Z);
 		$ret = $this->level->generateChunk($X, $Z);
-		$this->saveChunk($X, $Z);		
-		echo decbin($this->chunkInfo[self::getIndex($X, $Z)][0]).PHP_EOL;
+		$this->saveChunk($X, $Z);
 		$this->populateChunk($X - 1, $Z);
 		$this->populateChunk($X + 1, $Z);
 		$this->populateChunk($X, $Z - 1);
@@ -233,7 +232,6 @@ class PMFLevel extends PMF{
 		$this->isGenerated($X - 1, $Z - 1) and
 		$this->isGenerated($X + 1, $Z - 1) and
 		$this->isGenerated($X - 1, $Z + 1)){
-			echo "pop $X $Z\n";
 			$this->level->populateChunk($X, $Z);
 			$this->saveChunk($X, $Z);
 		}
@@ -243,7 +241,6 @@ class PMFLevel extends PMF{
 		if($this->isChunkLoaded($X, $Z)){
 			return true;
 		}
-		echo "load $X $Z\n";
 		$index = self::getIndex($X, $Z);
 		$path = $this->getChunkPath($X, $Z);
 		if(!file_exists($path)){
