@@ -243,9 +243,8 @@ class PMFLevel extends PMF{
 		);
 		$this->chunks[$index] = array();
 		$this->chunkChange[$index] = array(-1 => false);
-		for($Y = 0; $Y < $this->chunkInfo[$index][0]; ++$Y){
-			$t = 1 << $Y;
-			if(($this->chunkInfo[$index][0] & $t) === $t){
+		for($Y = 0; $Y < 8; ++$Y){
+			if(($this->chunkInfo[$index][0] & (1 << $Y)) !== 0){
 				// 4096 + 2048 + 2048, Block Data, Meta, Light
 				if(strlen($this->chunks[$index][$Y] = gzread($chunk, 8192)) < 8192){
 					console("[NOTICE] Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents", true, true, 2);
