@@ -279,9 +279,8 @@ class PMFLevel extends PMF{
 		$this->chunkChange[$index] = array(-1 => false);
 		$this->chunkInfo[$index][3] = substr($chunk, $offset, 256); //Biome data
 		$offset += 256;
-		for($Y = 0; $Y < $this->chunkInfo[$index][0]; ++$Y){
-			$t = 1 << $Y;
-			if(($this->chunkInfo[$index][0] & $t) === $t){
+		for($Y = 0; $Y < 8; ++$Y){
+			if(($this->chunkInfo[$index][0] & (1 << $Y)) !== 0){
 				// 4096 + 2048 + 2048, Block Data, Meta, Light
 				if(strlen($this->chunks[$index][$Y] = substr($chunk, $offset, 8192)) < 8192){
 					console("[NOTICE] Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents", true, true, 2);
