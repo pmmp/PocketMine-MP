@@ -98,6 +98,7 @@ class LevelImport{
 				foreach($chunk as $Y => $data){
 					$pmf->setMiniChunk($X, $Z, $Y, $data);
 				}
+				$pmf->setPopulated($X, $Z);
 				$pmf->saveChunk($X, $Z);
 			}
 			console("[NOTICE] Importing level ".ceil(($Z + 1)/0.16)."%");
