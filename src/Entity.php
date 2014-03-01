@@ -23,7 +23,10 @@ abstract class Entity extends Position{
 	public static $entityCount = 1;
 	public static $list = array();
 	public static $needUpdate = array();
-	private $id;
+	
+	protected $hasSpawned = array();
+	
+	protected $id;
 	
 	public $passenger = null;
 	public $vehicle = null;
@@ -86,7 +89,15 @@ abstract class Entity extends Position{
 		$this->level = $level;
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPosition(new Vector3($this->namedtag->Pos[0], $this->namedtag->Pos[1], $this->namedtag->Pos[2]));
+		$this->setPositionAndRotation(new Vector3($this->namedtag->Pos[0], $this->namedtag->Pos[1], $this->namedtag->Pos[2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
+		$this->setMotion(new Vector3($this->namedtag->Motion[0], $this->namedtag->Motion[1], $this->namedtag->Motion[2]));
+		
+		$this->fallDistance = $this->namedtag->FallDistance;
+		$this->fireTicks = $this->namedtag->Fire;
+		$this->airTicks = $this->namedtag->Air;
+		$this->onGround = $this->namedtag->OnGround > 0 ? true:false;
+		$this->invulnerable = $this->namedtag->Invulnerable > 0 ? true:false;
+		
 		$index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		Entity::$list[$this->id] = $this;
@@ -118,12 +129,19 @@ abstract class Entity extends Position{
 
 	protected abstract function initEntity();
 	
-	public abstract function spawnTo(Player $player);
+	public function spawnTo(Player $player){
+		if(!isset($this->hasSpawned[$player->getID()]) and $player->chunksLoaded[$this->chunkIndex] !== 0xff){
+			$this->hasSpawned[$player->getID()] = $player;
+		}
+	}
 	
 	public function despawnFrom(Player $player){	
-		$pk = new RemoveEntityPacket;
-		$pk->eid = $this->id;
-		$player->dataPacket($pk);
+		if(isset($this->hasSpawned[$player->getID()])){
+			$pk = new RemoveEntityPacket;
+			$pk->eid = $this->id;
+			$player->dataPacket($pk);
+			unset($this->hasSpawned[$player->getID()]);
+		}
 	}
 	
 	abstract function attack($damage, $source = "generic");
@@ -310,6 +328,28 @@ abstract class Entity extends Position{
 			$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		}
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+		
+		if($this instanceof HumanEntity){
+			$pk = new MovePlayerPacket;
+			$pk->eid = $this->id;
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$pk->yaw = $this->yaw;
+			$pk->pitch = $this->pitch;
+			$pk->bodyYaw = $this->yaw;
+		}else{
+			$pk = new MoveEntityPacket_PosRot;
+			$pk->eid = $this->id;
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$pk->yaw = $this->yaw;
+			$pk->pitch = $this->pitch;		
+		}
+		foreach($this->hasSpawned as $p){
+			$p->dataPacket(clone $pk);
+		}
 		return true;
 	}
 	
@@ -376,10 +416,8 @@ abstract class Entity extends Position{
 	}
 	
 	public function despawnFromAll(){
-		foreach($this->level->getPlayers() as $player){
-			if($player->eid !== false or $player->spawned !== true){
-				$this->despawnFrom($player);
-			}
+		foreach($this->hasSpawned as $player){
+			$this->despawnFrom($player);
 		}
 	}
 	

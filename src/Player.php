@@ -1355,7 +1355,7 @@ class Player extends PlayerEntity{
 					$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 				}
 				
-				parent::__construct($this->level, new NBTTag_Compound(false, array(
+				$nbt = new NBTTag_Compound(false, array(
 					"Pos" => new NBTTag_List("Pos", array(
 						0 => new NBTTag_Double(0, $this->data->get("position")["x"]),
 						1 => new NBTTag_Double(1, $this->data->get("position")["y"]),
@@ -1377,10 +1377,13 @@ class Player extends PlayerEntity{
 					"Invulnerable" => new NBTTag_Byte("Invulnerable", 0),
 					
 					"NameTag" => new NBTTag_String("NameTag", $this->username),
-				)));
-				$this->namedtag->Pos->setTagType(NBTTag::TAG_Double);
-				$this->namedtag->Motion->setTagType(NBTTag::TAG_Double);
-				$this->namedtag->Rotation->setTagType(NBTTag::TAG_Float);
+				));
+				$nbt->Pos->setTagType(NBTTag::TAG_Double);
+				$nbt->Motion->setTagType(NBTTag::TAG_Double);
+				$nbt->Rotation->setTagType(NBTTag::TAG_Float);
+				
+				parent::__construct($this->level, $nbt);
+				
 				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
 					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
 					
@@ -1416,14 +1419,7 @@ class Player extends PlayerEntity{
 						}
 						$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
-						//TODO
-						//$this->server->api->player->spawnAllPlayers($this);
-						//TODO
-						//$this->server->api->player->spawnToAllPlayers($this);
-						//TODO
-						//$this->server->api->entity->spawnAll($this);
-						//$this->spawnToAll();
-						//$this->sendArmor();
+						$this->spawnToAll();
 						$this->sendChat($this->server->motd."\n");
 						
 						if($this->iusername === "steve" or $this->iusername === "stevie"){
@@ -1431,6 +1427,7 @@ class Player extends PlayerEntity{
 						}
 						$this->sendInventory();
 						$this->sendSettings();
+						$this->sendArmor();
 						$this->server->schedule(30, array($this, "orderChunks"), array(), true);
 						$this->blocked = false;
 						
