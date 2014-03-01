@@ -588,7 +588,7 @@ class EntityOLD extends Position{
 						$pk->yaw = $this->yaw;
 						$pk->pitch = $this->pitch;
 						$pk->bodyYaw = $this->yaw;
-						$this->server->api->player->broadcastPacket($players, $pk);
+						Player::broadcastPacket($players, $pk);
 					}else{
 						$pk = new MoveEntityPacket_PosRot;
 						$pk->eid = $this->eid;
@@ -597,7 +597,7 @@ class EntityOLD extends Position{
 						$pk->z = $this->z;
 						$pk->yaw = $this->yaw;
 						$pk->pitch = $this->pitch;
-						$this->server->api->player->broadcastPacket($players, $pk);
+						Player::broadcastPacket($players, $pk);
 					}
 				}
 			}else{
@@ -1029,7 +1029,7 @@ class EntityOLD extends Position{
 					$pk->z = -256;
 					$pk->yaw = 0;
 					$pk->pitch = 0;
-					$this->server->api->player->broadcastPacket($this->level->players, $pk);
+					Player::broadcastPacket($this->level->players, $pk);
 				}else{
 					$this->server->api->dhandle("entity.event", array("entity" => $this, "event" => 3)); //Entity dead
 				}

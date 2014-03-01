@@ -119,6 +119,59 @@ class Player extends PlayerEntity{
 	public static function getAll(){
 		return Player::$list;
 	}
+	
+	public static function getOffline($name){
+		$server = ServerAPI::request();
+		$iname = strtolower($name);
+		$default = array(
+			"caseusername" => $name,
+			"position" => array(
+				"level" => $server->spawn->level->getName(),
+				"x" => $server->spawn->x,
+				"y" => $server->spawn->y,
+				"z" => $server->spawn->z,
+			),
+			"spawn" => array(
+				"level" => $server->spawn->level->getName(),
+				"x" => $server->spawn->x,
+				"y" => $server->spawn->y,
+				"z" => $server->spawn->z,
+			),
+			"inventory" => array_fill(0, PLAYER_SURVIVAL_SLOTS, array(AIR, 0, 0)),
+			"hotbar" => array(0, -1, -1, -1, -1, -1, -1, -1, -1),
+			"armor" => array_fill(0, 4, array(AIR, 0)),
+			"gamemode" => $server->gamemode,
+			"health" => 20,
+			"lastIP" => "",
+			"lastID" => 0,
+			"achievements" => array(),
+		);
+
+		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
+			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
+			$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, $default);
+			$data->save();
+		}else{
+			$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, $default);
+		}
+
+		if(($data->get("gamemode") & 0x01) === 1){
+			$data->set("health", 20);
+		}
+		$server->handle("player.offline.get", $data);
+		return $data;
+	}	
+
+	public static function saveOffline(Config $data){
+		ServerAPI::request()->handle("player.offline.save", $data);
+		$data->save();
+	}
+	
+	public static function broadcastPacket(array $players, RakNetDataPacket $packet){
+		foreach($players as $player){
+			$player->dataPacket(clone $packet);
+		}
+	}
 
 	/**
 	 * @param integer $clientID
@@ -293,43 +346,39 @@ class Player extends PlayerEntity{
 	}
 
 	public function save(){
-		if($this->entity instanceof Entity){
-			$this->data->set("achievements", $this->achievements);
-			$this->data->set("position", array(
-				"level" => $this->entity->level->getName(),
-				"x" => $this->entity->x,
-				"y" => $this->entity->y,
-				"z" => $this->entity->z,
-			));
-			$this->data->set("spawn", array(
-				"level" => $this->spawnPosition->level->getName(),
-				"x" => $this->spawnPosition->x,
-				"y" => $this->spawnPosition->y,
-				"z" => $this->spawnPosition->z,
-			));
-			$inv = array();			
-			foreach($this->inventory as $slot => $item){
-				if($item instanceof Item){
-					if($slot < (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS)){
-						$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
-					}
+		$this->data->set("achievements", $this->achievements);
+		$this->data->set("position", array(
+			"level" => $this->level->getName(),
+			"x" => $this->x,
+			"y" => $this->y,
+			"z" => $this->z,
+		));
+		$this->data->set("spawn", array(
+			"level" => $this->spawnPosition->level->getName(),
+			"x" => $this->spawnPosition->x,
+			"y" => $this->spawnPosition->y,
+			"z" => $this->spawnPosition->z,
+		));
+		$inv = array();			
+		foreach($this->inventory as $slot => $item){
+			if($item instanceof Item){
+				if($slot < (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS)){
+					$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
 				}
 			}
-			$this->data->set("inventory", $inv);
-			$this->data->set("hotbar", $this->hotbar);
-			
-			$armor = array();
-			foreach($this->armor as $slot => $item){
-				if($item instanceof Item){
-					$armor[$slot] = array($item->getID(), $item->getMetadata());
-				}
-			}
-			$this->data->set("armor", $armor);
-			if($this->entity instanceof Entity){
-				$this->data->set("health", $this->entity->getHealth());
-			}
-			$this->data->set("gamemode", $this->gamemode);
 		}
+		$this->data->set("inventory", $inv);
+		$this->data->set("hotbar", $this->hotbar);
+		
+		$armor = array();
+		foreach($this->armor as $slot => $item){
+			if($item instanceof Item){
+				$armor[$slot] = array($item->getID(), $item->getMetadata());
+			}
+		}
+		$this->data->set("armor", $armor);
+		//$this->data->set("health", $this->getHealth());
+		$this->data->set("gamemode", $this->gamemode);
 	}
 
 	/**
@@ -360,8 +409,7 @@ class Player extends PlayerEntity{
 			$this->resendQueue = array();
 			$this->ackQueue = array();
 			if($this->username != "" and ($this->data instanceof Config)){
-				//TODO
-				//$this->saveOffline($player->data);
+				Player::saveOffline($this->data);
 			}
 			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
@@ -1282,7 +1330,18 @@ class Player extends PlayerEntity{
 					}
 				}
 
-				$this->server->api->player->add($this->CID);
+				$this->data = Player::getOffline($this->username);
+				$this->gamemode = $this->data->get("gamemode");
+				if(($this->level = $this->server->api->level->get($this->data->get("position")["level"])) === false){
+					$this->level = $this->server->api->level->getDefault();
+					$this->data->set("position", array(
+						"level" => $this->level->getName(),
+						"x" => $this->level->getSpawn()->x,
+						"y" => $this->level->getSpawn()->y,
+						"z" => $this->level->getSpawn()->z,
+					));
+				}
+			
 				if($this->server->api->handle("player.join", $this) === false){
 					$this->close("join cancelled", false);
 					return;
@@ -1327,7 +1386,7 @@ class Player extends PlayerEntity{
 				$this->data->set("lastIP", $this->ip);
 				$this->data->set("lastID", $this->clientID);
 
-				$this->server->api->player->saveOffline($this->data);
+				Player::saveOffline($this->data);
 
 
 				$pk = new LoginStatusPacket;
@@ -2000,7 +2059,7 @@ class Player extends PlayerEntity{
 							$pk->z = $ob->z;
 							$pk->case1 = 1;
 							$pk->case2 = 0;
-							$this->server->api->player->broadcastPacket($this->level->players, $pk);
+							Player::broadcastPacket($this->level->players, $pk);
 						}
 					}elseif($this->windows[$packet->windowid] instanceof ChestTile){
 						$pk = new TileEventPacket;
@@ -2009,7 +2068,7 @@ class Player extends PlayerEntity{
 						$pk->z = $this->windows[$packet->windowid]->z;
 						$pk->case1 = 1;
 						$pk->case2 = 0;
-						$this->server->api->player->broadcastPacket($this->level->players, $pk);
+						Player::broadcastPacket($this->level->players, $pk);
 					}
 				}
 				unset($this->windows[$packet->windowid]);

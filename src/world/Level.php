@@ -103,7 +103,7 @@ class Level{
 			$pk = new SetTimePacket;
 			$pk->time = (int) $this->time;
 			$pk->started = $this->stopTime == false;
-			$this->server->api->player->broadcastPacket($this->players, $pk);
+			Player::broadcastPacket($this->players, $pk);
 		}
 	}
 	
@@ -143,7 +143,7 @@ class Level{
 							$pk->z = $b->z;
 							$pk->block = $b->getID();
 							$pk->meta = $b->getMetadata();
-							$this->server->api->player->broadcastPacket($this->players, $pk);
+							Player::broadcastPacket($this->players, $pk);
 						}
 					}
 				}
@@ -259,7 +259,7 @@ class Level{
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
 				$pk->meta = $block->getMetadata();
-				$this->server->api->player->broadcastPacket($this->players, $pk);
+				Player::broadcastPacket($this->players, $pk);
 			}elseif($direct === false){
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
@@ -303,7 +303,7 @@ class Level{
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
 				$pk->meta = $block->getMetadata();
-				$this->server->api->player->broadcastPacket($this->players, $pk);
+				Player::broadcastPacket($this->players, $pk);
 			}else{
 				$index = PMFLevel::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){

@@ -59,7 +59,7 @@ trait ContainerTileTrait{
 					$pk->z = $ob->z;
 					$pk->case1 = 1;
 					$pk->case2 = 2;
-					$this->server->api->player->broadcastPacket($all, $pk);
+					Player::broadcastPacket($all, $pk);
 					for($s = 0; $s < ChestTile::SLOTS; ++$s){
 						$slot = $ob->getSlot($s);
 						if($slot->getID() > AIR and $slot->count > 0){
@@ -76,7 +76,7 @@ trait ContainerTileTrait{
 				$pk->z = $this->z;
 				$pk->case1 = 1;
 				$pk->case2 = 2;
-				$this->server->api->player->broadcastPacket($this->level->getPlayers(), $pk);
+				Player::broadcastPacket($this->level->getPlayers(), $pk);
 				for($s = 0; $s < ChestTile::SLOTS; ++$s){
 					$slot = $this->getSlot($s);
 					if($slot->getID() > AIR and $slot->count > 0){
