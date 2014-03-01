@@ -212,33 +212,37 @@ class PMFLevel extends PMF{
 			@mkdir(dirname($path), 0755);
 		}
 		$this->initCleanChunk($X, $Z);
-		$ret = $this->level->generateChunk($X, $Z);
-		$this->saveChunk($X, $Z);
-		$this->populateChunk($X - 1, $Z);
-		$this->populateChunk($X + 1, $Z);
-		$this->populateChunk($X, $Z - 1);
-		$this->populateChunk($X, $Z + 1);
-		$this->populateChunk($X + 1, $Z + 1);
-		$this->populateChunk($X + 1, $Z - 1);
-		$this->populateChunk($X - 1, $Z - 1);
-		$this->populateChunk($X - 1, $Z + 1);
-		return $ret;
+		if($this->level instanceof Level){
+			$ret = $this->level->generateChunk($X, $Z);
+			$this->saveChunk($X, $Z);
+			$this->populateChunk($X - 1, $Z);
+			$this->populateChunk($X + 1, $Z);
+			$this->populateChunk($X, $Z - 1);
+			$this->populateChunk($X, $Z + 1);
+			$this->populateChunk($X + 1, $Z + 1);
+			$this->populateChunk($X + 1, $Z - 1);
+			$this->populateChunk($X - 1, $Z - 1);
+			$this->populateChunk($X - 1, $Z + 1);
+			return $ret;
+		}
 	}
 	
 	public function populateChunk($X, $Z){
-		if($this->isGenerating === 0 and
-		$this->isChunkLoaded($X, $Z) and
-		!$this->isPopulated($X, $Z) and
-		$this->isGenerated($X - 1, $Z) and
-		$this->isGenerated($X, $Z - 1) and
-		$this->isGenerated($X + 1, $Z) and
-		$this->isGenerated($X, $Z + 1) and
-		$this->isGenerated($X + 1, $Z + 1) and
-		$this->isGenerated($X - 1, $Z - 1) and
-		$this->isGenerated($X + 1, $Z - 1) and
-		$this->isGenerated($X - 1, $Z + 1)){
-			$this->level->populateChunk($X, $Z);
-			$this->saveChunk($X, $Z);
+		if($this->level instanceof Level){
+			if($this->isGenerating === 0 and
+			$this->isChunkLoaded($X, $Z) and
+			!$this->isPopulated($X, $Z) and
+			$this->isGenerated($X - 1, $Z) and
+			$this->isGenerated($X, $Z - 1) and
+			$this->isGenerated($X + 1, $Z) and
+			$this->isGenerated($X, $Z + 1) and
+			$this->isGenerated($X + 1, $Z + 1) and
+			$this->isGenerated($X - 1, $Z - 1) and
+			$this->isGenerated($X + 1, $Z - 1) and
+			$this->isGenerated($X - 1, $Z + 1)){
+				$this->level->populateChunk($X, $Z);
+				$this->saveChunk($X, $Z);
+			}
 		}
 	}
 	
