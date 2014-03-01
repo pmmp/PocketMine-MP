@@ -30,4 +30,16 @@ class PlayerEntity extends HumanEntity{
 		unset($this->level->players[$this->CID]);
 		parent::close();
 	}
+	
+	public function spawnTo(Player $player){
+		if($this->spawned === true){
+			parent::spawnTo($player);
+		}	
+	}
+	
+	public function despawnFrom(Player $player){
+		if($this->spawned === true){
+			parent::despawnFrom($player);
+		}
+	}
 }

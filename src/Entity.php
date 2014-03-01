@@ -327,11 +327,11 @@ abstract class Entity extends Position{
 			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
 			
 			$newChunk = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
-			foreach($this->hasSpawned as $CID => $player){
-				if(!isset($newChunk[$CID])){
+			foreach($this->hasSpawned as $player){
+				if(!isset($newChunk[$player->CID])){
 					$this->despawnFrom($player);
 				}else{
-					unset($newChunk[$CID]);
+					unset($newChunk[$player->CID]);
 				}
 			}
 			foreach($newChunk as $player){
