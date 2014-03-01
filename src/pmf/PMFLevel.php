@@ -77,6 +77,7 @@ class PMFLevel extends PMF{
 	}
 	
 	public function saveData(){
+		$this->levelData["version"] = PMFLevel::VERSION;
 		@ftruncate($this->fp, 5);
 		$this->seek(5);
 		$this->write(chr($this->levelData["version"]));
