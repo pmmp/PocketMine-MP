@@ -265,12 +265,12 @@ class Player extends PlayerEntity{
 		if(!isset($this->chunksLoaded[$index])){
 			$this->chunksLoaded[$index] = 0xff;
 		}
+		$Yndex = $this->chunksLoaded[$index];
+		$this->chunksLoaded[$index] = 0; //Load them all
 		$X = null;
 		$Z = null;
 		PMFLevel::getXZ($index, $X, $Z);
 		$this->level->useChunk($X, $Z, $this);
-		$Yndex = $this->chunksLoaded[$index];
-		$this->chunksLoaded[$index] = 0; //Load them all
 		$pk = new ChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;

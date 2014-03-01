@@ -62,10 +62,14 @@ class Level{
 		$this->__destruct();
 	}
 	
+	public function getUsingChunk($X, $Z){
+		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index]:array();
+	}
+	
 	public function useChunk($X, $Z, Player $player){
 		$index = PMFLevel::getIndex($X, $Z);
 		$this->loadChunk($X, $Z);
-		$this->usedChunks[$index][$player->CID] = true;
+		$this->usedChunks[$index][$player->CID] = $player;
 	}
 	
 	public function freeAllChunks(Player $player){

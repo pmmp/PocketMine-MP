@@ -325,6 +325,19 @@ abstract class Entity extends Position{
 			}
 			$this->chunkIndex = $index;
 			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
+			
+			$newChunk = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
+			foreach($this->hasSpawned as $CID => $player){
+				if(!isset($newChunk[$CID])){
+					$this->despawnFrom($player);
+				}else{
+					unset($newChunk[$CID]);
+				}
+			}
+			foreach($newChunk as $player){
+				$this->spawnTo($player);
+			}
+
 			$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		}
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
