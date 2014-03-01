@@ -41,13 +41,12 @@ class PlayerAPI{
 		$this->server->api->ban->cmdWhitelist("list");
 		$this->server->api->ban->cmdWhitelist("ping");
 		$this->server->api->ban->cmdWhitelist("spawn");
-		$this->server->preparedSQL->selectPlayersToHeal = $this->server->database->prepare("SELECT EID FROM entities WHERE class = ".ENTITY_PLAYER." AND health < 20;");
 	}
 
 	public function handle($data, $event){
 		switch($event){
 			case "server.regeneration":
-				if($this->server->difficulty === 0){
+				/*if($this->server->difficulty === 0){
 					$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
 					if($result !== false){
 						while(($player = $result->fetchArray()) !== false){
@@ -60,7 +59,7 @@ class PlayerAPI{
 						}
 						return true;
 					}
-				}
+				}*/
 				break;
 			case "player.death":
 				if(is_numeric($data["cause"])){
@@ -267,7 +266,7 @@ class PlayerAPI{
 				if(!isset($params[0]) and ($issuer instanceof Player)){
 					$player = $issuer;
 				}else{
-					$player = $this->get($params[0]);
+					$player = Player::get($params[0]);
 				}
 				if($player instanceof Player){
 					$player->entity->harm(1000, "console", true);
@@ -294,7 +293,7 @@ class PlayerAPI{
 		if(substr($target, 0, 2) === "w:"){
 			$lv = $this->server->api->level->get(substr($target, 2));
 			if($lv instanceof Level){
-				$origin = $this->get($name);
+				$origin = Player::get($name);
 				if($origin instanceof Player){
 					$name = $origin->username;
 					return $origin->teleport($lv->getSafeSpawn());
@@ -303,10 +302,10 @@ class PlayerAPI{
 				return false;
 			}
 		}
-		$player = $this->get($target);
+		$player = Player::get($target);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
 			$target = $player->username;
-			$origin = $this->get($name);
+			$origin = Player::get($name);
 			if($origin instanceof Player){
 				$name = $origin->username;
 				return $origin->teleport($player->entity);
@@ -316,7 +315,7 @@ class PlayerAPI{
 	}
 
 	public function tppos(&$name, &$x, &$y, &$z){
-		$player = $this->get($name);
+		$player = Player::get($name);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
 			$name = $player->username;
 			$x = $x{0} === "~" ? $player->entity->x + floatval(substr($x, 1)):floatval($x);

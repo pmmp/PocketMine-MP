@@ -25,8 +25,8 @@ abstract class Entity extends Position{
 	public static $needUpdate = array();
 	private $id;
 	
-	//public $passenger = null;
-	//public $vehicle = null;
+	public $passenger = null;
+	public $vehicle = null;
 	
 	public $chunkIndex;
 	
@@ -258,12 +258,14 @@ abstract class Entity extends Position{
 			unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
 			$this->despawnFromAll();
 			if($this instanceof Player){
-				foreach($this->chunksLoaded as $index => $boolean){
-					$X = null;
-					$Z = null;
-					PMFLevel::getXZ($index, $X, $Z);
-					foreach($this->level->getChunkEntities($X, $Z) as $entity){
-						$entity->despawnFrom($this);
+				foreach($this->chunksLoaded as $index => $Yndex){
+					if($Yndex !== 0xff){
+						$X = null;
+						$Z = null;
+						PMFLevel::getXZ($index, $X, $Z);
+						foreach($this->level->getChunkEntities($X, $Z) as $entity){
+							$entity->despawnFrom($this);
+						}
 					}
 				}
 				$this->level->freeAllChunks($this);

@@ -181,7 +181,7 @@ class Player extends PlayerEntity{
 		}
 		
 		$newOrder = array();
-		$lastLoaded = $this->chunksLoaded;
+		$lastChunk = $this->chunksLoaded;
 		$centerX = intval(($this->x - 0.5) / 16);
 		$centerZ = intval(($this->z - 0.5) / 16);
 		$startX = $centerX - $this->viewDistance;
@@ -191,21 +191,26 @@ class Player extends PlayerEntity{
 		for($X = $startX; $X <= $finalX; ++$X){
 			for($Z = $startZ; $Z <= $finalZ; ++$Z){
 				$distance = abs($X - $centerX) + abs($Z - $centerZ);
-				for($Y = 0; $Y < 8; ++$Y){
-					$index = "$X:$Y:$Z";
-					if(!isset($lastLoaded[$index])){
-						$newOrder[$index] = $distance;
-					}else{
-						unset($lastLoaded[$index]);
-					}
+				$index = PMFLevel::getIndex($X, $Z);
+				if(!isset($this->chunksLoaded[$index]) or $this->chunksLoaded[$index] !== 0){
+					$newOrder[$index] = $distance;
 				}
+				unset($lastChunk[$index]);
 			}
 		}
 		asort($newOrder);
 		$this->chunksOrder = $newOrder;
-		foreach($lastLoaded as $index => $distance){
-			$id = explode(":", $index);
-			$this->level->freeChunk($id[0], $id[2], $this);
+		foreach($lastChunk as $index => $Yndex){
+			if($Yndex !== 0xff){
+				$X = null;
+				$Z = null;
+				PMFLevel::getXZ($index, $X, $Z);
+				foreach($this->level->getChunkEntities($X, $Z) as $entity){
+					if($entity !== $this){
+						$entity->despawnFrom($this);
+					}
+				}
+			}
 			unset($this->chunksLoaded[$index]);
 		}
 	}
@@ -235,6 +240,11 @@ class Player extends PlayerEntity{
 		}
 		
 		if(is_array($this->lastChunk)){
+			foreach($this->level->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
+				if($entity !== $this){
+					$entity->spawnTo($this);
+				}
+			}
 			foreach($this->level->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
 				if($tile instanceof SpawnableTile){
 					$tile->spawnTo($this);
@@ -243,29 +253,24 @@ class Player extends PlayerEntity{
 			$this->lastChunk = false;
 		}
 
-		$c = key($this->chunksOrder);
-		$d = @$this->chunksOrder[$c];
-		if($c === null or $d === null){
+		$index = key($this->chunksOrder);
+		$distance = @$this->chunksOrder[$index];
+		if($index === null or $distance === null){
 			if($this->chunkScheduled === 0){
 				$this->server->schedule(40, array($this, "getNextChunk"));
 			}
 			return false;
 		}
-		unset($this->chunksOrder[$c]);
-		$this->chunksLoaded[$c] = true;
-		$id = explode(":", $c);
-		$X = $id[0];
-		$Z = $id[2];
-		$Y = $id[1];
-		$this->level->useChunk($X, $Z, $this);
-		$Yndex = 1 << $Y;
-		for($iY = 0; $iY < 8; ++$iY){
-			if(isset($this->chunksOrder["$X:$iY:$Z"])){
-				unset($this->chunksOrder["$X:$iY:$Z"]);
-				$this->chunksLoaded["$X:$iY:$Z"] = true;
-				$Yndex |= 1 << $iY;
-			}
+		unset($this->chunksOrder[$index]);
+		if(!isset($this->chunksLoaded[$index])){
+			$this->chunksLoaded[$index] = 0xff;
 		}
+		$X = null;
+		$Z = null;
+		PMFLevel::getXZ($index, $X, $Z);
+		$this->level->useChunk($X, $Z, $this);
+		$Yndex = $this->chunksLoaded[$index];
+		$this->chunksLoaded[$index] = 0; //Load them all
 		$pk = new ChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;

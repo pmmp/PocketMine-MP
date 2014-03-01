@@ -109,28 +109,37 @@ class Level{
 		$now = microtime(true);
 		
 		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
-			arsort($this->changedCount);
-			foreach($this->changedCount as $index => $count){
-				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
-					break;
+			foreach($this->changedCount as $index => $mini){
+				for($Y = 0; $Y < 8; ++$Y){
+					if(($mini & (1 << $Y)) === 0){
+						continue;
+					}
+					if(count($this->changedBlocks[$index][$Y]) < 582){//Optimal value, calculated using the relation between minichunks and single packets
+						continue;
+					}else{
+						foreach($this->players as $p){
+							if(isset($p->chunksLoaded[$index])){
+								$p->chunksLoaded[$index] |= $mini;
+							}
+						}
+						unset($this->changedBlocks[$index][$Y]);
+					}
 				}
-				foreach($this->players as $p){
-					unset($p->chunksLoaded[$index]);
-				}
-				unset($this->changedBlocks[$index]);
 			}
 			$this->changedCount = array();
 
 			if(count($this->changedBlocks) > 0){
-				foreach($this->changedBlocks as $blocks){
-					foreach($blocks as $b){
-						$pk = new UpdateBlockPacket;
-						$pk->x = $b->x;
-						$pk->y = $b->y;
-						$pk->z = $b->z;
-						$pk->block = $b->getID();
-						$pk->meta = $b->getMetadata();
-						$this->server->api->player->broadcastPacket($this->players, $pk);
+				foreach($this->changedBlocks as $index => $mini){
+					foreach($mini as $blocks){
+						foreach($blocks as $b){
+							$pk = new UpdateBlockPacket;
+							$pk->x = $b->x;
+							$pk->y = $b->y;
+							$pk->z = $b->z;
+							$pk->block = $b->getID();
+							$pk->meta = $b->getMetadata();
+							$this->server->api->player->broadcastPacket($this->players, $pk);
+						}
 					}
 				}
 				$this->changedBlocks = array();
@@ -251,16 +260,20 @@ class Level{
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
 				$block->position($pos);
-				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
+				$index = PMFLevel::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->name}:".($pos->x >> 4).":".($pos->z >> 4));
+					Cache::remove("world:{$this->name}:{$index}");
 				}
-				if(!isset($this->changedBlocks[$i])){
-					$this->changedBlocks[$i] = array();
-					$this->changedCount[$i] = 0;
+				if(!isset($this->changedBlocks[$index])){
+					$this->changedBlocks[$index] = array();
+					$this->changedCount[$index] = 0;
 				}
-				$this->changedBlocks[$i][] = clone $block;
-				++$this->changedCount[$i];
+				$Y = $pos->y >> 4;
+				if(!isset($this->changedBlocks[$index][$Y])){
+					$this->changedBlocks[$index][$Y] = array();
+					$this->changedCount[$index] |= 1 << $Y;
+				}
+				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
 		}
 		return $ret;
@@ -287,16 +300,20 @@ class Level{
 				$pk->meta = $block->getMetadata();
 				$this->server->api->player->broadcastPacket($this->players, $pk);
 			}else{
-				$i = ($pos->x >> 4).":".($pos->y >> 4).":".($pos->z >> 4);
-				if(!isset($this->changedBlocks[$i])){
-					$this->changedBlocks[$i] = array();
-					$this->changedCount[$i] = 0;
-				}
+				$index = PMFLevel::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->name}:".($pos->x >> 4).":".($pos->z >> 4));
+					Cache::remove("world:{$this->name}:{$index}");
 				}
-				$this->changedBlocks[$i][] = clone $block;
-				++$this->changedCount[$i];
+				if(!isset($this->changedBlocks[$index])){
+					$this->changedBlocks[$index] = array();
+					$this->changedCount[$index] = 0;
+				}
+				$Y = $pos->y >> 4;
+				if(!isset($this->changedBlocks[$index][$Y])){
+					$this->changedBlocks[$index][$Y] = array();
+					$this->changedCount[$index] |= 1 << $Y;
+				}
+				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
 
 			if($update === true){				
@@ -440,8 +457,8 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
-		if(ADVANCED_CACHE == true and $Yndex == 0xff){
-			$identifier = "world:{$this->name}:$X:$Z";
+		if(ADVANCED_CACHE == true and $Yndex === 0xff){
+			$identifier = "world:{$this->name}:".PMFLevel::getIndex($X, $Z);
 			if(($cache = Cache::get($identifier)) !== false){
 				return $cache;
 			}
@@ -450,7 +467,7 @@ class Level{
 		
 		$raw = array();
 		for($Y = 0; $Y < 8; ++$Y){
-			if(($Yndex & (1 << $Y)) > 0){
+			if(($Yndex & (1 << $Y)) !== 0){
 				$raw[$Y] = $this->level->getMiniChunk($X, $Z, $Y);
 			}
 		}

@@ -137,8 +137,6 @@ class MainServer{
 		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
 		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
 		$this->preparedSQL->updateAction = $this->database->prepare("UPDATE actions SET last = :time WHERE ID = :id;");
-		$this->preparedSQL->entity->setPosition = $this->database->prepare("UPDATE entities SET x = :x, y = :y, z = :z, pitch = :pitch, yaw = :yaw WHERE EID = :eid ;");
-		$this->preparedSQL->entity->setLevel = $this->database->prepare("UPDATE entities SET level = :level WHERE EID = :eid ;");
 	}
 
 	public function query($sql, $fetch = false){
@@ -154,10 +152,8 @@ class MainServer{
 		$info["tps"] = $this->getTPS();
 		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2)."MB";
 		$info["memory_peak_usage"] = round((memory_get_peak_usage() / 1024) / 1024, 2)."MB";
-		$info["entities"] = $this->query("SELECT count(EID) as count FROM entities;", true);
-		$info["entities"] = $info["entities"]["count"];
-		$info["players"] = $this->query("SELECT count(CID) as count FROM players;", true);
-		$info["players"] = $info["players"]["count"];
+		$info["entities"] = count(Entity::$list);
+		$info["players"] = count(Player::$list);
 		$info["events"] = count($this->eventsID);
 		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
 		$info["handlers"] = $info["handlers"]["count"];
