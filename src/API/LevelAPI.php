@@ -205,7 +205,7 @@ class LevelAPI{
 							$tag = new NBTTag_List("Items", array());
 							$tag->setTagType(NBTTag::TAG_Compound);
 							foreach($data as $slot => $fields){								
-								$tag->{$slot} = new NBTTag_Compound(false, array(
+								$tag[(int) $slot] = new NBTTag_Compound(false, array(
 									"Count" => new NBTTag_Byte("Count", $fields["Count"]),
 									"Slot" => new NBTTag_Short("Slot", $fields["Slot"]),
 									"Damage" => new NBTTag_Short("Damage", $fields["Damage"]),

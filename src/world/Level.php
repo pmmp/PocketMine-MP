@@ -405,9 +405,6 @@ class Level{
 	
 	
 	public function loadChunk($X, $Z){
-		if(!isset($this->level)){
-			return false;
-		}
 		$index = PMFLevel::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index])){
 			return true;
@@ -433,6 +430,7 @@ class Level{
 						break;
 				}
 			}
+			return true;
 		}
 		return false;
 	}
