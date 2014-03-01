@@ -168,6 +168,17 @@ class NBTTag_List extends NamedNBTTag implements ArrayAccess, Iterator{
 	}
 	
 	public function write(NBT $nbt){
+		if(!isset($this->tagType)){
+			foreach($this->value as $tag){
+				if(!isset($id)){
+					$id = $tag->getType();
+				}elseif($id !== $tag->getType()){
+					return false;
+				}
+			}
+			$this->tagType = $id;
+		}
+		
 		$nbt->putByte($this->tagType);
 		$nbt->putInt(count($this->value));
 		foreach($this->value as $tag){
