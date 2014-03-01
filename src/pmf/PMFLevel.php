@@ -77,7 +77,6 @@ class PMFLevel extends PMF{
 	}
 	
 	public function saveData(){
-		$this->levelData["version"] = PMFLevel::VERSION;
 		@ftruncate($this->fp, 5);
 		$this->seek(5);
 		$this->write(chr($this->levelData["version"]));
@@ -130,11 +129,18 @@ class PMFLevel extends PMF{
 		}
 		$this->levelData["extra"] = @zlib_decode($this->read(Utils::readShort($this->read(2), false)));
 
+		$upgrade = false;
 		if($this->levelData["version"] === 0){
 			$this->upgrade_From0_To1();
+			$upgrade = true;
 		}
 		if($this->levelData["version"] === 1){
 			$this->upgrade_From1_To2();
+			$upgrade = true;
+		}
+		
+		if($upgrade === true){
+			$this->saveData();
 		}
 	}
 	
@@ -149,7 +155,7 @@ class PMFLevel extends PMF{
 			$chunkOld = gzopen($oldPath, "rb");
 			$newPath = dirname($this->file)."/chunks/".(($X ^ $Z) & 0xff)."/".$Z.".".$X.".pmc";
 			@mkdir(dirname($newPath));
-			$chunkNew = gzopen($newPath, "wb".PMFLevel::DEFLATE_LEVEL);
+			$chunkNew = gzopen($newPath, "wb1");
 			gzwrite($chunkNew, chr($bitflags) . "\x00\x00\x00\x01");
 			while(gzeof($chunkOld) === false){
 				gzwrite($chunkNew, gzread($chunkOld, 65535));
@@ -161,7 +167,6 @@ class PMFLevel extends PMF{
 		$this->levelData["version"] = 1;
 		$this->levelData["generator"] = "NormalGenerator";
 		$this->levelData["generatorSettings"] = "";
-		$this->saveData();
 	}
 	
 	private function upgrade_From1_To2(){
@@ -184,7 +189,6 @@ class PMFLevel extends PMF{
 			file_put_contents($chunkFile, zlib_encode($newChunk, PMFLevel::ZLIB_ENCODING, PMFLevel::ZLIB_LEVEL));
 		}
 		$this->levelData["version"] = 2;
-		$this->saveData();
 	}
 	
 	public static function getIndex($X, $Z){
