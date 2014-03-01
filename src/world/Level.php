@@ -63,6 +63,7 @@ class Level{
 	}
 	
 	public function getUsingChunk($X, $Z){
+		$index = PMFLevel::getIndex($X, $Z);
 		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index]:array();
 	}
 	
