@@ -129,8 +129,6 @@ class MainServer{
 		$this->query("PRAGMA journal_mode = OFF;");
 		$this->query("PRAGMA encoding = \"UTF-8\";");
 		$this->query("PRAGMA secure_delete = OFF;");
-		$this->query("CREATE TABLE players (CID INTEGER PRIMARY KEY, EID NUMERIC, ip TEXT, port NUMERIC, name TEXT UNIQUE COLLATE NOCASE);");
-		$this->query("CREATE TABLE entities (EID INTEGER PRIMARY KEY, level TEXT, type NUMERIC, class NUMERIC, hasUpdate NUMERIC, name TEXT, x NUMERIC, y NUMERIC, z NUMERIC, yaw NUMERIC, pitch NUMERIC, health NUMERIC);");
 		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
 		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
 		$this->query("CREATE TABLE blockUpdates (level TEXT, x INTEGER, y INTEGER, z INTEGER, type INTEGER, delay NUMERIC);");
