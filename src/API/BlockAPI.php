@@ -287,7 +287,7 @@ class BlockAPI{
 					$output .= "Usage: /give <player> <item[:damage]> [amount]\n";
 					break;
 				}
-				$player = $this->server->api->player->get($params[0]);
+				$player = Player::get($params[0]);
 				$item = BlockAPI::fromString($params[1]);
 				
 				if(!isset($params[2])){

@@ -209,7 +209,7 @@ class ConsoleAPI{
 							if($issuer instanceof Player){
 								if($this->server->api->ban->isOp($issuer->username)){
 									$output = "";
-									foreach($this->server->api->player->getAll() as $p){
+									foreach(Player::getAll() as $p){
 										$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 									}
 								}else{
@@ -217,7 +217,7 @@ class ConsoleAPI{
 								}
 							}else{
 								$output = "";
-								foreach($this->server->api->player->getAll() as $p){
+								foreach(Player::getAll() as $p){
 									$output .= $this->run($cmd . " ". substr_replace($params, $p->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 								}
 							}
@@ -225,7 +225,7 @@ class ConsoleAPI{
 						case "r":
 						case "random":
 							$l = array();
-							foreach($this->server->api->player->getAll() as $p){
+							foreach(Player::getAll() as $p){
 								if($p !== $issuer){
 									$l[] = $p;
 								}

@@ -138,11 +138,11 @@ class NBT implements ArrayAccess{
 	}
 	
 	public function getByte(){
-		return Utils::readByte($this->get(1), true);
+		return ord($this->get(1));
 	}
 	
 	public function putByte($v){
-		$this->buffer .= Utils::writeByte($v);
+		$this->buffer .= chr($v);
 	}
 	
 	public function getShort(){

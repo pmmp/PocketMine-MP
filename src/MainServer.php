@@ -21,7 +21,7 @@
 
 class MainServer{
 	public $tCnt;
-	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $whitelist, $seed, $stop, $gamemode, $difficulty, $name, $maxClients, $clients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
+	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $whitelist, $seed, $stop, $gamemode, $difficulty, $name, $maxClients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
 	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $doTick, $ticks, $memoryStats, $schedule, $asyncThread, $async = array(), $asyncID = 0;
 
 	/**
@@ -55,7 +55,6 @@ class MainServer{
 		$this->scheduleCnt = 1;
 		$this->description = "";
 		$this->memoryStats = array();
-		$this->clients = array();
 		$this->spawn = false;
 		$this->saveEnabled = true;
 		$this->whitelist = false;
@@ -93,7 +92,7 @@ class MainServer{
 	public function titleTick(){
 		$time = microtime(true);
 		if(defined("DEBUG") and DEBUG >= 0 and ENABLE_ANSI === true){
-			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count($this->clients)."/".$this->maxClients." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | U ".round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." D ".round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." kB/s | TPS ".$this->getTPS()."\x07";
+			echo "\x1b]0;PocketMine-MP ".MAJOR_VERSION." | Online ". count(Player::$list)."/".$this->maxClients." | RAM ".round((memory_get_usage() / 1024) / 1024, 2)."MB | U ".round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." D ".round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2)." kB/s | TPS ".$this->getTPS()."\x07";
 		}
 		$this->interface->bandwidth = array(0, 0, $time);
 	}
@@ -492,12 +491,9 @@ class MainServer{
 	public function packetHandler(Packet $packet){
 		$data =& $packet;
 		$CID = MainServer::clientID($packet->ip, $packet->port);
-		if(isset($this->clients[$CID])){
-			$this->clients[$CID]->handlePacket($packet);
+		if(isset(Player::$list[$CID])){
+			Player::$list[$CID]->handlePacket($packet);
 		}else{
-			if($this->handle("server.noauthpacket.".$packet->pid(), $packet) === false){
-				return;
-			}
 			switch($packet->pid()){
 				case RakNetInfo::UNCONNECTED_PING:
 				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
@@ -523,7 +519,7 @@ class MainServer{
 					$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
 					$pk->pingID = $packet->pingID;
 					$pk->serverID = $this->serverID;
-					$pk->serverType = $this->serverType . $this->name . " [".count($this->clients)."/".$this->maxClients."] ".$txt;
+					$pk->serverType = $this->serverType . $this->name . " [".count(Player::$list)."/".$this->maxClients."] ".$txt;
 					$pk->ip = $packet->ip;
 					$pk->port = $packet->port;
 					$this->send($pk);
@@ -551,7 +547,7 @@ class MainServer{
 						break;
 					}
 					
-					$this->clients[$CID] = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
+					new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
 					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
 					$pk->serverID = $this->serverID;
 					$pk->port = $this->port;

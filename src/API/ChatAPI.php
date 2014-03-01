@@ -77,7 +77,7 @@ class ChatAPI{
 					$sender = $issuer->username;
 				}
 				$n = array_shift($params);
-				$target = $this->server->api->player->get($n);
+				$target = Player::get($n);
 				if($target instanceof Player){
 					$target = $target->username;
 				}else{

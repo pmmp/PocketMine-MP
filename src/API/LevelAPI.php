@@ -125,7 +125,7 @@ class LevelAPI{
 		console("[INFO] Unloading level \"".$name."\"");
 		$level->nextSave = PHP_INT_MAX;
 		$level->save();
-		foreach($this->server->api->player->getAll($level) as $player){
+		foreach($level->getPlayers() as $player){
 			$player->teleport($this->server->spawn);
 		}
 		/*foreach($this->server->api->entity->getAll($level) as $entity){

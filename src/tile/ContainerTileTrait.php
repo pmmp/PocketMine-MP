@@ -51,7 +51,7 @@ trait ContainerTileTrait{
 			$slots = array();
 			
 			if(is_array($player->windows[$id])){
-				$all = $this->server->api->player->getAll($this->level);
+				$all = $this->level->getPlayers();
 				foreach($player->windows[$id] as $ob){				
 					$pk = new TileEventPacket;
 					$pk->x = $ob->x;
@@ -76,7 +76,7 @@ trait ContainerTileTrait{
 				$pk->z = $this->z;
 				$pk->case1 = 1;
 				$pk->case2 = 2;
-				$this->server->api->player->broadcastPacket($this->server->api->player->getAll($this->level), $pk);
+				$this->server->api->player->broadcastPacket($this->level->getPlayers(), $pk);
 				for($s = 0; $s < ChestTile::SLOTS; ++$s){
 					$slot = $this->getSlot($s);
 					if($slot->getID() > AIR and $slot->count > 0){

@@ -29,27 +29,36 @@ abstract class Entity extends Position{
 	//public $vehicle = null;
 	
 	public $chunkIndex;
+	
 	public $lastX;
 	public $lastY;
 	public $lastZ;
-	public $velocity;
+	
+	public $motionX;
+	public $motionY;
+	public $motionZ;
+	
 	public $yaw;
 	public $pitch;
 	public $lastYaw;
 	public $lastPitch;
+	
 	public $boundingBox;
 	public $onGround;
 	public $positionChanged;
-	public $velocityChanged;
+	public $motionChanged;
 	public $dead;
+	
 	public $height;
 	public $width;
 	public $length;
+	
 	public $fallDistance;
 	public $ticksLived;
 	public $lastUpdate;
 	public $maxFireTicks;
 	public $fireTicks;
+	public $airTicks;
 	public $namedtag;
 	
 	protected $inWater;
@@ -65,7 +74,7 @@ abstract class Entity extends Position{
 	}
 	
 	public static function getAll(){
-		return $this->list;
+		return Entity::$list;
 	}
 	
 	
@@ -92,11 +101,30 @@ abstract class Entity extends Position{
 		$this->namedtag->Pos[0] = $this->x;
 		$this->namedtag->Pos[1] = $this->y;
 		$this->namedtag->Pos[2] = $this->z;
+		
+		$this->namedtag->Motion[0] = $this->motionX;
+		$this->namedtag->Motion[1] = $this->motionY;
+		$this->namedtag->Motion[2] = $this->motionZ;
+		
+		$this->namedtag->Rotation[0] = $this->yaw;
+		$this->namedtag->Rotation[1] = $this->pitch;
+		
+		$this->namedtag->FallDistance = $this->fallDistance;
+		$this->namedtag->Fire = $this->fireTicks;
+		$this->namedtag->Air = $this->airTicks;
+		$this->namedtag->OnGround = $this->onGround == true ? 1:0;
+		$this->namedtag->Invulnerable = $this->invulnerable == true ? 1:0;
 	}
 
 	protected abstract function initEntity();
 	
 	public abstract function spawnTo(Player $player);
+	
+	public function despawnFrom(Player $player){	
+		$pk = new RemoveEntityPacket;
+		$pk->eid = $this->id;
+		$player->dataPacket($pk);
+	}
 	
 	abstract function attack($damage, $source = "generic");
 	
@@ -209,34 +237,91 @@ abstract class Entity extends Position{
 	}
 	
 	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){ //TODO
-		$this->x = $pos->x;
-		$this->y = $pos->y;
-		$this->z = $pos->z;
-		$this->yaw = $yaw;
-		$this->pitch = $pitch;
+		if($this->setPosition($pos) === true){
+			$this->yaw = $yaw;
+			$this->pitch = $pitch;
+			return true;
+		}
+		return false;
 	}
 	
 	public function onCollideWithPlayer(EntityPlayer $entityPlayer){
 	
 	}
 	
+	protected function switchLevel(Level $targetLevel){
+		if($this->level instanceof Level){
+			if(EventHandler::callEvent(new EntityLevelChangeEvent($this, $this->level, $targetLevel)) === BaseEvent::DENY){
+				return false;
+			}
+			unset($this->level->entities[$this->id]);
+			unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
+			$this->despawnFromAll();
+			if($this instanceof Player){
+				foreach($this->chunksLoaded as $index => $boolean){
+					$X = null;
+					$Z = null;
+					PMFLevel::getXZ($index, $X, $Z);
+					foreach($this->level->getChunkEntities($X, $Z) as $entity){
+						$entity->despawnFrom($this);
+					}
+				}
+				$this->level->freeAllChunks($this);
+			}
+		}
+		$this->level = $targetLevel;
+		$this->level->entities[$this->id] = $this;
+		if($this instanceof Player){
+			$this->chunksLoaded = array();
+			$pk = new SetTimePacket;
+			$pk->time = $this->level->getTime();
+			$this->dataPacket($pk);		
+		}
+		$this->spawnToAll();
+		$this->chunkIndex = false;
+	}
 	
 	public function getPosition(){
 		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 	
 	public function setPosition(Vector3 $pos){
+		if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
+			if($this->switchLevel($pos->level) === false){
+				return false;
+			}
+		}
+		if(EventHandler::callEvent(new EntityMoveEvent($this, $pos)) === BaseEvent::DENY){
+			return false;
+		}
 		$this->x = $pos->x;
 		$this->y = $pos->y;
 		$this->z = $pos->z;
+		
+		$radius = $this->width / 2;
+		if(($index = PMFLevel::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
+			if($this->chunkIndex !== false){
+				unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
+			}
+			$this->chunkIndex = $index;
+			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
+			$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
+		}
+		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+		return true;
 	}
 	
-	public function setVelocity(Vector3 $velocity){
-		$this->velocity = clone $velocity;
+	public function getMotion(){
+		return new Vector3($this->motionX, $this->motionY, $this->motionZ);
 	}
 	
-	public function getVelocity(){
-		return clone $this->velocity;
+	public function setMotion(Vector3 $motion){
+		if(EventHandler::callEvent(new EntityMotionEvent($this, $motion)) === BaseEvent::DENY){
+			return false;
+		}
+		$this->motionX = $motion->x;
+		$this->motionY = $motion->y;
+		$this->motionZ = $motion->z;
 	}
 	
 	public function isOnGround(){
@@ -251,10 +336,31 @@ abstract class Entity extends Position{
 		return $this->level;
 	}
 	
-	public function teleport(Position $pos){
-	
+	public function teleport(Position $pos, $yaw = false, $pitch = false){
+		$this->setMotion(new Vector3(0, 0, 0));
+		if($this->setPositionAndRotation($pos, $yaw === false ? $this->yaw : $yaw, $pitch === false ? $this->pitch : $pitch) !== false){
+			if($this instanceof Player){
+				$this->airTicks = 300;
+				$this->fallDistance = 0;
+				$this->orderChunks();
+				$this->getNextChunk(true);
+				$this->forceMovement = $pos;
+				
+				$pk = new MovePlayerPacket;
+				$pk->eid = 0;
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$pk->bodyYaw = $this->yaw;
+				$pk->pitch = $this->pitch;
+				$pk->yaw = $this->yaw;
+				$this->dataPacket($pk);
+			}
+			return true;
+		}
+		return false;
 	}
-		
+
 	public function getID(){
 		return $this->id;
 	}
@@ -267,23 +373,22 @@ abstract class Entity extends Position{
 		}
 	}
 	
+	public function despawnFromAll(){
+		foreach($this->level->getPlayers() as $player){
+			if($player->eid !== false or $player->spawned !== true){
+				$this->despawnFrom($player);
+			}
+		}
+	}
+	
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Entity::$needUpdate[$this->id]);
-			unset($this->level->entities[$this->id]);	
+			unset($this->level->entities[$this->id]);
 			unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);	
 			unset(Entity::$list[$this->id]);
-			if($this instanceof HumanEntity){
-				$pk = new RemovePlayerPacket;
-				$pk->eid = $this->id;
-				$pk->clientID = 0;
-				$this->server->api->player->broadcastPacket($this->level->getPlayers(), $pk);
-			}else{
-				$pk = new RemoveEntityPacket;
-				$pk->eid = $this->id;
-				$this->server->api->player->broadcastPacket($this->level->getPlayers(), $pk);
-			}
+			$this->despawnFromAll();
 			$this->server->api->dhandle("entity.remove", $this);
 		}	
 	}

@@ -577,7 +577,7 @@ class EntityOLD extends Position{
 					}
 				}else{
 					$this->updateLast();
-					$players = $this->server->api->player->getAll($this->level);
+					$players = $this->level->getPlayers();
 					if($this->player instanceof Player){
 						unset($players[$this->player->CID]);
 						$pk = new MovePlayerPacket;
@@ -659,7 +659,7 @@ class EntityOLD extends Position{
 
 	public function spawn($player){
 		if(!($player instanceof Player)){
-			$player = $this->server->api->player->get($player);
+			$player = Player::get($player);
 		}
 		if($player->eid === $this->eid or $this->closed !== false or ($player->level !== $this->level and $this->class !== ENTITY_PLAYER)){
 			return false;

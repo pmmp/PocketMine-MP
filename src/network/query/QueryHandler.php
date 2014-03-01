@@ -69,7 +69,7 @@ class QueryHandler{
 			"server_engine" => "PocketMine-MP ".MAJOR_VERSION,
 			"plugins" => $plist,
 			"map" => $this->server->api->level->getDefault()->getName(),
-			"numplayers" => count($this->server->clients),
+			"numplayers" => count(Player::$list),
 			"maxplayers" => $this->server->maxClients,
 			"whitelist" => $this->server->api->getProperty("white-list") === true ? "on":"off",
 			"hostport" => $this->server->api->getProperty("server-port"),
@@ -79,7 +79,7 @@ class QueryHandler{
 			$str .= $key."\x00".$value."\x00";
 		}
 		$str .= "\x00\x01player_\x00\x00";
-		foreach($this->server->clients as $player){
+		foreach(Player::$list as $player){
 			if($player->username != ""){
 				$str .= $player->username."\x00";
 			}
@@ -127,7 +127,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;			
 				}else{
-					$pk->payload = $this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
+					$pk->payload = $this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count(Player::$list)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
 				}
 				$pk->encode();
 				$this->server->send($pk);

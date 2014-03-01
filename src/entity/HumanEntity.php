@@ -27,6 +27,8 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 		if(isset($this->namedtag->NameTag)){
 			$this->nameTag = $this->namedtag->NameTag;
 		}
+		$this->height = 1.8; //Or 1.62?
+		$this->width = 0.6;
 	}
 	
 	public function spawnTo(Player $player){
@@ -65,6 +67,13 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 		$this->sendEquipment($player);
 		
 		$this->sendArmor($player);
+	}
+	
+	public function despawnTo(Player $player){
+		$pk = new RemovePlayerPacket;
+		$pk->eid = $this->id;
+		$pk->clientID = 0;
+		$player->dataPacket($pk);
 	}
 	
 	public function getMetadata(){

@@ -24,6 +24,8 @@ require_once("Entity.php");
 /***REM_END***/
 
 class Player extends PlayerEntity{
+	public static $list = array();
+
 	private $recoveryQueue = array();
 	private $receiveQueue = array();
 	private $resendQueue = array();
@@ -33,18 +35,18 @@ class Player extends PlayerEntity{
 	private $bufferLen = 0;
 	private $nextBuffer = 0;
 	private $evid = array();
-	private $lastMovement = 0;
-	private $forceMovement = false;
+	protected $lastMovement = 0;
+	protected $forceMovement = false;
 	private $timeout;
-	private $connected = true;
-	private $clientID;
-	private $ip;
-	private $port;
+	protected $connected = true;
+	protected $clientID;
+	protected $ip;
+	protected $port;
 	private $counter = array(0, 0, 0, 0);
 	private $username;
 	private $iusername;
 	private $startAction = false;
-	private $isSleeping = false;
+	protected $isSleeping = false;
 	public $auth = false;
 	public $CID;
 	public $MTU;
@@ -71,6 +73,7 @@ class Player extends PlayerEntity{
 	private $spawnPosition;
 	private $packetLoss = 0;
 	private $lastChunk = false;
+	private $hunkScheduled = 0;
 	public $lastCorrect;
 	private $bigCnt;
 	private $packetStats;
@@ -87,6 +90,35 @@ class Player extends PlayerEntity{
 		}
 		return null;
 	}
+	
+	public static function get($name, $alike = true, $multiple = false){
+		$name = trim(strtolower($name));
+		if($name === ""){
+			return false;
+		}
+		$players = array();
+		foreach(Player::$list as $player){
+			if($multiple === false and $player->iusername === $name){
+				return $player;
+			}elseif(strpos($player->iusername, $name) !== false){
+				$players[$player->CID] = $player;
+			}
+		}
+		
+		if($multiple === false){
+			if(count($players) > 0){
+				return array_shift($players);
+			}else{
+				return false;
+			}
+		}else{
+			return $players;
+		}
+	}
+
+	public static function getAll(){
+		return Player::$list;
+	}
 
 	/**
 	 * @param integer $clientID
@@ -101,6 +133,7 @@ class Player extends PlayerEntity{
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
 		$this->CID = MainServer::clientID($ip, $port);
+		Player::$list[$this->CID] = $this;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = $this->server->spawn;
@@ -177,14 +210,24 @@ class Player extends PlayerEntity{
 		}
 	}
 	
-	public function getNextChunk(){
+	public function getNextChunk($force = false, $ev = null){
 		if($this->connected === false){
 			return false;
 		}
 
+		if($ev === "server.schedule"){
+			--$this->chunkScheduled;
+			if($this->chunkScheduled < 0){
+				$this->chunkScheduled = 0;
+			}
+		}
+		
 		foreach($this->chunkCount as $count => $t){
 			if(isset($this->recoveryQueue[$count]) or isset($this->resendQueue[$count])){
-				$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+				if($this->chunkScheduled === 0){
+					$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+					++$this->chunkScheduled;
+				}
 				return;
 			}else{
 				unset($this->chunkCount[$count]);
@@ -203,7 +246,9 @@ class Player extends PlayerEntity{
 		$c = key($this->chunksOrder);
 		$d = @$this->chunksOrder[$c];
 		if($c === null or $d === null){
-			$this->server->schedule(40, array($this, "getNextChunk"));
+			if($this->chunkScheduled === 0){
+				$this->server->schedule(40, array($this, "getNextChunk"));
+			}
 			return false;
 		}
 		unset($this->chunksOrder[$c]);
@@ -236,7 +281,10 @@ class Player extends PlayerEntity{
 		
 		$this->lastChunk = array($X, $Z);
 		
-		$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+		if($this->chunkScheduled === 0 or $force === true){
+			$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+			++$this->chunkScheduled;
+		}
 	}
 
 	public function save(){
@@ -296,6 +344,7 @@ class Player extends PlayerEntity{
 			$this->sendChat("You have been kicked. Reason: ".$reason."\n");
 			$this->sendBuffer();
 			$this->directDataPacket(new DisconnectPacket);
+			unset(Player::$list[$this->CID]);
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
 			$this->loggedIn = false;
@@ -305,7 +354,6 @@ class Player extends PlayerEntity{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			unset($this->server->clients[$this->CID]);
 			if($this->username != "" and ($this->data instanceof Config)){
 				//TODO
 				//$this->saveOffline($player->data);
@@ -333,7 +381,7 @@ class Player extends PlayerEntity{
      * @return boolean
      */
     public function sleepOn(Vector3 $pos){
-		foreach($this->server->api->player->getAll($this->level) as $p){
+		foreach($this->level->getPlayers() as $p){
 			if($p->isSleeping instanceof Vector3){
 				if($pos->distance($p->isSleeping) <= 0.1){
 					return false;
@@ -341,7 +389,7 @@ class Player extends PlayerEntity{
 			}
 		}
 		$this->isSleeping = $pos;
-		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level), false, false, false, false);
+		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
 		if($this->entity instanceof Entity){
 			$this->entity->updateMetadata();
 		}
@@ -360,13 +408,13 @@ class Player extends PlayerEntity{
 	public function checkSleep(){
 		if($this->isSleeping !== false){
 			if($this->server->api->time->getPhase($this->level) === "night"){
-				foreach($this->server->api->player->getAll($this->level) as $p){
+				foreach($this->level->getPlayers() as $p){
 					if($p->isSleeping === false){
 						return false;
 					}
 				}
 				$this->server->api->time->set("day", $this->level);
-				foreach($this->server->api->player->getAll($this->level) as $p){
+				foreach($this->level->getPlayers() as $p){
 					$p->stopSleep();
 				}
 			}
@@ -899,121 +947,6 @@ class Player extends PlayerEntity{
      *
      * @return boolean
      */
-    public function teleport(Vector3 $pos, $yaw = false, $pitch = false, $terrain = true, $force = true){
-		if($this->level instanceof Level){
-			if($yaw === false){
-				$yaw = $this->yaw;
-			}
-			if($pitch === false){
-				$pitch = $this->pitch;
-			}
-			if($this->server->api->dhandle("player.teleport", array("player" => $this, "target" => $pos)) === false){
-				return false;
-			}
-			
-			/*if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
-				if($this->server->api->dhandle("player.teleport.level", array("player" => $this, "origin" => $this->level, "target" => $pos->level)) === false){
-					return false;
-				}
-
-				foreach($this->level->getEntities() as $e){
-					if($e !== $this->entity){
-						if($e->player instanceof Player){
-							$pk = new MoveEntityPacket_PosRot;
-							$pk->eid = $this->entity->eid;
-							$pk->x = -256;
-							$pk->y = 128;
-							$pk->z = -256;
-							$pk->yaw = 0;
-							$pk->pitch = 0;
-							$e->player->dataPacket($pk);
-							
-							$pk = new MoveEntityPacket_PosRot;
-							$pk->eid = $e->eid;
-							$pk->x = -256;
-							$pk->y = 128;
-							$pk->z = -256;
-							$pk->yaw = 0;
-							$pk->pitch = 0;
-							$this->dataPacket($pk);
-						}else{
-							$pk = new RemoveEntityPacket;
-							$pk->eid = $e->eid;
-							$this->dataPacket($pk);
-						}
-					}
-				}
-				
-
-				$this->level->freeAllChunks($this);
-				$this->level = $pos->level;
-				$this->chunksLoaded = array();
-				$this->entity->spawnToAll();
-				//TODO
-				$this->server->api->entity->spawnAll($this);
-				
-				$pk = new SetTimePacket;
-				$pk->time = $this->level->getTime();
-				$this->dataPacket($pk);
-				$terrain = true;
-				
-				foreach($this->level->getPlayers() as $player){
-					if($player !== $this and $player->entity instanceof Entity){
-						$pk = new MoveEntityPacket_PosRot;
-						$pk->eid = $player->entity->eid;
-						$pk->x = $player->entity->x;
-						$pk->y = $player->entity->y;
-						$pk->z = $player->entity->z;
-						$pk->yaw = $player->entity->yaw;
-						$pk->pitch = $player->entity->pitch;
-						$this->dataPacket($pk);
-						
-						$pk = new PlayerEquipmentPacket;
-						$pk->eid = $this->eid;
-						$pk->item = $this->getSlot($this->slot)->getID();
-						$pk->meta = $this->getSlot($this->slot)->getMetadata();
-						$pk->slot = 0;
-						$player->dataPacket($pk);
-						$this->sendArmor($player);
-						
-						$pk = new PlayerEquipmentPacket;
-						$pk->eid = $player->eid;
-						$pk->item = $player->getSlot($player->slot)->getID();
-						$pk->meta = $player->getSlot($player->slot)->getMetadata();
-						$pk->slot = 0;
-						$this->dataPacket($pk);
-						$player->sendArmor($this);
-					}
-				}
-			}*/
-
-			$this->lastCorrect = $pos;
-			/*$this->entity->fallY = false;
-			$this->entity->fallStart = false;*/
-			$this->setPosition($pos, $yaw, $pitch);
-			/*$this->entity->resetSpeed();
-			$this->entity->updateLast();
-			$this->entity->calculateVelocity();*/
-			if($terrain === true){
-				$this->orderChunks();
-				$this->getNextChunk();
-			}
-			//$this->entity->check = true;
-			if($force === true){
-				$this->forceMovement = $pos;
-			}
-		}
-		
-		$pk = new MovePlayerPacket;
-		$pk->eid = 0;
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
-		$pk->bodyYaw = $yaw;
-		$pk->pitch = $pitch;
-		$pk->yaw = $yaw;
-		$this->dataPacket($pk);
-	}
 	
 	public function getGamemode(){
 		switch($this->gamemode){
@@ -1300,7 +1233,7 @@ class Player extends PlayerEntity{
 				$this->username = $packet->username;
 				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
-				if(count($this->server->clients) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
+				if(count(Player::$list) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
 					$this->close("server is full!", false);
 					return;
 				}
@@ -1335,13 +1268,13 @@ class Player extends PlayerEntity{
 				}
 				$this->loggedIn = true;
 				
-				$u = $this->server->api->player->get($this->iusername, false);
-				if($u !== false){
-					$u->close("logged in from another location");
-				}
-				if(!isset($this->CID) or $this->CID == null){
-					console("[DEBUG] Player ".$this->username." does not have a CID", true, true, 2);
-					$this->CID = Utils::readLong(Utils::getRandomBytes(8, false));
+				$u = Player::get($this->iusername, false, true);
+				if(count($u) > 0){
+					foreach($u as $p){
+						if($p !== $this){
+							$p->close("logged in from another location");
+						}
+					}
 				}
 
 				$this->server->api->player->add($this->CID);
@@ -1423,9 +1356,26 @@ class Player extends PlayerEntity{
 						1 => new NBTTag_Double(1, $this->data->get("position")["y"]),
 						2 => new NBTTag_Double(2, $this->data->get("position")["z"])
 					)),
-					"NameTag" => new NBTTag_String("NameTag", $this->username),						
+					"Motion" => new NBTTag_List("Motion", array(
+						0 => new NBTTag_Double(0, 0.0),
+						1 => new NBTTag_Double(1, 0.0),
+						2 => new NBTTag_Double(2, 0.0)
+					)),
+					"Rotation" => new NBTTag_List("Rotation", array(
+						0 => new NBTTag_Float(0, 0.0),
+						1 => new NBTTag_Float(1, 0.0)
+					)),
+					"FallDistance" => new NBTTag_Float("FallDistance", 0.0),
+					"Fire" => new NBTTag_Short("Fire", 0),
+					"Air" => new NBTTag_Short("Air", 0),
+					"OnGround" => new NBTTag_Byte("OnGround", 1),
+					"Invulnerable" => new NBTTag_Byte("Invulnerable", 0),
+					
+					"NameTag" => new NBTTag_String("NameTag", $this->username),
 				)));
 				$this->namedtag->Pos->setTagType(NBTTag::TAG_Double);
+				$this->namedtag->Motion->setTagType(NBTTag::TAG_Double);
+				$this->namedtag->Rotation->setTagType(NBTTag::TAG_Float);
 				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
 					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
 					
@@ -1513,13 +1463,13 @@ class Player extends PlayerEntity{
 				if($packet->messageIndex > $this->lastMovement){
 					$this->lastMovement = $packet->messageIndex;
 					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
-					/*if($this->forceMovement instanceof Vector3){
+					if($this->forceMovement instanceof Vector3){
 						if($this->forceMovement->distance($newPos) <= 0.7){
 							$this->forceMovement = false;
 						}else{
-							$this->teleport($this->forceMovement, $this->entity->yaw, $this->entity->pitch, false);
+							$this->setPosition($this->forceMovement);
 						}
-					}*/
+					}
 					/*$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
 						if($this->lastCorrect instanceof Vector3){
@@ -1529,7 +1479,7 @@ class Player extends PlayerEntity{
 							console("[WARNING] ".$this->username." moved too quickly!");
 						}
 					}else{*/
-						$this->setPosition($newPos, $packet->yaw, $packet->pitch);
+						$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch);
 					//}
 				}
 				break;
@@ -2425,16 +2375,6 @@ class Player extends PlayerEntity{
 		@$this->buffer->data[] = $packet;
 		$this->bufferLen += 6 + $len;
 		return array();
-	}
-
-    /**
-     * @return string
-     */
-    function __toString(){
-		if($this->username != ""){
-			return $this->username;
-		}
-		return $this->clientID;
 	}
 
 }

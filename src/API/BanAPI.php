@@ -133,7 +133,7 @@ class BanAPI{
 		switch($cmd){
 			case "sudo":
 				$target = strtolower(array_shift($params));
-				$player = $this->server->api->player->get($target);
+				$player = Player::get($target);
 				if(!($player instanceof Player)){
 					$output .= "Player not connected.\n";
 					break;
@@ -147,7 +147,7 @@ class BanAPI{
 				  $output .= "Usage: /op <player>\n";
 				  break;
 				}
-				$player = $this->server->api->player->get($user);
+				$player = Player::get($user);
 				if(!($player instanceof Player)){
 					$this->ops->set($user);
 					$this->ops->save();
@@ -161,7 +161,7 @@ class BanAPI{
 				break;
 			case "deop":
 				$user = strtolower($params[0]);
-				$player = $this->server->api->player->get($user);
+				$player = Player::get($user);
 				if(!($player instanceof Player)){
 					$this->ops->remove($user);
 					$this->ops->save();
@@ -178,7 +178,7 @@ class BanAPI{
 					$output .= "Usage: /kick <player> [reason ...]\n";
 				}else{
 					$name = strtolower(array_shift($params));
-					$player = $this->server->api->player->get($name);
+					$player = Player::get($name);
 					if($player === false){
 						$output .= "Player \"".$name."\" does not exist\n";
 					}else{
@@ -246,7 +246,7 @@ class BanAPI{
 					case "add":
 					case "ban":
 						$ip = strtolower($params[0]);
-						$player = $this->server->api->player->get($ip);
+						$player = Player::get($ip);
 						if($player instanceof Player){
 							$ip = $player->ip;
 							$player->close("banned");
@@ -281,7 +281,7 @@ class BanAPI{
 						$user = strtolower($params[0]);
 						$this->banned->set($user);
 						$this->banned->save();
-						$player = $this->server->api->player->get($user);
+						$player = Player::get($user);
 						if($player !== false){
 							$player->close("You have been banned");
 						}

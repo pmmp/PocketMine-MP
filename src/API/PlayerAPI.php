@@ -132,7 +132,7 @@ class PlayerAPI{
 					if(count($params) === 3 and substr($tg, 0, 2) === "w:"){
 						$target = $this->server->api->level->get(substr($tg, 2));
 					}else{
-						$target = $this->server->api->player->get($tg);
+						$target = Player::get($tg);
 					}
 				}else{
 					$target = $issuer;
@@ -196,18 +196,18 @@ class PlayerAPI{
 					"v" => VIEW,
 				);
 				if(isset($params[1])){
-					if($this->server->api->player->get($params[1]) instanceof Player){
-						$player = $this->server->api->player->get($params[1]);
+					if(Player::get($params[1]) instanceof Player){
+						$player = Player::get($params[1]);
 						$setgm = $params[0];
-					}elseif($this->server->api->player->get($params[0]) instanceof Player){
-						$player = $this->server->api->player->get($params[0]);
+					}elseif(Player::get($params[0]) instanceof Player){
+						$player = Player::get($params[0]);
 						$setgm = $params[1];
 					}else{
 						$output .= "Usage: /$cmd <mode> [player] or /$cmd [player] <mode>\n";
 						break;
 					}
 				}elseif(isset($params[0])){
-					if(!($this->server->api->player->get($params[0]) instanceof Player)){
+					if(!(Player::get($params[0]) instanceof Player)){
 						if($issuer instanceof Player){
 							$setgm = $params[0];
 							$player = $issuer;
@@ -277,11 +277,11 @@ class PlayerAPI{
 				}
 				break;
 			case "list":
-				$output .= "There are ".count($this->server->clients)."/".$this->server->maxClients." players online:\n";
-				if(count($this->server->clients) == 0){
+				$output .= "There are ".count(Player::$list)."/".$this->server->maxClients." players online:\n";
+				if(count(Player::$list) == 0){
 					break;
 				}
-				foreach($this->server->clients as $c){
+				foreach(Player::$list as $c){
 					$output .= $c->username.", ";
 				}
 				$output = substr($output, 0, -2)."\n";
@@ -328,72 +328,15 @@ class PlayerAPI{
 		return false;
 	}
 
-	public function get($name, $alike = true, $multiple = false){
-		$name = trim(strtolower($name));
-		if($name === ""){
-			return false;
-		}
-		$query = $this->server->query("SELECT ip,port,name FROM players WHERE name ".($alike === true ? "LIKE '%".$name."%'":"= '".$name."'").";");
-		$players = array();
-		if($query !== false and $query !== true){
-			while(($d = $query->fetchArray(SQLITE3_ASSOC)) !== false){
-				$CID = MainServer::clientID($d["ip"], $d["port"]);
-				if(isset($this->server->clients[$CID])){
-					$players[$CID] = $this->server->clients[$CID];
-					if($multiple === false and $d["name"] === $name){
-						return $players[$CID];
-					}
-				}
-			}
-		}
-		
-		if($multiple === false){
-			if(count($players) > 0){
-				return array_shift($players);
-			}else{
-				return false;
-			}
-		}else{
-			return $players;
-		}
-	}
-
-	public function getAll($level = null){
-		if($level instanceof Level){
-			$clients = array();
-			$l = $this->server->query("SELECT EID FROM entities WHERE level = '".$level->getName()."' AND class = '".ENTITY_PLAYER."';");
-			if($l !== false and $l !== true){
-				while(($e = $l->fetchArray(SQLITE3_ASSOC)) !== false){
-					$e = $this->getByEID($e["EID"]);
-					if($e instanceof Player){
-						$clients[$e->CID] = $e;
-					}
-				}
-			}
-			return $clients;
-		}
-		return $this->server->clients;
-	}
-
 	public function broadcastPacket(array $players, RakNetDataPacket $packet){
 		foreach($players as $p){
 			$p->dataPacket(clone $packet);
 		}
 	}
 
-	public function getByEID($eid){
-		$eid = (int) $eid;
-		$CID = $this->server->query("SELECT ip,port FROM players WHERE EID = '".$eid."';", true);
-		$CID = MainServer::clientID($CID["ip"], $CID["port"]);
-		if(isset($this->server->clients[$CID])){
-			return $this->server->clients[$CID];
-		}
-		return false;
-	}
-
 	public function online(){
 		$o = array();
-		foreach($this->server->clients as $p){
+		foreach(Player::$list as $p){
 			if($p->auth === true){
 				$o[] = $p->username;
 			}
@@ -401,9 +344,10 @@ class PlayerAPI{
 		return $o;
 	}
 
+	//TODO (remove)
 	public function add($CID){
-		if(isset($this->server->clients[$CID])){
-			$player = $this->server->clients[$CID];
+		if(isset(Player::$list[$CID])){
+			$player =Player::$list[$CID];
 			$player->data = $this->getOffline($player->username);
 			$player->gamemode = $player->data->get("gamemode");
 			if(($player->level = $this->server->api->level->get($player->data->get("position")["level"])) === false){
@@ -414,43 +358,6 @@ class PlayerAPI{
 					"y" => $player->level->getSpawn()->y,
 					"z" => $player->level->getSpawn()->z,
 				));
-			}
-			$this->server->query("INSERT OR REPLACE INTO players (CID, ip, port, name) VALUES (".$player->CID.", '".$player->ip."', ".$player->port.", '".strtolower($player->username)."');");
-		}
-	}
-
-	public function spawnAllPlayers(Player $player){
-		foreach($this->getAll() as $p){
-			if($p !== $player and ($p->entity instanceof Entity)){
-				$p->entity->spawnTo($player);
-				if($p->level !== $player->level){
-					$pk = new MoveEntityPacket_PosRot;
-					$pk->eid = $p->entity->eid;
-					$pk->x = -256;
-					$pk->y = 128;
-					$pk->z = -256;
-					$pk->yaw = 0;
-					$pk->pitch = 0;
-					$player->dataPacket($pk);
-				}
-			}
-		}
-	}
-
-	public function spawnToAllPlayers(Player $player){
-		foreach($this->getAll() as $p){
-			if($p !== $player and ($p->entity instanceof Entity) and ($player->entity instanceof Entity)){
-				$player->entity->spawnTo($p);
-				if($p->level !== $player->level){
-					$pk = new MoveEntityPacket_PosRot;
-					$pk->eid = $player->entity->eid;
-					$pk->x = -256;
-					$pk->y = 128;
-					$pk->z = -256;
-					$pk->yaw = 0;
-					$pk->pitch = 0;
-					$p->dataPacket($pk);
-				}
 			}
 		}
 	}
