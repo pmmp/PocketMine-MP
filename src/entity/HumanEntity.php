@@ -48,16 +48,13 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 			$pk->unknown2 = 0;
 			$pk->metadata = $this->getMetadata();
 			$player->dataPacket($pk);
-					
-			/*
+
 			$pk = new SetEntityMotionPacket;
 			$pk->eid = $this->id;
-			$pk->speedX = $this->velocity->x;
-			$pk->speedY = $this->velocity->y;
-			$pk->speedZ = $this->velocity->z;
-			$player->dataPacket($pk);*/
-
-			//$this->sendMotion($player);
+			$pk->speedX = $this->motionX;
+			$pk->speedY = $this->motionY;
+			$pk->speedZ = $this->motionZ;
+			$player->dataPacket($pk);
 			
 			/*
 			$pk = new PlayerEquipmentPacket;

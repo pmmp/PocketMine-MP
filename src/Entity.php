@@ -152,9 +152,9 @@ abstract class Entity extends Position{
 		if($this->closed !== false){
 			return false;
 		}
+
 		$timeNow = microtime(true);
 		$this->ticksLived += ($now - $this->lastUpdate) * 20;
-		$this->lastUpdate = $timeNow;
 		
 		if($this->handleWaterMovement()){
 			$this->fallDistance = 0;
@@ -187,6 +187,48 @@ abstract class Entity extends Position{
 		if($this->y < -64){
 			$this->kill();
 		}
+		
+		if($this->x !== $this->lastX or $this->y !== $this->lastY or $this->z !== $this->lastZ or $this->yaw !== $this->lastYaw or $this->pitch !== $this->lastPitch){
+			$this->lastX = $this->x;
+			$this->lastY = $this->y;
+			$this->lastZ = $this->z;
+			
+			$this->lastYaw = $this->yaw;
+			$this->lastPitch = $this->pitch;
+	
+			if($this instanceof HumanEntity){
+				$pk = new MovePlayerPacket;
+				$pk->eid = $this->id;
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$pk->yaw = $this->yaw;
+				$pk->pitch = $this->pitch;
+				$pk->bodyYaw = $this->yaw;
+			}else{
+				$pk = new MoveEntityPacket_PosRot;
+				$pk->eid = $this->id;
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$pk->yaw = $this->yaw;
+				$pk->pitch = $this->pitch;		
+			}
+			Player::broadcastPacket($this->hasSpawned, $pk);
+		}
+		
+		if($this->motionChanged === true){
+			$this->motionChanged = false;
+			
+			$pk = new SetEntityMotionPacket;
+			$pk->eid = $this->id;
+			$pk->speedX = $this->motionX;
+			$pk->speedY = $this->motionY;
+			$pk->speedZ = $this->motionZ;
+			Player::broadcastPacket($this->hasSpawned, $pk);
+		}
+		
+		$this->lastUpdate = $timeNow;
 		return false;
 	}
 	
@@ -205,10 +247,6 @@ abstract class Entity extends Position{
 	
 	public function extinguish(){
 		$this->fireTicks = 0;
-	}
-	
-	public function moveEntity(Vector3 $displacement){ //TODO
-	
 	}
 	
 	public function canTriggerWalking(){
@@ -254,15 +292,6 @@ abstract class Entity extends Position{
 		
 	}
 	
-	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){ //TODO
-		if($this->setPosition($pos) === true){
-			$this->yaw = $yaw;
-			$this->pitch = $pitch;
-			return true;
-		}
-		return false;
-	}
-	
 	public function onCollideWithPlayer(EntityPlayer $entityPlayer){
 	
 	}
@@ -305,6 +334,31 @@ abstract class Entity extends Position{
 		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 	
+	public function move(Vector3 $displacement){
+		if($displacement->x == 0 and $displacement->y == 0 and $displacement->z == 0){
+			return;
+		}
+		
+		$x = $this->x;
+		$y = $this->y;
+		$z = $this->z;
+		$this->scheduleUpdate();
+	}
+
+	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){
+		if($this->setPosition($pos) === true){
+			$this->setRotation($yaw, $pitch);
+			return true;
+		}
+		return false;
+	}
+	
+	public function setRotation($yaw, $pitch){
+		$this->yaw = $yaw;
+		$this->pitch = $pitch;
+		$this->scheduleUpdate();
+	}
+	
 	public function setPosition(Vector3 $pos){
 		if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
 			if($this->switchLevel($pos->level) === false){
@@ -342,27 +396,7 @@ abstract class Entity extends Position{
 		}
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
 		
-		if($this instanceof HumanEntity){
-			$pk = new MovePlayerPacket;
-			$pk->eid = $this->id;
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->yaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->bodyYaw = $this->yaw;
-		}else{
-			$pk = new MoveEntityPacket_PosRot;
-			$pk->eid = $this->id;
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->yaw = $this->yaw;
-			$pk->pitch = $this->pitch;		
-		}
-		foreach($this->hasSpawned as $p){
-			$p->dataPacket(clone $pk);
-		}
+		$this->scheduleUpdate();
 		return true;
 	}
 	
@@ -377,6 +411,7 @@ abstract class Entity extends Position{
 		$this->motionX = $motion->x;
 		$this->motionY = $motion->y;
 		$this->motionZ = $motion->z;
+		$this->scheduleUpdate();
 	}
 	
 	public function isOnGround(){
