@@ -43,53 +43,73 @@ class AxisAlignedBB{
 		$this->maxX = $maxX;
 		$this->maxY = $maxY;
 		$this->maxZ = $maxZ;
+		return $this;
 	}
 	
 	public function addCoord($x, $y, $z){
+		$vec = clone $this;
 		if($x < 0){
-			$this->minX += $x;
+			$vec->minX += $x;
 		}elseif($x > 0){
-			$this->maxX += $x;
+			$vec->maxX += $x;
 		}
 
 		if($y < 0){
-			$this->minY += $y;
+			$vec->minY += $y;
 		}elseif($y > 0){
-			$this->maxY += $y;
+			$vec->maxY += $y;
 		}
 
 		if($z < 0){
-			$this->minZ += $z;
+			$vec->minZ += $z;
 		}elseif($z > 0){
-			$this->maxZ += $z;
+			$vec->maxZ += $z;
 		}
+		return $vec;
 	}
 	
-	public function expand($x, $y, $z){
-		$this->minX -= $x;
-		$this->minY -= $y;
-		$this->minZ -= $z;
-		$this->maxX += $x;
-		$this->maxY += $y;
-		$this->maxZ += $z;
+	public function expand($x, $y, $z){		
+		$vec = clone $this;
+		$vec->minX -= $x;
+		$vec->minY -= $y;
+		$vec->minZ -= $z;
+		$vec->maxX += $x;
+		$vec->maxY += $y;
+		$vec->maxZ += $z;
+		return $vec;
 	}
 
 	public function offset($x, $y, $z){
-		$this->minX += $x;
-		$this->minY += $y;
-		$this->minZ += $z;
-		$this->maxX += $x;
-		$this->maxY += $y;
-		$this->maxZ += $z;
+		$vec = clone $this;
+		$vec->minX += $x;
+		$vec->minY += $y;
+		$vec->minZ += $z;
+		$vec->maxX += $x;
+		$vec->maxY += $y;
+		$vec->maxZ += $z;
+		return $vec;
 	}
 	
 	public function contract($x, $y, $z){
-		$this->minX += $x;
-		$this->minY += $y;
-		$this->minZ += $z;
-		$this->maxX -= $x;
-		$this->maxY -= $y;
-		$this->maxZ -= $z;
+		$vec = clone $this;
+		$vec->minX += $x;
+		$vec->minY += $y;
+		$vec->minZ += $z;
+		$vec->maxX -= $x;
+		$vec->maxY -= $y;
+		$vec->maxZ -= $z;
+		return $vec;
+	}
+	
+	public function getMixedBoundingBox(AxisAlignedBB $bb){
+		return new AxisAlignedBB(
+			min($this->minX, $bb->minX),
+			min($this->minY, $bb->minY),
+			min($this->minZ, $bb->minZ),
+			max($this->maxX, $bb->maxX),
+			max($this->maxY, $bb->maxY),
+			max($this->maxZ, $bb->maxZ)
+		);
 	}
 	
 	public function getOffsetBoundingBox($x, $y, $z){
