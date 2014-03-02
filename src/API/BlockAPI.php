@@ -363,7 +363,8 @@ class BlockAPI{
 		
 		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
-				$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
+				echo "I dropped something\n";
+				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
 			}
 		}
 		return false;
@@ -435,9 +436,10 @@ class BlockAPI{
 			//$face = -1;
 		}
 		
-		if($hand->isSolid === true and $player->entity->inBlock($block)){
+		//Implement using Bounding Boxes
+		/*if($hand->isSolid === true and $player->inBlock($block)){
 			return $this->cancelAction($block, $player, false); //Entity in block
-		}
+		}*/
 		
 		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
 			return $this->cancelAction($block, $player);
@@ -500,8 +502,6 @@ class BlockAPI{
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
-		}elseif($level === BLOCK_UPDATE_RANDOM){
-			$this->nextRandomUpdate($pos);
 		}
 		return $level;
 	}
@@ -520,27 +520,6 @@ class BlockAPI{
 			return true;
 		}
 		return false;
-	}
-	
-	public function nextRandomUpdate(Position $pos){
-		if(!isset($this->scheduledUpdates[$pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName().".".BLOCK_UPDATE_RANDOM])){
-			$time = microtime(true);
-			$offset = 0;
-			do{
-				$t = $offset + Utils::getRandomUpdateTicks() * 0.05;
-				$update = $this->server->query("SELECT COUNT(*) FROM blockUpdates WHERE level = '".$pos->level->getName()."' AND type = ".BLOCK_UPDATE_RANDOM." AND delay >= ".($time + $t - 1)." AND delay <= ".($time + $t + 1).";");
-				if($update instanceof SQLite3Result){
-					$update = $update->fetchArray(SQLITE3_NUM);
-					if($update[0] < 3){
-						break;
-					}
-				}else{
-					break;
-				}
-				$offset += mt_rand(25, 75);
-			}while(true);
-			$this->scheduleBlockUpdate($pos, $t / 0.05, BLOCK_UPDATE_RANDOM);
-		}
 	}
 	
 	public function blockUpdateTick(){

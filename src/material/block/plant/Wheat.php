@@ -61,10 +61,7 @@ class WheatBlock extends FlowableBlock{
 				if($this->meta < 0x07){
 					++$this->meta;
 					$this->level->setBlock($this, $this, true, false, true);
-					return BLOCK_UPDATE_RANDOM;
 				}
-			}else{
-				return BLOCK_UPDATE_RANDOM;
 			}
 		}
 		return false;

@@ -326,14 +326,24 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
-	public function isMiniChunkEmpty($X, $Z, $Y){
+	protected function cleanChunk($X, $Z){
 		$index = self::getIndex($X, $Z);
-		if(isset($this->chunks[$index]) and $this->chunks[$index][$Y] !== false){
-			if(substr_count($this->chunks[$index][$Y], "\x00") < 8192){
-				return false;
+		if(isset($this->chunks[$index])){
+			for($Y = 0; $Y < 8; ++$Y){
+				if($this->chunks[$index][$Y] !== false and substr_count($this->chunks[$index][$Y], "\x00") === 8192){
+					$this->chunks[$index][$Y] = false;
+					$this->chunkInfo[$index][0] &= ~(1 << $Y);
+				}
 			}
 		}
-		return true;
+	}
+	
+	public function isMiniChunkEmpty($X, $Z, $Y){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index]) or $this->chunks[$index][$Y] === false){
+			return true;
+		}
+		return false;
 	}
 	
 	protected function fillMiniChunk($X, $Z, $Y){
@@ -645,6 +655,7 @@ class PMFLevel extends PMF{
 			@mkdir(dirname($path), 0755);
 		}
 		$bitmap = 0;
+		$this->cleanChunk($X, $Z);
 		for($Y = 0; $Y < 8; ++$Y){
 			if($this->chunks[$index][$Y] !== false and ((isset($this->chunkChange[$index][$Y]) and $this->chunkChange[$index][$Y] === 0) or !$this->isMiniChunkEmpty($X, $Z, $Y))){
 				$bitmap |= 1 << $Y;

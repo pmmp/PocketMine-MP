@@ -117,7 +117,7 @@ class ServerAPI{
 			"white-list" => false,
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
-			"view-distance" => 10,
+			"view-distance" => 8,
 			"max-players" => 20,
 			"allow-flight" => false,
 			"spawn-animals" => true,
@@ -221,6 +221,14 @@ class ServerAPI{
 	}
 	
 	public function checkTickUpdates(){
+		//Update entities that need update
+		if(count(Entity::$needUpdate) > 0){
+			foreach(Entity::$needUpdate as $id => $entity){
+				if($entity->onUpdate() === false){
+					unset(Entity::$needUpdate[$id]);
+				}
+			}
+		}
 	
 		//Update tiles that need update
 		if(count(Tile::$needUpdate) > 0){

@@ -105,7 +105,6 @@ class LeavesBlock extends TransparentBlock{
 			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;
 				$this->level->setBlock($this, $this, false, false, true);
-				return BLOCK_UPDATE_RANDOM;
 			}
 		}elseif($type === BLOCK_UPDATE_RANDOM){
 			if(($this->meta & 0b00001100) === 0x08){

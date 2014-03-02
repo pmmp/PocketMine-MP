@@ -39,7 +39,7 @@ class Level{
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
 		$this->stopTime = false;
-		$this->server->schedule(2, array($this, "checkThings"), array(), true);
+		$this->server->schedule(1, array($this, "doTick"), array(), true);
 		$this->server->schedule(20 * 13, array($this, "checkTime"), array(), true);
 		$this->name = $name;
 		$this->usedChunks = array();
@@ -107,11 +107,10 @@ class Level{
 		}
 	}
 	
-	public function checkThings(){
+	public function doTick(){
 		if(!isset($this->level)){
 			return false;
 		}
-		$now = microtime(true);
 		
 		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
 			foreach($this->changedCount as $index => $mini){
@@ -149,15 +148,35 @@ class Level{
 				}
 				$this->changedBlocks = array();
 			}
+			
+			$X = null;
+			$Z = null;
+			
+			//Do chunk updates
+			foreach($this->usedChunks as $index => $p){
+				PMFLevel::getXZ($index, $X, $Z);
+				for($Y = 0; $Y < 8; ++$Y){
+					if(!$this->level->isMiniChunkEmpty($X, $Z, $Y)){
+						for($i = 0; $i < 3; ++$i){
+							$block = $this->getBlockRaw(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
+							if($block instanceof Block){
+								if($block->onUpdate(BLOCK_UPDATE_RANDOM) === BLOCK_UPDATE_NORMAL){
+									$this->server->api->block->blockUpdateAround($block, $this);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
-		if($this->nextSave < $now){
+		if($this->nextSave < microtime(true)){
+			$X = null;
+			$Z = null;
 			foreach($this->usedChunks as $i => $c){
 				if(count($c) === 0){
 					unset($this->usedChunks[$i]);
-					$X = explode(".", $i);
-					$Z = (int) array_pop($X);
-					$X = (int) array_pop($X);
+					PMFLevel::getXZ($i, $X, $Z);
 					if(!$this->isSpawnChunk($X, $Z)){
 						$this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 					}
