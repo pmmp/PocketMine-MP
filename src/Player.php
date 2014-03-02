@@ -253,6 +253,21 @@ class Player extends PlayerEntity{
 		}
 		asort($newOrder);
 		$this->chunksOrder = $newOrder;
+		
+		$index = key($this->chunksOrder);
+		PMFLevel::getXZ($index, $X, $Z);
+		$this->level->loadChunk($X, $Z);
+		if(!$this->level->isChunkPopulated($X, $Z)){
+			$this->level->loadChunk($X - 1, $Z);
+			$this->level->loadChunk($X + 1, $Z);
+			$this->level->loadChunk($X, $Z - 1);
+			$this->level->loadChunk($X, $Z + 1);
+			$this->level->loadChunk($X + 1, $Z + 1);
+			$this->level->loadChunk($X + 1, $Z - 1);
+			$this->level->loadChunk($X - 1, $Z - 1);
+			$this->level->loadChunk($X - 1, $Z + 1);
+		}
+
 		foreach($lastChunk as $index => $Yndex){
 			if($Yndex !== 0xff){
 				$X = null;
@@ -314,15 +329,23 @@ class Player extends PlayerEntity{
 			}
 			return false;
 		}
+		$X = null;
+		$Z = null;
+		PMFLevel::getXZ($index, $X, $Z);
+		if(!$this->level->isChunkPopulated($X, $Z)){			
+			$this->orderChunks();
+			if($this->chunkScheduled === 0 or $force === true){
+				$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+				++$this->chunkScheduled;
+			}
+			return false;
+		}
 		unset($this->chunksOrder[$index]);
 		if(!isset($this->chunksLoaded[$index])){
 			$this->chunksLoaded[$index] = 0xff;
 		}
 		$Yndex = $this->chunksLoaded[$index];
 		$this->chunksLoaded[$index] = 0; //Load them all
-		$X = null;
-		$Z = null;
-		PMFLevel::getXZ($index, $X, $Z);
 		$this->level->useChunk($X, $Z, $this);
 		$pk = new ChunkDataPacket;
 		$pk->chunkX = $X;
@@ -1608,11 +1631,7 @@ class Player extends PlayerEntity{
 				break;*/
 			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				break;
-			/*case ProtocolInfo::USE_ITEM_PACKET:
-				if(!($this->entity instanceof Entity)){
-					break;
-				}
-
+			case ProtocolInfo::USE_ITEM_PACKET:
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 				
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
@@ -1656,12 +1675,12 @@ class Player extends PlayerEntity{
 				$data["posZ"] = $packet->posZ;
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
-					if($this->entity->inAction === true){
-						$this->entity->inAction = false;
-						$this->entity->updateMetadata();
+					if($this->inAction === true){
+						$this->inAction = false;
+						//$this->entity->updateMetadata();
 					}
 					
-					if($this->blocked === true or ($this->entity instanceof Entity and $blockVector->distance($this->entity) > 10)){
+					if($this->blocked === true or $blockVector->distance($this) > 10){
 					
 					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
@@ -1689,11 +1708,11 @@ class Player extends PlayerEntity{
 					$this->dataPacket($pk);
 					break;
 				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
-					$this->entity->inAction = true;
+					$this->inAction = true;
 					$this->startAction = microtime(true);
-					$this->entity->updateMetadata();
+					//$this->updateMetadata();
 				}
-				break;*/
+				break;
 			/*case ProtocolInfo::PLAYER_ACTION_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
@@ -1770,9 +1789,9 @@ class Player extends PlayerEntity{
 						$this->stopSleep();
 				}
 				break;*/
-			/*case ProtocolInfo::REMOVE_BLOCK_PACKET:
+			case ProtocolInfo::REMOVE_BLOCK_PACKET:
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
-				if($this->spawned === false or $this->blocked === true or $this->entity->distance($blockVector) > 8){
+				if($this->spawned === false or $this->blocked === true or $this->distance($blockVector) > 8){
 					$target = $this->level->getBlock($blockVector);
 					
 					$pk = new UpdateBlockPacket;
@@ -1787,7 +1806,7 @@ class Player extends PlayerEntity{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 				$this->server->api->block->playerBlockBreak($this, $blockVector);
-				break;*/
+				break;
 			/*case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
