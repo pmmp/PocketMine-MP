@@ -49,7 +49,7 @@ class TextFormat{
 	}
 
 	public static function clean($string){
-		return preg_replace("/§[0123456789abcdefklmnor]/", "", $string);
+		return preg_replace(array("/§[0123456789abcdefklmnor]/", "/\\x1b*/"), "", $string);
 	}
 	
 	public static function toHTML($string){
