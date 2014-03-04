@@ -1371,6 +1371,8 @@ class Player extends PlayerEntity{
 				$pk->status = 0;
 				$this->dataPacket($pk);
 				
+				parent::__construct($this->level, $nbt);
+				
 				$pk = new StartGamePacket;
 				$pk->seed = $this->level->getSeed();
 				$pk->x = $this->x;
@@ -1381,7 +1383,6 @@ class Player extends PlayerEntity{
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
 				$this->dataPacket($pk);
 				
-				parent::__construct($this->level, $nbt);
 				
 				if(($level = $this->server->api->level->get($this->namedtag->SpawnLevel)) !== false){
 					$this->spawnPosition = new Position($this->namedtag->SpawnX, $this->namedtag->SpawnY, $this->namedtag->SpawnZ, $level);
