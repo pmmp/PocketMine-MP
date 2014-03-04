@@ -80,6 +80,14 @@ class Item{
 		}
 	}
 	
+	public function getCount(){
+		return $this->count;
+	}
+	
+	public function setCount($count){
+		$this->count = (int) $count;
+	}
+	
 	final public function getName(){
 		return $this->name;
 	}
@@ -280,6 +288,10 @@ class Item{
 	
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
+	}
+	
+	public final function equals(Item $item, $checkDamage = false){
+		return $this->id === $item->getID() and ($checkDamage === false or $this->getMetadata() === $item->getMetadata());
 	}
 	
 }

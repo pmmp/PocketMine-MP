@@ -154,7 +154,7 @@ abstract class Entity extends Position{
 		}
 
 		$timeNow = microtime(true);
-		$this->ticksLived += ($now - $this->lastUpdate) * 20;
+		$this->ticksLived += ($timeNow - $this->lastUpdate) * 20;
 		
 		if($this->handleWaterMovement()){
 			$this->fallDistance = 0;
@@ -490,6 +490,7 @@ abstract class Entity extends Position{
 /***REM_START***/
 require_once("entity/DamageableEntity.php");
 require_once("entity/ProjectileSourceEntity.php");
+require_once("entity/InventorySourceEntity.php");
 require_once("entity/RideableEntity.php");
 require_once("entity/TameableEntity.php");
 require_once("entity/AttachableEntity.php");

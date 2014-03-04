@@ -101,7 +101,7 @@ class AxisAlignedBB{
 		return $vec;
 	}
 	
-	public function getMixedBoundingBox(AxisAlignedBB $bb){
+	public function setBB(AxisAlignedBB $bb){
 		return new AxisAlignedBB(
 			min($this->minX, $bb->minX),
 			min($this->minY, $bb->minY),

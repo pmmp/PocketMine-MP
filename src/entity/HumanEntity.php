@@ -19,9 +19,10 @@
  *
 */
 
-class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
+class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, InventorySourceEntity{
 	
-	protected $nameTag;
+	protected $nameTag = "TESTIFICATE";
+	protected $inventory = array();
 	
 	protected function initEntity(){
 		if(isset($this->namedtag->NameTag)){
@@ -106,7 +107,7 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 			}
 		}*/
 		return $d;
-	}
+	}	
 	
 	public function attack($damage, $source = "generic"){
 	
@@ -114,5 +115,114 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity{
 	
 	public function heal($amount, $source = "generic"){
 	
+	}
+	
+	public function hasItem(Item $item, $checkDamage = true){
+		foreach($this->inventory as $s => $i){
+			if($i->equals($item, $checkDamage)){
+				return $i;
+			}
+		}
+		return false;	
+	}
+	
+	public function canAddItem(Item $item){
+		$inv = $this->inventory;
+		while($item->getCount() > 0){
+			$add = 0;
+			foreach($inv as $s => $i){
+				if($i->getID() === AIR){
+					$add = min($i->getMaxStackSize(), $item->getCount());
+					$inv[$s] = clone $item;
+					$inv[$s]->setCount($add);
+					break;
+				}elseif($i->equals($item)){
+					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
+					if($add <= 0){
+						continue;
+					}
+					$inv[$s] = clone $item;
+					$inv[$s]->setCount($i->getCount() + $add);
+					break;
+				}
+			}
+			if($add <= 0){
+				return false;
+			}
+			$item->setCount($item->getCount() - $add);
+		}
+		return true;
+	}
+	
+	public function addItem(Item $item){
+		while($item->getCount() > 0){
+			$add = 0;
+			foreach($this->inventory as $s => $i){
+				if($i->getID() === AIR){
+					$add = min($i->getMaxStackSize(), $item->getCount());
+					$i2 = clone $item;
+					$i2->setCount($add);
+					$this->setSlot($s, $i2);
+					break;
+				}elseif($i->equals($item)){
+					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
+					if($add <= 0){
+						continue;
+					}
+					$i2 = clone $item;
+					$i2->setCount($i->getCount() + $add);
+					$this->setSlot($s, $i2);
+					break;
+				}
+			}
+			if($add <= 0){
+				return false;
+			}
+			$item->setCount($item->getCount() - $add);
+		}
+		return true;
+	}
+	
+	public function canRemoveItem(Item $item, $checkDamage = true){
+		return $this->hasItem($item, $checkDamage);
+	}
+	
+	public function removeItem(Item $item, $checkDamage = true){
+		while($item->getCount() > 0){
+			$remove = 0;
+			foreach($this->inventory as $s => $i){
+				if($i->equals($item, $checkDamage)){
+					$remove = min($item->getCount(), $i->getCount());
+					if($item->getCount() < $i->getCount()){
+						$i->setCount($i->getCount() - $item->getCount());
+						$this->setSlot($s, $i);
+					}else{
+						$this->setSlot($s, BlockAPI::getItem(AIR, 0, 0));
+					}
+					break;
+				}
+			}
+			if($remove <= 0){
+				return false;
+			}
+			$item->setCount($item->getCount() - $remove);
+		}
+		return true;
+	}
+
+    public function setSlot($slot, Item $item){
+		$this->inventory[(int) $slot] = $item;
+	}
+
+    public function getSlot($slot){
+		$this->inventory[(int) $slot] = $item;
+	}
+	
+	public function getAllSlots(){
+		return $this->inventory;
+	}
+	
+	public function getSlotCount(){
+		return count($this->inventory);
 	}
 }
