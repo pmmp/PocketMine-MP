@@ -216,7 +216,7 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, Inve
 
     public function getSlot($slot){
 		$slot = (int) $slot;
-		if(!($this->inventory[$slot] instanceof Item)){
+		if(!isset($this->inventory[$slot])){
 			$this->inventory[$slot] = BlockAPI::getItem(AIR, 0, 0);
 		}
 		return $this->inventory[$slot];
