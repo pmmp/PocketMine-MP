@@ -162,14 +162,14 @@ class Player extends PlayerEntity{
 			if(file_exists(DATA_PATH."players/".$iname.".yml")){
 				$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, array());
 				$nbt->playerGameType = (int) $data->get("gamemode");
-				$nbt->Level = $data->get("gamemode")["position"]["level"];
-				$nbt->Pos[0] = $data->get("gamemode")["position"]["x"];
-				$nbt->Pos[1] = $data->get("gamemode")["position"]["y"];
-				$nbt->Pos[2] = $data->get("gamemode")["position"]["z"];
-				$nbt->SpawnLevel = $data->get("gamemode")["spawn"]["level"];
-				$nbt->SpawnX = (int) $data->get("gamemode")["spawn"]["x"];
-				$nbt->SpawnY = (int) $data->get("gamemode")["spawn"]["y"];
-				$nbt->SpawnZ = (int) $data->get("gamemode")["spawn"]["z"];				
+				$nbt->Level = $data->get("position")["level"];
+				$nbt->Pos[0] = $data->get("position")["x"];
+				$nbt->Pos[1] = $data->get("position")["y"];
+				$nbt->Pos[2] = $data->get("position")["z"];
+				$nbt->SpawnLevel = $data->get("spawn")["level"];
+				$nbt->SpawnX = (int) $data->get("spawn")["x"];
+				$nbt->SpawnY = (int) $data->get("spawn")["y"];
+				$nbt->SpawnZ = (int) $data->get("spawn")["z"];				
 				console("[NOTICE] Old Player data found for \"".$iname."\", upgrading profile");
 				foreach($data->get("inventory") as $slot => $item){
 					if(count($item) === 3){
@@ -442,7 +442,7 @@ class Player extends PlayerEntity{
 		
 		//Hotbar
 		for($slot = 0; $slot < 9; ++$slot){
-			if($this->hotbar[$slot] !== -1){
+			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
 				$item = $this->getSlot($this->hotbar[$slot]);
 				if($item->getID() !== AIR and $item->getCount() > 0){
 					$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
