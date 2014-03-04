@@ -230,7 +230,7 @@ class Level{
 			PMFLevel::getXZ($index, $X, $Z);
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->setData(new NBTTag_Compound("", array(
-				"Entities" => new NBTTag_List("Entities", array()),				
+				"Entities" => new NBTTag_List("Entities", array()),
 				"TileEntities" => new NBTTag_List("TileEntities", array()),
 			)));
 			$nbt->Entities->setTagType(NBTTag::TAG_Compound);
@@ -239,6 +239,7 @@ class Level{
 			$i = 0;
 			foreach($this->chunkEntities[$index] as $entity){
 				if($entity->closed !== true){
+					$nbt->Entities[$i]->saveNBT();
 					$nbt->Entities[$i] = $entity->namedtag;
 					++$i;
 				}
