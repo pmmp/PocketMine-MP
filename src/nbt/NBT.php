@@ -131,7 +131,7 @@ class NBT implements ArrayAccess{
 	
 	public function writeTag(NBTTag $tag){
 		$this->putByte($tag->getType());
-		if($tag instanceof NamedNBTTag and $tag->getName() !== false){
+		if($tag instanceof NamedNBTTag){
 			$this->putString($tag->getName());
 		}
 		$tag->write($this);

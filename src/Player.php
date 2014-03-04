@@ -51,7 +51,6 @@ class Player extends PlayerEntity{
 	public $CID;
 	public $MTU;
 	public $spawned = false;
-	public $inventory;
 	public $slot;
 	public $hotbar;
 	public $armor = array();
@@ -123,48 +122,113 @@ class Player extends PlayerEntity{
 	public static function getOffline($name){
 		$server = ServerAPI::request();
 		$iname = strtolower($name);
-		$default = array(
-			"caseusername" => $name,
-			"position" => array(
-				"level" => $server->spawn->level->getName(),
-				"x" => $server->spawn->x,
-				"y" => $server->spawn->y,
-				"z" => $server->spawn->z,
-			),
-			"spawn" => array(
-				"level" => $server->spawn->level->getName(),
-				"x" => $server->spawn->x,
-				"y" => $server->spawn->y,
-				"z" => $server->spawn->z,
-			),
-			"inventory" => array_fill(0, PLAYER_SURVIVAL_SLOTS, array(AIR, 0, 0)),
-			"hotbar" => array(0, -1, -1, -1, -1, -1, -1, -1, -1),
-			"armor" => array_fill(0, 4, array(AIR, 0)),
-			"gamemode" => $server->gamemode,
-			"health" => 20,
-			"lastIP" => "",
-			"lastID" => 0,
-			"achievements" => array(),
-		);
-
-		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
-			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
-			$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, $default);
-			$data->save();
+		if(!file_exists(DATA_PATH."players/".$iname.".dat")){
+			$nbt = new NBTTag_Compound(false, array(
+				"Pos" => new NBTTag_List("Pos", array(
+					0 => new NBTTag_Double(0, $server->spawn->x),
+					1 => new NBTTag_Double(1, $server->spawn->y),
+					2 => new NBTTag_Double(2, $server->spawn->z)
+				)),
+				"Level" => new NBTTag_String("Level", $server->spawn->level->getName()),
+				"SpawnLevel" => new NBTTag_String("SpawnLevel", $server->spawn->level->getName()),
+				"SpawnX" => new NBTTag_Int("SpawnX", (int) $server->spawn->x),
+				"SpawnY" => new NBTTag_Int("SpawnY", (int) $server->spawn->y),
+				"SpawnZ" => new NBTTag_Int("SpawnZ", (int) $server->spawn->z),
+				"SpawnForced" => new NBTTag_Byte("SpawnForced", 1), //TODO
+				"Inventory" => new NBTTag_List("Inventory", array()),
+				"Achievements" => new NBTTag_Compound("Achievements", array()),
+				"playerGameType" => new NBTTag_Int("playerGameType", $server->gamemode),
+				"Motion" => new NBTTag_List("Motion", array(
+					0 => new NBTTag_Double(0, 0.0),
+					1 => new NBTTag_Double(1, 0.0),
+					2 => new NBTTag_Double(2, 0.0)
+				)),
+				"Rotation" => new NBTTag_List("Rotation", array(
+					0 => new NBTTag_Float(0, 0.0),
+					1 => new NBTTag_Float(1, 0.0)
+				)),
+				"FallDistance" => new NBTTag_Float("FallDistance", 0.0),
+				"Fire" => new NBTTag_Short("Fire", 0),
+				"Air" => new NBTTag_Short("Air", 0),
+				"OnGround" => new NBTTag_Byte("OnGround", 1),
+				"Invulnerable" => new NBTTag_Byte("Invulnerable", 0),
+				
+				"NameTag" => new NBTTag_String("NameTag", $name),
+			));
+			$nbt->Pos->setTagType(NBTTag::TAG_Double);
+			$nbt->Inventory->setTagType(NBTTag::TAG_Compound);
+			$nbt->Motion->setTagType(NBTTag::TAG_Double);
+			$nbt->Rotation->setTagType(NBTTag::TAG_Float);
+			if(file_exists(DATA_PATH."players/".$iname.".yml")){
+				$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, array());
+				$nbt->playerGameType = (int) $data->get("gamemode");
+				$nbt->Level = $data->get("gamemode")["position"]["level"];
+				$nbt->Pos[0] = $data->get("gamemode")["position"]["x"];
+				$nbt->Pos[1] = $data->get("gamemode")["position"]["y"];
+				$nbt->Pos[2] = $data->get("gamemode")["position"]["z"];
+				$nbt->SpawnLevel = $data->get("gamemode")["spawn"]["level"];
+				$nbt->SpawnX = (int) $data->get("gamemode")["spawn"]["x"];
+				$nbt->SpawnY = (int) $data->get("gamemode")["spawn"]["y"];
+				$nbt->SpawnZ = (int) $data->get("gamemode")["spawn"]["z"];				
+				console("[NOTICE] Old Player data found for \"".$iname."\", upgrading profile");
+				foreach($data->get("inventory") as $slot => $item){
+					if(count($item) === 3){
+						$nbt->Inventory[$slot + 9] = new NBTTag_Compound(false, array(
+							"id" => new NBTTag_Short("id", $item[0]),
+							"Damage" => new NBTTag_Short("Damage", $item[1]),
+							"Count" => new NBTTag_Byte("Count", $item[2]),
+							"Slot" => new NBTTag_Byte("Slot", $slot + 9),
+							"TrueSlot" => new NBTTag_Byte("TrueSlot", $slot + 9)
+						));
+					}
+				}
+				foreach($data->get("hotbar") as $slot => $itemSlot){
+					if(isset($nbt->Inventory[$itemSlot + 9])){
+						$item = $nbt->Inventory[$itemSlot + 9];
+						$nbt->Inventory[$slot] = new NBTTag_Compound(false, array(
+								"id" => new NBTTag_Short("id", $item->id),
+								"Damage" => new NBTTag_Short("Damage", $item->Damage),
+								"Count" => new NBTTag_Byte("Count", $item->Count),
+								"Slot" => new NBTTag_Byte("Slot", $slot),
+								"TrueSlot" => new NBTTag_Byte("TrueSlot", $item->TrueSlot)
+						));
+					}
+				}
+				foreach($data->get("armor") as $slot => $item){
+					if(count($item) === 2){
+						$nbt->Inventory[$slot + 100] = new NBTTag_Compound(false, array(
+							"id" => new NBTTag_Short("id", $item[0]),
+							"Damage" => new NBTTag_Short("Damage", $item[1]),
+							"Count" => new NBTTag_Byte("Count", 1),
+							"Slot" => new NBTTag_Byte("Slot", $slot + 100)
+						));
+					}
+				}
+				foreach($data->get("achievements") as $achievement => $status){
+					$nbt->Achievements[$achievement] = new NBTTag_Byte($achievement, $status == true ? 1:0);
+				}
+				unlink(DATA_PATH."players/".$iname.".yml");
+			}else{
+				console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
+				Player::saveOffline($name, $nbt);
+			}
+			
 		}else{
-			$data = new Config(DATA_PATH."players/".$iname.".yml", Config::YAML, $default);
+			$nbt = new NBT(NBT::BIG_ENDIAN);
+			$nbt->read(file_get_contents(DATA_PATH."players/".$iname.".dat"));
+			$nbt = $nbt->getData();
 		}
 
-		if(($data->get("gamemode") & 0x01) === 1){
-			$data->set("health", 20);
-		}
-		$server->handle("player.offline.get", $data);
-		return $data;
+		$server->handle("player.offline.get", $nbt);		
+	
+		return $nbt;
 	}	
 
-	public static function saveOffline(Config $data){
-		ServerAPI::request()->handle("player.offline.save", $data);
-		$data->save();
+	public static function saveOffline($name, NBTTag_Compound $nbtTag){
+		ServerAPI::request()->handle("player.offline.save", $nbtTag);
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setData($nbtTag);
+		file_put_contents(DATA_PATH."players/".strtolower($name).".dat", $nbt->write());
 	}
 	
 	public static function broadcastPacket(array $players, RakNetDataPacket $packet){
@@ -191,7 +255,6 @@ class Player extends PlayerEntity{
 		$this->port = $port;
 		$this->spawnPosition = $this->server->spawn;
 		$this->timeout = microtime(true) + 20;
-		$this->inventory = array();
 		$this->armor = array();
 		$this->gamemode = $this->server->gamemode;
 		$this->level = $this->server->api->level->getDefault();
@@ -369,39 +432,70 @@ class Player extends PlayerEntity{
 	}
 
 	public function save(){
-		$this->data->set("achievements", $this->achievements);
-		$this->data->set("position", array(
-			"level" => $this->level->getName(),
-			"x" => $this->x,
-			"y" => $this->y,
-			"z" => $this->z,
-		));
-		$this->data->set("spawn", array(
-			"level" => $this->spawnPosition->level->getName(),
-			"x" => $this->spawnPosition->x,
-			"y" => $this->spawnPosition->y,
-			"z" => $this->spawnPosition->z,
-		));
-		$inv = array();			
-		foreach($this->inventory as $slot => $item){
-			if($item instanceof Item){
-				if($slot < (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS)){
-					$inv[$slot] = array($item->getID(), $item->getMetadata(), $item->count);
+		parent::saveNBT();
+		unset($this->namedtag->NameTag);
+		$this->namedtag->Level = $this->level->getName();
+		$this->namedtag->SpawnLevel = $this->level->getName();
+		$this->namedtag->SpawnX = (int) $this->spawnPosition->x;
+		$this->namedtag->SpawnY = (int) $this->spawnPosition->y;
+		$this->namedtag->SpawnZ = (int) $this->spawnPosition->z;
+		
+		//Hotbar
+		for($slot = 0; $slot < 9; ++$slot){
+			if($this->hotbar[$slot] !== -1){
+				$item = $this->getSlot($this->hotbar[$slot]);
+				if($item->getID() !== AIR and $item->getCount() > 0){
+					$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+						"Count" => new NBTTag_Byte("Count", $item->getCount()),
+						"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
+						"Slot" => new NBTTag_Byte("Slot", $slot),
+						"TrueSlot" => new NBTTag_Byte("TrueSlot", $this->hotbar[$slot]),
+						"id" => new NBTTag_Short("id", $item->getID()),
+					));
+					continue;
 				}
 			}
+			$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+				"Count" => new NBTTag_Byte("Count", 0),
+				"Damage" => new NBTTag_Short("Damage", 0),
+				"Slot" => new NBTTag_Byte("Slot", $slot),
+				"TrueSlot" => new NBTTag_Byte("Slot", -1),
+				"id" => new NBTTag_Short("id", 0),
+			));			
 		}
-		$this->data->set("inventory", $inv);
-		$this->data->set("hotbar", $this->hotbar);
 		
-		$armor = array();
-		foreach($this->armor as $slot => $item){
+		//Normal inventory
+		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS) + 9;
+		for($slot = 9; $slot < $slotCount; ++$slot){
+			$item = $this->getSlot($count);
+			$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+				"Count" => new NBTTag_Byte("Count", $item->getCount()),
+				"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
+				"Slot" => new NBTTag_Byte("Slot", $slot),
+				"id" => new NBTTag_Short("id", $item->getID()),
+			));
+		}
+
+		//Armor
+		for($slot = 100; $slot < 104; ++$slot){
+			$item = $this->armor[$slot - 100];
 			if($item instanceof Item){
-				$armor[$slot] = array($item->getID(), $item->getMetadata());
+				$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+					"Count" => new NBTTag_Byte("Count", $item->getCount()),
+					"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
+					"Slot" => new NBTTag_Byte("Slot", $slot),
+					"id" => new NBTTag_Short("id", $item->getID()),
+				));
 			}
 		}
-		$this->data->set("armor", $armor);
+		
+		foreach($this->achievements as $achievement => $status){
+			$this->namedtag->Achievements[$achievement] = new NBTTag_Byte($achievement, $status === true ? 1:0);
+		}
+		
+		$this->namedtag->playerGameType = $this->gamemode;
+
 		//$this->data->set("health", $this->getHealth());
-		$this->data->set("gamemode", $this->gamemode);
 	}
 
 	/**
@@ -431,8 +525,8 @@ class Player extends PlayerEntity{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			if($this->username != "" and ($this->data instanceof Config)){
-				Player::saveOffline($this->data);
+			if($this->username != "" and ($this->namedtag instanceof NBTTag_Compound)){
+				Player::saveOffline($this->username, $this->namedtag);
 			}
 			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
@@ -496,131 +590,6 @@ class Player extends PlayerEntity{
 			}
 		}
 	}
-
-    /**
-     * @param $type
-     * @param $damage
-     * @param $count
-     *
-     * @return boolean
-     */
-    public function hasSpace($type, $damage, $count){
-		$inv = $this->inventory;
-		while($count > 0){
-			$add = 0;
-			foreach($inv as $s => $item){
-				if($item->getID() === AIR){
-					$add = min($item->getMaxStackSize(), $count);
-					$inv[$s] = BlockAPI::getItem($type, $damage, $add);
-					break;
-				}elseif($item->getID() === $type and $item->getMetadata() === $damage){
-					$add = min($item->getMaxStackSize() - $item->count, $count);
-					if($add <= 0){
-						continue;
-					}
-					$inv[$s] = BlockAPI::getItem($type, $damage, $item->count + $add);
-					break;
-				}
-			}
-			if($add <= 0){
-				return false;
-			}
-			$count -= $add;
-		}
-		return true;
-	}
-
-    /**
-     * @param $type
-     * @param $damage
-     * @param integer $count
-     * @param boolean $send
-     *
-     * @return boolean
-     */
-    public function addItem($type, $damage, $count, $send = true){
-		while($count > 0){
-			$add = 0;
-			foreach($this->inventory as $s => $item){
-				if($item->getID() === AIR){
-					$add = min($item->getMaxStackSize(), $count);
-					$this->inventory[$s] = BlockAPI::getItem($type, $damage, $add);
-					if($send === true){
-						$this->sendInventorySlot($s);
-					}
-					break;
-				}elseif($item->getID() === $type and $item->getMetadata() === $damage){
-					$add = min($item->getMaxStackSize() - $item->count, $count);
-					if($add <= 0){
-						continue;
-					}
-					$item->count += $add;
-					if($send === true){
-						$this->sendInventorySlot($s);
-					}
-					break;
-				}
-			}
-			if($add <= 0){
-				return false;
-			}
-			$count -= $add;
-		}
-		return true;
-	}
-
-	public function removeItem($type, $damage, $count, $send = true){
-		while($count > 0){
-			$remove = 0;
-			foreach($this->inventory as $s => $item){
-				if($item->getID() === $type and $item->getMetadata() === $damage){
-					$remove = min($count, $item->count);
-					if($remove < $item->count){
-						$item->count -= $remove;
-					}else{
-						$this->inventory[$s] = BlockAPI::getItem(AIR, 0, 0);
-					}
-					if($send === true){
-						$this->sendInventorySlot($s);
-					}
-					break;
-				}
-			}
-			if($remove <= 0){
-				return false;
-			}
-			$count -= $remove;
-		}
-		return true;
-	}
-
-    /**
-     * @param integer $slot
-     * @param Item $item
-     * @param boolean $send
-     *
-     * @return boolean
-     */
-    public function setSlot($slot, Item $item, $send = true){
-		$this->inventory[(int) $slot] = $item;
-		if($send === true){
-			$this->sendInventorySlot((int) $slot);
-		}
-		return true;
-	}
-
-    /**
-     * @param integer $slot
-     *
-     * @return Item
-     */
-    public function getSlot($slot){
-		if(isset($this->inventory[(int) $slot])){
-			return $this->inventory[(int) $slot];
-		}else{
-			return BlockAPI::getItem(AIR, 0, 0);
-		}
-	}
 	
 	public function sendInventorySlot($s){
 		$this->sendInventory();
@@ -662,15 +631,6 @@ class Player extends PlayerEntity{
 		}else{
 			return BlockAPI::getItem(AIR, 0, 0);
 		}
-	}
-	
-	public function hasItem($type, $damage = false){
-		foreach($this->inventory as $s => $item){
-			if($item->getID() === $type and ($item->getMetadata() === $damage or $damage === false) and $item->count > 0){
-				return $s;
-			}
-		}
-		return false;
 	}
 
     /**
@@ -1353,16 +1313,15 @@ class Player extends PlayerEntity{
 					}
 				}
 
-				$this->data = Player::getOffline($this->username);
-				$this->gamemode = $this->data->get("gamemode");
-				if(($this->level = $this->server->api->level->get($this->data->get("position")["level"])) === false){
+				$nbt = Player::getOffline($this->username);
+				$nbt->NameTag = $this->username;
+				$this->gamemode = $nbt->playerGameType & 0x03;
+				if(($this->level = $this->server->api->level->get($nbt->Level)) === false){
 					$this->level = $this->server->api->level->getDefault();
-					$this->data->set("position", array(
-						"level" => $this->level->getName(),
-						"x" => $this->level->getSpawn()->x,
-						"y" => $this->level->getSpawn()->y,
-						"z" => $this->level->getSpawn()->z,
-					));
+					$nbt->Level = $this->level->getName();
+					$nbt->Pos[0] = $this->level->getSpawn()->x;
+					$nbt->Pos[1] = $this->level->getSpawn()->y;
+					$nbt->Pos[2] = $this->level->getSpawn()->z;
 				}
 			
 				if($this->server->api->handle("player.join", $this) === false){
@@ -1370,47 +1329,43 @@ class Player extends PlayerEntity{
 					return;
 				}
 				
-				if(!($this->data instanceof Config)){
+				if(!($nbt instanceof NBTTag_Compound)){
 					$this->close("no config created", false);
 					return;
 				}
 				
-				$this->auth = true;
-				if(!$this->data->exists("inventory") or ($this->gamemode & 0x01) === 0x01){
-					if(($this->gamemode & 0x01) === 0x01){
-						$inv = array();
-						if(($this->gamemode & 0x02) === 0x02){
-							foreach(BlockAPI::$creative as $item){
-								$inv[] = array(DANDELION, 0, 1);
-							}
-						}else{
-							foreach(BlockAPI::$creative as $item){
-								$inv[] = array($item[0], $item[1], 1);
-							}
-						}
-						$this->data->set("inventory", $inv);
+				$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
+				$this->armor = array(
+					0 => BlockAPI::getItem(AIR, 0, 0),
+					1 => BlockAPI::getItem(AIR, 0, 0),
+					2 => BlockAPI::getItem(AIR, 0, 0),
+					3 => BlockAPI::getItem(AIR, 0, 0)
+				);
+				
+				foreach($nbt->Inventory as $item){
+					if($item->Slot >= 0 and $item->Slot < 9){ //Hotbar
+						$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot:-1;
+					}elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
+						$this->armor[$item->Slot - 100] = BlockAPI::getItem($item->id, $item->Damage, $item->Count);
+					}else{
+						$this->inventory[$item->Slot - 9] = BlockAPI::getItem($item->id, $item->Damage, $item->Count);
 					}
-				}
-				$this->achievements = $this->data->get("achievements");
-				$this->data->set("caseusername", $this->username);
-				$this->inventory = array();		
-				foreach($this->data->get("inventory") as $slot => $item){
-					if(!is_array($item) or count($item) < 3){
-						$item = array(AIR, 0, 0);
-					}
-					$this->inventory[$slot] = BlockAPI::getItem($item[0], $item[1], $item[2]);
 				}
 
-				$this->armor = array();
-				foreach($this->data->get("armor") as $slot => $item){
-					$this->armor[$slot] = BlockAPI::getItem($item[0], $item[1], $item[0] === 0 ? 0:1);
+				if(($this->gamemode & 0x01) === 0x01){
+					$this->slot = 0;
+					$this->hotbar = array();
+				}else{
+					$this->slot = $this->hotbar[0];
 				}
 				
-				$this->data->set("lastIP", $this->ip);
-				$this->data->set("lastID", $this->clientID);
+				$this->achievements = array();
+				foreach($nbt->Achievements->getValue() as $achievement){
+					$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
+				}
 
-				Player::saveOffline($this->data);
-
+				Player::saveOffline($this->username, $nbt);
+				$this->auth = true;
 
 				$pk = new LoginStatusPacket;
 				$pk->status = 0;
@@ -1418,56 +1373,18 @@ class Player extends PlayerEntity{
 				
 				$pk = new StartGamePacket;
 				$pk->seed = $this->level->getSeed();
-				$pk->x = $this->data->get("position")["x"];
-				$pk->y = $this->data->get("position")["y"];
-				$pk->z = $this->data->get("position")["z"];
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
 				$pk->generator = 0;
 				$pk->gamemode = $this->gamemode & 0x01;
-				$pk->eid = 0;
+				$pk->eid = 0; //Always use EntityID as zero for the actual player
 				$this->dataPacket($pk);
-	
-				if(($this->gamemode & 0x01) === 0x01){
-					$this->slot = 0;
-					$this->hotbar = array();
-				}elseif($this->data->exists("hotbar")){
-					$this->hotbar = $this->data->get("hotbar");
-					$this->slot = $this->hotbar[0];
-				}else{
-					$this->slot = -1;//0
-					$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
-				}
-				
-				$nbt = new NBTTag_Compound(false, array(
-					"Pos" => new NBTTag_List("Pos", array(
-						0 => new NBTTag_Double(0, $this->data->get("position")["x"]),
-						1 => new NBTTag_Double(1, $this->data->get("position")["y"]),
-						2 => new NBTTag_Double(2, $this->data->get("position")["z"])
-					)),
-					"Motion" => new NBTTag_List("Motion", array(
-						0 => new NBTTag_Double(0, 0.0),
-						1 => new NBTTag_Double(1, 0.0),
-						2 => new NBTTag_Double(2, 0.0)
-					)),
-					"Rotation" => new NBTTag_List("Rotation", array(
-						0 => new NBTTag_Float(0, 0.0),
-						1 => new NBTTag_Float(1, 0.0)
-					)),
-					"FallDistance" => new NBTTag_Float("FallDistance", 0.0),
-					"Fire" => new NBTTag_Short("Fire", 0),
-					"Air" => new NBTTag_Short("Air", 0),
-					"OnGround" => new NBTTag_Byte("OnGround", 1),
-					"Invulnerable" => new NBTTag_Byte("Invulnerable", 0),
-					
-					"NameTag" => new NBTTag_String("NameTag", $this->username),
-				));
-				$nbt->Pos->setTagType(NBTTag::TAG_Double);
-				$nbt->Motion->setTagType(NBTTag::TAG_Double);
-				$nbt->Rotation->setTagType(NBTTag::TAG_Float);
 				
 				parent::__construct($this->level, $nbt);
 				
-				if(($level = $this->server->api->level->get($this->data->get("spawn")["level"])) !== false){
-					$this->spawnPosition = new Position($this->data->get("spawn")["x"], $this->data->get("spawn")["y"], $this->data->get("spawn")["z"], $level);
+				if(($level = $this->server->api->level->get($this->namedtag->SpawnLevel)) !== false){
+					$this->spawnPosition = new Position($this->namedtag->SpawnX, $this->namedtag->SpawnY, $this->namedtag->SpawnZ, $level);
 					
 					$pk = new SetSpawnPositionPacket;
 					$pk->x = (int) $this->spawnPosition->x;
@@ -1499,7 +1416,7 @@ class Player extends PlayerEntity{
 						if($this->spawned !== false){
 							break;
 						}
-						$this->heal($this->data->get("health"), "spawn", true);
+						//$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
 						$this->spawnToAll();
 						$this->sendChat($this->server->motd."\n");

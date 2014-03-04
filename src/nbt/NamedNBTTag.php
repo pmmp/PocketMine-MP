@@ -34,7 +34,7 @@ abstract class NamedNBTTag extends NBTTag{
 	}
 
 	public function getName(){
-		return $this->name;
+		return $this->name === false ? "" : $this->name;
 	}
 	
 	public function setName($name){
