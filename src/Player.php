@@ -467,7 +467,7 @@ class Player extends PlayerEntity{
 		//Normal inventory
 		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
-			$item = $this->getSlot($count);
+			$item = $this->getSlot($slot);
 			$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
 				"Count" => new NBTTag_Byte("Count", $item->getCount()),
 				"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
