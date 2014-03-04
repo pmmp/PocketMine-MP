@@ -57,13 +57,13 @@ class FurnaceTile extends Tile{
 		$raw = $this->getSlot(0);
 		$product = $this->getSlot(2);
 		$smelt = $raw->getSmeltItem();
-		$canSmelt = ($smelt !== false and $raw->count > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->count < $product->getMaxStackSize()) or $product->getID() === AIR));
-		if($this->namedtag->BurnTime <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->count > 0){
+		$canSmelt = ($smelt !== false and $raw->getCount() > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === AIR));
+		if($this->namedtag->BurnTime <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->getCount() > 0){
 			$this->lastUpdate = microtime(true);
 			$this->namedtag->MaxTime = $this->namedtag->BurnTime = floor($fuel->getFuelTime() * 20);
 			$this->namedtag->BurnTicks = 0;
-			--$fuel->count;
-			if($fuel->count === 0){
+			$fuel->setCount($fuel->getCount() - 1);
+			if($fuel->getCount() === 0){
 				$fuel = BlockAPI::getItem(AIR, 0, 0);
 			}
 			$this->setSlot(1, $fuel, false);
@@ -79,10 +79,10 @@ class FurnaceTile extends Tile{
 			if($smelt !== false and $canSmelt){
 				$this->namedtag->CookTime += $ticks;
 				if($this->namedtag->CookTime >= 200){ //10 seconds
-					$product = BlockAPI::getItem($smelt->getID(), $smelt->getMetadata(), $product->count + 1);
+					$product = BlockAPI::getItem($smelt->getID(), $smelt->getMetadata(), $product->getCount() + 1);
 					$this->setSlot(2, $product, false);
-					--$raw->count;
-					if($raw->count === 0){
+					$raw->setCount($raw->getCount() - 1);
+					if($raw->getCount() === 0){
 						$raw = BlockAPI::getItem(AIR, 0, 0);
 					}
 					$this->setSlot(0, $raw, false);

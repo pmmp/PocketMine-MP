@@ -139,7 +139,7 @@ class BanAPI{
 					break;
 				}
 				$this->server->api->console->run(implode(" ", $params), $player);
-				$output .= "Command ran as ".$player->username.".\n";
+				$output .= "Command ran as ".$player->getUsername().".\n";
 				break;
 			case "op":
 				$user = strtolower($params[0]);
@@ -188,9 +188,9 @@ class BanAPI{
 						$this->server->schedule(60, array($player, "close"), "You have been kicked: ".$reason); //Forces a kick
 						$player->blocked = true;
 						if($issuer instanceof Player){
-							$this->server->api->chat->broadcast($player->username." has been kicked by ".$issuer->username.": $reason\n");
+							$this->server->api->chat->broadcast($player->getUsername()." has been kicked by ".$issuer->getUsername().": $reason\n");
 						}else{
-							$this->server->api->chat->broadcast($player->username." has been kicked: $reason\n");
+							$this->server->api->chat->broadcast($player->getUsername()." has been kicked: $reason\n");
 						}
 					}
 				}
@@ -286,7 +286,7 @@ class BanAPI{
 							$player->close("You have been banned");
 						}
 						if($issuer instanceof Player){
-							$this->server->api->chat->broadcast($user." has been banned by ".$issuer->username."\n");
+							$this->server->api->chat->broadcast($user." has been banned by ".$issuer->getUsername()."\n");
 						}else{
 							$this->server->api->chat->broadcast($user." has been banned\n");
 						}

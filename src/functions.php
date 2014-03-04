@@ -84,7 +84,7 @@ function require_all($path, array $ignore = array(), &$count = 0){
 	$dir = dir($path."/");
 	$dirs = array();
 	while(false !== ($file = $dir->read())){
-		if($file !== "." and $file !== ".." and !in_array($file, $ignore, true)){
+		if($file !== "." and $file !== ".." and !isset($ignore[$file])){
 			if(!is_dir($path.$file) and strtolower(substr($file, -3)) === "php"){
 				require_once($path.$file);
 				++$count;

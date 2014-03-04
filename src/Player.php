@@ -43,10 +43,10 @@ class Player extends PlayerEntity{
 	protected $ip;
 	protected $port;
 	private $counter = array(0, 0, 0, 0);
-	private $username;
-	private $iusername;
-	private $startAction = false;
-	protected $isSleeping = false;
+	protected $username;
+	protected $iusername;
+	protected $startAction = false;
+	protected $sleeping = false;
 	public $auth = false;
 	public $CID;
 	public $MTU;
@@ -63,7 +63,7 @@ class Player extends PlayerEntity{
 	public $achievements = array();
 	public $chunksLoaded = array();
 	private $viewDistance;
-	private $chunksOrder = array();
+	protected $chunksOrder = array();
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
 	private $bandwidthStats = array(0, 0, 0);
@@ -72,7 +72,7 @@ class Player extends PlayerEntity{
 	private $spawnPosition;
 	private $packetLoss = 0;
 	private $lastChunk = false;
-	private $hunkScheduled = 0;
+	private $chunkScheduled = 0;
 	public $lastCorrect;
 	private $bigCnt;
 	private $packetStats;
@@ -82,13 +82,7 @@ class Player extends PlayerEntity{
 	private $chunkCount = array();
 	private $received = array();
 	public $loginData = array();
-	
-	public function __get($name){
-		if(isset($this->{$name})){
-			return ($this->{$name});
-		}
-		return null;
-	}
+
 	
 	public static function get($name, $alike = true, $multiple = false){
 		$name = trim(strtolower($name));
@@ -236,6 +230,69 @@ class Player extends PlayerEntity{
 			$player->dataPacket(clone $packet);
 		}
 	}
+	
+	public function grantAchievement($achievementId){
+		if(isset(Achievement::$list[$achievementId]) and !$this->hasAchievement($achievementId)){
+			foreach(Achievement::$list[$achievementId]["requires"] as $requerimentId){
+				if(!$this->hasAchievement($requerimentId)){
+					return false;
+				}
+			}
+			if($this->server->api->dhandle("achievement.grant", array("player" => $this, "achievementId" => $achievementId)) !== false){
+				$this->achievements[$achievementId] = true;
+				Achievement::broadcast($this, $achievementId);
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public function hasAchievement($achievementId){
+		if(!isset(Achievement::$list[$achievementId]) or !isset($this->achievements)){
+			$this->achievements = array();
+			return false;
+		}
+		
+		if(!isset($this->achievements[$achievementId]) or $this->achievements[$achievementId] == false){
+			return false;
+		}
+		return true;
+	}
+	
+	public function removeAchievement($achievementId){
+		if($this->hasAchievement($achievementId)){
+			$this->achievements[$achievementId] = false;
+		}
+	}
+	
+	public function getUsername(){
+		return $this->username;
+	}
+	
+	public function isConnected(){
+		return $this->connected === true;
+	}
+	
+	public function getIP(){
+		return $this->ip;
+	}
+	
+	public function getPort(){
+		return $this->port;
+	}
+	
+	public function isSleeping(){
+		return $this->sleeping instanceof Vector3;
+	}
+	
+	public function setChunkIndex($index, $flags){
+		if(isset($this->chunksLoaded[$index])){
+			$this->chunksLoaded[$index] |= $flags;		
+		}
+	}
+	
 
 	/**
 	 * @param integer $clientID
@@ -552,34 +609,34 @@ class Player extends PlayerEntity{
      */
     public function sleepOn(Vector3 $pos){
 		foreach($this->level->getPlayers() as $p){
-			if($p->isSleeping instanceof Vector3){
-				if($pos->distance($p->isSleeping) <= 0.1){
+			if($p->sleeping instanceof Vector3){
+				if($pos->distance($p->sleeping) <= 0.1){
 					return false;
 				}
 			}
 		}
-		$this->isSleeping = $pos;
+		$this->sleeping = $pos;
 		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
-		if($this->entity instanceof Entity){
-			$this->entity->updateMetadata();
-		}
+		/*if($this->entity instanceof Entity){
+			$this->updateMetadata();
+		}*/
 		$this->setSpawn($pos);
 		$this->server->schedule(60, array($this, "checkSleep"));
 		return true;
 	}
 	
 	public function stopSleep(){
-		$this->isSleeping = false;
+		$this->sleeping = false;
 		if($this->entity instanceof Entity){
 			$this->entity->updateMetadata();
 		}
 	}
 	
 	public function checkSleep(){
-		if($this->isSleeping !== false){
+		if($this->sleeping !== false){
 			if($this->server->api->time->getPhase($this->level) === "night"){
 				foreach($this->level->getPlayers() as $p){
-					if($p->isSleeping === false){
+					if($p->sleeping === false){
 						return false;
 					}
 				}
@@ -675,7 +732,7 @@ class Player extends PlayerEntity{
 				break;
 			case "player.armor":
 				if($data["player"]->level === $this->level){
-					if($data["eid"] === $this->eid){
+					if($data["eid"] === $this->id){
 						$this->sendArmor($this);
 						break;
 					}
@@ -686,32 +743,32 @@ class Player extends PlayerEntity{
 				}
 				break;
 			case "player.pickup":
-				if($data["eid"] === $this->eid){
+				if($data["eid"] === $this->id){
 					$data["eid"] = 0;
 					$pk = new TakeItemEntityPacket;
 					$pk->eid = 0;
-					$pk->target = $data["entity"]->eid;
+					$pk->target = $data["entity"]->getID();
 					$this->dataPacket($pk);
 					if(($this->gamemode & 0x01) === 0x00){
-						$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack, false);
+						//$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
 					switch($data["entity"]->type){
 						case WOOD:
-							AchievementAPI::grantAchievement($this, "mineWood");
+							$this->grantAchievement("mineWood");
 							break;
 						case DIAMOND:
-							AchievementAPI::grantAchievement($this, "diamond");
+							$this->grantAchievement("diamond");
 							break;
 					}
 				}elseif($data["entity"]->level === $this->level){
 					$pk = new TakeItemEntityPacket;
 					$pk->eid = $data["eid"];
-					$pk->target = $data["entity"]->eid;
+					$pk->target = $data["entity"]->getID();
 					$this->dataPacket($pk);
 				}
 				break;
 			case "player.equipment.change":
-				if($data["eid"] === $this->eid or $data["player"]->level !== $this->level){
+				if($data["eid"] === $this->id or $data["player"]->level !== $this->level){
 					break;
 				}
 				$data["slot"] = 0;
@@ -725,18 +782,18 @@ class Player extends PlayerEntity{
 
 				break;
 			case "entity.motion":
-				if($data->eid === $this->eid or $data->level !== $this->level){
+				if($data->getID() === $this->id or $data->level !== $this->level){
 					break;
 				}
 				$pk = new SetEntityMotionPacket;
-				$pk->eid = $data->eid;
+				$pk->eid = $data->getID();
 				$pk->speedX = $data->speedX;
 				$pk->speedY = $data->speedY;
 				$pk->speedZ = $data->speedZ;
 				$this->dataPacket($pk);
 				break;
 			case "entity.animate":
-				if($data["eid"] === $this->eid or $data["entity"]->level !== $this->level){
+				if($data["eid"] === $this->id or $data["entity"]->level !== $this->level){
 					break;
 				}
 				$pk = new AnimatePacket;
@@ -745,10 +802,10 @@ class Player extends PlayerEntity{
 				$this->dataPacket($pk);
 				break;
 			case "entity.metadata":
-				if($data->eid === $this->eid){
+				if($data->getID() === $this->id){
 					$eid = 0;
 				}else{
-					$eid = $data->eid;
+					$eid = $data->getID();
 				}
 				if($data->level === $this->level){
 					$pk = new SetEntityDataPacket;
@@ -758,10 +815,10 @@ class Player extends PlayerEntity{
 				}
 				break;
 			case "entity.event":
-				if($data["entity"]->eid === $this->eid){
+				if($data["entity"]->getID() === $this->id){
 					$eid = 0;
 				}else{
-					$eid = $data["entity"]->eid;
+					$eid = $data["entity"]->getID();
 				}
 				if($data["entity"]->level === $this->level){
 					$pk = new EntityEventPacket;
@@ -887,7 +944,7 @@ class Player extends PlayerEntity{
 				}else{
 					$craftItem[1] = $item->getMetadata();
 				}
-				$craftItem[2] += $item->count;
+				$craftItem[2] += $item->getCount();
 			}
 			
 		}
@@ -895,12 +952,12 @@ class Player extends PlayerEntity{
 		$recipeItems = array();
 		foreach($recipe as $slot => $item){
 			if(!isset($recipeItems[$item->getID()])){
-				$recipeItems[$item->getID()] = array($item->getID(), $item->getMetadata(), $item->count);
+				$recipeItems[$item->getID()] = array($item->getID(), $item->getMetadata(), $item->getCount());
 			}else{
 				if($item->getMetadata() !== $recipeItems[$item->getID()][1]){
 					$recipeItems[$item->getID()][1] = false;
 				}
-				$recipeItems[$item->getID()][2] += $item->count;
+				$recipeItems[$item->getID()][2] += $item->getCount();
 			}
 		}
 	
@@ -920,52 +977,52 @@ class Player extends PlayerEntity{
 			}
 			foreach($recipe as $slot => $item){
 				$s = $this->getSlot($slot);
-				$s->count -= $item->count;
-				if($s->count <= 0){				
-					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0), false);
+				$s->setCount($s->getCount() - $item->getCount());
+				if($s->getCount() <= 0){				
+					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0));
 				}
 			}
 			foreach($craft as $slot => $item){
 				$s = $this->getSlot($slot);				
-				if($s->count <= 0 or $s->getID() === AIR){				
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->count), false);
+				if($s->getCount() <= 0 or $s->getID() === AIR){				
+					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->getCount()));
 				}else{
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->count + $item->count), false);
+					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->getCount() + $item->getCount()));
 				}
 
 				switch($item->getID()){
 					case WORKBENCH:
-						AchievementAPI::grantAchievement($this, "buildWorkBench");
+						$this->grantAchievement("buildWorkBench");
 						break;
 					case WOODEN_PICKAXE:
-						AchievementAPI::grantAchievement($this, "buildPickaxe");
+						$this->grantAchievement("buildPickaxe");
 						break;
 					case FURNACE:
-						AchievementAPI::grantAchievement($this, "buildFurnace");
+						$this->grantAchievement("buildFurnace");
 						break;
 					case WOODEN_HOE:
-						AchievementAPI::grantAchievement($this, "buildHoe");
+						$this->grantAchievement("buildHoe");
 						break;
 					case BREAD:
-						AchievementAPI::grantAchievement($this, "makeBread");
+						$this->grantAchievement("makeBread");
 						break;
 					case CAKE:
-						AchievementAPI::grantAchievement($this, "bakeCake");
+						$this->grantAchievement("bakeCake");
 						break;
 					case STONE_PICKAXE:
 					case GOLD_PICKAXE:
 					case IRON_PICKAXE:
 					case DIAMOND_PICKAXE:
-						AchievementAPI::grantAchievement($this, "buildBetterPickaxe");
+						$this->grantAchievement("buildBetterPickaxe");
 						break;
 					case WOODEN_SWORD:
-						AchievementAPI::grantAchievement($this, "buildSword");
+						$this->grantAchievement("buildSword");
 						break;
 					case DIAMOND:
-						AchievementAPI::grantAchievement($this, "diamond");
+						$this->grantAchievement("diamond");
 						break;
 					case CAKE:
-						$this->addItem(BUCKET, 0, 3, false);
+						$this->addItem(BlockAPI::getItem(BUCKET, 0, 3));
 						break;
 						
 				}
@@ -973,18 +1030,12 @@ class Player extends PlayerEntity{
 		}
 		return $res;
 	}
-
-    /**
-     * @param Vector3 $pos
-     * @param float|boolean $yaw
-     * @param float|boolean $pitch
-     * @param float|boolean $terrain
-     * @param float|boolean $force
-     *
-     * @return boolean
-     */
 	
 	public function getGamemode(){
+		return $this->gamemode;
+	}
+	
+	public function getGamemodeString(){
 		switch($this->gamemode){
 			case SURVIVAL:
 				return "survival";
@@ -1575,7 +1626,7 @@ class Player extends PlayerEntity{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				$data = array();
 				$data["eid"] = $packet->eid;
 				$data["player"] = $this;
@@ -1635,7 +1686,7 @@ class Player extends PlayerEntity{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				$this->craftingItems = array();
 				$this->toCraft = array();				
 				
@@ -1732,7 +1783,7 @@ class Player extends PlayerEntity{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				for($i = 0; $i < 4; ++$i){
 					$s = $packet->slots[$i];
 					if($s === 0 or $s === 255){
@@ -1742,16 +1793,16 @@ class Player extends PlayerEntity{
 					}
 					$slot = $this->armor[$i];
 					if($slot->getID() !== AIR and $s->getID() === AIR){
-						$this->addItem($slot->getID(), $slot->getMetadata(), 1, false);
+						$this->addItem($slot);
 						$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
 						$packet->slots[$i] = 255;
 					}elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						$this->armor[$i] = $this->getSlot($sl);
-						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0), false);
+						$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0));
 					}elseif($s->getID() !== AIR and $slot->getID() !== AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s->getID())) !== false){
 						$item = $this->armor[$i];
 						$this->armor[$i] = $this->getSlot($sl);
-						$this->setSlot($sl, $item, false);
+						$this->setSlot($sl, $item);
 					}else{
 						$packet->slots[$i] = 255;
 					}
@@ -1767,7 +1818,7 @@ class Player extends PlayerEntity{
 				if($this->spawned === false){
 					break;
 				}
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				$data = array();
 				$data["target"] = $packet->target;
 				$data["eid"] = $packet->eid;
@@ -1842,10 +1893,10 @@ class Player extends PlayerEntity{
 							default:
 								$damage = 1;//$this->server->difficulty;
 						}
-						$target->harm($damage, $this->eid);
+						$target->harm($damage, $this->id);
 						if($slot->isTool() === true and ($this->gamemode & 0x01) === 0){
 							if($slot->useOn($target) and $slot->getMetadata() >= $slot->getMaxDurability()){
-								$this->setSlot($this->slot, new Item(AIR, 0, 0), false);
+								$this->setSlot($this->slot, new Item(AIR, 0, 0));
 							}
 						}
 					}
@@ -1856,7 +1907,7 @@ class Player extends PlayerEntity{
 				if($this->spawned === false){
 					break;
 				}
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				$this->server->api->dhandle("entity.animate", array("eid" => $packet->eid, "entity" => $this->entity, "action" => $packet->action));
 				break;*/
 			case ProtocolInfo::RESPAWN_PACKET:
@@ -1889,7 +1940,7 @@ class Player extends PlayerEntity{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
 					$this->entity->updateMetadata();
@@ -1926,12 +1977,12 @@ class Player extends PlayerEntity{
 							$this->dataPacket($pk);
 							
 							$this->entity->heal($items[$slot->getID()], "eating");
-							--$slot->count;
-							if($slot->count <= 0){
-								$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
+							//--$slot->count;
+							if($slot->getCount() <= 0){
+								$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0));
 							}
 							if($slot->getID() === MUSHROOM_STEW or $slot->getID() === BEETROOT_SOUP){
-								$this->addItem(BOWL, 0, 1, false);
+								$this->addItem(BlockAPI::getItem(BOWL, 0, 1));
 							}
 						}
 						break;
@@ -1941,7 +1992,7 @@ class Player extends PlayerEntity{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$packet->eid = $this->eid;
+				$packet->eid = $this->id;
 				$packet->item = $this->getSlot($this->slot);
 				$this->craftingItems = array();
 				$this->toCraft = array();
@@ -2032,23 +2083,23 @@ class Player extends PlayerEntity{
 				if($packet->windowid === 0){
 					$craft = false;
 					$slot = $this->getSlot($packet->slot);
-					if($slot->count >= $packet->item->count and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->count === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count - $packet->item->count);
+					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
-					}elseif($slot->count <= $packet->item->count and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count - $slot->count);
+					}elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
+						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount() - $slot->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
-					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->count > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
+					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
+						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->count);
+						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
@@ -2089,7 +2140,7 @@ class Player extends PlayerEntity{
 						break;
 					}
 
-					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
+					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 					
 					$slot = $tile->getSlot($slotn);
 					if($this->server->api->dhandle("player.container.slot", array(
@@ -2108,20 +2159,24 @@ class Player extends PlayerEntity{
 						break;
 					}
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
-						if($slot->count < $item->count){
-							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+						if($slot->getCount() < $item->getCount()){
+							$it = clone $item;
+							$it->setCount($item->getCount() - $slot->getCount());
+							if($this->removeItem($it) === false){
 								$this->sendInventory();
 								break;
 							}
-						}elseif($slot->count > $item->count){
-							$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
+						}elseif($slot->getCount() > $item->getCount()){
+							$it = clone $item;
+							$it->setCount($slot->getCount() - $item->getCount());
+							$this->addItem($it);
 						}
 					}else{
-						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+						if($this->removeItem($item) === false){
 							$this->sendInventory();
 							break;
 						}
-						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+						$this->addItem($slot);
 					}
 					$tile->setSlot($slotn, $item, true, $offset);
 				}else{
@@ -2138,7 +2193,7 @@ class Player extends PlayerEntity{
 					){
 						break;
 					}
-					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->count);
+					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 					
 					$slot = $tile->getSlot($packet->slot);
 					if($this->server->api->dhandle("player.container.slot", array(
@@ -2159,26 +2214,30 @@ class Player extends PlayerEntity{
 					if($tile instanceof FurnaceTile and $packet->slot == 2){
 						switch($slot->getID()){
 							case IRON_INGOT:
-								AchievementAPI::grantAchievement($this, "acquireIron");
+								$this->grantAchievement("acquireIron");
 								break;
 						}
 					}
 					
 					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
-						if($slot->count < $item->count){
-							if($this->removeItem($item->getID(), $item->getMetadata(), $item->count - $slot->count, false) === false){
+						if($slot->getCount() < $item->getCount()){
+							$it = clone $item;
+							$it->setCount($item->getCount() - $slot->getCount());
+							if($this->removeItem($it) === false){
 								$this->sendInventory();
 								break;
 							}
-						}elseif($slot->count > $item->count){
-							$this->addItem($item->getID(), $item->getMetadata(), $slot->count - $item->count, false);
+						}elseif($slot->getCount() > $item->getCount()){
+							$it = clone $item;
+							$it->setCount($slot->count - $item->count);
+							$this->addItem($it);
 						}
 					}else{
-						if($this->removeItem($item->getID(), $item->getMetadata(), $item->count, false) === false){
+						if($this->removeItem($item) === false){
 							$this->sendInventory();
 							break;
 						}
-						$this->addItem($slot->getID(), $slot->getMetadata(), $slot->count, false);
+						$this->addItem($slot);
 					}
 					$tile->setSlot($packet->slot, $item);
 				}
@@ -2221,7 +2280,7 @@ class Player extends PlayerEntity{
     public function sendArmor($player = false){
 		$data = array(
 			"player" => $this,
-			"eid" => $this->eid,
+			"eid" => $this->id,
 			"slots" => array()
 		);
 		for($i = 0; $i < 4; ++$i){
@@ -2240,7 +2299,7 @@ class Player extends PlayerEntity{
 				$this->dataPacket($pk);
 			}else{
 				$pk = new PlayerArmorEquipmentPacket;
-				$pk->eid = $this->eid;
+				$pk->eid = $this->id;
 				$pk->slots = $data["slots"];
 				$player->dataPacket($pk);
 			}
@@ -2374,6 +2433,11 @@ class Player extends PlayerEntity{
 		@$this->buffer->data[] = $packet;
 		$this->bufferLen += 6 + $len;
 		return array();
+	}
+	
+	public function setSlot($slot, Item $item){
+		parent::setSlot($slot, $item);
+		$this->sendInventorySlot($slot);
 	}
 
 }

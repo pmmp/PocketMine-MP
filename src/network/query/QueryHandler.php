@@ -80,8 +80,8 @@ class QueryHandler{
 		}
 		$str .= "\x00\x01player_\x00\x00";
 		foreach(Player::$list as $player){
-			if($player->username != ""){
-				$str .= $player->username."\x00";
+			if($player->getUsername() != ""){
+				$str .= $player->getUsername()."\x00";
 			}
 		}
 		$str .= "\x00";

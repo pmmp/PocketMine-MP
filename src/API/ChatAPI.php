@@ -62,7 +62,7 @@ class ChatAPI{
 						$sender = ucfirst($issuer);
 					}
 				}else{
-					$sender = $issuer->username;
+					$sender = $issuer->getUsername();
 				}
 				$this->broadcast("* $sender ".implode(" ", $params));
 				break;
@@ -74,12 +74,12 @@ class ChatAPI{
 				if(!($issuer instanceof Player)){
 					$sender = ucfirst($issuer);
 				}else{
-					$sender = $issuer->username;
+					$sender = $issuer->getUsername();
 				}
 				$n = array_shift($params);
 				$target = Player::get($n);
 				if($target instanceof Player){
-					$target = $target->username;
+					$target = $target->getUsername();
 				}else{
 					$target = strtolower($n);
 					if($target === "server" or $target === "console" or $target === "rcon"){
@@ -129,7 +129,7 @@ class ChatAPI{
 		if($owner !== false){
 			if($owner instanceof Player){
 				if($whitelist === false){
-					console("[INFO] <".$owner->username."> ".$text);
+					console("[INFO] <".$owner->getUsername()."> ".$text);
 				}
 			}else{
 				if($whitelist === false){

@@ -61,9 +61,9 @@ class NoiseGeneratorPerlin extends NoiseGenerator{
 		$y += $this->offsetY;
 		$z += $this->offsetZ;
 		
-		$floorX = self::floor($x);
-		$floorY = self::floor($y);
-		$floorZ = self::floor($z);
+		$floorX = (int) floor($x);
+		$floorY = (int) floor($y);
+		$floorZ = (int) floor($z);
 		
 		$X = $floorX & 0xFF;
 		$Y = $floorY & 0xFF;

@@ -108,7 +108,7 @@ class PlayerAPI{
 							break;
 					}
 				}
-				$this->server->api->chat->broadcast($data["player"]->username . $message);
+				$this->server->api->chat->broadcast($data["player"]->getUsername() . $message);
 				return true;
 		}
 	}
@@ -156,7 +156,7 @@ class PlayerAPI{
 				if($target instanceof Level){
 					$output .= "Spawnpoint of world ".$target->getName()." set correctly!\n";
 				}elseif($target !== $issuer){
-					$output .= "Spawnpoint of ".$target->username." set correctly!\n";
+					$output .= "Spawnpoint of ".$target->getUsername()." set correctly!\n";
 				}else{
 					$output .= "Spawnpoint set correctly!\n";				
 				}
@@ -219,13 +219,13 @@ class PlayerAPI{
 					break;
 				}
 				if($player->setGamemode($gms[strtolower($setgm)])){
-					$output .= "Gamemode of ".$player->username." changed to ".$player->getGamemode()."\n";
+					$output .= "Gamemode of ".$player->getUsername()." changed to ".$player->getGamemode()."\n";
 				}
 				break;
 			case "tp":
 				if(count($params) <= 2 or substr($params[0], 0, 2) === "w:" or substr($params[1], 0, 2) === "w:"){
 					if((!isset($params[1]) or substr($params[0], 0, 2) === "w:") and isset($params[0]) and ($issuer instanceof Player)){
-						$name = $issuer->username;
+						$name = $issuer->getUsername();
 						$target = implode(" ", $params);
 					}elseif(isset($params[1]) and isset($params[0])){
 						$name = array_shift($params);
@@ -241,7 +241,7 @@ class PlayerAPI{
 					}
 				}else{
 					if(!isset($params[3]) and isset($params[2]) and isset($params[1]) and isset($params[0]) and ($issuer instanceof Player)){
-						$name = $issuer->username;
+						$name = $issuer->getUsername();
 						$x = $params[0];
 						$y = $params[1];
 						$z = $params[2];
@@ -281,7 +281,7 @@ class PlayerAPI{
 					break;
 				}
 				foreach(Player::$list as $c){
-					$output .= $c->username.", ";
+					$output .= $c->getUsername().", ";
 				}
 				$output = substr($output, 0, -2)."\n";
 				break;
@@ -295,7 +295,7 @@ class PlayerAPI{
 			if($lv instanceof Level){
 				$origin = Player::get($name);
 				if($origin instanceof Player){
-					$name = $origin->username;
+					$name = $origin->getUsername();
 					return $origin->teleport($lv->getSafeSpawn());
 				}
 			}else{
@@ -304,10 +304,10 @@ class PlayerAPI{
 		}
 		$player = Player::get($target);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
-			$target = $player->username;
+			$target = $player->getUsername();
 			$origin = Player::get($name);
 			if($origin instanceof Player){
-				$name = $origin->username;
+				$name = $origin->getUsername();
 				return $origin->teleport($player->entity);
 			}
 		}
@@ -317,7 +317,7 @@ class PlayerAPI{
 	public function tppos(&$name, &$x, &$y, &$z){
 		$player = Player::get($name);
 		if(($player instanceof Player) and ($player->entity instanceof Entity)){
-			$name = $player->username;
+			$name = $player->getUsername();
 			$x = $x{0} === "~" ? $player->entity->x + floatval(substr($x, 1)):floatval($x);
 			$y = $y{0} === "~" ? $player->entity->y + floatval(substr($y, 1)):floatval($y);
 			$z = $z{0} === "~" ? $player->entity->z + floatval(substr($z, 1)):floatval($z);

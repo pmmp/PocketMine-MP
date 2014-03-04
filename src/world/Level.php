@@ -122,9 +122,7 @@ class Level{
 						continue;
 					}else{
 						foreach($this->players as $p){
-							if(isset($p->chunksLoaded[$index])){
-								$p->chunksLoaded[$index] |= $mini;
-							}
+							$p->setChunkIndex($index, $mini);
 						}
 						unset($this->changedBlocks[$index][$Y]);
 					}

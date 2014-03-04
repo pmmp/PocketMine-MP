@@ -19,7 +19,7 @@
  *
 */
 
-class PlayerEntity extends HumanEntity{
+abstract class PlayerEntity extends HumanEntity{
 	
 	protected function initEntity(){
 		$this->level->players[$this->CID] = $this;

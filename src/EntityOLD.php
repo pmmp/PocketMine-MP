@@ -107,7 +107,7 @@ class EntityOLD extends Position{
 			case ENTITY_ITEM:
 				if(isset($data["item"]) and ($data["item"] instanceof Item)){
 					$this->meta = $this->data["item"]->getMetadata();
-					$this->stack = $this->data["item"]->count;			
+					$this->stack = $this->data["item"]->getCount();			
 				}else{
 					$this->meta = (int) $this->data["meta"];
 					$this->stack = (int) $this->data["stack"];
@@ -177,15 +177,15 @@ class EntityOLD extends Position{
 			for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 				$slot = $this->player->getSlot($i);
 				$this->player->setSlot($i, BlockAPI::getItem(AIR, 0, 0));
-				if($slot->getID() !== AIR and $slot->count > 0){
-					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+				if($slot->getID() !== AIR and $slot->getCount() > 0){
+					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 				}
 			}
 			for($re = 0; $re < 4; $re++){
 				$slot = $this->player->getArmor($re);
 				$this->player->setArmor($re, BlockAPI::getItem(AIR, 0, 0));
-				if($slot->getID() !== AIR and $slot->count > 0){
-					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+				if($slot->getID() !== AIR and $slot->getCount() > 0){
+					$inv[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 				}
 			}
 			return $inv;
@@ -254,7 +254,7 @@ class EntityOLD extends Position{
 		if($this->class === ENTITY_PLAYER and ($this->player instanceof Player) and $this->player->spawned === true and $this->player->blocked !== true){
 			foreach($this->server->api->entity->getRadius($this, 1.5, ENTITY_ITEM) as $item){
 				if($item->closed === false and $item->spawntime > 0 and ($time - $item->spawntime) >= 0.6){
-					if((($this->player->gamemode & 0x01) === 1 or $this->player->hasSpace($item->type, $item->meta, $item->stack) === true) and $this->server->api->dhandle("player.pickup", array(
+					if((($this->player->gamemode & 0x01) === 1 or $this->player->canAddItem($item->type, $item->meta, $item->stack) === true) and $this->server->api->dhandle("player.pickup", array(
 						"eid" => $this->player->eid,
 						"player" => $this->player,
 						"entity" => $item,

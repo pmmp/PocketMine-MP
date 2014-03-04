@@ -457,7 +457,7 @@ abstract class Entity extends Position{
 
 	public function spawnToAll(){
 		foreach($this->level->getPlayers() as $player){
-			if($player->eid !== false or $player->spawned !== true){
+			if(isset($player->id) and $player->spawned === true){
 				$this->spawnTo($player);
 			}
 		}

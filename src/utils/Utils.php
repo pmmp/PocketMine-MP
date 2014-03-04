@@ -189,7 +189,7 @@ class Utils{
 	}
 	
 	public static function writeSlot(Item $item){
-		return Utils::writeShort($item->getID()).chr($item->count).Utils::writeShort($item->getMetadata());
+		return Utils::writeShort($item->getID()).chr($item->getCount()).Utils::writeShort($item->getMetadata());
 	}
 	
 	public static function readSlot($ob){

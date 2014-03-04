@@ -60,13 +60,19 @@ class OreObject{
 			$endZ = (int) ($seedZ + $size);
 			
 			for($x = $startX; $x <= $endX; ++$x){
-				$sizeX = pow(($x + 0.5 - $seedX) / $size, 2);
+				$sizeX = ($x + 0.5 - $seedX) / $size;
+				$sizeX *= $sizeX;
+
 				if($sizeX < 1){
 					for($y = $startY; $y <= $endY; ++$y){
-						$sizeY = pow(($y + 0.5 - $seedY) / $size, 2);
+						$sizeY = ($y + 0.5 - $seedY) / $size;
+						$sizeY *= $sizeY;
+						
 						if($y > 0 and ($sizeX + $sizeY) < 1){
 							for($z = $startZ; $z <= $endZ; ++$z){
-								$sizeZ = pow(($z + 0.5 - $seedZ) / $size, 2);
+								$sizeZ = ($z + 0.5 - $seedZ) / $size;
+								$sizeZ *= $sizeZ;
+								
 								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->level->getBlockID($x, $y, $z) === STONE){
 									$level->setBlockRaw(new Vector3($x, $y, $z), $this->type->material);
 								}

@@ -62,7 +62,7 @@ trait ContainerTileTrait{
 					Player::broadcastPacket($all, $pk);
 					for($s = 0; $s < ChestTile::SLOTS; ++$s){
 						$slot = $ob->getSlot($s);
-						if($slot->getID() > AIR and $slot->count > 0){
+						if($slot->getID() > AIR and $slot->getCount() > 0){
 							$slots[] = $slot;
 						}else{
 							$slots[] = BlockAPI::getItem(AIR, 0, 0);
@@ -79,7 +79,7 @@ trait ContainerTileTrait{
 				Player::broadcastPacket($this->level->getPlayers(), $pk);
 				for($s = 0; $s < ChestTile::SLOTS; ++$s){
 					$slot = $this->getSlot($s);
-					if($slot->getID() > AIR and $slot->count > 0){
+					if($slot->getID() > AIR and $slot->getCount() > 0){
 						$slots[] = $slot;
 					}else{
 						$slots[] = BlockAPI::getItem(AIR, 0, 0);
@@ -109,7 +109,7 @@ trait ContainerTileTrait{
 			$slots = array();
 			for($s = 0; $s < FurnaceTile::SLOTS; ++$s){
 				$slot = $this->getSlot($s);
-				if($slot->getID() > AIR and $slot->count > 0){
+				if($slot->getID() > AIR and $slot->getCount() > 0){
 					$slots[] = $slot;
 				}else{
 					$slots[] = BlockAPI::getItem(AIR, 0, 0);
@@ -144,14 +144,14 @@ trait ContainerTileTrait{
 	public function setSlot($s, Item $item, $update = true, $offset = 0){
 		$i = $this->getSlotIndex($s);
 		$d = new NBTTag_Compound(false, array(
-			"Count" => new NBTTag_Byte("Count", $item->count),
+			"Count" => new NBTTag_Byte("Count", $item->getCount()),
 			"Slot" => new NBTTag_Byte("Slot", $s),
 			"id" => new NBTTag_Short("id", $item->getID()),
 			"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
 		));
 		if($i === false){
 			return false;
-		}elseif($item->getID() === AIR or $item->count <= 0){
+		}elseif($item->getID() === AIR or $item->getCount() <= 0){
 			if($i >= 0){
 				unset($this->namedtag->Items[$i]);
 			}

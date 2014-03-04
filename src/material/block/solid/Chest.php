@@ -114,8 +114,8 @@ class ChestBlock extends TransparentBlock{
 		if($t instanceof ChestTile){
 			for($s = 0; $s < ChestTile::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
-				if($slot->getID() > AIR and $slot->count > 0){
-					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->count);
+				if($slot->getID() > AIR and $slot->getCount() > 0){
+					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 				}
 			}
 		}

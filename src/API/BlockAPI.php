@@ -291,9 +291,9 @@ class BlockAPI{
 				$item = BlockAPI::fromString($params[1]);
 				
 				if(!isset($params[2])){
-					$item->count = $item->getMaxStackSize();
+					$item->setCount($item->getMaxStackSize());
 				}else{
-					$item->count = (int) $params[2];
+					$item->setCount((int) $params[2]);
 				}
 
 				if($player instanceof Player){
@@ -305,8 +305,8 @@ class BlockAPI{
 						$output .= "You cannot give an air block to a player.\n";
 						break;
 					}
-					$player->addItem($item->getID(), $item->getMetadata(), $item->count);
-					$output .= "Giving ".$item->count." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->username."\n";
+					$player->addItem($item);
+					$output .= "Giving ".$item->getCount()." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->getUsername()."\n";
 				}else{
 					$output .= "Unknown player.\n";
 				}
@@ -354,7 +354,7 @@ class BlockAPI{
 				return $this->cancelAction($target, $player, false);
 			}
 			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
-				$player->setSlot($player->slot, new Item(AIR, 0, 0), false);
+				$player->setSlot($player->slot, new Item(AIR, 0, 0));
 			}
 		}else{
 			return $this->cancelAction($target, $player, false);
@@ -410,8 +410,8 @@ class BlockAPI{
 		}
 		
 		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
-			if($item->count <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false);
+			if($item->getCount() <= 0){
+				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
 			}
 			return false;
 		}
@@ -456,14 +456,14 @@ class BlockAPI{
 				"Text2" => new NBTTag_String("Text2", ""),
 				"Text3" => new NBTTag_String("Text3", ""),
 				"Text4" => new NBTTag_String("Text4", ""),
-				"creator" => new NBTTag_String("creator", $player->username)
+				"creator" => new NBTTag_String("creator", $player->getUsername())
 			)));
 		}
 
 		if(($player->gamemode & 0x01) === 0x00){
-			--$item->count;
-			if($item->count <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0), false);
+			$item->setCount($item->getCount() - 1);
+			if($item->getCount() <= 0){
+				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
 			}
 		}
 

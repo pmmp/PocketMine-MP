@@ -545,7 +545,7 @@ class MainServer{
 					new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
 					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
 					$pk->serverID = $this->serverID;
-					$pk->port = $this->port;
+					$pk->serverPort = $this->port;
 					$pk->mtuSize = $packet->mtuSize;
 					$pk->ip = $packet->ip;
 					$pk->port = $packet->port;
@@ -566,21 +566,21 @@ class MainServer{
 			if($packet instanceof Packet){
 				$this->packetHandler($packet);
 				$lastLoop = 0;
-			}elseif($this->tick() > 0){
+			}
+			if($this->tick() > 0){
 				$lastLoop = 0;
 			}else{
 				++$lastLoop;
-				if($lastLoop < 16){
-					usleep(1);
-				}elseif($lastLoop < 128){
-					usleep(100);
+				if($lastLoop < 64){
+
 				}elseif($lastLoop < 256){
+					usleep(100);
+				}elseif($lastLoop < 512){
 					usleep(512);
 				}else{
-					usleep(10000);
+					usleep(5000);
 				}
 			}
-			$this->tick();
 		}
 	}
 

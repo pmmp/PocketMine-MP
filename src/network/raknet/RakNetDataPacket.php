@@ -152,7 +152,7 @@ abstract class RakNetDataPacket extends stdClass{
 	
 	protected function putSlot(Item $item){
 		$this->putShort($item->getID());
-		$this->putByte($item->count);
+		$this->putByte($item->getCount());
 		$this->putShort($item->getMetadata());
 	}
 	

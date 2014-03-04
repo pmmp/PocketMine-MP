@@ -101,9 +101,9 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, Inve
 		}elseif($this->type === OBJECT_PRIMEDTNT){
 			$d[16]["value"] = (int) max(0, $this->data["fuse"] - (microtime(true) - $this->spawntime) * 20);
 		}elseif($this->class === ENTITY_PLAYER){
-			if($this->player->isSleeping !== false){
+			if($this->player->sleeping !== false){
 				$d[16]["value"] = 2;
-				$d[17]["value"] = array($this->player->isSleeping->x, $this->player->isSleeping->y, $this->player->isSleeping->z);
+				$d[17]["value"] = array($this->player->sleeping->x, $this->player->sleeping->y, $this->player->sleeping->z);
 			}
 		}*/
 		return $d;

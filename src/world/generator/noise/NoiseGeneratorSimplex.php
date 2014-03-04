@@ -81,9 +81,9 @@ class NoiseGeneratorSimplex extends NoiseGeneratorPerlin{
 
 		// Skew the input space to determine which simplex cell we're in
 		$s = ($x + $y + $z) * self::$F3; // Very nice and simple skew factor for 3D
-		$i = self::floor($x + $s);
-		$j = self::floor($y + $s);
-		$k = self::floor($z + $s);
+		$i = (int) floor($x + $s);
+		$j = (int) floor($y + $s);
+		$k = (int) floor($z + $s);
 		$t = ($i + $j + $k) * self::$G3;
 		$X0 = $i - $t; // Unskew the cell origin back to (x,y,z) space
 		$Y0 = $j - $t;
@@ -214,8 +214,8 @@ class NoiseGeneratorSimplex extends NoiseGeneratorPerlin{
 
 		// Skew the input space to determine which simplex cell we're in
 		$s = ($x + $y) * self::$F2; // Hairy factor for 2D
-		$i = self::floor($x + $s);
-		$j = self::floor($y + $s);
+		$i = (int) floor($x + $s);
+		$j = (int) floor($y + $s);
 		$t = ($i + $j) * self::$G2;
 		$X0 = $i - $t; // Unskew the cell origin back to (x,y) space
 		$Y0 = $j - $t;

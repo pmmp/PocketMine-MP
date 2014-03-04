@@ -36,33 +36,29 @@ class MinecraftInterface{
 	public function close(){
 		return $this->socket->close(false);
 	}
-
+	
 	public function readPacket(){
 		$buf = null;
 		$source = null;
 		$port = null;
-		$len = $this->socket->read($buf, $source, $port);
+		$len = $this->socket->read($buffer, $source, $port);
 		if($len === false or $len === 0){
 			return false;
 		}
 		$this->bandwidth[0] += $len;
-		return $this->parsePacket($buf, $source, $port);
-	}
-	
-	private function parsePacket($buffer, $source, $port){
+
 		$pid = ord($buffer{0});
 
 		if(RakNetInfo::isValid($pid)){
-			$parser = new RakNetParser($buffer);
-			if($parser->packet !== false){
-				$parser->packet->ip = $source;
-				$parser->packet->port = $port;
-				if(EventHandler::callEvent(new PacketReceiveEvent($parser->packet)) === BaseEvent::DENY){
-					return false;
-				}
-				return $parser->packet;
+			$packet = new RakNetPacket($pid);
+			$packet->buffer =& $buffer;
+			$packet->ip = $source;
+			$packet->port = $port;
+			$packet->decode();
+			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === BaseEvent::DENY){
+				return false;
 			}
-			return false;
+			return $packet;
 		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
 			$packet = new QueryPacket;
 			$packet->ip = $source;
@@ -86,7 +82,7 @@ class MinecraftInterface{
 		if(EventHandler::callEvent(new PacketSendEvent($packet)) === BaseEvent::DENY){
 			return 0;
 		}elseif($packet instanceof RakNetPacket){
-			new RakNetCodec($packet);
+			$packet->encode();
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);
 		$this->bandwidth[1] += $write;
