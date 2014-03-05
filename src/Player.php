@@ -682,17 +682,6 @@ class Player extends PlayerEntity{
 					$this->dataPacket($pk);
 				}
 				break;
-			case "entity.motion":
-				if($data->getID() === $this->id or $data->level !== $this->level){
-					break;
-				}
-				$pk = new SetEntityMotionPacket;
-				$pk->eid = $data->getID();
-				$pk->speedX = $data->speedX;
-				$pk->speedY = $data->speedY;
-				$pk->speedZ = $data->speedZ;
-				$this->dataPacket($pk);
-				break;
 			case "entity.animate":
 				if($data["eid"] === $this->id or $data["entity"]->level !== $this->level){
 					break;
@@ -1315,7 +1304,6 @@ class Player extends PlayerEntity{
 				}
 				
 				$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("entity.motion", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
