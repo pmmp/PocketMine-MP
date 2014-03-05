@@ -26,18 +26,21 @@ class NBT implements ArrayAccess{
 	private $buffer;
 	private $offset;
 	private $endianness;
-	private $data;
-	
+	private $data;	
+
 	public function get($len){
-		if($len < 0){
+		if($len <= 0){
 			$this->offset = strlen($this->buffer) - 1;
 			return "";
-		}
-		if($len === true){
+		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
-		$this->offset += $len;
-		return substr($this->buffer, $this->offset - $len, $len);
+		
+		$buffer = b"";
+		for(; $len > 0; --$len, ++$this->offset){
+			$buffer .= @$this->buffer{$this->offset};
+		}
+		return $buffer;
 	}
 	
 	public function put($v){
