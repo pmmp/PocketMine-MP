@@ -19,10 +19,10 @@
  *
 */
 
-abstract class EntityEvent extends BaseEvent{
-	protected $entity;
+abstract class PlayerEvent extends BaseEvent{
+	protected $player;
 	
-	public function getEntity(){
-		return $this->entity;
+	public function getPlayer(){
+		return $this->player;
 	}
 }

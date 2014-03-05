@@ -23,13 +23,86 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, Inve
 	
 	protected $nameTag = "TESTIFICATE";
 	protected $inventory = array();
+	public $slot;
+	protected $hotbar = array();
+	protected $armor = array();
 	
 	protected function initEntity(){
 		if(isset($this->namedtag->NameTag)){
 			$this->nameTag = $this->namedtag->NameTag;
 		}
+		$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
+		$this->armor = array(
+			0 => BlockAPI::getItem(AIR, 0, 0),
+			1 => BlockAPI::getItem(AIR, 0, 0),
+			2 => BlockAPI::getItem(AIR, 0, 0),
+			3 => BlockAPI::getItem(AIR, 0, 0)
+		);
+				
+		foreach($nbt->Inventory as $item){
+			if($item->Slot >= 0 and $item->Slot < 9){ //Hotbar
+				$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot:-1;
+			}elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
+				$this->armor[$item->Slot - 100] = BlockAPI::getItem($item->id, $item->Damage, $item->Count);
+			}else{
+				$this->inventory[$item->Slot - 9] = BlockAPI::getItem($item->id, $item->Damage, $item->Count);
+			}
+		}
+		$this->slot = $this->hotbar[0];
+			
 		$this->height = 1.8; //Or 1.62?
 		$this->width = 0.6;
+	}
+	
+	public function saveNBT(){
+		parent::saveNBT();
+		for($slot = 0; $slot < 9; ++$slot){
+			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
+				$item = $this->getSlot($this->hotbar[$slot]);
+				if($item->getID() !== AIR and $item->getCount() > 0){
+					$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+						"Count" => new NBTTag_Byte("Count", $item->getCount()),
+						"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
+						"Slot" => new NBTTag_Byte("Slot", $slot),
+						"TrueSlot" => new NBTTag_Byte("TrueSlot", $this->hotbar[$slot]),
+						"id" => new NBTTag_Short("id", $item->getID()),
+					));
+					continue;
+				}
+			}
+			$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+				"Count" => new NBTTag_Byte("Count", 0),
+				"Damage" => new NBTTag_Short("Damage", 0),
+				"Slot" => new NBTTag_Byte("Slot", $slot),
+				"TrueSlot" => new NBTTag_Byte("Slot", -1),
+				"id" => new NBTTag_Short("id", 0),
+			));
+		}
+		
+		//Normal inventory
+		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS) + 9;
+		for($slot = 9; $slot < $slotCount; ++$slot){
+			$item = $this->getSlot($slot);
+			$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+				"Count" => new NBTTag_Byte("Count", $item->getCount()),
+				"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
+				"Slot" => new NBTTag_Byte("Slot", $slot),
+				"id" => new NBTTag_Short("id", $item->getID()),
+			));
+		}
+
+		//Armor
+		for($slot = 100; $slot < 104; ++$slot){
+			$item = $this->armor[$slot - 100];
+			if($item instanceof Item){
+				$this->namedtag->Inventory[$slot] = new NBTTag_Compound(false, array(
+					"Count" => new NBTTag_Byte("Count", $item->getCount()),
+					"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
+					"Slot" => new NBTTag_Byte("Slot", $slot),
+					"id" => new NBTTag_Short("id", $item->getID()),
+				));
+			}
+		}
 	}
 	
 	public function spawnTo(Player $player){
@@ -57,17 +130,9 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, Inve
 			$pk->speedZ = $this->motionZ;
 			$player->dataPacket($pk);
 			
-			/*
-			$pk = new PlayerEquipmentPacket;
-			$pk->eid = $this->id;
-			$pk->item = $this->player->getSlot($this->player->slot)->getID();
-			$pk->meta = $this->player->getSlot($this->player->slot)->getMetadata();
-			$pk->slot = 0;
-			$player->dataPacket($pk);*/
+			$this->sendCurrentEquipmentSlot($player);
 			
-			//$this->sendEquipment($player);
-			
-			//$this->sendArmor($player);
+			$this->sendArmor($player);
 		}
 	}
 	
@@ -78,6 +143,78 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, Inve
 			$pk->clientID = 0;
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getID()]);
+		}
+	}
+	
+	public function setEquipmentSlot($equipmentSlot, $inventorySlot){
+		$this->hotbar[$equipmentSlot] = $inventorySlot;
+		if($equipmentSlot === $this->slot){
+			foreach($this->hasSpawned as $p){
+				$this->sendEquipmentSlot($p);
+			}
+		}
+	}
+	
+	public function setCurrentEquipmentSlot($slot){
+		if(isset($this->hotbar[$slot])){
+			$this->slot = (int) $slot;
+			foreach($this->hasSpawned as $p){
+				$this->sendEquipmentSlot($p);
+			}
+		}
+	}
+	
+	public function sendCurrentEquipmentSlot(Player $player){	
+		$pk = new PlayerEquipmentPacket;
+		$pk->eid = $this->id;
+		$pk->item = $this->getSlot($this->slot)->getID();
+		$pk->meta = $this->getSlot($this->slot)->getMetadata();
+		$pk->slot = 0;
+		$player->dataPacket($pk);
+	}
+	
+    public function setArmorSlot($slot, Item $item){
+		if(EventHandler::callEvent($ev = new EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot)) === BaseEvent::DENY){
+			return false;
+		}
+		$this->armor[(int) $slot] = $ev->getNewItem();
+		foreach($this->hasSpawned as $p){
+			$this->sendArmor($p);
+		}
+		if($this instanceof Player){
+			$this->sendArmor();
+		}
+		return true;
+	}
+
+    public function getArmorSlot($slot){
+		$slot = (int) $slot;
+		if(!isset($this->armor[$slot])){
+			$this->armor[$slot] = BlockAPI::getItem(AIR, 0, 0);
+		}
+		return $this->armor[$slot];
+	}
+	
+    public function sendArmor(Player $player = null){
+		$slots = array();
+		for($i = 0; $i < 4; ++$i){
+			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > AIR){
+				$slots[$i] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
+			}else{
+				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
+				$slots[$i] = 255;
+			}
+		}
+		if($player instanceof Player){
+			$pk = new PlayerArmorEquipmentPacket;
+			$pk->eid = $this->id;
+			$pk->slots = $slots;
+			$player->dataPacket($pk);
+		}elseif($this instanceof Player){
+			$pk = new ContainerSetContentPacket;
+			$pk->windowid = 0x78; //Armor window id
+			$pk->slots = $this->armor;
+			$this->dataPacket($pk);
 		}
 	}
 	
@@ -211,7 +348,11 @@ class HumanEntity extends CreatureEntity implements ProjectileSourceEntity, Inve
 	}
 
     public function setSlot($slot, Item $item){
-		$this->inventory[(int) $slot] = $item;
+		if(EventHandler::callEvent($ev = new EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot)) === BaseEvent::DENY){
+			return false;
+		}
+		$this->inventory[(int) $slot] = $ev->getNewItem();
+		return true;
 	}
 
     public function getSlot($slot){

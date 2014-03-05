@@ -19,10 +19,31 @@
  *
 */
 
-abstract class EntityEvent extends BaseEvent{
-	protected $entity;
+class PlayerEquipmentChangeEvent extends PlayerEvent implements CancellableEvent{
+	public static $handlers;
+	public static $handlerPriority;
+
+	private $item;
+	private $slot;
+	private $inventorySlot;
 	
-	public function getEntity(){
-		return $this->entity;
+	public function __construct(Player $player, Item $item, $inventorySlot, $slot){
+		$this->player = $player;
+		$this->item = $item;
+		$this->inventorySlot = (int) $inventorySlot;
+		$this->slot = (int) $slot;
 	}
+	
+	public function getSlot(){
+		return $this->slot;
+	}
+	
+	public function getInventorySlot(){
+		return $this->inventorySlot;
+	}
+	
+	public function getItem(){
+		return $this->item;
+	}
+
 }

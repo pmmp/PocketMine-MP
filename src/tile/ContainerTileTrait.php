@@ -143,15 +143,20 @@ trait ContainerTileTrait{
 	
 	public function setSlot($s, Item $item, $update = true, $offset = 0){
 		$i = $this->getSlotIndex($s);
+		
+		if($i === false or EventHandler::callEvent($ev = new TileInventoryChangeEvent($this, $this->getSlot($s), $item, $s, $offset)) === BaseEvent::DENY){
+			return false;
+		}
+		
+		$item = $ev->getNewItem();
 		$d = new NBTTag_Compound(false, array(
 			"Count" => new NBTTag_Byte("Count", $item->getCount()),
 			"Slot" => new NBTTag_Byte("Slot", $s),
 			"id" => new NBTTag_Short("id", $item->getID()),
 			"Damage" => new NBTTag_Short("Damage", $item->getMetadata()),
 		));
-		if($i === false){
-			return false;
-		}elseif($item->getID() === AIR or $item->getCount() <= 0){
+
+		if($item->getID() === AIR or $item->getCount() <= 0){
 			if($i >= 0){
 				unset($this->namedtag->Items[$i]);
 			}
@@ -160,12 +165,6 @@ trait ContainerTileTrait{
 		}else{
 			$this->namedtag->Items[$i] = $d;
 		}
-		$this->server->api->dhandle("tile.container.slot", array(
-			"tile" => $this,
-			"slot" => $s,
-			"offset" => $offset,
-			"slotdata" => $item,
-		));
 
 		if($update === true){
 			$this->scheduleUpdate();

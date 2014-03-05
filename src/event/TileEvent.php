@@ -19,10 +19,10 @@
  *
 */
 
-abstract class EntityEvent extends BaseEvent{
-	protected $entity;
+abstract class TileEvent extends BaseEvent{
+	protected $tile;
 	
-	public function getEntity(){
-		return $this->entity;
+	public function getTile(){
+		return $this->tile;
 	}
 }
