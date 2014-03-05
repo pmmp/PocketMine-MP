@@ -90,13 +90,13 @@ class BanAPI{
     public function permissionsCheck($data, $event){
 		switch($event){
 			case "player.flying"://OPs can fly around the server.
-				if($this->isOp($data->iusername)){
+				if($this->isOp($data->getUsername())){
 					return true;
 				}
 				break;
 			case "player.block.break":
 			case "player.block.place"://Spawn protection detection. Allows OPs to place/break blocks in the spawn area.
-				if(!$this->isOp($data["player"]->iusername)){
+				if(!$this->isOp($data["player"]->getUsername())){
 					$t = new Vector2($data["target"]->x, $data["target"]->z);
 					$s = new Vector2($this->server->spawn->x, $this->server->spawn->z);
 					if($t->distance($s) <= $this->server->api->getProperty("spawn-protection") and $this->server->api->dhandle($event.".spawn", $data) !== true){
@@ -110,7 +110,7 @@ class BanAPI{
 				}
 				
 				if($data["issuer"] instanceof Player){
-					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->iusername)){
+					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->getUsername())){
 						return;
 					}
 				}elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
@@ -154,10 +154,10 @@ class BanAPI{
 					$output .= $user." is now op\n";
 					break;
 				}
-				$this->ops->set($player->iusername);
+				$this->ops->set(strtolower($player->getUsername()));
 				$this->ops->save();
-				$output .= $player->iusername." is now op\n";
-				$this->server->api->chat->sendTo(false, "You are now op.", $player->iusername);
+				$output .= $player->getUsername()." is now op\n";
+				$this->server->api->chat->sendTo(false, "You are now op.", $player->getUsername());
 				break;
 			case "deop":
 				$user = strtolower($params[0]);
@@ -168,10 +168,10 @@ class BanAPI{
 					$output .= $user." is no longer op\n";
 					break;
 				}
-				$this->ops->remove($player->iusername);
+				$this->ops->remove(strtolower($player->getUsername()));
 				$this->ops->save();
-				$output .= $player->iusername." is no longer op\n";
-				$this->server->api->chat->sendTo(false, "You are no longer op.", $player->iusername);
+				$output .= $player->getUsername()." is no longer op\n";
+				$this->server->api->chat->sendTo(false, "You are no longer op.", $player->getUsername());
 				break;
 			case "kick":
 				if(!isset($params[0])){

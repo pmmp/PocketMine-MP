@@ -73,6 +73,7 @@ class Player extends PlayerEntity{
 	private $packetLoss = 0;
 	private $lastChunk = false;
 	private $chunkScheduled = 0;
+	private $inAction = false;
 	public $lastCorrect;
 	private $bigCnt;
 	private $packetStats;
@@ -1059,23 +1060,9 @@ class Player extends PlayerEntity{
 		
 		$inv =& $this->inventory;
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){			
-			if(($gm & 0x01) === 0x01 and ($gm & 0x02) === 0x02){
-				$inv = array();
-				foreach(BlockAPI::$creative as $item){
-					$inv[] = BlockAPI::getItem(DANDELION, 0, 1);
-				}
-			}elseif(($gm & 0x01) === 0x01){
-				$inv = array();
-				foreach(BlockAPI::$creative as $item){
-					$inv[] = BlockAPI::getItem($item[0], $item[1], 1);
-				}
-			}
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to ".$this->getGamemode().".\n");
 		}else{
-			foreach($this->inventory as $slot => $item){
-				$inv[$slot] = BlockAPI::getItem(AIR, 0, 0);
-			}
 			$this->blocked = true;
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to ".$this->getGamemode().", you've to do a forced reconnect.\n");
@@ -1536,7 +1523,7 @@ class Player extends PlayerEntity{
 					//}
 				}
 				break;
-			/*case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
+			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1568,6 +1555,7 @@ class Player extends PlayerEntity{
 					foreach(BlockAPI::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
 							$packet->slot = $i;
+							break;
 						}
 					}
 					if($packet->slot !== false){
@@ -1590,14 +1578,14 @@ class Player extends PlayerEntity{
 						}
 					}
 				}else{
-					//$this->sendInventorySlot($packet->slot);
-					$this->sendInventory();
+					$this->sendInventorySlot($packet->slot);
+					//$this->sendInventory();
 				}
-				if($this->entity->inAction === true){
-					$this->entity->inAction = false;
-					$this->entity->updateMetadata();
+				if($this->inAction === true){
+					$this->inAction = false;
+					//$this->entity->updateMetadata();
 				}
-				break;*/
+				break;
 			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
@@ -1651,6 +1639,9 @@ class Player extends PlayerEntity{
 					
 					if($this->blocked === true or $blockVector->distance($this) > 10){
 					
+					}elseif(($this->gamemode & 0x01) === 1 and isset(BlockAPI::$creative[$this->slot]) and $packet->item === BlockAPI::$creative[$this->slot][0] and $packet->meta === BlockAPI::$creative[$this->slot][1]){
+						$this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->fx, $packet->fy, $packet->fz);
+						break;
 					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
 					}else{
