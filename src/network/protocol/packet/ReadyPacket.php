@@ -19,11 +19,14 @@
  *
 */
 
-class ReadyPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ReadyPacket extends DataPacket{
 	public $status;
 	
 	public function pid(){
-		return ProtocolInfo::READY_PACKET;
+		return Info::READY_PACKET;
 	}
 	
 	public function decode(){

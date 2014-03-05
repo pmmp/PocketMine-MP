@@ -19,7 +19,10 @@
  *
 */
 
-class Matrix implements ArrayAccess{
+namespace PocketMine\Math;
+use PocketMine;
+
+class Matrix implements \ArrayAccess{
 	private $matrix = array();
 	private $rows = 0;
 	private $columns = 0;

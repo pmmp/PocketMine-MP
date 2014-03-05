@@ -19,6 +19,9 @@
  *
 */
 
+namespace PocketMine\Utils;
+use PocketMine;
+
 class Cache{
 	public static $cached = array();
 	

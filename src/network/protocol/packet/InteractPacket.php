@@ -19,13 +19,16 @@
  *
 */
 
-class InteractPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class InteractPacket extends DataPacket{
 	public $action;
 	public $eid;
 	public $target;
 
 	public function pid(){
-		return ProtocolInfo::INTERACT_PACKET;
+		return Info::INTERACT_PACKET;
 	}
 	
 	public function decode(){

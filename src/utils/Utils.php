@@ -19,17 +19,16 @@
  *
 */
 
-define("BIG_ENDIAN", 0x00);
-define("LITTLE_ENDIAN", 0x01);
-define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? BIG_ENDIAN:LITTLE_ENDIAN));
+namespace PocketMine\Utils;
+use PocketMine;
 
 class Utils{
+	const BIG_ENDIAN = 0x00;
+	const LITTLE_ENDIAN = 0x01;
+	
+	
 	public static $online = true;
 	public static $ip = false;
-	
-	public static function isOnline(){
-		return ((@fsockopen("8.8.8.8", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.linux.org", 80, $e = null, $n = null, 2) !== false or @fsockopen("www.php.net", 80, $e = null, $n = null, 2) !== false) ? true:false);
-	}
 	
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
@@ -535,21 +534,21 @@ class Utils{
 	}
 
 	public static function readFloat($str){
-		list(,$value) = ENDIANNESS === BIG_ENDIAN ? @unpack("f", $str):@unpack("f", strrev($str));
+		list(,$value) = ENDIANNESS === Utils::BIG_ENDIAN ? @unpack("f", $str):@unpack("f", strrev($str));
 		return $value;
 	}
 
 	public static function writeFloat($value){
-		return ENDIANNESS === BIG_ENDIAN ? pack("f", $value):strrev(pack("f", $value));
+		return ENDIANNESS === Utils::BIG_ENDIAN ? pack("f", $value):strrev(pack("f", $value));
 	}
 
 	public static function readLFloat($str){
-		list(,$value) = ENDIANNESS === BIG_ENDIAN ? @unpack("f", strrev($str)):@unpack("f", $str);
+		list(,$value) = ENDIANNESS === Utils::BIG_ENDIAN ? @unpack("f", strrev($str)):@unpack("f", $str);
 		return $value;
 	}
 
 	public static function writeLFloat($value){
-		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("f", $value)):pack("f", $value);
+		return ENDIANNESS === Utils::BIG_ENDIAN ? strrev(pack("f", $value)):pack("f", $value);
 	}
 
 	public static function printFloat($value){
@@ -557,21 +556,21 @@ class Utils{
 	}
 
 	public static function readDouble($str){
-		list(,$value) = ENDIANNESS === BIG_ENDIAN ? @unpack("d", $str):@unpack("d", strrev($str));
+		list(,$value) = ENDIANNESS === Utils::BIG_ENDIAN ? @unpack("d", $str):@unpack("d", strrev($str));
 		return $value;
 	}
 
 	public static function writeDouble($value){
-		return ENDIANNESS === BIG_ENDIAN ? pack("d", $value):strrev(pack("d", $value));
+		return ENDIANNESS === Utils::BIG_ENDIAN ? pack("d", $value):strrev(pack("d", $value));
 	}
 
 	public static function readLDouble($str){
-		list(,$value) = ENDIANNESS === BIG_ENDIAN ? @unpack("d", strrev($str)):@unpack("d", $str);
+		list(,$value) = ENDIANNESS === Utils::BIG_ENDIAN ? @unpack("d", strrev($str)):@unpack("d", $str);
 		return $value;
 	}
 
 	public static function writeLDouble($value){
-		return ENDIANNESS === BIG_ENDIAN ? strrev(pack("d", $value)):pack("d", $value);
+		return ENDIANNESS === Utils::BIG_ENDIAN ? strrev(pack("d", $value)):pack("d", $value);
 	}
 
 	public static function readLong($x, $signed = true){
@@ -626,6 +625,4 @@ class Utils{
 
 }
 
-if(Utils::isOnline() === false){
-	Utils::$online = false;
-}
+define('\ENDIANNESS', (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Utils::BIG_ENDIAN : Utils::LITTLE_ENDIAN));

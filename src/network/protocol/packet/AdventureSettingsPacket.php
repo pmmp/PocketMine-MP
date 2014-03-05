@@ -19,11 +19,14 @@
  *
 */
 
-class AdventureSettingsPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class AdventureSettingsPacket extends DataPacket{
 	public $flags;
 	
 	public function pid(){
-		return ProtocolInfo::ADVENTURE_SETTINGS_PACKET;
+		return Info::ADVENTURE_SETTINGS_PACKET;
 	}
 	
 	public function decode(){

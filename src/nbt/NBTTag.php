@@ -19,19 +19,22 @@
  *
 */
 
+namespace PocketMine\NBT;
+const TAG_End = 0;
+const TAG_Byte = 1;
+const TAG_Short = 2;
+const TAG_Int = 3;
+const TAG_Long = 4;
+const TAG_Float = 5;
+const TAG_Double = 6;
+const TAG_Byte_Array = 7;
+const TAG_String = 8;
+const TAG_Enum = 9;
+const TAG_Compound = 10;
+const TAG_Int_Array = 11;
+use PocketMine;
+
 abstract class NBTTag{
-	const TAG_End = 0;
-	const TAG_Byte = 1;
-	const TAG_Short = 2;
-	const TAG_Int = 3;
-	const TAG_Long = 4;
-	const TAG_Float = 5;
-	const TAG_Double = 6;
-	const TAG_Byte_Array = 7;
-	const TAG_String = 8;
-	const TAG_List = 9;
-	const TAG_Compound = 10;
-	const TAG_Int_Array = 11;
 
 	protected $value;
 	

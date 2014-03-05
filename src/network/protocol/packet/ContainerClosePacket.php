@@ -19,11 +19,14 @@
  *
 */
 
-class ContainerClosePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ContainerClosePacket extends DataPacket{
 	public $windowid;
 	
 	public function pid(){
-		return ProtocolInfo::CONTAINER_CLOSE_PACKET;
+		return Info::CONTAINER_CLOSE_PACKET;
 	}
 	
 	public function decode(){

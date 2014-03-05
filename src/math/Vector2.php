@@ -19,6 +19,9 @@
  *
 */
 
+namespace PocketMine\Math;
+use PocketMine;
+
 class Vector2{
 	public $x, $y;
 
@@ -49,7 +52,7 @@ class Vector2{
 		}else{
 			$this->x += $x;
 			$this->y += $y;
-			return new Vector3($this->x + $x, $this->y + $y);
+			return new Math\Vector3($this->x + $x, $this->y + $y);
 		}
 	}
 

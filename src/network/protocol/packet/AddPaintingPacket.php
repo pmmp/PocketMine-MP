@@ -19,7 +19,10 @@
  *
 */
 
-class AddPaintingPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class AddPaintingPacket extends DataPacket{
 	public $eid;
 	public $x;
 	public $y;
@@ -28,7 +31,7 @@ class AddPaintingPacket extends RakNetDataPacket{
 	public $title;
 	
 	public function pid(){
-		return ProtocolInfo::ADD_PAINTING_PACKET;
+		return Info::ADD_PAINTING_PACKET;
 	}
 	
 	public function decode(){

@@ -19,8 +19,7 @@
  *
 */
 
-
-define("PMF_LEVEL_DEFLATE_LEVEL", 6);
+use PocketMine;
 
 //Gamemodes
 define("SURVIVAL", 0);

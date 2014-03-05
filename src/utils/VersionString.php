@@ -19,6 +19,9 @@
  *
 */
 
+namespace PocketMine\Utils;
+use PocketMine;
+
 class VersionString{
 	public static $stageOrder = array(
 		"alpha" => 0,
@@ -34,7 +37,7 @@ class VersionString{
 	private $minor;
 	private $development = false;
 	private $generation;
-	public function __construct($version = MAJOR_VERSION){
+	public function __construct($version = PocketMine\VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
 			$this->major = ($version >> 5) & 0x0F;

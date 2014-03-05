@@ -19,14 +19,17 @@
  *
 */
 
-class SendInventoryPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class SendInventoryPacket extends DataPacket{
 	public $eid;
 	public $windowid;
 	public $slots = array();
 	public $armor = array();
 	
 	public function pid(){
-		return ProtocolInfo::SEND_INVENTORY_PACKET;
+		return Info::SEND_INVENTORY_PACKET;
 	}
 	
 	public function decode(){

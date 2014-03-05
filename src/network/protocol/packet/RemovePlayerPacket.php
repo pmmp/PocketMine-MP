@@ -19,12 +19,15 @@
  *
 */
 
-class RemovePlayerPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class RemovePlayerPacket extends DataPacket{
 	public $eid;
 	public $clientID;
 	
 	public function pid(){
-		return ProtocolInfo::REMOVE_PLAYER_PACKET;
+		return Info::REMOVE_PLAYER_PACKET;
 	}
 	
 	public function decode(){

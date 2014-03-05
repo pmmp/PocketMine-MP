@@ -19,7 +19,10 @@
  *
 */
 
-class LevelEventPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class LevelEventPacket extends DataPacket{
 	public $evid;
 	public $x;
 	public $y;
@@ -27,7 +30,7 @@ class LevelEventPacket extends RakNetDataPacket{
 	public $data;
 	
 	public function pid(){
-		return ProtocolInfo::LEVEL_EVENT_PACKET;
+		return Info::LEVEL_EVENT_PACKET;
 	}
 	
 	public function decode(){

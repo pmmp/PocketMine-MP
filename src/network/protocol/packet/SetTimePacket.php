@@ -19,12 +19,15 @@
  *
 */
 
-class SetTimePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class SetTimePacket extends DataPacket{
 	public $time;
 	public $started = true;
 	
 	public function pid(){
-		return ProtocolInfo::SET_TIME_PACKET;
+		return Info::SET_TIME_PACKET;
 	}
 	
 	public function decode(){

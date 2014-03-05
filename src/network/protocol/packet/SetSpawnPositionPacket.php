@@ -19,13 +19,16 @@
  *
 */
 
-class SetSpawnPositionPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class SetSpawnPositionPacket extends DataPacket{
 	public $x;
 	public $z;
 	public $y;
 	
 	public function pid(){
-		return ProtocolInfo::SET_SPAWN_POSITION_PACKET;
+		return Info::SET_SPAWN_POSITION_PACKET;
 	}
 	
 	public function decode(){

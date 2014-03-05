@@ -19,7 +19,10 @@
  *
 */
 
-class MovePlayerPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class MovePlayerPacket extends DataPacket{
 	public $eid;
 	public $x;
 	public $y;
@@ -29,7 +32,7 @@ class MovePlayerPacket extends RakNetDataPacket{
 	public $bodyYaw;
 	
 	public function pid(){
-		return ProtocolInfo::MOVE_PLAYER_PACKET;
+		return Info::MOVE_PLAYER_PACKET;
 	}
 	
 	public function decode(){

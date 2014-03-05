@@ -19,14 +19,17 @@
  *
 */
 
-class RemoveBlockPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class RemoveBlockPacket extends DataPacket{
 	public $eid;
 	public $x;
 	public $y;
 	public $z;
 	
 	public function pid(){
-		return ProtocolInfo::REMOVE_BLOCK_PACKET;
+		return Info::REMOVE_BLOCK_PACKET;
 	}
 	
 	public function decode(){

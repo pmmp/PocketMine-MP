@@ -19,14 +19,17 @@
  *
 */
 
-class SetEntityMotionPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class SetEntityMotionPacket extends DataPacket{
 	public $eid;
 	public $speedX;
 	public $speedY;
 	public $speedZ;
 	
 	public function pid(){
-		return ProtocolInfo::SET_ENTITY_MOTION_PACKET;
+		return Info::SET_ENTITY_MOTION_PACKET;
 	}
 	
 	public function decode(){

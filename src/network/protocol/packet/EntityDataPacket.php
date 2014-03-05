@@ -19,14 +19,17 @@
  *
 */
 
-class EntityDataPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class EntityDataPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
 	public $namedtag;
 	
 	public function pid(){
-		return ProtocolInfo::ENTITY_DATA_PACKET;
+		return Info::ENTITY_DATA_PACKET;
 	}
 	
 	public function decode(){

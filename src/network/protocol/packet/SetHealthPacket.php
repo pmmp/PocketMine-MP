@@ -19,11 +19,14 @@
  *
 */
 
-class SetHealthPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class SetHealthPacket extends DataPacket{
 	public $health;
 	
 	public function pid(){
-		return ProtocolInfo::SET_HEALTH_PACKET;
+		return Info::SET_HEALTH_PACKET;
 	}
 	
 	public function decode(){

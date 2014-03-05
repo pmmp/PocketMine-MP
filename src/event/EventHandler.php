@@ -19,11 +19,14 @@
  *
 */
 
+namespace PocketMine\Event;
+use PocketMine;
+
 abstract class EventHandler{
 
-	public static function callEvent(BaseEvent $event){
+	public static function callEvent(Event $event){
 		if(count($event::$handlerPriority) === 0){
-			return BaseEvent::NORMAL;
+			return Event::NORMAL;
 		}
 		foreach($event::$handlerPriority as $priority => $handlerList){
 			if(count($handlerList) > 0){
@@ -33,20 +36,20 @@ abstract class EventHandler{
 				}
 				if($event->isForced()){
 					if($event instanceof CancellableEvent and $event->isCancelled()){
-						return BaseEvent::DENY;
+						return Event::DENY;
 					}else{
-						return BaseEvent::ALLOW;
+						return Event::ALLOW;
 					}
 				}			
 			}
 		}
 
 		if($event instanceof CancellableEvent and $event->isCancelled()){
-			return BaseEvent::DENY;
+			return Event::DENY;
 		}elseif($event->isAllowed()){
-			return BaseEvent::ALLOW;
+			return Event::ALLOW;
 		}else{
-			return BaseEvent::NORMAL;
+			return Event::NORMAL;
 		}
 	}
 

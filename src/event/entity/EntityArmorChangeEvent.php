@@ -19,6 +19,10 @@
  *
 */
 
+namespace PocketMine\Event\Entity;
+use PocketMine\Event;
+use PocketMine;
+
 class EntityArmorChangeEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
@@ -27,7 +31,7 @@ class EntityArmorChangeEvent extends EntityEvent implements CancellableEvent{
 	private $newItem;
 	private $slot;
 	
-	public function __construct(Entity $entity, Item $oldItem, Item $newItem, $slot){
+	public function __construct(Entity\Entity $entity, Item\Item $oldItem, Item\Item $newItem, $slot){
 		$this->entity = $entity;
 		$this->oldItem = $oldItem;
 		$this->newItem = $newItem;
@@ -42,7 +46,7 @@ class EntityArmorChangeEvent extends EntityEvent implements CancellableEvent{
 		return $this->newItem;
 	}
 	
-	public function setNewItem(Item $item){
+	public function setNewItem(Item\Item $item){
 		$this->newItem = $item;
 	}
 	

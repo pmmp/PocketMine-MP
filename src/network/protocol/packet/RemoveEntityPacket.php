@@ -19,11 +19,14 @@
  *
 */
 
-class RemoveEntityPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class RemoveEntityPacket extends DataPacket{
 	public $eid;
 
 	public function pid(){
-		return ProtocolInfo::REMOVE_ENTITY_PACKET;
+		return Info::REMOVE_ENTITY_PACKET;
 	}
 	
 	public function decode(){

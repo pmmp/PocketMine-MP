@@ -19,15 +19,17 @@
  *
 */
 
-define("PMF_CURRENT_VERSION", 0x01);
+namespace PocketMine\PMF
 
 class PMF{
+	const VERSION = 0x01;
+	
 	protected $fp;
 	protected $file;
 	private $version;
 	private $type;
 	
-	public function __construct($file, $new = false, $type = 0, $version = PMF_CURRENT_VERSION){
+	public function __construct($file, $new = false, $type = 0, $version = PMF::VERSION){
 		if($new === true){
 			$this->create($file, $type, $version);
 		}else{
@@ -88,7 +90,7 @@ class PMF{
 		}
 	}
 	
-	public function create($file, $type, $version = PMF_CURRENT_VERSION){
+	public function create($file, $type, $version = PMF::VERSION){
 		$this->file = $file;
 		@mkdir(dirname($this->file), 0755, true);
 		if(!is_resource($this->fp)){

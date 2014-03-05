@@ -19,6 +19,8 @@
  *
 */
 
+use PocketMine;
+
 define("IRON_SHOVEL", 256);//Implemented
 define("IRON_PICKAXE", 257);//Implemented
 define("IRON_AXE", 258);//Implemented

@@ -19,7 +19,8 @@
  *
 */
 
-
+namespace PocketMine\Utils;
+use PocketMine;
 
 /**
  * Class Config

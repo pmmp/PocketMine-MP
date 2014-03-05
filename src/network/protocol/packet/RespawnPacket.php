@@ -19,14 +19,17 @@
  *
 */
 
-class RespawnPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class RespawnPacket extends DataPacket{
 	public $eid;
 	public $x;
 	public $y;
 	public $z;
 	
 	public function pid(){
-		return ProtocolInfo::RESPAWN_PACKET;
+		return Info::RESPAWN_PACKET;
 	}
 	
 	public function decode(){

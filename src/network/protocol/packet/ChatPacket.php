@@ -19,11 +19,14 @@
  *
 */
 
-class ChatPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ChatPacket extends DataPacket{
 	public $message;
 	
 	public function pid(){
-		return ProtocolInfo::CHAT_PACKET;
+		return Info::CHAT_PACKET;
 	}
 	
 	public function decode(){

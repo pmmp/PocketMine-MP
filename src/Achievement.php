@@ -19,6 +19,8 @@
  *
 */
 
+namespace PocketMine;
+
 abstract class Achievement{
 	public static $list = array(
 		/*"openInventory" => array(

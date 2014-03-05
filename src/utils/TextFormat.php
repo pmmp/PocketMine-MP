@@ -19,6 +19,9 @@
  *
 */
 
+namespace PocketMine\Utils;
+use PocketMine;
+
 class TextFormat{
 	const BLACK = "§0";
 	const DARK_BLUE = "§1";

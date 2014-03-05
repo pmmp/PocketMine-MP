@@ -19,7 +19,10 @@
  *
 */
 
-class UpdateBlockPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class UpdateBlockPacket extends DataPacket{
 	public $x;
 	public $z;
 	public $y;
@@ -27,7 +30,7 @@ class UpdateBlockPacket extends RakNetDataPacket{
 	public $meta;
 	
 	public function pid(){
-		return ProtocolInfo::UPDATE_BLOCK_PACKET;
+		return Info::UPDATE_BLOCK_PACKET;
 	}
 	
 	public function decode(){

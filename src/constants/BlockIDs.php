@@ -19,6 +19,8 @@
  *
 */
 
+use PocketMine;
+
 define("AIR", 0);
 define("STONE", 1);
 define("GRASS", 2);

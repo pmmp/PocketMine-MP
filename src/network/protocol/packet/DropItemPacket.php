@@ -19,13 +19,16 @@
  *
 */
 
-class DropItemPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class DropItemPacket extends DataPacket{
 	public $eid;
 	public $unknown;
 	public $item;
 	
 	public function pid(){
-		return ProtocolInfo::DROP_ITEM_PACKET;
+		return Info::DROP_ITEM_PACKET;
 	}
 	
 	public function decode(){

@@ -19,6 +19,9 @@
  *
 */
 
+//TODO: REMOVE
+
+namespace PocketMine;
 
 class Deprecation{
 	public static $events = array(
@@ -30,6 +33,5 @@ class Deprecation{
 		"api.player.offline.get" => "player.offline.get",
 		"api.player.offline.save" => "player.offline.save",
 	);
-
 
 }

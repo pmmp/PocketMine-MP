@@ -19,11 +19,14 @@
  *
 */
 
-class LoginStatusPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class LoginStatusPacket extends DataPacket{
 	public $status;
 	
 	public function pid(){
-		return ProtocolInfo::LOGIN_STATUS_PACKET;
+		return Info::LOGIN_STATUS_PACKET;
 	}
 	
 	public function decode(){

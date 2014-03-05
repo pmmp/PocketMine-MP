@@ -19,7 +19,10 @@
  *
 */
 
-class StartGamePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class StartGamePacket extends DataPacket{
 	public $seed;
 	public $generator;
 	public $gamemode;
@@ -29,7 +32,7 @@ class StartGamePacket extends RakNetDataPacket{
 	public $z;
 	
 	public function pid(){
-		return ProtocolInfo::START_GAME_PACKET;
+		return Info::START_GAME_PACKET;
 	}
 	
 	public function decode(){

@@ -19,9 +19,8 @@
  *
 */
 
-/***REM_START***/
-require_once("NBTTag.php");
-/***REM_END***/
+namespace PocketMine\NBT;
+use PocketMine;
 
 abstract class NamedNBTTag extends NBTTag{
 	

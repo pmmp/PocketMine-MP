@@ -19,7 +19,8 @@
  *
 */
 
-
+namespace PocketMine\Network;
+use PocketMine;
 
 class UDPSocket{
 	public $connected, $sock, $server, $port;

@@ -19,13 +19,16 @@
  *
 */
 
-class ServerHandshakePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ServerHandshakePacket extends DataPacket{
 	public $port;
 	public $session;
 	public $session2;
 
 	public function pid(){
-		return ProtocolInfo::SERVER_HANDSHAKE_PACKET;
+		return Info::SERVER_HANDSHAKE_PACKET;
 	}
 	
 	public function decode(){

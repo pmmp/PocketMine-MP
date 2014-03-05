@@ -19,13 +19,16 @@
  *
 */
 
-class ClientConnectPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ClientConnectPacket extends DataPacket{
 	public $clientID;
 	public $session;
 	public $unknown1;
 
 	public function pid(){
-		return ProtocolInfo::CLIENT_CONNECT_PACKET;
+		return Info::CLIENT_CONNECT_PACKET;
 	}
 	
 	public function decode(){

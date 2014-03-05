@@ -19,7 +19,10 @@
  *
 */
 
-class UseItemPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class UseItemPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
@@ -35,7 +38,7 @@ class UseItemPacket extends RakNetDataPacket{
 	public $posZ;
 	
 	public function pid(){
-		return ProtocolInfo::USE_ITEM_PACKET;
+		return Info::USE_ITEM_PACKET;
 	}
 	
 	public function decode(){

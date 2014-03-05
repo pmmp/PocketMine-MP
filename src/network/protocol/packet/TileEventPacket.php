@@ -19,7 +19,10 @@
  *
 */
 
-class TileEventPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class TileEventPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
@@ -27,7 +30,7 @@ class TileEventPacket extends RakNetDataPacket{
 	public $case2;
 	
 	public function pid(){
-		return ProtocolInfo::TILE_EVENT_PACKET;
+		return Info::TILE_EVENT_PACKET;
 	}
 	
 	public function decode(){

@@ -19,13 +19,16 @@
  *
 */
 
-class ContainerSetSlotPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ContainerSetSlotPacket extends DataPacket{
 	public $windowid;
 	public $slot;
 	public $item;
 	
 	public function pid(){
-		return ProtocolInfo::CONTAINER_SET_SLOT_PACKET;
+		return Info::CONTAINER_SET_SLOT_PACKET;
 	}
 	
 	public function decode(){

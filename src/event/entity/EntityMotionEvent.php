@@ -19,13 +19,17 @@
  *
 */
 
+namespace PocketMine\Event\Entity;
+use PocketMine\Event;
+use PocketMine;
+
 class EntityMotionEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
 
 	private $mot;	
 	
-	public function __construct(Entity $entity, Vector3 $mot){
+	public function __construct(Entity\Entity $entity, Math\Vector3 $mot){
 		$this->entity = $entity;
 		$this->mot = $mot;
 	}

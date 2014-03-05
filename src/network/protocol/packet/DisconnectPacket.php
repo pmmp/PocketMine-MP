@@ -19,9 +19,12 @@
  *
 */
 
-class DisconnectPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class DisconnectPacket extends DataPacket{
 	public function pid(){
-		return ProtocolInfo::DISCONNECT_PACKET;
+		return Info::DISCONNECT_PACKET;
 	}
 	
 	public function decode(){

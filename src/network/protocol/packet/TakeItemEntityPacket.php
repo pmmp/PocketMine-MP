@@ -19,12 +19,15 @@
  *
 */
 
-class TakeItemEntityPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class TakeItemEntityPacket extends DataPacket{
 	public $target;
 	public $eid;
 
 	public function pid(){
-		return ProtocolInfo::TAKE_ITEM_ENTITY_PACKET;
+		return Info::TAKE_ITEM_ENTITY_PACKET;
 	}
 	
 	public function decode(){

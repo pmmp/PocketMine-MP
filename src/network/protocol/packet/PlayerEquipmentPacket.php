@@ -19,14 +19,17 @@
  *
 */
 
-class PlayerEquipmentPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class PlayerEquipmentPacket extends DataPacket{
 	public $eid;
 	public $item;
 	public $meta;
 	public $slot;
 	
 	public function pid(){
-		return ProtocolInfo::PLAYER_EQUIPMENT_PACKET;
+		return Info::PLAYER_EQUIPMENT_PACKET;
 	}
 	
 	public function decode(){

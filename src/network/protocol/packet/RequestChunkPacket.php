@@ -19,12 +19,15 @@
  *
 */
 
-class RequestChunkPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class RequestChunkPacket extends DataPacket{
 	public $chunkX;
 	public $chunkZ;
 	
 	public function pid(){
-		return ProtocolInfo::REQUEST_CHUNK_PACKET;
+		return Info::REQUEST_CHUNK_PACKET;
 	}
 	
 	public function decode(){

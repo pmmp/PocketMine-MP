@@ -19,12 +19,15 @@
  *
 */
 
-class RotateHeadPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class RotateHeadPacket extends DataPacket{
 	public $eid;
 	public $yaw;
 	
 	public function pid(){
-		return ProtocolInfo::ROTATE_HEAD_PACKET;
+		return Info::ROTATE_HEAD_PACKET;
 	}
 	
 	public function decode(){

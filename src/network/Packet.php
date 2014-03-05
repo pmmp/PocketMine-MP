@@ -19,7 +19,10 @@
  *
 */
 
-class Packet extends stdClass{
+namespace PocketMine\Network;
+use PocketMine;
+
+class Packet extends \stdClass{
 	public $ip;
 	public $port;
 	public $buffer;

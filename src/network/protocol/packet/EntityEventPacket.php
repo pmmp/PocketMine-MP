@@ -19,12 +19,15 @@
  *
 */
 
-class EntityEventPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class EntityEventPacket extends DataPacket{
 	public $eid;
 	public $event;
 	
 	public function pid(){
-		return ProtocolInfo::ENTITY_EVENT_PACKET;
+		return Info::ENTITY_EVENT_PACKET;
 	}
 	
 	public function decode(){

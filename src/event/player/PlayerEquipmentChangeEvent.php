@@ -19,6 +19,10 @@
  *
 */
 
+namespace PocketMine\Event\Player;
+use PocketMine\Event;
+use PocketMine;
+
 class PlayerEquipmentChangeEvent extends PlayerEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
@@ -27,7 +31,7 @@ class PlayerEquipmentChangeEvent extends PlayerEvent implements CancellableEvent
 	private $slot;
 	private $inventorySlot;
 	
-	public function __construct(Player $player, Item $item, $inventorySlot, $slot){
+	public function __construct(Player $player, Item\Item $item, $inventorySlot, $slot){
 		$this->player = $player;
 		$this->item = $item;
 		$this->inventorySlot = (int) $inventorySlot;

@@ -19,6 +19,8 @@
  *
 */
 
+__halt_compiler();
+
 class EntityOLD extends Position{
 	public $age;
 	public $air;
@@ -346,11 +348,11 @@ class EntityOLD extends Position{
 		for($y = $startY; $y <= $endY; ++$y){
 			for($x = $startX; $x <= $endX; ++$x){
 				for($z = $startZ; $z <= $endZ; ++$z){
-					$b = $this->level->getBlock(new Vector3($x, $y, $z));
+					$b = $this->level->getBlock(new Math\Vector3($x, $y, $z));
 					switch($b->getID()){
 						case WATER:
 						case STILL_WATER: //Drowing
-							if($this->fire > 0 and $this->inBlock(new Vector3($x, $y, $z))){
+							if($this->fire > 0 and $this->inBlock(new Math\Vector3($x, $y, $z))){
 								$this->fire = 0;
 								$this->updateMetadata();
 							}
@@ -366,7 +368,7 @@ class EntityOLD extends Position{
 							break;
 						case LAVA: //Lava damage
 						case STILL_LAVA:
-							if($this->inBlock(new Vector3($x, $y, $z))){
+							if($this->inBlock(new Math\Vector3($x, $y, $z))){
 								$this->harm(5, "lava");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -374,7 +376,7 @@ class EntityOLD extends Position{
 							}
 							break;
 						case FIRE: //Fire block damage
-							if($this->inBlock(new Vector3($x, $y, $z))){
+							if($this->inBlock(new Math\Vector3($x, $y, $z))){
 								$this->harm(1, "fire");
 								$this->fire = 300;
 								$this->updateMetadata();
@@ -382,13 +384,13 @@ class EntityOLD extends Position{
 							}
 							break;
 						case CACTUS: //Cactus damage
-							if($this->touchingBlock(new Vector3($x, $y, $z))){
+							if($this->touchingBlock(new Math\Vector3($x, $y, $z))){
 								$this->harm(1, "cactus");
 								$hasUpdate = true;
 							}
 							break;
 						default:
-							if($this->inBlock(new Vector3($x, $y, $z), 0.7) and $y == $endY and $b->isTransparent === false and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
+							if($this->inBlock(new Math\Vector3($x, $y, $z), 0.7) and $y == $endY and $b->isTransparent === false and ($this->class === ENTITY_MOB or $this->class === ENTITY_PLAYER)){
 								$this->harm(1, "suffocation"); //Suffocation
 								$hasUpdate = true;
 							}elseif($x == ($endX - 1) and $y == $endY and $z == ($endZ - 1)){
@@ -436,7 +438,7 @@ class EntityOLD extends Position{
 			$isFlying = true;
 			for($z = $startZ; $z <= $endZ; ++$z){
 				for($x = $startX; $x <= $endX; ++$x){
-					$v = new Vector3($x, $y, $z);
+					$v = new Math\Vector3($x, $y, $z);
 					if($this->isSupport($v, $this->size)){
 						$b = $this->level->getBlock($v);
 						if($b->isSolid === true){
@@ -474,14 +476,14 @@ class EntityOLD extends Position{
 							$z = (int) ($this->z - 0.5);
 							$lim = (int) floor($ny);
 							for($y = (int) ceil($this->y) - 1; $y >= $lim; --$y){
-								if($this->level->getBlock(new Vector3($x, $y, $z))->isSolid === true){
+								if($this->level->getBlock(new Math\Vector3($x, $y, $z))->isSolid === true){
 									$ny = $y + 1;
 									$this->speedY = 0;
 									$support = true;
 									if($this->class === ENTITY_FALLING){
 										$this->y = $ny;
-										$fall = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
-										$down = $this->level->getBlock(new Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
+										$fall = $this->level->getBlock(new Math\Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
+										$down = $this->level->getBlock(new Math\Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
 										if($fall->isFullBlock === false or $down->isFullBlock === false){
 											$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
 										}else{
@@ -534,8 +536,8 @@ class EntityOLD extends Position{
 					}					
 				}elseif($this->fallY !== false){ //Fall damage!
 					if($y < $this->fallY){
-						$d = $this->level->getBlock(new Vector3($this->x, $y + 1, $this->z));
-						$d2 = $this->level->getBlock(new Vector3($this->x, $y + 2, $this->z));
+						$d = $this->level->getBlock(new Math\Vector3($this->x, $y + 1, $this->z));
+						$d2 = $this->level->getBlock(new Math\Vector3($this->x, $y + 2, $this->z));
 						$dmg = ($this->fallY - $y) - 3;
 						if($dmg > 0 and !($d instanceof LiquidBlock) and $d->getID() !== LADDER and $d->getID() !== COBWEB and !($d2 instanceof LiquidBlock) and $d2->getID() !== LADDER and $d2->getID() !== COBWEB){
 							$this->harm($dmg, "fall");
@@ -547,7 +549,7 @@ class EntityOLD extends Position{
 				}
 				$this->calculateVelocity();
 				if($this->speed <= 9 or ($this->speed <= 20 and ($this->player->gamemode & 0x01) === 0x01)){
-					$this->player->lastCorrect = new Vector3($this->last[0], $this->last[1], $this->last[2]);
+					$this->player->lastCorrect = new Math\Vector3($this->last[0], $this->last[1], $this->last[2]);
 				}
 			}
 		}
@@ -571,9 +573,9 @@ class EntityOLD extends Position{
 			if($this->class === ENTITY_PLAYER or ($this->last[5] + 8) < $now){
 				if($this->server->api->handle("entity.move", $this) === false){
 					if($this->class === ENTITY_PLAYER and $this->player instanceof Player){
-						$this->player->teleport(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
+						$this->player->teleport(new Math\Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
 					}else{
-						$this->setPosition(new Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
+						$this->setPosition(new Math\Vector3($this->last[0], $this->last[1], $this->last[2]), $this->last[3], $this->last[4]);
 					}
 				}else{
 					$this->updateLast();
@@ -834,7 +836,7 @@ class EntityOLD extends Position{
 		$this->server->query("UPDATE entities SET pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
-	public function move(Vector3 $pos, $yaw = 0, $pitch = 0){
+	public function move(Math\Vector3 $pos, $yaw = 0, $pitch = 0){
 		$this->x += $pos->x;
 		$this->y += $pos->y;
 		$this->z += $pos->z;
@@ -849,7 +851,7 @@ class EntityOLD extends Position{
 		$this->server->query("UPDATE entities SET level = '".$this->level->getName()."', x = ".$this->x.", y = ".$this->y.", z = ".$this->z.", pitch = ".$this->pitch.", yaw = ".$this->yaw." WHERE EID = ".$this->eid.";");
 	}
 
-	public function setPosition(Vector3 $pos, $yaw = false, $pitch = false){
+	public function setPosition(Math\Vector3 $pos, $yaw = false, $pitch = false){
 		if($pos instanceof Position and $pos->level instanceof Level and $this->level !== $pos->level){
 			$this->level = $pos->level;
 			$this->server->preparedSQL->entity->setLevel->reset();
@@ -878,23 +880,23 @@ class EntityOLD extends Position{
 		$this->server->preparedSQL->entity->setPosition->execute();
 	}
 	
-	public function inBlock(Vector3 $block, $radius = 0.8){
-		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
+	public function inBlock(Math\Vector3 $block, $radius = 0.8){
+		$me = new Math\Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
 		if(($block->y == ((int) $this->y) or $block->y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
 		}
 		return false;
 	}
 	
-	public function touchingBlock(Vector3 $block, $radius = 0.9){
-		$me = new Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
+	public function touchingBlock(Math\Vector3 $block, $radius = 0.9){
+		$me = new Math\Vector3($this->x - 0.5, $this->y, $this->z - 0.5);
 		if(($block->y == (((int) $this->y) - 1) or $block->y == ((int) $this->y) or $block->y == (((int) $this->y) + 1)) and $block->maxPlainDistance($me) < $radius){
 			return true;
 		}
 		return false;
 	}
 	
-	public function isSupport(Vector3 $pos, $radius = 1){
+	public function isSupport(Math\Vector3 $pos, $radius = 1){
 		$me = new Vector2($this->x - 0.5, $this->z - 0.5);
 		$diff = $this->y - $pos->y;
 		if($me->distance(new Vector2($pos->x, $pos->z)) < $radius and $diff > -0.7 and $diff < 1.6){

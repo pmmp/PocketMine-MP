@@ -19,6 +19,9 @@
  *
 */
 
+namespace PocketMine\Network\Query;
+use PocketMine;
+
 /*
 Implementation of the UT3 Query Protocol (GameSpot)
 Source: http://wiki.unrealadmin.org/UT3_query_protocol
@@ -51,7 +54,7 @@ class QueryHandler{
 	
 	public function regenerateInfo(){
 		$str = "";
-		$plist = "PocketMine-MP ".MAJOR_VERSION;
+		$plist = "PocketMine-MP ".VERSION;
 		$pl = $this->server->api->plugin->getList();
 		if(count($pl) > 0){
 			$plist .= ":";
@@ -65,8 +68,8 @@ class QueryHandler{
 			"hostname" => $this->server->name,
 			"gametype" => ($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP",
 			"game_id" => "MINECRAFTPE",
-			"version" => CURRENT_MINECRAFT_VERSION,
-			"server_engine" => "PocketMine-MP ".MAJOR_VERSION,
+			"version" => MINECRAFT_VERSION,
+			"server_engine" => "PocketMine-MP ".VERSION,
 			"plugins" => $plist,
 			"map" => $this->server->api->level->getDefault()->getName(),
 			"numplayers" => count(Player::$list),
@@ -91,11 +94,11 @@ class QueryHandler{
 	
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
-		$this->token = Utils::getRandomBytes(16, false);
+		$this->token = Utils\Utils::getRandomBytes(16, false);
 	}
 	
 	public static function getTokenString($token, $salt){
-		return Utils::readInt(substr(hash("sha512", $salt . ":". $token, true), 7, 4));
+		return Utils\Utils::readInt(substr(hash("sha512", $salt . ":". $token, true), 7, 4));
 	}
 	
 	public function handle(QueryPacket $packet){	
@@ -112,7 +115,7 @@ class QueryHandler{
 				$this->server->send($pk);
 				break;
 			case QueryPacket::STATISTICS: //Stat
-				$token = Utils::readInt(substr($packet->payload, 0, 4));
+				$token = Utils\Utils::readInt(substr($packet->payload, 0, 4));
 				if($token !== self::getTokenString($this->token, $packet->ip) and $token !== self::getTokenString($this->lastToken, $packet->ip)){
 					break;
 				}
@@ -127,7 +130,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;			
 				}else{
-					$pk->payload = $this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count(Player::$list)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
+					$pk->payload = $this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count(Player::$list)."\x00".$this->server->maxClients."\x00".Utils\Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
 				}
 				$pk->encode();
 				$this->server->send($pk);

@@ -19,7 +19,10 @@
  *
 */
 
-class AddPlayerPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class AddPlayerPacket extends DataPacket{
 	public $clientID;
 	public $username;
 	public $eid;
@@ -33,7 +36,7 @@ class AddPlayerPacket extends RakNetDataPacket{
 	public $metadata;
 	
 	public function pid(){
-		return ProtocolInfo::ADD_PLAYER_PACKET;
+		return Info::ADD_PLAYER_PACKET;
 	}
 	
 	public function decode(){
@@ -52,7 +55,7 @@ class AddPlayerPacket extends RakNetDataPacket{
 		$this->putByte($this->pitch);
 		$this->putShort($this->unknown1);
 		$this->putShort($this->unknown2);
-		$this->put(Utils::writeMetadata($this->metadata));
+		$this->put(Utils\Utils::writeMetadata($this->metadata));
 	}
 
 }

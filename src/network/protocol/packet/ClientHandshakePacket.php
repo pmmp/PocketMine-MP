@@ -19,7 +19,10 @@
  *
 */
 
-class ClientHandshakePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ClientHandshakePacket extends DataPacket{
 	public $cookie;
 	public $security;
 	public $port;
@@ -30,7 +33,7 @@ class ClientHandshakePacket extends RakNetDataPacket{
 	public $session;
 
 	public function pid(){
-		return ProtocolInfo::CLIENT_HANDSHAKE_PACKET;
+		return Info::CLIENT_HANDSHAKE_PACKET;
 	}
 	
 	public function decode(){

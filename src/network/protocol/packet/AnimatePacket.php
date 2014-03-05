@@ -19,12 +19,15 @@
  *
 */
 
-class AnimatePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class AnimatePacket extends DataPacket{
 	public $action;
 	public $eid;
 	
 	public function pid(){
-		return ProtocolInfo::ANIMATE_PACKET;
+		return Info::ANIMATE_PACKET;
 	}
 	
 	public function decode(){

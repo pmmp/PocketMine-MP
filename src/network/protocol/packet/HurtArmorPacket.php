@@ -19,11 +19,14 @@
  *
 */
 
-class HurtArmorPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class HurtArmorPacket extends DataPacket{
 	public $health;
 	
 	public function pid(){
-		return ProtocolInfo::HURT_ARMOR_PACKET;
+		return Info::HURT_ARMOR_PACKET;
 	}
 	
 	public function decode(){

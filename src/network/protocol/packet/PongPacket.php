@@ -19,12 +19,15 @@
  *
 */
 
-class PongPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class PongPacket extends DataPacket{
 	public $time = 0;
 	public $ptime = 0;
 
 	public function pid(){
-		return ProtocolInfo::PONG_PACKET;
+		return Info::PONG_PACKET;
 	}
 	
 	public function decode(){

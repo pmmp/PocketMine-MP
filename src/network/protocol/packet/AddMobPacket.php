@@ -19,7 +19,10 @@
  *
 */
 
-class AddMobPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class AddMobPacket extends DataPacket{
 	public $eid;
 	public $type;
 	public $x;
@@ -30,7 +33,7 @@ class AddMobPacket extends RakNetDataPacket{
 	public $metadata;
 	
 	public function pid(){
-		return ProtocolInfo::ADD_MOB_PACKET;
+		return Info::ADD_MOB_PACKET;
 	}
 	
 	public function decode(){
@@ -46,7 +49,7 @@ class AddMobPacket extends RakNetDataPacket{
 		$this->putFloat($this->z);
 		$this->putByte($this->yaw);
 		$this->putByte($this->pitch);
-		$this->put(Utils::writeMetadata($this->metadata));
+		$this->put(Utils\Utils::writeMetadata($this->metadata));
 	}
 
 }

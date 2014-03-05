@@ -19,7 +19,10 @@
  *
 */
 
-class PlayerActionPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class PlayerActionPacket extends DataPacket{
 	public $action;
 	public $x;
 	public $y;
@@ -28,7 +31,7 @@ class PlayerActionPacket extends RakNetDataPacket{
 	public $eid;
 	
 	public function pid(){
-		return ProtocolInfo::PLAYER_ACTION_PACKET;
+		return Info::PLAYER_ACTION_PACKET;
 	}
 	
 	public function decode(){

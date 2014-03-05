@@ -19,7 +19,10 @@
  *
 */
 
-class MoveEntityPacket_PosRot extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class MoveEntityPacket_PosRot extends DataPacket{
 	public $eid;
 	public $x;
 	public $y;
@@ -28,7 +31,7 @@ class MoveEntityPacket_PosRot extends RakNetDataPacket{
 	public $pitch;
 	
 	public function pid(){
-		return ProtocolInfo::MOVE_ENTITY_PACKET_POSROT;
+		return Info::MOVE_ENTITY_PACKET_POSROT;
 	}
 	
 	public function decode(){

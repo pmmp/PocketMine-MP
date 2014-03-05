@@ -19,12 +19,15 @@
  *
 */
 
-class SetEntityDataPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class SetEntityDataPacket extends DataPacket{
 	public $eid;
 	public $metadata;
 	
 	public function pid(){
-		return ProtocolInfo::SET_ENTITY_DATA_PACKET;
+		return Info::SET_ENTITY_DATA_PACKET;
 	}
 	
 	public function decode(){
@@ -34,7 +37,7 @@ class SetEntityDataPacket extends RakNetDataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->put(Utils::writeMetadata($this->metadata));
+		$this->put(Utils\Utils::writeMetadata($this->metadata));
 	}
 
 }

@@ -19,7 +19,10 @@
  *
 */
 
-class LoginPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class LoginPacket extends DataPacket{
 	public $username;
 	public $protocol1;
 	public $protocol2;
@@ -27,7 +30,7 @@ class LoginPacket extends RakNetDataPacket{
 	public $loginData;
 	
 	public function pid(){
-		return ProtocolInfo::LOGIN_PACKET;
+		return Info::LOGIN_PACKET;
 	}
 	
 	public function decode(){

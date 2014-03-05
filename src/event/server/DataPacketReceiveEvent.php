@@ -19,6 +19,10 @@
  *
 */
 
+namespace PocketMine\Event\Server;
+use PocketMine\Event;
+use PocketMine;
+
 class DataPacketReceiveEvent extends ServerEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
@@ -26,7 +30,7 @@ class DataPacketReceiveEvent extends ServerEvent implements CancellableEvent{
 	private $packet;
 	private $player;	
 	
-	public function __construct(Player $player, RakNetDataPacket $packet){
+	public function __construct(Player $player, Network\Protocol\DataPacket $packet){
 		$this->packet = $packet;
 		$this->player = $player;
 	}

@@ -19,10 +19,13 @@
  *
 */
 
-class MoveEntityPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class MoveEntityPacket extends DataPacket{
 
 	public function pid(){
-		return ProtocolInfo::MOVE_ENTITY_PACKET;
+		return Info::MOVE_ENTITY_PACKET;
 	}
 	
 	public function decode(){

@@ -19,7 +19,10 @@
  *
 */
 
-class ExplodePacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ExplodePacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
@@ -27,7 +30,7 @@ class ExplodePacket extends RakNetDataPacket{
 	public $records;
 	
 	public function pid(){
-		return ProtocolInfo::EXPLODE_PACKET;
+		return Info::EXPLODE_PACKET;
 	}
 	
 	public function decode(){

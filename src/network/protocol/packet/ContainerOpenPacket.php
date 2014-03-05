@@ -19,7 +19,10 @@
  *
 */
 
-class ContainerOpenPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class ContainerOpenPacket extends DataPacket{
 	public $windowid;
 	public $type;
 	public $slots;
@@ -28,7 +31,7 @@ class ContainerOpenPacket extends RakNetDataPacket{
 	public $z;
 	
 	public function pid(){
-		return ProtocolInfo::CONTAINER_OPEN_PACKET;
+		return Info::CONTAINER_OPEN_PACKET;
 	}
 	
 	public function decode(){

@@ -19,7 +19,10 @@
  *
 */
 
-class AddItemEntityPacket extends RakNetDataPacket{
+namespace PocketMine\Network\Protocol;
+use PocketMine;
+
+class AddItemEntityPacket extends DataPacket{
 	public $eid;
 	public $item;
 	public $x;
@@ -30,7 +33,7 @@ class AddItemEntityPacket extends RakNetDataPacket{
 	public $roll;
 	
 	public function pid(){
-		return ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
+		return Info::ADD_ITEM_ENTITY_PACKET;
 	}
 	
 	public function decode(){
