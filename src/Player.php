@@ -356,8 +356,8 @@ class Player extends PlayerEntity{
 		
 		$newOrder = array();
 		$lastChunk = $this->chunksLoaded;
-		$centerX = intval(($this->x - 0.5) / 16);
-		$centerZ = intval(($this->z - 0.5) / 16);
+		$centerX = $this->x >> 4;
+		$centerZ = $this->z >> 4;
 		$startX = $centerX - $this->viewDistance;
 		$startZ = $centerZ - $this->viewDistance;
 		$finalX = $centerX + $this->viewDistance;
@@ -1460,9 +1460,6 @@ class Player extends PlayerEntity{
 						$this->spawnToAll();
 						$this->sendChat($this->server->motd."\n");
 						
-						if($this->iusername === "steve" or $this->iusername === "stevie"){
-							$this->sendChat("You're using the default username. Please change it on the Minecraft PE settings.\n");
-						}
 						$this->sendInventory();
 						$this->sendSettings();
 						$this->sendArmor();
@@ -1471,11 +1468,13 @@ class Player extends PlayerEntity{
 						
 						$pk = new SetTimePacket;
 						$pk->time = $this->level->getTime();
+						$pk->started = $this->level->stopTime == false;
 						$this->dataPacket($pk);
 						
 						$pos = new Position($this->x, $this->y, $this->z, $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
 						$this->teleport($pos);
+						$this->sendBuffer();
 						$this->server->handle("player.spawn", $this);
 						break;
 					case 2://Chunk loaded?

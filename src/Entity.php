@@ -324,6 +324,7 @@ abstract class Entity extends Position{
 			$this->chunksLoaded = array();
 			$pk = new SetTimePacket;
 			$pk->time = $this->level->getTime();
+			$pk->started = $this->level->stopTime == false;
 			$this->dataPacket($pk);		
 		}
 		$this->spawnToAll();

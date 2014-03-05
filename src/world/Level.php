@@ -29,7 +29,8 @@ class Level{
 	public $chunkTiles = array();
 	
 	public $nextSave, $level;
-	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
+	public $stopTime;
+	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
 	
 	public function __construct(PMFLevel $level, $name){
 		$this->server = ServerAPI::request();
