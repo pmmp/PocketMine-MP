@@ -108,6 +108,7 @@ foreach($inc as $s){
 	$sha1sum ^= sha1_file($s, true);
 }
 /***REM_END***/
+ini_set("opcache.mmap_base", bin2hex(Utils::getRandomBytes(8, false))); //Fix OPCache address errors
 define("SOURCE_SHA1SUM", bin2hex($sha1sum));
 
 /***REM_START***/

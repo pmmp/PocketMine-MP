@@ -31,17 +31,20 @@ class RakNetPacket extends Packet{
 	public function pid(){
 		return $this->packetID;
 	}
-	
-	private function get($len){
+		
+	protected function get($len){
 		if($len <= 0){
 			$this->offset = strlen($this->buffer) - 1;
 			return "";
-		}
-		if($len === true){
+		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
-		$this->offset += $len;
-		return substr($this->buffer, $this->offset - $len, $len);
+		
+		$buffer = b"";
+		for(; $len > 0; --$len, ++$this->offset){
+			$buffer .= $this->buffer{$this->offset};
+		}
+		return $buffer;
 	}
 	
 	private function getLong($unsigned = false){
@@ -61,7 +64,7 @@ class RakNetPacket extends Packet{
 	}
 	
 	private function getByte(){
-		return ord($this->get(1));
+		return ord($this->buffer{$this->offset++});
 	}	
 	
 	private function feof(){
