@@ -20,10 +20,14 @@
 */
 
 
-/**
- * Plugins that create events must use this class as the base
- */
-
 abstract class PluginEvent extends BaseEvent{
-
+	private $plugin;
+	
+	public function __construct(Plugin $plugin){
+		$this->plugin = $plugin;
+	}
+	
+	public function getPlugin(){
+		return $this->plugin;
+	}
 }
