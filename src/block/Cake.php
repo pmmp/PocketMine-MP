@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Cake extends Transparent{
 	public function __construct($meta = 0){
@@ -31,7 +32,7 @@ class Cake extends Transparent{
 		$this->hardness = 2.5;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -54,11 +55,11 @@ class Cake extends Transparent{
 		return false;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array();
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($player->getHealth() < 20){
 			++$this->meta;
 			$player->heal(3, "cake");

@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Generic extends Block{
 
@@ -33,15 +35,15 @@ class Generic extends Block{
 		parent::__construct($id, $meta, $name);
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return $this->level->setBlock($this, $this, true, false, true);
 	}
 
-	public function isBreakable(Item\Item $item, Player $player){
+	public function isBreakable(Item $item, Player $player){
 		return $this->breakable;
 	}
 
-	public function onBreak(Item\Item $item, Player $player){
+	public function onBreak(Item $item, Player $player){
 		return $this->level->setBlock($this, new Air(), true, false, true);
 	}
 
@@ -69,7 +71,7 @@ class Generic extends Block{
 		return false;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		return $this->isActivable;
 	}
 }

@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Block\Block as Block;
 
 class Dirt extends Solid{
 	public function __construct(){
@@ -29,7 +31,7 @@ class Dirt extends Solid{
 		$this->hardness = 2.5;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($item->isHoe()){
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);

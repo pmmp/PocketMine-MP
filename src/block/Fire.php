@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Fire extends Flowable{
 	public function __construct($meta = 0){
@@ -31,7 +32,7 @@ class Fire extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array();
 	}
 

@@ -21,6 +21,9 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Level\Position as Position;
 
 class Lava extends Liquid{
 	public function __construct($meta = 0){
@@ -28,7 +31,7 @@ class Lava extends Liquid{
 		$this->hardness = 0;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		ServerAPI::request()->api->block->scheduleBlockUpdate(clone $this, 40, BLOCK_UPDATE_NORMAL);
 
@@ -99,7 +102,7 @@ class Lava extends Liquid{
 			if($level !== 0x07){
 				if($down instanceof Air || $down instanceof Lava){
 					$this->level->setBlock($down, new Lava(0x01), false, false, true);
-					ServerAPI::request()->api->block->scheduleBlockUpdate(new Level\Position($down, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($down, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 				} else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
@@ -107,7 +110,7 @@ class Lava extends Liquid{
 
 						} elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Lava(min($level + 2, 7)), false, false, true);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Level\Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
@@ -121,7 +124,7 @@ class Lava extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Level\Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($sb, new Air(), false, false, true);
 					}
@@ -132,7 +135,7 @@ class Lava extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Level\Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($b, new Air(), false, false, true);
 					}

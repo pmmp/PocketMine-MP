@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Workbench extends Solid{
 	public function __construct($meta = 0){
@@ -29,13 +30,13 @@ class Workbench extends Solid{
 		$this->hardness = 15;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		$player->toCraft[-1] = 1;
 
 		return true;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

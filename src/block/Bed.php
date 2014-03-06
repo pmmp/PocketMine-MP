@@ -21,6 +21,10 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Block\Block as Block;
+use PocketMine\Item\BED as BED;
 
 class Bed extends Transparent{
 	public function __construct($type = 0){
@@ -30,7 +34,7 @@ class Bed extends Transparent{
 		$this->hardness = 1;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if(ServerAPI::request()->api->time->getPhase($player->level) !== "night"){
 			$pk = new Network\Protocol\ChatPacket;
 			$pk->message = "You can only sleep at night";
@@ -72,7 +76,7 @@ class Bed extends Transparent{
 		return true;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$faces = array(
@@ -96,7 +100,7 @@ class Bed extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item\Item $item, Player $player){
+	public function onBreak(Item $item, Player $player){
 		$blockNorth = $this->getSide(2); //Gets the blocks around them
 		$blockSouth = $this->getSide(3);
 		$blockEast = $this->getSide(5);
@@ -128,9 +132,9 @@ class Bed extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
-			array(Item\BED, 0, 1),
+			array(BED, 0, 1),
 		);
 	}
 

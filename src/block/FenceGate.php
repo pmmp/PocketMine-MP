@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class FenceGate extends Transparent{
 	public function __construct($meta = 0){
@@ -34,7 +35,7 @@ class FenceGate extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 3,
 			1 => 0,
@@ -47,13 +48,13 @@ class FenceGate extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		$faces = array(
 			0 => 3,
 			1 => 0,

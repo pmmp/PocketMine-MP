@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class LapisOre extends Solid{
 	public function __construct(){
@@ -28,7 +29,7 @@ class LapisOre extends Solid{
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -44,7 +45,7 @@ class LapisOre extends Solid{
 		}
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 3){
 			return array(
 				array(Item\DYE, 4, mt_rand(4, 8)),

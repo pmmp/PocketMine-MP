@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class StoneBricks extends Solid{
 	public function __construct($meta = 0){
@@ -35,7 +36,7 @@ class StoneBricks extends Solid{
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -55,7 +56,7 @@ class StoneBricks extends Solid{
 		}
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(STONE_BRICKS, $this->meta & 0x03, 1),

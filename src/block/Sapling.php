@@ -21,6 +21,10 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Level\Generator\Object\Tree as Tree;
+use PocketMine\Utils\Random as Random;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Sapling extends Flowable{
 	const OAK = 0;
@@ -42,7 +46,7 @@ class Sapling extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -53,9 +57,9 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			Level\Generator\Object\Tree::growTree($this->level, $this, new Utils\Random(), $this->meta & 0x03);
+			Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}
@@ -70,7 +74,7 @@ class Sapling extends Flowable{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
+				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
@@ -78,7 +82,7 @@ class Sapling extends Flowable{
 		} elseif($type === BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
 				if(($this->meta & 0x08) === 0x08){
-					Level\Generator\Object\Tree::growTree($this->level, $this, new Utils\Random(), $this->meta & 0x03);
+					Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 				} else{
 					$this->meta |= 0x08;
 					$this->level->setBlock($this, $this, true, false, true);
@@ -93,7 +97,7 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);

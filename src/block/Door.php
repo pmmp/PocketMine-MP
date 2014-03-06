@@ -21,6 +21,9 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Block\Block as Block;
+use PocketMine\Player as Player;
 
 
 abstract class Door extends Transparent{
@@ -44,7 +47,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($face === 1){
 			$blockUp = $this->getSide(1);
 			$blockDown = $this->getSide(0);
@@ -74,7 +77,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item\Item $item, Player $player){
+	public function onBreak(Item $item, Player $player){
 		if(($this->meta & 0x08) === 0x08){
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
@@ -91,7 +94,7 @@ abstract class Door extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if(($this->meta & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){

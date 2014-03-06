@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Bedrock extends Solid{
 	public function __construct(){
@@ -29,7 +30,7 @@ class Bedrock extends Solid{
 		$this->hardness = 18000000;
 	}
 
-	public function isBreakable(Item\Item $item, Player $player){
+	public function isBreakable(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}

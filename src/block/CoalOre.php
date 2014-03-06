@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Item\COAL as COAL;
 
 class CoalOre extends Solid{
 	public function __construct(){
@@ -28,7 +30,7 @@ class CoalOre extends Solid{
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -48,10 +50,10 @@ class CoalOre extends Solid{
 		}
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(Item\COAL, 0, 1),
+				array(COAL, 0, 1),
 			);
 		} else{
 			return array();

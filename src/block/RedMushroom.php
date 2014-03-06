@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Item\Item as Item;
 
 class RedMushroom extends Flowable{
 	public function __construct(){
@@ -32,7 +34,7 @@ class RedMushroom extends Flowable{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
+				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
 				$this->level->setBlock($this, new Air(), false);
 
 				return BLOCK_UPDATE_NORMAL;
@@ -42,7 +44,7 @@ class RedMushroom extends Flowable{
 		return false;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$this->level->setBlock($block, $this, true, false, true);

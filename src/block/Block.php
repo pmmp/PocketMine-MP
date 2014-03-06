@@ -429,12 +429,12 @@ abstract class Block extends Position{
 	/**
 	 * Returns an array of Item objects to be dropped
 	 *
-	 * @param Item\Item $item
+	 * @param ItemItem $item
 	 * @param Player    $player
 	 *
 	 * @return array
 	 */
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(ItemItem $item, Player $player){
 		if(!isset(self::$class[$this->id])){ //Unknown blocks
 			return array();
 		} else{
@@ -447,13 +447,13 @@ abstract class Block extends Position{
 	/**
 	 * Returns the seconds that this block takes to be broken using an specific Item
 	 *
-	 * @param Item\Item $item
+	 * @param ItemItem $item
 	 * @param Player    $player
 	 *
 	 * @return float
 	 */
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(ItemItem $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.15;
 		}
@@ -470,7 +470,7 @@ abstract class Block extends Position{
 	 */
 	public function getSide($side){
 		$v = parent::getSide($side);
-		if($this->level instanceof Level\Level){
+		if($this->level instanceof LevelLevel){
 			return $this->level->getBlock($v);
 		}
 
@@ -484,27 +484,27 @@ abstract class Block extends Position{
 	/**
 	 * Returns if the item can be broken with an specific Item
 	 *
-	 * @param Item\Item $item
+	 * @param ItemItem $item
 	 * @param Player    $player
 	 *
 	 * @return bool
 	 */
-	abstract function isBreakable(Item\Item $item, Player $player);
+	abstract function isBreakable(ItemItem $item, Player $player);
 
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
-	 * @param Item\Item $item
+	 * @param ItemItem $item
 	 * @param Player    $player
 	 *
 	 * @return mixed
 	 */
-	abstract function onBreak(Item\Item $item, Player $player);
+	abstract function onBreak(ItemItem $item, Player $player);
 
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param Item\Item $item
+	 * @param ItemItem $item
 	 * @param Player    $player
 	 * @param Block     $block
 	 * @param Block     $target
@@ -515,17 +515,17 @@ abstract class Block extends Position{
 	 *
 	 * @return bool
 	 */
-	abstract function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	abstract function place(ItemItem $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
-	 * @param Item\Item $item
+	 * @param ItemItem $item
 	 * @param Player    $player
 	 *
 	 * @return bool
 	 */
-	abstract function onActivate(Item\Item $item, Player $player);
+	abstract function onActivate(ItemItem $item, Player $player);
 
 	/**
 	 * Fires a block update on the Block

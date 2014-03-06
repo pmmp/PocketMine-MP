@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
 
 class TNT extends Solid{
 	public function __construct(){
@@ -29,7 +31,7 @@ class TNT extends Solid{
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($item->getID() === Item\FLINT_STEEL){
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);

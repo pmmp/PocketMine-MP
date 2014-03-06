@@ -21,6 +21,10 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Block\Block as Block;
+use PocketMine\Level\Position as Position;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Item\Item as Item;
 
 class GlowingRedstoneOre extends Solid{
 	public function __construct(){
@@ -34,14 +38,14 @@ class GlowingRedstoneOre extends Solid{
 
 			return BLOCK_UPDATE_WEAK;
 		} else{
-			$this->level->scheduleBlockUpdate(new Level\Position($this, 0, 0, $this->level), Utils\Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
+			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 		}
 
 		return false;
 	}
 
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -55,7 +59,7 @@ class GlowingRedstoneOre extends Solid{
 		}
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
 				array(Item\REDSTONE_DUST, 0, mt_rand(4, 5)),

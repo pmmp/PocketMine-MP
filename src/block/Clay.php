@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Clay extends Solid{
 	public function __construct(){
@@ -28,7 +29,7 @@ class Clay extends Solid{
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array(Item\CLAY, 0, 4),
 		);

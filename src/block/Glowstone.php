@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Glowstone extends Transparent{
 	public function __construct(){
@@ -28,7 +29,7 @@ class Glowstone extends Transparent{
 		$this->hardness = 1.5;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array(Item\GLOWSTONE_DUST, 0, mt_rand(2, 4)),
 		);

@@ -21,6 +21,9 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Block\Block as Block;
+use PocketMine\ServerAPI as ServerAPI;
 
 class SignPost extends Transparent{
 	public function __construct($meta = 0){
@@ -30,7 +33,7 @@ class SignPost extends Transparent{
 		$this->hardness = 5;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($face !== 0){
 			$faces = array(
 				2 => 2,
@@ -58,7 +61,7 @@ class SignPost extends Transparent{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item\Item::get(SIGN, 0, 1));
+				//ServerAPI::request()->api->entity->drop($this, Item::get(SIGN, 0, 1));
 				$this->level->setBlock($this, new Air(), true, true, true);
 
 				return BLOCK_UPDATE_NORMAL;
@@ -68,13 +71,13 @@ class SignPost extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item\Item $item, Player $player){
+	public function onBreak(Item $item, Player $player){
 		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array(Item\SIGN, 0, 1),
 		);

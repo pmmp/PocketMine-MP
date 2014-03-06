@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Melon extends Transparent{
 	public function __construct(){
@@ -28,7 +29,7 @@ class Melon extends Transparent{
 		$this->hardness = 5;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array(Item\MELON_SLICE, 0, mt_rand(3, 7)),
 		);

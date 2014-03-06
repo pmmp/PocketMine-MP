@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Quartz extends Solid{
 	public function __construct($meta = 0){
@@ -34,7 +35,7 @@ class Quartz extends Solid{
 		$this->name = $names[$this->meta & 0x03];
 	}
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -54,7 +55,7 @@ class Quartz extends Solid{
 		}
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(QUARTZ_BLOCK, $this->meta & 0x03, 1),

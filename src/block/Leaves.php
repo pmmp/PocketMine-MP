@@ -21,6 +21,9 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Item\Item as Item;
+use PocketMine\Item\APPLE as APPLE;
 
 class Leaves extends Transparent{
 	const OAK = 0;
@@ -122,11 +125,11 @@ class Leaves extends Transparent{
 					$this->level->setBlock($this, new Air(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
 						//TODO
-						ServerAPI::request()->api->entity->drop($this, Item\Item::get(SAPLING, $this->meta & 0x03, 1));
+						ServerAPI::request()->api->entity->drop($this, Item::get(SAPLING, $this->meta & 0x03, 1));
 					}
 					if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
 						//TODO
-						ServerAPI::request()->api->entity->drop($this, Item\Item::get(APPLE, 0, 1));
+						ServerAPI::request()->api->entity->drop($this, Item::get(APPLE, 0, 1));
 					}
 
 					return BLOCK_UPDATE_NORMAL;
@@ -137,12 +140,12 @@ class Leaves extends Transparent{
 		return false;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$this->meta |= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if($item->isShears()){
 			$drops[] = array(LEAVES, $this->meta & 0x03, 1);
@@ -151,7 +154,7 @@ class Leaves extends Transparent{
 				$drops[] = array(Item\SAPLING, $this->meta & 0x03, 1);
 			}
 			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = array(Item\APPLE, 0, 1);
+				$drops[] = array(APPLE, 0, 1);
 			}
 		}
 

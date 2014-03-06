@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Item\Item as Item;
 
 class Torch extends Flowable{
 	public function __construct($meta = 0){
@@ -43,7 +45,7 @@ class Torch extends Flowable{
 
 			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === FENCE)){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id, 0, 1));
+				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id, 0, 1));
 				$this->level->setBlock($this, new Air(), true, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
@@ -53,7 +55,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face !== 0){
 			$faces = array(
 				1 => 5,
@@ -76,7 +78,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

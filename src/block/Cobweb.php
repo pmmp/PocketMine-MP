@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Cobweb extends Flowable{
 	public function __construct(){
@@ -30,7 +31,7 @@ class Cobweb extends Flowable{
 		$this->hardness = 25;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array();
 	}
 }

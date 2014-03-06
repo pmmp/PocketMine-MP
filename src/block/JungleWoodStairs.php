@@ -21,13 +21,14 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class JungleWoodStairs extends Stair{
 	public function __construct($meta = 0){
 		parent::__construct(JUNGLE_WOOD_STAIRS, $meta, "Jungle Wood Stairs");
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

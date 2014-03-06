@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class Diamond extends Solid{
 	public function __construct(){
@@ -28,7 +29,7 @@ class Diamond extends Solid{
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item\Item $item, Player $player){
+	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -42,7 +43,7 @@ class Diamond extends Solid{
 		}
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
 				array(DIAMOND_BLOCK, 0, 1),

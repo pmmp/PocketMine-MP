@@ -26,6 +26,7 @@ use PocketMine\Block\Block as Block;
 use PocketMine\Block\Air as Air;
 use PocketMine\Block\Water as Water;
 use PocketMine\Block\Lava as Lava;
+use PocketMine\Block\Liquid as Liquid;
 
 class Bucket extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -36,7 +37,7 @@ class Bucket extends Item{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($this->meta === AIR){
-			if($target instanceof Block\Liquid){
+			if($target instanceof Liquid){
 				$level->setBlock($target, new Air(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = ($target instanceof Water) ? WATER : LAVA;

@@ -21,6 +21,9 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Item\CARROT as CARROT;
 
 class Carrot extends Flowable{
 	public function __construct($meta = 0){
@@ -29,7 +32,7 @@ class Carrot extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -40,7 +43,7 @@ class Carrot extends Flowable{
 		return false;
 	}
 
-	public function onActivate(Item\Item $item, Player $player){
+	public function onActivate(Item $item, Player $player){
 		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this, true, false, true);
@@ -58,7 +61,7 @@ class Carrot extends Flowable{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item\Item::get(Item\CARROT, 0, 1));
+				//ServerAPI::request()->api->entity->drop($this, Item::get(CARROT, 0, 1));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
@@ -79,12 +82,12 @@ class Carrot extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if($this->meta >= 0x07){
-			$drops[] = array(Item\CARROT, 0, mt_rand(1, 4));
+			$drops[] = array(CARROT, 0, mt_rand(1, 4));
 		} else{
-			$drops[] = array(Item\CARROT, 0, 1);
+			$drops[] = array(CARROT, 0, 1);
 		}
 
 		return $drops;

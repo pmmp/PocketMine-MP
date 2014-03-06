@@ -51,7 +51,7 @@ class Level{
 	public $nextSave;
 
 	/**
-	 * @var PMF\LevelFormat
+	 * @var PMFLevelFormat
 	 */
 	public $level;
 	public $stopTime;

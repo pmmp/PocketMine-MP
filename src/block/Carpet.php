@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Carpet extends Flowable{
 	public function __construct($meta = 0){
@@ -49,7 +51,7 @@ class Carpet extends Flowable{
 		$this->isSolid = true;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR){
 			$this->level->setBlock($block, $this, true, false, true);

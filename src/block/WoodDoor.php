@@ -21,6 +21,7 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
 
 class WoodDoor extends Door{
 	public function __construct($meta = 0){
@@ -29,7 +30,7 @@ class WoodDoor extends Door{
 		$this->hardness = 15;
 	}
 
-	public function getDrops(Item\Item $item, Player $player){
+	public function getDrops(Item $item, Player $player){
 		return array(
 			array(Item\WOODEN_DOOR, 0, 1),
 		);

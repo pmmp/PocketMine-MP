@@ -21,6 +21,8 @@
 
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Dandelion extends Flowable{
 	public function __construct(){
@@ -28,7 +30,7 @@ class Dandelion extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -43,7 +45,7 @@ class Dandelion extends Flowable{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
+				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
