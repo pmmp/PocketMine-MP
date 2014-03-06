@@ -35,6 +35,15 @@ class BurningFurnaceBlock extends SolidBlock{
 		);
 		$this->meta = $faces[$player->entity->getDirection()];
 		$this->level->setBlock($block, $this, true, false, true);
+		$nbt = new NBT\Tag\Compound(false, array(
+			"Items" => new NBT\Tag\Enum("Items", array()),
+			"id" => new NBT\Tag\String("id", Tile::FURNACE),
+			"x" => new NBT\Tag\Int("x", $this->x),
+			"y" => new NBT\Tag\Int("y", $this->y),
+			"z" =>new NBT\Tag\Int("z",  $this->z)			
+		));
+		$nbt->Items->setTagType(NBT\Tag_Compound);
+		$furnace = new Furnace($this->level, $nbt);
 		return true;
 	}
 	
