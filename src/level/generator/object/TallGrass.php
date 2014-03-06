@@ -25,16 +25,17 @@ use PocketMine\Level;
 use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Block\Block as Block;
 
 class TallGrass{
 	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = array(
-			Block\Block::get(DANDELION, 0),
-			Block\Block::get(CYAN_FLOWER, 0),
-			Block\Block::get(TALL_GRASS, 1),
-			Block\Block::get(TALL_GRASS, 1),
-			Block\Block::get(TALL_GRASS, 1),
-			Block\Block::get(TALL_GRASS, 1)
+			Block::get(DANDELION, 0),
+			Block::get(CYAN_FLOWER, 0),
+			Block::get(TALL_GRASS, 1),
+			Block::get(TALL_GRASS, 1),
+			Block::get(TALL_GRASS, 1),
+			Block::get(TALL_GRASS, 1)
 		);
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){

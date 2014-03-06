@@ -21,10 +21,11 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Block\Block as Block;
 
 class Sign extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block\Block::get(SIGN_POST);
+		$this->block = Block::get(SIGN_POST);
 		$this->maxStackSize = 16;
 		parent::__construct(SIGN, 0, $count, "Sign");
 	}

@@ -195,6 +195,9 @@ const GLOWING_OBSIDIAN = 246;
 const NETHER_REACTOR = 247;
 
 use PocketMine;
+use PocketMine\Level\Position as Position;
+use PocketMine\Level\Level as Level;
+use PocketMine\Item\Item as Item;
 
 abstract class Block extends Position{
 	public static $list = array();
@@ -348,7 +351,7 @@ abstract class Block extends Position{
 		}
 	}
 	
-	public static function get($id, $meta = 0, Level\Position $pos = null){
+	public static function get($id, $meta = 0, Position $pos = null){
 		if(isset(self::$list[$id])){
 			$block = clone self::$list[$id];
 			$block->setMetadata($meta);
@@ -397,7 +400,7 @@ abstract class Block extends Position{
 	}
 
 	public function getDrops(Item $item, Player $player){
-		if(!isset(Block::$class[$this->id])){ //Unknown blocks
+		if(!isset(self::$class[$this->id])){ //Unknown blocks
 			return array();
 		} else{
 			return array(
@@ -416,7 +419,7 @@ abstract class Block extends Position{
 
 	public function getSide($side){
 		$v = parent::getSide($side);
-		if($this->level instanceof Level\Level){
+		if($this->level instanceof Level){
 			return $this->level->getBlock($v);
 		}
 
@@ -427,13 +430,13 @@ abstract class Block extends Position{
 		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
 	}
 
-	abstract function isBreakable(Item\Item $item, Player $player);
+	abstract function isBreakable(Item $item, Player $player);
 
-	abstract function onBreak(Item\Item $item, Player $player);
+	abstract function onBreak(Item $item, Player $player);
 
-	abstract function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	abstract function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 
-	abstract function onActivate(Item\Item $item, Player $player);
+	abstract function onActivate(Item $item, Player $player);
 
 	abstract function onUpdate($type);
 }

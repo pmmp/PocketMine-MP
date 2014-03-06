@@ -21,6 +21,11 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Block\Block as Block;
+use PocketMine\Block\Air as Air;
+use PocketMine\Block\Water as Water;
+use PocketMine\Block\Lava as Lava;
 
 class Bucket extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -29,20 +34,20 @@ class Bucket extends Item{
 		$this->maxStackSize = 1;
 	}
 
-	public function onActivate(Level\Level $level, Player $player, Block\Block $block, Block\Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($this->meta === AIR){
 			if($target instanceof Block\Liquid){
-				$level->setBlock($target, new Block\Air(), true, false, true);
+				$level->setBlock($target, new Air(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
-					$this->meta = ($target instanceof Block\Water) ? WATER : LAVA;
+					$this->meta = ($target instanceof Water) ? WATER : LAVA;
 				}
 
 				return true;
 			}
 		} elseif($this->meta === WATER){
 			//Support Make Non-Support Water to Support Water
-			if($block->getID() === AIR || ($block instanceof Block\Water && ($block->getMetadata() & 0x07) != 0x00)){
-				$water = new Block\Water();
+			if($block->getID() === AIR || ($block instanceof Water && ($block->getMetadata() & 0x07) != 0x00)){
+				$water = new Water();
 				$level->setBlock($block, $water, true, false, true);
 				$water->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
 				if(($player->gamemode & 0x01) === 0){
@@ -53,7 +58,7 @@ class Bucket extends Item{
 			}
 		} elseif($this->meta === LAVA){
 			if($block->getID() === AIR){
-				$level->setBlock($block, new Block\Lava(), true, false, true);
+				$level->setBlock($block, new Lava(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}

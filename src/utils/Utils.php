@@ -23,6 +23,7 @@ namespace PocketMine\Utils;
 
 use PocketMine;
 use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Item\Item as Item;
 
 class Utils{
 	const BIG_ENDIAN = 0x00;
@@ -203,7 +204,7 @@ class Utils{
 		$id = Utils::readShort($ob->get(2));
 		$cnt = ord($ob->get(1));
 
-		return Item\Item::get(
+		return Item::get(
 			$id,
 			Utils::readShort($ob->get(2)),
 			$cnt

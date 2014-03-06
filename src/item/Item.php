@@ -345,6 +345,14 @@ const BEETROOT_SEEDS = 458;
 const BEETROOT_SEED = 458;
 const BEETROOT_SOUP = 459;
 use PocketMine;
+use PocketMine\Block\Block as Block;
+use PocketMine\Item\Block as ItemBlock;
+use PocketMine\Recipes\Fuel as Fuel;
+use PocketMine\Recipes\Smelt as Smelt;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Block\GRASS as GRASS;
+use PocketMine\Block\DIRT as DIRT;
+use PocketMine\Level\Level as Level;
 
 class Item{
 
@@ -397,8 +405,8 @@ class Item{
 				WOODEN_AXE => new WoodenAxe(),
 				FLINT_STEEL => new FlintSteel(),
 			);
-			foreach(Block\Block::$list as $id => $class){
-				self::$list[$id] = new Item\Block($class);
+			foreach(Block::$list as $id => $class){
+				self::$list[$id] = new ItemBlock($class);
 			}
 
 		}
@@ -421,7 +429,7 @@ class Item{
 		$this->count = (int) $count;
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$class[$this->id])){
-			$this->block = Block\Block::get($this->id, $this->meta);
+			$this->block = Block::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
 		}
 		if($this->isTool() !== false){
@@ -443,14 +451,14 @@ class Item{
 	}
 
 	final public function isPlaceable(){
-		return (($this->block instanceof Block\Block) and $this->block->isPlaceable === true);
+		return (($this->block instanceof Block) and $this->block->isPlaceable === true);
 	}
 
 	public function getBlock(){
-		if($this->block instanceof Block\Block){
+		if($this->block instanceof Block){
 			return $this->block;
 		} else{
-			return Block\Block::get(AIR);
+			return Block::get(AIR);
 		}
 	}
 
@@ -471,36 +479,36 @@ class Item{
 	}
 
 	final public function getFuelTime(){
-		if(!isset(Recipes\Fuel::$duration[$this->id])){
+		if(!isset(Fuel::$duration[$this->id])){
 			return false;
 		}
 		if($this->id !== BUCKET or $this->meta === 10){
-			return Recipes\Fuel::$duration[$this->id];
+			return Fuel::$duration[$this->id];
 		}
 
 		return false;
 	}
 
 	final public function getSmeltItem(){
-		if(!isset(Recipes\Smelt::$product[$this->id])){
+		if(!isset(Smelt::$product[$this->id])){
 			return false;
 		}
 
-		if(isset(Recipes\Smelt::$product[$this->id][0]) and !is_array(Recipes\Smelt::$product[$this->id][0])){
-			return Item\Item::get(Recipes\Smelt::$product[$this->id][0], Recipes\Smelt::$product[$this->id][1]);
+		if(isset(Smelt::$product[$this->id][0]) and !is_array(Smelt::$product[$this->id][0])){
+			return self::get(Smelt::$product[$this->id][0], Smelt::$product[$this->id][1]);
 		}
 
-		if(!isset(Recipes\Smelt::$product[$this->id][$this->meta])){
+		if(!isset(Smelt::$product[$this->id][$this->meta])){
 			return false;
 		}
 
-		return Item\Item::get(Recipes\Smelt::$product[$this->id][$this->meta][0], Recipes\Smelt::$product[$this->id][$this->meta][1]);
+		return self::get(Smelt::$product[$this->id][$this->meta][0], Smelt::$product[$this->id][$this->meta][1]);
 
 	}
 
 	public function useOn($object, $force = false){
 		if($this->isTool() or $force === true){
-			if(($object instanceof Entity\Entity) and !$this->isSword()){
+			if(($object instanceof Entity) and !$this->isSword()){
 				$this->meta += 2;
 			} else{
 				$this->meta++;
@@ -508,7 +516,7 @@ class Item{
 
 			return true;
 		} elseif($this->isHoe()){
-			if(($object instanceof Block\Block) and ($object->getID() === Block\GRASS or $object->getID() === Block\DIRT)){
+			if(($object instanceof Block) and ($object->getID() === GRASS or $object->getID() === DIRT)){
 				$this->meta++;
 			}
 		}
@@ -644,7 +652,7 @@ class Item{
 		return 1;
 	}
 
-	public function onActivate(Level\Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
 

@@ -21,9 +21,10 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Block\Block as BlockBlock;
 
 class Block extends Item{
-	public function __construct(Block\Block $block, $meta = 0, $count = 1){
+	public function __construct(BlockBlock $block, $meta = 0, $count = 1){
 		$this->block = clone $block;
 		parent::__construct($block->getID(), $block->getMetadata(), $count, $block->getName());
 	}

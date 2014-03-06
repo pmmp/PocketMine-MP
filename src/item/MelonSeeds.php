@@ -21,10 +21,11 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Block\Block as Block;
 
 class MelonSeeds extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block\Block::get(MELON_STEM);
+		$this->block = Block::get(MELON_STEM);
 		parent::__construct(MELON_SEEDS, 0, $count, "Melon Seeds");
 	}
 }

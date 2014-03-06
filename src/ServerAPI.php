@@ -34,6 +34,8 @@ use PocketMine\Network\RCON\RCON as RCON;
 use PocketMine\Network\Query\QueryHandler as QueryHandler;
 use PocketMine\Recipes\Crafting as Crafting;
 use PocketMine\Network\UPnP\RemovePortForward as RemovePortForward;
+use PocketMine\Block\Block as Block;
+use PocketMine\Item\Item as Item;
 
 class ServerAPI{
 	public $restart = false;
@@ -391,8 +393,8 @@ class ServerAPI{
 			$this->query = new QueryHandler();
 		}
 
-		Block\Block::init();
-		Item\Item::init();
+		Block::init();
+		Item::init();
 		Crafting::init();
 
 		$this->schedule(2, array($this, "checkTickUpdates"), array(), true);

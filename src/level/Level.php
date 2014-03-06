@@ -276,7 +276,7 @@ class Level{
 	public function getBlockRaw(Vector3 $pos){
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 
-		return Block\Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
+		return BlockBlock::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	public function getBlock(Vector3 $pos){
@@ -285,7 +285,7 @@ class Level{
 		}
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 
-		return Block\Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
+		return BlockBlock::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){

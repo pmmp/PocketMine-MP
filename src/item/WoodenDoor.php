@@ -21,10 +21,11 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Block\Block as Block;
 
 class WoodenDoor extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block\Block::get(WOODEN_DOOR_BLOCK);
+		$this->block = Block::get(WOODEN_DOOR_BLOCK);
 		parent::__construct(WOODEN_DOOR, 0, $count, "Wooden Door");
 		$this->maxStackSize = 1;
 	}

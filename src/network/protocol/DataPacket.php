@@ -24,6 +24,7 @@ namespace PocketMine\Network\Protocol;
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Item\Item as Item;
 
 abstract class DataPacket{
 	private $offset = 0;
@@ -155,7 +156,7 @@ abstract class DataPacket{
 		$id = $this->getShort();
 		$cnt = $this->getByte();
 
-		return Item\Item::get(
+		return Item::get(
 			$id,
 			$this->getShort(),
 			$cnt

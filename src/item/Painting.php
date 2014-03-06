@@ -21,6 +21,10 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Block\Block as Block;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Item\Item as Item;
 
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -28,7 +32,7 @@ class Painting extends Item{
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Level\Level $level, Player $player, Block\Block $block, Block\Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1 and $block->isSolid === false){
 			$server = ServerAPI::request();
 			$faces = array(

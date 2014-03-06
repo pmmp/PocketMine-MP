@@ -21,6 +21,9 @@
 
 namespace PocketMine\Item;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Block\Block as Block;
+use PocketMine\ServerAPI as ServerAPI;
 
 class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -29,7 +32,7 @@ class SpawnEgg extends Item{
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Level\Level $level, Player $player, Block\Block $block, Block\Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		switch($this->meta){
 			case Entity\CHICKEN:
 			case Entity\SHEEP:

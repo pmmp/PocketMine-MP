@@ -249,12 +249,12 @@ class BlockAPI{
 			}
 
 			if(defined(strtoupper($b[0]))){
-				$item = Item\Item::get(constant(strtoupper($b[0])), $meta);
+				$item = ItemItem::get(constant(strtoupper($b[0])), $meta);
 				if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
-					$item = Item\Item::get(((int) $b[0]) & 0xFFFF, $meta);
+					$item = ItemItem::get(((int) $b[0]) & 0xFFFF, $meta);
 				}
 			} else{
-				$item = Item\Item::get(((int) $b[0]) & 0xFFFF, $meta);
+				$item = ItemItem::get(((int) $b[0]) & 0xFFFF, $meta);
 			}
 
 			return $item;
@@ -357,7 +357,7 @@ class BlockAPI{
 		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
 				echo "I dropped something\n";
-				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), Item\Item::get($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
+				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), ItemItem::get($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
 			}
 		}
 
@@ -374,7 +374,7 @@ class BlockAPI{
 		if(($player->getGamemode() & 0x01) === 0){
 			$item = $player->getSlot($player->slot);
 		} else{
-			$item = Item\Item::get(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
+			$item = ItemItem::get(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
 		}
 
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
@@ -410,7 +410,7 @@ class BlockAPI{
 
 		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
 			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, Item\Item::get(AIR, 0, 0));
+				$player->setSlot($player->slot, ItemItem::get(AIR, 0, 0));
 			}
 
 			return false;
@@ -464,7 +464,7 @@ class BlockAPI{
 		if(($player->getGamemode() & 0x01) === 0){
 			$item->setCount($item->getCount() - 1);
 			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, Item\Item::get(AIR, 0, 0));
+				$player->setSlot($player->slot, ItemItem::get(AIR, 0, 0));
 			}
 		}
 
