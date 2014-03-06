@@ -20,7 +20,6 @@
 */
 
 namespace PocketMine\Level\Generator;
-use PocketMine\Level;
 use PocketMine;
 
 abstract class Generator{
@@ -43,7 +42,7 @@ abstract class Generator{
 	
 	public abstract function __construct(array $settings = array());
 	
-	public abstract function init(Level $level, Random $random);
+	public abstract function init(Level\Level $level, Utils\Random $random);
 
 	public abstract function generateChunk($chunkX, $chunkZ);
 	

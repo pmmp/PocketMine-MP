@@ -19,11 +19,14 @@
  *
 */
 
-class OreObject{
+namespace PocketMine\Level\Generator\Object;
+use PocketMine;
+
+class Ore{
 	private $random;
 	public $type;
 	
-	public function __construct(Random $random, OreType $type){
+	public function __construct(Utils\Random $random, OreType $type){
 		$this->type = $type;
 		$this->random = $random;
 	}
@@ -32,14 +35,14 @@ class OreObject{
 		return $this->type;
 	}
 	
-	public function canPlaceObject(Level $level, $x, $y, $z){
+	public function canPlaceObject(Level\Level $level, $x, $y, $z){
 		return ($level->level->getBlockID($x, $y, $z) != AIR);
 	}
 	
-	public function placeObject(Level $level, Math\Vector3 $pos){
+	public function placeObject(Level\Level $level, Math\Vector3 $pos){
 		$clusterSize = (int) $this->type->clusterSize;
 		$angle = $this->random->nextFloat() * M_PI;
-		$offset = VectorMath::getDirection2D($angle)->multiply($clusterSize)->divide(8);
+		$offset = Math\VectorMath::getDirection2D($angle)->multiply($clusterSize)->divide(8);
 		$x1 = $pos->x + 8 + $offset->x;
 		$x2 = $pos->x + 8 - $offset->x;
 		$z1 = $pos->z + 8 + $offset->y;

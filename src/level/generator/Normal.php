@@ -20,7 +20,6 @@
 */
 
 namespace PocketMine\Level\Generator;
-use PocketMine\Level;
 use PocketMine;
 
 class Normal extends Generator{
@@ -47,7 +46,7 @@ class Normal extends Generator{
 		return array();
 	}
 	
-	public function init(Level $level, Random $random){
+	public function init(Level\Level $level, Utils\Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());	
@@ -57,16 +56,16 @@ class Normal extends Generator{
 		$this->noiseBase = new Noise\Simplex($this->random, 16);
 
 
-		$ores = new OrePopulator();
+		$ores = new Populator\Ore();
 		$ores->setOreTypes(array(
-			new Object\Ore\Type(new Block\CoalOre(), 20, 16, 0, 128),
-			new Object\Ore\Type(New Block\IronOre(), 20, 8, 0, 64),
-			new Object\Ore\Type(new Block\RedstoneOre(), 8, 7, 0, 16),
-			new Object\Ore\Type(new Block\LapisOre(), 1, 6, 0, 32),
-			new Object\Ore\Type(new Block\GoldOre(), 2, 8, 0, 32),
-			new Object\Ore\Type(new Block\DiamondOre(), 1, 7, 0, 16),
-			new Object\Ore\Type(new Block\Dirt(), 20, 32, 0, 128),
-			new Object\Ore\Type(new Block\Gravel(), 10, 16, 0, 128),
+			new Object\OreType(new Block\CoalOre(), 20, 16, 0, 128),
+			new Object\OreType(New Block\IronOre(), 20, 8, 0, 64),
+			new Object\OreType(new Block\RedstoneOre(), 8, 7, 0, 16),
+			new Object\OreType(new Block\LapisOre(), 1, 6, 0, 32),
+			new Object\OreType(new Block\GoldOre(), 2, 8, 0, 32),
+			new Object\OreType(new Block\DiamondOre(), 1, 7, 0, 16),
+			new Object\OreType(new Block\Dirt(), 20, 32, 0, 128),
+			new Object\OreType(new Block\Gravel(), 10, 16, 0, 128),
 		));
 		$this->populators[] = $ores;
 		

@@ -20,7 +20,6 @@
 */
 
 namespace PocketMine\Level\Generator;
-use PocketMine\Level;
 use PocketMine;
 
 class Flat extends Generator{
@@ -122,7 +121,7 @@ class Flat extends Generator{
 		}
 	}
 	
-	public function init(Level $level, Random $random){
+	public function init(Level\Level $level, Utils\Random $random){
 		$this->level = $level;
 		$this->random = $random;
 	}
