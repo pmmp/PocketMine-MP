@@ -19,9 +19,24 @@
  *
 */
 
+/**
+ * Named Binary Tag handling classes
+ */
 namespace PocketMine\NBT;
 const LITTLE_ENDIAN = 0;
 const BIG_ENDIAN = 1;
+const TAG_End = 0;
+const TAG_Byte = 1;
+const TAG_Short = 2;
+const TAG_Int = 3;
+const TAG_Long = 4;
+const TAG_Float = 5;
+const TAG_Double = 6;
+const TAG_Byte_Array = 7;
+const TAG_String = 8;
+const TAG_Enum = 9;
+const TAG_Compound = 10;
+const TAG_Int_Array = 11;
 use PocketMine\NBT\Tag\Byte as Byte;
 use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
 use PocketMine\NBT\Tag\Compound as Compound;
@@ -145,9 +160,9 @@ class NBT implements \ArrayAccess{
 		return $tag;
 	}
 
-	public function writeTag(NBTTag $tag){
+	public function writeTag(Tag\Tag $tag){
 		$this->putByte($tag->getType());
-		if($tag instanceof NamedNBTTag){
+		if($tag instanceof Tag\NamedTAG){
 			$this->putString($tag->getName());
 		}
 		$tag->write($this);
@@ -162,43 +177,43 @@ class NBT implements \ArrayAccess{
 	}
 
 	public function getShort(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils::readShort($this->get(2)) : Utils::readLShort($this->get(2));
+		return $this->endianness === BIG_ENDIAN ? Utils::readShort($this->get(2)) : Utils::readLShort($this->get(2));
 	}
 
 	public function putShort($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeShort($v) : Utils::writeLShort($v);
+		$this->buffer .= $this->endianness === BIG_ENDIAN ? Utils::writeShort($v) : Utils::writeLShort($v);
 	}
 
 	public function getInt(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils::readInt($this->get(4)) : Utils::readLInt($this->get(4));
+		return $this->endianness === BIG_ENDIAN ? Utils::readInt($this->get(4)) : Utils::readLInt($this->get(4));
 	}
 
 	public function putInt($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeInt($v) : Utils::writeLInt($v);
+		$this->buffer .= $this->endianness === BIG_ENDIAN ? Utils::writeInt($v) : Utils::writeLInt($v);
 	}
 
 	public function getLong(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils::readLong($this->get(8)) : Utils::readLLong($this->get(8));
+		return $this->endianness === BIG_ENDIAN ? Utils::readLong($this->get(8)) : Utils::readLLong($this->get(8));
 	}
 
 	public function putLong($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeLong($v) : Utils::writeLLong($v);
+		$this->buffer .= $this->endianness === BIG_ENDIAN ? Utils::writeLong($v) : Utils::writeLLong($v);
 	}
 
 	public function getFloat(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils::readFloat($this->get(4)) : Utils::readLFloat($this->get(4));
+		return $this->endianness === BIG_ENDIAN ? Utils::readFloat($this->get(4)) : Utils::readLFloat($this->get(4));
 	}
 
 	public function putFloat($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeFloat($v) : Utils::writeLFloat($v);
+		$this->buffer .= $this->endianness === BIG_ENDIAN ? Utils::writeFloat($v) : Utils::writeLFloat($v);
 	}
 
 	public function getDouble(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils::readDouble($this->get(8)) : Utils::readLDouble($this->get(8));
+		return $this->endianness === BIG_ENDIAN ? Utils::readDouble($this->get(8)) : Utils::readLDouble($this->get(8));
 	}
 
 	public function putDouble($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeDouble($v) : Utils::writeLDouble($v);
+		$this->buffer .= $this->endianness === BIG_ENDIAN ? Utils::writeDouble($v) : Utils::writeLDouble($v);
 	}
 
 	public function getString(){

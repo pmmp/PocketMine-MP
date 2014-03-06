@@ -25,7 +25,7 @@ use PocketMine\NBT\Tag\Enum as TagEnum;
 use PocketMine;
 use PocketMine\NBT;
 
-class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
+class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 
 	private $tagType;
 

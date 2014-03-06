@@ -20,25 +20,24 @@
 */
 
 namespace PocketMine\Recipes;
-
 use PocketMine;
 
 class Smelt{
 	public static $product = array(
-		COBBLESTONE => array(STONE, 0),
-		SAND => array(GLASS, 0),
-		TRUNK => array(COAL, 1), //Charcoal
-		GOLD_ORE => array(GOLD_INGOT, 0),
-		IRON_ORE => array(IRON_INGOT, 0),
-		NETHERRACK => array(NETHER_BRICK, 0),
-		RAW_PORKCHOP => array(COOKED_PORKCHOP, 0),
-		CLAY => array(BRICK, 0),
-		//RAW_FISH => array(COOKED_FISH, 0),
-		CACTUS => array(DYE, 2),
-		RED_MUSHROOM => array(DYE, 1),
-		RAW_BEEF => array(STEAK, 0),
-		RAW_CHICKEN => array(COOKED_CHICKEN, 0),
-		RED_MUSHROOM => array(DYE, 1),
-		POTATO => array(BAKED_POTATO, 0),
+		Item\COBBLESTONE => array(Item\STONE, 0),
+		Item\SAND => array(Item\GLASS, 0),
+		Item\TRUNK => array(Item\COAL, 1), //Charcoal
+		Item\GOLD_ORE => array(Item\GOLD_INGOT, 0),
+		Item\IRON_ORE => array(Item\IRON_INGOT, 0),
+		Item\NETHERRACK => array(Item\NETHER_BRICK, 0),
+		Item\RAW_PORKCHOP => array(Item\COOKED_PORKCHOP, 0),
+		Item\CLAY => array(Item\BRICK, 0),
+		//Item\RAW_FISH => array(Item\COOKED_FISH, 0),
+		Item\CACTUS => array(Item\DYE, 2),
+		Item\RED_MUSHROOM => array(Item\DYE, 1),
+		Item\RAW_BEEF => array(Item\STEAK, 0),
+		Item\RAW_CHICKEN => array(Item\COOKED_CHICKEN, 0),
+		Item\RED_MUSHROOM => array(Item\DYE, 1),
+		Item\POTATO => array(Item\BAKED_POTATO, 0),
 	);
 }

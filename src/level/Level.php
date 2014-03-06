@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * All Level related classes are here, like Generators, Populators, Noise, ...
+ */
 namespace PocketMine\Level;
 
 use PocketMine\Block\Air as Air;

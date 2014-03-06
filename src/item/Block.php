@@ -24,6 +24,12 @@ namespace PocketMine\Item;
 use PocketMine;
 use PocketMine\Block\Block as BlockBlock;
 
+/**
+ * Class used for Items that can be Blocks
+ *
+ * Class Block
+ * @package PocketMine\Item
+ */
 class Block extends Item{
 	public function __construct(BlockBlock $block, $meta = 0, $count = 1){
 		$this->block = clone $block;

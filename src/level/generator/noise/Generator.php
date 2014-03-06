@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Different noise generators for level generation
+ */
 namespace PocketMine\Level\Generator\Noise;
 
 use PocketMine;

@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Various Utilities used around the code
+ */
 namespace PocketMine\Utils;
 
 use PocketMine;

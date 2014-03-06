@@ -19,6 +19,10 @@
  *
 */
 
+/**
+ * Set-up wizard used on the first run
+ * Can be disabled with --no-wizard
+ */
 namespace PocketMine\Wizard;
 
 use PocketMine;

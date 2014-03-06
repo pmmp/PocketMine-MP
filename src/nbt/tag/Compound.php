@@ -24,7 +24,7 @@ namespace PocketMine\NBT\Tag;
 use PocketMine;
 use PocketMine\NBT;
 
-class Compound extends NamedNBTTag implements \ArrayAccess, \Iterator{
+class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 
 	public function __construct($name = "", $value = array()){
 		$this->name = $name;

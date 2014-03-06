@@ -14,23 +14,17 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
 /**
- * Player-only related events
+ * Math related classes, like matrices, bounding boxes and vector
  */
-namespace PocketMine\Event\Player;
-
+namespace PocketMine\Math;
 use PocketMine;
-use PocketMine\Event;
 
-abstract class PlayerEvent extends Event{
-	protected $player;
+abstract class Math{
 
-	public function getPlayer(){
-		return $this->player;
-	}
 }

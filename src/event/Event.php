@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Classes referenced to Event handling and Events itself
+ */
 namespace PocketMine\Event;
 
 use PocketMine;

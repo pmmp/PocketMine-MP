@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Generator classes used in Levels
+ */
 namespace PocketMine\Level\Generator;
 
 use PocketMine\Level\Level as Level;

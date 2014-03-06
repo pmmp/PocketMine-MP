@@ -19,26 +19,31 @@
  *
 */
 
-namespace PocketMine\NBT;
-
+/**
+ * All the NBT Tags
+ */
+namespace PocketMine\NBT\Tag;
 use PocketMine;
 
-abstract class NamedNBTTag extends NBTTag{
+abstract class Tag{
 
-	protected $name;
+	protected $value;
 
-	public function __construct($name = "", $value = false){
-		$this->name = $name;
-		if($value !== false){
-			$this->value = $value;
-		}
+	public function &getValue(){
+		return $this->value;
 	}
 
-	public function getName(){
-		return $this->name === false ? "" : $this->name;
+	public abstract function getType();
+
+	public function setValue($value){
+		$this->value = $value;
 	}
 
-	public function setName($name){
-		$this->name = $name;
+	abstract public function write(NBT $nbt);
+
+	abstract public function read(NBT $nbt);
+
+	public final function __toString(){
+		return $this->value;
 	}
 }

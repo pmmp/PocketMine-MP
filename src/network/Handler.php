@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Network-related classes
+ */
 namespace PocketMine\Network;
 
 use PocketMine\Event\Event as Event;

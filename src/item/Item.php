@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * All the Item classes
+ */
 namespace PocketMine\Item;
 
 //All Block IDs are here too

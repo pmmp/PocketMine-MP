@@ -19,6 +19,10 @@
  *
 */
 
+/**
+ * PMF (PocketMine Format) handling
+ * TODO: Remove in favor of NBT
+ */
 namespace PocketMine\PMF;
 
 use PocketMine;

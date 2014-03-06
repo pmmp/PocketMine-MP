@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * UPnP port forwarding support. Only for Windows
+ */
 namespace PocketMine\Network\UPnP;
 
 use PocketMine;

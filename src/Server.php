@@ -19,6 +19,10 @@
  *
 */
 
+/**
+ * PocketMine-MP is the Minecraft: PE multiplayer server software
+ * Homepage: http://www.pocketmine.net/
+ */
 namespace PocketMine;
 
 use PocketMine\Entity\Entity as Entity;

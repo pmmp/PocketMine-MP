@@ -19,15 +19,16 @@
  *
 */
 
+/**
+ * Implementation of the Source RCON Protocol to allow remote console commands
+ * Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
+*/
 namespace PocketMine\Network\RCON;
 
 use PocketMine;
 use PocketMine\ServerAPI as ServerAPI;
 
-/*
-Implementation of the Source RCON Protocol to allow remote console commands
-Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
-*/
+
 
 class RCON{
 	private $socket, $password, $workers, $threads, $clientsPerThread;

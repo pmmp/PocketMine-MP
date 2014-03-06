@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * All Block classes are in here
+ */
 namespace PocketMine\Block;
 const AIR = 0;
 const STONE = 1;

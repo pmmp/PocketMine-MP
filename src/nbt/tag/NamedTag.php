@@ -19,23 +19,26 @@
  *
 */
 
-namespace PocketMine\Network\Protocol;
+namespace PocketMine\NBT\Tag;
 
 use PocketMine;
 
-class UnknownPacket extends DataPacket{
-	public $packetID = -1;
+abstract class NamedTag extends Tag{
 
-	public function pid(){
-		return $this->packetID;
+	protected $name;
+
+	public function __construct($name = "", $value = false){
+		$this->name = $name;
+		if($value !== false){
+			$this->value = $value;
+		}
 	}
 
-	public function decode(){
-
+	public function getName(){
+		return $this->name === false ? "" : $this->name;
 	}
 
-	public function encode(){
-
+	public function setName($name){
+		$this->name = $name;
 	}
-
 }

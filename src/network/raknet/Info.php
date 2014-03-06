@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * RakNet UDP library implementation
+ */
 namespace PocketMine\Network\RakNet;
 
 use PocketMine;

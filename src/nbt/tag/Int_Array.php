@@ -24,7 +24,7 @@ namespace PocketMine\NBT\Tag;
 use PocketMine;
 use PocketMine\NBT;
 
-class Int_Array extends NamedNBTTag{
+class Int_Array extends NamedTag{
 
 	public function getType(){
 		return NBT\TAG_Int_Array;

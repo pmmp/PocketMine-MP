@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Minecraft: PE multiplayer protocol implementation
+ */
 namespace PocketMine\Network\Protocol;
 
 use PocketMine;
@@ -26,6 +29,9 @@ use PocketMine;
 
 abstract class Info{
 
+	/**
+	 * Actual Minecraft: PE protocol version
+	 */
 	const CURRENT_PROTOCOL = 14;
 
 

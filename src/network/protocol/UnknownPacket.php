@@ -19,40 +19,24 @@
  *
 */
 
-namespace PocketMine\NBT;
-const TAG_End = 0;
-const TAG_Byte = 1;
-const TAG_Short = 2;
-const TAG_Int = 3;
-const TAG_Long = 4;
-const TAG_Float = 5;
-const TAG_Double = 6;
-const TAG_Byte_Array = 7;
-const TAG_String = 8;
-const TAG_Enum = 9;
-const TAG_Compound = 10;
-const TAG_Int_Array = 11;
+
+namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 
-abstract class NBTTag{
+class UnknownPacket extends DataPacket{
+	public $packetID = -1;
 
-	protected $value;
-
-	public function &getValue(){
-		return $this->value;
+	public function pid(){
+		return $this->packetID;
 	}
 
-	public abstract function getType();
+	public function decode(){
 
-	public function setValue($value){
-		$this->value = $value;
 	}
 
-	abstract public function write(NBT $nbt);
+	public function encode(){
 
-	abstract public function read(NBT $nbt);
-
-	public final function __toString(){
-		return $this->value;
 	}
+
 }

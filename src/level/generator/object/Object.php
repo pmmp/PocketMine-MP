@@ -14,23 +14,17 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
 /**
- * Player-only related events
+ * All the different object classes used in populators
  */
-namespace PocketMine\Event\Player;
-
+namespace PocketMine\Level\Generator\Object;
 use PocketMine;
-use PocketMine\Event;
 
-abstract class PlayerEvent extends Event{
-	protected $player;
+abstract class Object{
 
-	public function getPlayer(){
-		return $this->player;
-	}
 }

@@ -19,6 +19,10 @@
  *
 */
 
+/**
+ * All the Tile classes and related classes
+ * TODO: Add Nether Reactor tile
+ */
 namespace PocketMine\Tile;
 
 use PocketMine\Level\Level as Level;

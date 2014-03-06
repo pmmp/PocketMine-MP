@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -19,6 +19,9 @@
  *
  */
 
+/**
+ * Entity related Events, like spawn, inventory, attack...
+ */
 namespace PocketMine\Event\Entity;
 
 use PocketMine;

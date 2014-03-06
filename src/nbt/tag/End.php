@@ -24,7 +24,7 @@ namespace PocketMine\NBT\Tag;
 use PocketMine;
 use PocketMine\NBT;
 
-class End extends NBTTag{
+class End extends Tag{
 
 	public function getType(){
 		return NBT\TAG_End;

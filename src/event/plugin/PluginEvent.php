@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Events related Plugin enable / disable events
+ */
 namespace PocketMine\Event\Plugin;
 
 use PocketMine;

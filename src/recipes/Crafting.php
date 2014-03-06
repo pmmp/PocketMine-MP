@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Crafting / Smelting / Fuel data and fast search databases
+ */
 namespace PocketMine\Recipes;
 
 use PocketMine\BlockAPI as BlockAPI;

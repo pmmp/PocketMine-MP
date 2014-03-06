@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * All the Object populator classes
+ */
 namespace PocketMine\Level\Generator\Populator;
 
 use PocketMine\Level\Level as Level;

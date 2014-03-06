@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * All the entity classes
+ */
 namespace PocketMine\Entity;
 
 use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
