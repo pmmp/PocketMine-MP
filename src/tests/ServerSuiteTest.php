@@ -16,8 +16,8 @@ exit(0);//TODO
 		if(!class_exists("Server", false)){
 			define("NO_THREADS", true);
 			require_once(dirname(__FILE__)."/../dependencies.php");
-			require_once(PATH."/src/functions.php");
-			require_once(PATH."/src/dependencies.php");
+			require_once(\PocketMine\PATH."/src/functions.php");
+			require_once(\PocketMine\PATH."/src/dependencies.php");
 			console(Utils\TextFormat::GREEN . "[TEST] Starting tests");
 			testCase("dummy", dummy(), null);
 			$t = new ServerSuiteTest;

@@ -28,7 +28,7 @@ class WorldGenerator{
 		$this->seed = $seed !== false ? (int) $seed:Utils\Utils::readInt(Utils\Utils::getRandomBytes(4, false));
 		$this->random = new Utils\Random($this->seed);
 		$this->height = (int) $height;
-		$this->path = DATA."worlds/".$name."/";
+		$this->path = \PocketMine\DATA."worlds/".$name."/";
 		$this->generator = $generator;
 		$level = new PMF\LevelFormat($this->path."level.pmf", array(
 			"name" => $name,

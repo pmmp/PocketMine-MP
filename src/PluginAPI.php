@@ -169,7 +169,7 @@ class PluginAPI extends \stdClass{
 	}
 	
 	public function pluginsPath(){
-		$path = join(DIRECTORY_SEPARATOR, array(DATA."plugins", ""));
+		$path = join(DIRECTORY_SEPARATOR, array(\PocketMine\DATA."plugins", ""));
 		@mkdir($path);
 		return $path;
 	}

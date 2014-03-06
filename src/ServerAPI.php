@@ -92,9 +92,9 @@ class ServerAPI{
 	}
 	
 	public function load(){
-		@mkdir(DATA."players/", 0755);
-		@mkdir(DATA."worlds/", 0755);
-		@mkdir(DATA."plugins/", 0755);
+		@mkdir(\PocketMine\DATA."players/", 0755);
+		@mkdir(\PocketMine\DATA."worlds/", 0755);
+		@mkdir(\PocketMine\DATA."plugins/", 0755);
 		
 		//Init all the events
 		foreach(get_declared_classes() as $class){
@@ -107,7 +107,7 @@ class ServerAPI{
 		console("[INFO] Starting Minecraft PE server version ".Utils\TextFormat::AQUA.MINECRAFT_VERSION);
 		
 		console("[INFO] Loading properties...");
-		$this->config = new Utils\Config(DATA . "server.properties", Utils\Config::PROPERTIES, array(
+		$this->config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES, array(
 			"server-name" => "Minecraft: PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",

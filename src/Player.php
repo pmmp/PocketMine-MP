@@ -112,7 +112,7 @@ class Player extends Entity\RealHuman{
 	public static function getOffline($name){
 		$server = ServerAPI::request();
 		$iname = strtolower($name);
-		if(!file_exists(DATA."players/".$iname.".dat")){
+		if(!file_exists(\PocketMine\DATA."players/".$iname.".dat")){
 			$nbt = new NBT\Tag\Compound(false, array(
 				"Pos" => new NBT\Tag\Enum("Pos", array(
 					0 => new NBT\Tag\Double(0, $server->spawn->x),
@@ -149,8 +149,8 @@ class Player extends Entity\RealHuman{
 			$nbt->Inventory->setTagType(NBT\TAG_Compound);
 			$nbt->Motion->setTagType(NBT\TAG_Double);
 			$nbt->Rotation->setTagType(NBT\TAG_Float);
-			if(file_exists(DATA."players/".$iname.".yml")){
-				$data = new Utils\Config(DATA."players/".$iname.".yml", Utils\Config::YAML, array());
+			if(file_exists(\PocketMine\DATA."players/".$iname.".yml")){
+				$data = new Utils\Config(\PocketMine\DATA."players/".$iname.".yml", Utils\Config::YAML, array());
 				$nbt->playerGameType = (int) $data->get("gamemode");
 				$nbt->Level = $data->get("position")["level"];
 				$nbt->Pos[0] = $data->get("position")["x"];
@@ -197,7 +197,7 @@ class Player extends Entity\RealHuman{
 				foreach($data->get("achievements") as $achievement => $status){
 					$nbt->Achievements[$achievement] = new NBT\Tag\Byte($achievement, $status == true ? 1:0);
 				}
-				unlink(DATA."players/".$iname.".yml");
+				unlink(\PocketMine\DATA."players/".$iname.".yml");
 			}else{
 				console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
 				Player::saveOffline($name, $nbt);
@@ -205,7 +205,7 @@ class Player extends Entity\RealHuman{
 			
 		}else{
 			$nbt = new NBT(NBT\BIG_ENDIAN);
-			$nbt->read(file_get_contents(DATA."players/".$iname.".dat"));
+			$nbt->read(file_get_contents(\PocketMine\DATA."players/".$iname.".dat"));
 			$nbt = $nbt->getData();
 		}
 
@@ -218,7 +218,7 @@ class Player extends Entity\RealHuman{
 		ServerAPI::request()->handle("player.offline.save", $nbtTag);
 		$nbt = new NBT(NBT\BIG_ENDIAN);
 		$nbt->setData($nbtTag);
-		file_put_contents(DATA."players/".strtolower($name).".dat", $nbt->write());
+		file_put_contents(\PocketMine\DATA."players/".strtolower($name).".dat", $nbt->write());
 	}
 	
 	public static function broadcastPacket(array $players, Network\Protocol\DataPacket $packet){

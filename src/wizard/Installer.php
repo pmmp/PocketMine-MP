@@ -84,7 +84,7 @@ LICENSE;
 		}
 		
 		private function generateBaseConfig(){
-			$config = new Utils\Config(DATA . "server.properties", Utils\Config::PROPERTIES);
+			$config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES);
 			echo "[?] ".$this->lang->name_your_server." (".self::DEFAULT_NAME."): ";
 			$config->set("server-name", $this->getInput(self::DEFAULT_NAME));
 			echo "[*] ".$this->lang->port_warning."\n";
@@ -124,13 +124,13 @@ LICENSE;
 			if($op === ""){
 				echo "[!] ".$this->lang->op_warning."\n";
 			}else{
-				$ops = new Utils\Config(DATA."ops.txt", Utils\Config::ENUM);
+				$ops = new Utils\Config(\PocketMine\DATA."ops.txt", Utils\Config::ENUM);
 				$ops->set($op, true);
 				$ops->save();
 			}
 			echo "[*] ".$this->lang->whitelist_info."\n";
 			echo "[?] ".$this->lang->whitelist_enable." (y/N): ";
-			$config = new Utils\Config(DATA . "server.properties", Utils\Config::PROPERTIES);
+			$config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES);
 			if(strtolower($this->getInput("n")) === "y"){
 				echo "[!] ".$this->lang->whitelist_warning."\n";
 				$config->set("white-list", true);
@@ -141,7 +141,7 @@ LICENSE;
 		}
 		
 		private function networkFunctions(){
-			$config = new Utils\Config(DATA . "server.properties", Utils\Config::PROPERTIES);
+			$config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES);
 			echo "[!] ".$this->lang->query_warning1."\n";
 			echo "[!] ".$this->lang->query_warning2."\n";
 			echo "[?] ".$this->lang->query_disable." (y/N): ";

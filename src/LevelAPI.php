@@ -109,7 +109,7 @@ class LevelAPI{
 		if($name === ""){
 			return false;
 		}
-		$path = DATA."worlds/".$name."/";
+		$path = \PocketMine\DATA."worlds/".$name."/";
 		if($this->get($name) === false and !file_exists($path."level.pmf")){
 			$level = new Level\LevelImport($path);
 			if($level->import() === false){
@@ -142,7 +142,7 @@ class LevelAPI{
 			console("[NOTICE] Level \"".$name."\" not found");
 			return false;
 		}
-		$path = DATA."worlds/".$name."/";
+		$path = \PocketMine\DATA."worlds/".$name."/";
 		console("[INFO] Preparing level \"".$name."\"");
 		$level = new PMF\LevelFormat($path."level.pmf");
 		if(!$level->isLoaded){

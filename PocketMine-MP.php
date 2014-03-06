@@ -36,7 +36,7 @@ const PHP_VERSION = "5.5";
 		}else{
 			$path = "";
 		}
-		$fPath = PATH . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
+		$fPath = \PocketMine\PATH . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
 		if(file_exists($fPath)){
 			require_once($fPath);
 		}
@@ -47,7 +47,7 @@ const PHP_VERSION = "5.5";
 		}else{
 			$path = "";
 		}
-		$fPath = PATH . "plugins". DIRECTORY_SEPARATOR . $parent . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
+		$fPath = \PocketMine\PATH . "plugins". DIRECTORY_SEPARATOR . $parent . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
 		if(file_exists($fPath)){
 			require_once($fPath);
 		}
@@ -274,7 +274,7 @@ function log($message, $name, $EOL = true, $level = 2, $close = false){
 			$fpointers = array();
 		}
 		if(!isset($fpointers[$name]) or $fpointers[$name] === false){
-			$fpointers[$name] = @fopen(DATA."/".$name.".log", "ab");
+			$fpointers[$name] = @fopen(\PocketMine\DATA."/".$name.".log", "ab");
 		}
 		@fwrite($fpointers[$name], $message);
 		if($close === true){
@@ -344,17 +344,17 @@ if($errors > 0){
 }
 
 $gitsha1 = false;
-if(file_exists(PATH . ".git/refs/heads/master")){ //Found Git information!
-	define("PocketMine\GIT_COMMIT", strtolower(trim(file_get_contents(PATH .".git/refs/heads/master"))));
+if(file_exists(\PocketMine\PATH . ".git/refs/heads/master")){ //Found Git information!
+	define("PocketMine\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH .".git/refs/heads/master"))));
 }else{ //Unknown :(
 	define("PocketMine\GIT_COMMIT", str_repeat("00", 20));
 }
 
 ini_set("opcache.mmap_base", bin2hex(Utils\Utils::getRandomBytes(8, false))); //Fix OPCache address errors
 
-require_once(PATH . "src/utils/pthreads.php");
+require_once(\PocketMine\PATH . "src/utils/pthreads.php");
 
-if(!file_exists(DATA . "server.properties") and !isset($opts["no-wizard"])){
+if(!file_exists(\PocketMine\DATA . "server.properties") and !isset($opts["no-wizard"])){
 	$installer = new Wizard\Installer();
 }
 
