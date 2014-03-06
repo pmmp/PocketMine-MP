@@ -20,14 +20,15 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
+
 use PocketMine\Item\Item as Item;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\NBT\Tag\String as String;
-use PocketMine\Tile\Tile as Tile;
 use PocketMine\NBT\Tag\Int as Int;
+use PocketMine\NBT\Tag\String as String;
 use PocketMine\Tile\Furnace as Furnace;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine;
 
 class BurningFurnace extends Solid{
 	public function __construct($meta = 0){

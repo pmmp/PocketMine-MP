@@ -21,12 +21,11 @@
 
 namespace PocketMine;
 
-use PocketMine\ServerAPI as ServerAPI;
-use PocketMine\Utils\Utils as Utils;
 use PocketMine\Network\Protocol\Info as Info;
 use PocketMine\PMF\Plugin as PMFPlugin;
-use PocketMine\Utils\TextFormat as TextFormat;
 use PocketMine\Utils\Config as Config;
+use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\Utils\Utils as Utils;
 
 class PluginAPI extends \stdClass{
 	private $server;

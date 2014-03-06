@@ -20,9 +20,10 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
+
 use PocketMine\Item\Item as Item;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Water extends Liquid{
 	public function __construct($meta = 0){

@@ -344,15 +344,13 @@ const BEETROOT = 457;
 const BEETROOT_SEEDS = 458;
 const BEETROOT_SEED = 458;
 const BEETROOT_SOUP = 459;
-use PocketMine;
 use PocketMine\Block\Block as Block;
+use PocketMine\Entity\Entity as Entity;
 use PocketMine\Item\Block as ItemBlock;
+use PocketMine\Level\Level as Level;
 use PocketMine\Recipes\Fuel as Fuel;
 use PocketMine\Recipes\Smelt as Smelt;
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Block\GRASS as GRASS;
-use PocketMine\Block\DIRT as DIRT;
-use PocketMine\Level\Level as Level;
+use PocketMine;
 
 class Item{
 
@@ -417,9 +415,10 @@ class Item{
 			$item = clone self::$list[$id];
 			$item->setMetadata($meta);
 			$item->setCount($count);
-		}else{
+		} else{
 			$item = new Item($id, $meta, $count);
 		}
+
 		return $item;
 	}
 

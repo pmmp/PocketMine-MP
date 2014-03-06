@@ -21,9 +21,9 @@
 
 namespace PocketMine\Event\Entity;
 
+use PocketMine\Entity\Entity as Entity;
 use PocketMine\Event;
 use PocketMine;
-use PocketMine\Entity\Entity as Entity;
 use PocketMine\Level\Level as Level;
 
 class EntityLevelChangeEvent extends EntityEvent implements CancellableEvent{

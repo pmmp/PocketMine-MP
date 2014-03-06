@@ -21,16 +21,15 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
-use PocketMine\Item\Item as Item;
-use PocketMine\BlockAPI as BlockAPI;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Byte as Byte;
-use PocketMine\NBT\Tag\Short as Short;
-use PocketMine\Event\EventHandler as EventHandler;
 use PocketMine\Event\Entity\EntityArmorChangeEvent as EntityArmorChangeEvent;
-use PocketMine\Event\Event as Event;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent as EntityInventoryChangeEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\Event\EventHandler as EventHandler;
+use PocketMine\Item\Item as Item;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 

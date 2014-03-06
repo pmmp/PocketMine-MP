@@ -21,8 +21,6 @@
 
 namespace PocketMine;
 
-use PocketMine\ServerAPI as ServerAPI;
-
 class TimeAPI{
 	public static $phases = array(
 		"day" => 0,

@@ -20,9 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\Item\COAL as COAL;
 
 class CoalOre extends Solid{
 	public function __construct(){

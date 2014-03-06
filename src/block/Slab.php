@@ -20,9 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\Block\Block as Block;
 
 class Slab extends Transparent{
 	public function __construct($meta = 0){

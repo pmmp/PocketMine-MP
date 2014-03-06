@@ -20,9 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\Item\DIAMOND as DIAMOND;
 
 class DiamondOre extends Solid{
 	public function __construct(){

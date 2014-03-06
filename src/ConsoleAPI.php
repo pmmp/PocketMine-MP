@@ -21,9 +21,7 @@
 
 namespace PocketMine;
 
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Utils\TextFormat as TextFormat;
-use PocketMine\Player as Player;
 
 class ConsoleAPI{
 	private $loop, $server, $event, $help, $cmds, $alias;

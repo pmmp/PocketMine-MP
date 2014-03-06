@@ -20,10 +20,10 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
-use PocketMine\ServerAPI as ServerAPI;
+
 use PocketMine\Item\Item as Item;
-use PocketMine\Item\APPLE as APPLE;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Leaves extends Transparent{
 	const OAK = 0;

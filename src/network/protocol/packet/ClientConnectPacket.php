@@ -22,7 +22,6 @@
 namespace PocketMine\Network\Protocol;
 
 use PocketMine;
-use PocketMine\Network\Protocol\Info as Info;
 
 class ClientConnectPacket extends DataPacket{
 	public $clientID;

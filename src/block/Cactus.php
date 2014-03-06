@@ -20,10 +20,11 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
-use PocketMine\ServerAPI as ServerAPI;
+
 use PocketMine\Item\Item as Item;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){
@@ -74,6 +75,7 @@ class Cactus extends Transparent{
 			$block3 = $this->getSide(5);
 			if($block0->isTransparent === true and $block1->isTransparent === true and $block2->isTransparent === true and $block3->isTransparent === true){
 				$this->level->setBlock($this, $this, true, false, true);
+
 				return true;
 			}
 		}

@@ -22,20 +22,20 @@
 namespace PocketMine\NBT;
 const LITTLE_ENDIAN = 0;
 const BIG_ENDIAN = 1;
-use PocketMine;
-use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Byte as Byte;
-use PocketMine\NBT\Tag\Short as Short;
-use PocketMine\NBT\Tag\Int as Int;
-use PocketMine\NBT\Tag\Long as Long;
-use PocketMine\NBT\Tag\Float as Float;
-use PocketMine\NBT\Tag\Double as Double;
 use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
-use PocketMine\NBT\Tag\String as String;
-use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\NBT\Tag\Int_Array as Int_Array;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Double as Double;
 use PocketMine\NBT\Tag\End as End;
+use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\NBT\Tag\Float as Float;
+use PocketMine\NBT\Tag\Int as Int;
+use PocketMine\NBT\Tag\Int_Array as Int_Array;
+use PocketMine\NBT\Tag\Long as Long;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\NBT\Tag\String as String;
 use PocketMine\Utils\Utils as Utils;
+use PocketMine;
 
 class NBT implements \ArrayAccess{
 	private $buffer;

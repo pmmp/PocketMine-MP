@@ -22,7 +22,6 @@
 namespace PocketMine\Event;
 
 use PocketMine;
-use PocketMine\Event\EventPriority as EventPriority;
 use PocketMine\Utils\Utils as Utils;
 
 abstract class Event{

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 
 class Sponge extends Solid{

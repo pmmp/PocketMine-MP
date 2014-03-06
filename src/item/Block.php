@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Item;
+
 use PocketMine;
 use PocketMine\Block\Block as BlockBlock;
 

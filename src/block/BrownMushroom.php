@@ -20,8 +20,8 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Item\Item as Item;
 
 class BrownMushroom extends Flowable{

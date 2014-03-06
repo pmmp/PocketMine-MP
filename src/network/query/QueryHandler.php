@@ -21,11 +21,10 @@
 
 namespace PocketMine\Network\Query;
 
-use PocketMine;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Player as Player;
+use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Utils\Utils as Utils;
-use PocketMine\Network\Query\QueryPacket as QueryPacket;
+use PocketMine;
 
 /*
 Implementation of the UT3 Query Protocol (GameSpot)

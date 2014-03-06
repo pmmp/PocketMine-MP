@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Item;
+
 use PocketMine;
 
 class IronIngot extends Item{

@@ -22,7 +22,6 @@
 namespace PocketMine\Network\Protocol;
 
 use PocketMine;
-use PocketMine\Network\Protocol\Info as Info;
 
 class MoveEntityPacket_PosRot extends DataPacket{
 	public $eid;

@@ -22,9 +22,9 @@
 namespace PocketMine\Event\Tile;
 
 use PocketMine\Event;
+use PocketMine\Item\Item as Item;
 use PocketMine;
 use PocketMine\Tile\Tile as Tile;
-use PocketMine\Item\Item as Item;
 
 class TileInventoryChangeEvent extends TileEvent implements CancellableEvent{
 	public static $handlers;

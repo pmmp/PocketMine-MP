@@ -20,11 +20,12 @@
 */
 
 namespace PocketMine\Item;
-use PocketMine;
-use PocketMine\Level\Level as Level;
+
 use PocketMine\Block\Block as Block;
 use PocketMine\Block\Fire as Fire;
 use PocketMine\Block\Solid as Solid;
+use PocketMine\Level\Level as Level;
+use PocketMine;
 
 class FlintSteel extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -40,6 +41,7 @@ class FlintSteel extends Item{
 
 		if($block->getID() === AIR and ($target instanceof Solid)){
 			$level->setBlock($block, new Fire(), true, false, true);
+
 			return true;
 		}
 

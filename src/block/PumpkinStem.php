@@ -20,9 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 
 class PumpkinStem extends Flowable{
 	public function __construct($meta = 0){

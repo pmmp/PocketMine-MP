@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Item;
+
 use PocketMine;
 
 class Stick extends Item{

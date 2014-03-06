@@ -21,8 +21,8 @@
 
 namespace PocketMine\Level\Generator\Noise;
 
-use PocketMine\Level;
 use PocketMine;
+use PocketMine\Level;
 
 /**
  * Generates simplex-based noise.

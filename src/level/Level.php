@@ -21,23 +21,22 @@
 
 namespace PocketMine\Level;
 
-use PocketMine;
-use PocketMine\PMF\LevelFormat as LevelFormat;
-use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Block\Air as Air;
+use PocketMine\Block\Block as Block;
 use PocketMine\Level\Generator\Generator as Generator;
-use PocketMine\Utils\Random as Random;
-use PocketMine\Player as Player;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\BlockAPI as BlockAPI;
-use PocketMine\Block\Block as Block;
-use PocketMine\Utils\Cache as Cache;
-use PocketMine\Tile\Tile as Tile;
+use PocketMine\Player as Player;
+use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Tile\Chest as Chest;
 use PocketMine\Tile\Furnace as Furnace;
 use PocketMine\Tile\Sign as Sign;
-use PocketMine\Block\Air as Air;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Utils\Cache as Cache;
+use PocketMine\Utils\Random as Random;
+use PocketMine;
 
 class Level{
 	public $players = array();

@@ -20,10 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\Block\Block as Block;
-use PocketMine\ServerAPI as ServerAPI;
 
 class SignPost extends Transparent{
 	public function __construct($meta = 0){

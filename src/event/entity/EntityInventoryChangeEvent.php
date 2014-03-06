@@ -21,9 +21,9 @@
 
 namespace PocketMine\Event\Entity;
 
+use PocketMine\Entity\Entity as Entity;
 use PocketMine\Event;
 use PocketMine;
-use PocketMine\Entity\Entity as Entity;
 use PocketMine\Item\Item as Item;
 
 class EntityInventoryChangeEvent extends EntityEvent implements CancellableEvent{

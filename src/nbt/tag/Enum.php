@@ -21,19 +21,9 @@
 
 namespace PocketMine\NBT\Tag;
 
-use PocketMine\NBT;
-use PocketMine;
-use PocketMine\NBT\Tag\Byte as Byte;
-use PocketMine\NBT\Tag\Short as Short;
-use PocketMine\NBT\Tag\Int as Int;
-use PocketMine\NBT\Tag\Long as Long;
-use PocketMine\NBT\Tag\Float as Float;
-use PocketMine\NBT\Tag\Double as Double;
-use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
-use PocketMine\NBT\Tag\String as String;
 use PocketMine\NBT\Tag\Enum as TagEnum;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Int_Array as Int_Array;
+use PocketMine;
+use PocketMine\NBT;
 
 class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 

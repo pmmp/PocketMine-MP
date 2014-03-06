@@ -21,8 +21,6 @@
 
 namespace PocketMine;
 
-use PocketMine\ServerAPI as ServerAPI;
-
 abstract class Achievement{
 	public static $list = array(
 		/*"openInventory" => array(
@@ -31,7 +29,7 @@ abstract class Achievement{
 		),*/
 		"mineWood" => array(
 			"name" => "Getting Wood",
-			"requires" => array(//"openInventory",
+			"requires" => array( //"openInventory",
 			),
 		),
 		"buildWorkBench" => array(

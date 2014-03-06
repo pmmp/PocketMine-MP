@@ -20,9 +20,10 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
+
 use PocketMine\Item\Item as Item;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Fallable extends Solid{
 

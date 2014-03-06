@@ -20,10 +20,10 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
+
 use PocketMine\Item\Item as Item;
-use PocketMine\Block\Block as Block;
 use PocketMine\Player as Player;
+use PocketMine;
 
 
 abstract class Door extends Transparent{

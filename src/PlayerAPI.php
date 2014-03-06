@@ -21,12 +21,10 @@
 
 namespace PocketMine;
 
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Entity\Entity as Entity;
-use PocketMine\Player as Player;
 use PocketMine\Level\Level as Level;
-use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Level\Position as Position;
+use PocketMine\Math\Vector3 as Vector3;
 
 class PlayerAPI{
 	private $server;

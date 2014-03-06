@@ -21,8 +21,8 @@
 
 namespace PocketMine\NBT\Tag;
 
-use PocketMine\NBT;
 use PocketMine;
+use PocketMine\NBT;
 
 class Float extends NamedNBTTag{
 

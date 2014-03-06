@@ -21,16 +21,14 @@
 
 namespace PocketMine;
 
-use PocketMine\Utils\VersionString as VersionString;
-use PocketMine\Utils\Utils as Utils;
-use PocketMine\Network\Handler as Handler;
-use PocketMine\Player as Player;
 use PocketMine\Entity\Entity as Entity;
-use PocketMine\Deprecation as Deprecation;
-use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Network\Handler as Handler;
 use PocketMine\Network\Packet as Packet;
+use PocketMine\Network\Protocol\Info as Info;
 use PocketMine\Network\RakNet\Info as RakNetInfo;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\VersionString as VersionString;
 
 class Server{
 	public $tCnt;

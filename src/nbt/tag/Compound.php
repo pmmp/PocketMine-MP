@@ -21,9 +21,8 @@
 
 namespace PocketMine\NBT\Tag;
 
-use PocketMine\NBT;
 use PocketMine;
-use PocketMine\NBT\Tag\End as End;
+use PocketMine\NBT;
 
 class Compound extends NamedNBTTag implements \ArrayAccess, \Iterator{
 

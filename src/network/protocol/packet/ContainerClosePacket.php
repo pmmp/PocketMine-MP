@@ -22,7 +22,6 @@
 namespace PocketMine\Network\Protocol;
 
 use PocketMine;
-use PocketMine\Network\Protocol\Info as Info;
 
 class ContainerClosePacket extends DataPacket{
 	public $windowid;

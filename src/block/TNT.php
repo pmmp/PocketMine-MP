@@ -20,9 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 
 class TNT extends Solid{
 	public function __construct(){

@@ -21,10 +21,10 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine;
+use PocketMine\Block\Sapling as Sapling;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Block\Sapling as Sapling;
+use PocketMine;
 
 class Tree{
 	public $overridable = array(

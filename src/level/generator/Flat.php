@@ -21,21 +21,20 @@
 
 namespace PocketMine\Level\Generator;
 
-use PocketMine;
-use PocketMine\Level\Generator\Populator\Ore as Ore;
 use PocketMine\Block\CoalOre as CoalOre;
-use PocketMine\Block\IronOre as IronOre;
-use PocketMine\Block\RedstoneOre as RedstoneOre;
-use PocketMine\Block\LapisOre as LapisOre;
-use PocketMine\Block\GoldOre as GoldOre;
 use PocketMine\Block\DiamondOre as DiamondOre;
 use PocketMine\Block\Dirt as Dirt;
+use PocketMine\Block\GoldOre as GoldOre;
 use PocketMine\Block\Gravel as Gravel;
+use PocketMine\Block\IronOre as IronOre;
+use PocketMine\Block\LapisOre as LapisOre;
+use PocketMine\Block\RedstoneOre as RedstoneOre;
 use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Level\Generator\Populator\Ore as Ore;
 use PocketMine\Level\Level as Level;
-use PocketMine\Utils\Random as Random;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Level\Generator\Generator as Generator;
+use PocketMine\Utils\Random as Random;
+use PocketMine;
 
 class Flat extends Generator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();

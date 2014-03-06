@@ -21,19 +21,19 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
-use PocketMine\Level\Position as Position;
+use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
+use PocketMine\Event\Entity\EntityMotionEvent as EntityMotionEvent;
+use PocketMine\Event\Entity\EntityMoveEvent as EntityMoveEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\Event\EventHandler as EventHandler;
 use PocketMine\Level\Level as Level;
-use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Level\Position as Position;
 use PocketMine\Math\AxisAlignedBB as AxisAlignedBB;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\Player as Player;
-use PocketMine\Event\EventHandler as EventHandler;
-use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
-use PocketMine\Event\Event as Event;
-use PocketMine\Event\Entity\EntityMoveEvent as EntityMoveEvent;
-use PocketMine\Event\Entity\EntityMotionEvent as EntityMotionEvent;
+use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;

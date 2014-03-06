@@ -21,21 +21,20 @@
 
 namespace PocketMine;
 
-use PocketMine\Utils\VersionString as VersionString;
-use PocketMine\Utils\TextFormat as TextFormat;
-use PocketMine\Utils\Config as Config;
-use PocketMine\Utils\Utils as Utils;
-use PocketMine\Network\UPnP\PortForward as PortForward;
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Tile\Tile as Tile;
-use PocketMine\Network\Protocol\Info as Info;
-use PocketMine\Player as Player;
-use PocketMine\Network\RCON\RCON as RCON;
-use PocketMine\Network\Query\QueryHandler as QueryHandler;
-use PocketMine\Recipes\Crafting as Crafting;
-use PocketMine\Network\UPnP\RemovePortForward as RemovePortForward;
 use PocketMine\Block\Block as Block;
+use PocketMine\Entity\Entity as Entity;
 use PocketMine\Item\Item as Item;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Network\Query\QueryHandler as QueryHandler;
+use PocketMine\Network\RCON\RCON as RCON;
+use PocketMine\Network\UPnP\PortForward as PortForward;
+use PocketMine\Network\UPnP\RemovePortForward as RemovePortForward;
+use PocketMine\Recipes\Crafting as Crafting;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Utils\Config as Config;
+use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\VersionString as VersionString;
 
 class ServerAPI{
 	public $restart = false;

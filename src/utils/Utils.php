@@ -22,7 +22,6 @@
 namespace PocketMine\Utils;
 
 use PocketMine;
-use PocketMine\BlockAPI as BlockAPI;
 use PocketMine\Item\Item as Item;
 
 class Utils{

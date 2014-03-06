@@ -20,9 +20,9 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 
 class Beetroot extends Flowable{
 	public function __construct($meta = 0){
@@ -35,6 +35,7 @@ class Beetroot extends Flowable{
 		$down = $this->getSide(0);
 		if($down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
+
 			return true;
 		}
 

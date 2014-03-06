@@ -20,11 +20,11 @@
 */
 
 namespace PocketMine\Block;
-use PocketMine;
-use PocketMine\Block\Block as Block;
+
+use PocketMine\Item\Item as Item;
 use PocketMine\Level\Position as Position;
 use PocketMine\Utils\Utils as Utils;
-use PocketMine\Item\Item as Item;
+use PocketMine;
 
 class GlowingRedstoneOre extends Solid{
 	public function __construct(){

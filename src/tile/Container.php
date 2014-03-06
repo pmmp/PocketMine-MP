@@ -21,18 +21,15 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine;
-use PocketMine\Tile\Chest as Chest;
-use PocketMine\Player as Player;
-use PocketMine\BlockAPI as BlockAPI;
-use PocketMine\Tile\Furnace as Furnace;
-use PocketMine\Item\Item as Item;
+use PocketMine\Event\Event as Event;
 use PocketMine\Event\EventHandler as EventHandler;
 use PocketMine\Event\Tile\TileInventoryChangeEvent as TileInventoryChangeEvent;
-use PocketMine\Event\Event as Event;
-use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Item\Item as Item;
 use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\Player as Player;
+use PocketMine;
 
 trait Container{
 	public function openInventory(Player $player){

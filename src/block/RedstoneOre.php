@@ -20,8 +20,8 @@
 */
 
 namespace PocketMine\Block;
+
 use PocketMine;
-use PocketMine\Block\Block as Block;
 use PocketMine\Item\Item as Item;
 
 class RedstoneOre extends Solid{

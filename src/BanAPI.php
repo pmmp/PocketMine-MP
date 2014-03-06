@@ -21,9 +21,7 @@
 
 namespace PocketMine;
 
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Utils\Config as Config;
-use PocketMine\Player as Player;
 
 class BanAPI{
 	private $server;

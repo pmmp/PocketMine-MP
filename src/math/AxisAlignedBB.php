@@ -22,7 +22,6 @@
 namespace PocketMine\Math;
 
 use PocketMine;
-use PocketMine\Math\Vector3 as Vector3;
 
 class AxisAlignedBB{
 	public $minX;

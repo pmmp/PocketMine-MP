@@ -21,8 +21,8 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine\Event;
 use PocketMine;
+use PocketMine\Event;
 
 abstract class PlayerEvent extends Event{
 	protected $player;
