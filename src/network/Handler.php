@@ -23,6 +23,14 @@ namespace PocketMine\Network;
 
 use PocketMine;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Network\RakNet\Info as Info;
+use PocketMine\Network\RakNet\Packet as Packet;
+use PocketMine\Event\EventHandler as EventHandler;
+use PocketMine\Event\Server\PacketReceiveEvent as PacketReceiveEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\Network\Query\QueryHandler as QueryHandler;
+use PocketMine\Network\Query\QueryPacket as QueryPacket;
+use PocketMine\Event\Server\PacketSendEvent as PacketSendEvent;
 
 class Handler{
 	public $bandwidth;
@@ -55,23 +63,23 @@ class Handler{
 
 		$pid = ord($buffer{0});
 
-		if(RakNet\Info::isValid($pid)){
-			$packet = new RakNet\Packet($pid);
+		if(Info::isValid($pid)){
+			$packet = new Packet($pid);
 			$packet->buffer =& $buffer;
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->decode();
-			if(Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet)) === Event\Event::DENY){
+			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === Event::DENY){
 				return false;
 			}
 
 			return $packet;
-		} elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof Query\QueryHandler){
-			$packet = new Query\QueryPacket;
+		} elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
+			$packet = new QueryPacket;
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer =& $buffer;
-			if(Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet)) === Event\Event::DENY){
+			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === Event::DENY){
 				return false;
 			}
 			ServerAPI::request()->api->query->handle($packet);
@@ -80,7 +88,7 @@ class Handler{
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer =& $buffer;
-			Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet));
+			EventHandler::callEvent(new PacketReceiveEvent($packet));
 
 			return false;
 		}
@@ -89,9 +97,9 @@ class Handler{
 	}
 
 	public function writePacket(Packet $packet){
-		if(Event\EventHandler::callEvent(new Event\Server\PacketSendEvent($packet)) === Event\Event::DENY){
+		if(EventHandler::callEvent(new PacketSendEvent($packet)) === Event::DENY){
 			return 0;
-		} elseif($packet instanceof RakNet\Packet){
+		} elseif($packet instanceof Packet){
 			$packet->encode();
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);
