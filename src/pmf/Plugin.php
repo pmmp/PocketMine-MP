@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\PMF;
+
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 
@@ -27,16 +28,17 @@ class Plugin extends PMF{
 	const VERSION = 0x02;
 
 	private $pluginData = array();
+
 	public function __construct($file){
 		$this->load($file);
 		$this->parseInfo();
 		$this->parsePlugin();
 	}
-	
+
 	public function getPluginInfo(){
 		return $this->pluginData;
 	}
-	
+
 	protected function parsePlugin(){
 		if($this->getType() !== 0x01){
 			return false;
@@ -51,7 +53,7 @@ class Plugin extends PMF{
 		$this->pluginData["author"] = $this->read(Utils::readShort($this->read(2), false));
 		if($this->pluginData["fversion"] >= 0x01){
 			$this->pluginData["apiversion"] = $this->read(Utils::readShort($this->read(2), false));
-		}else{
+		} else{
 			$this->pluginData["apiversion"] = Utils::readShort($this->read(2), false);
 		}
 		$this->pluginData["class"] = $this->read(Utils::readShort($this->read(2), false));
@@ -67,8 +69,8 @@ class Plugin extends PMF{
 					$this->pluginData["extra"][substr($v, 0, $kl)] = substr($v, $kl + 1);
 				}
 			}
-			
-		}else{
+
+		} else{
 			$this->pluginData["extra"] = gzinflate($this->read(Utils::readShort($this->read(2), false)));
 		}
 		$this->pluginData["code"] = "";
@@ -76,6 +78,7 @@ class Plugin extends PMF{
 			$this->pluginData["code"] .= $this->read(4096);
 		}
 		$this->pluginData["code"] = gzinflate($this->pluginData["code"]);
+
 		return true;
 	}
 

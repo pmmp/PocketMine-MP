@@ -24,5 +24,5 @@ class SoulSandBlock extends SolidBlock{
 		parent::__construct(SOUL_SAND, 0, "Soul Sand");
 		$this->hardness = 2.5;
 	}
-	
+
 }

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -27,15 +28,15 @@ class SetSpawnPositionPacket extends DataPacket{
 	public $x;
 	public $z;
 	public $y;
-	
+
 	public function pid(){
 		return Info::SET_SPAWN_POSITION_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->x);

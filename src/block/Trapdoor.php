@@ -25,11 +25,12 @@ class TrapdoorBlock extends TransparentBlock{
 		$this->isActivable = true;
 		if(($this->meta & 0x04) === 0x04){
 			$this->isFullBlock = false;
-		}else{
+		} else{
 			$this->isFullBlock = true;
 		}
 		$this->hardness = 15;
 	}
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if(($target->isTransparent === false or $target->getID() === SLAB) and $face !== 0 and $face !== 1){
 			$faces = array(
@@ -43,18 +44,23 @@ class TrapdoorBlock extends TransparentBlock{
 				$this->meta |= 0x08;
 			}
 			$this->level->setBlock($block, $this, true, false, true);
+
 			return true;
 		}
+
 		return false;
 	}
+
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);
 	}
+
 	public function onActivate(Item $item, Player $player){
 		$this->meta ^= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
+
 		return true;
 	}
 }

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -29,15 +30,15 @@ class LevelEventPacket extends DataPacket{
 	public $y;
 	public $z;
 	public $data;
-	
+
 	public function pid(){
 		return Info::LEVEL_EVENT_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putShort($this->evid);

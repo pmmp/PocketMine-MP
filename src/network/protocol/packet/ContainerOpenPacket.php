@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -30,15 +31,15 @@ class ContainerOpenPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
 		return Info::CONTAINER_OPEN_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

@@ -31,9 +31,11 @@ class RedMushroomBlock extends FlowableBlock{
 				//TODO
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				$this->level->setBlock($this, new AirBlock(), false);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
 
@@ -41,8 +43,10 @@ class RedMushroomBlock extends FlowableBlock{
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$this->level->setBlock($block, $this, true, false, true);
+
 			return true;
 		}
+
 		return false;
-	}	
+	}
 }

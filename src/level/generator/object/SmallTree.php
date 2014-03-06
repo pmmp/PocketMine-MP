@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
@@ -32,7 +33,7 @@ class SmallTree extends Tree{
 	public $type = 0;
 	private $trunkHeight = 5;
 	private static $leavesHeight = 4; // All trees appear to be 4 tall
-	private static $leafRadii = array( 1, 1.41, 2.83, 2.24 );
+	private static $leafRadii = array(1, 1.41, 2.83, 2.24);
 
 	private $addLeavesVines = false;
 	private $addLogVines = false;
@@ -40,8 +41,8 @@ class SmallTree extends Tree{
 
 	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$radiusToCheck = 0;
-		for ($yy = 0; $yy < $this->trunkHeight + 3; ++$yy) {
-			if($yy == 1 or $yy === $this->trunkHeight) {
+		for($yy = 0; $yy < $this->trunkHeight + 3; ++$yy){
+			if($yy == 1 or $yy === $this->trunkHeight){
 				++$radiusToCheck;
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
@@ -52,57 +53,53 @@ class SmallTree extends Tree{
 				}
 			}
 		}
+
 		return true;
 	}
 
 	public function placeObject(Level $level, Vector3 $pos, Random $random){
-      // The base dirt block
-      $dirtpos = new Vector3( $pos->x, $pos->y - 1, $pos->z );
-		$level->setBlockRaw( $dirtpos, new Dirt() );
+		// The base dirt block
+		$dirtpos = new Vector3($pos->x, $pos->y - 1, $pos->z);
+		$level->setBlockRaw($dirtpos, new Dirt());
 
-      // Adjust the tree trunk's height randomly
-      //    plot [-14:11] int( x / 8 ) + 5
-      //    - min=4 (all leaves are 4 tall, some trunk must show)
-      //    - max=6 (top leaves are within ground-level whacking range
-      //             on all small trees)
-      $heightPre = $random->nextRange(-14, 11);
-      $this->trunkHeight = intval( $heightPre / 8 ) + 5;
+		// Adjust the tree trunk's height randomly
+		//    plot [-14:11] int( x / 8 ) + 5
+		//    - min=4 (all leaves are 4 tall, some trunk must show)
+		//    - max=6 (top leaves are within ground-level whacking range
+		//             on all small trees)
+		$heightPre = $random->nextRange(-14, 11);
+		$this->trunkHeight = intval($heightPre / 8) + 5;
 
-      // Adjust the starting leaf density using the trunk height as a
-      // starting position (tall trees with skimpy leaves don't look
-      // too good)
-      $leafPre = $random->nextRange($this->trunkHeight, 10) / 20; // (TODO: seed may apply)
+		// Adjust the starting leaf density using the trunk height as a
+		// starting position (tall trees with skimpy leaves don't look
+		// too good)
+		$leafPre = $random->nextRange($this->trunkHeight, 10) / 20; // (TODO: seed may apply)
 
-      // Now build the tree (from the top down)
-      $leaflevel = 0;
-      for( $yy = ($this->trunkHeight + 1); $yy >= 0; --$yy )
-      {
-         if( $leaflevel < self::$leavesHeight ){
-            // The size is a slight variation on the trunkheight
-            $radius = self::$leafRadii[ $leaflevel ] + $leafPre;
-            $bRadius = 3;
-            for( $xx = -$bRadius; $xx <= $bRadius; ++ $xx )
-            {
-               for( $zz = -$bRadius; $zz <= $bRadius; ++ $zz )
-               {
-                  if( sqrt(($xx * $xx) + ($zz * $zz)) <= $radius )
-                  {
-                     $leafpos = new Vector3( $pos->x + $xx,
-                                             $pos->y + $yy,
-                                             $pos->z + $zz );
-                     $level->setBlockRaw($leafpos, new Leaves($this->type) );
-                  }
-               }
-            }
-            $leaflevel ++;
-         }
+		// Now build the tree (from the top down)
+		$leaflevel = 0;
+		for($yy = ($this->trunkHeight + 1); $yy >= 0; --$yy){
+			if($leaflevel < self::$leavesHeight){
+				// The size is a slight variation on the trunkheight
+				$radius = self::$leafRadii[$leaflevel] + $leafPre;
+				$bRadius = 3;
+				for($xx = -$bRadius; $xx <= $bRadius; ++$xx){
+					for($zz = -$bRadius; $zz <= $bRadius; ++$zz){
+						if(sqrt(($xx * $xx) + ($zz * $zz)) <= $radius){
+							$leafpos = new Vector3($pos->x + $xx,
+								$pos->y + $yy,
+								$pos->z + $zz);
+							$level->setBlockRaw($leafpos, new Leaves($this->type));
+						}
+					}
+				}
+				$leaflevel++;
+			}
 
-         // Place the trunk last
-         if($leaflevel > 1)
-         {
-            $trunkpos = new Vector3( $pos->x, $pos->y + $yy, $pos->z );
-            $level->setBlockRaw($trunkpos, new Wood($this->type));
-         }
-      }
-   }
+			// Place the trunk last
+			if($leaflevel > 1){
+				$trunkpos = new Vector3($pos->x, $pos->y + $yy, $pos->z);
+				$level->setBlockRaw($trunkpos, new Wood($this->type));
+			}
+		}
+	}
 }

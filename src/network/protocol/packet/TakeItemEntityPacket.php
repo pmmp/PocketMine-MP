@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -30,11 +31,11 @@ class TakeItemEntityPacket extends DataPacket{
 	public function pid(){
 		return Info::TAKE_ITEM_ENTITY_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->target);

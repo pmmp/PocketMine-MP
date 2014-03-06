@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
@@ -37,8 +38,8 @@ class PineTree extends Tree{
 	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$this->findRandomLeavesSize($random);
 		$checkRadius = 0;
-		for($yy = 0; $yy < $this->totalHeight; ++$yy) {
-			if($yy === $this->leavesSizeY) {
+		for($yy = 0; $yy < $this->totalHeight; ++$yy){
+			if($yy === $this->leavesSizeY){
 				$checkRadius = $this->leavesAbsoluteMaxRadius;
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
@@ -49,6 +50,7 @@ class PineTree extends Tree{
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -59,7 +61,7 @@ class PineTree extends Tree{
 	}
 
 	public function placeObject(Level $level, Vector3 $pos, Random $random){
-		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1) {
+		if($this->leavesSizeY === -1 or $this->leavesAbsoluteMaxRadius === -1){
 			$this->findRandomLeavesSize($random);
 		}
 		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new Dirt());
@@ -67,22 +69,22 @@ class PineTree extends Tree{
 		$leavesMaxRadius = 1;
 		$leavesBottomY = $this->totalHeight - $this->leavesSizeY;
 		$firstMaxedRadius = false;
-		for($leavesY = 0; $leavesY <= $leavesBottomY; ++$leavesY) {
+		for($leavesY = 0; $leavesY <= $leavesBottomY; ++$leavesY){
 			$yy = $this->totalHeight - $leavesY;
-			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
-				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
-					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
+			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx){
+				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz){
+					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0){
 						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new Leaves($this->type));
 					}
 				}
 			}
-			if($leavesRadius >= $leavesMaxRadius) {
+			if($leavesRadius >= $leavesMaxRadius){
 				$leavesRadius = $firstMaxedRadius ? 1 : 0;
 				$firstMaxedRadius = true;
-				if(++$leavesMaxRadius > $this->leavesAbsoluteMaxRadius) {
+				if(++$leavesMaxRadius > $this->leavesAbsoluteMaxRadius){
 					$leavesMaxRadius = $this->leavesAbsoluteMaxRadius;
 				}
-			}else{
+			} else{
 				++$leavesRadius;
 			}
 		}

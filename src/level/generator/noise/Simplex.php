@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Noise;
+
 use PocketMine\Level;
 use PocketMine;
 
@@ -44,23 +45,23 @@ class Simplex extends Perlin{
 	protected static $G42;
 	protected static $G43;
 	protected static $G44;
-	protected static $grad4 = [[0, 1, 1, 1],[0, 1, 1, -1],[0, 1, -1, 1],[0, 1, -1, -1],
-		[0, -1, 1, 1],[0, -1, 1, -1],[0, -1, -1, 1],[0, -1, -1, -1],
-		[1, 0, 1, 1],[1, 0, 1, -1],[1, 0, -1, 1],[1, 0, -1, -1],
-		[-1, 0, 1, 1],[-1, 0, 1, -1],[-1, 0, -1, 1],[-1, 0, -1, -1],
-		[1, 1, 0, 1],[1, 1, 0, -1],[1, -1, 0, 1],[1, -1, 0, -1],
-		[-1, 1, 0, 1],[-1, 1, 0, -1],[-1, -1, 0, 1],[-1, -1, 0, -1],
-		[1, 1, 1, 0],[1, 1, -1, 0],[1, -1, 1, 0],[1, -1, -1, 0],
-		[-1, 1, 1, 0],[-1, 1, -1, 0],[-1, -1, 1, 0],[-1, -1, -1, 0]];
+	protected static $grad4 = [[0, 1, 1, 1], [0, 1, 1, -1], [0, 1, -1, 1], [0, 1, -1, -1],
+		[0, -1, 1, 1], [0, -1, 1, -1], [0, -1, -1, 1], [0, -1, -1, -1],
+		[1, 0, 1, 1], [1, 0, 1, -1], [1, 0, -1, 1], [1, 0, -1, -1],
+		[-1, 0, 1, 1], [-1, 0, 1, -1], [-1, 0, -1, 1], [-1, 0, -1, -1],
+		[1, 1, 0, 1], [1, 1, 0, -1], [1, -1, 0, 1], [1, -1, 0, -1],
+		[-1, 1, 0, 1], [-1, 1, 0, -1], [-1, -1, 0, 1], [-1, -1, 0, -1],
+		[1, 1, 1, 0], [1, 1, -1, 0], [1, -1, 1, 0], [1, -1, -1, 0],
+		[-1, 1, 1, 0], [-1, 1, -1, 0], [-1, -1, 1, 0], [-1, -1, -1, 0]];
 	protected static $simplex = [
-		[0, 1, 2, 3],[0, 1, 3, 2],[0, 0, 0, 0],[0, 2, 3, 1],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[1, 2, 3, 0],
-		[0, 2, 1, 3],[0, 0, 0, 0],[0, 3, 1, 2],[0, 3, 2, 1],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[1, 3, 2, 0],
-		[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],
-		[1, 2, 0, 3],[0, 0, 0, 0],[1, 3, 0, 2],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[2, 3, 0, 1],[2, 3, 1, 0],
-		[1, 0, 2, 3],[1, 0, 3, 2],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[2, 0, 3, 1],[0, 0, 0, 0],[2, 1, 3, 0],
-		[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],
-		[2, 0, 1, 3],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[3, 0, 1, 2],[3, 0, 2, 1],[0, 0, 0, 0],[3, 1, 2, 0],
-		[2, 1, 0, 3],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[3, 1, 0, 2],[0, 0, 0, 0],[3, 2, 0, 1],[3, 2, 1, 0]];
+		[0, 1, 2, 3], [0, 1, 3, 2], [0, 0, 0, 0], [0, 2, 3, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 2, 3, 0],
+		[0, 2, 1, 3], [0, 0, 0, 0], [0, 3, 1, 2], [0, 3, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 3, 2, 0],
+		[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+		[1, 2, 0, 3], [0, 0, 0, 0], [1, 3, 0, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [2, 3, 0, 1], [2, 3, 1, 0],
+		[1, 0, 2, 3], [1, 0, 3, 2], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [2, 0, 3, 1], [0, 0, 0, 0], [2, 1, 3, 0],
+		[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
+		[2, 0, 1, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 0, 1, 2], [3, 0, 2, 1], [0, 0, 0, 0], [3, 1, 2, 0],
+		[2, 1, 0, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 1, 0, 2], [0, 0, 0, 0], [3, 2, 0, 1], [3, 2, 1, 0]];
 	protected $offsetW;
 
 	public function __construct(Random $random, $octaves){
@@ -121,7 +122,7 @@ class Simplex extends Perlin{
 				$i2 = 1;
 				$j2 = 1;
 				$k2 = 0;
-			}// X Y Z order
+			} // X Y Z order
 			elseif($x0 >= $z0){
 				$i1 = 1;
 				$j1 = 0;
@@ -129,7 +130,7 @@ class Simplex extends Perlin{
 				$i2 = 1;
 				$j2 = 0;
 				$k2 = 1;
-			}// X Z Y order
+			} // X Z Y order
 			else{
 				$i1 = 0;
 				$j1 = 0;
@@ -137,8 +138,9 @@ class Simplex extends Perlin{
 				$i2 = 1;
 				$j2 = 0;
 				$k2 = 1;
-			}// Z X Y order
-		}else{ // x0<y0
+			}
+			// Z X Y order
+		} else{ // x0<y0
 			if($y0 < $z0){
 				$i1 = 0;
 				$j1 = 0;
@@ -146,7 +148,7 @@ class Simplex extends Perlin{
 				$i2 = 0;
 				$j2 = 1;
 				$k2 = 1;
-			}// Z Y X order
+			} // Z Y X order
 			elseif($x0 < $z0){
 				$i1 = 0;
 				$j1 = 1;
@@ -154,7 +156,7 @@ class Simplex extends Perlin{
 				$i2 = 0;
 				$j2 = 1;
 				$k2 = 1;
-			}// Y Z X order
+			} // Y Z X order
 			else{
 				$i1 = 0;
 				$j1 = 1;
@@ -162,7 +164,8 @@ class Simplex extends Perlin{
 				$i2 = 1;
 				$j2 = 1;
 				$k2 = 0;
-			}// Y X Z order
+			}
+			// Y X Z order
 		}
 
 		// A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
@@ -192,7 +195,7 @@ class Simplex extends Perlin{
 		$t0 = 0.6 - $x0 * $x0 - $y0 * $y0 - $z0 * $z0;
 		if($t0 < 0){
 			$n0 = 0.0;
-		}else{
+		} else{
 			$t0 *= $t0;
 			$n0 = $t0 * $t0 * self::dot3D(self::$grad3[$gi0], $x0, $y0, $z0);
 		}
@@ -200,7 +203,7 @@ class Simplex extends Perlin{
 		$t1 = 0.6 - $x1 * $x1 - $y1 * $y1 - $z1 * $z1;
 		if($t1 < 0){
 			$n1 = 0.0;
-		}else{
+		} else{
 			$t1 *= $t1;
 			$n1 = $t1 * $t1 * self::dot3D(self::$grad3[$gi1], $x1, $y1, $z1);
 		}
@@ -208,7 +211,7 @@ class Simplex extends Perlin{
 		$t2 = 0.6 - $x2 * $x2 - $y2 * $y2 - $z2 * $z2;
 		if($t2 < 0){
 			$n2 = 0.0;
-		}else{
+		} else{
 			$t2 *= $t2;
 			$n2 = $t2 * $t2 * self::dot3D(self::$grad3[$gi2], $x2, $y2, $z2);
 		}
@@ -216,7 +219,7 @@ class Simplex extends Perlin{
 		$t3 = 0.6 - $x3 * $x3 - $y3 * $y3 - $z3 * $z3;
 		if($t3 < 0){
 			$n3 = 0.0;
-		}else{
+		} else{
 			$t3 *= $t3;
 			$n3 = $t3 * $t3 * self::dot3D(self::$grad3[$gi3], $x3, $y3, $z3);
 		}
@@ -246,11 +249,12 @@ class Simplex extends Perlin{
 		if($x0 > $y0){
 			$i1 = 1;
 			$j1 = 0;
-		}// lower triangle, XY order: (0,0)->(1,0)->(1,1)
+		} // lower triangle, XY order: (0,0)->(1,0)->(1,1)
 		else{
 			$i1 = 0;
 			$j1 = 1;
-		}// upper triangle, YX order: (0,0)->(0,1)->(1,1)
+		}
+		// upper triangle, YX order: (0,0)->(0,1)->(1,1)
 
 		// A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
 		// a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
@@ -272,7 +276,7 @@ class Simplex extends Perlin{
 		$t0 = 0.5 - $x0 * $x0 - $y0 * $y0;
 		if($t0 < 0){
 			$n0 = 0.0;
-		}else{
+		} else{
 			$t0 *= $t0;
 			$n0 = $t0 * $t0 * self::dot2D(self::$grad3[$gi0], $x0, $y0); // (x,y) of grad3 used for 2D gradient
 		}
@@ -280,7 +284,7 @@ class Simplex extends Perlin{
 		$t1 = 0.5 - $x1 * $x1 - $y1 * $y1;
 		if($t1 < 0){
 			$n1 = 0.0;
-		}else{
+		} else{
 			$t1 *= $t1;
 			$n1 = $t1 * $t1 * self::dot2D(self::$grad3[$gi1], $x1, $y1);
 		}
@@ -288,7 +292,7 @@ class Simplex extends Perlin{
 		$t2 = 0.5 - $x2 * $x2 - $y2 * $y2;
 		if($t2 < 0){
 			$n2 = 0.0;
-		}else{
+		} else{
 			$t2 *= $t2;
 			$n2 = $t2 * $t2 * self::dot2D(self::$grad3[$gi2], $x2, $y2);
 		}
@@ -306,6 +310,7 @@ class Simplex extends Perlin{
 	 * @param y Y coordinate
 	 * @param z Z coordinate
 	 * @param w W coordinate
+	 *
 	 * @return Noise at given location, from range -1 to 1
 	 */
 	/*public function getNoise4D(x, y, z, w){
@@ -452,5 +457,5 @@ class Simplex extends Perlin{
 
 		// Sum up and scale the result to cover the range [-1,1]
 		return 27.0 * (n0 + n1 + n2 + n3 + n4);
-	}*/ 
+	}*/
 }

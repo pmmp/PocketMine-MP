@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Populator;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Utils\Random as Random;
@@ -30,6 +31,7 @@ class Pond extends Populator{
 	private $waterOdd = 4;
 	private $lavaOdd = 4;
 	private $lavaSurfaceOdd = 4;
+
 	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
 		if($random->nextRange(0, $this->waterOdd) === 0){
 			$v = new Vector3(
@@ -43,7 +45,7 @@ class Pond extends Populator{
 			}
 		}
 	}
-	
+
 	public function setWaterOdd($waterOdd){
 		$this->waterOdd = $waterOdd;
 	}

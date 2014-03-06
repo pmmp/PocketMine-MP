@@ -26,11 +26,13 @@ class CyanFlowerBlock extends FlowableBlock{
 	}
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$down = $this->getSide(0);
-			if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
-				$this->level->setBlock($block, $this, true, false, true);
-				return true;
-			}
+		$down = $this->getSide(0);
+		if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
+			$this->level->setBlock($block, $this, true, false, true);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -39,9 +41,11 @@ class CyanFlowerBlock extends FlowableBlock{
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
 }

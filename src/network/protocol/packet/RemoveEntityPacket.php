@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -29,11 +30,11 @@ class RemoveEntityPacket extends DataPacket{
 	public function pid(){
 		return Info::REMOVE_ENTITY_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

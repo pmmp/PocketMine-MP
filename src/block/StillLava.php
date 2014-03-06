@@ -24,5 +24,5 @@ class StillLavaBlock extends LiquidBlock{
 		parent::__construct(STILL_LAVA, $meta, "Still Lava");
 		$this->hardness = 500;
 	}
-	
+
 }

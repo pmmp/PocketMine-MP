@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -27,15 +28,15 @@ class ChunkDataPacket extends DataPacket{
 	public $chunkX;
 	public $chunkZ;
 	public $data;
-	
+
 	public function pid(){
 		return Info::CHUNK_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->chunkX);

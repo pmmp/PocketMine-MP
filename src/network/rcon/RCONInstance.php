@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\RCON;
+
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 
@@ -39,29 +40,29 @@ class RCONInstance extends \Thread{
 		$this->password = $password;
 		$this->maxClients = (int) $maxClients;
 		for($n = 0; $n < $this->maxClients; ++$n){
-			$this->{"client".$n} = null;
-			$this->{"status".$n} = 0;
-			$this->{"timeout".$n} = 0;
+			$this->{"client" . $n} = null;
+			$this->{"status" . $n} = 0;
+			$this->{"timeout" . $n} = 0;
 		}
 		$this->start();
 	}
-	
+
 	private function writePacket($client, $requestID, $packetType, $payload){
 		$pk = Utils::writeLInt((int) $requestID)
 			. Utils::writeLInt((int) $packetType)
 			. $payload
 			. "\x00\x00"; //Terminate payload and packet
-		return socket_write($client, Utils::writeLInt(strlen($pk)).$pk);
+		return socket_write($client, Utils::writeLInt(strlen($pk)) . $pk);
 	}
-	
+
 	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
 		@socket_set_nonblock($client);
 		$d = socket_read($client, 4);
 		if($this->stop === true){
 			return false;
-		}elseif($d === false){
+		} elseif($d === false){
 			return null;
-		}elseif($d === "" or strlen($d) < 4){
+		} elseif($d === "" or strlen($d) < 4){
 			return false;
 		}
 		@socket_set_block($client);
@@ -74,11 +75,11 @@ class RCONInstance extends \Thread{
 		$payload = rtrim(socket_read($client, $size + 2)); //Strip two null bytes
 		return true;
 	}
-	
+
 	public function close(){
 		$this->stop = true;
 	}
-	
+
 	public function run(){
 		while($this->stop !== true){
 			usleep(2000);
@@ -91,10 +92,10 @@ class RCONInstance extends \Thread{
 					socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
 					$done = false;
 					for($n = 0; $n < $this->maxClients; ++$n){
-						if($this->{"client".$n} === null){
-							$this->{"client".$n} = $client;
-							$this->{"status".$n} = 0;
-							$this->{"timeout".$n} = microtime(true) + 5;
+						if($this->{"client" . $n} === null){
+							$this->{"client" . $n} = $client;
+							$this->{"status" . $n} = 0;
+							$this->{"timeout" . $n} = microtime(true) + 5;
 							$done = true;
 							break;
 						}
@@ -106,25 +107,25 @@ class RCONInstance extends \Thread{
 			}
 
 			for($n = 0; $n < $this->maxClients; ++$n){
-				$client = &$this->{"client".$n};
+				$client = & $this->{"client" . $n};
 				if($client !== null){
-					if($this->{"status".$n} !== -1 and $this->stop !== true){
-						if($this->{"status".$n} === 0 and $this->{"timeout".$n} < microtime(true)){ //Timeout
-							$this->{"status".$n} = -1;
+					if($this->{"status" . $n} !== -1 and $this->stop !== true){
+						if($this->{"status" . $n} === 0 and $this->{"timeout" . $n} < microtime(true)){ //Timeout
+							$this->{"status" . $n} = -1;
 							continue;
 						}
 						$p = $this->readPacket($client, $size, $requestID, $packetType, $payload);
 						if($p === false){
-							$this->{"status".$n} = -1;
+							$this->{"status" . $n} = -1;
 							continue;
-						}elseif($p === null){
+						} elseif($p === null){
 							continue;
 						}
 
 						switch($packetType){
 							case 3: //Login
-								if($this->{"status".$n} !== 0){
-									$this->{"status".$n} = -1;
+								if($this->{"status" . $n} !== 0){
+									$this->{"status" . $n} = -1;
 									continue;
 								}
 								if($payload === $this->password){
@@ -133,16 +134,16 @@ class RCONInstance extends \Thread{
 									$this->wait();
 									$this->response = "";
 									$this->writePacket($client, $requestID, 2, "");
-									$this->{"status".$n} = 1;
-								}else{
-									$this->{"status".$n} = -1;
+									$this->{"status" . $n} = 1;
+								} else{
+									$this->{"status" . $n} = -1;
 									$this->writePacket($client, -1, 2, "");
 									continue;
 								}
 								break;
 							case 2: //Command
-								if($this->{"status".$n} !== 1){
-									$this->{"status".$n} = -1;
+								if($this->{"status" . $n} !== 1){
+									$this->{"status" . $n} = -1;
 									continue;
 								}
 								if(strlen($payload) > 0){
@@ -155,14 +156,14 @@ class RCONInstance extends \Thread{
 								break;
 						}
 						usleep(1);
-					}else{
+					} else{
 						@socket_set_option($client, SOL_SOCKET, SO_LINGER, array("l_onoff" => 1, "l_linger" => 1));
 						@socket_shutdown($client, 2);
 						@socket_set_block($client);
 						@socket_read($client, 1);
 						@socket_close($client);
-						$this->{"status".$n} = 0;
-						$this->{"client".$n} = null;
+						$this->{"status" . $n} = 0;
+						$this->{"client" . $n} = null;
 					}
 				}
 			}

@@ -20,21 +20,22 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class RotateHeadPacket extends DataPacket{
 	public $eid;
 	public $yaw;
-	
+
 	public function pid(){
 		return Info::ROTATE_HEAD_PACKET;
 	}
-	
+
 	public function decode(){
-		
+
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

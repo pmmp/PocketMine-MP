@@ -14,12 +14,13 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @link   http://www.pocketmine.net/
  *
  *
  */
 
 namespace PocketMine;
+
 use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Level\Generator\Flat as Flat;
 use PocketMine\Level\Generator\Normal as Normal;
@@ -44,18 +45,20 @@ use PocketMine\Level\Position as Position;
 
 class LevelAPI{
 	private $server, $levels, $default;
+
 	public function __construct(){
 		$this->server = ServerAPI::request();
 		$this->levels = array();
 	}
-	
+
 	public function get($name){
 		if(isset($this->levels[$name])){
 			return $this->levels[$name];
 		}
+
 		return false;
 	}
-	
+
 	public function getDefault(){
 		return $this->levels[$this->default];
 	}
@@ -72,7 +75,7 @@ class LevelAPI{
 		}
 		$this->server->spawn = $this->getDefault()->getSafeSpawn();
 	}
-	
+
 	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
@@ -90,18 +93,19 @@ class LevelAPI{
 				break;
 			case "seed":
 				if(!isset($params[0]) and ($issuer instanceof Player)){
-					$output .= "Seed: ".$issuer->level->getSeed()."\n";
-				}elseif(isset($params[0])){
+					$output .= "Seed: " . $issuer->level->getSeed() . "\n";
+				} elseif(isset($params[0])){
 					if(($lv = $this->server->api->level->get(trim(implode(" ", $params)))) !== false){
-						$output .= "Seed: ".$lv->getSeed()."\n";
+						$output .= "Seed: " . $lv->getSeed() . "\n";
 					}
-				}else{
-					$output .= "Seed: ".$this->server->api->level->getDefault()->getSeed()."\n";
+				} else{
+					$output .= "Seed: " . $this->server->api->level->getDefault()->getSeed() . "\n";
 				}
 		}
-		return $output;			
+
+		return $output;
 	}
-	
+
 	public function generateLevel($name, $seed = false, $generator = false){
 		if($name == "" or $this->levelExists($name)){
 			return false;
@@ -113,39 +117,41 @@ class LevelAPI{
 
 		if($generator !== false and class_exists($generator)){
 			$generator = new $generator($options);
-		}else{
+		} else{
 			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
 				$generator = new Flat($options);
-			}else{
+			} else{
 				$generator = new Normal($options);
 			}
 		}
-		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
+		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
 		$gen->generate();
 		$gen->close();
+
 		return true;
 	}
-	
+
 	public function levelExists($name){
 		if($name === ""){
 			return false;
 		}
-		$path = \PocketMine\DATA."worlds/".$name."/";
-		if($this->get($name) === false and !file_exists($path."level.pmf")){
+		$path = \PocketMine\DATA . "worlds/" . $name . "/";
+		if($this->get($name) === false and !file_exists($path . "level.pmf")){
 			$level = new LevelImport($path);
 			if($level->import() === false){
 				return false;
 			}
 		}
+
 		return true;
 	}
-	
+
 	public function unloadLevel(Level $level, $force = false){
 		$name = $level->getName();
 		if($name === $this->default and $force !== true){
 			return false;
 		}
-		console("[INFO] Unloading level \"".$name."\"");
+		console("[INFO] Unloading level \"" . $name . "\"");
 		$level->nextSave = PHP_INT_MAX;
 		$level->save();
 		foreach($level->getPlayers() as $player){
@@ -153,28 +159,31 @@ class LevelAPI{
 		}
 		$level->close();
 		unset($this->levels[$name]);
+
 		return true;
 	}
-	
+
 	public function loadLevel($name){
 		if($this->get($name) !== false){
 			return true;
-		}elseif($this->levelExists($name) === false){
-			console("[NOTICE] Level \"".$name."\" not found");
+		} elseif($this->levelExists($name) === false){
+			console("[NOTICE] Level \"" . $name . "\" not found");
+
 			return false;
 		}
-		$path = \PocketMine\DATA."worlds/".$name."/";
-		console("[INFO] Preparing level \"".$name."\"");
-		$level = new LevelFormat($path."level.pmf");
+		$path = \PocketMine\DATA . "worlds/" . $name . "/";
+		console("[INFO] Preparing level \"" . $name . "\"");
+		$level = new LevelFormat($path . "level.pmf");
 		if(!$level->isLoaded){
-			console("[ERROR] Could not load level \"".$name."\"");
+			console("[ERROR] Could not load level \"" . $name . "\"");
+
 			return false;
 		}
 		//$entities = new Config($path."entities.yml", Config::YAML);
-		if(file_exists($path."tileEntities.yml")){
-			@rename($path."tileEntities.yml", $path."tiles.yml");
+		if(file_exists($path . "tileEntities.yml")){
+			@rename($path . "tileEntities.yml", $path . "tiles.yml");
 		}
-		$blockUpdates = new Config($path."bupdates.yml", Config::YAML);
+		$blockUpdates = new Config($path . "bupdates.yml", Config::YAML);
 		$this->levels[$name] = new Level($level, $name);
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
@@ -204,22 +213,22 @@ class LevelAPI{
 				$e->setHealth($entity["Health"]);
 			}
 		}*/
-			
-		if(file_exists($path ."tiles.yml")){
-			$tiles = new Config($path."tiles.yml", Config::YAML);
+
+		if(file_exists($path . "tiles.yml")){
+			$tiles = new Config($path . "tiles.yml", Config::YAML);
 			foreach($tiles->getAll() as $tile){
 				if(!isset($tile["id"])){
 					continue;
 				}
 				$this->levels[$name]->loadChunk($tile["x"] >> 4, $tile["z"] >> 4);
-			
+
 				$nbt = new Compound(false, array());
 				foreach($tile as $index => $data){
 					switch($index){
 						case "Items":
 							$tag = new Enum("Items", array());
 							$tag->setTagType(NBT\TAG_Compound);
-							foreach($data as $slot => $fields){								
+							foreach($data as $slot => $fields){
 								$tag[(int) $slot] = new Compound(false, array(
 									"Count" => new Byte("Count", $fields["Count"]),
 									"Slot" => new Short("Slot", $fields["Slot"]),
@@ -229,7 +238,7 @@ class LevelAPI{
 							}
 							$nbt["Items"] = $tag;
 							break;
-							
+
 						case "id":
 						case "Text1":
 						case "Text2":
@@ -237,7 +246,7 @@ class LevelAPI{
 						case "Text4":
 							$nbt[$index] = new String($index, $data);
 							break;
-							
+
 						case "x":
 						case "y":
 						case "z":
@@ -245,7 +254,7 @@ class LevelAPI{
 						case "pairz":
 							$nbt[$index] = new Int($index, $data);
 							break;
-							
+
 						case "BurnTime":
 						case "CookTime":
 						case "MaxTime":
@@ -265,13 +274,14 @@ class LevelAPI{
 						break;
 				}
 			}
-			unlink($path ."tiles.yml");
+			unlink($path . "tiles.yml");
 			$this->levels[$name]->save(true, true);
 		}
-		
+
 		foreach($blockUpdates->getAll() as $bupdate){
-			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"],(int) $bupdate["y"],(int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
+			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
+
 		return true;
 	}
 
@@ -279,13 +289,13 @@ class LevelAPI{
 		switch($event){
 		}
 	}
-	
+
 	public function saveAll(){
 		foreach($this->levels as $level){
 			$level->save();
 		}
 	}
-	
+
 	public function __destruct(){
 		$this->saveAll();
 		foreach($this->levels as $level){
@@ -296,9 +306,9 @@ class LevelAPI{
 	public function getSpawn(){
 		return $this->server->spawn;
 	}
-	
+
 	public function getAll(){
 		return $this->levels;
 	}
-	
+
 }

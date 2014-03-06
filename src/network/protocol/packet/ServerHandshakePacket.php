@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -31,11 +32,11 @@ class ServerHandshakePacket extends DataPacket{
 	public function pid(){
 		return Info::SERVER_HANDSHAKE_PACKET;
 	}
-	
+
 	public function decode(){
 
-	}	
-	
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->put("\x04\x3f\x57\xfe"); //cookie

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
@@ -40,7 +41,7 @@ class Tree{
 			case SaplingBlock::SPRUCE:
 				if($random->nextRange(0, 1) === 1){
 					$tree = new SpruceTree();
-				}else{
+				} else{
 					$tree = new PineTree();
 				}
 				break;
@@ -57,7 +58,7 @@ class Tree{
 				/*if($random->nextRange(0, 9) === 0){
 					$tree = new BigTree();
 				}else{*/
-					$tree = new SmallTree();
+				$tree = new SmallTree();
 				//}
 				break;
 		}

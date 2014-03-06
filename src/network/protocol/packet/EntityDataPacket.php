@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -28,18 +29,18 @@ class EntityDataPacket extends DataPacket{
 	public $y;
 	public $z;
 	public $namedtag;
-	
+
 	public function pid(){
 		return Info::ENTITY_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->x = $this->getShort();
 		$this->y = $this->getByte();
 		$this->z = $this->getShort();
 		$this->namedtag = $this->get(true);
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putShort($this->x);

@@ -24,5 +24,5 @@ class SpongeBlock extends SolidBlock{
 		parent::__construct(SPONGE, "Sponge");
 		$this->hardness = 3;
 	}
-	
+
 }

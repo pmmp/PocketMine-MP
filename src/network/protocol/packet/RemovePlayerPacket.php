@@ -20,21 +20,22 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class RemovePlayerPacket extends DataPacket{
 	public $eid;
 	public $clientID;
-	
+
 	public function pid(){
 		return Info::REMOVE_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

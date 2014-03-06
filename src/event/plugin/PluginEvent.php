@@ -20,17 +20,18 @@
 */
 
 namespace PocketMine\Event\Plugin;
+
 use PocketMine\Event;
 use PocketMine;
 
 
 abstract class PluginEvent extends Event{
 	private $plugin;
-	
+
 	public function __construct(Plugin $plugin){ //TODO: NEW PLUGIN CLASS!
 		$this->plugin = $plugin;
 	}
-	
+
 	public function getPlugin(){
 		return $this->plugin;
 	}

@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class AdventureSettingsPacket extends DataPacket{
 	public $flags;
-	
+
 	public function pid(){
 		return Info::ADVENTURE_SETTINGS_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->flags);

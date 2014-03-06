@@ -29,28 +29,31 @@ class StackableArray extends \Stackable{
 			if(is_array($value)){
 				$this->{$n} = new StackableArray();
 				call_user_func_array(array($this->{$n}, "__construct"), $value);
-			}else{
+			} else{
 				$this->{$n} = $value;
 			}
 		}
 	}
-	
-	public function __destruct(){}
-	
-	public function run(){}
+
+	public function __destruct(){
+	}
+
+	public function run(){
+	}
 }
 
 class AsyncMultipleQueue extends Thread{
 	public $input;
 	public $output;
 	public $stop;
+
 	public function __construct(){
 		$this->input = "";
 		$this->output = "";
 		$this->stop = false;
 		$this->start();
 	}
-	
+
 	private function get($len){
 		$str = "";
 		if($len <= 0){
@@ -64,9 +67,10 @@ class AsyncMultipleQueue extends Thread{
 			}
 		}
 		$this->input = (string) substr($this->input, $offset);
+
 		return $str;
 	}
-	
+
 	public function run(){
 		while($this->stop === false){
 			if(isset($this->input{5})){ //len 6 min
@@ -75,10 +79,10 @@ class AsyncMultipleQueue extends Thread{
 					case ASYNC_CURL_GET:
 						$url = $this->get(Utils::readShort($this->get(2), false));
 						$timeout = Utils::readShort($this->get(2));
-						
+
 						$res = (string) Utils::curl_get($url, $timeout);
 						$this->lock();
-						$this->output .= Utils::writeInt($rID).Utils::writeShort(ASYNC_CURL_GET).Utils::writeInt(strlen($res)).$res;
+						$this->output .= Utils::writeInt($rID) . Utils::writeShort(ASYNC_CURL_GET) . Utils::writeInt(strlen($res)) . $res;
 						$this->unlock();
 						break;
 					case ASYNC_CURL_POST:
@@ -92,14 +96,14 @@ class AsyncMultipleQueue extends Thread{
 						}
 						$res = (string) Utils::curl_post($url, $d, $timeout);
 						$this->lock();
-						$this->output .= Utils::writeInt($rID).Utils::writeShort(ASYNC_CURL_POST).Utils::writeInt(strlen($res)).$res;
+						$this->output .= Utils::writeInt($rID) . Utils::writeShort(ASYNC_CURL_POST) . Utils::writeInt(strlen($res)) . $res;
 						$this->unlock();
 						break;
 					case ASYNC_FUNCTION:
 						$function = $this->get(Utils::readShort($this->get(2), false));
 						$params = unserialize($this->get(Utils::readInt($this->get(4))));
 						$res = serialize(@call_user_func_array($function, $params));
-						$this->output .= Utils::writeInt($rID).Utils::writeShort(ASYNC_FUNCTION).Utils::writeInt(strlen($res)).$res;
+						$this->output .= Utils::writeInt($rID) . Utils::writeShort(ASYNC_FUNCTION) . Utils::writeInt(strlen($res)) . $res;
 						break;
 				}
 			}
@@ -117,9 +121,9 @@ class Async extends Thread{
 	}
 
 	public function run(){
-		if(($this->result=call_user_func_array($this->method, $this->params))){
+		if(($this->result = call_user_func_array($this->method, $this->params))){
 			return true;
-		}else{
+		} else{
 			return false;
 		}
 	}

@@ -20,12 +20,12 @@
 */
 
 namespace PocketMine\Event;
+
 use PocketMine;
 
 /**
  * Events that can be cancelled must use the interface CancellableEvent
  */
-
 interface CancellableEvent{
 
 }

@@ -24,7 +24,7 @@ class HayBaleBlock extends SolidBlock{
 		parent::__construct(HAY_BALE, $meta, "Hay Bale");
 		$this->hardness = 10;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 0,
@@ -37,6 +37,7 @@ class HayBaleBlock extends SolidBlock{
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];
 		$this->level->setBlock($block, $this, true, false, true);
+
 		return true;
 	}
 
@@ -45,5 +46,5 @@ class HayBaleBlock extends SolidBlock{
 			array($this->id, 0, 1),
 		);
 	}
-	
+
 }

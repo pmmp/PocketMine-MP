@@ -24,5 +24,5 @@ class SnowBlock extends SolidBlock{
 		parent::__construct(SNOW_BLOCK, 0, "Snow Block");
 		$this->hardness = 1;
 	}
-	
+
 }

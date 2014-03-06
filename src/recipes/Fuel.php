@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Recipes;
+
 use PocketMine;
 
 abstract class Fuel{
@@ -46,7 +47,7 @@ abstract class Fuel{
 		BOOKSHELF => 15,
 		CHEST => 15,
 		BUCKET => 1000,
-	
+
 	);
 
 }

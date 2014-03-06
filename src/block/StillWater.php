@@ -24,5 +24,5 @@ class StillWaterBlock extends WaterBlock{
 		LiquidBlock::__construct(STILL_WATER, $meta, "Still Water");
 		$this->hardness = 500;
 	}
-	
+
 }

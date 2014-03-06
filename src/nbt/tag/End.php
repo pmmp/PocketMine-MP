@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 
 class End extends NBTTag{
-	
+
 	public function getType(){
 		return NBT\TAG_End;
 	}
-	
+
 	public function read(NBT $nbt){
 
 	}
-	
+
 	public function write(NBT $nbt){
-	
+
 	}
 }

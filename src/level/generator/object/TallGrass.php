@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine\Level;
 use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Utils;
+
 use PocketMine;
 
 class VersionString{
@@ -37,19 +38,20 @@ class VersionString{
 	private $minor;
 	private $development = false;
 	private $generation;
+
 	public function __construct($version = PocketMine\VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
 			$this->major = ($version >> 5) & 0x0F;
 			$this->generation = ($version >> 9) & 0x0F;
 			$this->stage = array_search(($version >> 13) & 0x0F, VersionString::$stageOrder, true);
-		}else{
+		} else{
 			$version = preg_split("/([A-Za-z]*)[ _\-]([0-9]*)\.([0-9]*)\.{0,1}([0-9]*)(dev|)/", $version, -1, PREG_SPLIT_DELIM_CAPTURE);
 			$this->stage = strtolower($version[1]); //0-15
 			$this->generation = (int) $version[2]; //0-15
 			$this->major = (int) $version[3]; //0-15
 			$this->minor = (int) $version[4]; //0-31
-			$this->development = $version[5] === "dev" ? true:false;
+			$this->development = $version[5] === "dev" ? true : false;
 		}
 	}
 
@@ -76,13 +78,13 @@ class VersionString{
 	public function getRelease(){
 		return $this->generation . "." . $this->major . "." . $this->minor;
 	}
-	
+
 	public function isDev(){
 		return $this->development === true;
 	}
-	
+
 	public function get(){
-		return ucfirst($this->stage) . "_" . $this->getRelease() . ($this->development === true ? "dev":"");
+		return ucfirst($this->stage) . "_" . $this->getRelease() . ($this->development === true ? "dev" : "");
 	}
 
 	public function __toString(){
@@ -100,9 +102,9 @@ class VersionString{
 		}
 		if($number > $tNumber){
 			return -1; //Target is older
-		}elseif($number < $tNumber){
+		} elseif($number < $tNumber){
 			return 1; //Target is newer
-		}else{
+		} else{
 			return 0; //Same version
 		}
 	}

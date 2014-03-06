@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class HurtArmorPacket extends DataPacket{
 	public $health;
-	
+
 	public function pid(){
 		return Info::HURT_ARMOR_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->health);

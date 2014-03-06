@@ -35,7 +35,7 @@ class StoneBricksBlock extends SolidBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.4;
@@ -51,15 +51,15 @@ class StoneBricksBlock extends SolidBlock{
 				return 7.5;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(STONE_BRICKS, $this->meta & 0x03, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}
-	
+
 }

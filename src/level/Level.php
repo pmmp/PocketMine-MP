@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level;
+
 use PocketMine;
 use PocketMine\PMF\LevelFormat as LevelFormat;
 use PocketMine\ServerAPI as ServerAPI;
@@ -43,14 +44,14 @@ class Level{
 
 	public $entities = array();
 	public $chunkEntities = array();
-	
+
 	public $tiles = array();
 	public $chunkTiles = array();
-	
+
 	public $nextSave, $level;
 	public $stopTime;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
-	
+
 	public function __construct(LevelFormat $level, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -69,22 +70,23 @@ class Level{
 		$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
 		$this->generator->init($this, new Random($this->level->levelData["seed"]));
 	}
-	
+
 	public function close(){
 		$this->__destruct();
 	}
-	
+
 	public function getUsingChunk($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
-		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index]:array();
+
+		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index] : array();
 	}
-	
+
 	public function useChunk($X, $Z, Player $player){
 		$index = LevelFormat::getIndex($X, $Z);
 		$this->loadChunk($X, $Z);
 		$this->usedChunks[$index][$player->CID] = $player;
 	}
-	
+
 	public function freeAllChunks(Player $player){
 		foreach($this->usedChunks as $i => $c){
 			unset($this->usedChunks[$i][$player->CID]);
@@ -94,11 +96,11 @@ class Level{
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[LevelFormat::getIndex($X, $Z)][$player->CID]);
 	}
-	
+
 	public function isChunkPopulated($X, $Z){
 		return $this->level->isPopulated($X, $Z);
 	}
-	
+
 	public function checkTime(){
 		if(!isset($this->level)){
 			return false;
@@ -106,33 +108,35 @@ class Level{
 		$now = microtime(true);
 		if($this->stopTime == true){
 
-		}else{
+		} else{
 			$time = $this->startTime + ($now - $this->startCheck) * 20;
 		}
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
-			
+
 			$pk = new Network\Protocol\SetTimePacket;
 			$pk->time = (int) $this->time;
 			$pk->started = $this->stopTime == false;
 			Player::broadcastPacket($this->players, $pk);
 		}
+
+		return;
 	}
-	
+
 	public function doTick(){
 		if(!isset($this->level)){
 			return false;
 		}
-		
+
 		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
 			foreach($this->changedCount as $index => $mini){
 				for($Y = 0; $Y < 8; ++$Y){
 					if(($mini & (1 << $Y)) === 0){
 						continue;
 					}
-					if(count($this->changedBlocks[$index][$Y]) < 582){//Optimal value, calculated using the relation between minichunks and single packets
+					if(count($this->changedBlocks[$index][$Y]) < 582){ //Optimal value, calculated using the relation between minichunks and single packets
 						continue;
-					}else{
+					} else{
 						foreach($this->players as $p){
 							$p->setChunkIndex($index, $mini);
 						}
@@ -158,10 +162,10 @@ class Level{
 				}
 				$this->changedBlocks = array();
 			}
-			
+
 			$X = null;
 			$Z = null;
-			
+
 			//Do chunk updates
 			foreach($this->usedChunks as $index => $p){
 				LevelFormat::getXZ($index, $X, $Z);
@@ -179,7 +183,7 @@ class Level{
 				}
 			}
 		}
-		
+
 		if($this->nextSave < microtime(true)){
 			$X = null;
 			$Z = null;
@@ -195,20 +199,22 @@ class Level{
 			$this->save(false, false);
 		}
 	}
-	
+
 	public function generateChunk($X, $Z){
 		++$this->level->isGenerating;
 		$this->generator->generateChunk($X, $Z);
 		--$this->level->isGenerating;
+
 		return true;
 	}
-	
+
 	public function populateChunk($X, $Z){
 		$this->level->setPopulated($X, $Z);
-		$this->generator->populateChunk($X, $Z);		
+		$this->generator->populateChunk($X, $Z);
+
 		return true;
 	}
-	
+
 	public function __destruct(){
 		if(isset($this->level)){
 			$this->save(false, false);
@@ -216,7 +222,7 @@ class Level{
 			unset($this->level);
 		}
 	}
-	
+
 	public function save($force = false, $extra = true){
 		if(!isset($this->level)){
 			return false;
@@ -224,17 +230,17 @@ class Level{
 		if($this->server->saveEnabled === false and $force === false){
 			return;
 		}
-		
+
 		if($extra !== false){
 			$this->doSaveRoundExtra();
 		}
-		
+
 		$this->level->setData("time", (int) $this->time);
 		$this->level->doSaveRound($force);
 		$this->level->saveData();
 		$this->nextSave = microtime(true) + 45;
 	}
-	
+
 	protected function doSaveRoundExtra(){
 		foreach($this->usedChunks as $index => $d){
 			LevelFormat::getXZ($index, $X, $Z);
@@ -245,7 +251,7 @@ class Level{
 			)));
 			$nbt->Entities->setTagType(NBT\TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT\TAG_Compound);
-			
+
 			$i = 0;
 			foreach($this->chunkEntities[$index] as $entity){
 				if($entity->closed !== true){
@@ -254,7 +260,7 @@ class Level{
 					++$i;
 				}
 			}
-			
+
 			$i = 0;
 			foreach($this->chunkTiles[$index] as $tile){
 				if($tile->closed !== true){
@@ -262,24 +268,26 @@ class Level{
 					++$i;
 				}
 			}
-			
+
 			$this->level->setChunkNBT($X, $Z, $nbt);
 		}
 	}
-	
+
 	public function getBlockRaw(Vector3 $pos){
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
+
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
-	
+
 	public function getBlock(Vector3 $pos){
 		if($pos instanceof Position and $pos->level !== $this){
 			return false;
 		}
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
+
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
-	
+
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
@@ -290,7 +298,7 @@ class Level{
 				$pk->block = $block->getID();
 				$pk->meta = $block->getMetadata();
 				Player::broadcastPacket($this->players, $pk);
-			}elseif($direct === false){
+			} elseif($direct === false){
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
@@ -311,9 +319,10 @@ class Level{
 				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
 		}
+
 		return $ret;
 	}
-	
+
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
@@ -334,7 +343,7 @@ class Level{
 				$pk->block = $block->getID();
 				$pk->meta = $block->getMetadata();
 				Player::broadcastPacket($this->players, $pk);
-			}else{
+			} else{
 				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
 					Cache::remove("world:{$this->name}:{$index}");
@@ -351,7 +360,7 @@ class Level{
 				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
 
-			if($update === true){				
+			if($update === true){
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){
@@ -360,29 +369,30 @@ class Level{
 				}
 			}
 		}
+
 		return $ret;
 	}
-	
+
 	public function getBiome($x, $z){
 		return $this->level->getBiome((int) $x, (int) $z);
 	}
-	
+
 	public function setBiome($x, $z, $biome){
 		return $this->level->getBiome((int) $x, (int) $z, $biome);
 	}
-	
+
 	public function getEntities(){
 		return $this->entities;
 	}
-	
+
 	public function getTiles(){
 		return $this->tiles;
 	}
-	
+
 	public function getPlayers(){
 		return $this->players;
 	}
-	
+
 	public function getTile(Vector3 $pos){
 		if($pos instanceof Position and $pos->level !== $this){
 			return false;
@@ -395,44 +405,47 @@ class Level{
 				}
 			}
 		}
+
 		return false;
 	}
-	
+
 	public function getMiniChunk($X, $Z, $Y){
 		return $this->level->getMiniChunk($X, $Z, $Y);
 	}
-	
+
 	public function setMiniChunk($X, $Z, $Y, $data){
-		$this->changedCount[$X.":".$Y.":".$Z] = 4096;
+		$this->changedCount[$X . ":" . $Y . ":" . $Z] = 4096;
 		if(ADVANCED_CACHE == true){
 			Cache::remove("world:{$this->name}:$X:$Z");
 		}
+
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
-	
+
 	public function getChunkEntities($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkEntities[$index];
 		}
+
 		return array();
 	}
-	
+
 	public function getChunkTiles($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkTiles[$index];
 		}
+
 		return array();
 	}
-	
-	
-	
+
+
 	public function loadChunk($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index])){
 			return true;
-		}elseif($this->level->loadChunk($X, $Z) !== false){
+		} elseif($this->level->loadChunk($X, $Z) !== false){
 			$this->usedChunks[$index] = array();
 			$this->chunkTiles[$index] = array();
 			$this->chunkEntities[$index] = array();
@@ -454,16 +467,18 @@ class Level{
 						break;
 				}
 			}
+
 			return true;
 		}
+
 		return false;
 	}
-	
+
 	public function unloadChunk($X, $Z, $force = false){
 		if(!isset($this->level)){
 			return false;
 		}
-		
+
 		if($force !== true and $this->isSpawnChunk($X, $Z)){
 			return false;
 		}
@@ -471,12 +486,14 @@ class Level{
 		unset($this->chunkEntities[$index]);
 		unset($this->chunkTiles[$index]);
 		Cache::remove("world:{$this->name}:$X:$Z");
+
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
-	
+
 	public function isSpawnChunk($X, $Z){
 		$spawnX = $this->level->getData("spawnX") >> 4;
 		$spawnZ = $this->level->getData("spawnZ") >> 4;
+
 		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}
 
@@ -485,20 +502,20 @@ class Level{
 			return false;
 		}
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
-			$identifier = "world:{$this->name}:".LevelFormat::getIndex($X, $Z);
+			$identifier = "world:{$this->name}:" . LevelFormat::getIndex($X, $Z);
 			if(($cache = Cache::get($identifier)) !== false){
 				return $cache;
 			}
 		}
-		
-		
+
+
 		$raw = array();
 		for($Y = 0; $Y < 8; ++$Y){
 			if(($Yndex & (1 << $Y)) !== 0){
 				$raw[$Y] = $this->level->getMiniChunk($X, $Z, $Y);
 			}
 		}
-		
+
 		$ordered = "";
 		$flag = chr($Yndex);
 		for($j = 0; $j < 256; ++$j){
@@ -509,7 +526,8 @@ class Level{
 		}
 		if(ADVANCED_CACHE == true and $Yndex == 0xff){
 			Cache::add($identifier, $ordered, 60);
-		}		
+		}
+
 		return $ordered;
 	}
 
@@ -523,13 +541,14 @@ class Level{
 		for($j = 0; $j < 256; ++$j){
 			$ordered .= $flag . substr($raw, $j << 5, 24); //16 + 8
 		}
+
 		return $ordered;
 	}
-	
+
 	public function getSpawn(){
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
 	}
-	
+
 	public function getSafeSpawn($spawn = false){
 		if($spawn === false){
 			$spawn = $this->getSpawn();
@@ -543,7 +562,7 @@ class Level{
 				$b = $this->getBlock($v->getSide(0));
 				if($b === false){
 					return $spawn;
-				}elseif(!($b instanceof Air)){
+				} elseif(!($b instanceof Air)){
 					break;
 				}
 			}
@@ -553,58 +572,60 @@ class Level{
 					if($this->getBlock($v) instanceof Air){
 						return new Position($x, $y, $z, $this);
 					}
-				}else{
+				} else{
 					++$y;
 				}
 			}
+
 			return new Position($x, $y, $z, $this);
 		}
+
 		return false;
 	}
-	
+
 	public function setSpawn(Vector3 $pos){
 		$this->level->setData("spawnX", $pos->x);
 		$this->level->setData("spawnY", $pos->y);
 		$this->level->setData("spawnZ", $pos->z);
 	}
-	
+
 	public function getTime(){
 		return (int) ($this->time);
 	}
-	
+
 	public function getName(){
-		return $this->name;//return $this->level->getData("name");
+		return $this->name; //return $this->level->getData("name");
 	}
-	
+
 	public function setTime($time){
 		$this->startTime = $this->time = (int) $time;
 		$this->startCheck = microtime(true);
 		$this->checkTime();
 	}
-	
+
 	public function stopTime(){
 		$this->stopTime = true;
 		$this->startCheck = 0;
 		$this->checkTime();
 	}
-	
+
 	public function startTime(){
 		$this->stopTime = false;
 		$this->startCheck = microtime(true);
 		$this->checkTime();
 	}
-	
+
 	public function getSeed(){
 		return (int) $this->level->getData("seed");
 	}
-	
+
 	public function setSeed($seed){
 		if(!isset($this->level)){
 			return false;
 		}
 		$this->level->setData("seed", (int) $seed);
 	}
-	
+
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine;
+
 use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Utils\Utils as Utils;
 use PocketMine\Network\Protocol\Info as Info;
@@ -31,6 +32,7 @@ class PluginAPI extends \stdClass{
 	private $server;
 	private $plugins = array();
 	private $randomNonce;
+
 	public function __construct(){
 		$this->server = ServerAPI::request();
 		$this->randomNonce = Utils::getRandomBytes(16, false);
@@ -38,28 +40,29 @@ class PluginAPI extends \stdClass{
 		$this->server->api->console->register("version", "", array($this, "commandHandler"));
 		$this->server->api->ban->cmdWhitelist("version");
 	}
-	
-    public function commandHandler($cmd, $params, $issuer, $alias){
+
+	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
 			case "plugins":
 				$output = "Plugins: ";
 				foreach($this->getList() as $plugin){
-					$output .= $plugin["name"] . ": ".$plugin["version"] .", ";
+					$output .= $plugin["name"] . ": " . $plugin["version"] . ", ";
 				}
-				$output = $output === "Plugins: " ? "No plugins installed.\n" : substr($output, 0, -2)."\n";
+				$output = $output === "Plugins: " ? "No plugins installed.\n" : substr($output, 0, -2) . "\n";
 				break;
 			case "version":
-				$output = "PocketMine-MP ".VERSION." 「".CODENAME."」 API #".API_VERSION." for Minecraft: PE ".MINECRAFT_VERSION." protocol #".Info::CURRENT_PROTOCOL;
+				$output = "PocketMine-MP " . VERSION . " 「" . CODENAME . "」 API #" . API_VERSION . " for Minecraft: PE " . MINECRAFT_VERSION . " protocol #" . Info::CURRENT_PROTOCOL;
 				if(GIT_COMMIT !== str_repeat("00", 20)){
-					$output .= " (git ".GIT_COMMIT.")";
+					$output .= " (git " . GIT_COMMIT . ")";
 				}
 				$output .= "\n";
 				break;
 		}
+
 		return $output;
 	}
-	
+
 	public function __destruct(){
 		foreach($this->plugins as $p){
 			$p[0]->__destruct();
@@ -72,27 +75,30 @@ class PluginAPI extends \stdClass{
 		foreach($this->plugins as $p){
 			$list[] = $p[1];
 		}
+
 		return $list;
 	}
-	
+
 	public function getAll(){
 		return $this->plugins;
 	}
 
 	public function load($file){
 		if(is_link($file) or is_dir($file) or !file_exists($file)){
-			console("[ERROR] ".basename($file)." is not a file");
+			console("[ERROR] " . basename($file) . " is not a file");
+
 			return false;
 		}
 		if(strtolower(substr($file, -3)) === "pmf"){
 			$pmf = new PMFPlugin($file);
 			$info = $pmf->getPluginInfo();
-		}else{
+		} else{
 			$content = file_get_contents($file);
 			$info = strstr($content, "*/", true);
-			$content = str_repeat(PHP_EOL, substr_count($info, "\n")).substr(strstr($content, "*/"),2);
+			$content = str_repeat(PHP_EOL, substr_count($info, "\n")) . substr(strstr($content, "*/"), 2);
 			if(preg_match_all('#([a-zA-Z0-9\-_]*)=([^\r\n]*)#u', $info, $matches) == 0){ //false or 0 matches
-				console("[ERROR] Failed parsing of ".basename($file));
+				console("[ERROR] Failed parsing of " . basename($file));
+
 				return false;
 			}
 			$info = array();
@@ -116,42 +122,46 @@ class PluginAPI extends \stdClass{
 			$info["class"] = trim(strtolower($info["class"]));
 		}
 		if(!isset($info["name"]) or !isset($info["version"]) or !isset($info["class"]) or !isset($info["author"])){
-			console("[ERROR] Failed parsing of ".basename($file));
+			console("[ERROR] Failed parsing of " . basename($file));
+
 			return false;
 		}
-		console("[INFO] Loading plugin \"".TextFormat::GREEN.$info["name"].TextFormat::RESET."\" ".TextFormat::AQUA.$info["version"].TextFormat::RESET." by ".TextFormat::AQUA.$info["author"].TextFormat::RESET);
+		console("[INFO] Loading plugin \"" . TextFormat::GREEN . $info["name"] . TextFormat::RESET . "\" " . TextFormat::AQUA . $info["version"] . TextFormat::RESET . " by " . TextFormat::AQUA . $info["author"] . TextFormat::RESET);
 		if($info["class"] !== "none" and class_exists($info["class"])){
 			console("[ERROR] Failed loading plugin: class already exists");
+
 			return false;
 		}
 		if(((!isset($pmf) and (include $file) === false) or (isset($pmf) and eval($info["code"]) === false)) and $info["class"] !== "none" and !class_exists($info["class"])){
 			console("[ERROR] Failed loading {$info['name']}: evaluation error");
+
 			return false;
 		}
-		
+
 		$className = $info["class"];
 		$apiversion = array_map("intval", explode(",", (string) $info["apiversion"]));
 		if(!in_array(API_VERSION, $apiversion)){
-			console("[WARNING] Plugin \"".$info["name"]."\" may not be compatible with the API (".$info["apiversion"]." != ".API_VERSION.")! It can crash or corrupt the server!");
+			console("[WARNING] Plugin \"" . $info["name"] . "\" may not be compatible with the API (" . $info["apiversion"] . " != " . API_VERSION . ")! It can crash or corrupt the server!");
 		}
-		
+
 		$identifier = $this->getIdentifier($info["name"], $info["author"]);
-		
-		if($info["class"] !== "none"){			
+
+		if($info["class"] !== "none"){
 			$object = new $className($this->server->api, false);
 			if(!($object instanceof Plugin)){
-				console("[ERROR] Plugin \"".$info["name"]."\" doesn't use the Plugin Interface");
+				console("[ERROR] Plugin \"" . $info["name"] . "\" doesn't use the Plugin Interface");
 				if(method_exists($object, "__destruct")){
 					$object->__destruct();
 				}
 				$object = null;
 				unset($object);
-			}else{
+			} else{
 				$this->plugins[$identifier] = array($object, $info);
 			}
-		}else{
+		} else{
 			$this->plugins[$identifier] = array(new DummyPlugin($this->server->api, false), $info);
 		}
+
 		return true;
 	}
 
@@ -166,21 +176,24 @@ class PluginAPI extends \stdClass{
 					return $p;
 				}
 			}
+
 			return false;
 		}
 		if(isset($this->plugins[$identifier])){
 			return $this->plugins[$identifier];
 		}
+
 		return false;
 	}
-	
+
 	public function pluginsPath(){
-		$path = join(DIRECTORY_SEPARATOR, array(\PocketMine\DATA."plugins", ""));
+		$path = join(DIRECTORY_SEPARATOR, array(\PocketMine\DATA . "plugins", ""));
 		@mkdir($path);
+
 		return $path;
 	}
-	
-	
+
+
 	public function configPath(Plugin $plugin){
 		$p = $this->get($plugin);
 		$identifier = $this->getIdentifier($p[1]["name"], $p[1]["author"]);
@@ -190,6 +203,7 @@ class PluginAPI extends \stdClass{
 		$path = $this->pluginsPath() . $p[1]["name"] . DIRECTORY_SEPARATOR;
 		$this->plugins[$identifier][1]["path"] = $path;
 		@mkdir($path);
+
 		return $path;
 	}
 
@@ -199,8 +213,9 @@ class PluginAPI extends \stdClass{
 			return false;
 		}
 		$path = $this->configPath($plugin);
-		$cnf = new Config($path."config.yml", Config::YAML, $default);
+		$cnf = new Config($path . "config.yml", Config::YAML, $default);
 		$cnf->save();
+
 		return $path;
 	}
 
@@ -228,7 +243,7 @@ class PluginAPI extends \stdClass{
 			}
 		}
 	}
-	
+
 	public function initAll(){
 		console("[INFO] Starting plugins...");
 		foreach($this->plugins as $p){
@@ -240,17 +255,19 @@ class PluginAPI extends \stdClass{
 
 interface Plugin{
 	public function __construct(ServerAPI $api, $server = false);
+
 	public function init();
+
 	public function __destruct();
 }
 
 class DummyPlugin implements Plugin{
-	public function __construct(ServerAPI $api, $server = false){	
+	public function __construct(ServerAPI $api, $server = false){
 	}
-	
+
 	public function init(){
 	}
-	
+
 	public function __destruct(){
 	}
 }

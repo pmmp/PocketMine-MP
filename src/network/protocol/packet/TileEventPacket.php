@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -29,15 +30,15 @@ class TileEventPacket extends DataPacket{
 	public $z;
 	public $case1;
 	public $case2;
-	
+
 	public function pid(){
 		return Info::TILE_EVENT_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->x);

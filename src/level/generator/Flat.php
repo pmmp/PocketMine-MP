@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator;
+
 use PocketMine;
 use PocketMine\Level\Generator\Populator\Ore as Ore;
 use PocketMine\Block\CoalOre as CoalOre;
@@ -38,21 +39,21 @@ use PocketMine\Level\Generator\Generator as Generator;
 
 class Flat extends Generator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
-	
+
 	public function getSettings(){
 		return $this->options;
 	}
-	
+
 	public function getName(){
 		return "flat";
 	}
-	
+
 	public function __construct(array $options = array()){
 		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		$this->options = $options;
 		if(isset($options["preset"])){
 			$this->parsePreset($options["preset"]);
-		}else{
+		} else{
 			$this->parsePreset($this->preset);
 		}
 		if(isset($this->options["decoration"])){
@@ -67,40 +68,40 @@ class Flat extends Generator{
 				new Object\Ore\Type(new Dirt(), 20, 32, 0, 128),
 				new Object\Ore\Type(new Gravel(), 10, 16, 0, 128),
 			));
-			$this->populators[] = $ores;			
+			$this->populators[] = $ores;
 		}
-		
+
 		/*if(isset($this->options["mineshaft"])){
 			$this->populators[] = new MineshaftPopulator(isset($this->options["mineshaft"]["chance"]) ? floatval($this->options["mineshaft"]["chance"]) : 0.01);
 		}*/
 	}
-	
+
 	public function parsePreset($preset){
 		$this->preset = $preset;
 		$preset = explode(";", $preset);
 		$version = (int) $preset[0];
 		$blocks = @$preset[1];
-		$biome = isset($preset[2]) ? $preset[2]:1;
-		$options = isset($preset[3]) ? $preset[3]:"";
+		$biome = isset($preset[2]) ? $preset[2] : 1;
+		$options = isset($preset[3]) ? $preset[3] : "";
 		preg_match_all('#(([0-9]{0,})x?([0-9]{1,3}:?[0-9]{0,2})),?#', $blocks, $matches);
 		$y = 0;
 		$this->structure = array();
 		$this->chunks = array();
 		foreach($matches[3] as $i => $b){
 			$b = BlockAPI::fromString($b);
-			$cnt = $matches[2][$i] === "" ? 1:intval($matches[2][$i]);
+			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$this->structure[$cY] = $b;
 			}
 		}
-		
+
 		$this->floorLevel = $y;
-		
-		for(;$y < 0xFF; ++$y){
+
+		for(; $y < 0xFF; ++$y){
 			$this->structure[$y] = new Block\Special\Air();
 		}
-		
-		
+
+
 		for($Y = 0; $Y < 8; ++$Y){
 			$this->chunks[$Y] = "";
 			$startY = $Y << 4;
@@ -113,11 +114,11 @@ class Flat extends Generator{
 						$blocks .= chr($this->structure[$y]->getID());
 						$metas .= substr(dechex($this->structure[$y]->getMetadata()), -1);
 					}
-					$this->chunks[$Y] .= $blocks.hex2bin($metas)."\x00\x00\x00\x00\x00\x00\x00\x00";
+					$this->chunks[$Y] .= $blocks . hex2bin($metas) . "\x00\x00\x00\x00\x00\x00\x00\x00";
 				}
 			}
 		}
-		
+
 		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
 		foreach($matches[2] as $i => $option){
 			$params = true;
@@ -134,25 +135,25 @@ class Flat extends Generator{
 			$this->options[$option] = $params;
 		}
 	}
-	
+
 	public function init(Level $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 	}
-		
+
 	public function generateChunk($chunkX, $chunkZ){
 		for($Y = 0; $Y < 8; ++$Y){
 			$this->level->setMiniChunk($chunkX, $chunkZ, $Y, $this->chunks[$Y]);
 		}
 	}
-	
+
 	public function populateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
 	}
-	
+
 	public function getSpawn(){
 		return new Vector3(128, $this->floorLevel, 128);
 	}

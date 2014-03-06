@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Entity;
+
 use PocketMine;
 
 abstract class Monster extends Creature{

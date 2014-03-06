@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Math;
+
 use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;
 
@@ -47,32 +48,34 @@ class AxisAlignedBB{
 		$this->maxX = $maxX;
 		$this->maxY = $maxY;
 		$this->maxZ = $maxZ;
+
 		return $this;
 	}
-	
+
 	public function addCoord($x, $y, $z){
 		$vec = clone $this;
 		if($x < 0){
 			$vec->minX += $x;
-		}elseif($x > 0){
+		} elseif($x > 0){
 			$vec->maxX += $x;
 		}
 
 		if($y < 0){
 			$vec->minY += $y;
-		}elseif($y > 0){
+		} elseif($y > 0){
 			$vec->maxY += $y;
 		}
 
 		if($z < 0){
 			$vec->minZ += $z;
-		}elseif($z > 0){
+		} elseif($z > 0){
 			$vec->maxZ += $z;
 		}
+
 		return $vec;
 	}
-	
-	public function expand($x, $y, $z){		
+
+	public function expand($x, $y, $z){
 		$vec = clone $this;
 		$vec->minX -= $x;
 		$vec->minY -= $y;
@@ -80,6 +83,7 @@ class AxisAlignedBB{
 		$vec->maxX += $x;
 		$vec->maxY += $y;
 		$vec->maxZ += $z;
+
 		return $vec;
 	}
 
@@ -91,9 +95,10 @@ class AxisAlignedBB{
 		$vec->maxX += $x;
 		$vec->maxY += $y;
 		$vec->maxZ += $z;
+
 		return $vec;
 	}
-	
+
 	public function contract($x, $y, $z){
 		$vec = clone $this;
 		$vec->minX += $x;
@@ -102,9 +107,10 @@ class AxisAlignedBB{
 		$vec->maxX -= $x;
 		$vec->maxY -= $y;
 		$vec->maxZ -= $z;
+
 		return $vec;
 	}
-	
+
 	public function setBB(AxisAlignedBB $bb){
 		return new AxisAlignedBB(
 			min($this->minX, $bb->minX),
@@ -115,11 +121,11 @@ class AxisAlignedBB{
 			max($this->maxZ, $bb->maxZ)
 		);
 	}
-	
+
 	public function getOffsetBoundingBox($x, $y, $z){
 		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
-	
+
 	public function calculateXOffset(AxisAlignedBB $bb, $x){
 		if($bb->maxY <= $this->minY or $bb->minY >= $this->maxY){
 			return $x;
@@ -139,9 +145,10 @@ class AxisAlignedBB{
 				$x = $x2;
 			}
 		}
+
 		return $x;
 	}
-	
+
 	public function calculateYOffset(AxisAlignedBB $bb, $y){
 		if($bb->maxX <= $this->minX or $bb->minX >= $this->maxX){
 			return $y;
@@ -161,9 +168,10 @@ class AxisAlignedBB{
 				$y = $y2;
 			}
 		}
+
 		return $y;
 	}
-	
+
 	public function calculateZOffset(AxisAlignedBB $bb, $z){
 		if($bb->maxX <= $this->minX or $bb->minX >= $this->maxX){
 			return $z;
@@ -183,9 +191,10 @@ class AxisAlignedBB{
 				$z = $z2;
 			}
 		}
+
 		return $z;
 	}
-	
+
 	public function intersectsWith(AxisAlignedBB $bb){
 		if($bb->maxX <= $this->minX or $bb->minX >= $this->maxX){
 			return false;
@@ -193,9 +202,10 @@ class AxisAlignedBB{
 		if($bb->maxY <= $this->minY or $bb->minY >= $this->maxY){
 			return false;
 		}
+
 		return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
 	}
-	
+
 	public function isVectorInside(Vector3 $vector){
 		if($vector->x <= $this->minX or $vector->x >= $this->maxX){
 			return false;
@@ -203,25 +213,26 @@ class AxisAlignedBB{
 		if($vector->y <= $this->minY or $vector->y >= $this->maxY){
 			return false;
 		}
+
 		return $vector->z > $this->minZ and $vector->z < $this->maxZ;
 	}
-	
+
 	public function getAverageEdgeLength(){
-		return ($this->maxX - $this->minX + $this->maxY - $this->minY + $this->maxZ - $this->minZ) / 3; 
+		return ($this->maxX - $this->minX + $this->maxY - $this->minY + $this->maxZ - $this->minZ) / 3;
 	}
-	
+
 	public function isVectorInYZ(Vector3 $vector){
 		return $vector->y >= $this->minY and $vector->y <= $this->maxY and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
 	}
-	
+
 	public function isVectorInXZ(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
 	}
-	
+
 	public function isVectorInXY(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
-	
+
 	/*
 	public function calculateIntercept(...){
 	

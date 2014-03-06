@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Entity;
+
 use PocketMine;
 
 class Cow extends Animal{

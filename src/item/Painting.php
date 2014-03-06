@@ -24,7 +24,7 @@ class PaintingItem extends Item{
 		parent::__construct(PAINTING, 0, $count, "Painting");
 		$this->isActivable = true;
 	}
-	
+
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1 and $block->isSolid === false){
 			$server = ServerAPI::request();
@@ -33,7 +33,7 @@ class PaintingItem extends Item{
 				3 => 3,
 				4 => 0,
 				5 => 2,
-			
+
 			);
 			$motives = array(
 				// Motive Width Height
@@ -78,8 +78,10 @@ class PaintingItem extends Item{
 			if(($player->gamemode & 0x01) === 0x00){
 				$player->removeItem(BlockAPI::getItem($this->getID(), $this->getMetadata(), 1));
 			}
+
 			return true;
 		}
+
 		return false;
 	}
 

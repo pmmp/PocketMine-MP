@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine;
 use PocketMine\Utils\Random as Random;
 use PocketMine\Block\Block as Block;
@@ -29,15 +30,15 @@ use PocketMine\Math\Vector3 as Vector3;
 class Pond{
 	private $random;
 	public $type;
-	
+
 	public function __construct(Random $random, Block $type){
 		$this->type = $type;
 		$this->random = $random;
 	}
-	
+
 	public function canPlaceObject(Level $level, Vector3 $pos){
 	}
-	
+
 	public function placeObject(Level $level, Vector3 $pos){
 	}
 

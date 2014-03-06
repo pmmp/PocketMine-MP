@@ -28,7 +28,7 @@ class MossStoneBlock extends SolidBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.4;
@@ -44,13 +44,13 @@ class MossStoneBlock extends SolidBlock{
 				return 10;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(MOSS_STONE, 0, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}

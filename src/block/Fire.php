@@ -27,11 +27,11 @@ class FireBlock extends FlowableBlock{
 		$this->isFullBlock = true;
 		$this->hardness = 0;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		return array();
 	}
-	
+
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			for($s = 0; $s <= 5; ++$s){
@@ -41,14 +41,17 @@ class FireBlock extends FlowableBlock{
 				}
 			}
 			$this->level->setBlock($this, new AirBlock(), true, false, true);
+
 			return BLOCK_UPDATE_NORMAL;
-		}elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== NETHERRACK){
 				$this->level->setBlock($this, new AirBlock(), true, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
-	
+
 }

@@ -27,14 +27,14 @@ class SandstoneBlock extends SolidBlock{
 			1 => "Chiseled Sandstone",
 			2 => "Smooth Sandstone",
 		);
-		$this->name = $names[$this->meta & 0x03];		
+		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 4;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.15;
@@ -56,9 +56,9 @@ class SandstoneBlock extends SolidBlock{
 			return array(
 				array(SANDSTONE, $this->meta & 0x03, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}
-	
+
 }

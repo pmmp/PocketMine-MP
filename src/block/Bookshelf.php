@@ -24,5 +24,5 @@ class BookshelfBlock extends SolidBlock{
 		parent::__construct(BOOKSHELF, 0, "Bookshelf");
 		$this->hardness = 7.5;
 	}
-	
+
 }

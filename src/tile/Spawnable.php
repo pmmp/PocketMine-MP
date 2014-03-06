@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Tile;
+
 use PocketMine;
 
 abstract class Spawnable extends Tile{

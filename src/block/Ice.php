@@ -24,20 +24,21 @@ class IceBlock extends TransparentBlock{
 		parent::__construct(ICE, 0, "Ice");
 		$this->hardness = 2.5;
 	}
-	
+
 	public function onBreak(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0){
 			$this->level->setBlock($this, new WaterBlock(), true, false, true);
-		}else{
+		} else{
 			$this->level->setBlock($this, new AirBlock(), true, false, true);
 		}
+
 		return true;
 	}
 
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.1;

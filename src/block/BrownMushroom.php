@@ -30,18 +30,22 @@ class BrownMushroomBlock extends FlowableBlock{
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$down = $this->getSide(0);
-			if($down->isTransparent === false){
-				$this->level->setBlock($block, $this, true, false, true);
-				return true;
-			}
+		$down = $this->getSide(0);
+		if($down->isTransparent === false){
+			$this->level->setBlock($block, $this, true, false, true);
+
+			return true;
+		}
+
 		return false;
-	}		
+	}
 }

@@ -24,5 +24,5 @@ class NetherReactorBlock extends SolidBlock{
 		parent::__construct(NETHER_REACTOR, $meta, "Nether Reactor");
 		$this->isActivable = true;
 	}
-	
+
 }

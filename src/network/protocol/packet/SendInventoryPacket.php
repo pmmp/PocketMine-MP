@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -28,11 +29,11 @@ class SendInventoryPacket extends DataPacket{
 	public $windowid;
 	public $slots = array();
 	public $armor = array();
-	
+
 	public function pid(){
 		return Info::SEND_INVENTORY_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->windowid = $this->getByte();
@@ -46,7 +47,7 @@ class SendInventoryPacket extends DataPacket{
 			}
 		}
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

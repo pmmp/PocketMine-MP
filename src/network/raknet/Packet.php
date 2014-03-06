@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\RakNet;
+
 use PocketMine;
 use PocketMine\Network\Packet as NetworkPacket;
 use PocketMine\Utils\Utils as Utils;
@@ -30,54 +31,55 @@ class Packet extends NetworkPacket{
 	private $packetID;
 	private $offset = 1;
 	public $data = array();
-	
+
 	public function __construct($packetID){
 		$this->packetID = (int) $packetID;
 	}
-	
+
 	public function pid(){
 		return $this->packetID;
 	}
-	
+
 	protected function get($len){
 		if($len <= 0){
 			$this->offset = strlen($this->buffer) - 1;
+
 			return "";
-		}elseif($len === true){
+		} elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
-		
+
 		$buffer = b"";
 		for(; $len > 0; --$len, ++$this->offset){
 			$buffer .= @$this->buffer{$this->offset};
 		}
 		return $buffer;
 	}
-	
+
 	private function getLong($unsigned = false){
 		return Utils::readLong($this->get(8), $unsigned);
 	}
-	
+
 	private function getInt(){
 		return Utils::readInt($this->get(4));
 	}
-	
+
 	private function getShort($unsigned = false){
 		return Utils::readShort($this->get(2), $unsigned);
 	}
-	
+
 	private function getLTriad(){
 		return Utils::readTriad(strrev($this->get(3)));
 	}
-	
+
 	private function getByte(){
 		return ord($this->buffer{$this->offset++});
-	}	
-	
+	}
+
 	private function feof(){
 		return !isset($this->buffer{$this->offset});
 	}
-	
+
 	public function decode(){
 		$this->offset = 1;
 		switch($this->packetID){
@@ -134,7 +136,7 @@ class Packet extends NetworkPacket{
 						for($c = $start; $c <= $end; ++$c){
 							$this->packets[] = $c;
 						}
-					}else{
+					} else{
 						$this->packets[] = $this->getLTriad();
 					}
 				}
@@ -143,48 +145,51 @@ class Packet extends NetworkPacket{
 				break;
 		}
 	}
-	
+
 	private function parseDataPacket(){
 		$packetFlags = $this->getByte();
 		$reliability = ($packetFlags & 0b11100000) >> 5;
 		$hasSplit = ($packetFlags & 0b00010000) > 0;
 		$length = (int) ceil($this->getShort() / 8);
 		if($reliability === 2
-		or $reliability === 3
-		or $reliability === 4
-		or $reliability === 6
-		or $reliability === 7){
+			or $reliability === 3
+			or $reliability === 4
+			or $reliability === 6
+			or $reliability === 7
+		){
 			$messageIndex = $this->getLTriad();
-		}else{
+		} else{
 			$messageIndex = false;
 		}
-		
+
 		if($reliability === 1
-		or $reliability === 3
-		or $reliability === 4
-		or $reliability === 7){
+			or $reliability === 3
+			or $reliability === 4
+			or $reliability === 7
+		){
 			$orderIndex = $this->getLTriad();
 			$orderChannel = $this->getByte();
-		}else{
+		} else{
 			$orderIndex = false;
 			$orderChannel = false;
 		}
-		
+
 		if($hasSplit == true){
 			$splitCount = $this->getInt();
 			$splitID = $this->getShort();
 			$splitIndex = $this->getInt();
-		}else{
+		} else{
 			$splitCount = false;
 			$splitID = false;
 			$splitIndex = false;
 		}
-		
+
 		if($length <= 0
-		or $orderChannel >= 32
-		or ($hasSplit === true and $splitIndex >= $splitCount)){
+			or $orderChannel >= 32
+			or ($hasSplit === true and $splitIndex >= $splitCount)
+		){
 			return false;
-		}else{
+		} else{
 			$pid = $this->getByte();
 			$buffer = $this->get($length - 1);
 			if(strlen($buffer) < ($length - 1)){
@@ -366,9 +371,10 @@ class Packet extends NetworkPacket{
 			$data->setBuffer($buffer);
 			$this->data[] = $data;
 		}
+
 		return true;
 	}
-	
+
 	public function encode(){
 		if(strlen($this->buffer) > 0){
 			return;
@@ -439,7 +445,7 @@ class Packet extends NetworkPacket{
 							$curr = $end = $n;
 							$type = false;
 							$pointer = $i + 1;
-						}else{
+						} else{
 							break;
 						}
 					}
@@ -448,7 +454,7 @@ class Packet extends NetworkPacket{
 						$payload .= "\x00";
 						$payload .= strrev(Utils::writeTriad($start));
 						$payload .= strrev(Utils::writeTriad($end));
-					}else{
+					} else{
 						$payload .= Utils::writeBool(true);
 						$payload .= strrev(Utils::writeTriad($start));
 					}
@@ -458,36 +464,38 @@ class Packet extends NetworkPacket{
 				$this->buffer .= $payload;
 				break;
 			default:
-				
+
 		}
-	
+
 	}
-	
+
 	private function encodeDataPacket(DataPacket $pk){
-		$this->putByte(($pk->reliability << 5) | ($pk->hasSplit > 0 ? 0b00010000:0));
+		$this->putByte(($pk->reliability << 5) | ($pk->hasSplit > 0 ? 0b00010000 : 0));
 		$this->putShort(strlen($pk->buffer) << 3);
 		if($pk->reliability === 2
-		or $pk->reliability === 3
-		or $pk->reliability === 4
-		or $pk->reliability === 6
-		or $pk->reliability === 7){
+			or $pk->reliability === 3
+			or $pk->reliability === 4
+			or $pk->reliability === 6
+			or $pk->reliability === 7
+		){
 			$this->putLTriad($pk->messageIndex);
 		}
-		
+
 		if($pk->reliability === 1
-		or $pk->reliability === 3
-		or $pk->reliability === 4
-		or $pk->reliability === 7){
+			or $pk->reliability === 3
+			or $pk->reliability === 4
+			or $pk->reliability === 7
+		){
 			$this->putLTriad($pk->orderIndex);
 			$this->putByte($pk->orderChannel);
 		}
-		
+
 		if($pk->hasSplit === true){
 			$this->putInt($pk->splitCount);
 			$this->putShort($pk->splitID);
 			$this->putInt($pk->splitIndex);
 		}
-		
+
 		$this->buffer .= $pk->buffer;
 	}
 
@@ -498,11 +506,11 @@ class Packet extends NetworkPacket{
 	protected function putLong($v){
 		$this->buffer .= Utils::writeLong($v);
 	}
-	
+
 	protected function putInt($v){
 		$this->buffer .= Utils::writeInt($v);
 	}
-	
+
 	protected function putShort($v){
 		$this->buffer .= Utils::writeShort($v);
 	}
@@ -510,19 +518,20 @@ class Packet extends NetworkPacket{
 	protected function putTriad($v){
 		$this->buffer .= Utils::writeTriad($v);
 	}
-	
+
 	protected function putLTriad($v){
 		$this->buffer .= strrev(Utils::writeTriad($v));
 	}
-	
+
 	protected function putByte($v){
 		$this->buffer .= chr($v);
 	}
-	
+
 	protected function putString($v){
 		$this->putShort(strlen($v));
 		$this->put($v);
 	}
-	
-	public function __destruct(){}
+
+	public function __destruct(){
+	}
 }

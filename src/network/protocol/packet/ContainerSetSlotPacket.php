@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -27,17 +28,17 @@ class ContainerSetSlotPacket extends DataPacket{
 	public $windowid;
 	public $slot;
 	public $item;
-	
+
 	public function pid(){
 		return Info::CONTAINER_SET_SLOT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->windowid = $this->getByte();
 		$this->slot = $this->getShort();
 		$this->item = $this->getSlot();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

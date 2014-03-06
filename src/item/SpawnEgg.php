@@ -25,7 +25,7 @@ class SpawnEggItem extends Item{
 		$this->meta = $meta;
 		$this->isActivable = true;
 	}
-	
+
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		switch($this->meta){
 			case MOB_CHICKEN:
@@ -42,6 +42,7 @@ class SpawnEggItem extends Item{
 				if(($player->gamemode & 0x01) === 0){
 					--$this->count;
 				}
+
 				return true;
 		}
 		return false;

@@ -32,61 +32,68 @@ class SlabBlock extends TransparentBlock{
 			6 => "Quartz",
 			7 => "",
 		);
-		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper ":"") . $names[$this->meta & 0x07] . " Slab";	
+		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 		if(($this->meta & 0x08) === 0x08){
 			$this->isFullBlock = true;
-		}else{
+		} else{
 			$this->isFullBlock = false;
-		}		
+		}
 		$this->hardness = 30;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$this->meta &= 0x07;
-			if($face === 0){
-				if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
-					$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
-					return true;
-				}elseif($block->getID() === SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+		$this->meta &= 0x07;
+		if($face === 0){
+			if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
+				$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+
+				return true;
+			} elseif($block->getID() === SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+				$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+
+				return true;
+			} else{
+				$this->meta |= 0x08;
+			}
+		} elseif($face === 1){
+			if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
+				$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+
+				return true;
+			} elseif($block->getID() === SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+				$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+
+				return true;
+			}
+		} elseif(!$player->entity->inBlock($block)){
+			if($block->getID() === SLAB){
+				if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 					$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+
 					return true;
-				}else{
+				}
+
+				return false;
+			} else{
+				if($fy > 0.5){
 					$this->meta |= 0x08;
 				}
-			}elseif($face === 1){
-				if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
-					$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
-					return true;
-				}elseif($block->getID() === SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-					$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
-					return true;
-				}
-			}elseif(!$player->entity->inBlock($block)){
-				if($block->getID() === SLAB){
-					if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-						$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
-						return true;
-					}
-					return false;
-				}else{
-					if($fy > 0.5){
-						$this->meta |= 0x08;
-					}
-				}
-			}else{
-				return false;
 			}
-			if($block->getID() === SLAB and ($target->getMetadata() & 0x07) !== ($this->meta & 0x07)){
-				return false;
-			}
-			$this->level->setBlock($block, $this, true, false, true);
-			return true;
+		} else{
+			return false;
+		}
+		if($block->getID() === SLAB and ($target->getMetadata() & 0x07) !== ($this->meta & 0x07)){
+			return false;
+		}
+		$this->level->setBlock($block, $this, true, false, true);
+
+		return true;
 	}
 
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.4;
@@ -102,13 +109,13 @@ class SlabBlock extends TransparentBlock{
 				return 10;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array($this->id, $this->meta & 0x07, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}

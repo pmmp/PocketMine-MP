@@ -43,5 +43,5 @@ class WoolBlock extends SolidBlock{
 		$this->name = $names[$this->meta];
 		$this->hardness = 4;
 	}
-	
+
 }

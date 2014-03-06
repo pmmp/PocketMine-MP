@@ -24,5 +24,5 @@ class PumpkinBlock extends SolidBlock{
 		parent::__construct(PUMPKIN, "Pumpkin");
 		$this->hardness = 5;
 	}
-	
+
 }

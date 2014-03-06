@@ -30,5 +30,5 @@ class StoneWallBlock extends TransparentBlock{
 		$this->isSolid = false;
 		$this->hardness = 30;
 	}
-	
+
 }

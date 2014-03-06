@@ -36,12 +36,14 @@ class TallGrassBlock extends FlowableBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		$possibleDrops = array(
@@ -63,6 +65,7 @@ class TallGrassBlock extends FlowableBlock{
 		if(($item = $possibleDrops[mt_rand(0, count($possibleDrops) - 1)]) !== 0){
 			$drops[] = $item;
 		}
+
 		return $drops;
 	}
 

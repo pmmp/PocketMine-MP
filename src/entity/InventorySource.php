@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Entity;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
 
@@ -28,26 +29,26 @@ interface InventorySource{
 	public function hasItem(Item $item, $checkDamage = true);
 
 	public function canAddItem(Item $item);
-	
+
 	/**
 	 * @return boolean hasBeenAdded
 	 */
 	public function addItem(Item $item);
-	
+
 	public function canRemoveItem(Item $item, $checkDamage = true);
-	
+
 	/**
 	 * @return boolean hasBeenRemoved
 	 */
 	public function removeItem(Item $item, $checkDamage = true);
-	
+
 	public function getSlotCount();
-	
+
 	public function getAllSlots();
-	
+
 	public function getSlot($slot);
-	
+
 	public function setSlot($slot, Item $item);
-	
+
 
 }

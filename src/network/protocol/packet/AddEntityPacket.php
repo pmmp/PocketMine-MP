@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -33,15 +34,15 @@ class AddEntityPacket extends DataPacket{
 	public $speedX;
 	public $speedY;
 	public $speedZ;
-	
+
 	public function pid(){
 		return Info::ADD_ENTITY_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

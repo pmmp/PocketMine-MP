@@ -26,20 +26,23 @@ class LadderBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 2;
 	}
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false){
-				$faces = array(
-					2 => 2,
-					3 => 3,
-					4 => 4,
-					5 => 5,
-				);
+			$faces = array(
+				2 => 2,
+				3 => 3,
+				4 => 4,
+				5 => 5,
+			);
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
 				$this->level->setBlock($block, $this, true, false, true);
+
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -51,6 +54,7 @@ class LadderBlock extends TransparentBlock{
 				return BLOCK_UPDATE_NORMAL;
 			}*/
 		}
+
 		return false;
 	}
 
@@ -58,5 +62,5 @@ class LadderBlock extends TransparentBlock{
 		return array(
 			array($this->id, 0, 1),
 		);
-	}		
+	}
 }

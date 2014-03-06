@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Utils;
+
 use PocketMine;
 
 class TextFormat{
@@ -46,7 +47,7 @@ class TextFormat{
 	const UNDERLINE = "§n";
 	const ITALIC = "§o";
 	const RESET = "§r";
-	
+
 	public static function tokenize($string){
 		return preg_split("/(§[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
@@ -54,7 +55,7 @@ class TextFormat{
 	public static function clean($string){
 		return preg_replace(array("/§[0123456789abcdefklmnor]/", "/\\x1b*/"), "", $string);
 	}
-	
+
 	public static function toHTML($string){
 		if(!is_array($string)){
 			$string = self::tokenize($string);
@@ -158,11 +159,12 @@ class TextFormat{
 					break;
 			}
 		}
-		
+
 		$newString .= str_repeat("</span>", $tokens);
+
 		return $newString;
 	}
-	
+
 	public static function toANSI($string){
 		if(!is_array($string)){
 			$string = self::tokenize($string);
@@ -242,6 +244,7 @@ class TextFormat{
 					break;
 			}
 		}
+
 		return $newString;
 	}
 

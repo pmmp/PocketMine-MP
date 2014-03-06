@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Query;
+
 use PocketMine;
 use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Player as Player;
@@ -33,11 +34,11 @@ Source: http://wiki.unrealadmin.org/UT3_query_protocol
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
-	
+
 	public function __construct(){
 		console("[INFO] Starting GS4 status listener");
 		$this->server = ServerAPI::request();
-		$addr = ($ip = $this->server->api->getProperty("server-ip")) != "" ? $ip:"0.0.0.0";
+		$addr = ($ip = $this->server->api->getProperty("server-ip")) != "" ? $ip : "0.0.0.0";
 		$port = $this->server->api->getProperty("server-port");
 		console("[INFO] Setting query port to $port");
 		/*
@@ -55,57 +56,57 @@ class QueryHandler{
 		$this->regenerateInfo();
 		console("[INFO] Query running on $addr:$port");
 	}
-	
+
 	public function regenerateInfo(){
 		$str = "";
-		$plist = "PocketMine-MP ".VERSION;
+		$plist = "PocketMine-MP " . VERSION;
 		$pl = $this->server->api->plugin->getList();
 		if(count($pl) > 0){
 			$plist .= ":";
 			foreach($pl as $p){
-				$plist .= " ".str_replace(array(";", ":", " "), array("", "", "_"), $p["name"])." ".str_replace(array(";", ":", " "), array("", "", "_"), $p["version"]).";";
+				$plist .= " " . str_replace(array(";", ":", " "), array("", "", "_"), $p["name"]) . " " . str_replace(array(";", ":", " "), array("", "", "_"), $p["version"]) . ";";
 			}
 			$plist = substr($plist, 0, -1);
 		}
 		$KVdata = array(
 			"splitnum" => chr(128),
 			"hostname" => $this->server->name,
-			"gametype" => ($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP",
+			"gametype" => ($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP",
 			"game_id" => "MINECRAFTPE",
 			"version" => MINECRAFT_VERSION,
-			"server_engine" => "PocketMine-MP ".VERSION,
+			"server_engine" => "PocketMine-MP " . VERSION,
 			"plugins" => $plist,
 			"map" => $this->server->api->level->getDefault()->getName(),
 			"numplayers" => count(Player::$list),
 			"maxplayers" => $this->server->maxClients,
-			"whitelist" => $this->server->api->getProperty("white-list") === true ? "on":"off",
+			"whitelist" => $this->server->api->getProperty("white-list") === true ? "on" : "off",
 			"hostport" => $this->server->api->getProperty("server-port"),
 			//"hostip" => $this->server->api->getProperty("server-ip", "0.0.0.0")
 		);
 		foreach($KVdata as $key => $value){
-			$str .= $key."\x00".$value."\x00";
+			$str .= $key . "\x00" . $value . "\x00";
 		}
 		$str .= "\x00\x01player_\x00\x00";
 		foreach(Player::$list as $player){
 			if($player->getUsername() != ""){
-				$str .= $player->getUsername()."\x00";
+				$str .= $player->getUsername() . "\x00";
 			}
 		}
 		$str .= "\x00";
 		$this->longData = $str;
 		$this->timeout = microtime(true) + 5;
 	}
-	
+
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
 		$this->token = Utils::getRandomBytes(16, false);
 	}
-	
+
 	public static function getTokenString($token, $salt){
-		return Utils::readInt(substr(hash("sha512", $salt . ":". $token, true), 7, 4));
+		return Utils::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
-	
-	public function handle(QueryPacket $packet){	
+
+	public function handle(QueryPacket $packet){
 		$packet->decode();
 		switch($packet->packetType){
 			case QueryPacket::HANDSHAKE: //Handshake
@@ -114,7 +115,7 @@ class QueryHandler{
 				$pk->port = $packet->port;
 				$pk->packetType = QueryPacket::HANDSHAKE;
 				$pk->sessionID = $packet->sessionID;
-				$pk->payload = self::getTokenString($this->token, $packet->ip)."\x00";
+				$pk->payload = self::getTokenString($this->token, $packet->ip) . "\x00";
 				$pk->encode();
 				$this->server->send($pk);
 				break;
@@ -132,9 +133,9 @@ class QueryHandler{
 					if($this->timeout < microtime(true)){
 						$this->regenerateInfo();
 					}
-					$pk->payload = $this->longData;			
-				}else{
-					$pk->payload = $this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count(Player::$list)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
+					$pk->payload = $this->longData;
+				} else{
+					$pk->payload = $this->server->name . "\x00" . (($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->api->level->getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->maxClients . "\x00" . Utils::writeLShort($this->server->api->getProperty("server-port")) . $this->server->api->getProperty("server-ip", "0.0.0.0") . "\x00";
 				}
 				$pk->encode();
 				$this->server->send($pk);

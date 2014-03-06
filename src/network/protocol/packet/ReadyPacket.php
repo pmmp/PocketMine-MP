@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class ReadyPacket extends DataPacket{
 	public $status;
-	
+
 	public function pid(){
 		return Info::READY_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->status = $this->getByte();
-	}	
-	
+	}
+
 	public function encode(){
 
 	}

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Populator;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Utils\Random as Random;
@@ -28,6 +29,7 @@ use PocketMine\Math\Vector3 as Vector3;
 
 class Ore extends Populator{
 	private $oreTypes = array();
+
 	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
 		foreach($this->oreTypes as $type){
 			$ore = new ObjectOre($random, $type);
@@ -41,7 +43,7 @@ class Ore extends Populator{
 			}
 		}
 	}
-	
+
 	public function setOreTypes(array $types){
 		$this->oreTypes = $types;
 	}

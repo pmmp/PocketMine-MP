@@ -20,22 +20,23 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class MessagePacket extends DataPacket{
 	public $source;
 	public $message;
-	
+
 	public function pid(){
 		return Info::MESSAGE_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->source = $this->getString();
 		$this->message = $this->getString();
-	}	
-	
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->putString($this->source);

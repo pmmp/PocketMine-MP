@@ -20,19 +20,20 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 
 class Long extends NamedNBTTag{
-	
+
 	public function getType(){
 		return NBT\TAG_Long;
 	}
-	
+
 	public function read(NBT $nbt){
 		$this->value = $nbt->getLong();
 	}
-	
+
 	public function write(NBT $nbt){
 		$nbt->putLong($this->value);
 	}

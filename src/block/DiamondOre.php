@@ -24,11 +24,11 @@ class DiamondOreBlock extends SolidBlock{
 		parent::__construct(DIAMOND_ORE, 0, "Diamond Ore");
 		$this->hardness = 15;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.6;
@@ -38,13 +38,13 @@ class DiamondOreBlock extends SolidBlock{
 				return 15;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
 				array(DIAMOND, 0, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}

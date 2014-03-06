@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -30,12 +31,12 @@ class PongPacket extends DataPacket{
 	public function pid(){
 		return Info::PONG_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->ptime = $this->getLong();
 		$this->time = $this->getLong();
-	}	
-	
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->putLong($this->ptime);

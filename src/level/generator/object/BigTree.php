@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
@@ -51,7 +52,7 @@ class BigTree extends Tree{
 			$groupX = $leafGroup->getBlockX();
 			$groupY = $leafGrou->getBlockY();
 			$groupZ = $leafGroup->getBlockZ();
-			for ($yy = $groupY; $yy < $groupY + $this->leafDistanceLimit; ++$yy) {
+			for($yy = $groupY; $yy < $groupY + $this->leafDistanceLimit; ++$yy){
 				$this->generateGroupLayer($level, $groupX, $yy, $groupZ, $this->getLeafGroupLayerSize($yy - $groupY));
 			}
 		}

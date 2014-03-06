@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Object;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
@@ -37,8 +38,8 @@ class SpruceTree extends Tree{
 	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$this->findRandomLeavesSize($random);
 		$checkRadius = 0;
-		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
-			if($yy === $this->leavesBottomY) {
+		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy){
+			if($yy === $this->leavesBottomY){
 				$checkRadius = $this->leavesMaxRadius;
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
@@ -49,6 +50,7 @@ class SpruceTree extends Tree{
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -59,22 +61,22 @@ class SpruceTree extends Tree{
 	}
 
 	public function placeObject(Level $level, Vector3 $pos, Random $random){
-		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
+		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1){
 			$this->findRandomLeavesSize($random);
 		}
 		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new Dirt());
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
-			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
-				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
-					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
+			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx){
+				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz){
+					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0){
 						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new Leaves($this->type));
 					}
 				}
 			}
-			if($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)) {
+			if($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)){
 				--$leavesRadius;
-			}elseif($leavesRadius < $this->leavesMaxRadius){
+			} elseif($leavesRadius < $this->leavesMaxRadius){
 				++$leavesRadius;
 			}
 		}

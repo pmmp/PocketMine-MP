@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine;
+
 use PocketMine\Level\Position as Position;
 use PocketMine\Block\GenericBlock as GenericBlock;
 use PocketMine\Item\Item as Item;
@@ -36,7 +37,7 @@ class BlockAPI{
 	private $scheduledUpdates = array();
 	private $randomUpdates = array();
 	public static $creative = array(
-	
+
 		//Building
 		array(STONE, 0),
 		array(COBBLESTONE, 0),
@@ -49,7 +50,7 @@ class BlockAPI{
 		array(WOODEN_PLANKS, 2),
 		array(WOODEN_PLANKS, 3),
 		array(BRICKS, 0),
-		
+
 		array(DIRT, 0),
 		array(GRASS, 0),
 		array(CLAY_BLOCK, 0),
@@ -97,7 +98,7 @@ class BlockAPI{
 		array(OBSIDIAN, 0),
 		array(ICE, 0),
 		array(SNOW_BLOCK, 0),
-		
+
 		//Decoration
 		array(COBBLESTONE_WALL, 0),
 		array(COBBLESTONE_WALL, 1),
@@ -180,11 +181,11 @@ class BlockAPI{
 		array(CARPET, 10),
 		array(CARPET, 9),
 		array(CARPET, 8),
-		
+
 		//Tools
 		//array(RAILS, 0),
 		//array(POWERED_RAILS, 0),
-		array(TORCH, 0),		
+		array(TORCH, 0),
 		array(BUCKET, 0),
 		array(BUCKET, 8),
 		array(BUCKET, 10),
@@ -201,7 +202,7 @@ class BlockAPI{
 		array(SPAWN_EGG, MOB_COW),
 		array(SPAWN_EGG, MOB_PIG),
 		array(SPAWN_EGG, MOB_SHEEP),
-		
+
 		//Seeds
 		array(SUGARCANE, 0),
 		array(WHEAT, 0),
@@ -228,32 +229,34 @@ class BlockAPI{
 		array(DYE, 10),
 		array(DYE, 9),
 		array(DYE, 8),
-		
+
 	);
-	
+
 	public static function fromString($str, $multiple = false){
 		if($multiple === true){
 			$blocks = array();
-			foreach(explode(",",$str) as $b){
+			foreach(explode(",", $str) as $b){
 				$blocks[] = BlockAPI::fromString($b, false);
 			}
+
 			return $blocks;
-		}else{
+		} else{
 			$b = explode(":", str_replace(" ", "_", trim($str)));
 			if(!isset($b[1])){
 				$meta = 0;
-			}else{
+			} else{
 				$meta = ((int) $b[1]) & 0xFFFF;
 			}
-			
+
 			if(defined(strtoupper($b[0]))){
 				$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
 				if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
 					$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
 				}
-			}else{
+			} else{
 				$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
 			}
+
 			return $item;
 		}
 	}
@@ -262,26 +265,28 @@ class BlockAPI{
 		if(isset(Block::$class[$id])){
 			$classname = Block::$class[$id];
 			$b = new $classname($meta);
-		}else{
+		} else{
 			$b = new GenericBlock((int) $id, $meta);
 		}
 		if($v instanceof Position){
 			$b->position($v);
 		}
+
 		return $b;
 	}
-	
+
 	public static function getItem($id, $meta = 0, $count = 1){
 		$id = (int) $id;
 		if(isset(Item::$class[$id])){
 			$classname = Item::$class[$id];
 			$i = new $classname($meta, $count);
-		}else{
+		} else{
 			$i = new Item($id, $meta, $count);
 		}
+
 		return $i;
 	}
-	
+
 	function __construct(){
 		$this->server = ServerAPI::request();
 	}
@@ -301,10 +306,10 @@ class BlockAPI{
 				}
 				$player = Player::get($params[0]);
 				$item = BlockAPI::fromString($params[1]);
-				
+
 				if(!isset($params[2])){
 					$item->setCount($item->getMaxStackSize());
-				}else{
+				} else{
 					$item->setCount((int) $params[2]);
 				}
 
@@ -313,18 +318,19 @@ class BlockAPI{
 						$output .= "Player is in creative mode.\n";
 						break;
 					}
-					if($item->getID() == 0) {
+					if($item->getID() == 0){
 						$output .= "You cannot give an air block to a player.\n";
 						break;
 					}
 					$player->addItem($item);
-					$output .= "Giving ".$item->getCount()." of ".$item->getName()." (".$item->getID().":".$item->getMetadata().") to ".$player->getUsername()."\n";
-				}else{
+					$output .= "Giving " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $player->getUsername() . "\n";
+				} else{
 					$output .= "Unknown player.\n";
 				}
 
 				break;
 		}
+
 		return $output;
 	}
 
@@ -339,6 +345,7 @@ class BlockAPI{
 		if($send === true){
 			$player->sendInventorySlot($player->slot);
 		}
+
 		return false;
 	}
 
@@ -346,20 +353,20 @@ class BlockAPI{
 
 		$target = $player->level->getBlock($vector);
 		$item = $player->getSlot($player->slot);
-		
+
 		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
 			if($this->server->api->dhandle("player.block.break.bypass", array("player" => $player, "target" => $target, "item" => $item)) !== true){
 				return $this->cancelAction($target, $player, false);
 			}
 		}
-		
+
 		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - $player->getLag() / 1000) + $target->getBreakTime($item, $player) - 0.2) >= microtime(true)){
 			if($this->server->api->dhandle("player.block.break.bypass", array("player" => $player, "target" => $target, "item" => $item)) !== true){
-				return $this->cancelAction($target, $player, false);			
+				return $this->cancelAction($target, $player, false);
 			}
 		}
 		$player->lastBreak = microtime(true);
-		
+
 		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
 			$drops = $target->getDrops($item, $player);
 			if($target->onBreak($item, $player) === false){
@@ -368,17 +375,18 @@ class BlockAPI{
 			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
 				$player->setSlot($player->slot, new Item(AIR, 0, 0));
 			}
-		}else{
+		} else{
 			return $this->cancelAction($target, $player, false);
 		}
-		
-		
+
+
 		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
 				echo "I dropped something\n";
 				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
 			}
 		}
+
 		return false;
 	}
 
@@ -387,21 +395,22 @@ class BlockAPI{
 			return false;
 		}
 
-		$target = $player->level->getBlock($vector);		
+		$target = $player->level->getBlock($vector);
 		$block = $target->getSide($face);
 		if(($player->getGamemode() & 0x01) === 0){
 			$item = $player->getSlot($player->slot);
-		}else{
+		} else{
 			$item = BlockAPI::getItem(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
 		}
-		
+
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
 			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
 				$this->cancelAction($target, $player);
+
 				return $this->cancelAction($block, $player);
 			}
 		}
-		
+
 		if($this->server->api->dhandle("player.block.touch", array("type" => "place", "player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
 			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
 				return $this->cancelAction($block, $player);
@@ -414,7 +423,7 @@ class BlockAPI{
 				return false;
 			}
 		}
-		
+
 		if(($player->gamemode & 0x02) === 0x02){ //Adventure mode!!
 			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
 				return $this->cancelAction($block, $player, false);
@@ -424,42 +433,44 @@ class BlockAPI{
 		if($block->y > 127 or $block->y < 0){
 			return false;
 		}
-		
+
 		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
 			if($item->getCount() <= 0){
 				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
 			}
+
 			return false;
 		}
 
 		if($item->isPlaceable()){
 			$hand = $item->getBlock();
 			$hand->position($block);
-		}elseif($block->getID() === FIRE){
+		} elseif($block->getID() === FIRE){
 			$player->level->setBlock($block, new Block\AirBlock(), true, false, true);
+
 			return false;
-		}else{
+		} else{
 			return $this->cancelAction($block, $player, false);
 		}
-		
+
 		if(!($block->isReplaceable === true or ($hand->getID() === SLAB and $block->getID() === SLAB))){
 			return $this->cancelAction($block, $player, false);
 		}
-		
+
 		if($target->isReplaceable === true){
 			$block = $target;
-			$hand->position($block);			
+			$hand->position($block);
 			//$face = -1;
 		}
-		
+
 		//Implement using Bounding Boxes
 		/*if($hand->isSolid === true and $player->inBlock($block)){
 			return $this->cancelAction($block, $player, false); //Entity in block
 		}*/
-		
+
 		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
 			return $this->cancelAction($block, $player);
-		}elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
+		} elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
 			return $this->cancelAction($block, $player, false);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
@@ -486,7 +497,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){		
+	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){
 		if($delay !== false){
 			$this->scheduleBlockUpdate($pos->getSide(0), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(1), $delay, $type);
@@ -494,7 +505,7 @@ class BlockAPI{
 			$this->scheduleBlockUpdate($pos->getSide(3), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(4), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(5), $delay, $type);
-		}else{
+		} else{
 			$this->blockUpdate($pos->getSide(0), $type);
 			$this->blockUpdate($pos->getSide(1), $type);
 			$this->blockUpdate($pos->getSide(2), $type);
@@ -503,55 +514,58 @@ class BlockAPI{
 			$this->blockUpdate($pos->getSide(5), $type);
 		}
 	}
-	
+
 	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
 		if(!($pos instanceof Block)){
 			$block = $pos->level->getBlock($pos);
-		}else{
+		} else{
 			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
 			$block = $pos->level->getBlock($pos);
 		}
 		if($block === false){
 			return false;
 		}
-		
+
 		$level = $block->onUpdate($type);
 		if($level === BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
 		}
+
 		return $level;
 	}
-	
+
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
 			return false;
 		}
 
-		$index = $pos->x.".".$pos->y.".".$pos->z.".".$pos->level->getName().".".$type;
-		$delay = microtime(true) + $delay * 0.05;		
+		$index = $pos->x . "." . $pos->y . "." . $pos->z . "." . $pos->level->getName() . "." . $type;
+		$delay = microtime(true) + $delay * 0.05;
 		if(!isset($this->scheduledUpdates[$index])){
 			$this->scheduledUpdates[$index] = $pos;
-			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, type, delay) VALUES (".$pos->x.", ".$pos->y.", ".$pos->z.", '".$pos->level->getName()."', ".$type.", ".$delay.");");
+			$this->server->query("INSERT INTO blockUpdates (x, y, z, level, type, delay) VALUES (" . $pos->x . ", " . $pos->y . ", " . $pos->z . ", '" . $pos->level->getName() . "', " . $type . ", " . $delay . ");");
+
 			return true;
 		}
+
 		return false;
 	}
-	
+
 	public function blockUpdateTick(){
 		$time = microtime(true);
 		if(count($this->scheduledUpdates) > 0){
-			$update = $this->server->query("SELECT x,y,z,level,type FROM blockUpdates WHERE delay <= ".$time.";");
+			$update = $this->server->query("SELECT x,y,z,level,type FROM blockUpdates WHERE delay <= " . $time . ";");
 			if($update instanceof \SQLite3Result){
 				$upp = array();
 				while(($up = $update->fetchArray(SQLITE3_ASSOC)) !== false){
-					$index = $up["x"].".".$up["y"].".".$up["z"].".".$up["level"].".".$up["type"];
+					$index = $up["x"] . "." . $up["y"] . "." . $up["z"] . "." . $up["level"] . "." . $up["type"];
 					if(isset($this->scheduledUpdates[$index])){
 						$upp[] = array((int) $up["type"], $this->scheduledUpdates[$index]);
 						unset($this->scheduledUpdates[$index]);
 					}
 				}
-				$this->server->query("DELETE FROM blockUpdates WHERE delay <= ".$time.";");
+				$this->server->query("DELETE FROM blockUpdates WHERE delay <= " . $time . ";");
 				foreach($upp as $b){
 					$this->blockUpdate($b[1], $b[0]);
 				}

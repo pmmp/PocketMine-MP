@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\UPnP;
+
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 
@@ -37,8 +38,9 @@ function RemovePortForward($port){
 			return false;
 		}
 		$com->StaticPortMappingCollection->Remove($port, "UDP");
-	}catch(Exception $e){
+	} catch(Exception $e){
 		return false;
 	}
+
 	return true;
 }

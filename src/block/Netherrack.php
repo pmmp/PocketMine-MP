@@ -24,11 +24,11 @@ class NetherrackBlock extends SolidBlock{
 		parent::__construct(NETHERRACK, 0, "Netherrack");
 		$this->hardness = 2;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.1;
@@ -50,7 +50,7 @@ class NetherrackBlock extends SolidBlock{
 			return array(
 				array(NETHERRACK, 0, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}

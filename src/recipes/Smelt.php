@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Recipes;
+
 use PocketMine;
 
 class Smelt{

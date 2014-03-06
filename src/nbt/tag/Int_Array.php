@@ -20,15 +20,16 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 
 class Int_Array extends NamedNBTTag{
-	
+
 	public function getType(){
 		return NBT\TAG_Int_Array;
 	}
-	
+
 	public function read(NBT $nbt){
 		$this->value = array();
 		$size = $nbt->getInt();
@@ -36,7 +37,7 @@ class Int_Array extends NamedNBTTag{
 			$this->value[] = $nbt->getInt();
 		}
 	}
-	
+
 	public function write(NBT $nbt){
 		$nbt->putInt(count($this->value));
 		foreach($this->value as $v){

@@ -25,13 +25,16 @@ class MelonStemBlock extends FlowableBlock{
 		$this->isActivable = true;
 		$this->hardness = 0;
 	}
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			$down = $this->getSide(0);
-			if($down->getID() === FARMLAND){
-				$this->level->setBlock($block, $this, true, false, true);
-				$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
-				return true;
-			}
+		$down = $this->getSide(0);
+		if($down->getID() === FARMLAND){
+			$this->level->setBlock($block, $this, true, false, true);
+			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -40,33 +43,37 @@ class MelonStemBlock extends FlowableBlock{
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(MELON_SEEDS, 0, mt_rand(0, 2)));
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
-		}elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === BLOCK_UPDATE_RANDOM){
 			if(mt_rand(0, 2) == 1){
 				if($this->meta < 0x07){
 					++$this->meta;
 					$this->level->setBlock($this, $this, true, false, true);
+
 					return BLOCK_UPDATE_RANDOM;
-				}else{
+				} else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
 						if($b->getID() === MELON_BLOCK){
 							return BLOCK_UPDATE_RANDOM;
 						}
 					}
-					$side = $this->getSide(mt_rand(2,5));
+					$side = $this->getSide(mt_rand(2, 5));
 					$d = $side->getSide(0);
 					if($side->getID() === AIR and ($d->getID() === FARMLAND or $d->getID() === GRASS or $d->getID() === DIRT)){
 						$this->level->setBlock($side, new MelonBlock(), true, false, true);
 					}
 				}
 			}
+
 			return BLOCK_UPDATE_RANDOM;
 		}
+
 		return false;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
@@ -74,11 +81,13 @@ class MelonStemBlock extends FlowableBlock{
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}
+
 			return true;
 		}
+
 		return false;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array(MELON_SEEDS, 0, mt_rand(0, 2)),

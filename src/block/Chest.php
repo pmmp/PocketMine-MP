@@ -25,6 +25,7 @@ class ChestBlock extends TransparentBlock{
 		$this->isActivable = true;
 		$this->hardness = 15;
 	}
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
@@ -35,11 +36,11 @@ class ChestBlock extends TransparentBlock{
 
 		$chest = false;
 		$this->meta = $faces[$player->entity->getDirection()];
-		
+
 		for($side = 2; $side <= 5; ++$side){
 			if(($this->meta === 4 or $this->meta === 5) and ($side === 4 or $side === 5)){
 				continue;
-			}elseif(($this->meta === 3 or $this->meta === 2) and ($side === 2 or $side === 3)){
+			} elseif(($this->meta === 3 or $this->meta === 2) and ($side === 2 or $side === 3)){
 				continue;
 			}
 			$c = $this->getSide($side);
@@ -57,7 +58,7 @@ class ChestBlock extends TransparentBlock{
 			"id" => new NBT\Tag\String("id", Tile::CHEST),
 			"x" => new NBT\Tag\Int("x", $this->x),
 			"y" => new NBT\Tag\Int("y", $this->y),
-			"z" =>new NBT\Tag\Int("z",  $this->z)
+			"z" => new NBT\Tag\Int("z", $this->z)
 		));
 		$nbt->Items->setTagType(NBT\Tag_Compound);
 		$tile = new Chest($this->level, $nbt);
@@ -66,47 +67,49 @@ class ChestBlock extends TransparentBlock{
 			$chest->pairWith($tile);
 			$tile->pairWith($chest);
 		}
+
 		return true;
 	}
-	
+
 	public function onBreak(Item $item, Player $player){
 		$t = $this->level->getTile($this);
 		if($t instanceof Chest){
 			$t->unpair();
 		}
 		$this->level->setBlock($this, new AirBlock(), true, true, true);
+
 		return true;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		$top = $this->getSide(1);
 		if($top->isTransparent !== true){
 			return true;
 		}
-	
+
 		$t = $this->level->getTile($this);
 		$chest = false;
 		if($t instanceof Chest){
 			$chest = $t;
-		}else{
+		} else{
 			$nbt = new NBT\Tag\Compound(false, array(
 				"Items" => new NBT\Tag\Enum("Items", array()),
 				"id" => new NBT\Tag\String("id", Tile::CHEST),
 				"x" => new NBT\Tag\Int("x", $this->x),
 				"y" => new NBT\Tag\Int("y", $this->y),
-				"z" =>new NBT\Tag\Int("z",  $this->z)
+				"z" => new NBT\Tag\Int("z", $this->z)
 			));
 			$nbt->Items->setTagType(NBT\Tag_Compound);
 			$chest = new Chest($this->level, $nbt);
 		}
-		
-		
-		
+
+
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
-		
-		$chest->openInventory($player);		
+
+		$chest->openInventory($player);
+
 		return true;
 	}
 
@@ -123,6 +126,7 @@ class ChestBlock extends TransparentBlock{
 				}
 			}
 		}
+
 		return $drops;
 	}
 }

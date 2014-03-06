@@ -20,35 +20,36 @@
 */
 
 namespace PocketMine\Math;
+
 use PocketMine;
 
 class Matrix implements \ArrayAccess{
 	private $matrix = array();
 	private $rows = 0;
 	private $columns = 0;
-	
+
 	public function offsetExists($offset){
 		return isset($this->matrix[(int) $offset]);
 	}
-	
+
 	public function offsetGet($offset){
 		return $this->matrix[(int) $offset];
 	}
-	
+
 	public function offsetSet($offset, $value){
 		$this->matrix[(int) $offset] = $value;
 	}
-	
+
 	public function offsetUnset($offset){
 		unset($this->matrix[(int) $offset]);
 	}
-	
+
 	public function __construct($rows, $columns, array $set = array()){
 		$this->rows = max(1, (int) $rows);
 		$this->columns = max(1, (int) $columns);
 		$this->set($set);
 	}
-	
+
 	public function set(array $m){
 		for($r = 0; $r < $this->rows; ++$r){
 			$this->matrix[$r] = array();
@@ -57,34 +58,36 @@ class Matrix implements \ArrayAccess{
 			}
 		}
 	}
-	
+
 	public function getRows(){
 		return ($this->rows);
 	}
-	
+
 	public function getColumns(){
 		return ($this->columns);
 	}
-	
+
 	public function setElement($row, $column, $value){
 		if($row > $this->rows or $row < 0 or $column > $this->columns or $column < 0){
 			return false;
 		}
 		$this->matrix[(int) $row][(int) $column] = $value;
+
 		return true;
 	}
-	
+
 	public function getElement($row, $column){
 		if($row > $this->rows or $row < 0 or $column > $this->columns or $column < 0){
 			return false;
 		}
+
 		return $this->matrix[(int) $row][(int) $column];
 	}
-	
+
 	public function isSquare(){
 		return $this->rows === $this->columns;
 	}
-	
+
 	public function add(Matrix $matrix){
 		if($this->rows !== $matrix->getRows() or $this->columns !== $matrix->getColumns()){
 			return false;
@@ -95,9 +98,10 @@ class Matrix implements \ArrayAccess{
 				$result->setElement($r, $c, $this->matrix[$r][$c] + $matrix->getElement($r, $c));
 			}
 		}
+
 		return $result;
 	}
-	
+
 	public function substract(Matrix $matrix){
 		if($this->rows !== $matrix->getRows() or $this->columns !== $matrix->getColumns()){
 			return false;
@@ -108,9 +112,10 @@ class Matrix implements \ArrayAccess{
 				$result->setElement($r, $c, $this->matrix[$r][$c] - $matrix->getElement($r, $c));
 			}
 		}
+
 		return $result;
 	}
-	
+
 	public function multiplyScalar($number){
 		$result = clone $this;
 		for($r = 0; $r < $this->rows; ++$r){
@@ -118,10 +123,11 @@ class Matrix implements \ArrayAccess{
 				$result->setElement($r, $c, $this->matrix[$r][$c] * $number);
 			}
 		}
+
 		return $result;
 	}
-	
-	
+
+
 	public function divideScalar($number){
 		$result = clone $this;
 		for($r = 0; $r < $this->rows; ++$r){
@@ -129,9 +135,10 @@ class Matrix implements \ArrayAccess{
 				$result->setElement($r, $c, $this->matrix[$r][$c] / $number);
 			}
 		}
+
 		return $result;
 	}
-	
+
 	public function transpose(){
 		$result = new Matrix($this->columns, $this->rows);
 		for($r = 0; $r < $this->rows; ++$r){
@@ -139,9 +146,10 @@ class Matrix implements \ArrayAccess{
 				$result->setElement($c, $r, $this->matrix[$r][$c]);
 			}
 		}
+
 		return $result;
 	}
-	
+
 	//Naive Matrix product, O(n^3)
 	public function product(Matrix $matrix){
 		if($this->columns !== $matrix->getRows()){
@@ -158,10 +166,11 @@ class Matrix implements \ArrayAccess{
 				$result->setElement($i, $j, $sum);
 			}
 		}
+
 		return $result;
 	}
-	
-	
+
+
 	//Computation of the determinant of 2x2 and 3x3 matrices
 	public function determinant(){
 		if($this->isSquare() !== true){
@@ -175,16 +184,18 @@ class Matrix implements \ArrayAccess{
 			case 3:
 				return $this->matrix[0][0] * $this->matrix[1][1] * $this->matrix[2][2] + $this->matrix[0][1] * $this->matrix[1][2] * $this->matrix[2][0] + $this->matrix[0][2] * $this->matrix[1][0] * $this->matrix[2][1] - $this->matrix[2][0] * $this->matrix[1][1] * $this->matrix[0][2] - $this->matrix[2][1] * $this->matrix[1][2] * $this->matrix[0][0] - $this->matrix[2][2] * $this->matrix[1][0] * $this->matrix[0][1];
 		}
+
 		return false;
 	}
-	
-	
+
+
 	public function __toString(){
 		$s = "";
 		for($r = 0; $r < $this->rows; ++$r){
-			$s .= implode(",", $this->matrix[$r]).";";
+			$s .= implode(",", $this->matrix[$r]) . ";";
 		}
-		return "Matrix({$this->rows}x{$this->columns};".substr($s, 0, -1).")";
+
+		return "Matrix({$this->rows}x{$this->columns};" . substr($s, 0, -1) . ")";
 	}
 
 }

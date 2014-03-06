@@ -20,14 +20,14 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 
 
 abstract class Info{
 
 	const CURRENT_PROTOCOL = 14;
-	
-	
+
 
 	const PING_PACKET = 0x00;
 

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine;
+
 use PocketMine\ServerAPI as ServerAPI;
 
 class TimeAPI{
@@ -30,6 +31,7 @@ class TimeAPI{
 		"sunrise" => 17800,
 	);
 	private $server;
+
 	function __construct(){
 		$this->server = ServerAPI::request();
 	}
@@ -49,19 +51,19 @@ class TimeAPI{
 				$p = strtolower(array_shift($params));
 				switch($p){
 					case "check":
-						$output .= "Time: ".$this->getDate($level).", ".$this->getPhase($level)." (".$this->get(true, $level).")\n";
+						$output .= "Time: " . $this->getDate($level) . ", " . $this->getPhase($level) . " (" . $this->get(true, $level) . ")\n";
 						break;
 					case "add":
-						$output .= "Set the time to ".$this->add(array_shift($params), $level)."\n";
+						$output .= "Set the time to " . $this->add(array_shift($params), $level) . "\n";
 						break;
 					case "set":
-						$output .= "Set the time to ".$this->set(array_shift($params), $level)."\n";
+						$output .= "Set the time to " . $this->set(array_shift($params), $level) . "\n";
 						break;
 					case "sunrise":
 					case "day":
 					case "sunset":
 					case "night":
-						$output .= "Set the time to ".$this->set($p, $level)."\n";
+						$output .= "Set the time to " . $this->set($p, $level) . "\n";
 						break;
 					default:
 						$output .= "Usage: /time <check|set|add> [time]\n";
@@ -69,18 +71,22 @@ class TimeAPI{
 				}
 				break;
 		}
+
 		return $output;
 	}
 
 	public function night(){
 		return $this->set("night");
 	}
+
 	public function day(){
 		return $this->set("day");
 	}
+
 	public function sunrise(){
 		return $this->set("sunrise");
 	}
+
 	public function sunset(){
 		return $this->set("sunset");
 	}
@@ -89,7 +95,8 @@ class TimeAPI{
 		if(!($level instanceof Level)){
 			$level = $this->server->api->level->getDefault();
 		}
-		return $raw === true ? $level->getTime():abs($level->getTime()) % 19200;
+
+		return $raw === true ? $level->getTime() : abs($level->getTime()) % 19200;
 	}
 
 	public function add($time, $level = false){
@@ -100,21 +107,23 @@ class TimeAPI{
 	}
 
 	public function getDate($time = false){
-		$time = !is_integer($time) ? $this->get(false, $time):$time;
-		return str_pad(strval((floor($time /800) + 6) % 24), 2, "0", STR_PAD_LEFT).":".str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
+		$time = !is_integer($time) ? $this->get(false, $time) : $time;
+
+		return str_pad(strval((floor($time / 800) + 6) % 24), 2, "0", STR_PAD_LEFT) . ":" . str_pad(strval(floor(($time % 800) / 13.33)), 2, "0", STR_PAD_LEFT);
 	}
 
 	public function getPhase($time = false){
-		$time = !is_integer($time) ? $this->get(false, $time):$time;
+		$time = !is_integer($time) ? $this->get(false, $time) : $time;
 		if($time < TimeAPI::$phases["sunset"]){
 			$time = "day";
-		}elseif($time < TimeAPI::$phases["night"]){
+		} elseif($time < TimeAPI::$phases["night"]){
 			$time = "sunset";
-		}elseif($time < TimeAPI::$phases["sunrise"]){
+		} elseif($time < TimeAPI::$phases["sunrise"]){
 			$time = "night";
-		}else{
+		} else{
 			$time = "sunrise";
 		}
+
 		return $time;
 	}
 
@@ -124,9 +133,10 @@ class TimeAPI{
 		}
 		if(is_string($time) and isset(TimeAPI::$phases[$time])){
 			$level->setTime(TimeAPI::$phases[$time]);
-		}else{
+		} else{
 			$level->setTime((int) $time);
 		}
+
 		return $level->getTime();
 	}
 

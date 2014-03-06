@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class ContainerClosePacket extends DataPacket{
 	public $windowid;
-	
+
 	public function pid(){
 		return Info::CONTAINER_CLOSE_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->windowid = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

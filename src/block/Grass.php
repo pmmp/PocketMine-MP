@@ -25,6 +25,7 @@ class GrassBlock extends SolidBlock{
 		$this->isActivable = true;
 		$this->hardness = 3;
 	}
+
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array(DIRT, 0, 1),
@@ -37,14 +38,17 @@ class GrassBlock extends SolidBlock{
 				$item->count--;
 			}
 			TallGrassObject::growGrass($this->level, $this, new Random(), 8, 2);
+
 			return true;
-		}elseif($item->isHoe()){
+		} elseif($item->isHoe()){
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}
 			$this->level->setBlock($this, new FarmlandBlock());
+
 			return true;
 		}
+
 		return false;
 	}
 }

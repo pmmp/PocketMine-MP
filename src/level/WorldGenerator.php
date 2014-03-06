@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level;
+
 use PocketMine;
 use PocketMine\Level\Generator\Generator as Generator;
 use PocketMine\Utils\Utils as Utils;
@@ -29,13 +30,14 @@ use PocketMine\Utils\Config as Config;
 
 class WorldGenerator{
 	private $seed, $level, $path, $random, $generator, $height;
+
 	public function __construct(Generator $generator, $name, $seed = false, $height = 8){
-		$this->seed = $seed !== false ? (int) $seed:Utils::readInt(Utils::getRandomBytes(4, false));
+		$this->seed = $seed !== false ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->random = new Random($this->seed);
 		$this->height = (int) $height;
-		$this->path = \PocketMine\DATA."worlds/".$name."/";
+		$this->path = \PocketMine\DATA . "worlds/" . $name . "/";
 		$this->generator = $generator;
-		$level = new LevelFormat($this->path."level.pmf", array(
+		$level = new LevelFormat($this->path . "level.pmf", array(
 			"name" => $name,
 			"seed" => $this->seed,
 			"time" => 0,
@@ -47,22 +49,22 @@ class WorldGenerator{
 			"generatorSettings" => $this->generator->getSettings(),
 			"extra" => ""
 		));
-		$blockUpdates = new Config($this->path."bupdates.yml", Config::YAML);
+		$blockUpdates = new Config($this->path . "bupdates.yml", Config::YAML);
 		$this->level = new Level($level, $name);
 	}
-	
+
 	public function generate(){
 		$this->generator->init($this->level, $this->random);
-		
+
 		for($Z = 7; $Z <= 9; ++$Z){
 			for($X = 7; $X <= 9; ++$X){
 				$this->level->level->loadChunk($X, $Z);
 			}
 		}
-		
+
 		$this->level->setSpawn($this->generator->getSpawn());
 	}
-	
+
 	public function close(){
 		$this->level->close();
 	}

@@ -24,26 +24,28 @@ class TorchBlock extends FlowableBlock{
 		parent::__construct(TORCH, $meta, "Torch");
 		$this->hardness = 0;
 	}
-	
+
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			$side = $this->getMetadata();
 			$faces = array(
-					1 => 4,
-					2 => 5,
-					3 => 2,
-					4 => 3,
-					5 => 0,
-					6 => 0,
-					0 => 0,
+				1 => 4,
+				2 => 5,
+				3 => 2,
+				4 => 3,
+				5 => 0,
+				6 => 0,
+				0 => 0,
 			);
 
 			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === FENCE)){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, 0, 1));
 				$this->level->setBlock($this, new AirBlock(), true, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
 
@@ -58,14 +60,18 @@ class TorchBlock extends FlowableBlock{
 			);
 			$this->meta = $faces[$face];
 			$this->level->setBlock($block, $this, true, false, true);
+
 			return true;
-		}elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === FENCE){
+		} elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === FENCE){
 			$this->meta = 0;
 			$this->level->setBlock($block, $this, true, false, true);
+
 			return true;
 		}
+
 		return false;
 	}
+
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),

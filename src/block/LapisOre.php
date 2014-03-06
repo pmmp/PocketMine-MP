@@ -24,11 +24,11 @@ class LapisOreBlock extends SolidBlock{
 		parent::__construct(LAPIS_ORE, 0, "Lapis Ore");
 		$this->hardness = 15;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.6;
@@ -46,9 +46,9 @@ class LapisOreBlock extends SolidBlock{
 			return array(
 				array(DYE, 4, mt_rand(4, 8)),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}
-	
+
 }

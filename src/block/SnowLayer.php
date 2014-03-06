@@ -27,32 +27,37 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->isFullBlock = false;
 		$this->hardness = 0.5;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down instanceof SolidBlock){
 			$this->level->setBlock($block, $this, true, false, true);
+
 			return true;
 		}
+
 		return false;
 	}
-	
+
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
 				$this->level->setBlock($this, new AirBlock(), true, false, true);
+
 				return BLOCK_UPDATE_NORMAL;
 			}
 		}
+
 		return false;
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isShovel() !== false){
 			return array(
 				array(SNOWBALL, 0, 1),
 			);
 		}
+
 		return array();
 	}
 }

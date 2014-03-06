@@ -20,22 +20,23 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class EntityEventPacket extends DataPacket{
 	public $eid;
 	public $event;
-	
+
 	public function pid(){
 		return Info::ENTITY_EVENT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->event = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

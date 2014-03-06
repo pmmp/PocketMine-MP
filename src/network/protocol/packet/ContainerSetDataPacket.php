@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -27,15 +28,15 @@ class ContainerSetDataPacket extends DataPacket{
 	public $windowid;
 	public $property;
 	public $value;
-	
+
 	public function pid(){
 		return Info::CONTAINER_SET_DATA_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->windowid);

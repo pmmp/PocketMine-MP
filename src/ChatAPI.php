@@ -20,15 +20,17 @@
 */
 
 namespace PocketMine;
+
 use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Player as Player;
 
 class ChatAPI{
 	private $server;
+
 	function __construct(){
 		$this->server = ServerAPI::request();
 	}
-	
+
 	public function init(){
 		$this->server->api->console->register("tell", "<player> <private message ...>", array($this, "commandHandler"));
 		$this->server->api->console->register("me", "<action ...>", array($this, "commandHandler"));
@@ -38,15 +40,15 @@ class ChatAPI{
 		$this->server->api->console->alias("msg", "tell");
 	}
 
-    /**
-     * @param string $cmd
-     * @param array $params
-     * @param string $issuer
-     * @param string $alias
-     *
-     * @return string
-     */
-    public function commandHandler($cmd, $params, $issuer, $alias){
+	/**
+	 * @param string $cmd
+	 * @param array  $params
+	 * @param string $issuer
+	 * @param string $alias
+	 *
+	 * @return string
+	 */
+	public function commandHandler($cmd, $params, $issuer, $alias){
 		$output = "";
 		switch($cmd){
 			case "say":
@@ -55,20 +57,20 @@ class ChatAPI{
 					$output .= "Usage: /say <message>\n";
 					break;
 				}
-				$sender = ($issuer instanceof Player) ? "Server":ucfirst($issuer);
-				$this->server->api->chat->broadcast("[$sender] ".$s);
+				$sender = ($issuer instanceof Player) ? "Server" : ucfirst($issuer);
+				$this->server->api->chat->broadcast("[$sender] " . $s);
 				break;
 			case "me":
 				if(!($issuer instanceof Player)){
 					if($issuer === "rcon"){
 						$sender = "Rcon";
-					}else{
+					} else{
 						$sender = ucfirst($issuer);
 					}
-				}else{
+				} else{
 					$sender = $issuer->getUsername();
 				}
-				$this->broadcast("* $sender ".implode(" ", $params));
+				$this->broadcast("* $sender " . implode(" ", $params));
 				break;
 			case "tell":
 				if(!isset($params[0]) or !isset($params[1])){
@@ -77,55 +79,56 @@ class ChatAPI{
 				}
 				if(!($issuer instanceof Player)){
 					$sender = ucfirst($issuer);
-				}else{
+				} else{
 					$sender = $issuer->getUsername();
 				}
 				$n = array_shift($params);
 				$target = Player::get($n);
 				if($target instanceof Player){
 					$target = $target->getUsername();
-				}else{
+				} else{
 					$target = strtolower($n);
 					if($target === "server" or $target === "console" or $target === "rcon"){
 						$target = "Console";
 					}
 				}
 				$mes = implode(" ", $params);
-				$output .= "[me -> ".$target."] ".$mes."\n";
+				$output .= "[me -> " . $target . "] " . $mes . "\n";
 				if($target !== "Console" and $target !== "Rcon"){
-					$this->sendTo(false, "[".$sender." -> me] ".$mes, $target);
+					$this->sendTo(false, "[" . $sender . " -> me] " . $mes, $target);
 				}
 				if($target === "Console" or $sender === "Console"){
-					console("[INFO] [".$sender." -> ".$target."] ".$mes);
+					console("[INFO] [" . $sender . " -> " . $target . "] " . $mes);
 				}
 				break;
 		}
+
 		return $output;
 	}
 
-    /**
-     * @param string $message
-     */
-    public function broadcast($message){
+	/**
+	 * @param string $message
+	 */
+	public function broadcast($message){
 		$this->send(false, $message);
 	}
 
-    /**
-     * @param string $owner
-     * @param string $text
-     * @param mixed $player Can be either Player object or string username. Boolean false for broadcast.
-     */
-    public function sendTo($owner, $text, $player){
+	/**
+	 * @param string $owner
+	 * @param string $text
+	 * @param mixed  $player Can be either Player object or string username. Boolean false for broadcast.
+	 */
+	public function sendTo($owner, $text, $player){
 		$this->send($owner, $text, array($player));
 	}
 
-    /**
-     * @param mixed $owner Can be either Player object or string username. Boolean false for broadcast.
-     * @param string $text
-     * @param $whitelist
-     * @param $blacklist
-     */
-    public function send($owner, $text, $whitelist = false, $blacklist = false){
+	/**
+	 * @param mixed  $owner Can be either Player object or string username. Boolean false for broadcast.
+	 * @param string $text
+	 * @param        $whitelist
+	 * @param        $blacklist
+	 */
+	public function send($owner, $text, $whitelist = false, $blacklist = false){
 		$message = array(
 			"player" => $owner,
 			"message" => $text,
@@ -133,14 +136,14 @@ class ChatAPI{
 		if($owner !== false){
 			if($owner instanceof Player){
 				if($whitelist === false){
-					console("[INFO] <".$owner->getUsername()."> ".$text);
+					console("[INFO] <" . $owner->getUsername() . "> " . $text);
 				}
-			}else{
+			} else{
 				if($whitelist === false){
-					console("[INFO] <".$owner."> ".$text);
+					console("[INFO] <" . $owner . "> " . $text);
 				}
 			}
-		}else{
+		} else{
 			if($whitelist === false){
 				console("[INFO] $text");
 			}

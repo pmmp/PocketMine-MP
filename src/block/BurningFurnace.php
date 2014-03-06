@@ -40,15 +40,17 @@ class BurningFurnaceBlock extends SolidBlock{
 			"id" => new NBT\Tag\String("id", Tile::FURNACE),
 			"x" => new NBT\Tag\Int("x", $this->x),
 			"y" => new NBT\Tag\Int("y", $this->y),
-			"z" =>new NBT\Tag\Int("z",  $this->z)			
+			"z" => new NBT\Tag\Int("z", $this->z)
 		));
 		$nbt->Items->setTagType(NBT\Tag_Compound);
 		$furnace = new Furnace($this->level, $nbt);
+
 		return true;
 	}
-	
+
 	public function onBreak(Item $item, Player $player){
 		$this->level->setBlock($this, new AirBlock(), true, true, true);
+
 		return true;
 	}
 
@@ -58,30 +60,31 @@ class BurningFurnaceBlock extends SolidBlock{
 		$furnace = false;
 		if($t instanceof Furnace){
 			$furnace = $t;
-		}else{
+		} else{
 			$nbt = new NBT\Tag\Compound(false, array(
 				"Items" => new NBT\Tag\Enum("Items", array()),
 				"id" => new NBT\Tag\String("id", Tile::FURNACE),
 				"x" => new NBT\Tag\Int("x", $this->x),
 				"y" => new NBT\Tag\Int("y", $this->y),
-				"z" =>new NBT\Tag\Int("z",  $this->z)			
+				"z" => new NBT\Tag\Int("z", $this->z)
 			));
 			$nbt->Items->setTagType(NBT\Tag_Compound);
 			$furnace = new Furnace($this->level, $nbt);
 		}
-		
+
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}
-		
+
 		$furnace->openInventory($player);
+
 		return true;
 	}
-	
+
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.7;
@@ -97,7 +100,7 @@ class BurningFurnaceBlock extends SolidBlock{
 				return 17.5;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if($item->isPickaxe() >= 1){
@@ -112,6 +115,7 @@ class BurningFurnaceBlock extends SolidBlock{
 				}
 			}
 		}
+
 		return $drops;
 	}
 }

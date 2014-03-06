@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class SetHealthPacket extends DataPacket{
 	public $health;
-	
+
 	public function pid(){
 		return Info::SET_HEALTH_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->health = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->health);

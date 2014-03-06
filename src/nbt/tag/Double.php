@@ -20,19 +20,20 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 
 class Double extends NamedNBTTag{
-	
+
 	public function getType(){
 		return NBT\TAG_Double;
 	}
-	
+
 	public function read(NBT $nbt){
 		$this->value = $nbt->getDouble();
 	}
-	
+
 	public function write(NBT $nbt){
 		$nbt->putDouble($this->value);
 	}

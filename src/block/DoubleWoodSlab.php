@@ -35,7 +35,7 @@ class DoubleWoodSlabBlock extends SolidBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isAxe()){
 			case 5:
 				return 0.4;
@@ -51,11 +51,11 @@ class DoubleWoodSlabBlock extends SolidBlock{
 				return 3;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		return array(
 			array(WOOD_SLAB, $this->meta & 0x07, 2),
 		);
 	}
-	
+
 }

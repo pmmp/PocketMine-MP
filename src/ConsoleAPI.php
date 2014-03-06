@@ -20,12 +20,14 @@
 */
 
 namespace PocketMine;
+
 use PocketMine\ServerAPI as ServerAPI;
 use PocketMine\Utils\TextFormat as TextFormat;
 use PocketMine\Player as Player;
 
 class ConsoleAPI{
 	private $loop, $server, $event, $help, $cmds, $alias;
+
 	function __construct(){
 		$this->help = array();
 		$this->cmds = array();
@@ -59,103 +61,105 @@ class ConsoleAPI{
 	}
 
 	public function defaultCommands($cmd, $params, $issuer, $alias){
-			$output = "";
-				switch($cmd){
-					case "defaultgamemode":
-						$gms = array(
-							"0" => SURVIVAL,
-							"survival" => SURVIVAL,
-							"s" => SURVIVAL,
-							"1" => CREATIVE,
-							"creative" => CREATIVE,
-							"c" => CREATIVE,
-							"2" => ADVENTURE,
-							"adventure" => ADVENTURE,
-							"a" => ADVENTURE,
-							"3" => VIEW,
-							"view" => VIEW,
-							"viewer" => VIEW,
-							"spectator" => VIEW,
-							"v" => VIEW,
-						);
-						if(!isset($gms[strtolower($params[0])])){
-							$output .= "Usage: /$cmd <mode>\n";
-							break;
-						}
-						$this->server->api->setProperty("gamemode", $gms[strtolower($params[0])]);
-						$output .= "Default Gamemode is now ".strtoupper($this->server->getGamemode()).".\n";
-						break;
-					case "status":
-						if(!($issuer instanceof Player) and $issuer === "console"){
-							$this->server->debugInfo(true);
-						}
-						$info = $this->server->debugInfo();
-						$output .= "TPS: ".$info["tps"].", Memory usage: ".$info["memory_usage"]." (Peak ".$info["memory_peak_usage"].")\n";
-						break;
-					case "update-done":
-						$this->server->api->setProperty("last-update", time());
-						break;
-					case "stop":
-						$this->loop->stop = true;
-						$output .= "Stopping the server\n";
-						$this->server->close();
-						break;
-					case "difficulty":
-						$s = trim(array_shift($params));
-						if($s === "" or (((int) $s) > 3 and ((int) $s) < 0)){
-							$output .= "Usage: /difficulty <0|1|2|3>\n";
-							break;
-						}
-						$this->server->api->setProperty("difficulty", (int) $s);
-						$output .= "Difficulty changed to ".$this->server->difficulty."\n";
-						break;
-					case "?":
-						if($issuer !== "console" and $issuer !== "rcon"){
-							break;
-						}
-					case "help":
-						if(isset($params[0]) and !is_numeric($params[0])){
-							$c = trim(strtolower($params[0]));
-							if(isset($this->help[$c]) or isset($this->alias[$c])){
-								$c = isset($this->help[$c]) ? $c : $this->alias[$c];
-								if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
-									break;
-								}
-								$output .= "Usage: /$c ".$this->help[$c]."\n";
-								break;
-							}
-						}
-						$cmds = array();
-						foreach($this->help as $c => $h){
-							if($this->server->api->dhandle("console.command.".$c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
-								continue;
-							}
-							$cmds[$c] = $h;
-						}
-						
-						$max = ceil(count($cmds) / 5);
-						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
-						$output .= TextFormat::RED."-".TextFormat::RESET." Showing help page $page of $max (/help <page>) ".TextFormat::RED."-".TextFormat::RESET."\n";
-						$current = 1;
-						foreach($cmds as $c => $h){
-							$curpage = (int) ceil($current / 5);
-							if($curpage === $page){
-								$output .= "/$c ".$h."\n";
-							}elseif($curpage > $page){
-								break;
-							}
-							++$current;
-						}
-						break;
-					default:
-						$output .= "Command doesn't exist! Use /help\n";
-						break;
+		$output = "";
+		switch($cmd){
+			case "defaultgamemode":
+				$gms = array(
+					"0" => SURVIVAL,
+					"survival" => SURVIVAL,
+					"s" => SURVIVAL,
+					"1" => CREATIVE,
+					"creative" => CREATIVE,
+					"c" => CREATIVE,
+					"2" => ADVENTURE,
+					"adventure" => ADVENTURE,
+					"a" => ADVENTURE,
+					"3" => VIEW,
+					"view" => VIEW,
+					"viewer" => VIEW,
+					"spectator" => VIEW,
+					"v" => VIEW,
+				);
+				if(!isset($gms[strtolower($params[0])])){
+					$output .= "Usage: /$cmd <mode>\n";
+					break;
 				}
+				$this->server->api->setProperty("gamemode", $gms[strtolower($params[0])]);
+				$output .= "Default Gamemode is now " . strtoupper($this->server->getGamemode()) . ".\n";
+				break;
+			case "status":
+				if(!($issuer instanceof Player) and $issuer === "console"){
+					$this->server->debugInfo(true);
+				}
+				$info = $this->server->debugInfo();
+				$output .= "TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . ")\n";
+				break;
+			case "update-done":
+				$this->server->api->setProperty("last-update", time());
+				break;
+			case "stop":
+				$this->loop->stop = true;
+				$output .= "Stopping the server\n";
+				$this->server->close();
+				break;
+			case "difficulty":
+				$s = trim(array_shift($params));
+				if($s === "" or (((int) $s) > 3 and ((int) $s) < 0)){
+					$output .= "Usage: /difficulty <0|1|2|3>\n";
+					break;
+				}
+				$this->server->api->setProperty("difficulty", (int) $s);
+				$output .= "Difficulty changed to " . $this->server->difficulty . "\n";
+				break;
+			case "?":
+				if($issuer !== "console" and $issuer !== "rcon"){
+					break;
+				}
+			case "help":
+				if(isset($params[0]) and !is_numeric($params[0])){
+					$c = trim(strtolower($params[0]));
+					if(isset($this->help[$c]) or isset($this->alias[$c])){
+						$c = isset($this->help[$c]) ? $c : $this->alias[$c];
+						if($this->server->api->dhandle("console.command." . $c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
+							break;
+						}
+						$output .= "Usage: /$c " . $this->help[$c] . "\n";
+						break;
+					}
+				}
+				$cmds = array();
+				foreach($this->help as $c => $h){
+					if($this->server->api->dhandle("console.command." . $c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
+						continue;
+					}
+					$cmds[$c] = $h;
+				}
+
+				$max = ceil(count($cmds) / 5);
+				$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))) : 1);
+				$output .= TextFormat::RED . "-" . TextFormat::RESET . " Showing help page $page of $max (/help <page>) " . TextFormat::RED . "-" . TextFormat::RESET . "\n";
+				$current = 1;
+				foreach($cmds as $c => $h){
+					$curpage = (int) ceil($current / 5);
+					if($curpage === $page){
+						$output .= "/$c " . $h . "\n";
+					} elseif($curpage > $page){
+						break;
+					}
+					++$current;
+				}
+				break;
+			default:
+				$output .= "Command doesn't exist! Use /help\n";
+				break;
+		}
+
 		return $output;
 	}
 
 	public function alias($alias, $cmd){
 		$this->alias[strtolower(trim($alias))] = trim($cmd);
+
 		return true;
 	}
 
@@ -168,7 +172,7 @@ class ConsoleAPI{
 		$this->help[$cmd] = $help;
 		ksort($this->help, SORT_NATURAL | SORT_FLAG_CASE);
 	}
-	
+
 	public function run($line = "", $issuer = "console", $alias = false){
 		if($line != ""){
 			$output = "";
@@ -179,14 +183,14 @@ class ConsoleAPI{
 			$cmd = strtolower(substr($line, 0, $end));
 			$params = (string) substr($line, $end + 1);
 			if(isset($this->alias[$cmd])){
-				return $this->run($this->alias[$cmd] . ($params !== "" ? " " .$params:""), $issuer, $cmd);
+				return $this->run($this->alias[$cmd] . ($params !== "" ? " " . $params : ""), $issuer, $cmd);
 			}
 			if($issuer instanceof Player){
-				console("[DEBUG] ".TextFormat::AQUA.$issuer->getUsername().TextFormat::RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
-			}else{
-				console("[DEBUG] ".TextFormat::YELLOW."*".$issuer.TextFormat::RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
+				console("[DEBUG] " . TextFormat::AQUA . $issuer->getUsername() . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
+			} else{
+				console("[DEBUG] " . TextFormat::YELLOW . "*" . $issuer . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
 			}
-			
+
 			if(preg_match_all('#@([@a-z]{1,})#', $params, $matches, PREG_OFFSET_CAPTURE) > 0){
 				$offsetshift = 0;
 				foreach($matches[1] as $selector){
@@ -199,13 +203,13 @@ class ConsoleAPI{
 						case "u":
 						case "player":
 						case "username":
-							$p = ($issuer instanceof Player) ? $issuer->getUsername():$issuer;
+							$p = ($issuer instanceof Player) ? $issuer->getUsername() : $issuer;
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
 						case "w":
 						case "world":
-							$p = ($issuer instanceof Player) ? $issuer->level->getName():$this->server->api->level->getDefault()->getName();
+							$p = ($issuer instanceof Player) ? $issuer->level->getName() : $this->server->api->level->getDefault()->getName();
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
@@ -215,17 +219,18 @@ class ConsoleAPI{
 								if($this->server->api->ban->isOp($issuer->getUsername())){
 									$output = "";
 									foreach(Player::getAll() as $p){
-										$output .= $this->run($cmd . " ". substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+										$output .= $this->run($cmd . " " . substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 									}
-								}else{
+								} else{
 									$issuer->sendChat("You don't have permissions to use this command.\n");
 								}
-							}else{
+							} else{
 								$output = "";
 								foreach(Player::getAll() as $p){
-									$output .= $this->run($cmd . " ". substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+									$output .= $this->run($cmd . " " . substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 								}
 							}
+
 							return $output;
 						case "r":
 						case "random":
@@ -238,7 +243,7 @@ class ConsoleAPI{
 							if(count($l) === 0){
 								return;
 							}
-							
+
 							$p = $l[mt_rand(0, count($l) - 1)]->getUsername();
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
@@ -250,21 +255,23 @@ class ConsoleAPI{
 			if(count($params) === 1 and $params[0] === ""){
 				$params = array();
 			}
-			
-			if(($d1 = $this->server->api->dhandle("console.command.".$cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false
-			or ($d2 = $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false){
+
+			if(($d1 = $this->server->api->dhandle("console.command." . $cmd, array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false
+				or ($d2 = $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false
+			){
 				$output = "You don't have permissions to use this command.\n";
-			}elseif($d1 !== true and (!isset($d2) or $d2 !== true)){
+			} elseif($d1 !== true and (!isset($d2) or $d2 !== true)){
 				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
 					$output = @call_user_func($this->cmds[$cmd], $cmd, $params, $issuer, $alias);
-				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
+				} elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
 					$output = $this->defaultCommands($cmd, $params, $issuer, $alias);
 				}
 			}
-				
+
 			if($output != "" and ($issuer instanceof Player)){
 				$issuer->sendChat(trim($output));
 			}
+
 			return $output;
 		}
 	}
@@ -280,10 +287,10 @@ class ConsoleAPI{
 			if($output != ""){
 				$mes = explode("\n", trim($output));
 				foreach($mes as $m){
-					console("[CMD] ".$m);	
+					console("[CMD] " . $m);
 				}
 			}
-		}else{
+		} else{
 			$this->loop->notify();
 		}
 	}
@@ -296,6 +303,7 @@ class ConsoleLoop extends \Thread{
 	public $base;
 	public $ev;
 	public $fp;
+
 	public function __construct(){
 		$this->line = false;
 		$this->stop = false;
@@ -309,12 +317,13 @@ class ConsoleLoop extends \Thread{
 	private function readLine(){
 		if($this->fp){
 			$line = trim(fgets($this->fp));
-		}else{
+		} else{
 			$line = trim(readline(""));
 			if($line != ""){
-				readline_add_history( $line );
+				readline_add_history($line);
 			}
 		}
+
 		return $line;
 	}
 

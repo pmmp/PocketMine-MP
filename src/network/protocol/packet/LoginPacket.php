@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -29,21 +30,21 @@ class LoginPacket extends DataPacket{
 	public $protocol2;
 	public $clientId;
 	public $loginData;
-	
+
 	public function pid(){
 		return Info::LOGIN_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->username = $this->getString();
 		$this->protocol1 = $this->getInt();
 		$this->protocol2 = $this->getInt();
 		$this->clientId = $this->getInt();
 		$this->loginData = $this->getString();
-	}	
-	
+	}
+
 	public function encode(){
-		
+
 	}
 
 }

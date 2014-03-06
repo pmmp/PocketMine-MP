@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 use PocketMine\Utils\Utils as Utils;
@@ -36,15 +37,15 @@ class AddPlayerPacket extends DataPacket{
 	public $unknown1;
 	public $unknown2;
 	public $metadata;
-	
+
 	public function pid(){
 		return Info::ADD_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putLong($this->clientID);

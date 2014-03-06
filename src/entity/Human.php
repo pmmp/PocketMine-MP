@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Entity;
+
 use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\BlockAPI as BlockAPI;
@@ -32,13 +33,13 @@ use PocketMine\Event\Event as Event;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent as EntityInventoryChangeEvent;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
-	
+
 	protected $nameTag = "TESTIFICATE";
 	protected $inventory = array();
 	public $slot;
 	protected $hotbar = array();
 	protected $armor = array();
-	
+
 	protected function initEntity(){
 		if(isset($this->namedtag->NameTag)){
 			$this->nameTag = $this->namedtag->NameTag;
@@ -50,22 +51,22 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			2 => BlockAPI::getItem(AIR, 0, 0),
 			3 => BlockAPI::getItem(AIR, 0, 0)
 		);
-				
+
 		foreach($nbt->Inventory as $item){
 			if($item->Slot >= 0 and $item->Slot < 9){ //Hotbar
-				$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot:-1;
-			}elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
+				$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot : -1;
+			} elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
 				$this->armor[$item->Slot - 100] = BlockAPI::getItem($item->id, $item->Damage, $item->Count);
-			}else{
+			} else{
 				$this->inventory[$item->Slot - 9] = BlockAPI::getItem($item->id, $item->Damage, $item->Count);
 			}
 		}
 		$this->slot = $this->hotbar[0];
-			
+
 		$this->height = 1.8; //Or 1.62?
 		$this->width = 0.6;
 	}
-	
+
 	public function saveNBT(){
 		parent::saveNBT();
 		for($slot = 0; $slot < 9; ++$slot){
@@ -90,9 +91,9 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 				"id" => new Short("id", 0),
 			));
 		}
-		
+
 		//Normal inventory
-		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS) + 9;
+		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS : PLAYER_CREATIVE_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
 			$item = $this->getSlot($slot);
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
@@ -116,7 +117,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 		}
 	}
-	
+
 	public function spawnTo(Player $player){
 		if($player !== $this and !isset($this->hasSpawned[$player->getID()])){
 			$this->hasSpawned[$player->getID()] = $player;
@@ -141,13 +142,13 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->speedY = $this->motionY;
 			$pk->speedZ = $this->motionZ;
 			$player->dataPacket($pk);
-			
+
 			$this->sendCurrentEquipmentSlot($player);
-			
+
 			$this->sendArmor($player);
 		}
 	}
-	
+
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
 			$pk = new Network\Protocol\RemovePlayerPacket;
@@ -157,7 +158,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			unset($this->hasSpawned[$player->getID()]);
 		}
 	}
-	
+
 	public function setEquipmentSlot($equipmentSlot, $inventorySlot){
 		$this->hotbar[$equipmentSlot] = $inventorySlot;
 		if($equipmentSlot === $this->slot){
@@ -166,7 +167,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 		}
 	}
-	
+
 	public function setCurrentEquipmentSlot($slot){
 		if(isset($this->hotbar[$slot])){
 			$this->slot = (int) $slot;
@@ -175,8 +176,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 		}
 	}
-	
-	public function sendCurrentEquipmentSlot(Player $player){	
+
+	public function sendCurrentEquipmentSlot(Player $player){
 		$pk = new Network\Protocol\PlayerEquipmentPacket;
 		$pk->eid = $this->id;
 		$pk->item = $this->getSlot($this->slot)->getID();
@@ -184,8 +185,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		$pk->slot = 0;
 		$player->dataPacket($pk);
 	}
-	
-    public function setArmorSlot($slot, Item $item){
+
+	public function setArmorSlot($slot, Item $item){
 		if(EventHandler::callEvent($ev = new EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot)) === Event::DENY){
 			return false;
 		}
@@ -196,23 +197,25 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		if($this instanceof Player){
 			$this->sendArmor();
 		}
+
 		return true;
 	}
 
-    public function getArmorSlot($slot){
+	public function getArmorSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->armor[$slot])){
 			$this->armor[$slot] = BlockAPI::getItem(AIR, 0, 0);
 		}
+
 		return $this->armor[$slot];
 	}
-	
-    public function sendArmor(Player $player = null){
+
+	public function sendArmor(Player $player = null){
 		$slots = array();
 		for($i = 0; $i < 4; ++$i){
 			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > AIR){
-				$slots[$i] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256:0;
-			}else{
+				$slots[$i] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256 : 0;
+			} else{
 				$this->armor[$i] = BlockAPI::getItem(AIR, 0, 0);
 				$slots[$i] = 255;
 			}
@@ -222,17 +225,17 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->eid = $this->id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
-		}elseif($this instanceof Player){
+		} elseif($this instanceof Player){
 			$pk = new Network\Protocol\ContainerSetContentPacket;
 			$pk->windowid = 0x78; //Armor window id
 			$pk->slots = $this->armor;
 			$this->dataPacket($pk);
 		}
 	}
-	
+
 	public function getMetadata(){ //TODO
 		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1:0;
+		$flags |= $this->fireTicks > 0 ? 1 : 0;
 		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
 		//$flags |= ($this->inAction === true ? 0b10000:0);
 		$d = array(
@@ -241,6 +244,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			16 => array("type" => 0, "value" => 0),
 			17 => array("type" => 6, "value" => array(0, 0, 0)),
 		);
+
 		/*if($this->class === ENTITY_MOB and $this->type === MOB_SHEEP){
 			if(!isset($this->data["Sheared"])){
 				$this->data["Sheared"] = 0;
@@ -255,26 +259,28 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 				$d[17]["value"] = array($this->player->sleeping->x, $this->player->sleeping->y, $this->player->sleeping->z);
 			}
 		}*/
+
 		return $d;
-	}	
-	
+	}
+
 	public function attack($damage, $source = "generic"){
-	
+
 	}
-	
+
 	public function heal($amount, $source = "generic"){
-	
+
 	}
-	
+
 	public function hasItem(Item $item, $checkDamage = true){
 		foreach($this->inventory as $s => $i){
 			if($i->equals($item, $checkDamage)){
 				return $i;
 			}
 		}
-		return false;	
+
+		return false;
 	}
-	
+
 	public function canAddItem(Item $item){
 		$inv = $this->inventory;
 		while($item->getCount() > 0){
@@ -285,7 +291,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 					$inv[$s] = clone $item;
 					$inv[$s]->setCount($add);
 					break;
-				}elseif($i->equals($item)){
+				} elseif($i->equals($item)){
 					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
 					if($add <= 0){
 						continue;
@@ -300,9 +306,10 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 			$item->setCount($item->getCount() - $add);
 		}
+
 		return true;
 	}
-	
+
 	public function addItem(Item $item){
 		while($item->getCount() > 0){
 			$add = 0;
@@ -313,7 +320,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 					$i2->setCount($add);
 					$this->setSlot($s, $i2);
 					break;
-				}elseif($i->equals($item)){
+				} elseif($i->equals($item)){
 					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
 					if($add <= 0){
 						continue;
@@ -329,13 +336,14 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 			$item->setCount($item->getCount() - $add);
 		}
+
 		return true;
 	}
-	
+
 	public function canRemoveItem(Item $item, $checkDamage = true){
 		return $this->hasItem($item, $checkDamage);
 	}
-	
+
 	public function removeItem(Item $item, $checkDamage = true){
 		while($item->getCount() > 0){
 			$remove = 0;
@@ -345,7 +353,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 					if($item->getCount() < $i->getCount()){
 						$i->setCount($i->getCount() - $item->getCount());
 						$this->setSlot($s, $i);
-					}else{
+					} else{
 						$this->setSlot($s, BlockAPI::getItem(AIR, 0, 0));
 					}
 					break;
@@ -356,29 +364,32 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 			$item->setCount($item->getCount() - $remove);
 		}
+
 		return true;
 	}
 
-    public function setSlot($slot, Item $item){
+	public function setSlot($slot, Item $item){
 		if(EventHandler::callEvent($ev = new EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot)) === Event::DENY){
 			return false;
 		}
 		$this->inventory[(int) $slot] = $ev->getNewItem();
+
 		return true;
 	}
 
-    public function getSlot($slot){
+	public function getSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->inventory[$slot])){
 			$this->inventory[$slot] = BlockAPI::getItem(AIR, 0, 0);
 		}
+
 		return $this->inventory[$slot];
 	}
-	
+
 	public function getAllSlots(){
 		return $this->inventory;
 	}
-	
+
 	public function getSlotCount(){
 		return count($this->inventory);
 	}

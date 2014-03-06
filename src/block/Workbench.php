@@ -25,9 +25,10 @@ class WorkbenchBlock extends SolidBlock{
 		$this->isActivable = true;
 		$this->hardness = 15;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		$player->toCraft[-1] = 1;
+
 		return true;
 	}
 

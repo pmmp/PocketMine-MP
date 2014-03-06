@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Tile;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\NBT\Tag\Compound as Compound;
@@ -28,9 +29,9 @@ use PocketMine\BlockAPI as BlockAPI;
 
 class Furnace extends Tile{
 	use Container;
-	
+
 	const SLOTS = 3;
-	
+
 	public function __construct(Level $level, Compound $nbt){
 		$nbt->id = Tile::FURNACE;
 		parent::__construct($level, $nbt);
@@ -48,14 +49,14 @@ class Furnace extends Tile{
 			$this->scheduleUpdate();
 		}
 	}
-	
+
 	public function onUpdate(){
 		if($this->closed === true){
 			return false;
 		}
-		
+
 		$ret = false;
-		
+
 		$fuel = $this->getSlot(1);
 		$raw = $this->getSlot(0);
 		$product = $this->getSlot(2);
@@ -91,15 +92,15 @@ class Furnace extends Tile{
 					$this->setSlot(0, $raw, false);
 					$this->namedtag->CookTime -= 200;
 				}
-			}elseif($this->namedtag->BurnTime <= 0){
+			} elseif($this->namedtag->BurnTime <= 0){
 				$this->namedtag->BurnTime = 0;
 				$this->namedtag->CookTime = 0;
 				$this->namedtag->BurnTicks = 0;
-			}else{
+			} else{
 				$this->namedtag->CookTime = 0;
 			}
 			$ret = true;
-		}else{
+		} else{
 			$current = $this->level->getBlock($this);
 			if($current->getID() === BURNING_FURNACE){
 				$this->level->setBlock($this, BlockAPI::get(FURNACE, $current->getMetadata()), true, false, true);
@@ -108,10 +109,11 @@ class Furnace extends Tile{
 			$this->namedtag->BurnTime = 0;
 			$this->namedtag->BurnTicks = 0;
 		}
-		
+
 
 		$this->server->handle("tile.update", $this);
 		$this->lastUpdate = microtime(true);
+
 		return $ret;
 	}
 }

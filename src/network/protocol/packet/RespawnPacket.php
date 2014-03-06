@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -28,18 +29,18 @@ class RespawnPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
 		return Info::RESPAWN_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->x = $this->getFloat();
 		$this->y = $this->getFloat();
 		$this->z = $this->getFloat();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

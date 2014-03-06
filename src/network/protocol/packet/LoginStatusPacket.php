@@ -20,20 +20,21 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class LoginStatusPacket extends DataPacket{
 	public $status;
-	
+
 	public function pid(){
 		return Info::LOGIN_STATUS_PACKET;
 	}
-	
+
 	public function decode(){
 
-	}	
-	
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->status);

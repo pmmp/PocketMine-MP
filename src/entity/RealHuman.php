@@ -20,26 +20,27 @@
 */
 
 namespace PocketMine\Entity;
+
 use PocketMine;
 
 abstract class RealHuman extends Human{
-	
+
 	protected function initEntity(){
 		$this->level->players[$this->CID] = $this;
 		parent::initEntity();
 	}
-	
+
 	public function close(){
 		unset($this->level->players[$this->CID]);
 		parent::close();
 	}
-	
+
 	public function spawnTo(Player $player){
 		if($this->spawned === true){
 			parent::spawnTo($player);
-		}	
+		}
 	}
-	
+
 	public function despawnFrom(Player $player){
 		if($this->spawned === true){
 			parent::despawnFrom($player);

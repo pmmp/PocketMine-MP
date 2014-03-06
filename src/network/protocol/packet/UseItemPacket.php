@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -37,11 +38,11 @@ class UseItemPacket extends DataPacket{
 	public $posX;
 	public $posY;
 	public $posZ;
-	
+
 	public function pid(){
 		return Info::USE_ITEM_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->x = $this->getInt();
 		$this->y = $this->getInt();
@@ -55,9 +56,9 @@ class UseItemPacket extends DataPacket{
 		$this->fz = $this->getFloat();
 		$this->posX = $this->getFloat();
 		$this->posY = $this->getFloat();
-		$this->posZ = $this->getFloat();		
+		$this->posZ = $this->getFloat();
 	}
-	
+
 	public function encode(){
 
 	}

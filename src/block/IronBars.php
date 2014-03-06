@@ -25,5 +25,5 @@ class IronBarsBlock extends TransparentBlock{
 		$this->isFullBlock = false;
 		$this->isSolid = false;
 	}
-	
+
 }

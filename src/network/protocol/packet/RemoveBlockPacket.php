@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -28,18 +29,18 @@ class RemoveBlockPacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
 		return Info::REMOVE_BLOCK_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->x = $this->getInt();
 		$this->z = $this->getInt();
 		$this->y = $this->getByte();
 	}
-	
+
 	public function encode(){
 
 	}

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -31,15 +32,15 @@ class StartGamePacket extends DataPacket{
 	public $x;
 	public $y;
 	public $z;
-	
+
 	public function pid(){
 		return Info::START_GAME_PACKET;
 	}
-	
+
 	public function decode(){
 
-	}	
-	
+	}
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->seed);

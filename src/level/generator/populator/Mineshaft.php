@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Populator;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Utils\Random as Random;
@@ -30,11 +31,11 @@ class Mineshaft extends Populator{
 	private static $ODD = 3;
 	private static $BASE_Y = 35;
 	private static $RAND_Y = 11;
-	
+
 	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
 		if($random->nextRange(0, self::$ODD) === 0){
 			//$mineshaft = new Mineshaft($random);
 		}
 	}
-	
+
 }

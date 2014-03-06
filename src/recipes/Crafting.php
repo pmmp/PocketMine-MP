@@ -20,23 +20,24 @@
 */
 
 namespace PocketMine\Recipes;
+
 use PocketMine;
 use PocketMine\BlockAPI as BlockAPI;
 use PocketMine\ServerAPI as ServerAPI;
 
 abstract class Crafting{
-	private static $small = array(//Probably means craftable on crafting bench and in inventory. Name it better!
+	private static $small = array( //Probably means craftable on crafting bench and in inventory. Name it better!
 		//Building
 		"CLAY:?x4=>CLAY_BLOCK:0x1",
 		"WOODEN_PLANKS:?x4=>WORKBENCH:0x1",
 		"GLOWSTONE_DUST:?x4=>GLOWSTONE_BLOCK:0x1",
 		"PUMPKIN:?x1,TORCH:?x1=>LIT_PUMPKIN:0x1",
-		"SNOWBALL:?x4=>SNOW_BLOCK:0x1",		
+		"SNOWBALL:?x4=>SNOW_BLOCK:0x1",
 		"WOODEN_PLANKS:?x2=>STICK:0x4",
-		"COBBLESTONE:?x4=>STONECUTTER:0x1",		
-		"WOOD:0x1=>WOODEN_PLANKS:0x4",		
-		"WOOD:1x1=>WOODEN_PLANKS:1x4",		
-		"WOOD:2x1=>WOODEN_PLANKS:2x4",		
+		"COBBLESTONE:?x4=>STONECUTTER:0x1",
+		"WOOD:0x1=>WOODEN_PLANKS:0x4",
+		"WOOD:1x1=>WOODEN_PLANKS:1x4",
+		"WOOD:2x1=>WOODEN_PLANKS:2x4",
 		"WOOD:3x1=>WOODEN_PLANKS:3x4",
 		"WOOL:0x1,DYE:0x1=>WOOL:15x1",
 		"WOOL:0x1,DYE:1x1=>WOOL:14x1",
@@ -54,22 +55,22 @@ abstract class Crafting{
 		"WOOL:0x1,DYE:13x1=>WOOL:2x1",
 		"WOOL:0x1,DYE:14x1=>WOOL:1x1",
 		"STRING:?x4=>WOOL:0x1",
-		
+
 		//Tools
 		"IRON_INGOT:?x1,FLINT:?x1=>FLINT_STEEL:0x1",
-		"IRON_INGOT:?x2=>SHEARS:0x1",		
+		"IRON_INGOT:?x2=>SHEARS:0x1",
 		"COAL:0x1,STICK:?x1=>TORCH:0x4",
 		"COAL:1x1,STICK:?x1=>TORCH:0x4",
-		
+
 		//Food & protection		
 		"MELON_SLICE:?x1=>MELON_SEEDS:0x1",
-		"PUMPKIN:?x1=>PUMPKIN_SEEDS:0x4",		
+		"PUMPKIN:?x1=>PUMPKIN_SEEDS:0x4",
 		"PUMPKIN:?x1,EGG:?x1,SUGAR:?x1=>PUMPKIN_PIE:0x1",
 		"BROWN_MUSHROOM:?x1,RED_MUSHROOM:?x1,BOWL:?x1=>MUSHROOM_STEW:0x1",
 		"SUGARCANE:?x1=>SUGAR:0x1",
 		"MELON_SLICE:?x1=>MELON_SEEDS:0x1",
 		"HAY_BALE:?x1=>WHEAT:0x9",
-		
+
 		//Items
 		"DIAMOND_BLOCK:?x1=>DIAMOND:0x9",
 		"GOLD_BLOCK:?x1=>GOLD_INGOT:0x9",
@@ -85,16 +86,16 @@ abstract class Crafting{
 		"DYE:4x1,DYE:15x1=>DYE:12x2",
 		"DYE:2x1,DYE:4x1=>DYE:6x2",
 		"DYE:1x1,DYE:4x1=>DYE:5x2",
-		"DYE:1x1,DYE:4x1,DYE:15x1=>DYE:13x3",		
+		"DYE:1x1,DYE:4x1,DYE:15x1=>DYE:13x3",
 		"BEETROOT:?x1=>DYE:1x1",
-		"DYE:15x1,DYE:1x2,DYE:4x1=>DYE:13x4",//
-		"DYE:5x1,DYE:9x1=>DYE:13x2",//		
-		"DYE:0x1,DYE:15x1=>DYE:8x2",//		
-		"DYE:0x1,DYE:15x2=>DYE:7x3",//
-		"DYE:0x1,DYE:8x1=>DYE:7x2",//
+		"DYE:15x1,DYE:1x2,DYE:4x1=>DYE:13x4", //
+		"DYE:5x1,DYE:9x1=>DYE:13x2", //
+		"DYE:0x1,DYE:15x1=>DYE:8x2", //
+		"DYE:0x1,DYE:15x2=>DYE:7x3", //
+		"DYE:0x1,DYE:8x1=>DYE:7x2", //
 	);
-	
-	private static $big = array(//Probably means only craftable on crafting bench. Name it better!
+
+	private static $big = array( //Probably means only craftable on crafting bench. Name it better!
 		//Building
 		"WOOL:?x3,WOODEN_PLANKS:?x3=>BED:0x1",
 		"WOODEN_PLANKS:?x8=>CHEST:0x1",
@@ -114,7 +115,7 @@ abstract class Crafting{
 		"WOODEN_PLANKS:2x3=>BIRCH_WOOD_SLAB:2x6",
 		"WOODEN_PLANKS:3x6=>JUNGLE_WOOD_STAIRS:0x4",
 		"WOODEN_PLANKS:3x3=>JUNGLE_WOOD_SLAB:3x6",
-		
+
 		//Tools
 		"STICK:?x1,FEATHER:?x1,FLINT:?x1=>ARROW:0x4",
 		"STICK:?x3,STRING:?x3=>BOW:0x1",
@@ -147,7 +148,7 @@ abstract class Crafting{
 		"WOODEN_PLANKS:?x3,STICK:?x2=>WOODEN_PICKAXE:0x1",
 		"WOODEN_PLANKS:?x1,STICK:?x2=>WOODEN_SHOVEL:0x1",
 		"WOODEN_PLANKS:?x2,STICK:?x1=>WOODEN_SWORD:0x1",
-		
+
 		//Food & protection
 		"BEETROOT:?x4,BOWL:?x1=>BEETROOT_SOUP:0x1",
 		"WOODEN_PLANKS:?x3=>BOWL:0x1",
@@ -173,7 +174,7 @@ abstract class Crafting{
 		"FIRE:?x8=>CHAIN_CHESTPLATE:0x1",
 		"FIRE:?x5=>CHAIN_HELMET:0x1",
 		"FIRE:?x7=>CHAIN_LEGGINGS:0x1",
-		
+
 		//Items
 		"DIAMOND:?x9=>DIAMOND_BLOCK:0x1",
 		"GOLD_INGOT:?x9=>GOLD_BLOCK:0x1",
@@ -190,7 +191,7 @@ abstract class Crafting{
 		"COAL:0x9=>COAL_BLOCK:0x1",
 		"COAL_BLOCK:?x1=>COAL:0x9",
 	);
-	
+
 	private static $stone = array(
 		"QUARTZ:?x4=>QUARTZ_BLOCK:0x1",
 		"BRICKS_BLOCK:?x6=>BRICK_STAIRS:0x4",
@@ -215,9 +216,9 @@ abstract class Crafting{
 		"STONE:?x3=>SLAB:0x6",
 		"COBBLESTONE:?x6=>COBBLESTONE_STAIRS:0x4",
 	);
-	
+
 	private static $recipes = array();
-	
+
 	private static function parseRecipe($recipe){
 		$recipe = explode("=>", $recipe);
 		$recipeItems = array();
@@ -226,29 +227,29 @@ abstract class Crafting{
 			$id = explode(":", $item[0]);
 			$meta = array_pop($id);
 			$id = $id[0];
-			
+
 			$it = BlockAPI::fromString($id);
-			$recipeItems[$it->getID()] = array($it->getID(), $meta === "?" ? false:intval($meta)&0xFFFF, intval($item[1]));
+			$recipeItems[$it->getID()] = array($it->getID(), $meta === "?" ? false : intval($meta) & 0xFFFF, intval($item[1]));
 		}
 		ksort($recipeItems);
 		$item = explode("x", $recipe[1]);
 		$id = explode(":", $item[0]);
 		$meta = array_pop($id);
 		$id = $id[0];
-			
+
 		$it = BlockAPI::fromString($id);
 
-		$craftItem = array($it->getID(), intval($meta)&0xFFFF, intval($item[1]));
-		
+		$craftItem = array($it->getID(), intval($meta) & 0xFFFF, intval($item[1]));
+
 		$recipeString = "";
 		foreach($recipeItems as $item){
-			$recipeString .= $item[0]."x".$item[2].",";
+			$recipeString .= $item[0] . "x" . $item[2] . ",";
 		}
-		$recipeString = substr($recipeString, 0, -1)."=>".$craftItem[0]."x".$craftItem[2];
-		
+		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
+
 		return array($recipeItems, $craftItem, $recipeString);
 	}
-	
+
 	public static function init(){
 		$server = ServerAPI::request();
 		$id = 1;
@@ -260,34 +261,34 @@ abstract class Crafting{
 		}
 		foreach(CraftingRecipes::$big as $recipe){
 			$recipe = CraftingRecipes::parseRecipe($recipe);
-			$recipe[3] = 1;			
+			$recipe[3] = 1;
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
 		foreach(CraftingRecipes::$stone as $recipe){
 			$recipe = CraftingRecipes::parseRecipe($recipe);
-			$recipe[3] = 2;		
+			$recipe[3] = 2;
 			CraftingRecipes::$recipes[$id] = $recipe;
 			++$id;
 		}
-		
+
 		foreach(CraftingRecipes::$recipes as $id => $recipe){
 
-			$server->query("INSERT INTO recipes (id, type, recipe) VALUES (".$id.", ".$recipe[3].", '".$recipe[2]."');");
+			$server->query("INSERT INTO recipes (id, type, recipe) VALUES (" . $id . ", " . $recipe[3] . ", '" . $recipe[2] . "');");
 		}
 
 	}
-	
+
 	public static function canCraft(array $craftItem, array $recipeItems, $type){
 		ksort($recipeItems);
 		$recipeString = "";
 		foreach($recipeItems as $item){
-			$recipeString .= $item[0]."x".$item[2].",";
+			$recipeString .= $item[0] . "x" . $item[2] . ",";
 		}
-		$recipeString = substr($recipeString, 0, -1)."=>".$craftItem[0]."x".$craftItem[2];
+		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
 		$server = ServerAPI::request();
 
-		$result = $server->query("SELECT id FROM recipes WHERE type == ".$type." AND recipe == '".$recipeString."';");
+		$result = $server->query("SELECT id FROM recipes WHERE type == " . $type . " AND recipe == '" . $recipeString . "';");
 		if($result instanceof \SQLite3Result){
 			$continue = true;
 			while(($r = $result->fetchArray(SQLITE3_NUM)) !== false){
@@ -311,9 +312,10 @@ abstract class Crafting{
 				$continue = $recipe;
 				break;
 			}
-		}else{
+		} else{
 			return true;
 		}
+
 		return $continue;
 	}
 

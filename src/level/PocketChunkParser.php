@@ -20,15 +20,15 @@
 */
 
 namespace PocketMine\Level;
+
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 
 /**
-  * WARNING: This code is old, and only supports the file format partially (reverse engineering)
-  * It can break, lock, or hit you in the face in any moment.
-  *	
+ * WARNING: This code is old, and only supports the file format partially (reverse engineering)
+ * It can break, lock, or hit you in the face in any moment.
+ *
  */
-
 class PocketChunkParser{
 	private $location, $raw = b"", $file;
 	public $sectorLength = 4096; //16 * 16 * 16
@@ -48,26 +48,27 @@ class PocketChunkParser{
 				continue;
 			}
 			$sectorLocation = $data >> 8;
-			$this->location[$offset >> 2] = $sectorLocation * $this->sectorLength;//$this->getOffset($X, $Z, $sectors);
+			$this->location[$offset >> 2] = $sectorLocation * $this->sectorLength; //$this->getOffset($X, $Z, $sectors);
 		}
 	}
 
 	public function loadFile($file){
-		if(file_exists($file.".gz")){
-			$this->raw = gzinflate(file_get_contents($file.".gz"));
+		if(file_exists($file . ".gz")){
+			$this->raw = gzinflate(file_get_contents($file . ".gz"));
 			$r = @gzinflate($this->raw);
 			if($r !== false and $r != ""){
 				$this->raw = $r;
 			}
-			@unlink($file.".gz");
+			@unlink($file . ".gz");
 			file_put_contents($file, $this->raw);
-		}elseif(!file_exists($file)){
+		} elseif(!file_exists($file)){
 			return false;
-		}else{
+		} else{
 			$this->raw = file_get_contents($file);
 		}
 		$this->file = $file;
 		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
+
 		return true;
 	}
 
@@ -75,16 +76,18 @@ class PocketChunkParser{
 		$this->file = $file;
 		$this->raw = $raw;
 		$this->chunkLength = $this->sectorLength * ord($this->raw{0});
+
 		return true;
 	}
 
 	private function getOffset($X, $Z){
 		return $this->location[$X + ($Z << 5)];
-    }
+	}
 
 	public function getChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
+
 		return substr($this->raw, $this->getOffset($X, $Z), $this->chunkLength);
 	}
 
@@ -100,7 +103,8 @@ class PocketChunkParser{
 				$chunk .= $data[$i];
 			}
 		}
-		return Utils::writeLInt(strlen($chunk)).$chunk;
+
+		return Utils::writeLInt(strlen($chunk)) . $chunk;
 	}
 
 	public function parseChunk($X, $Z){
@@ -116,12 +120,13 @@ class PocketChunkParser{
 			3 => array(), //BlockLight
 		);
 		foreach($chunk as $section => &$data){
-			$l = $section === 0 ? 128:64;
+			$l = $section === 0 ? 128 : 64;
 			for($i = 0; $i < 256; ++$i){
 				$data[$i] = substr($this->raw, $offset, $l);
 				$offset += $l;
 			}
 		}
+
 		return $chunk;
 	}
 
@@ -155,9 +160,9 @@ class PocketChunkParser{
 		flock($fp, LOCK_UN);
 		fclose($fp);
 		$original = filesize($this->file);
-		file_put_contents($this->file .".gz", gzdeflate(gzdeflate(file_get_contents($this->file),9),9)); //Double compression for flat maps
-		$compressed = filesize($this->file .".gz");
-		console("[DEBUG] Saved chunks.dat.gz with ".round(($compressed/$original)*100, 2)."% (".round($compressed/1024, 2)."KB) of the original size", true, true, 2);
+		file_put_contents($this->file . ".gz", gzdeflate(gzdeflate(file_get_contents($this->file), 9), 9)); //Double compression for flat maps
+		$compressed = filesize($this->file . ".gz");
+		console("[DEBUG] Saved chunks.dat.gz with " . round(($compressed / $original) * 100, 2) . "% (" . round($compressed / 1024, 2) . "KB) of the original size", true, true, 2);
 		if($final === true){
 			@unlink($this->file);
 		}
@@ -174,6 +179,7 @@ class PocketChunkParser{
 				break;
 			}
 		}
+
 		return $y;
 	}
 
@@ -190,14 +196,16 @@ class PocketChunkParser{
 		$meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
 			$meta = $meta & 0x0F;
-		}else{
+		} else{
 			$meta = $meta >> 4;
 		}
+
 		return array($block, $meta);
 	}
 
 	public function getChunkColumn($X, $Z, $x, $z, $type = 0){
 		$index = $z + ($x << 4);
+
 		return $this->map[$X][$Z][$type][$index];
 	}
 
@@ -214,7 +222,7 @@ class PocketChunkParser{
 		$old_meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
 			$meta = ($old_meta & 0xF0) | ($meta & 0x0F);
-		}else{
+		} else{
 			$meta = (($meta << 4) & 0xF0) | ($old_meta & 0x0F);
 		}
 		$this->map[$X][$Z][1][$index]{$y >> 1} = chr($meta);

@@ -29,7 +29,7 @@ class IronDoorBlock extends DoorBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.95;
@@ -45,13 +45,13 @@ class IronDoorBlock extends DoorBlock{
 				return 25;
 		}
 	}
-	
+
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(IRON_DOOR, 0, 1),
 			);
-		}else{
+		} else{
 			return array();
 		}
 	}

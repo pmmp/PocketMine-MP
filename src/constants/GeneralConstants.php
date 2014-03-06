@@ -48,23 +48,23 @@ const BLOCK_UPDATE_TOUCH = 5;
 const ENTITY_PLAYER = 1;
 
 const ENTITY_MOB = 2;
-	const MOB_CHICKEN = 10;
-	const MOB_COW = 11;
-	const MOB_PIG = 12;
-	const MOB_SHEEP = 13;
+const MOB_CHICKEN = 10;
+const MOB_COW = 11;
+const MOB_PIG = 12;
+const MOB_SHEEP = 13;
 
-	const MOB_ZOMBIE = 32;
-	const MOB_CREEPER = 33;
-	const MOB_SKELETON = 34;
-	const MOB_SPIDER = 35;
-	const MOB_PIGMAN = 36;
+const MOB_ZOMBIE = 32;
+const MOB_CREEPER = 33;
+const MOB_SKELETON = 34;
+const MOB_SPIDER = 35;
+const MOB_PIGMAN = 36;
 
 const ENTITY_OBJECT = 3;
-	const OBJECT_PRIMEDTNT = 65;
-	const OBJECT_ARROW = 80;
-	const OBJECT_PAINTING = 83;
+const OBJECT_PRIMEDTNT = 65;
+const OBJECT_ARROW = 80;
+const OBJECT_PAINTING = 83;
 
 const ENTITY_ITEM = 4;
 
 const ENTITY_FALLING = 5;
-	const FALLING_SAND = 66;
+const FALLING_SAND = 66;

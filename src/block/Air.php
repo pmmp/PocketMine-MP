@@ -32,7 +32,7 @@ class AirBlock extends TransparentBlock{
 		$this->isSolid = false;
 		$this->isFullBlock = true;
 		$this->hardness = 0;
-		
+
 	}
-	
+
 }

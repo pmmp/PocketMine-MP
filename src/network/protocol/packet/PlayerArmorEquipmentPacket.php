@@ -20,25 +20,26 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class PlayerArmorEquipmentPacket extends DataPacket{
 	public $eid;
 	public $slots = array();
-	
+
 	public function pid(){
 		return Info::PLAYER_ARMOR_EQUIPMENT_PACKET;
 	}
-	
+
 	public function decode(){
-		$this->eid = $this->getInt();		
+		$this->eid = $this->getInt();
 		$this->slots[0] = $this->getByte();
 		$this->slots[1] = $this->getByte();
 		$this->slots[2] = $this->getByte();
 		$this->slots[3] = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

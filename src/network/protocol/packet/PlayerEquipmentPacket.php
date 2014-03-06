@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -28,18 +29,18 @@ class PlayerEquipmentPacket extends DataPacket{
 	public $item;
 	public $meta;
 	public $slot;
-	
+
 	public function pid(){
 		return Info::PLAYER_EQUIPMENT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
 		$this->slot = $this->getByte();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

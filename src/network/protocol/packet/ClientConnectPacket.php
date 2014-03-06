@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -31,13 +32,13 @@ class ClientConnectPacket extends DataPacket{
 	public function pid(){
 		return Info::CLIENT_CONNECT_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->clientID = $this->getLong();
 		$this->session = $this->getLong();
 		$this->unknown1 = $this->get(1);
-	}	
-	
+	}
+
 	public function encode(){
 
 	}

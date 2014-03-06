@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\RakNet;
+
 use PocketMine;
 
 abstract class Info{
@@ -58,8 +59,7 @@ abstract class Info{
 	const NACK = 0xa0;
 	const ACK = 0xc0;
 
-	
-	
+
 	public static function isValid($pid){
 		switch((int) $pid){
 			case self::UNCONNECTED_PING:

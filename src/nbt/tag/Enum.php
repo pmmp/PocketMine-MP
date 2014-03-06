@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 use PocketMine\NBT\Tag\Byte as Byte;
@@ -35,63 +36,64 @@ use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Int_Array as Int_Array;
 
 class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
-	
+
 	private $tagType;
-	
+
 	public function getType(){
 		return NBT\TAG_Enum;
 	}
-	
+
 	public function setTagType($type){
 		$this->tagType = $type;
 	}
-	
+
 	public function getTagType(){
 		return $this->tagType;
 	}
-	
+
 	public function rewind(){
 		reset($this->value);
 	}
-	
+
 	public function current(){
 		return current($this->value);
 	}
-	
+
 	public function key(){
 		return key($this->value);
 	}
-	
+
 	public function next(){
 		return next($this->value);
 	}
-	
+
 	public function valid(){
 		$key = key($this->value);
+
 		return $key !== null and $key !== false;
 	}
-	
+
 	public function offsetExists($name){
 		return $this->__isset($name);
 	}
-	
+
 	public function &offsetGet($name){
 		return $this->__get($name);
 	}
-	
+
 	public function offsetSet($name, $value){
 		$this->__set($name, $value);
 	}
-	
+
 	public function offsetUnset($name){
 		$this->__unset($name);
 	}
-	
+
 	public function &__get($name){
 		$ret = isset($this->value[$name]) ? $this->value[$name] : false;
 		if(!is_object($ret) or $ret instanceof ArrayAccess){
 			return $ret;
-		}else{
+		} else{
 			return $ret->getValue();
 		}
 	}
@@ -99,19 +101,19 @@ class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 	public function __set($name, $value){
 		if($value instanceof NBTTag){
 			$this->value[$name] = $value;
-		}elseif(isset($this->value[$name])){
+		} elseif(isset($this->value[$name])){
 			$this->value[$name]->setValue($value);
 		}
 	}
-	
+
 	public function __isset($name){
 		return isset($this->value[$name]);
 	}
-	
+
 	public function __unset($name){
 		unset($this->value[$name]);
 	}
-	
+
 	public function read(NBT $nbt){
 		$this->value = array();
 		$this->tagType = $nbt->getByte();
@@ -181,19 +183,19 @@ class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 			}
 		}
 	}
-	
+
 	public function write(NBT $nbt){
 		if(!isset($this->tagType)){
 			foreach($this->value as $tag){
 				if(!isset($id)){
 					$id = $tag->getType();
-				}elseif($id !== $tag->getType()){
+				} elseif($id !== $tag->getType()){
 					return false;
 				}
 			}
 			$this->tagType = $id;
 		}
-		
+
 		$nbt->putByte($this->tagType);
 		$nbt->putInt(count($this->value));
 		foreach($this->value as $tag){

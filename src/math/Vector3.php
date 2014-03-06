@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Math;
+
 use PocketMine;
 use PocketMine\Math\Vector3 as MathVector3;
 
@@ -79,7 +80,7 @@ class Vector3{
 	public function add($x = 0, $y = 0, $z = 0){
 		if(($x instanceof MathVector3) === true){
 			return $this->add($x->x, $x->y, $x->z);
-		}else{
+		} else{
 			return new MathVector3($this->x + $x, $this->y + $y, $this->z + $z);
 		}
 	}
@@ -87,15 +88,15 @@ class Vector3{
 	public function subtract($x = 0, $y = 0, $z = 0){
 		if(($x instanceof MathVector3) === true){
 			return $this->add(-$x->x, -$x->y, -$x->z);
-		}else{
+		} else{
 			return $this->add(-$x, -$y, -$z);
 		}
 	}
-	
+
 	public function multiply($number){
 		return new MathVector3($this->x * $number, $this->y * $number, $this->z * $number);
 	}
-	
+
 	public function divide($number){
 		return new MathVector3($this->x / $number, $this->y / $number, $this->z / $number);
 	}
@@ -115,7 +116,7 @@ class Vector3{
 	public function abs(){
 		return new MathVector3(abs($this->x), abs($this->y), abs($this->z));
 	}
-	
+
 	public function getSide($side){
 		switch((int) $side){
 			case 0:
@@ -129,7 +130,7 @@ class Vector3{
 			case 4:
 				return new MathVector3($this->x - 1, $this->y, $this->z);
 			case 5:
-				return new MathVector3($this->x + 1, $this->y, $this->z);	
+				return new MathVector3($this->x + 1, $this->y, $this->z);
 			default:
 				return $this;
 		}
@@ -138,7 +139,7 @@ class Vector3{
 	public function distance($x = 0, $y = 0, $z = 0){
 		if(($x instanceof MathVector3) === true){
 			return sqrt($this->distanceSquared($x->x, $x->y, $x->z));
-		}else{
+		} else{
 			return sqrt($this->distanceSquared($x, $y, $z));
 		}
 	}
@@ -146,39 +147,40 @@ class Vector3{
 	public function distanceSquared($x = 0, $y = 0, $z = 0){
 		if(($x instanceof MathVector3) === true){
 			return $this->distanceSquared($x->x, $x->y, $x->z);
-		}else{
+		} else{
 			return pow($this->x - $x, 2) + pow($this->y - $y, 2) + pow($this->z - $z, 2);
 		}
 	}
-	
+
 	public function maxPlainDistance($x = 0, $z = 0){
 		if(($x instanceof MathVector3) === true){
 			return $this->maxPlainDistance($x->x, $x->z);
-		}else{
+		} else{
 			return max(abs($this->x - $x), abs($this->z - $z));
-		}	
+		}
 	}
-	
+
 	public function length(){
 		return sqrt($this->lengthSquared());
 	}
-	
+
 	public function lengthSquared(){
 		return $this->x * $this->x + $this->y * $this->y + $this->z * $this->z;
 	}
-	
+
 	public function normalize(){
 		$len = $this->length();
 		if($len != 0){
 			return $this->divide($len);
 		}
+
 		return new MathVector3(0, 0, 0);
 	}
-	
+
 	public function dot(MathVector3 $v){
 		return $this->x * $v->x + $this->y * $v->y + $this->z * $v->z;
 	}
-	
+
 	public function cross(MathVector3 $v){
 		return new MathVector3(
 			$this->y * $v->z - $this->z * $v->y,
@@ -188,7 +190,7 @@ class Vector3{
 	}
 
 	public function __toString(){
-		return "Vector3(x=".$this->x.",y=".$this->y.",z=".$this->z.")";
+		return "Vector3(x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
 }

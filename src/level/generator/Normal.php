@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Utils\Random as Random;
@@ -50,23 +51,23 @@ class Normal extends Generator{
 	private $noisePatches;
 	private $noisePatchesSmall;
 	private $noiseBase;
-	
+
 	public function __construct(array $options = array()){
-		
+
 	}
-	
+
 	public function getName(){
 		return "normal";
 	}
-	
+
 	public function getSettings(){
 		return array();
 	}
-	
+
 	public function init(Level $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
-		$this->random->setSeed($this->level->getSeed());	
+		$this->random->setSeed($this->level->getSeed());
 		$this->noiseHills = new Simplex($this->random, 3);
 		$this->noisePatches = new Simplex($this->random, 2);
 		$this->noisePatchesSmall = new Simplex($this->random, 2);
@@ -85,18 +86,18 @@ class Normal extends Generator{
 			new OreType(new Gravel(), 10, 16, 0, 128),
 		));
 		$this->populators[] = $ores;
-		
+
 		$trees = new Tree();
 		$trees->setBaseAmount(3);
 		$trees->setRandomAmount(0);
 		$this->populators[] = $trees;
-		
+
 		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(5);
 		$tallGrass->setRandomAmount(0);
-		$this->populators[] = $tallGrass;		
+		$this->populators[] = $tallGrass;
 	}
-	
+
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		$hills = array();
@@ -110,7 +111,7 @@ class Normal extends Generator{
 				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.03, 16, true);
 				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.5, 4, true);
 				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.7, 16, true);
-				
+
 				if($base[$i] < 0){
 					$base[$i] *= 0.5;
 				}
@@ -128,42 +129,42 @@ class Normal extends Generator{
 					$height = (int) $height;
 
 					for($y = $startY; $y < $endY; ++$y){
-						$diff = $height - $y;	
+						$diff = $height - $y;
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
 							$chunk .= "\x07"; //bedrock
-						}elseif($diff > 2){
+						} elseif($diff > 2){
 							$chunk .= "\x01"; //stone
-						}elseif($diff > 0){
+						} elseif($diff > 0){
 							if($patches[$i] > 0.7){
 								$chunk .= "\x01"; //stone
-							}elseif($patches[$i] < -0.8){
+							} elseif($patches[$i] < -0.8){
 								$chunk .= "\x0d"; //gravel
-							}else{
+							} else{
 								$chunk .= "\x03"; //dirt
-							}							
-						}elseif($y <= $this->waterHeight){
+							}
+						} elseif($y <= $this->waterHeight){
 							if(($this->waterHeight - $y) <= 1 and $diff === 0){
 								$chunk .= "\x0c"; //sand
-							}elseif($diff === 0){
+							} elseif($diff === 0){
 								if($patchesSmall[$i] > 0.3){
 									$chunk .= "\x0d"; //gravel
-								}elseif($patchesSmall[$i] < -0.45){
+								} elseif($patchesSmall[$i] < -0.45){
 									$chunk .= "\x0c"; //sand
-								}else{
+								} else{
 									$chunk .= "\x03"; //dirt
-								}	
-							}else{
+								}
+							} else{
 								$chunk .= "\x09"; //still_water
 							}
-						}elseif($diff === 0){
+						} elseif($diff === 0){
 							if($patches[$i] > 0.7){
 								$chunk .= "\x01"; //stone
-							}elseif($patches[$i] < -0.8){
+							} elseif($patches[$i] < -0.8){
 								$chunk .= "\x0d"; //gravel
-							}else{
+							} else{
 								$chunk .= "\x02"; //grass
 							}
-						}else{
+						} else{
 							$chunk .= "\x00";
 						}
 					}
@@ -172,9 +173,9 @@ class Normal extends Generator{
 			}
 			$this->level->setMiniChunk($chunkX, $chunkZ, $chunkY, $chunk);
 		}
-		
+
 	}
-	
+
 	public function populateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
@@ -182,7 +183,7 @@ class Normal extends Generator{
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
 	}
-	
+
 	public function getSpawn(){
 		return $this->level->getSafeSpawn(new Vector3(127.5, 128, 127.5));
 	}

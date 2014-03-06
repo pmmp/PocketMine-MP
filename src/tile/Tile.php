@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Tile;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\NBT\Tag\Compound as Compound;
@@ -47,20 +48,20 @@ abstract class Tile extends Position{
 	public $namedtag;
 	private $lastUpdate;
 	private $server;
-	
+
 	public static function getByID($tileID){
-		return isset(Tile::$list[$tileID]) ? Tile::$list[$tileID]:false;
+		return isset(Tile::$list[$tileID]) ? Tile::$list[$tileID] : false;
 	}
-	
+
 	public static function getAll(){
 		return Tile::$list;
 	}
-	
+
 	public function getID(){
 		return $this->id;
 	}
-	
-	
+
+
 	public function __construct(Level $level, Compound $nbt){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
@@ -73,18 +74,18 @@ abstract class Tile extends Position{
 		$this->x = (int) $this->namedtag->x;
 		$this->y = (int) $this->namedtag->y;
 		$this->z = (int) $this->namedtag->z;
-		
+
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		$this->level->tiles[$this->id] = $this;
 		$this->level->chunkTiles[$this->chunkIndex][$this->id] = $this;
 		$this->server->api->dhandle("tile.add", $this);
 	}
-	
+
 	public function onUpdate(){
 		return false;
 	}
-	
+
 	public final function scheduleUpdate(){
 		Tile::$needUpdate[$this->id] = $this;
 	}
@@ -93,8 +94,8 @@ abstract class Tile extends Position{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Tile::$needUpdate[$this->id]);
-			unset($this->level->tiles[$this->id]);	
-			unset($this->level->chunkTiles[$this->chunkIndex][$this->id]);	
+			unset($this->level->tiles[$this->id]);
+			unset($this->level->chunkTiles[$this->chunkIndex][$this->id]);
 			unset(Tile::$list[$this->id]);
 			$this->server->api->dhandle("tile.remove", $t);
 		}

@@ -32,8 +32,10 @@ class DirtBlock extends SolidBlock{
 				$item->useOn($this);
 			}
 			$this->level->setBlock($this, BlockAPI::get(FARMLAND, 0), true, false, true);
+
 			return true;
 		}
+
 		return false;
 	}
 }

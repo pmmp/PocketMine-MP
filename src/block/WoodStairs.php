@@ -27,7 +27,7 @@ class WoodStairsBlock extends StairBlock{
 	public function getBreakTime(Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
-		}		
+		}
 		switch($item->isAxe()){
 			case 5:
 				return 0.4;

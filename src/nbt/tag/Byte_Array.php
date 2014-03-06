@@ -20,19 +20,20 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 
 class Byte_Array extends NamedNBTTag{
-	
+
 	public function getType(){
 		return NBT\TAG_Byte_Array;
 	}
-	
+
 	public function read(NBT $nbt){
 		$this->value = $nbt->get($this->getInt());
 	}
-	
+
 	public function write(NBT $nbt){
 		$nbt->putInt(strlen($this->value));
 		$nbt->put($this->value);

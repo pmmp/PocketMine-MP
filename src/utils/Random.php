@@ -20,38 +20,40 @@
 */
 
 namespace PocketMine\Utils;
+
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 
 //Unsecure, not used for "Real Randomness"
 class Random{
 	private $z, $w;
+
 	public function __construct($seed = false){
 		$this->setSeed($seed);
 	}
-	
+
 	public function setSeed($seed = false){
-		$seed = $seed !== false ? (int) $seed:Utils::readInt(Utils::getRandomBytes(4, false));
+		$seed = $seed !== false ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->z = $seed ^ 0xdeadbeef;
 		$this->w = $seed ^ 0xc0de1337;
 	}
-	
+
 	public function nextInt(){
 		return Utils::readInt($this->nextBytes(4)) & 0x7FFFFFFF;
 	}
-	
+
 	public function nextSignedInt(){
 		return Utils::readInt($this->nextBytes(4));
 	}
-	
+
 	public function nextFloat(){
 		return $this->nextInt() / 0x7FFFFFFF;
 	}
-	
+
 	public function nextSignedFloat(){
 		return $this->nextSignedInt() / 0x7FFFFFFF;
 	}
-	
+
 	public function nextBytes($byteCount){
 		$bytes = "";
 		while(strlen($bytes) < $byteCount){
@@ -59,13 +61,14 @@ class Random{
 			$this->w = 18000 * ($this->w & 65535) + ($this->w >> 16);
 			$bytes .= pack("N", ($this->z << 16) + $this->w);
 		}
+
 		return substr($bytes, 0, $byteCount);
 	}
-	
+
 	public function nextBoolean(){
 		return ($this->nextSignedInt() & 0x01) === 0;
 	}
-	
+
 	public function nextRange($start = 0, $end = PHP_INT_MAX){
 		return $start + ($this->nextInt() % ($end + 1 - $start));
 	}

@@ -20,39 +20,43 @@
 */
 
 namespace PocketMine\Level\Generator;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Utils\Random as Random;
 
 abstract class Generator{
 	private static $list = array();
-	
+
 	public static function addGenerator($object, $name){
 		if(is_subclass_of($object, "\PocketMine\Level\Generator\Generator") and !isset(Generator::$list[$name])){
 			Generator::$list[$name] = $object;
+
 			return true;
 		}
+
 		return false;
 	}
-	
+
 	public static function getGenerator($name){
 		if(isset(Generator::$list[$name])){
 			return Generator::$list[$name];
 		}
+
 		return "\PocketMine\Level\Generator\Normal";
 	}
-	
+
 	public abstract function __construct(array $settings = array());
-	
+
 	public abstract function init(Level $level, Random $random);
 
 	public abstract function generateChunk($chunkX, $chunkZ);
-	
+
 	public abstract function populateChunk($chunkX, $chunkZ);
-	
+
 	public abstract function getSettings();
-	
+
 	public abstract function getName();
-	
+
 	public abstract function getSpawn();
 }

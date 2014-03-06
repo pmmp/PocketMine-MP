@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network;
+
 use PocketMine;
 use PocketMine\ServerAPI as ServerAPI;
 
@@ -27,10 +28,11 @@ class Handler{
 	public $bandwidth;
 	private $socket;
 	private $packets;
+
 	function __construct($server, $port = 25565, $serverip = "0.0.0.0"){
 		$this->socket = new UDPSocket($server, $port, true, $serverip);
 		if($this->socket->connected === false){
-			console("[SEVERE] Couldn't bind to $serverip:".$port, true, true, 0);
+			console("[SEVERE] Couldn't bind to $serverip:" . $port, true, true, 0);
 			exit(1);
 		}
 		$this->bandwidth = array(0, 0, microtime(true));
@@ -40,7 +42,7 @@ class Handler{
 	public function close(){
 		return $this->socket->close(false);
 	}
-	
+
 	public function readPacket(){
 		$buf = null;
 		$source = null;
@@ -62,8 +64,9 @@ class Handler{
 			if(Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet)) === Event\Event::DENY){
 				return false;
 			}
+
 			return $packet;
-		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof Query\QueryHandler){
+		} elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof Query\QueryHandler){
 			$packet = new Query\QueryPacket;
 			$packet->ip = $source;
 			$packet->port = $port;
@@ -72,25 +75,28 @@ class Handler{
 				return false;
 			}
 			ServerAPI::request()->api->query->handle($packet);
-		}else{
+		} else{
 			$packet = new Packet();
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer =& $buffer;
 			Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet));
+
 			return false;
 		}
+
 		return true;
 	}
-	
+
 	public function writePacket(Packet $packet){
 		if(Event\EventHandler::callEvent(new Event\Server\PacketSendEvent($packet)) === Event\Event::DENY){
 			return 0;
-		}elseif($packet instanceof RakNet\Packet){
+		} elseif($packet instanceof RakNet\Packet){
 			$packet->encode();
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);
 		$this->bandwidth[1] += $write;
+
 		return $write;
 	}
 

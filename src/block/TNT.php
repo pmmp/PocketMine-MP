@@ -25,7 +25,7 @@ class TNTBlock extends SolidBlock{
 		$this->hardness = 0;
 		$this->isActivable = true;
 	}
-	
+
 	public function onActivate(Item $item, Player $player){
 		if($item->getID() === FLINT_STEEL){
 			if(($player->gamemode & 0x01) === 0){
@@ -42,8 +42,10 @@ class TNTBlock extends SolidBlock{
 			//TODO
 			$e = ServerAPI::request()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 			$e->spawnToAll();
+
 			return true;
 		}
+
 		return false;
 	}
 }

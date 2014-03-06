@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Level;
+
 use PocketMine;
 use PocketMine\Level\Position as Position;
 use PocketMine\ServerAPI as ServerAPI;
@@ -42,20 +43,21 @@ class Explosion{
 	public $size;
 	public $affectedBlocks = array();
 	public $stepLen = 0.3;
-	
+
 	public function __construct(Position $center, $size){
 		$this->level = $center->level;
 		$this->source = $center;
 		$this->size = max($size, 0);
 	}
-	
+
 	public function explode(){
 		$server = ServerAPI::request();
 		if($this->size < 0.1 or $server->api->dhandle("entity.explosion", array(
-			"level" => $this->level,
-			"source" => $this->source,
-			"size" => $this->size
-		)) === false){
+				"level" => $this->level,
+				"source" => $this->source,
+				"size" => $this->size
+			)) === false
+		){
 			return false;
 		}
 
@@ -67,11 +69,11 @@ class Explosion{
 						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
 						$vector = $vector->normalize()->multiply($this->stepLen);
 						$pointer = clone $this->source;
-						
+
 						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
 							$vBlock = $pointer->floor();
 							$blockID = $this->level->level->getBlockID($vBlock->x, $vBlock->y, $vBlock->z);
-			
+
 							if($blockID > 0){
 								$block = BlockAPI::get($blockID, 0);
 								$block->x = $vBlock->x;
@@ -79,7 +81,7 @@ class Explosion{
 								$block->z = $vBlock->z;
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									$index = ($block->x << 15) + ($block->z << 7) +  $block->y;
+									$index = ($block->x << 15) + ($block->z << 7) + $block->y;
 									if(!isset($this->affectedBlocks[$index])){
 										$this->affectedBlocks[$index] = $block;
 									}
@@ -91,7 +93,7 @@ class Explosion{
 				}
 			}
 		}
-		
+
 		$send = array();
 		$source = $this->source->floor();
 		$radius = 2 * $this->size;
@@ -115,11 +117,11 @@ class Explosion{
 				//TODO
 				//$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				//$e->spawnToAll();
-			}elseif(mt_rand(0, 10000) < ((1/$this->size) * 10000)){
+			} elseif(mt_rand(0, 10000) < ((1 / $this->size) * 10000)){
 				if(isset(self::$specialDrops[$block->getID()])){
 					//TODO
 					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem(self::$specialDrops[$block->getID()], 0));				
-				}else{
+				} else{
 					//TODO
 					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));				
 				}

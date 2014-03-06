@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Tile;
+
 use PocketMine;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\Tile\Tile as Tile;
@@ -28,7 +29,7 @@ use PocketMine\NBT\Tag\String as String;
 use PocketMine\NBT\Tag\Int as Int;
 
 class Sign extends Spawnable{
-	
+
 	public function __construct(Level $level, Compound $nbt){
 		$nbt->id = Tile::SIGN;
 		parent::__construct($level, $nbt);
@@ -39,11 +40,12 @@ class Sign extends Spawnable{
 		$this->namedtag->Text2 = $line2;
 		$this->namedtag->Text3 = $line3;
 		$this->namedtag->Text4 = $line4;
-		$this->spawnToAll();	
+		$this->spawnToAll();
 		$this->server->handle("tile.update", $this);
+
 		return true;
 	}
-	
+
 	public function getText(){
 		return array(
 			$this->namedtag->Text1,
@@ -52,7 +54,7 @@ class Sign extends Spawnable{
 			$this->namedtag->Text4
 		);
 	}
-	
+
 	public function spawnTo(Player $player){
 		if($this->closed){
 			return false;
@@ -68,14 +70,15 @@ class Sign extends Spawnable{
 			new Int("x", (int) $this->x),
 			new Int("y", (int) $this->y),
 			new Int("z", (int) $this->z)
-		)));				
+		)));
 		$pk = new Network\Protocol\EntityDataPacket;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
 		$pk->namedtag = $nbt->write();
 		$player->dataPacket($pk);
+
 		return true;
 	}
-	
+
 }

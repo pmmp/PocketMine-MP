@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -31,11 +32,11 @@ class MovePlayerPacket extends DataPacket{
 	public $yaw;
 	public $pitch;
 	public $bodyYaw;
-	
+
 	public function pid(){
 		return Info::MOVE_PLAYER_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->eid = $this->getInt();
 		$this->x = $this->getFloat();
@@ -45,7 +46,7 @@ class MovePlayerPacket extends DataPacket{
 		$this->pitch = $this->getFloat();
 		$this->bodyYaw = $this->getFloat();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

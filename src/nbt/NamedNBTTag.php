@@ -20,11 +20,13 @@
 */
 
 namespace PocketMine\NBT;
+
 use PocketMine;
 
 abstract class NamedNBTTag extends NBTTag{
-	
+
 	protected $name;
+
 	public function __construct($name = "", $value = false){
 		$this->name = $name;
 		if($value !== false){
@@ -35,7 +37,7 @@ abstract class NamedNBTTag extends NBTTag{
 	public function getName(){
 		return $this->name === false ? "" : $this->name;
 	}
-	
+
 	public function setName($name){
 		$this->name = $name;
 	}

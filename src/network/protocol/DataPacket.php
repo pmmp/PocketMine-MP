@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Utils\Utils as Utils;
 use PocketMine\BlockAPI as BlockAPI;
@@ -60,11 +61,12 @@ abstract class DataPacket{
 	protected function get($len){
 		if($len <= 0){
 			$this->offset = strlen($this->buffer) - 1;
+
 			return "";
-		}elseif($len === true){
+		} elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
-		
+
 		$buffer = b"";
 		for(; $len > 0; --$len, ++$this->offset){
 			$buffer .= @$this->buffer{$this->offset};
@@ -138,6 +140,7 @@ abstract class DataPacket{
 		for($i = 1; $i <= $len and !$this->feof(); ++$i){
 			$data[] = $this->get($this->getTriad());
 		}
+
 		return $data;
 	}
 
@@ -151,6 +154,7 @@ abstract class DataPacket{
 	protected function getSlot(){
 		$id = $this->getShort();
 		$cnt = $this->getByte();
+
 		return BlockAPI::getItem(
 			$id,
 			$this->getShort(),

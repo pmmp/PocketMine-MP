@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -30,15 +31,15 @@ class AddPaintingPacket extends DataPacket{
 	public $z;
 	public $direction;
 	public $title;
-	
+
 	public function pid(){
 		return Info::ADD_PAINTING_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);

@@ -20,19 +20,20 @@
 */
 
 namespace PocketMine\NBT\Tag;
+
 use PocketMine\NBT;
 use PocketMine;
 
 class Float extends NamedNBTTag{
-	
+
 	public function getType(){
 		return NBT\TAG_Float;
 	}
-	
+
 	public function read(NBT $nbt){
 		$this->value = $nbt->getFloat();
 	}
-	
+
 	public function write(NBT $nbt){
 		$nbt->putFloat($this->value);
 	}

@@ -20,22 +20,23 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
 class AnimatePacket extends DataPacket{
 	public $action;
 	public $eid;
-	
+
 	public function pid(){
 		return Info::ANIMATE_PACKET;
 	}
-	
+
 	public function decode(){
 		$this->action = $this->getByte();
 		$this->eid = $this->getInt();
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->action);

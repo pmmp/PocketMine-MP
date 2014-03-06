@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Tile;
+
 use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\NBT\Tag\Compound as Compound;
@@ -30,60 +31,64 @@ use PocketMine\NBT\Tag\Int as Int;
 
 class Chest extends Spawnable{
 	use Container;
-	
+
 	const SLOTS = 27;
-	
+
 	public function __construct(Level $level, Compound $nbt){
 		$nbt->id = Tile::CHEST;
 		parent::__construct($level, $nbt);
 	}
-	
+
 	public function isPaired(){
 		if(!isset($this->namedtag->pairx) or !isset($this->namedtag->pairz)){
 			return false;
 		}
+
 		return true;
 	}
-	
+
 	public function getPair(){
 		if($this->isPaired()){
 			return $this->level->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
 		}
+
 		return false;
 	}
-	
+
 	public function pairWith(Tile $tile){
-		if($this->isPaired()or $tile->isPaired()){
+		if($this->isPaired() or $tile->isPaired()){
 			return false;
 		}
-		
+
 		$this->namedtag->pairx = $tile->x;
 		$this->namedtag->pairz = $tile->z;
-		
+
 		$tile->namedtag->pairx = $this->x;
 		$tile->namedtag->pairz = $this->z;
-		
+
 		$this->spawnToAll();
 		$tile->spawnToAll();
 		$this->server->handle("tile.update", $this);
 		$this->server->handle("tile.update", $tile);
+
 		return true;
 	}
-	
+
 	public function unpair(){
 		if(!$this->isPaired()){
 			return false;
 		}
-		
+
 		$tile = $this->getPair();
 		unset($this->namedtag->pairx, $this->namedtag->pairz, $tile->namedtag->pairx, $tile->namedtag->pairz);
-		
+
 		$this->spawnToAll();
 		$this->server->handle("tile.update", $this);
 		if($tile instanceof Chest){
 			$tile->spawnToAll();
 			$this->server->handle("tile.update", $tile);
 		}
+
 		return true;
 	}
 
@@ -98,11 +103,11 @@ class Chest extends Spawnable{
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
-				new Int("z", (int) $this->z),	
+				new Int("z", (int) $this->z),
 				new Int("pairx", (int) $this->namedtag->pairx),
 				new Int("pairz", (int) $this->namedtag->pairz)
 			)));
-		}else{
+		} else{
 			$nbt->setData(new Compound("", array(
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
@@ -110,7 +115,7 @@ class Chest extends Spawnable{
 				new Int("z", (int) $this->z)
 			)));
 		}
-			
+
 		$pk = new Network\Protocol\EntityDataPacket;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
@@ -118,5 +123,6 @@ class Chest extends Spawnable{
 		$pk->namedtag = $nbt->write();
 		$player->dataPacket($pk);
 
+		return true;
 	}
 }

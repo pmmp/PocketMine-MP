@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Event;
+
 use PocketMine;
 use PocketMine\Event\Event as Event;
 
@@ -38,18 +39,18 @@ abstract class EventHandler{
 				if($event->isForced()){
 					if($event instanceof CancellableEvent and $event->isCancelled()){
 						return Event::DENY;
-					}else{
+					} else{
 						return Event::ALLOW;
 					}
-				}			
+				}
 			}
 		}
 
 		if($event instanceof CancellableEvent and $event->isCancelled()){
 			return Event::DENY;
-		}elseif($event->isAllowed()){
+		} elseif($event->isAllowed()){
 			return Event::ALLOW;
-		}else{
+		} else{
 			return Event::NORMAL;
 		}
 	}

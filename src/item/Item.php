@@ -21,7 +21,7 @@
 
 class Item{
 	public static $class = array(
-		SUGARCANE => "SugarcaneItem",	
+		SUGARCANE => "SugarcaneItem",
 		WHEAT_SEEDS => "WheatSeedsItem",
 		PUMPKIN_SEEDS => "PumpkinSeedsItem",
 		MELON_SEEDS => "MelonSeedsItem",
@@ -65,7 +65,7 @@ class Item{
 	protected $durability = 0;
 	protected $name;
 	public $isActivable = false;
-	
+
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
@@ -79,43 +79,43 @@ class Item{
 			$this->maxStackSize = 1;
 		}
 	}
-	
+
 	public function getCount(){
 		return $this->count;
 	}
-	
+
 	public function setCount($count){
 		$this->count = (int) $count;
 	}
-	
+
 	final public function getName(){
 		return $this->name;
 	}
-	
+
 	final public function isPlaceable(){
 		return (($this->block instanceof Block) and $this->block->isPlaceable === true);
 	}
-	
+
 	final public function getBlock(){
 		if($this->block instanceof Block){
 			return $this->block;
-		}else{
+		} else{
 			return BlockAPI::get(AIR);
 		}
 	}
-	
+
 	final public function getID(){
 		return $this->id;
 	}
-	
+
 	final public function getMetadata(){
 		return $this->meta;
-	}	
-	
+	}
+
 	final public function getMaxStackSize(){
 		return $this->maxStackSize;
 	}
-	
+
 	final public function getFuelTime(){
 		if(!isset(Recipes\Fuel::$duration[$this->id])){
 			return false;
@@ -123,51 +123,54 @@ class Item{
 		if($this->id !== BUCKET or $this->meta === 10){
 			return Recipes\Fuel::$duration[$this->id];
 		}
+
 		return false;
 	}
-	
+
 	final public function getSmeltItem(){
 		if(!isset(Recipes\Smelt::$product[$this->id])){
 			return false;
 		}
-		
+
 		if(isset(Recipes\Smelt::$product[$this->id][0]) and !is_array(Recipes\Smelt::$product[$this->id][0])){
 			return BlockAPI::getItem(Recipes\Smelt::$product[$this->id][0], Recipes\Smelt::$product[$this->id][1]);
 		}
-		
+
 		if(!isset(Recipes\Smelt::$product[$this->id][$this->meta])){
 			return false;
 		}
-		
+
 		return BlockAPI::getItem(Recipes\Smelt::$product[$this->id][$this->meta][0], Recipes\Smelt::$product[$this->id][$this->meta][1]);
-		
+
 	}
-	
+
 	public function useOn($object, $force = false){
 		if($this->isTool() or $force === true){
 			if(($object instanceof Entity) and !$this->isSword()){
 				$this->meta += 2;
-			}else{
+			} else{
 				$this->meta++;
 			}
+
 			return true;
-		}elseif($this->isHoe()){
+		} elseif($this->isHoe()){
 			if(($object instanceof Block) and ($object->getID() === GRASS or $object->getID() === DIRT)){
 				$this->meta++;
 			}
 		}
+
 		return false;
 	}
-	
+
 	final public function isTool(){
 		return ($this->id === FLINT_STEEL or $this->id === SHEARS or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
 	}
-	
+
 	final public function getMaxDurability(){
 		if(!$this->isTool() and $this->isHoe() === false and $this->id !== BOW){
 			return false;
 		}
-		
+
 		$levels = array(
 			2 => 33,
 			1 => 60,
@@ -179,20 +182,21 @@ class Item{
 			BOW => 385,
 		);
 
-		if(($type = $this->isPickaxe()) === false){			
-			if(($type = $this->isAxe()) === false){			
-				if(($type = $this->isSword()) === false){				
-					if(($type = $this->isShovel()) === false){					
+		if(($type = $this->isPickaxe()) === false){
+			if(($type = $this->isAxe()) === false){
+				if(($type = $this->isSword()) === false){
+					if(($type = $this->isShovel()) === false){
 						if(($type = $this->isHoe()) === false){
 							$type = $this->id;
 						}
-					}	
+					}
 				}
 			}
 		}
+
 		return $levels[$type];
 	}
-	
+
 	final public function isPickaxe(){ //Returns false or level of the pickaxe
 		switch($this->id){
 			case IRON_PICKAXE:
@@ -209,7 +213,7 @@ class Item{
 				return false;
 		}
 	}
-	
+
 	final public function isAxe(){
 		switch($this->id){
 			case IRON_AXE:
@@ -243,7 +247,7 @@ class Item{
 				return false;
 		}
 	}
-	
+
 	final public function isShovel(){
 		switch($this->id){
 			case IRON_SHOVEL:
@@ -260,7 +264,7 @@ class Item{
 				return false;
 		}
 	}
-	
+
 	public function isHoe(){
 		switch($this->id){
 			case IRON_HOE:
@@ -277,21 +281,21 @@ class Item{
 	public function isShears(){
 		return ($this->id === SHEARS);
 	}
-	
+
 	final public function __toString(){
-		return "Item ". $this->name ." (".$this->id.":".$this->meta.")";
+		return "Item " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
 	}
-	
+
 	public function getDestroySpeed(Block $block, Player $player){
 		return 1;
 	}
-	
+
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return false;
 	}
-	
+
 	public final function equals(Item $item, $checkDamage = false){
 		return $this->id === $item->getID() and ($checkDamage === false or $this->getMetadata() === $item->getMetadata());
 	}
-	
+
 }

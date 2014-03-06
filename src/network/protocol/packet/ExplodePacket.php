@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Network\Protocol;
+
 use PocketMine;
 use PocketMine\Network\Protocol\Info as Info;
 
@@ -29,15 +30,15 @@ class ExplodePacket extends DataPacket{
 	public $z;
 	public $radius;
 	public $records;
-	
+
 	public function pid(){
 		return Info::EXPLODE_PACKET;
 	}
-	
+
 	public function decode(){
 
 	}
-	
+
 	public function encode(){
 		$this->reset();
 		$this->putFloat($this->x);

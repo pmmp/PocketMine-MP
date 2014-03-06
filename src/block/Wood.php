@@ -24,7 +24,7 @@ class WoodBlock extends SolidBlock{
 	const SPRUCE = 1;
 	const BIRCH = 2;
 	const JUNGLE = 3;
-	
+
 	public function __construct($meta = 0){
 		parent::__construct(WOOD, $meta, "Wood");
 		$names = array(
@@ -36,7 +36,7 @@ class WoodBlock extends SolidBlock{
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 10;
 	}
-	
+
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 0,
@@ -49,6 +49,7 @@ class WoodBlock extends SolidBlock{
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];
 		$this->level->setBlock($block, $this, true, false, true);
+
 		return true;
 	}
 
