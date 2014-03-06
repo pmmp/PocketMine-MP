@@ -38,7 +38,7 @@ abstract class Generator{
 		if(isset(Generator::$list[$name])){
 			return Generator::$list[$name];
 		}
-		return "\PocketMine\Level\Generator\Generator\Normal";
+		return "\PocketMine\Level\Generator\Normal";
 	}
 	
 	public abstract function __construct(array $settings = array());
