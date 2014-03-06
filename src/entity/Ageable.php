@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Entity
+namespace PocketMine\Entity;
 use PocketMine;
 
 interface Ageable{

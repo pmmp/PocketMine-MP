@@ -19,151 +19,151 @@
  *
 */
 
-use PocketMine;
+namespace PocketMine;
 
-define("IRON_SHOVEL", 256);//Implemented
-define("IRON_PICKAXE", 257);//Implemented
-define("IRON_AXE", 258);//Implemented
-define("FLINT_STEEL", 259);
-define("FLINT_AND_STEEL", 259);
-define("APPLE", 260);//Implemented
-define("BOW", 261);
-define("ARROW", 262);
-define("COAL", 263);//Implemented
-define("DIAMOND", 264);//Implemented
-define("IRON_INGOT", 265);//Implemented
-define("GOLD_INGOT", 266);//Implemented
-define("IRON_SWORD", 267);
-define("WOODEN_SWORD", 268);//Implemented
-define("WOODEN_SHOVEL", 269);//Implemented
-define("WOODEN_PICKAXE", 270);//Implemented
-define("WOODEN_AXE", 271);//Implemented
-define("STONE_SWORD", 272);
-define("STONE_SHOVEL", 273);
-define("STONE_PICKAXE", 274);
-define("STONE_AXE", 275);
-define("DIAMOND_SWORD", 276);
-define("DIAMOND_SHOVEL", 277);
-define("DIAMOND_PICKAXE", 278);
-define("DIAMOND_AXE", 279);
-define("STICK", 280);//Implemented
-define("STICKS", 280);
-define("BOWL", 281);//Implemented
-define("MUSHROOM_STEW", 282);
-define("GOLD_SWORD", 283);
-define("GOLD_SHOVEL", 284);
-define("GOLD_PICKAXE", 285);
-define("GOLD_AXE", 286);
-define("GOLDEN_SWORD", 283);
-define("GOLDEN_SHOVEL", 284);
-define("GOLDEN_PICKAXE", 285);
-define("GOLDEN_AXE", 286);
-define("STRING", 287);
-define("FEATHER", 288);//Implemented
-define("GUNPOWDER", 289);
-define("WOODEN_HOE", 290);
-define("STONE_HOE", 291);
-define("IRON_HOE", 292);//Implemented
-define("DIAMOND_HOE", 293);
-define("GOLD_HOE", 294);
-define("GOLDEN_HOE", 294);
-define("SEEDS", 295);
-define("WHEAT_SEEDS", 295);
-define("WHEAT", 296);
-define("BREAD", 297);
-define("LEATHER_CAP", 298);
-define("LEATHER_TUNIC", 299);
-define("LEATHER_PANTS", 300);
-define("LEATHER_BOOTS", 301);
-define("CHAIN_HELMET", 302);
-define("CHAIN_CHESTPLATE", 303);
-define("CHAIN_LEGGINGS", 304);
-define("CHAIN_BOOTS", 305);
-define("IRON_HELMET", 306);
-define("IRON_CHESTPLATE", 307);
-define("IRON_LEGGINGS", 308);
-define("IRON_BOOTS", 309);
-define("DIAMOND_HELMET", 310);
-define("DIAMOND_CHESTPLATE", 311);
-define("DIAMOND_LEGGINGS", 312);
-define("DIAMOND_BOOTS", 313);
-define("GOLD_HELMET", 314);
-define("GOLD_CHESTPLATE", 315);
-define("GOLD_LEGGINGS", 316);
-define("GOLD_BOOTS", 317);
-define("FLINT", 318);
-define("RAW_PORKCHOP", 319);
-define("COOKED_PORKCHOP", 320);
-define("PAINTING", 321);
-define("GOLDEN_APPLE", 322);
-define("SIGN", 323);
-define("WOODEN_DOOR", 324);
-define("BUCKET", 325);
+const IRON_SHOVEL = 256;//Implemented
+const IRON_PICKAXE = 257;//Implemented
+const IRON_AXE = 258;//Implemented
+const FLINT_STEEL = 259;
+const FLINT_AND_STEEL = 259;
+const APPLE = 260;//Implemented
+const BOW = 261;
+const ARROW = 262;
+const COAL = 263;//Implemented
+const DIAMOND = 264;//Implemented
+const IRON_INGOT = 265;//Implemented
+const GOLD_INGOT = 266;//Implemented
+const IRON_SWORD = 267;
+const WOODEN_SWORD = 268;//Implemented
+const WOODEN_SHOVEL = 269;//Implemented
+const WOODEN_PICKAXE = 270;//Implemented
+const WOODEN_AXE = 271;//Implemented
+const STONE_SWORD = 272;
+const STONE_SHOVEL = 273;
+const STONE_PICKAXE = 274;
+const STONE_AXE = 275;
+const DIAMOND_SWORD = 276;
+const DIAMOND_SHOVEL = 277;
+const DIAMOND_PICKAXE = 278;
+const DIAMOND_AXE = 279;
+const STICK = 280;//Implemented
+const STICKS = 280;
+const BOWL = 281;//Implemented
+const MUSHROOM_STEW = 282;
+const GOLD_SWORD = 283;
+const GOLD_SHOVEL = 284;
+const GOLD_PICKAXE = 285;
+const GOLD_AXE = 286;
+const GOLDEN_SWORD = 283;
+const GOLDEN_SHOVEL = 284;
+const GOLDEN_PICKAXE = 285;
+const GOLDEN_AXE = 286;
+const STRING = 287;
+const FEATHER = 288;//Implemented
+const GUNPOWDER = 289;
+const WOODEN_HOE = 290;
+const STONE_HOE = 291;
+const IRON_HOE = 292;//Implemented
+const DIAMOND_HOE = 293;
+const GOLD_HOE = 294;
+const GOLDEN_HOE = 294;
+const SEEDS = 295;
+const WHEAT_SEEDS = 295;
+const WHEAT = 296;
+const BREAD = 297;
+const LEATHER_CAP = 298;
+const LEATHER_TUNIC = 299;
+const LEATHER_PANTS = 300;
+const LEATHER_BOOTS = 301;
+const CHAIN_HELMET = 302;
+const CHAIN_CHESTPLATE = 303;
+const CHAIN_LEGGINGS = 304;
+const CHAIN_BOOTS = 305;
+const IRON_HELMET = 306;
+const IRON_CHESTPLATE = 307;
+const IRON_LEGGINGS = 308;
+const IRON_BOOTS = 309;
+const DIAMOND_HELMET = 310;
+const DIAMOND_CHESTPLATE = 311;
+const DIAMOND_LEGGINGS = 312;
+const DIAMOND_BOOTS = 313;
+const GOLD_HELMET = 314;
+const GOLD_CHESTPLATE = 315;
+const GOLD_LEGGINGS = 316;
+const GOLD_BOOTS = 317;
+const FLINT = 318;
+const RAW_PORKCHOP = 319;
+const COOKED_PORKCHOP = 320;
+const PAINTING = 321;
+const GOLDEN_APPLE = 322;
+const SIGN = 323;
+const WOODEN_DOOR = 324;
+const BUCKET = 325;
 
-define("MINECART", 329);
+const MINECART = 329;
 
-define("IRON_DOOR", 330);
-define("REDSTONE", 331);
-define("REDSTONE_DUST", 331);
-define("SNOWBALL", 332);
+const IRON_DOOR = 330;
+const REDSTONE = 331;
+const REDSTONE_DUST = 331;
+const SNOWBALL = 332;
 
-define("LEATHER", 334);
+const LEATHER = 334;
 
-define("BRICK", 336);
-define("CLAY", 337);
-define("SUGARCANE", 338);
-define("SUGAR_CANE", 338);
-define("SUGAR_CANES", 338);
-define("PAPER", 339);
-define("BOOK", 340);
-define("SLIMEBALL", 341);
+const BRICK = 336;
+const CLAY = 337;
+const SUGARCANE = 338;
+const SUGAR_CANE = 338;
+const SUGAR_CANES = 338;
+const PAPER = 339;
+const BOOK = 340;
+const SLIMEBALL = 341;
 
-define("EGG", 344);
-define("COMPASS", 345);
+const EGG = 344;
+const COMPASS = 345;
 
-define("CLOCK", 347);
-define("GLOWSTONE_DUST", 348);
-//define("RAW_FISH", 349);
-//define("COOKED_FISH", 350);
-define("DYE", 351);
-define("BONE", 352);
-define("SUGAR", 353);
-define("CAKE", 354);
-define("BED", 355);
-
-
-//define("COOKIE", 357);
+const CLOCK = 347;
+const GLOWSTONE_DUST = 348;
+//const RAW_FISH = 349;
+//const COOKED_FISH = 350;
+const DYE = 351;
+const BONE = 352;
+const SUGAR = 353;
+const CAKE = 354;
+const BED = 355;
 
 
-define("SHEARS", 359);
-define("MELON", 360);
-define("MELON_SLICE", 360);
-define("PUMPKIN_SEEDS", 361);
-define("MELON_SEEDS", 362);
-define("RAW_BEEF", 363);
-define("STEAK", 364);
-define("COOKED_BEEF", 364);
+//const COOKIE = 357;
 
-define("RAW_CHICKEN", 365);
-define("COOKED_CHICKEN", 366);
 
-define("SPAWN_EGG", 383);
+const SHEARS = 359;
+const MELON = 360;
+const MELON_SLICE = 360;
+const PUMPKIN_SEEDS = 361;
+const MELON_SEEDS = 362;
+const RAW_BEEF = 363;
+const STEAK = 364;
+const COOKED_BEEF = 364;
 
-define("CARROT", 391);
-define("CARROTS", 391);
-define("POTATO", 392);
-define("POTATOES", 392);//@shoghicp Why the heck do we need plural redundant Item ID here????
-define("BAKED_POTATO", 393);
-define("BAKED_POTATOES", 393);
+const RAW_CHICKEN = 365;
+const COOKED_CHICKEN = 366;
 
-define("PUMPKIN_PIE", 400);
+const SPAWN_EGG = 383;
 
-define("NETHER_BRICK", 405);
-define("QUARTZ", 406);
-define("NETHER_QUARTZ", 406);
+const CARROT = 391;
+const CARROTS = 391;
+const POTATO = 392;
+const POTATOES = 392;//@shoghicp Why the heck do we need plural redundant Item ID here????
+const BAKED_POTATO = 393;
+const BAKED_POTATOES = 393;
 
-define("CAMERA", 456);
-define("BEETROOT", 457);
-define("BEETROOT_SEEDS", 458);
-define("BEETROOT_SEED", 458);
-define("BEETROOT_SOUP", 459);
+const PUMPKIN_PIE = 400;
+
+const NETHER_BRICK = 405;
+const QUARTZ = 406;
+const NETHER_QUARTZ = 406;
+
+const CAMERA = 456;
+const BEETROOT = 457;
+const BEETROOT_SEEDS = 458;
+const BEETROOT_SEED = 458;
+const BEETROOT_SOUP = 459;

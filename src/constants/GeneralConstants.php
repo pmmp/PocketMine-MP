@@ -19,52 +19,52 @@
  *
 */
 
-use PocketMine;
+namespace PocketMine;
 
 //Gamemodes
-define("SURVIVAL", 0);
-define("CREATIVE", 1);
-define("ADVENTURE", 2);
-define("VIEW", 3);
-define("VIEWER", 3);
+const SURVIVAL = 0;
+const CREATIVE = 1;
+const ADVENTURE = 2;
+const VIEW = 3;
+const VIEWER = 3;
 
 
 //Players
-define("PLAYER_MAX_QUEUE", 1024);
+const PLAYER_MAX_QUEUE = 1024;
 
-define("PLAYER_SURVIVAL_SLOTS", 36);
-define("PLAYER_CREATIVE_SLOTS", 112);
+const PLAYER_SURVIVAL_SLOTS = 36;
+const PLAYER_CREATIVE_SLOTS = 112;
 
 
 //Block Updates
-define("BLOCK_UPDATE_NORMAL", 1);
-define("BLOCK_UPDATE_RANDOM", 2);
-define("BLOCK_UPDATE_SCHEDULED", 3);
-define("BLOCK_UPDATE_WEAK", 4);
-define("BLOCK_UPDATE_TOUCH", 5);
+const BLOCK_UPDATE_NORMAL = 1;
+const BLOCK_UPDATE_RANDOM = 2;
+const BLOCK_UPDATE_SCHEDULED = 3;
+const BLOCK_UPDATE_WEAK = 4;
+const BLOCK_UPDATE_TOUCH = 5;
 
 
 //Entities
-define("ENTITY_PLAYER", 1);
+const ENTITY_PLAYER = 1;
 
-define("ENTITY_MOB", 2);
-	define("MOB_CHICKEN", 10);
-	define("MOB_COW", 11);
-	define("MOB_PIG", 12);
-	define("MOB_SHEEP", 13);
+const ENTITY_MOB = 2;
+	const MOB_CHICKEN = 10;
+	const MOB_COW = 11;
+	const MOB_PIG = 12;
+	const MOB_SHEEP = 13;
 
-	define("MOB_ZOMBIE", 32);
-	define("MOB_CREEPER", 33);
-	define("MOB_SKELETON", 34);
-	define("MOB_SPIDER", 35);
-	define("MOB_PIGMAN", 36);
+	const MOB_ZOMBIE = 32;
+	const MOB_CREEPER = 33;
+	const MOB_SKELETON = 34;
+	const MOB_SPIDER = 35;
+	const MOB_PIGMAN = 36;
 
-define("ENTITY_OBJECT", 3);
-	define("OBJECT_PRIMEDTNT", 65);
-	define("OBJECT_ARROW", 80);
-	define("OBJECT_PAINTING", 83);
+const ENTITY_OBJECT = 3;
+	const OBJECT_PRIMEDTNT = 65;
+	const OBJECT_ARROW = 80;
+	const OBJECT_PAINTING = 83;
 
-define("ENTITY_ITEM", 4);
+const ENTITY_ITEM = 4;
 
-define("ENTITY_FALLING", 5);
-	define("FALLING_SAND", 66);
+const ENTITY_FALLING = 5;
+	const FALLING_SAND = 66;
