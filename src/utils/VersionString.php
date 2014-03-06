@@ -23,6 +23,12 @@ namespace PocketMine\Utils;
 
 use PocketMine;
 
+/**
+ * Class VersionString
+ * Manages PocketMine-MP Version strings, and compares them
+ *
+ * @package PocketMine\Utils
+ */
 class VersionString{
 	public static $stageOrder = array(
 		"alpha" => 0,

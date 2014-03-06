@@ -601,6 +601,14 @@ class Utils{
 		return Utils::writeByte($b === true ? 1 : 0);
 	}
 
+	/**
+	 * Reads an unsigned/signed byte
+	 *
+	 * @param      $c
+	 * @param bool $signed
+	 *
+	 * @return int
+	 */
 	public static function readByte($c, $signed = true){
 		$b = ord($c{0});
 		if($signed === true and ($b & 0x80) === 0x80){ //calculate Two's complement
@@ -610,6 +618,13 @@ class Utils{
 		return $b;
 	}
 
+	/**
+	 * Writes an unsigned/signed byte
+	 *
+	 * @param $c
+	 *
+	 * @return bool|string
+	 */
 	public static function writeByte($c){
 		if($c > 0xff){
 			return false;
@@ -621,6 +636,14 @@ class Utils{
 		return chr($c);
 	}
 
+	/**
+	 * Reads a 16-bit signed/unsigned big-endian number
+	 *
+	 * @param      $str
+	 * @param bool $signed
+	 *
+	 * @return int
+	 */
 	public static function readShort($str, $signed = true){
 		list(, $unpacked) = @unpack("n", $str);
 		if($unpacked > 0x7fff and $signed === true){
@@ -630,6 +653,13 @@ class Utils{
 		return $unpacked;
 	}
 
+	/**
+	 * Writes a 16-bit signed/unsigned big-endian number
+	 *
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	public static function writeShort($value){
 		if($value < 0){
 			$value += 0x10000;
@@ -638,6 +668,14 @@ class Utils{
 		return pack("n", $value);
 	}
 
+	/**
+	 * Reads a 16-bit signed/unsigned little-endian number
+	 *
+	 * @param      $str
+	 * @param bool $signed
+	 *
+	 * @return int
+	 */
 	public static function readLShort($str, $signed = true){
 		list(, $unpacked) = @unpack("v", $str);
 		if($unpacked > 0x7fff and $signed === true){
@@ -647,6 +685,13 @@ class Utils{
 		return $unpacked;
 	}
 
+	/**
+	 * Writes a 16-bit signed/unsigned little-endian number
+	 *
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	public static function writeLShort($value){
 		if($value < 0){
 			$value += 0x10000;
@@ -657,7 +702,7 @@ class Utils{
 
 	public static function readInt($str){
 		list(, $unpacked) = @unpack("N", $str);
-		if($unpacked >= 2147483648){
+		if($unpacked > 2147483647){
 			$unpacked -= 4294967296;
 		}
 
@@ -665,10 +710,6 @@ class Utils{
 	}
 
 	public static function writeInt($value){
-		if($value < 0){
-			$value += 0x100000000;
-		}
-
 		return pack("N", $value);
 	}
 
@@ -682,10 +723,6 @@ class Utils{
 	}
 
 	public static function writeLInt($value){
-		if($value < 0){
-			$value += 0x100000000;
-		}
-
 		return pack("V", $value);
 	}
 
