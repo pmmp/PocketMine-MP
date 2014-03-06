@@ -442,7 +442,7 @@ class Item{
 			}
 
 			if(defined("PocketMine\\Item\\Item::".strtoupper($b[0]))){
-				$item = self::get(constant("PocketMine\\Item\\Item::".strtoupper($b[0]))), $meta);
+				$item = self::get(constant("PocketMine\\Item\\Item::".strtoupper($b[0])), $meta);
 				if($item->getID() === self::AIR and strtoupper($b[0]) !== "AIR"){
 					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 				}
