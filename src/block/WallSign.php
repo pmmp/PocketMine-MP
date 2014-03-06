@@ -19,10 +19,6 @@
  *
 */
 
-/***REM_START***/
-require_once("SignPost.php");
-/***REM_END***/
-
 class WallSignBlock extends SignPostBlock{
 	public function __construct($meta = 0){
 		TransparentBlock::__construct(WALL_SIGN, $meta, "Wall Sign");

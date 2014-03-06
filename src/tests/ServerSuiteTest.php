@@ -1,6 +1,6 @@
 <?php
 exit(0);//TODO
-/***REM_START***/
+
 		$testErrors = 0;
 		function testCase($name, $output, $expected){
 			global $testErrors;
@@ -58,4 +58,3 @@ exit(0);//TODO
 				$server->close();
 			}
 		}
-/***REM_END***/

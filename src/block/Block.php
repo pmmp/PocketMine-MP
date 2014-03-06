@@ -236,13 +236,3 @@ abstract class Block extends Position{
 	
 	abstract function onUpdate($type);
 }
-
-/***REM_START***/
-require_once("block/GenericBlock.php");
-require_once("block/SolidBlock.php");
-require_once("block/TransparentBlock.php");
-require_once("block/FallableBlock.php");
-require_once("block/LiquidBlock.php");
-require_once("block/StairBlock.php");
-require_once("block/DoorBlock.php");
-/***REM_END***/
