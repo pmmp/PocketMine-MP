@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\PMF
+namespace PocketMine\PMF;
 use PocketMine;
 
 class Plugin extends PMF{
