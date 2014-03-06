@@ -52,13 +52,15 @@ class ChestBlock extends TransparentBlock{
 		}
 
 		$this->level->setBlock($block, $this, true, false, true);
-		$tile = new Chest($this->level, new NBT\Tag\Compound(false, array(
-			"Items" => new NBT\Tag\List("Items", array()),
+		$nbt = new NBT\Tag\Compound(false, array(
+			"Items" => new NBT\Tag\Enum("Items", array()),
 			"id" => new NBT\Tag\String("id", Tile::CHEST),
 			"x" => new NBT\Tag\Int("x", $this->x),
 			"y" => new NBT\Tag\Int("y", $this->y),
-			"z" =>new NBT\Tag\Int("z",  $this->z)			
-		)));
+			"z" =>new NBT\Tag\Int("z",  $this->z)
+		));
+		$nbt->Items->setTagType(NBT\Tag_Compound);
+		$tile = new Chest($this->level, $nbt);
 
 		if($chest instanceof Chest){
 			$chest->pairWith($tile);
