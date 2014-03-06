@@ -29,6 +29,13 @@ class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 
 	private $tagType;
 
+	public function __construct($name = "", $value = array()){
+		$this->name = $name;
+		if($value !== false){
+			$this->value = $value;
+		}
+	}
+
 	public function getType(){
 		return NBT\TAG_Enum;
 	}
@@ -110,11 +117,6 @@ class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 		$size = $nbt->getInt();
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			switch($this->tagType){
-				case NBT\TAG_Byte:
-					$tag = new Byte(false);
-					$tag->read($nbt);
-					$this->value[] = $tag;
-					break;
 				case NBT\TAG_Byte:
 					$tag = new Byte(false);
 					$tag->read($nbt);

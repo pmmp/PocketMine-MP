@@ -141,6 +141,6 @@ class Async extends Thread{
 			$this->join();
 		}
 
-		return $this->result;
+		return (string) $this->result;
 	}
 }

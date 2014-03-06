@@ -96,10 +96,6 @@ class NBT implements \ArrayAccess{
 				$tag = new Byte($this->getString());
 				$tag->read($this);
 				break;
-			case NBT\TAG_Byte:
-				$tag = new Byte($this->getString());
-				$tag->read($this);
-				break;
 			case NBT\TAG_Short:
 				$tag = new Short($this->getString());
 				$tag->read($this);

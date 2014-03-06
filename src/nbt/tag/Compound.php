@@ -26,6 +26,13 @@ use PocketMine\NBT;
 
 class Compound extends NamedNBTTag implements \ArrayAccess, \Iterator{
 
+	public function __construct($name = "", $value = array()){
+		$this->name = $name;
+		if($value !== false){
+			$this->value = $value;
+		}
+	}
+
 	public function getType(){
 		return NBT\TAG_Compound;
 	}
