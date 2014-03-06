@@ -57,7 +57,7 @@ class QueryHandler{
 
 	public function regenerateInfo(){
 		$str = "";
-		$plist = "PocketMine-MP " . VERSION;
+		$plist = "PocketMine-MP " . PocketMine\VERSION;
 		$pl = $this->server->api->plugin->getList();
 		if(count($pl) > 0){
 			$plist .= ":";
@@ -71,8 +71,8 @@ class QueryHandler{
 			"hostname" => $this->server->name,
 			"gametype" => ($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP",
 			"game_id" => "MINECRAFTPE",
-			"version" => MINECRAFT_VERSION,
-			"server_engine" => "PocketMine-MP " . VERSION,
+			"version" => PocketMine\MINECRAFT_VERSION,
+			"server_engine" => "PocketMine-MP " . PocketMine\VERSION,
 			"plugins" => $plist,
 			"map" => $this->server->api->level->getDefault()->getName(),
 			"numplayers" => count(Player::$list),

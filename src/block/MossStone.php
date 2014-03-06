@@ -25,12 +25,12 @@ use PocketMine;
 use PocketMine\Item\Item as Item;
 
 class MossStone extends Solid{
-	public function __construct($meta){
-		parent::__construct(MOSS_STONE, $meta, "Moss Stone");
+	public function __construct($meta = 0){
+		parent::__construct(self::MOSS_STONE, $meta, "Moss Stone");
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -50,7 +50,7 @@ class MossStone extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(MOSS_STONE, $this->meta, 1),

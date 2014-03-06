@@ -25,7 +25,7 @@ use PocketMine;
 
 class Sand extends Fallable{
 	public function __construct(){
-		parent::__construct(SAND, 0, "Sand");
+		parent::__construct(self::SAND, 0, "Sand");
 		$this->hardness = 2.5;
 	}
 

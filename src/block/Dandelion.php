@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class Dandelion extends Flowable{
 	public function __construct(){
-		parent::__construct(DANDELION, 0, "Dandelion");
+		parent::__construct(self::DANDELION, 0, "Dandelion");
 		$this->hardness = 0;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
 			$this->level->setBlock($block, $this, true, false, true);

@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class Obsidian extends Solid{
 	public function __construct(){
-		parent::__construct(OBSIDIAN, 0, "Obsidian");
+		parent::__construct(self::OBSIDIAN, 0, "Obsidian");
 		$this->hardness = 6000;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -41,7 +41,7 @@ class Obsidian extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 5){
 			return array(
 				array(OBSIDIAN, 0, 1),

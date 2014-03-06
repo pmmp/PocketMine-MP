@@ -60,7 +60,7 @@ class Sign extends Spawnable{
 			return false;
 		}
 
-		$nbt = new NBT(NBT\LITTLE_ENDIAN);
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$nbt->setData(new Compound("", array(
 			new String("Text1", $this->namedtag->Text1),
 			new String("Text2", $this->namedtag->Text2),

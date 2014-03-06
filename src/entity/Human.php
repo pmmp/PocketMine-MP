@@ -34,6 +34,7 @@ use PocketMine\Network\Protocol\ContainerSetContentPacket as ContainerSetContent
 use PocketMine\Network\Protocol\PlayerEquipmentPacket as PlayerEquipmentPacket;
 use PocketMine\Network\Protocol\RemovePlayerPacket as RemovePlayerPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket as SetEntityMotionPacket;
+use PocketMine\Player;
 use PocketMine;
 
 class Human extends Creature implements ProjectileSource, InventorySource{

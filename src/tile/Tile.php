@@ -29,6 +29,7 @@ use PocketMine\Level\Level as Level;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\PMF\LevelFormat as LevelFormat;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Level\Position;
 use PocketMine;
 
 abstract class Tile extends Position{

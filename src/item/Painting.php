@@ -28,7 +28,7 @@ use PocketMine;
 
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(PAINTING, 0, $count, "Painting");
+		parent::__construct(self::PAINTING, 0, $count, "Painting");
 		$this->isActivable = true;
 	}
 

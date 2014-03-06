@@ -23,6 +23,7 @@
  * All the NBT Tags
  */
 namespace PocketMine\NBT\Tag;
+use PocketMine\NBT\NBT as NBT;
 use PocketMine;
 
 abstract class Tag{

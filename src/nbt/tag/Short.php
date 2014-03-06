@@ -22,12 +22,12 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine;
-use PocketMine\NBT;
+use PocketMine\NBT\NBT as NBT;
 
 class Short extends NamedTag{
 
 	public function getType(){
-		return NBT\TAG_Short;
+		return NBT::TAG_Short;
 	}
 
 	public function read(NBT $nbt){

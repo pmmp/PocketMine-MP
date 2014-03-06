@@ -25,7 +25,7 @@ use PocketMine;
 
 class GlassPane extends Transparent{
 	public function __construct(){
-		parent::__construct(GLASS_PANE, 0, "Glass Pane");
+		parent::__construct(self::GLASS_PANE, 0, "Glass Pane");
 		$this->isFullBlock = false;
 		$this->isSolid = false;
 	}

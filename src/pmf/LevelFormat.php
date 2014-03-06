@@ -22,6 +22,7 @@
 namespace PocketMine\PMF;
 
 use PocketMine\Level\Level as Level;
+use PocketMine\NBT\NBT as NBT;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Enum as Enum;
 use PocketMine\Utils\Utils as Utils;
@@ -183,13 +184,13 @@ class LevelFormat extends PMF{
 
 	private function upgrade_From1_To2(){
 		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
-		$nbt = new NBT(NBT\BIG_ENDIAN);
+		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData(new Compound("", array(
 			"Entities" => new Enum("Entities", array()),
 			"TileEntities" => new Enum("TileEntities", array())
 		)));
-		$nbt->Entities->setTagType(NBT\TAG_Compound);
-		$nbt->TileEntities->setTagType(NBT\TAG_Compound);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		$namedtag = $nbt->write();
 		$namedtag = Utils::writeInt(strlen($namedtag)) . $namedtag;
 		foreach(glob(dirname($this->file) . "/chunks/*/*.*.pmc") as $chunkFile){
@@ -291,7 +292,7 @@ class LevelFormat extends PMF{
 		$offset += 5;
 		$len = Utils::readInt(substr($chunk, $offset, 4));
 		$offset += 4;
-		$nbt = new NBT(NBT\BIG_ENDIAN);
+		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->read(substr($chunk, $offset, $len));
 		$this->chunkInfo[$index][2] = $nbt;
 		$offset += $len;
@@ -414,13 +415,13 @@ class LevelFormat extends PMF{
 				6 => 8192,
 				7 => 8192,
 			);
-			$nbt = new NBT(NBT\BIG_ENDIAN);
+			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->setData(new Compound("", array(
 				"Entities" => new Enum("Entities", array()),
 				"TileEntities" => new Enum("TileEntities", array())
 			)));
-			$nbt->Entities->setTagType(NBT\TAG_Compound);
-			$nbt->TileEntities->setTagType(NBT\TAG_Compound);
+			$nbt->Entities->setTagType(NBT::TAG_Compound);
+			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$this->chunkInfo[$index] = array(
 				0 => 0,
 				1 => 0,
@@ -588,13 +589,13 @@ class LevelFormat extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		if($y < 0 or $y > 127){
-			return array(AIR, 0);
+			return array(0, 0);
 		}
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
-			return array(AIR, 0);
+			return array(0, 0);
 		} elseif($this->chunks[$index][$Y] === false){
-			return array(AIR, 0);
+			return array(0, 0);
 		}
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);

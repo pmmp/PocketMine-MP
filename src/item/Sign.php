@@ -19,13 +19,15 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace PocketMine\Item;
 
 use PocketMine;
+use PocketMine\Block\Block as Block;
 
-class NetherBricksStairs extends Stair{
-	public function __construct($meta = 0){
-		parent::__construct(NETHER_BRICKS_STAIRS, $meta, "Nether Bricks Stairs");
+class Sign extends Item{
+	public function __construct($meta = 0, $count = 1){
+		$this->block = Block::get(Item::SIGN_POST);
+		$this->maxStackSize = 16;
+		parent::__construct(self::SIGN, 0, $count, "Sign");
 	}
-
 }

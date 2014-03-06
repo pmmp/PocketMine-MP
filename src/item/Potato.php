@@ -26,7 +26,7 @@ use PocketMine\Block\Block as Block;
 
 class Potato extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(POTATO_BLOCK);
-		parent::__construct(POTATO, 0, $count, "Potato");
+		$this->block = Block::get(Item::POTATO_BLOCK);
+		parent::__construct(self::POTATO, 0, $count, "Potato");
 	}
 }

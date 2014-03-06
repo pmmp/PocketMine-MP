@@ -26,8 +26,8 @@ use PocketMine\Block\Block as Block;
 
 class Bed extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(BED_BLOCK);
-		parent::__construct(BED, 0, $count, "Bed");
+		$this->block = Block::get(Item::BED_BLOCK);
+		parent::__construct(self::BED, 0, $count, "Bed");
 		$this->maxStackSize = 1;
 	}
 }

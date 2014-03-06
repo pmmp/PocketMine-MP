@@ -32,12 +32,12 @@ use PocketMine;
 
 class Chest extends Transparent{
 	public function __construct($meta = 0){
-		parent::__construct(CHEST, $meta, "Chest");
+		parent::__construct(self::CHEST, $meta, "Chest");
 		$this->isActivable = true;
 		$this->hardness = 15;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
 			1 => 2,
@@ -82,7 +82,7 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item $item, PocketMine\Player $player){
 		$t = $this->level->getTile($this);
 		if($t instanceof TileChest){
 			$t->unpair();
@@ -92,7 +92,7 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player){
 		$top = $this->getSide(1);
 		if($top->isTransparent !== true){
 			return true;
@@ -124,7 +124,7 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		$drops = array(
 			array($this->id, 0, 1),
 		);

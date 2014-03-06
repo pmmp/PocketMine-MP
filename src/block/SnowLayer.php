@@ -26,14 +26,14 @@ use PocketMine\Item\Item as Item;
 
 class SnowLayer extends Flowable{
 	public function __construct($meta = 0){
-		parent::__construct(SNOW_LAYER, $meta, "Snow Layer");
+		parent::__construct(self::SNOW_LAYER, $meta, "Snow Layer");
 		$this->isReplaceable = true;
 		$this->isSolid = false;
 		$this->isFullBlock = false;
 		$this->hardness = 0.5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down instanceof Solid){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -56,10 +56,10 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isShovel() !== false){
 			return array(
-				array(ItemItem::SNOWBALL, 0, 1),
+				array(Item::SNOWBALL, 0, 1),
 			);
 		}
 

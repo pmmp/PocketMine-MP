@@ -29,18 +29,18 @@ use PocketMine\Math\Vector3 as Vector3;
 class TallGrass{
 	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = array(
-			Block::get(DANDELION, 0),
-			Block::get(CYAN_FLOWER, 0),
-			Block::get(TALL_GRASS, 1),
-			Block::get(TALL_GRASS, 1),
-			Block::get(TALL_GRASS, 1),
-			Block::get(TALL_GRASS, 1)
+			Block::get(Block::DANDELION, 0),
+			Block::get(Block::CYAN_FLOWER, 0),
+			Block::get(Block::TALL_GRASS, 1),
+			Block::get(Block::TALL_GRASS, 1),
+			Block::get(Block::TALL_GRASS, 1),
+			Block::get(Block::TALL_GRASS, 1)
 		);
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($pos->x - $radius, $pos->x + $radius);
 			$z = $random->nextRange($pos->z - $radius, $pos->z + $radius);
-			if($level->level->getBlockID($x, $pos->y + 1, $z) === AIR and $level->level->getBlockID($x, $pos->y, $z) === GRASS){
+			if($level->level->getBlockID($x, $pos->y + 1, $z) === Block::AIR and $level->level->getBlockID($x, $pos->y, $z) === Block::GRASS){
 				$t = $arr[$random->nextRange(0, $arrC)];
 				$level->setBlockRaw(new Vector3($x, $pos->y + 1, $z), $t);
 			}

@@ -25,7 +25,7 @@ use PocketMine;
 
 class SandstoneStairs extends Stair{
 	public function __construct($meta = 0){
-		parent::__construct(SANDSTONE_STAIRS, $meta, "Sandstone Stairs");
+		parent::__construct(self::SANDSTONE_STAIRS, $meta, "Sandstone Stairs");
 	}
 
 }

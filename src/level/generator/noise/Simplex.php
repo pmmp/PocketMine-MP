@@ -22,7 +22,7 @@
 namespace PocketMine\Level\Generator\Noise;
 
 use PocketMine;
-use PocketMine\Level;
+use PocketMine\Utils\Random as Random;
 
 /**
  * Generates simplex-based noise.

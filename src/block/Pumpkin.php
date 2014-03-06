@@ -25,7 +25,7 @@ use PocketMine;
 
 class Pumpkin extends Solid{
 	public function __construct(){
-		parent::__construct(PUMPKIN, "Pumpkin");
+		parent::__construct(self::PUMPKIN, "Pumpkin");
 		$this->hardness = 5;
 	}
 

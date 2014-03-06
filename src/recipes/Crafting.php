@@ -26,6 +26,7 @@ namespace PocketMine\Recipes;
 
 use PocketMine\BlockAPI as BlockAPI;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Item\Item as Item;
 use PocketMine;
 
 abstract class Crafting{
@@ -256,26 +257,26 @@ abstract class Crafting{
 	public static function init(){
 		$server = ServerAPI::request();
 		$id = 1;
-		foreach(CraftingRecipes::$small as $recipe){
-			$recipe = CraftingRecipes::parseRecipe($recipe);
+		foreach(self::$small as $recipe){
+			$recipe = self::parseRecipe($recipe);
 			$recipe[3] = 0; //Type			
-			CraftingRecipes::$recipes[$id] = $recipe;
+			self::$recipes[$id] = $recipe;
 			++$id;
 		}
-		foreach(CraftingRecipes::$big as $recipe){
-			$recipe = CraftingRecipes::parseRecipe($recipe);
+		foreach(self::$big as $recipe){
+			$recipe = self::parseRecipe($recipe);
 			$recipe[3] = 1;
-			CraftingRecipes::$recipes[$id] = $recipe;
+			self::$recipes[$id] = $recipe;
 			++$id;
 		}
-		foreach(CraftingRecipes::$stone as $recipe){
-			$recipe = CraftingRecipes::parseRecipe($recipe);
+		foreach(self::$stone as $recipe){
+			$recipe = self::parseRecipe($recipe);
 			$recipe[3] = 2;
-			CraftingRecipes::$recipes[$id] = $recipe;
+			self::$recipes[$id] = $recipe;
 			++$id;
 		}
 
-		foreach(CraftingRecipes::$recipes as $id => $recipe){
+		foreach(self::$recipes as $id => $recipe){
 
 			$server->query("INSERT INTO recipes (id, type, recipe) VALUES (" . $id . ", " . $recipe[3] . ", '" . $recipe[2] . "');");
 		}
@@ -296,7 +297,7 @@ abstract class Crafting{
 			$continue = true;
 			while(($r = $result->fetchArray(SQLITE3_NUM)) !== false){
 				$continue = true;
-				$recipe = CraftingRecipes::$recipes[$r[0]];
+				$recipe = self::$recipes[$r[0]];
 				foreach($recipe[0] as $item){
 					if(!isset($recipeItems[$item[0]])){
 						$continue = false;

@@ -26,7 +26,7 @@ use PocketMine\Item\Item as Item;
 
 class RedMushroom extends Flowable{
 	public function __construct(){
-		parent::__construct(RED_MUSHROOM, 0, "Red Mushroom");
+		parent::__construct(self::RED_MUSHROOM, 0, "Red Mushroom");
 		$this->hardness = 0;
 	}
 
@@ -44,7 +44,7 @@ class RedMushroom extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$this->level->setBlock($block, $this, true, false, true);

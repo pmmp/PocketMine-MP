@@ -26,14 +26,14 @@ use PocketMine\Item\Item as Item;
 
 class Fire extends Flowable{
 	public function __construct($meta = 0){
-		parent::__construct(FIRE, $meta, "Fire");
+		parent::__construct(self::FIRE, $meta, "Fire");
 		$this->isReplaceable = true;
 		$this->breakable = false;
 		$this->isFullBlock = true;
 		$this->hardness = 0;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array();
 	}
 

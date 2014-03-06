@@ -25,7 +25,7 @@ use PocketMine;
 
 class Air extends Transparent{
 	public function __construct(){
-		parent::__construct(AIR, 0, "Air");
+		parent::__construct(self::AIR, 0, "Air");
 		$this->isActivable = false;
 		$this->breakable = false;
 		$this->isFlowable = true;

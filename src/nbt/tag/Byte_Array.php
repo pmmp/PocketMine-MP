@@ -22,12 +22,12 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine;
-use PocketMine\NBT;
+use PocketMine\NBT\NBT as NBT;
 
 class Byte_Array extends NamedTag{
 
 	public function getType(){
-		return NBT\TAG_Byte_Array;
+		return NBT::TAG_Byte_Array;
 	}
 
 	public function read(NBT $nbt){

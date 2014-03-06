@@ -24,6 +24,9 @@ namespace PocketMine\Level\Generator\Populator;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random as Random;
+use PocketMine\Block\Block as Block;
+use PocketMine\Block\Sapling as Sapling;
+use PocketMine\Level\Generator\Object\Tree as ObjectTree;
 use PocketMine;
 
 class Tree extends Populator{
@@ -50,18 +53,18 @@ class Tree extends Populator{
 				continue;
 			}
 			if($random->nextFloat() > 0.75){
-				$meta = SaplingBlock::BIRCH;
+				$meta = Sapling::BIRCH;
 			} else{
-				$meta = SaplingBlock::OAK;
+				$meta = Sapling::OAK;
 			}
-			TreeObject::growTree($this->level, new Vector3($x, $y, $z), $random, $meta);
+			ObjectTree::growTree($this->level, new Vector3($x, $y, $z), $random, $meta);
 		}
 	}
 
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 128; $y > 0; --$y){
 			$b = $this->level->getBlockRaw(new Vector3($x, $y, $z));
-			if($b->getID() !== DIRT and $b->getID() !== GRASS){
+			if($b->getID() !== Block::DIRT and $b->getID() !== Block::GRASS){
 				if(--$y <= 0){
 					return -1;
 				}

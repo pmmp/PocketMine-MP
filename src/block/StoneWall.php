@@ -26,7 +26,7 @@ use PocketMine;
 class StoneWall extends Transparent{
 	public function __construct($meta = 0){
 		$meta &= 0x01;
-		parent::__construct(STONE_WALL, $meta, "Cobblestone Wall");
+		parent::__construct(self::STONE_WALL, $meta, "Cobblestone Wall");
 		if($meta === 1){
 			$this->name = "Mossy Cobblestone Wall";
 		}

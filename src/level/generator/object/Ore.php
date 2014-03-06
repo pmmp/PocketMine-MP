@@ -41,7 +41,7 @@ class Ore{
 	}
 
 	public function canPlaceObject(Level $level, $x, $y, $z){
-		return ($level->level->getBlockID($x, $y, $z) != AIR);
+		return ($level->level->getBlockID($x, $y, $z) !== 0);
 	}
 
 	public function placeObject(Level $level, Vector3 $pos){
@@ -81,7 +81,7 @@ class Ore{
 								$sizeZ = ($z + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->level->getBlockID($x, $y, $z) === STONE){
+								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->level->getBlockID($x, $y, $z) === 1){
 									$level->setBlockRaw(new Vector3($x, $y, $z), $this->type->material);
 								}
 							}

@@ -119,7 +119,7 @@ class Server{
 		}
 		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
 		$this->schedule(20 * 60, array($this, "checkMemory"), array(), true);
-		$this->schedule(20 * 45, "Cache::cleanup", array(), true);
+		$this->schedule(20 * 45, "PocketMine\\Utils\\Cache::cleanup", array(), true);
 		$this->schedule(20, array($this, "asyncOperationChecker"), array(), true);
 	}
 

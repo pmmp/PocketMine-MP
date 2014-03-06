@@ -26,7 +26,7 @@ use PocketMine\Item\Item as Item;
 
 class Carpet extends Flowable{
 	public function __construct($meta = 0){
-		parent::__construct(CARPET, $meta, "Carpet");
+		parent::__construct(self::CARPET, $meta, "Carpet");
 		$names = array(
 			0 => "White Carpet",
 			1 => "Orange Carpet",
@@ -51,7 +51,7 @@ class Carpet extends Flowable{
 		$this->isSolid = true;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== self::AIR){
 			$this->level->setBlock($block, $this, true, false, true);

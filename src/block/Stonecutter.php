@@ -26,17 +26,17 @@ use PocketMine\Item\Item as Item;
 
 class Stonecutter extends Solid{
 	public function __construct($meta = 0){
-		parent::__construct(STONECUTTER, $meta, "Stonecutter");
+		parent::__construct(self::STONECUTTER, $meta, "Stonecutter");
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player){
 		$player->toCraft[-1] = 2;
 
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

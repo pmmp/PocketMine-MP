@@ -28,7 +28,7 @@ use PocketMine;
 
 class GlowingRedstoneOre extends Solid{
 	public function __construct(){
-		parent::__construct(GLOWING_REDSTONE_ORE, 0, "Glowing Redstone Ore");
+		parent::__construct(self::GLOWING_REDSTONE_ORE, 0, "Glowing Redstone Ore");
 		$this->hardness = 15;
 	}
 
@@ -45,7 +45,7 @@ class GlowingRedstoneOre extends Solid{
 	}
 
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -59,10 +59,10 @@ class GlowingRedstoneOre extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
-				array(ItemItem::REDSTONE_DUST, 0, mt_rand(4, 5)),
+				array(Item::REDSTONE_DUST, 0, mt_rand(4, 5)),
 			);
 		} else{
 			return array();

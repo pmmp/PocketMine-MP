@@ -29,7 +29,7 @@ use PocketMine;
 
 class FlintSteel extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(FLINT_STEEL, $meta, $count, "Flint and Steel");
+		parent::__construct(self::FLINT_STEEL, $meta, $count, "Flint and Steel");
 		$this->isActivable = true;
 		$this->maxStackSize = 1;
 	}

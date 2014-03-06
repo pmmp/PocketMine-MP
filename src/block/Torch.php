@@ -26,7 +26,7 @@ use PocketMine\Item\Item as Item;
 
 class Torch extends Flowable{
 	public function __construct($meta = 0){
-		parent::__construct(TORCH, $meta, "Torch");
+		parent::__construct(self::TORCH, $meta, "Torch");
 		$this->hardness = 0;
 	}
 
@@ -55,7 +55,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face !== 0){
 			$faces = array(
 				1 => 5,
@@ -78,7 +78,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

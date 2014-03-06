@@ -28,7 +28,7 @@ use PocketMine;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){
-		parent::__construct(CACTUS, $meta, "Cactus");
+		parent::__construct(self::CACTUS, $meta, "Cactus");
 		$this->isFullBlock = false;
 		$this->hardness = 2;
 	}
@@ -66,7 +66,7 @@ class Cactus extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === self::SAND or $down->getID() === self::CACTUS){
 			$block0 = $this->getSide(2);
@@ -83,7 +83,7 @@ class Cactus extends Transparent{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

@@ -22,12 +22,12 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine;
-use PocketMine\NBT;
+use PocketMine\NBT\NBT as NBT;
 
 class Long extends NamedTag{
 
 	public function getType(){
-		return NBT\TAG_Long;
+		return NBT::TAG_Long;
 	}
 
 	public function read(NBT $nbt){

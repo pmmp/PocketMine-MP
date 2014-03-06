@@ -225,7 +225,7 @@ class LevelAPI{
 					switch($index){
 						case "Items":
 							$tag = new Enum("Items", array());
-							$tag->setTagType(NBT\TAG_Compound);
+							$tag->setTagType(NBT::TAG_Compound);
 							foreach($data as $slot => $fields){
 								$tag[(int) $slot] = new Compound(false, array(
 									"Count" => new Byte("Count", $fields["Count"]),

@@ -25,7 +25,7 @@ use PocketMine;
 
 class Wool extends Solid{
 	public function __construct($meta = 0){
-		parent::__construct(WOOL, $meta, "Wool");
+		parent::__construct(self::WOOL, $meta, "Wool");
 		$names = array(
 			0 => "White Wool",
 			1 => "Orange Wool",

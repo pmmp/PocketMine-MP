@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class DiamondOre extends Solid{
 	public function __construct(){
-		parent::__construct(DIAMOND_ORE, 0, "Diamond Ore");
+		parent::__construct(self::DIAMOND_ORE, 0, "Diamond Ore");
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -44,7 +44,7 @@ class DiamondOre extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
 				array(DIAMOND, 0, 1),

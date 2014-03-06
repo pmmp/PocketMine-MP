@@ -32,7 +32,7 @@ class Leaves extends Transparent{
 	const JUNGLE = 3;
 
 	public function __construct($meta = 0){
-		parent::__construct(LEAVES, $meta, "Leaves");
+		parent::__construct(self::LEAVES, $meta, "Leaves");
 		$names = array(
 			self::OAK => "Oak Leaves",
 			self::SPRUCE => "Spruce Leaves",
@@ -140,18 +140,18 @@ class Leaves extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$this->meta |= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		$drops = array();
 		if($item->isShears()){
 			$drops[] = array(LEAVES, $this->meta & 0x03, 1);
 		} else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = array(ItemItem::SAPLING, $this->meta & 0x03, 1);
+				$drops[] = array(Item::SAPLING, $this->meta & 0x03, 1);
 			}
 			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
 				$drops[] = array(APPLE, 0, 1);

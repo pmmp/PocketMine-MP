@@ -27,7 +27,7 @@ use PocketMine;
 
 class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(SPAWN_EGG, 0, $count, "Spawn Egg");
+		parent::__construct(self::SPAWN_EGG, 0, $count, "Spawn Egg");
 		$this->meta = $meta;
 		$this->isActivable = true;
 	}

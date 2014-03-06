@@ -74,36 +74,36 @@ class AsyncMultipleQueue extends Thread{
 	public function run(){
 		while($this->stop === false){
 			if(isset($this->input{5})){ //len 6 min
-				$rID = Utils::readInt($this->get(4));
-				switch(Utils::readShort($this->get(2), false)){
+				$rID = \PocketMine\Utils\Utils::readInt($this->get(4));
+				switch(\PocketMine\Utils\Utils::readShort($this->get(2), false)){
 					case ASYNC_CURL_GET:
-						$url = $this->get(Utils::readShort($this->get(2), false));
-						$timeout = Utils::readShort($this->get(2));
+						$url = $this->get(\PocketMine\Utils\Utils::readShort($this->get(2), false));
+						$timeout = \PocketMine\Utils\Utils::readShort($this->get(2));
 
-						$res = (string) Utils::curl_get($url, $timeout);
+						$res = (string) \PocketMine\Utils\Utils::curl_get($url, $timeout);
 						$this->lock();
-						$this->output .= Utils::writeInt($rID) . Utils::writeShort(ASYNC_CURL_GET) . Utils::writeInt(strlen($res)) . $res;
+						$this->output .= \PocketMine\Utils\Utils::writeInt($rID) . \PocketMine\Utils\Utils::writeShort(ASYNC_CURL_GET) . \PocketMine\Utils\Utils::writeInt(strlen($res)) . $res;
 						$this->unlock();
 						break;
 					case ASYNC_CURL_POST:
-						$url = $this->get(Utils::readShort($this->get(2), false));
-						$timeout = Utils::readShort($this->get(2));
-						$cnt = Utils::readShort($this->get(2), false);
+						$url = $this->get(\PocketMine\Utils\Utils::readShort($this->get(2), false));
+						$timeout = \PocketMine\Utils\Utils::readShort($this->get(2));
+						$cnt = \PocketMine\Utils\Utils::readShort($this->get(2), false);
 						$d = array();
 						for($c = 0; $c < $cnt; ++$c){
-							$key = $this->get(Utils::readShort($this->get(2), false));
-							$d[$key] = $this->get(Utils::readInt($this->get(4)));
+							$key = $this->get(\PocketMine\Utils\Utils::readShort($this->get(2), false));
+							$d[$key] = $this->get(\PocketMine\Utils\Utils::readInt($this->get(4)));
 						}
-						$res = (string) Utils::curl_post($url, $d, $timeout);
+						$res = (string) \PocketMine\Utils\Utils::curl_post($url, $d, $timeout);
 						$this->lock();
-						$this->output .= Utils::writeInt($rID) . Utils::writeShort(ASYNC_CURL_POST) . Utils::writeInt(strlen($res)) . $res;
+						$this->output .= \PocketMine\Utils\Utils::writeInt($rID) . \PocketMine\Utils\Utils::writeShort(ASYNC_CURL_POST) . \PocketMine\Utils\Utils::writeInt(strlen($res)) . $res;
 						$this->unlock();
 						break;
 					case ASYNC_FUNCTION:
-						$function = $this->get(Utils::readShort($this->get(2), false));
-						$params = unserialize($this->get(Utils::readInt($this->get(4))));
+						$function = $this->get(\PocketMine\Utils\Utils::readShort($this->get(2), false));
+						$params = unserialize($this->get(\PocketMine\Utils\Utils::readInt($this->get(4))));
 						$res = serialize(@call_user_func_array($function, $params));
-						$this->output .= Utils::writeInt($rID) . Utils::writeShort(ASYNC_FUNCTION) . Utils::writeInt(strlen($res)) . $res;
+						$this->output .= \PocketMine\Utils\Utils::writeInt($rID) . \PocketMine\Utils\Utils::writeShort(ASYNC_FUNCTION) . \PocketMine\Utils\Utils::writeInt(strlen($res)) . $res;
 						break;
 				}
 			}

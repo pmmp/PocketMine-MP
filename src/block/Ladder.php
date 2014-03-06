@@ -26,13 +26,13 @@ use PocketMine\Item\Item as Item;
 
 class Ladder extends Transparent{
 	public function __construct($meta = 0){
-		parent::__construct(LADDER, $meta, "Ladder");
+		parent::__construct(self::LADDER, $meta, "Ladder");
 		$this->isSolid = false;
 		$this->isFullBlock = false;
 		$this->hardness = 2;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false){
 			$faces = array(
 				2 => 2,
@@ -63,7 +63,7 @@ class Ladder extends Transparent{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

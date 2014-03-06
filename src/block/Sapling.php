@@ -34,7 +34,7 @@ class Sapling extends Flowable{
 	const BURN_TIME = 5;
 
 	public function __construct($meta = Sapling::OAK){
-		parent::__construct(SAPLING, $meta, "Sapling");
+		parent::__construct(self::SAPLING, $meta, "Sapling");
 		$this->isActivable = true;
 		$names = array(
 			0 => "Oak Sapling",
@@ -46,7 +46,7 @@ class Sapling extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -57,8 +57,8 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function onActivate(Item $item, Player $player){
-		if($item->getID() === ItemItem::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+	public function onActivate(Item $item, PocketMine\Player $player){
+		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
@@ -97,7 +97,7 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);

@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class Ice extends Transparent{
 	public function __construct(){
-		parent::__construct(ICE, 0, "Ice");
+		parent::__construct(self::ICE, 0, "Ice");
 		$this->hardness = 2.5;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0){
 			$this->level->setBlock($this, new Water(), true, false, true);
 		} else{
@@ -40,7 +40,7 @@ class Ice extends Transparent{
 		return true;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -60,7 +60,7 @@ class Ice extends Transparent{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array();
 	}
 }

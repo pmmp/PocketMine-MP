@@ -26,6 +26,7 @@ namespace PocketMine\Level;
 
 use PocketMine\Block\Air as Air;
 use PocketMine\Block\Block as Block;
+use PocketMine\Item\Item as Item;
 use PocketMine\Level\Generator\Generator as Generator;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound as Compound;
@@ -253,13 +254,13 @@ class Level{
 	protected function doSaveRoundExtra(){
 		foreach($this->usedChunks as $index => $d){
 			LevelFormat::getXZ($index, $X, $Z);
-			$nbt = new NBT(NBT\BIG_ENDIAN);
+			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->setData(new Compound("", array(
 				"Entities" => new Enum("Entities", array()),
 				"TileEntities" => new Enum("TileEntities", array()),
 			)));
-			$nbt->Entities->setTagType(NBT\TAG_Compound);
-			$nbt->TileEntities->setTagType(NBT\TAG_Compound);
+			$nbt->Entities->setTagType(NBT::TAG_Compound);
+			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 
 			$i = 0;
 			foreach($this->chunkEntities[$index] as $entity){
@@ -285,7 +286,7 @@ class Level{
 	public function getBlockRaw(Vector3 $pos){
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 
-		return BlockBlock::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
+		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	public function getBlock(Vector3 $pos){
@@ -294,7 +295,7 @@ class Level{
 		}
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 
-		return BlockBlock::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
+		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){

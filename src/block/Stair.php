@@ -36,7 +36,7 @@ class Stair extends Transparent{
 		$this->hardness = 30;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 0,
 			1 => 2,
@@ -52,7 +52,7 @@ class Stair extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array($this->id, 0, 1),

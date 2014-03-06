@@ -20,7 +20,7 @@
 */
 
 namespace PocketMine\Level\Generator\Noise;
-
+use PocketMine\Utils\Random as Random;
 use PocketMine;
 
 class Perlin extends Generator{

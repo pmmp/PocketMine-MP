@@ -25,7 +25,7 @@ use PocketMine;
 
 class DeadBush extends Flowable{
 	public function __construct(){
-		parent::__construct(DEAD_BUSH, 0, "Dead Bush");
+		parent::__construct(self::DEAD_BUSH, 0, "Dead Bush");
 		//$this->isReplaceable = true;
 		$this->hardness = 0;
 	}

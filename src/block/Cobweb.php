@@ -26,13 +26,13 @@ use PocketMine\Item\Item as Item;
 
 class Cobweb extends Flowable{
 	public function __construct(){
-		parent::__construct(COBWEB, 0, "Cobweb");
+		parent::__construct(self::COBWEB, 0, "Cobweb");
 		$this->isSolid = true;
 		$this->isFullBlock = false;
 		$this->hardness = 25;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array();
 	}
 }

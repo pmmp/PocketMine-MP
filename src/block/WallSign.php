@@ -25,7 +25,7 @@ use PocketMine;
 
 class WallSign extends SignPost{
 	public function __construct($meta = 0){
-		TransparentBlock::__construct(WALL_SIGN, $meta, "Wall Sign");
+		Transparent::__construct(self::WALL_SIGN, $meta, "Wall Sign");
 	}
 
 	public function onUpdate($type){

@@ -26,7 +26,7 @@ use PocketMine\Item\Item as Item;
 
 class RedstoneOre extends Solid{
 	public function __construct(){
-		parent::__construct(REDSTONE_ORE, 0, "Redstone Ore");
+		parent::__construct(self::REDSTONE_ORE, 0, "Redstone Ore");
 		$this->hardness = 15;
 	}
 
@@ -41,7 +41,7 @@ class RedstoneOre extends Solid{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 2){
 			return array(
 				array(Redstone\REDSTONE_DUST, 0, mt_rand(4, 5)),

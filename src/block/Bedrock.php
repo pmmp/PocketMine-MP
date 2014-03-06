@@ -26,12 +26,12 @@ use PocketMine\Item\Item as Item;
 
 class Bedrock extends Solid{
 	public function __construct(){
-		parent::__construct(BEDROCK, 0, "Bedrock");
+		parent::__construct(self::BEDROCK, 0, "Bedrock");
 		$this->breakable = false;
 		$this->hardness = 18000000;
 	}
 
-	public function isBreakable(Item $item, Player $player){
+	public function isBreakable(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return true;
 		}

@@ -22,19 +22,17 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine;
-use PocketMine\NBT;
+use PocketMine\NBT\NBT as NBT;
 
 class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 
 	public function __construct($name = "", $value = array()){
 		$this->name = $name;
-		if($value !== false){
-			$this->value = $value;
-		}
+		$this->value = $value;
 	}
 
 	public function getType(){
-		return NBT\TAG_Compound;
+		return NBT::TAG_Compound;
 	}
 
 	public function rewind(){
@@ -77,7 +75,7 @@ class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 
 	public function &__get($name){
 		$ret = isset($this->value[$name]) ? $this->value[$name] : false;
-		if(!is_object($ret) or $ret instanceof ArrayAccess){
+		if(!is_object($ret) or $ret instanceof \ArrayAccess){
 			return $ret;
 		} else{
 			return $ret->getValue();
@@ -85,10 +83,10 @@ class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 	}
 
 	public function __set($name, $value){
-		if($value instanceof NBTTag){
+		if($value instanceof Tag){
 			$this->value[$name] = $value;
 		} elseif(isset($this->value[$name])){
-			if($value instanceof NamedNBTTag and $value->getName() !== "" and $value->getName() !== false){
+			if($value instanceof NamedTag and $value->getName() !== "" and $value->getName() !== false){
 				$this->value[$value->getName()]->setValue($value);
 			} else{
 				$this->value[$name]->setValue($value);
@@ -108,7 +106,7 @@ class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 		$this->value = array();
 		do{
 			$tag = $nbt->readTag();
-			if($tag instanceof NamedNBTTag and $tag->getName() !== ""){
+			if($tag instanceof NamedTag and $tag->getName() !== ""){
 				$this->value[$tag->getName()] = $tag;
 			} elseif(!($tag instanceof End)){
 				$this->value[] = $tag;

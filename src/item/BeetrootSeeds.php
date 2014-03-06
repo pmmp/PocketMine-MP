@@ -26,7 +26,7 @@ use PocketMine\Block\Block as Block;
 
 class BeetrootSeeds extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(BEETROOT_BLOCK);
-		parent::__construct(BEETROOT_SEEDS, 0, $count, "Beetroot Seeds");
+		$this->block = Block::get(Item::BEETROOT_BLOCK);
+		parent::__construct(self::BEETROOT_SEEDS, 0, $count, "Beetroot Seeds");
 	}
 }

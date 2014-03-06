@@ -31,18 +31,18 @@ class Wood extends Solid{
 	const JUNGLE = 3;
 
 	public function __construct($meta = 0){
-		parent::__construct(WOOD, $meta, "Wood");
+		parent::__construct(self::WOOD, $meta, "Wood");
 		$names = array(
-			WoodBlock::OAK => "Oak Wood",
-			WoodBlock::SPRUCE => "Spruce Wood",
-			WoodBlock::BIRCH => "Birch Wood",
-			WoodBlock::JUNGLE => "Jungle Wood",
+			self::OAK => "Oak Wood",
+			self::SPRUCE => "Spruce Wood",
+			self::BIRCH => "Birch Wood",
+			self::JUNGLE => "Jungle Wood",
 		);
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 10;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 0,
 			1 => 0,
@@ -58,7 +58,7 @@ class Wood extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);

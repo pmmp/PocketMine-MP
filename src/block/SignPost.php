@@ -26,13 +26,13 @@ use PocketMine\Item\Item as Item;
 
 class SignPost extends Transparent{
 	public function __construct($meta = 0){
-		parent::__construct(SIGN_POST, $meta, "Sign Post");
+		parent::__construct(self::SIGN_POST, $meta, "Sign Post");
 		$this->isSolid = false;
 		$this->isFullBlock = false;
 		$this->hardness = 5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($face !== 0){
 			$faces = array(
 				2 => 2,
@@ -70,15 +70,15 @@ class SignPost extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item $item, PocketMine\Player $player){
 		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
-			array(ItemItem::SIGN, 0, 1),
+			array(Item::SIGN, 0, 1),
 		);
 	}
 }

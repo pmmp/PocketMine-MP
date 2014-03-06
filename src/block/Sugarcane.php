@@ -27,17 +27,17 @@ use PocketMine;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){
-		parent::__construct(SUGARCANE_BLOCK, $meta, "Sugarcane");
+		parent::__construct(self::SUGARCANE_BLOCK, $meta, "Sugarcane");
 		$this->hardness = 0;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array(SUGARCANE, 0, 1),
 		);
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player){
 		if($item->getID() === self::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
@@ -94,7 +94,7 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === self::SUGARCANE_BLOCK){
 			$this->level->setBlock($block, new Sugarcane(), true, false, true);

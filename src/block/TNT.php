@@ -26,13 +26,13 @@ use PocketMine\Item\Item as Item;
 
 class TNT extends Solid{
 	public function __construct(){
-		parent::__construct(TNT, 0, "TNT");
+		parent::__construct(self::TNT, 0, "TNT");
 		$this->hardness = 0;
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item $item, Player $player){
-		if($item->getID() === ItemItem::FLINT_STEEL){
+	public function onActivate(Item $item, PocketMine\Player $player){
+		if($item->getID() === Item::FLINT_STEEL){
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}

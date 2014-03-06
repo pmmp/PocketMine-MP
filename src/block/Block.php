@@ -24,7 +24,10 @@
  */
 namespace PocketMine\Block;
 use PocketMine;
+use PocketMine\Player as Player;
+use PocketMine\Item\Item as Item;
 use PocketMine\Level\Position as Position;
+use PocketMine\Level\Level as Level;
 
 abstract class Block extends Position{
 	const AIR = 0;
@@ -224,131 +227,131 @@ abstract class Block extends Position{
 	public $z = 0;
 
 	public static function init(){
-		if(count(self::$init) === 0){
-			self::$init = array(
-				AIR => new Air(),
-				STONE => new Stone(),
-				GRASS => new Grass(),
-				DIRT => new Dirt(),
-				COBBLESTONE => new Cobblestone(),
-				PLANKS => new Planks(),
-				SAPLING => new Sapling(),
-				BEDROCK => new Bedrock(),
-				WATER => new Water(),
-				STILL_WATER => new StillWater(),
-				LAVA => new Lava(),
-				STILL_LAVA => new StillLava(),
-				SAND => new Sand(),
-				GRAVEL => new Gravel(),
-				GOLD_ORE => new GoldOre(),
-				IRON_ORE => new IronOre(),
-				COAL_ORE => new CoalOre(),
-				WOOD => new Wood(),
-				LEAVES => new Leaves(),
-				SPONGE => new Sponge(),
-				GLASS => new Glass(),
-				LAPIS_ORE => new LapisOre(),
-				LAPIS_BLOCK => new Lapis(),
-				SANDSTONE => new Sandstone(),
-				BED_BLOCK => new Bed(),
-				COBWEB => new Cobweb(),
-				TALL_GRASS => new TallGrass(),
-				DEAD_BUSH => new DeadBush(),
-				WOOL => new Wool(),
-				DANDELION => new Dandelion(),
-				CYAN_FLOWER => new CyanFlower(),
-				BROWN_MUSHROOM => new BrownMushroom(),
-				RED_MUSHROOM => new RedMushRoom(),
-				GOLD_BLOCK => new Gold(),
-				IRON_BLOCK => new Iron(),
-				DOUBLE_SLAB => new DoubleSlab(),
-				SLAB => new Slab(),
-				BRICKS_BLOCK => new Bricks(),
-				TNT => new TNT(),
-				BOOKSHELF => new Bookshelf(),
-				MOSS_STONE => new MossStone(),
-				OBSIDIAN => new Obsidian(),
-				TORCH => new Torch(),
-				FIRE => new Fire(),
+		if(count(self::$list) === 0){
+			self::$list = array(
+				self::AIR => new Air(),
+				self::STONE => new Stone(),
+				self::GRASS => new Grass(),
+				self::DIRT => new Dirt(),
+				self::COBBLESTONE => new Cobblestone(),
+				self::PLANKS => new Planks(),
+				self::SAPLING => new Sapling(),
+				self::BEDROCK => new Bedrock(),
+				self::WATER => new Water(),
+				self::STILL_WATER => new StillWater(),
+				self::LAVA => new Lava(),
+				self::STILL_LAVA => new StillLava(),
+				self::SAND => new Sand(),
+				self::GRAVEL => new Gravel(),
+				self::GOLD_ORE => new GoldOre(),
+				self::IRON_ORE => new IronOre(),
+				self::COAL_ORE => new CoalOre(),
+				self::WOOD => new Wood(),
+				self::LEAVES => new Leaves(),
+				self::SPONGE => new Sponge(),
+				self::GLASS => new Glass(),
+				self::LAPIS_ORE => new LapisOre(),
+				self::LAPIS_BLOCK => new Lapis(),
+				self::SANDSTONE => new Sandstone(),
+				self::BED_BLOCK => new Bed(),
+				self::COBWEB => new Cobweb(),
+				self::TALL_GRASS => new TallGrass(),
+				self::DEAD_BUSH => new DeadBush(),
+				self::WOOL => new Wool(),
+				self::DANDELION => new Dandelion(),
+				self::CYAN_FLOWER => new CyanFlower(),
+				self::BROWN_MUSHROOM => new BrownMushroom(),
+				self::RED_MUSHROOM => new RedMushRoom(),
+				self::GOLD_BLOCK => new Gold(),
+				self::IRON_BLOCK => new Iron(),
+				self::DOUBLE_SLAB => new DoubleSlab(),
+				self::SLAB => new Slab(),
+				self::BRICKS_BLOCK => new Bricks(),
+				self::TNT => new TNT(),
+				self::BOOKSHELF => new Bookshelf(),
+				self::MOSS_STONE => new MossStone(),
+				self::OBSIDIAN => new Obsidian(),
+				self::TORCH => new Torch(),
+				self::FIRE => new Fire(),
 
-				WOOD_STAIRS => new WoodStairs(),
-				CHEST => new Chest(),
+				self::WOOD_STAIRS => new WoodStairs(),
+				self::CHEST => new Chest(),
 
-				DIAMOND_ORE => new DiamondOre(),
-				DIAMOND_BLOCK => new Diamond(),
-				WORKBENCH => new Workbench(),
-				WHEAT_BLOCK => new Wheat(),
-				FARMLAND => new Farmland(),
-				FURNACE => new Furnace(),
-				BURNING_FURNACE => new BurningFurnace(),
-				SIGN_POST => new SignPost(),
-				WOOD_DOOR_BLOCK => new WoodDoor(),
-				LADDER => new Ladder(),
+				self::DIAMOND_ORE => new DiamondOre(),
+				self::DIAMOND_BLOCK => new Diamond(),
+				self::WORKBENCH => new Workbench(),
+				self::WHEAT_BLOCK => new Wheat(),
+				self::FARMLAND => new Farmland(),
+				self::FURNACE => new Furnace(),
+				self::BURNING_FURNACE => new BurningFurnace(),
+				self::SIGN_POST => new SignPost(),
+				self::WOOD_DOOR_BLOCK => new WoodDoor(),
+				self::LADDER => new Ladder(),
 
-				COBBLESTONE_STAIRS => new CobblestoneStairs(),
-				WALL_SIGN => new WallSign(),
+				self::COBBLESTONE_STAIRS => new CobblestoneStairs(),
+				self::WALL_SIGN => new WallSign(),
 
-				IRON_DOOR_BLOCK => new IronDoor(),
-				REDSTONE_ORE => new RedstoneOre(),
-				GLOWING_REDSTONE_ORE => new GlowingRedstoneOre(),
+				self::IRON_DOOR_BLOCK => new IronDoor(),
+				self::REDSTONE_ORE => new RedstoneOre(),
+				self::GLOWING_REDSTONE_ORE => new GlowingRedstoneOre(),
 
-				SNOW_LAYER => new SnowLayer(),
-				ICE => new Ice(),
-				SNOW_BLOCK => new Snow(),
-				CACTUS => new Cactus(),
-				CLAY_BLOCK => new Clay(),
-				SUGARCANE_BLOCK => new Sugarcane(),
+				self::SNOW_LAYER => new SnowLayer(),
+				self::ICE => new Ice(),
+				self::SNOW_BLOCK => new Snow(),
+				self::CACTUS => new Cactus(),
+				self::CLAY_BLOCK => new Clay(),
+				self::SUGARCANE_BLOCK => new Sugarcane(),
 
-				FENCE => new Fence(),
-				PUMPKIN => new Pumpkin(),
-				NETHERRACK => new Netherrack(),
-				SOUL_SAND => new SoulSand(),
-				GLOWSTONE_BLOCK => new Glowstone(),
+				self::FENCE => new Fence(),
+				self::PUMPKIN => new Pumpkin(),
+				self::NETHERRACK => new Netherrack(),
+				self::SOUL_SAND => new SoulSand(),
+				self::GLOWSTONE_BLOCK => new Glowstone(),
 
-				LIT_PUMPKIN => new LitPumpkin(),
-				CAKE_BLOCK => new Cake(),
+				self::LIT_PUMPKIN => new LitPumpkin(),
+				self::CAKE_BLOCK => new Cake(),
 
-				TRAPDOOR => new Trapdoor(),
+				self::TRAPDOOR => new Trapdoor(),
 
-				STONE_BRICKS => new StoneBricks(),
+				self::STONE_BRICKS => new StoneBricks(),
 
-				IRON_BARS => new IronBars(),
-				GLASS_PANE => new GlassPane(),
-				MELON_BLOCK => new Melon(),
-				PUMPKIN_STEM => new PumpkinStem(),
-				MELON_STEM => new MelonStem(),
+				self::IRON_BARS => new IronBars(),
+				self::GLASS_PANE => new GlassPane(),
+				self::MELON_BLOCK => new Melon(),
+				self::PUMPKIN_STEM => new PumpkinStem(),
+				self::MELON_STEM => new MelonStem(),
 
-				FENCE_GATE => new FenceGate(),
-				BRICK_STAIRS => new BrickStairs(),
-				STONE_BRICK_STAIRS => new StoneBrickStairs(),
+				self::FENCE_GATE => new FenceGate(),
+				self::BRICK_STAIRS => new BrickStairs(),
+				self::STONE_BRICK_STAIRS => new StoneBrickStairs(),
 
-				NETHER_BRICKS => new NetherBricks(),
+				self::NETHER_BRICKS => new NetherBrick(),
 
-				NETHER_BRICKS_STAIRS => new NetherBricksStairs(),
+				self::NETHER_BRICKS_STAIRS => new NetherBrickStairs(),
 
-				SANDSTONE_STAIRS => new SandstoneStairs(),
+				self::SANDSTONE_STAIRS => new SandstoneStairs(),
 
-				SPRUCE_WOOD_STAIRS => new SpruceWoodStairs(),
-				BIRCH_WOOD_STAIRS => new BirchWoodStairs(),
-				JUNGLE_WOOD_STAIRS => new JungleWoodStairs(),
-				STONE_WALL => new StoneWall(),
+				self::SPRUCE_WOOD_STAIRS => new SpruceWoodStairs(),
+				self::BIRCH_WOOD_STAIRS => new BirchWoodStairs(),
+				self::JUNGLE_WOOD_STAIRS => new JungleWoodStairs(),
+				self::STONE_WALL => new StoneWall(),
 
-				CARROT_BLOCK => new Carrot(),
-				POTATO_BLOCK => new Potato(),
+				self::CARROT_BLOCK => new Carrot(),
+				self::POTATO_BLOCK => new Potato(),
 
-				QUARTZ_BLOCK => new Quartz(),
-				QUARTZ_STAIRS => new QuartzStairs(),
-				DOUBLE_WOOD_SLAB => new DoubleWoodSlab(),
-				WOOD_SLAB => new WoodSlab(),
+				self::QUARTZ_BLOCK => new Quartz(),
+				self::QUARTZ_STAIRS => new QuartzStairs(),
+				self::DOUBLE_WOOD_SLAB => new DoubleWoodSlab(),
+				self::WOOD_SLAB => new WoodSlab(),
 
-				HAY_BALE => new HayBale(),
-				CARPET => new Carpet(),
+				self::HAY_BALE => new HayBale(),
+				self::CARPET => new Carpet(),
 
-				COAL_BLOCK => new Coal(),
+				self::COAL_BLOCK => new Coal(),
 
-				BEETROOT_BLOCK => new Beetroot(),
-				STONECUTTER => new Stonecutter(),
-				GLOWING_OBSIDIAN => new GlowingObsidian(),
+				self::BEETROOT_BLOCK => new Beetroot(),
+				self::STONECUTTER => new Stonecutter(),
+				self::GLOWING_OBSIDIAN => new GlowingObsidian(),
 			);
 		}
 	}
@@ -432,12 +435,12 @@ abstract class Block extends Position{
 	/**
 	 * Returns an array of Item objects to be dropped
 	 *
-	 * @param ItemItem $item
+	 * @param Item $item
 	 * @param Player   $player
 	 *
 	 * @return array
 	 */
-	public function getDrops(ItemItem $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if(!isset(self::$class[$this->id])){ //Unknown blocks
 			return array();
 		} else{
@@ -450,13 +453,13 @@ abstract class Block extends Position{
 	/**
 	 * Returns the seconds that this block takes to be broken using an specific Item
 	 *
-	 * @param ItemItem $item
+	 * @param Item $item
 	 * @param Player   $player
 	 *
 	 * @return float
 	 */
 
-	public function getBreakTime(ItemItem $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.15;
 		}
@@ -473,7 +476,7 @@ abstract class Block extends Position{
 	 */
 	public function getSide($side){
 		$v = parent::getSide($side);
-		if($this->level instanceof LevelLevel){
+		if($this->level instanceof Level){
 			return $this->level->getBlock($v);
 		}
 
@@ -487,27 +490,27 @@ abstract class Block extends Position{
 	/**
 	 * Returns if the item can be broken with an specific Item
 	 *
-	 * @param ItemItem $item
+	 * @param Item $item
 	 * @param Player   $player
 	 *
 	 * @return bool
 	 */
-	abstract function isBreakable(ItemItem $item, Player $player);
+	abstract function isBreakable(Item $item, PocketMine\Player $player);
 
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
-	 * @param ItemItem $item
+	 * @param Item $item
 	 * @param Player   $player
 	 *
 	 * @return mixed
 	 */
-	abstract function onBreak(ItemItem $item, Player $player);
+	abstract function onBreak(Item $item, PocketMine\Player $player);
 
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param ItemItem $item
+	 * @param Item $item
 	 * @param Player   $player
 	 * @param Block    $block
 	 * @param Block    $target
@@ -518,17 +521,17 @@ abstract class Block extends Position{
 	 *
 	 * @return bool
 	 */
-	abstract function place(ItemItem $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	abstract function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
-	 * @param ItemItem $item
+	 * @param Item $item
 	 * @param Player   $player
 	 *
 	 * @return bool
 	 */
-	abstract function onActivate(ItemItem $item, Player $player);
+	abstract function onActivate(Item $item, PocketMine\Player $player);
 
 	/**
 	 * Fires a block update on the Block

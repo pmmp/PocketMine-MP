@@ -659,4 +659,4 @@ class Utils{
 
 }
 
-define('Utils\ENDIANNESS', (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Utils::BIG_ENDIAN : Utils::LITTLE_ENDIAN));
+define("PocketMine\\Utils\\ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Utils::BIG_ENDIAN : Utils::LITTLE_ENDIAN));

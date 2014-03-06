@@ -198,10 +198,10 @@ class Player extends RealHuman{
 
 				"NameTag" => new String("NameTag", $name),
 			));
-			$nbt->Pos->setTagType(NBT\TAG_Double);
-			$nbt->Inventory->setTagType(NBT\TAG_Compound);
-			$nbt->Motion->setTagType(NBT\TAG_Double);
-			$nbt->Rotation->setTagType(NBT\TAG_Float);
+			$nbt->Pos->setTagType(NBT::TAG_Double);
+			$nbt->Inventory->setTagType(NBT::TAG_Compound);
+			$nbt->Motion->setTagType(NBT::TAG_Double);
+			$nbt->Rotation->setTagType(NBT::TAG_Float);
 			if(file_exists(\PocketMine\DATA . "players/" . $iname . ".yml")){
 				$data = new Config(\PocketMine\DATA . "players/" . $iname . ".yml", Config::YAML, array());
 				$nbt->playerGameType = (int) $data->get("gamemode");
@@ -257,7 +257,7 @@ class Player extends RealHuman{
 			}
 
 		} else{
-			$nbt = new NBT(NBT\BIG_ENDIAN);
+			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->read(file_get_contents(\PocketMine\DATA . "players/" . $iname . ".dat"));
 			$nbt = $nbt->getData();
 		}
@@ -269,7 +269,7 @@ class Player extends RealHuman{
 
 	public static function saveOffline($name, Compound $nbtTag){
 		ServerAPI::request()->handle("player.offline.save", $nbtTag);
-		$nbt = new NBT(NBT\BIG_ENDIAN);
+		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($nbtTag);
 		file_put_contents(\PocketMine\DATA . "players/" . strtolower($name) . ".dat", $nbt->write());
 	}
@@ -1855,25 +1855,25 @@ class Player extends RealHuman{
 				switch($packet->event){
 					case 9: //Eating
 						$items = array(
-							ItemItem::APPLE => 4,
-							ItemItem::MUSHROOM_STEW => 10,
-							ItemItem::BEETROOT_SOUP => 10,
-							ItemItem::BREAD => 5,
-							ItemItem::RAW_PORKCHOP => 3,
-							ItemItem::COOKED_PORKCHOP => 8,
-							ItemItem::RAW_BEEF => 3,
-							ItemItem::STEAK => 8,
-							ItemItem::COOKED_CHICKEN => 6,
-							ItemItem::RAW_CHICKEN => 2,
-							ItemItem::MELON_SLICE => 2,
-							ItemItem::GOLDEN_APPLE => 10,
-							ItemItem::PUMPKIN_PIE => 8,
-							ItemItem::CARROT => 4,
-							ItemItem::POTATO => 1,
-							ItemItem::BAKED_POTATO => 6,
-							//ItemItem::COOKIE => 2,
-							//ItemItem::COOKED_FISH => 5,
-							//ItemItem::RAW_FISH => 2,
+							Item::APPLE => 4,
+							Item::MUSHROOM_STEW => 10,
+							Item::BEETROOT_SOUP => 10,
+							Item::BREAD => 5,
+							Item::RAW_PORKCHOP => 3,
+							Item::COOKED_PORKCHOP => 8,
+							Item::RAW_BEEF => 3,
+							Item::STEAK => 8,
+							Item::COOKED_CHICKEN => 6,
+							Item::RAW_CHICKEN => 2,
+							Item::MELON_SLICE => 2,
+							Item::GOLDEN_APPLE => 10,
+							Item::PUMPKIN_PIE => 8,
+							Item::CARROT => 4,
+							Item::POTATO => 1,
+							Item::BAKED_POTATO => 6,
+							//Item::COOKIE => 2,
+							//Item::COOKED_FISH => 5,
+							//Item::RAW_FISH => 2,
 						);
 						$slot = $this->getSlot($this->slot);
 						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
@@ -1888,7 +1888,7 @@ class Player extends RealHuman{
 							if($slot->getCount() <= 0){
 								$this->setSlot($this->slot, Item::get(AIR, 0, 0));
 							}
-							if($slot->getID() === ItemItem::MUSHROOM_STEW or $slot->getID() === ItemItem::BEETROOT_SOUP){
+							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){
 								$this->addItem(Item::get(BOWL, 0, 1));
 							}
 						}
@@ -2167,7 +2167,7 @@ class Player extends RealHuman{
 					if($t->namedtag->creator !== $this->username){
 						$t->spawnTo($this);
 					} else{
-						$nbt = new NBT(NBT\LITTLE_ENDIAN);
+						$nbt = new NBT(NBT::LITTLE_ENDIAN);
 						$nbt->read($packet->namedtag);
 						if($nbt->id !== Tile::SIGN){
 							$t->spawnTo($this);

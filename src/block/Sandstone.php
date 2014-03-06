@@ -26,7 +26,7 @@ use PocketMine\Item\Item as Item;
 
 class Sandstone extends Solid{
 	public function __construct($meta = 0){
-		parent::__construct(SANDSTONE, $meta, "Sandstone");
+		parent::__construct(self::SANDSTONE, $meta, "Sandstone");
 		$names = array(
 			0 => "Sandstone",
 			1 => "Chiseled Sandstone",
@@ -36,7 +36,7 @@ class Sandstone extends Solid{
 		$this->hardness = 4;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -56,7 +56,7 @@ class Sandstone extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(SANDSTONE, $this->meta & 0x03, 1),

@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class LitPumpkin extends Solid{
 	public function __construct(){
-		parent::__construct(LIT_PUMPKIN, "Jack o'Lantern");
+		parent::__construct(self::LIT_PUMPKIN, "Jack o'Lantern");
 		$this->hardness = 5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
 			1 => 2,

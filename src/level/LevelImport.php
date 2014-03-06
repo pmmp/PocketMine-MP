@@ -41,7 +41,7 @@ class LevelImport{
 			$tiles = new Config($this->path . "tiles.yml", Config::YAML, unserialize(file_get_contents($this->path . "tileEntities.dat")));
 			$tiles->save();
 		} elseif(file_exists($this->path . "chunks.dat") and file_exists($this->path . "level.dat")){ //Pocket
-			$nbt = new NBT(NBT\LITTLE_ENDIAN);
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
 			$nbt->read(substr(file_get_contents($this->path . "level.dat"), 8));
 			$level = $nbt->getData();
 			if($level->LevelName == ""){

@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class Farmland extends Solid{
 	public function __construct($meta = 0){
-		parent::__construct(FARMLAND, $meta, "Farmland");
+		parent::__construct(self::FARMLAND, $meta, "Farmland");
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array(DIRT, 0, 1),
 		);

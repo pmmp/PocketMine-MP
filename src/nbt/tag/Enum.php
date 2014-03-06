@@ -23,7 +23,7 @@ namespace PocketMine\NBT\Tag;
 
 use PocketMine\NBT\Tag\Enum as TagEnum;
 use PocketMine;
-use PocketMine\NBT;
+use PocketMine\NBT\NBT as NBT;
 
 class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 
@@ -31,13 +31,11 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 
 	public function __construct($name = "", $value = array()){
 		$this->name = $name;
-		if($value !== false){
-			$this->value = $value;
-		}
+		$this->value = $value;
 	}
 
 	public function getType(){
-		return NBT\TAG_Enum;
+		return NBT::TAG_Enum;
 	}
 
 	public function setTagType($type){
@@ -88,7 +86,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 
 	public function &__get($name){
 		$ret = isset($this->value[$name]) ? $this->value[$name] : false;
-		if(!is_object($ret) or $ret instanceof ArrayAccess){
+		if(!is_object($ret) or $ret instanceof \ArrayAccess){
 			return $ret;
 		} else{
 			return $ret->getValue();
@@ -96,7 +94,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 	}
 
 	public function __set($name, $value){
-		if($value instanceof NBTTag){
+		if($value instanceof Tag){
 			$this->value[$name] = $value;
 		} elseif(isset($this->value[$name])){
 			$this->value[$name]->setValue($value);
@@ -117,57 +115,57 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 		$size = $nbt->getInt();
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			switch($this->tagType){
-				case NBT\TAG_Byte:
+				case NBT::TAG_Byte:
 					$tag = new Byte(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Short:
+				case NBT::TAG_Short:
 					$tag = new Short(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Int:
+				case NBT::TAG_Int:
 					$tag = new Int(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Long:
+				case NBT::TAG_Long:
 					$tag = new Long(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Float:
+				case NBT::TAG_Float:
 					$tag = new Float(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Double:
+				case NBT::TAG_Double:
 					$tag = new Double(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Byte_Array:
+				case NBT::TAG_Byte_Array:
 					$tag = new Byte_Array(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_String:
+				case NBT::TAG_String:
 					$tag = new String(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Enum:
+				case NBT::TAG_Enum:
 					$tag = new TagEnum(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Compound:
+				case NBT::TAG_Compound:
 					$tag = new Compound(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
-				case NBT\TAG_Int_Array:
+				case NBT::TAG_Int_Array:
 					$tag = new Int_Array(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
@@ -191,7 +189,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 		$nbt->putByte($this->tagType);
 		$nbt->putInt(count($this->value));
 		foreach($this->value as $tag){
-			if($tag instanceof NBTTag){
+			if($tag instanceof Tag){
 				$tag->write($nbt);
 			}
 		}

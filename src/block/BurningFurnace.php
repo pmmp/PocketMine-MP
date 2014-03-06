@@ -32,12 +32,12 @@ use PocketMine;
 
 class BurningFurnace extends Solid{
 	public function __construct($meta = 0){
-		parent::__construct(BURNING_FURNACE, $meta, "Burning Furnace");
+		parent::__construct(self::BURNING_FURNACE, $meta, "Burning Furnace");
 		$this->isActivable = true;
 		$this->hardness = 17.5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
 			1 => 2,
@@ -59,13 +59,13 @@ class BurningFurnace extends Solid{
 		return true;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item $item, PocketMine\Player $player){
 		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player){
 
 		$t = $this->level->getTile($this);
 		$furnace = false;
@@ -92,7 +92,7 @@ class BurningFurnace extends Solid{
 		return true;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -112,7 +112,7 @@ class BurningFurnace extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		$drops = array();
 		if($item->isPickaxe() >= 1){
 			$drops[] = array(FURNACE, 0, 1);

@@ -28,19 +28,19 @@ use PocketMine;
 
 class Grass extends Solid{
 	public function __construct(){
-		parent::__construct(GRASS, 0, "Grass");
+		parent::__construct(self::GRASS, 0, "Grass");
 		$this->isActivable = true;
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
 			array(DIRT, 0, 1),
 		);
 	}
 
-	public function onActivate(Item $item, Player $player){
-		if($item->getID() === ItemItem::DYE and $item->getMetadata() === 0x0F){
+	public function onActivate(Item $item, PocketMine\Player $player){
+		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}

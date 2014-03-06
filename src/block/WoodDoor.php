@@ -26,14 +26,14 @@ use PocketMine\Item\Item as Item;
 
 class WoodDoor extends Door{
 	public function __construct($meta = 0){
-		parent::__construct(WOOD_DOOR_BLOCK, $meta, "Wood Door Block");
+		parent::__construct(self::WOOD_DOOR_BLOCK, $meta, "Wood Door Block");
 		$this->isActivable = true;
 		$this->hardness = 15;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
-			array(ItemItem::WOODEN_DOOR, 0, 1),
+			array(Item::WOODEN_DOOR, 0, 1),
 		);
 	}
 }

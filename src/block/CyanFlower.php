@@ -26,11 +26,11 @@ use PocketMine\Item\Item as Item;
 
 class CyanFlower extends Flowable{
 	public function __construct(){
-		parent::__construct(CYAN_FLOWER, 0, "Cyan Flower");
+		parent::__construct(self::CYAN_FLOWER, 0, "Cyan Flower");
 		$this->hardness = 0;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){
 			$this->level->setBlock($block, $this, true, false, true);

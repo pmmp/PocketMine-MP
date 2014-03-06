@@ -97,7 +97,7 @@ class Chest extends Spawnable{
 			return false;
 		}
 
-		$nbt = new NBT(NBT\LITTLE_ENDIAN);
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		if($this->isPaired()){
 			$nbt->setData(new Compound("", array(
 				new String("id", Tile::CHEST),

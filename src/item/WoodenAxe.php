@@ -25,7 +25,7 @@ use PocketMine;
 
 class WoodenAxe extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(WOODEN_AXE, 0, $count, "Wooden Axe");
+		parent::__construct(self::WOODEN_AXE, 0, $count, "Wooden Axe");
 	}
 
 }

@@ -25,7 +25,7 @@ use PocketMine;
 
 class SoulSand extends Solid{
 	public function __construct(){
-		parent::__construct(SOUL_SAND, 0, "Soul Sand");
+		parent::__construct(self::SOUL_SAND, 0, "Soul Sand");
 		$this->hardness = 2.5;
 	}
 

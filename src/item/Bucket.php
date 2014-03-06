@@ -31,7 +31,7 @@ use PocketMine;
 
 class Bucket extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(BUCKET, $meta, $count, "Bucket");
+		parent::__construct(self::BUCKET, $meta, $count, "Bucket");
 		$this->isActivable = true;
 		$this->maxStackSize = 1;
 	}
