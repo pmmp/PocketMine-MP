@@ -19,7 +19,10 @@
  *
 */
 
-class FireBlock extends FlowableBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Fire extends Flowable{
 	public function __construct($meta = 0){
 		parent::__construct(FIRE, $meta, "Fire");
 		$this->isReplaceable = true;
@@ -28,7 +31,7 @@ class FireBlock extends FlowableBlock{
 		$this->hardness = 0;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array();
 	}
 
@@ -36,16 +39,16 @@ class FireBlock extends FlowableBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			for($s = 0; $s <= 5; ++$s){
 				$side = $this->getSide($s);
-				if($side->getID() !== AIR and !($side instanceof LiquidBlock)){
+				if($side->getID() !== AIR and !($side instanceof Liquid)){
 					return false;
 				}
 			}
-			$this->level->setBlock($this, new AirBlock(), true, false, true);
+			$this->level->setBlock($this, new Air(), true, false, true);
 
 			return BLOCK_UPDATE_NORMAL;
 		} elseif($type === BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== NETHERRACK){
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
+				$this->level->setBlock($this, new Air(), true, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}

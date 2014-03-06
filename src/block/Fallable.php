@@ -19,16 +19,20 @@
  *
 */
 
-class FlowableBlock extends TransparentBlock{
-	/**
-	 * @param int    $id
-	 * @param int    $meta
-	 * @param string $name
-	 */
+namespace PocketMine\Block;
+use PocketMine;
+
+class Fallable extends Solid{
+
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
-		$this->isFlowable = true;
-		$this->isFullBlock = false;
-		$this->isSolid = false;
+		$this->hasPhysics = true;
+	}
+
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		$ret = $this->level->setBlock($this, $this, true, false, true);
+		ServerAPI::request()->api->block->blockUpdate(clone $this, BLOCK_UPDATE_NORMAL);
+
+		return $ret;
 	}
 }

@@ -19,13 +19,16 @@
  *
 */
 
-class CoalOreBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class CoalOre extends Solid{
 	public function __construct(){
 		parent::__construct(COAL_ORE, 0, "Coal Ore");
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -45,10 +48,10 @@ class CoalOreBlock extends SolidBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(COAL, 0, 1),
+				array(Item\COAL, 0, 1),
 			);
 		} else{
 			return array();

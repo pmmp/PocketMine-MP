@@ -19,13 +19,16 @@
  *
 */
 
-class MossStoneBlock extends SolidBlock{
-	public function __construct(){
-		parent::__construct(MOSS_STONE, 0, "Moss Stone");
+namespace PocketMine\Block;
+use PocketMine;
+
+class MossStone extends Solid{
+	public function __construct($meta){
+		parent::__construct(MOSS_STONE, $meta, "Moss Stone");
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -45,10 +48,10 @@ class MossStoneBlock extends SolidBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(MOSS_STONE, 0, 1),
+				array(MOSS_STONE, $this->meta, 1),
 			);
 		} else{
 			return array();

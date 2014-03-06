@@ -19,7 +19,10 @@
  *
 */
 
-class NetherReactorBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class NetherReactor extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(NETHER_REACTOR, $meta, "Nether Reactor");
 		$this->isActivable = true;

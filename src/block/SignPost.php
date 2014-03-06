@@ -19,7 +19,10 @@
  *
 */
 
-class SignPostBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class SignPost extends Transparent{
 	public function __construct($meta = 0){
 		parent::__construct(SIGN_POST, $meta, "Sign Post");
 		$this->isSolid = false;
@@ -27,7 +30,7 @@ class SignPostBlock extends TransparentBlock{
 		$this->hardness = 5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($face !== 0){
 			$faces = array(
 				2 => 2,
@@ -36,13 +39,13 @@ class SignPostBlock extends TransparentBlock{
 				5 => 5,
 			);
 			if(!isset($faces[$face])){
-				$this->meta = floor((($player->entity->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
-				$this->level->setBlock($block, Block\Block::get(SIGN_POST, $this->meta), true, false, true);
+				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
+				$this->level->setBlock($block, Block::get(SIGN_POST, $this->meta), true, false, true);
 
 				return true;
 			} else{
 				$this->meta = $faces[$face];
-				$this->level->setBlock($block, Block\Block::get(WALL_SIGN, $this->meta), true, false, true);
+				$this->level->setBlock($block, Block::get(WALL_SIGN, $this->meta), true, false, true);
 
 				return true;
 			}
@@ -54,8 +57,9 @@ class SignPostBlock extends TransparentBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop($this, Item\Item::get(SIGN, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), true, true, true);
+				//TODO
+				//ServerAPI::request()->api->entity->drop($this, Item\Item::get(SIGN, 0, 1));
+				$this->level->setBlock($this, new Air(), true, true, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}
@@ -64,15 +68,15 @@ class SignPostBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player){
-		$this->level->setBlock($this, new AirBlock(), true, true, true);
+	public function onBreak(Item\Item $item, Player $player){
+		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
-			array(SIGN, 0, 1),
+			array(Item\SIGN, 0, 1),
 		);
 	}
 }

@@ -19,7 +19,10 @@
  *
 */
 
-class SpongeBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Sponge extends Solid{
 	public function __construct(){
 		parent::__construct(SPONGE, "Sponge");
 		$this->hardness = 3;

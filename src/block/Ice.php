@@ -19,23 +19,26 @@
  *
 */
 
-class IceBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Ice extends Transparent{
 	public function __construct(){
 		parent::__construct(ICE, 0, "Ice");
 		$this->hardness = 2.5;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0){
-			$this->level->setBlock($this, new WaterBlock(), true, false, true);
+			$this->level->setBlock($this, new Water(), true, false, true);
 		} else{
-			$this->level->setBlock($this, new AirBlock(), true, false, true);
+			$this->level->setBlock($this, new Air(), true, false, true);
 		}
 
 		return true;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -55,7 +58,7 @@ class IceBlock extends TransparentBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array();
 	}
 }

@@ -19,7 +19,10 @@
  *
 */
 
-class SnowLayerBlock extends FlowableBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class SnowLayer extends Flowable{
 	public function __construct($meta = 0){
 		parent::__construct(SNOW_LAYER, $meta, "Snow Layer");
 		$this->isReplaceable = true;
@@ -28,9 +31,9 @@ class SnowLayerBlock extends FlowableBlock{
 		$this->hardness = 0.5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
-		if($down instanceof SolidBlock){
+		if($down instanceof Solid){
 			$this->level->setBlock($block, $this, true, false, true);
 
 			return true;
@@ -42,7 +45,7 @@ class SnowLayerBlock extends FlowableBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
+				$this->level->setBlock($this, new Air(), true, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}
@@ -51,10 +54,10 @@ class SnowLayerBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isShovel() !== false){
 			return array(
-				array(SNOWBALL, 0, 1),
+				array(Item\SNOWBALL, 0, 1),
 			);
 		}
 

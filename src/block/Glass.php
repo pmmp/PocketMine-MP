@@ -19,13 +19,16 @@
  *
 */
 
-class GlassBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Glass extends Transparent{
 	public function __construct(){
 		parent::__construct(GLASS, 0, "Glass");
 		$this->hardness = 1.5;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array();
 	}
 }

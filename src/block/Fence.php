@@ -19,7 +19,10 @@
  *
 */
 
-class FenceBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Fence extends Transparent{
 	public function __construct(){
 		parent::__construct(FENCE, 0, "Fence");
 		$this->isFullBlock = false;

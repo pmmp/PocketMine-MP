@@ -19,7 +19,10 @@
  *
 */
 
-class LadderBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Ladder extends Transparent{
 	public function __construct($meta = 0){
 		parent::__construct(LADDER, $meta, "Ladder");
 		$this->isSolid = false;
@@ -27,7 +30,7 @@ class LadderBlock extends TransparentBlock{
 		$this->hardness = 2;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false){
 			$faces = array(
 				2 => 2,
@@ -50,7 +53,7 @@ class LadderBlock extends TransparentBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			/*if($this->getSide(0)->getID() === AIR){ //Replace with common break method
 				ServerAPI::request()->api->entity->drop($this, Item\Item::get(LADDER, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), true, true, true);
+				$this->level->setBlock($this, new Air(), true, true, true);
 				return BLOCK_UPDATE_NORMAL;
 			}*/
 		}
@@ -58,7 +61,7 @@ class LadderBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

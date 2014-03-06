@@ -25,7 +25,11 @@ use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;
 
 class Position extends Vector3{
-	public $level;
+
+	/**
+	 * @var Level
+	 */
+	public $level = null;
 
 	public function __construct($x = 0, $y = 0, $z = 0, Level $level){
 		if(($x instanceof Vector3) === true){

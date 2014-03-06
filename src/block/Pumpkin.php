@@ -19,7 +19,10 @@
  *
 */
 
-class PumpkinBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Pumpkin extends Solid{
 	public function __construct(){
 		parent::__construct(PUMPKIN, "Pumpkin");
 		$this->hardness = 5;

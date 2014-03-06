@@ -19,7 +19,10 @@
  *
 */
 
-class DoubleSlabBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class DoubleSlab extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(DOUBLE_SLAB, $meta, "Double Slab");
 		$names = array(
@@ -35,7 +38,7 @@ class DoubleSlabBlock extends SolidBlock{
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -55,7 +58,7 @@ class DoubleSlabBlock extends SolidBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(SLAB, $this->meta & 0x07, 2),

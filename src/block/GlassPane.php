@@ -19,7 +19,10 @@
  *
 */
 
-class GlassPaneBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class GlassPane extends Transparent{
 	public function __construct(){
 		parent::__construct(GLASS_PANE, 0, "Glass Pane");
 		$this->isFullBlock = false;

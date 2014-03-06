@@ -19,8 +19,11 @@
  *
 */
 
+namespace PocketMine\Block;
+use PocketMine;
 
-class GenericBlock extends Block{
+class Generic extends Block{
+
 	/**
 	 * @param int    $id
 	 * @param int    $meta
@@ -30,51 +33,22 @@ class GenericBlock extends Block{
 		parent::__construct($id, $meta, $name);
 	}
 
-	/**
-	 * @param Item    $item
-	 * @param Player  $player
-	 * @param Block   $block
-	 * @param Block   $target
-	 * @param integer $face
-	 * @param integer $fx
-	 * @param integer $fy
-	 * @param integer $fz
-	 *
-	 * @return mixed
-	 */
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		return $this->level->setBlock($this, $this, true, false, true);
 	}
 
-	/**
-	 * @param Item   $item
-	 * @param Player $player
-	 *
-	 * @return boolean
-	 */
-	public function isBreakable(Item $item, Player $player){
-		return ($this->breakable);
+	public function isBreakable(Item\Item $item, Player $player){
+		return $this->breakable;
 	}
 
-	/**
-	 * @param Item   $item
-	 * @param Player $player
-	 *
-	 * @return mixed
-	 */
-	public function onBreak(Item $item, Player $player){
-		return $this->level->setBlock($this, new AirBlock(), true, false, true);
+	public function onBreak(Item\Item $item, Player $player){
+		return $this->level->setBlock($this, new Air(), true, false, true);
 	}
 
-	/**
-	 * @param integer $type
-	 *
-	 * @return boolean
-	 */
 	public function onUpdate($type){
 		if($this->hasPhysics === true and $type === BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() === AIR or ($down instanceof LiquidBlock)){
+			if($down->getID() === AIR or ($down instanceof Liquid)){
 				$data = array(
 					"x" => $this->x + 0.5,
 					"y" => $this->y + 0.5,
@@ -82,10 +56,10 @@ class GenericBlock extends Block{
 					"Tile" => $this->id,
 				);
 				$server = ServerAPI::request();
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
+				$this->level->setBlock($this, new Air(), false, false, true);
 				//TODO
-				$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
-				$e->spawnToAll();
+				//$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
+				//$e->spawnToAll();
 				$server->api->block->blockUpdateAround(clone $this, BLOCK_UPDATE_NORMAL, 1);
 			}
 
@@ -95,13 +69,7 @@ class GenericBlock extends Block{
 		return false;
 	}
 
-	/**
-	 * @param Item   $item
-	 * @param Player $player
-	 *
-	 * @return boolean
-	 */
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item\Item $item, Player $player){
 		return $this->isActivable;
 	}
 }

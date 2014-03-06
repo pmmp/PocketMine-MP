@@ -19,7 +19,10 @@
  *
 */
 
-class BedBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Bed extends Transparent{
 	public function __construct($type = 0){
 		parent::__construct(BED_BLOCK, $type, "Bed Block");
 		$this->isActivable = true;
@@ -27,9 +30,9 @@ class BedBlock extends TransparentBlock{
 		$this->hardness = 1;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item\Item $item, Player $player){
 		if(ServerAPI::request()->api->time->getPhase($player->level) !== "night"){
-			$pk = new ChatPacket;
+			$pk = new Network\Protocol\ChatPacket;
 			$pk->message = "You can only sleep at night";
 			$player->dataPacket($pk);
 
@@ -52,7 +55,7 @@ class BedBlock extends TransparentBlock{
 			} elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 				$b = $blockWest;
 			} else{
-				$pk = new ChatPacket;
+				$pk = new Network\Protocol\ChatPacket;
 				$pk->message = "This bed is incomplete";
 				$player->dataPacket($pk);
 
@@ -61,7 +64,7 @@ class BedBlock extends TransparentBlock{
 		}
 
 		if($player->sleepOn($b) === false){
-			$pk = new ChatPacket;
+			$pk = new Network\Protocol\ChatPacket;
 			$pk->message = "This bed is occupied";
 			$player->dataPacket($pk);
 		}
@@ -69,7 +72,7 @@ class BedBlock extends TransparentBlock{
 		return true;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$faces = array(
@@ -78,13 +81,13 @@ class BedBlock extends TransparentBlock{
 				2 => 2,
 				3 => 5,
 			);
-			$d = $player->entity->getDirection();
+			$d = $player->getDirection();
 			$next = $this->getSide($faces[(($d + 3) % 4)]);
 			$downNext = $this->getSide(0);
 			if($next->isReplaceable === true and $downNext->isTransparent === false){
 				$meta = (($d + 3) % 4) & 0x03;
-				$this->level->setBlock($block, Block\Block::get($this->id, $meta), true, false, true);
-				$this->level->setBlock($next, Block\Block::get($this->id, $meta | 0x08), true, false, true);
+				$this->level->setBlock($block, Block::get($this->id, $meta), true, false, true);
+				$this->level->setBlock($next, Block::get($this->id, $meta | 0x08), true, false, true);
 
 				return true;
 			}
@@ -93,7 +96,7 @@ class BedBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item\Item $item, Player $player){
 		$blockNorth = $this->getSide(2); //Gets the blocks around them
 		$blockSouth = $this->getSide(3);
 		$blockEast = $this->getSide(5);
@@ -101,33 +104,33 @@ class BedBlock extends TransparentBlock{
 
 		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed
 			if($blockNorth->getID() === $this->id and $blockNorth->meta !== 0x08){ //Checks if the block ID and meta are right
-				$this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockNorth, new Air(), true, false, true);
 			} elseif($blockSouth->getID() === $this->id and $blockSouth->meta !== 0x08){
-				$this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockSouth, new Air(), true, false, true);
 			} elseif($blockEast->getID() === $this->id and $blockEast->meta !== 0x08){
-				$this->level->setBlock($blockEast, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockEast, new Air(), true, false, true);
 			} elseif($blockWest->getID() === $this->id and $blockWest->meta !== 0x08){
-				$this->level->setBlock($blockWest, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockWest, new Air(), true, false, true);
 			}
 		} else{ //Bottom Part of Bed
 			if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockNorth, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockNorth, new Air(), true, false, true);
 			} elseif($blockSouth->getID() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockSouth, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockSouth, new Air(), true, false, true);
 			} elseif($blockEast->getID() === $this->id and ($blockEast->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockEast, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockEast, new Air(), true, false, true);
 			} elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
-				$this->level->setBlock($blockWest, new AirBlock(), true, false, true);
+				$this->level->setBlock($blockWest, new Air(), true, false, true);
 			}
 		}
-		$this->level->setBlock($this, new AirBlock(), true, false, true);
+		$this->level->setBlock($this, new Air(), true, false, true);
 
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
-			array(BED, 0, 1),
+			array(Item\BED, 0, 1),
 		);
 	}
 

@@ -19,7 +19,10 @@
  *
 */
 
-class PlanksBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Planks extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(PLANKS, $meta, "Wooden Planks");
 		$names = array(

@@ -281,7 +281,7 @@ class PlayerAPI{
 					$player = Player::get($params[0]);
 				}
 				if($player instanceof Player){
-					$player->entity->harm(1000, "console", true);
+					$player->harm(1000, "console", true);
 					$player->sendChat("Ouch. That looks like it hurt.\n");
 				} else{
 					$output .= "Usage: /$cmd [player]\n";
@@ -334,9 +334,9 @@ class PlayerAPI{
 		$player = Player::get($name);
 		if($player instanceof Player and $player->spawned === true){
 			$name = $player->getUsername();
-			$x = $x{0} === "~" ? $player->entity->x + floatval(substr($x, 1)) : floatval($x);
-			$y = $y{0} === "~" ? $player->entity->y + floatval(substr($y, 1)) : floatval($y);
-			$z = $z{0} === "~" ? $player->entity->z + floatval(substr($z, 1)) : floatval($z);
+			$x = $x{0} === "~" ? $player->x + floatval(substr($x, 1)) : floatval($x);
+			$y = $y{0} === "~" ? $player->y + floatval(substr($y, 1)) : floatval($y);
+			$z = $z{0} === "~" ? $player->z + floatval(substr($z, 1)) : floatval($z);
 			$player->teleport(new Vector3($x, $y, $z));
 
 			return true;

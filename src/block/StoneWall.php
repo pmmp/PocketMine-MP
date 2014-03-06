@@ -19,7 +19,10 @@
  *
 */
 
-class StoneWallBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class StoneWall extends Transparent{
 	public function __construct($meta = 0){
 		$meta &= 0x01;
 		parent::__construct(STONE_WALL, $meta, "Cobblestone Wall");

@@ -19,7 +19,10 @@
  *
 */
 
-class CactusBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Cactus extends Transparent{
 	public function __construct($meta = 0){
 		parent::__construct(CACTUS, $meta, "Cactus");
 		$this->isFullBlock = false;
@@ -30,7 +33,7 @@ class CactusBlock extends TransparentBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() !== SAND and $down->getID() !== CACTUS){ //Replace with common break method
-				$this->level->setBlock($this, new AirBlock(), false);
+				$this->level->setBlock($this, new Air(), false);
 				ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
 
 				return BLOCK_UPDATE_NORMAL;
@@ -41,7 +44,7 @@ class CactusBlock extends TransparentBlock{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->level->getBlock(new Math\Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getID() === AIR){
-							$this->level->setBlock($b, new CactusBlock(), true, false, true);
+							$this->level->setBlock($b, new Cactus(), true, false, true);
 							break;
 						}
 					}
@@ -59,7 +62,7 @@ class CactusBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === SAND or $down->getID() === CACTUS){
 			$block0 = $this->getSide(2);
@@ -68,8 +71,6 @@ class CactusBlock extends TransparentBlock{
 			$block3 = $this->getSide(5);
 			if($block0->isTransparent === true and $block1->isTransparent === true and $block2->isTransparent === true and $block3->isTransparent === true){
 				$this->level->setBlock($this, $this, true, false, true);
-				$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
-
 				return true;
 			}
 		}
@@ -77,7 +78,7 @@ class CactusBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

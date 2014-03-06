@@ -19,7 +19,10 @@
  *
 */
 
-class GlowingObsidianBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class GlowingObsidian extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(GLOWING_OBSIDIAN, $meta, "Glowing Obsidian");
 	}

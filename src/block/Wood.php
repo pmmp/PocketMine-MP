@@ -19,7 +19,10 @@
  *
 */
 
-class WoodBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Wood extends Solid{
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
@@ -37,7 +40,7 @@ class WoodBlock extends SolidBlock{
 		$this->hardness = 10;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 0,
 			1 => 0,
@@ -53,7 +56,7 @@ class WoodBlock extends SolidBlock{
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);

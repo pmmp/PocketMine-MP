@@ -19,16 +19,19 @@
  *
 */
 
-class WoodDoorBlock extends DoorBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class WoodDoor extends Door{
 	public function __construct($meta = 0){
 		parent::__construct(WOOD_DOOR_BLOCK, $meta, "Wood Door Block");
 		$this->isActivable = true;
 		$this->hardness = 15;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
-			array(WOODEN_DOOR, 0, 1),
+			array(Item\WOODEN_DOOR, 0, 1),
 		);
 	}
 }

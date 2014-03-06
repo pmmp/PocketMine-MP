@@ -19,7 +19,10 @@
  *
 */
 
-class NetherBricksStairsBlock extends StairBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class NetherBricksStairs extends Stair{
 	public function __construct($meta = 0){
 		parent::__construct(NETHER_BRICKS_STAIRS, $meta, "Nether Bricks Stairs");
 	}

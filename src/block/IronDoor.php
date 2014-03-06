@@ -19,14 +19,17 @@
  *
 */
 
-class IronDoorBlock extends DoorBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class IronDoor extends Door{
 	public function __construct($meta = 0){
 		parent::__construct(IRON_DOOR_BLOCK, $meta, "Iron Door Block");
 		//$this->isActivable = true;
 		$this->hardness = 25;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -46,10 +49,10 @@ class IronDoorBlock extends DoorBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(IRON_DOOR, 0, 1),
+				array(Item\IRON_DOOR, 0, 1),
 			);
 		} else{
 			return array();

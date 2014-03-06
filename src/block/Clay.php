@@ -19,15 +19,18 @@
  *
 */
 
-class ClayBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Clay extends Solid{
 	public function __construct(){
 		parent::__construct(CLAY_BLOCK, 0, "Clay Block");
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
-			array(CLAY, 0, 4),
+			array(Item\CLAY, 0, 4),
 		);
 	}
 }

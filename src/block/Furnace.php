@@ -19,8 +19,11 @@
  *
 */
 
+namespace PocketMine\Block;
+use PocketMine;
 
-class FurnaceBlock extends BurningFurnaceBlock{
+
+class Furnace extends BurningFurnace{
 	public function __construct($meta = 0){
 		parent::__construct($meta);
 		$this->id = FURNACE;

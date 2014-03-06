@@ -19,18 +19,20 @@
  *
 */
 
-class PotatoBlock extends FlowableBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Potato extends Flowable{
 	public function __construct($meta = 0){
 		parent::__construct(POTATO_BLOCK, $meta, "Potato Block");
 		$this->isActivable = true;
 		$this->hardness = 0;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
-			$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
 
 			return true;
 		}
@@ -38,8 +40,8 @@ class PotatoBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function onActivate(Item $item, Player $player){
-		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+	public function onActivate(Item\Item $item, Player $player){
+		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this, true, false, true);
 			if(($player->gamemode & 0x01) === 0){
@@ -55,8 +57,9 @@ class PotatoBlock extends FlowableBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop($this, Item\Item::get(POTATO, 0, 1));
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
+				//TODO
+				//ServerAPI::request()->api->entity->drop($this, Item\Item::get(POTATO, 0, 1));
+				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}
@@ -76,12 +79,12 @@ class PotatoBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		$drops = array();
 		if($this->meta >= 0x07){
-			$drops[] = array(POTATO, 0, mt_rand(1, 4));
+			$drops[] = array(Item\POTATO, 0, mt_rand(1, 4));
 		} else{
-			$drops[] = array(POTATO, 0, 1);
+			$drops[] = array(Item\POTATO, 0, 1);
 		}
 
 		return $drops;

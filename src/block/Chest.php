@@ -19,14 +19,17 @@
  *
 */
 
-class ChestBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Chest extends Transparent{
 	public function __construct($meta = 0){
 		parent::__construct(CHEST, $meta, "Chest");
 		$this->isActivable = true;
 		$this->hardness = 15;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
 			1 => 2,
@@ -35,7 +38,7 @@ class ChestBlock extends TransparentBlock{
 		);
 
 		$chest = false;
-		$this->meta = $faces[$player->entity->getDirection()];
+		$this->meta = $faces[$player->getDirection()];
 
 		for($side = 2; $side <= 5; ++$side){
 			if(($this->meta === 4 or $this->meta === 5) and ($side === 4 or $side === 5)){
@@ -44,8 +47,8 @@ class ChestBlock extends TransparentBlock{
 				continue;
 			}
 			$c = $this->getSide($side);
-			if(($c instanceof ChestBlock) and $c->getMetadata() === $this->meta){
-				if((($tile = $this->level->getTile($c)) instanceof Chest) and !$tile->isPaired()){
+			if(($c instanceof Tile\Chest) and $c->getMetadata() === $this->meta){
+				if((($tile = $this->level->getTile($c)) instanceof Tile\Chest) and !$tile->isPaired()){
 					$chest = $tile;
 					break;
 				}
@@ -55,15 +58,15 @@ class ChestBlock extends TransparentBlock{
 		$this->level->setBlock($block, $this, true, false, true);
 		$nbt = new NBT\Tag\Compound(false, array(
 			"Items" => new NBT\Tag\Enum("Items", array()),
-			"id" => new NBT\Tag\String("id", Tile::CHEST),
+			"id" => new NBT\Tag\String("id", Tile\Tile::CHEST),
 			"x" => new NBT\Tag\Int("x", $this->x),
 			"y" => new NBT\Tag\Int("y", $this->y),
 			"z" => new NBT\Tag\Int("z", $this->z)
 		));
 		$nbt->Items->setTagType(NBT\Tag_Compound);
-		$tile = new Chest($this->level, $nbt);
+		$tile = new Tile\Chest($this->level, $nbt);
 
-		if($chest instanceof Chest){
+		if($chest instanceof Tile\Chest){
 			$chest->pairWith($tile);
 			$tile->pairWith($chest);
 		}
@@ -71,17 +74,17 @@ class ChestBlock extends TransparentBlock{
 		return true;
 	}
 
-	public function onBreak(Item $item, Player $player){
+	public function onBreak(Item\Item $item, Player $player){
 		$t = $this->level->getTile($this);
-		if($t instanceof Chest){
+		if($t instanceof Tile\Chest){
 			$t->unpair();
 		}
-		$this->level->setBlock($this, new AirBlock(), true, true, true);
+		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item\Item $item, Player $player){
 		$top = $this->getSide(1);
 		if($top->isTransparent !== true){
 			return true;
@@ -89,18 +92,18 @@ class ChestBlock extends TransparentBlock{
 
 		$t = $this->level->getTile($this);
 		$chest = false;
-		if($t instanceof Chest){
+		if($t instanceof Tile\Chest){
 			$chest = $t;
 		} else{
 			$nbt = new NBT\Tag\Compound(false, array(
 				"Items" => new NBT\Tag\Enum("Items", array()),
-				"id" => new NBT\Tag\String("id", Tile::CHEST),
+				"id" => new NBT\Tag\String("id", Tile\Tile::CHEST),
 				"x" => new NBT\Tag\Int("x", $this->x),
 				"y" => new NBT\Tag\Int("y", $this->y),
 				"z" => new NBT\Tag\Int("z", $this->z)
 			));
 			$nbt->Items->setTagType(NBT\Tag_Compound);
-			$chest = new Chest($this->level, $nbt);
+			$chest = new Tile\Chest($this->level, $nbt);
 		}
 
 
@@ -113,7 +116,7 @@ class ChestBlock extends TransparentBlock{
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		$drops = array(
 			array($this->id, 0, 1),
 		);

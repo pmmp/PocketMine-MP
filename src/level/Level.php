@@ -48,7 +48,12 @@ class Level{
 	public $tiles = array();
 	public $chunkTiles = array();
 
-	public $nextSave, $level;
+	public $nextSave;
+
+	/**
+	 * @var PMF\LevelFormat
+	 */
+	public $level;
 	public $stopTime;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
 

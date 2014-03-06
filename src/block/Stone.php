@@ -19,13 +19,16 @@
  *
 */
 
-class StoneBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Stone extends Solid{
 	public function __construct(){
 		parent::__construct(STONE, 0, "Stone");
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -45,7 +48,7 @@ class StoneBlock extends SolidBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array(COBBLESTONE, 0, 1),

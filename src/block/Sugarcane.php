@@ -19,25 +19,28 @@
  *
 */
 
-class SugarcaneBlock extends FlowableBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Sugarcane extends Flowable{
 	public function __construct($meta = 0){
 		parent::__construct(SUGARCANE_BLOCK, $meta, "Sugarcane");
 		$this->hardness = 0;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
-			array(SUGARCANE, 0, 1),
+			array(Item\SUGARCANE, 0, 1),
 		);
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item\Item $item, Player $player){
 		if($item->getID() === DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			if($this->getSide(0)->getID() !== SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->level->getBlock(new Math\Vector3($this->x, $this->y + $y, $this->z));
 					if($b->getID() === AIR){
-						$this->level->setBlock($b, new SugarcaneBlock(), true, false, true);
+						$this->level->setBlock($b, new Sugarcane(), true, false, true);
 						break;
 					}
 				}
@@ -59,8 +62,8 @@ class SugarcaneBlock extends FlowableBlock{
 			$down = $this->getSide(0);
 			if($down->isTransparent === true and $down->getID() !== SUGARCANE_BLOCK){ //Replace with common break method
 				//TODO
-				ServerAPI::request()->api->entity->drop($this, Item\Item::get(SUGARCANE));
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
+				//ServerAPI::request()->api->entity->drop($this, Item\Item::get(SUGARCANE));
+				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}
@@ -70,7 +73,7 @@ class SugarcaneBlock extends FlowableBlock{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->level->getBlock(new Math\Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getID() === AIR){
-							$this->level->setBlock($b, new SugarcaneBlock(), true, false, true);
+							$this->level->setBlock($b, new Sugarcane(), true, false, true);
 							break;
 						}
 					}
@@ -88,10 +91,10 @@ class SugarcaneBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() === SUGARCANE_BLOCK){
-			$this->level->setBlock($block, new SugarcaneBlock(), true, false, true);
+			$this->level->setBlock($block, new Sugarcane(), true, false, true);
 
 			return true;
 		} elseif($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === SAND){
@@ -99,9 +102,8 @@ class SugarcaneBlock extends FlowableBlock{
 			$block1 = $down->getSide(3);
 			$block2 = $down->getSide(4);
 			$block3 = $down->getSide(5);
-			if(($block0 instanceof WaterBlock) or ($block1 instanceof WaterBlock) or ($block2 instanceof WaterBlock) or ($block3 instanceof WaterBlock)){
-				$this->level->setBlock($block, new SugarcaneBlock(), true, false, true);
-				$this->level->scheduleBlockUpdate(new Position($this, 0, 0, $this->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
+			if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
+				$this->level->setBlock($block, new Sugarcane(), true, false, true);
 
 				return true;
 			}

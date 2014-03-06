@@ -19,13 +19,16 @@
  *
 */
 
-class FarmlandBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Farmland extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(FARMLAND, $meta, "Farmland");
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
 			array(DIRT, 0, 1),
 		);

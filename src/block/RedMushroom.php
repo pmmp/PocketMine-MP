@@ -19,7 +19,10 @@
  *
 */
 
-class RedMushroomBlock extends FlowableBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class RedMushroom extends Flowable{
 	public function __construct(){
 		parent::__construct(RED_MUSHROOM, 0, "Red Mushroom");
 		$this->hardness = 0;
@@ -29,8 +32,8 @@ class RedMushroomBlock extends FlowableBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
-				$this->level->setBlock($this, new AirBlock(), false);
+				//ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
+				$this->level->setBlock($this, new Air(), false);
 
 				return BLOCK_UPDATE_NORMAL;
 			}
@@ -39,7 +42,7 @@ class RedMushroomBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$this->level->setBlock($block, $this, true, false, true);

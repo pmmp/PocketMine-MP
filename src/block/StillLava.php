@@ -19,7 +19,10 @@
  *
 */
 
-class StillLavaBlock extends LiquidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class StillLava extends Liquid{
 	public function __construct($meta = 0){
 		parent::__construct(STILL_LAVA, $meta, "Still Lava");
 		$this->hardness = 500;

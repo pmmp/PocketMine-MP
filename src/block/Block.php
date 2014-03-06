@@ -350,7 +350,14 @@ abstract class Block extends Position{
 			);
 		}
 	}
-	
+
+	/**
+	 * @param int      $id
+	 * @param int      $meta
+	 * @param Position $pos
+	 *
+	 * @return Block
+	 */
 	public static function get($id, $meta = 0, Position $pos = null){
 		if(isset(self::$list[$id])){
 			$block = clone self::$list[$id];
@@ -372,26 +379,46 @@ abstract class Block extends Position{
 		$this->hardness = 10;
 	}
 
+	/**
+	 * @return int
+	 */
 	final public function getHardness(){
-		return ($this->hardness);
+		return $this->hardness;
 	}
 
+	/**
+	 * @return string
+	 */
 	final public function getName(){
 		return $this->name;
 	}
 
+	/**
+	 * @return int
+	 */
 	final public function getID(){
 		return $this->id;
 	}
 
+	/**
+	 * @return int
+	 */
 	final public function getMetadata(){
 		return $this->meta;
 	}
 
+	/**
+	 * @param int $meta
+	 */
 	final public function setMetadata($meta){
 		$this->meta = $meta & 0x0F;
 	}
 
+	/**
+	 * Sets the block position to a new Position object
+	 *
+	 * @param Position $v
+	 */
 	final public function position(Position $v){
 		$this->level = $v->level;
 		$this->x = (int) $v->x;
@@ -399,7 +426,15 @@ abstract class Block extends Position{
 		$this->z = (int) $v->z;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	/**
+	 * Returns an array of Item objects to be dropped
+	 *
+	 * @param Item\Item $item
+	 * @param Player    $player
+	 *
+	 * @return array
+	 */
+	public function getDrops(Item\Item $item, Player $player){
 		if(!isset(self::$class[$this->id])){ //Unknown blocks
 			return array();
 		} else{
@@ -409,7 +444,16 @@ abstract class Block extends Position{
 		}
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	/**
+	 * Returns the seconds that this block takes to be broken using an specific Item
+	 *
+	 * @param Item\Item $item
+	 * @param Player    $player
+	 *
+	 * @return float
+	 */
+
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.15;
 		}
@@ -417,9 +461,16 @@ abstract class Block extends Position{
 		return $this->breakTime;
 	}
 
+	/**
+	 * Returns the Block on the side $side, works like Vector3::side()
+	 *
+	 * @param int $side
+	 *
+	 * @return Block
+	 */
 	public function getSide($side){
 		$v = parent::getSide($side);
-		if($this->level instanceof Level){
+		if($this->level instanceof Level\Level){
 			return $this->level->getBlock($v);
 		}
 
@@ -430,13 +481,58 @@ abstract class Block extends Position{
 		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
 	}
 
-	abstract function isBreakable(Item $item, Player $player);
+	/**
+	 * Returns if the item can be broken with an specific Item
+	 *
+	 * @param Item\Item $item
+	 * @param Player    $player
+	 *
+	 * @return bool
+	 */
+	abstract function isBreakable(Item\Item $item, Player $player);
 
-	abstract function onBreak(Item $item, Player $player);
+	/**
+	 * Do the actions needed so the block is broken with the Item
+	 *
+	 * @param Item\Item $item
+	 * @param Player    $player
+	 *
+	 * @return mixed
+	 */
+	abstract function onBreak(Item\Item $item, Player $player);
 
-	abstract function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	/**
+	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
+	 *
+	 * @param Item\Item $item
+	 * @param Player    $player
+	 * @param Block     $block
+	 * @param Block     $target
+	 * @param int       $face
+	 * @param float     $fx
+	 * @param float     $fy
+	 * @param float     $fz
+	 *
+	 * @return bool
+	 */
+	abstract function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 
-	abstract function onActivate(Item $item, Player $player);
+	/**
+	 * Do actions when activated by Item. Returns if it has done anything
+	 *
+	 * @param Item\Item $item
+	 * @param Player    $player
+	 *
+	 * @return bool
+	 */
+	abstract function onActivate(Item\Item $item, Player $player);
 
+	/**
+	 * Fires a block update on the Block
+	 *
+	 * @param int $type
+	 *
+	 * @return void
+	 */
 	abstract function onUpdate($type);
 }

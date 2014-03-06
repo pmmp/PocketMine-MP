@@ -19,7 +19,10 @@
  *
 */
 
-class CobblestoneStairsBlock extends StairBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class CobblestoneStairs extends Stair{
 	public function __construct($meta = 0){
 		parent::__construct(COBBLESTONE_STAIRS, $meta, "Cobblestone Stairs");
 	}

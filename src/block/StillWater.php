@@ -19,7 +19,10 @@
  *
 */
 
-class StillWaterBlock extends WaterBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class StillWater extends Water{
 	public function __construct($meta = 0){
 		LiquidBlock::__construct(STILL_WATER, $meta, "Still Water");
 		$this->hardness = 500;

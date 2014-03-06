@@ -19,57 +19,60 @@
  *
 */
 
-class BurningFurnaceBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class BurningFurnace extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(BURNING_FURNACE, $meta, "Burning Furnace");
 		$this->isActivable = true;
 		$this->hardness = 17.5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
 			1 => 2,
 			2 => 5,
 			3 => 3,
 		);
-		$this->meta = $faces[$player->entity->getDirection()];
+		$this->meta = $faces[$player->getDirection()];
 		$this->level->setBlock($block, $this, true, false, true);
 		$nbt = new NBT\Tag\Compound(false, array(
 			"Items" => new NBT\Tag\Enum("Items", array()),
-			"id" => new NBT\Tag\String("id", Tile::FURNACE),
+			"id" => new NBT\Tag\String("id", Tile\Tile::FURNACE),
 			"x" => new NBT\Tag\Int("x", $this->x),
 			"y" => new NBT\Tag\Int("y", $this->y),
 			"z" => new NBT\Tag\Int("z", $this->z)
 		));
 		$nbt->Items->setTagType(NBT\Tag_Compound);
-		$furnace = new Furnace($this->level, $nbt);
+		$furnace = new Tile\Furnace($this->level, $nbt);
 
 		return true;
 	}
 
-	public function onBreak(Item $item, Player $player){
-		$this->level->setBlock($this, new AirBlock(), true, true, true);
+	public function onBreak(Item\Item $item, Player $player){
+		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item\Item $item, Player $player){
 
 		$t = $this->level->getTile($this);
 		$furnace = false;
-		if($t instanceof Furnace){
+		if($t instanceof Tile\Furnace){
 			$furnace = $t;
 		} else{
 			$nbt = new NBT\Tag\Compound(false, array(
 				"Items" => new NBT\Tag\Enum("Items", array()),
-				"id" => new NBT\Tag\String("id", Tile::FURNACE),
+				"id" => new NBT\Tag\String("id", Tile\Tile::FURNACE),
 				"x" => new NBT\Tag\Int("x", $this->x),
 				"y" => new NBT\Tag\Int("y", $this->y),
 				"z" => new NBT\Tag\Int("z", $this->z)
 			));
 			$nbt->Items->setTagType(NBT\Tag_Compound);
-			$furnace = new Furnace($this->level, $nbt);
+			$furnace = new Tile\Furnace($this->level, $nbt);
 		}
 
 		if(($player->gamemode & 0x01) === 0x01){
@@ -81,7 +84,7 @@ class BurningFurnaceBlock extends SolidBlock{
 		return true;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -101,14 +104,14 @@ class BurningFurnaceBlock extends SolidBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		$drops = array();
 		if($item->isPickaxe() >= 1){
 			$drops[] = array(FURNACE, 0, 1);
 		}
 		$t = $this->level->getTile($this);
-		if($t instanceof Furnace){
-			for($s = 0; $s < Furnace::SLOTS; ++$s){
+		if($t instanceof Tile\Furnace){
+			for($s = 0; $s < Tile\Furnace::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > AIR and $slot->getCount() > 0){
 					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());

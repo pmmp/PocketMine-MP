@@ -19,7 +19,10 @@
  *
 */
 
-class CarpetBlock extends FlowableBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Carpet extends Flowable{
 	public function __construct($meta = 0){
 		parent::__construct(CARPET, $meta, "Carpet");
 		$names = array(
@@ -46,7 +49,7 @@ class CarpetBlock extends FlowableBlock{
 		$this->isSolid = true;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
 		if($down->getID() !== AIR){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -60,8 +63,9 @@ class CarpetBlock extends FlowableBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id, $this->meta, 1));
-				$this->level->setBlock($this, new AirBlock(), true, false, true);
+				//TODO
+				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id, $this->meta, 1));
+				$this->level->setBlock($this, new Air(), true, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}

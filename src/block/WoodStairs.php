@@ -19,12 +19,15 @@
  *
 */
 
-class WoodStairsBlock extends StairBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class WoodStairs extends Stair{
 	public function __construct($meta = 0){
 		parent::__construct(WOOD_STAIRS, $meta, "Wood Stairs");
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -44,7 +47,7 @@ class WoodStairsBlock extends StairBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

@@ -19,7 +19,7 @@
  *
 */
 
-class TallGrassBlock extends FlowableBlock{
+class TallGrass extends Flowable{
 	public function __construct($meta = 1){
 		parent::__construct(TALL_GRASS, $meta, "Tall Grass");
 		$this->isReplaceable = true;
@@ -35,7 +35,7 @@ class TallGrassBlock extends FlowableBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				$this->level->setBlock($this, new AirBlock(), false, false, true);
+				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;
 			}
@@ -44,15 +44,15 @@ class TallGrassBlock extends FlowableBlock{
 		return false;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		$drops = array();
 		$possibleDrops = array(
-			array(WHEAT_SEEDS, 0, 1),
-			array(CARROT, 0, 1),
-			array(POTATO, 0, 1),
-			array(BEETROOT_SEEDS, 0, 1),
-			array(MELON_SEEDS, 0, 1),
-			array(PUMPKIN_SEEDS, 0, 1),
+			array(Item\WHEAT_SEEDS, 0, 1),
+			array(Item\CARROT, 0, 1),
+			array(Item\POTATO, 0, 1),
+			array(Item\BEETROOT_SEEDS, 0, 1),
+			array(Item\MELON_SEEDS, 0, 1),
+			array(Item\PUMPKIN_SEEDS, 0, 1),
 			0,
 			0,
 			0,

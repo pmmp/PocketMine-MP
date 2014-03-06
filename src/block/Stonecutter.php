@@ -19,19 +19,22 @@
  *
 */
 
-class StonecutterBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Stonecutter extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(STONECUTTER, $meta, "Stonecutter");
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item $item, Player $player){
+	public function onActivate(Item\Item $item, Player $player){
 		$player->toCraft[-1] = 2;
 
 		return true;
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		return array(
 			array($this->id, 0, 1),
 		);

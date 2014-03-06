@@ -19,13 +19,16 @@
  *
 */
 
-class DiamondOreBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class DiamondOre extends Solid{
 	public function __construct(){
 		parent::__construct(DIAMOND_ORE, 0, "Diamond Ore");
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item $item, Player $player){
+	public function getBreakTime(Item\Item $item, Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.20;
 		}
@@ -39,10 +42,10 @@ class DiamondOreBlock extends SolidBlock{
 		}
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
-				array(DIAMOND, 0, 1),
+				array(Item\DIAMOND, 0, 1),
 			);
 		} else{
 			return array();

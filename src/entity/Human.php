@@ -46,19 +46,19 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		}
 		$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->armor = array(
-			0 => ItemItem::get(AIR, 0, 0),
-			1 => ItemItem::get(AIR, 0, 0),
-			2 => ItemItem::get(AIR, 0, 0),
-			3 => ItemItem::get(AIR, 0, 0)
+			0 => Item::get(AIR, 0, 0),
+			1 => Item::get(AIR, 0, 0),
+			2 => Item::get(AIR, 0, 0),
+			3 => Item::get(AIR, 0, 0)
 		);
 
 		foreach($nbt->Inventory as $item){
 			if($item->Slot >= 0 and $item->Slot < 9){ //Hotbar
 				$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot : -1;
 			} elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
-				$this->armor[$item->Slot - 100] = ItemItem::get($item->id, $item->Damage, $item->Count);
+				$this->armor[$item->Slot - 100] = Item::get($item->id, $item->Damage, $item->Count);
 			} else{
-				$this->inventory[$item->Slot - 9] = ItemItem::get($item->id, $item->Damage, $item->Count);
+				$this->inventory[$item->Slot - 9] = Item::get($item->id, $item->Damage, $item->Count);
 			}
 		}
 		$this->slot = $this->hotbar[0];
@@ -204,7 +204,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	public function getArmorSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->armor[$slot])){
-			$this->armor[$slot] = ItemItem::get(AIR, 0, 0);
+			$this->armor[$slot] = Item::get(AIR, 0, 0);
 		}
 
 		return $this->armor[$slot];
@@ -216,7 +216,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > AIR){
 				$slots[$i] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256 : 0;
 			} else{
-				$this->armor[$i] = ItemItem::get(AIR, 0, 0);
+				$this->armor[$i] = Item::get(AIR, 0, 0);
 				$slots[$i] = 255;
 			}
 		}
@@ -354,7 +354,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 						$i->setCount($i->getCount() - $item->getCount());
 						$this->setSlot($s, $i);
 					} else{
-						$this->setSlot($s, ItemItem::get(AIR, 0, 0));
+						$this->setSlot($s, Item::get(AIR, 0, 0));
 					}
 					break;
 				}
@@ -380,7 +380,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	public function getSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->inventory[$slot])){
-			$this->inventory[$slot] = ItemItem::get(AIR, 0, 0);
+			$this->inventory[$slot] = Item::get(AIR, 0, 0);
 		}
 
 		return $this->inventory[$slot];

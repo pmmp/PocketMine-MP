@@ -19,18 +19,22 @@
  *
 */
 
-class LeavesBlock extends TransparentBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Leaves extends Transparent{
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
+	const JUNGLE = 3;
 
 	public function __construct($meta = 0){
 		parent::__construct(LEAVES, $meta, "Leaves");
 		$names = array(
-			LeavesBlock::OAK => "Oak Leaves",
-			LeavesBlock::SPRUCE => "Spruce Leaves",
-			LeavesBlock::BIRCH => "Birch Leaves",
-			3 => "",
+			self::OAK => "Oak Leaves",
+			self::SPRUCE => "Spruce Leaves",
+			self::BIRCH => "Birch Leaves",
+			self::JUNGLE => "Jungle Leaves",
 		);
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 1;
@@ -115,12 +119,12 @@ class LeavesBlock extends TransparentBlock{
 				if($this->findLog($this, $visited, 0, $check) === true){
 					$this->level->setBlock($this, $this, false, false, true);
 				} else{
-					$this->level->setBlock($this, new AirBlock(), false, false, true);
+					$this->level->setBlock($this, new Air(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
 						//TODO
 						ServerAPI::request()->api->entity->drop($this, Item\Item::get(SAPLING, $this->meta & 0x03, 1));
 					}
-					if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1, 200) === 1){ //Apples
+					if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
 						//TODO
 						ServerAPI::request()->api->entity->drop($this, Item\Item::get(APPLE, 0, 1));
 					}
@@ -133,21 +137,21 @@ class LeavesBlock extends TransparentBlock{
 		return false;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$this->meta |= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 	}
 
-	public function getDrops(Item $item, Player $player){
+	public function getDrops(Item\Item $item, Player $player){
 		$drops = array();
 		if($item->isShears()){
 			$drops[] = array(LEAVES, $this->meta & 0x03, 1);
 		} else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = array(SAPLING, $this->meta & 0x03, 1);
+				$drops[] = array(Item\SAPLING, $this->meta & 0x03, 1);
 			}
-			if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = array(APPLE, 0, 1);
+			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
+				$drops[] = array(Item\APPLE, 0, 1);
 			}
 		}
 

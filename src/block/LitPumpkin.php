@@ -19,20 +19,23 @@
  *
 */
 
-class LitPumpkinBlock extends SolidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class LitPumpkin extends Solid{
 	public function __construct(){
 		parent::__construct(LIT_PUMPKIN, "Jack o'Lantern");
 		$this->hardness = 5;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$faces = array(
 			0 => 4,
 			1 => 2,
 			2 => 5,
 			3 => 3,
 		);
-		$this->meta = $faces[$player->entity->getDirection()];
+		$this->meta = $faces[$player->getDirection()];
 		$this->level->setBlock($block, $this, true, false, true);
 
 		return true;

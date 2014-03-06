@@ -19,13 +19,16 @@
  *
 */
 
-class WaterBlock extends LiquidBlock{
+namespace PocketMine\Block;
+use PocketMine;
+
+class Water extends Liquid{
 	public function __construct($meta = 0){
 		parent::__construct(WATER, $meta, "Water");
 		$this->hardness = 500;
 	}
 
-	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		ServerAPI::request()->api->block->scheduleBlockUpdate(clone $this, 10, BLOCK_UPDATE_NORMAL);
 
@@ -35,7 +38,7 @@ class WaterBlock extends LiquidBlock{
 	public function getSourceCount(){
 		$count = 0;
 		for($side = 2; $side <= 5; ++$side){
-			if($this->getSide($side) instanceof WaterBlock){
+			if($this->getSide($side) instanceof Water){
 				$b = $this->getSide($side);
 				$level = $b->meta & 0x07;
 				if($level == 0x00){
@@ -53,12 +56,12 @@ class WaterBlock extends LiquidBlock{
 				continue;
 			}
 			$b = $this->getSide($side);
-			if($b instanceof LavaBlock){
+			if($b instanceof Lava){
 				$level = $b->meta & 0x07;
 				if($level == 0x00){
-					$this->level->setBlock($b, new ObsidianBlock(), false, false, true);
+					$this->level->setBlock($b, new Obsidian(), false, false, true);
 				} else{
-					$this->level->setBlock($b, new CobblestoneBlock(), false, false, true);
+					$this->level->setBlock($b, new Cobblestone(), false, false, true);
 				}
 
 				return true;
@@ -71,7 +74,7 @@ class WaterBlock extends LiquidBlock{
 	public function getFrom(){
 		for($side = 0; $side <= 5; ++$side){
 			$b = $this->getSide($side);
-			if($b instanceof WaterBlock){
+			if($b instanceof Water){
 				$tlevel = $b->meta & 0x07;
 				$level = $this->meta & 0x07;
 				if(($tlevel + 1) == $level || ($side == 0x01 && $level == 0x01)){
@@ -100,18 +103,18 @@ class WaterBlock extends LiquidBlock{
 		//Has Source or Its Source
 		if($from !== null || $level == 0x00){
 			if($level !== 0x07){
-				if($down instanceof AirBlock || $down instanceof WaterBlock){
-					$this->level->setBlock($down, new WaterBlock(0x01), false, false, true);
+				if($down instanceof Air || $down instanceof Water){
+					$this->level->setBlock($down, new Water(0x01), false, false, true);
 					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($down, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 				} else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
-						if($b instanceof WaterBlock){
+						if($b instanceof Water){
 							if($this->getSourceCount() >= 2 && $level != 0x00){
-								$this->level->setBlock($this, new WaterBlock(0), false, false, true);
+								$this->level->setBlock($this, new Water(0), false, false, true);
 							}
 						} elseif($b->isFlowable === true){
-							$this->level->setBlock($b, new WaterBlock($level + 1), false, false, true);
+							$this->level->setBlock($b, new Water($level + 1), false, false, true);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 						}
 					}
@@ -121,30 +124,30 @@ class WaterBlock extends LiquidBlock{
 			//Extend Remove for Left Waters
 			for($side = 2; $side <= 5; ++$side){
 				$sb = $this->getSide($side);
-				if($sb instanceof WaterBlock){
+				if($sb instanceof Water){
 					$tlevel = $sb->meta & 0x07;
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 						}
-						$this->level->setBlock($sb, new AirBlock(), false, false, true);
+						$this->level->setBlock($sb, new Air(), false, false, true);
 					}
 				}
 				$b = $this->getSide(0)->getSide($side);
-				if($b instanceof WaterBlock){
+				if($b instanceof Water){
 					$tlevel = $b->meta & 0x07;
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 						}
-						$this->level->setBlock($b, new AirBlock(), false, false, true);
+						$this->level->setBlock($b, new Air(), false, false, true);
 					}
 				}
 				//ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
 			}
-			$this->level->setBlock($this, new AirBlock(), false, false, true);
+			$this->level->setBlock($this, new Air(), false, false, true);
 		}
 
 		return false;
