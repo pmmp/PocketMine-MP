@@ -68,12 +68,12 @@ class Furnace extends Tile{
 			$this->namedtag->BurnTicks = 0;
 			$fuel->setCount($fuel->getCount() - 1);
 			if($fuel->getCount() === 0){
-				$fuel = BlockAPI::getItem(AIR, 0, 0);
+				$fuel = Item\Item::get(AIR, 0, 0);
 			}
 			$this->setSlot(1, $fuel, false);
 			$current = $this->level->getBlock($this);
 			if($current->getID() === FURNACE){
-				$this->level->setBlock($this, BlockAPI::get(BURNING_FURNACE, $current->getMetadata()), true, false, true);
+				$this->level->setBlock($this, Block\Block::get(BURNING_FURNACE, $current->getMetadata()), true, false, true);
 			}
 		}
 		if($this->namedtag->BurnTime > 0){
@@ -83,11 +83,11 @@ class Furnace extends Tile{
 			if($smelt !== false and $canSmelt){
 				$this->namedtag->CookTime += $ticks;
 				if($this->namedtag->CookTime >= 200){ //10 seconds
-					$product = BlockAPI::getItem($smelt->getID(), $smelt->getMetadata(), $product->getCount() + 1);
+					$product = Item\Item::get($smelt->getID(), $smelt->getMetadata(), $product->getCount() + 1);
 					$this->setSlot(2, $product, false);
 					$raw->setCount($raw->getCount() - 1);
 					if($raw->getCount() === 0){
-						$raw = BlockAPI::getItem(AIR, 0, 0);
+						$raw = Item\Item::get(AIR, 0, 0);
 					}
 					$this->setSlot(0, $raw, false);
 					$this->namedtag->CookTime -= 200;
@@ -103,7 +103,7 @@ class Furnace extends Tile{
 		} else{
 			$current = $this->level->getBlock($this);
 			if($current->getID() === BURNING_FURNACE){
-				$this->level->setBlock($this, BlockAPI::get(FURNACE, $current->getMetadata()), true, false, true);
+				$this->level->setBlock($this, Block\Block::get(FURNACE, $current->getMetadata()), true, false, true);
 			}
 			$this->namedtag->CookTime = 0;
 			$this->namedtag->BurnTime = 0;

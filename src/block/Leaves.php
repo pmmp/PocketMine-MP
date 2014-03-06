@@ -118,11 +118,11 @@ class LeavesBlock extends TransparentBlock{
 					$this->level->setBlock($this, new AirBlock(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
 						//TODO
-						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(SAPLING, $this->meta & 0x03, 1));
+						ServerAPI::request()->api->entity->drop($this, Item\Item::get(SAPLING, $this->meta & 0x03, 1));
 					}
 					if(($this->meta & 0x03) === LeavesBlock::OAK and mt_rand(1, 200) === 1){ //Apples
 						//TODO
-						ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem(APPLE, 0, 1));
+						ServerAPI::request()->api->entity->drop($this, Item\Item::get(APPLE, 0, 1));
 					}
 
 					return BLOCK_UPDATE_NORMAL;

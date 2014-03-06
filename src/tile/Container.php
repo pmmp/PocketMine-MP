@@ -80,7 +80,7 @@ trait Container{
 						if($slot->getID() > AIR and $slot->getCount() > 0){
 							$slots[] = $slot;
 						} else{
-							$slots[] = BlockAPI::getItem(AIR, 0, 0);
+							$slots[] = Item\Item::get(AIR, 0, 0);
 						}
 					}
 				}
@@ -97,7 +97,7 @@ trait Container{
 					if($slot->getID() > AIR and $slot->getCount() > 0){
 						$slots[] = $slot;
 					} else{
-						$slots[] = BlockAPI::getItem(AIR, 0, 0);
+						$slots[] = Item\Item::get(AIR, 0, 0);
 					}
 				}
 			}
@@ -128,7 +128,7 @@ trait Container{
 				if($slot->getID() > AIR and $slot->getCount() > 0){
 					$slots[] = $slot;
 				} else{
-					$slots[] = BlockAPI::getItem(AIR, 0, 0);
+					$slots[] = Item\Item::get(AIR, 0, 0);
 				}
 			}
 			$pk = new ContainerSetContentPacket;
@@ -153,9 +153,9 @@ trait Container{
 	public function getSlot($s){
 		$i = $this->getSlotIndex($s);
 		if($i === false or $i < 0){
-			return BlockAPI::getItem(AIR, 0, 0);
+			return Item\Item::get(AIR, 0, 0);
 		} else{
-			return BlockAPI::getItem($this->namedtag->Items[$i]->id, $this->namedtag->Items[$i]->Damage, $this->namedtag->Items[$i]->Count);
+			return Item\Item::get($this->namedtag->Items[$i]->id, $this->namedtag->Items[$i]->Damage, $this->namedtag->Items[$i]->Count);
 		}
 	}
 

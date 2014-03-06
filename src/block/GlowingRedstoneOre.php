@@ -27,7 +27,7 @@ class GlowingRedstoneOreBlock extends SolidBlock{
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_SCHEDULED or $type === BLOCK_UPDATE_RANDOM){
-			$this->level->setBlock($this, BlockAPI::get(REDSTONE_ORE, $this->meta), false, false, true);
+			$this->level->setBlock($this, Block\Block::get(REDSTONE_ORE, $this->meta), false, false, true);
 
 			return BLOCK_UPDATE_WEAK;
 		} else{

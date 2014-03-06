@@ -249,42 +249,16 @@ class BlockAPI{
 			}
 
 			if(defined(strtoupper($b[0]))){
-				$item = BlockAPI::getItem(constant(strtoupper($b[0])), $meta);
+				$item = Item\Item::get(constant(strtoupper($b[0])), $meta);
 				if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
-					$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+					$item = Item\Item::get(((int) $b[0]) & 0xFFFF, $meta);
 				}
 			} else{
-				$item = BlockAPI::getItem(((int) $b[0]) & 0xFFFF, $meta);
+				$item = Item\Item::get(((int) $b[0]) & 0xFFFF, $meta);
 			}
 
 			return $item;
 		}
-	}
-
-	public static function get($id, $meta = 0, Position $v = null){
-		if(isset(Block::$class[$id])){
-			$classname = Block::$class[$id];
-			$b = new $classname($meta);
-		} else{
-			$b = new GenericBlock((int) $id, $meta);
-		}
-		if($v instanceof Position){
-			$b->position($v);
-		}
-
-		return $b;
-	}
-
-	public static function getItem($id, $meta = 0, $count = 1){
-		$id = (int) $id;
-		if(isset(Item::$class[$id])){
-			$classname = Item::$class[$id];
-			$i = new $classname($meta, $count);
-		} else{
-			$i = new Item($id, $meta, $count);
-		}
-
-		return $i;
 	}
 
 	function __construct(){
@@ -383,7 +357,7 @@ class BlockAPI{
 		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
 			foreach($drops as $drop){
 				echo "I dropped something\n";
-				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
+				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), Item\Item::get($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
 			}
 		}
 
@@ -400,7 +374,7 @@ class BlockAPI{
 		if(($player->getGamemode() & 0x01) === 0){
 			$item = $player->getSlot($player->slot);
 		} else{
-			$item = BlockAPI::getItem(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
+			$item = Item\Item::get(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
 		}
 
 		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
@@ -436,7 +410,7 @@ class BlockAPI{
 
 		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
 			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
+				$player->setSlot($player->slot, Item\Item::get(AIR, 0, 0));
 			}
 
 			return false;
@@ -490,7 +464,7 @@ class BlockAPI{
 		if(($player->getGamemode() & 0x01) === 0){
 			$item->setCount($item->getCount() - 1);
 			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, BlockAPI::getItem(AIR, 0, 0));
+				$player->setSlot($player->slot, Item\Item::get(AIR, 0, 0));
 			}
 		}
 

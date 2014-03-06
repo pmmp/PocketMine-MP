@@ -19,22 +19,23 @@
  *
 */
 
-class FlintSteelItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class FlintSteel extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(FLINT_STEEL, $meta, $count, "Flint and Steel");
 		$this->isActivable = true;
 		$this->maxStackSize = 1;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level\Level $level, Player $player, Block\Block $block, Block\Block $target, $face, $fx, $fy, $fz){
 		if(($player->gamemode & 0x01) === 0 and $this->useOn($block) and $this->getMetadata() >= $this->getMaxDurability()){
 			$player->setSlot($player->slot, new Item(AIR, 0, 0));
 		}
 
-		if($block->getID() === AIR and ($target instanceof SolidBlock)){
-			$level->setBlock($block, new FireBlock(), true, false, true);
-			$block->level->scheduleBlockUpdate(new Position($block, 0, 0, $block->level), Utils::getRandomUpdateTicks(), BLOCK_UPDATE_RANDOM);
-
+		if($block->getID() === AIR and ($target instanceof Block\Solid)){
+			$level->setBlock($block, new Block\Fire(), true, false, true);
 			return true;
 		}
 

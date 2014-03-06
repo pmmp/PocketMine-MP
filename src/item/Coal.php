@@ -19,7 +19,10 @@
  *
 */
 
-class CoalItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class Coal extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(COAL, $meta & 0x01, $count, "Coal");
 		if($this->meta === 1){

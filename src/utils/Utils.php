@@ -203,7 +203,7 @@ class Utils{
 		$id = Utils::readShort($ob->get(2));
 		$cnt = ord($ob->get(1));
 
-		return BlockAPI::getItem(
+		return Item\Item::get(
 			$id,
 			Utils::readShort($ob->get(2)),
 			$cnt

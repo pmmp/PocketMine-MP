@@ -31,7 +31,7 @@ class DirtBlock extends SolidBlock{
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}
-			$this->level->setBlock($this, BlockAPI::get(FARMLAND, 0), true, false, true);
+			$this->level->setBlock($this, Block\Block::get(FARMLAND, 0), true, false, true);
 
 			return true;
 		}

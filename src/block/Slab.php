@@ -45,11 +45,11 @@ class SlabBlock extends TransparentBlock{
 		$this->meta &= 0x07;
 		if($face === 0){
 			if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->level->setBlock($target, Block\Block::get(DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
 			} elseif($block->getID() === SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->level->setBlock($block, Block\Block::get(DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
 			} else{
@@ -57,18 +57,18 @@ class SlabBlock extends TransparentBlock{
 			}
 		} elseif($face === 1){
 			if($target->getID() === SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($target, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->level->setBlock($target, Block\Block::get(DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
 			} elseif($block->getID() === SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->level->setBlock($block, Block\Block::get(DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}
 		} elseif(!$player->entity->inBlock($block)){
 			if($block->getID() === SLAB){
 				if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-					$this->level->setBlock($block, BlockAPI::get(DOUBLE_SLAB, $this->meta), true, false, true);
+					$this->level->setBlock($block, Block\Block::get(DOUBLE_SLAB, $this->meta), true, false, true);
 
 					return true;
 				}

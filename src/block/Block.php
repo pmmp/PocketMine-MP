@@ -19,133 +19,185 @@
  *
 */
 
+namespace PocketMine\Block;
+const AIR = 0;
+const STONE = 1;
+const GRASS = 2;
+const DIRT = 3;
+const COBBLESTONE = 4;
+const COBBLE = 4;
+const PLANK = 5;
+const PLANKS = 5;
+const WOODEN_PLANK = 5;
+const WOODEN_PLANKS = 5;
+const SAPLING = 6;
+const SAPLINGS = 6;
+const BEDROCK = 7;
+const WATER = 8;
+const STILL_WATER = 9;
+const LAVA = 10;
+const STILL_LAVA = 11;
+const SAND = 12;
+const GRAVEL = 13;
+const GOLD_ORE = 14;
+const IRON_ORE = 15;
+const COAL_ORE = 16;
+const WOOD = 17;
+const TRUNK = 17;
+const LOG = 17;
+const LEAVES = 18;
+const LEAVE = 18;
+const SPONGE = 19;
+const GLASS = 20;
+const LAPIS_ORE = 21;
+const LAPIS_BLOCK = 22;
+
+const SANDSTONE = 24;
+
+const BED_BLOCK = 26;
+
+
+const COBWEB = 30;
+const TALL_GRASS = 31;
+const BUSH = 32;
+const DEAD_BUSH = 32;
+const WOOL = 35;
+const DANDELION = 37;
+const ROSE = 38;
+const CYAN_FLOWER = 38;
+const BROWN_MUSHROOM = 39;
+const RED_MUSHROOM = 40;
+const GOLD_BLOCK = 41;
+const IRON_BLOCK = 42;
+const DOUBLE_SLAB = 43;
+const DOUBLE_SLABS = 43;
+const SLAB = 44;
+const SLABS = 44;
+const BRICKS = 45;
+const BRICKS_BLOCK = 45;
+const TNT = 46;
+const BOOKSHELF = 47;
+const MOSS_STONE = 48;
+const MOSSY_STONE = 48;
+const OBSIDIAN = 49;
+const TORCH = 50;
+const FIRE = 51;
+
+const WOOD_STAIRS = 53;
+const WOODEN_STAIRS = 53;
+const OAK_WOOD_STAIRS = 53;
+const OAK_WOODEN_STAIRS = 53;
+const CHEST = 54;
+
+const DIAMOND_ORE = 56;
+const DIAMOND_BLOCK = 57;
+const CRAFTING_TABLE = 58;
+const WORKBENCH = 58;
+const WHEAT_BLOCK = 59;
+const FARMLAND = 60;
+const FURNACE = 61;
+const BURNING_FURNACE = 62;
+const LIT_FURNACE = 62;
+const SIGN_POST = 63;
+const DOOR_BLOCK = 64;
+const WOODEN_DOOR_BLOCK = 64;
+const WOOD_DOOR_BLOCK = 64;
+const LADDER = 65;
+
+const COBBLE_STAIRS = 67;
+const COBBLESTONE_STAIRS = 67;
+const WALL_SIGN = 68;
+
+const IRON_DOOR_BLOCK = 71;
+
+const REDSTONE_ORE = 73;
+const GLOWING_REDSTONE_ORE = 74;
+const LIT_REDSTONE_ORE = 74;
+
+const SNOW = 78;
+const SNOW_LAYER = 78;
+const ICE = 79;
+const SNOW_BLOCK = 80;
+const CACTUS = 81;
+const CLAY_BLOCK = 82;
+const REEDS = 83;
+const SUGARCANE_BLOCK = 83;
+
+const FENCE = 85;
+const PUMPKIN = 86;
+const NETHERRACK = 87;
+const SOUL_SAND = 88;
+const GLOWSTONE = 89;
+const GLOWSTONE_BLOCK = 89;
+
+
+const LIT_PUMPKIN = 91;
+const JACK_O_LANTERN = 91;
+const CAKE_BLOCK = 92;
+
+const TRAPDOOR = 96;
+
+const STONE_BRICKS = 98;
+const STONE_BRICK = 98;
+
+const IRON_BAR = 101;
+const IRON_BARS = 101;
+const GLASS_PANE = 102;
+const GLASS_PANEL = 102;
+const MELON_BLOCK = 103;
+const PUMPKIN_STEM = 104;
+const MELON_STEM = 105;
+
+const FENCE_GATE = 107;
+const BRICK_STAIRS = 108;
+const STONE_BRICK_STAIRS = 109;
+
+const NETHER_BRICKS = 112;
+const NETHER_BRICK_BLOCK = 112;
+
+const NETHER_BRICKS_STAIRS = 114;
+
+const SANDSTONE_STAIRS = 128;
+
+const SPRUCE_WOOD_STAIRS = 134;
+const SPRUCE_WOODEN_STAIRS = 134;
+const BIRCH_WOOD_STAIRS = 135;
+const BIRCH_WOODEN_STAIRS = 135;
+const JUNGLE_WOOD_STAIRS = 136;
+const JUNGLE_WOODEN_STAIRS = 136;
+
+const COBBLE_WALL = 139;
+const STONE_WALL = 139;
+const COBBLESTONE_WALL = 139;
+
+const CARROT_BLOCK = 141;
+const POTATO_BLOCK = 142;
+
+const QUARTZ_BLOCK = 155;
+const QUARTZ_STAIRS = 156;
+const DOUBLE_WOOD_SLAB = 157;
+const DOUBLE_WOODEN_SLAB = 157;
+const DOUBLE_WOOD_SLABS = 157;
+const DOUBLE_WOODEN_SLABS = 157;
+const WOOD_SLAB = 158;
+const WOODEN_SLAB = 158;
+const WOOD_SLABS = 158;
+const WOODEN_SLABS = 158;
+
+const HAY_BALE = 170;
+const CARPET = 171;
+
+const COAL_BLOCK = 173;
+
+const BEETROOT_BLOCK = 244;
+const STONECUTTER = 245;
+const GLOWING_OBSIDIAN = 246;
+const NETHER_REACTOR = 247;
+
+use PocketMine;
+
 abstract class Block extends Position{
-	public static $class = array(
-		AIR => "AirBlock",
-		STONE => "StoneBlock",
-		GRASS => "GrassBlock",
-		DIRT => "DirtBlock",
-		COBBLESTONE => "CobblestoneBlock",
-		PLANKS => "PlanksBlock",
-		SAPLING => "SaplingBlock",
-		BEDROCK => "BedrockBlock",
-		WATER => "WaterBlock",
-		STILL_WATER => "StillWaterBlock",
-		LAVA => "LavaBlock",
-		STILL_LAVA => "StillLavaBlock",
-		SAND => "SandBlock",
-		GRAVEL => "GravelBlock",
-		GOLD_ORE => "GoldOreBlock",
-		IRON_ORE => "IronOreBlock",
-		COAL_ORE => "CoalOreBlock",
-		WOOD => "WoodBlock",
-		LEAVES => "LeavesBlock",
-		SPONGE => "SpongeBlock",
-		GLASS => "GlassBlock",
-		LAPIS_ORE => "LapisOreBlock",
-		LAPIS_BLOCK => "LapisBlock",
-		SANDSTONE => "SandstoneBlock",
-		BED_BLOCK => "BedBlock",
-		COBWEB => "CobwebBlock",
-		TALL_GRASS => "TallGrassBlock",
-		DEAD_BUSH => "DeadBushBlock",
-		WOOL => "WoolBlock",
-		DANDELION => "DandelionBlock",
-		CYAN_FLOWER => "CyanFlowerBlock",
-		BROWN_MUSHROOM => "BrownMushroomBlock",
-		RED_MUSHROOM => "RedMushRoomBlock",
-		GOLD_BLOCK => "GoldBlock",
-		IRON_BLOCK => "IronBlock",
-		DOUBLE_SLAB => "DoubleSlabBlock",
-		SLAB => "SlabBlock",
-		BRICKS_BLOCK => "BricksBlock",
-		TNT => "TNTBlock",
-		BOOKSHELF => "BookshelfBlock",
-		MOSS_STONE => "MossStoneBlock",
-		OBSIDIAN => "ObsidianBlock",
-		TORCH => "TorchBlock",
-		FIRE => "FireBlock",
-
-		WOOD_STAIRS => "WoodStairsBlock",
-		CHEST => "ChestBlock",
-
-		DIAMOND_ORE => "DiamondOreBlock",
-		DIAMOND_BLOCK => "DiamondBlock",
-		WORKBENCH => "WorkbenchBlock",
-		WHEAT_BLOCK => "WheatBlock",
-		FARMLAND => "FarmlandBlock",
-		FURNACE => "FurnaceBlock",
-		BURNING_FURNACE => "BurningFurnaceBlock",
-		SIGN_POST => "SignPostBlock",
-		WOOD_DOOR_BLOCK => "WoodDoorBlock",
-		LADDER => "LadderBlock",
-
-		COBBLESTONE_STAIRS => "CobblestoneStairsBlock",
-		WALL_SIGN => "WallSignBlock",
-
-		IRON_DOOR_BLOCK => "IronDoorBlock",
-		REDSTONE_ORE => "RedstoneOreBlock",
-		GLOWING_REDSTONE_ORE => "GlowingRedstoneOreBlock",
-
-		SNOW_LAYER => "SnowLayerBlock",
-		ICE => "IceBlock",
-		SNOW_BLOCK => "SnowBlock",
-		CACTUS => "CactusBlock",
-		CLAY_BLOCK => "ClayBlock",
-		SUGARCANE_BLOCK => "SugarcaneBlock",
-
-		FENCE => "FenceBlock",
-		PUMPKIN => "PumpkinBlock",
-		NETHERRACK => "NetherrackBlock",
-		SOUL_SAND => "SoulSandBlock",
-		GLOWSTONE_BLOCK => "GlowstoneBlock",
-
-		LIT_PUMPKIN => "LitPumpkinBlock",
-		CAKE_BLOCK => "CakeBlock",
-
-		TRAPDOOR => "TrapdoorBlock",
-
-		STONE_BRICKS => "StoneBricksBlock",
-
-		IRON_BARS => "IronBarsBlock",
-		GLASS_PANE => "GlassPaneBlock",
-		MELON_BLOCK => "MelonBlock",
-		PUMPKIN_STEM => "PumpkinStemBlock",
-		MELON_STEM => "MelonStemBlock",
-
-		FENCE_GATE => "FenceGateBlock",
-		BRICK_STAIRS => "BrickStairsBlock",
-		STONE_BRICK_STAIRS => "StoneBrickStairsBlock",
-
-		NETHER_BRICKS => "NetherBricksBlock",
-
-		NETHER_BRICKS_STAIRS => "NetherBricksStairsBlock",
-
-		SANDSTONE_STAIRS => "SandstoneStairsBlock",
-
-		SPRUCE_WOOD_STAIRS => "SpruceWoodStairsBlock",
-		BIRCH_WOOD_STAIRS => "BirchWoodStairsBlock",
-		JUNGLE_WOOD_STAIRS => "JungleWoodStairsBlock",
-		STONE_WALL => "StoneWallBlock",
-
-		CARROT_BLOCK => "CarrotBlock",
-		POTATO_BLOCK => "PotatoBlock",
-
-		QUARTZ_BLOCK => "QuartzBlock",
-		QUARTZ_STAIRS => "QuartzStairsBlock",
-		DOUBLE_WOOD_SLAB => "DoubleWoodSlabBlock",
-		WOOD_SLAB => "WoodSlabBlock",
-
-		HAY_BALE => "HayBaleBlock",
-		CARPET => "CarpetBlock",
-
-		COAL_BLOCK => "CoalBlock",
-
-		BEETROOT_BLOCK => "BeetrootBlock",
-		STONECUTTER => "StonecutterBlock",
-		GLOWING_OBSIDIAN => "GlowingObsidianBlock",
-		NETHER_REACTOR => "NetherReactorBlock",
-	);
+	public static $list = array();
 	protected $id;
 	protected $meta;
 	protected $name;
@@ -165,6 +217,149 @@ abstract class Block extends Position{
 	public $x = 0;
 	public $y = 0;
 	public $z = 0;
+
+	public static function init(){
+		if(count(self::$init) === 0){
+			self::$init = array(
+				AIR => new Air(),
+				STONE => new Stone(),
+				GRASS => new Grass(),
+				DIRT => new Dirt(),
+				COBBLESTONE => new Cobblestone(),
+				PLANKS => new Planks(),
+				SAPLING => new Sapling(),
+				BEDROCK => new Bedrock(),
+				WATER => new Water(),
+				STILL_WATER => new StillWater(),
+				LAVA => new Lava(),
+				STILL_LAVA => new StillLava(),
+				SAND => new Sand(),
+				GRAVEL => new Gravel(),
+				GOLD_ORE => new GoldOre(),
+				IRON_ORE => new IronOre(),
+				COAL_ORE => new CoalOre(),
+				WOOD => new Wood(),
+				LEAVES => new Leaves(),
+				SPONGE => new Sponge(),
+				GLASS => new Glass(),
+				LAPIS_ORE => new LapisOre(),
+				LAPIS_BLOCK => new Lapis(),
+				SANDSTONE => new Sandstone(),
+				BED_BLOCK => new Bed(),
+				COBWEB => new Cobweb(),
+				TALL_GRASS => new TallGrass(),
+				DEAD_BUSH => new DeadBush(),
+				WOOL => new Wool(),
+				DANDELION => new Dandelion(),
+				CYAN_FLOWER => new CyanFlower(),
+				BROWN_MUSHROOM => new BrownMushroom(),
+				RED_MUSHROOM => new RedMushRoom(),
+				GOLD_BLOCK => new Gold(),
+				IRON_BLOCK => new Iron(),
+				DOUBLE_SLAB => new DoubleSlab(),
+				SLAB => new Slab(),
+				BRICKS_BLOCK => new Bricks(),
+				TNT => new TNT(),
+				BOOKSHELF => new Bookshelf(),
+				MOSS_STONE => new MossStone(),
+				OBSIDIAN => new Obsidian(),
+				TORCH => new Torch(),
+				FIRE => new Fire(),
+
+				WOOD_STAIRS => new WoodStairs(),
+				CHEST => new Chest(),
+
+				DIAMOND_ORE => new DiamondOre(),
+				DIAMOND_BLOCK => new Diamond(),
+				WORKBENCH => new Workbench(),
+				WHEAT_BLOCK => new Wheat(),
+				FARMLAND => new Farmland(),
+				FURNACE => new Furnace(),
+				BURNING_FURNACE => new BurningFurnace(),
+				SIGN_POST => new SignPost(),
+				WOOD_DOOR_BLOCK => new WoodDoor(),
+				LADDER => new Ladder(),
+
+				COBBLESTONE_STAIRS => new CobblestoneStairs(),
+				WALL_SIGN => new WallSign(),
+
+				IRON_DOOR_BLOCK => new IronDoor(),
+				REDSTONE_ORE => new RedstoneOre(),
+				GLOWING_REDSTONE_ORE => new GlowingRedstoneOre(),
+
+				SNOW_LAYER => new SnowLayer(),
+				ICE => new Ice(),
+				SNOW_BLOCK => new Snow(),
+				CACTUS => new Cactus(),
+				CLAY_BLOCK => new Clay(),
+				SUGARCANE_BLOCK => new Sugarcane(),
+
+				FENCE => new Fence(),
+				PUMPKIN => new Pumpkin(),
+				NETHERRACK => new Netherrack(),
+				SOUL_SAND => new SoulSand(),
+				GLOWSTONE_BLOCK => new Glowstone(),
+
+				LIT_PUMPKIN => new LitPumpkin(),
+				CAKE_BLOCK => new Cake(),
+
+				TRAPDOOR => new Trapdoor(),
+
+				STONE_BRICKS => new StoneBricks(),
+
+				IRON_BARS => new IronBars(),
+				GLASS_PANE => new GlassPane(),
+				MELON_BLOCK => new Melon(),
+				PUMPKIN_STEM => new PumpkinStem(),
+				MELON_STEM => new MelonStem(),
+
+				FENCE_GATE => new FenceGate(),
+				BRICK_STAIRS => new BrickStairs(),
+				STONE_BRICK_STAIRS => new StoneBrickStairs(),
+
+				NETHER_BRICKS => new NetherBricks(),
+
+				NETHER_BRICKS_STAIRS => new NetherBricksStairs(),
+
+				SANDSTONE_STAIRS => new SandstoneStairs(),
+
+				SPRUCE_WOOD_STAIRS => new SpruceWoodStairs(),
+				BIRCH_WOOD_STAIRS => new BirchWoodStairs(),
+				JUNGLE_WOOD_STAIRS => new JungleWoodStairs(),
+				STONE_WALL => new StoneWall(),
+
+				CARROT_BLOCK => new Carrot(),
+				POTATO_BLOCK => new Potato(),
+
+				QUARTZ_BLOCK => new Quartz(),
+				QUARTZ_STAIRS => new QuartzStairs(),
+				DOUBLE_WOOD_SLAB => new DoubleWoodSlab(),
+				WOOD_SLAB => new WoodSlab(),
+
+				HAY_BALE => new HayBale(),
+				CARPET => new Carpet(),
+
+				COAL_BLOCK => new Coal(),
+
+				BEETROOT_BLOCK => new Beetroot(),
+				STONECUTTER => new Stonecutter(),
+				GLOWING_OBSIDIAN => new GlowingObsidian(),
+			);
+		}
+	}
+	
+	public static function get($id, $meta = 0, Level\Position $pos = null){
+		if(isset(self::$list[$id])){
+			$block = clone self::$list[$id];
+			$block->setMetadata($meta);
+		}else{
+			$block = new Generic($id, $meta);
+		}
+		if($pos instanceof Position){
+			$block->position($pos);
+		}
+		return $block;
+	}
 
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;
@@ -187,7 +382,11 @@ abstract class Block extends Position{
 	}
 
 	final public function getMetadata(){
-		return $this->meta & 0x0F;
+		return $this->meta;
+	}
+
+	final public function setMetadata($meta){
+		$this->meta = $meta & 0x0F;
 	}
 
 	final public function position(Position $v){
@@ -217,7 +416,7 @@ abstract class Block extends Position{
 
 	public function getSide($side){
 		$v = parent::getSide($side);
-		if($this->level instanceof Level){
+		if($this->level instanceof Level\Level){
 			return $this->level->getBlock($v);
 		}
 
@@ -228,13 +427,13 @@ abstract class Block extends Position{
 		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
 	}
 
-	abstract function isBreakable(Item $item, Player $player);
+	abstract function isBreakable(Item\Item $item, Player $player);
 
-	abstract function onBreak(Item $item, Player $player);
+	abstract function onBreak(Item\Item $item, Player $player);
 
-	abstract function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	abstract function place(Item\Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
 
-	abstract function onActivate(Item $item, Player $player);
+	abstract function onActivate(Item\Item $item, Player $player);
 
 	abstract function onUpdate($type);
 }

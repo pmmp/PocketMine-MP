@@ -29,12 +29,12 @@ use PocketMine\BlockAPI as BlockAPI;
 class TallGrass{
 	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = array(
-			BlockAPI::get(DANDELION, 0),
-			BlockAPI::get(CYAN_FLOWER, 0),
-			BlockAPI::get(TALL_GRASS, 1),
-			BlockAPI::get(TALL_GRASS, 1),
-			BlockAPI::get(TALL_GRASS, 1),
-			BlockAPI::get(TALL_GRASS, 1)
+			Block\Block::get(DANDELION, 0),
+			Block\Block::get(CYAN_FLOWER, 0),
+			Block\Block::get(TALL_GRASS, 1),
+			Block\Block::get(TALL_GRASS, 1),
+			Block\Block::get(TALL_GRASS, 1),
+			Block\Block::get(TALL_GRASS, 1)
 		);
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){

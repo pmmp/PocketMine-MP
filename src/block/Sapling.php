@@ -68,7 +68,7 @@ class SaplingBlock extends FlowableBlock{
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id));
+				ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id));
 				$this->level->setBlock($this, new AirBlock(), false, false, true);
 
 				return BLOCK_UPDATE_NORMAL;

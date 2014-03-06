@@ -75,7 +75,7 @@ class Explosion{
 							$blockID = $this->level->level->getBlockID($vBlock->x, $vBlock->y, $vBlock->z);
 
 							if($blockID > 0){
-								$block = BlockAPI::get($blockID, 0);
+								$block = Block\Block::get($blockID, 0);
 								$block->x = $vBlock->x;
 								$block->y = $vBlock->y;
 								$block->z = $vBlock->z;
@@ -120,10 +120,10 @@ class Explosion{
 			} elseif(mt_rand(0, 10000) < ((1 / $this->size) * 10000)){
 				if(isset(self::$specialDrops[$block->getID()])){
 					//TODO
-					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem(self::$specialDrops[$block->getID()], 0));				
+					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), Item\Item::get(self::$specialDrops[$block->getID()], 0));
 				} else{
 					//TODO
-					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), BlockAPI::getItem($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));				
+					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), Item\Item::get($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));
 				}
 			}
 			$this->level->level->setBlockID($block->x, $block->y, $block->z, 0);

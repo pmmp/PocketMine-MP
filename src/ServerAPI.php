@@ -390,7 +390,11 @@ class ServerAPI{
 		if($this->getProperty("enable-query") === true){
 			$this->query = new QueryHandler();
 		}
+
+		Block\Block::init();
+		Item\Item::init();
 		Crafting::init();
+
 		$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));

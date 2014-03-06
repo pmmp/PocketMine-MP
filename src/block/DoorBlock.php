@@ -82,7 +82,7 @@ class DoorBlock extends TransparentBlock{
 			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
-			$this->level->setBlock($blockUp, BlockAPI::get($this->id, $metaUp), true, false, true); //Top
+			$this->level->setBlock($blockUp, Block\Block::get($this->id, $metaUp), true, false, true); //Top
 
 			$this->meta = $direction & 0x03;
 			$this->level->setBlock($block, $this, true, false, true); //Bottom
@@ -126,7 +126,7 @@ class DoorBlock extends TransparentBlock{
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
 				$meta = $down->getMetadata() ^ 0x04;
-				$this->level->setBlock($down, BlockAPI::get($this->id, $meta), true, false, true);
+				$this->level->setBlock($down, Block\Block::get($this->id, $meta), true, false, true);
 				$players = ServerAPI::request()->api->player->getAll($this->level);
 				unset($players[$player->CID]);
 				$pk = new LevelEventPacket;

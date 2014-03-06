@@ -19,9 +19,12 @@
  *
 */
 
-class PumpkinSeedsItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class PumpkinSeeds extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = BlockAPI::get(PUMPKIN_STEM);
+		$this->block = Block\Block::get(PUMPKIN_STEM);
 		parent::__construct(PUMPKIN_SEEDS, 0, $count, "Pumpkin Seeds");
 	}
 }

@@ -60,7 +60,7 @@ class CarpetBlock extends FlowableBlock{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
-				ServerAPI::request()->api->entity->drop($this, BlockAPI::getItem($this->id, $this->meta, 1));
+				ServerAPI::request()->api->entity->drop($this, Item\Item::get($this->id, $this->meta, 1));
 				$this->level->setBlock($this, new AirBlock(), true, false, true);
 
 				return BLOCK_UPDATE_NORMAL;

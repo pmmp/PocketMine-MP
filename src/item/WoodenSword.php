@@ -19,7 +19,10 @@
  *
 */
 
-class WoodenSwordItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class WoodenSword extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(WOODEN_SWORD, 0, $count, "Wooden Sword");
 	}

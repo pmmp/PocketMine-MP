@@ -19,26 +19,29 @@
  *
 */
 
-class SpawnEggItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(SPAWN_EGG, 0, $count, "Spawn Egg");
 		$this->meta = $meta;
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level\Level $level, Player $player, Block\Block $block, Block\Block $target, $face, $fx, $fy, $fz){
 		switch($this->meta){
-			case MOB_CHICKEN:
-			case MOB_SHEEP:
-			case MOB_COW:
-			case MOB_PIG:
+			case Entity\CHICKEN:
+			case Entity\SHEEP:
+			case Entity\COW:
+			case Entity\PIG:
 				$data = array(
 					"x" => $block->x + 0.5,
 					"y" => $block->y,
 					"z" => $block->z + 0.5,
 				);
-				$e = ServerAPI::request()->api->entity->add($block->level, ENTITY_MOB, $this->meta, $data);
-				ServerAPI::request()->api->entity->spawnToAll($e);
+				//$e = ServerAPI::request()->api->entity->add($block->level, ENTITY_MOB, $this->meta, $data);
+				//ServerAPI::request()->api->entity->spawnToAll($e);
 				if(($player->gamemode & 0x01) === 0){
 					--$this->count;
 				}

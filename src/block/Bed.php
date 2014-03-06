@@ -83,8 +83,8 @@ class BedBlock extends TransparentBlock{
 			$downNext = $this->getSide(0);
 			if($next->isReplaceable === true and $downNext->isTransparent === false){
 				$meta = (($d + 3) % 4) & 0x03;
-				$this->level->setBlock($block, BlockAPI::get($this->id, $meta), true, false, true);
-				$this->level->setBlock($next, BlockAPI::get($this->id, $meta | 0x08), true, false, true);
+				$this->level->setBlock($block, Block\Block::get($this->id, $meta), true, false, true);
+				$this->level->setBlock($next, Block\Block::get($this->id, $meta | 0x08), true, false, true);
 
 				return true;
 			}

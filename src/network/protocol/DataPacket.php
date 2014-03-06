@@ -155,7 +155,7 @@ abstract class DataPacket{
 		$id = $this->getShort();
 		$cnt = $this->getByte();
 
-		return BlockAPI::getItem(
+		return Item\Item::get(
 			$id,
 			$this->getShort(),
 			$cnt

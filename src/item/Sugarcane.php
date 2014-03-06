@@ -19,9 +19,12 @@
  *
 */
 
-class SugarcaneItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class Sugarcane extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = BlockAPI::get(SUGARCANE_BLOCK);
+		$this->block = Block\Block::get(SUGARCANE_BLOCK);
 		parent::__construct(SUGARCANE, 0, $count, "Sugar Cane");
 	}
 }

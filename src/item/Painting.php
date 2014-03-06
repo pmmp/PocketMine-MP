@@ -19,13 +19,16 @@
  *
 */
 
-class PaintingItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(PAINTING, 0, $count, "Painting");
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level\Level $level, Player $player, Block\Block $block, Block\Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1 and $block->isSolid === false){
 			$server = ServerAPI::request();
 			$faces = array(
@@ -73,10 +76,10 @@ class PaintingItem extends Item{
 				"Motive" => $motive[0],
 			);
 			//TODO
-			$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			$e->spawnToAll();
+			//$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
+			//$e->spawnToAll();
 			if(($player->gamemode & 0x01) === 0x00){
-				$player->removeItem(BlockAPI::getItem($this->getID(), $this->getMetadata(), 1));
+				$player->removeItem(Item::get($this->getID(), $this->getMetadata(), 1));
 			}
 
 			return true;

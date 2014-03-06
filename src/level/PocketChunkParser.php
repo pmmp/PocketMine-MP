@@ -30,7 +30,9 @@ use PocketMine\Utils\Utils as Utils;
  *
  */
 class PocketChunkParser{
-	private $location, $raw = b"", $file;
+	private $location
+	private $raw = b""
+	private $file;
 	public $sectorLength = 4096; //16 * 16 * 16
 	public $chunkLength = 86016; //21 * $sectorLength
 	public $map = array();
@@ -144,6 +146,7 @@ class PocketChunkParser{
 		}
 		$this->raw = b"";
 		console("[DEBUG] Chunks loaded!", true, true, 2);
+		return true;
 	}
 
 	public function saveMap($final = false){

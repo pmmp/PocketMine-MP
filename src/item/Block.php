@@ -22,9 +22,19 @@
 namespace PocketMine\Item;
 use PocketMine;
 
-class IronAxe extends Item{
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(IRON_AXE, 0, $count, "Iron Axe");
+class Block extends Item{
+	public function __construct(Block\Block $block, $meta = 0, $count = 1){
+		$this->block = clone $block;
+		parent::__construct($block->getID(), $block->getMetadata(), $count, $block->getName());
+	}
+
+	public function setMetadata($meta){
+		$this->meta = $meta & 0x0F;
+		$this->block->setMetadata($this->meta);
+	}
+
+	public function getBlock(){
+		return $this->block;
 	}
 
 }

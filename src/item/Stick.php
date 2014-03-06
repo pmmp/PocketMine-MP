@@ -19,7 +19,10 @@
  *
 */
 
-class StickItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class Stick extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(STICK, 0, $count, "Stick");
 	}

@@ -19,9 +19,12 @@
  *
 */
 
-class PotatoItem extends Item{
+namespace PocketMine\Item;
+use PocketMine;
+
+class Potato extends Item{
 	public function __construct($meta = 0, $count = 1){
-		$this->block = BlockAPI::get(POTATO_BLOCK);
+		$this->block = Block\Block::get(POTATO_BLOCK);
 		parent::__construct(POTATO, 0, $count, "Potato");
 	}
 }

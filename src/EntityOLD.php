@@ -178,14 +178,14 @@ if($this->class === ENTITY_PLAYER and $this->player instanceof Player and ($this
 $inv = array();
 for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
 $slot = $this->player->getSlot($i);
-$this->player->setSlot($i, BlockAPI::getItem(AIR, 0, 0));
+$this->player->setSlot($i, Item\Item::get(AIR, 0, 0));
 if($slot->getID() !== AIR and $slot->getCount() > 0){
 $inv[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 }
 }
 for($re = 0; $re < 4; $re++){
 $slot = $this->player->getArmor($re);
-$this->player->setArmor($re, BlockAPI::getItem(AIR, 0, 0));
+$this->player->setArmor($re, Item\Item::get(AIR, 0, 0));
 if($slot->getID() !== AIR and $slot->getCount() > 0){
 $inv[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 }
@@ -246,7 +246,7 @@ return array();
 
 private function spawnDrops(){
 foreach($this->getDrops() as $drop){
-$this->server->api->entity->drop($this, BlockAPI::getItem($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
+$this->server->api->entity->drop($this, Item\Item::get($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2] & 0xFF), true);
 }
 }
 
@@ -485,9 +485,9 @@ $this->y = $ny;
 $fall = $this->level->getBlock(new Math\Vector3(intval($this->x - 0.5), intval(ceil($this->y)), intval($this->z - 0.5)));
 $down = $this->level->getBlock(new Math\Vector3(intval($this->x - 0.5), intval(ceil($this->y) - 1), intval($this->z - 0.5)));
 if($fall->isFullBlock === false or $down->isFullBlock === false){
-$this->server->api->entity->drop($this, BlockAPI::getItem($this->data["Tile"] & 0xFFFF, 0, 1), true);
+$this->server->api->entity->drop($this, Item\Item::get($this->data["Tile"] & 0xFFFF, 0, 1), true);
 }else{
-$this->level->setBlock($fall, BlockAPI::get($this->data["Tile"]), true, false, true);
+$this->level->setBlock($fall, Block\Block::get($this->data["Tile"]), true, false, true);
 }
 $this->server->api->handle("entity.motion", $this);
 $this->close();
@@ -710,7 +710,7 @@ $pk->z = $this->z;
 $pk->yaw = $this->yaw;
 $pk->pitch = $this->pitch;
 $pk->roll = 0;
-$pk->item = BlockAPI::getItem($this->type, $this->meta, $this->stack);
+$pk->item = Item\Item::get($this->type, $this->meta, $this->stack);
 $pk->metadata = $this->getMetadata();
 $player->dataPacket($pk);
 

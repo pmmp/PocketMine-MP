@@ -648,7 +648,7 @@ class Player extends RealHuman{
 			$pk = new Network\Protocol\ContainerSetSlotPacket;
 			$pk->windowid = 0;
 			$pk->slot = (int) $s;
-			$pk->item = BlockAPI::getItem(AIR, 0, 0);
+			$pk->item = Item\Item::get(AIR, 0, 0);
 			$this->dataPacket($pk);
 		}
 
@@ -914,15 +914,15 @@ class Player extends RealHuman{
 				$s = $this->getSlot($slot);
 				$s->setCount($s->getCount() - $item->getCount());
 				if($s->getCount() <= 0){
-					$this->setSlot($slot, BlockAPI::getItem(AIR, 0, 0));
+					$this->setSlot($slot, Item\Item::get(AIR, 0, 0));
 				}
 			}
 			foreach($craft as $slot => $item){
 				$s = $this->getSlot($slot);
 				if($s->getCount() <= 0 or $s->getID() === AIR){
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $item->getCount()));
+					$this->setSlot($slot, Item\Item::get($item->getID(), $item->getMetadata(), $item->getCount()));
 				} else{
-					$this->setSlot($slot, BlockAPI::getItem($item->getID(), $item->getMetadata(), $s->getCount() + $item->getCount()));
+					$this->setSlot($slot, Item\Item::get($item->getID(), $item->getMetadata(), $s->getCount() + $item->getCount()));
 				}
 
 				switch($item->getID()){
@@ -957,7 +957,7 @@ class Player extends RealHuman{
 						$this->grantAchievement("diamond");
 						break;
 					case CAKE:
-						$this->addItem(BlockAPI::getItem(BUCKET, 0, 3));
+						$this->addItem(Item\Item::get(BUCKET, 0, 3));
 						break;
 
 				}
@@ -1454,7 +1454,7 @@ class Player extends RealHuman{
 					foreach(BlockAPI::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
 							$packet->slot = $i;
-							$item = BlockAPI::getItem($d[0], $d[1], 1);
+							$item = Item\Item::get($d[0], $d[1], 1);
 							break;
 						}
 					}
@@ -1670,13 +1670,13 @@ class Player extends RealHuman{
 				for($i = 0; $i < 4; ++$i){
 					$s = $packet->slots[$i];
 					if($s === 0 or $s === 255){
-						$s = BlockAPI::getItem(AIR, 0, 0);
+						$s = Item\Item::get(AIR, 0, 0);
 					} else{
-						$s = BlockAPI::getItem($s + 256, 0, 1);
+						$s = Item\Item::get($s + 256, 0, 1);
 					}
 					$slot = $this->getArmorSlot($i);
 					if($slot->getID() !== AIR and $s->getID() === AIR){
-						if($this->setArmorSlot($i, BlockAPI::getItem(AIR, 0, 0)) === false){
+						if($this->setArmorSlot($i, Item\Item::get(AIR, 0, 0)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
 						} else{
@@ -1688,7 +1688,7 @@ class Player extends RealHuman{
 							$this->sendArmor();
 							$this->sendInventory();
 						} else{
-							$this->setSlot($sl, BlockAPI::getItem(AIR, 0, 0));
+							$this->setSlot($sl, Item\Item::get(AIR, 0, 0));
 						}
 					} elseif($s->getID() !== AIR and $slot->getID() !== AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s->getID())) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
@@ -1870,10 +1870,10 @@ class Player extends RealHuman{
 							$this->entity->heal($items[$slot->getID()], "eating");
 							//--$slot->count;
 							if($slot->getCount() <= 0){
-								$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0));
+								$this->setSlot($this->slot, Item\Item::get(AIR, 0, 0));
 							}
 							if($slot->getID() === MUSHROOM_STEW or $slot->getID() === BEETROOT_SOUP){
-								$this->addItem(BlockAPI::getItem(BOWL, 0, 1));
+								$this->addItem(Item\Item::get(BOWL, 0, 1));
 							}
 						}
 						break;
@@ -1894,7 +1894,7 @@ class Player extends RealHuman{
 				$data["player"] = $this;
 				if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
 					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $packet->item);
-					$this->setSlot($this->slot, BlockAPI::getItem(AIR, 0, 0), false);
+					$this->setSlot($this->slot, Item\Item::get(AIR, 0, 0), false);
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -1975,22 +1975,22 @@ class Player extends RealHuman{
 					$craft = false;
 					$slot = $this->getSlot($packet->slot);
 					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->getCount() - $packet->item->getCount());
+						$use = Item\Item::get($slot->getID(), $slot->getMetadata(), $slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
 					} elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount() - $slot->getCount());
+						$craftItem = Item\Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount() - $slot->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
 					} elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
-						$craftItem = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
+						$craftItem = Item\Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
-						$use = BlockAPI::getItem($slot->getID(), $slot->getMetadata(), $slot->getCount());
+						$use = Item\Item::get($slot->getID(), $slot->getMetadata(), $slot->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
@@ -2031,7 +2031,7 @@ class Player extends RealHuman{
 						break;
 					}
 
-					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
+					$item = Item\Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($slotn);
 					if($this->server->api->dhandle("player.container.slot", array(
@@ -2085,7 +2085,7 @@ class Player extends RealHuman{
 					){
 						break;
 					}
-					$item = BlockAPI::getItem($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
+					$item = Item\Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($packet->slot);
 					if($this->server->api->dhandle("player.container.slot", array(
