@@ -22,8 +22,8 @@
 namespace PocketMine\Event\Entity;
 
 use PocketMine\Entity\Entity as Entity;
-use PocketMine;
 use PocketMine\Event;
+use PocketMine;
 use PocketMine\Item\Item as Item;
 
 class EntityArmorChangeEvent extends EntityEvent implements CancellableEvent{

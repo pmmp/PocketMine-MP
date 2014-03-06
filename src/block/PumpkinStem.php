@@ -80,7 +80,7 @@ class PumpkinStem extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === ItemItem::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this, true, false, true);
 			if(($player->gamemode & 0x01) === 0){
@@ -95,7 +95,7 @@ class PumpkinStem extends Flowable{
 
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array(Item\Item::PUMPKIN_SEEDS, 0, mt_rand(0, 2)),
+			array(ItemItem::PUMPKIN_SEEDS, 0, mt_rand(0, 2)),
 		);
 	}
 }

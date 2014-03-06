@@ -21,12 +21,12 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine;
 use PocketMine\NBT\NBT as NBT;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Int as Int;
 use PocketMine\NBT\Tag\String as String;
 use PocketMine\Network\Protocol\EntityDataPacket as EntityDataPacket;
+use PocketMine;
 
 class Sign extends Spawnable{
 

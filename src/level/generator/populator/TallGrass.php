@@ -21,9 +21,9 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
-use PocketMine;
 use PocketMine\Block\TallGrass as BlockTallGrass;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine;
 
 class TallGrass extends Populator{
 	private $level;

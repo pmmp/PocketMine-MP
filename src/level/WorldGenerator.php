@@ -21,12 +21,12 @@
 
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Level\Generator\Generator as Generator;
 use PocketMine\PMF\LevelFormat as LevelFormat;
 use PocketMine\Utils\Config as Config;
 use PocketMine\Utils\Random as Random;
 use PocketMine\Utils\Utils as Utils;
+use PocketMine;
 
 class WorldGenerator{
 	private $seed, $level, $path, $random, $generator, $height;

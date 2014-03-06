@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){

@@ -43,7 +43,7 @@ class Potato extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === ItemItem::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this, true, false, true);
 			if(($player->gamemode & 0x01) === 0){

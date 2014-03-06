@@ -23,13 +23,13 @@
  * All the Item classes
  */
 namespace PocketMine\Item;
-use PocketMine;
 use PocketMine\Block\Block as Block;
 use PocketMine\Entity\Entity as Entity;
 use PocketMine\Item\Block as ItemBlock;
 use PocketMine\Level\Level as Level;
 use PocketMine\Recipes\Fuel as Fuel;
 use PocketMine\Recipes\Smelt as Smelt;
+use PocketMine;
 
 class Item{
 	//All Block IDs are here too

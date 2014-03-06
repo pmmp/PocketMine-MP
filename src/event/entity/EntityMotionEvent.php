@@ -22,8 +22,8 @@
 namespace PocketMine\Event\Entity;
 
 use PocketMine\Entity\Entity as Entity;
-use PocketMine;
 use PocketMine\Event;
+use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;
 
 class EntityMotionEvent extends EntityEvent implements CancellableEvent{

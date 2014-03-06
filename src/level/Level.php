@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Block\Air as Air;
 use PocketMine\Block\Block as Block;
 use PocketMine\Level\Generator\Generator as Generator;
@@ -42,6 +41,7 @@ use PocketMine\Tile\Sign as Sign;
 use PocketMine\Tile\Tile as Tile;
 use PocketMine\Utils\Cache as Cache;
 use PocketMine\Utils\Random as Random;
+use PocketMine;
 
 class Level{
 	public $players = array();

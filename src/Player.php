@@ -1855,25 +1855,25 @@ class Player extends RealHuman{
 				switch($packet->event){
 					case 9: //Eating
 						$items = array(
-							Item\Item::APPLE => 4,
-							Item\Item::MUSHROOM_STEW => 10,
-							Item\Item::BEETROOT_SOUP => 10,
-							Item\Item::BREAD => 5,
-							Item\Item::RAW_PORKCHOP => 3,
-							Item\Item::COOKED_PORKCHOP => 8,
-							Item\Item::RAW_BEEF => 3,
-							Item\Item::STEAK => 8,
-							Item\Item::COOKED_CHICKEN => 6,
-							Item\Item::RAW_CHICKEN => 2,
-							Item\Item::MELON_SLICE => 2,
-							Item\Item::GOLDEN_APPLE => 10,
-							Item\Item::PUMPKIN_PIE => 8,
-							Item\Item::CARROT => 4,
-							Item\Item::POTATO => 1,
-							Item\Item::BAKED_POTATO => 6,
-							//Item\Item::COOKIE => 2,
-							//Item\Item::COOKED_FISH => 5,
-							//Item\Item::RAW_FISH => 2,
+							ItemItem::APPLE => 4,
+							ItemItem::MUSHROOM_STEW => 10,
+							ItemItem::BEETROOT_SOUP => 10,
+							ItemItem::BREAD => 5,
+							ItemItem::RAW_PORKCHOP => 3,
+							ItemItem::COOKED_PORKCHOP => 8,
+							ItemItem::RAW_BEEF => 3,
+							ItemItem::STEAK => 8,
+							ItemItem::COOKED_CHICKEN => 6,
+							ItemItem::RAW_CHICKEN => 2,
+							ItemItem::MELON_SLICE => 2,
+							ItemItem::GOLDEN_APPLE => 10,
+							ItemItem::PUMPKIN_PIE => 8,
+							ItemItem::CARROT => 4,
+							ItemItem::POTATO => 1,
+							ItemItem::BAKED_POTATO => 6,
+							//ItemItem::COOKIE => 2,
+							//ItemItem::COOKED_FISH => 5,
+							//ItemItem::RAW_FISH => 2,
 						);
 						$slot = $this->getSlot($this->slot);
 						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
@@ -1888,7 +1888,7 @@ class Player extends RealHuman{
 							if($slot->getCount() <= 0){
 								$this->setSlot($this->slot, Item::get(AIR, 0, 0));
 							}
-							if($slot->getID() === Item\Item::MUSHROOM_STEW or $slot->getID() === Item\Item::BEETROOT_SOUP){
+							if($slot->getID() === ItemItem::MUSHROOM_STEW or $slot->getID() === ItemItem::BEETROOT_SOUP){
 								$this->addItem(Item::get(BOWL, 0, 1));
 							}
 						}

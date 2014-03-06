@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Entity;
 
-use PocketMine;
 use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
 use PocketMine\Event\Entity\EntityMotionEvent as EntityMotionEvent;
 use PocketMine\Event\Entity\EntityMoveEvent as EntityMoveEvent;
@@ -41,6 +40,7 @@ use PocketMine\Network\Protocol\RemoveEntityPacket as RemoveEntityPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket as SetEntityMotionPacket;
 use PocketMine\Player as Player;
 use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;

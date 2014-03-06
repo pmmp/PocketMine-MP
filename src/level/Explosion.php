@@ -21,13 +21,13 @@
 
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Block\Block as Block;
 use PocketMine\Block\TNT as TNT;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Network\Protocol\ExplodePacket as ExplodePacket;
 use PocketMine\Player as Player;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Explosion{
 	public static $specialDrops = array(

@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Network;
 
-use PocketMine;
 use PocketMine\Event\Event as Event;
 use PocketMine\Event\EventHandler as EventHandler;
 use PocketMine\Event\Server\PacketReceiveEvent as PacketReceiveEvent;
@@ -34,6 +33,7 @@ use PocketMine\Network\Query\QueryPacket as QueryPacket;
 use PocketMine\Network\RakNet\Info as Info;
 use PocketMine\Network\RakNet\Packet as Packet;
 use PocketMine\ServerAPI as ServerAPI;
+use PocketMine;
 
 class Handler{
 	public $bandwidth;
