@@ -2,6 +2,7 @@ players/*
 worlds/*
 plugins/*
 bin/*
+.idea/*
 *.log
 *.txt
 server.properties
