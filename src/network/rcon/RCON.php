@@ -29,7 +29,6 @@ use PocketMine;
 use PocketMine\ServerAPI as ServerAPI;
 
 
-
 class RCON{
 	private $socket, $password, $workers, $threads, $clientsPerThread;
 

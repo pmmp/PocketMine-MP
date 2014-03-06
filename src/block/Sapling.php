@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\Level\Generator\Object\Tree as Tree;
 use PocketMine\Utils\Random as Random;
-use PocketMine;
 
 class Sapling extends Flowable{
 	const OAK = 0;
@@ -48,7 +48,7 @@ class Sapling extends Flowable{
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
-		if($down->getID() === GRASS or $down->getID() === DIRT or $down->getID() === FARMLAND){
+		if($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
 
 			return true;
@@ -58,7 +58,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === Item\Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;

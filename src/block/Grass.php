@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\Level\Generator\Object\TallGrass as TallGrass;
 use PocketMine\Utils\Random as Random;
-use PocketMine;
 
 class Grass extends Solid{
 	public function __construct(){
@@ -40,7 +40,7 @@ class Grass extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){
+		if($item->getID() === Item\Item::DYE and $item->getMetadata() === 0x0F){
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}

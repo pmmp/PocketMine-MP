@@ -21,11 +21,11 @@
 
 namespace PocketMine\PMF;
 
+use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Enum as Enum;
 use PocketMine\Utils\Utils as Utils;
-use PocketMine;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;

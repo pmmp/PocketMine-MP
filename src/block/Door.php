@@ -21,9 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Player as Player;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Network\Protocol\LevelEventPacket as LevelEventPacket;
+use PocketMine\Player as Player;
 
 
 abstract class Door extends Transparent{
@@ -34,7 +35,7 @@ abstract class Door extends Transparent{
 
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === AIR){ //Replace with common break method
+			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
 				$this->level->setBlock($this, new Air(), false);
 				if($this->getSide(1) instanceof Door){
 					$this->level->setBlock($this->getSide(1), new Air(), false);
@@ -102,7 +103,7 @@ abstract class Door extends Transparent{
 				$this->level->setBlock($down, Block::get($this->id, $meta), true, false, true);
 				$players = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
 				unset($players[$player->CID]);
-				$pk = new Network\Protocol\LevelEventPacket;
+				$pk = new LevelEventPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -119,7 +120,7 @@ abstract class Door extends Transparent{
 			$this->level->setBlock($this, $this, true, false, true);
 			$players = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
 			unset($players[$player->CID]);
-			$pk = new Network\Protocol\LevelEventPacket;
+			$pk = new LevelEventPacket;
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;

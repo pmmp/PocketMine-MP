@@ -32,7 +32,7 @@ class Clay extends Solid{
 
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array(Item\CLAY, 0, 4),
+			array(Item\Item::CLAY, 0, 4),
 		);
 	}
 }

@@ -24,6 +24,7 @@
  */
 namespace PocketMine\Entity;
 
+use PocketMine;
 use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
 use PocketMine\Event\Entity\EntityMotionEvent as EntityMotionEvent;
 use PocketMine\Event\Entity\EntityMoveEvent as EntityMoveEvent;
@@ -34,9 +35,12 @@ use PocketMine\Level\Position as Position;
 use PocketMine\Math\AxisAlignedBB as AxisAlignedBB;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Network\Protocol\MoveEntityPacket_PosRot as MoveEntityPacket_PosRot;
+use PocketMine\Network\Protocol\MovePlayerPacket as MovePlayerPacket;
+use PocketMine\Network\Protocol\RemoveEntityPacket as RemoveEntityPacket;
+use PocketMine\Network\Protocol\SetEntityMotionPacket as SetEntityMotionPacket;
 use PocketMine\Player as Player;
 use PocketMine\PMF\LevelFormat as LevelFormat;
-use PocketMine;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;
@@ -156,7 +160,7 @@ abstract class Entity extends Position{
 
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
-			$pk = new Network\Protocol\RemoveEntityPacket;
+			$pk = new RemoveEntityPacket;
 			$pk->eid = $this->id;
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getID()]);
@@ -216,7 +220,7 @@ abstract class Entity extends Position{
 			$this->lastPitch = $this->pitch;
 
 			if($this instanceof Human){
-				$pk = new Network\Protocol\MovePlayerPacket;
+				$pk = new MovePlayerPacket;
 				$pk->eid = $this->id;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -225,7 +229,7 @@ abstract class Entity extends Position{
 				$pk->pitch = $this->pitch;
 				$pk->bodyYaw = $this->yaw;
 			} else{
-				$pk = new Network\Protocol\MoveEntityPacket_PosRot;
+				$pk = new MoveEntityPacket_PosRot;
 				$pk->eid = $this->id;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -239,7 +243,7 @@ abstract class Entity extends Position{
 		if($this->motionChanged === true){
 			$this->motionChanged = false;
 
-			$pk = new Network\Protocol\SetEntityMotionPacket;
+			$pk = new SetEntityMotionPacket;
 			$pk->eid = $this->id;
 			$pk->speedX = $this->motionX;
 			$pk->speedY = $this->motionY;
@@ -460,7 +464,7 @@ abstract class Entity extends Position{
 				$this->getNextChunk(true);
 				$this->forceMovement = $pos;
 
-				$pk = new Network\Protocol\MovePlayerPacket;
+				$pk = new MovePlayerPacket;
 				$pk->eid = 0;
 				$pk->x = $this->x;
 				$pk->y = $this->y;

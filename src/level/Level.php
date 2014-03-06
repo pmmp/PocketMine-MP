@@ -24,12 +24,15 @@
  */
 namespace PocketMine\Level;
 
+use PocketMine;
 use PocketMine\Block\Air as Air;
 use PocketMine\Block\Block as Block;
 use PocketMine\Level\Generator\Generator as Generator;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\Network\Protocol\SetTimePacket as SetTimePacket;
+use PocketMine\Network\Protocol\UpdateBlockPacket as UpdateBlockPacket;
 use PocketMine\Player as Player;
 use PocketMine\PMF\LevelFormat as LevelFormat;
 use PocketMine\ServerAPI as ServerAPI;
@@ -39,7 +42,6 @@ use PocketMine\Tile\Sign as Sign;
 use PocketMine\Tile\Tile as Tile;
 use PocketMine\Utils\Cache as Cache;
 use PocketMine\Utils\Random as Random;
-use PocketMine;
 
 class Level{
 	public $players = array();
@@ -121,7 +123,7 @@ class Level{
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
 			$this->time = $time;
 
-			$pk = new Network\Protocol\SetTimePacket;
+			$pk = new SetTimePacket;
 			$pk->time = (int) $this->time;
 			$pk->started = $this->stopTime == false;
 			Player::broadcastPacket($this->players, $pk);
@@ -157,7 +159,7 @@ class Level{
 				foreach($this->changedBlocks as $index => $mini){
 					foreach($mini as $blocks){
 						foreach($blocks as $b){
-							$pk = new Network\Protocol\UpdateBlockPacket;
+							$pk = new UpdateBlockPacket;
 							$pk->x = $b->x;
 							$pk->y = $b->y;
 							$pk->z = $b->z;
@@ -298,7 +300,7 @@ class Level{
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
-				$pk = new Network\Protocol\UpdateBlockPacket;
+				$pk = new UpdateBlockPacket;
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;
@@ -343,7 +345,7 @@ class Level{
 			$block->position($pos);
 
 			if($direct === true){
-				$pk = new Network\Protocol\UpdateBlockPacket;
+				$pk = new UpdateBlockPacket;
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;

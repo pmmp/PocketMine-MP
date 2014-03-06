@@ -32,7 +32,7 @@ class TNT extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\FLINT_STEEL){
+		if($item->getID() === Item\Item::FLINT_STEEL){
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}

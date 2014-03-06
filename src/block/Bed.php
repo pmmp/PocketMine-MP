@@ -21,9 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item as Item;
+use PocketMine\Network\Protocol\ChatPacket as ChatPacket;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Bed extends Transparent{
 	public function __construct($type = 0){
@@ -35,7 +36,7 @@ class Bed extends Transparent{
 
 	public function onActivate(Item $item, Player $player){
 		if(ServerAPI::request()->api->time->getPhase($player->level) !== "night"){
-			$pk = new Network\Protocol\ChatPacket;
+			$pk = new ChatPacket;
 			$pk->message = "You can only sleep at night";
 			$player->dataPacket($pk);
 
@@ -58,7 +59,7 @@ class Bed extends Transparent{
 			} elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 				$b = $blockWest;
 			} else{
-				$pk = new Network\Protocol\ChatPacket;
+				$pk = new ChatPacket;
 				$pk->message = "This bed is incomplete";
 				$player->dataPacket($pk);
 
@@ -67,7 +68,7 @@ class Bed extends Transparent{
 		}
 
 		if($player->sleepOn($b) === false){
-			$pk = new Network\Protocol\ChatPacket;
+			$pk = new ChatPacket;
 			$pk->message = "This bed is occupied";
 			$player->dataPacket($pk);
 		}

@@ -41,7 +41,7 @@ class Fire extends Flowable{
 		if($type === BLOCK_UPDATE_NORMAL){
 			for($s = 0; $s <= 5; ++$s){
 				$side = $this->getSide($s);
-				if($side->getID() !== AIR and !($side instanceof Liquid)){
+				if($side->getID() !== self::AIR and !($side instanceof Liquid)){
 					return false;
 				}
 			}
@@ -49,7 +49,7 @@ class Fire extends Flowable{
 
 			return BLOCK_UPDATE_NORMAL;
 		} elseif($type === BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getID() !== NETHERRACK){
+			if($this->getSide(0)->getID() !== self::NETHERRACK){
 				$this->level->setBlock($this, new Air(), true, false, true);
 
 				return BLOCK_UPDATE_NORMAL;

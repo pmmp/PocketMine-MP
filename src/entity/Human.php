@@ -21,6 +21,7 @@
 
 namespace PocketMine\Entity;
 
+use PocketMine;
 use PocketMine\Event\Entity\EntityArmorChangeEvent as EntityArmorChangeEvent;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent as EntityInventoryChangeEvent;
 use PocketMine\Event\Event as Event;
@@ -29,7 +30,11 @@ use PocketMine\Item\Item as Item;
 use PocketMine\NBT\Tag\Byte as Byte;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Short as Short;
-use PocketMine;
+use PocketMine\Network\Protocol\AddPlayerPacket as AddPlayerPacket;
+use PocketMine\Network\Protocol\ContainerSetContentPacket as ContainerSetContentPacket;
+use PocketMine\Network\Protocol\PlayerEquipmentPacket as PlayerEquipmentPacket;
+use PocketMine\Network\Protocol\RemovePlayerPacket as RemovePlayerPacket;
+use PocketMine\Network\Protocol\SetEntityMotionPacket as SetEntityMotionPacket;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -121,7 +126,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		if($player !== $this and !isset($this->hasSpawned[$player->getID()])){
 			$this->hasSpawned[$player->getID()] = $player;
 
-			$pk = new Network\Protocol\AddPlayerPacket;
+			$pk = new AddPlayerPacket;
 			$pk->clientID = 0;
 			$pk->username = $this->nameTag;
 			$pk->eid = $this->id;
@@ -135,7 +140,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->metadata = $this->getMetadata();
 			$player->dataPacket($pk);
 
-			$pk = new Network\Protocol\SetEntityMotionPacket;
+			$pk = new SetEntityMotionPacket;
 			$pk->eid = $this->id;
 			$pk->speedX = $this->motionX;
 			$pk->speedY = $this->motionY;
@@ -150,7 +155,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
-			$pk = new Network\Protocol\RemovePlayerPacket;
+			$pk = new RemovePlayerPacket;
 			$pk->eid = $this->id;
 			$pk->clientID = 0;
 			$player->dataPacket($pk);
@@ -177,7 +182,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 
 	public function sendCurrentEquipmentSlot(Player $player){
-		$pk = new Network\Protocol\PlayerEquipmentPacket;
+		$pk = new PlayerEquipmentPacket;
 		$pk->eid = $this->id;
 		$pk->item = $this->getSlot($this->slot)->getID();
 		$pk->meta = $this->getSlot($this->slot)->getMetadata();
@@ -225,7 +230,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
 		} elseif($this instanceof Player){
-			$pk = new Network\Protocol\ContainerSetContentPacket;
+			$pk = new ContainerSetContentPacket;
 			$pk->windowid = 0x78; //Armor window id
 			$pk->slots = $this->armor;
 			$this->dataPacket($pk);

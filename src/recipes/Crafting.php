@@ -24,9 +24,9 @@
  */
 namespace PocketMine\Recipes;
 
+use PocketMine;
 use PocketMine\BlockAPI as BlockAPI;
 use PocketMine\ServerAPI as ServerAPI;
-use PocketMine;
 
 abstract class Crafting{
 	private static $small = array( //Probably means craftable on crafting bench and in inventory. Name it better!
@@ -231,7 +231,7 @@ abstract class Crafting{
 			$meta = array_pop($id);
 			$id = $id[0];
 
-			$it = BlockAPI::fromString($id);
+			$it = Item::fromString($id);
 			$recipeItems[$it->getID()] = array($it->getID(), $meta === "?" ? false : intval($meta) & 0xFFFF, intval($item[1]));
 		}
 		ksort($recipeItems);

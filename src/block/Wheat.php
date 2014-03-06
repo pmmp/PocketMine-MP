@@ -33,7 +33,7 @@ class Wheat extends Flowable{
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
-		if($down->getID() === FARMLAND){
+		if($down->getID() === self::FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
 
 			return true;
@@ -43,7 +43,7 @@ class Wheat extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === Item\Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this, true, false, true);
 			if(($player->gamemode & 0x01) === 0){
@@ -80,10 +80,10 @@ class Wheat extends Flowable{
 	public function getDrops(Item $item, Player $player){
 		$drops = array();
 		if($this->meta >= 0x07){
-			$drops[] = array(Item\WHEAT, 0, 1);
-			$drops[] = array(Item\WHEAT_SEEDS, 0, mt_rand(0, 3));
+			$drops[] = array(Item\Item::WHEAT, 0, 1);
+			$drops[] = array(Item\Item::WHEAT_SEEDS, 0, mt_rand(0, 3));
 		} else{
-			$drops[] = array(Item\WHEAT_SEEDS, 0, 1);
+			$drops[] = array(Item\Item::WHEAT_SEEDS, 0, 1);
 		}
 
 		return $drops;

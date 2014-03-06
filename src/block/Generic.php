@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\ServerAPI as ServerAPI;
-use PocketMine;
 
 class Generic extends Block{
 
@@ -51,7 +51,7 @@ class Generic extends Block{
 	public function onUpdate($type){
 		if($this->hasPhysics === true and $type === BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() === AIR or ($down instanceof Liquid)){
+			if($down->getID() === self::AIR or ($down instanceof Liquid)){
 				$data = array(
 					"x" => $this->x + 0.5,
 					"y" => $this->y + 0.5,

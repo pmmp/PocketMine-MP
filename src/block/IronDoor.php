@@ -54,7 +54,7 @@ class IronDoor extends Door{
 	public function getDrops(Item $item, Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(Item\IRON_DOOR, 0, 1),
+				array(Item\Item::IRON_DOOR, 0, 1),
 			);
 		} else{
 			return array();

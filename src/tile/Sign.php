@@ -21,11 +21,12 @@
 
 namespace PocketMine\Tile;
 
+use PocketMine;
 use PocketMine\NBT\NBT as NBT;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Int as Int;
 use PocketMine\NBT\Tag\String as String;
-use PocketMine;
+use PocketMine\Network\Protocol\EntityDataPacket as EntityDataPacket;
 
 class Sign extends Spawnable{
 
@@ -70,7 +71,7 @@ class Sign extends Spawnable{
 			new Int("y", (int) $this->y),
 			new Int("z", (int) $this->z)
 		)));
-		$pk = new Network\Protocol\EntityDataPacket;
+		$pk = new EntityDataPacket;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

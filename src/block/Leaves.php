@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\ServerAPI as ServerAPI;
-use PocketMine;
 
 class Leaves extends Transparent{
 	const OAK = 0;
@@ -49,9 +49,9 @@ class Leaves extends Transparent{
 		if(isset($visited[$index])){
 			return false;
 		}
-		if($pos->getID() === WOOD){
+		if($pos->getID() === self::WOOD){
 			return true;
-		} elseif($pos->getID() === LEAVES and $distance < 3){
+		} elseif($pos->getID() === self::LEAVES and $distance < 3){
 			$visited[$index] = true;
 			$down = $pos->getSide(0)->getID();
 			if($down === WOOD){
@@ -151,7 +151,7 @@ class Leaves extends Transparent{
 			$drops[] = array(LEAVES, $this->meta & 0x03, 1);
 		} else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = array(Item\SAPLING, $this->meta & 0x03, 1);
+				$drops[] = array(Item\Item::SAPLING, $this->meta & 0x03, 1);
 			}
 			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
 				$drops[] = array(APPLE, 0, 1);

@@ -43,7 +43,7 @@ class Torch extends Flowable{
 				0 => 0,
 			);
 
-			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === FENCE)){ //Replace with common break method
+			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === self::FENCE)){ //Replace with common break method
 				//TODO
 				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id, 0, 1));
 				$this->level->setBlock($this, new Air(), true, false, true);
@@ -68,7 +68,7 @@ class Torch extends Flowable{
 			$this->level->setBlock($block, $this, true, false, true);
 
 			return true;
-		} elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === FENCE){
+		} elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === self::FENCE){
 			$this->meta = 0;
 			$this->level->setBlock($block, $this, true, false, true);
 

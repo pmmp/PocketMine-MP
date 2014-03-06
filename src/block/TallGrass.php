@@ -47,12 +47,12 @@ class TallGrass extends Flowable{
 	public function getDrops(Item\Item $item, Player $player){
 		$drops = array();
 		$possibleDrops = array(
-			array(Item\WHEAT_SEEDS, 0, 1),
-			array(Item\CARROT, 0, 1),
-			array(Item\POTATO, 0, 1),
-			array(Item\BEETROOT_SEEDS, 0, 1),
-			array(Item\MELON_SEEDS, 0, 1),
-			array(Item\PUMPKIN_SEEDS, 0, 1),
+			array(Item\Item::WHEAT_SEEDS, 0, 1),
+			array(Item\Item::CARROT, 0, 1),
+			array(Item\Item::POTATO, 0, 1),
+			array(Item\Item::BEETROOT_SEEDS, 0, 1),
+			array(Item\Item::MELON_SEEDS, 0, 1),
+			array(Item\Item::PUMPKIN_SEEDS, 0, 1),
 			0,
 			0,
 			0,

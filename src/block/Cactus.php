@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item as Item;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\ServerAPI as ServerAPI;
-use PocketMine;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){
@@ -36,18 +36,18 @@ class Cactus extends Transparent{
 	public function onUpdate($type){
 		if($type === BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() !== SAND and $down->getID() !== CACTUS){ //Replace with common break method
+			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){ //Replace with common break method
 				$this->level->setBlock($this, new Air(), false);
 				ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
 
 				return BLOCK_UPDATE_NORMAL;
 			}
 		} elseif($type === BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getID() !== CACTUS){
+			if($this->getSide(0)->getID() !== self::CACTUS){
 				if($this->meta == 0x0F){
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->level->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-						if($b->getID() === AIR){
+						if($b->getID() === self::AIR){
 							$this->level->setBlock($b, new Cactus(), true, false, true);
 							break;
 						}
@@ -68,7 +68,7 @@ class Cactus extends Transparent{
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
-		if($down->getID() === SAND or $down->getID() === CACTUS){
+		if($down->getID() === self::SAND or $down->getID() === self::CACTUS){
 			$block0 = $this->getSide(2);
 			$block1 = $this->getSide(3);
 			$block2 = $this->getSide(4);

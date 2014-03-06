@@ -33,7 +33,7 @@ class WoodDoor extends Door{
 
 	public function getDrops(Item $item, Player $player){
 		return array(
-			array(Item\WOODEN_DOOR, 0, 1),
+			array(Item\Item::WOODEN_DOOR, 0, 1),
 		);
 	}
 }

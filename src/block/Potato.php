@@ -33,7 +33,7 @@ class Potato extends Flowable{
 
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$down = $this->getSide(0);
-		if($down->getID() === FARMLAND){
+		if($down->getID() === self::FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
 
 			return true;
@@ -43,7 +43,7 @@ class Potato extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player){
-		if($item->getID() === Item\DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === Item\Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->level->setBlock($this, $this, true, false, true);
 			if(($player->gamemode & 0x01) === 0){

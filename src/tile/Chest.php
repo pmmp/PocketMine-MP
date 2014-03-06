@@ -21,12 +21,13 @@
 
 namespace PocketMine\Tile;
 
+use PocketMine;
 use PocketMine\Level\Level as Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine\NBT\Tag\Int as Int;
 use PocketMine\NBT\Tag\String as String;
-use PocketMine;
+use PocketMine\Network\Protocol\EntityDataPacket as EntityDataPacket;
 
 class Chest extends Spawnable{
 	use Container;
@@ -115,7 +116,7 @@ class Chest extends Spawnable{
 			)));
 		}
 
-		$pk = new Network\Protocol\EntityDataPacket;
+		$pk = new EntityDataPacket;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

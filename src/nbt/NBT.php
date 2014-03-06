@@ -37,6 +37,7 @@ const TAG_String = 8;
 const TAG_Enum = 9;
 const TAG_Compound = 10;
 const TAG_Int_Array = 11;
+use PocketMine;
 use PocketMine\NBT\Tag\Byte as Byte;
 use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
 use PocketMine\NBT\Tag\Compound as Compound;
@@ -47,10 +48,11 @@ use PocketMine\NBT\Tag\Float as Float;
 use PocketMine\NBT\Tag\Int as Int;
 use PocketMine\NBT\Tag\Int_Array as Int_Array;
 use PocketMine\NBT\Tag\Long as Long;
+use PocketMine\NBT\Tag\NamedTAG as NamedTAG;
 use PocketMine\NBT\Tag\Short as Short;
 use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Tag as Tag;
 use PocketMine\Utils\Utils as Utils;
-use PocketMine;
 
 class NBT implements \ArrayAccess{
 	private $buffer;
@@ -160,9 +162,9 @@ class NBT implements \ArrayAccess{
 		return $tag;
 	}
 
-	public function writeTag(Tag\Tag $tag){
+	public function writeTag(Tag $tag){
 		$this->putByte($tag->getType());
-		if($tag instanceof Tag\NamedTAG){
+		if($tag instanceof NamedTAG){
 			$this->putString($tag->getName());
 		}
 		$tag->write($this);

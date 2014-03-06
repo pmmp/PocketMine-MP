@@ -24,20 +24,20 @@ use PocketMine;
 
 class Smelt{
 	public static $product = array(
-		Item\COBBLESTONE => array(Item\STONE, 0),
-		Item\SAND => array(Item\GLASS, 0),
-		Item\TRUNK => array(Item\COAL, 1), //Charcoal
-		Item\GOLD_ORE => array(Item\GOLD_INGOT, 0),
-		Item\IRON_ORE => array(Item\IRON_INGOT, 0),
-		Item\NETHERRACK => array(Item\NETHER_BRICK, 0),
-		Item\RAW_PORKCHOP => array(Item\COOKED_PORKCHOP, 0),
-		Item\CLAY => array(Item\BRICK, 0),
-		//Item\RAW_FISH => array(Item\COOKED_FISH, 0),
-		Item\CACTUS => array(Item\DYE, 2),
-		Item\RED_MUSHROOM => array(Item\DYE, 1),
-		Item\RAW_BEEF => array(Item\STEAK, 0),
-		Item\RAW_CHICKEN => array(Item\COOKED_CHICKEN, 0),
-		Item\RED_MUSHROOM => array(Item\DYE, 1),
-		Item\POTATO => array(Item\BAKED_POTATO, 0),
+		Item\Item::COBBLESTONE => array(Item\Item::STONE, 0),
+		Item\Item::SAND => array(Item\Item::GLASS, 0),
+		Item\Item::TRUNK => array(Item\Item::COAL, 1), //Charcoal
+		Item\Item::GOLD_ORE => array(Item\Item::GOLD_INGOT, 0),
+		Item\Item::IRON_ORE => array(Item\Item::IRON_INGOT, 0),
+		Item\Item::NETHERRACK => array(Item\Item::NETHER_BRICK, 0),
+		Item\Item::RAW_PORKCHOP => array(Item\Item::COOKED_PORKCHOP, 0),
+		Item\Item::CLAY => array(Item\Item::BRICK, 0),
+		//Item\Item::RAW_FISH => array(Item\Item::COOKED_FISH, 0),
+		Item\Item::CACTUS => array(Item\Item::DYE, 2),
+		Item\Item::RED_MUSHROOM => array(Item\Item::DYE, 1),
+		Item\Item::RAW_BEEF => array(Item\Item::STEAK, 0),
+		Item\Item::RAW_CHICKEN => array(Item\Item::COOKED_CHICKEN, 0),
+		Item\Item::RED_MUSHROOM => array(Item\Item::DYE, 1),
+		Item\Item::POTATO => array(Item\Item::BAKED_POTATO, 0),
 	);
 }

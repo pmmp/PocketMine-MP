@@ -38,8 +38,29 @@ use PocketMine\NBT\Tag\Float as Float;
 use PocketMine\NBT\Tag\Int as Int;
 use PocketMine\NBT\Tag\Short as Short;
 use PocketMine\NBT\Tag\String as String;
+use PocketMine\Network\Protocol\AdventureSettingsPacket as AdventureSettingsPacket;
+use PocketMine\Network\Protocol\AnimatePacket as AnimatePacket;
+use PocketMine\Network\Protocol\ChunkDataPacket as ChunkDataPacket;
+use PocketMine\Network\Protocol\ContainerClosePacket as ContainerClosePacket;
+use PocketMine\Network\Protocol\ContainerSetContentPacket as ContainerSetContentPacket;
+use PocketMine\Network\Protocol\ContainerSetDataPacket as ContainerSetDataPacket;
+use PocketMine\Network\Protocol\ContainerSetSlotPacket as ContainerSetSlotPacket;
 use PocketMine\Network\Protocol\DataPacket as DataPacket;
+use PocketMine\Network\Protocol\DisconnectPacket as DisconnectPacket;
+use PocketMine\Network\Protocol\EntityEventPacket as EntityEventPacket;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
+use PocketMine\Network\Protocol\LoginStatusPacket as LoginStatusPacket;
+use PocketMine\Network\Protocol\MessagePacket as MessagePacket;
+use PocketMine\Network\Protocol\PongPacket as PongPacket;
+use PocketMine\Network\Protocol\ServerHandshakePacket as ServerHandshakePacket;
+use PocketMine\Network\Protocol\SetEntityDataPacket as SetEntityDataPacket;
+use PocketMine\Network\Protocol\SetSpawnPositionPacket as SetSpawnPositionPacket;
+use PocketMine\Network\Protocol\SetTimePacket as SetTimePacket;
+use PocketMine\Network\Protocol\StartGamePacket as StartGamePacket;
+use PocketMine\Network\Protocol\TakeItemEntityPacket as TakeItemEntityPacket;
+use PocketMine\Network\Protocol\TileEventPacket as TileEventPacket;
+use PocketMine\Network\Protocol\UnknownPacket as UnknownPacket;
+use PocketMine\Network\Protocol\UpdateBlockPacket as UpdateBlockPacket;
 use PocketMine\Network\RakNet\Info as Info;
 use PocketMine\Network\RakNet\Packet as Packet;
 use PocketMine\PMF\LevelFormat as LevelFormat;
@@ -372,7 +393,7 @@ class Player extends RealHuman{
 			$level = $pos->level;
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
-		$pk = new Network\Protocol\SetSpawnPositionPacket;
+		$pk = new SetSpawnPositionPacket;
 		$pk->x = (int) $this->spawnPosition->x;
 		$pk->y = (int) $this->spawnPosition->y;
 		$pk->z = (int) $this->spawnPosition->z;
@@ -501,7 +522,7 @@ class Player extends RealHuman{
 		$Yndex = $this->chunksLoaded[$index];
 		$this->chunksLoaded[$index] = 0; //Load them all
 		$this->level->useChunk($X, $Z, $this);
-		$pk = new Network\Protocol\ChunkDataPacket;
+		$pk = new ChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
 		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
@@ -556,7 +577,7 @@ class Player extends RealHuman{
 			$reason = $reason == "" ? "server stop" : $reason;
 			$this->sendChat("You have been kicked. Reason: " . $reason . "\n");
 			$this->sendBuffer();
-			$this->directDataPacket(new Network\Protocol\DisconnectPacket);
+			$this->directDataPacket(new DisconnectPacket);
 			unset(Player::$list[$this->CID]);
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
@@ -640,7 +661,7 @@ class Player extends RealHuman{
 		return; //TODO: Check if Mojang adds this
 		$s = (int) $s;
 		if(!isset($this->inventory[$s])){
-			$pk = new Network\Protocol\ContainerSetSlotPacket;
+			$pk = new ContainerSetSlotPacket;
 			$pk->windowid = 0;
 			$pk->slot = (int) $s;
 			$pk->item = Item::get(AIR, 0, 0);
@@ -648,7 +669,7 @@ class Player extends RealHuman{
 		}
 
 		$slot = $this->inventory[$s];
-		$pk = new Network\Protocol\ContainerSetSlotPacket;
+		$pk = new ContainerSetSlotPacket;
 		$pk->windowid = 0;
 		$pk->slot = (int) $s;
 		$pk->item = $slot;
@@ -668,13 +689,13 @@ class Player extends RealHuman{
 					if($data instanceof Furnace){
 						foreach($this->windows as $id => $w){
 							if($w === $data){
-								$pk = new Network\Protocol\ContainerSetDataPacket;
+								$pk = new ContainerSetDataPacket;
 								$pk->windowid = $id;
 								$pk->property = 0; //Smelting
 								$pk->value = floor($data->namedtag->CookTime);
 								$this->dataPacket($pk);
 
-								$pk = new Network\Protocol\ContainerSetDataPacket;
+								$pk = new ContainerSetDataPacket;
 								$pk->windowid = $id;
 								$pk->property = 1; //Fire icon
 								$pk->value = $data->namedtag->BurnTicks;
@@ -688,7 +709,7 @@ class Player extends RealHuman{
 				if($data["tile"]->level === $this->level){
 					foreach($this->windows as $id => $w){
 						if($w === $data["tile"]){
-							$pk = new Network\Protocol\ContainerSetSlotPacket;
+							$pk = new ContainerSetSlotPacket;
 							$pk->windowid = $id;
 							$pk->slot = $data["slot"] + (isset($data["offset"]) ? $data["offset"] : 0);
 							$pk->item = $data["slotdata"];
@@ -700,7 +721,7 @@ class Player extends RealHuman{
 			case "player.pickup":
 				if($data["eid"] === $this->id){
 					$data["eid"] = 0;
-					$pk = new Network\Protocol\TakeItemEntityPacket;
+					$pk = new TakeItemEntityPacket;
 					$pk->eid = 0;
 					$pk->target = $data["entity"]->getID();
 					$this->dataPacket($pk);
@@ -716,7 +737,7 @@ class Player extends RealHuman{
 							break;
 					}
 				} elseif($data["entity"]->level === $this->level){
-					$pk = new Network\Protocol\TakeItemEntityPacket;
+					$pk = new TakeItemEntityPacket;
 					$pk->eid = $data["eid"];
 					$pk->target = $data["entity"]->getID();
 					$this->dataPacket($pk);
@@ -726,7 +747,7 @@ class Player extends RealHuman{
 				if($data["eid"] === $this->id or $data["entity"]->level !== $this->level){
 					break;
 				}
-				$pk = new Network\Protocol\AnimatePacket;
+				$pk = new AnimatePacket;
 				$pk->eid = $data["eid"];
 				$pk->action = $data["action"]; //1 swing arm,
 				$this->dataPacket($pk);
@@ -738,7 +759,7 @@ class Player extends RealHuman{
 					$eid = $data->getID();
 				}
 				if($data->level === $this->level){
-					$pk = new Network\Protocol\SetEntityDataPacket;
+					$pk = new SetEntityDataPacket;
 					$pk->eid = $eid;
 					$pk->metadata = $data->getMetadata();
 					$this->dataPacket($pk);
@@ -751,7 +772,7 @@ class Player extends RealHuman{
 					$eid = $data["entity"]->getID();
 				}
 				if($data["entity"]->level === $this->level){
-					$pk = new Network\Protocol\EntityEventPacket;
+					$pk = new EntityEventPacket;
 					$pk->eid = $eid;
 					$pk->event = $data["event"];
 					$this->dataPacket($pk);
@@ -798,7 +819,7 @@ class Player extends RealHuman{
 			}
 
 			if($m !== ""){
-				$pk = new Network\Protocol\MessagePacket;
+				$pk = new MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username : $author;
 				$pk->message = TextFormat::clean($m); //Colors not implemented :(
 				$this->dataPacket($pk);
@@ -851,7 +872,7 @@ class Player extends RealHuman{
 			$flags |= 0x20; //Show Nametags
 		}
 
-		$pk = new Network\Protocol\AdventureSettingsPacket;
+		$pk = new AdventureSettingsPacket;
 		$pk->flags = $flags;
 		$this->dataPacket($pk);
 	}
@@ -1209,7 +1230,7 @@ class Player extends RealHuman{
 			case ProtocolInfo::PONG_PACKET:
 				break;
 			case ProtocolInfo::PING_PACKET:
-				$pk = new Network\Protocol\PongPacket;
+				$pk = new PongPacket;
 				$pk->ptime = $packet->time;
 				$pk->time = abs(microtime(true) * 1000);
 				$this->directDataPacket($pk);
@@ -1221,7 +1242,7 @@ class Player extends RealHuman{
 				if($this->loggedIn === true){
 					break;
 				}
-				$pk = new Network\Protocol\ServerHandshakePacket;
+				$pk = new ServerHandshakePacket;
 				$pk->port = $this->port;
 				$pk->session = $packet->session;
 				$pk->session2 = Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
@@ -1246,11 +1267,11 @@ class Player extends RealHuman{
 				}
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
-						$pk = new Network\Protocol\LoginStatusPacket;
+						$pk = new LoginStatusPacket;
 						$pk->status = 1;
 						$this->directDataPacket($pk);
 					} else{
-						$pk = new Network\Protocol\LoginStatusPacket;
+						$pk = new LoginStatusPacket;
 						$pk->status = 2;
 						$this->directDataPacket($pk);
 					}
@@ -1320,7 +1341,7 @@ class Player extends RealHuman{
 				Player::saveOffline($this->username, $nbt);
 				$this->auth = true;
 
-				$pk = new Network\Protocol\LoginStatusPacket;
+				$pk = new LoginStatusPacket;
 				$pk->status = 0;
 				$this->dataPacket($pk);
 
@@ -1333,7 +1354,7 @@ class Player extends RealHuman{
 					$this->slot = $this->hotbar[0];
 				}
 
-				$pk = new Network\Protocol\StartGamePacket;
+				$pk = new StartGamePacket;
 				$pk->seed = $this->level->getSeed();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -1385,7 +1406,7 @@ class Player extends RealHuman{
 						$this->server->schedule(30, array($this, "orderChunks"), array(), true);
 						$this->blocked = false;
 
-						$pk = new Network\Protocol\SetTimePacket;
+						$pk = new SetTimePacket;
 						$pk->time = $this->level->getTime();
 						$pk->started = $this->level->stopTime == false;
 						$this->dataPacket($pk);
@@ -1483,7 +1504,7 @@ class Player extends RealHuman{
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
-					$pk = new Network\Protocol\UpdateBlockPacket;
+					$pk = new UpdateBlockPacket;
 					$pk->x = $target->x;
 					$pk->y = $target->y;
 					$pk->z = $target->z;
@@ -1491,7 +1512,7 @@ class Player extends RealHuman{
 					$pk->meta = $target->getMetadata();
 					$this->dataPacket($pk);
 
-					$pk = new Network\Protocol\UpdateBlockPacket;
+					$pk = new UpdateBlockPacket;
 					$pk->x = $block->x;
 					$pk->y = $block->y;
 					$pk->z = $block->z;
@@ -1539,7 +1560,7 @@ class Player extends RealHuman{
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
-					$pk = new Network\Protocol\UpdateBlockPacket;
+					$pk = new UpdateBlockPacket;
 					$pk->x = $target->x;
 					$pk->y = $target->y;
 					$pk->z = $target->z;
@@ -1547,7 +1568,7 @@ class Player extends RealHuman{
 					$pk->meta = $target->getMetadata();
 					$this->dataPacket($pk);
 
-					$pk = new Network\Protocol\UpdateBlockPacket;
+					$pk = new UpdateBlockPacket;
 					$pk->x = $block->x;
 					$pk->y = $block->y;
 					$pk->z = $block->z;
@@ -1642,7 +1663,7 @@ class Player extends RealHuman{
 				if($this->spawned === false or $this->blocked === true or $this->distance($blockVector) > 8){
 					$target = $this->level->getBlock($blockVector);
 
-					$pk = new Network\Protocol\UpdateBlockPacket;
+					$pk = new UpdateBlockPacket;
 					$pk->x = $target->x;
 					$pk->y = $target->y;
 					$pk->z = $target->z;
@@ -1834,30 +1855,30 @@ class Player extends RealHuman{
 				switch($packet->event){
 					case 9: //Eating
 						$items = array(
-							APPLE => 4,
-							MUSHROOM_STEW => 10,
-							BEETROOT_SOUP => 10,
-							BREAD => 5,
-							RAW_PORKCHOP => 3,
-							COOKED_PORKCHOP => 8,
-							RAW_BEEF => 3,
-							STEAK => 8,
-							COOKED_CHICKEN => 6,
-							RAW_CHICKEN => 2,
-							MELON_SLICE => 2,
-							GOLDEN_APPLE => 10,
-							PUMPKIN_PIE => 8,
-							CARROT => 4,
-							POTATO => 1,
-							BAKED_POTATO => 6,
-							//COOKIE => 2,
-							//COOKED_FISH => 5,
-							//RAW_FISH => 2,
+							Item\Item::APPLE => 4,
+							Item\Item::MUSHROOM_STEW => 10,
+							Item\Item::BEETROOT_SOUP => 10,
+							Item\Item::BREAD => 5,
+							Item\Item::RAW_PORKCHOP => 3,
+							Item\Item::COOKED_PORKCHOP => 8,
+							Item\Item::RAW_BEEF => 3,
+							Item\Item::STEAK => 8,
+							Item\Item::COOKED_CHICKEN => 6,
+							Item\Item::RAW_CHICKEN => 2,
+							Item\Item::MELON_SLICE => 2,
+							Item\Item::GOLDEN_APPLE => 10,
+							Item\Item::PUMPKIN_PIE => 8,
+							Item\Item::CARROT => 4,
+							Item\Item::POTATO => 1,
+							Item\Item::BAKED_POTATO => 6,
+							//Item\Item::COOKIE => 2,
+							//Item\Item::COOKED_FISH => 5,
+							//Item\Item::RAW_FISH => 2,
 						);
 						$slot = $this->getSlot($this->slot);
 						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
 						
-							$pk = new Network\Protocol\EntityEventPacket;
+							$pk = new EntityEventPacket;
 							$pk->eid = 0;
 							$pk->event = 9;							
 							$this->dataPacket($pk);
@@ -1867,7 +1888,7 @@ class Player extends RealHuman{
 							if($slot->getCount() <= 0){
 								$this->setSlot($this->slot, Item::get(AIR, 0, 0));
 							}
-							if($slot->getID() === MUSHROOM_STEW or $slot->getID() === BEETROOT_SOUP){
+							if($slot->getID() === Item\Item::MUSHROOM_STEW or $slot->getID() === Item\Item::BEETROOT_SOUP){
 								$this->addItem(Item::get(BOWL, 0, 1));
 							}
 						}
@@ -1928,7 +1949,7 @@ class Player extends RealHuman{
 				if(isset($this->windows[$packet->windowid])){
 					if(is_array($this->windows[$packet->windowid])){
 						foreach($this->windows[$packet->windowid] as $ob){
-							$pk = new Network\Protocol\TileEventPacket;
+							$pk = new TileEventPacket;
 							$pk->x = $ob->x;
 							$pk->y = $ob->y;
 							$pk->z = $ob->z;
@@ -1937,7 +1958,7 @@ class Player extends RealHuman{
 							Player::broadcastPacket($this->level->players, $pk);
 						}
 					} elseif($this->windows[$packet->windowid] instanceof Chest){
-						$pk = new Network\Protocol\TileEventPacket;
+						$pk = new TileEventPacket;
 						$pk->x = $this->windows[$packet->windowid]->x;
 						$pk->y = $this->windows[$packet->windowid]->y;
 						$pk->z = $this->windows[$packet->windowid]->z;
@@ -1948,7 +1969,7 @@ class Player extends RealHuman{
 				}
 				unset($this->windows[$packet->windowid]);
 
-				$pk = new Network\Protocol\ContainerClosePacket;
+				$pk = new ContainerClosePacket;
 				$pk->windowid = $packet->windowid;
 				$this->dataPacket($pk);
 				break;
@@ -2038,7 +2059,7 @@ class Player extends RealHuman{
 							"player" => $this,
 						)) === false
 					){
-						$pk = new Network\Protocol\ContainerSetSlotPacket;
+						$pk = new ContainerSetSlotPacket;
 						$pk->windowid = $packet->windowid;
 						$pk->slot = $packet->slot;
 						$pk->item = $slot;
@@ -2091,7 +2112,7 @@ class Player extends RealHuman{
 							"player" => $this,
 						)) === false
 					){
-						$pk = new Network\Protocol\ContainerSetSlotPacket;
+						$pk = new ContainerSetSlotPacket;
 						$pk->windowid = $packet->windowid;
 						$pk->slot = $packet->slot;
 						$pk->item = $slot;
@@ -2171,7 +2192,7 @@ class Player extends RealHuman{
 			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
 		}
 
-		$pk = new Network\Protocol\ContainerSetContentPacket;
+		$pk = new ContainerSetContentPacket;
 		$pk->windowid = 0;
 		$pk->slots = $this->inventory;
 		$pk->hotbar = $hotbar;
@@ -2215,7 +2236,7 @@ class Player extends RealHuman{
 		foreach($buffer as $i => $buf){
 			$cnts[] = $count = $this->counter[0]++;
 
-			$pk = new Network\Protocol\UnknownPacket;
+			$pk = new UnknownPacket;
 			$pk->packetID = $packet->pid();
 			$pk->reliability = 2;
 			$pk->hasSplit = true;
