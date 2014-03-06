@@ -27,7 +27,9 @@ The entire server is written in PHP, and has been tested, profiled and optimized
 
 ### [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)
 
-### [API Documentation](http://docs.pocketmine.net/)
+### API Documentation
+ * [Doxygen generated](http://docs.pocketmine.net/)
+ * [PHPDoc generated](http://docs.pocketmine.net/phpdoc/)
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
