@@ -22,7 +22,7 @@
 namespace PocketMine\PMF;
 use PocketMine;
 
-class Level extends PMF{
+class LevelFormat extends PMF{
 	const VERSION = 2;
 	const ZLIB_LEVEL = 6;
 	const ZLIB_ENCODING = 15; //15 = zlib, -15 = raw deflate, 31 = gzip

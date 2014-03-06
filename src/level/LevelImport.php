@@ -60,7 +60,7 @@ class LevelImport{
 			return false;
 		}
 		
-		$pmf = new PMF\Level($this->path."level.pmf", array(
+		$pmf = new PMF\LevelFormat($this->path."level.pmf", array(
 			"name" => $level["LevelName"],
 			"seed" => $level["RandomSeed"],
 			"time" => $level["Time"],

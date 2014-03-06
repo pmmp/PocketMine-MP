@@ -35,7 +35,7 @@ class Level{
 	public $stopTime;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
 	
-	public function __construct(PMF\Level $level, $name){
+	public function __construct(PMF\LevelFormat $level, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->level->level = $this;
@@ -59,12 +59,12 @@ class Level{
 	}
 	
 	public function getUsingChunk($X, $Z){
-		$index = PMF\Level::getIndex($X, $Z);
+		$index = PMF\LevelFormat::getIndex($X, $Z);
 		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index]:array();
 	}
 	
 	public function useChunk($X, $Z, Player $player){
-		$index = PMF\Level::getIndex($X, $Z);
+		$index = PMF\LevelFormat::getIndex($X, $Z);
 		$this->loadChunk($X, $Z);
 		$this->usedChunks[$index][$player->CID] = $player;
 	}
@@ -76,7 +76,7 @@ class Level{
 	}
 
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[PMF\Level::getIndex($X, $Z)][$player->CID]);
+		unset($this->usedChunks[PMF\LevelFormat::getIndex($X, $Z)][$player->CID]);
 	}
 	
 	public function isChunkPopulated($X, $Z){
@@ -148,7 +148,7 @@ class Level{
 			
 			//Do chunk updates
 			foreach($this->usedChunks as $index => $p){
-				PMF\Level::getXZ($index, $X, $Z);
+				PMF\LevelFormat::getXZ($index, $X, $Z);
 				for($Y = 0; $Y < 8; ++$Y){
 					if(!$this->level->isMiniChunkEmpty($X, $Z, $Y)){
 						for($i = 0; $i < 3; ++$i){
@@ -170,7 +170,7 @@ class Level{
 			foreach($this->usedChunks as $i => $c){
 				if(count($c) === 0){
 					unset($this->usedChunks[$i]);
-					PMF\Level::getXZ($i, $X, $Z);
+					PMF\LevelFormat::getXZ($i, $X, $Z);
 					if(!$this->isSpawnChunk($X, $Z)){
 						$this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 					}
@@ -221,7 +221,7 @@ class Level{
 	
 	protected function doSaveRoundExtra(){
 		foreach($this->usedChunks as $index => $d){
-			PMF\Level::getXZ($index, $X, $Z);
+			PMF\LevelFormat::getXZ($index, $X, $Z);
 			$nbt = new NBT(NBT\BIG_ENDIAN);
 			$nbt->setData(new NBT\Tag\Compound("", array(
 				"Entities" => new NBT\Tag\Enum("Entities", array()),
@@ -279,7 +279,7 @@ class Level{
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
 				$block->position($pos);
-				$index = PMF\Level::getIndex($pos->x >> 4, $pos->z >> 4);
+				$index = PMF\LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
 					Utils\Cache::remove("world:{$this->name}:{$index}");
 				}
@@ -319,7 +319,7 @@ class Level{
 				$pk->meta = $block->getMetadata();
 				Player::broadcastPacket($this->players, $pk);
 			}else{
-				$index = PMF\Level::getIndex($pos->x >> 4, $pos->z >> 4);
+				$index = PMF\LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
 					Utils\Cache::remove("world:{$this->name}:{$index}");
 				}
@@ -395,7 +395,7 @@ class Level{
 	}
 	
 	public function getChunkEntities($X, $Z){
-		$index = PMF\Level::getIndex($X, $Z);
+		$index = PMF\LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkEntities[$index];
 		}
@@ -403,7 +403,7 @@ class Level{
 	}
 	
 	public function getChunkTiles($X, $Z){
-		$index = PMF\Level::getIndex($X, $Z);
+		$index = PMF\LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkTiles[$index];
 		}
@@ -413,7 +413,7 @@ class Level{
 	
 	
 	public function loadChunk($X, $Z){
-		$index = PMF\Level::getIndex($X, $Z);
+		$index = PMF\LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index])){
 			return true;
 		}elseif($this->level->loadChunk($X, $Z) !== false){
@@ -469,7 +469,7 @@ class Level{
 			return false;
 		}
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
-			$identifier = "world:{$this->name}:".PMF\Level::getIndex($X, $Z);
+			$identifier = "world:{$this->name}:".PMF\LevelFormat::getIndex($X, $Z);
 			if(($cache = Utils\Cache::get($identifier)) !== false){
 				return $cache;
 			}

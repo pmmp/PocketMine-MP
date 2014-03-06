@@ -359,7 +359,7 @@ class Player extends Entity\RealHuman{
 		for($X = $startX; $X <= $finalX; ++$X){
 			for($Z = $startZ; $Z <= $finalZ; ++$Z){
 				$distance = abs($X - $centerX) + abs($Z - $centerZ);
-				$index = PMF\Level::getIndex($X, $Z);
+				$index = PMF\LevelFormat::getIndex($X, $Z);
 				if(!isset($this->chunksLoaded[$index]) or $this->chunksLoaded[$index] !== 0){
 					$newOrder[$index] = $distance;
 				}
@@ -370,7 +370,7 @@ class Player extends Entity\RealHuman{
 		$this->chunksOrder = $newOrder;
 		
 		$index = key($this->chunksOrder);
-		PMF\Level::getXZ($index, $X, $Z);
+		PMF\LevelFormat::getXZ($index, $X, $Z);
 		$this->level->loadChunk($X, $Z);
 		if(!$this->level->isChunkPopulated($X, $Z)){
 			$this->level->loadChunk($X - 1, $Z);
@@ -387,7 +387,7 @@ class Player extends Entity\RealHuman{
 			if($Yndex !== 0xff){
 				$X = null;
 				$Z = null;
-				PMF\Level::getXZ($index, $X, $Z);
+				PMF\LevelFormat::getXZ($index, $X, $Z);
 				foreach($this->level->getChunkEntities($X, $Z) as $entity){
 					if($entity !== $this){
 						$entity->despawnFrom($this);
@@ -446,7 +446,7 @@ class Player extends Entity\RealHuman{
 		}
 		$X = null;
 		$Z = null;
-		PMF\Level::getXZ($index, $X, $Z);
+		PMF\LevelFormat::getXZ($index, $X, $Z);
 		if(!$this->level->isChunkPopulated($X, $Z)){			
 			$this->orderChunks();
 			if($this->chunkScheduled === 0 or $force === true){

@@ -101,7 +101,7 @@ abstract class Entity extends Level\Position{
 		$this->onGround = $this->namedtag->OnGround > 0 ? true:false;
 		$this->invulnerable = $this->namedtag->Invulnerable > 0 ? true:false;
 		
-		$index = PMF\Level::getIndex($this->x >> 4, $this->z >> 4);
+		$index = PMF\LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		Entity::$list[$this->id] = $this;
 		$this->level->entities[$this->id] = $this;
@@ -312,7 +312,7 @@ abstract class Entity extends Level\Position{
 					if($Yndex !== 0xff){
 						$X = null;
 						$Z = null;
-						PMF\Level::getXZ($index, $X, $Z);
+						PMF\LevelFormat::getXZ($index, $X, $Z);
 						foreach($this->level->getChunkEntities($X, $Z) as $entity){
 							$entity->despawnFrom($this);
 						}
@@ -377,7 +377,7 @@ abstract class Entity extends Level\Position{
 		$this->z = $pos->z;
 		
 		$radius = $this->width / 2;
-		if(($index = PMF\Level::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
+		if(($index = PMF\LevelFormat::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
 			if($this->chunkIndex !== false){
 				unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
 			}

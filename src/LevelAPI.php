@@ -144,7 +144,7 @@ class LevelAPI{
 		}
 		$path = DATA."worlds/".$name."/";
 		console("[INFO] Preparing level \"".$name."\"");
-		$level = new PMF\Level($path."level.pmf");
+		$level = new PMF\LevelFormat($path."level.pmf");
 		if(!$level->isLoaded){
 			console("[ERROR] Could not load level \"".$name."\"");
 			return false;

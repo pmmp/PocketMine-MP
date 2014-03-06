@@ -70,7 +70,7 @@ abstract class Tile extends Position{
 		$this->y = (int) $this->namedtag->y;
 		$this->z = (int) $this->namedtag->z;
 		
-		$index = PMF\Level::getIndex($this->x >> 4, $this->z >> 4);
+		$index = PMF\LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		$this->level->tiles[$this->id] = $this;
 		$this->level->chunkTiles[$this->chunkIndex][$this->id] = $this;

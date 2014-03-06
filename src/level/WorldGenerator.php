@@ -30,7 +30,7 @@ class WorldGenerator{
 		$this->height = (int) $height;
 		$this->path = DATA."worlds/".$name."/";
 		$this->generator = $generator;
-		$level = new PMF\Level($this->path."level.pmf", array(
+		$level = new PMF\LevelFormat($this->path."level.pmf", array(
 			"name" => $name,
 			"seed" => $this->seed,
 			"time" => 0,
