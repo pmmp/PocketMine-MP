@@ -75,6 +75,7 @@ class Sign extends Spawnable{
 		$pk->z = $this->z;
 		$pk->namedtag = $nbt->write();
 		$player->dataPacket($pk);
+		return true;
 	}
 	
 }

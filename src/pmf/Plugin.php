@@ -76,6 +76,7 @@ class Plugin extends PMF{
 			$this->pluginData["code"] .= $this->read(4096);
 		}
 		$this->pluginData["code"] = gzinflate($this->pluginData["code"]);
+		return true;
 	}
 
 }

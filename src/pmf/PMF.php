@@ -101,6 +101,7 @@ class PMF{
 		}
 		$this->seek(0);
 		$this->write("PMF" . chr((int) $version) . chr((int) $type));
+		return true;
 	}
 	
 	public function read($length){

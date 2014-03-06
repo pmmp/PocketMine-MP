@@ -31,20 +31,21 @@ class TrapdoorBlock extends TransparentBlock{
 		$this->hardness = 15;
 	}
 	public function place(Item $item, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-			if(($target->isTransparent === false or $target->getID() === SLAB) and $face !== 0 and $face !== 1){
-				$faces = array(
-					2 => 0,
-					3 => 1,
-					4 => 2,
-					5 => 3,
-				);
-				$this->meta = $faces[$face] & 0x03;
-				if($fy > 0.5){
-					$this->meta |= 0x08;
-				}
-				$this->level->setBlock($block, $this, true, false, true);
-				return true;
+		if(($target->isTransparent === false or $target->getID() === SLAB) and $face !== 0 and $face !== 1){
+			$faces = array(
+				2 => 0,
+				3 => 1,
+				4 => 2,
+				5 => 3,
+			);
+			$this->meta = $faces[$face] & 0x03;
+			if($fy > 0.5){
+				$this->meta |= 0x08;
 			}
+			$this->level->setBlock($block, $this, true, false, true);
+			return true;
+		}
+		return false;
 	}
 	public function getDrops(Item $item, Player $player){
 		return array(

@@ -53,22 +53,22 @@ class Handler{
 
 		$pid = ord($buffer{0});
 
-		if(RakNetInfo::isValid($pid)){
-			$packet = new RakNetPacket($pid);
+		if(RakNet\Info::isValid($pid)){
+			$packet = new RakNet\Packet($pid);
 			$packet->buffer =& $buffer;
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->decode();
-			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === Event::DENY){
+			if(Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet)) === Event\Event::DENY){
 				return false;
 			}
 			return $packet;
-		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
-			$packet = new QueryPacket;
+		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof Query\QueryHandler){
+			$packet = new Query\QueryPacket;
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer =& $buffer;
-			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === Event::DENY){
+			if(Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet)) === Event\Event::DENY){
 				return false;
 			}
 			ServerAPI::request()->api->query->handle($packet);
@@ -77,15 +77,16 @@ class Handler{
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer =& $buffer;
-			EventHandler::callEvent(new PacketReceiveEvent($packet));
+			Event\EventHandler::callEvent(new Event\Server\PacketReceiveEvent($packet));
 			return false;
 		}
+		return true;
 	}
 	
 	public function writePacket(Packet $packet){
-		if(EventHandler::callEvent(new PacketSendEvent($packet)) === Event::DENY){
+		if(Event\EventHandler::callEvent(new Event\Server\PacketSendEvent($packet)) === Event\Event::DENY){
 			return 0;
-		}elseif($packet instanceof RakNetPacket){
+		}elseif($packet instanceof RakNet\Packet){
 			$packet->encode();
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);

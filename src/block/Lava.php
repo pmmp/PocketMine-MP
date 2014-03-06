@@ -81,7 +81,7 @@ class LavaBlock extends LiquidBlock{
 			return false;
 		}
 		
-		if( $this->checkWater()){
+		if($this->checkWater()){
 			return;
 		}
 		

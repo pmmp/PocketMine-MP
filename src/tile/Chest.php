@@ -67,6 +67,7 @@ class Chest extends Spawnable{
 		$tile->spawnToAll();
 		$this->server->handle("tile.update", $this);
 		$this->server->handle("tile.update", $tile);
+		return true;
 	}
 	
 	public function unpair(){
@@ -83,6 +84,7 @@ class Chest extends Spawnable{
 			$tile->spawnToAll();
 			$this->server->handle("tile.update", $tile);
 		}
+		return true;
 	}
 
 	public function spawnTo(Player $player){
