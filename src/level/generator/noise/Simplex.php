@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Level\Generator;
+namespace PocketMine\Level\Generator\Noise;
 use PocketMine\Level;
 use PocketMine;
 
