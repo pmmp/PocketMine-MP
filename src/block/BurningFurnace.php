@@ -50,13 +50,15 @@ class BurningFurnaceBlock extends SolidBlock{
 		if($t instanceof Furnace){
 			$furnace = $t;
 		}else{
-			$furnace = new Furnace($this->level, new NBT\Tag\Compound(false, array(
-				"Items" => new NBT\Tag\List("Items", array()),
+			$nbt = new NBT\Tag\Compound(false, array(
+				"Items" => new NBT\Tag\Enum("Items", array()),
 				"id" => new NBT\Tag\String("id", Tile::FURNACE),
 				"x" => new NBT\Tag\Int("x", $this->x),
 				"y" => new NBT\Tag\Int("y", $this->y),
 				"z" =>new NBT\Tag\Int("z",  $this->z)			
-			)));
+			));
+			$nbt->Items->setTagType(NBT\Tag_Compound);
+			$furnace = new Furnace($this->level, $nbt);
 		}
 		
 		if(($player->gamemode & 0x01) === 0x01){
