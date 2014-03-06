@@ -21,6 +21,17 @@
 
 namespace PocketMine\Tile;
 use PocketMine;
+use PocketMine\Tile\Chest as Chest;
+use PocketMine\Player as Player;
+use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Tile\Furnace as Furnace;
+use PocketMine\Item\Item as Item;
+use PocketMine\Event\EventHandler as EventHandler;
+use PocketMine\Event\Tile\TileInventoryChangeEvent as TileInventoryChangeEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Short as Short;
 
 trait Container{
 	public function openInventory(Player $player){
@@ -144,19 +155,19 @@ trait Container{
 		}
 	}
 	
-	public function setSlot($s, Item\Item $item, $update = true, $offset = 0){
+	public function setSlot($s, Item $item, $update = true, $offset = 0){
 		$i = $this->getSlotIndex($s);
 		
-		if($i === false or Event\EventHandler::callEvent($ev = new Event\Tile\TileInventoryChangeEvent($this, $this->getSlot($s), $item, $s, $offset)) === Event\Event::DENY){
+		if($i === false or EventHandler::callEvent($ev = new TileInventoryChangeEvent($this, $this->getSlot($s), $item, $s, $offset)) === Event::DENY){
 			return false;
 		}
 		
 		$item = $ev->getNewItem();
-		$d = new NBT\Tag\Compound(false, array(
-			"Count" => new NBT\Tag\Byte("Count", $item->getCount()),
-			"Slot" => new NBT\Tag\Byte("Slot", $s),
-			"id" => new NBT\Tag\Short("id", $item->getID()),
-			"Damage" => new NBT\Tag\Short("Damage", $item->getMetadata()),
+		$d = new Compound(false, array(
+			"Count" => new Byte("Count", $item->getCount()),
+			"Slot" => new Byte("Slot", $s),
+			"id" => new Short("id", $item->getID()),
+			"Damage" => new Short("Damage", $item->getMetadata()),
 		));
 
 		if($item->getID() === AIR or $item->getCount() <= 0){

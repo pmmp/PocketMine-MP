@@ -21,6 +21,12 @@
 
 namespace PocketMine\Level\Generator\Object;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Block\Dirt as Dirt;
+use PocketMine\Block\Leaves as Leaves;
+use PocketMine\Block\Wood as Wood;
 
 class SmallTree extends Tree{
 	public $type = 0;
@@ -32,7 +38,7 @@ class SmallTree extends Tree{
 	private $addLogVines = false;
 	private $addCocoaPlants = false;
 
-	public function canPlaceObject(Level\Level $level, Math\Vector3 $pos, Utils\Random $random){
+	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$radiusToCheck = 0;
 		for ($yy = 0; $yy < $this->trunkHeight + 3; ++$yy) {
 			if($yy == 1 or $yy === $this->trunkHeight) {
@@ -49,10 +55,10 @@ class SmallTree extends Tree{
 		return true;
 	}
 
-	public function placeObject(Level\Level $level, Math\Vector3 $pos, Utils\Random $random){
+	public function placeObject(Level $level, Vector3 $pos, Random $random){
       // The base dirt block
-      $dirtpos = new Math\Vector3( $pos->x, $pos->y - 1, $pos->z );
-		$level->setBlockRaw( $dirtpos, new Block\Dirt() );
+      $dirtpos = new Vector3( $pos->x, $pos->y - 1, $pos->z );
+		$level->setBlockRaw( $dirtpos, new Dirt() );
 
       // Adjust the tree trunk's height randomly
       //    plot [-14:11] int( x / 8 ) + 5
@@ -81,10 +87,10 @@ class SmallTree extends Tree{
                {
                   if( sqrt(($xx * $xx) + ($zz * $zz)) <= $radius )
                   {
-                     $leafpos = new Math\Vector3( $pos->x + $xx,
+                     $leafpos = new Vector3( $pos->x + $xx,
                                              $pos->y + $yy,
                                              $pos->z + $zz );
-                     $level->setBlockRaw($leafpos, new Block\Leaves($this->type) );
+                     $level->setBlockRaw($leafpos, new Leaves($this->type) );
                   }
                }
             }
@@ -94,8 +100,8 @@ class SmallTree extends Tree{
          // Place the trunk last
          if($leaflevel > 1)
          {
-            $trunkpos = new Math\Vector3( $pos->x, $pos->y + $yy, $pos->z );
-            $level->setBlockRaw($trunkpos, new Block\Wood($this->type));
+            $trunkpos = new Vector3( $pos->x, $pos->y + $yy, $pos->z );
+            $level->setBlockRaw($trunkpos, new Wood($this->type));
          }
       }
    }

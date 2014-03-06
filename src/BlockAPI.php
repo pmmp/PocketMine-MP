@@ -20,6 +20,16 @@
 */
 
 namespace PocketMine;
+use PocketMine\Level\Position as Position;
+use PocketMine\Block\GenericBlock as GenericBlock;
+use PocketMine\Item\Item as Item;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Player as Player;
+use PocketMine\Block\Block as Block;
+use PocketMine\Tile\Sign as Sign;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Int as Int;
 
 class BlockAPI{
 	private $server;
@@ -248,14 +258,14 @@ class BlockAPI{
 		}
 	}
 
-	public static function get($id, $meta = 0, Level\Position $v = null){
+	public static function get($id, $meta = 0, Position $v = null){
 		if(isset(Block::$class[$id])){
 			$classname = Block::$class[$id];
 			$b = new $classname($meta);
 		}else{
-			$b = new Block\GenericBlock((int) $id, $meta);
+			$b = new GenericBlock((int) $id, $meta);
 		}
-		if($v instanceof Level\Position){
+		if($v instanceof Position){
 			$b->position($v);
 		}
 		return $b;
@@ -263,11 +273,11 @@ class BlockAPI{
 	
 	public static function getItem($id, $meta = 0, $count = 1){
 		$id = (int) $id;
-		if(isset(Item\Item::$class[$id])){
-			$classname = Item\Item::$class[$id];
+		if(isset(Item::$class[$id])){
+			$classname = Item::$class[$id];
 			$i = new $classname($meta, $count);
 		}else{
-			$i = new Item\Item($id, $meta, $count);
+			$i = new Item($id, $meta, $count);
 		}
 		return $i;
 	}
@@ -318,7 +328,7 @@ class BlockAPI{
 		return $output;
 	}
 
-	private function cancelAction(Block\Block $block, Player $player, $send = true){
+	private function cancelAction(Block $block, Player $player, $send = true){
 		$pk = new Network\Protocol\UpdateBlockPacket;
 		$pk->x = $block->x;
 		$pk->y = $block->y;
@@ -356,7 +366,7 @@ class BlockAPI{
 				return $this->cancelAction($target, $player, false);
 			}
 			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
-				$player->setSlot($player->slot, new Item\Item(AIR, 0, 0));
+				$player->setSlot($player->slot, new Item(AIR, 0, 0));
 			}
 		}else{
 			return $this->cancelAction($target, $player, false);
@@ -453,16 +463,16 @@ class BlockAPI{
 			return $this->cancelAction($block, $player, false);
 		}
 		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
-			new Tile\Sign($player->level, new NBT\Tag\Compound(false, array(
-				"id" => new NBT\Tag\String("id", Tile::Sign),
-				"x" => new NBT\Tag\Int("x", $block->x),
-				"y" => new NBT\Tag\Int("y", $block->y),
-				"z" => new NBT\Tag\Int("z", $block->z),
-				"Text1" => new NBT\Tag\String("Text1", ""),
-				"Text2" => new NBT\Tag\String("Text2", ""),
-				"Text3" => new NBT\Tag\String("Text3", ""),
-				"Text4" => new NBT\Tag\String("Text4", ""),
-				"creator" => new NBT\Tag\String("creator", $player->getUsername())
+			new Sign($player->level, new Compound(false, array(
+				"id" => new String("id", Tile::Sign),
+				"x" => new Int("x", $block->x),
+				"y" => new Int("y", $block->y),
+				"z" => new Int("z", $block->z),
+				"Text1" => new String("Text1", ""),
+				"Text2" => new String("Text2", ""),
+				"Text3" => new String("Text3", ""),
+				"Text4" => new String("Text4", ""),
+				"creator" => new String("creator", $player->getUsername())
 			)));
 		}
 
@@ -476,7 +486,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function blockUpdateAround(Level\Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){		
+	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){		
 		if($delay !== false){
 			$this->scheduleBlockUpdate($pos->getSide(0), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(1), $delay, $type);
@@ -494,11 +504,11 @@ class BlockAPI{
 		}
 	}
 	
-	public function blockUpdate(Level\Position $pos, $type = BLOCK_UPDATE_NORMAL){
-		if(!($pos instanceof Block\Block)){
+	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
+		if(!($pos instanceof Block)){
 			$block = $pos->level->getBlock($pos);
 		}else{
-			$pos = new Level\Position($pos->x, $pos->y, $pos->z, $pos->level);
+			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
 			$block = $pos->level->getBlock($pos);
 		}
 		if($block === false){
@@ -512,7 +522,7 @@ class BlockAPI{
 		return $level;
 	}
 	
-	public function scheduleBlockUpdate(Level\Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
+	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
 			return false;

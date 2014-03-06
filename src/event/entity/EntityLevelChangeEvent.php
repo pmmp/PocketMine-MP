@@ -22,6 +22,8 @@
 namespace PocketMine\Event\Entity;
 use PocketMine\Event;
 use PocketMine;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Level\Level as Level;
 
 class EntityLevelChangeEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;
@@ -30,7 +32,7 @@ class EntityLevelChangeEvent extends EntityEvent implements CancellableEvent{
 	private $originLevel;
 	private $targetLevel;
 	
-	public function __construct(Entity\Entity $entity, Level\Level $originLevel, Level\Level $targetLevel){
+	public function __construct(Entity $entity, Level $originLevel, Level $targetLevel){
 		$this->entity = $entity;
 		$this->originLevel = $originLevel;
 		$this->targetLevel = $targetLevel;

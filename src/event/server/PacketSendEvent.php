@@ -22,6 +22,7 @@
 namespace PocketMine\Event\Server;
 use PocketMine\Event;
 use PocketMine;
+use PocketMine\Network\Packet as Packet;
 
 class PacketSendEvent extends ServerEvent implements CancellableEvent{
 	public static $handlers;
@@ -30,7 +31,7 @@ class PacketSendEvent extends ServerEvent implements CancellableEvent{
 	private $packet;
 	
 	
-	public function __construct(Network\Packet $packet){
+	public function __construct(Packet $packet){
 		$this->packet = $packet;
 	}
 	

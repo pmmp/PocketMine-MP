@@ -21,6 +21,9 @@
 
 namespace PocketMine\Level\Generator\Populator;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Math\Vector3 as Vector3;
 
 class Tree extends Populator{
 	private $level;
@@ -35,7 +38,7 @@ class Tree extends Populator{
 		$this->baseAmount = $amount;
 	}
 	
-	public function populate(Level\Level $level, $chunkX, $chunkZ, Utils\Random $random){
+	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
 		$this->level = $level;
 		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
@@ -50,13 +53,13 @@ class Tree extends Populator{
 			}else{
 				$meta = SaplingBlock::OAK;
 			}
-			TreeObject::growTree($this->level, new Math\Vector3($x, $y, $z), $random, $meta);
+			TreeObject::growTree($this->level, new Vector3($x, $y, $z), $random, $meta);
 		}
 	}
 	
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 128; $y > 0; --$y){
-			$b = $this->level->getBlockRaw(new Math\Vector3($x, $y, $z));
+			$b = $this->level->getBlockRaw(new Vector3($x, $y, $z));
 			if($b->getID() !== DIRT and $b->getID() !== GRASS){
 				if(--$y <= 0){
 					return -1;

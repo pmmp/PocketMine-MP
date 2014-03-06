@@ -21,6 +21,20 @@
 
 namespace PocketMine\Level\Generator;
 use PocketMine;
+use PocketMine\Level\Generator\Populator\Ore as Ore;
+use PocketMine\Block\CoalOre as CoalOre;
+use PocketMine\Block\IronOre as IronOre;
+use PocketMine\Block\RedstoneOre as RedstoneOre;
+use PocketMine\Block\LapisOre as LapisOre;
+use PocketMine\Block\GoldOre as GoldOre;
+use PocketMine\Block\DiamondOre as DiamondOre;
+use PocketMine\Block\Dirt as Dirt;
+use PocketMine\Block\Gravel as Gravel;
+use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Level\Level as Level;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Level\Generator\Generator as Generator;
 
 class Flat extends Generator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
@@ -42,16 +56,16 @@ class Flat extends Generator{
 			$this->parsePreset($this->preset);
 		}
 		if(isset($this->options["decoration"])){
-			$ores = new Populator\Ore();
+			$ores = new Ore();
 			$ores->setOreTypes(array(
-				new Object\Ore\Type(new Block\CoalOre(), 20, 16, 0, 128),
-				new Object\Ore\Type(New Block\IronOre(), 20, 8, 0, 64),
-				new Object\Ore\Type(new Block\RedstoneOre(), 8, 7, 0, 16),
-				new Object\Ore\Type(new Block\LapisOre(), 1, 6, 0, 32),
-				new Object\Ore\Type(new Block\GoldOre(), 2, 8, 0, 32),
-				new Object\Ore\Type(new Block\DiamondOre(), 1, 7, 0, 16),
-				new Object\Ore\Type(new Block\Dirt(), 20, 32, 0, 128),
-				new Object\Ore\Type(new Block\Gravel(), 10, 16, 0, 128),
+				new Object\Ore\Type(new CoalOre(), 20, 16, 0, 128),
+				new Object\Ore\Type(New IronOre(), 20, 8, 0, 64),
+				new Object\Ore\Type(new RedstoneOre(), 8, 7, 0, 16),
+				new Object\Ore\Type(new LapisOre(), 1, 6, 0, 32),
+				new Object\Ore\Type(new GoldOre(), 2, 8, 0, 32),
+				new Object\Ore\Type(new DiamondOre(), 1, 7, 0, 16),
+				new Object\Ore\Type(new Dirt(), 20, 32, 0, 128),
+				new Object\Ore\Type(new Gravel(), 10, 16, 0, 128),
 			));
 			$this->populators[] = $ores;			
 		}
@@ -121,7 +135,7 @@ class Flat extends Generator{
 		}
 	}
 	
-	public function init(Level\Level $level, Utils\Random $random){
+	public function init(Level $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 	}
@@ -140,7 +154,7 @@ class Flat extends Generator{
 	}
 	
 	public function getSpawn(){
-		return new Math\Vector3(128, $this->floorLevel, 128);
+		return new Vector3(128, $this->floorLevel, 128);
 	}
 }
 

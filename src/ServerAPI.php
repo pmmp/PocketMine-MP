@@ -20,6 +20,19 @@
 */
 
 namespace PocketMine;
+use PocketMine\Utils\VersionString as VersionString;
+use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\Utils\Config as Config;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Network\UPnP\PortForward as PortForward;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Player as Player;
+use PocketMine\Network\RCON\RCON as RCON;
+use PocketMine\Network\Query\QueryHandler as QueryHandler;
+use PocketMine\Recipes\Crafting as Crafting;
+use PocketMine\Network\UPnP\RemovePortForward as RemovePortForward;
 
 class ServerAPI{
 	public $restart = false;
@@ -103,11 +116,11 @@ class ServerAPI{
 			}
 		}
 		
-		$version = new Utils\VersionString();
-		console("[INFO] Starting Minecraft PE server version ".Utils\TextFormat::AQUA.MINECRAFT_VERSION);
+		$version = new VersionString();
+		console("[INFO] Starting Minecraft PE server version ".TextFormat::AQUA.MINECRAFT_VERSION);
 		
 		console("[INFO] Loading properties...");
-		$this->config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES, array(
+		$this->config = new Config(\PocketMine\DATA . "server.properties", Config::PROPERTIES, array(
 			"server-name" => "Minecraft: PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",
@@ -134,7 +147,7 @@ class ServerAPI{
 			"level-type" => "DEFAULT",
 			"enable-query" => true,
 			"enable-rcon" => false,
-			"rcon.password" => substr(base64_encode(Utils\Utils::getRandomBytes(20, false)), 3, 10),
+			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
 		));
 		
@@ -149,52 +162,52 @@ class ServerAPI{
 		}
 		if($this->getProperty("upnp-forwarding") == true){
 			console("[INFO] [UPnP] Trying to port forward...");
-			Network\UPnP\PortForward($this->getProperty("server-port"));
+			PortForward($this->getProperty("server-port"));
 		}
 
 		$this->server = new Server($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
-		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? Utils\TextFormat::YELLOW:"").VERSION.Utils\TextFormat::RESET." \"".CODENAME."\" (MCPE: ".MINECRAFT_VERSION.") (API ".API_VERSION.")", true, true, 0);
+		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? TextFormat::YELLOW:"").VERSION.TextFormat::RESET." \"".CODENAME."\" (MCPE: ".MINECRAFT_VERSION.") (API ".API_VERSION.")", true, true, 0);
 		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
 
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
-			console("[INFO] Last check: ".Utils\TextFormat::AQUA.date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
+			console("[INFO] Last check: ".TextFormat::AQUA.date("Y-m-d H:i:s", $this->getProperty("last-update"))."\x1b[0m");
 			if($this->server->version->isDev()){
-				$info = json_decode(Utils\Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
+				$info = json_decode(Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
 				if($info === false or !isset($info[0])){
 					console("[ERROR] Github API error");
 				}else{
 					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
 					$last = $last->getTimestamp();
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info[0]["sha"]){
-						console("[NOTICE] ".Utils\TextFormat::YELLOW."A new DEVELOPMENT version of PocketMine-MP has been released!");
-						console("[NOTICE] ".Utils\TextFormat::YELLOW."Commit \"".$info[0]["commit"]["message"]."\" [".substr($info[0]["sha"], 0, 10)."] by ".$info[0]["commit"]["committer"]["name"]);
-						console("[NOTICE] ".Utils\TextFormat::YELLOW."Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/".$info[0]["sha"].".zip");
+						console("[NOTICE] ".TextFormat::YELLOW."A new DEVELOPMENT version of PocketMine-MP has been released!");
+						console("[NOTICE] ".TextFormat::YELLOW."Commit \"".$info[0]["commit"]["message"]."\" [".substr($info[0]["sha"], 0, 10)."] by ".$info[0]["commit"]["committer"]["name"]);
+						console("[NOTICE] ".TextFormat::YELLOW."Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/".$info[0]["sha"].".zip");
 						console("[NOTICE] This message will dissapear after issuing the command \"/update-done\"");
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] ".Utils\TextFormat::AQUA."This is the latest DEVELOPMENT version");
+						console("[INFO] ".TextFormat::AQUA."This is the latest DEVELOPMENT version");
 					}
 				}
 			}else{
-				$info = json_decode(Utils\Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
+				$info = json_decode(Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
 				if($info === false or !isset($info[0])){
 					console("[ERROR] Github API error");
 				}else{
-					$newest = new Utils\VersionString(VERSION);
+					$newest = new VersionString(VERSION);
 					$newestN = $newest->getNumber();
-					$update = new Utils\VersionString($info[0]["name"]);
+					$update = new VersionString($info[0]["name"]);
 					$updateN = $update->getNumber();
 					if($updateN > $newestN){
-						console("[NOTICE] ".Utils\TextFormat::GREEN."A new STABLE version of PocketMine-MP has been released!");
-						console("[NOTICE] ".Utils\TextFormat::GREEN."Version \"".$info[0]["name"]."\" #".$updateN);
+						console("[NOTICE] ".TextFormat::GREEN."A new STABLE version of PocketMine-MP has been released!");
+						console("[NOTICE] ".TextFormat::GREEN."Version \"".$info[0]["name"]."\" #".$updateN);
 						console("[NOTICE] Get it at PocketMine.net or at ".$info[0]["zipball_url"]);
 						console("[NOTICE] This message will dissapear as soon as you update");
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] ".Utils\TextFormat::AQUA."This is the latest STABLE version");
+						console("[INFO] ".TextFormat::AQUA."This is the latest STABLE version");
 					}
 				}
 			}
@@ -222,19 +235,19 @@ class ServerAPI{
 	
 	public function checkTickUpdates(){
 		//Update entities that need update
-		if(count(Entity\Entity::$needUpdate) > 0){
+		if(count(Entity::$needUpdate) > 0){
 			foreach(EntityEntity::$needUpdate as $id => $entity){
 				if($entity->onUpdate() === false){
-					unset(Entity\Entity::$needUpdate[$id]);
+					unset(Entity::$needUpdate[$id]);
 				}
 			}
 		}
 	
 		//Update tiles that need update
-		if(count(Tile\Tile::$needUpdate) > 0){
-			foreach(Tile\Tile::$needUpdate as $id => $tile){
+		if(count(Tile::$needUpdate) > 0){
+			foreach(Tile::$needUpdate as $id => $tile){
 				if($tile->onUpdate() === false){
-					unset(Tile\Tile::$needUpdate[$id]);
+					unset(Tile::$needUpdate[$id]);
 				}
 			}
 		}
@@ -272,13 +285,13 @@ class ServerAPI{
 			"data" => array(
 				"serverid" => $this->server->serverID,
 				"port" => $this->server->port,
-				"os" => Utils\Utils::getOS(),
+				"os" => Utils::getOS(),
 				"memory_total" => $this->getProperty("memory-limit"),
 				"memory_usage" => memory_get_usage(true),
 				"php_version" => PHP_VERSION,
 				"version" => VERSION,
 				"mc_version" => MINECRAFT_VERSION,
-				"protocol" => Network\Protocol\Info::CURRENT_PROTOCOL,
+				"protocol" => Info::CURRENT_PROTOCOL,
 				"online" => count(Player::$list),
 				"max" => $this->server->maxClients,
 				"plugins" => $plist,
@@ -342,7 +355,7 @@ class ServerAPI{
 					break;
 				case "server-id":
 					if($v !== false){
-						$v = preg_match("/[^0-9\-]/", $v) > 0 ? Utils\Utils::readInt(substr(md5($v, true), 0, 4)):$v;
+						$v = preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)):$v;
 					}
 					break;
 			}
@@ -366,24 +379,24 @@ class ServerAPI{
 			$this->server->schedule(18000, array($this, "autoSave"), array(), true);	
 		}
 		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
-			$this->rcon = new Network\RCON\RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
+			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}
 
 		if($this->getProperty("enable-query") === true){
-			$this->query = new Network\Query\QueryHandler();
+			$this->query = new QueryHandler();
 		}
-		Recipes\Crafting::init();
+		Crafting::init();
 		$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
 		$this->server->init();
 		unregister_tick_function(array($this->server, "tick"));
 		$this->console->__destruct();
-		if($this->rcon instanceof Network\RCON\RCON){
+		if($this->rcon instanceof RCON){
 			$this->rcon->stop();
 		}
 		$this->__destruct();
 		if($this->getProperty("upnp-forwarding") === true ){
 			console("[INFO] [UPnP] Removing port forward...");
-			Network\UPnP\RemovePortForward($this->getProperty("server-port"));
+			RemovePortForward($this->getProperty("server-port"));
 		}
 		return $this->restart;
 	}

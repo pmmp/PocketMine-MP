@@ -20,6 +20,12 @@
  */
  
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Player as Player;
+use PocketMine\Level\Level as Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Level\Position as Position;
 
 class PlayerAPI{
 	private $server;
@@ -52,7 +58,7 @@ class PlayerAPI{
 					$result = $this->server->preparedSQL->selectPlayersToHeal->execute();
 					if($result !== false){
 						while(($player = $result->fetchArray()) !== false){
-							if(($player = Entity\Entity::get($player["EID"])) !== false){
+							if(($player = Entity::get($player["EID"])) !== false){
 								if($player->getHealth() <= 0){
 									continue;
 								}
@@ -65,8 +71,8 @@ class PlayerAPI{
 				break;
 			case "player.death":
 				if(is_numeric($data["cause"])){
-					$e = Entity\Entity::get($data["cause"]);
-					if($e instanceof Entity\Entity){
+					$e = Entity::get($data["cause"]);
+					if($e instanceof Entity){
 						switch($e->class){
 							case ENTITY_PLAYER:
 								$message = " was killed by ".$e->name;
@@ -139,19 +145,19 @@ class PlayerAPI{
 					$target = $issuer;
 				}
 
-				if(!($target instanceof Player) and !($target instanceof Level\Level)){
+				if(!($target instanceof Player) and !($target instanceof Level)){
 					$output .= "That player cannot be found.\n";
 					break;
 				}
 
 				if(count($params) === 3){
 					if($target instanceof Level){
-						$spawn = new Math\Vector3(floatval(array_shift($params)), floatval(array_shift($params)), floatval(array_shift($params)));
+						$spawn = new Vector3(floatval(array_shift($params)), floatval(array_shift($params)), floatval(array_shift($params)));
 					}else{
-						$spawn = new Level\Position(floatval(array_shift($params)), floatval(array_shift($params)), floatval(array_shift($params)), $issuer->level);
+						$spawn = new Position(floatval(array_shift($params)), floatval(array_shift($params)), floatval(array_shift($params)), $issuer->level);
 					}
 				}else{
-					$spawn = new Level\Position($issuer->entity->x, $issuer->entity->y, $issuer->entity->z, $issuer->entity->level);
+					$spawn = new Position($issuer->entity->x, $issuer->entity->y, $issuer->entity->z, $issuer->entity->level);
 				}
 
 				$target->setSpawn($spawn);
@@ -323,7 +329,7 @@ class PlayerAPI{
 			$x = $x{0} === "~" ? $player->entity->x + floatval(substr($x, 1)):floatval($x);
 			$y = $y{0} === "~" ? $player->entity->y + floatval(substr($y, 1)):floatval($y);
 			$z = $z{0} === "~" ? $player->entity->z + floatval(substr($z, 1)):floatval($z);
-			$player->teleport(new Math\Vector3($x, $y, $z));
+			$player->teleport(new Vector3($x, $y, $z));
 			return true;
 		}
 		return false;

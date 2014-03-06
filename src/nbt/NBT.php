@@ -23,6 +23,19 @@ namespace PocketMine\NBT;
 const LITTLE_ENDIAN = 0;
 const BIG_ENDIAN = 1;
 use PocketMine;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\NBT\Tag\Int as Int;
+use PocketMine\NBT\Tag\Long as Long;
+use PocketMine\NBT\Tag\Float as Float;
+use PocketMine\NBT\Tag\Double as Double;
+use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\NBT\Tag\Int_Array as Int_Array;
+use PocketMine\NBT\Tag\End as End;
+use PocketMine\Utils\Utils as Utils;
 
 class NBT implements \ArrayAccess{
 	private $buffer;
@@ -67,7 +80,7 @@ class NBT implements \ArrayAccess{
 	
 	public function write(){
 		$this->offset = 0;
-		if($this->data instanceof NBT\Tag\Compound){
+		if($this->data instanceof Compound){
 			$this->writeTag($this->data);
 			return $this->buffer;
 		}else{
@@ -78,57 +91,57 @@ class NBT implements \ArrayAccess{
 	public function readTag(){
 		switch($this->getByte()){
 			case NBT\TAG_Byte:
-				$tag = new NBT\Tag\Byte($this->getString());
+				$tag = new Byte($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Byte:
-				$tag = new NBT\Tag\Byte($this->getString());
+				$tag = new Byte($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Short:
-				$tag = new NBT\Tag\Short($this->getString());
+				$tag = new Short($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Int:
-				$tag = new NBT\Tag\Int($this->getString());
+				$tag = new Int($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Long:
-				$tag = new NBT\Tag\Long($this->getString());
+				$tag = new Long($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Float:
-				$tag = new NBT\Tag\Float($this->getString());
+				$tag = new Float($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Double:
-				$tag = new NBT\Tag\Double($this->getString());
+				$tag = new Double($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Byte_Array:
-				$tag = new NBT\Tag\Byte_Array($this->getString());
+				$tag = new Byte_Array($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_String:
-				$tag = new NBT\Tag\String($this->getString());
+				$tag = new String($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Enum:
-				$tag = new NBT\Tag\Enum($this->getString());
+				$tag = new Enum($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Compound:
-				$tag = new NBT\Tag\Compound($this->getString());
+				$tag = new Compound($this->getString());
 				$tag->read($this);
 				break;
 			case NBT\TAG_Int_Array:
-				$tag = new NBT\Tag\Int_Array($this->getString());
+				$tag = new Int_Array($this->getString());
 				$tag->read($this);
 				break;
 
 			case NBT\TAG_End: //No named tag
 			default:
-				$tag = new NBT\Tag\End;
+				$tag = new End;
 				break;
 		}
 		return $tag;
@@ -151,43 +164,43 @@ class NBT implements \ArrayAccess{
 	}
 	
 	public function getShort(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils\Utils::readShort($this->get(2)) : Utils\Utils::readLShort($this->get(2));
+		return $this->endianness === self::BIG_ENDIAN ? Utils::readShort($this->get(2)) : Utils::readLShort($this->get(2));
 	}
 	
 	public function putShort($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils\Utils::writeShort($v) : Utils\Utils::writeLShort($v);
+		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeShort($v) : Utils::writeLShort($v);
 	}
 	
 	public function getInt(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils\Utils::readInt($this->get(4)) : Utils\Utils::readLInt($this->get(4));
+		return $this->endianness === self::BIG_ENDIAN ? Utils::readInt($this->get(4)) : Utils::readLInt($this->get(4));
 	}
 	
 	public function putInt($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils\Utils::writeInt($v) : Utils\Utils::writeLInt($v);
+		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeInt($v) : Utils::writeLInt($v);
 	}
 
 	public function getLong(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils\Utils::readLong($this->get(8)) : Utils\Utils::readLLong($this->get(8));
+		return $this->endianness === self::BIG_ENDIAN ? Utils::readLong($this->get(8)) : Utils::readLLong($this->get(8));
 	}
 	
 	public function putLong($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils\Utils::writeLong($v) : Utils\Utils::writeLLong($v);
+		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeLong($v) : Utils::writeLLong($v);
 	}
 
 	public function getFloat(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils\Utils::readFloat($this->get(4)) : Utils\Utils::readLFloat($this->get(4));
+		return $this->endianness === self::BIG_ENDIAN ? Utils::readFloat($this->get(4)) : Utils::readLFloat($this->get(4));
 	}
 	
 	public function putFloat($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils\Utils::writeFloat($v) : Utils\Utils::writeLFloat($v);
+		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeFloat($v) : Utils::writeLFloat($v);
 	}
 
 	public function getDouble(){
-		return $this->endianness === self::BIG_ENDIAN ? Utils\Utils::readDouble($this->get(8)) : Utils\Utils::readLDouble($this->get(8));
+		return $this->endianness === self::BIG_ENDIAN ? Utils::readDouble($this->get(8)) : Utils::readLDouble($this->get(8));
 	}
 	
 	public function putDouble($v){
-		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils\Utils::writeDouble($v) : Utils\Utils::writeLDouble($v);
+		$this->buffer .= $this->endianness === self::BIG_ENDIAN ? Utils::writeDouble($v) : Utils::writeLDouble($v);
 	}
 
 	public function getString(){
@@ -200,22 +213,22 @@ class NBT implements \ArrayAccess{
 	}
 	
 	public function &__get($name){
-		$ret = $this->data instanceof NBT\Tag\Compound ? $this->data[$name] : false;
+		$ret = $this->data instanceof Compound ? $this->data[$name] : false;
 		return $ret;
 	}
 
 	public function __set($name, $value){
-		if($this->data instanceof NBT\Tag\Compound){
+		if($this->data instanceof Compound){
 			$this->data[$name] = $value;
 		}
 	}
 	
 	public function __isset($name){
-		return $this->data instanceof NBT\Tag\Compound ? isset($this->data[$name]) : false;
+		return $this->data instanceof Compound ? isset($this->data[$name]) : false;
 	}
 	
 	public function __unset($name){
-		if($this->data instanceof NBT\Tag\Compound){
+		if($this->data instanceof Compound){
 			unset($this->data[$name]);
 		}
 	}
@@ -240,7 +253,7 @@ class NBT implements \ArrayAccess{
 		return $this->data;
 	}
 	
-	public function setData(NBT\Tag\Compound $data){
+	public function setData(Compound $data){
 		$this->data = $data;
 	}
 	

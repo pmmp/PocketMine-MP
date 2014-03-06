@@ -21,6 +21,8 @@
 
 namespace PocketMine\Event;
 use PocketMine;
+use PocketMine\Event\EventPriority as EventPriority;
+use PocketMine\Utils\Utils as Utils;
 
 abstract class Event{
 	const ALLOW = 0;
@@ -54,7 +56,7 @@ abstract class Event{
 		if($priority < EventPriority::MONITOR or $priority > EventPriority::LOWEST){
 			return false;
 		}
-		$identifier = Utils\Utils::getCallableIdentifier($handler);
+		$identifier = Utils::getCallableIdentifier($handler);
 		if(isset(static::$handlers[$identifier])){ //Already registered
 			return false;
 		}else{
@@ -69,7 +71,7 @@ abstract class Event{
 	}
 	
 	public static function unregister(callable $handler, $priority = EventPriority::NORMAL){
-		$identifier = Utils\Utils::getCallableIdentifier($handler);
+		$identifier = Utils::getCallableIdentifier($handler);
 		if(isset(static::$handlers[$identifier])){
 			if(isset(static::$handlerPriority[(int) $priority][$identifier])){
 				unset(static::$handlerPriority[(int) $priority][$identifier]);

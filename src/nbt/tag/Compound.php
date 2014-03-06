@@ -22,6 +22,7 @@
 namespace PocketMine\NBT\Tag;
 use PocketMine\NBT;
 use PocketMine;
+use PocketMine\NBT\Tag\End as End;
 
 class Compound extends NamedNBTTag implements \ArrayAccess, \Iterator{
 	
@@ -101,18 +102,18 @@ class Compound extends NamedNBTTag implements \ArrayAccess, \Iterator{
 			$tag = $nbt->readTag();
 			if($tag instanceof NamedNBTTag and $tag->getName() !== ""){
 				$this->value[$tag->getName()] = $tag;
-			}elseif(!($tag instanceof NBT\Tag\End)){
+			}elseif(!($tag instanceof End)){
 				$this->value[] = $tag;
 			}
-		}while(!($tag instanceof NBT\Tag\End) and !$nbt->feof());
+		}while(!($tag instanceof End) and !$nbt->feof());
 	}
 	
 	public function write(NBT $nbt){
 		foreach($this->value as $tag){
-			if(!($tag instanceof NBT\Tag\End)){
+			if(!($tag instanceof End)){
 				$nbt->writeTag($tag);
 			}
 		}
-		$nbt->writeTag(new NBT\Tag\End);
+		$nbt->writeTag(new End);
 	}
 }

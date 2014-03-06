@@ -20,6 +20,12 @@
 */
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\PMF\Plugin as PMFPlugin;
+use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\Utils\Config as Config;
 
 class PluginAPI extends \stdClass{
 	private $server;
@@ -27,7 +33,7 @@ class PluginAPI extends \stdClass{
 	private $randomNonce;
 	public function __construct(){
 		$this->server = ServerAPI::request();
-		$this->randomNonce = Utils\Utils::getRandomBytes(16, false);
+		$this->randomNonce = Utils::getRandomBytes(16, false);
 		$this->server->api->console->register("plugins", "", array($this, "commandHandler"));
 		$this->server->api->console->register("version", "", array($this, "commandHandler"));
 		$this->server->api->ban->cmdWhitelist("version");
@@ -44,7 +50,7 @@ class PluginAPI extends \stdClass{
 				$output = $output === "Plugins: " ? "No plugins installed.\n" : substr($output, 0, -2)."\n";
 				break;
 			case "version":
-				$output = "PocketMine-MP ".VERSION." 「".CODENAME."」 API #".API_VERSION." for Minecraft: PE ".MINECRAFT_VERSION." protocol #".Network\Protocol\Info::CURRENT_PROTOCOL;
+				$output = "PocketMine-MP ".VERSION." 「".CODENAME."」 API #".API_VERSION." for Minecraft: PE ".MINECRAFT_VERSION." protocol #".Info::CURRENT_PROTOCOL;
 				if(GIT_COMMIT !== str_repeat("00", 20)){
 					$output .= " (git ".GIT_COMMIT.")";
 				}
@@ -79,7 +85,7 @@ class PluginAPI extends \stdClass{
 			return false;
 		}
 		if(strtolower(substr($file, -3)) === "pmf"){
-			$pmf = new PMF\Plugin($file);
+			$pmf = new PMFPlugin($file);
 			$info = $pmf->getPluginInfo();
 		}else{
 			$content = file_get_contents($file);
@@ -113,7 +119,7 @@ class PluginAPI extends \stdClass{
 			console("[ERROR] Failed parsing of ".basename($file));
 			return false;
 		}
-		console("[INFO] Loading plugin \"".Utils\TextFormat::GREEN.$info["name"].Utils\TextFormat::RESET."\" ".Utils\TextFormat::AQUA.$info["version"].Utils\TextFormat::RESET." by ".Utils\TextFormat::AQUA.$info["author"].Utils\TextFormat::RESET);
+		console("[INFO] Loading plugin \"".TextFormat::GREEN.$info["name"].TextFormat::RESET."\" ".TextFormat::AQUA.$info["version"].TextFormat::RESET." by ".TextFormat::AQUA.$info["author"].TextFormat::RESET);
 		if($info["class"] !== "none" and class_exists($info["class"])){
 			console("[ERROR] Failed loading plugin: class already exists");
 			return false;
@@ -193,7 +199,7 @@ class PluginAPI extends \stdClass{
 			return false;
 		}
 		$path = $this->configPath($plugin);
-		$cnf = new Utils\Config($path."config.yml", Utils\Config::YAML, $default);
+		$cnf = new Config($path."config.yml", Config::YAML, $default);
 		$cnf->save();
 		return $path;
 	}

@@ -22,6 +22,17 @@
 namespace PocketMine\NBT\Tag;
 use PocketMine\NBT;
 use PocketMine;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\NBT\Tag\Int as Int;
+use PocketMine\NBT\Tag\Long as Long;
+use PocketMine\NBT\Tag\Float as Float;
+use PocketMine\NBT\Tag\Double as Double;
+use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Enum as TagEnum;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Int_Array as Int_Array;
 
 class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 	
@@ -108,62 +119,62 @@ class Enum extends NamedNBTTag implements \ArrayAccess, \Iterator{
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			switch($this->tagType){
 				case NBT\TAG_Byte:
-					$tag = new NBT\Tag\Byte(false);
+					$tag = new Byte(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Byte:
-					$tag = new NBT\Tag\Byte(false);
+					$tag = new Byte(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Short:
-					$tag = new NBT\Tag\Short(false);
+					$tag = new Short(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Int:
-					$tag = new NBT\Tag\Int(false);
+					$tag = new Int(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Long:
-					$tag = new NBT\Tag\Long(false);
+					$tag = new Long(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Float:
-					$tag = new NBT\Tag\Float(false);
+					$tag = new Float(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Double:
-					$tag = new NBT\Tag\Double(false);
+					$tag = new Double(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Byte_Array:
-					$tag = new NBT\Tag\Byte_Array(false);
+					$tag = new Byte_Array(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_String:
-					$tag = new NBT\Tag\String(false);
+					$tag = new String(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Enum:
-					$tag = new NBT\Tag\Enum(false);
+					$tag = new TagEnum(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Compound:
-					$tag = new NBT\Tag\Compound(false);
+					$tag = new Compound(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;
 				case NBT\TAG_Int_Array:
-					$tag = new NBT\Tag\Int_Array(false);
+					$tag = new Int_Array(false);
 					$tag->read($nbt);
 					$this->value[] = $tag;
 					break;

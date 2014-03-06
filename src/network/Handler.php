@@ -21,6 +21,7 @@
 
 namespace PocketMine\Network;
 use PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Handler{
 	public $bandwidth;

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
 
 abstract class Achievement{
 	public static $list = array(

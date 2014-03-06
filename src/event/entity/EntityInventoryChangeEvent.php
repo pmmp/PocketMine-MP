@@ -22,6 +22,8 @@
 namespace PocketMine\Event\Entity;
 use PocketMine\Event;
 use PocketMine;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Item\Item as Item;
 
 class EntityInventoryChangeEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;
@@ -31,7 +33,7 @@ class EntityInventoryChangeEvent extends EntityEvent implements CancellableEvent
 	private $newItem;
 	private $slot;
 	
-	public function __construct(Entity\Entity $entity, Item\Item $oldItem, Item\Item $newItem, $slot){
+	public function __construct(Entity $entity, Item $oldItem, Item $newItem, $slot){
 		$this->entity = $entity;
 		$this->oldItem = $oldItem;
 		$this->newItem = $newItem;
@@ -46,7 +48,7 @@ class EntityInventoryChangeEvent extends EntityEvent implements CancellableEvent
 		return $this->newItem;
 	}
 	
-	public function setNewItem(Item\Item $item){
+	public function setNewItem(Item $item){
 		$this->newItem = $item;
 	}
 	

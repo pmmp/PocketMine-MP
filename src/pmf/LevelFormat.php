@@ -21,6 +21,10 @@
 
 namespace PocketMine\PMF;
 use PocketMine;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\Level\Level as Level;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;
@@ -84,18 +88,18 @@ class LevelFormat extends PMF{
 		@ftruncate($this->fp, 5);
 		$this->seek(5);
 		$this->write(chr($this->levelData["version"]));
-		$this->write(Utils\Utils::writeShort(strlen($this->levelData["name"])).$this->levelData["name"]);
-		$this->write(Utils\Utils::writeInt($this->levelData["seed"]));
-		$this->write(Utils\Utils::writeInt($this->levelData["time"]));
-		$this->write(Utils\Utils::writeFloat($this->levelData["spawnX"]));
-		$this->write(Utils\Utils::writeFloat($this->levelData["spawnY"]));
-		$this->write(Utils\Utils::writeFloat($this->levelData["spawnZ"]));
+		$this->write(Utils::writeShort(strlen($this->levelData["name"])).$this->levelData["name"]);
+		$this->write(Utils::writeInt($this->levelData["seed"]));
+		$this->write(Utils::writeInt($this->levelData["time"]));
+		$this->write(Utils::writeFloat($this->levelData["spawnX"]));
+		$this->write(Utils::writeFloat($this->levelData["spawnY"]));
+		$this->write(Utils::writeFloat($this->levelData["spawnZ"]));
 		$this->write(chr($this->levelData["height"]));
-		$this->write(Utils\Utils::writeShort(strlen($this->levelData["generator"])).$this->levelData["generator"]);
+		$this->write(Utils::writeShort(strlen($this->levelData["generator"])).$this->levelData["generator"]);
 		$settings = serialize($this->levelData["generatorSettings"]);
-		$this->write(Utils\Utils::writeShort(strlen($settings)).$settings);
+		$this->write(Utils::writeShort(strlen($settings)).$settings);
 		$extra = zlib_encode($this->levelData["extra"], self::ZLIB_ENCODING, self::ZLIB_LEVEL);
-		$this->write(Utils\Utils::writeShort(strlen($extra)).$extra);
+		$this->write(Utils::writeShort(strlen($extra)).$extra);
 	}
 	
 	private function createBlank(){
@@ -113,12 +117,12 @@ class LevelFormat extends PMF{
 			console("[ERROR] New unsupported PMF Level format version #".$this->levelData["version"].", current version is #".self::VERSION);
 			return false;
 		}
-		$this->levelData["name"] = $this->read(Utils\Utils::readShort($this->read(2), false));
-		$this->levelData["seed"] = Utils\Utils::readInt($this->read(4));
-		$this->levelData["time"] = Utils\Utils::readInt($this->read(4));
-		$this->levelData["spawnX"] = Utils\Utils::readFloat($this->read(4));
-		$this->levelData["spawnY"] = Utils\Utils::readFloat($this->read(4));
-		$this->levelData["spawnZ"] = Utils\Utils::readFloat($this->read(4));
+		$this->levelData["name"] = $this->read(Utils::readShort($this->read(2), false));
+		$this->levelData["seed"] = Utils::readInt($this->read(4));
+		$this->levelData["time"] = Utils::readInt($this->read(4));
+		$this->levelData["spawnX"] = Utils::readFloat($this->read(4));
+		$this->levelData["spawnY"] = Utils::readFloat($this->read(4));
+		$this->levelData["spawnZ"] = Utils::readFloat($this->read(4));
 		if($this->levelData["version"] === 0){
 			$this->read(1);
 			$this->levelData["height"] = ord($this->read(1));
@@ -127,11 +131,11 @@ class LevelFormat extends PMF{
 			if($this->levelData["height"] !== 8){
 				return false;
 			}
-			$this->levelData["generator"] = $this->read(Utils\Utils::readShort($this->read(2), false));
-			$this->levelData["generatorSettings"] = unserialize($this->read(Utils\Utils::readShort($this->read(2), false)));
+			$this->levelData["generator"] = $this->read(Utils::readShort($this->read(2), false));
+			$this->levelData["generatorSettings"] = unserialize($this->read(Utils::readShort($this->read(2), false)));
 			
 		}
-		$this->levelData["extra"] = @zlib_decode($this->read(Utils\Utils::readShort($this->read(2), false)));
+		$this->levelData["extra"] = @zlib_decode($this->read(Utils::readShort($this->read(2), false)));
 
 		$upgrade = false;
 		if($this->levelData["version"] === 0){
@@ -154,7 +158,7 @@ class LevelFormat extends PMF{
 			$X = $index & 0x0F;
 			$Z = $index >> 4;
 
-			$bitflags = Utils\Utils::readShort($this->read(2));
+			$bitflags = Utils::readShort($this->read(2));
 			$oldPath = dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
 			$chunkOld = gzopen($oldPath, "rb");
 			$newPath = dirname($this->file)."/chunks/".(($X ^ $Z) & 0xff)."/".$Z.".".$X.".pmc";
@@ -176,14 +180,14 @@ class LevelFormat extends PMF{
 	private function upgrade_From1_To2(){
 		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
 		$nbt = new NBT(NBT\BIG_ENDIAN);
-		$nbt->setData(new NBT\Tag\Compound("", array(
-			"Entities" => new NBT\Tag\Enum("Entities", array()),
-			"TileEntities" => new NBT\Tag\Enum("TileEntities", array())
+		$nbt->setData(new Compound("", array(
+			"Entities" => new Enum("Entities", array()),
+			"TileEntities" => new Enum("TileEntities", array())
 		)));
 		$nbt->Entities->setTagType(NBT\TAG_Compound);
 		$nbt->TileEntities->setTagType(NBT\TAG_Compound);
 		$namedtag = $nbt->write();
-		$namedtag = Utils\Utils::writeInt(strlen($namedtag)) . $namedtag;
+		$namedtag = Utils::writeInt(strlen($namedtag)) . $namedtag;
 		foreach(glob(dirname($this->file)."/chunks/*/*.*.pmc") as $chunkFile){
 			$oldChunk = zlib_decode(file_get_contents($chunkFile));
 			$newChunk = substr($oldChunk, 0, 5);
@@ -215,7 +219,7 @@ class LevelFormat extends PMF{
 			@mkdir(dirname($path), 0755);
 		}
 		$this->initCleanChunk($X, $Z);
-		if($this->level instanceof Level\Level){
+		if($this->level instanceof Level){
 			$ret = $this->level->generateChunk($X, $Z);
 			$this->saveChunk($X, $Z);
 			$this->populateChunk($X - 1, $Z);
@@ -231,7 +235,7 @@ class LevelFormat extends PMF{
 	}
 	
 	public function populateChunk($X, $Z){
-		if($this->level instanceof Level\Level){
+		if($this->level instanceof Level){
 			if($this->isGenerating === 0 and
 			$this->isChunkLoaded($X, $Z) and
 			!$this->isPopulated($X, $Z) and
@@ -274,10 +278,10 @@ class LevelFormat extends PMF{
 		
 		$this->chunkInfo[$index] = array(
 			0 => ord($chunk{0}),
-			1 => Utils\Utils::readInt(substr($chunk, 1, 4)),
+			1 => Utils::readInt(substr($chunk, 1, 4)),
 		);
 		$offset += 5;
-		$len = Utils\Utils::readInt(substr($chunk, $offset, 4));
+		$len = Utils::readInt(substr($chunk, $offset, 4));
 		$offset += 4;
 		$nbt = new NBT(NBT\BIG_ENDIAN);
 		$nbt->read(substr($chunk, $offset, $len));
@@ -397,9 +401,9 @@ class LevelFormat extends PMF{
 				7 => 8192,
 			);
 			$nbt = new NBT(NBT\BIG_ENDIAN);
-			$nbt->setData(new NBT\Tag\Compound("", array(
-				"Entities" => new NBT\Tag\Enum("Entities", array()),
-				"TileEntities" => new NBT\Tag\Enum("TileEntities", array())
+			$nbt->setData(new Compound("", array(
+				"Entities" => new Enum("Entities", array()),
+				"TileEntities" => new Enum("TileEntities", array())
 			)));
 			$nbt->Entities->setTagType(NBT\TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT\TAG_Compound);
@@ -671,9 +675,9 @@ class LevelFormat extends PMF{
 		$this->chunkChange[$index][-1] = false;
 		$chunk = b"";
 		$chunk .= chr($bitmap);
-		$chunk .= Utils\Utils::writeInt($this->chunkInfo[$index][1]);
+		$chunk .= Utils::writeInt($this->chunkInfo[$index][1]);
 		$namedtag = $this->chunkInfo[$index][2]->write();
-		$chunk .= Utils\Utils::writeInt(strlen($namedtag)).$namedtag;
+		$chunk .= Utils::writeInt(strlen($namedtag)).$namedtag;
 		$chunk .= $this->chunkInfo[$index][3]; //biomes
 		for($Y = 0; $Y < 8; ++$Y){
 			$t = 1 << $Y;

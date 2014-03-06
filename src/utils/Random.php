@@ -21,6 +21,7 @@
 
 namespace PocketMine\Utils;
 use PocketMine;
+use PocketMine\Utils\Utils as Utils;
 
 //Unsecure, not used for "Real Randomness"
 class Random{

@@ -22,6 +22,14 @@
 namespace PocketMine\Entity;
 use PocketMine;
 use PocketMine\Item\Item as Item;
+use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\Event\EventHandler as EventHandler;
+use PocketMine\Event\Entity\EntityArmorChangeEvent as EntityArmorChangeEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\Event\Entity\EntityInventoryChangeEvent as EntityInventoryChangeEvent;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 	
@@ -64,22 +72,22 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
 				$item = $this->getSlot($this->hotbar[$slot]);
 				if($item->getID() !== AIR and $item->getCount() > 0){
-					$this->namedtag->Inventory[$slot] = new NBT\Tag\Compound(false, array(
-						"Count" => new NBT\Tag\Byte("Count", $item->getCount()),
-						"Damage" => new NBT\Tag\Short("Damage", $item->getMetadata()),
-						"Slot" => new NBT\Tag\Byte("Slot", $slot),
-						"TrueSlot" => new NBT\Tag\Byte("TrueSlot", $this->hotbar[$slot]),
-						"id" => new NBT\Tag\Short("id", $item->getID()),
+					$this->namedtag->Inventory[$slot] = new Compound(false, array(
+						"Count" => new Byte("Count", $item->getCount()),
+						"Damage" => new Short("Damage", $item->getMetadata()),
+						"Slot" => new Byte("Slot", $slot),
+						"TrueSlot" => new Byte("TrueSlot", $this->hotbar[$slot]),
+						"id" => new Short("id", $item->getID()),
 					));
 					continue;
 				}
 			}
-			$this->namedtag->Inventory[$slot] = new NBT\Tag\Compound(false, array(
-				"Count" => new NBT\Tag\Byte("Count", 0),
-				"Damage" => new NBT\Tag\Short("Damage", 0),
-				"Slot" => new NBT\Tag\Byte("Slot", $slot),
-				"TrueSlot" => new NBT\Tag\Byte("Slot", -1),
-				"id" => new NBT\Tag\Short("id", 0),
+			$this->namedtag->Inventory[$slot] = new Compound(false, array(
+				"Count" => new Byte("Count", 0),
+				"Damage" => new Short("Damage", 0),
+				"Slot" => new Byte("Slot", $slot),
+				"TrueSlot" => new Byte("Slot", -1),
+				"id" => new Short("id", 0),
 			));
 		}
 		
@@ -87,11 +95,11 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS:PLAYER_CREATIVE_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
 			$item = $this->getSlot($slot);
-			$this->namedtag->Inventory[$slot] = new NBT\Tag\Compound(false, array(
-				"Count" => new NBT\Tag\Byte("Count", $item->getCount()),
-				"Damage" => new NBT\Tag\Short("Damage", $item->getMetadata()),
-				"Slot" => new NBT\Tag\Byte("Slot", $slot),
-				"id" => new NBT\Tag\Short("id", $item->getID()),
+			$this->namedtag->Inventory[$slot] = new Compound(false, array(
+				"Count" => new Byte("Count", $item->getCount()),
+				"Damage" => new Short("Damage", $item->getMetadata()),
+				"Slot" => new Byte("Slot", $slot),
+				"id" => new Short("id", $item->getID()),
 			));
 		}
 
@@ -99,11 +107,11 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		for($slot = 100; $slot < 104; ++$slot){
 			$item = $this->armor[$slot - 100];
 			if($item instanceof Item){
-				$this->namedtag->Inventory[$slot] = new NBT\Tag\Compound(false, array(
-					"Count" => new NBT\Tag\Byte("Count", $item->getCount()),
-					"Damage" => new NBT\Tag\Short("Damage", $item->getMetadata()),
-					"Slot" => new NBT\Tag\Byte("Slot", $slot),
-					"id" => new NBT\Tag\Short("id", $item->getID()),
+				$this->namedtag->Inventory[$slot] = new Compound(false, array(
+					"Count" => new Byte("Count", $item->getCount()),
+					"Damage" => new Short("Damage", $item->getMetadata()),
+					"Slot" => new Byte("Slot", $slot),
+					"id" => new Short("id", $item->getID()),
 				));
 			}
 		}
@@ -178,7 +186,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 	
     public function setArmorSlot($slot, Item $item){
-		if(Event\EventHandler::callEvent($ev = new Event\Entity\EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot)) === Event\Event::DENY){
+		if(EventHandler::callEvent($ev = new EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot)) === Event::DENY){
 			return false;
 		}
 		$this->armor[(int) $slot] = $ev->getNewItem();
@@ -352,7 +360,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 
     public function setSlot($slot, Item $item){
-		if(Event\EventHandler::callEvent($ev = new Event\Entity\EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot)) === Event\Event::DENY){
+		if(EventHandler::callEvent($ev = new EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot)) === Event::DENY){
 			return false;
 		}
 		$this->inventory[(int) $slot] = $ev->getNewItem();

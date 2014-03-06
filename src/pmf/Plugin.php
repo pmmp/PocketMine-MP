@@ -21,6 +21,7 @@
 
 namespace PocketMine\PMF;
 use PocketMine;
+use PocketMine\Utils\Utils as Utils;
 
 class Plugin extends PMF{
 	const VERSION = 0x02;
@@ -45,18 +46,18 @@ class Plugin extends PMF{
 		if($this->pluginData["fversion"] > PMFPlugin::VERSION){
 			return false;
 		}
-		$this->pluginData["name"] = $this->read(Utils\Utils::readShort($this->read(2), false));
-		$this->pluginData["version"] = $this->read(Utils\Utils::readShort($this->read(2), false));
-		$this->pluginData["author"] = $this->read(Utils\Utils::readShort($this->read(2), false));
+		$this->pluginData["name"] = $this->read(Utils::readShort($this->read(2), false));
+		$this->pluginData["version"] = $this->read(Utils::readShort($this->read(2), false));
+		$this->pluginData["author"] = $this->read(Utils::readShort($this->read(2), false));
 		if($this->pluginData["fversion"] >= 0x01){
-			$this->pluginData["apiversion"] = $this->read(Utils\Utils::readShort($this->read(2), false));
+			$this->pluginData["apiversion"] = $this->read(Utils::readShort($this->read(2), false));
 		}else{
-			$this->pluginData["apiversion"] = Utils\Utils::readShort($this->read(2), false);
+			$this->pluginData["apiversion"] = Utils::readShort($this->read(2), false);
 		}
-		$this->pluginData["class"] = $this->read(Utils\Utils::readShort($this->read(2), false));
-		$this->pluginData["identifier"] = $this->read(Utils\Utils::readShort($this->read(2), false)); //Will be used to check for updates
+		$this->pluginData["class"] = $this->read(Utils::readShort($this->read(2), false));
+		$this->pluginData["identifier"] = $this->read(Utils::readShort($this->read(2), false)); //Will be used to check for updates
 		if($this->pluginData["fversion"] >= 0x02){
-			$data = explode(";", gzinflate($this->read(Utils\Utils::readInt($this->read(4)))));
+			$data = explode(";", gzinflate($this->read(Utils::readInt($this->read(4)))));
 			$this->pluginData["extra"] = array();
 			foreach($data as $v){
 				$v = trim($v);
@@ -68,7 +69,7 @@ class Plugin extends PMF{
 			}
 			
 		}else{
-			$this->pluginData["extra"] = gzinflate($this->read(Utils\Utils::readShort($this->read(2), false)));
+			$this->pluginData["extra"] = gzinflate($this->read(Utils::readShort($this->read(2), false)));
 		}
 		$this->pluginData["code"] = "";
 		while(!feof($this->fp)){

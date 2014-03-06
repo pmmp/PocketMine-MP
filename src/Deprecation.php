@@ -22,6 +22,7 @@
 //TODO: REMOVE
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
 
 class Deprecation{
 	public static $events = array(

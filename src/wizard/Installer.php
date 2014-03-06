@@ -21,6 +21,8 @@
 
 namespace PocketMine\Wizard;
 use PocketMine\Utils\Config as Config;
+use PocketMine\Wizard\InstallerLang as InstallerLang;
+use PocketMine\Utils\Utils as Utils;
 use PocketMine;
 
 	class Installer{
@@ -84,7 +86,7 @@ LICENSE;
 		}
 		
 		private function generateBaseConfig(){
-			$config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES);
+			$config = new UtilsConfig(\PocketMine\DATA . "server.properties", UtilsConfig::PROPERTIES);
 			echo "[?] ".$this->lang->name_your_server." (".self::DEFAULT_NAME."): ";
 			$config->set("server-name", $this->getInput(self::DEFAULT_NAME));
 			echo "[*] ".$this->lang->port_warning."\n";
@@ -124,13 +126,13 @@ LICENSE;
 			if($op === ""){
 				echo "[!] ".$this->lang->op_warning."\n";
 			}else{
-				$ops = new Utils\Config(\PocketMine\DATA."ops.txt", Utils\Config::ENUM);
+				$ops = new UtilsConfig(\PocketMine\DATA."ops.txt", UtilsConfig::ENUM);
 				$ops->set($op, true);
 				$ops->save();
 			}
 			echo "[*] ".$this->lang->whitelist_info."\n";
 			echo "[?] ".$this->lang->whitelist_enable." (y/N): ";
-			$config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES);
+			$config = new UtilsConfig(\PocketMine\DATA . "server.properties", UtilsConfig::PROPERTIES);
 			if(strtolower($this->getInput("n")) === "y"){
 				echo "[!] ".$this->lang->whitelist_warning."\n";
 				$config->set("white-list", true);
@@ -141,7 +143,7 @@ LICENSE;
 		}
 		
 		private function networkFunctions(){
-			$config = new Utils\Config(\PocketMine\DATA . "server.properties", Utils\Config::PROPERTIES);
+			$config = new UtilsConfig(\PocketMine\DATA . "server.properties", UtilsConfig::PROPERTIES);
 			echo "[!] ".$this->lang->query_warning1."\n";
 			echo "[!] ".$this->lang->query_warning2."\n";
 			echo "[?] ".$this->lang->query_disable." (y/N): ";
@@ -155,7 +157,7 @@ LICENSE;
 			echo "[?] ".$this->lang->rcon_enable." (y/N): ";
 			if(strtolower($this->getInput("n")) === "y"){
 				$config->set("enable-rcon", true);
-				$password = substr(base64_encode(Utils\Utils::getRandomBytes(20, false)), 3, 10);
+				$password = substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10);
 				$config->set("rcon.password", $password);
 				echo "[*] ".$this->lang->rcon_password.": ".$password."\n";
 			}else{
@@ -174,7 +176,7 @@ LICENSE;
 			
 			echo "[*] ".$this->lang->ip_get."\n";
 			
-			$externalIP = Utils\Utils::getIP();
+			$externalIP = Utils::getIP();
 			$internalIP = gethostbyname(trim(`hostname`));
 			
 			echo "[!] ".$this->lang->get("ip_warning", array("{{EXTERNAL_IP}}", "{{INTERNAL_IP}}"), array($externalIP, $internalIP))."\n";

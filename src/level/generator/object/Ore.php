@@ -21,12 +21,16 @@
 
 namespace PocketMine\Level\Generator\Object;
 use PocketMine;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Level\Level as Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Math\VectorMath as VectorMath;
 
 class Ore{
 	private $random;
 	public $type;
 	
-	public function __construct(Utils\Random $random, OreType $type){
+	public function __construct(Random $random, OreType $type){
 		$this->type = $type;
 		$this->random = $random;
 	}
@@ -35,14 +39,14 @@ class Ore{
 		return $this->type;
 	}
 	
-	public function canPlaceObject(Level\Level $level, $x, $y, $z){
+	public function canPlaceObject(Level $level, $x, $y, $z){
 		return ($level->level->getBlockID($x, $y, $z) != AIR);
 	}
 	
-	public function placeObject(Level\Level $level, Math\Vector3 $pos){
+	public function placeObject(Level $level, Vector3 $pos){
 		$clusterSize = (int) $this->type->clusterSize;
 		$angle = $this->random->nextFloat() * M_PI;
-		$offset = Math\VectorMath::getDirection2D($angle)->multiply($clusterSize)->divide(8);
+		$offset = VectorMath::getDirection2D($angle)->multiply($clusterSize)->divide(8);
 		$x1 = $pos->x + 8 + $offset->x;
 		$x2 = $pos->x + 8 - $offset->x;
 		$z1 = $pos->z + 8 + $offset->y;
@@ -77,7 +81,7 @@ class Ore{
 								$sizeZ *= $sizeZ;
 								
 								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->level->getBlockID($x, $y, $z) === STONE){
-									$level->setBlockRaw(new Math\Vector3($x, $y, $z), $this->type->material);
+									$level->setBlockRaw(new Vector3($x, $y, $z), $this->type->material);
 								}
 							}
 						}

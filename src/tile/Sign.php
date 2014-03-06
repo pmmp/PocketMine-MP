@@ -21,10 +21,15 @@
 
 namespace PocketMine\Tile;
 use PocketMine;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\NBT\NBT as NBT;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Int as Int;
 
 class Sign extends Spawnable{
 	
-	public function __construct(Level $level, NBT\Tag\Compound $nbt){
+	public function __construct(Level $level, Compound $nbt){
 		$nbt->id = Tile::SIGN;
 		parent::__construct($level, $nbt);
 	}
@@ -53,16 +58,16 @@ class Sign extends Spawnable{
 			return false;
 		}
 
-		$nbt = new NBT\NBT(NBT\LITTLE_ENDIAN);
-		$nbt->setData(new NBT\Tag\Compound("", array(
-			new NBT\Tag\String("Text1", $this->namedtag->Text1),
-			new NBT\Tag\String("Text2", $this->namedtag->Text2),
-			new NBT\Tag\String("Text3", $this->namedtag->Text3),
-			new NBT\Tag\String("Text4", $this->namedtag->Text4),
-			new NBT\Tag\String("id", Tile::SIGN),
-			new NBT\Tag\Int("x", (int) $this->x),
-			new NBT\Tag\Int("y", (int) $this->y),
-			new NBT\Tag\Int("z", (int) $this->z)
+		$nbt = new NBT(NBT\LITTLE_ENDIAN);
+		$nbt->setData(new Compound("", array(
+			new String("Text1", $this->namedtag->Text1),
+			new String("Text2", $this->namedtag->Text2),
+			new String("Text3", $this->namedtag->Text3),
+			new String("Text4", $this->namedtag->Text4),
+			new String("id", Tile::SIGN),
+			new Int("x", (int) $this->x),
+			new Int("y", (int) $this->y),
+			new Int("z", (int) $this->z)
 		)));				
 		$pk = new Network\Protocol\EntityDataPacket;
 		$pk->x = $this->x;

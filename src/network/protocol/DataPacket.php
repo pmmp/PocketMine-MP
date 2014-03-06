@@ -21,6 +21,8 @@
 
 namespace PocketMine\Network\Protocol;
 use PocketMine;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\BlockAPI as BlockAPI;
 
 abstract class DataPacket{
 	private $offset = 0;
@@ -75,52 +77,52 @@ abstract class DataPacket{
 	}
 	
 	protected function getLong($unsigned = false){
-		return Utils\Utils::readLong($this->get(8), $unsigned);
+		return Utils::readLong($this->get(8), $unsigned);
 	}
 
 	protected function putLong($v){
-		$this->buffer .= Utils\Utils::writeLong($v);
+		$this->buffer .= Utils::writeLong($v);
 	}
 	
 	protected function getInt(){
-		return Utils\Utils::readInt($this->get(4));
+		return Utils::readInt($this->get(4));
 	}
 	
 	protected function putInt($v){
-		$this->buffer .= Utils\Utils::writeInt($v);
+		$this->buffer .= Utils::writeInt($v);
 	}
 	
 	protected function getShort($unsigned = false){
-		return Utils\Utils::readShort($this->get(2), $unsigned);
+		return Utils::readShort($this->get(2), $unsigned);
 	}
 	
 	protected function putShort($v){
-		$this->buffer .= Utils\Utils::writeShort($v);
+		$this->buffer .= Utils::writeShort($v);
 	}
 	
 	protected function getFloat(){
-		return Utils\Utils::readFloat($this->get(4));
+		return Utils::readFloat($this->get(4));
 	}
 
 	protected function putFloat($v){
-		$this->buffer .= Utils\Utils::writeFloat($v);
+		$this->buffer .= Utils::writeFloat($v);
 	}
 
 	protected function getTriad(){
-		return Utils\Utils::readTriad($this->get(3));
+		return Utils::readTriad($this->get(3));
 	}
 
 	protected function putTriad($v){
-		$this->buffer .= Utils\Utils::writeTriad($v);
+		$this->buffer .= Utils::writeTriad($v);
 	}
 	
 	
 	protected function getLTriad(){
-		return Utils\Utils::readTriad(strrev($this->get(3)));
+		return Utils::readTriad(strrev($this->get(3)));
 	}
 	
 	protected function putLTriad($v){
-		$this->buffer .= strrev(Utils\Utils::writeTriad($v));
+		$this->buffer .= strrev(Utils::writeTriad($v));
 	}
 	
 	protected function getByte(){

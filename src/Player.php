@@ -20,8 +20,44 @@
 */
 
 namespace PocketMine;
+use PocketMine\Entity\RealHuman as RealHuman;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\NBT\Tag\Double as Double;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Int as Int;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Float as Float;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\Utils\Config as Config;
+use PocketMine\Network\Protocol\DataPacket as DataPacket;
+use PocketMine\Achievement as Achievement;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Server as Server;
+use PocketMine\Network\RakNet\Packet as Packet;
+use PocketMine\Network\RakNet\Info as Info;
+use PocketMine\Level\Position as Position;
+use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine\Tile\Spawnable as Spawnable;
+use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Tile\Furnace as Furnace;
+use PocketMine\Item\Item as Item;
+use PocketMine\Recipes\Crafting as Crafting;
+use PocketMine\Network\Protocol\Info as ProtocolInfo;
+use PocketMine\Event\EventHandler as EventHandler;
+use PocketMine\Event\Server\DataPacketReceiveEvent as DataPacketReceiveEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Tile\Chest as Chest;
+use PocketMine\Tile\Sign as Sign;
+use PocketMine\NBT\NBT as NBT;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Event\Server\DataPacketSendEvent as DataPacketSendEvent;
 
-class Player extends Entity\RealHuman{
+class Player extends RealHuman{
 	public static $list = array();
 
 	private $recoveryQueue = array();
@@ -113,44 +149,44 @@ class Player extends Entity\RealHuman{
 		$server = ServerAPI::request();
 		$iname = strtolower($name);
 		if(!file_exists(\PocketMine\DATA."players/".$iname.".dat")){
-			$nbt = new NBT\Tag\Compound(false, array(
-				"Pos" => new NBT\Tag\Enum("Pos", array(
-					0 => new NBT\Tag\Double(0, $server->spawn->x),
-					1 => new NBT\Tag\Double(1, $server->spawn->y),
-					2 => new NBT\Tag\Double(2, $server->spawn->z)
+			$nbt = new Compound(false, array(
+				"Pos" => new Enum("Pos", array(
+					0 => new Double(0, $server->spawn->x),
+					1 => new Double(1, $server->spawn->y),
+					2 => new Double(2, $server->spawn->z)
 				)),
-				"Level" => new NBT\Tag\String("Level", $server->spawn->level->getName()),
-				"SpawnLevel" => new NBT\Tag\String("SpawnLevel", $server->spawn->level->getName()),
-				"SpawnX" => new NBT\Tag\Int("SpawnX", (int) $server->spawn->x),
-				"SpawnY" => new NBT\Tag\Int("SpawnY", (int) $server->spawn->y),
-				"SpawnZ" => new NBT\Tag\Int("SpawnZ", (int) $server->spawn->z),
-				"SpawnForced" => new NBT\Tag\Byte("SpawnForced", 1), //TODO
-				"Inventory" => new NBT\Tag\Enum("Inventory", array()),
-				"Achievements" => new NBT\Tag\Compound("Achievements", array()),
-				"playerGameType" => new NBT\Tag\Int("playerGameType", $server->gamemode),
-				"Motion" => new NBT\Tag\Enum("Motion", array(
-					0 => new NBT\Tag\Double(0, 0.0),
-					1 => new NBT\Tag\Double(1, 0.0),
-					2 => new NBT\Tag\Double(2, 0.0)
+				"Level" => new String("Level", $server->spawn->level->getName()),
+				"SpawnLevel" => new String("SpawnLevel", $server->spawn->level->getName()),
+				"SpawnX" => new Int("SpawnX", (int) $server->spawn->x),
+				"SpawnY" => new Int("SpawnY", (int) $server->spawn->y),
+				"SpawnZ" => new Int("SpawnZ", (int) $server->spawn->z),
+				"SpawnForced" => new Byte("SpawnForced", 1), //TODO
+				"Inventory" => new Enum("Inventory", array()),
+				"Achievements" => new Compound("Achievements", array()),
+				"playerGameType" => new Int("playerGameType", $server->gamemode),
+				"Motion" => new Enum("Motion", array(
+					0 => new Double(0, 0.0),
+					1 => new Double(1, 0.0),
+					2 => new Double(2, 0.0)
 				)),
-				"Rotation" => new NBT\Tag\Enum("Rotation", array(
-					0 => new NBT\Tag\Float(0, 0.0),
-					1 => new NBT\Tag\Float(1, 0.0)
+				"Rotation" => new Enum("Rotation", array(
+					0 => new Float(0, 0.0),
+					1 => new Float(1, 0.0)
 				)),
-				"FallDistance" => new NBT\Tag\Float("FallDistance", 0.0),
-				"Fire" => new NBT\Tag\Short("Fire", 0),
-				"Air" => new NBT\Tag\Short("Air", 0),
-				"OnGround" => new NBT\Tag\Byte("OnGround", 1),
-				"Invulnerable" => new NBT\Tag\Byte("Invulnerable", 0),
+				"FallDistance" => new Float("FallDistance", 0.0),
+				"Fire" => new Short("Fire", 0),
+				"Air" => new Short("Air", 0),
+				"OnGround" => new Byte("OnGround", 1),
+				"Invulnerable" => new Byte("Invulnerable", 0),
 				
-				"NameTag" => new NBT\Tag\String("NameTag", $name),
+				"NameTag" => new String("NameTag", $name),
 			));
 			$nbt->Pos->setTagType(NBT\TAG_Double);
 			$nbt->Inventory->setTagType(NBT\TAG_Compound);
 			$nbt->Motion->setTagType(NBT\TAG_Double);
 			$nbt->Rotation->setTagType(NBT\TAG_Float);
 			if(file_exists(\PocketMine\DATA."players/".$iname.".yml")){
-				$data = new Utils\Config(\PocketMine\DATA."players/".$iname.".yml", Utils\Config::YAML, array());
+				$data = new Config(\PocketMine\DATA."players/".$iname.".yml", Config::YAML, array());
 				$nbt->playerGameType = (int) $data->get("gamemode");
 				$nbt->Level = $data->get("position")["level"];
 				$nbt->Pos[0] = $data->get("position")["x"];
@@ -163,39 +199,39 @@ class Player extends Entity\RealHuman{
 				console("[NOTICE] Old Player data found for \"".$iname."\", upgrading profile");
 				foreach($data->get("inventory") as $slot => $item){
 					if(count($item) === 3){
-						$nbt->Inventory[$slot + 9] = new NBT\Tag\Compound(false, array(
-							"id" => new NBT\Tag\Short("id", $item[0]),
-							"Damage" => new NBT\Tag\Short("Damage", $item[1]),
-							"Count" => new NBT\Tag\Byte("Count", $item[2]),
-							"Slot" => new NBT\Tag\Byte("Slot", $slot + 9),
-							"TrueSlot" => new NBT\Tag\Byte("TrueSlot", $slot + 9)
+						$nbt->Inventory[$slot + 9] = new Compound(false, array(
+							"id" => new Short("id", $item[0]),
+							"Damage" => new Short("Damage", $item[1]),
+							"Count" => new Byte("Count", $item[2]),
+							"Slot" => new Byte("Slot", $slot + 9),
+							"TrueSlot" => new Byte("TrueSlot", $slot + 9)
 						));
 					}
 				}
 				foreach($data->get("hotbar") as $slot => $itemSlot){
 					if(isset($nbt->Inventory[$itemSlot + 9])){
 						$item = $nbt->Inventory[$itemSlot + 9];
-						$nbt->Inventory[$slot] = new NBT\Tag\Compound(false, array(
-								"id" => new NBT\Tag\Short("id", $item->id),
-								"Damage" => new NBT\Tag\Short("Damage", $item->Damage),
-								"Count" => new NBT\Tag\Byte("Count", $item->Count),
-								"Slot" => new NBT\Tag\Byte("Slot", $slot),
-								"TrueSlot" => new NBT\Tag\Byte("TrueSlot", $item->TrueSlot)
+						$nbt->Inventory[$slot] = new Compound(false, array(
+								"id" => new Short("id", $item->id),
+								"Damage" => new Short("Damage", $item->Damage),
+								"Count" => new Byte("Count", $item->Count),
+								"Slot" => new Byte("Slot", $slot),
+								"TrueSlot" => new Byte("TrueSlot", $item->TrueSlot)
 						));
 					}
 				}
 				foreach($data->get("armor") as $slot => $item){
 					if(count($item) === 2){
-						$nbt->Inventory[$slot + 100] = new NBT\Tag\Compound(false, array(
-							"id" => new NBT\Tag\Short("id", $item[0]),
-							"Damage" => new NBT\Tag\Short("Damage", $item[1]),
-							"Count" => new NBT\Tag\Byte("Count", 1),
-							"Slot" => new NBT\Tag\Byte("Slot", $slot + 100)
+						$nbt->Inventory[$slot + 100] = new Compound(false, array(
+							"id" => new Short("id", $item[0]),
+							"Damage" => new Short("Damage", $item[1]),
+							"Count" => new Byte("Count", 1),
+							"Slot" => new Byte("Slot", $slot + 100)
 						));
 					}
 				}
 				foreach($data->get("achievements") as $achievement => $status){
-					$nbt->Achievements[$achievement] = new NBT\Tag\Byte($achievement, $status == true ? 1:0);
+					$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1:0);
 				}
 				unlink(\PocketMine\DATA."players/".$iname.".yml");
 			}else{
@@ -214,14 +250,14 @@ class Player extends Entity\RealHuman{
 		return $nbt;
 	}	
 
-	public static function saveOffline($name, NBT\Tag\Compound $nbtTag){
+	public static function saveOffline($name, Compound $nbtTag){
 		ServerAPI::request()->handle("player.offline.save", $nbtTag);
 		$nbt = new NBT(NBT\BIG_ENDIAN);
 		$nbt->setData($nbtTag);
 		file_put_contents(\PocketMine\DATA."players/".strtolower($name).".dat", $nbt->write());
 	}
 	
-	public static function broadcastPacket(array $players, Network\Protocol\DataPacket $packet){
+	public static function broadcastPacket(array $players, DataPacket $packet){
 		foreach($players as $player){
 			$player->dataPacket(clone $packet);
 		}
@@ -280,7 +316,7 @@ class Player extends Entity\RealHuman{
 	}
 	
 	public function isSleeping(){
-		return $this->sleeping instanceof Math\Vector3;
+		return $this->sleeping instanceof Vector3;
 	}
 	
 	public function setChunkIndex($index, $flags){
@@ -314,7 +350,7 @@ class Player extends Entity\RealHuman{
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0,0);
-		$this->buffer = new Network\RakNet\Packet(Network\RakNet\Info::DATA_PACKET_0);
+		$this->buffer = new Packet(Info::DATA_PACKET_0);
 		$this->buffer->data = array();
 		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
 		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
@@ -327,15 +363,15 @@ class Player extends Entity\RealHuman{
 	}
 
 	/**
-	 * @param Math\Vector3 $pos
+	 * @param Vector3 $pos
 	 */
-	public function setSpawn(Math\Vector3 $pos){
-		if(!($pos instanceof Level\Position)){
+	public function setSpawn(Vector3 $pos){
+		if(!($pos instanceof Position)){
 			$level = $this->level;
 		}else{
 			$level = $pos->level;
 		}
-		$this->spawnPosition = new Level\Position($pos->x, $pos->y, $pos->z, $level);
+		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
 		$pk = new Network\Protocol\SetSpawnPositionPacket;
 		$pk->x = (int) $this->spawnPosition->x;
 		$pk->y = (int) $this->spawnPosition->y;
@@ -359,7 +395,7 @@ class Player extends Entity\RealHuman{
 		for($X = $startX; $X <= $finalX; ++$X){
 			for($Z = $startZ; $Z <= $finalZ; ++$Z){
 				$distance = abs($X - $centerX) + abs($Z - $centerZ);
-				$index = PMF\LevelFormat::getIndex($X, $Z);
+				$index = LevelFormat::getIndex($X, $Z);
 				if(!isset($this->chunksLoaded[$index]) or $this->chunksLoaded[$index] !== 0){
 					$newOrder[$index] = $distance;
 				}
@@ -370,7 +406,7 @@ class Player extends Entity\RealHuman{
 		$this->chunksOrder = $newOrder;
 		
 		$index = key($this->chunksOrder);
-		PMF\LevelFormat::getXZ($index, $X, $Z);
+		LevelFormat::getXZ($index, $X, $Z);
 		$this->level->loadChunk($X, $Z);
 		if(!$this->level->isChunkPopulated($X, $Z)){
 			$this->level->loadChunk($X - 1, $Z);
@@ -387,7 +423,7 @@ class Player extends Entity\RealHuman{
 			if($Yndex !== 0xff){
 				$X = null;
 				$Z = null;
-				PMF\LevelFormat::getXZ($index, $X, $Z);
+				LevelFormat::getXZ($index, $X, $Z);
 				foreach($this->level->getChunkEntities($X, $Z) as $entity){
 					if($entity !== $this){
 						$entity->despawnFrom($this);
@@ -429,7 +465,7 @@ class Player extends Entity\RealHuman{
 				}
 			}
 			foreach($this->level->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
-				if($tile instanceof Tile\Spawnable){
+				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
 				}
 			}
@@ -446,7 +482,7 @@ class Player extends Entity\RealHuman{
 		}
 		$X = null;
 		$Z = null;
-		PMF\LevelFormat::getXZ($index, $X, $Z);
+		LevelFormat::getXZ($index, $X, $Z);
 		if(!$this->level->isChunkPopulated($X, $Z)){			
 			$this->orderChunks();
 			if($this->chunkScheduled === 0 or $force === true){
@@ -493,7 +529,7 @@ class Player extends Entity\RealHuman{
 		$this->namedtag->SpawnZ = (int) $this->spawnPosition->z;
 		
 		foreach($this->achievements as $achievement => $status){
-			$this->namedtag->Achievements[$achievement] = new NBT\Tag\Byte($achievement, $status === true ? 1:0);
+			$this->namedtag->Achievements[$achievement] = new Byte($achievement, $status === true ? 1:0);
 		}
 		
 		$this->namedtag->playerGameType = $this->gamemode;
@@ -528,14 +564,14 @@ class Player extends Entity\RealHuman{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			if($this->username != "" and ($this->namedtag instanceof NBT\Tag\Compound)){
+			if($this->username != "" and ($this->namedtag instanceof Compound)){
 				Player::saveOffline($this->username, $this->namedtag);
 			}
 			if($msg === true and $this->username != "" and $this->spawned !== false){
 				$this->server->api->chat->broadcast($this->username." left the game");
 			}
 			$this->spawned = false;
-			console("[INFO] ".Utils\TextFormat::AQUA.$this->username.Utils\TextFormat::RESET."[/".$this->ip.":".$this->port."] logged out due to ".$reason);
+			console("[INFO] ".TextFormat::AQUA.$this->username.TextFormat::RESET."[/".$this->ip.":".$this->port."] logged out due to ".$reason);
 			$this->windows = array();
 			$this->armor = array();
 			$this->inventory = array();
@@ -549,20 +585,20 @@ class Player extends Entity\RealHuman{
 	}
 
     /**
-     * @param Math\Vector3 $pos
+     * @param Vector3 $pos
      *
      * @return boolean
      */
-    public function sleepOn(Math\Vector3 $pos){
+    public function sleepOn(Vector3 $pos){
 		foreach($this->level->getPlayers() as $p){
-			if($p->sleeping instanceof Math\Vector3){
+			if($p->sleeping instanceof Vector3){
 				if($pos->distance($p->sleeping) <= 0.1){
 					return false;
 				}
 			}
 		}
 		$this->sleeping = $pos;
-		$this->teleport(new Level\Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
+		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
 		/*if($this->entity instanceof Entity){
 			$this->updateMetadata();
 		}*/
@@ -623,7 +659,7 @@ class Player extends Entity\RealHuman{
 		switch($event){
 			case "tile.update":
 				if($data->level === $this->level){
-					if($data instanceof Tile\Furnace){
+					if($data instanceof Furnace){
 						foreach($this->windows as $id => $w){
 							if($w === $data){
 								$pk = new Network\Protocol\ContainerSetDataPacket;
@@ -758,7 +794,7 @@ class Player extends Entity\RealHuman{
 			if($m !== ""){
 				$pk = new Network\Protocol\MessagePacket;
 				$pk->source = ($author instanceof Player) ? $author->username:$author;
-				$pk->message = Utils\TextFormat::clean($m); //Colors not implemented :(
+				$pk->message = TextFormat::clean($m); //Colors not implemented :(
 				$this->dataPacket($pk);
 			}
 		}
@@ -825,7 +861,7 @@ class Player extends Entity\RealHuman{
 		$craftItem = array(0, true, 0);
 		unset($craft[-1]);
 		foreach($craft as $slot => $item){
-			if($item instanceof Item\Item){
+			if($item instanceof Item){
 				$craftItem[0] = $item->getID();
 				if($item->getMetadata() !== $craftItem[1] and $craftItem[1] !== true){
 					$craftItem[1] = false;
@@ -849,10 +885,10 @@ class Player extends Entity\RealHuman{
 			}
 		}
 	
-		$res = Recipes\Crafting::canCraft($craftItem, $recipeItems, $type);
+		$res = Crafting::canCraft($craftItem, $recipeItems, $type);
 
 		if(!is_array($res) and $type === 1){
-			$res2 = Recipes\Crafting::canCraft($craftItem, $recipeItems, 0);
+			$res2 = Crafting::canCraft($craftItem, $recipeItems, 0);
 			if(is_array($res2)){
 				$res = $res2;
 			}
@@ -1023,7 +1059,7 @@ class Player extends Entity\RealHuman{
 			$safeCount = (int) (($this->MTU - 1) / 4);
 			$packetCnt = (int) ($ackCnt / $safeCount + 1);
 			for($p = 0; $p < $packetCnt; ++$p){
-				$pk = new Network\RakNet\Packet(Network\RakNet\Info::ACK);
+				$pk = new Packet(Info::ACK);
 				$pk->packets = array();
 				for($c = 0; $c < $safeCount; ++$c){
 					if(($k = array_pop($this->ackQueue)) === null){
@@ -1041,7 +1077,7 @@ class Player extends Entity\RealHuman{
 			foreach($this->receiveQueue as $count => $packets){
 				unset($this->receiveQueue[$count]);
 				foreach($packets as $p){
-					if($p instanceof Network\Protocol\DataPacket and $p->hasSplit === false){
+					if($p instanceof DataPacket and $p->hasSplit === false){
 						if(isset($p->messageIndex) and $p->messageIndex !== false){
 							if($p->messageIndex > $this->receiveCount){
 								$this->receiveCount = $p->messageIndex;
@@ -1051,12 +1087,12 @@ class Player extends Entity\RealHuman{
 								}
 								switch($p->pid()){
 									case 0x01:
-									case Network\Protocol\Info::PING_PACKET:
-									case Network\Protocol\Info::PONG_PACKET:
-									case Network\Protocol\Info::MOVE_PLAYER_PACKET:
-									case Network\Protocol\Info::REQUEST_CHUNK_PACKET:
-									case Network\Protocol\Info::ANIMATE_PACKET:
-									case Network\Protocol\Info::SET_HEALTH_PACKET:
+									case ProtocolInfo::PING_PACKET:
+									case ProtocolInfo::PONG_PACKET:
+									case ProtocolInfo::MOVE_PLAYER_PACKET:
+									case ProtocolInfo::REQUEST_CHUNK_PACKET:
+									case ProtocolInfo::ANIMATE_PACKET:
+									case ProtocolInfo::SET_HEALTH_PACKET:
 										continue;
 								}
 							}
@@ -1097,11 +1133,11 @@ class Player extends Entity\RealHuman{
 		}
 	}
 	
-	public function handlePacket(Network\RakNet\Packet $packet){
+	public function handlePacket(Packet $packet){
 		if($this->connected === true){
 			$this->timeout = microtime(true) + 20;
 			switch($packet->pid()){
-				case Network\RakNet\Info::NACK:
+				case Info::NACK:
 					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){
 							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
@@ -1112,7 +1148,7 @@ class Player extends Entity\RealHuman{
 					}
 					break;
 
-				case Network\RakNet\Info::ACK:
+				case Info::ACK:
 					foreach($packet->packets as $count){
 						if(isset($this->recoveryQueue[$count])){	
 							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
@@ -1123,22 +1159,22 @@ class Player extends Entity\RealHuman{
 					}
 					break;
 
-				case Network\RakNet\Info::DATA_PACKET_0:
-				case Network\RakNet\Info::DATA_PACKET_1:
-				case Network\RakNet\Info::DATA_PACKET_2:
-				case Network\RakNet\Info::DATA_PACKET_3:
-				case Network\RakNet\Info::DATA_PACKET_4:
-				case Network\RakNet\Info::DATA_PACKET_5:
-				case Network\RakNet\Info::DATA_PACKET_6:
-				case Network\RakNet\Info::DATA_PACKET_7:
-				case Network\RakNet\Info::DATA_PACKET_8:
-				case Network\RakNet\Info::DATA_PACKET_9:
-				case Network\RakNet\Info::DATA_PACKET_A:
-				case Network\RakNet\Info::DATA_PACKET_B:
-				case Network\RakNet\Info::DATA_PACKET_C:
-				case Network\RakNet\Info::DATA_PACKET_D:
-				case Network\RakNet\Info::DATA_PACKET_E:
-				case Network\RakNet\Info::DATA_PACKET_F:
+				case Info::DATA_PACKET_0:
+				case Info::DATA_PACKET_1:
+				case Info::DATA_PACKET_2:
+				case Info::DATA_PACKET_3:
+				case Info::DATA_PACKET_4:
+				case Info::DATA_PACKET_5:
+				case Info::DATA_PACKET_6:
+				case Info::DATA_PACKET_7:
+				case Info::DATA_PACKET_8:
+				case Info::DATA_PACKET_9:
+				case Info::DATA_PACKET_A:
+				case Info::DATA_PACKET_B:
+				case Info::DATA_PACKET_C:
+				case Info::DATA_PACKET_D:
+				case Info::DATA_PACKET_E:
+				case Info::DATA_PACKET_F:
 					$this->ackQueue[] = $packet->seqNumber;
 					$this->receiveQueue[$packet->seqNumber] = array();
 					foreach($packet->data as $pk){
@@ -1149,45 +1185,45 @@ class Player extends Entity\RealHuman{
 		}
 	}
 
-	public function handleDataPacket(Network\Protocol\DataPacket $packet){
+	public function handleDataPacket(DataPacket $packet){
 		if($this->connected === false){
 			return;
 		}
 		
-		if(Event\EventHandler::callEvent(new Event\Server\DataPacketReceiveEvent($this, $packet)) === Event\Event::DENY){
+		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === Event::DENY){
 			return;
 		}
 		
 		switch($packet->pid()){
 			case 0x01:
 				break;
-			case Network\Protocol\Info::PONG_PACKET:
+			case ProtocolInfo::PONG_PACKET:
 				break;
-			case Network\Protocol\Info::PING_PACKET:
+			case ProtocolInfo::PING_PACKET:
 				$pk = new Network\Protocol\PongPacket;
 				$pk->ptime = $packet->time;
 				$pk->time = abs(microtime(true) * 1000);
 				$this->directDataPacket($pk);
 				break;
-			case Network\Protocol\Info::DISCONNECT_PACKET:
+			case ProtocolInfo::DISCONNECT_PACKET:
 				$this->close("client disconnect");
 				break;
-			case Network\Protocol\Info::CLIENT_CONNECT_PACKET:
+			case ProtocolInfo::CLIENT_CONNECT_PACKET:
 				if($this->loggedIn === true){
 					break;
 				}
 				$pk = new Network\Protocol\ServerHandshakePacket;
 				$pk->port = $this->port;
 				$pk->session = $packet->session;
-				$pk->session2 = Utils\Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
+				$pk->session2 = Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
 				$this->dataPacket($pk);
 				break;
-			case Network\Protocol\Info::CLIENT_HANDSHAKE_PACKET:
+			case ProtocolInfo::CLIENT_HANDSHAKE_PACKET:
 				if($this->loggedIn === true){
 					break;
 				}
 				break;
-			case Network\Protocol\Info::LOGIN_PACKET:
+			case ProtocolInfo::LOGIN_PACKET:
 				if($this->loggedIn === true){
 					break;
 				}
@@ -1198,8 +1234,8 @@ class Player extends Entity\RealHuman{
 					$this->close("server is full!", false);
 					return;
 				}
-				if($packet->protocol1 !== Network\Protocol\Info::CURRENT_PROTOCOL){
-					if($packet->protocol1 < Network\Protocol\Info::CURRENT_PROTOCOL){
+				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
+					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
 						$pk = new Network\Protocol\LoginStatusPacket;
 						$pk->status = 1;
 						$this->directDataPacket($pk);
@@ -1254,7 +1290,7 @@ class Player extends Entity\RealHuman{
 					return;
 				}
 				
-				if(!($nbt instanceof NBT\Tag\Compound)){
+				if(!($nbt instanceof Compound)){
 					$this->close("no config created", false);
 					return;
 				}
@@ -1292,7 +1328,7 @@ class Player extends Entity\RealHuman{
 				
 				
 				if(($level = $this->server->api->level->get($this->namedtag->SpawnLevel)) !== false){
-					$this->spawnPosition = new Level\Position($this->namedtag->SpawnX, $this->namedtag->SpawnY, $this->namedtag->SpawnZ, $level);
+					$this->spawnPosition = new Position($this->namedtag->SpawnX, $this->namedtag->SpawnY, $this->namedtag->SpawnZ, $level);
 					
 					$pk = new SetSpawnPositionPacket;
 					$pk->x = (int) $this->spawnPosition->x;
@@ -1310,9 +1346,9 @@ class Player extends Entity\RealHuman{
 				$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 				$this->lastMeasure = microtime(true);
 				$this->server->schedule(50, array($this, "measureLag"), array(), true);
-				console("[INFO] ".Utils\TextFormat::AQUA.$this->username.Utils\TextFormat::RESET."[/".$this->ip.":".$this->port."] logged in with entity id ".$this->id." at (".$this->level->getName().", ".round($this->x, 4).", ".round($this->y, 4).", ".round($this->z, 4).")");
+				console("[INFO] ".TextFormat::AQUA.$this->username.TextFormat::RESET."[/".$this->ip.":".$this->port."] logged in with entity id ".$this->id." at (".$this->level->getName().", ".round($this->x, 4).", ".round($this->y, 4).", ".round($this->z, 4).")");
 				break;
-			case Network\Protocol\Info::READY_PACKET:
+			case ProtocolInfo::READY_PACKET:
 				if($this->loggedIn === false){
 					break;
 				}
@@ -1337,7 +1373,7 @@ class Player extends Entity\RealHuman{
 						$pk->started = $this->level->stopTime == false;
 						$this->dataPacket($pk);
 						
-						$pos = new Level\Position($this->x, $this->y, $this->z, $this->level);
+						$pos = new Position($this->x, $this->y, $this->z, $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
 						$this->teleport($pos);
 						$this->sendBuffer();
@@ -1347,20 +1383,20 @@ class Player extends Entity\RealHuman{
 						break;
 				}
 				break;
-			case Network\Protocol\Info::ROTATE_HEAD_PACKET:
+			case ProtocolInfo::ROTATE_HEAD_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				$this->setRotation($packet->yaw, $this->pitch);
 				break;
-			case Network\Protocol\Info::MOVE_PLAYER_PACKET:
+			case ProtocolInfo::MOVE_PLAYER_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				if($packet->messageIndex > $this->lastMovement){
 					$this->lastMovement = $packet->messageIndex;
-					$newPos = new Math\Vector3($packet->x, $packet->y, $packet->z);
-					if($this->forceMovement instanceof Math\Vector3){
+					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
+					if($this->forceMovement instanceof Vector3){
 						if($this->forceMovement->distance($newPos) <= 0.7){
 							$this->forceMovement = false;
 						}else{
@@ -1369,7 +1405,7 @@ class Player extends Entity\RealHuman{
 					}
 					/*$speed = $this->entity->getSpeedMeasure();
 					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
-						if($this->lastCorrect instanceof Math\Vector3){
+						if($this->lastCorrect instanceof Vector3){
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 						if($this->blocked !== true){
@@ -1380,7 +1416,7 @@ class Player extends Entity\RealHuman{
 					//}
 				}
 				break;
-			case Network\Protocol\Info::PLAYER_EQUIPMENT_PACKET:
+			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1421,10 +1457,10 @@ class Player extends Entity\RealHuman{
 					//$this->entity->updateMetadata();
 				}
 				break;
-			case Network\Protocol\Info::REQUEST_CHUNK_PACKET:
+			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				break;
-			case Network\Protocol\Info::USE_ITEM_PACKET:
-				$blockVector = new Math\Vector3($packet->x, $packet->y, $packet->z);
+			case ProtocolInfo::USE_ITEM_PACKET:
+				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 				
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
 					$target = $this->level->getBlock($blockVector);
@@ -1508,7 +1544,7 @@ class Player extends Entity\RealHuman{
 					//$this->updateMetadata();
 				}
 				break;
-			/*case Network\Protocol\Info::PLAYER_ACTION_PACKET:
+			/*case ProtocolInfo::PLAYER_ACTION_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1584,8 +1620,8 @@ class Player extends Entity\RealHuman{
 						$this->stopSleep();
 				}
 				break;*/
-			case Network\Protocol\Info::REMOVE_BLOCK_PACKET:
-				$blockVector = new Math\Vector3($packet->x, $packet->y, $packet->z);
+			case ProtocolInfo::REMOVE_BLOCK_PACKET:
+				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 				if($this->spawned === false or $this->blocked === true or $this->distance($blockVector) > 8){
 					$target = $this->level->getBlock($blockVector);
 					
@@ -1602,7 +1638,7 @@ class Player extends Entity\RealHuman{
 				$this->toCraft = array();
 				$this->server->api->block->playerBlockBreak($this, $blockVector);
 				break;
-			case Network\Protocol\Info::PLAYER_ARMOR_EQUIPMENT_PACKET:
+			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1650,7 +1686,7 @@ class Player extends Entity\RealHuman{
 					//$this->entity->updateMetadata();
 				}
 				break;
-			/*case Network\Protocol\Info::INTERACT_PACKET:
+			/*case ProtocolInfo::INTERACT_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1661,8 +1697,8 @@ class Player extends Entity\RealHuman{
 				$data["action"] = $packet->action;
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$target = Entity\Entity::get($packet->target);
-				if($target instanceof Entity\Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity\Entity) and $this->entity->distance($target) <= 8){
+				$target = Entity::get($packet->target);
+				if($target instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
 					$data["entity"] = $this->entity;
 				if($target instanceof RealHuman and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
@@ -1739,14 +1775,14 @@ class Player extends Entity\RealHuman{
 				}
 				
 				break;*/
-			/*case Network\Protocol\Info::ANIMATE_PACKET:
+			/*case ProtocolInfo::ANIMATE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				$packet->eid = $this->id;
 				$this->server->api->dhandle("entity.animate", array("eid" => $packet->eid, "entity" => $this->entity, "action" => $packet->action));
 				break;*/
-			case Network\Protocol\Info::RESPAWN_PACKET:
+			case ProtocolInfo::RESPAWN_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1765,9 +1801,9 @@ class Player extends Entity\RealHuman{
 				$this->blocked = false;
 				$this->server->handle("player.respawn", $this);
 				break;
-			case Network\Protocol\Info::SET_HEALTH_PACKET: //Not used
+			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
-			/*case Network\Protocol\Info::ENTITY_EVENT_PACKET:
+			/*case ProtocolInfo::ENTITY_EVENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1821,7 +1857,7 @@ class Player extends Entity\RealHuman{
 						break;
 				}
 				break;*/
-			/*case Network\Protocol\Info::DROP_ITEM_PACKET:
+			/*case ProtocolInfo::DROP_ITEM_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1843,13 +1879,13 @@ class Player extends Entity\RealHuman{
 					$this->entity->updateMetadata();
 				}
 				break;*/
-			case Network\Protocol\Info::MESSAGE_PACKET:
+			case ProtocolInfo::MESSAGE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$packet->message = Utils\TextFormat::clean($packet->message);
+				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
 					if($message{0} === "/"){ //Command
@@ -1866,7 +1902,7 @@ class Player extends Entity\RealHuman{
 					}
 				}
 				break;
-			case Network\Protocol\Info::CONTAINER_CLOSE_PACKET:
+			case ProtocolInfo::CONTAINER_CLOSE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
@@ -1899,7 +1935,7 @@ class Player extends Entity\RealHuman{
 				$pk->windowid = $packet->windowid;
 				$this->dataPacket($pk);
 				break;
-			case Network\Protocol\Info::CONTAINER_SET_SLOT_PACKET:
+			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1961,14 +1997,14 @@ class Player extends Entity\RealHuman{
 
 				if(is_array($this->windows[$packet->windowid])){
 					$tiles = $this->windows[$packet->windowid];
-					if($packet->slot >= 0 and $packet->slot < Tile\Chest::SLOTS){
+					if($packet->slot >= 0 and $packet->slot < Chest::SLOTS){
 						$tile = $tiles[0];
 						$slotn = $packet->slot;
 						$offset = 0;
-					}elseif($packet->slot >= Tile\Chest::SLOTS and $packet->slot <= (Tile\Chest::SLOTS << 1)){
+					}elseif($packet->slot >= Chest::SLOTS and $packet->slot <= (Chest::SLOTS << 1)){
 						$tile = $tiles[1];
-						$slotn = $packet->slot - Tile\Chest::SLOTS;
-						$offset = Tile\Chest::SLOTS;
+						$slotn = $packet->slot - Chest::SLOTS;
+						$offset = Chest::SLOTS;
 					}else{
 						break;
 					}
@@ -2015,13 +2051,13 @@ class Player extends Entity\RealHuman{
 				}else{
 					$tile = $this->windows[$packet->windowid];
 					if(
-						!($tile instanceof Tile\Chest or $tile instanceof Tile\Furnace)
+						!($tile instanceof Chest or $tile instanceof Furnace)
 						or $packet->slot < 0
 						or (
-							$tile instanceof Tile\Chest
-							and $packet->slot >= Tile\Chest::SLOTS
+							$tile instanceof Chest
+							and $packet->slot >= Chest::SLOTS
 						) or (
-							$tile instanceof Tile\Furnace and $packet->slot >= Tile\Furnace::SLOTS
+							$tile instanceof Furnace and $packet->slot >= Furnace::SLOTS
 						)
 					){
 						break;
@@ -2044,7 +2080,7 @@ class Player extends Entity\RealHuman{
 						break;
 					}
 
-					if($tile instanceof Tile\Furnace and $packet->slot == 2){
+					if($tile instanceof Furnace and $packet->slot == 2){
 						switch($slot->getID()){
 							case IRON_INGOT:
 								$this->grantAchievement("acquireIron");
@@ -2075,25 +2111,25 @@ class Player extends Entity\RealHuman{
 					$tile->setSlot($packet->slot, $item);
 				}
 				break;
-			case Network\Protocol\Info::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
+			case ProtocolInfo::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
 					break;
 				}
 				break;
-			case Network\Protocol\Info::ENTITY_DATA_PACKET:
+			case ProtocolInfo::ENTITY_DATA_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$t = $this->level->getTile(new Math\Vector3($packet->x, $packet->y, $packet->z));
-				if($t instanceof Tile\Sign){
+				$t = $this->level->getTile(new Vector3($packet->x, $packet->y, $packet->z));
+				if($t instanceof Sign){
 					if($t->namedtag->creator !== $this->username){
 						$t->spawnTo($this);
 					}else{
-						$nbt = new NBT\NBT(NBT\LITTLE_ENDIAN);
+						$nbt = new NBT(NBT\LITTLE_ENDIAN);
 						$nbt->read($packet->namedtag);
-						if($nbt->id !== Tile\Tile::SIGN){
+						if($nbt->id !== Tile::SIGN){
 							$t->spawnTo($this);
 						}else{
 							$t->setText($nbt->Text1, $nbt->Text2, $nbt->Text3, $nbt->Text4);
@@ -2123,7 +2159,7 @@ class Player extends Entity\RealHuman{
 		$this->dataPacket($pk);
 	}
 
-	public function send(Network\RakNet\Packet $packet){
+	public function send(Packet $packet){
 		if($this->connected === true){
 			$packet->ip = $this->ip;
 			$packet->port = $this->port;
@@ -2133,12 +2169,12 @@ class Player extends Entity\RealHuman{
 	
 	public function sendBuffer(){
 		if($this->connected === true){
-			if($this->bufferLen > 0 and $this->buffer instanceof Network\RakNet\Packet){	
+			if($this->bufferLen > 0 and $this->buffer instanceof Packet){	
 				$this->buffer->seqNumber = $this->counter[0]++;
 				$this->send($this->buffer);
 			}
 			$this->bufferLen = 0;
-			$this->buffer = new Network\RakNet\Packet(Network\RakNet\Info::DATA_PACKET_0);
+			$this->buffer = new Packet(Info::DATA_PACKET_0);
 			$this->buffer->data = array();
 			$this->nextBuffer = microtime(true) + 0.1;
 		}
@@ -2170,7 +2206,7 @@ class Player extends Entity\RealHuman{
 			$pk->buffer = $buf;
 			$pk->messageIndex = $this->counter[3]++;
 			
-			$rk = new Network\RakNet\Packet(Network\RakNet\Info::DATA_PACKET_0);
+			$rk = new Packet(Info::DATA_PACKET_0);
 			$rk->data[] = $pk;
 			$rk->seqNumber = $count;
 			$rk->sendtime = $sendtime;
@@ -2185,11 +2221,11 @@ class Player extends Entity\RealHuman{
 			return false;
 		}
 		
-		if(Event\EventHandler::callEvent(new Event\Server\DataPacketSendEvent($this, $packet)) === Event\Event::DENY){
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === Event::DENY){
 			return array();
 		}
 		$packet->encode();
-		$pk = new Network\RakNet\Packet(Network\RakNet\Info::DATA_PACKET_0);
+		$pk = new Packet(Info::DATA_PACKET_0);
 		$pk->data[] = $packet;
 		$pk->seqNumber = $this->counter[0]++;
 		$pk->sendtime = microtime(true);
@@ -2212,7 +2248,7 @@ class Player extends Entity\RealHuman{
 			return false;
 		}
 		
-		if(Event\EventHandler::callEvent(new Event\Server\DataPacketSendEvent($this, $packet)) === Event\Event::DENY){
+		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === Event::DENY){
 			return;
 		}
 		

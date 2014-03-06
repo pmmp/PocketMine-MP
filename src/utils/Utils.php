@@ -21,6 +21,7 @@
 
 namespace PocketMine\Utils;
 use PocketMine;
+use PocketMine\BlockAPI as BlockAPI;
 
 class Utils{
 	const BIG_ENDIAN = 0x00;

@@ -22,6 +22,8 @@
 namespace PocketMine\Event\Tile;
 use PocketMine\Event;
 use PocketMine;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Item\Item as Item;
 
 class TileInventoryChangeEvent extends TileEvent implements CancellableEvent{
 	public static $handlers;
@@ -31,7 +33,7 @@ class TileInventoryChangeEvent extends TileEvent implements CancellableEvent{
 	private $newItem;
 	private $slot;
 	
-	public function __construct(Tile\Tile $tile, Item\Item $oldItem, Item\Item $newItem, $slot){
+	public function __construct(Tile $tile, Item $oldItem, Item $newItem, $slot){
 		$this->tile = $tile;
 		$this->oldItem = $oldItem;
 		$this->newItem = $newItem;
@@ -46,7 +48,7 @@ class TileInventoryChangeEvent extends TileEvent implements CancellableEvent{
 		return $this->newItem;
 	}
 	
-	public function setNewItem(Item\Item $item){
+	public function setNewItem(Item $item){
 		$this->newItem = $item;
 	}
 	

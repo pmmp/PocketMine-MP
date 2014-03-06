@@ -20,6 +20,9 @@
 */
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\Player as Player;
 
 class ConsoleAPI{
 	private $loop, $server, $event, $help, $cmds, $alias;
@@ -132,7 +135,7 @@ class ConsoleAPI{
 						
 						$max = ceil(count($cmds) / 5);
 						$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))):1);						
-						$output .= Utils\TextFormat::RED."-".Utils\TextFormat::RESET." Showing help page $page of $max (/help <page>) ".Utils\TextFormat::RED."-".Utils\TextFormat::RESET."\n";
+						$output .= TextFormat::RED."-".TextFormat::RESET." Showing help page $page of $max (/help <page>) ".TextFormat::RED."-".TextFormat::RESET."\n";
 						$current = 1;
 						foreach($cmds as $c => $h){
 							$curpage = (int) ceil($current / 5);
@@ -179,9 +182,9 @@ class ConsoleAPI{
 				return $this->run($this->alias[$cmd] . ($params !== "" ? " " .$params:""), $issuer, $cmd);
 			}
 			if($issuer instanceof Player){
-				console("[DEBUG] ".Utils\TextFormat::AQUA.$issuer->getUsername().Utils\TextFormat::RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
+				console("[DEBUG] ".TextFormat::AQUA.$issuer->getUsername().TextFormat::RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}else{
-				console("[DEBUG] ".Utils\TextFormat::YELLOW."*".$issuer.Utils\TextFormat::RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
+				console("[DEBUG] ".TextFormat::YELLOW."*".$issuer.TextFormat::RESET." issued server command: ".ltrim("$alias ")."/$cmd ".$params, true, true, 2);
 			}
 			
 			if(preg_match_all('#@([@a-z]{1,})#', $params, $matches, PREG_OFFSET_CAPTURE) > 0){

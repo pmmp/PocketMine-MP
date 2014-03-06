@@ -21,12 +21,13 @@
 
 namespace PocketMine\Level;
 use PocketMine;
+use PocketMine\Math\Vector3 as Vector3;
 
-class Position extends Math\Vector3{
+class Position extends Vector3{
 	public $level;
 
 	public function __construct($x = 0, $y = 0, $z = 0, Level $level){
-		if(($x instanceof Math\Vector3) === true){
+		if(($x instanceof Vector3) === true){
 			$this->__construct($x->x, $x->y, $x->z, $level);
 		}else{
 			$this->x = $x;

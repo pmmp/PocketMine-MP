@@ -21,6 +21,10 @@
 
 namespace PocketMine\Tile;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\PMF\LevelFormat as LevelFormat;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
@@ -57,7 +61,7 @@ abstract class Tile extends Position{
 	}
 	
 	
-	public function __construct(Level\Level $level, NBT\Tag\Compound $nbt){
+	public function __construct(Level $level, Compound $nbt){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->namedtag = $nbt;
@@ -70,7 +74,7 @@ abstract class Tile extends Position{
 		$this->y = (int) $this->namedtag->y;
 		$this->z = (int) $this->namedtag->z;
 		
-		$index = PMF\LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
+		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		$this->level->tiles[$this->id] = $this;
 		$this->level->chunkTiles[$this->chunkIndex][$this->id] = $this;

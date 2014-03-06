@@ -21,6 +21,7 @@
 
 namespace PocketMine\Network\Protocol;
 use PocketMine;
+use PocketMine\Network\Protocol\Info as Info;
 
 class ServerHandshakePacket extends DataPacket{
 	public $port;

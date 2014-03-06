@@ -22,9 +22,11 @@
 namespace PocketMine\Level\Generator\Object;
 use PocketMine\Level;
 use PocketMine;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\BlockAPI as BlockAPI;
 
 class TallGrass{
-	public static function growGrass(Level $level, Math\Vector3 $pos, Random $random, $count = 15, $radius = 10){
+	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = array(
 			BlockAPI::get(DANDELION, 0),
 			BlockAPI::get(CYAN_FLOWER, 0),
@@ -39,7 +41,7 @@ class TallGrass{
 			$z = $random->nextRange($pos->z - $radius, $pos->z + $radius);
 			if($level->level->getBlockID($x, $pos->y + 1, $z) === AIR and $level->level->getBlockID($x, $pos->y, $z) === GRASS){
 				$t = $arr[$random->nextRange(0, $arrC)];
-				$level->setBlockRaw(new Math\Vector3($x, $pos->y + 1, $z), $t);
+				$level->setBlockRaw(new Vector3($x, $pos->y + 1, $z), $t);
 			}
 		}
 	}

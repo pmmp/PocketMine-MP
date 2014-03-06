@@ -21,12 +21,13 @@
 
 namespace PocketMine\Network\UPnP;
 use PocketMine;
+use PocketMine\Utils\Utils as Utils;
 
 function RemovePortForward($port){
-	if(Utils\Utils::$online === false){
+	if(Utils::$online === false){
 		return false;
 	}
-	if(Utils\Utils::getOS() != "win" or !class_exists("COM")){
+	if(Utils::getOS() != "win" or !class_exists("COM")){
 		return false;
 	}
 	$port = (int) $port;

@@ -21,13 +21,17 @@
 
 namespace PocketMine\Tile;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\BlockAPI as BlockAPI;
 
 class Furnace extends Tile{
 	use Container;
 	
 	const SLOTS = 3;
 	
-	public function __construct(Level\Level $level, NBT\Tag\Compound $nbt){
+	public function __construct(Level $level, Compound $nbt){
 		$nbt->id = Tile::FURNACE;
 		parent::__construct($level, $nbt);
 		if(!isset($this->namedtag->BurnTime) or $this->namedtag->BurnTime < 0){

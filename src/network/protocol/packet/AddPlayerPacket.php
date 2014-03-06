@@ -21,6 +21,8 @@
 
 namespace PocketMine\Network\Protocol;
 use PocketMine;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Utils\Utils as Utils;
 
 class AddPlayerPacket extends DataPacket{
 	public $clientID;
@@ -55,7 +57,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->putByte($this->pitch);
 		$this->putShort($this->unknown1);
 		$this->putShort($this->unknown2);
-		$this->put(Utils\Utils::writeMetadata($this->metadata));
+		$this->put(Utils::writeMetadata($this->metadata));
 	}
 
 }

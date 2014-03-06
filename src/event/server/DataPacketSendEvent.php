@@ -22,6 +22,7 @@
 namespace PocketMine\Event\Server;
 use PocketMine\Event;
 use PocketMine;
+use PocketMine\Network\Protocol\DataPacket as DataPacket;
 
 class DataPacketSendEvent extends ServerEvent implements CancellableEvent{
 	public static $handlers;
@@ -30,7 +31,7 @@ class DataPacketSendEvent extends ServerEvent implements CancellableEvent{
 	private $packet;
 	private $player;	
 	
-	public function __construct(Player $player, Network\Protocol\DataPacket $packet){
+	public function __construct(Player $player, DataPacket $packet){
 		$this->packet = $packet;
 		$this->player = $player;
 	}

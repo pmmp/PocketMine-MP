@@ -21,19 +21,23 @@
 
 namespace PocketMine\Level\Generator\Populator;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Block\Water as Water;
 
 class Pond extends Populator{
 	private $waterOdd = 4;
 	private $lavaOdd = 4;
 	private $lavaSurfaceOdd = 4;
-	public function populate(Level\Level $level, $chunkX, $chunkZ, Utils\Random $random){
+	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
 		if($random->nextRange(0, $this->waterOdd) === 0){
-			$v = new Math\Vector3(
+			$v = new Vector3(
 				$random->nextRange($chunkX << 4, ($chunkX << 4) + 16),
 				$random->nextRange(0, 128),
 				$random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16)
 			);
-			$pond = new Level\Genenerator\Object\Pond($random, new Block\Water());
+			$pond = new Level\Genenerator\Object\Pond($random, new Water());
 			if($pond->canPlaceObject($level, $v)){
 				$pond->placeObject($level, $v);
 			}

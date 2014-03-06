@@ -21,6 +21,22 @@
 
 namespace PocketMine\Level;
 use PocketMine;
+use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Level\Generator\Generator as Generator;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Player as Player;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Block\Block as Block;
+use PocketMine\Utils\Cache as Cache;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Tile\Chest as Chest;
+use PocketMine\Tile\Furnace as Furnace;
+use PocketMine\Tile\Sign as Sign;
+use PocketMine\Block\Air as Air;
 
 class Level{
 	public $players = array();
@@ -35,7 +51,7 @@ class Level{
 	public $stopTime;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
 	
-	public function __construct(PMF\LevelFormat $level, $name){
+	public function __construct(LevelFormat $level, $name){
 		$this->server = ServerAPI::request();
 		$this->level = $level;
 		$this->level->level = $this;
@@ -49,9 +65,9 @@ class Level{
 		$this->usedChunks = array();
 		$this->changedBlocks = array();
 		$this->changedCount = array();
-		$gen = Generator\Generator::getGenerator($this->level->levelData["generator"]);
+		$gen = Generator::getGenerator($this->level->levelData["generator"]);
 		$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
-		$this->generator->init($this, new Utils\Random($this->level->levelData["seed"]));
+		$this->generator->init($this, new Random($this->level->levelData["seed"]));
 	}
 	
 	public function close(){
@@ -59,12 +75,12 @@ class Level{
 	}
 	
 	public function getUsingChunk($X, $Z){
-		$index = PMF\LevelFormat::getIndex($X, $Z);
+		$index = LevelFormat::getIndex($X, $Z);
 		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index]:array();
 	}
 	
 	public function useChunk($X, $Z, Player $player){
-		$index = PMF\LevelFormat::getIndex($X, $Z);
+		$index = LevelFormat::getIndex($X, $Z);
 		$this->loadChunk($X, $Z);
 		$this->usedChunks[$index][$player->CID] = $player;
 	}
@@ -76,7 +92,7 @@ class Level{
 	}
 
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[PMF\LevelFormat::getIndex($X, $Z)][$player->CID]);
+		unset($this->usedChunks[LevelFormat::getIndex($X, $Z)][$player->CID]);
 	}
 	
 	public function isChunkPopulated($X, $Z){
@@ -148,11 +164,11 @@ class Level{
 			
 			//Do chunk updates
 			foreach($this->usedChunks as $index => $p){
-				PMF\LevelFormat::getXZ($index, $X, $Z);
+				LevelFormat::getXZ($index, $X, $Z);
 				for($Y = 0; $Y < 8; ++$Y){
 					if(!$this->level->isMiniChunkEmpty($X, $Z, $Y)){
 						for($i = 0; $i < 3; ++$i){
-							$block = $this->getBlockRaw(new Math\Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
+							$block = $this->getBlockRaw(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
 							if($block instanceof Block){
 								if($block->onUpdate(BLOCK_UPDATE_RANDOM) === BLOCK_UPDATE_NORMAL){
 									$this->server->api->block->blockUpdateAround($block, $this);
@@ -170,7 +186,7 @@ class Level{
 			foreach($this->usedChunks as $i => $c){
 				if(count($c) === 0){
 					unset($this->usedChunks[$i]);
-					PMF\LevelFormat::getXZ($i, $X, $Z);
+					LevelFormat::getXZ($i, $X, $Z);
 					if(!$this->isSpawnChunk($X, $Z)){
 						$this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 					}
@@ -221,11 +237,11 @@ class Level{
 	
 	protected function doSaveRoundExtra(){
 		foreach($this->usedChunks as $index => $d){
-			PMF\LevelFormat::getXZ($index, $X, $Z);
+			LevelFormat::getXZ($index, $X, $Z);
 			$nbt = new NBT(NBT\BIG_ENDIAN);
-			$nbt->setData(new NBT\Tag\Compound("", array(
-				"Entities" => new NBT\Tag\Enum("Entities", array()),
-				"TileEntities" => new NBT\Tag\Enum("TileEntities", array()),
+			$nbt->setData(new Compound("", array(
+				"Entities" => new Enum("Entities", array()),
+				"TileEntities" => new Enum("TileEntities", array()),
 			)));
 			$nbt->Entities->setTagType(NBT\TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT\TAG_Compound);
@@ -251,12 +267,12 @@ class Level{
 		}
 	}
 	
-	public function getBlockRaw(Math\Vector3 $pos){
+	public function getBlockRaw(Vector3 $pos){
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 	
-	public function getBlock(Math\Vector3 $pos){
+	public function getBlock(Vector3 $pos){
 		if($pos instanceof Position and $pos->level !== $this){
 			return false;
 		}
@@ -264,7 +280,7 @@ class Level{
 		return BlockAPI::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 	
-	public function setBlockRaw(Math\Vector3 $pos, Block\Block $block, $direct = true, $send = true){
+	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
 				$pk = new Network\Protocol\UpdateBlockPacket;
@@ -279,9 +295,9 @@ class Level{
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
 				$block->position($pos);
-				$index = PMF\LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
+				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
-					Utils\Cache::remove("world:{$this->name}:{$index}");
+					Cache::remove("world:{$this->name}:{$index}");
 				}
 				if(!isset($this->changedBlocks[$index])){
 					$this->changedBlocks[$index] = array();
@@ -298,7 +314,7 @@ class Level{
 		return $ret;
 	}
 	
-	public function setBlock(Math\Vector3 $pos, Block\Block $block, $update = true, $tiles = false, $direct = false){
+	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
@@ -319,9 +335,9 @@ class Level{
 				$pk->meta = $block->getMetadata();
 				Player::broadcastPacket($this->players, $pk);
 			}else{
-				$index = PMF\LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
+				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
-					Utils\Cache::remove("world:{$this->name}:{$index}");
+					Cache::remove("world:{$this->name}:{$index}");
 				}
 				if(!isset($this->changedBlocks[$index])){
 					$this->changedBlocks[$index] = array();
@@ -339,7 +355,7 @@ class Level{
 				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){
-				if($t = $this->getTile($pos) instanceof Tile\Tile){
+				if($t = $this->getTile($pos) instanceof Tile){
 					$t->close();
 				}
 			}
@@ -367,7 +383,7 @@ class Level{
 		return $this->players;
 	}
 	
-	public function getTile(Math\Vector3 $pos){
+	public function getTile(Vector3 $pos){
 		if($pos instanceof Position and $pos->level !== $this){
 			return false;
 		}
@@ -389,13 +405,13 @@ class Level{
 	public function setMiniChunk($X, $Z, $Y, $data){
 		$this->changedCount[$X.":".$Y.":".$Z] = 4096;
 		if(ADVANCED_CACHE == true){
-			Utils\Cache::remove("world:{$this->name}:$X:$Z");
+			Cache::remove("world:{$this->name}:$X:$Z");
 		}
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
 	
 	public function getChunkEntities($X, $Z){
-		$index = PMF\LevelFormat::getIndex($X, $Z);
+		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkEntities[$index];
 		}
@@ -403,7 +419,7 @@ class Level{
 	}
 	
 	public function getChunkTiles($X, $Z){
-		$index = PMF\LevelFormat::getIndex($X, $Z);
+		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
 			return $this->chunkTiles[$index];
 		}
@@ -413,7 +429,7 @@ class Level{
 	
 	
 	public function loadChunk($X, $Z){
-		$index = PMF\LevelFormat::getIndex($X, $Z);
+		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index])){
 			return true;
 		}elseif($this->level->loadChunk($X, $Z) !== false){
@@ -427,14 +443,14 @@ class Level{
 			}
 			foreach($this->level->getChunkNBT($X, $Z)->TileEntities as $nbt){
 				switch($nbt->id){
-					case Tile\Tile::CHEST:
-						new Tile\Chest($this, $nbt);
+					case Tile::CHEST:
+						new Chest($this, $nbt);
 						break;
-					case Tile\Tile::FURNACE:
-						new Tile\Furnace($this, $nbt);
+					case Tile::FURNACE:
+						new Furnace($this, $nbt);
 						break;
-					case Tile\Tile::SIGN:
-						new Tile\Sign($this, $nbt);
+					case Tile::SIGN:
+						new Sign($this, $nbt);
 						break;
 				}
 			}
@@ -454,7 +470,7 @@ class Level{
 		unset($this->usedChunks[$index]);
 		unset($this->chunkEntities[$index]);
 		unset($this->chunkTiles[$index]);
-		Utils\Cache::remove("world:{$this->name}:$X:$Z");
+		Cache::remove("world:{$this->name}:$X:$Z");
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
 	
@@ -469,8 +485,8 @@ class Level{
 			return false;
 		}
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
-			$identifier = "world:{$this->name}:".PMF\LevelFormat::getIndex($X, $Z);
-			if(($cache = Utils\Cache::get($identifier)) !== false){
+			$identifier = "world:{$this->name}:".LevelFormat::getIndex($X, $Z);
+			if(($cache = Cache::get($identifier)) !== false){
 				return $cache;
 			}
 		}
@@ -492,7 +508,7 @@ class Level{
 			}
 		}
 		if(ADVANCED_CACHE == true and $Yndex == 0xff){
-			Utils\Cache::add($identifier, $ordered, 60);
+			Cache::add($identifier, $ordered, 60);
 		}		
 		return $ordered;
 	}
@@ -518,23 +534,23 @@ class Level{
 		if($spawn === false){
 			$spawn = $this->getSpawn();
 		}
-		if($spawn instanceof Math\Vector3){
+		if($spawn instanceof Vector3){
 			$x = (int) round($spawn->x);
 			$y = (int) round($spawn->y);
 			$z = (int) round($spawn->z);
 			for(; $y > 0; --$y){
-				$v = new Math\Vector3($x, $y, $z);
+				$v = new Vector3($x, $y, $z);
 				$b = $this->getBlock($v->getSide(0));
 				if($b === false){
 					return $spawn;
-				}elseif(!($b instanceof Block\Air)){
+				}elseif(!($b instanceof Air)){
 					break;
 				}
 			}
 			for(; $y < 128; ++$y){
-				$v = new Math\Vector3($x, $y, $z);
-				if($this->getBlock($v->getSide(1)) instanceof Block\Air){
-					if($this->getBlock($v) instanceof Block\Air){
+				$v = new Vector3($x, $y, $z);
+				if($this->getBlock($v->getSide(1)) instanceof Air){
+					if($this->getBlock($v) instanceof Air){
 						return new Position($x, $y, $z, $this);
 					}
 				}else{
@@ -546,7 +562,7 @@ class Level{
 		return false;
 	}
 	
-	public function setSpawn(Math\Vector3 $pos){
+	public function setSpawn(Vector3 $pos){
 		$this->level->setData("spawnX", $pos->x);
 		$this->level->setData("spawnY", $pos->y);
 		$this->level->setData("spawnZ", $pos->z);

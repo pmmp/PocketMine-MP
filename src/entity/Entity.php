@@ -21,8 +21,20 @@
 
 namespace PocketMine\Entity;
 use PocketMine;
+use PocketMine\Level\Position as Position;
+use PocketMine\Level\Level as Level;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Math\AxisAlignedBB as AxisAlignedBB;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine\Player as Player;
+use PocketMine\Event\EventHandler as EventHandler;
+use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
+use PocketMine\Event\Event as Event;
+use PocketMine\Event\Entity\EntityMoveEvent as EntityMoveEvent;
+use PocketMine\Event\Entity\EntityMotionEvent as EntityMotionEvent;
 
-abstract class Entity extends Level\Position{
+abstract class Entity extends Position{
 	public static $entityCount = 1;
 	public static $list = array();
 	public static $needUpdate = array();
@@ -84,16 +96,16 @@ abstract class Entity extends Level\Position{
 	}
 	
 	
-	public function __construct(Level\Level $level, NBT\Tag\Compound $nbt){
+	public function __construct(Level $level, Compound $nbt){
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
 		$this->closed = false;
 		$this->namedtag = $nbt;
 		$this->level = $level;
 
-		$this->boundingBox = new Math\AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPositionAndRotation(new Math\Vector3($this->namedtag->Pos[0], $this->namedtag->Pos[1], $this->namedtag->Pos[2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
-		$this->setMotion(new Math\Vector3($this->namedtag->Motion[0], $this->namedtag->Motion[1], $this->namedtag->Motion[2]));
+		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		$this->setPositionAndRotation(new Vector3($this->namedtag->Pos[0], $this->namedtag->Pos[1], $this->namedtag->Pos[2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
+		$this->setMotion(new Vector3($this->namedtag->Motion[0], $this->namedtag->Motion[1], $this->namedtag->Motion[2]));
 		
 		$this->fallDistance = $this->namedtag->FallDistance;
 		$this->fireTicks = $this->namedtag->Fire;
@@ -101,7 +113,7 @@ abstract class Entity extends Level\Position{
 		$this->onGround = $this->namedtag->OnGround > 0 ? true:false;
 		$this->invulnerable = $this->namedtag->Invulnerable > 0 ? true:false;
 		
-		$index = PMF\LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
+		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		Entity::$list[$this->id] = $this;
 		$this->level->entities[$this->id] = $this;
@@ -299,9 +311,9 @@ abstract class Entity extends Level\Position{
 	
 	}
 	
-	protected function switchLevel(Level\Level $targetLevel){
-		if($this->level instanceof Level\Level){
-			if(Event\EventHandler::callEvent(new Event\Entity\EntityLevelChangeEvent($this, $this->level, $targetLevel)) === Event\Event::DENY){
+	protected function switchLevel(Level $targetLevel){
+		if($this->level instanceof Level){
+			if(EventHandler::callEvent(new EntityLevelChangeEvent($this, $this->level, $targetLevel)) === Event::DENY){
 				return false;
 			}
 			unset($this->level->entities[$this->id]);
@@ -312,7 +324,7 @@ abstract class Entity extends Level\Position{
 					if($Yndex !== 0xff){
 						$X = null;
 						$Z = null;
-						PMF\LevelFormat::getXZ($index, $X, $Z);
+						LevelFormat::getXZ($index, $X, $Z);
 						foreach($this->level->getChunkEntities($X, $Z) as $entity){
 							$entity->despawnFrom($this);
 						}
@@ -335,10 +347,10 @@ abstract class Entity extends Level\Position{
 	}
 	
 	public function getPosition(){
-		return new Level\Position($this->x, $this->y, $this->z, $this->level);
+		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 	
-	public function move(Math\Vector3 $displacement){
+	public function move(Vector3 $displacement){
 		if($displacement->x == 0 and $displacement->y == 0 and $displacement->z == 0){
 			return;
 		}
@@ -349,7 +361,7 @@ abstract class Entity extends Level\Position{
 		$this->scheduleUpdate();
 	}
 
-	public function setPositionAndRotation(Math\Vector3 $pos, $yaw, $pitch){
+	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){
 		if($this->setPosition($pos) === true){
 			$this->setRotation($yaw, $pitch);
 			return true;
@@ -363,13 +375,13 @@ abstract class Entity extends Level\Position{
 		$this->scheduleUpdate();
 	}
 	
-	public function setPosition(Math\Vector3 $pos){
-		if($pos instanceof Level\Position and $pos->level instanceof Level\Level and $pos->level !== $this->level){
+	public function setPosition(Vector3 $pos){
+		if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
 			if($this->switchLevel($pos->level) === false){
 				return false;
 			}
 		}
-		if(Event\EventHandler::callEvent(new Event\Entity\EntityMoveEvent($this, $pos)) === Event\Event::DENY){
+		if(EventHandler::callEvent(new EntityMoveEvent($this, $pos)) === Event::DENY){
 			return false;
 		}
 		$this->x = $pos->x;
@@ -377,7 +389,7 @@ abstract class Entity extends Level\Position{
 		$this->z = $pos->z;
 		
 		$radius = $this->width / 2;
-		if(($index = PMF\LevelFormat::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
+		if(($index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
 			if($this->chunkIndex !== false){
 				unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
 			}
@@ -405,11 +417,11 @@ abstract class Entity extends Level\Position{
 	}
 	
 	public function getMotion(){
-		return new Math\Vector3($this->motionX, $this->motionY, $this->motionZ);
+		return new Vector3($this->motionX, $this->motionY, $this->motionZ);
 	}
 	
-	public function setMotion(Math\Vector3 $motion){
-		if(Event\EventHandler::callEvent(new Event\Entity\EntityMotionEvent($this, $motion)) === Event\Event::DENY){
+	public function setMotion(Vector3 $motion){
+		if(EventHandler::callEvent(new EntityMotionEvent($this, $motion)) === Event::DENY){
 			return false;
 		}
 		$this->motionX = $motion->x;
@@ -430,8 +442,8 @@ abstract class Entity extends Level\Position{
 		return $this->level;
 	}
 	
-	public function teleport(Level\Position $pos, $yaw = false, $pitch = false){
-		$this->setMotion(new Math\Vector3(0, 0, 0));
+	public function teleport(Position $pos, $yaw = false, $pitch = false){
+		$this->setMotion(new Vector3(0, 0, 0));
 		if($this->setPositionAndRotation($pos, $yaw === false ? $this->yaw : $yaw, $pitch === false ? $this->pitch : $pitch) !== false){
 			if($this instanceof Player){
 				$this->airTicks = 300;

@@ -21,6 +21,12 @@
 
 namespace PocketMine\Level;
 use PocketMine;
+use PocketMine\Level\Position as Position;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\BlockAPI as BlockAPI;
+use PocketMine\Block\TNT as TNT;
+use PocketMine\Player as Player;
 
 class Explosion{
 	public static $specialDrops = array(
@@ -37,7 +43,7 @@ class Explosion{
 	public $affectedBlocks = array();
 	public $stepLen = 0.3;
 	
-	public function __construct(Level\Position $center, $size){
+	public function __construct(Position $center, $size){
 		$this->level = $center->level;
 		$this->source = $center;
 		$this->size = max($size, 0);
@@ -58,7 +64,7 @@ class Explosion{
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
 					if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
-						$vector = new Math\Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
+						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
 						$vector = $vector->normalize()->multiply($this->stepLen);
 						$pointer = clone $this->source;
 						
@@ -98,7 +104,7 @@ class Explosion{
 
 		foreach($this->affectedBlocks as $block){
 
-			if($block instanceof Block\TNT){
+			if($block instanceof TNT){
 				$data = array(
 					"x" => $block->x + 0.5,
 					"y" => $block->y + 0.5,
@@ -119,7 +125,7 @@ class Explosion{
 				}
 			}
 			$this->level->level->setBlockID($block->x, $block->y, $block->z, 0);
-			$send[] = new Math\Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
+			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
 		$pk = new Network\Protocol\ExplodePacket;
 		$pk->x = $this->source->x;

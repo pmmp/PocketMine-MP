@@ -21,13 +21,19 @@
 
 namespace PocketMine\Tile;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Int as Int;
 
 class Chest extends Spawnable{
 	use Container;
 	
 	const SLOTS = 27;
 	
-	public function __construct(Level\Level $level, NBT\Tag\Compound $nbt){
+	public function __construct(Level $level, Compound $nbt){
 		$nbt->id = Tile::CHEST;
 		parent::__construct($level, $nbt);
 	}
@@ -41,7 +47,7 @@ class Chest extends Spawnable{
 	
 	public function getPair(){
 		if($this->isPaired()){
-			return $this->level->getTile(new Math\Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
+			return $this->level->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
 		}
 		return false;
 	}
@@ -86,20 +92,20 @@ class Chest extends Spawnable{
 
 		$nbt = new NBT(NBT\LITTLE_ENDIAN);
 		if($this->isPaired()){
-			$nbt->setData(new NBT\Tag\Compound("", array(
-				new NBT\Tag\String("id", Tile::CHEST),
-				new NBT\Tag\Int("x", (int) $this->x),
-				new NBT\Tag\Int("y", (int) $this->y),
-				new NBT\Tag\Int("z", (int) $this->z),	
-				new NBT\Tag\Int("pairx", (int) $this->namedtag->pairx),
-				new NBT\Tag\Int("pairz", (int) $this->namedtag->pairz)
+			$nbt->setData(new Compound("", array(
+				new String("id", Tile::CHEST),
+				new Int("x", (int) $this->x),
+				new Int("y", (int) $this->y),
+				new Int("z", (int) $this->z),	
+				new Int("pairx", (int) $this->namedtag->pairx),
+				new Int("pairz", (int) $this->namedtag->pairz)
 			)));
 		}else{
-			$nbt->setData(new NBT\Tag\Compound("", array(
-				new NBT\Tag\String("id", Tile::CHEST),
-				new NBT\Tag\Int("x", (int) $this->x),
-				new NBT\Tag\Int("y", (int) $this->y),
-				new NBT\Tag\Int("z", (int) $this->z)
+			$nbt->setData(new Compound("", array(
+				new String("id", Tile::CHEST),
+				new Int("x", (int) $this->x),
+				new Int("y", (int) $this->y),
+				new Int("z", (int) $this->z)
 			)));
 		}
 			

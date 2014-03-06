@@ -21,6 +21,9 @@
 
 namespace PocketMine\Level\Generator\Object;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Block\Sapling as Sapling;
 
 class Tree{
 	public $overridable = array(
@@ -32,7 +35,7 @@ class Tree{
 		18 => true,
 	);
 
-	public static function growTree(Level\Level $level, Math\Vector3 $pos, Level\Random $random, $type = 0){
+	public static function growTree(Level $level, Vector3 $pos, Level\Random $random, $type = 0){
 		switch($type & 0x03){
 			case SaplingBlock::SPRUCE:
 				if($random->nextRange(0, 1) === 1){
@@ -43,11 +46,11 @@ class Tree{
 				break;
 			case SaplingBlock::BIRCH:
 				$tree = new SmallTree();
-				$tree->type = Block\Sapling::BIRCH;
+				$tree->type = Sapling::BIRCH;
 				break;
 			case SaplingBlock::JUNGLE:
 				$tree = new SmallTree();
-				$tree->type = Block\Sapling::JUNGLE;
+				$tree->type = Sapling::JUNGLE;
 				break;
 			case SaplingBlock::OAK:
 			default:

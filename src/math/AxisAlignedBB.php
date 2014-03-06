@@ -21,6 +21,7 @@
 
 namespace PocketMine\Math;
 use PocketMine;
+use PocketMine\Math\Vector3 as Vector3;
 
 class AxisAlignedBB{
 	public $minX;
@@ -195,7 +196,7 @@ class AxisAlignedBB{
 		return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
 	}
 	
-	public function isVectorInside(Math\Vector3 $vector){
+	public function isVectorInside(Vector3 $vector){
 		if($vector->x <= $this->minX or $vector->x >= $this->maxX){
 			return false;
 		}
@@ -209,15 +210,15 @@ class AxisAlignedBB{
 		return ($this->maxX - $this->minX + $this->maxY - $this->minY + $this->maxZ - $this->minZ) / 3; 
 	}
 	
-	public function isVectorInYZ(Math\Vector3 $vector){
+	public function isVectorInYZ(Vector3 $vector){
 		return $vector->y >= $this->minY and $vector->y <= $this->maxY and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
 	}
 	
-	public function isVectorInXZ(Math\Vector3 $vector){
+	public function isVectorInXZ(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->z >= $this->minZ and $vector->z <= $this->maxZ;
 	}
 	
-	public function isVectorInXY(Math\Vector3 $vector){
+	public function isVectorInXY(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
 	

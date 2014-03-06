@@ -21,6 +21,8 @@
 
 namespace PocketMine\Level\Generator\Populator;
 use PocketMine;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Block\TallGrass as BlockTallGrass;
 
 class TallGrass extends Populator{
 	private $level;
@@ -45,9 +47,9 @@ class TallGrass extends Populator{
 				$xx = $x - 7 + $random->nextRange(0, 15);
 				$zz = $z - 7 + $random->nextRange(0, 15);
 				$yy = $this->getHighestWorkableBlock($xx, $zz);
-				$vector = new Math\Vector3($xx, $yy, $zz);
+				$vector = new Vector3($xx, $yy, $zz);
 				if($yy !== -1 and $this->canTallGrassStay($this->level->getBlockRaw($vector))){
-					$this->level->setBlockRaw($vector, new Block\TallGrass(1));
+					$this->level->setBlockRaw($vector, new BlockTallGrass(1));
 				}
 			}
 		}
@@ -59,7 +61,7 @@ class TallGrass extends Populator{
 	
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 128; $y > 0; --$y){
-			$b = $this->level->getBlockRaw(new Math\Vector3($x, $y, $z));
+			$b = $this->level->getBlockRaw(new Vector3($x, $y, $z));
 			if($b->getID() === AIR or $b->getID() === LEAVES){
 				if(--$y <= 0){
 					return -1;

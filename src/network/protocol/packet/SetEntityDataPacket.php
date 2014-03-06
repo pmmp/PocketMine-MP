@@ -21,6 +21,8 @@
 
 namespace PocketMine\Network\Protocol;
 use PocketMine;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Utils\Utils as Utils;
 
 class SetEntityDataPacket extends DataPacket{
 	public $eid;
@@ -37,7 +39,7 @@ class SetEntityDataPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->put(Utils\Utils::writeMetadata($this->metadata));
+		$this->put(Utils::writeMetadata($this->metadata));
 	}
 
 }

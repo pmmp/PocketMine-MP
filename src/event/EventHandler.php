@@ -21,6 +21,7 @@
 
 namespace PocketMine\Event;
 use PocketMine;
+use PocketMine\Event\Event as Event;
 
 abstract class EventHandler{
 

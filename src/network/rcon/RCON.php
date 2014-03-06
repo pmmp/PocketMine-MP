@@ -21,6 +21,7 @@
 
 namespace PocketMine\Network\RCON;
 use PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
 
 /*
 Implementation of the Source RCON Protocol to allow remote console commands

@@ -21,6 +21,7 @@
 
 namespace PocketMine\Level;
 use PocketMine;
+use PocketMine\Utils\Utils as Utils;
 
 /**
   * WARNING: This code is old, and only supports the file format partially (reverse engineering)
@@ -41,7 +42,7 @@ class PocketChunkParser{
 		$this->location = array();
 		console("[DEBUG] Loading Chunk Location table...", true, true, 2);
 		for($offset = 0; $offset < 0x1000; $offset += 4){
-			$data = Utils\Utils::readLInt(substr($this->raw, $offset, 4));
+			$data = Utils::readLInt(substr($this->raw, $offset, 4));
 			$sectors = $data & 0xff;
 			if($sectors === 0){
 				continue;
@@ -99,14 +100,14 @@ class PocketChunkParser{
 				$chunk .= $data[$i];
 			}
 		}
-		return Utils\Utils::writeLInt(strlen($chunk)).$chunk;
+		return Utils::writeLInt(strlen($chunk)).$chunk;
 	}
 
 	public function parseChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
 		$offset = $this->getOffset($X, $Z);
-		$len = Utils\Utils::readLInt(substr($this->raw, $offset, 4));
+		$len = Utils::readLInt(substr($this->raw, $offset, 4));
 		$offset += 4;
 		$chunk = array(
 			0 => array(), //Block

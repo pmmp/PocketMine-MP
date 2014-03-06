@@ -20,6 +20,9 @@
 */
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Utils\Config as Config;
+use PocketMine\Player as Player;
 
 class BanAPI{
 	private $server;
@@ -40,10 +43,10 @@ class BanAPI{
 	}
 	
 	public function init(){
-		$this->whitelist = new Utils\Config(\PocketMine\DATA."white-list.txt", Utils\Config::ENUM);//Open whitelist list file
-		$this->bannedIPs = new Utils\Config(\PocketMine\DATA."banned-ips.txt", Utils\Config::ENUM);//Open Banned IPs list file
-		$this->banned = new Utils\Config(\PocketMine\DATA."banned.txt", Utils\Config::ENUM);//Open Banned Usernames list file
-		$this->ops = new Utils\Config(\PocketMine\DATA."ops.txt", Utils\Config::ENUM);//Open list of OPs
+		$this->whitelist = new Config(\PocketMine\DATA."white-list.txt", Config::ENUM);//Open whitelist list file
+		$this->bannedIPs = new Config(\PocketMine\DATA."banned-ips.txt", Config::ENUM);//Open Banned IPs list file
+		$this->banned = new Config(\PocketMine\DATA."banned.txt", Config::ENUM);//Open Banned Usernames list file
+		$this->ops = new Config(\PocketMine\DATA."ops.txt", Config::ENUM);//Open list of OPs
 		$this->server->api->console->register("banip", "<add|remove|list|reload> [IP|player]", array($this, "commandHandler"));
 		$this->server->api->console->register("ban", "<add|remove|list|reload> [username]", array($this, "commandHandler"));
 		$this->server->api->console->register("kick", "<player> [reason ...]", array($this, "commandHandler"));
@@ -213,7 +216,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to white-list\n";
 						break;
 					case "reload":
-						$this->whitelist = new Utils\Config(\PocketMine\DATA."white-list.txt", Utils\Config::ENUM);
+						$this->whitelist = new Config(\PocketMine\DATA."white-list.txt", Config::ENUM);
 						break;
 					case "list":
 						$output .= "White-list: ".implode(", ", $this->whitelist->getAll(true))."\n";
@@ -258,7 +261,7 @@ class BanAPI{
 						$output .= "IP \"$ip\" added to ban list\n";
 						break;
 					case "reload":
-						$this->bannedIPs = new Utils\Config(\PocketMine\DATA."banned-ips.txt", Utils\Config::ENUM);
+						$this->bannedIPs = new Config(\PocketMine\DATA."banned-ips.txt", Config::ENUM);
 						break;
 					case "list":
 						$output .= "IP ban list: ".implode(", ", $this->bannedIPs->getAll(true))."\n";
@@ -296,7 +299,7 @@ class BanAPI{
 						$output .= "Player \"$user\" added to ban list\n";
 						break;
 					case "reload":
-						$this->banned = new Utils\Config(\PocketMine\DATA."banned.txt", Utils\Config::ENUM);
+						$this->banned = new Config(\PocketMine\DATA."banned.txt", Config::ENUM);
 						break;
 					case "list":
 						$output .= "Ban list: ".implode(", ", $this->banned->getAll(true))."\n";

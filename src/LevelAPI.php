@@ -20,6 +20,27 @@
  */
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Level\Generator\Flat as Flat;
+use PocketMine\Level\Generator\Normal as Normal;
+use PocketMine\Level\WorldGenerator as WorldGenerator;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Level\LevelImport as LevelImport;
+use PocketMine\Level\Level as Level;
+use PocketMine\PMF\LevelFormat as LevelFormat;
+use PocketMine\Utils\Config as Config;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\NBT\Tag\Compound as Compound;
+use PocketMine\NBT\Tag\Enum as Enum;
+use PocketMine\NBT\Tag\Byte as Byte;
+use PocketMine\NBT\Tag\Short as Short;
+use PocketMine\NBT\Tag\String as String;
+use PocketMine\NBT\Tag\Int as Int;
+use PocketMine\Tile\Tile as Tile;
+use PocketMine\Tile\Furnace as Furnace;
+use PocketMine\Tile\Chest as Chest;
+use PocketMine\Tile\Sign as Sign;
+use PocketMine\Level\Position as Position;
 
 class LevelAPI{
 	private $server, $levels, $default;
@@ -94,12 +115,12 @@ class LevelAPI{
 			$generator = new $generator($options);
 		}else{
 			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
-				$generator = new Level\Generator\Flat($options);
+				$generator = new Flat($options);
 			}else{
-				$generator = new Level\Generator\Normal($options);
+				$generator = new Normal($options);
 			}
 		}
-		$gen = new Level\WorldGenerator($generator, $name, $seed === false ? Utils\Utils::readInt(Utils\Utils::getRandomBytes(4, false)):(int) $seed);
+		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
 		$gen->generate();
 		$gen->close();
 		return true;
@@ -111,7 +132,7 @@ class LevelAPI{
 		}
 		$path = \PocketMine\DATA."worlds/".$name."/";
 		if($this->get($name) === false and !file_exists($path."level.pmf")){
-			$level = new Level\LevelImport($path);
+			$level = new LevelImport($path);
 			if($level->import() === false){
 				return false;
 			}
@@ -119,7 +140,7 @@ class LevelAPI{
 		return true;
 	}
 	
-	public function unloadLevel(Level\Level $level, $force = false){
+	public function unloadLevel(Level $level, $force = false){
 		$name = $level->getName();
 		if($name === $this->default and $force !== true){
 			return false;
@@ -144,17 +165,17 @@ class LevelAPI{
 		}
 		$path = \PocketMine\DATA."worlds/".$name."/";
 		console("[INFO] Preparing level \"".$name."\"");
-		$level = new PMF\LevelFormat($path."level.pmf");
+		$level = new LevelFormat($path."level.pmf");
 		if(!$level->isLoaded){
 			console("[ERROR] Could not load level \"".$name."\"");
 			return false;
 		}
-		//$entities = new Utils\Config($path."entities.yml", Utils\Config::YAML);
+		//$entities = new Config($path."entities.yml", Config::YAML);
 		if(file_exists($path."tileEntities.yml")){
 			@rename($path."tileEntities.yml", $path."tiles.yml");
 		}
-		$blockUpdates = new Utils\Config($path."bupdates.yml", Utils\Config::YAML);
-		$this->levels[$name] = new Level\Level($level, $name);
+		$blockUpdates = new Config($path."bupdates.yml", Config::YAML);
+		$this->levels[$name] = new Level($level, $name);
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
@@ -171,39 +192,39 @@ class LevelAPI{
 				));
 			}elseif($entity["id"] === FALLING_SAND){
 				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_FALLING, $entity["id"], $entity);
-				$e->setPosition(new Math\Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
 				$e->setHealth($entity["Health"]);
 			}elseif($entity["id"] === OBJECT_PAINTING or $entity["id"] === OBJECT_ARROW){ //Painting
 				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_OBJECT, $entity["id"], $entity);
-				$e->setPosition(new Math\Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
 				$e->setHealth(1);
 			}else{
 				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_MOB, $entity["id"], $entity);
-				$e->setPosition(new Math\Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
 				$e->setHealth($entity["Health"]);
 			}
 		}*/
 			
 		if(file_exists($path ."tiles.yml")){
-			$tiles = new Utils\Config($path."tiles.yml", Utils\Config::YAML);
+			$tiles = new Config($path."tiles.yml", Config::YAML);
 			foreach($tiles->getAll() as $tile){
 				if(!isset($tile["id"])){
 					continue;
 				}
 				$this->levels[$name]->loadChunk($tile["x"] >> 4, $tile["z"] >> 4);
 			
-				$nbt = new NBT\Tag\Compound(false, array());
+				$nbt = new Compound(false, array());
 				foreach($tile as $index => $data){
 					switch($index){
 						case "Items":
-							$tag = new NBT\Tag\Enum("Items", array());
+							$tag = new Enum("Items", array());
 							$tag->setTagType(NBT\TAG_Compound);
 							foreach($data as $slot => $fields){								
-								$tag[(int) $slot] = new NBT\Tag\Compound(false, array(
-									"Count" => new NBT\Tag\Byte("Count", $fields["Count"]),
-									"Slot" => new NBT\Tag\Short("Slot", $fields["Slot"]),
-									"Damage" => new NBT\Tag\Short("Damage", $fields["Damage"]),
-									"id" => new NBT\Tag\String("id", $fields["id"])
+								$tag[(int) $slot] = new Compound(false, array(
+									"Count" => new Byte("Count", $fields["Count"]),
+									"Slot" => new Short("Slot", $fields["Slot"]),
+									"Damage" => new Short("Damage", $fields["Damage"]),
+									"id" => new String("id", $fields["id"])
 								));
 							}
 							$nbt["Items"] = $tag;
@@ -214,7 +235,7 @@ class LevelAPI{
 						case "Text2":
 						case "Text3":
 						case "Text4":
-							$nbt[$index] = new NBT\Tag\String($index, $data);
+							$nbt[$index] = new String($index, $data);
 							break;
 							
 						case "x":
@@ -222,25 +243,25 @@ class LevelAPI{
 						case "z":
 						case "pairx":
 						case "pairz":
-							$nbt[$index] = new NBT\Tag\Int($index, $data);
+							$nbt[$index] = new Int($index, $data);
 							break;
 							
 						case "BurnTime":
 						case "CookTime":
 						case "MaxTime":
-							$nbt[$index] = new NBT\Tag\Short($index, $data);
+							$nbt[$index] = new Short($index, $data);
 							break;
 					}
 				}
 				switch($tile["id"]){
-					case Tile\Tile::FURNACE:
-						new Tile\Furnace($this->levels[$name], $nbt);
+					case Tile::FURNACE:
+						new Furnace($this->levels[$name], $nbt);
 						break;
-					case Tile\Tile::CHEST:
-						new Tile\Chest($this->levels[$name], $nbt);
+					case Tile::CHEST:
+						new Chest($this->levels[$name], $nbt);
 						break;
-					case Tile\Tile::SIGN:
-						new Tile\Sign($this->levels[$name], $nbt);
+					case Tile::SIGN:
+						new Sign($this->levels[$name], $nbt);
 						break;
 				}
 			}
@@ -249,7 +270,7 @@ class LevelAPI{
 		}
 		
 		foreach($blockUpdates->getAll() as $bupdate){
-			$this->server->api->block->scheduleBlockUpdate(new Level\Position((int) $bupdate["x"],(int) $bupdate["y"],(int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
+			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"],(int) $bupdate["y"],(int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
 		return true;
 	}

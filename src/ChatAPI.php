@@ -20,6 +20,8 @@
 */
 
 namespace PocketMine;
+use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\Player as Player;
 
 class ChatAPI{
 	private $server;

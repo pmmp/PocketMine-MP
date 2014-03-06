@@ -20,6 +20,16 @@
 */
 
 namespace PocketMine;
+use PocketMine\Utils\VersionString as VersionString;
+use PocketMine\Utils\Utils as Utils;
+use PocketMine\Network\Handler as Handler;
+use PocketMine\Player as Player;
+use PocketMine\Entity\Entity as Entity;
+use PocketMine\Deprecation as Deprecation;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Network\Packet as Packet;
+use PocketMine\Network\RakNet\Info as RakNetInfo;
+use PocketMine\Network\RakNet\Packet as RakNetPacket;
 
 class Server{
 	public $tCnt;
@@ -32,14 +42,14 @@ class Server{
 	public $api;
 	
 	private function load(){
-		$this->version = new Utils\VersionString();
+		$this->version = new VersionString();
 		if(defined("DEBUG") and DEBUG >= 0){
 			@cli_set_process_title("PocketMine-MP ".MAJOR_VERSION);
 		}
 		console("[INFO] Starting Minecraft PE server on ".($this->serverip === "0.0.0.0" ? "*":$this->serverip).":".$this->port);
-		define("BOOTUP_RANDOM", Utils\Utils::getRandomBytes(16));
-		$this->serverID = $this->serverID === false ? Utils\Utils::readLong(substr(Utils\Utils::getUniqueID(true, $this->serverip . $this->port), 8)):$this->serverID;
-		$this->seed = $this->seed === false ? Utils\Utils::readInt(Utils\Utils::getRandomBytes(4, false)):$this->seed;
+		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
+		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true, $this->serverip . $this->port), 8)):$this->serverID;
+		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):$this->seed;
 		$this->startDatabase();
 		$this->api = false;
 		$this->tCnt = 1;
@@ -62,7 +72,7 @@ class Server{
 		$this->whitelist = false;
 		$this->tickMeasure = array_fill(0, 40, 0);
 		$this->setType("normal");
-		$this->interface = new Network\Handler("255.255.255.255", $this->port, $this->serverip);
+		$this->interface = new Handler("255.255.255.255", $this->port, $this->serverip);
 		$this->stop = false;
 		$this->ticks = 0;
 		if(!defined("NO_THREADS")){
@@ -154,7 +164,7 @@ class Server{
 		$info["tps"] = $this->getTPS();
 		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2)."MB";
 		$info["memory_peak_usage"] = round((memory_get_peak_usage() / 1024) / 1024, 2)."MB";
-		$info["entities"] = count(Entity\Entity::$list);
+		$info["entities"] = count(Entity::$list);
 		$info["players"] = count(Player::$list);
 		$info["events"] = count($this->eventsID);
 		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
@@ -213,25 +223,25 @@ class Server{
 		$type = (int) $type;
 		switch($type){
 			case ASYNC_CURL_GET:
-				$d .= Utils\Utils::writeShort(strlen($data["url"])).$data["url"].(isset($data["timeout"]) ? Utils\Utils::writeShort($data["timeout"]) : Utils\Utils::writeShort(10));
+				$d .= Utils::writeShort(strlen($data["url"])).$data["url"].(isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10));
 				break;
 			case ASYNC_CURL_POST:
-				$d .= Utils\Utils::writeShort(strlen($data["url"])).$data["url"].(isset($data["timeout"]) ? Utils\Utils::writeShort($data["timeout"]) : Utils\Utils::writeShort(10));
-				$d .= Utils\Utils::writeShort(count($data["data"]));
+				$d .= Utils::writeShort(strlen($data["url"])).$data["url"].(isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10));
+				$d .= Utils::writeShort(count($data["data"]));
 				foreach($data["data"] as $key => $value){
-					$d .= Utils\Utils::writeShort(strlen($key)).$key . Utils\Utils::writeInt(strlen($value)).$value;
+					$d .= Utils::writeShort(strlen($key)).$key . Utils::writeInt(strlen($value)).$value;
 				}
 				break;
 			case ASYNC_FUNCTION:
 				$params = serialize($data["arguments"]);
-				$d .= Utils\Utils::writeShort(strlen($data["function"])).$data["function"] . Utils\Utils::writeInt(strlen($params)) . $params;
+				$d .= Utils::writeShort(strlen($data["function"])).$data["function"] . Utils::writeInt(strlen($params)) . $params;
 				break;
 			default:
 				return false;
 		}
 		$ID = $this->asyncID++;
 		$this->async[$ID] = $callable;
-		$this->asyncThread->input .= Utils\Utils::writeInt($ID).Utils\Utils::writeShort($type).$d;
+		$this->asyncThread->input .= Utils::writeInt($ID).Utils::writeShort($type).$d;
 		return $ID;
 	}
 	
@@ -241,21 +251,21 @@ class Server{
 		}
 		if(isset($this->asyncThread->output{5})){
 			$offset = 0;
-			$ID = Utils\Utils::readInt(substr($this->asyncThread->output, $offset, 4));
+			$ID = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
 			$offset += 4;
-			$type = Utils\Utils::readShort(substr($this->asyncThread->output, $offset, 2));
+			$type = Utils::readShort(substr($this->asyncThread->output, $offset, 2));
 			$offset += 2;
 			$data = array();
 			switch($type){
 				case ASYNC_CURL_GET:
 				case ASYNC_CURL_POST:
-					$len = Utils\Utils::readInt(substr($this->asyncThread->output, $offset, 4));
+					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
 					$offset += 4;
 					$data["result"] = substr($this->asyncThread->output, $offset, $len);
 					$offset += $len;
 					break;
 				case ASYNC_FUNCTION:
-					$len = Utils\Utils::readInt(substr($this->asyncThread->output, $offset, 4));
+					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
 					$offset += 4;
 					$data["result"] = unserialize(substr($this->asyncThread->output, $offset, $len));
 					$offset += $len;
@@ -426,13 +436,13 @@ class Server{
 			$dump .= "$line\r\n";
 		}
 		$dump .= "\r\n\r\n";
-		$version = new Utils\VersionString();
-		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".Network\Protocol\Info::CURRENT_PROTOCOL."; API ".API_VERSION."]\r\n";
+		$version = new VersionString();
+		$dump .= "PocketMine-MP version: ".$version." #".$version->getNumber()." [Protocol ".Info::CURRENT_PROTOCOL."; API ".API_VERSION."]\r\n";
 		$dump .= "Git commit: ".GIT_COMMIT."\r\n";
 		$dump .= "uname -a: ".php_uname("a")."\r\n";
 		$dump .= "PHP Version: " .phpversion()."\r\n";
 		$dump .= "Zend version: ".zend_version()."\r\n";
-		$dump .= "OS : " .PHP_OS.", ".Utils\Utils::getOS()."\r\n";
+		$dump .= "OS : " .PHP_OS.", ".Utils::getOS()."\r\n";
 		$dump .= "Debug Info: ".var_export($this->debugInfo(false), true)."\r\n\r\n\r\n";
 		global $arguments;
 		$dump .= "Parameters: ".var_export($arguments, true)."\r\n\r\n\r\n";
@@ -484,17 +494,17 @@ class Server{
 		//return $ip . ":" . $port;
 	}
 
-	public function packetHandler(Network\Packet $packet){
+	public function packetHandler(Packet $packet){
 		$data =& $packet;
 		$CID = Server::clientID($packet->ip, $packet->port);
 		if(isset(Player::$list[$CID])){
 			Player::$list[$CID]->handlePacket($packet);
 		}else{
 			switch($packet->pid()){
-				case Network\RakNet\Info::UNCONNECTED_PING:
-				case Network\RakNet\Info::UNCONNECTED_PING_OPEN_CONNECTIONS:
+				case RakNetInfo::UNCONNECTED_PING:
+				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
 					if($this->invisible === true){
-						$pk = new Network\RakNet\Packet(Network\RakNet\Info::UNCONNECTED_PONG);
+						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
 						$pk->pingID = $packet->pingID;
 						$pk->serverID = $this->serverID;
 						$pk->serverType = $this->serverType;
@@ -512,7 +522,7 @@ class Server{
 					}
 					$txt = substr($this->description, $this->custom["times_".$CID], $ln);
 					$txt .= substr($this->description, 0, $ln - strlen($txt));
-					$pk = new Network\RakNet\Packet(Network\RakNet\Info::UNCONNECTED_PONG);
+					$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
 					$pk->pingID = $packet->pingID;
 					$pk->serverID = $this->serverID;
 					$pk->serverType = $this->serverType . $this->name . " [".count(Player::$list)."/".$this->maxClients."] ".$txt;
@@ -521,16 +531,16 @@ class Server{
 					$this->send($pk);
 					$this->custom["times_".$CID] = ($this->custom["times_".$CID] + 1) % strlen($this->description);
 					break;
-				case Network\RakNet\Info::OPEN_CONNECTION_REQUEST_1:
-					if($packet->structure !== Network\RakNet\Info::STRUCTURE){
+				case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
+					if($packet->structure !== RakNetInfo::STRUCTURE){
 						console("[DEBUG] Incorrect structure #".$packet->structure." from ".$packet->ip.":".$packet->port, true, true, 2);
-						$pk = new Network\RakNet\Packet(Network\RakNet\Info::INCOMPATIBLE_PROTOCOL_VERSION);
+						$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
 						$pk->serverID = $this->serverID;
 						$pk->ip = $packet->ip;
 						$pk->port = $packet->port;
 						$this->send($pk);
 					}else{
-						$pk = new Network\RakNet\Packet(Network\RakNet\Info::OPEN_CONNECTION_REPLY_1);
+						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
 						$pk->serverID = $this->serverID;
 						$pk->mtuSize = strlen($packet->buffer);
 						$pk->ip = $packet->ip;
@@ -538,13 +548,13 @@ class Server{
 						$this->send($pk);
 					}
 					break;
-				case Network\RakNet\Info::OPEN_CONNECTION_REQUEST_2:
+				case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
 					if($this->invisible === true){
 						break;
 					}
 					
 					new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
-					$pk = new Network\RakNet\Packet(Network\RakNet\Info::OPEN_CONNECTION_REPLY_2);
+					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
 					$pk->serverID = $this->serverID;
 					$pk->serverPort = $this->port;
 					$pk->mtuSize = $packet->mtuSize;
@@ -556,7 +566,7 @@ class Server{
 		}
 	}
 
-	public function send(Network\Packet $packet){
+	public function send(Packet $packet){
 		return $this->interface->writePacket($packet);
 	}
 
@@ -564,7 +574,7 @@ class Server{
 		$lastLoop = 0;
 		while($this->stop === false){
 			$packet = $this->interface->readPacket();
-			if($packet instanceof Network\Packet){
+			if($packet instanceof Packet){
 				$this->packetHandler($packet);
 				$lastLoop = 0;
 			}

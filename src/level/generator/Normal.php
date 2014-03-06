@@ -21,6 +21,23 @@
 
 namespace PocketMine\Level\Generator;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Level\Generator\Noise\Simplex as Simplex;
+use PocketMine\Level\Generator\Populator\Ore as Ore;
+use PocketMine\Level\Generator\Object\OreType as OreType;
+use PocketMine\Block\CoalOre as CoalOre;
+use PocketMine\Block\IronOre as IronOre;
+use PocketMine\Block\RedstoneOre as RedstoneOre;
+use PocketMine\Block\LapisOre as LapisOre;
+use PocketMine\Block\GoldOre as GoldOre;
+use PocketMine\Block\DiamondOre as DiamondOre;
+use PocketMine\Block\Dirt as Dirt;
+use PocketMine\Block\Gravel as Gravel;
+use PocketMine\Level\Generator\Populator\Tree as Tree;
+use PocketMine\Level\Generator\Populator\TallGrass as TallGrass;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Level\Generator\Generator as Generator;
 
 class Normal extends Generator{
 
@@ -46,35 +63,35 @@ class Normal extends Generator{
 		return array();
 	}
 	
-	public function init(Level\Level $level, Utils\Random $random){
+	public function init(Level $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());	
-		$this->noiseHills = new Noise\Simplex($this->random, 3);
-		$this->noisePatches = new Noise\Simplex($this->random, 2);
-		$this->noisePatchesSmall = new Noise\Simplex($this->random, 2);
-		$this->noiseBase = new Noise\Simplex($this->random, 16);
+		$this->noiseHills = new Simplex($this->random, 3);
+		$this->noisePatches = new Simplex($this->random, 2);
+		$this->noisePatchesSmall = new Simplex($this->random, 2);
+		$this->noiseBase = new Simplex($this->random, 16);
 
 
-		$ores = new Populator\Ore();
+		$ores = new Ore();
 		$ores->setOreTypes(array(
-			new Object\OreType(new Block\CoalOre(), 20, 16, 0, 128),
-			new Object\OreType(New Block\IronOre(), 20, 8, 0, 64),
-			new Object\OreType(new Block\RedstoneOre(), 8, 7, 0, 16),
-			new Object\OreType(new Block\LapisOre(), 1, 6, 0, 32),
-			new Object\OreType(new Block\GoldOre(), 2, 8, 0, 32),
-			new Object\OreType(new Block\DiamondOre(), 1, 7, 0, 16),
-			new Object\OreType(new Block\Dirt(), 20, 32, 0, 128),
-			new Object\OreType(new Block\Gravel(), 10, 16, 0, 128),
+			new OreType(new CoalOre(), 20, 16, 0, 128),
+			new OreType(New IronOre(), 20, 8, 0, 64),
+			new OreType(new RedstoneOre(), 8, 7, 0, 16),
+			new OreType(new LapisOre(), 1, 6, 0, 32),
+			new OreType(new GoldOre(), 2, 8, 0, 32),
+			new OreType(new DiamondOre(), 1, 7, 0, 16),
+			new OreType(new Dirt(), 20, 32, 0, 128),
+			new OreType(new Gravel(), 10, 16, 0, 128),
 		));
 		$this->populators[] = $ores;
 		
-		$trees = new Populator\Tree();
+		$trees = new Tree();
 		$trees->setBaseAmount(3);
 		$trees->setRandomAmount(0);
 		$this->populators[] = $trees;
 		
-		$tallGrass = new Populator\TallGrass();
+		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(5);
 		$tallGrass->setRandomAmount(0);
 		$this->populators[] = $tallGrass;		
@@ -167,7 +184,7 @@ class Normal extends Generator{
 	}
 	
 	public function getSpawn(){
-		return $this->level->getSafeSpawn(new Math\Vector3(127.5, 128, 127.5));
+		return $this->level->getSafeSpawn(new Vector3(127.5, 128, 127.5));
 	}
 
 }

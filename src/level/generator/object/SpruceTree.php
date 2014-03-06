@@ -21,6 +21,12 @@
 
 namespace PocketMine\Level\Generator\Object;
 use PocketMine;
+use PocketMine\Level\Level as Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Utils\Random as Random;
+use PocketMine\Block\Dirt as Dirt;
+use PocketMine\Block\Leaves as Leaves;
+use PocketMine\Block\Wood as Wood;
 
 class SpruceTree extends Tree{
 	var $type = 1;
@@ -28,7 +34,7 @@ class SpruceTree extends Tree{
 	private $leavesBottomY = -1;
 	private $leavesMaxRadius = -1;
 
-	public function canPlaceObject(Level\Level $level, Math\Vector3 $pos, Utils\Random $random){
+	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
 		$this->findRandomLeavesSize($random);
 		$checkRadius = 0;
 		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy) {
@@ -46,23 +52,23 @@ class SpruceTree extends Tree{
 		return true;
 	}
 
-	private function findRandomLeavesSize(Utils\Random $random){
+	private function findRandomLeavesSize(Random $random){
 		$this->totalHeight += $random->nextRange(-1, 2);
 		$this->leavesBottomY = (int) ($this->totalHeight - $random->nextRange(1, 2) - 3);
 		$this->leavesMaxRadius = 1 + $random->nextRange(0, 1);
 	}
 
-	public function placeObject(Level\Level $level, Math\Vector3 $pos, Utils\Random $random){
+	public function placeObject(Level $level, Vector3 $pos, Random $random){
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1) {
 			$this->findRandomLeavesSize($random);
 		}
-		$level->setBlockRaw(new Math\Vector3($pos->x, $pos->y - 1, $pos->z), new Block\Dirt());
+		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new Dirt());
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
 			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx) {
 				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz) {
 					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0) {
-						$level->setBlockRaw(new Math\Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new Block\Leaves($this->type));
+						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new Leaves($this->type));
 					}
 				}
 			}
@@ -73,7 +79,7 @@ class SpruceTree extends Tree{
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlockRaw(new Math\Vector3($pos->x, $pos->y + $yy, $pos->z), new Block\Wood($this->type));
+			$level->setBlockRaw(new Vector3($pos->x, $pos->y + $yy, $pos->z), new Wood($this->type));
 		}
 	}
 

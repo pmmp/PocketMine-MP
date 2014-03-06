@@ -21,6 +21,8 @@
 
 namespace PocketMine\Network\Protocol;
 use PocketMine;
+use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Utils\Utils as Utils;
 
 class AddMobPacket extends DataPacket{
 	public $eid;
@@ -49,7 +51,7 @@ class AddMobPacket extends DataPacket{
 		$this->putFloat($this->z);
 		$this->putByte($this->yaw);
 		$this->putByte($this->pitch);
-		$this->put(Utils\Utils::writeMetadata($this->metadata));
+		$this->put(Utils::writeMetadata($this->metadata));
 	}
 
 }
