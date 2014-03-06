@@ -19,34 +19,23 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace PocketMine\Entity;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
 
-class RedstoneOre extends Solid{
-	public function __construct(){
-		parent::__construct(self::REDSTONE_ORE, 0, "Redstone Ore");
-		$this->hardness = 15;
-	}
+class Villager extends Creature implements NPC, Ageable{
+	const FARMER = 0;
+	const LIBRARIAN = 1;
+	const PRIEST = 2;
+	const BLACKSMITH = 3;
+	const BUTCHER = 4;
 
-	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL or $type === BLOCK_UPDATE_TOUCH){
-			$this->level->setBlock($this, Block::get(GLOWING_REDSTONE_ORE, $this->meta), false, false, true);
+	/**
+	 * Sets the villager profession
+	 *
+	 * @param $profession
+	 */
+	public function setProfession($profession){
 
-			return BLOCK_UPDATE_WEAK;
-		}
-
-		return false;
-	}
-
-	public function getDrops(Item $item, PocketMine\Player $player){
-		if($item->isPickaxe() >= 2){
-			return array(
-				array(Redstone\REDSTONE_DUST, 0, mt_rand(4, 5)),
-			);
-		} else{
-			return array();
-		}
 	}
 }

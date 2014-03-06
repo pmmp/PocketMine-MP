@@ -23,36 +23,75 @@ namespace PocketMine\Utils;
 
 use PocketMine;
 
-//Unsecure, not used for "Real Randomness"
+/**
+ * Class Random
+ *
+ * Unsecure Random Number Generator, used for fast seeded values
+ *
+ * @package PocketMine\Utils
+ */
 class Random{
 	private $z, $w;
 
+	/**
+	 * @param int|bool $seed Integer to be used as seed. If false, generates a Random one
+	 */
 	public function __construct($seed = false){
 		$this->setSeed($seed);
 	}
 
+	/**
+	 * @param int|bool $seed Integer to be used as seed. If false, generates a Random one
+	 */
 	public function setSeed($seed = false){
 		$seed = $seed !== false ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->z = $seed ^ 0xdeadbeef;
 		$this->w = $seed ^ 0xc0de1337;
 	}
 
+	/**
+	 * Returns an 31-bit integer (not signed)
+	 *
+	 * @return int
+	 */
 	public function nextInt(){
 		return Utils::readInt($this->nextBytes(4)) & 0x7FFFFFFF;
 	}
 
+	/**
+	 * Returns a 32-bit integer (signed)
+	 *
+	 * @return int
+	 */
 	public function nextSignedInt(){
 		return Utils::readInt($this->nextBytes(4));
 	}
 
+	/**
+	 * Returns a float between 0.0 and 1.0 (inclusive)
+	 *
+	 * @return float
+	 */
 	public function nextFloat(){
 		return $this->nextInt() / 0x7FFFFFFF;
 	}
 
+	/**
+	 * Returns a float between -1.0 and 1.0 (inclusive)
+	 *
+	 * @return float
+	 */
 	public function nextSignedFloat(){
 		return $this->nextSignedInt() / 0x7FFFFFFF;
 	}
 
+	/**
+	 * Returns $byteCount random bytes
+	 *
+	 * @param $byteCount
+	 *
+	 * @return string
+	 */
 	public function nextBytes($byteCount){
 		$bytes = "";
 		while(strlen($bytes) < $byteCount){
@@ -64,10 +103,23 @@ class Random{
 		return substr($bytes, 0, $byteCount);
 	}
 
+	/**
+	 * Returns a random boolean
+	 *
+	 * @return bool
+	 */
 	public function nextBoolean(){
 		return ($this->nextSignedInt() & 0x01) === 0;
 	}
 
+	/**
+	 * Returns a random integer between $start and $end
+	 *
+	 * @param int $start default 0
+	 * @param int $end default PHP_INT_MAX
+	 *
+	 * @return int
+	 */
 	public function nextRange($start = 0, $end = PHP_INT_MAX){
 		return $start + ($this->nextInt() % ($end + 1 - $start));
 	}

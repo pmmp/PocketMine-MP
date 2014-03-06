@@ -178,7 +178,7 @@ class ServerAPI{
 			console("[INFO] Checking for new server version");
 			console("[INFO] Last check: " . TextFormat::AQUA . date("Y-m-d H:i:s", $this->getProperty("last-update")) . "\x1b[0m");
 			if($this->server->version->isDev()){
-				$info = json_decode(Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
+				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
 				if($info === false or !isset($info[0])){
 					console("[ERROR] Github API error");
 				} else{
@@ -195,7 +195,7 @@ class ServerAPI{
 					}
 				}
 			} else{
-				$info = json_decode(Utils::curl_get("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
+				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
 				if($info === false or !isset($info[0])){
 					console("[ERROR] Github API error");
 				} else{

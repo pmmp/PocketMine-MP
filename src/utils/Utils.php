@@ -27,6 +27,12 @@ namespace PocketMine\Utils;
 use PocketMine;
 use PocketMine\Item\Item as Item;
 
+/**
+ * Class Utils
+ * Big collection of functions
+ *
+ * @package PocketMine\Utils
+ */
 class Utils{
 	const BIG_ENDIAN = 0x00;
 	const LITTLE_ENDIAN = 0x01;
@@ -35,14 +41,32 @@ class Utils{
 	public static $online = true;
 	public static $ip = false;
 
+	/**
+	 * Generates an unique identifier to a callable
+	 *
+	 * @param callable $variable
+	 *
+	 * @return string
+	 */
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
-			return sha1(strtolower(get_class($variable[0])) . "::" . strtolower($variable[1]));
+			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
 		} else{
 			return sha1(strtolower($variable));
 		}
 	}
 
+	/**
+	 * Gets this machine / server instance unique ID
+	 * Returns a hash, the first 32 characters (or 16 if raw)
+	 * will be an identifier that won't change frequently.
+	 * The rest of the hash will change depending on other factors.
+	 *
+	 * @param bool   $raw default false, if true, returns the raw identifier, not hexadecimal
+	 * @param string $extra optional, additional data to identify the machine
+	 *
+	 * @return string
+	 */
 	public static function getUniqueID($raw = false, $extra = ""){
 		$machine = php_uname("a");
 		$machine .= file_exists("/proc/cpuinfo") ? file_get_contents("/proc/cpuinfo") : "";
@@ -71,25 +95,33 @@ class Utils{
 		return hash("md5", $machine, $raw) . hash("sha512", $data, $raw);
 	}
 
+	/**
+	 * Gets the External IP using an external service, it is cached
+	 *
+	 * @param bool $force default false, force IP check even when cached
+	 *
+	 * @return string
+	 */
+
 	public static function getIP($force = false){
 		if(Utils::$online === false){
 			return false;
 		} elseif(Utils::$ip !== false and $force !== true){
 			return Utils::$ip;
 		}
-		$ip = trim(strip_tags(Utils::curl_get("http://checkip.dyndns.org/")));
+		$ip = trim(strip_tags(Utils::getURL("http://checkip.dyndns.org/")));
 		if(preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 			Utils::$ip = $matches[1];
 		} else{
-			$ip = Utils::curl_get("http://www.checkip.org/");
+			$ip = Utils::getURL("http://www.checkip.org/");
 			if(preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
 				Utils::$ip = $matches[1];
 			} else{
-				$ip = Utils::curl_get("http://checkmyip.org/");
+				$ip = Utils::getURL("http://checkmyip.org/");
 				if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 					Utils::$ip = $matches[1];
 				} else{
-					$ip = trim(Utils::curl_get("http://ifconfig.me/ip"));
+					$ip = trim(Utils::getURL("http://ifconfig.me/ip"));
 					if($ip != ""){
 						Utils::$ip = $ip;
 					} else{
@@ -103,6 +135,18 @@ class Utils{
 
 	}
 
+	/**
+	 * Returns the current Operating System
+	 * Windows => win
+	 * MacOS => mac
+	 * iOS => ios
+	 * Android => android
+	 * Linux => Linux
+	 * BSD => bsd
+	 * Other => other
+	 *
+	 * @return string
+	 */
 	public static function getOS(){
 		$uname = php_uname("s");
 		if(stripos($uname, "Darwin") !== false){
@@ -126,6 +170,13 @@ class Utils{
 		}
 	}
 
+	/**
+	 * Returns a prettified hexdump
+	 *
+	 * @param string $bin
+	 *
+	 * @return string
+	 */
 	public static function hexdump($bin){
 		$output = "";
 		$bin = str_split($bin, 16);
@@ -138,6 +189,14 @@ class Utils{
 		return $output;
 	}
 
+
+	/**
+	 * Returns a string that can be printed, replaces non-printable characters
+	 *
+	 * @param $str
+	 *
+	 * @return string
+	 */
 	public static function printable($str){
 		if(!is_string($str)){
 			return gettype($str);
@@ -146,20 +205,37 @@ class Utils{
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
 
+	/**
+	 * Reads a 3-byte big-endian number
+	 *
+	 * @param $str
+	 *
+	 * @return mixed
+	 */
 	public static function readTriad($str){
 		list(, $unpacked) = @unpack("N", "\x00" . $str);
 
 		return $unpacked;
 	}
 
+	/**
+	 * Writes a 3-byte big-endian number
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	public static function writeTriad($value){
 		return substr(pack("N", $value), 1);
 	}
 
-	public static function getRandomUpdateTicks(){
-		return -log(lcg_value()) * 1365.4; //Poisson distribution (1/(68.27 * 20))
-	}
-
+	/**
+	 * Writes a coded metadata string
+	 * TODO: Replace and move this to entity
+	 *
+	 * @param $data
+	 *
+	 * @return string
+	 */
 	public static function writeMetadata($data){
 		$m = "";
 		foreach($data as $bottom => $d){
@@ -198,9 +274,24 @@ class Utils{
 		return $m;
 	}
 
+	/**
+	 * Writes a Item to binary (short id, byte Count, short Damage)
+	 *
+	 * @param Item $item
+	 *
+	 * @return string
+	 */
 	public static function writeSlot(Item $item){
 		return Utils::writeShort($item->getID()) . chr($item->getCount()) . Utils::writeShort($item->getMetadata());
 	}
+
+	/**
+	 * Reads a binary Item, returns an Item object
+	 *
+	 * @param $ob
+	 *
+	 * @return Item
+	 */
 
 	public static function readSlot($ob){
 		$id = Utils::readShort($ob->get(2));
@@ -213,6 +304,15 @@ class Utils{
 		);
 	}
 
+	/**
+	 * Reads a metadata coded string
+	 * TODO: Change
+	 *
+	 * @param      $value
+	 * @param bool $types
+	 *
+	 * @return array
+	 */
 	public static function readMetadata($value, $types = false){
 		$offset = 0;
 		$m = array();
@@ -297,6 +397,19 @@ class Utils{
 		return $raw;
 	}
 
+	/**
+	 * This function tries to get all the entropy available in PHP, and distills it to get a good RNG.
+	 *
+	 *
+	 * @param int    $length default 16, Number of bytes to generate
+	 * @param bool   $secure default true, Generate secure distilled bytes, slower
+	 * @param bool   $raw default true, returns a binary string if true, or an hexadecimal one
+	 * @param string $startEntropy default null, adds more initial entropy
+	 * @param int    &$rounds Will be set to the number of rounds taken
+	 * @param int    &$drop Will be set to the amount of dropped bytes
+	 *
+	 * @return string
+	 */
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
 		static $lastRandom = "";
 		$output = b"";
@@ -394,14 +507,7 @@ class Utils{
 		return $raw === false ? bin2hex($output) : $output;
 	}
 
-	public static function round($number){
-		return round($number, 0, PHP_ROUND_HALF_DOWN);
-	}
-
-	public static function distance($pos1, $pos2){
-		return sqrt(pow($pos1["x"] - $pos2["x"], 2) + pow($pos1["y"] - $pos2["y"], 2) + pow($pos1["z"] - $pos2["z"], 2));
-	}
-
+	/*
 	public static function angle3D($pos1, $pos2){
 		$X = $pos1["x"] - $pos2["x"];
 		$Z = $pos1["z"] - $pos2["z"];
@@ -411,9 +517,17 @@ class Utils{
 		$vAngle = rad2deg(-atan2($Y, $dXZ));
 
 		return array("yaw" => $hAngle, "pitch" => $vAngle);
-	}
+	}*/
 
-	public static function curl_get($page, $timeout = 10){
+	/**
+	 * GETs an URL using cURL
+	 *
+	 * @param     $page
+	 * @param int $timeout default 10
+	 *
+	 * @return bool|mixed
+	 */
+	public static function getURL($page, $timeout = 10){
 		if(Utils::$online === false){
 			return false;
 		}
@@ -434,7 +548,15 @@ class Utils{
 		return $ret;
 	}
 
-	public static function curl_post($page, $args, $timeout = 10){
+	/**
+	 * POSTs data to an URL
+	 * @param     $page
+	 * @param array|string $args
+	 * @param int $timeout
+	 *
+	 * @return bool|mixed
+	 */
+	public static function postURL($page, $args, $timeout = 10){
 		if(Utils::$online === false){
 			return false;
 		}
@@ -457,18 +579,24 @@ class Utils{
 		return $ret;
 	}
 
-	public static function strToHex($str){
-		return bin2hex($str);
-	}
-
-	public static function hexToStr($hex){
-		return hex2bin($hex);
-	}
-
+	/**
+	 * Reads a byte boolean
+	 *
+	 * @param $b
+	 *
+	 * @return bool
+	 */
 	public static function readBool($b){
 		return Utils::readByte($b, false) === 0 ? false : true;
 	}
 
+	/**
+	 * Writes a byte boolean
+	 *
+	 * @param $b
+	 *
+	 * @return bool|string
+	 */
 	public static function writeBool($b){
 		return Utils::writeByte($b === true ? 1 : 0);
 	}

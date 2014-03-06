@@ -23,6 +23,13 @@ namespace PocketMine\Utils;
 
 use PocketMine;
 
+/**
+ * Class TextFormat
+ *
+ * Class used to handle Minecraft chat format, and convert it to other formats like ANSI or HTML
+ *
+ * @package PocketMine\Utils
+ */
 class TextFormat{
 	const BLACK = "§0";
 	const DARK_BLUE = "§1";
@@ -48,14 +55,35 @@ class TextFormat{
 	const ITALIC = "§o";
 	const RESET = "§r";
 
+	/**
+	 * Splits the string by Format tokens
+	 *
+	 * @param string $string
+	 *
+	 * @return array
+	 */
 	public static function tokenize($string){
 		return preg_split("/(§[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
 
+	/**
+	 * Cleans the string from Minecraft codes and ANSI Escape Codes
+	 *
+	 * @param string $string
+	 *
+	 * @return mixed
+	 */
 	public static function clean($string){
 		return preg_replace(array("/§[0123456789abcdefklmnor]/", "/\\x1b*/"), "", $string);
 	}
 
+	/**
+	 * Returns an HTML-formatted string with colors/markup
+	 *
+	 * @param string|array $string
+	 *
+	 * @return string
+	 */
 	public static function toHTML($string){
 		if(!is_array($string)){
 			$string = self::tokenize($string);
@@ -165,6 +193,13 @@ class TextFormat{
 		return $newString;
 	}
 
+	/**
+	 * Returns a string with colorized ANSI Escape codes
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
 	public static function toANSI($string){
 		if(!is_array($string)){
 			$string = self::tokenize($string);

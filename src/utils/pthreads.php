@@ -80,7 +80,7 @@ class AsyncMultipleQueue extends Thread{
 						$url = $this->get(\PocketMine\Utils\Utils::readShort($this->get(2), false));
 						$timeout = \PocketMine\Utils\Utils::readShort($this->get(2));
 
-						$res = (string) \PocketMine\Utils\Utils::curl_get($url, $timeout);
+						$res = (string) \PocketMine\Utils\Utils::getURL($url, $timeout);
 						$this->lock();
 						$this->output .= \PocketMine\Utils\Utils::writeInt($rID) . \PocketMine\Utils\Utils::writeShort(ASYNC_CURL_GET) . \PocketMine\Utils\Utils::writeInt(strlen($res)) . $res;
 						$this->unlock();
@@ -94,7 +94,7 @@ class AsyncMultipleQueue extends Thread{
 							$key = $this->get(\PocketMine\Utils\Utils::readShort($this->get(2), false));
 							$d[$key] = $this->get(\PocketMine\Utils\Utils::readInt($this->get(4)));
 						}
-						$res = (string) \PocketMine\Utils\Utils::curl_post($url, $d, $timeout);
+						$res = (string) \PocketMine\Utils\Utils::postURL($url, $d, $timeout);
 						$this->lock();
 						$this->output .= \PocketMine\Utils\Utils::writeInt($rID) . \PocketMine\Utils\Utils::writeShort(ASYNC_CURL_POST) . \PocketMine\Utils\Utils::writeInt(strlen($res)) . $res;
 						$this->unlock();

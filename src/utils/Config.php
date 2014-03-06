@@ -75,16 +75,19 @@ class Config{
 	);
 
 	/**
-	 * @param string       $file
-	 * @param int          $type
-	 * @param array        $default
-	 * @param null|boolean $correct
+	 * @param       $file Path of the file to be loaded
+	 * @param int   $type Config type to load, -1 by default (detect)
+	 * @param array $default Array with the default values, will be set if not existent
+	 * @param null  &$correct Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct($file, $type = Config::DETECT, $default = array(), &$correct = null){
 		$this->load($file, $type, $default);
 		$correct = $this->correct;
 	}
 
+	/**
+	 * Removes all the changes in memory and loads the file again
+	 */
 	public function reload(){
 		unset($this->config);
 		unset($this->correct);
@@ -92,16 +95,21 @@ class Config{
 		$this->load($this->file);
 	}
 
-	public function fixYAMLIndexes($str){
+	/**
+	 * @param $str
+	 *
+	 * @return mixed
+	 */
+	public static function fixYAMLIndexes($str){
 		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[^\:]*)\:#m", "$1\"$2\":", $str);
 	}
 
 	/**
-	 * @param string $file
-	 * @param int    $type
-	 * @param array  $default
+	 * @param       $file
+	 * @param int   $type
+	 * @param array $default
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function load($file, $type = Config::DETECT, $default = array()){
 		$this->correct = true;
@@ -134,7 +142,7 @@ class Config{
 						$this->config = @json_decode($content, true);
 						break;
 					case Config::YAML:
-						$content = $this->fixYAMLIndexes($content);
+						$content = self::fixYAMLIndexes($content);
 						$this->config = yaml_parse($content);
 						break;
 					case Config::SERIALIZED:
@@ -249,8 +257,8 @@ class Config{
 	}
 
 	/**
-	 * @param      $k
-	 * @param bool $v
+	 * @param      $k key to be set
+	 * @param bool $v value to set key
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
