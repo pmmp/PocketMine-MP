@@ -30,8 +30,8 @@ use PocketMine\Utils\Utils as Utils;
  *
  */
 class PocketChunkParser{
-	private $location
-	private $raw = b""
+	private $location;
+	private $raw = b"";
 	private $file;
 	public $sectorLength = 4096; //16 * 16 * 16
 	public $chunkLength = 86016; //21 * $sectorLength
