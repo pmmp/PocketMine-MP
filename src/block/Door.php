@@ -19,7 +19,7 @@
  *
 */
 
-use PocketMine\Block;
+namespace PocketMine\Block;
 use PocketMine;
 
 
