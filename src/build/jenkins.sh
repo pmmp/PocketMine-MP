@@ -1,7 +1,7 @@
 #!/bin/bash -x
 export PATH="/opt/arm-2013.05/bin:/opt/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:/opt/arm-unknown-linux-uclibcgnueabi/bin:$PATH"
 export THREADS=2
-PHP_VERSION="5.5.9"
+PHP_VERSION="5.5.10"
 
 #Needed to use aliases
 shopt -s expand_aliases
