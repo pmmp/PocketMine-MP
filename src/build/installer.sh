@@ -74,7 +74,7 @@ rm -f -r PocketMine-MP-$PMMP_VERSION/
 rm -f ./start.cmd
 chmod +x ./start.sh
 chmod +x ./src/build/compile.sh
-if [ $update == on ]; then
+if [ "$update" == "on" ]; then
 	echo "[3/3] Skipping PHP recompilation due to user request"
 else
 	echo -n "[3/3] Obtaining PHP:"
@@ -84,7 +84,7 @@ else
 		UNAME_M=$(uname -m)
 		IS_IOS=$(expr match $UNAME_M 'iP[a-zA-Z0-9,]*' 2> /dev/null)
 		set -e
-		if [[ $IS_IOS -gt 0 ]]; then
+		if [[ "$IS_IOS" -gt 0 ]]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] iOS PHP build available, downloading $IOS_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$IOS_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
@@ -92,6 +92,7 @@ else
 			echo -n " checking..."
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
+				TIMEZONE=$(date +%Z)
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
@@ -106,16 +107,17 @@ else
 			rm -r -f bin/ >> /dev/null 2>&1
 			if [ `getconf LONG_BIT` == "64" ]; then
 				echo -n "[3/3] MacOS 64-bit PHP build available, downloading $MAC_64_BUILD.tar.gz..."
-				MAC_BUILD=$MAC_64_BUILD
+				MAC_BUILD="$MAC_64_BUILD"
 			else
 				echo -n "[3/3] MacOS 32-bit PHP build available, downloading $MAC_32_BUILD.tar.gz..."
-				MAC_BUILD=$MAC_32_BUILD
+				MAC_BUILD="$MAC_32_BUILD"
 			fi
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$MAC_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
 			echo -n " checking..."
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
+				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
 				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
@@ -142,7 +144,7 @@ else
 		IS_RPI=$?
 		grep -q ODROID /proc/cpuinfo > /dev/null 2>&1
 		IS_ODROID=$?
-		if [ $IS_RPI -eq 0 ] && [ "$forcecompile" == "off" ]; then
+		if [ "$IS_RPI" -eq 0 ] && [ "$forcecompile" == "off" ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] Raspberry Pi PHP build available, downloading $RPI_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$RPI_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
@@ -150,6 +152,7 @@ else
 			echo -n " checking..."
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
+				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
 				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
@@ -170,7 +173,7 @@ else
 			else
 				echo " invalid build detected"
 			fi
-		elif [ $IS_ODROID -eq 0 ] && [ "$forcecompile" == "off" ]; then
+		elif [ "$IS_ODROID" -eq 0 ] && [ "$forcecompile" == "off" ]; then
 			rm -r -f bin/ >> /dev/null 2>&1
 			echo -n "[3/3] ODROID PHP build available, downloading $ODROID_BUILD.tar.gz..."
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$ODROID_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
@@ -202,10 +205,10 @@ else
 			rm -r -f bin/ >> /dev/null 2>&1
 			if [ `getconf LONG_BIT` = "64" ]; then
 				echo -n "[3/3] Linux 64-bit PHP build available, downloading $LINUX_64_BUILD.tar.gz..."
-				LINUX_BUILD=$LINUX_64_BUILD
+				LINUX_BUILD="$LINUX_64_BUILD"
 			else
 				echo -n "[3/3] Linux 32-bit PHP build available, downloading $LINUX_32_BUILD.tar.gz..."
-				LINUX_BUILD=$LINUX_32_BUILD
+				LINUX_BUILD="$LINUX_32_BUILD"
 			fi
 			download_file "http://sourceforge.net/projects/pocketmine/files/builds/$LINUX_BUILD.tar.gz" | tar -zx > /dev/null 2>&1
 			chmod +x ./bin/php5/bin/*
