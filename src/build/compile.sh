@@ -51,11 +51,11 @@ while getopts "t:oj:cxf::" OPTION; do
 	case $OPTION in
 		t)
 			echo "[opt] Set target to $OPTARG"
-			COMPILE_TARGET=$OPTARG
+			COMPILE_TARGET="$OPTARG"
 			;;
 		j)
 			echo "[opt] Set make threads to $OPTARG"
-			THREADS=$OPTARG
+			THREADS="$OPTARG"
 			;;
 		o)
 			echo "[opt] Will compile OpenSSL"
@@ -476,10 +476,8 @@ echo -n " compiling..."
 if [ "$COMPILE_FOR_ANDROID" == "yes" ]; then
 	sed -i=".backup" 's/-export-dynamic/-all-static/g' Makefile
 fi
-if [ "$IS_CROSSCOMPILE" == "yes" ]; then
-	sed -i=".backup" 's/PHP_BINARIES. pharcmd$/PHP_BINARIES)/g' Makefile
-	sed -i=".backup" 's/install-programs install-pharcmd$/install-programs/g' Makefile
-fi
+sed -i=".backup" 's/PHP_BINARIES. pharcmd$/PHP_BINARIES)/g' Makefile
+sed -i=".backup" 's/install-programs install-pharcmd$/install-programs/g' Makefile
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
