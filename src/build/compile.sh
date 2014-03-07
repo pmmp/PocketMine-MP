@@ -152,7 +152,7 @@ elif [ "$COMPILE_TARGET" == "rpi" ]; then
 	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
 	OPENSSL_TARGET="linux-armv4"
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
-elif [ "$COMPILE_TARGET" == "mac" ]; then
+elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
 	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
 	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
