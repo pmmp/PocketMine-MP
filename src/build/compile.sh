@@ -76,12 +76,14 @@ while getopts "t:oj:cxf::" OPTION; do
 		f)
 			echo "[opt] Enabling abusive optimizations..."
 			DO_OPTIMIZE="yes"
-			FAST_MATH="-fno-math-errno -funsafe-math-optimizations -fno-trapping-math -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fcx-limited-range" #workaround SQLite3 fail
-			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $FAST_MATH -finline-functions -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funroll-loops -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -ftracer -ftree-loop-im -fprefetch-loop-arrays -ftree-parallelize-loops=4"
+			ffast_math="-fno-math-errno -funsafe-math-optimizations -fno-trapping-math -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fcx-limited-range" #workaround SQLite3 fail
+			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $ffast_math -fno-signed-zeros -finline-functions -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funroll-loops -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -ftracer -ftree-loop-im -fprefetch-loop-arrays -ftree-parallelize-loops=4 -fomit-frame-pointer"
 			if [ "$OPTARG" == "arm" ]; then
-				CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=vfp -fomit-frame-pointer"
-			else
-				CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
+				CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=vfp"
+			elif [ "$OPTARG" == "x86_64" ]; then
+				CFLAGS="$CFLAGS -mmx -msse -msse2 -msse3 -mfpmath=sse -free -msahf"
+			elif [ "$OPTARG" == "x86" ]; then
+				CFLAGS="$CFLAGS -mmx -msse -msse2 -mfpmath=sse -m128bit-long-double -malign-double"
 			fi
 			;;
 		\?)
@@ -137,13 +139,13 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=generic-armv6;
+		[ -z "$mtune" ] && mtune=arm1176jzf-s;
 		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
 		OPENSSL_TARGET="linux-armv4"
 		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
-		[ -z "$mtune" ] && mtune=generic-armv7-a;
+		[ -z "$mtune" ] && mtune=cortex-a8;
 		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
 		OPENSSL_TARGET="linux-armv4"
 		HAVE_MYSQLI="--without-mysqli"
