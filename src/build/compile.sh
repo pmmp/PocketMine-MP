@@ -295,10 +295,12 @@ if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" == "yes" ] && [ "$IS_CRO
 	$OPENSSL_TARGET \
 	--prefix="$DIR/bin/php5" \
 	--openssldir="$DIR/bin/php5" \
+	zlib \
+	zlib-dynamic \
 	--with-zlib-lib="$DIR/bin/php5/lib" \
 	--with-zlib-include="$DIR/bin/php5/include" \
-	zlib-dynamic \
 	shared \
+	no-ssl2 \
 	no-asm \
 	no-hw \
 	no-engines \
