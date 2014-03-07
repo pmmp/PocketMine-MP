@@ -94,6 +94,8 @@ while getopts "t:oj:cxf::" OPTION; do
 done
 
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
+	export PHP_VAR_NAME="php"
+	export php_var_name="php"
 	if [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
