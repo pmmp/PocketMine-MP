@@ -153,6 +153,9 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
+		if [ "$DO_OPTIMIZE" == "yes" ]; then
+			CFLAGS="$CFLAGS -mfpu=neon"
+		fi
 	else
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
 		exit 1
