@@ -430,7 +430,7 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	sed -i ".backup" 's/pthreads_working=no/pthreads_working=yes/' ./configure
-	export LIBS="-lpthread -ldl"
+	export LIBS="-lpthread -ldl -lresolv"
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
 RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION--prefix="$DIR/bin/php5" \
