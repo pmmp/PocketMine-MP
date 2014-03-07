@@ -58,12 +58,12 @@ class LevelImport{
 		}
 		
 		$pmf = new PMFLevel($this->path."level.pmf", array(
-			"name" => $level["LevelName"],
-			"seed" => $level["RandomSeed"],
-			"time" => $level["Time"],
-			"spawnX" => $level["SpawnX"],
-			"spawnY" => $level["SpawnY"],
-			"spawnZ" => $level["SpawnZ"],
+			"name" => $level->LevelName,
+			"seed" => $level->RandomSeed,
+			"time" => $level->Time,
+			"spawnX" => $level->SpawnX,
+			"spawnY" => $level->SpawnY,
+			"spawnZ" => $level->SpawnZ,
 			"height" => 8,
 			"generator" => "NormalGenerator",
 			"generatorSettings" => "",
@@ -84,6 +84,7 @@ class LevelImport{
 					6 => "",
 					7 => ""					
 				);
+
 				for($z = 0; $z < 16; ++$z){
 					for($x = 0; $x < 16; ++$x){
 						$block = $chunks->getChunkColumn($X, $Z, $x, $z, 0);
@@ -95,6 +96,8 @@ class LevelImport{
 						}
 					}
 				}
+
+				$pmf->initCleanChunk($X, $Z);
 				foreach($chunk as $Y => $data){
 					$pmf->setMiniChunk($X, $Z, $Y, $data);
 				}
@@ -103,6 +106,7 @@ class LevelImport{
 			}
 			console("[NOTICE] Importing level ".ceil(($Z + 1)/0.16)."%");
 		}
+		$pmf->saveData();
 		$chunks->map = null;
 		$chunks = null;
 		@unlink($this->path."level.dat");

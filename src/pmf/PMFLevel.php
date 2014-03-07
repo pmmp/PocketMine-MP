@@ -179,7 +179,7 @@ class PMFLevel extends PMF{
 	}
 	
 	private function getChunkPath($X, $Z){
-		return dirname($this->file)."/chunks/".(($X ^ $Z) & 0xff)."/".$Z.".".$X.".pmc";
+		return dirname($this->file)."/chunks/".(((int) $X ^ (int) $Z) & 0xff)."/".$Z.".".$X.".pmc";
 	}
 	
 	public function generateChunk($X, $Z){
