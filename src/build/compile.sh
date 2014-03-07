@@ -94,8 +94,6 @@ while getopts "t:oj:cxf::" OPTION; do
 done
 
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
-	export PHP_VAR_NAME="php"
-	export php_var_name="php"
 	if [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
@@ -431,7 +429,7 @@ rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
 rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
-	sed -i ".backup" 's/pthreads_working=no/pthreads_working=yes/' ./configure
+	sed -i=".backup" 's/pthreads_working=no/pthreads_working=yes/' ./configure
 	export LIBS="-lpthread -ldl -lresolv"
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
@@ -472,8 +470,12 @@ $HAVE_MYSQLI \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-if [ $COMPILE_FOR_ANDROID == "yes" ]; then
-	sed -i ".backup" 's/-export-dynamic/-all-static/g' Makefile
+if [ "$COMPILE_FOR_ANDROID" == "yes" ]; then
+	sed -i=".backup" 's/-export-dynamic/-all-static/g' Makefile
+fi
+if [ "$IS_CROSSCOMPILE" == "yes" ]; then
+	sed -i=".backup" 's/PHP_BINARIES. pharcmd$/PHP_BINARIES)/g' Makefile
+	sed -i=".backup" 's/install-programs install-pharcmd$/install-programs/g' Makefile
 fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
