@@ -3,7 +3,7 @@ PHP_VERSION="5.5.10"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
-OPENSSL_VERSION="0.9.8y"
+OPENSSL_VERSION="1.0.0l"
 CURL_VERSION="curl-7_35_0"
 LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="0.1.0"
@@ -140,14 +140,14 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
-		OPENSSL_TARGET="linux-armv4"
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -arch=armv6 -miphoneos-version-min=4.2"
+		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=cortex-a8;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
-		OPENSSL_TARGET="linux-armv4"
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -arch=armv7-a -miphoneos-version-min=4.2"
+		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	else
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
