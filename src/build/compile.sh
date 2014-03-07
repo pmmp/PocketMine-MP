@@ -140,13 +140,13 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -arch=armv6 -miphoneos-version-min=4.2"
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=cortex-a8;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -arch=armv7-a -miphoneos-version-min=4.2"
+		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	else
@@ -176,9 +176,9 @@ elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	OPENSSL_TARGET="darwin64-x86_64-cc"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$COMPILE_TARGET" == "ios" ]; then
-	[ -z "$march" ] && march=armv6;
+	[ -z "$march" ] && march=armv7-a;
 	[ -z "$mtune" ] && mtune=cortex-a8;
-	echo "[INFO] Compiling for iOS ARMv6"
+	echo "[INFO] Compiling for iOS ARMv7"
 	OPENSSL_TARGET="linux-armv4"
 elif [ -z "$CFLAGS" ]; then
 	if [ `getconf LONG_BIT` == "64" ]; then
@@ -289,7 +289,7 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" == "yes" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
+if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	#OpenSSL
 	WITH_SSL="--with-ssl=$DIR/bin/php5"
 	WITH_OPENSSL="--with-openssl=$DIR/bin/php5"
