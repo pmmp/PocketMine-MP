@@ -444,11 +444,11 @@ $HAVE_LIBEDIT \
 --disable-cgi \
 --disable-session \
 --disable-debug \
---disable-phar \
 --disable-pdo \
 --without-pear \
 --without-iconv \
 --without-pdo-sqlite \
+--enable-phar \
 --enable-ctype \
 --enable-sockets \
 --enable-shared=no \
