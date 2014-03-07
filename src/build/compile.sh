@@ -429,7 +429,7 @@ rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
 rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
-	sed -i 's/pthreads_working=no/pthreads_working=yes/' ./configure
+	sed -i ".backup" 's/pthreads_working=no/pthreads_working=yes/' ./configure
 	export LIBS="-lpthread -ldl"
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
@@ -471,7 +471,7 @@ $HAVE_MYSQLI \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 if [ $COMPILE_FOR_ANDROID == "yes" ]; then
-	sed -i 's/-export-dynamic/-all-static/g' Makefile
+	sed -i ".backup" 's/-export-dynamic/-all-static/g' Makefile
 fi
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
