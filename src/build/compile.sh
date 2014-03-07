@@ -47,7 +47,7 @@ COMPILE_CURL="default"
 COMPILE_LIBEDIT="no"
 IS_CROSSCOMPILE="no"
 DO_OPTIMIZE="no"
-while getopts "t:oj:cxf" OPTION; do
+while getopts "t:oj:cxf::" OPTION; do
 	case $OPTION in
 		t)
 			echo "[opt] Set target to $OPTARG"
@@ -77,7 +77,12 @@ while getopts "t:oj:cxf" OPTION; do
 			echo "[opt] Enabling abusive optimizations..."
 			DO_OPTIMIZE="yes"
 			FAST_MATH="-fno-math-errno -funsafe-math-optimizations -fno-trapping-math -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fcx-limited-range" #workaround SQLite3 fail
-			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $FAST_MATH -finline-functions -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funroll-loops -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -msse2 -ftracer -mfpmath=sse -ftree-loop-im -fprefetch-loop-arrays -ftree-parallelize-loops=4"
+			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $FAST_MATH -finline-functions -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funroll-loops -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -ftracer -ftree-loop-im -fprefetch-loop-arrays -ftree-parallelize-loops=4"
+			if [ "$OPTARG" == "arm" ]; then
+				CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=vfp -fomit-frame-pointer"
+			else
+				CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
+			fi
 			;;
 		\?)
 			echo "Invalid option: -$OPTION$OPTARG" >&2

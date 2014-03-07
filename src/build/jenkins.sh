@@ -21,11 +21,11 @@ rm -rf $WORKSPACE/compile.sh
 download_file "https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh" > $WORKSPACE/compile.sh
 chmod +x $WORKSPACE/compile.sh
 SCRIPT="$WORKSPACE/compile.sh"
-ARCHIVE=$WORKSPACE/archive
-COMPILEDIR=$WORKSPACE/compile
-rm -rf $ARCHIVE $COMPILEDIR
-mkdir -p $ARCHIVE
-mkdir -p $COMPILEDIR
+ARCHIVE="$WORKSPACE/archive"
+COMPILEDIR="$WORKSPACE/compile"
+rm -rf "$ARCHIVE" "$COMPILEDIR"
+mkdir -p "$ARCHIVE"
+mkdir -p "$COMPILEDIR"
 
 if [ "$COMPILE_LINUX_32BIT" = "true" ];
 then
@@ -106,7 +106,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/rpi
     cd $COMPILEDIR/rpi
     
-    $SCRIPT -t rpi -o -j 1 -c
+    $SCRIPT -t rpi -o -j 1 -c -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz bin/
     cp -r $COMPILEDIR/rpi/{install.log,PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz,install_data/*} $ARCHIVE/rpi/
@@ -120,7 +120,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/android-armv6
     cd $COMPILEDIR/crosscompile/android-armv6
     
-    $SCRIPT -t android-armv6 -o -j 1 -c -x
+    $SCRIPT -t android-armv6 -o -j 1 -c -x -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARMv6_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,PHP_${PHP_VERSION}_ARMv6_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv6/
@@ -134,7 +134,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/android-armv7
     cd $COMPILEDIR/crosscompile/android-armv7
     
-    $SCRIPT -t android-armv7 -o -j 1 -c -x
+    $SCRIPT -t android-armv7 -o -j 1 -c -x -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARMv7_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,PHP_${PHP_VERSION}_ARMv7_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv7/
@@ -190,8 +190,8 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/rpi
     cd $COMPILEDIR/crosscompile/rpi
     
-    $SCRIPT -t rpi -o -j 1 -c -x
-    
+    $SCRIPT -t rpi -o -j 1 -c -x -f arm
+
     tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/rpi/{install.log,PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz,install_data/*} $ARCHIVE/crosscompile/rpi/
 	if [ ! -f $COMPILEDIR/crosscompile/rpi/bin/php5/bin/php ]; then
