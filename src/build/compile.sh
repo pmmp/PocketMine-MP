@@ -316,7 +316,7 @@ if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" == "yes" ] && [ "$IS_CRO
 else
 	WITH_SSL="--with-ssl"
 	WITH_OPENSSL="--without-ssl"
-	if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+	if [ "$(uname -s)" == "Darwin" ] && [ "$COMPILE_TARGET" != "crosscompile" ]; then
 		WITH_SSL="--with-darwinssl"	
 	fi
 fi
@@ -483,7 +483,7 @@ TIMEZONE=$(date +%Z)
 echo "date.timezone=$TIMEZONE" > "$DIR/bin/php5/bin/php.ini"
 echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "asp_tags=0" >> "$DIR/bin/php5/bin/php.ini"
-if [ "$1" != "crosscompile" ]; then
+if [ "$IS_CROSSCOMPILE" != "crosscompile" ]; then
 	echo "zend_extension=opcache.so" >> "$DIR/bin/php5/bin/php.ini"
 	echo "opcache.enable=1" >> "$DIR/bin/php5/bin/php.ini"
 	echo "opcache.enable_cli=1" >> "$DIR/bin/php5/bin/php.ini"
