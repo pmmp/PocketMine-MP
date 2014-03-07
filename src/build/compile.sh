@@ -142,7 +142,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
 		TOOLCHAIN_PREFIX="arm-apple-darwin10"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=arm-apple-darwin10 -miphoneos-version-min=4.2"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
@@ -150,7 +150,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		[ -z "$mtune" ] && mtune=cortex-a8;
 		TOOLCHAIN_PREFIX="arm-apple-darwin10"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
-		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=arm-apple-darwin10 -miphoneos-version-min=4.2"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	else
@@ -496,6 +496,8 @@ TIMEZONE=$(date +%Z)
 echo "date.timezone=$TIMEZONE" > "$DIR/bin/php5/bin/php.ini"
 echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "asp_tags=0" >> "$DIR/bin/php5/bin/php.ini"
+echo "phar.readonly=0" >> "$DIR/bin/php5/bin/php.ini"
+echo "phar.require_hash=1" >> "$DIR/bin/php5/bin/php.ini"
 if [ "$IS_CROSSCOMPILE" != "crosscompile" ]; then
 	echo "zend_extension=opcache.so" >> "$DIR/bin/php5/bin/php.ini"
 	echo "opcache.enable=1" >> "$DIR/bin/php5/bin/php.ini"

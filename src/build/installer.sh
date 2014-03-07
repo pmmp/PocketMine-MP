@@ -95,6 +95,8 @@ else
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.readonly=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.require_hash=1" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -127,6 +129,8 @@ else
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.readonly=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.require_hash=1" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -159,6 +163,8 @@ else
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.readonly=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.require_hash=1" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -185,6 +191,8 @@ else
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.readonly=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.require_hash=1" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
@@ -217,6 +225,8 @@ else
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.readonly=0" >> "./bin/php5/bin/php.ini"
+				echo "phar.require_hash=1" >> "./bin/php5/bin/php.ini"
 				echo " done"
 				alldone=yes
 			else
