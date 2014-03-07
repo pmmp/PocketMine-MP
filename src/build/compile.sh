@@ -140,13 +140,17 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -miphoneos-version-min=4.2"
+		TOOLCHAIN_PREFIX="arm-apple-darwin10"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=arm-apple-darwin10 -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=cortex-a8;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10 -miphoneos-version-min=4.2"
+		TOOLCHAIN_PREFIX="arm-apple-darwin10"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=arm-apple-darwin10 -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
 		HAVE_MYSQLI="--without-mysqli"
 	else
