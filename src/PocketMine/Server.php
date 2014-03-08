@@ -47,7 +47,7 @@ class Server{
 	private function load(){
 		$this->version = new VersionString();
 		if(defined("DEBUG") and DEBUG >= 0){
-			@cli_set_process_title("PocketMine-MP " . MAJOR_VERSION);
+			@cli_set_process_title("PocketMine-MP " . \PocketMine\VERSION);
 		}
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));

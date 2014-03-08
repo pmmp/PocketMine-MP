@@ -41,7 +41,7 @@ namespace PocketMine{
 			}else{
 				$path = "";
 			}
-			$fPath = \PocketMine\PATH . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
+			$fPath = \PocketMine\PATH . "src" . DIRECTORY_SEPARATOR . "PocketMine" . DIRECTORY_SEPARATOR . $path . $className . ".php";
 			if(file_exists($fPath)){
 				require_once($fPath);
 			}
@@ -59,7 +59,7 @@ namespace PocketMine{
 		}
 	});
 
-	define("PocketMine\PATH", realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
+	define("PocketMine\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 
 	//Startup code. Do not look at it, it can harm you. Most of them are hacks to fix date-related bugs, or basic functions used after this
 
@@ -357,7 +357,7 @@ namespace PocketMine{
 
 	ini_set("opcache.mmap_base", bin2hex(Utils\Utils::getRandomBytes(8, false))); //Fix OPCache address errors
 
-	require_once(\PocketMine\PATH . "src/utils/pthreads.php");
+	require_once(\PocketMine\PATH . "src/pthreads.php");
 
 	if(!file_exists(\PocketMine\DATA . "server.properties") and !isset($opts["no-wizard"])){
 		$installer = new Wizard\Installer();
