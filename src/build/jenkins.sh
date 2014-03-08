@@ -1,7 +1,7 @@
 #!/bin/bash -x
 export PATH="/opt/arm-2013.05/bin:/opt/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:/opt/arm-unknown-linux-uclibcgnueabi/bin:$PATH"
 export THREADS=2
-PHP_VERSION="5.5.9"
+PHP_VERSION="5.5.10"
 
 #Needed to use aliases
 shopt -s expand_aliases
@@ -21,18 +21,18 @@ rm -rf $WORKSPACE/compile.sh
 download_file "https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh" > $WORKSPACE/compile.sh
 chmod +x $WORKSPACE/compile.sh
 SCRIPT="$WORKSPACE/compile.sh"
-ARCHIVE=$WORKSPACE/archive
-COMPILEDIR=$WORKSPACE/compile
-rm -rf $ARCHIVE $COMPILEDIR
-mkdir -p $ARCHIVE
-mkdir -p $COMPILEDIR
+ARCHIVE="$WORKSPACE/archive"
+COMPILEDIR="$WORKSPACE/compile"
+rm -rf "$ARCHIVE" "$COMPILEDIR"
+mkdir -p "$ARCHIVE"
+mkdir -p "$COMPILEDIR"
 
 if [ "$COMPILE_LINUX_32BIT" = "true" ];
 then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/32bit
     cd $COMPILEDIR/linux/32bit
     
-    OPENSSL_TARGET="linux-generic32" CFLAGS="-m32" march=i386 mtune=none $SCRIPT linux openssl
+    OPENSSL_TARGET="linux-generic32" CFLAGS="-m32" march=i686 mtune=pentium4 $SCRIPT -t linux -o -j 1 -c -f x86
     
     tar -czf PHP_${PHP_VERSION}_x86_Linux.tar.gz bin/
     cp -r $COMPILEDIR/linux/32bit/{install.log,PHP_${PHP_VERSION}_x86_Linux.tar.gz,install_data/*} $ARCHIVE/linux/32bit/
@@ -46,7 +46,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/64bit
     cd $COMPILEDIR/linux/64bit
     
-    OPENSSL_TARGET="linux-x86_64" CFLAGS="-m64" march=x86-64 mtune=none $SCRIPT linux openssl
+    OPENSSL_TARGET="linux-x86_64" CFLAGS="-m64" march=x86-64 mtune=nocona $SCRIPT -t linux -o -j 1 -c -f x86_64
     
     tar -czf PHP_${PHP_VERSION}_x86-64_Linux.tar.gz bin/
     cp -r $COMPILEDIR/linux/64bit/{install.log,PHP_${PHP_VERSION}_x86-64_Linux.tar.gz,install_data/*} $ARCHIVE/linux/64bit/
@@ -69,7 +69,7 @@ then
 	rm -rf libtool-2.4.2
 	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
 	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
-    $SCRIPT mac curl
+    $SCRIPT -t mac32 -o -j 1 -c -f x86
     
     tar -czf PHP_${PHP_VERSION}_x86_MacOS.tar.gz bin/
     cp -r $COMPILEDIR/mac32/{install.log,PHP_${PHP_VERSION}_x86_MacOS.tar.gz,install_data/*} $ARCHIVE/mac32/
@@ -92,7 +92,7 @@ then
 	rm -rf libtool-2.4.2
 	export LIBTOOL="$COMPILEDIR/mac/libtool/bin/libtool"
 	export LIBTOOLIZE="$COMPILEDIR/mac/libtool/bin/libtoolize"
-    $SCRIPT mac64 curl
+    $SCRIPT -t mac64 -o -j 1 -c -f x86_64
     
     tar -czf PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz bin/
     cp -r $COMPILEDIR/mac64/{install.log,PHP_${PHP_VERSION}_x86-64_MacOS.tar.gz,install_data/*} $ARCHIVE/mac64
@@ -106,7 +106,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/rpi
     cd $COMPILEDIR/rpi
     
-    $SCRIPT rpi
+    $SCRIPT -t rpi -o -j 1 -c -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz bin/
     cp -r $COMPILEDIR/rpi/{install.log,PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz,install_data/*} $ARCHIVE/rpi/
@@ -120,7 +120,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/android-armv6
     cd $COMPILEDIR/crosscompile/android-armv6
     
-    $SCRIPT crosscompile android-armv6
+    $SCRIPT -t android-armv6 -o -j 1 -c -x -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARMv6_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,PHP_${PHP_VERSION}_ARMv6_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv6/
@@ -134,7 +134,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/android-armv7
     cd $COMPILEDIR/crosscompile/android-armv7
     
-    $SCRIPT crosscompile android-armv7
+    $SCRIPT -t android-armv7 -o -j 1 -c -x -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARMv7_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,PHP_${PHP_VERSION}_ARMv7_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv7/
@@ -156,7 +156,7 @@ then
 	rm -rf libtool-2.4.2
 	export LIBTOOL="$COMPILEDIR/crosscompile/ios-armv6/libtool/bin/libtool"
 	export LIBTOOLIZE="$COMPILEDIR/crosscompile/ios-armv6/libtool/bin/libtoolize"
-    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:$PATH" $SCRIPT crosscompile ios-armv6
+    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:$PATH" $SCRIPT -t ios-armv6 -o -j 1 -c -x
     
     cp -r $COMPILEDIR/crosscompile/ios-armv6/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv6/
 	if [ ! -f $COMPILEDIR/crosscompile/ios-armv6/bin/php5/bin/php ]; then
@@ -177,7 +177,7 @@ then
 	rm -rf libtool-2.4.2
 	export LIBTOOL="$COMPILEDIR/crosscompile/ios-armv7/libtool/bin/libtool"
 	export LIBTOOLIZE="$COMPILEDIR/crosscompile/ios-armv7/libtool/bin/libtoolize"
-    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:$PATH" $SCRIPT crosscompile ios-armv7
+    PATH="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin:$PATH" $SCRIPT -t ios-armv6 -o -j 1 -c -x
     
     cp -r $COMPILEDIR/crosscompile/ios-armv7/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/ios-armv7/
 	if [ ! -f $COMPILEDIR/crosscompile/ios-armv7/bin/php5/bin/php ]; then
@@ -190,8 +190,8 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/rpi
     cd $COMPILEDIR/crosscompile/rpi
     
-    $SCRIPT crosscompile rpi
-    
+    $SCRIPT -t rpi -o -j 1 -c -x -f arm
+
     tar -czf PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/rpi/{install.log,PHP_${PHP_VERSION}_ARM_Raspbian_hard.tar.gz,install_data/*} $ARCHIVE/crosscompile/rpi/
 	if [ ! -f $COMPILEDIR/crosscompile/rpi/bin/php5/bin/php ]; then
@@ -204,7 +204,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/mac
     cd $COMPILEDIR/crosscompile/mac
     
-    $SCRIPT crosscompile mac curl
+    $SCRIPT -t mac -o -j 1 -c -f -x
     
     cp -r $COMPILEDIR/crosscompile/mac/{install.log,bin/*,install_data/*} $ARCHIVE/crosscompile/mac/
 	if [ ! -f $COMPILEDIR/crosscompile/mac/bin/php5/bin/php ]; then

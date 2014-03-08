@@ -1,12 +1,12 @@
-![](http://www.pocketmine.net/favicon.png)
+![](http://cdn.pocketmine.net/img/PocketMine-MP-h.png)
 
 # PocketMine-MP Contribution Guidelines
 
-Before contributing to PocketMine-MP, please read this.
+Before contributing to PocketMine-MP, please read this. Also, take a look if your contribution fits the PocketMine-MP goals below.
 
 
 ## I've a question
-* For questions, please refer to the _#pocketmine_ or _#mcpedevs_ IRC channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=pockdetmine,mcpedevs&uio=d4) if you want.
+* For questions, please refer to the _#pocketmine_ or _#mcpedevs_ IRC channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=pocketmine,mcpedevs&uio=d4) if you want.
 * You can ask directly to _[@PocketMine](https://twitter.com/PocketMine)_ in Twitter, but don't expect an inmediate reply.
 
 ## I want to create an issue
@@ -28,8 +28,7 @@ __Thanks for contributing to PocketMine-MP!__
 
 
 
-
-#### Code syntax
+### Code syntax
 
 It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) with a few exceptions.
 * Opening braces MUST go on the same line.
@@ -39,7 +38,7 @@ It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accept
 * Long arrays MAY be split across multiple lines, where each subsequent line is indented once. 
 * Files MUST use only the `<?php` tag.
 * Files MUST NOT have an ending `?>` tag.
-* Code MUST NOT use namespaces. _(This restriction will be lifted on the Alpha_1.4 code)_
+* Code MUST NOT use namespaces. Descriptive and unique class names are enforced.
 * Strings SHOULD use the double quote `"` except when the single quote is required.
 * Arrays SHOULD be declared using `array()`, not the `[]` shortcut.
 * Argument lists MAY NOT be split across multiple lines, except long arrays.

@@ -1,9 +1,9 @@
 #!/bin/bash
-PHP_VERSION="5.5.9"
+PHP_VERSION="5.5.10"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
-OPENSSL_VERSION="0.9.8y"
+OPENSSL_VERSION="1.0.0l"
 CURL_VERSION="curl-7_35_0"
 LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="0.1.0"
@@ -41,36 +41,60 @@ export CC="gcc"
 COMPILE_FOR_ANDROID=no
 RANLIB=ranlib
 HAVE_MYSQLI="--with-mysqli=mysqlnd"
-if [ "$1" == "rpi" ]; then
-	[ -z "$march" ] && march=armv6zk;
-	[ -z "$mtune" ] && mtune=arm1176jzf-s;
-	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
-	OPENSSL_TARGET="linux-armv4"
-	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
-elif [ "$1" == "mac" ]; then
-	[ -z "$march" ] && march=prescott;
-	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
-	export DYLD_LIBRARY_PATH="@loader_path/../lib"
-	OPENSSL_TARGET="darwin-i386-cc"
-	echo "[INFO] Compiling for Intel MacOS x86"
-elif [ "$1" == "mac64" ]; then
-	[ -z "$march" ] && march=core2;
-	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer -mmacosx-version-min=10.5";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
-	export DYLD_LIBRARY_PATH="@loader_path/../lib"
-	OPENSSL_TARGET="darwin64-x86_64-cc"
-	echo "[INFO] Compiling for Intel MacOS x86_64"
-elif [ "$1" == "ios" ]; then
-	[ -z "$march" ] && march=armv6;
-	[ -z "$mtune" ] && mtune=cortex-a8;
-	echo "[INFO] Compiling for iOS ARMv6"
-	OPENSSL_TARGET="linux-armv4"
-elif [ "$1" == "crosscompile" ]; then
-	HAVE_MYSQLI="--without-mysqli"
-	if [ "$2" == "android" ] || [ "$2" == "android-armv6" ]; then
+COMPILE_TARGET=""
+COMPILE_OPENSSL="no"
+COMPILE_CURL="default"
+COMPILE_LIBEDIT="no"
+IS_CROSSCOMPILE="no"
+DO_OPTIMIZE="no"
+while getopts "t:oj:cxf::" OPTION; do
+	case $OPTION in
+		t)
+			echo "[opt] Set target to $OPTARG"
+			COMPILE_TARGET="$OPTARG"
+			;;
+		j)
+			echo "[opt] Set make threads to $OPTARG"
+			THREADS="$OPTARG"
+			;;
+		o)
+			echo "[opt] Will compile OpenSSL"
+			COMPILE_OPENSSL="yes"
+			;;
+		l)
+			echo "[opt] Will compile libedit"
+			COMPILE_LIBEDIT="yes"
+			;;
+		c)
+			echo "[opt] Will force compile cURL"
+			COMPILE_CURL="yes"
+			;;
+		x)
+			echo "[opt] Doing cross-compile"
+			IS_CROSSCOMPILE="yes"
+			;;
+		f)
+			echo "[opt] Enabling abusive optimizations..."
+			DO_OPTIMIZE="yes"
+			ffast_math="-fno-math-errno -funsafe-math-optimizations -fno-trapping-math -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fcx-limited-range" #workaround SQLite3 fail
+			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $ffast_math -fno-signed-zeros -finline-functions -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funroll-loops -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -ftracer -ftree-loop-im -fprefetch-loop-arrays -ftree-parallelize-loops=4 -fomit-frame-pointer"
+			if [ "$OPTARG" == "arm" ]; then
+				CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=vfp"
+			elif [ "$OPTARG" == "x86_64" ]; then
+				CFLAGS="$CFLAGS -mmx -msse -msse2 -msse3 -mfpmath=sse -free -msahf"
+			elif [ "$OPTARG" == "x86" ]; then
+				CFLAGS="$CFLAGS -mmx -msse -msse2 -mfpmath=sse -m128bit-long-double -malign-double"
+			fi
+			;;
+		\?)
+			echo "Invalid option: -$OPTION$OPTARG" >&2
+			exit 1
+			;;
+	esac
+done
+
+if [ "$IS_CROSSCOMPILE" == "yes" ]; then
+	if [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=arm1136jf-s;
@@ -80,7 +104,8 @@ elif [ "$1" == "crosscompile" ]; then
 		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 		OPENSSL_TARGET="android"
-	elif [ "$2" == "android-armv7" ]; then
+		HAVE_MYSQLI="--without-mysqli"
+	elif [ "$COMPILE_TARGET" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=cortex-a8;
@@ -90,7 +115,8 @@ elif [ "$1" == "crosscompile" ]; then
 		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 		OPENSSL_TARGET="android-armv7"
-	elif [ "$2" == "rpi" ]; then
+		HAVE_MYSQLI="--without-mysqli"
+	elif [ "$COMPILE_TARGET" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
 		[ -z "$march" ] && march=armv6zk;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
@@ -100,7 +126,7 @@ elif [ "$1" == "crosscompile" ]; then
 		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";
 		OPENSSL_TARGET="linux-armv4"
 		echo "[INFO] Cross-compiling for Raspberry Pi ARMv6zk hard float"
-	elif [ "$2" == "mac" ]; then
+	elif [ "$COMPILE_TARGET" == "mac" ]; then
 		[ -z "$march" ] && march=prescott;
 		[ -z "$mtune" ] && mtune=generic;
 		[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
@@ -111,20 +137,56 @@ elif [ "$1" == "crosscompile" ]; then
 		RANLIB=$TOOLCHAIN_PREFIX-ranlib
 		OPENSSL_TARGET="darwin64-x86_64-cc"
 		echo "[INFO] Cross-compiling for Intel MacOS"
-	elif [ "$2" == "ios" ] || [ "$2" == "ios-armv6" ]; then
+	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
-		[ -z "$mtune" ] && mtune=generic-armv6;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
-		OPENSSL_TARGET="linux-armv4"
-	elif [ "$2" == "ios-armv7" ]; then
+		[ -z "$mtune" ] && mtune=arm1176jzf-s;
+		TOOLCHAIN_PREFIX="arm-apple-darwin10"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
+		OPENSSL_TARGET="BSD-generic32"
+		HAVE_MYSQLI="--without-mysqli"
+	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
-		[ -z "$mtune" ] && mtune=generic-armv7-a;
-		CONFIGURE_FLAGS="--target=arm-apple-darwin10"
-		OPENSSL_TARGET="linux-armv4"
+		[ -z "$mtune" ] && mtune=cortex-a8;
+		TOOLCHAIN_PREFIX="arm-apple-darwin10"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
+		OPENSSL_TARGET="BSD-generic32"
+		HAVE_MYSQLI="--without-mysqli"
+		if [ "$DO_OPTIMIZE" == "yes" ]; then
+			CFLAGS="$CFLAGS -mfpu=neon"
+		fi
 	else
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
 		exit 1
 	fi
+elif [ "$COMPILE_TARGET" == "rpi" ]; then
+	[ -z "$march" ] && march=armv6zk;
+	[ -z "$mtune" ] && mtune=arm1176jzf-s;
+	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+	OPENSSL_TARGET="linux-armv4"
+	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
+elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
+	[ -z "$march" ] && march=prescott;
+	[ -z "$mtune" ] && mtune=generic;
+	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	export DYLD_LIBRARY_PATH="@loader_path/../lib"
+	OPENSSL_TARGET="darwin-i386-cc"
+	echo "[INFO] Compiling for Intel MacOS x86"
+elif [ "$COMPILE_TARGET" == "mac64" ]; then
+	[ -z "$march" ] && march=core2;
+	[ -z "$mtune" ] && mtune=generic;
+	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86_64 -fomit-frame-pointer -mmacosx-version-min=10.5";
+	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	export DYLD_LIBRARY_PATH="@loader_path/../lib"
+	OPENSSL_TARGET="darwin64-x86_64-cc"
+	echo "[INFO] Compiling for Intel MacOS x86_64"
+elif [ "$COMPILE_TARGET" == "ios" ]; then
+	[ -z "$march" ] && march=armv7-a;
+	[ -z "$mtune" ] && mtune=cortex-a8;
+	echo "[INFO] Compiling for iOS ARMv7"
+	OPENSSL_TARGET="linux-armv4"
 elif [ -z "$CFLAGS" ]; then
 	if [ `getconf LONG_BIT` == "64" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
@@ -188,7 +250,7 @@ download_file "http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror" | ta
 mv php-$PHP_VERSION php
 echo " done!"
 
-if [ "$1" == "crosscompile" ] || [ "$1" == "rpi" ] || [ "$1" == "mac" ]; then
+if [ "$IS_CROSSCOMPILE" == "yes" ] || [ "$COMPILE_TARGET" == "rpi" ] || [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_LIBEDIT" != "yes" ]; then
 	HAVE_LIBEDIT="--without-readline --without-libedit"
 else
 	#libedit
@@ -234,7 +296,7 @@ cd ..
 rm -r -f ./zlib
 echo " done!"
 
-if [ "$2" == "openssl" ] || [ "$2" == "curl" ] && [ "$1" != "crosscompile" ]; then
+if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	#OpenSSL
 	WITH_SSL="--with-ssl=$DIR/bin/php5"
 	WITH_OPENSSL="--with-openssl=$DIR/bin/php5"
@@ -247,10 +309,12 @@ if [ "$2" == "openssl" ] || [ "$2" == "curl" ] && [ "$1" != "crosscompile" ]; th
 	$OPENSSL_TARGET \
 	--prefix="$DIR/bin/php5" \
 	--openssldir="$DIR/bin/php5" \
+	zlib \
+	zlib-dynamic \
 	--with-zlib-lib="$DIR/bin/php5/lib" \
 	--with-zlib-include="$DIR/bin/php5/include" \
-	zlib-dynamic \
 	shared \
+	no-ssl2 \
 	no-asm \
 	no-hw \
 	no-engines \
@@ -268,12 +332,12 @@ if [ "$2" == "openssl" ] || [ "$2" == "curl" ] && [ "$1" != "crosscompile" ]; th
 else
 	WITH_SSL="--with-ssl"
 	WITH_OPENSSL="--without-ssl"
-	if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+	if [ "$(uname -s)" == "Darwin" ] && [ "$COMPILE_TARGET" != "crosscompile" ]; then
 		WITH_SSL="--with-darwinssl"	
 	fi
 fi
 
-if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ] && [ "$2" != "curl" ]; then
+if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ] && [ "$COMPILE_CURL" != "yes" ]; then
    HAVE_CURL="shared,/usr"
 else
 	#curl
@@ -354,31 +418,25 @@ rm -r -f ./yaml
 echo " done!"
 
 echo -n "[PHP]"
-set +e
-if which free >/dev/null; then
-	MAX_MEMORY=$(free -m | awk '/^Mem:/{print $2}')
-else
-	MAX_MEMORY=$(top -l 1 | grep PhysMem: | awk '{print $10}' | tr -d 'a-zA-Z')
-fi
-if [ $MAX_MEMORY -gt 512 2>> /dev/null ] && [ "$1" != "crosscompile" ]; then
+
+if [ "$DO_OPTIMIZE" != "no" ]; then
 	echo -n " enabling optimizations..."
-	OPTIMIZATION="--enable-inline-optimization "
+	PHP_OPTIMIZATION="--enable-inline-optimization "
 else
-	OPTIMIZATION="--disable-inline-optimization "
+	PHP_OPTIMIZATION="--disable-inline-optimization "
 fi
-set -e
 echo -n " checking..."
 cd php
 rm -rf ./aclocal.m4 >> "$DIR/install.log" 2>&1
 rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
 rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
-if [ "$1" == "crosscompile" ]; then
-	sed -i 's/pthreads_working=no/pthreads_working=yes/' ./configure
-	export LIBS="-lpthread -ldl"
+if [ "$IS_CROSSCOMPILE" == "yes" ]; then
+	sed -i=".backup" 's/pthreads_working=no/pthreads_working=yes/' ./configure
+	export LIBS="-lpthread -ldl -lresolv"
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
-RANLIB=$RANLIB ./configure $OPTIMIZATION--prefix="$DIR/bin/php5" \
+RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION--prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/bin/php5" \
@@ -393,11 +451,11 @@ $HAVE_LIBEDIT \
 --disable-cgi \
 --disable-session \
 --disable-debug \
---disable-phar \
 --disable-pdo \
 --without-pear \
 --without-iconv \
 --without-pdo-sqlite \
+--enable-phar \
 --enable-ctype \
 --enable-sockets \
 --enable-shared=no \
@@ -415,14 +473,16 @@ $HAVE_MYSQLI \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
-if [ $COMPILE_FOR_ANDROID == "yes" ]; then
-	sed -i 's/-export-dynamic/-all-static/g' Makefile
+if [ "$COMPILE_FOR_ANDROID" == "yes" ]; then
+	sed -i=".backup" 's/-export-dynamic/-all-static/g' Makefile
 fi
+sed -i=".backup" 's/PHP_BINARIES. pharcmd$/PHP_BINARIES)/g' Makefile
+sed -i=".backup" 's/install-programs install-pharcmd$/install-programs/g' Makefile
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 
-if [ "$(uname -s)" == "Darwin" ] && [ "$1" != "crosscompile" ]; then
+if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	set +e
 	install_name_tool -delete_rpath "$DIR/bin/php5/lib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libz.1.dylib" "@loader_path/../lib/libz.1.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
@@ -441,7 +501,9 @@ TIMEZONE=$(date +%Z)
 echo "date.timezone=$TIMEZONE" > "$DIR/bin/php5/bin/php.ini"
 echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "asp_tags=0" >> "$DIR/bin/php5/bin/php.ini"
-if [ "$1" != "crosscompile" ]; then
+echo "phar.readonly=0" >> "$DIR/bin/php5/bin/php.ini"
+echo "phar.require_hash=1" >> "$DIR/bin/php5/bin/php.ini"
+if [ "$IS_CROSSCOMPILE" != "crosscompile" ]; then
 	echo "zend_extension=opcache.so" >> "$DIR/bin/php5/bin/php.ini"
 	echo "opcache.enable=1" >> "$DIR/bin/php5/bin/php.ini"
 	echo "opcache.enable_cli=1" >> "$DIR/bin/php5/bin/php.ini"
