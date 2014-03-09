@@ -94,7 +94,7 @@ class LevelAPI{
 			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
 				$generator = new SuperflatGenerator($options);
 			}else{
-				$generator = new TemporalGenerator($options);
+				$generator = new NormalGenerator($options);
 			}
 		}
 		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)):(int) $seed);
@@ -151,6 +151,10 @@ class LevelAPI{
 		$path = DATA_PATH."worlds/".$name."/";
 		console("[INFO] Preparing level \"".$name."\"");
 		$level = new PMFLevel($path."level.pmf");
+		if(!$level->isLoaded){
+			console("[ERROR] Could not load level \"".$name."\"");
+			return false;
+		}
 		$entities = new Config($path."entities.yml", CONFIG_YAML);
 		if(file_exists($path."tileEntities.yml")){
 			@rename($path."tileEntities.yml", $path."tiles.yml");
@@ -194,7 +198,6 @@ class LevelAPI{
 			$t = $this->server->api->tile->add($this->levels[$name], $tile["id"], $tile["x"], $tile["y"], $tile["z"], $tile);
 		}
 		
-		$timeu = microtime(true);
 		foreach($blockUpdates->getAll() as $bupdate){
 			$this->server->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"],(int) $bupdate["y"],(int) $bupdate["z"], $this->levels[$name]), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
@@ -221,20 +224,6 @@ class LevelAPI{
 
 	public function getSpawn(){
 		return $this->server->spawn;
-	}
-	
-	public function loadMap(){
-		if($this->mapName !== false and trim($this->mapName) !== ""){
-			if(!file_exists($this->mapDir."level.pmf")){
-				$level = new LevelImport($this->mapDir);
-				$level->import();
-			}
-			$this->level = new PMFLevel($this->mapDir."level.pmf");
-			console("[INFO] Preparing level \"".$this->level->getData("name")."\"");
-			$this->time = (int) $this->level->getData("time");
-			$this->seed = (int) $this->level->getData("seed");
-			$this->spawn = $this->level->getSpawn();
-		}
 	}
 	
 	public function getAll(){

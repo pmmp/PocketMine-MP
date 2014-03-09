@@ -31,6 +31,8 @@ class Tile extends Position{
 	public $attach;
 	public $metadata;
 	public $closed;
+	private $lastUpdate;
+	private $scheduledUpdate;
 	private $server;
 	function __construct(Level $level, $id, $class, $x, $y, $z, $data = array()){
 		$this->server = ServerAPI::request();
@@ -354,87 +356,52 @@ class Tile extends Position{
 		}
 		switch($this->class){
 			case TILE_CHEST:
-				$nbt = new NBT();
-				$nbt->write(chr(NBT::TAG_COMPOUND)."\x00\x00");
-				
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("id");
-				$nbt->writeTAG_String($this->class);
-				
-				$nbt->write(chr(NBT::TAG_INT));
-				$nbt->writeTAG_String("x");
-				$nbt->writeTAG_Int((int) $this->x);
-				
-				$nbt->write(chr(NBT::TAG_INT));
-				$nbt->writeTAG_String("y");
-				$nbt->writeTAG_Int((int) $this->y);
-				
-				$nbt->write(chr(NBT::TAG_INT));
-				$nbt->writeTAG_String("z");
-				$nbt->writeTAG_Int((int) $this->z);
-				
+				$nbt = new NBT(NBT::LITTLE_ENDIAN);
 				if($this->isPaired()){
-					$nbt->write(chr(NBT::TAG_INT));
-					$nbt->writeTAG_String("pairx");
-					$nbt->writeTAG_Int((int) $this->data["pairx"]);
-					
-					$nbt->write(chr(NBT::TAG_INT));
-					$nbt->writeTAG_String("pairz");
-					$nbt->writeTAG_Int((int) $this->data["pairz"]);
+					$nbt->setData(new NBTTag_Compound("", array(
+						new NBTTag_String("id", $this->class),
+						new NBTTag_Int("x", (int) $this->x),
+						new NBTTag_Int("y", (int) $this->y),
+						new NBTTag_Int("z", (int) $this->z),	
+						new NBTTag_Int("pairx", (int) $this->data["pairx"]),
+						new NBTTag_Int("pairz", (int) $this->data["pairz"]),	
+						new NBTTag_End
+					)));
+				}else{
+					$nbt->setData(new NBTTag_Compound("", array(
+						new NBTTag_String("id", $this->class),
+						new NBTTag_Int("x", (int) $this->x),
+						new NBTTag_Int("y", (int) $this->y),
+						new NBTTag_Int("z", (int) $this->z),	
+						new NBTTag_End
+					)));
 				}
-				
-				$nbt->write(chr(NBT::TAG_END));				
 				
 				$pk = new EntityDataPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
-				$pk->namedtag = $nbt->binary;
+				$pk->namedtag = $nbt->write();
 				$player->dataPacket($pk);
 				break;
 			case TILE_SIGN:
-				$nbt = new NBT();
-				$nbt->write(chr(NBT::TAG_COMPOUND)."\x00\x00");
-				
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("Text1");
-				$nbt->writeTAG_String($this->data["Text1"]);
-				
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("Text2");
-				$nbt->writeTAG_String($this->data["Text2"]);
-				
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("Text3");
-				$nbt->writeTAG_String($this->data["Text3"]);
-				
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("Text4");
-				$nbt->writeTAG_String($this->data["Text4"]);
-				
-				$nbt->write(chr(NBT::TAG_STRING));
-				$nbt->writeTAG_String("id");
-				$nbt->writeTAG_String($this->class);
-				
-				$nbt->write(chr(NBT::TAG_INT));
-				$nbt->writeTAG_String("x");
-				$nbt->writeTAG_Int((int) $this->x);
-				
-				$nbt->write(chr(NBT::TAG_INT));
-				$nbt->writeTAG_String("y");
-				$nbt->writeTAG_Int((int) $this->y);
-				
-				$nbt->write(chr(NBT::TAG_INT));
-				$nbt->writeTAG_String("z");
-				$nbt->writeTAG_Int((int) $this->z);
-				
-				$nbt->write(chr(NBT::TAG_END));				
-				
+				$nbt = new NBT(NBT::LITTLE_ENDIAN);
+				$nbt->setData(new NBTTag_Compound("", array(
+					new NBTTag_String("Text1", $this->data["Text1"]),
+					new NBTTag_String("Text2", $this->data["Text2"]),
+					new NBTTag_String("Text3", $this->data["Text3"]),
+					new NBTTag_String("Text4", $this->data["Text4"]),
+					new NBTTag_String("id", $this->class),
+					new NBTTag_Int("x", (int) $this->x),
+					new NBTTag_Int("y", (int) $this->y),
+					new NBTTag_Int("z", (int) $this->z),	
+					new NBTTag_End
+				)));				
 				$pk = new EntityDataPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
-				$pk->namedtag = $nbt->binary;
+				$pk->namedtag = $nbt->write();
 				$player->dataPacket($pk);
 				break;
 		}

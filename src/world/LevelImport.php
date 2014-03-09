@@ -34,21 +34,21 @@ class LevelImport{
 			$tiles = new Config($this->path."tiles.yml", CONFIG_YAML, unserialize(file_get_contents($this->path."tileEntities.dat")));
 			$tiles->save();
 		}elseif(file_exists($this->path."chunks.dat") and file_exists($this->path."level.dat")){ //Pocket
-			$nbt = new NBT();
-			$nbt->load(substr(file_get_contents($this->path."level.dat"), 8));
-			$level = array_shift($nbt->tree);
-			if($level["LevelName"] == ""){
-				$level["LevelName"] = "world".time();
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$nbt->read(substr(file_get_contents($this->path."level.dat"), 8));
+			$level = $nbt->getData();
+			if($level->LevelName == ""){
+				$level->LevelName = "world".time();
 			}
-			console("[INFO] Importing Pocket level \"".$level["LevelName"]."\" to PMF format");
-			unset($level["Player"]);
-			$nbt->load(substr(file_get_contents($this->path."entities.dat"), 12));
-			$entities = array_shift($nbt->tree);
-			if(!isset($entities["TileEntities"])){
-				$entities["TileEntities"] = array();
+			console("[INFO] Importing Pocket level \"".$level->LevelName."\" to PMF format");
+			unset($level->Player);
+			$nbt->read(substr(file_get_contents($this->path."entities.dat"), 12));
+			$entities = $nbt->getData();
+			if(!isset($entities->TileEntities)){
+				$entities->TileEntities = array();
 			}
-			$tiles = $entities["TileEntities"];
-			$entities = $entities["Entities"];
+			$tiles = $entities->TileEntities;
+			$entities = $entities->Entities;
 			$entities = new Config($this->path."entities.yml", CONFIG_YAML, $entities);
 			$entities->save();
 			$tiles = new Config($this->path."tiles.yml", CONFIG_YAML, $tiles);
@@ -58,15 +58,16 @@ class LevelImport{
 		}
 		
 		$pmf = new PMFLevel($this->path."level.pmf", array(
-			"name" => $level["LevelName"],
-			"seed" => $level["RandomSeed"],
-			"time" => $level["Time"],
-			"spawnX" => $level["SpawnX"],
-			"spawnY" => $level["SpawnY"],
-			"spawnZ" => $level["SpawnZ"],
-			"extra" => "",
-			"width" => 16,
-			"height" => 8
+			"name" => $level->LevelName,
+			"seed" => $level->RandomSeed,
+			"time" => $level->Time,
+			"spawnX" => $level->SpawnX,
+			"spawnY" => $level->SpawnY,
+			"spawnZ" => $level->SpawnZ,
+			"height" => 8,
+			"generator" => "NormalGenerator",
+			"generatorSettings" => "",
+			"extra" => ""
 		));
 		$chunks = new PocketChunkParser();
 		$chunks->loadFile($this->path."chunks.dat");
@@ -83,6 +84,7 @@ class LevelImport{
 					6 => "",
 					7 => ""					
 				);
+
 				for($z = 0; $z < 16; ++$z){
 					for($x = 0; $x < 16; ++$x){
 						$block = $chunks->getChunkColumn($X, $Z, $x, $z, 0);
@@ -94,13 +96,17 @@ class LevelImport{
 						}
 					}
 				}
+
+				$pmf->initCleanChunk($X, $Z);
 				foreach($chunk as $Y => $data){
 					$pmf->setMiniChunk($X, $Z, $Y, $data);
 				}
+				$pmf->setPopulated($X, $Z);
 				$pmf->saveChunk($X, $Z);
 			}
 			console("[NOTICE] Importing level ".ceil(($Z + 1)/0.16)."%");
 		}
+		$pmf->saveData();
 		$chunks->map = null;
 		$chunks = null;
 		@unlink($this->path."level.dat");

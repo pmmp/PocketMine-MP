@@ -32,7 +32,7 @@ class BanAPI{
 	private $ops;
     /** @var Config */
 	private $bannedIPs;
-	private $cmdWL = array();//Command WhiteList
+	private $cmdWhitelist = array();//Command WhiteList
 	function __construct(){
 		$this->server = ServerAPI::request();
 	}
@@ -48,7 +48,7 @@ class BanAPI{
 		$this->server->api->console->register("whitelist", "<on|off|list|add|remove|reload> [username]", array($this, "commandHandler"));
 		$this->server->api->console->register("op", "<player>", array($this, "commandHandler"));
 		$this->server->api->console->register("deop", "<player>", array($this, "commandHandler"));
-		$this->server->api->console->register("sudo", "<player>", array($this, "commandHandler"));
+		$this->server->api->console->register("sudo", "<player> <command>", array($this, "commandHandler"));
 		$this->server->api->console->alias("ban-ip", "banip add");
 		$this->server->api->console->alias("banlist", "ban list");
 		$this->server->api->console->alias("pardon", "ban remove");
@@ -104,7 +104,6 @@ class BanAPI{
 					}
 				}
 				return;
-				break;
 			case "console.command"://Checks if a command is allowed with the current user permissions.
 				if(isset($this->cmdWhitelist[$data["cmd"]])){
 					return;
@@ -118,7 +117,6 @@ class BanAPI{
 					return;
 				}
 				return false;
-			break;
 		}
 	}
 
@@ -152,7 +150,7 @@ class BanAPI{
 				$player = $this->server->api->player->get($user);
 				if(!($player instanceof Player)){
 					$this->ops->set($user);
-					$this->ops->save($user);
+					$this->ops->save();
 					$output .= $user." is now op\n";
 					break;
 				}

@@ -24,7 +24,11 @@ require_once("LevelGenerator.php");
 /***REM_END***/
 
 class SuperflatGenerator implements LevelGenerator{
-	private $level, $random, $structure, $chunks, $options, $floorLevel, $populators = array();
+	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
+	
+	public function getSettings(){
+		return $this->options;
+	}
 	
 	public function __construct(array $options = array()){
 		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
@@ -125,9 +129,9 @@ class SuperflatGenerator implements LevelGenerator{
 		}
 	}
 	
-	public function populateChunk($chunkX, $chunkZ){		
+	public function populateChunk($chunkX, $chunkZ){
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
-			$this->random->setSeed((int) ($chunkX * 0xdead + $chunkZ * 0xbeef) ^ $this->level->getSeed());
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
 	}

@@ -36,7 +36,7 @@ class SendInventoryPacket extends RakNetDataPacket{
 		for($s = 0; $s < $count and !$this->feof(); ++$s){
 			$this->slots[$s] = $this->getSlot();
 		}
-		if($this->windowid === 1){ //Armir is sent
+		if($this->windowid === 1){ //Armor is sent
 			for($s = 0; $s < 4; ++$s){
 				$this->armor[$s] = $this->getSlot();
 			}

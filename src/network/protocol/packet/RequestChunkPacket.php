@@ -20,16 +20,16 @@
 */
 
 class RequestChunkPacket extends RakNetDataPacket{
-	public $x;
-	public $z;
+	public $chunkX;
+	public $chunkZ;
 	
 	public function pid(){
 		return ProtocolInfo::REQUEST_CHUNK_PACKET;
 	}
 	
 	public function decode(){
-		$this->x = $this->getInt();
-		$this->z = $this->getInt();
+		$this->chunkX = $this->getInt();
+		$this->chunkZ = $this->getInt();
 	}
 	
 	public function encode(){

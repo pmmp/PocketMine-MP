@@ -12,7 +12,7 @@
 			}
 		}
 		
-		if(!class_exists("PocketMinecraftServer", false)){
+		if(!class_exists("MainServer", false)){
 			define("NO_THREADS", true);
 			require_once(dirname(__FILE__)."/../dependencies.php");
 			require_once(FILE_PATH."/src/functions.php");

@@ -24,7 +24,7 @@ Implementation of the UT3 Query Protocol (GameSpot)
 Source: http://wiki.unrealadmin.org/UT3_query_protocol
 */
 
-class Query{
+class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
 	
 	public function __construct(){
@@ -41,7 +41,7 @@ class Query{
 		Then, the Query class handles itself sending the packets in raw form, because
 		packets can conflict with the MCPE ones.
 		*/
-		$this->server->addHandler("server.unknownpacket.254", array($this, "packetHandler"), 50);
+
 		$this->server->schedule(20 * 30, array($this, "regenerateToken"), array(), true);
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
@@ -91,51 +91,48 @@ class Query{
 	
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
-		$this->token = Utils::readInt("\x00".Utils::getRandomBytes(3, false));
+		$this->token = Utils::getRandomBytes(16, false);
 	}
 	
-	public function packetHandler($packet, $event){
-		if($event !== "server.unknownpacket.254"){
-			return;
-		}
-		$magic = substr($packet->buffer, 0, 2);
-		$offset = 2;
-		if($magic !== "\xfe\xfd"){
-			return;
-		}
-		$type = ord($packet->buffer{2});
-		++$offset;
-		$sessionID = Utils::readInt(substr($packet->buffer, $offset, 4));
-		$offset += 4;
-		$payload = substr($packet->buffer, $offset);
-		switch($type){
-			case 9: //Handshake
-				$pk = new Packet;
+	public static function getTokenString($token, $salt){
+		return Utils::readInt(substr(hash("sha512", $salt . ":". $token, true), 7, 4));
+	}
+	
+	public function handle(QueryPacket $packet){	
+		$packet->decode();
+		switch($packet->packetType){
+			case QueryPacket::HANDSHAKE: //Handshake
+				$pk = new QueryPacket;
 				$pk->ip = $packet->ip;
 				$pk->port = $packet->port;
-				$pk->buffer = chr(9).Utils::writeInt($sessionID).$this->token."\x00";
+				$pk->packetType = QueryPacket::HANDSHAKE;
+				$pk->sessionID = $packet->sessionID;
+				$pk->payload = self::getTokenString($this->token, $packet->ip)."\x00";
+				$pk->encode();
 				$this->server->send($pk);
 				break;
-			case 0: //Stat
-				$token = Utils::readInt(substr($payload, 0, 4));
-				if($token !== $this->token and $token !== $this->lastToken){
+			case QueryPacket::STATISTICS: //Stat
+				$token = Utils::readInt(substr($packet->payload, 0, 4));
+				if($token !== self::getTokenString($this->token, $packet->ip) and $token !== self::getTokenString($this->lastToken, $packet->ip)){
 					break;
 				}
-				$pk = new Packet;
+				$pk = new QueryPacket;
 				$pk->ip = $packet->ip;
-				$pk->port = $packet->port;				
-				if(strlen($payload) === 8){
+				$pk->port = $packet->port;
+				$pk->packetType = QueryPacket::STATISTICS;
+				$pk->sessionID = $packet->sessionID;
+				if(strlen($packet->payload) === 8){
 					if($this->timeout < microtime(true)){
 						$this->regenerateInfo();
 					}
-					$pk->buffer = chr(0).Utils::writeInt($sessionID).$this->longData;			
+					$pk->payload = $this->longData;			
 				}else{
-					$pk->buffer = chr(0).Utils::writeInt($sessionID).$this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
+					$pk->payload = $this->server->name."\x00".(($this->server->gamemode & 0x01) === 0 ? "SMP":"CMP")."\x00".$this->server->api->level->getDefault()->getName()."\x00".count($this->server->clients)."\x00".$this->server->maxClients."\x00".Utils::writeLShort($this->server->api->getProperty("server-port")).$this->server->api->getProperty("server-ip", "0.0.0.0")."\x00";
 				}
+				$pk->encode();
 				$this->server->send($pk);
 				break;
 		}
-		return true;
 	}
 
 }

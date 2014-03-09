@@ -19,16 +19,17 @@
  *
 */
 
-define("PMF_CURRENT_LEVEL_VERSION", 0x00);
-
 class PMFLevel extends PMF{
-	private $levelData = array();
-	private $locationTable = array();
+	const VERSION = 0x01;
+	const DEFLATE_LEVEL = 9;
+	
+	public $level;
+	public $levelData = array();
 	public $isLoaded = true;
-	private $log = 4;
-	private $payloadOffset = 0;
 	private $chunks = array();
 	private $chunkChange = array();
+	private $chunkInfo = array();
+	public $isGenerating = 0;
 	
 	public function getData($index){
 		if(!isset($this->levelData[$index])){
@@ -45,19 +46,21 @@ class PMFLevel extends PMF{
 		return true;
 	}
 	
-	public function close(){
-		$chunks = null;
-		unset($chunks, $chunkChange, $locationTable);
-		parent::close();
+	public function closeLevel(){
+		$this->chunks = null;
+		unset($this->chunks, $this->chunkChange, $this->chunkInfo, $this->level);
+		$this->close();
 	}
 	
 	public function __construct($file, $blank = false){
+		$this->chunks = array();
+		$this->chunkChange = array();
+		$this->chunkInfo = array();
 		if(is_array($blank)){
 			$this->create($file, 0);
 			$this->levelData = $blank;
 			$this->createBlank();
 			$this->isLoaded = true;
-			$this->log = (int) ((string) log($this->levelData["width"], 2));
 		}else{
 			if($this->load($file) !== false){
 				$this->parseInfo();
@@ -65,7 +68,6 @@ class PMFLevel extends PMF{
 					$this->isLoaded = false;
 				}else{
 					$this->isLoaded = true;
-					$this->log = (int) ((string) log($this->levelData["width"], 2));
 				}
 			}else{
 				$this->isLoaded = false;
@@ -73,8 +75,8 @@ class PMFLevel extends PMF{
 		}
 	}
 	
-	public function saveData($locationTable = true){
-		$this->levelData["version"] = PMF_CURRENT_LEVEL_VERSION;
+	public function saveData(){
+		$this->levelData["version"] = PMFLevel::VERSION;
 		@ftruncate($this->fp, 5);
 		$this->seek(5);
 		$this->write(chr($this->levelData["version"]));
@@ -84,33 +86,17 @@ class PMFLevel extends PMF{
 		$this->write(Utils::writeFloat($this->levelData["spawnX"]));
 		$this->write(Utils::writeFloat($this->levelData["spawnY"]));
 		$this->write(Utils::writeFloat($this->levelData["spawnZ"]));
-		$this->write(chr($this->levelData["width"]));
 		$this->write(chr($this->levelData["height"]));
-		$extra = gzdeflate($this->levelData["extra"], PMF_LEVEL_DEFLATE_LEVEL);
+		$this->write(Utils::writeShort(strlen($this->levelData["generator"])).$this->levelData["generator"]);
+		$settings = serialize($this->levelData["generatorSettings"]);
+		$this->write(Utils::writeShort(strlen($settings)).$settings);
+		$extra = gzdeflate($this->levelData["extra"], PMFLevel::DEFLATE_LEVEL);
 		$this->write(Utils::writeShort(strlen($extra)).$extra);
-		$this->payloadOffset = ftell($this->fp);
-		
-		if($locationTable !== false){
-			$this->writeLocationTable();
-		}
 	}
 	
 	private function createBlank(){
-		$this->saveData(false);
-		$this->locationTable = array();
-		$cnt = pow($this->levelData["width"], 2);
+		$this->saveData();
 		@mkdir(dirname($this->file)."/chunks/", 0755);
-		for($index = 0; $index < $cnt; ++$index){
-			$this->chunks[$index] = false;
-			$this->chunkChange[$index] = false;
-			$this->locationTable[$index] = array(
-				0 => 0,
-			);
-			$this->write(Utils::writeShort(0));
-			$X = $Z = null;
-			$this->getXZ($index, $X, $Z);
-			@file_put_contents($this->getChunkPath($X, $Z), gzdeflate("", PMF_LEVEL_DEFLATE_LEVEL));
-		}
 		if(!file_exists(dirname($this->file)."/entities.yml")){
 			$entities = new Config(dirname($this->file)."/entities.yml", CONFIG_YAML);
 			$entities->save();
@@ -127,7 +113,8 @@ class PMFLevel extends PMF{
 		}
 		$this->seek(5);
 		$this->levelData["version"] = ord($this->read(1));
-		if($this->levelData["version"] > PMF_CURRENT_LEVEL_VERSION){
+		if($this->levelData["version"] > PMFLevel::VERSION){
+			console("[ERROR] New unsupported PMF Level format version #".$this->levelData["version"].", current version is #".PMFLevel::VERSION);
 			return false;
 		}
 		$this->levelData["name"] = $this->read(Utils::readShort($this->read(2), false));
@@ -136,93 +123,136 @@ class PMFLevel extends PMF{
 		$this->levelData["spawnX"] = Utils::readFloat($this->read(4));
 		$this->levelData["spawnY"] = Utils::readFloat($this->read(4));
 		$this->levelData["spawnZ"] = Utils::readFloat($this->read(4));
-		$this->levelData["width"] = ord($this->read(1));
-		$this->levelData["height"] = ord($this->read(1));
-		if(($this->levelData["width"] !== 16 and $this->levelData["width"] !== 32) or $this->levelData["height"] !== 8){
-			return false;
-		}
-		$lastseek = ftell($this->fp);
-		if(($len = $this->read(2)) === false or ($this->levelData["extra"] = @gzinflate($this->read(Utils::readShort($len, false)))) === false){ //Corruption protection
-			console("[NOTICE] Empty/corrupt location table detected, forcing recovery");
-			fseek($this->fp, $lastseek);
-			$c = gzdeflate("");
-			$this->write(Utils::writeShort(strlen($c)).$c);
-			$this->payloadOffset = ftell($this->fp);
-			$this->levelData["extra"] = "";
-			$cnt = pow($this->levelData["width"], 2);			
-			for($index = 0; $index < $cnt; ++$index){
-				$this->write("\x00\xFF"); //Force index recreation
-			}
-			fseek($this->fp, $this->payloadOffset);
+		if($this->levelData["version"] === 0){
+			$this->read(1);
+			$this->levelData["height"] = ord($this->read(1));
 		}else{
-			$this->payloadOffset = ftell($this->fp);
+			$this->levelData["height"] = ord($this->read(1));
+			if($this->levelData["height"] !== 8){
+				return false;
+			}
+			$this->levelData["generator"] = $this->read(Utils::readShort($this->read(2), false));
+			$this->levelData["generatorSettings"] = unserialize($this->read(Utils::readShort($this->read(2), false)));
+			
 		}
-		return $this->readLocationTable();
+		$this->levelData["extra"] = @gzinflate($this->read(Utils::readShort($this->read(2), false)));
+
+		if($this->levelData["version"] === 0){
+			$this->upgrade_From0_To1();
+		}
 	}
 	
-	public function getIndex($X, $Z){
-		$X = (int) $X;
-		$Z = (int) $Z;
-		return ($Z << $this->log) + $X;
+	private function upgrade_From0_To1(){
+		console("[NOTICE] Old PMF Level format version #0 detected, upgrading to version #1");
+		for($index = 0; $index < 256; ++$index){
+			$X = $index & 0x0F;
+			$Z = $index >> 4;
+
+			$bitflags = Utils::readShort($this->read(2));
+			$oldPath = dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
+			$chunkOld = gzopen($oldPath, "rb");
+			$newPath = dirname($this->file)."/chunks/".(($X ^ $Z) & 0xff)."/".$Z.".".$X.".pmc";
+			@mkdir(dirname($newPath));
+			$chunkNew = gzopen($newPath, "wb".PMFLevel::DEFLATE_LEVEL);
+			gzwrite($chunkNew, chr($bitflags) . "\x00\x00\x00\x01");
+			while(gzeof($chunkOld) === false){
+				gzwrite($chunkNew, gzread($chunkOld, 65535));
+			}
+			gzclose($chunkNew);
+			gzclose($chunkOld);
+			@unlink($oldPath);
+		}
+		$this->levelData["version"] = 0x01;
+		$this->levelData["generator"] = "NormalGenerator";
+		$this->levelData["generatorSettings"] = "";
+		$this->saveData();
 	}
 	
-	public function getXZ($index, &$X = null, &$Z = null){
-		$X = $index >> $this->log;
-		$Z = $index & (pow($this->log, 2) - 1);
+	public static function getIndex($X, $Z){
+		return ($Z << 16) | ($X < 0 ? (~--$X & 0x7fff) | 0x8000 : $X & 0x7fff);
+	}
+	
+	public static function getXZ($index, &$X = null, &$Z = null){
+		$Z = $index >> 16;
+		$X = ($index & 0x8000) === 0x8000 ? -($index & 0x7fff) : $index & 0x7fff;
 		return array($X, $Z);
 	}
 	
-	private function readLocationTable(){
-		$this->locationTable = array();
-		$cnt = pow($this->levelData["width"], 2);
-		$this->seek($this->payloadOffset);
-		for($index = 0; $index < $cnt; ++$index){
-			$this->chunks[$index] = false;
-			$this->chunkChange[$index] = false;
-			$this->locationTable[$index] = array(
-				0 => Utils::readShort($this->read(2)), //16 bit flags
-			);
-		}
-		return true;
-	}
-	
-	private function writeLocationTable(){
-		$cnt = pow($this->levelData["width"], 2);
-		@ftruncate($this->fp, $this->payloadOffset);
-		$this->seek($this->payloadOffset);
-		for($index = 0; $index < $cnt; ++$index){
-			$this->write(Utils::writeShort($this->locationTable[$index][0]));
-		}
-	}
-	
 	private function getChunkPath($X, $Z){
-		return dirname($this->file)."/chunks/".$Z.".".$X.".pmc";
+		return dirname($this->file)."/chunks/".(((int) $X ^ (int) $Z) & 0xff)."/".$Z.".".$X.".pmc";
+	}
+	
+	public function generateChunk($X, $Z){
+		$path = $this->getChunkPath($X, $Z);
+		if(!file_exists(dirname($path))){
+			@mkdir(dirname($path), 0755);
+		}
+		$this->initCleanChunk($X, $Z);
+		if($this->level instanceof Level){
+			$ret = $this->level->generateChunk($X, $Z);
+			$this->saveChunk($X, $Z);
+			$this->populateChunk($X - 1, $Z);
+			$this->populateChunk($X + 1, $Z);
+			$this->populateChunk($X, $Z - 1);
+			$this->populateChunk($X, $Z + 1);
+			$this->populateChunk($X + 1, $Z + 1);
+			$this->populateChunk($X + 1, $Z - 1);
+			$this->populateChunk($X - 1, $Z - 1);
+			$this->populateChunk($X - 1, $Z + 1);
+			return $ret;
+		}
+	}
+	
+	public function populateChunk($X, $Z){
+		if($this->level instanceof Level){
+			if($this->isGenerating === 0 and
+			$this->isChunkLoaded($X, $Z) and
+			!$this->isPopulated($X, $Z) and
+			$this->isGenerated($X - 1, $Z) and
+			$this->isGenerated($X, $Z - 1) and
+			$this->isGenerated($X + 1, $Z) and
+			$this->isGenerated($X, $Z + 1) and
+			$this->isGenerated($X + 1, $Z + 1) and
+			$this->isGenerated($X - 1, $Z - 1) and
+			$this->isGenerated($X + 1, $Z - 1) and
+			$this->isGenerated($X - 1, $Z + 1)){
+				$this->level->populateChunk($X, $Z);
+				$this->saveChunk($X, $Z);
+			}
+		}
 	}
 	
 	public function loadChunk($X, $Z){
-		$X = (int) $X;
-		$Z = (int) $Z;
-		$index = $this->getIndex($X, $Z);
 		if($this->isChunkLoaded($X, $Z)){
 			return true;
-		}elseif(!isset($this->locationTable[$index])){
-			return false;
 		}
-		$info = $this->locationTable[$index];
-		$this->seek($info[0]);
-
-		$chunk = @gzopen($this->getChunkPath($X, $Z), "rb");
+		$index = self::getIndex($X, $Z);
+		$path = $this->getChunkPath($X, $Z);
+		if(!file_exists($path)){
+			if($this->generateChunk($X, $Z) === false){
+				return false;
+			}
+			if($this->isGenerating === 0){
+				$this->populateChunk($X, $Z);			
+			}
+			return true;
+		}
+	
+		$chunk = @gzopen($path, "rb");
 		if($chunk === false){
 			return false;
 		}
+		$this->chunkInfo[$index] = array(
+			0 => ord(gzread($chunk, 1)),
+			1 => Utils::readInt(gzread($chunk, 4)),
+		);
 		$this->chunks[$index] = array();
 		$this->chunkChange[$index] = array(-1 => false);
-		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
-			$t = 1 << $Y;
-			if(($info[0] & $t) === $t){
+		for($Y = 0; $Y < 8; ++$Y){
+			if(($this->chunkInfo[$index][0] & (1 << $Y)) !== 0){
 				// 4096 + 2048 + 2048, Block Data, Meta, Light
 				if(strlen($this->chunks[$index][$Y] = gzread($chunk, 8192)) < 8192){
-					console("[NOTICE] Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents");
+					console("[NOTICE] Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents", true, true, 2);
 					$this->fillMiniChunk($X, $Z, $Y);
 				}
 			}else{
@@ -230,6 +260,9 @@ class PMFLevel extends PMF{
 			}
 		}
 		@gzclose($chunk);
+		if($this->isGenerating === 0 and !$this->isPopulated($X, $Z)){
+			$this->populateChunk($X, $Z);
+		}
 		return true;
 	}
 	
@@ -241,24 +274,25 @@ class PMFLevel extends PMF{
 		}elseif($save !== false){
 			$this->saveChunk($X, $Z);
 		}
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
 		$this->chunks[$index] = null;
 		$this->chunkChange[$index] = null;
-		unset($this->chunks[$index], $this->chunkChange[$index]);
+		$this->chunkInfo[$index] = null;
+		unset($this->chunks[$index], $this->chunkChange[$index], $this->chunkInfo[$index]);
 		return true;
 	}
 	
 	public function isChunkLoaded($X, $Z){
-		$index = $this->getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
 			return false;
 		}
 		return true;
 	}
 	
-	protected function isMiniChunkEmpty($X, $Z, $Y){
-		$index = $this->getIndex($X, $Z);
-		if($this->chunks[$index][$Y] !== false){
+	public function isMiniChunkEmpty($X, $Z, $Y){
+		$index = self::getIndex($X, $Z);
+		if(isset($this->chunks[$index]) and $this->chunks[$index][$Y] !== false){
 			if(substr_count($this->chunks[$index][$Y], "\x00") < 8192){
 				return false;
 			}
@@ -270,48 +304,84 @@ class PMFLevel extends PMF{
 		if($this->isChunkLoaded($X, $Z) === false){
 			return false;
 		}
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
 		$this->chunks[$index][$Y] = str_repeat("\x00", 8192);
 		$this->chunkChange[$index][-1] = true;
 		$this->chunkChange[$index][$Y] = 8192;
-		$this->locationTable[$index][0] |= 1 << $Y;
+		$this->chunkInfo[$index][0] |= 1 << $Y;
 		return true;
 	}
 	
 	public function getMiniChunk($X, $Z, $Y){
-		if($this->loadChunk($X, $Z) === false){
+		if($this->isChunkLoaded($X, $Z) === false and $this->loadChunk($X, $Z) === false){
 			return str_repeat("\x00", 8192);
 		}
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index][$Y]) or $this->chunks[$index][$Y] === false){
 			return str_repeat("\x00", 8192);
 		}
 		return $this->chunks[$index][$Y];
 	}
 	
+	public function initCleanChunk($X, $Z){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
+			$this->chunks[$index] = array(
+				0 => false,
+				1 => false,
+				2 => false,
+				3 => false,
+				4 => false,
+				5 => false,
+				6 => false,
+				7 => false,		
+			);
+			$this->chunkChange[$index] = array(
+				-1 => true,
+				0 => 8192,
+				1 => 8192,
+				2 => 8192,
+				3 => 8192,
+				4 => 8192,
+				5 => 8192,
+				6 => 8192,
+				7 => 8192,
+			);
+			$this->chunkInfo[$index] = array(
+				0 => 0,
+				1 => 0,
+			);
+		}
+	}
+	
 	public function setMiniChunk($X, $Z, $Y, $data){
-		if($this->isChunkLoaded($X, $Z) === false){
+		if($this->isGenerating > 0){
+			$this->initCleanChunk($X, $Z);
+		}elseif($this->isChunkLoaded($X, $Z) === false){
 			$this->loadChunk($X, $Z);
 		}
 		if(strlen($data) !== 8192){
 			return false;
 		}
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
 		$this->chunks[$index][$Y] = (string) $data;
 		$this->chunkChange[$index][-1] = true;
 		$this->chunkChange[$index][$Y] = 8192;
-		$this->locationTable[$index][0] |= 1 << $Y;
+		$this->chunkInfo[$index][0] |= 1 << $Y;
 		return true;
 	}
 	
 	public function getBlockID($x, $y, $z){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($y > 127 or $y < 0){
 			return 0;
 		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
+			return 0;
+		}
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
@@ -320,17 +390,17 @@ class PMFLevel extends PMF{
 	}
 	
 	public function setBlockID($x, $y, $z, $block){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($y > 127 or $y < 0){
 			return false;
 		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$block &= 0xFF;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
 			return false;
 		}
-		$index = $this->getIndex($X, $Z);
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
@@ -345,13 +415,16 @@ class PMFLevel extends PMF{
 	}
 	
 	public function getBlockDamage($x, $y, $z){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($y > 127 or $y < 0){
 			return 0;
 		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
+			return 0;
+		}
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
@@ -365,17 +438,17 @@ class PMFLevel extends PMF{
 	}
 	
 	public function setBlockDamage($x, $y, $z, $damage){
-		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
+		if($y > 127 or $y < 0){
 			return false;
 		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$damage &= 0x0F;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index])){
 			return false;
 		}
-		$index = $this->getIndex($X, $Z);
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
 		$aY = $y - ($Y << 4);
@@ -404,15 +477,13 @@ class PMFLevel extends PMF{
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
-		if($x < 0 or $z < 0 or $X >= $this->levelData["width"] or $Z >= $this->levelData["width"] or $Y >= $this->levelData["height"] or $y < 0){
+		if($y < 0 or $y > 127){
 			return array(AIR, 0);
 		}
-		$index = $this->getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
-			if($this->loadChunk($X, $Z) === false){
-				return array(AIR, 0);
-			}
-		}elseif($this->chunks[$index][$Y] === false){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
+			return array(AIR, 0);
+		}elseif($this->chunks[$index][$Y] === false){			
 			return array(AIR, 0);
 		}
 		$aX = $x - ($X << 4);
@@ -429,19 +500,17 @@ class PMFLevel extends PMF{
 	}
 	
 	public function setBlock($x, $y, $z, $block, $meta = 0){
+		if($y > 127 or $y < 0){
+			return false;
+		}
 		$X = $x >> 4;
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		$block &= 0xFF;
 		$meta &= 0x0F;
-		if($X >= 32 or $Z >= 32 or $Y >= $this->levelData["height"] or $y < 0){
+		$index = self::getIndex($X, $Z);
+		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
 			return false;
-		}
-		$index = $this->getIndex($X, $Z);
-		if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
-			if($this->loadChunk($X, $Z) === false){
-				return false;
-			}
 		}elseif($this->chunks[$index][$Y] === false){
 			$this->fillMiniChunk($X, $Z, $Y);
 		}
@@ -467,17 +536,6 @@ class PMFLevel extends PMF{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
-			if($old_b instanceof LiquidBlock){
-				$pos = new Position($x, $y, $z, $this->level);
-				for($side = 0; $side <= 5; ++$side){
-					$b = $pos->getSide($side);
-					if($b instanceof LavaBlock){
-						ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, BLOCK_UPDATE_NORMAL);
-					}else{
-						ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, BLOCK_UPDATE_NORMAL);
-					}
-				}
-			}
 			return true;
 		}
 		return false;
@@ -489,32 +547,70 @@ class PMFLevel extends PMF{
 		if(!$this->isChunkLoaded($X, $Z)){
 			return false;
 		}
-		$index = $this->getIndex($X, $Z);
+		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunkChange[$index]) or $this->chunkChange[$index][-1] === false){//No changes in chunk
 			return true;
 		}
 		
-		$chunk = @gzopen($this->getChunkPath($X, $Z), "wb".PMF_LEVEL_DEFLATE_LEVEL);
+		$path = $this->getChunkPath($X, $Z);
+		if(!file_exists(dirname($path))){
+			@mkdir(dirname($path), 0755);
+		}
 		$bitmap = 0;
-		for($Y = 0; $Y < $this->levelData["height"]; ++$Y){
+		for($Y = 0; $Y < 8; ++$Y){
 			if($this->chunks[$index][$Y] !== false and ((isset($this->chunkChange[$index][$Y]) and $this->chunkChange[$index][$Y] === 0) or !$this->isMiniChunkEmpty($X, $Z, $Y))){
-				gzwrite($chunk, $this->chunks[$index][$Y]);
 				$bitmap |= 1 << $Y;
 			}else{
 				$this->chunks[$index][$Y] = false;
 			}
 			$this->chunkChange[$index][$Y] = 0;
 		}
+		$chunk = @gzopen($path, "wb".PMFLevel::DEFLATE_LEVEL);
+		gzwrite($chunk, chr($bitmap));
+		gzwrite($chunk, Utils::writeInt($this->chunkInfo[$index][1]));
+		for($Y = 0; $Y < 8; ++$Y){
+			$t = 1 << $Y;
+			if(($bitmap & $t) === $t){
+				gzwrite($chunk, $this->chunks[$index][$Y]);
+			}
+		}
+		gzclose($chunk);
 		$this->chunkChange[$index][-1] = false;
-		$this->locationTable[$index][0] = $bitmap;
-		$this->seek($this->payloadOffset + ($index << 1));
-		$this->write(Utils::writeShort($this->locationTable[$index][0]));
+		$this->chunkInfo[$index][0] = $bitmap;
 		return true;
+	}
+	
+	public function setPopulated($X, $Z){
+		if(!$this->isChunkLoaded($X, $Z)){
+			return false;
+		}
+		$index = self::getIndex($X, $Z);
+		$this->chunkInfo[$index][1] |= 0b00000000000000000000000000000001;
+	}
+	
+	public function unsetPopulated($X, $Z){		
+		if(!$this->isChunkLoaded($X, $Z)){
+			return false;
+		}
+		$index = self::getIndex($X, $Z);
+		$this->chunkInfo[$index][1] &= ~0b00000000000000000000000000000001;
+	}
+	
+	public function isPopulated($X, $Z){
+		if(!$this->isChunkLoaded($X, $Z)){
+			return false;
+		}
+		$index = self::getIndex($X, $Z);
+		return ($this->chunkInfo[$index][1] & 0b00000000000000000000000000000001) > 0;
+	}
+	
+	public function isGenerated($X, $Z){
+		return file_exists($this->getChunkPath($X, $Z));
 	}
 	
 	public function doSaveRound(){
 		foreach($this->chunks as $index => $chunk){
-			$this->getXZ($index, $X, $Z);
+			self::getXZ($index, $X, $Z);
 			$this->saveChunk($X, $Z);
 		}
 	}

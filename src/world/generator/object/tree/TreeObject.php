@@ -23,6 +23,8 @@
 class TreeObject{
 	public $overridable = array(
 		0 => true,
+		2 => true,
+		3 => true,
 		6 => true,
 		17 => true,
 		18 => true,
@@ -45,8 +47,8 @@ class TreeObject{
 				$tree = new SmallTreeObject();
 				$tree->type = SaplingBlock::JUNGLE;
 				break;
-			default:
 			case SaplingBlock::OAK:
+			default:
 				/*if($random->nextRange(0, 9) === 0){
 					$tree = new BigTreeObject();
 				}else{*/

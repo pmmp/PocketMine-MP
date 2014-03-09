@@ -76,7 +76,6 @@ class Config{
      */
     public function __construct($file, $type = CONFIG_DETECT, $default = array(), &$correct = null){
 		$this->load($file, $type, $default);
-		$correct = $this->check();
 	}
 	
 	public function reload(){	
@@ -84,7 +83,6 @@ class Config{
 		unset($this->correct);
 		unset($this->type);
 		$this->load($this->file);
-		$correct = $this->check();
 	}
 	
 	public function fixYAMLIndexes($str){
@@ -141,7 +139,6 @@ class Config{
 					default:
 						$this->correct = false;
 						return false;
-						break;
 				}
 				if(!is_array($this->config)){
 					$this->config = $default;

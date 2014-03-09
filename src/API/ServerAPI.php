@@ -28,7 +28,8 @@ class ServerAPI{
 	private $apiList = array();
 	private $asyncCnt = 0;
 	private $rcon;
-	private $query;
+	
+	public $query;
 
     //TODO: Instead of hard-coding functions, use PHPDoc-compatible methods to load APIs.
 
@@ -78,7 +79,7 @@ class ServerAPI{
 	public $tile;
 
 	/**
-	 * @return PocketMinecraftServer
+	 * @return MainServer
 	 */
 	public static function request(){
 		return self::$serverRequest;
@@ -97,6 +98,14 @@ class ServerAPI{
 		@mkdir(DATA_PATH."players/", 0755);
 		@mkdir(DATA_PATH."worlds/", 0755);
 		@mkdir(DATA_PATH."plugins/", 0755);
+		
+		//Init all the events
+		foreach(get_declared_classes() as $class){
+			if(is_subclass_of($class, "BaseEvent") and property_exists($class, "handlers") and property_exists($class, "handlerPriority")){
+				$class::unregisterAll();
+			}
+		}
+		
 		$version = new VersionString();
 		console("[INFO] Starting Minecraft PE server version ".FORMAT_AQUA.CURRENT_MINECRAFT_VERSION);
 		
@@ -129,32 +138,28 @@ class ServerAPI{
 			"enable-query" => true,
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
-			"send-usage" => true,
 			"auto-save" => true,
 		));
 		
 		$this->parseProperties();
+		
+		//Load advanced properties
 		define("DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
-		if($this->getProperty("port") !== false){
-			$this->setProperty("server-port", $this->getProperty("port"));
-			$this->config->remove("port");
-			$this->config->remove("invisible");
+		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 7)); //Default rate ~448 kB/s
+		if(ADVANCED_CACHE == true){
+			console("[INFO] Advanced cache enabled");
 		}
-		$this->server = new PocketMinecraftServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
+		if($this->getProperty("upnp-forwarding") == true){
+			console("[INFO] [UPnP] Trying to port forward...");
+			UPnP_PortForward($this->getProperty("server-port"));
+		}
+
+		$this->server = new MainServer($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed:false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip:"0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
 		console("[INFO] This server is running PocketMine-MP version ".($version->isDev() ? FORMAT_YELLOW:"").MAJOR_VERSION.FORMAT_RESET." \"".CODENAME."\" (MCPE: ".CURRENT_MINECRAFT_VERSION.") (API ".CURRENT_API_VERSION.")", true, true, 0);
 		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
-
-		if(ADVANCED_CACHE == true){
-			console("[INFO] Advanced cache enabled");
-		}
-
-		if($this->getProperty("upnp-forwarding") === true){
-			console("[INFO] [UPnP] Trying to port forward...");
-			UPnP_PortForward($this->getProperty("server-port"));
-		}
 
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
 			console("[INFO] Checking for new server version");
@@ -287,7 +292,7 @@ class ServerAPI{
 			$this->setProperty("memory-limit", "128M");
 		}
 
-		if($this->server instanceof PocketMinecraftServer){
+		if($this->server instanceof MainServer){
 			$this->server->setType($this->getProperty("server-type"));
 			$this->server->maxClients = $this->getProperty("max-players");
 			$this->server->description = $this->getProperty("description");
@@ -333,11 +338,11 @@ class ServerAPI{
 	}
 
 	public function init(){
-		if(!(self::$serverRequest instanceof PocketMinecraftServer)){
+		if(!(self::$serverRequest instanceof MainServer)){
 			self::$serverRequest = $this->server;
 		}
 
-		if($this->getProperty("send-usage") !== false){
+		if($this->getProperty("send-usage", true) !== false){
 			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
 		}
@@ -349,7 +354,7 @@ class ServerAPI{
 		}
 
 		if($this->getProperty("enable-query") === true){
-			$this->query = new Query();
+			$this->query = new QueryHandler();
 		}
 		CraftingRecipes::init();
 		$this->server->init();

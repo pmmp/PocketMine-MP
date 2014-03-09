@@ -21,7 +21,7 @@
 
 class Level{
 	public $entities, $tiles, $blockUpdates, $nextSave, $players = array(), $level;
-	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime;
+	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $stopTime, $generator;
 	
 	public function __construct(PMFLevel $level, Config $entities, Config $tiles, Config $blockUpdates, $name){
 		$this->server = ServerAPI::request();
@@ -34,12 +34,23 @@ class Level{
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
 		$this->stopTime = false;
-		$this->server->schedule(15, array($this, "checkThings"), array(), true);
+		$this->server->schedule(2, array($this, "checkThings"), array(), true);
 		$this->server->schedule(20 * 13, array($this, "checkTime"), array(), true);
 		$this->name = $name;
 		$this->usedChunks = array();
 		$this->changedBlocks = array();
 		$this->changedCount = array();
+		if(class_exists($this->level->levelData["generator"])){
+			$gen = $this->level->levelData["generator"];
+			$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
+		}else{
+			if(strtoupper($this->server->api->getProperty("level-type")) == "FLAT"){
+				$this->generator = new SuperflatGenerator();
+			}else{
+				$this->generator = new NormalGenerator();
+			}
+		}	
+		$this->generator->init($this, new Random($this->level->levelData["seed"]));
 	}
 	
 	public function close(){
@@ -64,6 +75,10 @@ class Level{
 
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[$X.".".$Z][$player->CID]);
+	}
+	
+	public function isChunkPopulated($X, $Z){
+		return $this->level->isPopulated($X, $Z);
 	}
 	
 	public function checkTime(){
@@ -93,9 +108,8 @@ class Level{
 		$now = microtime(true);
 		$this->players = $this->server->api->player->getAll($this);
 		
-		if(count($this->changedCount) > 0){
+		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
 			arsort($this->changedCount);
-			$resendChunks = array();
 			foreach($this->changedCount as $index => $count){
 				if($count < 582){//Optimal value, calculated using the relation between minichunks and single packets
 					break;
@@ -128,18 +142,34 @@ class Level{
 				if(count($c) === 0){
 					unset($this->usedChunks[$i]);
 					$X = explode(".", $i);
-					$Z = array_pop($X);
-					$this->level->unloadChunk((int) array_pop($X), (int) $Z, $this->server->saveEnabled);
+					$Z = (int) array_pop($X);
+					$X = (int) array_pop($X);
+					if(!$this->isSpawnChunk($X, $Z)){
+						$this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
+					}
 				}
 			}
 			$this->save(false, false);
 		}
 	}
 	
+	public function generateChunk($X, $Z){
+		++$this->level->isGenerating;
+		$this->generator->generateChunk($X, $Z);
+		--$this->level->isGenerating;
+		return true;
+	}
+	
+	public function populateChunk($X, $Z){
+		$this->level->setPopulated($X, $Z);
+		$this->generator->populateChunk($X, $Z);		
+		return true;
+	}
+	
 	public function __destruct(){
 		if(isset($this->level)){
 			$this->save(false, false);
-			$this->level->close();
+			$this->level->closeLevel();
 			unset($this->level);
 		}
 	}
@@ -385,12 +415,22 @@ class Level{
 		return $this->level->loadChunk($X, $Z);
 	}
 	
-	public function unloadChunk($X, $Z){
+	public function unloadChunk($X, $Z, $force = false){
 		if(!isset($this->level)){
+			return false;
+		}
+		
+		if($force !== true and $this->isSpawnChunk($X, $Z)){
 			return false;
 		}
 		Cache::remove("world:{$this->name}:$X:$Z");
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
+	}
+	
+	public function isSpawnChunk($X, $Z){
+		$spawnX = $this->level->getData("spawnX") >> 4;
+		$spawnZ = $this->level->getData("spawnZ") >> 4;
+		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}
 
 	public function getOrderedChunk($X, $Z, $Yndex){

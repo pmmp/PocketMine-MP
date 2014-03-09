@@ -20,7 +20,7 @@
 */
 
 
-class ProtocolInfo{
+abstract class ProtocolInfo{
 
 	const CURRENT_PROTOCOL = 14;
 	
@@ -95,63 +95,6 @@ class ProtocolInfo{
 	const ADVENTURE_SETTINGS_PACKET = 0xb7;
 	const ENTITY_DATA_PACKET = 0xb8;
 	//const PLAYER_INPUT_PACKET = 0xb9;
-	
-	public static $packets = array(
-		-1 => "UnknownPacket",
-		ProtocolInfo::PING_PACKET => "PingPacket",
-		ProtocolInfo::PONG_PACKET => "PongPacket",
-		ProtocolInfo::CLIENT_CONNECT_PACKET => "ClientConnectPacket",
-		ProtocolInfo::SERVER_HANDSHAKE_PACKET => "ServerHandshakePacket",
-		ProtocolInfo::DISCONNECT_PACKET => "DisconnectPacket",
-		ProtocolInfo::LOGIN_PACKET => "LoginPacket",
-		ProtocolInfo::LOGIN_STATUS_PACKET => "LoginStatusPacket",
-		ProtocolInfo::READY_PACKET => "ReadyPacket",
-		ProtocolInfo::MESSAGE_PACKET => "MessagePacket",
-		ProtocolInfo::SET_TIME_PACKET => "SetTimePacket",
-		ProtocolInfo::START_GAME_PACKET => "StartGamePacket",
-		ProtocolInfo::ADD_MOB_PACKET => "AddMobPacket",
-		ProtocolInfo::ADD_PLAYER_PACKET => "AddPlayerPacket",
-		ProtocolInfo::REMOVE_PLAYER_PACKET => "RemovePlayerPacket",
-		ProtocolInfo::ADD_ENTITY_PACKET => "AddEntityPacket",
-		ProtocolInfo::REMOVE_ENTITY_PACKET => "RemoveEntityPacket",
-		ProtocolInfo::ADD_ITEM_ENTITY_PACKET => "AddItemEntityPacket",
-		ProtocolInfo::TAKE_ITEM_ENTITY_PACKET => "TakeItemEntityPacket",
-		ProtocolInfo::MOVE_ENTITY_PACKET => "MoveEntityPacket",
-		ProtocolInfo::MOVE_ENTITY_PACKET_POSROT => "MoveEntityPacket_PosRot",
-		ProtocolInfo::ROTATE_HEAD_PACKET => "RotateHeadPacket",
-		ProtocolInfo::MOVE_PLAYER_PACKET => "MovePlayerPacket",
-		ProtocolInfo::REMOVE_BLOCK_PACKET => "RemoveBlockPacket",
-		ProtocolInfo::UPDATE_BLOCK_PACKET => "UpdateBlockPacket",
-		ProtocolInfo::ADD_PAINTING_PACKET => "AddPaintingPacket",
-		ProtocolInfo::EXPLODE_PACKET => "ExplodePacket",
-		ProtocolInfo::LEVEL_EVENT_PACKET => "LevelEventPacket",
-		ProtocolInfo::TILE_EVENT_PACKET => "TileEventPacket",
-		ProtocolInfo::ENTITY_EVENT_PACKET => "EntityEventPacket",
-		ProtocolInfo::REQUEST_CHUNK_PACKET => "RequestChunkPacket",
-		ProtocolInfo::CHUNK_DATA_PACKET => "ChunkDataPacket",
-		ProtocolInfo::PLAYER_EQUIPMENT_PACKET => "PlayerEquipmentPacket",
-		ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET => "PlayerArmorEquipmentPacket",
-		ProtocolInfo::INTERACT_PACKET => "InteractPacket",
-		ProtocolInfo::USE_ITEM_PACKET => "UseItemPacket",
-		ProtocolInfo::PLAYER_ACTION_PACKET => "PlayerActionPacket",
-		ProtocolInfo::HURT_ARMOR_PACKET => "HurtArmorPacket",
-		ProtocolInfo::SET_ENTITY_DATA_PACKET => "SetEntityDataPacket",
-		ProtocolInfo::SET_ENTITY_MOTION_PACKET => "SetEntityMotionPacket",
-		ProtocolInfo::SET_HEALTH_PACKET => "SetHealthPacket",
-		ProtocolInfo::SET_SPAWN_POSITION_PACKET => "SetSpawnPositionPacket",
-		ProtocolInfo::ANIMATE_PACKET => "AnimatePacket",
-		ProtocolInfo::RESPAWN_PACKET => "RespawnPacket",
-		ProtocolInfo::SEND_INVENTORY_PACKET => "SendInventoryPacket",
-		ProtocolInfo::DROP_ITEM_PACKET => "DropItemPacket",
-		ProtocolInfo::CONTAINER_OPEN_PACKET => "ContainerOpenPacket",
-		ProtocolInfo::CONTAINER_CLOSE_PACKET => "ContainerClosePacket",
-		ProtocolInfo::CONTAINER_SET_SLOT_PACKET => "ContainerSetSlotPacket",
-		ProtocolInfo::CONTAINER_SET_DATA_PACKET => "ContainerSetDataPacket",
-		ProtocolInfo::CONTAINER_SET_CONTENT_PACKET => "ContainerSetContentPacket",
-		ProtocolInfo::CHAT_PACKET => "ChatPacket",
-		ProtocolInfo::ADVENTURE_SETTINGS_PACKET => "AdventureSettingsPacket",
-		ProtocolInfo::ENTITY_DATA_PACKET => "EntityDataPacket",
-	);
 
 }
 

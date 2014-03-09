@@ -33,6 +33,7 @@ class VersionString{
 	private $release;
 	private $minor;
 	private $development = false;
+	private $generation;
 	public function __construct($version = MAJOR_VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
