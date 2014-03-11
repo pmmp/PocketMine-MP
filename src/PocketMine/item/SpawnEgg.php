@@ -21,9 +21,9 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Level\Level;
+use PocketMine;
 
 class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){

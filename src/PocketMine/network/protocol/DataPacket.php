@@ -21,9 +21,9 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 abstract class DataPacket{
 	private $offset = 0;

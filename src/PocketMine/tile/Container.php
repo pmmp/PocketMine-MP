@@ -21,7 +21,6 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine;
 use PocketMine\Event\Event;
 use PocketMine\Event\EventHandler;
 use PocketMine\Event\Tile\TileInventoryChangeEvent;
@@ -30,6 +29,7 @@ use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\Player;
+use PocketMine;
 
 trait Container{
 	public function openInventory(Player $player){

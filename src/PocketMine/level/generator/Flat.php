@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator;
 
-use PocketMine;
 use PocketMine\Block\CoalOre;
 use PocketMine\Block\DiamondOre;
 use PocketMine\Block\Dirt;
@@ -35,6 +34,7 @@ use PocketMine\Level\Generator\Populator\Ore;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
+use PocketMine;
 
 class Flat extends Generator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();

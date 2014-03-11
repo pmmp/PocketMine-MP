@@ -24,9 +24,9 @@
  */
 namespace PocketMine\Level\Generator;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Utils\Random;
+use PocketMine;
 
 abstract class Generator{
 	private static $list = array();

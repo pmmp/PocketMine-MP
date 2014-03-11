@@ -21,9 +21,9 @@
 
 namespace PocketMine\Network\Query;
 
-use PocketMine;
 use PocketMine\Network\Packet;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 class QueryPacket extends Packet{
 	const HANDSHAKE = 9;

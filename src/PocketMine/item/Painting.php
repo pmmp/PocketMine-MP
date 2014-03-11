@@ -21,10 +21,10 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Level\Level;
 use PocketMine\ServerAPI;
+use PocketMine;
 
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){

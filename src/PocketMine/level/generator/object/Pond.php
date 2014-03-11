@@ -21,11 +21,11 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
+use PocketMine;
 
 class Pond{
 	private $random;

@@ -24,16 +24,16 @@
  */
 namespace PocketMine\Level;
 
-use PocketMine;
-use PocketMine\Utils\Utils;
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
+use PocketMine\Level\Generator\Flat;
 use PocketMine\Level\Generator\Generator;
+use PocketMine\Level\Generator\Normal;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
 use PocketMine\NBT\Tag\Short;
-use PocketMine\NBT\NBT;
 use PocketMine\Network\Protocol\SetTimePacket;
 use PocketMine\Network\Protocol\UpdateBlockPacket;
 use PocketMine\Player;
@@ -46,8 +46,8 @@ use PocketMine\Tile\Tile;
 use PocketMine\Utils\Cache;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
-use PocketMine\Level\Generator\Flat;
-use PocketMine\Level\Generator\Normal;
+use PocketMine\Utils\Utils;
+use PocketMine;
 
 /**
  * Class Level

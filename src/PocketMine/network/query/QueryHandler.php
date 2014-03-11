@@ -25,11 +25,11 @@
  */
 namespace PocketMine\Network\Query;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Player;
 use PocketMine\ServerAPI;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;

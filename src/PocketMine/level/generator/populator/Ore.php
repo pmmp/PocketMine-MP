@@ -21,11 +21,11 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
-use PocketMine;
 use PocketMine\Level\Generator\Object\Ore as ObjectOre;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
+use PocketMine;
 
 class Ore extends Populator{
 	private $oreTypes = array();

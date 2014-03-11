@@ -21,13 +21,11 @@
 
 namespace PocketMine;
 
-use PocketMine\Level\Level;
 use PocketMine\Entity\RealHuman;
-use PocketMine\Event;
 use PocketMine\Event\EventHandler;
-use PocketMine\Event\Server\DataPacketReceiveEvent;
-use PocketMine\Event\Server\DataPacketSendEvent;
+use PocketMine\Event;
 use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\NBT;

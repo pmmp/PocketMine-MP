@@ -21,10 +21,10 @@
 
 namespace PocketMine\Event\Server;
 
+use PocketMine\Event\CancellableEvent;
 use PocketMine\Event;
 use PocketMine;
 use PocketMine\Network\Packet;
-use PocketMine\Event\CancellableEvent;
 
 class PacketSendEvent extends ServerEvent implements CancellableEvent{
 	public static $handlers;

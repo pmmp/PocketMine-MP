@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator;
 
-use PocketMine;
 use PocketMine\Block\CoalOre;
 use PocketMine\Block\DiamondOre;
 use PocketMine\Block\Dirt;
@@ -38,6 +37,7 @@ use PocketMine\Level\Generator\Populator\Tree;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
+use PocketMine;
 
 class Normal extends Generator{
 

@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
@@ -29,6 +28,7 @@ use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Tile\Chest as TileChest;
 use PocketMine\Tile\Tile;
+use PocketMine;
 
 class Chest extends Transparent{
 	public function __construct($meta = 0){

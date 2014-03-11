@@ -21,9 +21,9 @@
 
 namespace PocketMine;
 
-use PocketMine\Level\Level;
 use PocketMine\Block\Block;
 use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Int;

@@ -21,13 +21,13 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
 use PocketMine\Block\Lava;
 use PocketMine\Block\Liquid;
 use PocketMine\Block\Water;
 use PocketMine\Level\Level;
+use PocketMine;
 
 class Bucket extends Item{
 	public function __construct($meta = 0, $count = 1){

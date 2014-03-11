@@ -22,9 +22,9 @@
 namespace PocketMine\Event\Player;
 
 use PocketMine\Event;
-use PocketMine;
-use PocketMine\Item\Item;
 use PocketMine\Event\CancellableEvent;
+use PocketMine\Item\Item;
+use PocketMine;
 use PocketMine\Player;
 
 class PlayerEquipmentChangeEvent extends PlayerEvent implements CancellableEvent{

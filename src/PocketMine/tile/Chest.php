@@ -21,13 +21,13 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Network\Protocol\EntityDataPacket;
+use PocketMine;
 
 class Chest extends Spawnable{
 	use Container;

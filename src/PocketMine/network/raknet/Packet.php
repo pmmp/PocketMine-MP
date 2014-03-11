@@ -21,10 +21,10 @@
 
 namespace PocketMine\Network\RakNet;
 
-use PocketMine;
 use PocketMine\Network;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 class Packet extends Network\Packet{
 	private $packetID;

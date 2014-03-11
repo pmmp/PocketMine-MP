@@ -22,9 +22,9 @@
 namespace PocketMine\Event\Server;
 
 use PocketMine\Event;
-use PocketMine;
-use PocketMine\Network\Protocol\DataPacket;
 use PocketMine\Event\CancellableEvent;
+use PocketMine\Network\Protocol\DataPacket;
+use PocketMine;
 use PocketMine\Player;
 
 class DataPacketSendEvent extends ServerEvent implements CancellableEvent{

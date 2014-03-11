@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 use PocketMine\Event\Entity\EntityArmorChangeEvent;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent;
 use PocketMine\Event\Event;
@@ -30,13 +29,14 @@ use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
+use PocketMine\Network;
 use PocketMine\Network\Protocol\AddPlayerPacket;
 use PocketMine\Network\Protocol\ContainerSetContentPacket;
 use PocketMine\Network\Protocol\PlayerEquipmentPacket;
 use PocketMine\Network\Protocol\RemovePlayerPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
 use PocketMine\Player;
-use PocketMine\Network;
+use PocketMine;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 

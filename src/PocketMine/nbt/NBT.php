@@ -24,7 +24,6 @@
  */
 namespace PocketMine\NBT;
 
-use PocketMine;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Byte_Array;
 use PocketMine\NBT\Tag\Compound;
@@ -40,6 +39,7 @@ use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
 use PocketMine\NBT\Tag\Tag;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 class NBT implements \ArrayAccess{
 	const LITTLE_ENDIAN = 0;
