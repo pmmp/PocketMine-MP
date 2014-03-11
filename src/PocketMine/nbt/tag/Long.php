@@ -22,7 +22,7 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine;
-use PocketMine\NBT\NBT as NBT;
+use PocketMine\NBT\NBT;
 
 class Long extends NamedTag{
 

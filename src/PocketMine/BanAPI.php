@@ -21,7 +21,9 @@
 
 namespace PocketMine;
 
-use PocketMine\Utils\Config as Config;
+use PocketMine\Level\Level;
+use PocketMine\Math\Vector2;
+use PocketMine\Utils\Config;
 
 class BanAPI{
 	private $server;
@@ -103,7 +105,7 @@ class BanAPI{
 			case "player.block.place": //Spawn protection detection. Allows OPs to place/break blocks in the spawn area.
 				if(!$this->isOp($data["player"]->getUsername())){
 					$t = new Vector2($data["target"]->x, $data["target"]->z);
-					$s = new Vector2($this->server->spawn->x, $this->server->spawn->z);
+					$s = new Vector2(Level::getDefault()->getSpawn()->x, Level::getDefault()->getSpawn()->z);
 					if($t->distance($s) <= $this->server->api->getProperty("spawn-protection") and $this->server->api->dhandle($event . ".spawn", $data) !== true){
 						return false;
 					}
@@ -255,7 +257,7 @@ class BanAPI{
 						$ip = strtolower($params[0]);
 						$player = Player::get($ip);
 						if($player instanceof Player){
-							$ip = $player->ip;
+							$ip = $player->getIP();
 							$player->close("banned");
 						}
 						$this->bannedIPs->set($ip);

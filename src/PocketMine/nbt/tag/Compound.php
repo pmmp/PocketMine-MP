@@ -22,9 +22,11 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine;
-use PocketMine\NBT\NBT as NBT;
+use PocketMine\NBT\NBT;
 
 class Compound extends NamedTag implements \ArrayAccess, \Iterator{
+
+	protected $value = array();
 
 	public function __construct($name = "", $value = array()){
 		$this->name = $name;
@@ -66,7 +68,7 @@ class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 	}
 
 	public function offsetSet($name, $value){
-		$this->__set($name, $value);
+		$this->value[$name] = $value;
 	}
 
 	public function offsetUnset($name){
@@ -82,17 +84,17 @@ class Compound extends NamedTag implements \ArrayAccess, \Iterator{
 		}
 	}
 
-	public function __set($name, $value){
+	/*public function __set($name, $value){
 		if($value instanceof Tag){
-			$this->value[$name] = $value;
-		} elseif(isset($this->value[$name])){
 			if($value instanceof NamedTag and $value->getName() !== "" and $value->getName() !== false){
-				$this->value[$value->getName()]->setValue($value);
+				$this->value[$value->getName()] = $value;
 			} else{
-				$this->value[$name]->setValue($value);
+				$this->value[$name] = $value;
 			}
+		}elseif(isset($this->value[$name])){
+			$this->value[$name]->setValue($value);
 		}
-	}
+	}*/
 
 	public function __isset($name){
 		return isset($this->value[$name]);

@@ -23,11 +23,12 @@
  * All Block classes are in here
  */
 namespace PocketMine\Block;
+
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
+use PocketMine\Level\Position;
+use PocketMine\Player;
 use PocketMine;
-use PocketMine\Player as Player;
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Position as Position;
-use PocketMine\Level\Level as Level;
 
 abstract class Block extends Position{
 	const AIR = 0;
@@ -435,8 +436,8 @@ abstract class Block extends Position{
 	/**
 	 * Returns an array of Item objects to be dropped
 	 *
-	 * @param Item $item
-	 * @param Player   $player
+	 * @param Item   $item
+	 * @param Player $player
 	 *
 	 * @return array
 	 */
@@ -453,8 +454,8 @@ abstract class Block extends Position{
 	/**
 	 * Returns the seconds that this block takes to be broken using an specific Item
 	 *
-	 * @param Item $item
-	 * @param Player   $player
+	 * @param Item   $item
+	 * @param Player $player
 	 *
 	 * @return float
 	 */
@@ -490,8 +491,8 @@ abstract class Block extends Position{
 	/**
 	 * Returns if the item can be broken with an specific Item
 	 *
-	 * @param Item $item
-	 * @param Player   $player
+	 * @param Item   $item
+	 * @param Player $player
 	 *
 	 * @return bool
 	 */
@@ -500,8 +501,8 @@ abstract class Block extends Position{
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
-	 * @param Item $item
-	 * @param Player   $player
+	 * @param Item   $item
+	 * @param Player $player
 	 *
 	 * @return mixed
 	 */
@@ -510,14 +511,14 @@ abstract class Block extends Position{
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param Item $item
-	 * @param Player   $player
-	 * @param Block    $block
-	 * @param Block    $target
-	 * @param int      $face
-	 * @param float    $fx
-	 * @param float    $fy
-	 * @param float    $fz
+	 * @param Item   $item
+	 * @param Player $player
+	 * @param Block  $block
+	 * @param Block  $target
+	 * @param int    $face
+	 * @param float  $fx
+	 * @param float  $fy
+	 * @param float  $fz
 	 *
 	 * @return bool
 	 */
@@ -526,8 +527,8 @@ abstract class Block extends Position{
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
-	 * @param Item $item
-	 * @param Player   $player
+	 * @param Item   $item
+	 * @param Player $player
 	 *
 	 * @return bool
 	 */

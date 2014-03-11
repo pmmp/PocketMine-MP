@@ -21,23 +21,23 @@
 
 namespace PocketMine\Level\Generator;
 
-use PocketMine\Block\CoalOre as CoalOre;
-use PocketMine\Block\DiamondOre as DiamondOre;
-use PocketMine\Block\Dirt as Dirt;
-use PocketMine\Block\GoldOre as GoldOre;
-use PocketMine\Block\Gravel as Gravel;
-use PocketMine\Block\IronOre as IronOre;
-use PocketMine\Block\LapisOre as LapisOre;
-use PocketMine\Block\RedstoneOre as RedstoneOre;
-use PocketMine\Level\Generator\Noise\Simplex as Simplex;
-use PocketMine\Level\Generator\Object\OreType as OreType;
-use PocketMine\Level\Generator\Populator\Ore as Ore;
-use PocketMine\Level\Generator\Populator\TallGrass as TallGrass;
-use PocketMine\Level\Generator\Populator\Tree as Tree;
-use PocketMine\Level\Level as Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random as Random;
 use PocketMine;
+use PocketMine\Block\CoalOre;
+use PocketMine\Block\DiamondOre;
+use PocketMine\Block\Dirt;
+use PocketMine\Block\GoldOre;
+use PocketMine\Block\Gravel;
+use PocketMine\Block\IronOre;
+use PocketMine\Block\LapisOre;
+use PocketMine\Block\RedstoneOre;
+use PocketMine\Level\Generator\Noise\Simplex;
+use PocketMine\Level\Generator\Object\OreType;
+use PocketMine\Level\Generator\Populator\Ore;
+use PocketMine\Level\Generator\Populator\TallGrass;
+use PocketMine\Level\Generator\Populator\Tree;
+use PocketMine\Level\Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Utils\Random;
 
 class Normal extends Generator{
 

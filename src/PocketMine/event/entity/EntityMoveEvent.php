@@ -21,10 +21,11 @@
 
 namespace PocketMine\Event\Entity;
 
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Event;
+use PocketMine\Entity\Entity;
 use PocketMine;
+use PocketMine\Event;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Event\CancellableEvent;
 
 class EntityMoveEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;

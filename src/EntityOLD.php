@@ -176,7 +176,7 @@ $explosion->explode();
 public function getDrops(){
 if($this->class === ENTITY_PLAYER and $this->player instanceof Player and ($this->player->gamemode & 0x01) === 0){
 $inv = array();
-for($i = 0; $i < PLAYER_SURVIVAL_SLOTS; ++$i){
+for($i = 0; $i < Player::SURVIVAL_SLOTS; ++$i){
 $slot = $this->player->getSlot($i);
 $this->player->setSlot($i, Item\Item::get(AIR, 0, 0));
 if($slot->getID() !== AIR and $slot->getCount() > 0){

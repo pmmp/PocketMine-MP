@@ -25,7 +25,7 @@
 namespace PocketMine\Event;
 
 use PocketMine;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\Utils;
 
 abstract class Event{
 	const ALLOW = 0;

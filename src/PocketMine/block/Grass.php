@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Generator\Object\TallGrass as TallGrass;
-use PocketMine\Utils\Random as Random;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Level\Generator\Object\TallGrass;
+use PocketMine\Utils\Random;
 
 class Grass extends Solid{
 	public function __construct(){

@@ -24,10 +24,10 @@
  */
 namespace PocketMine\Recipes;
 
-use PocketMine\BlockAPI as BlockAPI;
-use PocketMine\ServerAPI as ServerAPI;
-use PocketMine\Item\Item as Item;
 use PocketMine;
+use PocketMine\BlockAPI;
+use PocketMine\Item\Item;
+use PocketMine\ServerAPI;
 
 abstract class Crafting{
 	private static $small = array( //Probably means craftable on crafting bench and in inventory. Name it better!

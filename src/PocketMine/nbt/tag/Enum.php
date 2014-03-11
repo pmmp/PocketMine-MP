@@ -21,13 +21,14 @@
 
 namespace PocketMine\NBT\Tag;
 
-use PocketMine\NBT\Tag\Enum as TagEnum;
+use PocketMine\NBT\NBT;
 use PocketMine;
-use PocketMine\NBT\NBT as NBT;
+use PocketMine\NBT\Tag\Enum as TagEnum;
 
 class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 
 	private $tagType;
+	protected $value = array();
 
 	public function __construct($name = "", $value = array()){
 		$this->name = $name;
@@ -77,7 +78,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 	}
 
 	public function offsetSet($name, $value){
-		$this->__set($name, $value);
+		$this->value[$name] = $value;
 	}
 
 	public function offsetUnset($name){
@@ -90,14 +91,6 @@ class Enum extends NamedTag implements \ArrayAccess, \Iterator{
 			return $ret;
 		} else{
 			return $ret->getValue();
-		}
-	}
-
-	public function __set($name, $value){
-		if($value instanceof Tag){
-			$this->value[$name] = $value;
-		} elseif(isset($this->value[$name])){
-			$this->value[$name]->setValue($value);
 		}
 	}
 

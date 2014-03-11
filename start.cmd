@@ -20,7 +20,7 @@ if exist src\PocketMine\PocketMine.php (
 )
 
 if exist bin\mintty.exe (
-	start "" bin\mintty.exe -o Columns=88 -o Rows=32 -o AllowBlinking=0 -o FontQuality=3 -o Font="DejaVu Sans Mono" -o FontHeight=10 -o CursorType=0 -o CursorBlinks=1 -h error -t "PocketMine-MP" -i bin/pocketmine.ico -w max %PHP_BINARY% -d enable_dl=On %POCKETMINE_FILE% --enable-ansi %*
+	start "" bin\mintty.exe -o Columns=88 -o Rows=32 -o AllowBlinking=0 -o FontQuality=3 -o Font="DejaVu Sans Mono" -o FontHeight=10 -o CursorType=0 -o CursorBlinks=1 -h error -t "PocketMine-MP" -i bin/pocketmine.ico -w max %PHP_BINARY% %POCKETMINE_FILE% --enable-ansi %*
 ) else (
-	%PHP_BINARY% -d enable_dl=On %POCKETMINE_FILE% %*
+	%PHP_BINARY% %POCKETMINE_FILE% %*
 )

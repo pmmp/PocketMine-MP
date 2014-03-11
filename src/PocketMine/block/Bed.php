@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Network\Protocol\ChatPacket as ChatPacket;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Network\Protocol\ChatPacket;
+use PocketMine\ServerAPI;
 
 class Bed extends Transparent{
 	public function __construct($type = 0){

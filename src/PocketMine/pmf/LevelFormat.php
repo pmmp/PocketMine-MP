@@ -21,12 +21,12 @@
 
 namespace PocketMine\PMF;
 
-use PocketMine\Level\Level as Level;
-use PocketMine\NBT\NBT as NBT;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\Utils\Utils as Utils;
 use PocketMine;
+use PocketMine\Level\Level;
+use PocketMine\NBT\NBT;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Enum;
+use PocketMine\Utils\Utils;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;
@@ -700,7 +700,7 @@ class LevelFormat extends PMF{
 		}
 		$this->chunkInfo[$index][0] = $bitmap;
 		$this->chunkChange[$index][-1] = false;
-		$chunk = b"";
+		$chunk = "";
 		$chunk .= chr($bitmap);
 		$chunk .= Utils::writeInt($this->chunkInfo[$index][1]);
 		$namedtag = $this->chunkInfo[$index][2]->write();
@@ -713,6 +713,7 @@ class LevelFormat extends PMF{
 			}
 		}
 		file_put_contents($path, zlib_encode($chunk, self::ZLIB_ENCODING, self::ZLIB_LEVEL));
+
 		return true;
 	}
 

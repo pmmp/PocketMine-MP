@@ -25,7 +25,7 @@
 namespace PocketMine\Network\UPnP;
 
 use PocketMine;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\Utils;
 
 function PortForward($port){
 	if(Utils::$online === false){

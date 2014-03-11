@@ -21,9 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Math\Vector3 as Vector3;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Level\Level;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){
@@ -61,16 +62,16 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->isTransparent === true and $down->getID() !== self::SUGARCANE_BLOCK){ //Replace with common break method
 				//TODO
 				//ServerAPI::request()->api->entity->drop($this, Item::get(SUGARCANE));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
@@ -87,7 +88,7 @@ class Sugarcane extends Flowable{
 					$this->level->setBlock($this, $this, true, false, true);
 				}
 
-				return BLOCK_UPDATE_RANDOM;
+				return Level::BLOCK_UPDATE_RANDOM;
 			}
 		}
 

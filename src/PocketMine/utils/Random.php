@@ -116,7 +116,7 @@ class Random{
 	 * Returns a random integer between $start and $end
 	 *
 	 * @param int $start default 0
-	 * @param int $end default PHP_INT_MAX
+	 * @param int $end   default PHP_INT_MAX
 	 *
 	 * @return int
 	 */

@@ -21,10 +21,11 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Network\Protocol\LevelEventPacket as LevelEventPacket;
-use PocketMine\Player as Player;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Network\Protocol\LevelEventPacket;
+use PocketMine\Player;
+use PocketMine\Level\Level;
 
 
 abstract class Door extends Transparent{
@@ -34,14 +35,14 @@ abstract class Door extends Transparent{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
 				$this->level->setBlock($this, new Air(), false);
 				if($this->getSide(1) instanceof Door){
 					$this->level->setBlock($this->getSide(1), new Air(), false);
 				}
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}
 

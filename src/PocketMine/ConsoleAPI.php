@@ -21,7 +21,8 @@
 
 namespace PocketMine;
 
-use PocketMine\Utils\TextFormat as TextFormat;
+use PocketMine\Level\Level;
+use PocketMine\Utils\TextFormat;
 
 class ConsoleAPI{
 	private $loop, $server, $event, $help, $cmds, $alias;
@@ -207,7 +208,7 @@ class ConsoleAPI{
 							break;
 						case "w":
 						case "world":
-							$p = ($issuer instanceof Player) ? $issuer->level->getName() : $this->server->api->level->getDefault()->getName();
+							$p = ($issuer instanceof Player) ? $issuer->level->getName() : Level::getDefault()->getName();
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;

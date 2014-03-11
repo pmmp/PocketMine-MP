@@ -21,9 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\ServerAPI;
+use PocketMine\Level\Level;
 
 class Leaves extends Transparent{
 	const OAK = 0;
@@ -109,12 +110,12 @@ class Leaves extends Transparent{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;
 				$this->level->setBlock($this, $this, false, false, true);
 			}
-		} elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(($this->meta & 0b00001100) === 0x08){
 				$this->meta &= 0x03;
 				$visited = array();
@@ -132,7 +133,7 @@ class Leaves extends Transparent{
 						ServerAPI::request()->api->entity->drop($this, Item::get(APPLE, 0, 1));
 					}
 
-					return BLOCK_UPDATE_NORMAL;
+					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}
 		}

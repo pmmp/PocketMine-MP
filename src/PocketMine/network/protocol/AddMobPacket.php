@@ -22,7 +22,7 @@
 namespace PocketMine\Network\Protocol;
 
 use PocketMine;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\Utils;
 
 class AddMobPacket extends DataPacket{
 	public $eid;

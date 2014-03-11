@@ -22,7 +22,7 @@
 namespace PocketMine\Network\UPnP;
 
 use PocketMine;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\Utils;
 
 function RemovePortForward($port){
 	if(Utils::$online === false){

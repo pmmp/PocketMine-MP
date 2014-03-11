@@ -23,6 +23,7 @@
  * Math related classes, like matrices, bounding boxes and vector
  */
 namespace PocketMine\Math;
+
 use PocketMine;
 
 abstract class Math{

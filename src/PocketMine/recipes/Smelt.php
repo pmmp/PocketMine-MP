@@ -20,8 +20,9 @@
 */
 
 namespace PocketMine\Recipes;
+
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
 
 class Smelt{
 	public static $product = array(

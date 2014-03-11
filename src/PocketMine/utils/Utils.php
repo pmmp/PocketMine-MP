@@ -25,7 +25,7 @@
 namespace PocketMine\Utils;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
 
 /**
  * Class Utils
@@ -62,7 +62,7 @@ class Utils{
 	 * will be an identifier that won't change frequently.
 	 * The rest of the hash will change depending on other factors.
 	 *
-	 * @param bool   $raw default false, if true, returns the raw identifier, not hexadecimal
+	 * @param bool   $raw   default false, if true, returns the raw identifier, not hexadecimal
 	 * @param string $extra optional, additional data to identify the machine
 	 *
 	 * @return string
@@ -220,6 +220,7 @@ class Utils{
 
 	/**
 	 * Writes a 3-byte big-endian number
+	 *
 	 * @param $value
 	 *
 	 * @return string
@@ -401,18 +402,18 @@ class Utils{
 	 * This function tries to get all the entropy available in PHP, and distills it to get a good RNG.
 	 *
 	 *
-	 * @param int    $length default 16, Number of bytes to generate
-	 * @param bool   $secure default true, Generate secure distilled bytes, slower
-	 * @param bool   $raw default true, returns a binary string if true, or an hexadecimal one
+	 * @param int    $length       default 16, Number of bytes to generate
+	 * @param bool   $secure       default true, Generate secure distilled bytes, slower
+	 * @param bool   $raw          default true, returns a binary string if true, or an hexadecimal one
 	 * @param string $startEntropy default null, adds more initial entropy
-	 * @param int    &$rounds Will be set to the number of rounds taken
-	 * @param int    &$drop Will be set to the amount of dropped bytes
+	 * @param int    &$rounds      Will be set to the number of rounds taken
+	 * @param int    &$drop        Will be set to the amount of dropped bytes
 	 *
 	 * @return string
 	 */
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
 		static $lastRandom = "";
-		$output = b"";
+		$output = "";
 		$length = abs((int) $length);
 		$secureValue = "";
 		$rounds = 0;
@@ -504,6 +505,7 @@ class Utils{
 			++$rounds;
 		}
 		$lastRandom = hash("sha512", $lastRandom, true);
+
 		return $raw === false ? bin2hex($output) : $output;
 	}
 
@@ -550,9 +552,10 @@ class Utils{
 
 	/**
 	 * POSTs data to an URL
-	 * @param     $page
+	 *
+	 * @param              $page
 	 * @param array|string $args
-	 * @param int $timeout
+	 * @param int          $timeout
 	 *
 	 * @return bool|mixed
 	 */

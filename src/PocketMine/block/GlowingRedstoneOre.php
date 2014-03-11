@@ -21,10 +21,9 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Position as Position;
-use PocketMine\Utils\Utils as Utils;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 
 class GlowingRedstoneOre extends Solid{
 	public function __construct(){
@@ -33,10 +32,10 @@ class GlowingRedstoneOre extends Solid{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_SCHEDULED or $type === BLOCK_UPDATE_RANDOM){
+		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){
 			$this->level->setBlock($this, Block::get(REDSTONE_ORE, $this->meta), false, false, true);
 
-			return BLOCK_UPDATE_WEAK;
+			return Level::BLOCK_UPDATE_WEAK;
 		}
 
 		return false;

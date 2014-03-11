@@ -22,11 +22,11 @@
 /**
  * Implementation of the Source RCON Protocol to allow remote console commands
  * Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
-*/
+ */
 namespace PocketMine\Network\RCON;
 
 use PocketMine;
-use PocketMine\ServerAPI as ServerAPI;
+use PocketMine\ServerAPI;
 
 
 class RCON{

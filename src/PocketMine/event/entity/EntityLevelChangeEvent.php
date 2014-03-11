@@ -21,10 +21,11 @@
 
 namespace PocketMine\Event\Entity;
 
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Event;
+use PocketMine\Entity\Entity;
 use PocketMine;
-use PocketMine\Level\Level as Level;
+use PocketMine\Event;
+use PocketMine\Level\Level;
+use PocketMine\Event\CancellableEvent;
 
 class EntityLevelChangeEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;

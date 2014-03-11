@@ -21,12 +21,12 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
-use PocketMine\Block\TallGrass as BlockTallGrass;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Level\Level as Level;
-use PocketMine\Utils\Random as Random;
-use PocketMine\Block\Block as Block;
 use PocketMine;
+use PocketMine\Block\Block;
+use PocketMine\Block\TallGrass as BlockTallGrass;
+use PocketMine\Level\Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Utils\Random;
 
 class TallGrass extends Populator{
 	private $level;

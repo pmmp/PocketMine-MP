@@ -21,11 +21,11 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine\Block\Block as Block;
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Level as Level;
-use PocketMine\NBT\Tag\Compound as Compound;
 use PocketMine;
+use PocketMine\Block\Block;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
+use PocketMine\NBT\Tag\Compound;
 
 class Furnace extends Tile{
 	use Container;

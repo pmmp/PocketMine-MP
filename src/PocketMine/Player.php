@@ -21,61 +21,73 @@
 
 namespace PocketMine;
 
-use PocketMine\Entity\RealHuman as RealHuman;
-use PocketMine\Event\Event as Event;
-use PocketMine\Event\EventHandler as EventHandler;
-use PocketMine\Event\Server\DataPacketReceiveEvent as DataPacketReceiveEvent;
-use PocketMine\Event\Server\DataPacketSendEvent as DataPacketSendEvent;
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Position as Position;
+use PocketMine\Level\Level;
+use PocketMine\Entity\RealHuman;
+use PocketMine\Event;
+use PocketMine\Event\EventHandler;
+use PocketMine\Event\Server\DataPacketReceiveEvent;
+use PocketMine\Event\Server\DataPacketSendEvent;
+use PocketMine\Item\Item;
+use PocketMine\Level\Position;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\NBT as NBT;
-use PocketMine\NBT\Tag\Byte as Byte;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Double as Double;
-use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\NBT\Tag\Float as Float;
-use PocketMine\NBT\Tag\Int as Int;
-use PocketMine\NBT\Tag\Short as Short;
-use PocketMine\NBT\Tag\String as String;
-use PocketMine\Network\Protocol\AdventureSettingsPacket as AdventureSettingsPacket;
-use PocketMine\Network\Protocol\AnimatePacket as AnimatePacket;
-use PocketMine\Network\Protocol\ChunkDataPacket as ChunkDataPacket;
-use PocketMine\Network\Protocol\ContainerClosePacket as ContainerClosePacket;
-use PocketMine\Network\Protocol\ContainerSetContentPacket as ContainerSetContentPacket;
-use PocketMine\Network\Protocol\ContainerSetDataPacket as ContainerSetDataPacket;
-use PocketMine\Network\Protocol\ContainerSetSlotPacket as ContainerSetSlotPacket;
-use PocketMine\Network\Protocol\DataPacket as DataPacket;
-use PocketMine\Network\Protocol\DisconnectPacket as DisconnectPacket;
-use PocketMine\Network\Protocol\EntityEventPacket as EntityEventPacket;
+use PocketMine\NBT\NBT;
+use PocketMine\NBT\Tag\Byte;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Double;
+use PocketMine\NBT\Tag\Enum;
+use PocketMine\NBT\Tag\Float;
+use PocketMine\NBT\Tag\Int;
+use PocketMine\NBT\Tag\Short;
+use PocketMine\NBT\Tag\String;
+use PocketMine\Network\Protocol\AdventureSettingsPacket;
+use PocketMine\Network\Protocol\AnimatePacket;
+use PocketMine\Network\Protocol\ChunkDataPacket;
+use PocketMine\Network\Protocol\ContainerClosePacket;
+use PocketMine\Network\Protocol\ContainerSetContentPacket;
+use PocketMine\Network\Protocol\ContainerSetDataPacket;
+use PocketMine\Network\Protocol\ContainerSetSlotPacket;
+use PocketMine\Network\Protocol\DataPacket;
+use PocketMine\Network\Protocol\DisconnectPacket;
+use PocketMine\Network\Protocol\EntityEventPacket;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
-use PocketMine\Network\Protocol\LoginStatusPacket as LoginStatusPacket;
-use PocketMine\Network\Protocol\MessagePacket as MessagePacket;
-use PocketMine\Network\Protocol\PongPacket as PongPacket;
-use PocketMine\Network\Protocol\ServerHandshakePacket as ServerHandshakePacket;
-use PocketMine\Network\Protocol\SetEntityDataPacket as SetEntityDataPacket;
-use PocketMine\Network\Protocol\SetSpawnPositionPacket as SetSpawnPositionPacket;
-use PocketMine\Network\Protocol\SetTimePacket as SetTimePacket;
-use PocketMine\Network\Protocol\StartGamePacket as StartGamePacket;
-use PocketMine\Network\Protocol\TakeItemEntityPacket as TakeItemEntityPacket;
-use PocketMine\Network\Protocol\TileEventPacket as TileEventPacket;
-use PocketMine\Network\Protocol\UnknownPacket as UnknownPacket;
-use PocketMine\Network\Protocol\UpdateBlockPacket as UpdateBlockPacket;
-use PocketMine\Network\RakNet\Info as Info;
-use PocketMine\Network\RakNet\Packet as Packet;
-use PocketMine\PMF\LevelFormat as LevelFormat;
-use PocketMine\Recipes\Crafting as Crafting;
-use PocketMine\Tile\Chest as Chest;
-use PocketMine\Tile\Furnace as Furnace;
-use PocketMine\Tile\Sign as Sign;
-use PocketMine\Tile\Spawnable as Spawnable;
-use PocketMine\Tile\Tile as Tile;
-use PocketMine\Utils\Config as Config;
-use PocketMine\Utils\TextFormat as TextFormat;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Network\Protocol\LoginStatusPacket;
+use PocketMine\Network\Protocol\MessagePacket;
+use PocketMine\Network\Protocol\PongPacket;
+use PocketMine\Network\Protocol\ServerHandshakePacket;
+use PocketMine\Network\Protocol\SetEntityDataPacket;
+use PocketMine\Network\Protocol\SetSpawnPositionPacket;
+use PocketMine\Network\Protocol\SetTimePacket;
+use PocketMine\Network\Protocol\StartGamePacket;
+use PocketMine\Network\Protocol\TakeItemEntityPacket;
+use PocketMine\Network\Protocol\TileEventPacket;
+use PocketMine\Network\Protocol\UnknownPacket;
+use PocketMine\Network\Protocol\UpdateBlockPacket;
+use PocketMine\Network\RakNet\Info;
+use PocketMine\Network\RakNet\Packet;
+use PocketMine\PMF\LevelFormat;
+use PocketMine\Recipes\Crafting;
+use PocketMine\Tile\Chest;
+use PocketMine\Tile\Furnace;
+use PocketMine\Tile\Sign;
+use PocketMine\Tile\Spawnable;
+use PocketMine\Tile\Tile;
+use PocketMine\Utils\Config;
+use PocketMine\Utils\TextFormat;
+use PocketMine\Utils\Utils;
 
+/**
+ * Main class that handles networking, recovery, and packet sending to the server part
+ * TODO: Move reliability layer
+ *
+ * Class Player
+ * @package PocketMine
+ */
 class Player extends RealHuman{
 	public static $list = array();
+
+	const MAX_QUEUE = 2048;
+	const SURVIVAL_SLOTS = 36;
+	const CREATIVE_SLOTS = 112; //????
 
 	private $recoveryQueue = array();
 	private $receiveQueue = array();
@@ -166,17 +178,18 @@ class Player extends RealHuman{
 		$server = ServerAPI::request();
 		$iname = strtolower($name);
 		if(!file_exists(\PocketMine\DATA . "players/" . $iname . ".dat")){
+			$spawn = Level::getDefault()->getSafeSpawn();
 			$nbt = new Compound(false, array(
 				"Pos" => new Enum("Pos", array(
-						0 => new Double(0, $server->spawn->x),
-						1 => new Double(1, $server->spawn->y),
-						2 => new Double(2, $server->spawn->z)
+						0 => new Double(0, $spawn->x),
+						1 => new Double(1, $spawn->y),
+						2 => new Double(2, $spawn->z)
 					)),
-				"Level" => new String("Level", $server->spawn->level->getName()),
-				"SpawnLevel" => new String("SpawnLevel", $server->spawn->level->getName()),
-				"SpawnX" => new Int("SpawnX", (int) $server->spawn->x),
-				"SpawnY" => new Int("SpawnY", (int) $server->spawn->y),
-				"SpawnZ" => new Int("SpawnZ", (int) $server->spawn->z),
+				"Level" => new String("Level", Level::getDefault()->getName()),
+				"SpawnLevel" => new String("SpawnLevel", Level::getDefault()->getName()),
+				"SpawnX" => new Int("SpawnX", (int) $spawn->x),
+				"SpawnY" => new Int("SpawnY", (int) $spawn->y),
+				"SpawnZ" => new Int("SpawnZ", (int) $spawn->z),
 				"SpawnForced" => new Byte("SpawnForced", 1), //TODO
 				"Inventory" => new Enum("Inventory", array()),
 				"Achievements" => new Compound("Achievements", array()),
@@ -363,10 +376,10 @@ class Player extends RealHuman{
 		Player::$list[$this->CID] = $this;
 		$this->ip = $ip;
 		$this->port = $port;
-		$this->spawnPosition = $this->server->spawn;
+		$this->spawnPosition = Level::getDefault()->getSafeSpawn();
 		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->gamemode;
-		$this->level = $this->server->api->level->getDefault();
+		$this->level = Level::getDefault();
 		$this->viewDistance = (int) $this->server->api->getProperty("view-distance");
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
@@ -384,7 +397,9 @@ class Player extends RealHuman{
 	}
 
 	/**
-	 * @param Vector3 $pos
+	 * Sets the spawnpoint of the player (and the compass direction) to a Vector3, or set it on another world with a Position object
+	 *
+	 * @param Vector3|Position $pos
 	 */
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Position)){
@@ -942,38 +957,36 @@ class Player extends RealHuman{
 				}
 
 				switch($item->getID()){
-					case WORKBENCH:
+					case Item::WORKBENCH:
 						$this->grantAchievement("buildWorkBench");
 						break;
-					case WOODEN_PICKAXE:
+					case Item::WOODEN_PICKAXE:
 						$this->grantAchievement("buildPickaxe");
 						break;
-					case FURNACE:
+					case Item::FURNACE:
 						$this->grantAchievement("buildFurnace");
 						break;
-					case WOODEN_HOE:
+					case Item::WOODEN_HOE:
 						$this->grantAchievement("buildHoe");
 						break;
-					case BREAD:
+					case Item::BREAD:
 						$this->grantAchievement("makeBread");
 						break;
-					case CAKE:
+					case Item::CAKE:
 						$this->grantAchievement("bakeCake");
+						$this->addItem(Item::get(Item::BUCKET, 0, 3));
 						break;
-					case STONE_PICKAXE:
-					case GOLD_PICKAXE:
-					case IRON_PICKAXE:
-					case DIAMOND_PICKAXE:
+					case Item::STONE_PICKAXE:
+					case Item::GOLD_PICKAXE:
+					case Item::IRON_PICKAXE:
+					case Item::DIAMOND_PICKAXE:
 						$this->grantAchievement("buildBetterPickaxe");
 						break;
-					case WOODEN_SWORD:
+					case Item::WOODEN_SWORD:
 						$this->grantAchievement("buildSword");
 						break;
-					case DIAMOND:
+					case Item::DIAMOND:
 						$this->grantAchievement("diamond");
-						break;
-					case CAKE:
-						$this->addItem(Item::get(BUCKET, 0, 3));
 						break;
 
 				}
@@ -1062,11 +1075,11 @@ class Player extends RealHuman{
 			return false;
 		}
 		ksort($this->received);
-		if(($cnt = count($this->received)) > PLAYER_MAX_QUEUE){
+		if(($cnt = count($this->received)) > self::MAX_QUEUE){
 			foreach($this->received as $c => $t){
 				unset($this->received[$c]);
 				--$cnt;
-				if($cnt <= PLAYER_MAX_QUEUE){
+				if($cnt <= self::MAX_QUEUE){
 					break;
 				}
 			}
@@ -1220,7 +1233,7 @@ class Player extends RealHuman{
 			return;
 		}
 
-		if(EventHandler::callEvent(new DataPacketReceiveEvent($this, $packet)) === Event::DENY){
+		if(EventHandler::callEvent(new Event\Server\DataPacketReceiveEvent($this, $packet)) === Event\Event::DENY){
 			return;
 		}
 
@@ -1313,8 +1326,8 @@ class Player extends RealHuman{
 				$nbt = Player::getOffline($this->username);
 				$nbt->NameTag = $this->username;
 				$this->gamemode = $nbt->playerGameType & 0x03;
-				if(($this->level = $this->server->api->level->get($nbt->Level)) === false){
-					$this->level = $this->server->api->level->getDefault();
+				if(($this->level = Level::get($nbt->Level)) === false){
+					$this->level = Level::getDefault();
 					$nbt->Level = $this->level->getName();
 					$nbt->Pos[0] = $this->level->getSpawn()->x;
 					$nbt->Pos[1] = $this->level->getSpawn()->y;
@@ -1334,7 +1347,7 @@ class Player extends RealHuman{
 				}
 
 				$this->achievements = array();
-				foreach($nbt->Achievements->getValue() as $achievement){
+				foreach($nbt->Achievements as $achievement){
 					$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 				}
 
@@ -1365,7 +1378,7 @@ class Player extends RealHuman{
 				$this->dataPacket($pk);
 
 
-				if(($level = $this->server->api->level->get($this->namedtag->SpawnLevel)) !== false){
+				if(($level = Level::get($this->namedtag->SpawnLevel)) !== false){
 					$this->spawnPosition = new Position($this->namedtag->SpawnX, $this->namedtag->SpawnY, $this->namedtag->SpawnZ, $level);
 
 					$pk = new SetSpawnPositionPacket;
@@ -1478,7 +1491,7 @@ class Player extends RealHuman{
 					$item = $this->getSlot($packet->slot);
 				}
 
-				if($packet->slot === false or EventHandler::callEvent(new PlayerEquipmentChangeEvent($this, $item, $packet->slot, 0)) === Event::DENY){
+				if($packet->slot === false or EventHandler::callEvent(new Event\Player\PlayerEquipmentChangeEvent($this, $item, $packet->slot, 0)) === Event\Event::DENY){
 					$this->sendInventorySlot($packet->slot);
 				} else{
 					$this->setEquipmentSlot(0, $packet->slot);
@@ -2262,7 +2275,7 @@ class Player extends RealHuman{
 			return false;
 		}
 
-		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === Event::DENY){
+		if(EventHandler::callEvent(new Event\Server\DataPacketSendEvent($this, $packet)) === Event\Event::DENY){
 			return array();
 		}
 		$packet->encode();
@@ -2280,8 +2293,7 @@ class Player extends RealHuman{
 	}
 
 	/**
-	 * @param integer $id
-	 * @param array   $data
+	 * @param DataPacket $packet
 	 *
 	 * @return array|bool
 	 */
@@ -2290,7 +2302,7 @@ class Player extends RealHuman{
 			return false;
 		}
 
-		if(EventHandler::callEvent(new DataPacketSendEvent($this, $packet)) === Event::DENY){
+		if(EventHandler::callEvent(new Event\Server\DataPacketSendEvent($this, $packet)) === Event\Event::DENY){
 			return;
 		}
 

@@ -22,7 +22,8 @@
 namespace PocketMine\Block;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 
 class MelonStem extends Flowable{
 	public function __construct($meta = 0){
@@ -43,26 +44,26 @@ class MelonStem extends Flowable{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
 				//ServerAPI::request()->api->entity->drop($this, Item::get(MELON_SEEDS, 0, mt_rand(0, 2)));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(mt_rand(0, 2) == 1){
 				if($this->meta < 0x07){
 					++$this->meta;
 					$this->level->setBlock($this, $this, true, false, true);
 
-					return BLOCK_UPDATE_RANDOM;
+					return Level::BLOCK_UPDATE_RANDOM;
 				} else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
 						if($b->getID() === self::MELON_BLOCK){
-							return BLOCK_UPDATE_RANDOM;
+							return Level::BLOCK_UPDATE_RANDOM;
 						}
 					}
 					$side = $this->getSide(mt_rand(2, 5));
@@ -73,7 +74,7 @@ class MelonStem extends Flowable{
 				}
 			}
 
-			return BLOCK_UPDATE_RANDOM;
+			return Level::BLOCK_UPDATE_RANDOM;
 		}
 
 		return false;

@@ -21,9 +21,9 @@
 
 namespace PocketMine;
 
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Level\Level as Level;
-use PocketMine\Level\Position as Position;
+use PocketMine\Entity\Entity;
+use PocketMine\Level\Level;
+use PocketMine\Level\Position;
 use PocketMine\Math\Vector3 as Vector3;
 
 class PlayerAPI{
@@ -139,7 +139,7 @@ class PlayerAPI{
 				if(count($params) === 1 or count($params) === 4){
 					$tg = array_shift($params);
 					if(count($params) === 3 and substr($tg, 0, 2) === "w:"){
-						$target = $this->server->api->level->get(substr($tg, 2));
+						$target = Level::get(substr($tg, 2));
 					} else{
 						$target = Player::get($tg);
 					}
@@ -176,7 +176,7 @@ class PlayerAPI{
 					$output .= "Please run this command in-game.\n";
 					break;
 				}
-				$issuer->teleport($this->server->spawn);
+				$issuer->teleport(Level::getDefault()->getSafeSpawn());
 				break;
 			case "ping":
 				if(!($issuer instanceof Player)){
@@ -302,7 +302,7 @@ class PlayerAPI{
 
 	public function teleport(&$name, &$target){
 		if(substr($target, 0, 2) === "w:"){
-			$lv = $this->server->api->level->get(substr($target, 2));
+			$lv = Level::get(substr($target, 2));
 			if($lv instanceof Level){
 				$origin = Player::get($name);
 				if($origin instanceof Player){

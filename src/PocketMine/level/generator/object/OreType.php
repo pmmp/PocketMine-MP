@@ -22,7 +22,7 @@
 namespace PocketMine\Level\Generator\Object;
 
 use PocketMine;
-use PocketMine\Block\Block as Block;
+use PocketMine\Block\Block;
 
 class OreType{
 	public $material, $clusterCount, $clusterSize, $maxHeight, $minHeight;

@@ -75,9 +75,9 @@ class Config{
 	);
 
 	/**
-	 * @param       $file Path of the file to be loaded
-	 * @param int   $type Config type to load, -1 by default (detect)
-	 * @param array $default Array with the default values, will be set if not existent
+	 * @param       $file     Path of the file to be loaded
+	 * @param int   $type     Config type to load, -1 by default (detect)
+	 * @param array $default  Array with the default values, will be set if not existent
 	 * @param null  &$correct Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct($file, $type = Config::DETECT, $default = array(), &$correct = null){

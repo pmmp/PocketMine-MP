@@ -21,9 +21,9 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine\Block\Block as Block;
-use PocketMine\Level;
+use PocketMine\Block\Block;
 use PocketMine;
+use PocketMine\Level;
 use PocketMine\Math\Vector3 as Vector3;
 
 class TallGrass{

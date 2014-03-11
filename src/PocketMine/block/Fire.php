@@ -22,7 +22,8 @@
 namespace PocketMine\Block;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 
 class Fire extends Flowable{
 	public function __construct($meta = 0){
@@ -38,7 +39,7 @@ class Fire extends Flowable{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			for($s = 0; $s <= 5; ++$s){
 				$side = $this->getSide($s);
 				if($side->getID() !== self::AIR and !($side instanceof Liquid)){
@@ -47,12 +48,12 @@ class Fire extends Flowable{
 			}
 			$this->level->setBlock($this, new Air(), true, false, true);
 
-			return BLOCK_UPDATE_NORMAL;
-		} elseif($type === BLOCK_UPDATE_RANDOM){
+			return Level::BLOCK_UPDATE_NORMAL;
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== self::NETHERRACK){
 				$this->level->setBlock($this, new Air(), true, false, true);
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}
 

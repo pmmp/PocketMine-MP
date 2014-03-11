@@ -24,16 +24,16 @@
  */
 namespace PocketMine\Network;
 
-use PocketMine\Event\Event as Event;
-use PocketMine\Event\EventHandler as EventHandler;
-use PocketMine\Event\Server\PacketReceiveEvent as PacketReceiveEvent;
-use PocketMine\Event\Server\PacketSendEvent as PacketSendEvent;
-use PocketMine\Network\Query\QueryHandler as QueryHandler;
-use PocketMine\Network\Query\QueryPacket as QueryPacket;
-use PocketMine\Network\RakNet\Info as Info;
-use PocketMine\Network\RakNet\Packet as Packet;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Event\Event;
+use PocketMine\Event\EventHandler;
+use PocketMine\Event\Server\PacketReceiveEvent;
+use PocketMine\Event\Server\PacketSendEvent;
+use PocketMine\Network\Query\QueryHandler;
+use PocketMine\Network\Query\QueryPacket;
+use PocketMine\Network\RakNet\Info;
+use PocketMine\Network\RakNet\Packet;
+use PocketMine\ServerAPI;
 
 class Handler{
 	public $bandwidth;

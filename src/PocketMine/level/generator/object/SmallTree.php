@@ -21,13 +21,13 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine\Block\Dirt as Dirt;
-use PocketMine\Block\Leaves as Leaves;
-use PocketMine\Block\Wood as Wood;
-use PocketMine\Level\Level as Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random as Random;
 use PocketMine;
+use PocketMine\Block\Dirt;
+use PocketMine\Block\Leaves;
+use PocketMine\Block\Wood;
+use PocketMine\Level\Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Utils\Random;
 
 class SmallTree extends Tree{
 	public $type = 0;

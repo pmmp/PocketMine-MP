@@ -21,11 +21,11 @@
 
 namespace PocketMine\Item;
 
-use PocketMine\Block\Block as Block;
-use PocketMine\Block\Fire as Fire;
-use PocketMine\Block\Solid as Solid;
-use PocketMine\Level\Level as Level;
 use PocketMine;
+use PocketMine\Block\Block;
+use PocketMine\Block\Fire;
+use PocketMine\Block\Solid;
+use PocketMine\Level\Level;
 
 class FlintSteel extends Item{
 	public function __construct($meta = 0, $count = 1){

@@ -22,7 +22,8 @@
 namespace PocketMine\Block;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 
 class Potato extends Flowable{
 	public function __construct($meta = 0){
@@ -57,24 +58,24 @@ class Potato extends Flowable{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
 				//ServerAPI::request()->api->entity->drop($this, Item::get(POTATO, 0, 1));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(mt_rand(0, 2) == 1){
 				if($this->meta < 0x07){
 					++$this->meta;
 					$this->level->setBlock($this, $this, true, false, true);
 
-					return BLOCK_UPDATE_RANDOM;
+					return Level::BLOCK_UPDATE_RANDOM;
 				}
 			} else{
-				return BLOCK_UPDATE_RANDOM;
+				return Level::BLOCK_UPDATE_RANDOM;
 			}
 		}
 

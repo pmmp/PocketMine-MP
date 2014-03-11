@@ -23,22 +23,23 @@
  * Named Binary Tag handling classes
  */
 namespace PocketMine\NBT;
-use PocketMine\NBT\Tag\Byte as Byte;
-use PocketMine\NBT\Tag\Byte_Array as Byte_Array;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Double as Double;
-use PocketMine\NBT\Tag\End as End;
-use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\NBT\Tag\Float as Float;
-use PocketMine\NBT\Tag\Int as Int;
-use PocketMine\NBT\Tag\Int_Array as Int_Array;
-use PocketMine\NBT\Tag\Long as Long;
-use PocketMine\NBT\Tag\NamedTAG as NamedTAG;
-use PocketMine\NBT\Tag\Short as Short;
-use PocketMine\NBT\Tag\String as String;
-use PocketMine\NBT\Tag\Tag as Tag;
-use PocketMine\Utils\Utils as Utils;
+
 use PocketMine;
+use PocketMine\NBT\Tag\Byte;
+use PocketMine\NBT\Tag\Byte_Array;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Double;
+use PocketMine\NBT\Tag\End;
+use PocketMine\NBT\Tag\Enum;
+use PocketMine\NBT\Tag\Float;
+use PocketMine\NBT\Tag\Int;
+use PocketMine\NBT\Tag\Int_Array;
+use PocketMine\NBT\Tag\Long;
+use PocketMine\NBT\Tag\NamedTAG;
+use PocketMine\NBT\Tag\Short;
+use PocketMine\NBT\Tag\String;
+use PocketMine\NBT\Tag\Tag;
+use PocketMine\Utils\Utils;
 
 class NBT implements \ArrayAccess{
 	const LITTLE_ENDIAN = 0;
@@ -70,10 +71,11 @@ class NBT implements \ArrayAccess{
 			return substr($this->buffer, $this->offset);
 		}
 
-		$buffer = b"";
+		$buffer = "";
 		for(; $len > 0; --$len, ++$this->offset){
 			$buffer .= @$this->buffer{$this->offset};
 		}
+
 		return $buffer;
 	}
 
@@ -85,7 +87,7 @@ class NBT implements \ArrayAccess{
 		return !isset($this->buffer{$this->offset});
 	}
 
-	public function __construct($endianness = NBT\NBT::LITTLE_ENDIAN){
+	public function __construct($endianness = self::LITTLE_ENDIAN){
 		$this->offset = 0;
 		$this->endianness = $endianness & 0x01;
 	}
@@ -94,7 +96,7 @@ class NBT implements \ArrayAccess{
 		$this->offset = 0;
 		$this->buffer = $buffer;
 		$this->data = $this->readTag();
-		$this->buffer = b"";
+		$this->buffer = "";
 	}
 
 	public function write(){
@@ -234,12 +236,6 @@ class NBT implements \ArrayAccess{
 		return $ret;
 	}
 
-	public function __set($name, $value){
-		if($this->data instanceof Compound){
-			$this->data[$name] = $value;
-		}
-	}
-
 	public function __isset($name){
 		return $this->data instanceof Compound ? isset($this->data[$name]) : false;
 	}
@@ -259,7 +255,9 @@ class NBT implements \ArrayAccess{
 	}
 
 	public function offsetSet($name, $value){
-		$this->__set($name, $value);
+		if($this->data instanceof Compound){
+			$this->data[$name] = $value;
+		}
 	}
 
 	public function offsetUnset($name){

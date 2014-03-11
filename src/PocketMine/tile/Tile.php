@@ -25,12 +25,12 @@
  */
 namespace PocketMine\Tile;
 
-use PocketMine\Level\Level as Level;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\PMF\LevelFormat as LevelFormat;
-use PocketMine\ServerAPI as ServerAPI;
-use PocketMine\Level\Position;
 use PocketMine;
+use PocketMine\Level\Level;
+use PocketMine\Level\Position;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\PMF\LevelFormat;
+use PocketMine\ServerAPI;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
@@ -51,8 +51,8 @@ abstract class Tile extends Position{
 	public $metadata;
 	public $closed;
 	public $namedtag;
-	private $lastUpdate;
-	private $server;
+	protected $lastUpdate;
+	protected $server;
 
 	public static function getByID($tileID){
 		return isset(Tile::$list[$tileID]) ? Tile::$list[$tileID] : false;

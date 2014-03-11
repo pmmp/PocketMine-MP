@@ -21,10 +21,11 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Generator\Object\Tree as Tree;
-use PocketMine\Utils\Random as Random;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Level\Generator\Object\Tree;
+use PocketMine\Utils\Random;
+use PocketMine\Level\Level;
 
 class Sapling extends Flowable{
 	const OAK = 0;
@@ -71,15 +72,15 @@ class Sapling extends Flowable{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
 				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === BLOCK_UPDATE_RANDOM){ //Growth
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
 				if(($this->meta & 0x08) === 0x08){
 					Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
@@ -87,10 +88,10 @@ class Sapling extends Flowable{
 					$this->meta |= 0x08;
 					$this->level->setBlock($this, $this, true, false, true);
 
-					return BLOCK_UPDATE_RANDOM;
+					return Level::BLOCK_UPDATE_RANDOM;
 				}
 			} else{
-				return BLOCK_UPDATE_RANDOM;
+				return Level::BLOCK_UPDATE_RANDOM;
 			}
 		}
 

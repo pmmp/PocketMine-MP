@@ -21,11 +21,11 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine\Level\Level as Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Math\VectorMath as VectorMath;
-use PocketMine\Utils\Random as Random;
 use PocketMine;
+use PocketMine\Level\Level;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Math\VectorMath;
+use PocketMine\Utils\Random;
 
 class Ore{
 	private $random;

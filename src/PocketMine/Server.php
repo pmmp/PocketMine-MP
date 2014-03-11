@@ -25,14 +25,14 @@
  */
 namespace PocketMine;
 
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Network\Handler as Handler;
-use PocketMine\Network\Packet as Packet;
-use PocketMine\Network\Protocol\Info as Info;
+use PocketMine\Entity\Entity;
+use PocketMine\Network\Handler;
+use PocketMine\Network\Packet;
+use PocketMine\Network\Protocol\Info;
 use PocketMine\Network\RakNet\Info as RakNetInfo;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
-use PocketMine\Utils\Utils as Utils;
-use PocketMine\Utils\VersionString as VersionString;
+use PocketMine\Utils\Utils;
+use PocketMine\Utils\VersionString;
 
 class Server{
 	public $tCnt;
@@ -46,7 +46,7 @@ class Server{
 
 	private function load(){
 		$this->version = new VersionString();
-		if(defined("DEBUG") and DEBUG >= 0){
+		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0){
 			@cli_set_process_title("PocketMine-MP " . \PocketMine\VERSION);
 		}
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
@@ -107,7 +107,7 @@ class Server{
 
 	public function titleTick(){
 		$time = microtime(true);
-		if(defined("DEBUG") and DEBUG >= 0 and ANSI === true){
+		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and ANSI === true){
 			echo "\x1b]0;PocketMine-MP " . VERSION . " | Online " . count(Player::$list) . "/" . $this->maxClients . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}
 		$this->interface->bandwidth = array(0, 0, $time);
@@ -482,7 +482,7 @@ class Server{
 		ob_end_clean();
 		$dump .= "\r\n```";
 		$name = "Error_Dump_" . date("D_M_j-H.i.s-T_Y");
-		logg($dump, $name, true, 0, true);
+		log($dump, $name, true, 0, true);
 		console("[SEVERE] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 

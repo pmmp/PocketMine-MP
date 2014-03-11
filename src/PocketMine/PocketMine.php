@@ -19,13 +19,21 @@
  *
 */
 
-namespace{
+namespace {
+	/**
+	 * Output text to the console, can contain Minecraft-formatted text.
+	 *
+	 * @param      $message
+	 * @param bool $EOL
+	 * @param bool $log
+	 * @param int  $level
+	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
-		return PocketMine\console($message, $EOL, $log, $level);
+		PocketMine\console($message, $EOL, $log, $level);
 	}
 }
 
-namespace PocketMine{
+namespace PocketMine {
 	const VERSION = "Alpha_1.4dev";
 	const API_VERSION = "1.0.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
@@ -38,28 +46,28 @@ namespace PocketMine{
 			$className = array_pop($path);
 			if(count($path) > 0){
 				$path = implode(DIRECTORY_SEPARATOR, array_map("strtolower", $path)) . DIRECTORY_SEPARATOR;
-			}else{
+			} else{
 				$path = "";
 			}
 			$fPath = \PocketMine\PATH . "src" . DIRECTORY_SEPARATOR . "PocketMine" . DIRECTORY_SEPARATOR . $path . $className . ".php";
 			if(file_exists($fPath)){
 				require_once($fPath);
 			}
-		}else{ //Try plugin
+		} else{ //Try plugin
 			$className = array_pop($path);
 			if(count($path) > 0){
 				$path = implode(DIRECTORY_SEPARATOR, array_map("strtolower", $path)) . DIRECTORY_SEPARATOR;
-			}else{
+			} else{
 				$path = "";
 			}
-			$fPath = \PocketMine\PATH . "plugins". DIRECTORY_SEPARATOR . $parent . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
+			$fPath = \PocketMine\PATH . "plugins" . DIRECTORY_SEPARATOR . $parent . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
 			if(file_exists($fPath)){
 				require_once($fPath);
 			}
 		}
 	});
 
-	define("PocketMine\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+	define("PocketMine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 
 	//Startup code. Do not look at it, it can harm you. Most of them are hacks to fix date-related bugs, or basic functions used after this
 
@@ -67,7 +75,7 @@ namespace PocketMine{
 
 	if(ini_get("date.timezone") == ""){ //No Timezone set
 		date_default_timezone_set("GMT");
-		if(strpos(" ".strtoupper(php_uname("s")), " WIN") !== false){
+		if(strpos(" " . strtoupper(php_uname("s")), " WIN") !== false){
 			$time = time();
 			$time -= $time % 60;
 			//TODO: Parse different time & date formats by region. ¬¬ world
@@ -77,7 +85,7 @@ namespace PocketMine{
 			exec("date.exe /T", $date);
 			$j = array_map("intval", explode(substr($date[0], 2, 1), trim($date[0])));
 			$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
-		}else{
+		} else{
 			exec("date +%s", $t);
 			$offset = round((intval(trim($t[0])) - time()) / 60) * 60;
 		}
@@ -86,7 +94,7 @@ namespace PocketMine{
 		$d = timezone_name_from_abbr("", $offset, $daylight);
 		@ini_set("date.timezone", $d);
 		date_default_timezone_set($d);
-	}else{
+	} else{
 		$d = @date_default_timezone_get();
 		if(strpos($d, "/") === false){
 			$d = timezone_name_from_abbr($d);
@@ -103,15 +111,15 @@ namespace PocketMine{
 	ini_set("default_charset", "utf-8");
 
 	ini_set("memory_limit", "128M"); //Default
-	define("PocketMine\START_TIME", microtime(true));
+	define("PocketMine\\START_TIME", microtime(true));
 
 	$opts = getopt("", array("enable-ansi", "disable-ansi", "data-path:", "no-wizard"));
-	define("PocketMine\DATA", isset($opts["data-path"]) ? realpath($opts["data-path"]) . DIRECTORY_SEPARATOR : PATH);
+	define("PocketMine\\DATA", isset($opts["data-path"]) ? realpath($opts["data-path"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH);
 
 	if((strpos(strtoupper(php_uname("s")), "WIN") or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
-		define("PocketMine\ANSI", true);
-	}else{
-		define("PocketMine\ANSI", false);
+		define("PocketMine\\ANSI", true);
+	} else{
+		define("PocketMine\\ANSI", false);
 	}
 
 	function dummy(){
@@ -121,33 +129,33 @@ namespace PocketMine{
 	function safe_var_dump($var, $cnt = 0){
 		switch(true){
 			case is_array($var):
-				echo str_repeat("  ", $cnt)."array(".count($var).") {".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "array(" . count($var) . ") {" . PHP_EOL;
 				foreach($var as $key => $value){
-					echo str_repeat("  ", $cnt + 1)."[".(is_integer($key) ? $key:'"'.$key.'"')."]=>".PHP_EOL;
+					echo str_repeat("  ", $cnt + 1) . "[" . (is_integer($key) ? $key : '"' . $key . '"') . "]=>" . PHP_EOL;
 					safe_var_dump($value, $cnt + 1);
 				}
-				echo str_repeat("  ", $cnt)."}".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "}" . PHP_EOL;
 				break;
 			case is_integer($var):
-				echo str_repeat("  ", $cnt)."int(".$var.")".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "int(" . $var . ")" . PHP_EOL;
 				break;
 			case is_float($var):
-				echo str_repeat("  ", $cnt)."float(".$var.")".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "float(" . $var . ")" . PHP_EOL;
 				break;
 			case is_bool($var):
-				echo str_repeat("  ", $cnt)."bool(".($var === true ? "true":"false").")".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "bool(" . ($var === true ? "true" : "false") . ")" . PHP_EOL;
 				break;
 			case is_string($var):
-				echo str_repeat("  ", $cnt)."string(".strlen($var).") \"$var\"".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "string(" . strlen($var) . ") \"$var\"" . PHP_EOL;
 				break;
 			case is_resource($var):
-				echo str_repeat("  ", $cnt)."resource() of type (".get_resource_type($var).")".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "resource() of type (" . get_resource_type($var) . ")" . PHP_EOL;
 				break;
 			case is_object($var):
-				echo str_repeat("  ", $cnt)."object(".get_class($var).")".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "object(" . get_class($var) . ")" . PHP_EOL;
 				break;
 			case is_null($var):
-				echo str_repeat("  ", $cnt)."NULL".PHP_EOL;
+				echo str_repeat("  ", $cnt) . "NULL" . PHP_EOL;
 				break;
 		}
 	}
@@ -155,12 +163,12 @@ namespace PocketMine{
 	function kill($pid){
 		switch(Utils\Utils::getOS()){
 			case "win":
-				exec("taskkill.exe /F /PID ".((int) $pid)." > NUL");
+				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
 				break;
 			case "mac":
 			case "linux":
 			default:
-				exec("kill -9 ".((int) $pid)." > /dev/null 2>&1");
+			exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
 		}
 	}
 
@@ -174,34 +182,43 @@ namespace PocketMine{
 			}
 			$var = null;
 			unset($var);
-		}elseif(is_array($var)){
+		} elseif(is_array($var)){
 			foreach($var as $i => $v){
 				hard_unset($var[$i]);
 			}
 			$var = null;
 			unset($var);
-		}else{
+		} else{
 			$var = null;
 			unset($var);
 		}
 	}
 
+	/**
+	 * Output text to the console, can contain Minecraft-formatted text.
+	 *
+	 * @param      $message
+	 * @param bool $EOL
+	 * @param bool $log
+	 * @param int  $level
+	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
-		if(!defined("DEBUG") or DEBUG >= $level){
-			$message .= $EOL === true ? PHP_EOL:"";
-			$time = (ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET:date("H:i:s")) . " ";
+		if(!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level){
+			$message .= $EOL === true ? PHP_EOL : "";
+			$time = (\PocketMine\ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET : date("H:i:s")) . " ";
 			$replaced = Utils\TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
 			if($log === true and (!defined("LOG") or LOG === true)){
-				log(date("Y-m-d")." ".$replaced, "console", false, $level);
+				log(date("Y-m-d") . " " . $replaced, "console", false, $level);
 			}
-			if(ANSI === true){
+			if(\PocketMine\ANSI === true){
 				$add = "";
-				if(preg_match("/\[([a-zA-Z0-9]*)\]/", $message, $matches) > 0){
+				if(preg_match("/\\[([a-zA-Z0-9]*)\\]/", $message, $matches) > 0){
 					switch($matches[1]){
 						case "ERROR":
 						case "SEVERE":
 							$add .= Utils\TextFormat::RED;
 							break;
+						case "TRACE":
 						case "INTERNAL":
 						case "DEBUG":
 							$add .= Utils\TextFormat::GRAY;
@@ -218,7 +235,7 @@ namespace PocketMine{
 					}
 				}
 				$message = Utils\TextFormat::toANSI($time . $add . $message . Utils\TextFormat::RESET);
-			}else{
+			} else{
 				$message = $replaced;
 			}
 			echo $message;
@@ -234,11 +251,12 @@ namespace PocketMine{
 			$params = "";
 			if(isset($trace[$i]["args"])){
 				foreach($trace[$i]["args"] as $name => $value){
-					$params .= (is_object($value) ? get_class($value)." ".(method_exists($value, "__toString") ? $value->__toString() : "object"):gettype($value)." ".@strval($value)).", ";
+					$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . @strval($value)) . ", ";
 				}
 			}
-			$messages[] = "#$j ".(isset($trace[$i]["file"]) ? $trace[$i]["file"]:"")."(".(isset($trace[$i]["line"]) ? $trace[$i]["line"]:"")."): ".(isset($trace[$i]["class"]) ? $trace[$i]["class"].$trace[$i]["type"]:"").$trace[$i]["function"]."(".substr($params, 0, -2).")";
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? $trace[$i]["file"] : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
 		}
+
 		return $messages;
 	}
 
@@ -263,23 +281,25 @@ namespace PocketMine{
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		);
-		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno]:$errno;
-		console("[ERROR] A ".$errno." error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
+		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? "ERROR" : "NOTICE";
+		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+		console("[$type] A $errno error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
 		foreach(getTrace() as $i => $line){
 			console("[TRACE] $line");
 		}
+
 		return true;
 	}
 
 	function log($message, $name, $EOL = true, $level = 2, $close = false){
 		global $fpointers;
-		if((!defined("DEBUG") or DEBUG >= $level) and (!defined("LOG") or LOG === true)){
-			$message .= $EOL === true ? PHP_EOL:"";
+		if((!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level) and (!defined("PocketMine\\LOG") or LOG === true)){
+			$message .= $EOL === true ? PHP_EOL : "";
 			if(!isset($fpointers)){
 				$fpointers = array();
 			}
 			if(!isset($fpointers[$name]) or $fpointers[$name] === false){
-				$fpointers[$name] = @fopen(\PocketMine\DATA."/".$name.".log", "ab");
+				$fpointers[$name] = @fopen(\PocketMine\DATA . "/" . $name . ".log", "ab");
 			}
 			@fwrite($fpointers[$name], $message);
 			if($close === true){
@@ -290,7 +310,7 @@ namespace PocketMine{
 	}
 
 
-	set_error_handler("\PocketMine\\error_handler", E_ALL);
+	set_error_handler("\\PocketMine\\error_handler", E_ALL);
 
 	$errors = 0;
 
@@ -304,15 +324,15 @@ namespace PocketMine{
 		++$errors;
 	}
 
-	if(!extension_loaded("sockets") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "sockets." . PHP_SHLIB_SUFFIX) === false){
+	if(!extension_loaded("sockets")){
 		console("[ERROR] Unable to find the Socket extension.", true, true, 0);
 		++$errors;
 	}
 
-	if(!extension_loaded("pthreads") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "pthreads." . PHP_SHLIB_SUFFIX) === false){
+	if(!extension_loaded("pthreads")){
 		console("[ERROR] Unable to find the pthreads extension.", true, true, 0);
 		++$errors;
-	}else{
+	} else{
 		$pthreads_version = phpversion("pthreads");
 		if(substr_count($pthreads_version, ".") < 2){
 			$pthreads_version = "0.$pthreads_version";
@@ -323,22 +343,22 @@ namespace PocketMine{
 		}
 	}
 
-	if(!extension_loaded("curl") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "curl." . PHP_SHLIB_SUFFIX) === false){
+	if(!extension_loaded("curl")){
 		console("[ERROR] Unable to find the cURL extension.", true, true, 0);
 		++$errors;
 	}
 
-	if(!extension_loaded("sqlite3") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "sqlite3." . PHP_SHLIB_SUFFIX) === false){
+	if(!extension_loaded("sqlite3")){
 		console("[ERROR] Unable to find the SQLite3 extension.", true, true, 0);
 		++$errors;
 	}
 
-	if(!extension_loaded("yaml") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "yaml." . PHP_SHLIB_SUFFIX) === false){
+	if(!extension_loaded("yaml")){
 		console("[ERROR] Unable to find the YAML extension.", true, true, 0);
 		++$errors;
 	}
 
-	if(!extension_loaded("zlib") and @dl((PHP_SHLIB_SUFFIX === "dll" ? "php_":"") . "zlib." . PHP_SHLIB_SUFFIX) === false){
+	if(!extension_loaded("zlib")){
 		console("[ERROR] Unable to find the Zlib extension.", true, true, 0);
 		++$errors;
 	}
@@ -350,8 +370,8 @@ namespace PocketMine{
 
 	$gitsha1 = false;
 	if(file_exists(\PocketMine\PATH . ".git/refs/heads/master")){ //Found Git information!
-		define("PocketMine\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH .".git/refs/heads/master"))));
-	}else{ //Unknown :(
+		define("PocketMine\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH . ".git/refs/heads/master"))));
+	} else{ //Unknown :(
 		define("PocketMine\GIT_COMMIT", str_repeat("00", 20));
 	}
 
@@ -363,10 +383,12 @@ namespace PocketMine{
 		$installer = new Wizard\Installer();
 	}
 
-	$server = new ServerAPI();
-	$server->start();
+	if(!defined("PARENT_API_EXISTENT")){
+		$server = new ServerAPI();
+		$server->start();
 
-	kill(getmypid()); //Fix for ConsoleAPI being blocked
-	exit(0);
+		kill(getmypid()); //Fix for ConsoleAPI being blocked
+		exit(0);
+	}
 
 }

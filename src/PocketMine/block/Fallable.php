@@ -21,9 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\ServerAPI;
+use PocketMine\Level\Level;
 
 class Fallable extends Solid{
 
@@ -34,7 +35,7 @@ class Fallable extends Solid{
 
 	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
-		ServerAPI::request()->api->block->blockUpdate(clone $this, BLOCK_UPDATE_NORMAL);
+		ServerAPI::request()->api->block->blockUpdate(clone $this, Level::BLOCK_UPDATE_NORMAL);
 
 		return $ret;
 	}

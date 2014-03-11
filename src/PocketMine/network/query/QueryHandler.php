@@ -22,13 +22,14 @@
 /**
  * Implementation of the UT3 Query Protocol (GameSpot)
  * Source: http://wiki.unrealadmin.org/UT3_query_protocol
-*/
+ */
 namespace PocketMine\Network\Query;
 
-use PocketMine\Player as Player;
-use PocketMine\ServerAPI as ServerAPI;
-use PocketMine\Utils\Utils as Utils;
 use PocketMine;
+use PocketMine\Level\Level;
+use PocketMine\Player;
+use PocketMine\ServerAPI;
+use PocketMine\Utils\Utils;
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
@@ -74,7 +75,7 @@ class QueryHandler{
 			"version" => PocketMine\MINECRAFT_VERSION,
 			"server_engine" => "PocketMine-MP " . PocketMine\VERSION,
 			"plugins" => $plist,
-			"map" => $this->server->api->level->getDefault()->getName(),
+			"map" => Level::getDefault()->getName(),
 			"numplayers" => count(Player::$list),
 			"maxplayers" => $this->server->maxClients,
 			"whitelist" => $this->server->api->getProperty("white-list") === true ? "on" : "off",
@@ -133,7 +134,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;
 				} else{
-					$pk->payload = $this->server->name . "\x00" . (($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->api->level->getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->maxClients . "\x00" . Utils::writeLShort($this->server->api->getProperty("server-port")) . $this->server->api->getProperty("server-ip", "0.0.0.0") . "\x00";
+					$pk->payload = $this->server->name . "\x00" . (($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->maxClients . "\x00" . Utils::writeLShort($this->server->api->getProperty("server-port")) . $this->server->api->getProperty("server-ip", "0.0.0.0") . "\x00";
 				}
 				$pk->encode();
 				$this->server->send($pk);

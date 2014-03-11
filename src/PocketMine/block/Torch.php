@@ -22,7 +22,8 @@
 namespace PocketMine\Block;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
 
 class Torch extends Flowable{
 	public function __construct($meta = 0){
@@ -31,7 +32,7 @@ class Torch extends Flowable{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$side = $this->getMetadata();
 			$faces = array(
 				1 => 4,
@@ -48,7 +49,7 @@ class Torch extends Flowable{
 				//ServerAPI::request()->api->entity->drop($this, Item::get($this->id, 0, 1));
 				$this->level->setBlock($this, new Air(), true, false, true);
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}
 

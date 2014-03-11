@@ -29,21 +29,6 @@ const VIEW = 3;
 const VIEWER = 3;
 
 
-//Players
-const PLAYER_MAX_QUEUE = 1024;
-
-const PLAYER_SURVIVAL_SLOTS = 36;
-const PLAYER_CREATIVE_SLOTS = 112;
-
-
-//Block Updates
-const BLOCK_UPDATE_NORMAL = 1;
-const BLOCK_UPDATE_RANDOM = 2;
-const BLOCK_UPDATE_SCHEDULED = 3;
-const BLOCK_UPDATE_WEAK = 4;
-const BLOCK_UPDATE_TOUCH = 5;
-
-
 //Entities
 const ENTITY_PLAYER = 1;
 

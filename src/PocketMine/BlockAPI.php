@@ -21,15 +21,15 @@
 
 namespace PocketMine;
 
-use PocketMine\Block\Block as Block;
-use PocketMine\Block\GenericBlock as GenericBlock;
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Position as Position;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Int as Int;
-use PocketMine\NBT\Tag\String as String;
-use PocketMine\Network\Protocol\UpdateBlockPacket as UpdateBlockPacket;
-use PocketMine\Tile\Sign as Sign;
+use PocketMine\Level\Level;
+use PocketMine\Block\Block;
+use PocketMine\Item\Item;
+use PocketMine\Level\Position;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Int;
+use PocketMine\NBT\Tag\String;
+use PocketMine\Network\Protocol\UpdateBlockPacket;
+use PocketMine\Tile\Sign;
 
 class BlockAPI{
 	private $server;
@@ -388,7 +388,7 @@ class BlockAPI{
 				return $this->cancelAction($block, $player);
 			}
 		}
-		$this->blockUpdate($target, BLOCK_UPDATE_TOUCH);
+		$this->blockUpdate($target, Level::BLOCK_UPDATE_TOUCH);
 
 		if($target->isActivable === true){
 			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($item, $player) === true){
@@ -469,7 +469,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function blockUpdateAround(Position $pos, $type = BLOCK_UPDATE_NORMAL, $delay = false){
+	public function blockUpdateAround(Position $pos, $type = Level::BLOCK_UPDATE_NORMAL, $delay = false){
 		if($delay !== false){
 			$this->scheduleBlockUpdate($pos->getSide(0), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(1), $delay, $type);
@@ -487,7 +487,7 @@ class BlockAPI{
 		}
 	}
 
-	public function blockUpdate(Position $pos, $type = BLOCK_UPDATE_NORMAL){
+	public function blockUpdate(Position $pos, $type = Level::BLOCK_UPDATE_NORMAL){
 		if(!($pos instanceof Block)){
 			$block = $pos->level->getBlock($pos);
 		} else{
@@ -499,14 +499,14 @@ class BlockAPI{
 		}
 
 		$level = $block->onUpdate($type);
-		if($level === BLOCK_UPDATE_NORMAL){
+		if($level === Level::BLOCK_UPDATE_NORMAL){
 			$this->blockUpdateAround($block, $level);
 		}
 
 		return $level;
 	}
 
-	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
+	public function scheduleBlockUpdate(Position $pos, $delay, $type = Level::BLOCK_UPDATE_SCHEDULED){
 		$type = (int) $type;
 		if($delay < 0){
 			return false;

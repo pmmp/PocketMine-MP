@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Player as Player;
-use PocketMine\Item\Item as Item;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\ServerAPI;
+use PocketMine\Level\Level;
 
 class Generic extends Block{
 
@@ -50,7 +50,7 @@ class Generic extends Block{
 	}
 
 	public function onUpdate($type){
-		if($this->hasPhysics === true and $type === BLOCK_UPDATE_NORMAL){
+		if($this->hasPhysics === true and $type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() === self::AIR or ($down instanceof Liquid)){
 				$data = array(
@@ -64,7 +64,7 @@ class Generic extends Block{
 				//TODO
 				//$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
 				//$e->spawnToAll();
-				$server->api->block->blockUpdateAround(clone $this, BLOCK_UPDATE_NORMAL, 1);
+				$server->api->block->blockUpdateAround(clone $this, Level::BLOCK_UPDATE_NORMAL, 1);
 			}
 
 			return false;

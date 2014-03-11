@@ -21,20 +21,21 @@
 
 namespace PocketMine;
 
-use PocketMine\Block\Block as Block;
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Item\Item as Item;
-use PocketMine\Network\Protocol\Info as Info;
-use PocketMine\Network\Query\QueryHandler as QueryHandler;
-use PocketMine\Network\RCON\RCON as RCON;
-use PocketMine\Network\UPnP\PortForward as PortForward;
-use PocketMine\Network\UPnP\RemovePortForward as RemovePortForward;
-use PocketMine\Recipes\Crafting as Crafting;
-use PocketMine\Tile\Tile as Tile;
-use PocketMine\Utils\Config as Config;
-use PocketMine\Utils\TextFormat as TextFormat;
-use PocketMine\Utils\Utils as Utils;
-use PocketMine\Utils\VersionString as VersionString;
+use PocketMine\Block\Block;
+use PocketMine\Entity\Entity;
+use PocketMine\Item\Item;
+use PocketMine\Level\Level;
+use PocketMine\Network\Protocol\Info;
+use PocketMine\Network\Query\QueryHandler;
+use PocketMine\Network\RCON\RCON;
+use PocketMine\Network\UPnP\PortForward;
+use PocketMine\Network\UPnP\RemovePortForward;
+use PocketMine\Recipes\Crafting;
+use PocketMine\Tile\Tile;
+use PocketMine\Utils\Config;
+use PocketMine\Utils\TextFormat;
+use PocketMine\Utils\Utils;
+use PocketMine\Utils\VersionString;
 
 class ServerAPI{
 	public $restart = false;
@@ -112,22 +113,14 @@ class ServerAPI{
 		@mkdir(\PocketMine\DATA . "worlds/", 0755);
 		@mkdir(\PocketMine\DATA . "plugins/", 0755);
 
-		//Init all the events
-		foreach(get_declared_classes() as $class){
-			if(is_subclass_of($class, "Event") and property_exists($class, "handlers") and property_exists($class, "handlerPriority")){
-				$class::unregisterAll();
-			}
-		}
-
 		$version = new VersionString();
-		console("[INFO] Starting Minecraft PE server version " . TextFormat::AQUA . MINECRAFT_VERSION);
+		console("[INFO] Starting Minecraft: PE server version " . TextFormat::AQUA . MINECRAFT_VERSION);
 
 		console("[INFO] Loading properties...");
 		$this->config = new Config(\PocketMine\DATA . "server.properties", Config::PROPERTIES, array(
 			"server-name" => "Minecraft: PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",
-			"server-ip" => "",
 			"server-port" => 19132,
 			"server-type" => "normal",
 			"memory-limit" => "128M",
@@ -157,7 +150,7 @@ class ServerAPI{
 		$this->parseProperties();
 
 		//Load advanced properties
-		define("DEBUG", $this->getProperty("debug", 1));
+		define("PocketMine\\DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
@@ -188,7 +181,7 @@ class ServerAPI{
 						console("[NOTICE] " . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
 						console("[NOTICE] " . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
 						console("[NOTICE] " . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
-						console("[NOTICE] This message will dissapear after issuing the command \"/update-done\"");
+						console("[NOTICE] This message will disappear after issuing the command \"/update-done\"");
 					} else{
 						$this->setProperty("last-update", time());
 						console("[INFO] " . TextFormat::AQUA . "This is the latest DEVELOPMENT version");
@@ -207,7 +200,7 @@ class ServerAPI{
 						console("[NOTICE] " . TextFormat::GREEN . "A new STABLE version of PocketMine-MP has been released!");
 						console("[NOTICE] " . TextFormat::GREEN . "Version \"" . $info[0]["name"] . "\" #" . $updateN);
 						console("[NOTICE] Get it at PocketMine.net or at " . $info[0]["zipball_url"]);
-						console("[NOTICE] This message will dissapear as soon as you update");
+						console("[NOTICE] This message will disappear as soon as you update");
 					} else{
 						$this->setProperty("last-update", time());
 						console("[INFO] " . TextFormat::AQUA . "This is the latest STABLE version");
@@ -218,8 +211,10 @@ class ServerAPI{
 
 		$this->loadProperties();
 
+
 		$this->apiList[] = $this->console = new ConsoleAPI();
 		$this->apiList[] = $this->level = new LevelAPI();
+
 		$this->apiList[] = $this->block = new BlockAPI();
 		$this->apiList[] = $this->chat = new ChatAPI();
 		$this->apiList[] = $this->ban = new BanAPI();
@@ -239,7 +234,7 @@ class ServerAPI{
 	public function checkTickUpdates(){
 		//Update entities that need update
 		if(count(Entity::$needUpdate) > 0){
-			foreach(EntityEntity::$needUpdate as $id => $entity){
+			foreach(Entity::$needUpdate as $id => $entity){
 				if($entity->onUpdate() === false){
 					unset(Entity::$needUpdate[$id]);
 				}
@@ -276,7 +271,7 @@ class ServerAPI{
 
 	public function autoSave(){
 		console("[DEBUG] Saving....", true, true, 2);
-		$this->server->api->level->saveAll();
+		Level::saveAll();
 	}
 
 	public function sendUsage(){
@@ -377,6 +372,12 @@ class ServerAPI{
 			self::$serverRequest = $this->server;
 		}
 
+		Block::init();
+		Item::init();
+		Crafting::init();
+		Level::init();
+
+
 		if($this->getProperty("send-usage", true) !== false){
 			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
@@ -391,10 +392,6 @@ class ServerAPI{
 		if($this->getProperty("enable-query") === true){
 			$this->query = new QueryHandler();
 		}
-
-		Block::init();
-		Item::init();
-		Crafting::init();
 
 		$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
 		$this->server->init();

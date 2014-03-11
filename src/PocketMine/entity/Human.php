@@ -21,21 +21,22 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine\Event\Entity\EntityArmorChangeEvent as EntityArmorChangeEvent;
-use PocketMine\Event\Entity\EntityInventoryChangeEvent as EntityInventoryChangeEvent;
-use PocketMine\Event\Event as Event;
-use PocketMine\Event\EventHandler as EventHandler;
-use PocketMine\Item\Item as Item;
-use PocketMine\NBT\Tag\Byte as Byte;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Short as Short;
-use PocketMine\Network\Protocol\AddPlayerPacket as AddPlayerPacket;
-use PocketMine\Network\Protocol\ContainerSetContentPacket as ContainerSetContentPacket;
-use PocketMine\Network\Protocol\PlayerEquipmentPacket as PlayerEquipmentPacket;
-use PocketMine\Network\Protocol\RemovePlayerPacket as RemovePlayerPacket;
-use PocketMine\Network\Protocol\SetEntityMotionPacket as SetEntityMotionPacket;
-use PocketMine\Player;
 use PocketMine;
+use PocketMine\Event\Entity\EntityArmorChangeEvent;
+use PocketMine\Event\Entity\EntityInventoryChangeEvent;
+use PocketMine\Event\Event;
+use PocketMine\Event\EventHandler;
+use PocketMine\Item\Item;
+use PocketMine\NBT\Tag\Byte;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Short;
+use PocketMine\Network\Protocol\AddPlayerPacket;
+use PocketMine\Network\Protocol\ContainerSetContentPacket;
+use PocketMine\Network\Protocol\PlayerEquipmentPacket;
+use PocketMine\Network\Protocol\RemovePlayerPacket;
+use PocketMine\Network\Protocol\SetEntityMotionPacket;
+use PocketMine\Player;
+use PocketMine\Network;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -51,13 +52,13 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		}
 		$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->armor = array(
-			0 => Item::get(AIR, 0, 0),
-			1 => Item::get(AIR, 0, 0),
-			2 => Item::get(AIR, 0, 0),
-			3 => Item::get(AIR, 0, 0)
+			0 => Item::get(Item::AIR, 0, 0),
+			1 => Item::get(Item::AIR, 0, 0),
+			2 => Item::get(Item::AIR, 0, 0),
+			3 => Item::get(Item::AIR, 0, 0)
 		);
 
-		foreach($nbt->Inventory as $item){
+		foreach($this->namedtag->Inventory as $item){
 			if($item->Slot >= 0 and $item->Slot < 9){ //Hotbar
 				$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot : -1;
 			} elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
@@ -98,7 +99,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		}
 
 		//Normal inventory
-		$slotCount = (($this->gamemode & 0x01) === 0 ? PLAYER_SURVIVAL_SLOTS : PLAYER_CREATIVE_SLOTS) + 9;
+		$slotCount = (($this->gamemode & 0x01) === 0 ? Player::SURVIVAL_SLOTS : Player::CREATIVE_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
 			$item = $this->getSlot($slot);
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
@@ -218,15 +219,15 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	public function sendArmor(Player $player = null){
 		$slots = array();
 		for($i = 0; $i < 4; ++$i){
-			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > AIR){
-				$slots[$i] = $this->armor[$i]->getID() !== AIR ? $this->armor[$i]->getID() - 256 : 0;
+			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > Item::AIR){
+				$slots[$i] = $this->armor[$i]->getID() !== Item::AIR ? $this->armor[$i]->getID() - 256 : 0;
 			} else{
-				$this->armor[$i] = Item::get(AIR, 0, 0);
+				$this->armor[$i] = Item::get(Item::AIR, 0, 0);
 				$slots[$i] = 255;
 			}
 		}
 		if($player instanceof Player){
-			$pk = new Netowrk\Protocol\PlayerArmorEquipmentPacket;
+			$pk = new Network\Protocol\PlayerArmorEquipmentPacket;
 			$pk->eid = $this->id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
@@ -385,7 +386,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	public function getSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->inventory[$slot])){
-			$this->inventory[$slot] = Item::get(AIR, 0, 0);
+			$this->inventory[$slot] = Item::get(Item::AIR, 0, 0);
 		}
 
 		return $this->inventory[$slot];

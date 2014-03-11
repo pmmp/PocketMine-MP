@@ -21,14 +21,14 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Utils\Utils as Utils;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Utils\Utils;
 
 abstract class DataPacket{
 	private $offset = 0;
-	public $buffer = b"";
-	
+	public $buffer = "";
+
 	public $reliability = 0;
 	public $hasSplit = false;
 	public $messageIndex;
@@ -38,26 +38,26 @@ abstract class DataPacket{
 	public $splitID;
 	public $splitIndex;
 
-	
+
 	abstract public function pid();
-	
+
 	abstract public function encode();
-	
+
 	abstract public function decode();
 
 	protected function reset(){
 		$this->setBuffer(chr($this->pid()));
 	}
-	
+
 	public function setBuffer($buffer = ""){
 		$this->buffer = $buffer;
 		$this->offset = 0;
 	}
-	
+
 	public function getBuffer(){
 		return $this->buffer;
 	}
-	
+
 	protected function get($len){
 		if($len <= 0){
 			$this->offset = strlen($this->buffer) - 1;
@@ -67,17 +67,18 @@ abstract class DataPacket{
 			return substr($this->buffer, $this->offset);
 		}
 
-		$buffer = b"";
+		$buffer = "";
 		for(; $len > 0; --$len, ++$this->offset){
 			$buffer .= @$this->buffer{$this->offset};
 		}
+
 		return $buffer;
 	}
-	
+
 	protected function put($str){
 		$this->buffer .= $str;
 	}
-	
+
 	protected function getLong($unsigned = false){
 		return Utils::readLong($this->get(8), $unsigned);
 	}
@@ -85,23 +86,23 @@ abstract class DataPacket{
 	protected function putLong($v){
 		$this->buffer .= Utils::writeLong($v);
 	}
-	
+
 	protected function getInt(){
 		return Utils::readInt($this->get(4));
 	}
-	
+
 	protected function putInt($v){
 		$this->buffer .= Utils::writeInt($v);
 	}
-	
+
 	protected function getShort($unsigned = false){
 		return Utils::readShort($this->get(2), $unsigned);
 	}
-	
+
 	protected function putShort($v){
 		$this->buffer .= Utils::writeShort($v);
 	}
-	
+
 	protected function getFloat(){
 		return Utils::readFloat($this->get(4));
 	}
@@ -117,20 +118,20 @@ abstract class DataPacket{
 	protected function putTriad($v){
 		$this->buffer .= Utils::writeTriad($v);
 	}
-	
-	
+
+
 	protected function getLTriad(){
 		return Utils::readTriad(strrev($this->get(3)));
 	}
-	
+
 	protected function putLTriad($v){
 		$this->buffer .= strrev(Utils::writeTriad($v));
 	}
-	
+
 	protected function getByte(){
 		return ord($this->buffer{$this->offset++});
 	}
-	
+
 	protected function putByte($v){
 		$this->buffer .= chr($v);
 	}
@@ -150,7 +151,7 @@ abstract class DataPacket{
 			$this->put($v);
 		}
 	}
-	
+
 	protected function getSlot(){
 		$id = $this->getShort();
 		$cnt = $this->getByte();
@@ -161,22 +162,22 @@ abstract class DataPacket{
 			$cnt
 		);
 	}
-	
+
 	protected function putSlot(Item $item){
 		$this->putShort($item->getID());
 		$this->putByte($item->getCount());
 		$this->putShort($item->getMetadata());
 	}
-	
+
 	protected function getString(){
 		return $this->get($this->getShort(true));
 	}
-	
+
 	protected function putString($v){
 		$this->putShort(strlen($v));
 		$this->put($v);
 	}
-	
+
 	protected function feof(){
 		return !isset($this->buffer{$this->offset});
 	}

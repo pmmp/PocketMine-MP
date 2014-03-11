@@ -91,7 +91,7 @@ class TimeAPI{
 
 	public function get($raw = false, $level = false){
 		if(!($level instanceof Level)){
-			$level = $this->server->api->level->getDefault();
+			$level = Level::getDefault();
 		}
 
 		return $raw === true ? $level->getTime() : abs($level->getTime()) % 19200;
@@ -99,7 +99,7 @@ class TimeAPI{
 
 	public function add($time, $level = false){
 		if(!($level instanceof Level)){
-			$level = $this->server->api->level->getDefault();
+			$level = Level::getDefault();
 		}
 		$level->setTime($level->getTime() + (int) $time);
 	}
@@ -127,7 +127,7 @@ class TimeAPI{
 
 	public function set($time, $level = false){
 		if(!($level instanceof Level)){
-			$level = $this->server->api->level->getDefault();
+			$level = Level::getDefault();
 		}
 		if(is_string($time) and isset(TimeAPI::$phases[$time])){
 			$level->setTime(TimeAPI::$phases[$time]);

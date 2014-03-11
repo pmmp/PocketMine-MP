@@ -23,13 +23,14 @@
  * All the Item classes
  */
 namespace PocketMine\Item;
-use PocketMine\Block\Block as Block;
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Item\Block as ItemBlock;
-use PocketMine\Level\Level as Level;
-use PocketMine\Recipes\Fuel as Fuel;
-use PocketMine\Recipes\Smelt as Smelt;
+
 use PocketMine;
+use PocketMine\Block\Block;
+use PocketMine\Entity\Entity;
+use PocketMine\Item\Block as ItemBlock;
+use PocketMine\Level\Level;
+use PocketMine\Recipes\Fuel;
+use PocketMine\Recipes\Smelt;
 
 class Item{
 	//All Block IDs are here too
@@ -441,8 +442,8 @@ class Item{
 				$meta = ((int) $b[1]) & 0xFFFF;
 			}
 
-			if(defined("PocketMine\\Item\\Item::".strtoupper($b[0]))){
-				$item = self::get(constant("PocketMine\\Item\\Item::".strtoupper($b[0])), $meta);
+			if(defined("PocketMine\\Item\\Item::" . strtoupper($b[0]))){
+				$item = self::get(constant("PocketMine\\Item\\Item::" . strtoupper($b[0])), $meta);
 				if($item->getID() === self::AIR and strtoupper($b[0]) !== "AIR"){
 					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 				}

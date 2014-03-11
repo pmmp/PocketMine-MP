@@ -22,7 +22,7 @@
 namespace PocketMine\Recipes;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
 
 abstract class Fuel{
 	public static $duration = array(

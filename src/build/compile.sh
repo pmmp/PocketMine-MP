@@ -121,6 +121,9 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		[ -z "$march" ] && march=armv6zk;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
 		[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+		if [ "$DO_OPTIMIZE" == "yes" ]; then
+			CFLAGS="$CFLAGS -mfloat-abi=hard -mfpu=vfp"
+		fi
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		[ -z "$CFLAGS" ] && CFLAGS="-uclibc";

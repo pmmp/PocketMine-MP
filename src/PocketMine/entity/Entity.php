@@ -24,23 +24,23 @@
  */
 namespace PocketMine\Entity;
 
-use PocketMine\Event\Entity\EntityLevelChangeEvent as EntityLevelChangeEvent;
-use PocketMine\Event\Entity\EntityMotionEvent as EntityMotionEvent;
-use PocketMine\Event\Entity\EntityMoveEvent as EntityMoveEvent;
-use PocketMine\Event\Event as Event;
-use PocketMine\Event\EventHandler as EventHandler;
-use PocketMine\Level\Level as Level;
-use PocketMine\Level\Position as Position;
-use PocketMine\Math\AxisAlignedBB as AxisAlignedBB;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\Network\Protocol\MoveEntityPacket_PosRot as MoveEntityPacket_PosRot;
-use PocketMine\Network\Protocol\MovePlayerPacket as MovePlayerPacket;
-use PocketMine\Network\Protocol\RemoveEntityPacket as RemoveEntityPacket;
-use PocketMine\Network\Protocol\SetEntityMotionPacket as SetEntityMotionPacket;
-use PocketMine\Player as Player;
-use PocketMine\PMF\LevelFormat as LevelFormat;
 use PocketMine;
+use PocketMine\Event\Entity\EntityLevelChangeEvent;
+use PocketMine\Event\Entity\EntityMotionEvent;
+use PocketMine\Event\Entity\EntityMoveEvent;
+use PocketMine\Event\Event;
+use PocketMine\Event\EventHandler;
+use PocketMine\Level\Level;
+use PocketMine\Level\Position;
+use PocketMine\Math\AxisAlignedBB;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\Network\Protocol\MoveEntityPacket_PosRot;
+use PocketMine\Network\Protocol\MovePlayerPacket;
+use PocketMine\Network\Protocol\RemoveEntityPacket;
+use PocketMine\Network\Protocol\SetEntityMotionPacket;
+use PocketMine\Player;
+use PocketMine\PMF\LevelFormat;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;

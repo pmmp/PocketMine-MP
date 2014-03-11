@@ -22,7 +22,7 @@
 namespace PocketMine\Level;
 
 use PocketMine;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\Utils;
 
 /**
  * WARNING: This code is old, and only supports the file format partially (reverse engineering)
@@ -31,7 +31,7 @@ use PocketMine\Utils\Utils as Utils;
  */
 class PocketChunkParser{
 	private $location;
-	private $raw = b"";
+	private $raw = "";
 	private $file;
 	public $sectorLength = 4096; //16 * 16 * 16
 	public $chunkLength = 86016; //21 * $sectorLength
@@ -144,8 +144,9 @@ class PocketChunkParser{
 				$this->map[$x][$z] = $this->parseChunk($x, $z);
 			}
 		}
-		$this->raw = b"";
+		$this->raw = "";
 		console("[DEBUG] Chunks loaded!", true, true, 2);
+
 		return true;
 	}
 

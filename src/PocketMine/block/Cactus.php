@@ -21,10 +21,11 @@
 
 namespace PocketMine\Block;
 
-use PocketMine\Item\Item as Item;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\ServerAPI as ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\ServerAPI;
+use PocketMine\Level\Level;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){
@@ -34,15 +35,15 @@ class Cactus extends Transparent{
 	}
 
 	public function onUpdate($type){
-		if($type === BLOCK_UPDATE_NORMAL){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){ //Replace with common break method
 				$this->level->setBlock($this, new Air(), false);
 				ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
 
-				return BLOCK_UPDATE_NORMAL;
+				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === BLOCK_UPDATE_RANDOM){
+		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== self::CACTUS){
 				if($this->meta == 0x0F){
 					for($y = 1; $y < 3; ++$y){
@@ -59,7 +60,7 @@ class Cactus extends Transparent{
 					$this->level->setBlock($this, $this, false);
 				}
 
-				return BLOCK_UPDATE_RANDOM;
+				return Level::BLOCK_UPDATE_RANDOM;
 			}
 		}
 

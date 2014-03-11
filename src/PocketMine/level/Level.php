@@ -24,27 +24,47 @@
  */
 namespace PocketMine\Level;
 
-use PocketMine\Block\Air as Air;
-use PocketMine\Block\Block as Block;
-use PocketMine\Item\Item as Item;
-use PocketMine\Level\Generator\Generator as Generator;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\Tag\Compound as Compound;
-use PocketMine\NBT\Tag\Enum as Enum;
-use PocketMine\Network\Protocol\SetTimePacket as SetTimePacket;
-use PocketMine\Network\Protocol\UpdateBlockPacket as UpdateBlockPacket;
-use PocketMine\Player as Player;
-use PocketMine\PMF\LevelFormat as LevelFormat;
-use PocketMine\ServerAPI as ServerAPI;
-use PocketMine\Tile\Chest as Chest;
-use PocketMine\Tile\Furnace as Furnace;
-use PocketMine\Tile\Sign as Sign;
-use PocketMine\Tile\Tile as Tile;
-use PocketMine\Utils\Cache as Cache;
-use PocketMine\Utils\Random as Random;
 use PocketMine;
+use PocketMine\Utils\Utils;
+use PocketMine\Block\Air;
+use PocketMine\Block\Block;
+use PocketMine\Level\Generator\Generator;
+use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Enum;
+use PocketMine\NBT\Tag\Short;
+use PocketMine\NBT\NBT;
+use PocketMine\Network\Protocol\SetTimePacket;
+use PocketMine\Network\Protocol\UpdateBlockPacket;
+use PocketMine\Player;
+use PocketMine\PMF\LevelFormat;
+use PocketMine\ServerAPI;
+use PocketMine\Tile\Chest;
+use PocketMine\Tile\Furnace;
+use PocketMine\Tile\Sign;
+use PocketMine\Tile\Tile;
+use PocketMine\Utils\Cache;
+use PocketMine\Utils\Config;
+use PocketMine\Utils\Random;
+use PocketMine\Level\Generator\Flat;
+use PocketMine\Level\Generator\Normal;
 
+/**
+ * Class Level
+ * Main Level handling class, includes all the methods used on them.
+ * @package PocketMine\Level
+ */
 class Level{
+
+	const BLOCK_UPDATE_NORMAL = 1;
+	const BLOCK_UPDATE_RANDOM = 2;
+	const BLOCK_UPDATE_SCHEDULED = 3;
+	const BLOCK_UPDATE_WEAK = 4;
+	const BLOCK_UPDATE_TOUCH = 5;
+
+	protected static $list = array();
+	public static $default = null;
+
 	public $players = array();
 
 	public $entities = array();
@@ -56,11 +76,256 @@ class Level{
 	public $nextSave;
 
 	/**
-	 * @var PMFLevelFormat
+	 * @var LevelFormat
 	 */
 	public $level;
 	public $stopTime;
 	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
+
+	public static function init(){
+		if(self::$default === null){
+			$default = ServerAPI::request()->api->getProperty("level-name");
+			if(self::loadLevel($default) === false){
+				self::generateLevel($default, ServerAPI::request()->seed);
+				self::loadLevel($default);
+			}
+			self::$default = self::get($default);
+		}
+	}
+
+	/**
+	 * Saves all the levels
+	 *
+	 * @return void
+	 */
+	public static function saveAll(){
+		foreach(self::$list as $level){
+			$level->save();
+		}
+	}
+
+	/**
+	 * Returns an array of all the loaded Levels
+	 *
+	 * @return Level[]
+	 */
+	public static function getAll(){
+		return self::$list;
+	}
+
+	/**
+	 * Gets the default Level on the Server
+	 *
+	 * @return Level
+	 */
+	public static function getDefault(){
+		return self::$default;
+	}
+
+	/**
+	 * Gets a loaded Level
+	 *
+	 * @param $name string Level name
+	 *
+	 * @return bool|Level
+	 */
+	public static function get($name){
+		if(isset(self::$list[$name])){
+			return self::$list[$name];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Loads a level from the data directory
+	 *
+	 * @param $name
+	 *
+	 * @return bool
+	 */
+	public static function loadLevel($name){
+		if(self::get($name) !== false){
+			return true;
+		} elseif(self::levelExists($name) === false){
+			console("[NOTICE] Level \"" . $name . "\" not found");
+
+			return false;
+		}
+		$path = \PocketMine\DATA . "worlds/" . $name . "/";
+		console("[INFO] Preparing level \"" . $name . "\"");
+		$level = new LevelFormat($path . "level.pmf");
+		if(!$level->isLoaded){
+			console("[ERROR] Could not load level \"" . $name . "\"");
+
+			return false;
+		}
+		//$entities = new Config($path."entities.yml", Config::YAML);
+		if(file_exists($path . "tileEntities.yml")){
+			@rename($path . "tileEntities.yml", $path . "tiles.yml");
+		}
+		$blockUpdates = new Config($path . "bupdates.yml", Config::YAML);
+		$level = new Level($level, $name);
+		/*foreach($entities->getAll() as $entity){
+			if(!isset($entity["id"])){
+				break;
+			}
+			if($entity["id"] === 64){ //Item Drop
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_ITEM, $entity["Item"]["id"], array(
+					"meta" => $entity["Item"]["Damage"],
+					"stack" => $entity["Item"]["Count"],
+					"x" => $entity["Pos"][0],
+					"y" => $entity["Pos"][1],
+					"z" => $entity["Pos"][2],
+					"yaw" => $entity["Rotation"][0],
+					"pitch" => $entity["Rotation"][1],
+				));
+			}elseif($entity["id"] === FALLING_SAND){
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_FALLING, $entity["id"], $entity);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setHealth($entity["Health"]);
+			}elseif($entity["id"] === OBJECT_PAINTING or $entity["id"] === OBJECT_ARROW){ //Painting
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_OBJECT, $entity["id"], $entity);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setHealth(1);
+			}else{
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_MOB, $entity["id"], $entity);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setHealth($entity["Health"]);
+			}
+		}*/
+
+		if(file_exists($path . "tiles.yml")){
+			$tiles = new Config($path . "tiles.yml", Config::YAML);
+			foreach($tiles->getAll() as $tile){
+				if(!isset($tile["id"])){
+					continue;
+				}
+				$level->loadChunk($tile["x"] >> 4, $tile["z"] >> 4);
+
+				$nbt = new Compound(false, array());
+				foreach($tile as $index => $data){
+					switch($index){
+						case "Items":
+							$tag = new Enum("Items", array());
+							$tag->setTagType(NBT::TAG_Compound);
+							foreach($data as $slot => $fields){
+								$tag[(int) $slot] = new Compound(false, array(
+									"Count" => new Byte("Count", $fields["Count"]),
+									"Slot" => new Short("Slot", $fields["Slot"]),
+									"Damage" => new Short("Damage", $fields["Damage"]),
+									"id" => new String("id", $fields["id"])
+								));
+							}
+							$nbt["Items"] = $tag;
+							break;
+
+						case "id":
+						case "Text1":
+						case "Text2":
+						case "Text3":
+						case "Text4":
+							$nbt[$index] = new String($index, $data);
+							break;
+
+						case "x":
+						case "y":
+						case "z":
+						case "pairx":
+						case "pairz":
+							$nbt[$index] = new Int($index, $data);
+							break;
+
+						case "BurnTime":
+						case "CookTime":
+						case "MaxTime":
+							$nbt[$index] = new Short($index, $data);
+							break;
+					}
+				}
+				switch($tile["id"]){
+					case Tile::FURNACE:
+						new Furnace($level, $nbt);
+						break;
+					case Tile::CHEST:
+						new Chest($level, $nbt);
+						break;
+					case Tile::SIGN:
+						new Sign($level, $nbt);
+						break;
+				}
+			}
+			unlink($path . "tiles.yml");
+			$level->save(true, true);
+		}
+
+		foreach($blockUpdates->getAll() as $bupdate){
+			ServerAPI::request()->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $level), (float) $bupdate["delay"], (int) $bupdate["type"]);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Generates a new level
+	 *
+	 * @param            $name
+	 * @param bool       $seed
+	 * @param bool       $generator
+	 * @param bool|array $options
+	 *
+	 * @return bool
+	 */
+	public static function generateLevel($name, $seed = false, $generator = false, $options = false){
+		if($name == "" or self::levelExists($name)){
+			return false;
+		}
+		$options = array();
+		if($options === false and ServerAPI::request()->api->getProperty("generator-settings") !== false and trim(ServerAPI::request()->api->getProperty("generator-settings")) != ""){
+			$options["preset"] = ServerAPI::request()->api->getProperty("generator-settings");
+		}
+
+		if($generator !== false and class_exists($generator)){
+			$generator = new $generator($options);
+		} else{
+			if(strtoupper(ServerAPI::request()->api->getProperty("level-type")) == "FLAT"){
+				$generator = new Flat($options);
+			} else{
+				$generator = new Normal($options);
+			}
+		}
+		$gen = new WorldGenerator($generator, $name, $seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
+		$gen->generate();
+		$gen->close();
+
+		return true;
+	}
+
+	/**
+	 * Searches if a level exists on file
+	 *
+	 * @param $name
+	 *
+	 * @return bool
+	 */
+	public static function levelExists($name){
+		if($name === ""){
+			return false;
+		}
+		$path = \PocketMine\DATA . "worlds/" . $name . "/";
+		if(self::get($name) === false and !file_exists($path . "level.pmf")){
+			if(file_exists($path)){
+				$level = new LevelImport($path);
+				if($level->import() === false){
+					return false;
+				}
+			} else{
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	public function __construct(LevelFormat $level, $name){
 		$this->server = ServerAPI::request();
@@ -79,10 +344,41 @@ class Level{
 		$gen = Generator::getGenerator($this->level->levelData["generator"]);
 		$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
 		$this->generator->init($this, new Random($this->level->levelData["seed"]));
+		self::$list[$name] = $this;
 	}
 
 	public function close(){
 		$this->__destruct();
+	}
+
+
+	/**
+	 * Unloads the current level from memory safely
+	 *
+	 * @param bool $force default false, force unload of default level
+	 *
+	 * @return bool
+	 */
+	public function unload($force = false){
+		if($this === self::getDefault() and $force !== true){
+			return false;
+		}
+		console("[INFO] Unloading level \"" . $this->getName() . "\"");
+		$this->nextSave = PHP_INT_MAX;
+		$this->save();
+		foreach($this->getPlayers() as $player){
+			if($this === self::getDefault()){
+				$player->close("forced level unload");
+			} else{
+				$player->teleport(Level::getDefault()->getSafeSpawn());
+			}
+		}
+		$this->close();
+		if($this === self::getDefault()){
+			self::$default = null;
+		}
+
+		return true;
 	}
 
 	public function getUsingChunk($X, $Z){
@@ -184,8 +480,8 @@ class Level{
 						for($i = 0; $i < 3; ++$i){
 							$block = $this->getBlockRaw(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
 							if($block instanceof Block){
-								if($block->onUpdate(BLOCK_UPDATE_RANDOM) === BLOCK_UPDATE_NORMAL){
-									$this->server->api->block->blockUpdateAround($block, $this);
+								if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
+									$this->server->api->block->blockUpdateAround($block);
 								}
 							}
 						}
@@ -226,6 +522,7 @@ class Level{
 	}
 
 	public function __destruct(){
+		unset(self::$list[$this->getName()]);
 		if(isset($this->level)){
 			$this->save(false, false);
 			$this->level->closeLevel();
@@ -371,10 +668,10 @@ class Level{
 			}
 
 			if($update === true){
-				$this->server->api->block->blockUpdateAround($pos, BLOCK_UPDATE_NORMAL, 1);
+				$this->server->api->block->blockUpdateAround($pos, self::BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){
-				if($t = $this->getTile($pos) instanceof Tile){
+				if(($t = $this->getTile($pos)) instanceof Tile){
 					$t->close();
 				}
 			}
@@ -459,22 +756,27 @@ class Level{
 			$this->usedChunks[$index] = array();
 			$this->chunkTiles[$index] = array();
 			$this->chunkEntities[$index] = array();
-			foreach($this->level->getChunkNBT($X, $Z)->Entities as $nbt){
-				switch($nbt->id){
-					//TODO: spawn entities
+			$tags = $this->level->getChunkNBT($X, $Z);
+			if(isset($tags->Entities)){
+				foreach($tags->Entities as $nbt){
+					switch($nbt->id){
+						//TODO: spawn entities
+					}
 				}
 			}
-			foreach($this->level->getChunkNBT($X, $Z)->TileEntities as $nbt){
-				switch($nbt->id){
-					case Tile::CHEST:
-						new Chest($this, $nbt);
-						break;
-					case Tile::FURNACE:
-						new Furnace($this, $nbt);
-						break;
-					case Tile::SIGN:
-						new Sign($this, $nbt);
-						break;
+			if(isset($tags->TileEntities)){
+				foreach($tags->TileEntities as $nbt){
+					switch($nbt->id){
+						case Tile::CHEST:
+							new Chest($this, $nbt);
+							break;
+						case Tile::FURNACE:
+							new Furnace($this, $nbt);
+							break;
+						case Tile::SIGN:
+							new Sign($this, $nbt);
+							break;
+					}
 				}
 			}
 
@@ -492,6 +794,7 @@ class Level{
 		if($force !== true and $this->isSpawnChunk($X, $Z)){
 			return false;
 		}
+		$index = LevelFormat::getIndex($X, $Z);
 		unset($this->usedChunks[$index]);
 		unset($this->chunkEntities[$index]);
 		unset($this->chunkTiles[$index]);
@@ -636,7 +939,7 @@ class Level{
 		$this->level->setData("seed", (int) $seed);
 	}
 
-	public function scheduleBlockUpdate(Position $pos, $delay, $type = BLOCK_UPDATE_SCHEDULED){
+	public function scheduleBlockUpdate(Position $pos, $delay, $type = self::BLOCK_UPDATE_SCHEDULED){
 		return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}
 }

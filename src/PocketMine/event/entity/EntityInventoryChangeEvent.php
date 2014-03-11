@@ -21,10 +21,11 @@
 
 namespace PocketMine\Event\Entity;
 
-use PocketMine\Entity\Entity as Entity;
-use PocketMine\Event;
+use PocketMine\Entity\Entity;
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Event;
+use PocketMine\Item\Item;
+use PocketMine\Event\CancellableEvent;
 
 class EntityInventoryChangeEvent extends EntityEvent implements CancellableEvent{
 	public static $handlers;

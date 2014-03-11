@@ -22,7 +22,7 @@
 namespace PocketMine\PMF;
 
 use PocketMine;
-use PocketMine\Utils\Utils as Utils;
+use PocketMine\Utils\Utils;
 
 class Plugin extends PMF{
 	const VERSION = 0x02;

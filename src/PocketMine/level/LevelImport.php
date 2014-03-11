@@ -21,9 +21,9 @@
 
 namespace PocketMine\Level;
 
-use PocketMine\PMF\LevelFormat as LevelFormat;
-use PocketMine\Utils\Config as Config;
 use PocketMine;
+use PocketMine\PMF\LevelFormat;
+use PocketMine\Utils\Config;
 
 class LevelImport{
 	private $path;

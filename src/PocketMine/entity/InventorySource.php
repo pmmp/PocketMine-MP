@@ -22,7 +22,7 @@
 namespace PocketMine\Entity;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
 
 interface InventorySource{
 

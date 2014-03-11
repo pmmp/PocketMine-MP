@@ -22,7 +22,7 @@
 namespace PocketMine\Block;
 
 use PocketMine;
-use PocketMine\Item\Item as Item;
+use PocketMine\Item\Item;
 
 class Cobweb extends Flowable{
 	public function __construct(){

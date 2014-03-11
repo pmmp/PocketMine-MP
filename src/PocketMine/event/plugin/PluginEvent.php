@@ -25,7 +25,7 @@
 namespace PocketMine\Event\Plugin;
 
 use PocketMine;
-use PocketMine\Event;
+use PocketMine\Event\Event;
 
 
 abstract class PluginEvent extends Event{

@@ -22,7 +22,7 @@
 namespace PocketMine\Item;
 
 use PocketMine;
-use PocketMine\Block\Block as Block;
+use PocketMine\Block\Block;
 
 class MelonSeeds extends Item{
 	public function __construct($meta = 0, $count = 1){
