@@ -47,7 +47,8 @@ COMPILE_CURL="default"
 COMPILE_LIBEDIT="no"
 IS_CROSSCOMPILE="no"
 DO_OPTIMIZE="no"
-while getopts "::t:oj:cxff:" OPTION; do
+DO_STATIC="no"
+while getopts "::t:oj:scxff:" OPTION; do
 	case $OPTION in
 		t)
 			echo "[opt] Set target to $OPTARG"
@@ -72,6 +73,10 @@ while getopts "::t:oj:cxff:" OPTION; do
 		x)
 			echo "[opt] Doing cross-compile"
 			IS_CROSSCOMPILE="yes"
+			;;
+		s)
+			echo "[opt] Will compile everything statically"
+			DO_STATIC="yes"
 			;;
 		f)
 			echo "[opt] Enabling abusive optimizations..."
@@ -256,6 +261,11 @@ echo " done!"
 if [ "$IS_CROSSCOMPILE" == "yes" ] || [ "$COMPILE_TARGET" == "rpi" ] || [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_LIBEDIT" != "yes" ]; then
 	HAVE_LIBEDIT="--without-readline --without-libedit"
 else
+	if [ "$DO_STATIC" == "yes" ]; then
+		EXTRA_FLAGS="--enable-shared=no --enable-static=yes"
+	else
+		EXTRA_FLAGS="--enable-shared=yes --enable-static=no"
+	fi
 	#libedit
 	set +e
 	echo -n "[libedit] downloading $LIBEDIT_VERSION..."
@@ -263,8 +273,7 @@ else
 	echo -n " checking..."
 	cd libedit
 	./configure --prefix="$DIR/bin/php5" \
-	--enable-shared=yes \
-	--enable-static=no \
+	$EXTRA_FLAGS \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	if make -j $THREADS >> "$DIR/install.log" 2>&1; then
@@ -282,6 +291,13 @@ else
 	set -e
 fi
 
+
+if [ "$DO_STATIC" == "yes" ]; then
+	EXTRA_FLAGS="--static"
+else
+	EXTRA_FLAGS="--shared"
+fi
+
 #zlib
 download_file "https://github.com/madler/zlib/archive/v$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 echo -n "[zlib] downloading $ZLIB_VERSION..."
@@ -289,7 +305,7 @@ mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
---shared >> "$DIR/install.log" 2>&1
+$EXTRA_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
@@ -300,6 +316,14 @@ rm -r -f ./zlib
 echo " done!"
 
 if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
+	#if [ "$DO_STATIC" == "yes" ]; then
+	#	EXTRA_FLAGS=""
+	#else
+	#	EXTRA_FLAGS="shared no-static"
+	#fi
+	EXTRA_FLAGS="shared no-static"
+
+
 	#OpenSSL
 	WITH_SSL="--with-ssl=$DIR/bin/php5"
 	WITH_OPENSSL="--with-openssl=$DIR/bin/php5"
@@ -316,12 +340,11 @@ if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROS
 	zlib-dynamic \
 	--with-zlib-lib="$DIR/bin/php5/lib" \
 	--with-zlib-include="$DIR/bin/php5/include" \
-	shared \
+	$EXTRA_FLAGS \
 	no-ssl2 \
 	no-asm \
 	no-hw \
 	no-engines \
-	no-static \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make depend >> "$DIR/install.log" 2>&1
@@ -343,6 +366,12 @@ fi
 if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ] && [ "$COMPILE_CURL" != "yes" ]; then
    HAVE_CURL="shared,/usr"
 else
+	if [ "$DO_STATIC" == "yes" ]; then
+		EXTRA_FLAGS="--enable-static --disable-shared"
+	else
+		EXTRA_FLAGS="--disable-static --enable-shared"
+	fi
+
 	#curl
 	echo -n "[cURL] downloading $CURL_VERSION..."
 	download_file "https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -374,8 +403,7 @@ else
 	$WITH_SSL \
 	--enable-threaded-resolver \
 	--prefix="$DIR/bin/php5" \
-	--disable-shared \
-	--enable-static \
+	$EXTRA_FLAGS \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	make -j $THREADS >> "$DIR/install.log" 2>&1
@@ -400,6 +428,12 @@ download_file "http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz" | tar -zx >> "
 mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
 echo " done!"
 
+
+if [ "$DO_STATIC" == "yes" ]; then
+	EXTRA_FLAGS="--disable-shared --enable-static"
+else
+	EXTRA_FLAGS="--enable-shared --disable-static"
+fi
 #YAML
 echo -n "[YAML] downloading $YAML_VERSION..."
 download_file "http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -408,8 +442,7 @@ echo -n " checking..."
 cd yaml
 RANLIB=$RANLIB ./configure \
 --prefix="$DIR/bin/php5" \
---disable-static \
---enable-shared \
+$EXTRA_FLAGS \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
