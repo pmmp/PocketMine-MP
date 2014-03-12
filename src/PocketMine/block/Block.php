@@ -378,6 +378,11 @@ abstract class Block extends Position{
 		return $block;
 	}
 
+	/**
+	 * @param int    $id
+	 * @param int    $meta
+	 * @param string $name
+	 */
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
@@ -442,7 +447,7 @@ abstract class Block extends Position{
 	 * @return array
 	 */
 	public function getDrops(Item $item, PocketMine\Player $player){
-		if(!isset(self::$class[$this->id])){ //Unknown blocks
+		if(!isset(self::$list[$this->id])){ //Unknown blocks
 			return array();
 		} else{
 			return array(
@@ -459,7 +464,6 @@ abstract class Block extends Position{
 	 *
 	 * @return float
 	 */
-
 	public function getBreakTime(Item $item, PocketMine\Player $player){
 		if(($player->gamemode & 0x01) === 0x01){
 			return 0.15;
@@ -484,6 +488,9 @@ abstract class Block extends Position{
 		return $v;
 	}
 
+	/**
+	 * @return string
+	 */
 	final public function __toString(){
 		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
 	}

@@ -21,7 +21,7 @@
 
 namespace PocketMine;
 
-use PocketMine\Block\Block;
+use PocketMine\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
@@ -196,10 +196,12 @@ class BlockAPI{
 		[Item::CLOCK, 0],
 		[Item::COMPASS, 0],
 		[Item::MINECART, 0],
-		[Item::SPAWN_EGG, MOB_CHICKEN],
-		[Item::SPAWN_EGG, MOB_COW],
-		[Item::SPAWN_EGG, MOB_PIG],
-		[Item::SPAWN_EGG, MOB_SHEEP],
+		[Item::SPAWN_EGG, 10], //Chicken
+		[Item::SPAWN_EGG, 11], //Cow
+		[Item::SPAWN_EGG, 12], //Pig
+		[Item::SPAWN_EGG, 13], //Sheep
+		//TODO: Replace with Entity constants
+
 
 		//Seeds
 		[Item::SUGARCANE, 0],
@@ -229,35 +231,6 @@ class BlockAPI{
 		[Item::DYE, 8],
 
 	);
-
-	public static function fromString($str, $multiple = false){
-		if($multiple === true){
-			$blocks = array();
-			foreach(explode(",", $str) as $b){
-				$blocks[] = BlockAPI::fromString($b, false);
-			}
-
-			return $blocks;
-		} else{
-			$b = explode(":", str_replace(" ", "_", trim($str)));
-			if(!isset($b[1])){
-				$meta = 0;
-			} else{
-				$meta = ((int) $b[1]) & 0xFFFF;
-			}
-
-			if(defined(strtoupper($b[0]))){
-				$item = Item::get(constant(strtoupper($b[0])), $meta);
-				if($item->getID() === AIR and strtoupper($b[0]) !== "AIR"){
-					$item = Item::get(((int) $b[0]) & 0xFFFF, $meta);
-				}
-			} else{
-				$item = Item::get(((int) $b[0]) & 0xFFFF, $meta);
-			}
-
-			return $item;
-		}
-	}
 
 	function __construct(){
 		$this->server = ServerAPI::request();
@@ -306,7 +279,7 @@ class BlockAPI{
 		return $output;
 	}
 
-	private function cancelAction(Block $block, Player $player, $send = true){
+	private function cancelAction(Block\Block $block, Player $player, $send = true){
 		$pk = new UpdateBlockPacket;
 		$pk->x = $block->x;
 		$pk->y = $block->y;
@@ -321,7 +294,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function playerBlockBreak(Player $player, Math\Math\Vector3 $vector){
+	public function playerBlockBreak(Player $player, Math\Vector3 $vector){
 
 		$target = $player->level->getBlock($vector);
 		$item = $player->getSlot($player->slot);
@@ -345,7 +318,7 @@ class BlockAPI{
 				return $this->cancelAction($target, $player, false);
 			}
 			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
-				$player->setSlot($player->slot, new Item(AIR, 0, 0));
+				$player->setSlot($player->slot, new Item(Item::AIR, 0, 0));
 			}
 		} else{
 			return $this->cancelAction($target, $player, false);
@@ -362,7 +335,7 @@ class BlockAPI{
 		return false;
 	}
 
-	public function playerBlockAction(Player $player, Math\Math\Vector3 $vector, $face, $fx, $fy, $fz){
+	public function playerBlockAction(Player $player, Math\Vector3 $vector, $face, $fx, $fy, $fz){
 		if($face < 0 or $face > 5){
 			return false;
 		}
@@ -375,7 +348,7 @@ class BlockAPI{
 			$item = Item::get(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
 		}
 
-		if($target->getID() === AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
+		if($target->getID() === Item::AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
 			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
 				$this->cancelAction($target, $player);
 
@@ -408,7 +381,7 @@ class BlockAPI{
 
 		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
 			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, Item::get(AIR, 0, 0));
+				$player->setSlot($player->slot, Item::get(Item::AIR, 0, 0));
 			}
 
 			return false;
@@ -417,15 +390,15 @@ class BlockAPI{
 		if($item->isPlaceable()){
 			$hand = $item->getBlock();
 			$hand->position($block);
-		} elseif($block->getID() === FIRE){
-			$player->level->setBlock($block, new Block\AirBlock(), true, false, true);
+		} elseif($block->getID() === Item::FIRE){
+			$player->level->setBlock($block, new Block\Air(), true, false, true);
 
 			return false;
 		} else{
 			return $this->cancelAction($block, $player, false);
 		}
 
-		if(!($block->isReplaceable === true or ($hand->getID() === SLAB and $block->getID() === SLAB))){
+		if(!($block->isReplaceable === true or ($hand->getID() === Item::SLAB and $block->getID() === Item::SLAB))){
 			return $this->cancelAction($block, $player, false);
 		}
 
@@ -445,24 +418,24 @@ class BlockAPI{
 		} elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
 			return $this->cancelAction($block, $player, false);
 		}
-		if($hand->getID() === SIGN_POST or $hand->getID() === WALL_SIGN){
+		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
 			new Sign($player->level, new Compound(false, array(
-				"id" => new String("id", Tile::Sign),
-				"x" => new Int("x", $block->x),
-				"y" => new Int("y", $block->y),
-				"z" => new Int("z", $block->z),
-				"Text1" => new String("Text1", ""),
-				"Text2" => new String("Text2", ""),
-				"Text3" => new String("Text3", ""),
-				"Text4" => new String("Text4", ""),
-				"creator" => new String("creator", $player->getUsername())
+				new String("id", Tile\Tile::SIGN),
+				new Int("x", $block->x),
+				new Int("y", $block->y),
+				new Int("z", $block->z),
+				new String("Text1", ""),
+				new String("Text2", ""),
+				new String("Text3", ""),
+				new String("Text4", ""),
+				new String("creator", $player->getUsername())
 			)));
 		}
 
 		if(($player->getGamemode() & 0x01) === 0){
 			$item->setCount($item->getCount() - 1);
 			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, Item::get(AIR, 0, 0));
+				$player->setSlot($player->slot, Item::get(Item::AIR, 0, 0));
 			}
 		}
 
@@ -488,7 +461,7 @@ class BlockAPI{
 	}
 
 	public function blockUpdate(Position $pos, $type = Level::BLOCK_UPDATE_NORMAL){
-		if(!($pos instanceof Block)){
+		if(!($pos instanceof BLock\Block)){
 			$block = $pos->level->getBlock($pos);
 		} else{
 			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);

@@ -41,7 +41,13 @@ use PocketMine\NBT\Tag\Tag;
 use PocketMine\Utils\Utils;
 use PocketMine;
 
-class NBT implements \ArrayAccess{
+/**
+ * Named Binary Tag encoder/decoder
+ *
+ * Class NBT
+ * @package PocketMine\NBT
+ */
+class NBT{
 	const LITTLE_ENDIAN = 0;
 	const BIG_ENDIAN = 1;
 	const TAG_End = 0;
@@ -63,7 +69,7 @@ class NBT implements \ArrayAccess{
 	private $data;
 
 	public function get($len){
-		if($len <= 0){
+		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
 
 			return "";
@@ -99,6 +105,10 @@ class NBT implements \ArrayAccess{
 		$this->buffer = "";
 	}
 
+	public function readCompressed($buffer){
+		$this->read(\gzdecode($buffer));
+	}
+
 	public function write(){
 		$this->offset = 0;
 		if($this->data instanceof Compound){
@@ -108,6 +118,13 @@ class NBT implements \ArrayAccess{
 		} else{
 			return false;
 		}
+	}
+
+	public function writeCompressed(){
+		if(($write = $this->write()) !== false){
+			return \gzencode($write, 9);
+		}
+		return false;
 	}
 
 	public function readTag(){
@@ -228,40 +245,6 @@ class NBT implements \ArrayAccess{
 	public function putString($v){
 		$this->putShort(strlen($v));
 		$this->buffer .= $v;
-	}
-
-	public function &__get($name){
-		$ret = $this->data instanceof Compound ? $this->data[$name] : false;
-
-		return $ret;
-	}
-
-	public function __isset($name){
-		return $this->data instanceof Compound ? isset($this->data[$name]) : false;
-	}
-
-	public function __unset($name){
-		if($this->data instanceof Compound){
-			unset($this->data[$name]);
-		}
-	}
-
-	public function offsetExists($name){
-		return $this->__isset($name);
-	}
-
-	public function &offsetGet($name){
-		return $this->__get($name);
-	}
-
-	public function offsetSet($name, $value){
-		if($this->data instanceof Compound){
-			$this->data[$name] = $value;
-		}
-	}
-
-	public function offsetUnset($name){
-		$this->__unset($name);
 	}
 
 	public function getData(){

@@ -333,7 +333,7 @@ $this->updateMetadata();
 }else{
 $hasUpdate = true;
 }
-if(($this->player instanceof Player) and ($this->player->gamemode & 0x01) === CREATIVE){ //Remove fire effects in next tick
+if(($this->player instanceof Player) and ($this->player->gamemode & 0x01) === 1){ //Remove fire effects in next tick
 $this->fire = 1;
 }
 }

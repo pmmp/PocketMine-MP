@@ -178,36 +178,35 @@ class Player extends RealHuman{
 		if(!file_exists(\PocketMine\DATA . "players/" . $iname . ".dat")){
 			$spawn = Level::getDefault()->getSafeSpawn();
 			$nbt = new Compound(false, array(
-				"Pos" => new Enum("Pos", array(
-						0 => new Double(0, $spawn->x),
-						1 => new Double(1, $spawn->y),
-						2 => new Double(2, $spawn->z)
-					)),
-				"Level" => new String("Level", Level::getDefault()->getName()),
-				"SpawnLevel" => new String("SpawnLevel", Level::getDefault()->getName()),
-				"SpawnX" => new Int("SpawnX", (int) $spawn->x),
-				"SpawnY" => new Int("SpawnY", (int) $spawn->y),
-				"SpawnZ" => new Int("SpawnZ", (int) $spawn->z),
-				"SpawnForced" => new Byte("SpawnForced", 1), //TODO
-				"Inventory" => new Enum("Inventory", array()),
-				"Achievements" => new Compound("Achievements", array()),
-				"playerGameType" => new Int("playerGameType", $server->gamemode),
-				"Motion" => new Enum("Motion", array(
-						0 => new Double(0, 0.0),
-						1 => new Double(1, 0.0),
-						2 => new Double(2, 0.0)
-					)),
-				"Rotation" => new Enum("Rotation", array(
-						0 => new Float(0, 0.0),
-						1 => new Float(1, 0.0)
-					)),
-				"FallDistance" => new Float("FallDistance", 0.0),
-				"Fire" => new Short("Fire", 0),
-				"Air" => new Short("Air", 0),
-				"OnGround" => new Byte("OnGround", 1),
-				"Invulnerable" => new Byte("Invulnerable", 0),
-
-				"NameTag" => new String("NameTag", $name),
+				new Enum("Pos", array(
+					new Double(0, $spawn->x),
+					new Double(1, $spawn->y),
+					new Double(2, $spawn->z)
+				)),
+				new String("Level", Level::getDefault()->getName()),
+				new String("SpawnLevel", Level::getDefault()->getName()),
+				new Int("SpawnX", (int) $spawn->x),
+				new Int("SpawnY", (int) $spawn->y),
+				new Int("SpawnZ", (int) $spawn->z),
+				new Byte("SpawnForced", 1), //TODO
+				new Enum("Inventory", array()),
+				new Compound("Achievements", array()),
+				new Int("playerGameType", $server->gamemode),
+				new Enum("Motion", array(
+					new Double(0, 0.0),
+					new Double(1, 0.0),
+					new Double(2, 0.0)
+				)),
+				new Enum("Rotation", array(
+					new Float(0, 0.0),
+					new Float(1, 0.0)
+				)),
+				new Float("FallDistance", 0.0),
+				new Short("Fire", 0),
+				new Short("Air", 0),
+				new Byte("OnGround", 1),
+				new Byte("Invulnerable", 0),
+				new String("NameTag", $name),
 			));
 			$nbt->Pos->setTagType(NBT::TAG_Double);
 			$nbt->Inventory->setTagType(NBT::TAG_Compound);
@@ -215,24 +214,24 @@ class Player extends RealHuman{
 			$nbt->Rotation->setTagType(NBT::TAG_Float);
 			if(file_exists(\PocketMine\DATA . "players/" . $iname . ".yml")){
 				$data = new Config(\PocketMine\DATA . "players/" . $iname . ".yml", Config::YAML, array());
-				$nbt->playerGameType = (int) $data->get("gamemode");
-				$nbt->Level = $data->get("position")["level"];
-				$nbt->Pos[0] = $data->get("position")["x"];
-				$nbt->Pos[1] = $data->get("position")["y"];
-				$nbt->Pos[2] = $data->get("position")["z"];
-				$nbt->SpawnLevel = $data->get("spawn")["level"];
-				$nbt->SpawnX = (int) $data->get("spawn")["x"];
-				$nbt->SpawnY = (int) $data->get("spawn")["y"];
-				$nbt->SpawnZ = (int) $data->get("spawn")["z"];
+				$nbt["playerGameType"] = (int) $data->get("gamemode");
+				$nbt["Level"] = $data->get("position")["level"];
+				$nbt["Pos"][0] = $data->get("position")["x"];
+				$nbt["Pos"][1] = $data->get("position")["y"];
+				$nbt["Pos"][2] = $data->get("position")["z"];
+				$nbt["SpawnLevel"] = $data->get("spawn")["level"];
+				$nbt["SpawnX"] = (int) $data->get("spawn")["x"];
+				$nbt["SpawnY"] = (int) $data->get("spawn")["y"];
+				$nbt["SpawnZ"] = (int) $data->get("spawn")["z"];
 				console("[NOTICE] Old Player data found for \"" . $iname . "\", upgrading profile");
 				foreach($data->get("inventory") as $slot => $item){
 					if(count($item) === 3){
 						$nbt->Inventory[$slot + 9] = new Compound(false, array(
-							"id" => new Short("id", $item[0]),
-							"Damage" => new Short("Damage", $item[1]),
-							"Count" => new Byte("Count", $item[2]),
-							"Slot" => new Byte("Slot", $slot + 9),
-							"TrueSlot" => new Byte("TrueSlot", $slot + 9)
+							new Short("id", $item[0]),
+							new Short("Damage", $item[1]),
+							new Byte("Count", $item[2]),
+							new Byte("Slot", $slot + 9),
+							new Byte("TrueSlot", $slot + 9)
 						));
 					}
 				}
@@ -240,21 +239,21 @@ class Player extends RealHuman{
 					if(isset($nbt->Inventory[$itemSlot + 9])){
 						$item = $nbt->Inventory[$itemSlot + 9];
 						$nbt->Inventory[$slot] = new Compound(false, array(
-							"id" => new Short("id", $item->id),
-							"Damage" => new Short("Damage", $item->Damage),
-							"Count" => new Byte("Count", $item->Count),
-							"Slot" => new Byte("Slot", $slot),
-							"TrueSlot" => new Byte("TrueSlot", $item->TrueSlot)
+							new Short("id", $item->id),
+							new Short("Damage", $item->Damage),
+							new Byte("Count", $item->Count),
+							new Byte("Slot", $slot),
+							new Byte("TrueSlot", $item->TrueSlot)
 						));
 					}
 				}
 				foreach($data->get("armor") as $slot => $item){
 					if(count($item) === 2){
 						$nbt->Inventory[$slot + 100] = new Compound(false, array(
-							"id" => new Short("id", $item[0]),
-							"Damage" => new Short("Damage", $item[1]),
-							"Count" => new Byte("Count", 1),
-							"Slot" => new Byte("Slot", $slot + 100)
+							new Short("id", $item[0]),
+							new Short("Damage", $item[1]),
+							new Byte("Count", 1),
+							new Byte("Slot", $slot + 100)
 						));
 					}
 				}
@@ -269,12 +268,11 @@ class Player extends RealHuman{
 
 		} else{
 			$nbt = new NBT(NBT::BIG_ENDIAN);
-			$nbt->read(file_get_contents(\PocketMine\DATA . "players/" . $iname . ".dat"));
+			$nbt->readCompressed(file_get_contents(\PocketMine\DATA . "players/" . $iname . ".dat"));
 			$nbt = $nbt->getData();
 		}
 
 		$server->handle("player.offline.get", $nbt);
-
 		return $nbt;
 	}
 
@@ -282,7 +280,7 @@ class Player extends RealHuman{
 		ServerAPI::request()->handle("player.offline.save", $nbtTag);
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($nbtTag);
-		file_put_contents(\PocketMine\DATA . "players/" . strtolower($name) . ".dat", $nbt->write());
+		file_put_contents(\PocketMine\DATA . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
 	}
 
 	public static function broadcastPacket(array $players, DataPacket $packet){
@@ -558,18 +556,17 @@ class Player extends RealHuman{
 
 	public function save(){
 		parent::saveNBT();
-		unset($this->namedtag->NameTag);
-		$this->namedtag->Level = $this->level->getName();
-		$this->namedtag->SpawnLevel = $this->level->getName();
-		$this->namedtag->SpawnX = (int) $this->spawnPosition->x;
-		$this->namedtag->SpawnY = (int) $this->spawnPosition->y;
-		$this->namedtag->SpawnZ = (int) $this->spawnPosition->z;
+		$this->namedtag["Level"] = $this->level->getName();
+		$this->namedtag["SpawnLevel"] = $this->level->getName();
+		$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
+		$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
+		$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
 
 		foreach($this->achievements as $achievement => $status){
 			$this->namedtag->Achievements[$achievement] = new Byte($achievement, $status === true ? 1 : 0);
 		}
 
-		$this->namedtag->playerGameType = $this->gamemode;
+		$this->namedtag["playerGameType"] = $this->gamemode;
 
 		//$this->data->set("health", $this->getHealth());
 	}
@@ -677,7 +674,7 @@ class Player extends RealHuman{
 			$pk = new ContainerSetSlotPacket;
 			$pk->windowid = 0;
 			$pk->slot = (int) $s;
-			$pk->item = Item::get(AIR, 0, 0);
+			$pk->item = Item::get(Item::AIR, 0, 0);
 			$this->dataPacket($pk);
 		}
 
@@ -1000,13 +997,13 @@ class Player extends RealHuman{
 
 	public function getGamemodeString(){
 		switch($this->gamemode){
-			case SURVIVAL:
+			case 0:
 				return "survival";
-			case CREATIVE:
+			case 1:
 				return "creative";
-			case ADVENTURE:
+			case 2:
 				return "adventure";
-			case VIEW:
+			case 3:
 				return "view";
 		}
 	}
@@ -1322,14 +1319,18 @@ class Player extends RealHuman{
 				}
 
 				$nbt = Player::getOffline($this->username);
-				$nbt->NameTag = $this->username;
-				$this->gamemode = $nbt->playerGameType & 0x03;
-				if(($this->level = Level::get($nbt->Level)) === false){
+				if(!isset($nbt->NameTag)){
+					$nbt->NameTag = new String("NameTag", $this->username);
+				}else{
+					$nbt["NameTag"] = $this->username;
+				}
+				$this->gamemode = $nbt["playerGameType"] & 0x03;
+				if(($this->level = Level::get($nbt["Level"])) === false){
 					$this->level = Level::getDefault();
-					$nbt->Level = $this->level->getName();
-					$nbt->Pos[0] = $this->level->getSpawn()->x;
-					$nbt->Pos[1] = $this->level->getSpawn()->y;
-					$nbt->Pos[2] = $this->level->getSpawn()->z;
+					$nbt["Level"] = $this->level->getName();
+					$nbt["Pos"][0] = $this->level->getSpawn()->x;
+					$nbt["Pos"][1] = $this->level->getSpawn()->y;
+					$nbt["Pos"][2] = $this->level->getSpawn()->z;
 				}
 
 				if($this->server->api->handle("player.join", $this) === false){
@@ -1376,8 +1377,8 @@ class Player extends RealHuman{
 				$this->dataPacket($pk);
 
 
-				if(($level = Level::get($this->namedtag->SpawnLevel)) !== false){
-					$this->spawnPosition = new Position($this->namedtag->SpawnX, $this->namedtag->SpawnY, $this->namedtag->SpawnZ, $level);
+				if(($level = Level::get($this->namedtag["SpawnLevel"])) !== false){
+					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 
 					$pk = new SetSpawnPositionPacket;
 					$pk->x = (int) $this->spawnPosition->x;
@@ -1476,7 +1477,7 @@ class Player extends RealHuman{
 					$packet->slot -= 9;
 				}
 
-				if(($this->gamemode & 0x01) === CREATIVE){
+				if(($this->gamemode & 0x01) === 1){
 					$packet->slot = false;
 					foreach(BlockAPI::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
@@ -1494,7 +1495,7 @@ class Player extends RealHuman{
 				} else{
 					$this->setEquipmentSlot(0, $packet->slot);
 					$this->setCurrentEquipmentSlot(0);
-					if(($this->gamemode & 0x01) === SURVIVAL){
+					if(($this->gamemode & 0x01) === 0){
 						if(!in_array($this->slot, $this->hotbar)){
 							array_pop($this->hotbar);
 							array_unshift($this->hotbar, $this->slot);
@@ -2195,7 +2196,7 @@ class Player extends RealHuman{
 	}
 
 	public function sendInventory(){
-		if(($this->gamemode & 0x01) === CREATIVE){
+		if(($this->gamemode & 0x01) === 1){
 			return;
 		}
 		$hotbar = array();

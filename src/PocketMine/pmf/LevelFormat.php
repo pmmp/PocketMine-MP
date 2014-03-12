@@ -64,6 +64,10 @@ class LevelFormat extends PMF{
 		$this->close();
 	}
 
+	/**
+	 * @param   string   $file
+	 * @param bool|array $blank default false
+	 */
 	public function __construct($file, $blank = false){
 		$this->chunks = array();
 		$this->chunkChange = array();
@@ -186,8 +190,8 @@ class LevelFormat extends PMF{
 		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData(new Compound("", array(
-			"Entities" => new Enum("Entities", array()),
-			"TileEntities" => new Enum("TileEntities", array())
+			new Enum("Entities", array()),
+			new Enum("TileEntities", array())
 		)));
 		$nbt->Entities->setTagType(NBT::TAG_Compound);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
@@ -417,8 +421,8 @@ class LevelFormat extends PMF{
 			);
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->setData(new Compound("", array(
-				"Entities" => new Enum("Entities", array()),
-				"TileEntities" => new Enum("TileEntities", array())
+				new Enum("Entities", array()),
+				new Enum("TileEntities", array())
 			)));
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);

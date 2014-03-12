@@ -29,6 +29,7 @@ use PocketMine\NBT\Tag\String;
 use PocketMine\Tile\Furnace;
 use PocketMine\Tile\Tile;
 use PocketMine;
+use PocketMine\NBT\NBT;
 
 class BurningFurnace extends Solid{
 	public function __construct($meta = 0){
@@ -47,14 +48,14 @@ class BurningFurnace extends Solid{
 		$this->meta = $faces[$player->getDirection()];
 		$this->level->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
-			"Items" => new Enum("Items", array()),
-			"id" => new String("id", Tile::FURNACE),
-			"x" => new Int("x", $this->x),
-			"y" => new Int("y", $this->y),
-			"z" => new Int("z", $this->z)
+			new Enum("Items", array()),
+			new String("id", Tile::FURNACE),
+			new Int("x", $this->x),
+			new Int("y", $this->y),
+			new Int("z", $this->z)
 		));
-		$nbt->Items->setTagType(NBT\Tag_Compound);
-		$furnace = new Furnace($this->level, $nbt);
+		$nbt->Items->setTagType(NBT::Tag_Compound);
+		new Furnace($this->level, $nbt);
 
 		return true;
 	}
@@ -73,13 +74,13 @@ class BurningFurnace extends Solid{
 			$furnace = $t;
 		} else{
 			$nbt = new Compound(false, array(
-				"Items" => new Enum("Items", array()),
-				"id" => new String("id", Tile::FURNACE),
-				"x" => new Int("x", $this->x),
-				"y" => new Int("y", $this->y),
-				"z" => new Int("z", $this->z)
+				new Enum("Items", array()),
+				new String("id", Tile::FURNACE),
+				new Int("x", $this->x),
+				new Int("y", $this->y),
+				new Int("z", $this->z)
 			));
-			$nbt->Items->setTagType(NBT\Tag_Compound);
+			$nbt->Items->setTagType(NBT::Tag_Compound);
 			$furnace = new Furnace($this->level, $nbt);
 		}
 
@@ -115,13 +116,13 @@ class BurningFurnace extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		$drops = array();
 		if($item->isPickaxe() >= 1){
-			$drops[] = array(FURNACE, 0, 1);
+			$drops[] = array(Item::FURNACE, 0, 1);
 		}
 		$t = $this->level->getTile($this);
 		if($t instanceof Furnace){
 			for($s = 0; $s < Furnace::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
-				if($slot->getID() > AIR and $slot->getCount() > 0){
+				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 				}
 			}

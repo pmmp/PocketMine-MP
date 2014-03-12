@@ -48,7 +48,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 	protected function initEntity(){
 		if(isset($this->namedtag->NameTag)){
-			$this->nameTag = $this->namedtag->NameTag;
+			$this->nameTag = $this->namedtag["NameTag"];
 		}
 		$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->armor = array(
@@ -59,12 +59,12 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		);
 
 		foreach($this->namedtag->Inventory as $item){
-			if($item->Slot >= 0 and $item->Slot < 9){ //Hotbar
-				$this->hotbar[$item->Slot] = isset($item->TrueSlot) ? $item->TrueSlot : -1;
-			} elseif($item->Slot >= 100 and $item->Slot < 104){ //Armor
-				$this->armor[$item->Slot - 100] = Item::get($item->id, $item->Damage, $item->Count);
+			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
+				$this->hotbar[$item["Slot"]] = isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1;
+			} elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
+				$this->armor[$item["Slot"] - 100] = Item::get($item["id"], $item["Damage"], $item["Count"]);
 			} else{
-				$this->inventory[$item->Slot - 9] = Item::get($item->id, $item->Damage, $item->Count);
+				$this->inventory[$item["Slot"] - 9] = Item::get($item["id"], $item["Damage"], $item["Count"]);
 			}
 		}
 		$this->slot = $this->hotbar[0];
@@ -78,35 +78,35 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		for($slot = 0; $slot < 9; ++$slot){
 			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
 				$item = $this->getSlot($this->hotbar[$slot]);
-				if($item->getID() !== AIR and $item->getCount() > 0){
+				if($item->getID() !== 0 and $item->getCount() > 0){
 					$this->namedtag->Inventory[$slot] = new Compound(false, array(
-						"Count" => new Byte("Count", $item->getCount()),
-						"Damage" => new Short("Damage", $item->getMetadata()),
-						"Slot" => new Byte("Slot", $slot),
-						"TrueSlot" => new Byte("TrueSlot", $this->hotbar[$slot]),
-						"id" => new Short("id", $item->getID()),
+						new Byte("Count", $item->getCount()),
+						new Short("Damage", $item->getMetadata()),
+						new Byte("Slot", $slot),
+						new Byte("TrueSlot", $this->hotbar[$slot]),
+						new Short("id", $item->getID()),
 					));
 					continue;
 				}
 			}
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
-				"Count" => new Byte("Count", 0),
-				"Damage" => new Short("Damage", 0),
-				"Slot" => new Byte("Slot", $slot),
-				"TrueSlot" => new Byte("Slot", -1),
-				"id" => new Short("id", 0),
+				new Byte("Count", 0),
+				new Short("Damage", 0),
+				new Byte("Slot", $slot),
+				new Byte("Slot", -1),
+				new Short("id", 0),
 			));
 		}
 
 		//Normal inventory
-		$slotCount = (($this->gamemode & 0x01) === 0 ? Player::SURVIVAL_SLOTS : Player::CREATIVE_SLOTS) + 9;
+		$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
 			$item = $this->getSlot($slot);
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
-				"Count" => new Byte("Count", $item->getCount()),
-				"Damage" => new Short("Damage", $item->getMetadata()),
-				"Slot" => new Byte("Slot", $slot),
-				"id" => new Short("id", $item->getID()),
+				new Byte("Count", $item->getCount()),
+				new Short("Damage", $item->getMetadata()),
+				new Byte("Slot", $slot),
+				new Short("id", $item->getID()),
 			));
 		}
 
@@ -115,10 +115,10 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$item = $this->armor[$slot - 100];
 			if($item instanceof Item){
 				$this->namedtag->Inventory[$slot] = new Compound(false, array(
-					"Count" => new Byte("Count", $item->getCount()),
-					"Damage" => new Short("Damage", $item->getMetadata()),
-					"Slot" => new Byte("Slot", $slot),
-					"id" => new Short("id", $item->getID()),
+					new Byte("Count", $item->getCount()),
+					new Short("Damage", $item->getMetadata()),
+					new Byte("Slot", $slot),
+					new Short("id", $item->getID()),
 				));
 			}
 		}
@@ -383,6 +383,11 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		return true;
 	}
 
+	/**
+	 * @param int $slot
+	 *
+	 * @return Item
+	 */
 	public function getSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->inventory[$slot])){

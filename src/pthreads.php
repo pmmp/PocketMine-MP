@@ -57,7 +57,7 @@ class AsyncMultipleQueue extends Thread{
 	private function get($len){
 		$str = "";
 		if($len <= 0){
-			return $len;
+			return "";
 		}
 		$offset = 0;
 		while(!isset($str{$len - 1})){

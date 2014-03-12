@@ -44,8 +44,8 @@ class LevelImport{
 			$nbt = new NBT(NBT::LITTLE_ENDIAN);
 			$nbt->read(substr(file_get_contents($this->path . "level.dat"), 8));
 			$level = $nbt->getData();
-			if($level->LevelName == ""){
-				$level->LevelName = "world" . time();
+			if($level["LevelName"] == ""){
+				$level["LevelName"] = "world" . time();
 			}
 			console("[INFO] Importing Pocket level \"" . $level->LevelName . "\" to PMF format");
 			unset($level->Player);

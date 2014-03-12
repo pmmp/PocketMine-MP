@@ -48,6 +48,9 @@ use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
 use PocketMine\Utils\Utils;
 use PocketMine;
+use PocketMine\NBT\Tag\Byte;
+use PocketMine\NBT\Tag\String;
+use PocketMine\NBT\Tag\Int;
 
 /**
  * Class Level
@@ -130,7 +133,7 @@ class Level{
 	 * @return bool|Level
 	 */
 	public static function get($name){
-		if(isset(self::$list[$name])){
+		if($name !== "" and isset(self::$list[$name])){
 			return self::$list[$name];
 		}
 
@@ -553,8 +556,8 @@ class Level{
 			LevelFormat::getXZ($index, $X, $Z);
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->setData(new Compound("", array(
-				"Entities" => new Enum("Entities", array()),
-				"TileEntities" => new Enum("TileEntities", array()),
+				new Enum("Entities", array()),
+				new Enum("TileEntities", array()),
 			)));
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
@@ -562,7 +565,7 @@ class Level{
 			$i = 0;
 			foreach($this->chunkEntities[$index] as $entity){
 				if($entity->closed !== true){
-					$nbt->Entities[$i]->saveNBT();
+					$entity->saveNBT();
 					$nbt->Entities[$i] = $entity->namedtag;
 					++$i;
 				}
@@ -759,14 +762,14 @@ class Level{
 			$tags = $this->level->getChunkNBT($X, $Z);
 			if(isset($tags->Entities)){
 				foreach($tags->Entities as $nbt){
-					switch($nbt->id){
+					switch($nbt["id"]){
 						//TODO: spawn entities
 					}
 				}
 			}
 			if(isset($tags->TileEntities)){
 				foreach($tags->TileEntities as $nbt){
-					switch($nbt->id){
+					switch($nbt["id"]){
 						case Tile::CHEST:
 							new Chest($this, $nbt);
 							break;

@@ -35,7 +35,7 @@ class Chest extends Spawnable{
 	const SLOTS = 27;
 
 	public function __construct(Level $level, Compound $nbt){
-		$nbt->id = Tile::CHEST;
+		$nbt["id"] = Tile::CHEST;
 		parent::__construct($level, $nbt);
 	}
 

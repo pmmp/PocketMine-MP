@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Recipes;
 
-use PocketMine\BlockAPI;
 use PocketMine\Item\Item;
 use PocketMine\ServerAPI;
 use PocketMine;
@@ -241,7 +240,7 @@ abstract class Crafting{
 		$meta = array_pop($id);
 		$id = $id[0];
 
-		$it = BlockAPI::fromString($id);
+		$it = Item::fromString($id);
 
 		$craftItem = array($it->getID(), intval($meta) & 0xFFFF, intval($item[1]));
 

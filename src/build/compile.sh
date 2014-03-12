@@ -46,6 +46,7 @@ COMPILE_OPENSSL="no"
 COMPILE_CURL="default"
 COMPILE_LIBEDIT="no"
 IS_CROSSCOMPILE="no"
+IS_WINDOWS="no"
 DO_OPTIMIZE="no"
 DO_STATIC="no"
 while getopts "::t:oj:scxff:" OPTION; do
@@ -99,7 +100,27 @@ while getopts "::t:oj:scxff:" OPTION; do
 done
 
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
-	if [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
+	if [ "$COMPILE_TARGET" == "win" ] || [ "$COMPILE_TARGET" == "win32" ]; then
+		TOOLCHAIN_PREFIX="i686-w64-mingw32"
+		[ -z "$march" ] && march=i686;
+		[ -z "$mtune" ] && mtune=pentium4;
+		CFLAGS="$CFLAGS -mconsole"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX --build=$TOOLCHAIN_PREFIX"
+		OPENSSL_TARGET="mingw"
+		IS_WINDOWS="yes"
+		echo "[INFO] Cross-compiling for Windows 32-bit"
+	elif [ "$COMPILE_TARGET" == "win64" ]; then
+		TOOLCHAIN_PREFIX="x86_64-w64-mingw32"
+		[ -z "$march" ] && march=x86_64;
+		[ -z "$mtune" ] && mtune=nocona;
+		CFLAGS="$CFLAGS -mconsole"
+		export CC="$TOOLCHAIN_PREFIX-gcc"
+		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX --build=$TOOLCHAIN_PREFIX"
+		OPENSSL_TARGET="mingw"
+		IS_WINDOWS="yes"
+		echo "[INFO] Cross-compiling for Windows 64-bit"
+	elif [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv6;
 		[ -z "$mtune" ] && mtune=arm1136jf-s;
@@ -165,7 +186,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 			CFLAGS="$CFLAGS -mfpu=neon"
 		fi
 	else
-		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7] to cross-compile"
+		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7 win win32 win64] to cross-compile"
 		exit 1
 	fi
 elif [ "$COMPILE_TARGET" == "rpi" ]; then
@@ -444,6 +465,7 @@ RANLIB=$RANLIB ./configure \
 --prefix="$DIR/bin/php5" \
 $EXTRA_FLAGS \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+sed -i=".backup" 's/ tests win32/ win32/g' Makefile
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
@@ -469,9 +491,22 @@ rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	sed -i=".backup" 's/pthreads_working=no/pthreads_working=yes/' ./configure
-	export LIBS="-lpthread -ldl -lresolv"
+	if [ "$IS_WINDOWS" != "yes" ]; then
+		export LIBS="$LIBS -lpthread -ldl -lresolv"
+	else
+		export LIBS="$LIBS -lpthread"
+	fi
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
+
+if [ "$IS_WINDOWS" != "yes" ]; then
+	HAVE_PCNTL="--enable-pcntl"
+else
+	HAVE_PCNTL="--disable-pcntl"
+	cp -f ./win32/build/config.* ./main >> "$DIR/install.log" 2>&1
+	sed 's:@PREFIX@:$DIR/bin/php5:' ./main/config.w32.h.in > ./wmain/config.w32.h 2>> "$DIR/install.log"
+fi
+
 RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION--prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
@@ -497,10 +532,10 @@ $HAVE_LIBEDIT \
 --enable-shared=no \
 --enable-static=yes \
 --enable-shmop \
---enable-pcntl \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
+$HAVE_PCNTL \
 $HAVE_MYSQLI \
 --enable-embedded-mysqli \
 --enable-bcmath \
@@ -558,10 +593,10 @@ echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
-rm -f bin/php5/bin/curl >> "$DIR/install.log" 2>&1
-rm -f bin/php5/bin/curl-config >> "$DIR/install.log" 2>&1
-rm -f bin/php5/bin/c_rehash >> "$DIR/install.log" 2>&1
-rm -f bin/php5/bin/openssl >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/curl* >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/curl-config* >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/c_rehash* >> "$DIR/install.log" 2>&1
+rm -f bin/php5/bin/openssl* >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/man >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/php >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/share >> "$DIR/install.log" 2>&1

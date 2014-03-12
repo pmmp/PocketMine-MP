@@ -32,7 +32,7 @@ use PocketMine;
 class Sign extends Spawnable{
 
 	public function __construct(Level $level, Compound $nbt){
-		$nbt->id = Tile::SIGN;
+		$nbt["id"] = Tile::SIGN;
 		parent::__construct($level, $nbt);
 	}
 

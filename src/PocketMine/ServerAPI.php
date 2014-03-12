@@ -128,7 +128,7 @@ class ServerAPI{
 			"allow-flight" => false,
 			"spawn-animals" => true,
 			"spawn-mobs" => true,
-			"gamemode" => SURVIVAL,
+			"gamemode" => 0,
 			"hardcore" => false,
 			"pvp" => true,
 			"difficulty" => 1,
@@ -158,7 +158,7 @@ class ServerAPI{
 		$this->server = new Server($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed : false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
-		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . VERSION . TextFormat::RESET . " \"" . CODENAME . "\" (MCPE: " . MINECRAFT_VERSION . ") (API " . API_VERSION . ")", true, true, 0);
+		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . VERSION . TextFormat::RESET . " \"" . CODENAME . "\" (API " . API_VERSION . ")", true, true, 0);
 		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
 
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){

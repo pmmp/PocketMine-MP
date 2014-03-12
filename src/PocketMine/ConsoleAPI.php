@@ -64,20 +64,20 @@ class ConsoleAPI{
 		switch($cmd){
 			case "defaultgamemode":
 				$gms = array(
-					"0" => SURVIVAL,
-					"survival" => SURVIVAL,
-					"s" => SURVIVAL,
-					"1" => CREATIVE,
-					"creative" => CREATIVE,
-					"c" => CREATIVE,
-					"2" => ADVENTURE,
-					"adventure" => ADVENTURE,
-					"a" => ADVENTURE,
-					"3" => VIEW,
-					"view" => VIEW,
-					"viewer" => VIEW,
-					"spectator" => VIEW,
-					"v" => VIEW,
+					"0" => 0,
+					"survival" => 0,
+					"s" => 0,
+					"1" => 1,
+					"creative" => 1,
+					"c" => 1,
+					"2" => 2,
+					"adventure" => 2,
+					"a" => 2,
+					"3" => 3,
+					"view" => 3,
+					"viewer" => 3,
+					"spectator" => 3,
+					"v" => 3,
 				);
 				if(!isset($gms[strtolower($params[0])])){
 					$output .= "Usage: /$cmd <mode>\n";

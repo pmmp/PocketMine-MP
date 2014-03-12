@@ -21,14 +21,6 @@
 
 namespace PocketMine;
 
-//Gamemodes
-const SURVIVAL = 0;
-const CREATIVE = 1;
-const ADVENTURE = 2;
-const VIEW = 3;
-const VIEWER = 3;
-
-
 //Entities
 const ENTITY_PLAYER = 1;
 

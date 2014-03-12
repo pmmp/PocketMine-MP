@@ -370,9 +370,9 @@ namespace PocketMine {
 
 	$gitsha1 = false;
 	if(file_exists(\PocketMine\PATH . ".git/refs/heads/master")){ //Found Git information!
-		define("PocketMine\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH . ".git/refs/heads/master"))));
+		define("PocketMine\\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH . ".git/refs/heads/master"))));
 	} else{ //Unknown :(
-		define("PocketMine\GIT_COMMIT", str_repeat("00", 20));
+		define("PocketMine\\GIT_COMMIT", str_repeat("00", 20));
 	}
 
 	ini_set("opcache.mmap_base", bin2hex(Utils\Utils::getRandomBytes(8, false))); //Fix OPCache address errors
@@ -380,7 +380,7 @@ namespace PocketMine {
 	require_once(\PocketMine\PATH . "src/pthreads.php");
 
 	if(!file_exists(\PocketMine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-		$installer = new Wizard\Installer();
+		new Wizard\Installer();
 	}
 
 	if(!defined("PARENT_API_EXISTENT")){

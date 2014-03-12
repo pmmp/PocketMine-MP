@@ -25,6 +25,7 @@ use PocketMine\Event;
 use PocketMine\Item\Item;
 use PocketMine;
 use PocketMine\Tile\Tile;
+use PocketMine\Event\CancellableEvent;
 
 class TileInventoryChangeEvent extends TileEvent implements CancellableEvent{
 	public static $handlers;

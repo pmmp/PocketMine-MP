@@ -33,7 +33,7 @@ class Installer{
 	const DEFAULT_PORT = 19132;
 	const DEFAULT_MEMORY = 128;
 	const DEFAULT_PLAYERS = 20;
-	const DEFAULT_GAMEMODE = SURVIVAL;
+	const DEFAULT_GAMEMODE = 0;
 
 	private $lang, $config;
 

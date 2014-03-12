@@ -40,6 +40,7 @@ use PocketMine\Network\Protocol\RemoveEntityPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
 use PocketMine\Player;
 use PocketMine\PMF\LevelFormat;
+use PocketMine\ServerAPI;
 use PocketMine;
 
 abstract class Entity extends Position{
@@ -112,14 +113,14 @@ abstract class Entity extends Position{
 		$this->level = $level;
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPositionAndRotation(new Vector3($this->namedtag->Pos[0], $this->namedtag->Pos[1], $this->namedtag->Pos[2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
-		$this->setMotion(new Vector3($this->namedtag->Motion[0], $this->namedtag->Motion[1], $this->namedtag->Motion[2]));
+		$this->setPositionAndRotation(new Vector3($this->namedtag["Pos"][0], $this->namedtag["Pos"][1], $this->namedtag["Pos"][2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
+		$this->setMotion(new Vector3($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
 
-		$this->fallDistance = $this->namedtag->FallDistance;
-		$this->fireTicks = $this->namedtag->Fire;
-		$this->airTicks = $this->namedtag->Air;
-		$this->onGround = $this->namedtag->OnGround > 0 ? true : false;
-		$this->invulnerable = $this->namedtag->Invulnerable > 0 ? true : false;
+		$this->fallDistance = $this->namedtag["FallDistance"];
+		$this->fireTicks = $this->namedtag["Fire"];
+		$this->airTicks = $this->namedtag["Air"];
+		$this->onGround = $this->namedtag["OnGround"] > 0 ? true : false;
+		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
@@ -128,26 +129,26 @@ abstract class Entity extends Position{
 		$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		$this->lastUpdate = microtime(true);
 		$this->initEntity();
-		$this->server->api->dhandle("entity.add", $this);
+		ServerAPI::request()->api->dhandle("entity.add", $this);
 	}
 
 	public function saveNBT(){
-		$this->namedtag->Pos[0] = $this->x;
-		$this->namedtag->Pos[1] = $this->y;
-		$this->namedtag->Pos[2] = $this->z;
+		$this->namedtag["Pos"][0] = $this->x;
+		$this->namedtag["Pos"][1] = $this->y;
+		$this->namedtag["Pos"][2] = $this->z;
 
-		$this->namedtag->Motion[0] = $this->motionX;
-		$this->namedtag->Motion[1] = $this->motionY;
-		$this->namedtag->Motion[2] = $this->motionZ;
+		$this->namedtag["Motion"][0] = $this->motionX;
+		$this->namedtag["Motion"][1] = $this->motionY;
+		$this->namedtag["Motion"][2] = $this->motionZ;
 
-		$this->namedtag->Rotation[0] = $this->yaw;
-		$this->namedtag->Rotation[1] = $this->pitch;
+		$this->namedtag["Rotation"][0] = $this->yaw;
+		$this->namedtag["Rotation"][1] = $this->pitch;
 
-		$this->namedtag->FallDistance = $this->fallDistance;
-		$this->namedtag->Fire = $this->fireTicks;
-		$this->namedtag->Air = $this->airTicks;
-		$this->namedtag->OnGround = $this->onGround == true ? 1 : 0;
-		$this->namedtag->Invulnerable = $this->invulnerable == true ? 1 : 0;
+		$this->namedtag["FallDistance"] = $this->fallDistance;
+		$this->namedtag["Fire"] = $this->fireTicks;
+		$this->namedtag["Air"] = $this->airTicks;
+		$this->namedtag["OnGround"] = $this->onGround == true ? 1 : 0;
+		$this->namedtag["Invulnerable"] = $this->invulnerable == true ? 1 : 0;
 	}
 
 	protected abstract function initEntity();

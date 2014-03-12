@@ -83,7 +83,7 @@ class Server{
 		}
 	}
 
-	function __construct($name, $gamemode = SURVIVAL, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
+	function __construct($name, $gamemode = 0, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
 		$this->port = (int) $port;
 		$this->doTick = true;
 		$this->gamemode = (int) $gamemode;
@@ -368,17 +368,18 @@ class Server{
 	}
 
 	/**
+	 * TODO
 	 * @return string
 	 */
 	public function getGamemode(){
 		switch($this->gamemode){
-			case SURVIVAL:
+			case 0:
 				return "survival";
-			case CREATIVE:
+			case 1:
 				return "creative";
-			case ADVENTURE:
+			case 2:
 				return "adventure";
-			case VIEW:
+			case 3:
 				return "view";
 		}
 	}

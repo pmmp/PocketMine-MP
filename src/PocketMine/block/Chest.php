@@ -29,6 +29,7 @@ use PocketMine\NBT\Tag\String;
 use PocketMine\Tile\Chest as TileChest;
 use PocketMine\Tile\Tile;
 use PocketMine;
+use PocketMine\NBT\NBT;
 
 class Chest extends Transparent{
 	public function __construct($meta = 0){
@@ -65,13 +66,13 @@ class Chest extends Transparent{
 
 		$this->level->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
-			"Items" => new Enum("Items", array()),
-			"id" => new String("id", Tile::CHEST),
-			"x" => new Int("x", $this->x),
-			"y" => new Int("y", $this->y),
-			"z" => new Int("z", $this->z)
+			new Enum("Items", array()),
+			new String("id", Tile::CHEST),
+			new Int("x", $this->x),
+			new Int("y", $this->y),
+			new Int("z", $this->z)
 		));
-		$nbt->Items->setTagType(NBT\Tag_Compound);
+		$nbt->Items->setTagType(NBT::Tag_Compound);
 		$tile = new TileChest($this->level, $nbt);
 
 		if($chest instanceof TileChest){
@@ -104,13 +105,13 @@ class Chest extends Transparent{
 			$chest = $t;
 		} else{
 			$nbt = new Compound(false, array(
-				"Items" => new Enum("Items", array()),
-				"id" => new String("id", Tile::CHEST),
-				"x" => new Int("x", $this->x),
-				"y" => new Int("y", $this->y),
-				"z" => new Int("z", $this->z)
+				new Enum("Items", array()),
+				new String("id", Tile::CHEST),
+				new Int("x", $this->x),
+				new Int("y", $this->y),
+				new Int("z", $this->z)
 			));
-			$nbt->Items->setTagType(NBT\Tag_Compound);
+			$nbt->Items->setTagType(NBT::Tag_Compound);
 			$chest = new TileChest($this->level, $nbt);
 		}
 

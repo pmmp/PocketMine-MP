@@ -29,6 +29,7 @@ use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\Player;
+use PocketMine\Network;
 use PocketMine;
 
 trait Container{
@@ -52,9 +53,9 @@ trait Container{
 				$player->windows[$id] = $this;
 			}
 
-			$pk = new ContainerOpenPacket;
+			$pk = new Network\Protocol\ContainerOpenPacket;
 			$pk->windowid = $id;
-			$pk->type = WINDOW_CHEST;
+			$pk->type = 0;
 			$pk->slots = is_array($player->windows[$id]) ? Chest::SLOTS << 1 : Chest::SLOTS;
 			$pk->x = $this->x;
 			$pk->y = $this->y;
@@ -65,7 +66,7 @@ trait Container{
 			if(is_array($player->windows[$id])){
 				$all = $this->level->getPlayers();
 				foreach($player->windows[$id] as $ob){
-					$pk = new TileEventPacket;
+					$pk = new Network\Protocol\TileEventPacket;
 					$pk->x = $ob->x;
 					$pk->y = $ob->y;
 					$pk->z = $ob->z;
@@ -74,15 +75,15 @@ trait Container{
 					Player::broadcastPacket($all, $pk);
 					for($s = 0; $s < Chest::SLOTS; ++$s){
 						$slot = $ob->getSlot($s);
-						if($slot->getID() > AIR and $slot->getCount() > 0){
+						if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 							$slots[] = $slot;
 						} else{
-							$slots[] = Item::get(AIR, 0, 0);
+							$slots[] = Item::get(Item::AIR, 0, 0);
 						}
 					}
 				}
 			} else{
-				$pk = new TileEventPacket;
+				$pk = new Network\Protocol\TileEventPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -91,15 +92,15 @@ trait Container{
 				Player::broadcastPacket($this->level->getPlayers(), $pk);
 				for($s = 0; $s < Chest::SLOTS; ++$s){
 					$slot = $this->getSlot($s);
-					if($slot->getID() > AIR and $slot->getCount() > 0){
+					if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 						$slots[] = $slot;
 					} else{
-						$slots[] = Item::get(AIR, 0, 0);
+						$slots[] = Item::get(Item::AIR, 0, 0);
 					}
 				}
 			}
 
-			$pk = new ContainerSetContentPacket;
+			$pk = new Network\Protocol\ContainerSetContentPacket;
 			$pk->windowid = $id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
@@ -110,9 +111,9 @@ trait Container{
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			$player->windows[$id] = $this;
 
-			$pk = new ContainerOpenPacket;
+			$pk = new Network\Protocol\ContainerOpenPacket;
 			$pk->windowid = $id;
-			$pk->type = WINDOW_FURNACE;
+			$pk->type = 2;
 			$pk->slots = Furnace::SLOTS;
 			$pk->x = $this->x;
 			$pk->y = $this->y;
@@ -122,13 +123,13 @@ trait Container{
 			$slots = array();
 			for($s = 0; $s < Furnace::SLOTS; ++$s){
 				$slot = $this->getSlot($s);
-				if($slot->getID() > AIR and $slot->getCount() > 0){
+				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$slots[] = $slot;
 				} else{
-					$slots[] = Item::get(AIR, 0, 0);
+					$slots[] = Item::get(Item::AIR, 0, 0);
 				}
 			}
-			$pk = new ContainerSetContentPacket;
+			$pk = new Network\Protocol\ContainerSetContentPacket;
 			$pk->windowid = $id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
@@ -139,7 +140,7 @@ trait Container{
 
 	public function getSlotIndex($s){
 		foreach($this->namedtag->Items as $i => $slot){
-			if($slot->Slot === $s){
+			if($slot["Slot"] === $s){
 				return $i;
 			}
 		}
@@ -150,9 +151,9 @@ trait Container{
 	public function getSlot($s){
 		$i = $this->getSlotIndex($s);
 		if($i === false or $i < 0){
-			return Item::get(AIR, 0, 0);
+			return Item::get(Item::AIR, 0, 0);
 		} else{
-			return Item::get($this->namedtag->Items[$i]->id, $this->namedtag->Items[$i]->Damage, $this->namedtag->Items[$i]->Count);
+			return Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
 		}
 	}
 
@@ -165,13 +166,13 @@ trait Container{
 
 		$item = $ev->getNewItem();
 		$d = new Compound(false, array(
-			"Count" => new Byte("Count", $item->getCount()),
-			"Slot" => new Byte("Slot", $s),
-			"id" => new Short("id", $item->getID()),
-			"Damage" => new Short("Damage", $item->getMetadata()),
+			new Byte("Count", $item->getCount()),
+			new Byte("Slot", $s),
+			new Short("id", $item->getID()),
+			new Short("Damage", $item->getMetadata()),
 		));
 
-		if($item->getID() === AIR or $item->getCount() <= 0){
+		if($item->getID() === Item::AIR or $item->getCount() <= 0){
 			if($i >= 0){
 				unset($this->namedtag->Items[$i]);
 			}
