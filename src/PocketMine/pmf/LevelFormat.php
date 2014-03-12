@@ -188,14 +188,15 @@ class LevelFormat extends PMF{
 
 	private function upgrade_From1_To2(){
 		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData(new Compound("", array(
+		$nbt = new Compound("", array(
 			new Enum("Entities", array()),
 			new Enum("TileEntities", array())
-		)));
+		));
 		$nbt->Entities->setTagType(NBT::TAG_Compound);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		$namedtag = $nbt->write();
+		$nbtCodec = new NBT(NBT::BIG_ENDIAN);
+		$nbtCodec->setData($nbt);
+		$namedtag = $nbtCodec->write();
 		$namedtag = Utils::writeInt(strlen($namedtag)) . $namedtag;
 		foreach(glob(dirname($this->file) . "/chunks/*/*.*.pmc") as $chunkFile){
 			$oldChunk = zlib_decode(file_get_contents($chunkFile));
@@ -298,7 +299,7 @@ class LevelFormat extends PMF{
 		$offset += 4;
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->read(substr($chunk, $offset, $len));
-		$this->chunkInfo[$index][2] = $nbt;
+		$this->chunkInfo[$index][2] = $nbt->getData();
 		$offset += $len;
 		$this->chunks[$index] = array();
 		$this->chunkChange[$index] = array(-1 => false);
@@ -419,11 +420,10 @@ class LevelFormat extends PMF{
 				6 => 8192,
 				7 => 8192,
 			);
-			$nbt = new NBT(NBT::BIG_ENDIAN);
-			$nbt->setData(new Compound("", array(
+			$nbt = new Compound("", array(
 				new Enum("Entities", array()),
 				new Enum("TileEntities", array())
-			)));
+			));
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$this->chunkInfo[$index] = array(
@@ -668,7 +668,7 @@ class LevelFormat extends PMF{
 		return $this->chunkInfo[$index][2];
 	}
 
-	public function setChunkNBT($X, $Z, NBT $nbt){
+	public function setChunkNBT($X, $Z, Compound $nbt){
 		if(!$this->isChunkLoaded($X, $Z) and $this->loadChunk($X, $Z) === false){
 			return false;
 		}
@@ -707,7 +707,9 @@ class LevelFormat extends PMF{
 		$chunk = "";
 		$chunk .= chr($bitmap);
 		$chunk .= Utils::writeInt($this->chunkInfo[$index][1]);
-		$namedtag = $this->chunkInfo[$index][2]->write();
+		$namedtag = new NBT(NBT::BIG_ENDIAN);
+		$namedtag->setData($this->chunkInfo[$index][2]);
+		$namedtag = $namedtag->write();
 		$chunk .= Utils::writeInt(strlen($namedtag)) . $namedtag;
 		$chunk .= $this->chunkInfo[$index][3]; //biomes
 		for($Y = 0; $Y < 8; ++$Y){

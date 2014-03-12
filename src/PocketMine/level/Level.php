@@ -554,11 +554,10 @@ class Level{
 	protected function doSaveRoundExtra(){
 		foreach($this->usedChunks as $index => $d){
 			LevelFormat::getXZ($index, $X, $Z);
-			$nbt = new NBT(NBT::BIG_ENDIAN);
-			$nbt->setData(new Compound("", array(
+			$nbt = new Compound("", array(
 				new Enum("Entities", array()),
 				new Enum("TileEntities", array()),
-			)));
+			));
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 
