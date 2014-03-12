@@ -46,7 +46,7 @@ class Server{
 
 	private function load(){
 		$this->version = new VersionString();
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0){
+		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and function_exists("cli_set_process_title")){
 			@cli_set_process_title("PocketMine-MP " . \PocketMine\VERSION);
 		}
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);

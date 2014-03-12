@@ -77,11 +77,6 @@ class ServerAPI{
 	public $ban;
 
 	/**
-	 * @var EntityAPI
-	 */
-	public $entity;
-
-	/**
 	 * @var TimeAPI
 	 */
 	public $time;
@@ -160,7 +155,6 @@ class ServerAPI{
 			console("[INFO] [UPnP] Trying to port forward...");
 			PortForward($this->getProperty("server-port"));
 		}
-
 		$this->server = new Server($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed : false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0");
 		$this->server->api = $this;
 		self::$serverRequest = $this->server;
