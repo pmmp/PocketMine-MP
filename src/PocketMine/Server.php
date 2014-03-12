@@ -107,14 +107,14 @@ class Server{
 
 	public function titleTick(){
 		$time = microtime(true);
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and ANSI === true){
+		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
 			echo "\x1b]0;PocketMine-MP " . VERSION . " | Online " . count(Player::$list) . "/" . $this->maxClients . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}
 		$this->interface->bandwidth = array(0, 0, $time);
 	}
 
 	public function loadEvents(){
-		if(ANSI === true){
+		if(\PocketMine\ANSI === true){
 			$this->schedule(30, array($this, "titleTick"), array(), true);
 		}
 		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);

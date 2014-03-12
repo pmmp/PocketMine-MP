@@ -116,7 +116,7 @@ namespace PocketMine {
 	$opts = getopt("", array("enable-ansi", "disable-ansi", "data-path:", "no-wizard"));
 	define("PocketMine\\DATA", isset($opts["data-path"]) ? realpath($opts["data-path"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH);
 
-	if((!strpos(strtoupper(php_uname("s")), "WIN") or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
+	if((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
 		define("PocketMine\\ANSI", true);
 	} else{
 		define("PocketMine\\ANSI", false);
