@@ -262,7 +262,7 @@ abstract class Block extends Position{
 				self::DANDELION => new Dandelion(),
 				self::CYAN_FLOWER => new CyanFlower(),
 				self::BROWN_MUSHROOM => new BrownMushroom(),
-				self::RED_MUSHROOM => new RedMushRoom(),
+				self::RED_MUSHROOM => new RedMushroom(),
 				self::GOLD_BLOCK => new Gold(),
 				self::IRON_BLOCK => new Iron(),
 				self::DOUBLE_SLAB => new DoubleSlab(),

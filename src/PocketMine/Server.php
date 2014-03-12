@@ -588,18 +588,16 @@ class Server{
 				$this->packetHandler($packet);
 				$lastLoop = 0;
 			}
-			if($this->tick() > 0){
-				$lastLoop = 0;
-			} else{
+			if(($ticks = $this->tick()) === 0){
 				++$lastLoop;
-				if($lastLoop < 64){
-
+				if($lastLoop < 16){
+					usleep(1);
+				} elseif($lastLoop < 128){
+					usleep(1000);
 				} elseif($lastLoop < 256){
-					usleep(100);
-				} elseif($lastLoop < 512){
-					usleep(512);
+					usleep(2000);
 				} else{
-					usleep(5000);
+					usleep(4000);
 				}
 			}
 		}
