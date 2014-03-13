@@ -25,6 +25,7 @@ use PocketMine\Block\Block;
 use PocketMine\Level\Level;
 use PocketMine\ServerAPI;
 use PocketMine;
+use PocketMine\Player;
 
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){

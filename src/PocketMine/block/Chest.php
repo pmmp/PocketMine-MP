@@ -32,6 +32,9 @@ use PocketMine;
 use PocketMine\NBT\NBT;
 
 class Chest extends Transparent{
+
+	const SLOTS = 27;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::CHEST, $meta, "Chest");
 		$this->isActivable = true;
@@ -72,7 +75,7 @@ class Chest extends Transparent{
 			new Int("y", $this->y),
 			new Int("z", $this->z)
 		));
-		$nbt->Items->setTagType(NBT::Tag_Compound);
+		$nbt->Items->setTagType(NBT::TAG_Compound);
 		$tile = new TileChest($this->level, $nbt);
 
 		if($chest instanceof TileChest){
@@ -111,7 +114,7 @@ class Chest extends Transparent{
 				new Int("y", $this->y),
 				new Int("z", $this->z)
 			));
-			$nbt->Items->setTagType(NBT::Tag_Compound);
+			$nbt->Items->setTagType(NBT::TAG_Compound);
 			$chest = new TileChest($this->level, $nbt);
 		}
 
@@ -133,7 +136,7 @@ class Chest extends Transparent{
 		if($t instanceof Chest){
 			for($s = 0; $s < Chest::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
-				if($slot->getID() > AIR and $slot->getCount() > 0){
+				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
 				}
 			}

@@ -25,6 +25,7 @@ use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\ServerAPI;
 use PocketMine;
+use PocketMine\Level\Position;
 
 class Water extends Liquid{
 	public function __construct($meta = 0){
@@ -109,7 +110,7 @@ class Water extends Liquid{
 			if($level !== 0x07){
 				if($down instanceof Air || $down instanceof Water){
 					$this->level->setBlock($down, new Water(0x01), false, false, true);
-					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($down, 0, 0, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+					ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($down, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 				} else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
@@ -119,7 +120,7 @@ class Water extends Liquid{
 							}
 						} elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Water($level + 1), false, false, true);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
@@ -133,7 +134,7 @@ class Water extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($sb, new Air(), false, false, true);
 					}
@@ -144,12 +145,12 @@ class Water extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($b, new Air(), false, false, true);
 					}
 				}
-				//ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+				//ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 			}
 			$this->level->setBlock($this, new Air(), false, false, true);
 		}

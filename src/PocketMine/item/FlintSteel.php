@@ -26,6 +26,7 @@ use PocketMine\Block\Fire;
 use PocketMine\Block\Solid;
 use PocketMine\Level\Level;
 use PocketMine;
+use PocketMine\Player;
 
 class FlintSteel extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -36,7 +37,7 @@ class FlintSteel extends Item{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if(($player->gamemode & 0x01) === 0 and $this->useOn($block) and $this->getMetadata() >= $this->getMaxDurability()){
-			$player->setSlot($player->slot, new Item(AIR, 0, 0));
+			$player->setSlot($player->slot, new Item(Item::AIR, 0, 0));
 		}
 
 		if($block->getID() === self::AIR and ($target instanceof Solid)){

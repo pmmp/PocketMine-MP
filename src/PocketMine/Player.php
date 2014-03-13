@@ -466,6 +466,14 @@ class Player extends RealHuman{
 		}
 	}
 
+	/**
+	 * Sends, if available, the next ordered chunk to the client
+	 *
+	 * @param bool $force
+	 * @param null $ev
+	 *
+	 * @return bool|void
+	 */
 	public function getNextChunk($force = false, $ev = null){
 		if($this->connected === false){
 			return false;
@@ -739,10 +747,10 @@ class Player extends RealHuman{
 						//$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
 					}
 					switch($data["entity"]->type){
-						case WOOD:
+						case Item::WOOD:
 							$this->grantAchievement("mineWood");
 							break;
-						case DIAMOND:
+						case Item::DIAMOND:
 							$this->grantAchievement("diamond");
 							break;
 					}
@@ -940,12 +948,12 @@ class Player extends RealHuman{
 				$s = $this->getSlot($slot);
 				$s->setCount($s->getCount() - $item->getCount());
 				if($s->getCount() <= 0){
-					$this->setSlot($slot, Item::get(AIR, 0, 0));
+					$this->setSlot($slot, Item::get(Item::AIR, 0, 0));
 				}
 			}
 			foreach($craft as $slot => $item){
 				$s = $this->getSlot($slot);
-				if($s->getCount() <= 0 or $s->getID() === AIR){
+				if($s->getCount() <= 0 or $s->getID() === Item::AIR){
 					$this->setSlot($slot, Item::get($item->getID(), $item->getMetadata(), $item->getCount()));
 				} else{
 					$this->setSlot($slot, Item::get($item->getID(), $item->getMetadata(), $s->getCount() + $item->getCount()));
@@ -1162,11 +1170,8 @@ class Player extends RealHuman{
 				$this->packetStats[1]++;
 				$this->lag[] = microtime(true) - $data->sendtime;
 				$data->sendtime = microtime(true);
-				$cnt = $this->send($data);
-				if(isset($this->chunkCount[$count])){
-					unset($this->chunkCount[$count]);
-					$this->chunkCount[$cnt[0]] = true;
-				}
+				$this->send($data);
+				$this->recoveryQueue[$count] = $data;
 			}
 		}
 	}
@@ -1698,27 +1703,27 @@ class Player extends RealHuman{
 				for($i = 0; $i < 4; ++$i){
 					$s = $packet->slots[$i];
 					if($s === 0 or $s === 255){
-						$s = Item::get(AIR, 0, 0);
+						$s = Item::get(Item::AIR, 0, 0);
 					} else{
 						$s = Item::get($s + 256, 0, 1);
 					}
 					$slot = $this->getArmorSlot($i);
-					if($slot->getID() !== AIR and $s->getID() === AIR){
-						if($this->setArmorSlot($i, Item::get(AIR, 0, 0)) === false){
+					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){
+						if($this->setArmorSlot($i, Item::get(Item::AIR, 0, 0)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
 						} else{
 							$this->addItem($slot);
 							$packet->slots[$i] = 255;
 						}
-					} elseif($s->getID() !== AIR and $slot->getID() === AIR and ($sl = $this->hasItem($s->getID())) !== false){
+					} elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->hasItem($s->getID())) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
 						} else{
-							$this->setSlot($sl, Item::get(AIR, 0, 0));
+							$this->setSlot($sl, Item::get(Item::AIR, 0, 0));
 						}
-					} elseif($s->getID() !== AIR and $slot->getID() !== AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s->getID())) !== false){
+					} elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s->getID())) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
@@ -2002,18 +2007,18 @@ class Player extends RealHuman{
 				if($packet->windowid === 0){
 					$craft = false;
 					$slot = $this->getSlot($packet->slot);
-					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
 						$use = Item::get($slot->getID(), $slot->getMetadata(), $slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
-					} elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
+					} elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
 						$craftItem = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount() - $slot->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
-					} elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
+					} elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > Item::AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
 						$craftItem = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
@@ -2078,7 +2083,7 @@ class Player extends RealHuman{
 						$this->dataPacket($pk);
 						break;
 					}
-					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
+					if($item->getID() !== Item::AIR and $slot->getID() == $item->getID()){
 						if($slot->getCount() < $item->getCount()){
 							$it = clone $item;
 							$it->setCount($item->getCount() - $slot->getCount());
@@ -2134,13 +2139,13 @@ class Player extends RealHuman{
 
 					if($tile instanceof Furnace and $packet->slot == 2){
 						switch($slot->getID()){
-							case IRON_INGOT:
+							case Item::IRON_INGOT:
 								$this->grantAchievement("acquireIron");
 								break;
 						}
 					}
 
-					if($item->getID() !== AIR and $slot->getID() == $item->getID()){
+					if($item->getID() !== Item::AIR and $slot->getID() == $item->getID()){
 						if($slot->getCount() < $item->getCount()){
 							$it = clone $item;
 							$it->setCount($item->getCount() - $slot->getCount());

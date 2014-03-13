@@ -27,6 +27,7 @@ namespace PocketMine\Wizard;
 
 use PocketMine;
 use PocketMine\Utils\Utils;
+use PocketMine\Utils\Config;
 
 class Installer{
 	const DEFAULT_NAME = "Minecraft: PE Server";
@@ -35,7 +36,7 @@ class Installer{
 	const DEFAULT_PLAYERS = 20;
 	const DEFAULT_GAMEMODE = 0;
 
-	private $lang, $config;
+	private $lang;
 
 	public function __construct(){
 		echo "[*] PocketMine-MP set-up wizard\n";
@@ -90,7 +91,7 @@ LICENSE;
 	}
 
 	private function generateBaseConfig(){
-		$config = new UtilsConfig(\PocketMine\DATA . "server.properties", UtilsConfig::PROPERTIES);
+		$config = new Config(\PocketMine\DATA . "server.properties", Config::PROPERTIES);
 		echo "[?] " . $this->lang->name_your_server . " (" . self::DEFAULT_NAME . "): ";
 		$config->set("server-name", $this->getInput(self::DEFAULT_NAME));
 		echo "[*] " . $this->lang->port_warning . "\n";
@@ -130,13 +131,13 @@ LICENSE;
 		if($op === ""){
 			echo "[!] " . $this->lang->op_warning . "\n";
 		} else{
-			$ops = new UtilsConfig(\PocketMine\DATA . "ops.txt", UtilsConfig::ENUM);
+			$ops = new Config(\PocketMine\DATA . "ops.txt", Config::ENUM);
 			$ops->set($op, true);
 			$ops->save();
 		}
 		echo "[*] " . $this->lang->whitelist_info . "\n";
 		echo "[?] " . $this->lang->whitelist_enable . " (y/N): ";
-		$config = new UtilsConfig(\PocketMine\DATA . "server.properties", UtilsConfig::PROPERTIES);
+		$config = new Config(\PocketMine\DATA . "server.properties", Config::PROPERTIES);
 		if(strtolower($this->getInput("n")) === "y"){
 			echo "[!] " . $this->lang->whitelist_warning . "\n";
 			$config->set("white-list", true);
@@ -147,7 +148,7 @@ LICENSE;
 	}
 
 	private function networkFunctions(){
-		$config = new UtilsConfig(\PocketMine\DATA . "server.properties", UtilsConfig::PROPERTIES);
+		$config = new Config(\PocketMine\DATA . "server.properties", Config::PROPERTIES);
 		echo "[!] " . $this->lang->query_warning1 . "\n";
 		echo "[!] " . $this->lang->query_warning2 . "\n";
 		echo "[?] " . $this->lang->query_disable . " (y/N): ";

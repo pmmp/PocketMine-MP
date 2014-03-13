@@ -44,7 +44,7 @@ class Obsidian extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 5){
 			return array(
-				array(OBSIDIAN, 0, 1),
+				array(Item::OBSIDIAN, 0, 1),
 			);
 		} else{
 			return array();

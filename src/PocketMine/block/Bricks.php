@@ -53,7 +53,7 @@ class Bricks extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(BRICKS_BLOCK, 0, 1),
+				array(Item::BRICKS_BLOCK, 0, 1),
 			);
 		} else{
 			return array();

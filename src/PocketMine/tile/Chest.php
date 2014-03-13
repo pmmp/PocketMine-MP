@@ -28,6 +28,8 @@ use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Network\Protocol\EntityDataPacket;
 use PocketMine;
+use PocketMine\Player;
+use PocketMine\NBT\NBT;
 
 class Chest extends Spawnable{
 	use Container;

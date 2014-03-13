@@ -59,7 +59,7 @@ class DoubleWoodSlab extends Solid{
 
 	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
-			array(WOOD_SLAB, $this->meta & 0x07, 2),
+			array(Item::WOOD_SLAB, $this->meta & 0x07, 2),
 		);
 	}
 

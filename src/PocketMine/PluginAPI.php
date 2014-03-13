@@ -52,8 +52,8 @@ class PluginAPI extends \stdClass{
 				break;
 			case "version":
 				$output = "PocketMine-MP " . VERSION . " 「" . CODENAME . "」 API #" . API_VERSION . " for Minecraft: PE " . MINECRAFT_VERSION . " protocol #" . Info::CURRENT_PROTOCOL;
-				if(GIT_COMMIT !== str_repeat("00", 20)){
-					$output .= " (git " . GIT_COMMIT . ")";
+				if(\PocketMine\GIT_COMMIT !== str_repeat("00", 20)){
+					$output .= " (git " . \PocketMine\GIT_COMMIT . ")";
 				}
 				$output .= "\n";
 				break;

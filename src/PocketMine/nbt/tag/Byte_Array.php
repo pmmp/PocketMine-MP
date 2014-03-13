@@ -31,7 +31,7 @@ class Byte_Array extends NamedTag{
 	}
 
 	public function read(NBT $nbt){
-		$this->value = $nbt->get($this->getInt());
+		$this->value = $nbt->get($nbt->getInt());
 	}
 
 	public function write(NBT $nbt){

@@ -47,7 +47,7 @@ class DiamondOre extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
-				array(DIAMOND, 0, 1),
+				array(Item::DIAMOND, 0, 1),
 			);
 		} else{
 			return array();

@@ -48,7 +48,7 @@ class UDPSocket{
 	}
 
 	public function close($error = 125){
-		return @socket_close($this->sock);
+		socket_close($this->sock);
 	}
 
 	public function block(){

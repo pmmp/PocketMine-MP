@@ -112,7 +112,7 @@ class Lava extends Liquid{
 
 						} elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Lava(min($level + 2, 7)), false, false, true);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
@@ -126,7 +126,7 @@ class Lava extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($sb, new Air(), false, false, true);
 					}
@@ -137,12 +137,12 @@ class Lava extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($ssb, 0, 0, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
+							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($b, new Air(), false, false, true);
 					}
 				}
-				//ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($b, 0, 0, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+				//ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 			}
 
 			$this->level->setBlock($this, new Air(), false, false, true);

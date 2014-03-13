@@ -59,7 +59,7 @@ class Quartz extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(QUARTZ_BLOCK, $this->meta & 0x03, 1),
+				array(Item::QUARTZ_BLOCK, $this->meta & 0x03, 1),
 			);
 		} else{
 			return array();

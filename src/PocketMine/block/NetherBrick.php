@@ -53,7 +53,7 @@ class NetherBrick extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(NETHER_BRICKS, 0, 1),
+				array(Item::NETHER_BRICKS, 0, 1),
 			);
 		} else{
 			return array();

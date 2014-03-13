@@ -34,6 +34,7 @@ use PocketMine\Level\Position;
 use PocketMine\Math\AxisAlignedBB;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound;
+use PocketMine\Network;
 use PocketMine\Network\Protocol\MoveEntityPacket_PosRot;
 use PocketMine\Network\Protocol\MovePlayerPacket;
 use PocketMine\Network\Protocol\RemoveEntityPacket;
@@ -270,6 +271,24 @@ abstract class Entity extends Position{
 		}
 	}
 
+	public function getDirection(){
+		$rotation = ($this->yaw - 90) % 360;
+		if($rotation < 0) {
+			$rotation += 360.0;
+		}
+		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)){
+			return 2; //North
+		}elseif(45 <= $rotation and $rotation < 135){
+			return 3; //East
+		}elseif(135 <= $rotation and $rotation < 225){
+			return 0; //South
+		}elseif(225 <= $rotation and $rotation < 315){
+			return 1; //West
+		}else{
+			return null;
+		}
+	}
+
 	public function extinguish(){
 		$this->fireTicks = 0;
 	}
@@ -281,7 +300,7 @@ abstract class Entity extends Position{
 	protected function updateFallState($distanceThisTick, $onGround){
 		if($onGround === true){
 			if($this->fallDistance > 0){
-				if($this instanceof EntityLiving){
+				if($this instanceof Living){
 					//TODO
 				}
 
@@ -347,7 +366,7 @@ abstract class Entity extends Position{
 		$this->level->entities[$this->id] = $this;
 		if($this instanceof Player){
 			$this->chunksLoaded = array();
-			$pk = new SetTimePacket;
+			$pk = new Network\Protocol\SetTimePacket;
 			$pk->time = $this->level->getTime();
 			$pk->started = $this->level->stopTime == false;
 			$this->dataPacket($pk);
@@ -455,7 +474,7 @@ abstract class Entity extends Position{
 		return $this->level;
 	}
 
-	public function teleport(Position $pos, $yaw = false, $pitch = false){
+	public function teleport(Vector3 $pos, $yaw = false, $pitch = false){
 		$this->setMotion(new Vector3(0, 0, 0));
 		if($this->setPositionAndRotation($pos, $yaw === false ? $this->yaw : $yaw, $pitch === false ? $this->pitch : $pitch) !== false){
 			if($this instanceof Player){

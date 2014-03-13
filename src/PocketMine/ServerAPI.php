@@ -28,8 +28,7 @@ use PocketMine\Level\Level;
 use PocketMine\Network\Protocol\Info;
 use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\RCON\RCON;
-use PocketMine\Network\UPnP\PortForward;
-use PocketMine\Network\UPnP\RemovePortForward;
+use PocketMine\Network\UPnP\UPnP;
 use PocketMine\Recipes\Crafting;
 use PocketMine\Tile\Tile;
 use PocketMine\Utils\Config;
@@ -153,7 +152,7 @@ class ServerAPI{
 		}
 		if($this->getProperty("upnp-forwarding") == true){
 			console("[INFO] [UPnP] Trying to port forward...");
-			PortForward($this->getProperty("server-port"));
+			UPnP::PortForward($this->getProperty("server-port"));
 		}
 		$this->server = new Server($this->getProperty("server-name"), $this->getProperty("gamemode"), ($seed = $this->getProperty("level-seed")) != "" ? (int) $seed : false, $this->getProperty("server-port"), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0");
 		$this->server->api = $this;
@@ -171,7 +170,7 @@ class ServerAPI{
 				} else{
 					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
 					$last = $last->getTimestamp();
-					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and GIT_COMMIT != $info[0]["sha"]){
+					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \PocketMine\GIT_COMMIT != $info[0]["sha"]){
 						console("[NOTICE] " . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
 						console("[NOTICE] " . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
 						console("[NOTICE] " . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
@@ -397,7 +396,7 @@ class ServerAPI{
 		$this->__destruct();
 		if($this->getProperty("upnp-forwarding") === true){
 			console("[INFO] [UPnP] Removing port forward...");
-			RemovePortForward($this->getProperty("server-port"));
+			UPnP::RemovePortForward($this->getProperty("server-port"));
 		}
 
 		return $this->restart;

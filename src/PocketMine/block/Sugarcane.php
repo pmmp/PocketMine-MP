@@ -34,12 +34,12 @@ class Sugarcane extends Flowable{
 
 	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
-			array(SUGARCANE, 0, 1),
+			array(Item::SUGARCANE, 0, 1),
 		);
 	}
 
 	public function onActivate(Item $item, PocketMine\Player $player){
-		if($item->getID() === self::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->level->getBlock(new Vector3($this->x, $this->y + $y, $this->z));

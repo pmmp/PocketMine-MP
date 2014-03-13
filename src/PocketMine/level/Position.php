@@ -31,27 +31,47 @@ class Position extends Vector3{
 	 */
 	public $level = null;
 
+	/**
+	 * @param int   $x
+	 * @param int   $y
+	 * @param int   $z
+	 * @param Level $level
+	 */
 	public function __construct($x = 0, $y = 0, $z = 0, Level $level){
-		if(($x instanceof Vector3) === true){
-			$this->__construct($x->x, $x->y, $x->z, $level);
-		} else{
-			$this->x = $x;
-			$this->y = $y;
-			$this->z = $z;
-		}
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
 		$this->level = $level;
 	}
 
-	public function getSide($side){
-		return new Position(parent::getSide($side), 0, 0, $this->level);
+	public static function fromObject(Vector3 $pos, Level $level){
+		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
 
-	public function distance($x = 0, $y = 0, $z = 0){
-		if(($x instanceof Position) and $x->level !== $this->level){
+	/**
+	 * Returns a side Vector
+	 *
+	 * @param $side
+	 *
+	 * @return Position
+	 */
+	public function getSide($side){
+		return Position::fromObject(parent::getSide($side), $this->level);
+	}
+
+	/**
+	 * Returns the distance between two points or objects
+	 *
+	 * @param Vector3 $pos
+	 *
+	 * @return float
+	 */
+	public function distance(Vector3 $pos){
+		if(($pos instanceof Position) and $pos->level !== $this->level){
 			return PHP_INT_MAX;
 		}
 
-		return parent::distance($x, $y, $z);
+		return parent::distance($pos);
 	}
 
 	public function __toString(){

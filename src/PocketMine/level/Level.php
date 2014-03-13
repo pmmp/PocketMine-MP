@@ -416,7 +416,7 @@ class Level{
 		}
 		$now = microtime(true);
 		if($this->stopTime == true){
-
+			return;
 		} else{
 			$time = $this->startTime + ($now - $this->startCheck) * 20;
 		}
@@ -864,8 +864,13 @@ class Level{
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
 	}
 
-	public function getSafeSpawn($spawn = false){
-		if($spawn === false){
+	/**
+	 * @param Vector3 $spawn default null
+	 *
+	 * @return bool|Position
+	 */
+	public function getSafeSpawn($spawn = null){
+		if(!($spawn instanceof Vector3)){
 			$spawn = $this->getSpawn();
 		}
 		if($spawn instanceof Vector3){

@@ -31,6 +31,7 @@ use PocketMine\Level\Level;
 use PocketMine\Recipes\Fuel;
 use PocketMine\Recipes\Smelt;
 use PocketMine;
+use PocketMine\Player;
 
 class Item{
 	//All Block IDs are here too

@@ -293,7 +293,7 @@ namespace PocketMine {
 
 	function log($message, $name, $EOL = true, $level = 2, $close = false){
 		global $fpointers;
-		if((!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level) and (!defined("PocketMine\\LOG") or LOG === true)){
+		if((!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level) and (!defined("PocketMine\\LOG") or \PocketMine\LOG === true)){
 			$message .= $EOL === true ? PHP_EOL : "";
 			if(!isset($fpointers)){
 				$fpointers = array();

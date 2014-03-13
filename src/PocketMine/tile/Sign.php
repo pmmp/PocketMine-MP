@@ -28,6 +28,7 @@ use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Network\Protocol\EntityDataPacket;
 use PocketMine;
+use PocketMine\Player;
 
 class Sign extends Spawnable{
 

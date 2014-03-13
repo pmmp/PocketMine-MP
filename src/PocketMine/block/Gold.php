@@ -47,7 +47,7 @@ class Gold extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 4){
 			return array(
-				array(GOLD_BLOCK, 0, 1),
+				array(Item::GOLD_BLOCK, 0, 1),
 			);
 		} else{
 			return array();

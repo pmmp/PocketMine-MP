@@ -22,9 +22,10 @@
 namespace PocketMine\Level\Generator\Object;
 
 use PocketMine\Block\Block;
-use PocketMine\Level;
+use PocketMine\Level\Level;
 use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Utils\Random;
 
 class TallGrass{
 	public static function growGrass(Level $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){

@@ -51,7 +51,7 @@ class Handler{
 	}
 
 	public function close(){
-		return $this->socket->close(false);
+		$this->socket->close(false);
 	}
 
 	public function readPacket(){
@@ -87,7 +87,7 @@ class Handler{
 			}
 			ServerAPI::request()->api->query->handle($packet);
 		} else{
-			$packet = new Packet();
+			$packet = new Packet($pid);
 			$packet->ip = $source;
 			$packet->port = $port;
 			$packet->buffer =& $buffer;

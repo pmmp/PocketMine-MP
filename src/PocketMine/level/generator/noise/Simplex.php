@@ -306,14 +306,14 @@ class Simplex extends Perlin{
 	 * Computes and returns the 4D simplex noise for the given coordinates in
 	 * 4D space
 	 *
-	 * @param x X coordinate
-	 * @param y Y coordinate
-	 * @param z Z coordinate
-	 * @param w W coordinate
+	 * @param float $x X coordinate
+	 * @param float $y Y coordinate
+	 * @param float $z Z coordinate
+	 * @param float $w W coordinate
 	 *
-	 * @return Noise at given location, from range -1 to 1
+	 * @return float Noise at given location, from range -1 to 1
 	 */
-	/*public function getNoise4D(x, y, z, w){
+	/*public function getNoise4D($x, $y, $z, $w){
 		x += offsetX;
 		y += offsetY;
 		z += offsetZ;

@@ -49,7 +49,7 @@ class Iron extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 3){
 			return array(
-				array(IRON_BLOCK, 0, 1),
+				array(Item::IRON_BLOCK, 0, 1),
 			);
 		} else{
 			return array();

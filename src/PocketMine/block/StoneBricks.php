@@ -60,7 +60,7 @@ class StoneBricks extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(STONE_BRICKS, $this->meta & 0x03, 1),
+				array(Item::STONE_BRICKS, $this->meta & 0x03, 1),
 			);
 		} else{
 			return array();

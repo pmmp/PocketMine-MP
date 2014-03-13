@@ -34,7 +34,6 @@ use PocketMine\Tile\Sign;
 class BlockAPI{
 	private $server;
 	private $scheduledUpdates = array();
-	private $randomUpdates = array();
 	public static $creative = array(
 		//Building
 		[Item::STONE, 0],

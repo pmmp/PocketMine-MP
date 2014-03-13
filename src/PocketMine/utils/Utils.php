@@ -365,7 +365,7 @@ class Utils{
 			}
 			if($types === true){
 				$m[$bottom] = array($r, $type);
-			} else{
+			}else{
 				$m[$bottom] = $r;
 			}
 			$b = ord($value{$offset});

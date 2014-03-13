@@ -21,8 +21,10 @@
 
 namespace PocketMine\Item;
 
+use PocketMine\Entity;
 use PocketMine\Block\Block;
 use PocketMine\Level\Level;
+use PocketMine\Player;
 use PocketMine;
 
 class SpawnEgg extends Item{
@@ -34,10 +36,11 @@ class SpawnEgg extends Item{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		switch($this->meta){
-			case Entity\CHICKEN:
-			case Entity\SHEEP:
-			case Entity\COW:
-			case Entity\PIG:
+			//TODO: use entity constants
+			case 10:
+			case 11:
+			case 12:
+			case 13:
 				$data = array(
 					"x" => $block->x + 0.5,
 					"y" => $block->y,

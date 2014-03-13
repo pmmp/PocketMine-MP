@@ -36,7 +36,7 @@ class Dirt extends Solid{
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}
-			$this->level->setBlock($this, Block::get(FARMLAND, 0), true, false, true);
+			$this->level->setBlock($this, Block::get(Item::FARMLAND, 0), true, false, true);
 
 			return true;
 		}

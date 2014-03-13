@@ -35,7 +35,7 @@ class Grass extends Solid{
 
 	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
-			array(DIRT, 0, 1),
+			array(Item::DIRT, 0, 1),
 		);
 	}
 

@@ -24,6 +24,7 @@ namespace PocketMine\Level;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\Utils\Config;
 use PocketMine;
+use PocketMine\NBT\NBT;
 
 class LevelImport{
 	private $path;

@@ -53,7 +53,7 @@ class CoalOre extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(COAL, 0, 1),
+				array(Item::COAL, 0, 1),
 			);
 		} else{
 			return array();

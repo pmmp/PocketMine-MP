@@ -54,7 +54,7 @@ class BurningFurnace extends Solid{
 			new Int("y", $this->y),
 			new Int("z", $this->z)
 		));
-		$nbt->Items->setTagType(NBT::Tag_Compound);
+		$nbt->Items->setTagType(NBT::TAG_Compound);
 		new Furnace($this->level, $nbt);
 
 		return true;
@@ -80,7 +80,7 @@ class BurningFurnace extends Solid{
 				new Int("y", $this->y),
 				new Int("z", $this->z)
 			));
-			$nbt->Items->setTagType(NBT::Tag_Compound);
+			$nbt->Items->setTagType(NBT::TAG_Compound);
 			$furnace = new Furnace($this->level, $nbt);
 		}
 

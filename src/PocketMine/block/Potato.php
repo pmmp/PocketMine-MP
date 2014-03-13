@@ -85,9 +85,9 @@ class Potato extends Flowable{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		$drops = array();
 		if($this->meta >= 0x07){
-			$drops[] = array(POTATO, 0, mt_rand(1, 4));
+			$drops[] = array(Item::POTATO, 0, mt_rand(1, 4));
 		} else{
-			$drops[] = array(POTATO, 0, 1);
+			$drops[] = array(Item::POTATO, 0, 1);
 		}
 
 		return $drops;

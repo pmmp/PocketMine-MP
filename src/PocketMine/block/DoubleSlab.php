@@ -63,7 +63,7 @@ class DoubleSlab extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(SLAB, $this->meta & 0x07, 2),
+				array(Item::SLAB, $this->meta & 0x07, 2),
 			);
 		} else{
 			return array();

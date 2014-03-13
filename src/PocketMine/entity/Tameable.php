@@ -23,6 +23,6 @@ namespace PocketMine\Entity;
 
 use PocketMine;
 
-interface TameableEntity{
+interface Tameable{
 
 }

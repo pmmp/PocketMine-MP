@@ -134,7 +134,7 @@ class Bed extends Transparent{
 
 	public function getDrops(Item $item, PocketMine\Player $player){
 		return array(
-			array(BED, 0, 1),
+			array(Item::BED, 0, 1),
 		);
 	}
 

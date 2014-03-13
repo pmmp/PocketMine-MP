@@ -28,14 +28,15 @@ use PocketMine\Network\Protocol\ExplodePacket;
 use PocketMine\Player;
 use PocketMine\ServerAPI;
 use PocketMine;
+use PocketMine\Item\Item;
 
 class Explosion{
 	public static $specialDrops = array(
-		GRASS => DIRT,
-		STONE => COBBLESTONE,
-		COAL_ORE => COAL,
-		DIAMOND_ORE => DIAMOND,
-		REDSTONE_ORE => REDSTONE,
+		Item::GRASS => Item::DIRT,
+		Item::STONE => Item::COBBLESTONE,
+		Item::COAL_ORE => Item::COAL,
+		Item::DIAMOND_ORE => Item::DIAMOND,
+		Item::REDSTONE_ORE => Item::REDSTONE,
 	);
 	private $rays = 16; //Rays
 	public $level;

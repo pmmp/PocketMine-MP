@@ -59,7 +59,7 @@ class Sandstone extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(SANDSTONE, $this->meta & 0x03, 1),
+				array(Item::SANDSTONE, $this->meta & 0x03, 1),
 			);
 		} else{
 			return array();

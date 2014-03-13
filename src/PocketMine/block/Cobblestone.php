@@ -53,7 +53,7 @@ class Cobblestone extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(COBBLESTONE, 0, 1),
+				array(Item::COBBLESTONE, 0, 1),
 			);
 		} else{
 			return array();

@@ -55,7 +55,7 @@ class Leaves extends Transparent{
 		} elseif($pos->getID() === self::LEAVES and $distance < 3){
 			$visited[$index] = true;
 			$down = $pos->getSide(0)->getID();
-			if($down === WOOD){
+			if($down === Item::WOOD){
 				return true;
 			}
 			if($fromSide === null){
@@ -126,11 +126,11 @@ class Leaves extends Transparent{
 					$this->level->setBlock($this, new Air(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
 						//TODO
-						ServerAPI::request()->api->entity->drop($this, Item::get(SAPLING, $this->meta & 0x03, 1));
+						//ServerAPI::request()->api->entity->drop($this, Item::get(Item::SAPLING, $this->meta & 0x03, 1));
 					}
 					if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
 						//TODO
-						ServerAPI::request()->api->entity->drop($this, Item::get(APPLE, 0, 1));
+						//ServerAPI::request()->api->entity->drop($this, Item::get(Item::APPLE, 0, 1));
 					}
 
 					return Level::BLOCK_UPDATE_NORMAL;
@@ -149,13 +149,13 @@ class Leaves extends Transparent{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		$drops = array();
 		if($item->isShears()){
-			$drops[] = array(LEAVES, $this->meta & 0x03, 1);
+			$drops[] = array(Item::LEAVES, $this->meta & 0x03, 1);
 		} else{
 			if(mt_rand(1, 20) === 1){ //Saplings
 				$drops[] = array(Item::SAPLING, $this->meta & 0x03, 1);
 			}
 			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = array(APPLE, 0, 1);
+				$drops[] = array(Item::APPLE, 0, 1);
 			}
 		}
 

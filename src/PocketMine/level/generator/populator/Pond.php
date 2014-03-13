@@ -39,7 +39,7 @@ class Pond extends Populator{
 				$random->nextRange(0, 128),
 				$random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16)
 			);
-			$pond = new Level\Genenerator\Object\Pond($random, new Water());
+			$pond = new PocketMine\Level\Generator\Object\Pond($random, new Water());
 			if($pond->canPlaceObject($level, $v)){
 				$pond->placeObject($level, $v);
 			}

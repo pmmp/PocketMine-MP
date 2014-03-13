@@ -45,7 +45,7 @@ class Plugin extends PMF{
 		}
 		$this->seek(5);
 		$this->pluginData["fversion"] = ord($this->read(1));
-		if($this->pluginData["fversion"] > PMFPlugin::VERSION){
+		if($this->pluginData["fversion"] > self::VERSION){
 			return false;
 		}
 		$this->pluginData["name"] = $this->read(Utils::readShort($this->read(2), false));

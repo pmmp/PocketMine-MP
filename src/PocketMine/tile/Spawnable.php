@@ -22,6 +22,7 @@
 namespace PocketMine\Tile;
 
 use PocketMine;
+use PocketMine\Player;
 
 abstract class Spawnable extends Tile{
 	public abstract function spawnTo(Player $player);

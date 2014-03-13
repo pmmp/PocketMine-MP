@@ -102,7 +102,7 @@ abstract class Tile extends Position{
 			unset($this->level->tiles[$this->id]);
 			unset($this->level->chunkTiles[$this->chunkIndex][$this->id]);
 			unset(Tile::$list[$this->id]);
-			$this->server->api->dhandle("tile.remove", $t);
+			$this->server->api->dhandle("tile.remove", $this);
 		}
 	}
 

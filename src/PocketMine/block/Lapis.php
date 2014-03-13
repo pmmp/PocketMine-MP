@@ -49,7 +49,7 @@ class Lapis extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 3){
 			return array(
-				array(LAPIS_BLOCK, 0, 1),
+				array(Item::LAPIS_BLOCK, 0, 1),
 			);
 		} else{
 			return array();

@@ -53,7 +53,7 @@ class Netherrack extends Solid{
 	public function getDrops(Item $item, PocketMine\Player $player){
 		if($item->isPickaxe() >= 1){
 			return array(
-				array(NETHERRACK, 0, 1),
+				array(Item::NETHERRACK, 0, 1),
 			);
 		} else{
 			return array();

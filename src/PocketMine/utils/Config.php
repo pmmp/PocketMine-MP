@@ -75,7 +75,7 @@ class Config{
 	);
 
 	/**
-	 * @param       $file     Path of the file to be loaded
+	 * @param string      $file     Path of the file to be loaded
 	 * @param int   $type     Config type to load, -1 by default (detect)
 	 * @param array $default  Array with the default values, will be set if not existent
 	 * @param null  &$correct Sets correct to true if everything has been loaded correctly
@@ -182,6 +182,7 @@ class Config{
 	 */
 	public function save(){
 		if($this->correct === true){
+			$content = null;
 			switch($this->type){
 				case Config::PROPERTIES:
 				case Config::CNF:
@@ -257,7 +258,7 @@ class Config{
 	}
 
 	/**
-	 * @param      $k key to be set
+	 * @param string $k key to be set
 	 * @param bool $v value to set key
 	 */
 	public function set($k, $v = true){

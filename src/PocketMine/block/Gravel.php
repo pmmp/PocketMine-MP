@@ -38,7 +38,7 @@ class Gravel extends Fallable{
 		}
 
 		return array(
-			array(GRAVEL, 0, 1),
+			array(Item::GRAVEL, 0, 1),
 		);
 	}
 
