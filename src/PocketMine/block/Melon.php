@@ -30,7 +30,7 @@ class Melon extends Transparent{
 		$this->hardness = 5;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::MELON_SLICE, 0, mt_rand(3, 7)),
 		);

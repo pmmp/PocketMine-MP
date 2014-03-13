@@ -21,11 +21,11 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Network\Protocol\LevelEventPacket;
 use PocketMine\Player;
-use PocketMine;
 
 
 abstract class Door extends Transparent{
@@ -49,14 +49,14 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		if($face === 1){
 			$blockUp = $this->getSide(1);
 			$blockDown = $this->getSide(0);
 			if($blockUp->isReplaceable === false or $blockDown->isTransparent === true){
 				return false;
 			}
-			$direction = $player->getDirection();
+			$direction = $player instanceof Player ? $player->getDirection() : 0;
 			$face = array(
 				0 => 3,
 				1 => 4,
@@ -71,7 +71,7 @@ abstract class Door extends Transparent{
 			}
 			$this->level->setBlock($blockUp, Block::get($this->id, $metaUp), true, false, true); //Top
 
-			$this->meta = $direction & 0x03;
+			$this->meta = $player->getDirection() & 0x03;
 			$this->level->setBlock($block, $this, true, false, true); //Bottom
 			return true;
 		}
@@ -79,13 +79,13 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item, PocketMine\Player $player){
+	public function onBreak(Item $item){
 		if(($this->meta & 0x08) === 0x08){
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
 				$this->level->setBlock($down, new Air(), true, false, true);
 			}
-		} else{
+		}else{
 			$up = $this->getSide(1);
 			if($up->getID() === $this->id){
 				$this->level->setBlock($up, new Air(), true, false, true);
@@ -96,14 +96,16 @@ abstract class Door extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		if(($this->meta & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
 				$meta = $down->getMetadata() ^ 0x04;
 				$this->level->setBlock($down, Block::get($this->id, $meta), true, false, true);
 				$players = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
-				unset($players[$player->CID]);
+				if($player instanceof Player){
+					unset($players[$player->CID]);
+				}
 				$pk = new LevelEventPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -116,11 +118,13 @@ abstract class Door extends Transparent{
 			}
 
 			return false;
-		} else{
+		}else{
 			$this->meta ^= 0x04;
 			$this->level->setBlock($this, $this, true, false, true);
 			$players = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
-			unset($players[$player->CID]);
+			if($player instanceof Player){
+				unset($players[$player->CID]);
+			}
 			$pk = new LevelEventPacket;
 			$pk->x = $this->x;
 			$pk->y = $this->y;

@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
 
 class RedstoneOre extends Solid{
 	public function __construct(){
@@ -41,12 +41,12 @@ class RedstoneOre extends Solid{
 		return false;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 2){
 			return array(
 				array(Item::REDSTONE_DUST, 0, mt_rand(4, 5)),
 			);
-		} else{
+		}else{
 			return array();
 		}
 	}

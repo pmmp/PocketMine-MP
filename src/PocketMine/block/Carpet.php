@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
 
 class Carpet extends Flowable{
 	public function __construct($meta = 0){
@@ -52,7 +52,7 @@ class Carpet extends Flowable{
 		$this->isSolid = true;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() !== self::AIR){
 			$this->level->setBlock($block, $this, true, false, true);

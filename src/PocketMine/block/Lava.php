@@ -21,11 +21,11 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\ServerAPI;
-use PocketMine;
 
 class Lava extends Liquid{
 	public function __construct($meta = 0){
@@ -33,7 +33,7 @@ class Lava extends Liquid{
 		$this->hardness = 0;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		ServerAPI::request()->api->block->scheduleBlockUpdate(clone $this, 40, Level::BLOCK_UPDATE_NORMAL);
 
@@ -62,7 +62,7 @@ class Lava extends Liquid{
 				$level = $this->meta & 0x07;
 				if($level == 0x00){
 					$this->level->setBlock($this, new Obsidian(), false, false, true);
-				} else{
+				}else{
 					$this->level->setBlock($this, new Cobblestone(), false, false, true);
 				}
 			}
@@ -105,19 +105,19 @@ class Lava extends Liquid{
 				if($down instanceof Air || $down instanceof Lava){
 					$this->level->setBlock($down, new Lava(0x01), false, false, true);
 					ServerAPI::request()->api->block->scheduleBlockUpdate(new Position($down, 0, 0, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
-				} else{
+				}else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
 						if($b instanceof Lava){
 
-						} elseif($b->isFlowable === true){
+						}elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Lava(min($level + 2, 7)), false, false, true);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
 			}
-		} else{
+		}else{
 			//Extend Remove for Left Lavas
 			for($side = 2; $side <= 5; ++$side){
 				$sb = $this->getSide($side);

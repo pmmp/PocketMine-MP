@@ -22,12 +22,12 @@
 namespace PocketMine\Item;
 
 use PocketMine\Block\Air;
+use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Block\Lava;
 use PocketMine\Block\Liquid;
 use PocketMine\Block\Water;
 use PocketMine\Level\Level;
-use PocketMine;
 use PocketMine\Player;
 
 class Bucket extends Item{
@@ -47,19 +47,19 @@ class Bucket extends Item{
 
 				return true;
 			}
-		} elseif($this->meta === Item::WATER){
+		}elseif($this->meta === Item::WATER){
 			//Support Make Non-Support Water to Support Water
 			if($block->getID() === self::AIR || ($block instanceof Water && ($block->getMetadata() & 0x07) != 0x00)){
 				$water = new Water();
 				$level->setBlock($block, $water, true, false, true);
-				$water->place(clone $this, $player, $block, $target, $face, $fx, $fy, $fz);
+				$water->place(clone $this, $block, $target, $face, $fx, $fy, $fz, $player);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}
 
 				return true;
 			}
-		} elseif($this->meta === Item::LAVA){
+		}elseif($this->meta === Item::LAVA){
 			if($block->getID() === self::AIR){
 				$level->setBlock($block, new Lava(), true, false, true);
 				if(($player->gamemode & 0x01) === 0){

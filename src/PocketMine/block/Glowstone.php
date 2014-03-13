@@ -30,7 +30,7 @@ class Glowstone extends Transparent{
 		$this->hardness = 1.5;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::GLOWSTONE_DUST, 0, mt_rand(2, 4)),
 		);

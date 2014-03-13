@@ -30,7 +30,7 @@ class Farmland extends Solid{
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::DIRT, 0, 1),
 		);

@@ -29,7 +29,7 @@ class SpruceWoodStairs extends Stair{
 		parent::__construct(self::SPRUCE_WOOD_STAIRS, $meta, "Spruce Wood Stairs");
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, 0, 1),
 		);

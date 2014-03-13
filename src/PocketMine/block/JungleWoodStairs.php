@@ -29,7 +29,7 @@ class JungleWoodStairs extends Stair{
 		parent::__construct(self::JUNGLE_WOOD_STAIRS, $meta, "Jungle Wood Stairs");
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, 0, 1),
 		);

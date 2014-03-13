@@ -31,7 +31,7 @@ class Byte extends NamedTag{
 	}
 
 	public function read(NBT $nbt){
-		$this->value = $nbt->getByte();
+		$this->value = $nbt->getByte(true);
 	}
 
 	public function write(NBT $nbt){

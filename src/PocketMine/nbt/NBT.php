@@ -24,6 +24,7 @@
  */
 namespace PocketMine\NBT;
 
+use PocketMine;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Byte_Array;
 use PocketMine\NBT\Tag\Compound;
@@ -39,7 +40,6 @@ use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
 use PocketMine\NBT\Tag\Tag;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 /**
  * Named Binary Tag encoder/decoder
@@ -190,12 +190,12 @@ class NBT{
 		$tag->write($this);
 	}
 
-	public function getByte(){
-		return ord($this->get(1));
+	public function getByte($signed = false){
+		return Utils::readByte($this->get(1), $signed);
 	}
 
 	public function putByte($v){
-		$this->buffer .= chr($v);
+		$this->buffer .= Utils::writeByte($v);
 	}
 
 	public function getShort(){

@@ -30,7 +30,7 @@ class Glass extends Transparent{
 		$this->hardness = 1.5;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array();
 	}
 }

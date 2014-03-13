@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
 
 class TallGrass extends Flowable{
 	public function __construct($meta = 1){
@@ -50,7 +50,7 @@ class TallGrass extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		$drops = array();
 		$possibleDrops = array(
 			array(Item::WHEAT_SEEDS, 0, 1),

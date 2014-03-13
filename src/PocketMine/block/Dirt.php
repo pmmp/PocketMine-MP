@@ -31,11 +31,9 @@ class Dirt extends Solid{
 		$this->hardness = 2.5;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		if($item->isHoe()){
-			if(($player->gamemode & 0x01) === 0){
-				$item->useOn($this);
-			}
+			$item->useOn($this);
 			$this->level->setBlock($this, Block::get(Item::FARMLAND, 0), true, false, true);
 
 			return true;

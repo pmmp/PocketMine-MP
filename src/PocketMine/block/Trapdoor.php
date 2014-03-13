@@ -30,13 +30,13 @@ class Trapdoor extends Transparent{
 		$this->isActivable = true;
 		if(($this->meta & 0x04) === 0x04){
 			$this->isFullBlock = false;
-		} else{
+		}else{
 			$this->isFullBlock = true;
 		}
 		$this->hardness = 15;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		if(($target->isTransparent === false or $target->getID() === self::SLAB) and $face !== 0 and $face !== 1){
 			$faces = array(
 				2 => 0,
@@ -56,13 +56,13 @@ class Trapdoor extends Transparent{
 		return false;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, 0, 1),
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		$this->meta ^= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 

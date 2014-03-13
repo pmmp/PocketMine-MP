@@ -21,6 +21,7 @@
 
 namespace PocketMine\Entity;
 
+use PocketMine;
 use PocketMine\Event\Entity\EntityArmorChangeEvent;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent;
 use PocketMine\Event\Event;
@@ -29,14 +30,13 @@ use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
-use PocketMine\Network;
 use PocketMine\Network\Protocol\AddPlayerPacket;
 use PocketMine\Network\Protocol\ContainerSetContentPacket;
 use PocketMine\Network\Protocol\PlayerEquipmentPacket;
 use PocketMine\Network\Protocol\RemovePlayerPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
+use PocketMine\Network;
 use PocketMine\Player;
-use PocketMine;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -61,9 +61,9 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		foreach($this->namedtag->Inventory as $item){
 			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 				$this->hotbar[$item["Slot"]] = isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1;
-			} elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
+			}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
 				$this->armor[$item["Slot"] - 100] = Item::get($item["id"], $item["Damage"], $item["Count"]);
-			} else{
+			}else{
 				$this->inventory[$item["Slot"] - 9] = Item::get($item["id"], $item["Damage"], $item["Count"]);
 			}
 		}
@@ -75,6 +75,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 	public function saveNBT(){
 		parent::saveNBT();
+		$this->namedtag->Inventory = new PocketMine\NBT\Tag\Enum("Inventory", array());
+		$this->namedtag->Inventory->setTagType(PocketMine\NBT\NBT::TAG_Compound);
 		for($slot = 0; $slot < 9; ++$slot){
 			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
 				$item = $this->getSlot($this->hotbar[$slot]);
@@ -93,15 +95,16 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 				new Byte("Count", 0),
 				new Short("Damage", 0),
 				new Byte("Slot", $slot),
-				new Byte("Slot", -1),
+				new Byte("TrueSlot", -1),
 				new Short("id", 0),
 			));
 		}
 
 		//Normal inventory
-		$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
+		$slotCount = Player::SURVIVAL_SLOTS + 9;
+		//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
-			$item = $this->getSlot($slot);
+			$item = $this->getSlot($slot - 9);
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
 				new Byte("Count", $item->getCount()),
 				new Short("Damage", $item->getMetadata()),
@@ -216,7 +219,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		return $this->armor[$slot];
 	}
 
-	public function sendArmor(Player $player = null){
+	public function sendArmor($player = null){
 		$slots = array();
 		for($i = 0; $i < 4; ++$i){
 			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > Item::AIR){

@@ -24,11 +24,10 @@
  */
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
-use PocketMine\Player;
+use PocketMine;
 
 abstract class Block extends Position{
 	const AIR = 0;
@@ -368,7 +367,7 @@ abstract class Block extends Position{
 		if(isset(self::$list[$id])){
 			$block = clone self::$list[$id];
 			$block->setMetadata($meta);
-		} else{
+		}else{
 			$block = new Generic($id, $meta);
 		}
 		if($pos instanceof Position){
@@ -441,15 +440,14 @@ abstract class Block extends Position{
 	/**
 	 * Returns an array of Item objects to be dropped
 	 *
-	 * @param Item   $item
-	 * @param Player $player
+	 * @param Item $item
 	 *
 	 * @return array
 	 */
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if(!isset(self::$list[$this->id])){ //Unknown blocks
 			return array();
-		} else{
+		}else{
 			return array(
 				array($this->id, $this->meta, 1),
 			);
@@ -459,16 +457,11 @@ abstract class Block extends Position{
 	/**
 	 * Returns the seconds that this block takes to be broken using an specific Item
 	 *
-	 * @param Item   $item
-	 * @param Player $player
+	 * @param Item $item
 	 *
 	 * @return float
 	 */
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.15;
-		}
-
+	public function getBreakTime(Item $item){
 		return $this->breakTime;
 	}
 
@@ -498,48 +491,46 @@ abstract class Block extends Position{
 	/**
 	 * Returns if the item can be broken with an specific Item
 	 *
-	 * @param Item   $item
-	 * @param Player $player
+	 * @param Item $item
 	 *
 	 * @return bool
 	 */
-	abstract function isBreakable(Item $item, PocketMine\Player $player);
+	abstract function isBreakable(Item $item);
 
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
-	 * @param Item   $item
-	 * @param Player $player
+	 * @param Item $item
 	 *
 	 * @return mixed
 	 */
-	abstract function onBreak(Item $item, PocketMine\Player $player);
+	abstract function onBreak(Item $item);
 
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param Item   $item
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param int    $face
-	 * @param float  $fx
-	 * @param float  $fy
-	 * @param float  $fz
+	 * @param Item               $item
+	 * @param Block              $block
+	 * @param Block              $target
+	 * @param int                $face
+	 * @param float              $fx
+	 * @param float              $fy
+	 * @param float              $fz
+	 * @param \PocketMine\Player $player = null
 	 *
 	 * @return bool
 	 */
-	abstract function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz);
+	abstract function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null);
 
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
-	 * @param Item   $item
-	 * @param Player $player
+	 * @param Item               $item
+	 * @param \PocketMine\Player $player
 	 *
 	 * @return bool
 	 */
-	abstract function onActivate(Item $item, PocketMine\Player $player);
+	abstract function onActivate(Item $item, PocketMine\Player $player = null);
 
 	/**
 	 * Fires a block update on the Block

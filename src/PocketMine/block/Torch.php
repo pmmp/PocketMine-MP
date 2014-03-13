@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
 
 class Torch extends Flowable{
 	public function __construct($meta = 0){
@@ -56,7 +56,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		if($target->isTransparent === false and $face !== 0){
 			$faces = array(
 				1 => 5,
@@ -69,7 +69,7 @@ class Torch extends Flowable{
 			$this->level->setBlock($block, $this, true, false, true);
 
 			return true;
-		} elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === self::FENCE){
+		}elseif($this->getSide(0)->isTransparent === false or $this->getSide(0)->getID() === self::FENCE){
 			$this->meta = 0;
 			$this->level->setBlock($block, $this, true, false, true);
 
@@ -79,7 +79,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, 0, 1),
 		);

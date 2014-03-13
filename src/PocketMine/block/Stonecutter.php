@@ -30,13 +30,13 @@ class Stonecutter extends Solid{
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		$player->toCraft[-1] = 2;
 
 		return true;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, 0, 1),
 		);

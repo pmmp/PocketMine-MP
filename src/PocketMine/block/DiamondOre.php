@@ -30,10 +30,7 @@ class DiamondOre extends Solid{
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.6;
@@ -44,12 +41,12 @@ class DiamondOre extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 4){
 			return array(
 				array(Item::DIAMOND, 0, 1),
 			);
-		} else{
+		}else{
 			return array();
 		}
 	}

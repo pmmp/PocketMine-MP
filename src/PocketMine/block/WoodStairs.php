@@ -29,10 +29,8 @@ class WoodStairs extends Stair{
 		parent::__construct(self::WOOD_STAIRS, $meta, "Wood Stairs");
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
+
 		switch($item->isAxe()){
 			case 5:
 				return 0.4;
@@ -49,7 +47,7 @@ class WoodStairs extends Stair{
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, 0, 1),
 		);

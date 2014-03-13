@@ -42,7 +42,7 @@ class Wood extends Solid{
 		$this->hardness = 10;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$faces = array(
 			0 => 0,
 			1 => 0,
@@ -58,7 +58,7 @@ class Wood extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);

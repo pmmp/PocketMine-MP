@@ -30,7 +30,7 @@ class Gravel extends Fallable{
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if(mt_rand(1, 10) === 1){
 			return array(
 				array(Item::FLINT, 0, 1),

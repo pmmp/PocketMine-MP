@@ -31,7 +31,7 @@ class TNT extends Solid{
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		if($item->getID() === Item::FLINT_STEEL){
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);

@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){
@@ -32,13 +32,13 @@ class Sugarcane extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::SUGARCANE, 0, 1),
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
@@ -71,7 +71,7 @@ class Sugarcane extends Flowable{
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
@@ -83,7 +83,7 @@ class Sugarcane extends Flowable{
 					}
 					$this->meta = 0;
 					$this->level->setBlock($this, $this, true, false, true);
-				} else{
+				}else{
 					++$this->meta;
 					$this->level->setBlock($this, $this, true, false, true);
 				}
@@ -95,13 +95,13 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::SUGARCANE_BLOCK){
 			$this->level->setBlock($block, new Sugarcane(), true, false, true);
 
 			return true;
-		} elseif($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::SAND){
+		}elseif($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::SAND){
 			$block0 = $down->getSide(2);
 			$block1 = $down->getSide(3);
 			$block2 = $down->getSide(4);

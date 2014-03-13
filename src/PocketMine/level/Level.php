@@ -24,16 +24,21 @@
  */
 namespace PocketMine\Level;
 
+use PocketMine;
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
+use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Flat;
 use PocketMine\Level\Generator\Generator;
 use PocketMine\Level\Generator\Normal;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\NBT;
+use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
+use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\Short;
+use PocketMine\NBT\Tag\String;
 use PocketMine\Network\Protocol\SetTimePacket;
 use PocketMine\Network\Protocol\UpdateBlockPacket;
 use PocketMine\Player;
@@ -47,10 +52,6 @@ use PocketMine\Utils\Cache;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
 use PocketMine\Utils\Utils;
-use PocketMine;
-use PocketMine\NBT\Tag\Byte;
-use PocketMine\NBT\Tag\String;
-use PocketMine\NBT\Tag\Int;
 
 /**
  * Class Level
@@ -682,6 +683,141 @@ class Level{
 		return $ret;
 	}
 
+	/**
+	 * Tries to break a block using a item, including Player time checks if available
+	 *
+	 * @param Vector3 $vector
+	 * @param Item    &$item (if null, can break anything)
+	 * @param Player  $player
+	 *
+	 * @return boolean
+	 */
+	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null){
+		$target = $this->getBlock($vector);
+
+		if($player instanceof Player){
+			$lastTime = $player->lastBreak - $player->getLag() / 1000;
+			if(($player->getGamemode() & 0x01) === 1 and ($lastTime + 0.15) >= microtime(true)){
+				return false;
+			}elseif(($lastTime + $target->getBreakTime($item)) >= microtime(true)){
+				return false;
+			}
+			$player->lastBreak = microtime(true);
+		}
+
+		//TODO: Adventure mode checks
+		if($player instanceof Player){
+			$ev = new PocketMine\Event\Block\BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
+			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
+				$ev->setCancelled();
+			}
+			if(PocketMine\Event\EventHandler::callEvent($ev) === PocketMine\Event\Event::DENY){
+				return false;
+			}
+		}elseif($item instanceof Item and !$target->isBreakable($item)){
+			return false;
+		}
+
+		$target->onBreak($item);
+		if($item instanceof Item){
+			$item->useOn($target);
+			if($item->isTool() and $item->getMetadata() >= $item->getMaxDurability()){
+				$item = Item::get(Item::AIR, 0, 0);
+			}
+		}
+
+		return $target->getDrops($item);
+	}
+
+	/**
+	 * Uses a item on a position and face, placing it or activating the block
+	 *
+	 * @param Vector3 $vector
+	 * @param Item    &$item
+	 * @param int     $face
+	 * @param float   $fx     default 0.0
+	 * @param float   $fy     default 0.0
+	 * @param float   $fz     default 0.0
+	 * @param Player  $player default null
+	 *
+	 * @return boolean
+	 */
+	public function useItemOn(Vector3 $vector, Item &$item, $face, $fx = 0.0, $fy = 0.0, $fz = 0.0, Player $player = null){
+		$target = $this->getBlock($vector);
+		$block = $target->getSide($face);
+
+		if($block->y > 127 or $block->y < 0){
+			return false;
+		}
+
+		if($target->getID() === Item::AIR){
+			return false;
+		}
+
+		if($player instanceof Player and PocketMine\Event\EventHandler::callEvent($ev = new PocketMine\Event\Player\PlayerInteractEvent($player, $item, $target, $face)) !== PocketMine\Event\Event::DENY){
+			$target->onUpdate(Level::BLOCK_UPDATE_TOUCH);
+		}
+
+		if($target->isActivable === true and $target->onActivate($item, $player) === true){
+			return true;
+		}
+
+		if($item->isPlaceable()){
+			$hand = $item->getBlock();
+			$hand->position($block);
+		}elseif($block->getID() === Item::FIRE){
+			$this->setBlock($block, new PocketMine\Block\Air(), true, false, true);
+
+			return false;
+		}else{
+			return false;
+		}
+
+		if(!($block->isReplaceable === true or ($hand->getID() === Item::SLAB and $block->getID() === Item::SLAB))){
+			return false;
+		}
+
+		if($target->isReplaceable === true){
+			$block = $target;
+			$hand->position($block);
+			//$face = -1;
+		}
+
+		//TODO: Implement using Bounding Boxes, all entities
+		/*if($hand->isSolid === true and $player->inBlock($block)){
+			return false; //Entity in block
+		}*/
+		$ev = new PocketMine\Event\Block\BlockPlaceEvent($player, $hand, $block, $target, $item);
+
+		if($player instanceof Player and PocketMine\Event\EventHandler::callEvent($ev) === PocketMine\Event\Event::DENY){
+			return false;
+		}elseif($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
+			return false;
+		}
+
+		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
+			$tile = new Sign($this, new Compound(false, array(
+				new String("id", PocketMine\Tile\Tile::SIGN),
+				new Int("x", $block->x),
+				new Int("y", $block->y),
+				new Int("z", $block->z),
+				new String("Text1", ""),
+				new String("Text2", ""),
+				new String("Text3", ""),
+				new String("Text4", "")
+			)));
+			if($player instanceof Player){
+				$tile->namedtag->creator = new String("creator", $player->getUsername());
+			}
+		}
+		$item->setCount($item->getCount() - 1);
+		if($item->getCount() <= 0){
+			$item = Item::get(Item::AIR, 0, 0);
+		}
+
+		return true;
+	}
+
 	public function getBiome($x, $z){
 		return $this->level->getBiome((int) $x, (int) $z);
 	}
@@ -761,6 +897,9 @@ class Level{
 			$tags = $this->level->getChunkNBT($X, $Z);
 			if(isset($tags->Entities)){
 				foreach($tags->Entities as $nbt){
+					if(!isset($nbt["id"])){
+						continue;
+					}
 					switch($nbt["id"]){
 						//TODO: spawn entities
 					}

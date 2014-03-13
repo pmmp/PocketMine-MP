@@ -37,10 +37,7 @@ class DoubleWoodSlab extends Solid{
 		$this->hardness = 15;
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
 		switch($item->isAxe()){
 			case 5:
 				return 0.4;
@@ -57,7 +54,7 @@ class DoubleWoodSlab extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::WOOD_SLAB, $this->meta & 0x07, 2),
 		);

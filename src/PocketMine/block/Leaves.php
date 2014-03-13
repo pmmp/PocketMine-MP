@@ -21,10 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine\ServerAPI;
-use PocketMine;
 
 class Leaves extends Transparent{
 	const OAK = 0;
@@ -52,7 +51,7 @@ class Leaves extends Transparent{
 		}
 		if($pos->getID() === self::WOOD){
 			return true;
-		} elseif($pos->getID() === self::LEAVES and $distance < 3){
+		}elseif($pos->getID() === self::LEAVES and $distance < 3){
 			$visited[$index] = true;
 			$down = $pos->getSide(0)->getID();
 			if($down === Item::WOOD){
@@ -64,41 +63,41 @@ class Leaves extends Transparent{
 						return true;
 					}
 				}
-			} else{ //No more loops
+			}else{ //No more loops
 				switch($fromSide){
 					case 2:
 						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
 					case 3:
 						if($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
 					case 4:
 						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
 					case 5:
 						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						} elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
@@ -115,14 +114,14 @@ class Leaves extends Transparent{
 				$this->meta |= 0x08;
 				$this->level->setBlock($this, $this, false, false, true);
 			}
-		} elseif($type === Level::BLOCK_UPDATE_RANDOM){
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(($this->meta & 0b00001100) === 0x08){
 				$this->meta &= 0x03;
 				$visited = array();
 				$check = 0;
 				if($this->findLog($this, $visited, 0, $check) === true){
 					$this->level->setBlock($this, $this, false, false, true);
-				} else{
+				}else{
 					$this->level->setBlock($this, new Air(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
 						//TODO
@@ -141,16 +140,16 @@ class Leaves extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$this->meta |= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		$drops = array();
 		if($item->isShears()){
 			$drops[] = array(Item::LEAVES, $this->meta & 0x03, 1);
-		} else{
+		}else{
 			if(mt_rand(1, 20) === 1){ //Saplings
 				$drops[] = array(Item::SAPLING, $this->meta & 0x03, 1);
 			}

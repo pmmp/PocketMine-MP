@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -19,39 +19,56 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace PocketMine\Event\Block;
 
-use PocketMine\Event;
+use PocketMine\Block\Block;
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Item\Item;
-use PocketMine;
 use PocketMine\Player;
+use PocketMine;
 
-class PlayerEquipmentChangeEvent extends PlayerEvent implements CancellableEvent{
+class BlockBreakEvent extends BlockEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
 
-	private $item;
-	private $slot;
-	private $inventorySlot;
+	/**
+	 * @var \PocketMine\Player
+	 */
+	protected $player;
 
-	public function __construct(Player $player, Item $item, $inventorySlot, $slot){
-		$this->player = $player;
+	/**
+	 * @var \PocketMine\Item\Item
+	 */
+	protected $item;
+
+	/**
+	 * @var bool
+	 */
+	protected $instaBreak = false;
+
+	public function __construct(Player $player, Block $block, Item $item, $instaBreak = false){
+		$this->block = $block;
 		$this->item = $item;
-		$this->inventorySlot = (int) $inventorySlot;
-		$this->slot = (int) $slot;
+		$this->player = $player;
+		$this->instaBreak = (bool) $instaBreak;
 	}
 
-	public function getSlot(){
-		return $this->slot;
-	}
-
-	public function getInventorySlot(){
-		return $this->inventorySlot;
+	public function getPlayer(){
+		return $this->player;
 	}
 
 	public function getItem(){
-		return $this->item;
+		return $item;
 	}
 
+	public function getInstaBreak(){
+		return $this->instaBreak;
+	}
+
+	/**
+	 * @param boolean $instaBreak
+	 */
+	public function setInstaBreak($instaBreak){
+		$this->instaBreak = (bool) $instaBreak;
+	}
 }

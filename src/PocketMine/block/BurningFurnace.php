@@ -22,14 +22,14 @@
 namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
+use PocketMine;
+use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Tile\Furnace;
 use PocketMine\Tile\Tile;
-use PocketMine;
-use PocketMine\NBT\NBT;
 
 class BurningFurnace extends Solid{
 	public function __construct($meta = 0){
@@ -38,14 +38,14 @@ class BurningFurnace extends Solid{
 		$this->hardness = 17.5;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$faces = array(
 			0 => 4,
 			1 => 2,
 			2 => 5,
 			3 => 3,
 		);
-		$this->meta = $faces[$player->getDirection()];
+		$this->meta = $faces[$player instanceof PocketMine\Player ? $player->getDirection() : 0];
 		$this->level->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
 			new Enum("Items", array()),
@@ -60,43 +60,41 @@ class BurningFurnace extends Solid{
 		return true;
 	}
 
-	public function onBreak(Item $item, PocketMine\Player $player){
+	public function onBreak(Item $item){
 		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
+		if($player instanceof PocketMine\Player){
+			$t = $this->level->getTile($this);
+			$furnace = false;
+			if($t instanceof Furnace){
+				$furnace = $t;
+			}else{
+				$nbt = new Compound(false, array(
+					new Enum("Items", array()),
+					new String("id", Tile::FURNACE),
+					new Int("x", $this->x),
+					new Int("y", $this->y),
+					new Int("z", $this->z)
+				));
+				$nbt->Items->setTagType(NBT::TAG_Compound);
+				$furnace = new Furnace($this->level, $nbt);
+			}
 
-		$t = $this->level->getTile($this);
-		$furnace = false;
-		if($t instanceof Furnace){
-			$furnace = $t;
-		} else{
-			$nbt = new Compound(false, array(
-				new Enum("Items", array()),
-				new String("id", Tile::FURNACE),
-				new Int("x", $this->x),
-				new Int("y", $this->y),
-				new Int("z", $this->z)
-			));
-			$nbt->Items->setTagType(NBT::TAG_Compound);
-			$furnace = new Furnace($this->level, $nbt);
+			if(($player->getGamemode() & 0x01) === 0x01){
+				return true;
+			}
+
+			$furnace->openInventory($player);
 		}
-
-		if(($player->gamemode & 0x01) === 0x01){
-			return true;
-		}
-
-		$furnace->openInventory($player);
 
 		return true;
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.7;
@@ -113,7 +111,7 @@ class BurningFurnace extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		$drops = array();
 		if($item->isPickaxe() >= 1){
 			$drops[] = array(Item::FURNACE, 0, 1);

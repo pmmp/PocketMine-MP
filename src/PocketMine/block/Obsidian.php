@@ -30,23 +30,21 @@ class Obsidian extends Solid{
 		$this->hardness = 6000;
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
+
 		if($item->isPickaxe() >= 5){
 			return 9.4;
-		} else{
+		}else{
 			return 250;
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 5){
 			return array(
 				array(Item::OBSIDIAN, 0, 1),
 			);
-		} else{
+		}else{
 			return array();
 		}
 	}

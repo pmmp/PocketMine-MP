@@ -31,11 +31,7 @@ class Bedrock extends Solid{
 		$this->hardness = 18000000;
 	}
 
-	public function isBreakable(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return true;
-		}
-
+	public function isBreakable(Item $item){
 		return false;
 	}
 

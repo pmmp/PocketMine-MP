@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Object\TallGrass;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Grass extends Solid{
 	public function __construct(){
@@ -33,24 +33,20 @@ class Grass extends Solid{
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::DIRT, 0, 1),
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){
-			if(($player->gamemode & 0x01) === 0){
-				$item->count--;
-			}
+			$item->count--;
 			TallGrass::growGrass($this->level, $this, new Random(), 8, 2);
 
 			return true;
-		} elseif($item->isHoe()){
-			if(($player->gamemode & 0x01) === 0){
-				$item->useOn($this);
-			}
+		}elseif($item->isHoe()){
+			$item->useOn($this);
 			$this->level->setBlock($this, new Farmland());
 
 			return true;

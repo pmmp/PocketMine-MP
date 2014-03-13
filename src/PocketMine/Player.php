@@ -22,8 +22,8 @@
 namespace PocketMine;
 
 use PocketMine\Entity\RealHuman;
-use PocketMine\Event\EventHandler;
 use PocketMine\Event;
+use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
@@ -1025,7 +1025,6 @@ class Player extends RealHuman{
 			return false;
 		}
 
-		$inv =& $this->inventory;
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ".\n");
@@ -1035,9 +1034,7 @@ class Player extends RealHuman{
 			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
 		}
-		$this->inventory = $inv;
 		$this->sendSettings();
-		$this->sendInventory();
 
 		return true;
 	}
@@ -1479,10 +1476,10 @@ class Player extends RealHuman{
 				if($packet->slot === 0x28 or $packet->slot === 0){ //0 for 0.8.0 compatibility
 					$packet->slot = -1; //Air
 				} else{
-					$packet->slot -= 9;
+					$packet->slot -= 9; //Get real block slot
 				}
 
-				if(($this->gamemode & 0x01) === 1){
+				if(($this->gamemode & 0x01) === 1){ //Creative mode match
 					$packet->slot = false;
 					foreach(BlockAPI::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
@@ -1491,13 +1488,13 @@ class Player extends RealHuman{
 							break;
 						}
 					}
-				} else{
+				}else{
 					$item = $this->getSlot($packet->slot);
 				}
 
-				if($packet->slot === false or EventHandler::callEvent(new Event\Player\PlayerEquipmentChangeEvent($this, $item, $packet->slot, 0)) === Event\Event::DENY){
+				if($packet->slot === false or EventHandler::callEvent(new Event\Player\PlayerItemHeldEvent($this, $item, $packet->slot, 0)) === Event\Event::DENY){
 					$this->sendInventorySlot($packet->slot);
-				} else{
+				}elseif($item instanceof Item){
 					$this->setEquipmentSlot(0, $packet->slot);
 					$this->setCurrentEquipmentSlot(0);
 					if(($this->gamemode & 0x01) === 0){
@@ -1507,6 +1504,7 @@ class Player extends RealHuman{
 						}
 					}
 				}
+
 				if($this->inAction === true){
 					$this->inAction = false;
 					//$this->entity->updateMetadata();
@@ -1541,21 +1539,6 @@ class Player extends RealHuman{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 				$packet->eid = $this->id;
-				$data = array();
-				$data["eid"] = $packet->eid;
-				$data["player"] = $this;
-				$data["face"] = $packet->face;
-				$data["x"] = $packet->x;
-				$data["y"] = $packet->y;
-				$data["z"] = $packet->z;
-				$data["item"] = $packet->item;
-				$data["meta"] = $packet->meta;
-				$data["fx"] = $packet->fx;
-				$data["fy"] = $packet->fy;
-				$data["fz"] = $packet->fz;
-				$data["posX"] = $packet->posX;
-				$data["posY"] = $packet->posY;
-				$data["posZ"] = $packet->posZ;
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					if($this->inAction === true){
@@ -1563,16 +1546,23 @@ class Player extends RealHuman{
 						//$this->entity->updateMetadata();
 					}
 
-					if($this->blocked === true or $blockVector->distance($this) > 10){
+					if($blockVector->distance($this) > 10){
 
-					} elseif(($this->gamemode & 0x01) === 1 and isset(BlockAPI::$creative[$this->slot]) and $packet->item === BlockAPI::$creative[$this->slot][0] and $packet->meta === BlockAPI::$creative[$this->slot][1]){
-						$this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->fx, $packet->fy, $packet->fz);
-						break;
-					} elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
+					}elseif(($this->gamemode & 0x01) === 1 and isset(BlockAPI::$creative[$this->slot]) and $packet->item === BlockAPI::$creative[$this->slot][0] and $packet->meta === BlockAPI::$creative[$this->slot][1]){
+						$item = Item::get(BlockAPI::$creative[$this->slot][0], BlockAPI::$creative[$this->slot][1], 1);
+						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
+							break;
+						}
+					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
 						$this->sendInventorySlot($this->slot);
-					} else{
-						$this->server->api->block->playerBlockAction($this, $blockVector, $packet->face, $packet->fx, $packet->fy, $packet->fz);
-						break;
+					}else{
+						$item = clone $this->getSlot($this->slot);
+						//TODO: Implement adventure mode checks
+						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
+							$this->setSlot($this->slot, $item);
+							$this->sendInventorySlot($this->slot);
+							break;
+						}
 					}
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
@@ -1676,22 +1666,36 @@ class Player extends RealHuman{
 				}
 				break;*/
 			case ProtocolInfo::REMOVE_BLOCK_PACKET:
-				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
-				if($this->spawned === false or $this->blocked === true or $this->distance($blockVector) > 8){
-					$target = $this->level->getBlock($blockVector);
-
-					$pk = new UpdateBlockPacket;
-					$pk->x = $target->x;
-					$pk->y = $target->y;
-					$pk->z = $target->z;
-					$pk->block = $target->getID();
-					$pk->meta = $target->getMetadata();
-					$this->dataPacket($pk);
+				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$this->server->api->block->playerBlockBreak($this, $blockVector);
+
+				$vector = new Vector3($packet->x, $packet->y, $packet->z);
+
+
+				if(($this->gamemode & 0x01) === 1){
+					$item = Item::get(BlockAPI::$creative[$this->slot][0], BlockAPI::$creative[$this->slot][1], 1);
+				}else{
+					$item = clone $this->getSlot($this->slot);
+				}
+
+				if(($drops = $this->level->useBreakOn($vector, $item)) !== true){
+					if(($this->gamemode & 0x01) === 0){
+						//TODO: drop items
+						$this->setSlot($this->slot, $item);
+					}
+					break;
+				}
+				$target = $this->level->getBlock($vector);
+				$pk = new UpdateBlockPacket;
+				$pk->x = $target->x;
+				$pk->y = $target->y;
+				$pk->z = $target->z;
+				$pk->block = $target->getID();
+				$pk->meta = $target->getMetadata();
+				$this->directDataPacket($pk);
 				break;
 			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
@@ -1716,14 +1720,14 @@ class Player extends RealHuman{
 							$this->addItem($slot);
 							$packet->slots[$i] = 255;
 						}
-					} elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->hasItem($s->getID())) !== false){
+					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->hasItem($s, false)) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
 						} else{
 							$this->setSlot($sl, Item::get(Item::AIR, 0, 0));
 						}
-					} elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s->getID())) !== false){
+					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s, false)) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();

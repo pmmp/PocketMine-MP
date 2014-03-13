@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
 
 class SignPost extends Transparent{
 	public function __construct($meta = 0){
@@ -33,7 +33,7 @@ class SignPost extends Transparent{
 		$this->hardness = 5;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		if($face !== 0){
 			$faces = array(
 				2 => 2,
@@ -46,7 +46,7 @@ class SignPost extends Transparent{
 				$this->level->setBlock($block, Block::get(Item::SIGN_POST, $this->meta), true, false, true);
 
 				return true;
-			} else{
+			}else{
 				$this->meta = $faces[$face];
 				$this->level->setBlock($block, Block::get(Item::WALL_SIGN, $this->meta), true, false, true);
 
@@ -71,13 +71,13 @@ class SignPost extends Transparent{
 		return false;
 	}
 
-	public function onBreak(Item $item, PocketMine\Player $player){
+	public function onBreak(Item $item){
 		$this->level->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::SIGN, 0, 1),
 		);

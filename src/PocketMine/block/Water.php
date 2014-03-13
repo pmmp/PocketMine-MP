@@ -22,10 +22,10 @@
 namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\ServerAPI;
 use PocketMine;
+use PocketMine\Level\Level;
 use PocketMine\Level\Position;
+use PocketMine\ServerAPI;
 
 class Water extends Liquid{
 	public function __construct($meta = 0){
@@ -33,7 +33,7 @@ class Water extends Liquid{
 		$this->hardness = 500;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		ServerAPI::request()->api->block->scheduleBlockUpdate(clone $this, 10, Level::BLOCK_UPDATE_NORMAL);
 
@@ -65,7 +65,7 @@ class Water extends Liquid{
 				$level = $b->meta & 0x07;
 				if($level == 0x00){
 					$this->level->setBlock($b, new Obsidian(), false, false, true);
-				} else{
+				}else{
 					$this->level->setBlock($b, new Cobblestone(), false, false, true);
 				}
 
@@ -111,21 +111,21 @@ class Water extends Liquid{
 				if($down instanceof Air || $down instanceof Water){
 					$this->level->setBlock($down, new Water(0x01), false, false, true);
 					ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($down, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
-				} else{
+				}else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
 						if($b instanceof Water){
 							if($this->getSourceCount() >= 2 && $level != 0x00){
 								$this->level->setBlock($this, new Water(0), false, false, true);
 							}
-						} elseif($b->isFlowable === true){
+						}elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Water($level + 1), false, false, true);
 							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
 			}
-		} else{
+		}else{
 			//Extend Remove for Left Waters
 			for($side = 2; $side <= 5; ++$side){
 				$sb = $this->getSide($side);

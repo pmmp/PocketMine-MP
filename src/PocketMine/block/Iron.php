@@ -30,10 +30,7 @@ class Iron extends Solid{
 		$this->hardness = 30;
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.95;
@@ -46,12 +43,12 @@ class Iron extends Solid{
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 3){
 			return array(
 				array(Item::IRON_BLOCK, 0, 1),
 			);
-		} else{
+		}else{
 			return array();
 		}
 	}

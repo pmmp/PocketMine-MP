@@ -32,7 +32,7 @@ class Cobweb extends Flowable{
 		$this->hardness = 25;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array();
 	}
 }

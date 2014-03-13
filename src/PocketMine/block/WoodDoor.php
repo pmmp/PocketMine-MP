@@ -31,7 +31,7 @@ class WoodDoor extends Door{
 		$this->hardness = 15;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::WOODEN_DOOR, 0, 1),
 		);

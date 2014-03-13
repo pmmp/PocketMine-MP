@@ -21,11 +21,11 @@
 
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Object\Tree;
 use PocketMine\Level\Level;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Sapling extends Flowable{
 	const OAK = 0;
@@ -47,7 +47,7 @@ class Sapling extends Flowable{
 		$this->hardness = 0;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::FARMLAND){
 			$this->level->setBlock($block, $this, true, false, true);
@@ -58,7 +58,7 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player){
+	public function onActivate(Item $item, PocketMine\Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
@@ -80,17 +80,17 @@ class Sapling extends Flowable{
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		} elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
+		}elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
 				if(($this->meta & 0x08) === 0x08){
 					Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
-				} else{
+				}else{
 					$this->meta |= 0x08;
 					$this->level->setBlock($this, $this, true, false, true);
 
 					return Level::BLOCK_UPDATE_RANDOM;
 				}
-			} else{
+			}else{
 				return Level::BLOCK_UPDATE_RANDOM;
 			}
 		}
@@ -98,7 +98,7 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array($this->id, $this->meta & 0x03, 1),
 		);

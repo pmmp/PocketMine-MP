@@ -30,13 +30,13 @@ class Stair extends Transparent{
 		parent::__construct($id, $meta, $name);
 		if(($this->meta & 0x04) === 0x04){
 			$this->isFullBlock = true;
-		} else{
+		}else{
 			$this->isFullBlock = false;
 		}
 		$this->hardness = 30;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$faces = array(
 			0 => 0,
 			1 => 2,
@@ -52,12 +52,12 @@ class Stair extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array($this->id, 0, 1),
 			);
-		} else{
+		}else{
 			return array();
 		}
 	}

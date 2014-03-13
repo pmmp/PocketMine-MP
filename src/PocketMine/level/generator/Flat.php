@@ -21,6 +21,7 @@
 
 namespace PocketMine\Level\Generator;
 
+use PocketMine;
 use PocketMine\Block\CoalOre;
 use PocketMine\Block\DiamondOre;
 use PocketMine\Block\Dirt;
@@ -29,12 +30,11 @@ use PocketMine\Block\Gravel;
 use PocketMine\Block\IronOre;
 use PocketMine\Block\LapisOre;
 use PocketMine\Block\RedstoneOre;
-use PocketMine\BlockAPI;
+use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Populator\Ore;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Flat extends Generator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
@@ -87,7 +87,7 @@ class Flat extends Generator{
 		$this->structure = array();
 		$this->chunks = array();
 		foreach($matches[3] as $i => $b){
-			$b = BlockAPI::fromString($b);
+			$b = Item::fromString($b);
 			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$this->structure[$cY] = $b;

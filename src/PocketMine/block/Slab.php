@@ -40,37 +40,37 @@ class Slab extends Transparent{
 		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 		if(($this->meta & 0x08) === 0x08){
 			$this->isFullBlock = true;
-		} else{
+		}else{
 			$this->isFullBlock = false;
 		}
 		$this->hardness = 30;
 	}
 
-	public function place(Item $item, PocketMine\Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$this->meta &= 0x07;
 		if($face === 0){
 			if($target->getID() === self::SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
 				$this->level->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
-			} elseif($block->getID() === self::SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+			}elseif($block->getID() === self::SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 				$this->level->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
-			} else{
+			}else{
 				$this->meta |= 0x08;
 			}
-		} elseif($face === 1){
+		}elseif($face === 1){
 			if($target->getID() === self::SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
 				$this->level->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
-			} elseif($block->getID() === self::SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+			}elseif($block->getID() === self::SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 				$this->level->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}
-		} elseif(!$player->inBlock($block)){
+		}elseif(!($player instanceof PocketMine\Player) or !$player->inBlock($block)){
 			if($block->getID() === self::SLAB){
 				if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 					$this->level->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
@@ -79,12 +79,12 @@ class Slab extends Transparent{
 				}
 
 				return false;
-			} else{
+			}else{
 				if($fy > 0.5){
 					$this->meta |= 0x08;
 				}
 			}
-		} else{
+		}else{
 			return false;
 		}
 		if($block->getID() === self::SLAB and ($target->getMetadata() & 0x07) !== ($this->meta & 0x07)){
@@ -95,10 +95,8 @@ class Slab extends Transparent{
 		return true;
 	}
 
-	public function getBreakTime(Item $item, PocketMine\Player $player){
-		if(($player->gamemode & 0x01) === 0x01){
-			return 0.20;
-		}
+	public function getBreakTime(Item $item){
+
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.4;
@@ -115,12 +113,12 @@ class Slab extends Transparent{
 		}
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
 			return array(
 				array($this->id, $this->meta & 0x07, 1),
 			);
-		} else{
+		}else{
 			return array();
 		}
 	}

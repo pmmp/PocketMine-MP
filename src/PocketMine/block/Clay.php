@@ -30,7 +30,7 @@ class Clay extends Solid{
 		$this->hardness = 3;
 	}
 
-	public function getDrops(Item $item, PocketMine\Player $player){
+	public function getDrops(Item $item){
 		return array(
 			array(Item::CLAY, 0, 4),
 		);

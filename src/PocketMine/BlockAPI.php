@@ -25,11 +25,6 @@ use PocketMine\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Int;
-use PocketMine\NBT\Tag\String;
-use PocketMine\Network\Protocol\UpdateBlockPacket;
-use PocketMine\Tile\Sign;
 
 class BlockAPI{
 	private $server;
@@ -249,7 +244,7 @@ class BlockAPI{
 					break;
 				}
 				$player = Player::get($params[0]);
-				$item = BlockAPI::fromString($params[1]);
+				$item = Item::fromString($params[1]);
 
 				if(!isset($params[2])){
 					$item->setCount($item->getMaxStackSize());
@@ -266,7 +261,7 @@ class BlockAPI{
 						$output .= "You cannot give an air block to a player.\n";
 						break;
 					}
-					$player->addItem($item);
+					$player->addItem(clone $item);
 					$output .= "Giving " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $player->getUsername() . "\n";
 				} else{
 					$output .= "Unknown player.\n";
@@ -276,169 +271,6 @@ class BlockAPI{
 		}
 
 		return $output;
-	}
-
-	private function cancelAction(Block\Block $block, Player $player, $send = true){
-		$pk = new UpdateBlockPacket;
-		$pk->x = $block->x;
-		$pk->y = $block->y;
-		$pk->z = $block->z;
-		$pk->block = $block->getID();
-		$pk->meta = $block->getMetadata();
-		$player->dataPacket($pk);
-		if($send === true){
-			$player->sendInventorySlot($player->slot);
-		}
-
-		return false;
-	}
-
-	public function playerBlockBreak(Player $player, Math\Vector3 $vector){
-
-		$target = $player->level->getBlock($vector);
-		$item = $player->getSlot($player->slot);
-
-		if($this->server->api->dhandle("player.block.touch", array("type" => "break", "player" => $player, "target" => $target, "item" => $item)) === false){
-			if($this->server->api->dhandle("player.block.break.bypass", array("player" => $player, "target" => $target, "item" => $item)) !== true){
-				return $this->cancelAction($target, $player, false);
-			}
-		}
-
-		if((!$target->isBreakable($item, $player) and $this->server->api->dhandle("player.block.break.invalid", array("player" => $player, "target" => $target, "item" => $item)) !== true) or ($player->gamemode & 0x02) === 0x02 or (($player->lastBreak - $player->getLag() / 1000) + $target->getBreakTime($item, $player) - 0.2) >= microtime(true)){
-			if($this->server->api->dhandle("player.block.break.bypass", array("player" => $player, "target" => $target, "item" => $item)) !== true){
-				return $this->cancelAction($target, $player, false);
-			}
-		}
-		$player->lastBreak = microtime(true);
-
-		if($this->server->api->dhandle("player.block.break", array("player" => $player, "target" => $target, "item" => $item)) !== false){
-			$drops = $target->getDrops($item, $player);
-			if($target->onBreak($item, $player) === false){
-				return $this->cancelAction($target, $player, false);
-			}
-			if(($player->gamemode & 0x01) === 0 and $item->useOn($target) and $item->getMetadata() >= $item->getMaxDurability()){
-				$player->setSlot($player->slot, new Item(Item::AIR, 0, 0));
-			}
-		} else{
-			return $this->cancelAction($target, $player, false);
-		}
-
-
-		if(($player->gamemode & 0x01) === 0x00 and count($drops) > 0){
-			foreach($drops as $drop){
-				echo "I dropped something\n";
-				//$this->server->api->entity->drop(new Position($target->x + 0.5, $target->y, $target->z + 0.5, $target->level), Item::get($drop[0] & 0xFFFF, $drop[1] & 0xFFFF, $drop[2]));
-			}
-		}
-
-		return false;
-	}
-
-	public function playerBlockAction(Player $player, Math\Vector3 $vector, $face, $fx, $fy, $fz){
-		if($face < 0 or $face > 5){
-			return false;
-		}
-
-		$target = $player->level->getBlock($vector);
-		$block = $target->getSide($face);
-		if(($player->getGamemode() & 0x01) === 0){
-			$item = $player->getSlot($player->slot);
-		} else{
-			$item = Item::get(BlockAPI::$creative[$player->slot][0], BlockAPI::$creative[$player->slot][1], 1);
-		}
-
-		if($target->getID() === Item::AIR and $this->server->api->dhandle("player.block.place.invalid", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){ //If no block exists or not allowed in CREATIVE
-			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
-				$this->cancelAction($target, $player);
-
-				return $this->cancelAction($block, $player);
-			}
-		}
-
-		if($this->server->api->dhandle("player.block.touch", array("type" => "place", "player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
-			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
-				return $this->cancelAction($block, $player);
-			}
-		}
-		$this->blockUpdate($target, Level::BLOCK_UPDATE_TOUCH);
-
-		if($target->isActivable === true){
-			if($this->server->api->dhandle("player.block.activate", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== false and $target->onActivate($item, $player) === true){
-				return false;
-			}
-		}
-
-		if(($player->gamemode & 0x02) === 0x02){ //Adventure mode!!
-			if($this->server->api->dhandle("player.block.place.bypass", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) !== true){
-				return $this->cancelAction($block, $player, false);
-			}
-		}
-
-		if($block->y > 127 or $block->y < 0){
-			return false;
-		}
-
-		if($item->isActivable === true and $item->onActivate($player->level, $player, $block, $target, $face, $fx, $fy, $fz) === true){
-			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, Item::get(Item::AIR, 0, 0));
-			}
-
-			return false;
-		}
-
-		if($item->isPlaceable()){
-			$hand = $item->getBlock();
-			$hand->position($block);
-		} elseif($block->getID() === Item::FIRE){
-			$player->level->setBlock($block, new Block\Air(), true, false, true);
-
-			return false;
-		} else{
-			return $this->cancelAction($block, $player, false);
-		}
-
-		if(!($block->isReplaceable === true or ($hand->getID() === Item::SLAB and $block->getID() === Item::SLAB))){
-			return $this->cancelAction($block, $player, false);
-		}
-
-		if($target->isReplaceable === true){
-			$block = $target;
-			$hand->position($block);
-			//$face = -1;
-		}
-
-		//Implement using Bounding Boxes
-		/*if($hand->isSolid === true and $player->inBlock($block)){
-			return $this->cancelAction($block, $player, false); //Entity in block
-		}*/
-
-		if($this->server->api->dhandle("player.block.place", array("player" => $player, "block" => $block, "target" => $target, "item" => $item)) === false){
-			return $this->cancelAction($block, $player);
-		} elseif($hand->place($item, $player, $block, $target, $face, $fx, $fy, $fz) === false){
-			return $this->cancelAction($block, $player, false);
-		}
-		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
-			new Sign($player->level, new Compound(false, array(
-				new String("id", Tile\Tile::SIGN),
-				new Int("x", $block->x),
-				new Int("y", $block->y),
-				new Int("z", $block->z),
-				new String("Text1", ""),
-				new String("Text2", ""),
-				new String("Text3", ""),
-				new String("Text4", ""),
-				new String("creator", $player->getUsername())
-			)));
-		}
-
-		if(($player->getGamemode() & 0x01) === 0){
-			$item->setCount($item->getCount() - 1);
-			if($item->getCount() <= 0){
-				$player->setSlot($player->slot, Item::get(Item::AIR, 0, 0));
-			}
-		}
-
-		return false;
 	}
 
 	public function blockUpdateAround(Position $pos, $type = Level::BLOCK_UPDATE_NORMAL, $delay = false){
