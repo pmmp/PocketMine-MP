@@ -600,8 +600,6 @@ class Player extends RealHuman{
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
 			$this->loggedIn = false;
-			$this->buffer = null;
-			unset($this->buffer);
 			$this->recoveryQueue = array();
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
@@ -623,6 +621,8 @@ class Player extends RealHuman{
 			$this->craftingItems = array();
 			$this->received = array();
 			parent::close();
+			$this->buffer = null;
+			unset($this->buffer);
 		}
 	}
 
