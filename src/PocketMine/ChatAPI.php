@@ -22,6 +22,10 @@
 namespace PocketMine;
 
 class ChatAPI{
+
+	/**
+	 * @var Server
+	 */
 	private $server;
 
 	function __construct(){

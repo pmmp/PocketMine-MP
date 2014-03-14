@@ -818,26 +818,65 @@ class Level{
 		return true;
 	}
 
+	/**
+	 * Gets the biome ID of a column
+	 *
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int
+	 */
 	public function getBiome($x, $z){
 		return $this->level->getBiome((int) $x, (int) $z);
 	}
 
+	/**
+	 * Sets the biome ID for a column
+	 *
+	 * @param int $x
+	 * @param int $z
+	 * @param int $biome
+	 *
+	 * @return int
+	 */
 	public function setBiome($x, $z, $biome){
 		return $this->level->getBiome((int) $x, (int) $z, $biome);
 	}
 
+	/**
+	 * Gets the list of all the entitites in this level
+	 *
+	 * @return Entity[]
+	 */
 	public function getEntities(){
 		return $this->entities;
 	}
 
+	/**
+	 * Returns a list of the Tile entities in this level
+	 *
+	 * @return Tile[]
+	 */
 	public function getTiles(){
 		return $this->tiles;
 	}
 
+	/**
+	 * Returns a list of the players in this level
+	 *
+	 * @return Player[]
+	 */
 	public function getPlayers(){
 		return $this->players;
 	}
 
+	/**
+	 * Returns the Tile in a position, or false if not found
+	 *
+	 * @param Vector3 $pos
+	 *
+	 * @return bool|Tile
+	 */
 	public function getTile(Vector3 $pos){
 		if($pos instanceof Position and $pos->level !== $this){
 			return false;
@@ -854,10 +893,29 @@ class Level{
 		return false;
 	}
 
+	/**
+	 * Gets a raw minichunk
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 * @param int $Y
+	 *
+	 * @return string
+	 */
 	public function getMiniChunk($X, $Z, $Y){
 		return $this->level->getMiniChunk($X, $Z, $Y);
 	}
 
+	/**
+	 * Sets a raw minichunk
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 * @param int $Y
+	 * @param string $data (must be 4096 bytes)
+	 *
+	 * @return bool
+	 */
 	public function setMiniChunk($X, $Z, $Y, $data){
 		$this->changedCount[$X . ":" . $Y . ":" . $Z] = 4096;
 		if(ADVANCED_CACHE == true){
@@ -867,6 +925,14 @@ class Level{
 		return $this->level->setMiniChunk($X, $Z, $Y, $data);
 	}
 
+	/**
+	 * Returns a list of the entities on a given chunk
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return array
+	 */
 	public function getChunkEntities($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
@@ -876,6 +942,14 @@ class Level{
 		return array();
 	}
 
+	/**
+	 * Gives a list of the Tile entities on a given chunk
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return array
+	 */
 	public function getChunkTiles($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index]) or $this->loadChunk($X, $Z) === true){
@@ -885,7 +959,14 @@ class Level{
 		return array();
 	}
 
-
+	/**
+	 * Loads a chunk
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function loadChunk($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index])){
@@ -927,6 +1008,15 @@ class Level{
 		return false;
 	}
 
+	/**
+	 * Unloads a chunk
+	 *
+	 * @param int     $X
+	 * @param int     $Z
+	 * @param bool $force
+	 *
+	 * @return bool
+	 */
 	public function unloadChunk($X, $Z, $force = false){
 		if(!isset($this->level)){
 			return false;
@@ -944,6 +1034,14 @@ class Level{
 		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
 	}
 
+	/**
+	 * Returns true if the spawn is part of the spawn
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function isSpawnChunk($X, $Z){
 		$spawnX = $this->level->getData("spawnX") >> 4;
 		$spawnZ = $this->level->getData("spawnZ") >> 4;
@@ -951,6 +1049,15 @@ class Level{
 		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}
 
+	/**
+	 * Gets a full chunk or parts of it for networking usage, allows cache usage
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 * @param int $Yndex bitmap of chunks to be returned
+	 *
+	 * @return bool|mixed|string
+	 */
 	public function getOrderedChunk($X, $Z, $Yndex){
 		if(!isset($this->level)){
 			return false;
@@ -985,6 +1092,15 @@ class Level{
 		return $ordered;
 	}
 
+	/**
+	 * Returns the network minichunk for a given Y
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 * @param int $Y
+	 *
+	 * @return bool|string
+	 */
 	public function getOrderedMiniChunk($X, $Z, $Y){
 		if(!isset($this->level)){
 			return false;
@@ -999,6 +1115,11 @@ class Level{
 		return $ordered;
 	}
 
+	/**
+	 * Returns the raw spawnpoint
+	 *
+	 * @return Position
+	 */
 	public function getSpawn(){
 		return new Position($this->level->getData("spawnX"), $this->level->getData("spawnY"), $this->level->getData("spawnZ"), $this);
 	}
@@ -1042,42 +1163,80 @@ class Level{
 		return false;
 	}
 
+	/**
+	 * Sets the spawnpoint
+	 *
+	 * @param Vector3 $pos
+	 */
 	public function setSpawn(Vector3 $pos){
 		$this->level->setData("spawnX", $pos->x);
 		$this->level->setData("spawnY", $pos->y);
 		$this->level->setData("spawnZ", $pos->z);
 	}
 
+	/**
+	 * Gets the current time
+	 *
+	 * @return int
+	 */
 	public function getTime(){
-		return (int) ($this->time);
+		return (int) $this->time;
 	}
 
+	/**
+	 * Returns the Level name
+	 *
+	 * @return string
+	 */
 	public function getName(){
 		return $this->name; //return $this->level->getData("name");
 	}
 
+	/**
+	 * Sets the current time on the level
+	 *
+	 * @param int $time
+	 */
 	public function setTime($time){
 		$this->startTime = $this->time = (int) $time;
 		$this->startCheck = microtime(true);
 		$this->checkTime();
 	}
 
+	/**
+	 * Stops the time for the level, will not save the lock state to disk
+	 */
 	public function stopTime(){
 		$this->stopTime = true;
 		$this->startCheck = 0;
 		$this->checkTime();
 	}
 
+	/**
+	 * Start the time again, if it was stopped
+	 */
 	public function startTime(){
 		$this->stopTime = false;
 		$this->startCheck = microtime(true);
 		$this->checkTime();
 	}
 
+	/**
+	 * Gets the level seed
+	 *
+	 * @return int
+	 */
 	public function getSeed(){
 		return (int) $this->level->getData("seed");
 	}
 
+	/**
+	 * Sets the seed for the level
+	 *
+	 * @param int $seed
+	 *
+	 * @return bool
+	 */
 	public function setSeed($seed){
 		if(!isset($this->level)){
 			return false;

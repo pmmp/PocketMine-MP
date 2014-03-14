@@ -21,7 +21,13 @@
 
 namespace PocketMine;
 
+/**
+ * Handles the achievement list and a bit more
+ */
 abstract class Achievement{
+	/**
+	 * @var array[]
+	 */
 	public static $list = array(
 		/*"openInventory" => array(
 			"name" => "Taking Inventory",

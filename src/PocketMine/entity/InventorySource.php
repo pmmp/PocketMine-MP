@@ -31,6 +31,8 @@ interface InventorySource{
 	public function canAddItem(Item $item);
 
 	/**
+	 * @param Item $item
+	 *
 	 * @return boolean hasBeenAdded
 	 */
 	public function addItem(Item $item);
@@ -38,6 +40,9 @@ interface InventorySource{
 	public function canRemoveItem(Item $item, $checkDamage = true);
 
 	/**
+	 * @param Item $item
+	 * @param boolean $checkDamage
+	 *
 	 * @return boolean hasBeenRemoved
 	 */
 	public function removeItem(Item $item, $checkDamage = true);

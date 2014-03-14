@@ -23,6 +23,9 @@ namespace PocketMine\Event;
 
 use PocketMine;
 
+/**
+ * List of event prioritoes
+ */
 abstract class EventPriority{
 	/**
 	 * Event call is of very low importance and should be ran first, to allow

@@ -23,6 +23,9 @@ namespace PocketMine\Event;
 
 use PocketMine;
 
+/**
+ * Triggers events and its handlers in the correct order, attaching and removing from them
+ */
 abstract class EventHandler{
 
 	public static function callEvent(Event $event){

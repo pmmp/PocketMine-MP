@@ -23,6 +23,9 @@ namespace PocketMine\Block;
 
 use PocketMine;
 
+/**
+ * Air block
+ */
 class Air extends Transparent{
 	public function __construct(){
 		parent::__construct(self::AIR, 0, "Air");
