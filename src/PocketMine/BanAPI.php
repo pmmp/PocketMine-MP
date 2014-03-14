@@ -166,7 +166,7 @@ class BanAPI{
 				$this->ops->set(strtolower($player->getUsername()));
 				$this->ops->save();
 				$output .= $player->getUsername() . " is now op\n";
-				$this->server->api->chat->sendTo(false, "You are now op.", $player->getUsername());
+				$player->sendChat("You are now op.");
 				break;
 			case "deop":
 				$user = strtolower($params[0]);
@@ -180,7 +180,7 @@ class BanAPI{
 				$this->ops->remove(strtolower($player->getUsername()));
 				$this->ops->save();
 				$output .= $player->getUsername() . " is no longer op\n";
-				$this->server->api->chat->sendTo(false, "You are no longer op.", $player->getUsername());
+				$player->sendChat("You are no longer op.");
 				break;
 			case "kick":
 				if(!isset($params[0])){
@@ -197,9 +197,9 @@ class BanAPI{
 						$this->server->schedule(60, array($player, "close"), "You have been kicked: " . $reason); //Forces a kick
 						$player->blocked = true;
 						if($issuer instanceof Player){
-							$this->server->api->chat->broadcast($player->getUsername() . " has been kicked by " . $issuer->getUsername() . ": $reason\n");
+							Player::broadcastChat($player->getUsername() . " has been kicked by " . $issuer->getUsername() . ": $reason\n");
 						} else{
-							$this->server->api->chat->broadcast($player->getUsername() . " has been kicked: $reason\n");
+							Player::broadcastChat($player->getUsername() . " has been kicked: $reason\n");
 						}
 					}
 				}
@@ -258,7 +258,7 @@ class BanAPI{
 						$player = Player::get($ip);
 						if($player instanceof Player){
 							$ip = $player->getIP();
-							$player->close("banned");
+							$player->kick("You are banned");
 						}
 						$this->bannedIPs->set($ip);
 						$this->bannedIPs->save();
@@ -292,12 +292,12 @@ class BanAPI{
 						$this->banned->save();
 						$player = Player::get($user);
 						if($player !== false){
-							$player->close("You have been banned");
+							$player->kick("You are banned");
 						}
 						if($issuer instanceof Player){
-							$this->server->api->chat->broadcast($user . " has been banned by " . $issuer->getUsername() . "\n");
+							Player::broadcastChat($user . " has been banned by " . $issuer->getUsername() . "\n");
 						} else{
-							$this->server->api->chat->broadcast($user . " has been banned\n");
+							Player::broadcastChat($user . " has been banned\n");
 						}
 						$this->kick($user, "Banned");
 						$output .= "Player \"$user\" added to ban list\n";

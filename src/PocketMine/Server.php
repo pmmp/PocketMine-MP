@@ -195,7 +195,7 @@ class Server{
 			}
 			if(($this->api instanceof ServerAPI) === true){
 				if(($this->api->chat instanceof ChatAPI) === true){
-					$this->api->chat->broadcast("Stopping server...");
+					Player::broadcastChat("Stopping server...");
 				}
 			}
 			$this->stop = true;

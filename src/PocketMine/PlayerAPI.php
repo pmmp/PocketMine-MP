@@ -116,7 +116,7 @@ class PlayerAPI{
 							break;
 					}
 				}
-				$this->server->api->chat->broadcast($data["player"]->getUsername() . $message);
+				Player::broadcastChat($data["player"]->getUsername() . $message);
 
 				return true;
 		}

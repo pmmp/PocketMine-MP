@@ -168,6 +168,9 @@ class Player extends RealHuman{
 		}
 	}
 
+	/**
+	 * @return Player[]
+	 */
 	public static function getAll(){
 		return Player::$list;
 	}
@@ -271,13 +274,10 @@ class Player extends RealHuman{
 			$nbt->readCompressed(file_get_contents(\PocketMine\DATA . "players/" . $iname . ".dat"));
 			$nbt = $nbt->getData();
 		}
-
-		$server->handle("player.offline.get", $nbt);
 		return $nbt;
 	}
 
 	public static function saveOffline($name, Compound $nbtTag){
-		ServerAPI::request()->handle("player.offline.save", $nbtTag);
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($nbtTag);
 		file_put_contents(\PocketMine\DATA . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
@@ -580,20 +580,35 @@ class Player extends RealHuman{
 	}
 
 	/**
-	 * @param string  $reason Reason for closing connection
-	 * @param boolean $msg    Set to false to silently disconnect player. No broadcast.
+	 * Kicks a player from the server
+	 *
+	 * @param string $reason
+	 *
+	 * @return bool
 	 */
-	public function close($reason = "", $msg = true){
+	public function kick($reason = ""){
+		if(EventHandler::callEvent($ev = new Event\Player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : ""))) !== Event\Event::DENY){
+			$this->sendChat("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
+			$this->close($ev->getQuitMessage(), $reason);
+
+			return true;
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * @param string $message Message to be broadcasted
+	 * @param string $reason  Reason showed in console
+	 */
+	public function close($message = "", $reason = "generic reason"){
 		if($this->connected === true){
-			foreach($this->evid as $ev){
-				$this->server->deleteEvent($ev);
-			}
 			if($this->username != ""){
-				$this->server->api->handle("player.quit", $this);
+				EventHandler::callEvent($ev = new Event\Player\PlayerQuitEvent($this, $message));
 				$this->save();
 			}
-			$reason = $reason == "" ? "server stop" : $reason;
-			$this->sendChat("You have been kicked. Reason: " . $reason . "\n");
+
 			$this->sendBuffer();
 			$this->directDataPacket(new DisconnectPacket);
 			unset(Player::$list[$this->CID]);
@@ -607,8 +622,8 @@ class Player extends RealHuman{
 			if($this->username != "" and ($this->namedtag instanceof Compound)){
 				Player::saveOffline($this->username, $this->namedtag);
 			}
-			if($msg === true and $this->username != "" and $this->spawned !== false){
-				$this->server->api->chat->broadcast($this->username . " left the game");
+			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
+				Player::broadcastChat($ev->getQuitMessage());
 			}
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
@@ -796,26 +811,33 @@ class Player extends RealHuman{
 					$this->dataPacket($pk);
 				}
 				break;
-			case "server.chat":
-				if(($data instanceof Container) === true){
-					if(!$data->check($this->username) and !$data->check($this->iusername)){
-						return;
-					} else{
-						$message = $data->get();
-						$this->sendChat($message["message"], $message["player"]);
-					}
-				} else{
-					$this->sendChat((string) $data);
-				}
-				break;
+		}
+	}
+
+	public static function broadcastChat($message){
+		foreach(self::getAll() as $p){
+			$p->sendChat($message);
 		}
 	}
 
 	/**
-	 * @param string $message
-	 * @param string $author
+	 * Sends a message to a group of players
+	 *
+	 * @param   string $message
+	 * @param Player[] $players
 	 */
-	public function sendChat($message, $author = ""){
+	public static function groupChat($message, array $players){
+		foreach($players as $p){
+			$p->sendChat($message);
+		}
+	}
+
+	/**
+	 * Sends a direct chat message to a player
+	 *
+	 * @param string $message
+	 */
+	public function sendChat($message){
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if(preg_match_all('#@([@A-Za-z_]{1,})#', $m, $matches, PREG_OFFSET_CAPTURE) > 0){
@@ -838,7 +860,7 @@ class Player extends RealHuman{
 
 			if($m !== ""){
 				$pk = new MessagePacket;
-				$pk->source = ($author instanceof Player) ? $author->username : $author;
+				$pk->author = ""; //Do not use this ;)
 				$pk->message = TextFormat::clean($m); //Colors not implemented :(
 				$this->dataPacket($pk);
 			}
@@ -1021,7 +1043,7 @@ class Player extends RealHuman{
 			return false;
 		}
 
-		if($this->server->api->dhandle("player.gamemode.change", array("player" => $this, "gamemode" => $gm)) === false){
+		if(EventHandler::callEvent(new Event\Player\PlayerGameModeChangeEvent((int) $gm)) === Event\Event::DENY){
 			return false;
 		}
 
@@ -1092,7 +1114,7 @@ class Player extends RealHuman{
 		}
 		$time = microtime(true);
 		if($time > $this->timeout){
-			$this->close("timeout");
+			$this->close($this->username . " has left the game", "timeout");
 
 			return false;
 		}
@@ -1246,7 +1268,7 @@ class Player extends RealHuman{
 				$this->directDataPacket($pk);
 				break;
 			case ProtocolInfo::DISCONNECT_PACKET:
-				$this->close("client disconnect");
+				$this->close($this->username . " has left the game", "client disconnect");
 				break;
 			case ProtocolInfo::CLIENT_CONNECT_PACKET:
 				if($this->loggedIn === true){
@@ -1271,7 +1293,7 @@ class Player extends RealHuman{
 				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
 				if(count(Player::$list) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
-					$this->close("server is full!", false);
+					$this->kick("server full");
 
 					return;
 				}
@@ -1285,27 +1307,28 @@ class Player extends RealHuman{
 						$pk->status = 2;
 						$this->directDataPacket($pk);
 					}
-					$this->close("Incorrect protocol #" . $packet->protocol1, false);
+					$this->close("", "Incorrect protocol #" . $packet->protocol1, false);
 
 					return;
 				}
 				if(preg_match('#^[a-zA-Z0-9_]{3,16}$#', $this->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console"){
-					$this->close("Bad username", false);
+					$this->close("", "Bad username");
 
 					return;
 				}
-				if($this->server->api->handle("player.connect", $this) === false){
-					$this->close("Unknown reason", false);
+
+				if(EventHandler::callEvent($ev = new Event\Player\PlayerPreLoginEvent($this, "Plugin reason")) === Event\Event::DENY){
+					$this->close($ev->getKickMessage(), "Plugin reason");
 
 					return;
 				}
 
 				if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
-					$this->close("Server is white-listed", false);
+					$this->close($this->username . " has left the game", "Server is white-listed");
 
 					return;
 				} elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
-					$this->close("You are banned!", false);
+					$this->close($this->username . " has left the game", "You are banned");
 
 					return;
 				}
@@ -1315,7 +1338,7 @@ class Player extends RealHuman{
 				if(count($u) > 0){
 					foreach($u as $p){
 						if($p !== $this){
-							$p->close("logged in from another location");
+							$p->close($p->getUsername() . " has left the game", "logged in from another location");
 						}
 					}
 				}
@@ -1335,14 +1358,8 @@ class Player extends RealHuman{
 					$nbt["Pos"][2] = $this->level->getSpawn()->z;
 				}
 
-				if($this->server->api->handle("player.join", $this) === false){
-					$this->close("join cancelled", false);
-
-					return;
-				}
-
 				if(!($nbt instanceof Compound)){
-					$this->close("no config created", false);
+					$this->close($this->username . " has left the game", "invalid data");
 
 					return;
 				}
@@ -1355,10 +1372,6 @@ class Player extends RealHuman{
 				Player::saveOffline($this->username, $nbt);
 				$this->auth = true;
 
-				$pk = new LoginStatusPacket;
-				$pk->status = 0;
-				$this->dataPacket($pk);
-
 				parent::__construct($this->level, $nbt);
 
 				if(($this->gamemode & 0x01) === 0x01){
@@ -1367,6 +1380,16 @@ class Player extends RealHuman{
 				} else{
 					$this->slot = $this->hotbar[0];
 				}
+
+				if(EventHandler::callEvent($ev = new Event\Player\PlayerLoginEvent($this, "Plugin reason")) === Event\Event::DENY){
+					$this->close($ev->getKickMessage(), "Plugin reason");
+
+					return;
+				}
+
+				$pk = new LoginStatusPacket;
+				$pk->status = 0;
+				$this->dataPacket($pk);
 
 				$pk = new StartGamePacket;
 				$pk->seed = $this->level->getSeed();
@@ -1389,7 +1412,6 @@ class Player extends RealHuman{
 					$this->dataPacket($pk);
 				}
 
-				$this->evid[] = $this->server->event("server.chat", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
 				$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
@@ -1399,6 +1421,9 @@ class Player extends RealHuman{
 				$this->lastMeasure = microtime(true);
 				$this->server->schedule(50, array($this, "measureLag"), array(), true);
 				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
+
+				EventHandler::callEvent(new Event\Player\PlayerJoinEvent($this, $this->username . " joined the game"));
+
 				break;
 			case ProtocolInfo::READY_PACKET:
 				if($this->loggedIn === false){
@@ -1950,13 +1975,9 @@ class Player extends RealHuman{
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					} else{
-						$data = array("player" => $this, "message" => $message);
-						if($this->server->api->handle("player.chat", $data) !== false){
-							if(isset($data["message"])){
-								$this->server->api->chat->send($this, $data["message"]);
-							} else{
-								$this->server->api->chat->send($this, $message);
-							}
+						$ev = new Event\Player\PlayerChatEvent($this, $message);
+						if(EventHandler::callEvent($ev) !== Event\Event::DENY){
+							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getUsername(), $ev->getMessage()), $ev->getRecipients());
 						}
 					}
 				}

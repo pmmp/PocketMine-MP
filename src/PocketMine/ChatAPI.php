@@ -55,7 +55,7 @@ class ChatAPI{
 					break;
 				}
 				$sender = ($issuer instanceof Player) ? "Server" : ucfirst($issuer);
-				$this->server->api->chat->broadcast("[$sender] " . $s);
+				Player::broadcastChat("[$sender] " . $s);
 				break;
 			case "me":
 				if(!($issuer instanceof Player)){
@@ -67,7 +67,7 @@ class ChatAPI{
 				} else{
 					$sender = $issuer->getUsername();
 				}
-				$this->broadcast("* $sender " . implode(" ", $params));
+				Player::broadcastChat("* $sender " . implode(" ", $params));
 				break;
 			case "tell":
 				if(!isset($params[0]) or !isset($params[1])){
@@ -77,25 +77,23 @@ class ChatAPI{
 				if(!($issuer instanceof Player)){
 					$sender = ucfirst($issuer);
 				} else{
-					$sender = $issuer->getUsername();
+					$sender = $issuer;
 				}
 				$n = array_shift($params);
 				$target = Player::get($n);
-				if($target instanceof Player){
-					$target = $target->getUsername();
-				} else{
+				if(!($target instanceof Player)){
 					$target = strtolower($n);
 					if($target === "server" or $target === "console" or $target === "rcon"){
 						$target = "Console";
 					}
 				}
 				$mes = implode(" ", $params);
-				$output .= "[me -> " . $target . "] " . $mes . "\n";
-				if($target !== "Console" and $target !== "Rcon"){
-					$this->sendTo(false, "[" . $sender . " -> me] " . $mes, $target);
+				$output .= "[me -> " . ($target instanceof Player ? $target->getUsername() : $target) . "] " . $mes . "\n";
+				if($target instanceof Player){
+					$target->sendChat("[" . ($sender instanceof Player ? $sender->getUsername() : $sender) . " -> me] " . $mes);
 				}
 				if($target === "Console" or $sender === "Console"){
-					console("[INFO] [" . $sender . " -> " . $target . "] " . $mes);
+					console("[INFO] [" . ($sender instanceof Player ? $sender->getUsername() : $sender) . " -> " . ($target instanceof Player ? $target->getUsername() : $target) . "] " . $mes);
 				}
 				break;
 		}
@@ -103,51 +101,4 @@ class ChatAPI{
 		return $output;
 	}
 
-	/**
-	 * @param string $message
-	 */
-	public function broadcast($message){
-		$this->send(false, $message);
-	}
-
-	/**
-	 * @param string $owner
-	 * @param string $text
-	 * @param mixed  $player Can be either Player object or string username. Boolean false for broadcast.
-	 */
-	public function sendTo($owner, $text, $player){
-		$this->send($owner, $text, array($player));
-	}
-
-	/**
-	 * @param mixed  $owner Can be either Player object or string username. Boolean false for broadcast.
-	 * @param string $text
-	 * @param        $whitelist
-	 * @param        $blacklist
-	 */
-	public function send($owner, $text, $whitelist = false, $blacklist = false){
-		$message = array(
-			"player" => $owner,
-			"message" => $text,
-		);
-		if($owner !== false){
-			if($owner instanceof Player){
-				if($whitelist === false){
-					console("[INFO] <" . $owner->getUsername() . "> " . $text);
-				}
-			} else{
-				if($whitelist === false){
-					console("[INFO] <" . $owner . "> " . $text);
-				}
-			}
-		} else{
-			if($whitelist === false){
-				console("[INFO] $text");
-			}
-			$message["player"] = "";
-		}
-
-		//TODO: Remove Container
-		$this->server->handle("server.chat", new Container($message, $whitelist, $blacklist));
-	}
 }

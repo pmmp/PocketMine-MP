@@ -151,7 +151,7 @@ class Level{
 	public static function loadLevel($name){
 		if(self::get($name) !== false){
 			return true;
-		} elseif(self::levelExists($name) === false){
+		}elseif(self::levelExists($name) === false){
 			console("[NOTICE] Level \"" . $name . "\" not found");
 
 			return false;
@@ -291,10 +291,10 @@ class Level{
 
 		if($generator !== false and class_exists($generator)){
 			$generator = new $generator($options);
-		} else{
+		}else{
 			if(strtoupper(ServerAPI::request()->api->getProperty("level-type")) == "FLAT"){
 				$generator = new Flat($options);
-			} else{
+			}else{
 				$generator = new Normal($options);
 			}
 		}
@@ -323,7 +323,7 @@ class Level{
 				if($level->import() === false){
 					return false;
 				}
-			} else{
+			}else{
 				return false;
 			}
 		}
@@ -372,8 +372,8 @@ class Level{
 		$this->save();
 		foreach($this->getPlayers() as $player){
 			if($this === self::getDefault()){
-				$player->close("forced level unload");
-			} else{
+				$player->close($player->getUsername() . " has left the game", "forced level unload");
+			}else{
 				$player->teleport(Level::getDefault()->getSafeSpawn());
 			}
 		}
@@ -418,7 +418,7 @@ class Level{
 		$now = microtime(true);
 		if($this->stopTime == true){
 			return;
-		} else{
+		}else{
 			$time = $this->startTime + ($now - $this->startCheck) * 20;
 		}
 		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
@@ -446,7 +446,7 @@ class Level{
 					}
 					if(count($this->changedBlocks[$index][$Y]) < 582){ //Optimal value, calculated using the relation between minichunks and single packets
 						continue;
-					} else{
+					}else{
 						foreach($this->players as $p){
 							$p->setChunkIndex($index, $mini);
 						}
@@ -608,7 +608,7 @@ class Level{
 				$pk->block = $block->getID();
 				$pk->meta = $block->getMetadata();
 				Player::broadcastPacket($this->players, $pk);
-			} elseif($direct === false){
+			}elseif($direct === false){
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
@@ -653,7 +653,7 @@ class Level{
 				$pk->block = $block->getID();
 				$pk->meta = $block->getMetadata();
 				Player::broadcastPacket($this->players, $pk);
-			} else{
+			}else{
 				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
 					Cache::remove("world:{$this->name}:{$index}");
@@ -890,7 +890,7 @@ class Level{
 		$index = LevelFormat::getIndex($X, $Z);
 		if(isset($this->usedChunks[$index])){
 			return true;
-		} elseif($this->level->loadChunk($X, $Z) !== false){
+		}elseif($this->level->loadChunk($X, $Z) !== false){
 			$this->usedChunks[$index] = array();
 			$this->chunkTiles[$index] = array();
 			$this->chunkEntities[$index] = array();
@@ -1021,7 +1021,7 @@ class Level{
 				$b = $this->getBlock($v->getSide(0));
 				if($b === false){
 					return $spawn;
-				} elseif(!($b instanceof Air)){
+				}elseif(!($b instanceof Air)){
 					break;
 				}
 			}
@@ -1031,7 +1031,7 @@ class Level{
 					if($this->getBlock($v) instanceof Air){
 						return new Position($x, $y, $z, $this);
 					}
-				} else{
+				}else{
 					++$y;
 				}
 			}
