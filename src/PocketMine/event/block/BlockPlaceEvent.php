@@ -66,7 +66,7 @@ class BlockPlaceEvent extends BlockEvent implements CancellableEvent{
 	 * @return mixed
 	 */
 	public function getItem(){
-		return $item;
+		return $this->item;
 	}
 
 	public function getBlockReplaced(){

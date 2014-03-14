@@ -58,7 +58,7 @@ class BlockBreakEvent extends BlockEvent implements CancellableEvent{
 	}
 
 	public function getItem(){
-		return $item;
+		return $this->item;
 	}
 
 	public function getInstaBreak(){

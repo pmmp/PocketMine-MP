@@ -1043,7 +1043,7 @@ class Player extends RealHuman{
 			return false;
 		}
 
-		if(EventHandler::callEvent(new Event\Player\PlayerGameModeChangeEvent((int) $gm)) === Event\Event::DENY){
+		if(EventHandler::callEvent(new Event\Player\PlayerGameModeChangeEvent($this, (int) $gm)) === Event\Event::DENY){
 			return false;
 		}
 

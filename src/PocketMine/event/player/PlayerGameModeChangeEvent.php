@@ -39,7 +39,7 @@ class PlayerGameModeChangeEvent extends PlayerEvent implements CancellableEvent{
 
 	public function __construct(Player $player, $newGamemode){
 		$this->player = $player;
-		$this->gamemode = (int) $gamemode;
+		$this->gamemode = (int) $newGamemode;
 	}
 
 	public function getNewGamemode(){
