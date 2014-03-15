@@ -7,6 +7,7 @@ OPENSSL_VERSION="1.0.0l"
 CURL_VERSION="curl-7_35_0"
 LIBEDIT_VERSION="0.3"
 PTHREADS_VERSION="1.0.1"
+WEAKREF_VERSION="0.2.2"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
 
@@ -443,6 +444,12 @@ download_file "http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz" | tar -zx
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
+#WeakRef
+echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
+download_file "http://pecl.php.net/get/Weakref-$PTHREADS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
+echo " done!"
+
 #PHP YAML
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
 download_file "http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -532,6 +539,7 @@ $HAVE_LIBEDIT \
 --enable-shared=no \
 --enable-static=yes \
 --enable-shmop \
+--enable-weakref \
 --enable-pthreads \
 --enable-maintainer-zts \
 --enable-zend-signals \
