@@ -6,7 +6,7 @@ php:
  - 5.6
   
 before_script:
- - pecl install channel://pecl.php.net/pthreads-0.1.0
+ - pecl install channel://pecl.php.net/pthreads-2.0.2
  - echo | pecl install channel://pecl.php.net/yaml-1.1.1
 
 script:
