@@ -23,7 +23,7 @@ define("ASYNC_CURL_GET", 1);
 define("ASYNC_CURL_POST", 2);
 define("ASYNC_FUNCTION", 3);
 
-class StackableArray extends \Stackable{
+class StackableArray extends \Threaded{
 	public function __construct(){
 		foreach(func_get_args() as $n => $value){
 			if(is_array($value)){
