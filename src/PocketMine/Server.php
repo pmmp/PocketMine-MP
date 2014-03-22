@@ -31,6 +31,7 @@ use PocketMine\Network\Packet;
 use PocketMine\Network\Protocol\Info;
 use PocketMine\Network\RakNet\Info as RakNetInfo;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
+use PocketMine\Plugin\PluginManager;
 use PocketMine\Utils\Utils;
 use PocketMine\Utils\VersionString;
 
@@ -301,12 +302,6 @@ class Server{
 	public function addHandler($event, callable $callable, $priority = 5){
 		if(!is_callable($callable)){
 			return false;
-		} elseif(isset(Deprecation::$events[$event])){
-			$sub = "";
-			if(Deprecation::$events[$event] !== false){
-				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
-			}
-			console("[ERROR] Event \"$event\" has been deprecated.$sub [Adding handle to " . (is_array($callable) ? get_class($callable[0]) . "::" . $callable[1] : $callable) . "]");
 		}
 		$priority = (int) $priority;
 		$hnid = $this->handCnt++;
@@ -346,12 +341,6 @@ class Server{
 					break;
 				}
 			}
-		} elseif(isset(Deprecation::$events[$event])){
-			$sub = "";
-			if(Deprecation::$events[$event] !== false){
-				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
-			}
-			console("[ERROR] Event \"$event\" has been deprecated.$sub [Handler]");
 		}
 
 		if($result !== false){
@@ -460,11 +449,11 @@ class Server{
 			$p["rcon.password"] = "******";
 		}
 		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
-		if($this->api->plugin instanceof PluginAPI){
-			$plist = $this->api->plugin->getList();
+		if(class_exists("PocketMine\\Plugin\\PluginManager", false)){
 			$dump .= "Loaded plugins:\r\n";
-			foreach($plist as $p){
-				$dump .= $p["name"] . " " . $p["version"] . " by " . $p["author"] . "\r\n";
+			foreach(PluginManager::getPlugins() as $p){
+				$d = $p->getDescription();
+				$dump .= $d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . "\r\n";
 			}
 			$dump .= "\r\n\r\n";
 		}
@@ -618,12 +607,6 @@ class Server{
 					$ev($data, $event);
 				}
 			}
-		} elseif(isset(Deprecation::$events[$event])){
-			$sub = "";
-			if(Deprecation::$events[$event] !== false){
-				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
-			}
-			console("[ERROR] Event \"$event\" has been deprecated.$sub [Trigger]");
 		}
 	}
 

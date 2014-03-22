@@ -59,11 +59,12 @@ class QueryHandler{
 	public function regenerateInfo(){
 		$str = "";
 		$plist = "PocketMine-MP " . PocketMine\VERSION;
-		$pl = $this->server->api->plugin->getList();
+		$pl = PocketMine\Plugin\PluginManager::getPlugins();
 		if(count($pl) > 0){
 			$plist .= ":";
 			foreach($pl as $p){
-				$plist .= " " . str_replace(array(";", ":", " "), array("", "", "_"), $p["name"]) . " " . str_replace(array(";", ":", " "), array("", "", "_"), $p["version"]) . ";";
+				$d = $p->getDescription();
+				$plist .= " " . str_replace(array(";", ":", " "), array("", "", "_"), $d->getName()) . " " . str_replace(array(";", ":", " "), array("", "", "_"), $d->getVersion()) . ";";
 			}
 			$plist = substr($plist, 0, -1);
 		}

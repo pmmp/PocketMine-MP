@@ -29,6 +29,8 @@ use PocketMine\Network\Protocol\Info;
 use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\RCON\RCON;
 use PocketMine\Network\UPnP\UPnP;
+use PocketMine\Plugin\PluginManager;
+use PocketMine\PMF\Plugin;
 use PocketMine\Recipes\Crafting;
 use PocketMine\Tile\Tile;
 use PocketMine\Utils\Config;
@@ -220,7 +222,7 @@ class ServerAPI{
 			}
 		}
 
-		$this->apiList[] = $this->plugin = new PluginAPI();
+		console("[INFO] Loaded ".count(PluginManager::loadPlugins(\PocketMine\DATA . "plugins/")). " plugin(s).");
 
 	}
 
@@ -270,8 +272,9 @@ class ServerAPI{
 	public function sendUsage(){
 		console("[DEBUG] Sending usage data...", true, true, 2);
 		$plist = "";
-		foreach($this->plugin->getList() as $p){
-			$plist .= str_replace(array(";", ":"), "", $p["name"]) . ":" . str_replace(array(";", ":"), "", $p["version"]) . ";";
+		foreach(PluginManager::getPlugins() as $p){
+			$d = $p->getDescription();
+			$plist .= str_replace(array(";", ":"), "", $d->getName()) . ":" . str_replace(array(";", ":"), "", $d->getVersion()) . ";";
 		}
 
 		$this->asyncOperation(ASYNC_CURL_POST, array(
