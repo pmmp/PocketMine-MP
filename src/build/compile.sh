@@ -5,15 +5,20 @@ ZEND_VM="GOTO"
 ZLIB_VERSION="1.2.8"
 OPENSSL_VERSION="1.0.0l"
 CURL_VERSION="curl-7_35_0"
-LIBEDIT_VERSION="0.3"
+READLINE_VERSION="6.3"
+NCURSES_VERSION="5.9"
+PHPNCURSES_VERSION="1.0.2"
 PTHREADS_VERSION="2.0.2"
 WEAKREF_VERSION="0.2.2"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
+LIBXML_VERSION="2.9.1"
+BCOMPILER_VERSION="1.0.2"
 
 echo "[PocketMine] PHP compiler for Linux, MacOS and Android"
 DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
+trap "echo \"# \$(eval echo \$BASH_COMMAND)\" >> \"$DIR/install.log\" 2>&1"  DEBUG
 uname -a >> "$DIR/install.log" 2>&1
 echo "[INFO] Checking dependecies"
 type make >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"make\""; read -p "Press [Enter] to continue..."; exit 1; }
@@ -41,16 +46,16 @@ fi
 export CC="gcc"
 COMPILE_FOR_ANDROID=no
 RANLIB=ranlib
-HAVE_MYSQLI="--with-mysqli=mysqlnd"
+HAVE_MYSQLI="--enable-embedded-mysqli --enable-mysqlnd --with-mysqli=mysqlnd"
 COMPILE_TARGET=""
 COMPILE_OPENSSL="no"
 COMPILE_CURL="default"
-COMPILE_LIBEDIT="no"
+COMPILE_FANCY="no"
 IS_CROSSCOMPILE="no"
 IS_WINDOWS="no"
 DO_OPTIMIZE="no"
 DO_STATIC="no"
-while getopts "::t:oj:scxff:" OPTION; do
+while getopts "::t:oj:srcxff:" OPTION; do
 	case $OPTION in
 		t)
 			echo "[opt] Set target to $OPTARG"
@@ -64,9 +69,9 @@ while getopts "::t:oj:scxff:" OPTION; do
 			echo "[opt] Will compile OpenSSL"
 			COMPILE_OPENSSL="yes"
 			;;
-		l)
-			echo "[opt] Will compile libedit"
-			COMPILE_LIBEDIT="yes"
+		r)
+			echo "[opt] Will compile readline and ncurses"
+			COMPILE_FANCY="yes"
 			;;
 		c)
 			echo "[opt] Will force compile cURL"
@@ -190,6 +195,18 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		echo "Please supply a proper platform [android android-armv6 android-armv7 rpi mac ios ios-armv6 ios-armv7 win win32 win64] to cross-compile"
 		exit 1
 	fi
+elif [ "$COMPILE_TARGET" == "linux" ] || [ "$COMPILE_TARGET" == "linux32" ]; then
+	[ -z "$march" ] && march=i686;
+	[ -z "$mtune" ] && mtune=pentium4;
+	CFLAGS="$CFLAGS -m32";
+	OPENSSL_TARGET="linux-generic32"
+	echo "[INFO] Compiling for Linux x86"
+elif [ "$COMPILE_TARGET" == "linux64" ]; then
+	[ -z "$march" ] && march=x86-64;
+	[ -z "$mtune" ] && mtune=nocona;
+	CFLAGS="$CFLAGS -m64"
+	OPENSSL_TARGET="linux-x86_64"
+	echo "[INFO] Compiling for Linux x86_64"
 elif [ "$COMPILE_TARGET" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
@@ -229,13 +246,11 @@ elif [ -z "$CFLAGS" ]; then
 	fi
 fi
 
-cat > test.c <<'CTEST'
-#include <stdio.h>
-int main(void){
-	printf("Hello world\n");
-	return 0;
-}
-CTEST
+echo "#include <stdio.h> \
+int main(void){ \
+	printf("Hello world\n"); \
+	return 0; \
+}" > test.c
 
 
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
@@ -263,7 +278,7 @@ fi
 rm test.* >> "$DIR/install.log" 2>&1
 rm test >> "$DIR/install.log" 2>&1
 
-export CFLAGS="-O2 $CFLAGS"
+export CFLAGS="-O2 -fPIC $CFLAGS"
 export LDFLAGS="$LDFLAGS"
 
 rm -r -f install_data/ >> "$DIR/install.log" 2>&1
@@ -280,37 +295,72 @@ download_file "http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror" | ta
 mv php-$PHP_VERSION php
 echo " done!"
 
-if [ "$IS_CROSSCOMPILE" == "yes" ] || [ "$COMPILE_TARGET" == "rpi" ] || [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_LIBEDIT" != "yes" ]; then
-	HAVE_LIBEDIT="--without-readline --without-libedit"
-else
+if [ "$COMPILE_FANCY" == "yes" ]; then
+	if [ "$DO_STATIC" == "yes" ]; then
+		EXTRA_FLAGS="--without-shared --with-static"
+	else
+		EXTRA_FLAGS="--with-shared --without-static"
+	fi
+	#ncurses
+	echo -n "[ncurses] downloading $NCURSES_VERSION..."
+	download_file "http://ftp.gnu.org/gnu/ncurses/ncurses-$NCURSES_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	mv ncurses-$NCURSES_VERSION ncurses
+	echo -n " checking..."
+	cd ncurses
+	./configure --prefix="$DIR/bin/php5" \
+	--without-ada \
+	--without-manpages \
+	--without-progs \
+	--without-tests \
+	--with-normal \
+	--with-pthread \
+	--without-debug \
+	$EXTRA_FLAGS \
+	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+	echo -n " compiling..."
+	make -j $THREADS >> "$DIR/install.log" 2>&1
+	echo -n " installing..."
+	make install >> "$DIR/install.log" 2>&1
+	echo -n " cleaning..."
+	cd ..
+	rm -r -f ./ncurses
+	echo " done!"
+	HAVE_NCURSES="--with-ncurses=$DIR/bin/php5"
+
 	if [ "$DO_STATIC" == "yes" ]; then
 		EXTRA_FLAGS="--enable-shared=no --enable-static=yes"
 	else
 		EXTRA_FLAGS="--enable-shared=yes --enable-static=no"
 	fi
-	#libedit
+	#readline
 	set +e
-	echo -n "[libedit] downloading $LIBEDIT_VERSION..."
-	download_file "http://download.sourceforge.net/project/libedit/libedit/libedit-$LIBEDIT_VERSION/libedit-$LIBEDIT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	echo -n "[readline] downloading $READLINE_VERSION..."
+	download_file "http://ftp.gnu.org/gnu/readline/readline-$READLINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	mv readline-$READLINE_VERSION readline
 	echo -n " checking..."
-	cd libedit
+	cd readline
 	./configure --prefix="$DIR/bin/php5" \
+	--with-curses="$DIR/bin/php5" \
+	--enable-multibyte \
 	$EXTRA_FLAGS \
 	$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 	echo -n " compiling..."
 	if make -j $THREADS >> "$DIR/install.log" 2>&1; then
 		echo -n " installing..."
 		make install >> "$DIR/install.log" 2>&1
-		HAVE_LIBEDIT="--without-readline --with-libedit=\"$DIR/bin/php5\""
+		HAVE_READLINE="--with-readline=$DIR/bin/php5"
 	else
 		echo -n " disabling..."
-		HAVE_LIBEDIT="--without-readline --without-libedit"
+		HAVE_READLINE="--without-readline"
 	fi
 	echo -n " cleaning..."
 	cd ..
-	rm -r -f ./libedit
+	rm -r -f ./readline
 	echo " done!"
 	set -e
+else
+	HAVE_NCURSES="--without-ncurses"
+	HAVE_READLINE="--without-readline"
 fi
 
 
@@ -335,6 +385,9 @@ make install >> "$DIR/install.log" 2>&1
 echo -n " cleaning..."
 cd ..
 rm -r -f ./zlib
+	if [ "$DO_STATIC" != "yes" ]; then
+		rm -f "$DIR/bin/php5/lib/libz.a"
+	fi
 echo " done!"
 
 if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
@@ -376,6 +429,9 @@ if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROS
 	echo -n " cleaning..."
 	cd ..
 	rm -r -f ./openssh
+	if [ "$DO_STATIC" != "yes" ]; then
+		rm -f "$DIR/bin/php5/lib/libcrypto.a" "$DIR/bin/php5/lib/libssl.a"
+	fi
 	echo " done!"
 else
 	WITH_SSL="--with-ssl"
@@ -438,6 +494,8 @@ else
 	HAVE_CURL="$DIR/bin/php5"
 fi
 
+# PECL libraries
+
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
 download_file "http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -446,7 +504,7 @@ echo " done!"
 
 #WeakRef
 echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
-download_file "http://pecl.php.net/get/Weakref-$PTHREADS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
 echo " done!"
 
@@ -454,6 +512,18 @@ echo " done!"
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
 download_file "http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
+echo " done!"
+
+#bcompiler
+echo -n "[bcompiler] downloading $BCOMPILER_VERSION..."
+download_file "http://pecl.php.net/get/bcompiler-$BCOMPILER_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv bcompiler-$BCOMPILER_VERSION "$DIR/install_data/php/ext/bcompiler"
+echo " done!"
+
+#PHP ncurses
+echo -n "[PHP ncurses] downloading $PHPNCURSES_VERSION..."
+download_file "http://pecl.php.net/get/ncurses-$PHPNCURSES_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv ncurses-$PHPNCURSES_VERSION "$DIR/install_data/php/ext/ncurses"
 echo " done!"
 
 
@@ -482,6 +552,33 @@ cd ..
 rm -r -f ./yaml
 echo " done!"
 
+if [ "$DO_STATIC" == "yes" ]; then
+	EXTRA_FLAGS="--enable-shared=no --enable-static=yes"
+else
+	EXTRA_FLAGS="--enable-shared=yes --enable-static=no"
+fi
+
+#libxml2
+#echo -n "[libxml2] downloading $LIBXML_VERSION..."
+#download_file "ftp://xmlsoft.org/libxml2/libxml2-$LIBXML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+#mv libxml2-$LIBXML_VERSION yaml
+#echo -n " checking..."
+#cd libxml2
+#RANLIB=$RANLIB ./configure \
+#--disable-ipv6 \
+#--with-libz="$DIR/bin/php5" \
+#--prefix="$DIR/bin/php5" \
+#$EXTRA_FLAGS \
+#$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+#echo -n " compiling..."
+#make -j $THREADS >> "$DIR/install.log" 2>&1
+#echo -n " installing..."
+#make install >> "$DIR/install.log" 2>&1
+#echo -n " cleaning..."
+#cd ..
+#rm -r -f ./libxml2
+#echo " done!"
+
 echo -n "[PHP]"
 
 if [ "$DO_OPTIMIZE" != "no" ]; then
@@ -492,7 +589,7 @@ else
 fi
 echo -n " checking..."
 cd php
-rm -rf ./aclocal.m4 >> "$DIR/install.log" 2>&1
+rm -f ./aclocal.m4 >> "$DIR/install.log" 2>&1
 rm -rf ./autom4te.cache/ >> "$DIR/install.log" 2>&1
 rm -f ./configure >> "$DIR/install.log" 2>&1
 ./buildconf --force >> "$DIR/install.log" 2>&1
@@ -514,12 +611,20 @@ else
 	sed 's:@PREFIX@:$DIR/bin/php5:' ./main/config.w32.h.in > ./wmain/config.w32.h 2>> "$DIR/install.log"
 fi
 
-RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION--prefix="$DIR/bin/php5" \
+RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
 --with-zlib="$DIR/bin/php5" \
+--with-zlib-dir="$DIR/bin/php5" \
 --with-yaml="$DIR/bin/php5" \
-$HAVE_LIBEDIT \
+$HAVE_NCURSES \
+$HAVE_READLINE \
+--enable-bcompiler \
+--enable-mbstring \
+--enable-calendar \
+--enable-weakref \
+--enable-pthreads \
+--enable-pthreads-pedantic \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
@@ -539,16 +644,15 @@ $HAVE_LIBEDIT \
 --enable-shared=no \
 --enable-static=yes \
 --enable-shmop \
---enable-weakref \
---enable-pthreads \
 --enable-maintainer-zts \
+--disable-short-tags \
 --enable-zend-signals \
 $HAVE_PCNTL \
 $HAVE_MYSQLI \
---enable-embedded-mysqli \
 --enable-bcmath \
 --enable-cli \
 --enable-zip \
+--enable-ftp \
 --with-zend-vm=$ZEND_VM \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
@@ -566,6 +670,12 @@ if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	install_name_tool -delete_rpath "$DIR/bin/php5/lib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libz.1.dylib" "@loader_path/../lib/libz.1.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libyaml-0.2.dylib" "@loader_path/../lib/libyaml-0.2.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libreadline.$READLINE_VERSION.dylib" "@loader_path/../lib/libreadline.$READLINE_VERSION.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libhistory.$READLINE_VERSION.dylib" "@loader_path/../lib/libhistory.$READLINE_VERSION.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libform.6.0.dylib" "@loader_path/../lib/libform.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libmenu.6.0.dylib" "@loader_path/../lib/libmenu.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libncurses.6.0.dylib" "@loader_path/../lib/libncurses.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libpanel.6.0.dylib" "@loader_path/../lib/libpanel.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libssl.1.0.0.dylib" "@loader_path/../lib/libssl.1.0.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libcrypto.1.0.0.dylib" "@loader_path/../lib/libcrypto.1.0.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	chmod 0777 "$DIR/bin/php5/lib/libssl.1.0.0.dylib" >> "$DIR/install.log" 2>&1
@@ -607,7 +717,6 @@ rm -f bin/php5/bin/c_rehash* >> "$DIR/install.log" 2>&1
 rm -f bin/php5/bin/openssl* >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/man >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/php >> "$DIR/install.log" 2>&1
-rm -r -f bin/php5/share >> "$DIR/install.log" 2>&1
 rm -r -f bin/php5/misc >> "$DIR/install.log" 2>&1
 date >> "$DIR/install.log" 2>&1
 echo " done!"
