@@ -578,10 +578,10 @@ const CREATIVE_SLOTS = 112;
 					}
 					switch($data["entity"]->type){
 						case Item::WOOD:
-							$this->grantAchievement("mineWood");
+							$this->awardAchievement("mineWood");
 							break;
 						case Item::DIAMOND:
-							$this->grantAchievement("diamond");
+							$this->awardAchievement("diamond");
 							break;
 					}
 				} elseif($data["entity"]->level === $this->level){
@@ -629,7 +629,7 @@ const CREATIVE_SLOTS = 112;
 		}
 	}
 
-	public function grantAchievement($achievementId){
+	public function awardAchievement($achievementId){
 		if(isset(Achievement::$list[$achievementId]) and !$this->hasAchievement($achievementId)){
 			foreach(Achievement::$list[$achievementId]["requires"] as $requerimentId){
 				if(!$this->hasAchievement($requerimentId)){
@@ -1797,7 +1797,7 @@ const CREATIVE_SLOTS = 112;
 					if($tile instanceof Furnace and $packet->slot == 2){
 						switch($slot->getID()){
 							case Item::IRON_INGOT:
-								$this->grantAchievement("acquireIron");
+								$this->awardAchievement("acquireIron");
 								break;
 						}
 					}
@@ -2273,35 +2273,35 @@ const CREATIVE_SLOTS = 112;
 
 				switch($item->getID()){
 					case Item::WORKBENCH:
-						$this->grantAchievement("buildWorkBench");
+						$this->awardAchievement("buildWorkBench");
 						break;
 					case Item::WOODEN_PICKAXE:
-						$this->grantAchievement("buildPickaxe");
+						$this->awardAchievement("buildPickaxe");
 						break;
 					case Item::FURNACE:
-						$this->grantAchievement("buildFurnace");
+						$this->awardAchievement("buildFurnace");
 						break;
 					case Item::WOODEN_HOE:
-						$this->grantAchievement("buildHoe");
+						$this->awardAchievement("buildHoe");
 						break;
 					case Item::BREAD:
-						$this->grantAchievement("makeBread");
+						$this->awardAchievement("makeBread");
 						break;
 					case Item::CAKE:
-						$this->grantAchievement("bakeCake");
+						$this->awardAchievement("bakeCake");
 						$this->addItem(Item::get(Item::BUCKET, 0, 3));
 						break;
 					case Item::STONE_PICKAXE:
 					case Item::GOLD_PICKAXE:
 					case Item::IRON_PICKAXE:
 					case Item::DIAMOND_PICKAXE:
-						$this->grantAchievement("buildBetterPickaxe");
+						$this->awardAchievement("buildBetterPickaxe");
 						break;
 					case Item::WOODEN_SWORD:
-						$this->grantAchievement("buildSword");
+						$this->awardAchievement("buildSword");
 						break;
 					case Item::DIAMOND:
-						$this->grantAchievement("diamond");
+						$this->awardAchievement("diamond");
 						break;
 
 				}
@@ -2422,5 +2422,8 @@ const CREATIVE_SLOTS = 112;
 			}
 		}
 	}
+
+
+
 
 }
