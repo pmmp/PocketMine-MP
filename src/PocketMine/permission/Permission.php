@@ -42,10 +42,10 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string  $name
-	 * @param string  $description
-	 * @param string  $defaultValue
-	 * @param array $children
+	 * @param string $name
+	 * @param string $description
+	 * @param string $defaultValue
+	 * @param array  $children
 	 */
 	public function __construct($name, $description = null, $defaultValue = null, array $children = array()){
 		$this->name = $name;

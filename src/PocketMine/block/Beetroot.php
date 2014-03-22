@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
+use PocketMine;
 
 class Beetroot extends Flowable{
 	public function __construct($meta = 0){

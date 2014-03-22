@@ -21,13 +21,13 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
+use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Block\Sapling;
 use PocketMine\Level\Generator\Object\Tree as ObjectTree;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Tree extends Populator{
 	private $level;
@@ -54,7 +54,7 @@ class Tree extends Populator{
 			}
 			if($random->nextFloat() > 0.75){
 				$meta = Sapling::BIRCH;
-			} else{
+			}else{
 				$meta = Sapling::OAK;
 			}
 			ObjectTree::growTree($this->level, new Vector3($x, $y, $z), $random, $meta);
@@ -68,7 +68,7 @@ class Tree extends Populator{
 				if(--$y <= 0){
 					return -1;
 				}
-			} else{
+			}else{
 				break;
 			}
 		}

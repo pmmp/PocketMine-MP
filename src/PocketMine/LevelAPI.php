@@ -55,11 +55,11 @@ class LevelAPI{
 			case "seed":
 				if(!isset($params[0]) and ($issuer instanceof Player)){
 					$output .= "Seed: " . $issuer->level->getSeed() . "\n";
-				} elseif(isset($params[0])){
+				}elseif(isset($params[0])){
 					if(($lv = Level::get(trim(implode(" ", $params)))) !== false){
 						$output .= "Seed: " . $lv->getSeed() . "\n";
 					}
-				} else{
+				}else{
 					$output .= "Seed: " . Level::getDefault()->getSeed() . "\n";
 				}
 		}

@@ -21,11 +21,11 @@
 
 namespace PocketMine\Event\Player;
 
+use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Item\Item;
 use PocketMine\Player;
-use PocketMine;
 
 /**
  * Called when a player interacts or touches a block (including air?)

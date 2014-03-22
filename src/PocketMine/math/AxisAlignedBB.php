@@ -55,19 +55,19 @@ class AxisAlignedBB{
 		$vec = clone $this;
 		if($x < 0){
 			$vec->minX += $x;
-		} elseif($x > 0){
+		}elseif($x > 0){
 			$vec->maxX += $x;
 		}
 
 		if($y < 0){
 			$vec->minY += $y;
-		} elseif($y > 0){
+		}elseif($y > 0){
 			$vec->maxY += $y;
 		}
 
 		if($z < 0){
 			$vec->minZ += $z;
-		} elseif($z > 0){
+		}elseif($z > 0){
 			$vec->maxZ += $z;
 		}
 

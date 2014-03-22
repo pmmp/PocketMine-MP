@@ -21,11 +21,11 @@
 
 namespace PocketMine\Tile;
 
+use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\NBT\Tag\Compound;
-use PocketMine;
 
 class Furnace extends Tile{
 	use Container;
@@ -92,15 +92,15 @@ class Furnace extends Tile{
 					$this->setSlot(0, $raw, false);
 					$this->namedtag->CookTime -= 200;
 				}
-			} elseif($this->namedtag->BurnTime <= 0){
+			}elseif($this->namedtag->BurnTime <= 0){
 				$this->namedtag->BurnTime = 0;
 				$this->namedtag->CookTime = 0;
 				$this->namedtag->BurnTicks = 0;
-			} else{
+			}else{
 				$this->namedtag->CookTime = 0;
 			}
 			$ret = true;
-		} else{
+		}else{
 			$current = $this->level->getBlock($this);
 			if($current->getID() === Item::BURNING_FURNACE){
 				$this->level->setBlock($this, Block::get(Item::FURNACE, $current->getMetadata()), true, false, true);

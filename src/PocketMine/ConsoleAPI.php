@@ -142,7 +142,7 @@ class ConsoleAPI{
 					$curpage = (int) ceil($current / 5);
 					if($curpage === $page){
 						$output .= "/$c " . $h . "\n";
-					} elseif($curpage > $page){
+					}elseif($curpage > $page){
 						break;
 					}
 					++$current;
@@ -186,7 +186,7 @@ class ConsoleAPI{
 			}
 			if($issuer instanceof Player){
 				console("[DEBUG] " . TextFormat::AQUA . $issuer->getUsername() . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
-			} else{
+			}else{
 				console("[DEBUG] " . TextFormat::YELLOW . "*" . $issuer . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
 			}
 
@@ -220,10 +220,10 @@ class ConsoleAPI{
 									foreach(Player::getAll() as $p){
 										$output .= $this->run($cmd . " " . substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 									}
-								} else{
+								}else{
 									$issuer->sendChat("You don't have permissions to use this command.\n");
 								}
-							} else{
+							}else{
 								$output = "";
 								foreach(Player::getAll() as $p){
 									$output .= $this->run($cmd . " " . substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
@@ -259,10 +259,10 @@ class ConsoleAPI{
 				or ($d2 = $this->server->api->dhandle("console.command", array("cmd" => $cmd, "parameters" => $params, "issuer" => $issuer, "alias" => $alias))) === false
 			){
 				$output = "You don't have permissions to use this command.\n";
-			} elseif($d1 !== true and (!isset($d2) or $d2 !== true)){
+			}elseif($d1 !== true and (!isset($d2) or $d2 !== true)){
 				if(isset($this->cmds[$cmd]) and is_callable($this->cmds[$cmd])){
 					$output = @call_user_func($this->cmds[$cmd], $cmd, $params, $issuer, $alias);
-				} elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
+				}elseif($this->server->api->dhandle("console.command.unknown", array("cmd" => $cmd, "params" => $params, "issuer" => $issuer, "alias" => $alias)) !== false){
 					$output = $this->defaultCommands($cmd, $params, $issuer, $alias);
 				}
 			}
@@ -289,7 +289,7 @@ class ConsoleAPI{
 					console("[CMD] " . $m);
 				}
 			}
-		} else{
+		}else{
 			$this->loop->notify();
 		}
 	}
@@ -316,7 +316,7 @@ class ConsoleLoop extends \Thread{
 	private function readLine(){
 		if($this->fp){
 			$line = trim(fgets($this->fp));
-		} else{
+		}else{
 			$line = trim(readline(""));
 			if($line != ""){
 				readline_add_history($line);

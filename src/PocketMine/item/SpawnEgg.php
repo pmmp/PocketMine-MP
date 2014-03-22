@@ -21,11 +21,11 @@
 
 namespace PocketMine\Item;
 
-use PocketMine\Entity;
+use PocketMine;
 use PocketMine\Block\Block;
+use PocketMine\Entity;
 use PocketMine\Level\Level;
 use PocketMine\Player;
-use PocketMine;
 
 class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){

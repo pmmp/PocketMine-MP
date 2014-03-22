@@ -81,7 +81,7 @@ class Vector3{
 	public function add($x = 0, $y = 0, $z = 0){
 		if(($x instanceof Vector3) === true){
 			return $this->add($x->x, $x->y, $x->z);
-		} else{
+		}else{
 			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
 		}
 	}
@@ -89,7 +89,7 @@ class Vector3{
 	public function subtract($x = 0, $y = 0, $z = 0){
 		if(($x instanceof Vector3) === true){
 			return $this->add(-$x->x, -$x->y, -$x->z);
-		} else{
+		}else{
 			return $this->add(-$x, -$y, -$z);
 		}
 	}
@@ -148,7 +148,7 @@ class Vector3{
 	public function maxPlainDistance($x = 0, $z = 0){
 		if(($x instanceof Vector3) === true){
 			return $this->maxPlainDistance($x->x, $x->z);
-		} else{
+		}else{
 			return max(abs($this->x - $x), abs($this->z - $z));
 		}
 	}

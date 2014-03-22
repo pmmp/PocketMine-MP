@@ -51,7 +51,7 @@ class VersionString{
 			$this->major = ($version >> 5) & 0x0F;
 			$this->generation = ($version >> 9) & 0x0F;
 			$this->stage = array_search(($version >> 13) & 0x0F, VersionString::$stageOrder, true);
-		} else{
+		}else{
 			$version = preg_split("/([A-Za-z]*)[ _\-]([0-9]*)\.([0-9]*)\.{0,1}([0-9]*)(dev|)/", $version, -1, PREG_SPLIT_DELIM_CAPTURE);
 			$this->stage = strtolower($version[1]); //0-15
 			$this->generation = (int) $version[2]; //0-15
@@ -108,9 +108,9 @@ class VersionString{
 		}
 		if($number > $tNumber){
 			return -1; //Target is older
-		} elseif($number < $tNumber){
+		}elseif($number < $tNumber){
 			return 1; //Target is newer
-		} else{
+		}else{
 			return 0; //Same version
 		}
 	}

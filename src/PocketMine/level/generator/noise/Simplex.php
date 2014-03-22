@@ -141,7 +141,7 @@ class Simplex extends Perlin{
 				$k2 = 1;
 			}
 			// Z X Y order
-		} else{ // x0<y0
+		}else{ // x0<y0
 			if($y0 < $z0){
 				$i1 = 0;
 				$j1 = 0;
@@ -196,7 +196,7 @@ class Simplex extends Perlin{
 		$t0 = 0.6 - $x0 * $x0 - $y0 * $y0 - $z0 * $z0;
 		if($t0 < 0){
 			$n0 = 0.0;
-		} else{
+		}else{
 			$t0 *= $t0;
 			$n0 = $t0 * $t0 * self::dot3D(self::$grad3[$gi0], $x0, $y0, $z0);
 		}
@@ -204,7 +204,7 @@ class Simplex extends Perlin{
 		$t1 = 0.6 - $x1 * $x1 - $y1 * $y1 - $z1 * $z1;
 		if($t1 < 0){
 			$n1 = 0.0;
-		} else{
+		}else{
 			$t1 *= $t1;
 			$n1 = $t1 * $t1 * self::dot3D(self::$grad3[$gi1], $x1, $y1, $z1);
 		}
@@ -212,7 +212,7 @@ class Simplex extends Perlin{
 		$t2 = 0.6 - $x2 * $x2 - $y2 * $y2 - $z2 * $z2;
 		if($t2 < 0){
 			$n2 = 0.0;
-		} else{
+		}else{
 			$t2 *= $t2;
 			$n2 = $t2 * $t2 * self::dot3D(self::$grad3[$gi2], $x2, $y2, $z2);
 		}
@@ -220,7 +220,7 @@ class Simplex extends Perlin{
 		$t3 = 0.6 - $x3 * $x3 - $y3 * $y3 - $z3 * $z3;
 		if($t3 < 0){
 			$n3 = 0.0;
-		} else{
+		}else{
 			$t3 *= $t3;
 			$n3 = $t3 * $t3 * self::dot3D(self::$grad3[$gi3], $x3, $y3, $z3);
 		}
@@ -277,7 +277,7 @@ class Simplex extends Perlin{
 		$t0 = 0.5 - $x0 * $x0 - $y0 * $y0;
 		if($t0 < 0){
 			$n0 = 0.0;
-		} else{
+		}else{
 			$t0 *= $t0;
 			$n0 = $t0 * $t0 * self::dot2D(self::$grad3[$gi0], $x0, $y0); // (x,y) of grad3 used for 2D gradient
 		}
@@ -285,7 +285,7 @@ class Simplex extends Perlin{
 		$t1 = 0.5 - $x1 * $x1 - $y1 * $y1;
 		if($t1 < 0){
 			$n1 = 0.0;
-		} else{
+		}else{
 			$t1 *= $t1;
 			$n1 = $t1 * $t1 * self::dot2D(self::$grad3[$gi1], $x1, $y1);
 		}
@@ -293,7 +293,7 @@ class Simplex extends Perlin{
 		$t2 = 0.5 - $x2 * $x2 - $y2 * $y2;
 		if($t2 < 0){
 			$n2 = 0.0;
-		} else{
+		}else{
 			$t2 *= $t2;
 			$n2 = $t2 * $t2 * self::dot2D(self::$grad3[$gi2], $x2, $y2);
 		}

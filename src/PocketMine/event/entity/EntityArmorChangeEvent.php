@@ -22,9 +22,9 @@
 namespace PocketMine\Event\Entity;
 
 use PocketMine\Entity\Entity;
+use PocketMine;
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Event;
-use PocketMine;
 use PocketMine\Item\Item;
 
 class EntityArmorChangeEvent extends EntityEvent implements CancellableEvent{

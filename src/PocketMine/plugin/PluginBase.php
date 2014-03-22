@@ -118,6 +118,7 @@ abstract class PluginBase{
 			if(file_exists($this->dataFolder . "resources/" . $filename)){
 				return file_get_contents($this->dataFolder . "resources/" . $filename);
 			}
+
 			return false;
 		}
 	}
@@ -154,6 +155,7 @@ abstract class PluginBase{
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dataFolder . "resources/")) as $resource){
 				$resources[] = $resource;
 			}
+
 			return $resources;
 		}
 	}
@@ -162,14 +164,17 @@ abstract class PluginBase{
 		if(!isset($this->config)){
 			$this->reloadConfig();
 		}
+
 		return $this->config;
 	}
 
 	public function saveConfig(){
 		if($this->getConfig()->save() === false){
-			console("[SEVERE] Could not save config to ". $this->configFile);
+			console("[SEVERE] Could not save config to " . $this->configFile);
+
 			return false;
 		}
+
 		return true;
 	}
 
@@ -190,8 +195,7 @@ abstract class PluginBase{
 		return $this->dataFolder;
 	}
 
-	public final function getName()
-	{
+	public final function getName(){
 		return $this->description->getName();
 	}
 

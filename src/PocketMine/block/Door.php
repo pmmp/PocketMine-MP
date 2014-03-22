@@ -21,11 +21,11 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Network\Protocol\LevelEventPacket;
 use PocketMine\Player;
+use PocketMine;
 
 
 abstract class Door extends Transparent{

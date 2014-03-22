@@ -21,11 +21,11 @@
 
 namespace PocketMine\Level\Generator\Object;
 
+use PocketMine;
 use PocketMine\Block\Sapling;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Tree{
 	public $overridable = array(
@@ -42,7 +42,7 @@ class Tree{
 			case Sapling::SPRUCE:
 				if($random->nextRange(0, 1) === 1){
 					$tree = new SpruceTree();
-				} else{
+				}else{
 					$tree = new PineTree();
 				}
 				break;

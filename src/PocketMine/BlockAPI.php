@@ -248,7 +248,7 @@ class BlockAPI{
 
 				if(!isset($params[2])){
 					$item->setCount($item->getMaxStackSize());
-				} else{
+				}else{
 					$item->setCount((int) $params[2]);
 				}
 
@@ -263,7 +263,7 @@ class BlockAPI{
 					}
 					$player->addItem(clone $item);
 					$output .= "Giving " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $player->getUsername() . "\n";
-				} else{
+				}else{
 					$output .= "Unknown player.\n";
 				}
 
@@ -281,7 +281,7 @@ class BlockAPI{
 			$this->scheduleBlockUpdate($pos->getSide(3), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(4), $delay, $type);
 			$this->scheduleBlockUpdate($pos->getSide(5), $delay, $type);
-		} else{
+		}else{
 			$this->blockUpdate($pos->getSide(0), $type);
 			$this->blockUpdate($pos->getSide(1), $type);
 			$this->blockUpdate($pos->getSide(2), $type);
@@ -294,7 +294,7 @@ class BlockAPI{
 	public function blockUpdate(Position $pos, $type = Level::BLOCK_UPDATE_NORMAL){
 		if(!($pos instanceof BLock\Block)){
 			$block = $pos->level->getBlock($pos);
-		} else{
+		}else{
 			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);
 			$block = $pos->level->getBlock($pos);
 		}

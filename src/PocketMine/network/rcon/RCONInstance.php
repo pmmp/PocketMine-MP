@@ -60,9 +60,9 @@ class RCONInstance extends \Thread{
 		$d = socket_read($client, 4);
 		if($this->stop === true){
 			return false;
-		} elseif($d === false){
+		}elseif($d === false){
 			return null;
-		} elseif($d === "" or strlen($d) < 4){
+		}elseif($d === "" or strlen($d) < 4){
 			return false;
 		}
 		@socket_set_block($client);
@@ -118,7 +118,7 @@ class RCONInstance extends \Thread{
 						if($p === false){
 							$this->{"status" . $n} = -1;
 							continue;
-						} elseif($p === null){
+						}elseif($p === null){
 							continue;
 						}
 
@@ -135,7 +135,7 @@ class RCONInstance extends \Thread{
 									$this->response = "";
 									$this->writePacket($client, $requestID, 2, "");
 									$this->{"status" . $n} = 1;
-								} else{
+								}else{
 									$this->{"status" . $n} = -1;
 									$this->writePacket($client, -1, 2, "");
 									continue;
@@ -156,7 +156,7 @@ class RCONInstance extends \Thread{
 								break;
 						}
 						usleep(1);
-					} else{
+					}else{
 						@socket_set_option($client, SOL_SOCKET, SO_LINGER, array("l_onoff" => 1, "l_linger" => 1));
 						@socket_shutdown($client, 2);
 						@socket_set_block($client);

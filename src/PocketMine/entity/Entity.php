@@ -24,6 +24,7 @@
  */
 namespace PocketMine\Entity;
 
+use PocketMine;
 use PocketMine\Event\Entity\EntityLevelChangeEvent;
 use PocketMine\Event\Entity\EntityMotionEvent;
 use PocketMine\Event\Entity\EntityMoveEvent;
@@ -34,15 +35,14 @@ use PocketMine\Level\Position;
 use PocketMine\Math\AxisAlignedBB;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound;
-use PocketMine\Network;
 use PocketMine\Network\Protocol\MoveEntityPacket_PosRot;
 use PocketMine\Network\Protocol\MovePlayerPacket;
 use PocketMine\Network\Protocol\RemoveEntityPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
+use PocketMine\Network;
 use PocketMine\Player;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\ServerAPI;
-use PocketMine;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;
@@ -185,7 +185,7 @@ abstract class Entity extends Position{
 			$this->fallDistance = 0;
 			$this->inWater = true;
 			$this->extinguish();
-		} else{
+		}else{
 			$this->inWater = false;
 		}
 
@@ -195,7 +195,7 @@ abstract class Entity extends Position{
 				if($this->fireTicks < 0){
 					$this->fireTicks = 0;
 				}
-			} else{
+			}else{
 				if(($this->fireTicks % 20) === 0){
 					$this->attackEntity(1, "onFire");
 				}
@@ -230,7 +230,7 @@ abstract class Entity extends Position{
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;
 				$pk->bodyYaw = $this->yaw;
-			} else{
+			}else{
 				$pk = new MoveEntityPacket_PosRot;
 				$pk->eid = $this->id;
 				$pk->x = $this->x;
@@ -273,7 +273,7 @@ abstract class Entity extends Position{
 
 	public function getDirection(){
 		$rotation = ($this->yaw - 90) % 360;
-		if($rotation < 0) {
+		if($rotation < 0){
 			$rotation += 360.0;
 		}
 		if((0 <= $rotation and $rotation < 45) or (315 <= $rotation and $rotation < 360)){
@@ -307,7 +307,7 @@ abstract class Entity extends Position{
 				$this->fall($this->fallDistance);
 				$this->fallDistance = 0;
 			}
-		} elseif($distanceThisTick < 0){
+		}elseif($distanceThisTick < 0){
 			$this->fallDistance -= $distanceThisTick;
 		}
 	}
@@ -431,7 +431,7 @@ abstract class Entity extends Position{
 			foreach($this->hasSpawned as $player){
 				if(!isset($newChunk[$player->CID])){
 					$this->despawnFrom($player);
-				} else{
+				}else{
 					unset($newChunk[$player->CID]);
 				}
 			}

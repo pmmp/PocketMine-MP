@@ -51,7 +51,7 @@ class InstallerLang{
 		if(file_exists(\PocketMine\PATH . "src/lang/Installer/" . $lang . ".ini")){
 			$this->lang = $lang;
 			$this->langfile = \PocketMine\PATH . "src/lang/Installer/" . $lang . ".ini";
-		} else{
+		}else{
 			$l = glob(\PocketMine\PATH . "src/lang/Installer/" . $lang . "_*.ini");
 			if(count($l) > 0){
 				$files = array();
@@ -64,7 +64,7 @@ class InstallerLang{
 				$l = substr($l, strrpos($l, "/") + 1, -4);
 				$this->lang = isset(self::$languages[$l]) ? $l : $lang;
 				$this->langfile = \PocketMine\PATH . "src/lang/Installer/" . $l . ".ini";
-			} else{
+			}else{
 				$this->lang = "en";
 				$this->langfile = \PocketMine\PATH . "src/lang/Installer/en.ini";
 			}
@@ -98,12 +98,12 @@ class InstallerLang{
 		if(!isset($this->texts[$this->lang][$name])){
 			if($this->lang !== "en" and isset($this->texts["en"][$name])){
 				return $this->texts["en"][$name];
-			} else{
+			}else{
 				return $name;
 			}
-		} elseif(count($search) > 0){
+		}elseif(count($search) > 0){
 			return str_replace($search, $replace, $this->texts[$this->lang][$name]);
-		} else{
+		}else{
 			return $this->texts[$this->lang][$name];
 		}
 	}

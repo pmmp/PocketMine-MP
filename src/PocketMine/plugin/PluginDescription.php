@@ -54,6 +54,7 @@ class PluginDescription{
 		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
 		if($this->name === ""){
 			trigger_error("Invalid PluginDescription name", E_USER_WARNING);
+
 			return;
 		}
 		$this->name = str_replace(" ", "_", $this->name);
@@ -62,6 +63,7 @@ class PluginDescription{
 		$this->api = !is_array($plugin["api"]) ? array($plugin["api"]) : $plugin["api"];
 		if(stripos($this->main, "PocketMine\\") === 0){
 			trigger_error("Invalid PluginDescription main, cannot start within the PocketMine namespace", E_USER_ERROR);
+
 			return;
 		}
 
@@ -87,6 +89,7 @@ class PluginDescription{
 			$order = strtoupper($plugin["load"]);
 			if(!defined("PocketMine\\Plugin\\PluginLoadOrder::" . $order)){
 				trigger_error("Invalid PluginDescription load", E_USER_ERROR);
+
 				return;
 			}else{
 				$this->order = constant("PocketMine\\Plugin\\PluginLoadOrder::" . $order);
@@ -128,80 +131,70 @@ class PluginDescription{
 	/**
 	 * @return array
 	 */
-	public function getDepend()
-	{
+	public function getDepend(){
 		return $this->depend;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getDescription()
-	{
+	public function getDescription(){
 		return $this->description;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getLoadBefore()
-	{
+	public function getLoadBefore(){
 		return $this->loadBefore;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getMain()
-	{
+	public function getMain(){
 		return $this->main;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getName()
-	{
+	public function getName(){
 		return $this->name;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getOrder()
-	{
+	public function getOrder(){
 		return $this->order;
 	}
 
 	/**
 	 * @return Permission[]
 	 */
-	public function getPermisions()
-	{
+	public function getPermisions(){
 		return $this->permissions;
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getSoftDepend()
-	{
+	public function getSoftDepend(){
 		return $this->softDepend;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getVersion()
-	{
+	public function getVersion(){
 		return $this->version;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getWebsite()
-	{
+	public function getWebsite(){
 		return $this->website;
 	}
 }

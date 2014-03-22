@@ -65,10 +65,10 @@ class ChatAPI{
 				if(!($issuer instanceof Player)){
 					if($issuer === "rcon"){
 						$sender = "Rcon";
-					} else{
+					}else{
 						$sender = ucfirst($issuer);
 					}
-				} else{
+				}else{
 					$sender = $issuer->getUsername();
 				}
 				Player::broadcastChat("* $sender " . implode(" ", $params));
@@ -80,7 +80,7 @@ class ChatAPI{
 				}
 				if(!($issuer instanceof Player)){
 					$sender = ucfirst($issuer);
-				} else{
+				}else{
 					$sender = $issuer;
 				}
 				$n = array_shift($params);

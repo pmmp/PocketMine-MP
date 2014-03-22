@@ -21,9 +21,9 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
+use PocketMine;
 
 class CyanFlower extends Flowable{
 	public function __construct(){

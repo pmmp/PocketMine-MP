@@ -40,7 +40,7 @@ interface InventorySource{
 	public function canRemoveItem(Item $item, $checkDamage = true);
 
 	/**
-	 * @param Item $item
+	 * @param Item    $item
 	 * @param boolean $checkDamage
 	 *
 	 * @return boolean hasBeenRemoved

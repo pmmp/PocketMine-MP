@@ -21,11 +21,11 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Object\Tree;
 use PocketMine\Level\Level;
 use PocketMine\Utils\Random;
+use PocketMine;
 
 class Sapling extends Flowable{
 	const OAK = 0;

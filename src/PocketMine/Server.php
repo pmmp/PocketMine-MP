@@ -284,7 +284,7 @@ class Server{
 				if(is_array($this->async[$ID])){
 					$method = $this->async[$ID][1];
 					$result = $this->async[$ID][0]->$method($data, $type, $ID);
-				} else{
+				}else{
 					$result = $this->async[$ID]($data, $type, $ID);
 				}
 			}
@@ -334,10 +334,10 @@ class Server{
 					if(is_array($handler)){
 						$method = $handler[1];
 						$result = $handler[0]->$method($data, $event);
-					} else{
+					}else{
 						$result = $handler($data, $event);
 					}
-				} else{
+				}else{
 					break;
 				}
 			}
@@ -499,7 +499,7 @@ class Server{
 		$CID = Server::clientID($packet->ip, $packet->port);
 		if(isset(Player::$list[$CID])){
 			Player::$list[$CID]->handlePacket($packet);
-		} else{
+		}else{
 			switch($packet->pid()){
 				case RakNetInfo::UNCONNECTED_PING:
 				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
@@ -539,7 +539,7 @@ class Server{
 						$pk->ip = $packet->ip;
 						$pk->port = $packet->port;
 						$this->send($pk);
-					} else{
+					}else{
 						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
 						$pk->serverID = $this->serverID;
 						$pk->mtuSize = strlen($packet->buffer);
@@ -582,11 +582,11 @@ class Server{
 				++$lastLoop;
 				if($lastLoop < 16){
 					usleep(1);
-				} elseif($lastLoop < 128){
+				}elseif($lastLoop < 128){
 					usleep(1000);
-				} elseif($lastLoop < 256){
+				}elseif($lastLoop < 256){
 					usleep(2000);
-				} else{
+				}else{
 					usleep(4000);
 				}
 			}
@@ -603,7 +603,7 @@ class Server{
 				if(is_array($ev)){
 					$method = $ev[1];
 					$ev[0]->$method($data, $event);
-				} else{
+				}else{
 					$ev($data, $event);
 				}
 			}
@@ -637,7 +637,7 @@ class Server{
 				$this->preparedSQL->updateAction->execute();
 				if(!@is_callable($this->schedule[$cid][0])){
 					$return = false;
-				} else{
+				}else{
 					++$actionCount;
 					$return = call_user_func($this->schedule[$cid][0], $this->schedule[$cid][1], $this->schedule[$cid][2]);
 				}
@@ -657,7 +657,7 @@ class Server{
 	public function event($event, callable $func){
 		if(!is_callable($func)){
 			return false;
-		} elseif(isset(Deprecation::$events[$event])){
+		}elseif(isset(Deprecation::$events[$event])){
 			$sub = "";
 			if(Deprecation::$events[$event] !== false){
 				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";

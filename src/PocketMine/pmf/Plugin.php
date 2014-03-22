@@ -53,7 +53,7 @@ class Plugin extends PMF{
 		$this->pluginData["author"] = $this->read(Utils::readShort($this->read(2), false));
 		if($this->pluginData["fversion"] >= 0x01){
 			$this->pluginData["apiversion"] = $this->read(Utils::readShort($this->read(2), false));
-		} else{
+		}else{
 			$this->pluginData["apiversion"] = Utils::readShort($this->read(2), false);
 		}
 		$this->pluginData["class"] = $this->read(Utils::readShort($this->read(2), false));
@@ -70,7 +70,7 @@ class Plugin extends PMF{
 				}
 			}
 
-		} else{
+		}else{
 			$this->pluginData["extra"] = gzinflate($this->read(Utils::readShort($this->read(2), false)));
 		}
 		$this->pluginData["code"] = "";

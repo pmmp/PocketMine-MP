@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
 use PocketMine\Item\Item;
@@ -52,6 +51,7 @@ use PocketMine\Utils\Cache;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 /**
  * Class Level
@@ -909,9 +909,9 @@ class Level{
 	/**
 	 * Sets a raw minichunk
 	 *
-	 * @param int $X
-	 * @param int $Z
-	 * @param int $Y
+	 * @param int    $X
+	 * @param int    $Z
+	 * @param int    $Y
 	 * @param string $data (must be 4096 bytes)
 	 *
 	 * @return bool
@@ -1011,8 +1011,8 @@ class Level{
 	/**
 	 * Unloads a chunk
 	 *
-	 * @param int     $X
-	 * @param int     $Z
+	 * @param int  $X
+	 * @param int  $Z
 	 * @param bool $force
 	 *
 	 * @return bool

@@ -21,12 +21,12 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
+use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Block\TallGrass as BlockTallGrass;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class TallGrass extends Populator{
 	/**
@@ -73,7 +73,7 @@ class TallGrass extends Populator{
 				if(--$y <= 0){
 					return -1;
 				}
-			} else{
+			}else{
 				break;
 			}
 		}

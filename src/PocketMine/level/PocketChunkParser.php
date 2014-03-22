@@ -63,9 +63,9 @@ class PocketChunkParser{
 			}
 			@unlink($file . ".gz");
 			file_put_contents($file, $this->raw);
-		} elseif(!file_exists($file)){
+		}elseif(!file_exists($file)){
 			return false;
-		} else{
+		}else{
 			$this->raw = file_get_contents($file);
 		}
 		$this->file = $file;
@@ -200,7 +200,7 @@ class PocketChunkParser{
 		$meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
 			$meta = $meta & 0x0F;
-		} else{
+		}else{
 			$meta = $meta >> 4;
 		}
 
@@ -226,7 +226,7 @@ class PocketChunkParser{
 		$old_meta = ord($this->map[$X][$Z][1][$index]{$y >> 1});
 		if(($y & 1) === 0){
 			$meta = ($old_meta & 0xF0) | ($meta & 0x0F);
-		} else{
+		}else{
 			$meta = (($meta << 4) & 0xF0) | ($old_meta & 0x0F);
 		}
 		$this->map[$X][$Z][1][$index]{$y >> 1} = chr($meta);

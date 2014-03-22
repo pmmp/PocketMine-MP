@@ -41,7 +41,7 @@ abstract class EventHandler{
 				if($event->isForced()){
 					if($event instanceof CancellableEvent and $event->isCancelled()){
 						return Event::DENY;
-					} else{
+					}else{
 						return Event::ALLOW;
 					}
 				}
@@ -50,9 +50,9 @@ abstract class EventHandler{
 
 		if($event instanceof CancellableEvent and $event->isCancelled()){
 			return Event::DENY;
-		} elseif($event->isAllowed()){
+		}elseif($event->isAllowed()){
 			return Event::ALLOW;
-		} else{
+		}else{
 			return Event::NORMAL;
 		}
 	}

@@ -30,7 +30,6 @@ use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\RCON\RCON;
 use PocketMine\Network\UPnP\UPnP;
 use PocketMine\Plugin\PluginManager;
-use PocketMine\PMF\Plugin;
 use PocketMine\Recipes\Crafting;
 use PocketMine\Tile\Tile;
 use PocketMine\Utils\Config;
@@ -169,7 +168,7 @@ class ServerAPI{
 				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
 				if($info === false or !isset($info[0])){
 					console("[ERROR] Github API error");
-				} else{
+				}else{
 					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
 					$last = $last->getTimestamp();
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \PocketMine\GIT_COMMIT != $info[0]["sha"]){
@@ -177,16 +176,16 @@ class ServerAPI{
 						console("[NOTICE] " . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
 						console("[NOTICE] " . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
 						console("[NOTICE] This message will disappear after issuing the command \"/update-done\"");
-					} else{
+					}else{
 						$this->setProperty("last-update", time());
 						console("[INFO] " . TextFormat::AQUA . "This is the latest DEVELOPMENT version");
 					}
 				}
-			} else{
+			}else{
 				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
 				if($info === false or !isset($info[0])){
 					console("[ERROR] Github API error");
-				} else{
+				}else{
 					$newest = new VersionString(VERSION);
 					$newestN = $newest->getNumber();
 					$update = new VersionString($info[0]["name"]);
@@ -196,7 +195,7 @@ class ServerAPI{
 						console("[NOTICE] " . TextFormat::GREEN . "Version \"" . $info[0]["name"] . "\" #" . $updateN);
 						console("[NOTICE] Get it at PocketMine.net or at " . $info[0]["zipball_url"]);
 						console("[NOTICE] This message will disappear as soon as you update");
-					} else{
+					}else{
 						$this->setProperty("last-update", time());
 						console("[INFO] " . TextFormat::AQUA . "This is the latest STABLE version");
 					}
@@ -222,7 +221,7 @@ class ServerAPI{
 			}
 		}
 
-		console("[INFO] Loaded ".count(PluginManager::loadPlugins(\PocketMine\DATA . "plugins/")). " plugin(s).");
+		console("[INFO] Loaded " . count(PluginManager::loadPlugins(\PocketMine\DATA . "plugins/")) . " plugin(s).");
 
 	}
 
@@ -314,7 +313,7 @@ class ServerAPI{
 				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
-		} else{
+		}else{
 			$this->setProperty("memory-limit", "128M");
 		}
 
@@ -339,7 +338,7 @@ class ServerAPI{
 				case "last-update":
 					if($v === false){
 						$v = time();
-					} else{
+					}else{
 						$v = (int) $v;
 					}
 					break;
@@ -464,7 +463,7 @@ class ServerAPI{
 				case "last-update":
 					if($v === false){
 						$v = time();
-					} else{
+					}else{
 						$v = (int) $v;
 					}
 					break;

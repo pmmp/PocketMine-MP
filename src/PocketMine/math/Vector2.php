@@ -50,7 +50,7 @@ class Vector2{
 	public function add($x = 0, $y = 0){
 		if(($x instanceof Vector2) === true){
 			return $this->add($x->x, $x->y);
-		} else{
+		}else{
 			$this->x += $x;
 			$this->y += $y;
 
@@ -61,7 +61,7 @@ class Vector2{
 	public function subtract($x = 0, $y = 0){
 		if(($x instanceof Vector2) === true){
 			return $this->add(-$x->x, -$x->y);
-		} else{
+		}else{
 			return $this->add(-$x, -$y);
 		}
 	}
@@ -93,7 +93,7 @@ class Vector2{
 	public function distance($x = 0, $y = 0){
 		if(($x instanceof Vector2) === true){
 			return sqrt($this->distanceSquared($x->x, $x->y));
-		} else{
+		}else{
 			return sqrt($this->distanceSquared($x, $y));
 		}
 	}
@@ -101,7 +101,7 @@ class Vector2{
 	public function distanceSquared($x = 0, $y = 0){
 		if(($x instanceof Vector2) === true){
 			return $this->distanceSquared($x->x, $x->y);
-		} else{
+		}else{
 			return pow($this->x - $x, 2) + pow($this->y - $y, 2);
 		}
 	}

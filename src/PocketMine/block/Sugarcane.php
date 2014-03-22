@@ -21,10 +21,10 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){

@@ -25,13 +25,13 @@
 namespace PocketMine\Item;
 
 use PocketMine\Block\Block;
+use PocketMine;
 use PocketMine\Entity\Entity;
 use PocketMine\Item\Block as ItemBlock;
 use PocketMine\Level\Level;
+use PocketMine\Player;
 use PocketMine\Recipes\Fuel;
 use PocketMine\Recipes\Smelt;
-use PocketMine;
-use PocketMine\Player;
 
 class Item{
 	//All Block IDs are here too
@@ -420,7 +420,7 @@ class Item{
 			$item = clone self::$list[$id];
 			$item->setMetadata($meta);
 			$item->setCount($count);
-		} else{
+		}else{
 			$item = new Item($id, $meta, $count);
 		}
 
@@ -435,11 +435,11 @@ class Item{
 			}
 
 			return $blocks;
-		} else{
+		}else{
 			$b = explode(":", str_replace(" ", "_", trim($str)));
 			if(!isset($b[1])){
 				$meta = 0;
-			} else{
+			}else{
 				$meta = ((int) $b[1]) & 0xFFFF;
 			}
 
@@ -448,7 +448,7 @@ class Item{
 				if($item->getID() === self::AIR and strtoupper($b[0]) !== "AIR"){
 					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 				}
-			} else{
+			}else{
 				$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 			}
 
@@ -490,7 +490,7 @@ class Item{
 	public function getBlock(){
 		if($this->block instanceof Block){
 			return $this->block;
-		} else{
+		}else{
 			return Block::get(self::AIR);
 		}
 	}
@@ -543,12 +543,12 @@ class Item{
 		if($this->isTool() or $force === true){
 			if(($object instanceof Entity) and !$this->isSword()){
 				$this->meta += 2;
-			} else{
+			}else{
 				$this->meta++;
 			}
 
 			return true;
-		} elseif($this->isHoe()){
+		}elseif($this->isHoe()){
 			if(($object instanceof Block) and ($object->getID() === self::GRASS or $object->getID() === self::DIRT)){
 				$this->meta++;
 			}

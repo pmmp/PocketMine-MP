@@ -21,10 +21,10 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine\Event\CancellableEvent;
-use PocketMine;
 use PocketMine\Event;
+use PocketMine\Event\CancellableEvent;
 use PocketMine\Item\Item;
+use PocketMine;
 use PocketMine\Player;
 
 class PlayerItemHeldEvent extends PlayerEvent implements CancellableEvent{

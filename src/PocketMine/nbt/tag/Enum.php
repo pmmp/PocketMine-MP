@@ -48,6 +48,7 @@ class Enum extends NamedTag implements \ArrayAccess{
 				return $this->{$offset}->getValue();
 			}
 		}
+
 		return null;
 	}
 

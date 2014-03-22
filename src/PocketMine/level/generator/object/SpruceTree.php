@@ -21,13 +21,13 @@
 
 namespace PocketMine\Level\Generator\Object;
 
+use PocketMine;
 use PocketMine\Block\Dirt;
 use PocketMine\Block\Leaves;
 use PocketMine\Block\Wood;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class SpruceTree extends Tree{
 	var $type = 1;
@@ -76,7 +76,7 @@ class SpruceTree extends Tree{
 			}
 			if($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)){
 				--$leavesRadius;
-			} elseif($leavesRadius < $this->leavesMaxRadius){
+			}elseif($leavesRadius < $this->leavesMaxRadius){
 				++$leavesRadius;
 			}
 		}

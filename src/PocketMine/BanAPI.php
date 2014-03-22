@@ -81,7 +81,7 @@ class BanAPI{
 		$username = strtolower($username);
 		if($this->server->api->dhandle("op.check", $username) === true){
 			return true;
-		} elseif($this->ops->exists($username)){
+		}elseif($this->ops->exists($username)){
 			return true;
 		}
 
@@ -121,7 +121,7 @@ class BanAPI{
 					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->getUsername())){
 						return;
 					}
-				} elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
+				}elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
 					return;
 				}
 
@@ -185,12 +185,12 @@ class BanAPI{
 			case "kick":
 				if(!isset($params[0])){
 					$output .= "Usage: /kick <player> [reason ...]\n";
-				} else{
+				}else{
 					$name = strtolower(array_shift($params));
 					$player = Player::get($name);
 					if($player === false){
 						$output .= "Player \"" . $name . "\" does not exist\n";
-					} else{
+					}else{
 						$reason = implode(" ", $params);
 						$reason = $reason == "" ? "No reason" : $reason;
 
@@ -198,7 +198,7 @@ class BanAPI{
 						$player->blocked = true;
 						if($issuer instanceof Player){
 							Player::broadcastChat($player->getUsername() . " has been kicked by " . $issuer->getUsername() . ": $reason\n");
-						} else{
+						}else{
 							Player::broadcastChat($player->getUsername() . " has been kicked: $reason\n");
 						}
 					}
@@ -296,7 +296,7 @@ class BanAPI{
 						}
 						if($issuer instanceof Player){
 							Player::broadcastChat($user . " has been banned by " . $issuer->getUsername() . "\n");
-						} else{
+						}else{
 							Player::broadcastChat($user . " has been banned\n");
 						}
 						$this->kick($user, "Banned");
@@ -368,9 +368,9 @@ class BanAPI{
 	public function isIPBanned($ip){
 		if($this->server->api->dhandle("api.ban.ip.check", $ip) === false){
 			return true;
-		} elseif($this->bannedIPs->exists($ip, true)){
+		}elseif($this->bannedIPs->exists($ip, true)){
 			return true;
-		} else{
+		}else{
 			return false;
 		}
 	}
@@ -384,9 +384,9 @@ class BanAPI{
 		$username = strtolower($username);
 		if($this->server->api->dhandle("api.ban.check", $username) === false){
 			return true;
-		} elseif($this->banned->exists($username, true)){
+		}elseif($this->banned->exists($username, true)){
 			return true;
-		} else{
+		}else{
 			return false;
 		}
 	}
@@ -400,9 +400,9 @@ class BanAPI{
 		$username = strtolower($username);
 		if($this->isOp($username)){
 			return true;
-		} elseif($this->server->api->dhandle("api.ban.whitelist.check", $username) === false){
+		}elseif($this->server->api->dhandle("api.ban.whitelist.check", $username) === false){
 			return true;
-		} elseif($this->whitelist->exists($username, true)){
+		}elseif($this->whitelist->exists($username, true)){
 			return true;
 		}
 

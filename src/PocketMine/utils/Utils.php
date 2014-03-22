@@ -51,7 +51,7 @@ class Utils{
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
 			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
-		} else{
+		}else{
 			return sha1(strtolower($variable));
 		}
 	}
@@ -106,25 +106,25 @@ class Utils{
 	public static function getIP($force = false){
 		if(Utils::$online === false){
 			return false;
-		} elseif(Utils::$ip !== false and $force !== true){
+		}elseif(Utils::$ip !== false and $force !== true){
 			return Utils::$ip;
 		}
 		$ip = trim(strip_tags(Utils::getURL("http://checkip.dyndns.org/")));
 		if(preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 			Utils::$ip = $matches[1];
-		} else{
+		}else{
 			$ip = Utils::getURL("http://www.checkip.org/");
 			if(preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
 				Utils::$ip = $matches[1];
-			} else{
+			}else{
 				$ip = Utils::getURL("http://checkmyip.org/");
 				if(preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
 					Utils::$ip = $matches[1];
-				} else{
+				}else{
 					$ip = trim(Utils::getURL("http://ifconfig.me/ip"));
 					if($ip != ""){
 						Utils::$ip = $ip;
-					} else{
+					}else{
 						return false;
 					}
 				}
@@ -152,20 +152,20 @@ class Utils{
 		if(stripos($uname, "Darwin") !== false){
 			if(strpos(php_uname("m"), "iP") === 0){
 				return "ios";
-			} else{
+			}else{
 				return "mac";
 			}
-		} elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+		}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
 			return "win";
-		} elseif(stripos($uname, "Linux") !== false){
+		}elseif(stripos($uname, "Linux") !== false){
 			if(@file_exists("/system/build.prop")){
 				return "android";
-			} else{
+			}else{
 				return "linux";
 			}
-		} elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+		}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
 			return "bsd";
-		} else{
+		}else{
 			return "other";
 		}
 	}
@@ -490,11 +490,11 @@ class Utils{
 								$value .= chr($secureValue);
 								$secureValue = 0;
 								$bitcnt = 0;
-							} else{
+							}else{
 								++$bitcnt;
 							}
 							++$drop;
-						} else{
+						}else{
 							$drop += 2;
 						}
 					}
@@ -780,7 +780,7 @@ class Utils{
 			if($negative){
 				$x = ~$x;
 			}
-		} else{
+		}else{
 			$negative = false;
 		}
 
@@ -800,7 +800,7 @@ class Utils{
 			if($value{0} === "-"){
 				$value = substr($value, 1);
 			}
-		} else{
+		}else{
 			$negative = false;
 		}
 		while(bccomp($value, "0", 0) > 0){

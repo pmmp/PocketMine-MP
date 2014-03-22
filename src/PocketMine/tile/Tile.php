@@ -25,12 +25,12 @@
  */
 namespace PocketMine\Tile;
 
+use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\ServerAPI;
-use PocketMine;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";

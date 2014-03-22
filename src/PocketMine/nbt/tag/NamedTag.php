@@ -28,8 +28,8 @@ abstract class NamedTag extends Tag{
 	protected $name;
 
 	/**
-	 * @param string $name
-	 * @param bool|float|double|int|byte|short|array|Compound|Enum|string   $value
+	 * @param string                                                      $name
+	 * @param bool|float|double|int|byte|short|array|Compound|Enum|string $value
 	 */
 	public function __construct($name = "", $value = false){
 		$this->name = $name;

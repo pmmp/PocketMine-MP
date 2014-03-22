@@ -21,10 +21,10 @@
 
 namespace PocketMine\Level;
 
+use PocketMine\NBT\NBT;
+use PocketMine;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\Utils\Config;
-use PocketMine;
-use PocketMine\NBT\NBT;
 
 class LevelImport{
 	private $path;
@@ -41,7 +41,7 @@ class LevelImport{
 			$entities->save();
 			$tiles = new Config($this->path . "tiles.yml", Config::YAML, unserialize(file_get_contents($this->path . "tileEntities.dat")));
 			$tiles->save();
-		} elseif(file_exists($this->path . "chunks.dat") and file_exists($this->path . "level.dat")){ //Pocket
+		}elseif(file_exists($this->path . "chunks.dat") and file_exists($this->path . "level.dat")){ //Pocket
 			$nbt = new NBT(NBT::LITTLE_ENDIAN);
 			$nbt->read(substr(file_get_contents($this->path . "level.dat"), 8));
 			$level = $nbt->getData();
@@ -61,7 +61,7 @@ class LevelImport{
 			$entities->save();
 			$tiles = new Config($this->path . "tiles.yml", Config::YAML, $tiles);
 			$tiles->save();
-		} else{
+		}else{
 			return false;
 		}
 

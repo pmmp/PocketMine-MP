@@ -24,7 +24,6 @@
  */
 namespace PocketMine\NBT;
 
-use PocketMine;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Byte_Array;
 use PocketMine\NBT\Tag\Compound;
@@ -40,6 +39,7 @@ use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
 use PocketMine\NBT\Tag\Tag;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 /**
  * Named Binary Tag encoder/decoder
@@ -73,7 +73,7 @@ class NBT{
 			$this->offset = strlen($this->buffer) - 1;
 
 			return "";
-		} elseif($len === true){
+		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
 
@@ -115,7 +115,7 @@ class NBT{
 			$this->writeTag($this->data);
 
 			return $this->buffer;
-		} else{
+		}else{
 			return false;
 		}
 	}
@@ -124,6 +124,7 @@ class NBT{
 		if(($write = $this->write()) !== false){
 			return \gzencode($write, 9);
 		}
+
 		return false;
 	}
 

@@ -34,14 +34,14 @@ class UDPSocket{
 		if($listen !== true){
 			$this->connected = true;
 			$this->unblock();
-		} else{
+		}else{
 			if(socket_bind($this->sock, $serverip, $port) === true){
 				socket_set_option($this->sock, SOL_SOCKET, SO_REUSEADDR, 0);
 				@socket_set_option($this->sock, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2); //2MB
 				@socket_set_option($this->sock, SOL_SOCKET, SO_RCVBUF, 1024 * 1024); //1MB
 				$this->unblock();
 				$this->connected = true;
-			} else{
+			}else{
 				$this->connected = false;
 			}
 		}

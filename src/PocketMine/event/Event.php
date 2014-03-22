@@ -62,7 +62,7 @@ abstract class Event{
 		$identifier = Utils::getCallableIdentifier($handler);
 		if(isset(static::$handlers[$identifier])){ //Already registered
 			return false;
-		} else{
+		}else{
 			static::$handlers[$identifier] = $handler;
 			if(!isset(static::$handlerPriority[(int) $priority])){
 				static::$handlerPriority[(int) $priority] = array();
@@ -79,7 +79,7 @@ abstract class Event{
 		if(isset(static::$handlers[$identifier])){
 			if(isset(static::$handlerPriority[(int) $priority][$identifier])){
 				unset(static::$handlerPriority[(int) $priority][$identifier]);
-			} else{
+			}else{
 				for($priority = EventPriority::MONITOR; $priority <= EventPriority::LOWEST; ++$priority){
 					unset(static::$handlerPriority[$priority][$identifier]);
 					if(count(static::$handlerPriority[$priority]) === 0){
@@ -90,7 +90,7 @@ abstract class Event{
 			unset(static::$handlers[$identifier]);
 
 			return true;
-		} else{
+		}else{
 			return false;
 		}
 	}

@@ -22,8 +22,8 @@
 namespace PocketMine;
 
 use PocketMine\Entity\RealHuman;
-use PocketMine\Event;
 use PocketMine\Event\EventHandler;
+use PocketMine\Event;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
@@ -83,8 +83,8 @@ use PocketMine\Utils\Utils;
 class Player extends RealHuman{
 	const MAX_QUEUE = 2048;
 	const SURVIVAL_SLOTS = 36;
-const CREATIVE_SLOTS = 112;
-		public static $list = array(); //????
+	const CREATIVE_SLOTS = 112;
+	public static $list = array(); //????
 	public $auth = false;
 	public $CID;
 	public $MTU;
@@ -246,7 +246,7 @@ const CREATIVE_SLOTS = 112;
 				}
 
 				return;
-			} else{
+			}else{
 				unset($this->chunkCount[$count]);
 			}
 		}
@@ -492,7 +492,7 @@ const CREATIVE_SLOTS = 112;
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Position)){
 			$level = $this->level;
-		} else{
+		}else{
 			$level = $pos->level;
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
@@ -584,7 +584,7 @@ const CREATIVE_SLOTS = 112;
 							$this->awardAchievement("diamond");
 							break;
 					}
-				} elseif($data["entity"]->level === $this->level){
+				}elseif($data["entity"]->level === $this->level){
 					$pk = new TakeItemEntityPacket;
 					$pk->eid = $data["eid"];
 					$pk->target = $data["entity"]->getID();
@@ -603,7 +603,7 @@ const CREATIVE_SLOTS = 112;
 			case "entity.metadata":
 				if($data->getID() === $this->id){
 					$eid = 0;
-				} else{
+				}else{
 					$eid = $data->getID();
 				}
 				if($data->level === $this->level){
@@ -616,7 +616,7 @@ const CREATIVE_SLOTS = 112;
 			case "entity.event":
 				if($data["entity"]->getID() === $this->id){
 					$eid = 0;
-				} else{
+				}else{
 					$eid = $data["entity"]->getID();
 				}
 				if($data["entity"]->level === $this->level){
@@ -641,7 +641,7 @@ const CREATIVE_SLOTS = 112;
 				Achievement::broadcast($this, $achievementId);
 
 				return true;
-			} else{
+			}else{
 				return false;
 			}
 		}
@@ -665,7 +665,7 @@ const CREATIVE_SLOTS = 112;
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ".\n");
-		} else{
+		}else{
 			$this->blocked = true;
 			$this->gamemode = $gm;
 			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
@@ -745,7 +745,7 @@ const CREATIVE_SLOTS = 112;
 		}
 		if($this->packetStats[1] > 2){
 			$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0] + $this->packetStats[1]);
-		} else{
+		}else{
 			$this->packetLoss = 0;
 		}
 		$this->packetStats = array(0, 0);
@@ -824,7 +824,7 @@ const CREATIVE_SLOTS = 112;
 						if(isset($p->messageIndex) and $p->messageIndex !== false){
 							if($p->messageIndex > $this->receiveCount){
 								$this->receiveCount = $p->messageIndex;
-							} elseif($p->messageIndex !== 0){
+							}elseif($p->messageIndex !== 0){
 								if(isset($this->received[$p->messageIndex])){
 									continue;
 								}
@@ -934,7 +934,7 @@ const CREATIVE_SLOTS = 112;
 						$pk = new LoginStatusPacket;
 						$pk->status = 1;
 						$this->directDataPacket($pk);
-					} else{
+					}else{
 						$pk = new LoginStatusPacket;
 						$pk->status = 2;
 						$this->directDataPacket($pk);
@@ -959,7 +959,7 @@ const CREATIVE_SLOTS = 112;
 					$this->close($this->username . " has left the game", "Server is white-listed");
 
 					return;
-				} elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
+				}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
 					$this->close($this->username . " has left the game", "You are banned");
 
 					return;
@@ -1009,7 +1009,7 @@ const CREATIVE_SLOTS = 112;
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
 					$this->hotbar[0] = 0;
-				} else{
+				}else{
 					$this->slot = $this->hotbar[0];
 				}
 
@@ -1108,7 +1108,7 @@ const CREATIVE_SLOTS = 112;
 					if($this->forceMovement instanceof Vector3){
 						if($this->forceMovement->distance($newPos) <= 0.7){
 							$this->forceMovement = false;
-						} else{
+						}else{
 							$this->setPosition($this->forceMovement);
 						}
 					}
@@ -1132,7 +1132,7 @@ const CREATIVE_SLOTS = 112;
 
 				if($packet->slot === 0x28 or $packet->slot === 0){ //0 for 0.8.0 compatibility
 					$packet->slot = -1; //Air
-				} else{
+				}else{
 					$packet->slot -= 9; //Get real block slot
 				}
 
@@ -1240,7 +1240,7 @@ const CREATIVE_SLOTS = 112;
 					$pk->meta = $block->getMetadata();
 					$this->dataPacket($pk);
 					break;
-				} elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
+				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
 					$this->inAction = true;
 					$this->startAction = microtime(true);
 					//$this->updateMetadata();
@@ -1365,7 +1365,7 @@ const CREATIVE_SLOTS = 112;
 					$s = $packet->slots[$i];
 					if($s === 0 or $s === 255){
 						$s = Item::get(Item::AIR, 0, 0);
-					} else{
+					}else{
 						$s = Item::get($s + 256, 0, 1);
 					}
 					$slot = $this->getArmorSlot($i);
@@ -1373,7 +1373,7 @@ const CREATIVE_SLOTS = 112;
 						if($this->setArmorSlot($i, Item::get(Item::AIR, 0, 0)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
-						} else{
+						}else{
 							$this->addItem($slot);
 							$packet->slots[$i] = 255;
 						}
@@ -1381,17 +1381,17 @@ const CREATIVE_SLOTS = 112;
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
-						} else{
+						}else{
 							$this->setSlot($sl, Item::get(Item::AIR, 0, 0));
 						}
 					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s, false)) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
-						} else{
+						}else{
 							$this->setSlot($sl, $slot);
 						}
-					} else{
+					}else{
 						$packet->slots[$i] = 255;
 					}
 
@@ -1606,7 +1606,7 @@ const CREATIVE_SLOTS = 112;
 					$message = $packet->message;
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
-					} else{
+					}else{
 						$ev = new Event\Player\PlayerChatEvent($this, $message);
 						if(EventHandler::callEvent($ev) !== Event\Event::DENY){
 							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getUsername(), $ev->getMessage()), $ev->getRecipients());
@@ -1631,7 +1631,7 @@ const CREATIVE_SLOTS = 112;
 							$pk->case2 = 0;
 							Player::broadcastPacket($this->level->players, $pk);
 						}
-					} elseif($this->windows[$packet->windowid] instanceof Chest){
+					}elseif($this->windows[$packet->windowid] instanceof Chest){
 						$pk = new TileEventPacket;
 						$pk->x = $this->windows[$packet->windowid]->x;
 						$pk->y = $this->windows[$packet->windowid]->y;
@@ -1655,7 +1655,7 @@ const CREATIVE_SLOTS = 112;
 				if($this->lastCraft <= (microtime(true) - 1)){
 					if(isset($this->toCraft[-1])){
 						$this->toCraft = array(-1 => $this->toCraft[-1]);
-					} else{
+					}else{
 						$this->toCraft = array();
 					}
 					$this->craftingItems = array();
@@ -1668,14 +1668,14 @@ const CREATIVE_SLOTS = 112;
 						$use = Item::get($slot->getID(), $slot->getMetadata(), $slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
-					} elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
+					}elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
 						$craftItem = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount() - $slot->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
-					} elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > Item::AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
+					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > Item::AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
 						$craftItem = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
@@ -1694,12 +1694,12 @@ const CREATIVE_SLOTS = 112;
 						if($recipe === false){
 							$this->sendInventory();
 							$this->toCraft = array();
-						} else{
+						}else{
 							$this->toCraft = array(-1 => $this->toCraft[-1]);
 						}
 						$this->craftingItems = array();
 					}
-				} else{
+				}else{
 					$this->toCraft = array();
 					$this->craftingItems = array();
 				}
@@ -1713,11 +1713,11 @@ const CREATIVE_SLOTS = 112;
 						$tile = $tiles[0];
 						$slotn = $packet->slot;
 						$offset = 0;
-					} elseif($packet->slot >= Chest::SLOTS and $packet->slot <= (Chest::SLOTS << 1)){
+					}elseif($packet->slot >= Chest::SLOTS and $packet->slot <= (Chest::SLOTS << 1)){
 						$tile = $tiles[1];
 						$slotn = $packet->slot - Chest::SLOTS;
 						$offset = Chest::SLOTS;
-					} else{
+					}else{
 						break;
 					}
 
@@ -1748,12 +1748,12 @@ const CREATIVE_SLOTS = 112;
 								$this->sendInventory();
 								break;
 							}
-						} elseif($slot->getCount() > $item->getCount()){
+						}elseif($slot->getCount() > $item->getCount()){
 							$it = clone $item;
 							$it->setCount($slot->getCount() - $item->getCount());
 							$this->addItem($it);
 						}
-					} else{
+					}else{
 						if($this->removeItem($item) === false){
 							$this->sendInventory();
 							break;
@@ -1761,7 +1761,7 @@ const CREATIVE_SLOTS = 112;
 						$this->addItem($slot);
 					}
 					$tile->setSlot($slotn, $item, true, $offset);
-				} else{
+				}else{
 					$tile = $this->windows[$packet->windowid];
 					if(
 						!($tile instanceof Chest or $tile instanceof Furnace)
@@ -1810,12 +1810,12 @@ const CREATIVE_SLOTS = 112;
 								$this->sendInventory();
 								break;
 							}
-						} elseif($slot->getCount() > $item->getCount()){
+						}elseif($slot->getCount() > $item->getCount()){
 							$it = clone $item;
 							$it->setCount($slot->count - $item->count);
 							$this->addItem($it);
 						}
-					} else{
+					}else{
 						if($this->removeItem($item) === false){
 							$this->sendInventory();
 							break;
@@ -1840,12 +1840,12 @@ const CREATIVE_SLOTS = 112;
 				if($t instanceof Sign){
 					if($t->namedtag->creator !== $this->username){
 						$t->spawnTo($this);
-					} else{
+					}else{
 						$nbt = new NBT(NBT::LITTLE_ENDIAN);
 						$nbt->read($packet->namedtag);
 						if($nbt->id !== Tile::SIGN){
 							$t->spawnTo($this);
-						} else{
+						}else{
 							$t->setText($nbt->Text1, $nbt->Text2, $nbt->Text3, $nbt->Text4);
 						}
 					}
@@ -2022,9 +2022,9 @@ const CREATIVE_SLOTS = 112;
 	/**
 	 * Gets a player, or multiple
 	 *
-	 * @param string $name name/partial name to search
-	 * @param bool $alike = true, if false, will only return exact matches
-	 * @param bool $multiple = false, if true, will return an array with all the players that match
+	 * @param string $name     name/partial name to search
+	 * @param bool   $alike    = true, if false, will only return exact matches
+	 * @param bool   $multiple = false, if true, will return an array with all the players that match
 	 *
 	 * @return Player[]|bool|Player
 	 */
@@ -2037,7 +2037,7 @@ const CREATIVE_SLOTS = 112;
 		foreach(Player::$list as $player){
 			if($multiple === false and $player->iusername === $name){
 				return $player;
-			} elseif(strpos($player->iusername, $name) !== false){
+			}elseif(strpos($player->iusername, $name) !== false){
 				$players[$player->CID] = $player;
 			}
 		}
@@ -2045,10 +2045,10 @@ const CREATIVE_SLOTS = 112;
 		if($multiple === false){
 			if(count($players) > 0){
 				return array_shift($players);
-			} else{
+			}else{
 				return false;
 			}
-		} else{
+		}else{
 			return $players;
 		}
 	}
@@ -2149,23 +2149,24 @@ const CREATIVE_SLOTS = 112;
 					$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
 				}
 				unlink(\PocketMine\DATA . "players/" . $iname . ".yml");
-			} else{
+			}else{
 				console("[NOTICE] Player data not found for \"" . $iname . "\", creating new profile");
 				Player::saveOffline($name, $nbt);
 			}
 
-		} else{
+		}else{
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->readCompressed(file_get_contents(\PocketMine\DATA . "players/" . $iname . ".dat"));
 			$nbt = $nbt->getData();
 		}
+
 		return $nbt;
 	}
 
 	/**
 	 * Saves a compressed NBT Coumpound tag as a player data
 	 *
-	 * @param string         $name
+	 * @param string   $name
 	 * @param Compound $nbtTag
 	 */
 	public static function saveOffline($name, Compound $nbtTag){
@@ -2222,7 +2223,7 @@ const CREATIVE_SLOTS = 112;
 				$craftItem[0] = $item->getID();
 				if($item->getMetadata() !== $craftItem[1] and $craftItem[1] !== true){
 					$craftItem[1] = false;
-				} else{
+				}else{
 					$craftItem[1] = $item->getMetadata();
 				}
 				$craftItem[2] += $item->getCount();
@@ -2234,7 +2235,7 @@ const CREATIVE_SLOTS = 112;
 		foreach($recipe as $slot => $item){
 			if(!isset($recipeItems[$item->getID()])){
 				$recipeItems[$item->getID()] = array($item->getID(), $item->getMetadata(), $item->getCount());
-			} else{
+			}else{
 				if($item->getMetadata() !== $recipeItems[$item->getID()][1]){
 					$recipeItems[$item->getID()][1] = false;
 				}
@@ -2267,7 +2268,7 @@ const CREATIVE_SLOTS = 112;
 				$s = $this->getSlot($slot);
 				if($s->getCount() <= 0 or $s->getID() === Item::AIR){
 					$this->setSlot($slot, Item::get($item->getID(), $item->getMetadata(), $item->getCount()));
-				} else{
+				}else{
 					$this->setSlot($slot, Item::get($item->getID(), $item->getMetadata(), $s->getCount() + $item->getCount()));
 				}
 
@@ -2422,8 +2423,6 @@ const CREATIVE_SLOTS = 112;
 			}
 		}
 	}
-
-
 
 
 }

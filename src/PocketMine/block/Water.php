@@ -22,9 +22,9 @@
 namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
+use PocketMine;
 use PocketMine\ServerAPI;
 
 class Water extends Liquid{

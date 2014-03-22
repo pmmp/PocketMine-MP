@@ -21,11 +21,11 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\ServerAPI;
+use PocketMine;
 
 class Lava extends Liquid{
 	public function __construct($meta = 0){

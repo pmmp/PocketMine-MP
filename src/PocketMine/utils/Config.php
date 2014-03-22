@@ -75,10 +75,10 @@ class Config{
 	);
 
 	/**
-	 * @param string      $file     Path of the file to be loaded
-	 * @param int   $type     Config type to load, -1 by default (detect)
-	 * @param array $default  Array with the default values, will be set if not existent
-	 * @param null  &$correct Sets correct to true if everything has been loaded correctly
+	 * @param string $file     Path of the file to be loaded
+	 * @param int    $type     Config type to load, -1 by default (detect)
+	 * @param array  $default  Array with the default values, will be set if not existent
+	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct($file, $type = Config::DETECT, $default = array(), &$correct = null){
 		$this->load($file, $type, $default);
@@ -121,13 +121,13 @@ class Config{
 		if(!file_exists($file)){
 			$this->config = $default;
 			$this->save();
-		} else{
+		}else{
 			if($this->type === Config::DETECT){
 				$extension = explode(".", basename($this->file));
 				$extension = strtolower(trim(array_pop($extension)));
 				if(isset(Config::$formats[$extension])){
 					$this->type = Config::$formats[$extension];
-				} else{
+				}else{
 					$this->correct = false;
 				}
 			}
@@ -162,7 +162,7 @@ class Config{
 				if($this->fillDefaults($default, $this->config) > 0){
 					$this->save();
 				}
-			} else{
+			}else{
 				return false;
 			}
 		}
@@ -204,7 +204,7 @@ class Config{
 			@file_put_contents($this->file, $content, LOCK_EX);
 
 			return true;
-		} else{
+		}else{
 			return false;
 		}
 	}
@@ -259,7 +259,7 @@ class Config{
 
 	/**
 	 * @param string $k key to be set
-	 * @param bool $v value to set key
+	 * @param bool   $v value to set key
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
@@ -283,7 +283,7 @@ class Config{
 			$k = strtolower($k); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
 			return isset($array[$k]); //Find $k in modified array
-		} else{
+		}else{
 			return isset($this->config[$k]);
 		}
 	}
@@ -318,7 +318,7 @@ class Config{
 					$data[$k] = array();
 				}
 				$changed += $this->fillDefaults($v, $data[$k]);
-			} elseif(!isset($data[$k])){
+			}elseif(!isset($data[$k])){
 				$data[$k] = $v;
 				++$changed;
 			}
@@ -348,7 +348,7 @@ class Config{
 		foreach($this->config as $k => $v){
 			if(is_bool($v) === true){
 				$v = $v === true ? "on" : "off";
-			} elseif(is_array($v)){
+			}elseif(is_array($v)){
 				$v = implode(";", $v);
 			}
 			$content .= $k . "=" . $v . "\r\n";

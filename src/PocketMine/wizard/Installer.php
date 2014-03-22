@@ -25,9 +25,9 @@
  */
 namespace PocketMine\Wizard;
 
-use PocketMine;
-use PocketMine\Utils\Utils;
 use PocketMine\Utils\Config;
+use PocketMine\Utils\Utils;
+use PocketMine;
 
 class Installer{
 	const DEFAULT_NAME = "Minecraft: PE Server";
@@ -51,7 +51,7 @@ class Installer{
 				echo "[!] Couldn't find the language\n";
 				$lang = false;
 			}
-		} while($lang == false);
+		}while($lang == false);
 		$this->lang = new InstallerLang($lang);
 		echo "[*] " . $this->lang->language_has_been_selected . "\n";
 		echo "[?] " . $this->lang->skip_installer . " (y/N): ";
@@ -101,7 +101,7 @@ LICENSE;
 			if($port <= 0 or $port > 65535){
 				echo "[!] " . $this->lang->invalid_port . "\n";
 			}
-		} while($port <= 0 or $port > 65535);
+		}while($port <= 0 or $port > 65535);
 		$config->set("server-port", $port);
 		echo "[*] " . $this->lang->ram_warning . "\n";
 		echo "[?] " . $this->lang->server_ram . " (" . self::DEFAULT_MEMORY . "): ";
@@ -110,7 +110,7 @@ LICENSE;
 		do{
 			echo "[?] " . $this->lang->default_gamemode . ": (" . self::DEFAULT_GAMEMODE . "): ";
 			$gamemode = (int) $this->getInput(self::DEFAULT_GAMEMODE);
-		} while($gamemode < 0 or $gamemode > 3);
+		}while($gamemode < 0 or $gamemode > 3);
 		$config->set("gamemode", $gamemode);
 		echo "[?] " . $this->lang->max_players . " (" . self::DEFAULT_PLAYERS . "): ";
 		$config->set("max-players", (int) $this->getInput(self::DEFAULT_PLAYERS));
@@ -118,7 +118,7 @@ LICENSE;
 		echo "[?] " . $this->lang->spawn_protection . " (Y/n): ";
 		if(strtolower($this->getInput("y")) == "n"){
 			$config->set("spawn-protection", -1);
-		} else{
+		}else{
 			$config->set("spawn-protection", 16);
 		}
 		$config->save();
@@ -130,7 +130,7 @@ LICENSE;
 		$op = strtolower($this->getInput(""));
 		if($op === ""){
 			echo "[!] " . $this->lang->op_warning . "\n";
-		} else{
+		}else{
 			$ops = new Config(\PocketMine\DATA . "ops.txt", Config::ENUM);
 			$ops->set($op, true);
 			$ops->save();
@@ -141,7 +141,7 @@ LICENSE;
 		if(strtolower($this->getInput("n")) === "y"){
 			echo "[!] " . $this->lang->whitelist_warning . "\n";
 			$config->set("white-list", true);
-		} else{
+		}else{
 			$config->set("white-list", false);
 		}
 		$config->save();
@@ -154,7 +154,7 @@ LICENSE;
 		echo "[?] " . $this->lang->query_disable . " (y/N): ";
 		if(strtolower($this->getInput("n")) === "y"){
 			$config->set("enable-query", false);
-		} else{
+		}else{
 			$config->set("enable-query", true);
 		}
 
@@ -165,7 +165,7 @@ LICENSE;
 			$password = substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10);
 			$config->set("rcon.password", $password);
 			echo "[*] " . $this->lang->rcon_password . ": " . $password . "\n";
-		} else{
+		}else{
 			$config->set("enable-rcon", false);
 		}
 
@@ -173,7 +173,7 @@ LICENSE;
 		echo "[?] " . $this->lang->usage_disable . " (y/N): ";
 		if(strtolower($this->getInput("n")) === "y"){
 			$config->set("send-usage", false);
-		} else{
+		}else{
 			$config->set("send-usage", true);
 		}
 		$config->save();

@@ -38,7 +38,7 @@ class PMF{
 	public function __construct($file, $new = false, $type = 0, $version = PMF::VERSION){
 		if($new === true){
 			$this->create($file, $type, $version);
-		} else{
+		}else{
 			if($this->load($file) !== true){
 				$this->parseInfo();
 			}

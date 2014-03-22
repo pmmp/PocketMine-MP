@@ -21,6 +21,7 @@
 
 namespace PocketMine\Tile;
 
+use PocketMine;
 use PocketMine\Event\Event;
 use PocketMine\Event\EventHandler;
 use PocketMine\Event\Tile\TileInventoryChangeEvent;
@@ -28,9 +29,8 @@ use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
-use PocketMine\Player;
 use PocketMine\Network;
-use PocketMine;
+use PocketMine\Player;
 
 trait Container{
 	public function openInventory(Player $player){
@@ -43,13 +43,13 @@ trait Container{
 						$pair,
 						$this
 					);
-				} else{
+				}else{
 					$player->windows[$id] = array(
 						$this,
 						$pair
 					);
 				}
-			} else{
+			}else{
 				$player->windows[$id] = $this;
 			}
 
@@ -77,12 +77,12 @@ trait Container{
 						$slot = $ob->getSlot($s);
 						if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 							$slots[] = $slot;
-						} else{
+						}else{
 							$slots[] = Item::get(Item::AIR, 0, 0);
 						}
 					}
 				}
-			} else{
+			}else{
 				$pk = new Network\Protocol\TileEventPacket;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -94,7 +94,7 @@ trait Container{
 					$slot = $this->getSlot($s);
 					if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 						$slots[] = $slot;
-					} else{
+					}else{
 						$slots[] = Item::get(Item::AIR, 0, 0);
 					}
 				}
@@ -106,7 +106,7 @@ trait Container{
 			$player->dataPacket($pk);
 
 			return true;
-		} elseif($this instanceof Furnace){
+		}elseif($this instanceof Furnace){
 			$player->windowCnt++;
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			$player->windows[$id] = $this;
@@ -125,7 +125,7 @@ trait Container{
 				$slot = $this->getSlot($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$slots[] = $slot;
-				} else{
+				}else{
 					$slots[] = Item::get(Item::AIR, 0, 0);
 				}
 			}
@@ -152,7 +152,7 @@ trait Container{
 		$i = $this->getSlotIndex($s);
 		if($i === false or $i < 0){
 			return Item::get(Item::AIR, 0, 0);
-		} else{
+		}else{
 			return Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
 		}
 	}
@@ -176,9 +176,9 @@ trait Container{
 			if($i >= 0){
 				unset($this->namedtag->Items[$i]);
 			}
-		} elseif($i < 0){
+		}elseif($i < 0){
 			$this->namedtag->Items[] = $d;
-		} else{
+		}else{
 			$this->namedtag->Items[$i] = $d;
 		}
 

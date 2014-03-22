@@ -24,9 +24,9 @@
  */
 namespace PocketMine\Recipes;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\ServerAPI;
-use PocketMine;
 
 abstract class Crafting{
 	private static $small = array( //Probably means craftable on crafting bench and in inventory. Name it better!
@@ -315,7 +315,7 @@ abstract class Crafting{
 				$continue = $recipe;
 				break;
 			}
-		} else{
+		}else{
 			return true;
 		}
 

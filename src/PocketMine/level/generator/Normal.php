@@ -21,6 +21,7 @@
 
 namespace PocketMine\Level\Generator;
 
+use PocketMine;
 use PocketMine\Block\CoalOre;
 use PocketMine\Block\DiamondOre;
 use PocketMine\Block\Dirt;
@@ -37,7 +38,6 @@ use PocketMine\Level\Generator\Populator\Tree;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Normal extends Generator{
 
@@ -131,39 +131,39 @@ class Normal extends Generator{
 						$diff = $height - $y;
 						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
 							$chunk .= "\x07"; //bedrock
-						} elseif($diff > 2){
+						}elseif($diff > 2){
 							$chunk .= "\x01"; //stone
-						} elseif($diff > 0){
+						}elseif($diff > 0){
 							if($patches[$i] > 0.7){
 								$chunk .= "\x01"; //stone
-							} elseif($patches[$i] < -0.8){
+							}elseif($patches[$i] < -0.8){
 								$chunk .= "\x0d"; //gravel
-							} else{
+							}else{
 								$chunk .= "\x03"; //dirt
 							}
-						} elseif($y <= $this->waterHeight){
+						}elseif($y <= $this->waterHeight){
 							if(($this->waterHeight - $y) <= 1 and $diff === 0){
 								$chunk .= "\x0c"; //sand
-							} elseif($diff === 0){
+							}elseif($diff === 0){
 								if($patchesSmall[$i] > 0.3){
 									$chunk .= "\x0d"; //gravel
-								} elseif($patchesSmall[$i] < -0.45){
+								}elseif($patchesSmall[$i] < -0.45){
 									$chunk .= "\x0c"; //sand
-								} else{
+								}else{
 									$chunk .= "\x03"; //dirt
 								}
-							} else{
+							}else{
 								$chunk .= "\x09"; //still_water
 							}
-						} elseif($diff === 0){
+						}elseif($diff === 0){
 							if($patches[$i] > 0.7){
 								$chunk .= "\x01"; //stone
-							} elseif($patches[$i] < -0.8){
+							}elseif($patches[$i] < -0.8){
 								$chunk .= "\x0d"; //gravel
-							} else{
+							}else{
 								$chunk .= "\x02"; //grass
 							}
-						} else{
+						}else{
 							$chunk .= "\x00";
 						}
 					}

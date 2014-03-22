@@ -46,18 +46,18 @@ namespace PocketMine {
 			$className = array_pop($path);
 			if(count($path) > 0){
 				$path = implode(DIRECTORY_SEPARATOR, array_map("strtolower", $path)) . DIRECTORY_SEPARATOR;
-			} else{
+			}else{
 				$path = "";
 			}
 			$fPath = \PocketMine\PATH . "src" . DIRECTORY_SEPARATOR . "PocketMine" . DIRECTORY_SEPARATOR . $path . $className . ".php";
 			if(file_exists($fPath)){
 				require_once($fPath);
 			}
-		} else{ //Try plugin
+		}else{ //Try plugin
 			$className = array_pop($path);
 			if(count($path) > 0){
 				$path = implode(DIRECTORY_SEPARATOR, array_map("strtolower", $path)) . DIRECTORY_SEPARATOR;
-			} else{
+			}else{
 				$path = "";
 			}
 			$fPath = \PocketMine\PATH . "plugins" . DIRECTORY_SEPARATOR . $parent . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
@@ -85,7 +85,7 @@ namespace PocketMine {
 			exec("date.exe /T", $date);
 			$j = array_map("intval", explode(substr($date[0], 2, 1), trim($date[0])));
 			$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
-		} else{
+		}else{
 			exec("date +%s", $t);
 			$offset = round((intval(trim($t[0])) - time()) / 60) * 60;
 		}
@@ -94,7 +94,7 @@ namespace PocketMine {
 		$d = timezone_name_from_abbr("", $offset, $daylight);
 		@ini_set("date.timezone", $d);
 		date_default_timezone_set($d);
-	} else{
+	}else{
 		$d = @date_default_timezone_get();
 		if(strpos($d, "/") === false){
 			$d = timezone_name_from_abbr($d);
@@ -118,7 +118,7 @@ namespace PocketMine {
 
 	if((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
 		define("PocketMine\\ANSI", true);
-	} else{
+	}else{
 		define("PocketMine\\ANSI", false);
 	}
 
@@ -168,7 +168,7 @@ namespace PocketMine {
 			case "mac":
 			case "linux":
 			default:
-			exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+				exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
 		}
 	}
 
@@ -182,13 +182,13 @@ namespace PocketMine {
 			}
 			$var = null;
 			unset($var);
-		} elseif(is_array($var)){
+		}elseif(is_array($var)){
 			foreach($var as $i => $v){
 				hard_unset($var[$i]);
 			}
 			$var = null;
 			unset($var);
-		} else{
+		}else{
 			$var = null;
 			unset($var);
 		}
@@ -235,7 +235,7 @@ namespace PocketMine {
 					}
 				}
 				$message = Utils\TextFormat::toANSI($time . $add . $message . Utils\TextFormat::RESET);
-			} else{
+			}else{
 				$message = $replaced;
 			}
 			echo $message;
@@ -332,7 +332,7 @@ namespace PocketMine {
 	if(!extension_loaded("pthreads")){
 		console("[ERROR] Unable to find the pthreads extension.", true, true, 0);
 		++$errors;
-	} else{
+	}else{
 		$pthreads_version = phpversion("pthreads");
 		if(substr_count($pthreads_version, ".") < 2){
 			$pthreads_version = "0.$pthreads_version";
@@ -371,7 +371,7 @@ namespace PocketMine {
 	$gitsha1 = false;
 	if(file_exists(\PocketMine\PATH . ".git/refs/heads/master")){ //Found Git information!
 		define("PocketMine\\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH . ".git/refs/heads/master"))));
-	} else{ //Unknown :(
+	}else{ //Unknown :(
 		define("PocketMine\\GIT_COMMIT", str_repeat("00", 20));
 	}
 

@@ -21,10 +21,10 @@
 
 namespace PocketMine\Network\RakNet;
 
+use PocketMine;
 use PocketMine\Network;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 class Packet extends Network\Packet{
 	private $packetID;
@@ -44,7 +44,7 @@ class Packet extends Network\Packet{
 			$this->offset = strlen($this->buffer) - 1;
 
 			return "";
-		} elseif($len === true){
+		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
 
@@ -136,7 +136,7 @@ class Packet extends Network\Packet{
 						for($c = $start; $c <= $end; ++$c){
 							$this->packets[] = $c;
 						}
-					} else{
+					}else{
 						$this->packets[] = $this->getLTriad();
 					}
 				}
@@ -158,7 +158,7 @@ class Packet extends Network\Packet{
 			or $reliability === 7
 		){
 			$messageIndex = $this->getLTriad();
-		} else{
+		}else{
 			$messageIndex = false;
 		}
 
@@ -169,7 +169,7 @@ class Packet extends Network\Packet{
 		){
 			$orderIndex = $this->getLTriad();
 			$orderChannel = $this->getByte();
-		} else{
+		}else{
 			$orderIndex = false;
 			$orderChannel = false;
 		}
@@ -178,7 +178,7 @@ class Packet extends Network\Packet{
 			$splitCount = $this->getInt();
 			$splitID = $this->getShort();
 			$splitIndex = $this->getInt();
-		} else{
+		}else{
 			$splitCount = false;
 			$splitID = false;
 			$splitIndex = false;
@@ -189,7 +189,7 @@ class Packet extends Network\Packet{
 			or ($hasSplit === true and $splitIndex >= $splitCount)
 		){
 			return false;
-		} else{
+		}else{
 			$pid = $this->getByte();
 			$buffer = $this->get($length - 1);
 			if(strlen($buffer) < ($length - 1)){
@@ -445,7 +445,7 @@ class Packet extends Network\Packet{
 							$curr = $end = $n;
 							$type = false;
 							$pointer = $i + 1;
-						} else{
+						}else{
 							break;
 						}
 					}
@@ -454,7 +454,7 @@ class Packet extends Network\Packet{
 						$payload .= "\x00";
 						$payload .= strrev(Utils::writeTriad($start));
 						$payload .= strrev(Utils::writeTriad($end));
-					} else{
+					}else{
 						$payload .= Utils::writeBool(true);
 						$payload .= strrev(Utils::writeTriad($start));
 					}

@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 use PocketMine\Event\Entity\EntityArmorChangeEvent;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent;
 use PocketMine\Event\Event;
@@ -30,13 +29,14 @@ use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
+use PocketMine\Network;
 use PocketMine\Network\Protocol\AddPlayerPacket;
 use PocketMine\Network\Protocol\ContainerSetContentPacket;
 use PocketMine\Network\Protocol\PlayerEquipmentPacket;
 use PocketMine\Network\Protocol\RemovePlayerPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
-use PocketMine\Network;
 use PocketMine\Player;
+use PocketMine;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -224,7 +224,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		for($i = 0; $i < 4; ++$i){
 			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > Item::AIR){
 				$slots[$i] = $this->armor[$i]->getID() !== Item::AIR ? $this->armor[$i]->getID() - 256 : 0;
-			} else{
+			}else{
 				$this->armor[$i] = Item::get(Item::AIR, 0, 0);
 				$slots[$i] = 255;
 			}
@@ -234,7 +234,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->eid = $this->id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
-		} elseif($this instanceof Player){
+		}elseif($this instanceof Player){
 			$pk = new ContainerSetContentPacket;
 			$pk->windowid = 0x78; //Armor window id
 			$pk->slots = $this->armor;
@@ -300,7 +300,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 					$inv[$s] = clone $item;
 					$inv[$s]->setCount($add);
 					break;
-				} elseif($i->equals($item)){
+				}elseif($i->equals($item)){
 					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
 					if($add <= 0){
 						continue;
@@ -329,7 +329,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 					$i2->setCount($add);
 					$this->setSlot($s, $i2);
 					break;
-				} elseif($i->equals($item)){
+				}elseif($i->equals($item)){
 					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
 					if($add <= 0){
 						continue;
@@ -362,7 +362,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 					if($item->getCount() < $i->getCount()){
 						$i->setCount($i->getCount() - $item->getCount());
 						$this->setSlot($s, $i);
-					} else{
+					}else{
 						$this->setSlot($s, Item::get(Item::AIR, 0, 0));
 					}
 					break;

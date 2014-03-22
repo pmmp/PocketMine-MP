@@ -24,10 +24,10 @@
  */
 namespace PocketMine\Block;
 
+use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
-use PocketMine;
 
 abstract class Block extends Position{
 	const AIR = 0;

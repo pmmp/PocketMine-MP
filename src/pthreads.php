@@ -42,7 +42,7 @@ class StackableArray extends \Threaded{
 	}
 }
 
-class AsyncMultipleQueue extends Thread{
+class AsyncMultipleQueue extends \Thread{
 	public $input;
 	public $output;
 	public $stop;
@@ -112,7 +112,7 @@ class AsyncMultipleQueue extends Thread{
 	}
 }
 
-class Async extends Thread{
+class Async extends \Thread{
 	public function __construct($method, $params = array()){
 		$this->method = $method;
 		$this->params = $params;

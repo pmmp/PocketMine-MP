@@ -25,11 +25,11 @@
  */
 namespace PocketMine\Network\Query;
 
+use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Player;
 use PocketMine\ServerAPI;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
@@ -134,7 +134,7 @@ class QueryHandler{
 						$this->regenerateInfo();
 					}
 					$pk->payload = $this->longData;
-				} else{
+				}else{
 					$pk->payload = $this->server->name . "\x00" . (($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->maxClients . "\x00" . Utils::writeLShort($this->server->api->getProperty("server-port")) . $this->server->api->getProperty("server-ip", "0.0.0.0") . "\x00";
 				}
 				$pk->encode();

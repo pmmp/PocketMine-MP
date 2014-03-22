@@ -24,6 +24,7 @@
  */
 namespace PocketMine\Network;
 
+use PocketMine;
 use PocketMine\Event\Event;
 use PocketMine\Event\EventHandler;
 use PocketMine\Event\Server\PacketReceiveEvent;
@@ -33,7 +34,6 @@ use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet;
 use PocketMine\ServerAPI;
-use PocketMine;
 
 class Handler{
 	public $bandwidth;
@@ -77,7 +77,7 @@ class Handler{
 			}
 
 			return $packet;
-		} elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
+		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
 			$packet = new QueryPacket;
 			$packet->ip = $source;
 			$packet->port = $port;
@@ -86,7 +86,7 @@ class Handler{
 				return false;
 			}
 			ServerAPI::request()->api->query->handle($packet);
-		} else{
+		}else{
 			$packet = new Packet($pid);
 			$packet->ip = $source;
 			$packet->port = $port;
@@ -102,7 +102,7 @@ class Handler{
 	public function writePacket(Packet $packet){
 		if(EventHandler::callEvent(new PacketSendEvent($packet)) === Event::DENY){
 			return 0;
-		} elseif($packet instanceof Packet){
+		}elseif($packet instanceof Packet){
 			$packet->encode();
 		}
 		$write = $this->socket->write($packet->buffer, $packet->ip, $packet->port);

@@ -21,11 +21,11 @@
 
 namespace PocketMine\Event\Block;
 
+use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Item\Item;
 use PocketMine\Player;
-use PocketMine;
 
 /**
  * Called when a player places a block

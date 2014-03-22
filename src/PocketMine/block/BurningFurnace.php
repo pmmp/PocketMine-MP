@@ -22,13 +22,13 @@
 namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
-use PocketMine;
 use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Tile\Furnace;
+use PocketMine;
 use PocketMine\Tile\Tile;
 
 class BurningFurnace extends Solid{

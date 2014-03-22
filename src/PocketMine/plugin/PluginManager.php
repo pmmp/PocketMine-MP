@@ -21,9 +21,9 @@
 
 namespace PocketMine\Plugin;
 
-use PocketMine;
-use PocketMine\Permission\Permission;
 use PocketMine\Permission\Permissible;
+use PocketMine\Permission\Permission;
+use PocketMine;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -51,7 +51,7 @@ abstract class PluginManager{
 	protected static $defaultPermsOp = array();
 
 	/**
-	  * @var Permissible[]
+	 * @var Permissible[]
 	 */
 	protected static $permSubs = array();
 
@@ -79,6 +79,7 @@ abstract class PluginManager{
 		if(isset(static::$plugins[$name])){
 			return static::$plugins[$name];
 		}
+
 		return null;
 	}
 
@@ -99,6 +100,7 @@ abstract class PluginManager{
 		}
 
 		static::$fileAssociations[spl_object_hash($loader)] = array($loader, $loader->getPluginFilters());
+
 		return true;
 	}
 
@@ -145,13 +147,13 @@ abstract class PluginManager{
 						if($description instanceof PluginDescription){
 							$name = $description->getName();
 							if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-								console("[ERROR] Could not load plugin '".$name."': restricted name");
+								console("[ERROR] Could not load plugin '" . $name . "': restricted name");
 								continue;
 							}elseif(strpos($name, " ") !== false){
-								console("[WARNING] Plugin '".$name."' uses spaces in its name, this is discouraged");
+								console("[WARNING] Plugin '" . $name . "' uses spaces in its name, this is discouraged");
 							}
 							if(isset($plugins[$name])){
-								console("[ERROR] Could not load duplicate plugin '".$name."': plugin exists");
+								console("[ERROR] Could not load duplicate plugin '" . $name . "': plugin exists");
 								continue;
 							}
 
@@ -178,7 +180,7 @@ abstract class PluginManager{
 							}
 
 							if($compatible === false){
-								console("[ERROR] Could not load plugin '".$name."': API version not compatible");
+								console("[ERROR] Could not load plugin '" . $name . "': API version not compatible");
 								continue;
 							}
 
@@ -209,7 +211,7 @@ abstract class PluginManager{
 							if(isset($loadedPlugins[$dependency])){
 								unset($dependencies[$name][$key]);
 							}elseif(!isset($plugins[$dependency])){
-								console("[SEVERE] Could not load plugin '".$name."': Unknown dependency");
+								console("[SEVERE] Could not load plugin '" . $name . "': Unknown dependency");
 								break;
 							}
 						}
@@ -237,7 +239,7 @@ abstract class PluginManager{
 						if($plugin = static::loadPlugin($file) and $plugin instanceof Plugin){
 							$loadedPlugins[$name] = $plugin;
 						}else{
-							console("[SEVERE] Could not load plugin '".$name."'");
+							console("[SEVERE] Could not load plugin '" . $name . "'");
 						}
 					}
 				}
@@ -251,7 +253,7 @@ abstract class PluginManager{
 							if($plugin = static::loadPlugin($file) and $plugin instanceof Plugin){
 								$loadedPlugins[$name] = $plugin;
 							}else{
-								console("[SEVERE] Could not load plugin '".$name."'");
+								console("[SEVERE] Could not load plugin '" . $name . "'");
 							}
 						}
 					}
@@ -259,7 +261,7 @@ abstract class PluginManager{
 					//No plugins loaded :(
 					if($missingDependency === true){
 						foreach($plugins as $name => $file){
-							console("[SEVERE] Could not load plugin '".$name."': circular dependency detected");
+							console("[SEVERE] Could not load plugin '" . $name . "': circular dependency detected");
 						}
 						$plugins = array();
 					}
@@ -281,6 +283,7 @@ abstract class PluginManager{
 		if(isset(static::$permissions[$name])){
 			return static::$permissions[$name];
 		}
+
 		return null;
 	}
 
@@ -293,8 +296,10 @@ abstract class PluginManager{
 		if(!isset(static::$permissions[$permission->getName()])){
 			static::$permissions[$permission->getName()] = $permission;
 			static::calculatePermissionDefault($permission);
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -388,6 +393,7 @@ abstract class PluginManager{
 		if(isset(static::$permSubs[$permission])){
 			return static::$permSubs[$permission];
 		}
+
 		return array();
 	}
 

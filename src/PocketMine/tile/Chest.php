@@ -23,13 +23,13 @@ namespace PocketMine\Tile;
 
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine;
+use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Network\Protocol\EntityDataPacket;
-use PocketMine;
 use PocketMine\Player;
-use PocketMine\NBT\NBT;
 
 class Chest extends Spawnable{
 	use Container;
@@ -109,7 +109,7 @@ class Chest extends Spawnable{
 				new Int("pairx", (int) $this->namedtag->pairx),
 				new Int("pairz", (int) $this->namedtag->pairz)
 			)));
-		} else{
+		}else{
 			$nbt->setData(new Compound("", array(
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),

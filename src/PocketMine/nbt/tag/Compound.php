@@ -45,6 +45,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 				return $this->{$offset}->getValue();
 			}
 		}
+
 		return null;
 	}
 
@@ -71,7 +72,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 			if($tag instanceof NamedTag and $tag->getName() !== ""){
 				$this->{$tag->getName()} = $tag;
 			}
-		} while(!($tag instanceof End) and !$nbt->feof());
+		}while(!($tag instanceof End) and !$nbt->feof());
 	}
 
 	public function write(NBT $nbt){

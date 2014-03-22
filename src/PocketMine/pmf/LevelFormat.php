@@ -21,12 +21,12 @@
 
 namespace PocketMine\PMF;
 
+use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;
@@ -77,15 +77,15 @@ class LevelFormat extends PMF{
 			$this->levelData = $blank;
 			$this->createBlank();
 			$this->isLoaded = true;
-		} else{
+		}else{
 			if($this->load($file) !== false){
 				$this->parseInfo();
 				if($this->parseLevel() === false){
 					$this->isLoaded = false;
-				} else{
+				}else{
 					$this->isLoaded = true;
 				}
-			} else{
+			}else{
 				$this->isLoaded = false;
 			}
 		}
@@ -135,7 +135,7 @@ class LevelFormat extends PMF{
 		if($this->levelData["version"] === 0){
 			$this->read(1);
 			$this->levelData["height"] = ord($this->read(1));
-		} else{
+		}else{
 			$this->levelData["height"] = ord($this->read(1));
 			if($this->levelData["height"] !== 8){
 				return false;
@@ -313,7 +313,7 @@ class LevelFormat extends PMF{
 					$this->fillMiniChunk($X, $Z, $Y);
 				}
 				$offset += 8192;
-			} else{
+			}else{
 				$this->chunks[$index][$Y] = false;
 			}
 		}
@@ -329,7 +329,7 @@ class LevelFormat extends PMF{
 		$Z = (int) $Z;
 		if(!$this->isChunkLoaded($X, $Z)){
 			return false;
-		} elseif($save !== false){
+		}elseif($save !== false){
 			$this->saveChunk($X, $Z);
 		}
 		$index = self::getIndex($X, $Z);
@@ -438,7 +438,7 @@ class LevelFormat extends PMF{
 	public function setMiniChunk($X, $Z, $Y, $data){
 		if($this->isGenerating > 0){
 			$this->initCleanChunk($X, $Z);
-		} elseif($this->isChunkLoaded($X, $Z) === false){
+		}elseif($this->isChunkLoaded($X, $Z) === false){
 			$this->loadChunk($X, $Z);
 		}
 		if(strlen($data) !== 8192){
@@ -518,7 +518,7 @@ class LevelFormat extends PMF{
 		$this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))} = chr($block);
 		if(!isset($this->chunkChange[$index][$Y])){
 			$this->chunkChange[$index][$Y] = 1;
-		} else{
+		}else{
 			++$this->chunkChange[$index][$Y];
 		}
 		$this->chunkChange[$index][-1] = true;
@@ -543,7 +543,7 @@ class LevelFormat extends PMF{
 		$m = ord($this->chunks[$index][$Y]{(int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))});
 		if(($y & 1) === 0){
 			$m = $m & 0x0F;
-		} else{
+		}else{
 			$m = $m >> 4;
 		}
 
@@ -569,7 +569,7 @@ class LevelFormat extends PMF{
 		$old_m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
 			$m = ($old_m & 0xF0) | $damage;
-		} else{
+		}else{
 			$m = ($damage << 4) | ($old_m & 0x0F);
 		}
 
@@ -577,7 +577,7 @@ class LevelFormat extends PMF{
 			$this->chunks[$index][$Y]{$mindex} = chr($m);
 			if(!isset($this->chunkChange[$index][$Y])){
 				$this->chunkChange[$index][$Y] = 1;
-			} else{
+			}else{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
@@ -598,7 +598,7 @@ class LevelFormat extends PMF{
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
 			return array(0, 0);
-		} elseif($this->chunks[$index][$Y] === false){
+		}elseif($this->chunks[$index][$Y] === false){
 			return array(0, 0);
 		}
 		$aX = $x - ($X << 4);
@@ -608,7 +608,7 @@ class LevelFormat extends PMF{
 		$m = ord($this->chunks[$index][$Y]{(int) (($aY >> 1) + 16 + ($aX << 5) + ($aZ << 9))});
 		if(($y & 1) === 0){
 			$m = $m & 0x0F;
-		} else{
+		}else{
 			$m = $m >> 4;
 		}
 
@@ -627,7 +627,7 @@ class LevelFormat extends PMF{
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
 			return false;
-		} elseif($this->chunks[$index][$Y] === false){
+		}elseif($this->chunks[$index][$Y] === false){
 			$this->fillMiniChunk($X, $Z, $Y);
 		}
 		$aX = $x - ($X << 4);
@@ -639,7 +639,7 @@ class LevelFormat extends PMF{
 		$old_m = ord($this->chunks[$index][$Y]{$mindex});
 		if(($y & 1) === 0){
 			$m = ($old_m & 0xF0) | $meta;
-		} else{
+		}else{
 			$m = ($meta << 4) | ($old_m & 0x0F);
 		}
 
@@ -648,7 +648,7 @@ class LevelFormat extends PMF{
 			$this->chunks[$index][$Y]{$mindex} = chr($m);
 			if(!isset($this->chunkChange[$index][$Y])){
 				$this->chunkChange[$index][$Y] = 1;
-			} else{
+			}else{
 				++$this->chunkChange[$index][$Y];
 			}
 			$this->chunkChange[$index][-1] = true;
@@ -697,7 +697,7 @@ class LevelFormat extends PMF{
 		for($Y = 0; $Y < 8; ++$Y){
 			if($this->chunks[$index][$Y] !== false and ((isset($this->chunkChange[$index][$Y]) and $this->chunkChange[$index][$Y] === 0) or !$this->isMiniChunkEmpty($X, $Z, $Y))){
 				$bitmap |= 1 << $Y;
-			} else{
+			}else{
 				$this->chunks[$index][$Y] = false;
 			}
 			$this->chunkChange[$index][$Y] = 0;

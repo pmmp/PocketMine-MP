@@ -73,11 +73,11 @@ class RCON{
 		for($n = 0; $n < $this->threads; ++$n){
 			if($this->workers[$n]->isTerminated() === true){
 				$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
-			} elseif($this->workers[$n]->isWaiting()){
+			}elseif($this->workers[$n]->isWaiting()){
 				if($this->workers[$n]->response !== ""){
 					console($this->workers[$n]->response);
 					$this->workers[$n]->notify();
-				} else{
+				}else{
 					$this->workers[$n]->response = ServerAPI::request()->api->console->run($this->workers[$n]->cmd, "rcon");
 					$this->workers[$n]->notify();
 				}
