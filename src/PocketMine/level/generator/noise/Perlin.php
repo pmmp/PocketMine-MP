@@ -32,8 +32,10 @@ class Perlin extends Generator{
 	];
 
 
-	public function __construct(Random $random, $octaves){
+	public function __construct(Random $random, $octaves, $frequency, $amplitude){
 		$this->octaves = $octaves;
+		$this->frequency = $frequency;
+		$this->amplitude = $amplitude;
 		$this->offsetX = $random->nextFloat() * 256;
 		$this->offsetY = $random->nextFloat() * 256;
 		$this->offsetZ = $random->nextFloat() * 256;

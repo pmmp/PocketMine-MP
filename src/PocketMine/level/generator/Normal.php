@@ -67,10 +67,10 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseHills = new Simplex($this->random, 3);
-		$this->noisePatches = new Simplex($this->random, 2);
-		$this->noisePatchesSmall = new Simplex($this->random, 2);
-		$this->noiseBase = new Simplex($this->random, 16);
+		$this->noiseHills = new Simplex($this->random, 3, 0.11, 12);
+		$this->noisePatches = new Simplex($this->random, 2, 0.03, 16);
+		$this->noisePatchesSmall = new Simplex($this->random, 2, 0.5, 4);
+		$this->noiseBase = new Simplex($this->random, 16, 0.7, 16);
 
 
 		$ores = new Ore();
@@ -106,10 +106,10 @@ class Normal extends Generator{
 		for($z = 0; $z < 16; ++$z){
 			for($x = 0; $x < 16; ++$x){
 				$i = ($z << 4) + $x;
-				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.11, 12, true);
-				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.03, 16, true);
-				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.5, 4, true);
-				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), 0.7, 16, true);
+				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
+				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
+				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
+				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
 
 				if($base[$i] < 0){
 					$base[$i] *= 0.5;

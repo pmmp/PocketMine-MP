@@ -64,8 +64,9 @@ class Simplex extends Perlin{
 		[2, 1, 0, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 1, 0, 2], [0, 0, 0, 0], [3, 2, 0, 1], [3, 2, 1, 0]];
 	protected $offsetW;
 
-	public function __construct(Random $random, $octaves){
-		parent::__construct($random, $octaves);
+
+	public function __construct(Random $random, $octaves, $frequency, $amplitude){
+		parent::__construct($random, $octaves, $frequency, $amplitude);
 		$this->offsetW = $random->nextFloat() * 256;
 		self::$SQRT_3 = sqrt(3);
 		self::$SQRT_5 = sqrt(5);

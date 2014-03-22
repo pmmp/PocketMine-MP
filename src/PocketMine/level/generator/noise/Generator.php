@@ -33,6 +33,8 @@ abstract class Generator{
 	protected $offsetY = 0;
 	protected $offsetZ = 0;
 	protected $octaves = 8;
+	protected $frequency;
+	protected $amplitude;
 
 	public static function floor($x){
 		return $x >= 0 ? (int) $x : (int) ($x - 1);
@@ -58,7 +60,7 @@ abstract class Generator{
 
 	abstract public function getNoise3D($x, $y, $z);
 
-	public function noise2D($x, $z, $frequency, $amplitude, $normalized = false){
+	public function noise2D($x, $z, $normalized = false){
 		$result = 0;
 		$amp = 1;
 		$freq = 1;
@@ -67,8 +69,8 @@ abstract class Generator{
 		for($i = 0; $i < $this->octaves; ++$i){
 			$result += $this->getNoise2D($x * $freq, $z * $freq) * $amp;
 			$max += $amp;
-			$freq *= $frequency;
-			$amp *= $amplitude;
+			$freq *= $this->frequency;
+			$amp *= $this->amplitude;
 		}
 		if($normalized === true){
 			$result /= $max;
@@ -77,7 +79,7 @@ abstract class Generator{
 		return $result;
 	}
 
-	public function noise3D($x, $y, $z, $frequency, $amplitude, $normalized = false){
+	public function noise3D($x, $y, $z, $normalized = false){
 		$result = 0;
 		$amp = 1;
 		$freq = 1;
@@ -86,8 +88,8 @@ abstract class Generator{
 		for($i = 0; $i < $this->octaves; ++$i){
 			$result += $this->getNoise3D($x * $freq, $y * $freq, $z * $freq) * $amp;
 			$max += $amp;
-			$freq *= $frequency;
-			$amp *= $amplitude;
+			$freq *= $this->frequency;
+			$amp *= $this->amplitude;
 		}
 		if($normalized === true){
 			$result /= $max;
