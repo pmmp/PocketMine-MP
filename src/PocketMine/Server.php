@@ -657,12 +657,6 @@ class Server{
 	public function event($event, callable $func){
 		if(!is_callable($func)){
 			return false;
-		}elseif(isset(Deprecation::$events[$event])){
-			$sub = "";
-			if(Deprecation::$events[$event] !== false){
-				$sub = " Substitute \"" . Deprecation::$events[$event] . "\" found.";
-			}
-			console("[ERROR] Event \"$event\" has been deprecated.$sub [Attach to " . (is_array($func) ? get_class($func[0]) . "::" . $func[1] : $func) . "]");
 		}
 		$evid = $this->evCnt++;
 		if(!isset($this->events[$event])){
