@@ -31,6 +31,49 @@ namespace {
 	function console($message, $EOL = true, $log = true, $level = 1){
 		PocketMine\console($message, $EOL, $log, $level);
 	}
+
+	function safe_var_dump(){
+		static $cnt = 0;
+		foreach(func_get_args() as $var){
+			switch(true){
+				case is_array($var):
+					echo str_repeat("  ", $cnt) . "array(" . count($var) . ") {" . PHP_EOL;
+					foreach($var as $key => $value){
+						echo str_repeat("  ", $cnt + 1) . "[" . (is_integer($key) ? $key : '"' . $key . '"') . "]=>" . PHP_EOL;
+						++$cnt;
+						safe_var_dump($value);
+						--$cnt;
+					}
+					echo str_repeat("  ", $cnt) . "}" . PHP_EOL;
+					break;
+				case is_integer($var):
+					echo str_repeat("  ", $cnt) . "int(" . $var . ")" . PHP_EOL;
+					break;
+				case is_float($var):
+					echo str_repeat("  ", $cnt) . "float(" . $var . ")" . PHP_EOL;
+					break;
+				case is_bool($var):
+					echo str_repeat("  ", $cnt) . "bool(" . ($var === true ? "true" : "false") . ")" . PHP_EOL;
+					break;
+				case is_string($var):
+					echo str_repeat("  ", $cnt) . "string(" . strlen($var) . ") \"$var\"" . PHP_EOL;
+					break;
+				case is_resource($var):
+					echo str_repeat("  ", $cnt) . "resource() of type (" . get_resource_type($var) . ")" . PHP_EOL;
+					break;
+				case is_object($var):
+					echo str_repeat("  ", $cnt) . "object(" . get_class($var) . ")" . PHP_EOL;
+					break;
+				case is_null($var):
+					echo str_repeat("  ", $cnt) . "NULL" . PHP_EOL;
+					break;
+			}
+		}
+	}
+
+	function dummy(){
+
+	}
 }
 
 namespace PocketMine {
@@ -120,44 +163,6 @@ namespace PocketMine {
 		define("PocketMine\\ANSI", true);
 	}else{
 		define("PocketMine\\ANSI", false);
-	}
-
-	function dummy(){
-
-	}
-
-	function safe_var_dump($var, $cnt = 0){
-		switch(true){
-			case is_array($var):
-				echo str_repeat("  ", $cnt) . "array(" . count($var) . ") {" . PHP_EOL;
-				foreach($var as $key => $value){
-					echo str_repeat("  ", $cnt + 1) . "[" . (is_integer($key) ? $key : '"' . $key . '"') . "]=>" . PHP_EOL;
-					safe_var_dump($value, $cnt + 1);
-				}
-				echo str_repeat("  ", $cnt) . "}" . PHP_EOL;
-				break;
-			case is_integer($var):
-				echo str_repeat("  ", $cnt) . "int(" . $var . ")" . PHP_EOL;
-				break;
-			case is_float($var):
-				echo str_repeat("  ", $cnt) . "float(" . $var . ")" . PHP_EOL;
-				break;
-			case is_bool($var):
-				echo str_repeat("  ", $cnt) . "bool(" . ($var === true ? "true" : "false") . ")" . PHP_EOL;
-				break;
-			case is_string($var):
-				echo str_repeat("  ", $cnt) . "string(" . strlen($var) . ") \"$var\"" . PHP_EOL;
-				break;
-			case is_resource($var):
-				echo str_repeat("  ", $cnt) . "resource() of type (" . get_resource_type($var) . ")" . PHP_EOL;
-				break;
-			case is_object($var):
-				echo str_repeat("  ", $cnt) . "object(" . get_class($var) . ")" . PHP_EOL;
-				break;
-			case is_null($var):
-				echo str_repeat("  ", $cnt) . "NULL" . PHP_EOL;
-				break;
-		}
 	}
 
 	function kill($pid){
