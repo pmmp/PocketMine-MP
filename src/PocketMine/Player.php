@@ -636,10 +636,9 @@ class Player extends RealHuman{
 					return false;
 				}
 			}
-			if($this->server->api->dhandle("achievement.grant", array("player" => $this, "achievementId" => $achievementId)) !== false){
+			if(EventHandler::callEvent(new Event\Player\PlayerAchievementAwardedEvent($this, $achievementId)) !== Event\Event::DENY){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
-
 				return true;
 			}else{
 				return false;
