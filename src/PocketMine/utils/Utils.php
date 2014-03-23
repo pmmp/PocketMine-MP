@@ -705,6 +705,9 @@ class Utils{
 
 	public static function readInt($str){
 		list(, $unpacked) = @unpack("N", $str);
+		if($unpacked > 2147483647){
+			$unpacked -= 4294967296;
+		}
 		return (int) $unpacked;
 	}
 
@@ -714,6 +717,9 @@ class Utils{
 
 	public static function readLInt($str){
 		list(, $unpacked) = @unpack("V", $str);
+		if($unpacked >= 2147483648){
+			$unpacked -= 4294967296;
+		}
 		return (int) $unpacked;
 	}
 
