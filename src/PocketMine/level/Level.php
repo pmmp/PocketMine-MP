@@ -24,6 +24,7 @@
  */
 namespace PocketMine\Level;
 
+use PocketMine;
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
 use PocketMine\Item\Item;
@@ -51,7 +52,6 @@ use PocketMine\Utils\Cache;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 /**
  * Class Level
@@ -421,14 +421,12 @@ class Level{
 		}else{
 			$time = $this->startTime + ($now - $this->startCheck) * 20;
 		}
-		if($this->server->api->dhandle("time.change", array("level" => $this, "time" => $time)) !== false){
-			$this->time = $time;
 
-			$pk = new SetTimePacket;
-			$pk->time = (int) $this->time;
-			$pk->started = $this->stopTime == false;
-			Player::broadcastPacket($this->players, $pk);
-		}
+		$this->time = $time;
+		$pk = new SetTimePacket;
+		$pk->time = (int) $this->time;
+		$pk->started = $this->stopTime == false;
+		Player::broadcastPacket($this->players, $pk);
 
 		return;
 	}

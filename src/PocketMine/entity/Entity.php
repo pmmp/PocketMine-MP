@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Entity;
 
-use PocketMine;
 use PocketMine\Event\Entity\EntityLevelChangeEvent;
 use PocketMine\Event\Entity\EntityMotionEvent;
 use PocketMine\Event\Entity\EntityMoveEvent;
@@ -35,14 +34,14 @@ use PocketMine\Level\Position;
 use PocketMine\Math\AxisAlignedBB;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\NBT\Tag\Compound;
+use PocketMine\Network;
 use PocketMine\Network\Protocol\MoveEntityPacket_PosRot;
 use PocketMine\Network\Protocol\MovePlayerPacket;
 use PocketMine\Network\Protocol\RemoveEntityPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
-use PocketMine\Network;
 use PocketMine\Player;
 use PocketMine\PMF\LevelFormat;
-use PocketMine\ServerAPI;
+use PocketMine;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;
@@ -130,7 +129,7 @@ abstract class Entity extends Position{
 		$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		$this->lastUpdate = microtime(true);
 		$this->initEntity();
-		ServerAPI::request()->api->dhandle("entity.add", $this);
+		EventHandler::callEvent(new PocketMine\Event\Entity\EntitySpawnEvent($this));
 	}
 
 	public function saveNBT(){
@@ -527,7 +526,7 @@ abstract class Entity extends Position{
 			unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
 			unset(Entity::$list[$this->id]);
 			$this->despawnFromAll();
-			$this->server->api->dhandle("entity.remove", $this);
+			EventHandler::callEvent(new PocketMine\Event\Entity\EntityDespawnEvent($this));
 		}
 	}
 

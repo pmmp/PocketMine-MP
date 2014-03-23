@@ -25,12 +25,12 @@
  */
 namespace PocketMine\Tile;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\ServerAPI;
+use PocketMine;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
@@ -84,7 +84,6 @@ abstract class Tile extends Position{
 		$this->chunkIndex = $index;
 		$this->level->tiles[$this->id] = $this;
 		$this->level->chunkTiles[$this->chunkIndex][$this->id] = $this;
-		$this->server->api->dhandle("tile.add", $this);
 	}
 
 	public function onUpdate(){
@@ -102,7 +101,6 @@ abstract class Tile extends Position{
 			unset($this->level->tiles[$this->id]);
 			unset($this->level->chunkTiles[$this->chunkIndex][$this->id]);
 			unset(Tile::$list[$this->id]);
-			$this->server->api->dhandle("tile.remove", $this);
 		}
 	}
 

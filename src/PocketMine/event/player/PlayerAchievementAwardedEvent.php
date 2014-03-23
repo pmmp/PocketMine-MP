@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -19,31 +19,34 @@
  *
  */
 
-namespace PocketMine\Event\Entity;
+namespace PocketMine\Event\Player;
 
-use PocketMine\Entity\Entity;
 use PocketMine\Event\CancellableEvent;
-use PocketMine\Event;
+use PocketMine\Player;
 use PocketMine;
-use PocketMine\Math\Vector3 as Vector3;
 
-class EntityMoveEvent extends EntityEvent implements CancellableEvent{
+/**
+ * Called when a player is awarded an achievement
+ */
+class PlayerAchievementAwardedEvent extends PlayerEvent implements CancellableEvent{
 	public static $handlers;
 	public static $handlerPriority;
 
 	/**
-	 * @var \PocketMine\Math\Vector3
+	 * @var string
 	 */
-	private $pos;
+	protected $achievement;
 
-	public function __construct(Entity $entity, Vector3 $pos){
-		$this->entity = $entity;
-		$this->pos = $pos;
+	/**
+	 * @param Player $player
+	 * @param string $achievementId
+	 */
+	public function __construct(Player $player, $achievementId){
+		$this->player = $player;
+		$this->achievement = $achievementId;
 	}
 
-	public function getVector(){
-		return $this->pos;
+	public function getAchievement(){
+		return $this->achievement;
 	}
-
-
 }

@@ -22,13 +22,13 @@
 namespace PocketMine\Level;
 
 use PocketMine\Block\Block;
-use PocketMine;
 use PocketMine\Block\TNT;
+use PocketMine\Entity\Entity;
 use PocketMine\Item\Item;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Network\Protocol\ExplodePacket;
+use PocketMine;
 use PocketMine\Player;
-use PocketMine\ServerAPI;
 
 class Explosion{
 	public static $specialDrops = array(
@@ -42,23 +42,22 @@ class Explosion{
 	public $level;
 	public $source;
 	public $size;
+	/**
+	 * @var Block[]
+	 */
 	public $affectedBlocks = array();
 	public $stepLen = 0.3;
+	private $what;
 
-	public function __construct(Position $center, $size){
+	public function __construct(Position $center, $size, $what = null){
 		$this->level = $center->level;
 		$this->source = $center;
 		$this->size = max($size, 0);
+		$this->what = $what;
 	}
 
 	public function explode(){
-		$server = ServerAPI::request();
-		if($this->size < 0.1 or $server->api->dhandle("entity.explosion", array(
-				"level" => $this->level,
-				"source" => $this->source,
-				"size" => $this->size
-			)) === false
-		){
+		if($this->size < 0.1){
 			return false;
 		}
 
@@ -98,15 +97,26 @@ class Explosion{
 		$send = array();
 		$source = $this->source->floor();
 		$radius = 2 * $this->size;
+		$yield = (1 / $this->size) * 100;
+
+		if($this->what instanceof Entity){
+			if(PocketMine\Event\EventHandler::callEvent($ev = new PocketMine\Event\Entity\EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield)) === PocketMine\Event\Event::DENY){
+				return;
+			}else{
+				$yield = $ev->getYield();
+				$this->affectedBlocks = $ev->getBlockList();
+			}
+		}
+
 		//TODO
-		foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
+		/*foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
 			$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //placeholder, 0.7 should be exposure
 			$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
 			$entity->harm($damage, "explosion");
-		}
+		}*/
+
 
 		foreach($this->affectedBlocks as $block){
-
 			if($block instanceof TNT){
 				$data = array(
 					"x" => $block->x + 0.5,
@@ -118,7 +128,7 @@ class Explosion{
 				//TODO
 				//$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				//$e->spawnToAll();
-			}elseif(mt_rand(0, 10000) < ((1 / $this->size) * 10000)){
+			}elseif(mt_rand(0, 100) < $yield){
 				if(isset(self::$specialDrops[$block->getID()])){
 					//TODO
 					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), Item::get(self::$specialDrops[$block->getID()], 0));
