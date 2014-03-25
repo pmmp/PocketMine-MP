@@ -29,6 +29,9 @@ use PocketMine\Item\Item;
 use PocketMine\ServerAPI;
 
 abstract class Crafting{
+
+	private static $lookupTable = array();
+
 	private static $small = array( //Probably means craftable on crafting bench and in inventory. Name it better!
 		//Building
 		"CLAY:?x4=>CLAY_BLOCK:0x1",
@@ -254,30 +257,40 @@ abstract class Crafting{
 	}
 
 	public static function init(){
-		$server = ServerAPI::request();
 		$id = 1;
+
+		self::$lookupTable[0] = array();
 		foreach(self::$small as $recipe){
 			$recipe = self::parseRecipe($recipe);
-			$recipe[3] = 0; //Type			
 			self::$recipes[$id] = $recipe;
+			self::$lookupTable[0][$recipe[2]];
+			if(!isset(self::$lookupTable[0][$recipe[2]])){
+				self::$lookupTable[0][$recipe[2]] = array();
+			}
+			self::$lookupTable[0][$recipe[2]][] = $id;
 			++$id;
 		}
+
+		self::$lookupTable[1] = array();
 		foreach(self::$big as $recipe){
 			$recipe = self::parseRecipe($recipe);
-			$recipe[3] = 1;
 			self::$recipes[$id] = $recipe;
+			if(!isset(self::$lookupTable[1][$recipe[2]])){
+				self::$lookupTable[1][$recipe[2]] = array();
+			}
+			self::$lookupTable[1][$recipe[2]][] = $id;
 			++$id;
 		}
+
+		self::$lookupTable[2] = array();
 		foreach(self::$stone as $recipe){
 			$recipe = self::parseRecipe($recipe);
-			$recipe[3] = 2;
 			self::$recipes[$id] = $recipe;
+			if(!isset(self::$lookupTable[2][$recipe[2]])){
+				self::$lookupTable[2][$recipe[2]] = array();
+			}
+			self::$lookupTable[2][$recipe[2]][] = $id;
 			++$id;
-		}
-
-		foreach(self::$recipes as $id => $recipe){
-
-			$server->query("INSERT INTO recipes (id, type, recipe) VALUES (" . $id . ", " . $recipe[3] . ", '" . $recipe[2] . "');");
 		}
 
 	}
@@ -289,14 +302,13 @@ abstract class Crafting{
 			$recipeString .= $item[0] . "x" . $item[2] . ",";
 		}
 		$recipeString = substr($recipeString, 0, -1) . "=>" . $craftItem[0] . "x" . $craftItem[2];
-		$server = ServerAPI::request();
 
-		$result = $server->query("SELECT id FROM recipes WHERE type == " . $type . " AND recipe == '" . $recipeString . "';");
-		if($result instanceof \SQLite3Result){
-			$continue = true;
-			while(($r = $result->fetchArray(SQLITE3_NUM)) !== false){
+		$continue = true;
+
+		if(isset(self::$lookupTable[$type][$recipeString])){
+			foreach(self::$lookupTable[$type][$recipeString] as $id){
 				$continue = true;
-				$recipe = self::$recipes[$r[0]];
+				$recipe = self::$recipes[$id];
 				foreach($recipe[0] as $item){
 					if(!isset($recipeItems[$item[0]])){
 						$continue = false;
