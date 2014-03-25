@@ -380,16 +380,14 @@ namespace PocketMine {
 		define("PocketMine\\GIT_COMMIT", str_repeat("00", 20));
 	}
 
-	ini_set("opcache.mmap_base", bin2hex(Utils\Utils::getRandomBytes(8, false))); //Fix OPCache address errors
-
-	require_once(\PocketMine\PATH . "src/pthreads.php");
+	@ini_set("opcache.mmap_base", bin2hex(Utils\Utils::getRandomBytes(8, false))); //Fix OPCache address errors
 
 	if(!file_exists(\PocketMine\DATA . "server.properties") and !isset($opts["no-wizard"])){
 		new Wizard\Installer();
 	}
 
 	if(!defined("PARENT_API_EXISTENT")){
-		$server = new ServerAPI();
+		$server = new Server();
 		$server->start();
 
 		kill(getmypid()); //Fix for ConsoleAPI being blocked
