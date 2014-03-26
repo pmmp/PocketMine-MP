@@ -30,7 +30,7 @@ abstract class VanillaCommand extends Command{
 	const MAX_COORD = 524288;
 	const MIN_COORD = -524288;
 
-	protected function __construct($name, $description = "", $usageMessage = null, array $aliases = array()){
+	public function __construct($name, $description = "", $usageMessage = null, array $aliases = array()){
 		parent::__construct($name, $description, $usageMessage, $aliases);
 	}
 

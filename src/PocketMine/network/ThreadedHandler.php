@@ -26,7 +26,6 @@ namespace PocketMine\Network;
 
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\RakNet\Info;
-use PocketMine\Network\RakNet\Packet;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
 use PocketMine;
 
@@ -143,7 +142,7 @@ class ThreadedHandler extends \Thread{
 	}
 
 	private function putPacket(){
-		if(($packet = $this->queue->synchronized(function (){
+		if(($packet = $this->queue->synchronized(function(){
 				return $this->queue->shift();
 			})) instanceof Packet
 		){
