@@ -25,24 +25,30 @@
  */
 namespace PocketMine;
 
-use PocketMine\Network\Packet;
-use PocketMine\Utils\Config;
-use PocketMine\Utils\Utils;
-use PocketMine\Utils\VersionString;
-use PocketMine\Network\UPnP\UPnP;
-use PocketMine\Utils\TextFormat;
-use PocketMine\Plugin\PluginManager;
-use PocketMine\Tile\Tile;
-use PocketMine\Entity\Entity;
-use PocketMine\Level\Level;
 use PocketMine\Block\Block;
+use PocketMine\Command\ConsoleCommandSender;
+use PocketMine\Command\SimpleCommandMap;
+use PocketMine\Entity\Entity;
+use PocketMine\Event\Event;
+use PocketMine\Event\EventHandler;
+use PocketMine\Event\Server\PacketReceiveEvent;
+use PocketMine\Event\Server\PacketSendEvent;
 use PocketMine\Item\Item;
+use PocketMine\Level\Level;
+use PocketMine\Network\Packet;
+use PocketMine\Network\Query\QueryHandler;
+use PocketMine\Network\Query\QueryPacket;
+use PocketMine\Network\ThreadedHandler;
+use PocketMine\Network\UPnP\UPnP;
+use PocketMine\Plugin\PluginManager;
 use PocketMine\Recipes\Crafting;
-use PocketMine\Network\Handler;
 use PocketMine\Scheduler\ServerScheduler;
 use PocketMine\Scheduler\TickScheduler;
-use PocketMine\Command\SimpleCommandMap;
-use PocketMine\Command\ConsoleCommandSender;
+use PocketMine\Tile\Tile;
+use PocketMine\Utils\Config;
+use PocketMine\Utils\TextFormat;
+use PocketMine\Utils\Utils;
+use PocketMine\Utils\VersionString;
 
 class Server{
 	/**
@@ -94,7 +100,7 @@ class Server{
 	private $inTick = false;
 
 	/**
-	 * @var Handler
+	 * @var ThreadedHandler
 	 */
 	private $interface;
 
@@ -103,6 +109,11 @@ class Server{
 	private $filePath;
 	private $dataPath;
 	private $pluginPath;
+
+	/**
+	 * @var QueryHandler
+	 */
+	private $queryHandler;
 
 	/**
 	 * @var Config
@@ -255,14 +266,19 @@ class Server{
 	public function getTick(){
 		return $this->tickCounter;
 	}
+
 	/**
 	 * @return float
 	 */
 	public function getTicksPerSecond(){
-		$v = array_values($this->tickMeasure);
-		$tps = 20 / ($v[19] - $v[0]);
+		return $this->tickScheduler->getTPS();
+	}
 
-		return round($tps, 4);
+	/**
+	 * @return ThreadedHandler
+	 */
+	public function getNetwork(){
+		return $this->interface;
 	}
 
 	/**
@@ -276,6 +292,7 @@ class Server{
 		if(isset($v[$variable])){
 			return (string) $v[$variable];
 		}
+
 		return $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
 	}
 
@@ -289,7 +306,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param int $defaultValue
+	 * @param int    $defaultValue
 	 *
 	 * @return int
 	 */
@@ -298,19 +315,20 @@ class Server{
 		if(isset($v[$variable])){
 			return (int) $v[$variable];
 		}
+
 		return $this->properties->exists($variable) ? (int) $this->properties->get($variable) : (int) $defaultValue;
 	}
 
 	/**
 	 * @param string $variable
-	 * @param int $value
+	 * @param int    $value
 	 */
 	public function setConfigInt($variable, $value){
 		$this->properties->set($variable, (int) $value);
 	}
 
 	/**
-	 * @param string $variable
+	 * @param string  $variable
 	 * @param boolean $defaultValue
 	 *
 	 * @return boolean
@@ -332,15 +350,16 @@ class Server{
 			case "yes":
 				return true;
 		}
+
 		return false;
 	}
 
 	/**
 	 * @param string $variable
-	 * @param bool $value
+	 * @param bool   $value
 	 */
 	public function setConfigBool($variable, $value){
-		$this->properties->set($variable, $value == true ? "1":"0");
+		$this->properties->set($variable, $value == true ? "1" : "0");
 	}
 
 	/**
@@ -436,7 +455,7 @@ class Server{
 		console("[INFO] Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 8));
-		$this->interface = new Handler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0":$this->getIp());
+		$this->interface = new ThreadedHandler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0" : $this->getIp());
 
 		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
 		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
@@ -466,11 +485,11 @@ class Server{
 		}
 		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
-		}
-
-		if($this->getProperty("enable-query") === true){
-			$this->query = new QueryHandler();
 		}*/
+
+		if($this->getConfigBoolean("enable-query", true) === true){
+			$this->queryHandler = new QueryHandler();
+		}
 
 		//$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
 
@@ -507,11 +526,13 @@ class Server{
 		}
 	}
 
-	private function tickProcessorWindows(){		$lastLoop = 0;
-
+	private function tickProcessorWindows(){
+		$lastLoop = 0;
 		while(true){
 			if(($packet = $this->interface->readPacket()) instanceof Packet){
-				var_dump($packet);
+				if(EventHandler::callEvent(new PacketReceiveEvent($packet)) !== Event::DENY){
+					$this->handlePacket($packet);
+				}
 				$lastLoop = 0;
 			}
 			if(($ticks = $this->tick()) !== true){
@@ -529,7 +550,9 @@ class Server{
 		$lastLoop = 0;
 		while(true){
 			if(($packet = $this->interface->readPacket()) instanceof Packet){
-				var_dump($packet);
+				if(EventHandler::callEvent(new PacketReceiveEvent($packet)) !== Event::DENY){
+					$this->handlePacket($packet);
+				}
 				$lastLoop = 0;
 			}
 			if(($ticks = $this->tick()) !== true){
@@ -545,6 +568,27 @@ class Server{
 				$lastLoop = 0;
 			}
 		}
+	}
+
+	public function handlePacket(Packet $packet){
+		if($packet instanceof QueryPacket and isset($this->queryHandler)){
+			$this->queryHandler->handle($packet);
+		}
+	}
+
+	/**
+	 * Sends a packet to the processing queue. Returns the number of bytes
+	 *
+	 * @param Packet $packet
+	 *
+	 * @return int
+	 */
+	public function sendPacket(Packet $packet){
+		if(EventHandler::callEvent(new PacketSendEvent($packet)) !== Event::DENY){
+			return $this->interface->writePacket($packet);
+		}
+
+		return 0;
 	}
 
 	private function checkTickUpdates(){
@@ -610,9 +654,8 @@ class Server{
 	public function titleTick(){
 		$time = microtime(true);
 		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " .$this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
+			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}
-		$this->interface->bandwidth = array(0, 0, $time);
 	}
 
 	/**
@@ -638,12 +681,17 @@ class Server{
 				$this->checkTickUpdates();
 				if(($this->tickCounter & 0b1111) === 0){
 					$this->titleTick();
+					if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
+						$this->queryHandler->regenerateInfo();
+					}
 				}
 			}
 			$this->tickScheduler->doTick();
 			$this->inTick = false;
+
 			return true;
 		}
+
 		return false;
 	}
 

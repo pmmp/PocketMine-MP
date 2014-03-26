@@ -22,8 +22,8 @@
 namespace PocketMine;
 
 use PocketMine\Entity\RealHuman;
-use PocketMine\Event\EventHandler;
 use PocketMine\Event;
+use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
@@ -37,7 +37,6 @@ use PocketMine\NBT\Tag\Float;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
-use PocketMine\Command\CommandSender;
 use PocketMine\Network\Protocol\AdventureSettingsPacket;
 use PocketMine\Network\Protocol\AnimatePacket;
 use PocketMine\Network\Protocol\ChunkDataPacket;
@@ -81,7 +80,7 @@ use PocketMine\Utils\Utils;
  * Class Player
  * @package PocketMine
  */
-class Player extends RealHuman/*TODO: implements CommandSender*/{
+class Player extends RealHuman /*TODO: implements CommandSender*/{
 	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
@@ -467,7 +466,7 @@ class Player extends RealHuman/*TODO: implements CommandSender*/{
 		if($this->connected === true){
 			$packet->ip = $this->ip;
 			$packet->port = $this->port;
-			$this->bandwidthRaw += $this->server->send($packet);
+			$this->bandwidthRaw += $this->server->sendPacket($packet);
 		}
 	}
 
@@ -663,6 +662,7 @@ class Player extends RealHuman/*TODO: implements CommandSender*/{
 			if(EventHandler::callEvent(new Event\Player\PlayerAchievementAwardedEvent($this, $achievementId)) !== Event\Event::DENY){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
+
 				return true;
 			}else{
 				return false;

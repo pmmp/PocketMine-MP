@@ -25,11 +25,11 @@
  */
 namespace PocketMine\Network\Query;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\Utils;
+use PocketMine;
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
@@ -49,7 +49,6 @@ class QueryHandler{
 		packets can conflict with the MCPE ones.
 		*/
 
-		$this->server->schedule(20 * 30, array($this, "regenerateToken"), array(), true);
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
 		$this->regenerateInfo();
@@ -116,7 +115,7 @@ class QueryHandler{
 				$pk->sessionID = $packet->sessionID;
 				$pk->payload = self::getTokenString($this->token, $packet->ip) . "\x00";
 				$pk->encode();
-				$this->server->send($pk);
+				$this->server->sendPacket($pk);
 				break;
 			case QueryPacket::STATISTICS: //Stat
 				$token = Utils::readInt(substr($packet->payload, 0, 4));
@@ -137,7 +136,7 @@ class QueryHandler{
 					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
 				$pk->encode();
-				$this->server->send($pk);
+				$this->server->sendPacket($pk);
 				break;
 		}
 	}
