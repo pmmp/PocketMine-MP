@@ -101,7 +101,7 @@ class ConsoleCommandSender implements CommandSender{
 	 * @param string $message
 	 */
 	public function sendMessage($message){
-		foreach(explode("\n", $message) as $line){
+		foreach(explode("\n", trim($message)) as $line){
 			$line = trim($line);
 			console($line);
 		}

@@ -212,6 +212,9 @@ namespace PocketMine {
 	function console($message, $EOL = true, $log = true, $level = 1){
 		if(!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level){
 			$message .= $EOL === true ? PHP_EOL : "";
+			if($message{0} !== "["){
+				$message = "[INFO] $message";
+			}
 			$time = (\PocketMine\ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET : date("H:i:s")) . " ";
 			$replaced = Utils\TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
 			if($log === true and (!defined("LOG") or LOG === true)){
@@ -219,7 +222,7 @@ namespace PocketMine {
 			}
 			if(\PocketMine\ANSI === true){
 				$add = "";
-				if(preg_match("/\\[([a-zA-Z0-9]*)\\]/", $message, $matches) > 0){
+				if(preg_match("/^\\[([a-zA-Z0-9]*)\\]/", $message, $matches) > 0){
 					switch($matches[1]){
 						case "ERROR":
 						case "SEVERE":

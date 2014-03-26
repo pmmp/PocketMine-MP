@@ -24,6 +24,8 @@ namespace PocketMine\Command;
 use PocketMine\Command\Defaults\PluginsCommand;
 use PocketMine\Command\Defaults\VanillaCommand;
 use PocketMine\Command\Defaults\VersionCommand;
+use PocketMine\Command\Defaults\SeedCommand;
+use PocketMine\Command\Defaults\HelpCommand;
 use PocketMine\Server;
 use PocketMine;
 
@@ -48,6 +50,8 @@ class SimpleCommandMap implements CommandMap{
 		//TODO
 		$this->register("pocketmine", new VersionCommand("version"));
 		$this->register("pocketmine", new PluginsCommand("plugins"));
+		$this->register("pocketmine", new SeedCommand("seed"));
+		$this->register("pocketmine", new HelpCommand("help"));
 	}
 
 

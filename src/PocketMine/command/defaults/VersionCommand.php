@@ -76,7 +76,7 @@ class VersionCommand extends VanillaCommand{
 
 	private function describeToSender(PocketMine\Plugin\Plugin $plugin, CommandSender $sender){
 		$desc = $plugin->getDescription();
-		$sender->sendMessage(TextFormat::GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::GREEN . $desc->getVersion());
+		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
 
 		if($desc->getDescription() != null){
 			$sender->sendMessage($desc->getDescription());

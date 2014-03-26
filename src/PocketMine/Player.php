@@ -72,6 +72,7 @@ use PocketMine\Tile\Tile;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\TextFormat;
 use PocketMine\Utils\Utils;
+use PocketMine\Command\CommandSender;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part

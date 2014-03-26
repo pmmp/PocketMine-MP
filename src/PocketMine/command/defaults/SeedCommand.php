@@ -52,17 +52,4 @@ class SeedCommand extends VanillaCommand{
 
 		return true;
 	}
-
-	private function getPluginList(){
-		$list = "";
-		foreach(($plugins = PocketMine\Server::getInstance()->getPluginManager()->getPlugins()) as $plugin){
-			if(strlen($list) > 0){
-				$list .= TextFormat::WHITE . ", ";
-			}
-			$list .= $plugin->isEnabled() ? TextFormat::GREEN : TextFormat::RED;
-			$list .= $plugin->getDescription()->getName();
-		}
-
-		return "(" . count($plugins) . "): $list";
-	}
 }

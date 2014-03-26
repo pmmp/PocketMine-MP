@@ -26,6 +26,7 @@
 namespace PocketMine;
 
 use PocketMine\Block\Block;
+use PocketMine\Command\CommandSender;
 use PocketMine\Command\ConsoleCommandSender;
 use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Entity\Entity;
@@ -282,6 +283,13 @@ class Server{
 	}
 
 	/**
+	 * @return SimpleCommandMap
+	 */
+	public function getCommandMap(){
+		return $this->commandMap;
+	}
+
+	/**
 	 * @param string $variable
 	 * @param string $defaultValue
 	 *
@@ -497,8 +505,30 @@ class Server{
 
 	public function checkConsole(){
 		if(($line = $this->console->getLine()) !== null){
-			$this->commandMap->dispatch($this->consoleSender, $line);
+			$this->dispatchCommand($this->consoleSender, $line);
 		}
+	}
+
+	/**
+	 * Executes a command from a CommandSender
+	 *
+	 * @param CommandSender $sender
+	 * @param string        $commandLine
+	 *
+	 * @return bool
+	 */
+	public function dispatchCommand(CommandSender $sender, $commandLine){
+		if($this->commandMap->dispatch($sender, $commandLine)){
+			return true;
+		}
+
+		if($sender instanceof Player){
+			$sender->sendMessage("Unknown command. Type \"/help\" for help.");
+		}else{
+			$sender->sendMessage("Unknown command. Type \"help\" for help.");
+		}
+
+		return false;
 	}
 
 	/**
