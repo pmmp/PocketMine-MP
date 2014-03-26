@@ -110,44 +110,6 @@ class ConsoleAPI{
 				$this->server->api->setProperty("difficulty", (int) $s);
 				$output .= "Difficulty changed to " . $this->server->difficulty . "\n";
 				break;
-			case "?":
-				if($issuer !== "console" and $issuer !== "rcon"){
-					break;
-				}
-			case "help":
-				if(isset($params[0]) and !is_numeric($params[0])){
-					$c = trim(strtolower($params[0]));
-					if(isset($this->help[$c]) or isset($this->alias[$c])){
-						$c = isset($this->help[$c]) ? $c : $this->alias[$c];
-						if($this->server->api->dhandle("console.command." . $c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
-							break;
-						}
-						$output .= "Usage: /$c " . $this->help[$c] . "\n";
-						break;
-					}
-				}
-				$cmds = array();
-				foreach($this->help as $c => $h){
-					if($this->server->api->dhandle("console.command." . $c, array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false or $this->server->api->dhandle("console.command", array("cmd" => $c, "parameters" => array(), "issuer" => $issuer, "alias" => false)) === false){
-						continue;
-					}
-					$cmds[$c] = $h;
-				}
-
-				$max = ceil(count($cmds) / 5);
-				$page = (int) (isset($params[0]) ? min($max, max(1, intval($params[0]))) : 1);
-				$output .= TextFormat::RED . "-" . TextFormat::RESET . " Showing help page $page of $max (/help <page>) " . TextFormat::RED . "-" . TextFormat::RESET . "\n";
-				$current = 1;
-				foreach($cmds as $c => $h){
-					$curpage = (int) ceil($current / 5);
-					if($curpage === $page){
-						$output .= "/$c " . $h . "\n";
-					}elseif($curpage > $page){
-						break;
-					}
-					++$current;
-				}
-				break;
 			default:
 				$output .= "Command doesn't exist! Use /help\n";
 				break;
