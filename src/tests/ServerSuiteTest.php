@@ -58,7 +58,7 @@ class ServerSuiteTest{
 
 	public function hook(){
 		testCase("event fired", true, true);
-		$server = \PocketMine\ServerAPI::request();
+		$server = \PocketMine\Server::getInstance();
 		testCase("defaultgamemode", $server->getGamemode(), "survival");
 
 

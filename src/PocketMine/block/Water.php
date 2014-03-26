@@ -25,7 +25,7 @@ use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 
 class Water extends Liquid{
 	public function __construct($meta = 0){
@@ -35,7 +35,7 @@ class Water extends Liquid{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
-		ServerAPI::request()->api->block->scheduleBlockUpdate(clone $this, 10, Level::BLOCK_UPDATE_NORMAL);
+		Server::getInstance()->api->block->scheduleBlockUpdate(clone $this, 10, Level::BLOCK_UPDATE_NORMAL);
 
 		return $ret;
 	}
@@ -110,7 +110,7 @@ class Water extends Liquid{
 			if($level !== 0x07){
 				if($down instanceof Air || $down instanceof Water){
 					$this->level->setBlock($down, new Water(0x01), false, false, true);
-					ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($down, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+					Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($down, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 				}else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
@@ -120,7 +120,7 @@ class Water extends Liquid{
 							}
 						}elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Water($level + 1), false, false, true);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
@@ -134,7 +134,7 @@ class Water extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($sb, new Air(), false, false, true);
 					}
@@ -145,12 +145,12 @@ class Water extends Liquid{
 					if($tlevel != 0x00){
 						for($s = 0; $s <= 5; $s++){
 							$ssb = $sb->getSide($s);
-							ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 						$this->level->setBlock($b, new Air(), false, false, true);
 					}
 				}
-				//ServerAPI::request()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+				//Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 			}
 			$this->level->setBlock($this, new Air(), false, false, true);
 		}

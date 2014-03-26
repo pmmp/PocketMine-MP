@@ -27,7 +27,7 @@ class LevelAPI{
 	private $server;
 
 	public function __construct(){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 	}
 
 	public function init(){

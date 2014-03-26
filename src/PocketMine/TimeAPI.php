@@ -33,7 +33,7 @@ class TimeAPI{
 	private $server;
 
 	function __construct(){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 	}
 
 	public function init(){

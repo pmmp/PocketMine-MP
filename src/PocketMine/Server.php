@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -25,662 +25,626 @@
  */
 namespace PocketMine;
 
-use PocketMine\Entity\Entity;
-use PocketMine\Network\Handler;
 use PocketMine\Network\Packet;
-use PocketMine\Network\Protocol\Info;
-use PocketMine\Network\RakNet\Info as RakNetInfo;
-use PocketMine\Network\RakNet\Packet as RakNetPacket;
-use PocketMine\Plugin\PluginManager;
+use PocketMine\Utils\Config;
 use PocketMine\Utils\Utils;
 use PocketMine\Utils\VersionString;
+use PocketMine\Network\UPnP\UPnP;
+use PocketMine\Utils\TextFormat;
+use PocketMine\Plugin\PluginManager;
+use PocketMine\Tile\Tile;
+use PocketMine\Entity\Entity;
+use PocketMine\Level\Level;
+use PocketMine\Block\Block;
+use PocketMine\Item\Item;
+use PocketMine\Recipes\Crafting;
+use PocketMine\Network\Handler;
+use PocketMine\Scheduler\ServerScheduler;
+use PocketMine\Scheduler\TickScheduler;
+use PocketMine\Command\SimpleCommandMap;
+use PocketMine\Command\ConsoleCommandSender;
 
 class Server{
-	public $tCnt;
-	public $serverID, $interface, $database, $version, $invisible, $tickMeasure, $preparedSQL, $spawn, $whitelist, $seed, $stop, $gamemode, $difficulty, $name, $maxClients, $eidCnt, $custom, $description, $motd, $port, $saveEnabled;
-	private $serverip, $evCnt, $handCnt, $events, $eventsID, $handlers, $serverType, $lastTick, $doTick, $ticks, $memoryStats, $schedule, $asyncThread, $async = array(), $asyncID = 0;
+	/**
+	 * @var Server
+	 */
+	private static $instance = null;
 
 	/**
-	 * @var ServerAPI
+	 * @var PluginManager
 	 */
-	public $api;
+	private $pluginManager = null;
 
-	private function load(){
-		$this->version = new VersionString();
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and function_exists("cli_set_process_title")){
-			@cli_set_process_title("PocketMine-MP " . \PocketMine\VERSION);
-		}
-		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
-		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
-		$this->serverID = $this->serverID === false ? Utils::readLong(substr(Utils::getUniqueID(true, $this->serverip . $this->port), 8)) : $this->serverID;
-		$this->seed = $this->seed === false ? Utils::readInt(Utils::getRandomBytes(4, false)) : $this->seed;
-		$this->startDatabase();
-		$this->api = false;
-		$this->tCnt = 1;
-		$this->events = array();
-		$this->eventsID = array();
-		$this->handlers = array();
-		$this->invisible = false;
-		$this->difficulty = 1;
-		$this->custom = array();
-		$this->evCnt = 1;
-		$this->handCnt = 1;
-		$this->eidCnt = 1;
-		$this->maxClients = 20;
-		$this->schedule = array();
-		$this->scheduleCnt = 1;
-		$this->description = "";
-		$this->memoryStats = array();
-		$this->spawn = false;
-		$this->saveEnabled = true;
-		$this->whitelist = false;
-		$this->tickMeasure = array_fill(0, 40, 0);
-		$this->setType("normal");
-		$this->interface = new Handler("255.255.255.255", $this->port, $this->serverip);
-		$this->stop = false;
-		$this->ticks = 0;
-		if(!defined("NO_THREADS")){
-			$this->asyncThread = new \AsyncMultipleQueue();
-		}
+	/**
+	 * @var ServerScheduler
+	 */
+	private $scheduler = null;
+
+	/**
+	 * @var TickScheduler
+	 */
+	private $tickScheduler = null;
+
+	/**
+	 * @var CommandReader
+	 */
+	private $console = null;
+
+	/**
+	 * @var SimpleCommandMap
+	 */
+	private $commandMap = null;
+
+	/**
+	 * @var ConsoleCommandSender
+	 */
+	private $consoleSender;
+
+	/**
+	 * @var int
+	 */
+	private $maxPlayers;
+
+	/**
+	 * Counts the ticks since the server start
+	 *
+	 * @var int
+	 */
+	private $tickCounter;
+	private $inTick = false;
+
+	/**
+	 * @var Handler
+	 */
+	private $interface;
+
+	private $serverID;
+
+	private $filePath;
+	private $dataPath;
+	private $pluginPath;
+
+	/**
+	 * @var Config
+	 */
+	private $properties;
+
+	/**
+	 * @return string
+	 */
+	public function getName(){
+		return "PocketMine-MP";
 	}
 
-	function __construct($name, $gamemode = 0, $seed = false, $port = 19132, $serverip = "0.0.0.0"){
-		$this->port = (int) $port;
-		$this->doTick = true;
-		$this->gamemode = (int) $gamemode;
-		$this->name = $name;
-		$this->motd = "Welcome to " . $name;
-		$this->serverID = false;
-		$this->seed = $seed;
-		$this->serverip = $serverip;
-		$this->load();
+	/**
+	 * @return string
+	 */
+	public function getPocketMineVersion(){
+		return \PocketMine\VERSION;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getCodename(){
+		return \PocketMine\CODENAME;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getVersion(){
+		return \PocketMine\MINECRAFT_VERSION;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getApiVersion(){
+		return \PocketMine\API_VERSION;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFilePath(){
+		return $this->filePath;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDataPath(){
+		return $this->dataPath;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPluginPath(){
+		return $this->pluginPath;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxPlayers(){
+		return $this->maxPlayers;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPort(){
+		return $this->getConfigInt("server-port", 19132);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getViewDistance(){
+		return $this->getConfigInt("view-distance", 8);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIp(){
+		return $this->getConfigString("server-ip", "");
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getServerName(){
+		return $this->getConfigString("server-name", "Unknown server");
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLevelType(){
+		return $this->getConfigString("level-type", "DEFAULT");
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getGenerateStructures(){
+		return $this->getConfigBoolean("generate-structures", true);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getGamemode(){
+		return $this->getConfigInt("gamemode", 0) & 0b11;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDifficulty(){
+		return $this->getConfigInt("difficulty", 1);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasWhitelist(){
+		return $this->getConfigBoolean("white-list", false);
+	}
+
+	/**
+	 * @return PluginManager
+	 */
+	public function getPluginManager(){
+		return $this->pluginManager;
+	}
+
+	/**
+	 * @return ServerScheduler
+	 */
+	public function getScheduler(){
+		return $this->scheduler;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getTick(){
+		return $this->tickCounter;
+	}
 	/**
 	 * @return float
 	 */
-	public function getTPS(){
+	public function getTicksPerSecond(){
 		$v = array_values($this->tickMeasure);
-		$tps = 40 / ($v[39] - $v[0]);
+		$tps = 20 / ($v[19] - $v[0]);
 
 		return round($tps, 4);
+	}
+
+	/**
+	 * @param string $variable
+	 * @param string $defaultValue
+	 *
+	 * @return string
+	 */
+	public function getConfigString($variable, $defaultValue = ""){
+		$v = getopt("", array("$variable::"));
+		if(isset($v[$variable])){
+			return (string) $v[$variable];
+		}
+		return $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
+	}
+
+	/**
+	 * @param string $variable
+	 * @param string $value
+	 */
+	public function setConfigString($variable, $value){
+		$this->properties->set($variable, $value);
+	}
+
+	/**
+	 * @param string $variable
+	 * @param int $defaultValue
+	 *
+	 * @return int
+	 */
+	public function getConfigInt($variable, $defaultValue = 0){
+		$v = getopt("", array("$variable::"));
+		if(isset($v[$variable])){
+			return (int) $v[$variable];
+		}
+		return $this->properties->exists($variable) ? (int) $this->properties->get($variable) : (int) $defaultValue;
+	}
+
+	/**
+	 * @param string $variable
+	 * @param int $value
+	 */
+	public function setConfigInt($variable, $value){
+		$this->properties->set($variable, (int) $value);
+	}
+
+	/**
+	 * @param string $variable
+	 * @param boolean $defaultValue
+	 *
+	 * @return boolean
+	 */
+	public function getConfigBoolean($variable, $defaultValue = false){
+		$v = getopt("", array("$variable::"));
+		if(isset($v[$variable])){
+			$value = $v[$variable];
+		}else{
+			$value = $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
+		}
+		if(is_bool($value)){
+			return $value;
+		}
+		switch(strtolower($value)){
+			case "on":
+			case "true":
+			case "1":
+			case "yes":
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @param string $variable
+	 * @param bool $value
+	 */
+	public function setConfigBool($variable, $value){
+		$this->properties->set($variable, $value == true ? "1":"0");
+	}
+
+	/**
+	 * @return Server
+	 */
+	public static function getInstance(){
+		return self::$instance;
+	}
+
+	/**
+	 * @param string $filePath
+	 * @param string $dataPath
+	 * @param string $pluginPath
+	 */
+	public function __construct($filePath, $dataPath, $pluginPath){
+		self::$instance = $this;
+
+		$this->filePath = $filePath;
+		$this->dataPath = $dataPath;
+		$this->pluginPath = $pluginPath;
+		@mkdir($this->dataPath . "worlds/", 0777);
+		@mkdir($this->dataPath . "players/", 0777);
+		@mkdir($this->pluginPath . "plugins/", 0777);
+
+		$this->tickScheduler = new TickScheduler(20);
+		$this->scheduler = new ServerScheduler();
+		$this->console = new CommandReader();
+
+		$version = new VersionString($this->getPocketMineVersion());
+		console("[INFO] Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());
+
+		console("[INFO] Loading properties...");
+		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, array(
+			"server-name" => "Minecraft: PE Server",
+			"motd" => "Welcome @player to this server!",
+			"server-port" => 19132,
+			"server-type" => "normal",
+			"memory-limit" => "128M",
+			"white-list" => false,
+			"announce-player-achievements" => true,
+			"spawn-protection" => 16,
+			"view-distance" => 8,
+			"max-players" => 20,
+			"allow-flight" => false,
+			"spawn-animals" => true,
+			"spawn-mobs" => true,
+			"gamemode" => 0,
+			"hardcore" => false,
+			"pvp" => true,
+			"difficulty" => 1,
+			"generator-settings" => "",
+			"level-name" => "world",
+			"level-seed" => "",
+			"level-type" => "DEFAULT",
+			"enable-query" => true,
+			"enable-rcon" => false,
+			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
+			"auto-save" => true,
+		));
+
+		$this->maxPlayers = $this->getConfigInt("max-players", 20);
+
+		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "128M")))) !== false){
+			$value = array("M" => 1, "G" => 1024);
+			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
+			if($real < 128){
+				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
+			}
+			@ini_set("memory_limit", $memory);
+		}else{
+			$this->setConfigString("memory-limit", "128M");
+		}
+
+		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
+			$this->setConfigInt("difficulty", 3);
+		}
+
+		define("PocketMine\\DEBUG", $this->getConfigInt("debug", 1));
+		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
+		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~448 kB/s
+		if(ADVANCED_CACHE == true){
+			console("[INFO] Advanced cache enabled");
+		}
+		if($this->getConfigBoolean("upnp-forwarding", false) == true){
+			console("[INFO] [UPnP] Trying to port forward...");
+			UPnP::PortForward($this->getPort());
+		}
+
+		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and function_exists("cli_set_process_title")){
+			@cli_set_process_title("PocketMine-MP " . $this->getPocketMineVersion());
+		}
+
+		console("[INFO] Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
+		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
+		$this->serverID = Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 8));
+		$this->interface = new Handler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0":$this->getIp());
+
+		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
+		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
+
+		//TODO: update checking (async)
+
+		$this->commandMap = new SimpleCommandMap($this);
+
+		Block::init();
+		Item::init();
+		Crafting::init();
+		Level::init();
+
+		$this->pluginManager = new PluginManager();
+		console("[INFO] Loaded " . count($this->pluginManager->loadPlugins($this->pluginPath . "plugins/")) . " plugin(s).");
+
+		$this->consoleSender = new ConsoleCommandSender();
+
+		$this->properties->save();
+		//TODO
+		/*if($this->getProperty("send-usage", true) !== false){
+			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
+			$this->sendUsage();
+		}
+		if($this->getProperty("auto-save") === true){
+			$this->server->schedule(18000, array($this, "autoSave"), array(), true);
+		}
+		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
+			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
+		}
+
+		if($this->getProperty("enable-query") === true){
+			$this->query = new QueryHandler();
+		}*/
+
+		//$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
+
+	}
+
+	public function checkConsole(){
+		if(($line = $this->console->getLine()) !== null){
+			$this->commandMap->dispatch($this->consoleSender, $line);
+		}
+	}
+
+	/**
+	 * Starts the PocketMine-MP server and starts processing ticks and packets
+	 */
+	public function start(){
+		$this->tickCounter = 0;
+		register_tick_function(array($this, "tick"));
+		/*
+		register_shutdown_function(array($this, "dumpError"));
+		register_shutdown_function(array($this, "close"));
+		if(function_exists("pcntl_signal")){
+			//pcntl_signal(SIGTERM, array($this, "close"));
+			pcntl_signal(SIGINT, array($this, "close"));
+			pcntl_signal(SIGHUP, array($this, "close"));
+		}
+		*/
+		console("[INFO] Default game type: " . strtoupper($this->getGamemode())); //TODO: string name
+		//$this->trigger("server.start", microtime(true));
+		console('[INFO] Done (' . round(microtime(true) - \PocketMine\START_TIME, 3) . 's)! For help, type "help" or "?"');
+		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
+			$this->tickProcessorWindows();
+		}else{
+			$this->tickProcessor();
+		}
+	}
+
+	private function tickProcessorWindows(){		$lastLoop = 0;
+
+		while(true){
+			if(($packet = $this->interface->readPacket()) instanceof Packet){
+				var_dump($packet);
+				$lastLoop = 0;
+			}
+			if(($ticks = $this->tick()) !== true){
+				++$lastLoop;
+				if($lastLoop > 128){
+					usleep(1000);
+				}
+			}else{
+				$lastLoop = 0;
+			}
+		}
+	}
+
+	private function tickProcessor(){
+		$lastLoop = 0;
+		while(true){
+			if(($packet = $this->interface->readPacket()) instanceof Packet){
+				var_dump($packet);
+				$lastLoop = 0;
+			}
+			if(($ticks = $this->tick()) !== true){
+				++$lastLoop;
+				if($lastLoop > 16 and $lastLoop < 128){
+					usleep(200);
+				}elseif($lastLoop < 512){
+					usleep(400);
+				}else{
+					usleep(1000);
+				}
+			}else{
+				$lastLoop = 0;
+			}
+		}
+	}
+
+	private function checkTickUpdates(){
+		//Update entities that need update
+		if(count(Entity::$needUpdate) > 0){
+			foreach(Entity::$needUpdate as $id => $entity){
+				if($entity->onUpdate() === false){
+					unset(Entity::$needUpdate[$id]);
+				}
+			}
+		}
+
+		//Update tiles that need update
+		if(count(Tile::$needUpdate) > 0){
+			foreach(Tile::$needUpdate as $id => $tile){
+				if($tile->onUpdate() === false){
+					unset(Tile::$needUpdate[$id]);
+				}
+			}
+		}
+
+		//TODO: Add level blocks
+
+		//Do level ticks
+		foreach(Level::$list as $level){
+			$level->doTick();
+		}
+	}
+
+	public function autoSave(){
+		console("[DEBUG] Saving....", true, true, 2);
+		Level::saveAll();
+	}
+
+	public function sendUsage(){
+		//TODO
+		/*console("[DEBUG] Sending usage data...", true, true, 2);
+		$plist = "";
+		foreach(Server::getInstance()->getPluginManager()->getPlugins() as $p){
+			$d = $p->getDescription();
+			$plist .= str_replace(array(";", ":"), "", $d->getName()) . ":" . str_replace(array(";", ":"), "", $d->getVersion()) . ";";
+		}
+
+		$this->asyncOperation(ASYNC_CURL_POST, array(
+			"url" => "http://stats.pocketmine.net/usage.php",
+			"data" => array(
+				"serverid" => $this->server->serverID,
+				"port" => $this->server->port,
+				"os" => Utils::getOS(),
+				"memory_total" => $this->getProperty("memory-limit"),
+				"memory_usage" => memory_get_usage(true),
+				"php_version" => PHP_VERSION,
+				"version" => VERSION,
+				"mc_version" => MINECRAFT_VERSION,
+				"protocol" => Info::CURRENT_PROTOCOL,
+				"online" => count(Player::$list),
+				"max" => $this->server->maxClients,
+				"plugins" => $plist,
+			),
+		), null);*/
 	}
 
 	public function titleTick(){
 		$time = microtime(true);
 		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . VERSION . " | Online " . count(Player::$list) . "/" . $this->maxClients . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
+			echo "\x1b]0;PocketMine-MP " .$this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}
 		$this->interface->bandwidth = array(0, 0, $time);
 	}
 
-	public function loadEvents(){
-		if(\PocketMine\ANSI === true){
-			$this->schedule(30, array($this, "titleTick"), array(), true);
-		}
-		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
-		$this->schedule(20 * 60, array($this, "checkMemory"), array(), true);
-		$this->schedule(20 * 45, "PocketMine\\Utils\\Cache::cleanup", array(), true);
-		$this->schedule(20, array($this, "asyncOperationChecker"), array(), true);
-	}
-
-	public function checkTicks(){
-		if($this->getTPS() < 12){
-			console("[WARNING] Can't keep up! Is the server overloaded?");
-		}
-	}
-
-	public function checkMemory(){
-		$info = $this->debugInfo();
-		$data = $info["memory_usage"] . "," . $info["players"] . "," . $info["entities"];
-		$i = count($this->memoryStats) - 1;
-		if($i < 0 or $this->memoryStats[$i] !== $data){
-			$this->memoryStats[] = $data;
-		}
-	}
-
-	public function startDatabase(){
-		$this->preparedSQL = new \stdClass();
-		$this->preparedSQL->entity = new \stdClass();
-		$this->database = new \SQLite3(":memory:", SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
-		$this->query("PRAGMA journal_mode = OFF;");
-		$this->query("PRAGMA encoding = \"UTF-8\";");
-		$this->query("PRAGMA secure_delete = OFF;");
-		$this->query("CREATE TABLE actions (ID INTEGER PRIMARY KEY, interval NUMERIC, last NUMERIC, code TEXT, repeat NUMERIC);");
-		$this->query("CREATE TABLE handlers (ID INTEGER PRIMARY KEY, name TEXT, priority NUMERIC);");
-		$this->query("CREATE TABLE blockUpdates (level TEXT, x INTEGER, y INTEGER, z INTEGER, type INTEGER, delay NUMERIC);");
-		$this->query("CREATE TABLE recipes (id INTEGER PRIMARY KEY, type NUMERIC, recipe TEXT);");
-		$this->query("PRAGMA synchronous = OFF;");
-		$this->preparedSQL->selectHandlers = $this->database->prepare("SELECT DISTINCT ID FROM handlers WHERE name = :name ORDER BY priority DESC;");
-		$this->preparedSQL->selectActions = $this->database->prepare("SELECT ID,code,repeat FROM actions WHERE last <= (:time - interval);");
-		$this->preparedSQL->updateAction = $this->database->prepare("UPDATE actions SET last = :time WHERE ID = :id;");
-	}
-
-	public function query($sql, $fetch = false){
-		$result = $this->database->query($sql) or console("[ERROR] [SQL Error] " . $this->database->lastErrorMsg() . ". Query: " . $sql, true, true, 0);
-		if($fetch === true and ($result instanceof \SQLite3Result)){
-			$result = $result->fetchArray(SQLITE3_ASSOC);
-		}
-
-		return $result;
-	}
-
-	public function debugInfo($console = false){
-		$info = array();
-		$info["tps"] = $this->getTPS();
-		$info["memory_usage"] = round((memory_get_usage() / 1024) / 1024, 2) . "MB";
-		$info["memory_peak_usage"] = round((memory_get_peak_usage() / 1024) / 1024, 2) . "MB";
-		$info["entities"] = count(Entity::$list);
-		$info["players"] = count(Player::$list);
-		$info["events"] = count($this->eventsID);
-		$info["handlers"] = $this->query("SELECT count(ID) as count FROM handlers;", true);
-		$info["handlers"] = $info["handlers"]["count"];
-		$info["actions"] = $this->query("SELECT count(ID) as count FROM actions;", true);
-		$info["actions"] = $info["actions"]["count"];
-		$info["garbage"] = gc_collect_cycles();
-		$this->handle("server.debug", $info);
-		if($console === true){
-			console("[DEBUG] TPS: " . $info["tps"] . ", Memory usage: " . $info["memory_usage"] . " (Peak " . $info["memory_peak_usage"] . "), Entities: " . $info["entities"] . ", Events: " . $info["events"] . ", Handlers: " . $info["handlers"] . ", Actions: " . $info["actions"] . ", Garbage: " . $info["garbage"], true, true, 2);
-		}
-
-		return $info;
-	}
-
 	/**
-	 * @param string $reason
-	 */
-	public function close($reason = "server stop"){
-		if($this->stop !== true){
-			if(is_int($reason)){
-				$reason = "signal stop";
-			}
-			if(($this->api instanceof ServerAPI) === true){
-				if(($this->api->chat instanceof ChatAPI) === true){
-					Player::broadcastChat("Stopping server...");
-				}
-			}
-			$this->stop = true;
-			$this->trigger("server.close", $reason);
-			$this->interface->close();
-
-			if(!defined("NO_THREADS")){
-				@$this->asyncThread->stop = true;
-			}
-		}
-	}
-
-	public function setType($type = "normal"){
-		switch(trim(strtolower($type))){
-			case "normal":
-			case "demo":
-				$this->serverType = "MCCPP;Demo;";
-				break;
-			case "minecon":
-				$this->serverType = "MCCPP;MINECON;";
-				break;
-		}
-
-	}
-
-	public function asyncOperation($type, array $data, callable $callable = null){
-		if(defined("NO_THREADS")){
-			return false;
-		}
-		$d = "";
-		$type = (int) $type;
-		switch($type){
-			case ASYNC_CURL_GET:
-				$d .= Utils::writeShort(strlen($data["url"])) . $data["url"] . (isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10));
-				break;
-			case ASYNC_CURL_POST:
-				$d .= Utils::writeShort(strlen($data["url"])) . $data["url"] . (isset($data["timeout"]) ? Utils::writeShort($data["timeout"]) : Utils::writeShort(10));
-				$d .= Utils::writeShort(count($data["data"]));
-				foreach($data["data"] as $key => $value){
-					$d .= Utils::writeShort(strlen($key)) . $key . Utils::writeInt(strlen($value)) . $value;
-				}
-				break;
-			case ASYNC_FUNCTION:
-				$params = serialize($data["arguments"]);
-				$d .= Utils::writeShort(strlen($data["function"])) . $data["function"] . Utils::writeInt(strlen($params)) . $params;
-				break;
-			default:
-				return false;
-		}
-		$ID = $this->asyncID++;
-		$this->async[$ID] = $callable;
-		$this->asyncThread->input .= Utils::writeInt($ID) . Utils::writeShort($type) . $d;
-
-		return $ID;
-	}
-
-	public function asyncOperationChecker(){
-		if(defined("NO_THREADS")){
-			return false;
-		}
-		if(isset($this->asyncThread->output{5})){
-			$offset = 0;
-			$ID = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
-			$offset += 4;
-			$type = Utils::readShort(substr($this->asyncThread->output, $offset, 2));
-			$offset += 2;
-			$data = array();
-			switch($type){
-				case ASYNC_CURL_GET:
-				case ASYNC_CURL_POST:
-					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
-					$offset += 4;
-					$data["result"] = substr($this->asyncThread->output, $offset, $len);
-					$offset += $len;
-					break;
-				case ASYNC_FUNCTION:
-					$len = Utils::readInt(substr($this->asyncThread->output, $offset, 4));
-					$offset += 4;
-					$data["result"] = unserialize(substr($this->asyncThread->output, $offset, $len));
-					$offset += $len;
-					break;
-			}
-			$this->asyncThread->output = substr($this->asyncThread->output, $offset);
-			if(isset($this->async[$ID]) and $this->async[$ID] !== null and is_callable($this->async[$ID])){
-				if(is_array($this->async[$ID])){
-					$method = $this->async[$ID][1];
-					$result = $this->async[$ID][0]->$method($data, $type, $ID);
-				}else{
-					$result = $this->async[$ID]($data, $type, $ID);
-				}
-			}
-			unset($this->async[$ID]);
-		}
-	}
-
-	/**
-	 * @param string   $event
-	 * @param callable $callable
-	 * @param integer  $priority
+	 * Returns the last server TPS measure
 	 *
-	 * @return boolean
+	 * @return float
 	 */
-	public function addHandler($event, callable $callable, $priority = 5){
-		if(!is_callable($callable)){
-			return false;
-		}
-		$priority = (int) $priority;
-		$hnid = $this->handCnt++;
-		$this->handlers[$hnid] = $callable;
-		$this->query("INSERT INTO handlers (ID, name, priority) VALUES (" . $hnid . ", '" . str_replace("'", "\\'", $event) . "', " . $priority . ");");
-		console("[INTERNAL] New handler " . (is_array($callable) ? get_class($callable[0]) . "::" . $callable[1] : $callable) . " to special event " . $event . " (ID " . $hnid . ")", true, true, 3);
-
-		return $hnid;
-	}
-
-	public function dhandle($e, $d){
-		return $this->handle($e, $d);
-	}
-
-	public function handle($event, &$data){
-		$this->preparedSQL->selectHandlers->reset();
-		$this->preparedSQL->selectHandlers->clear();
-		$this->preparedSQL->selectHandlers->bindValue(":name", $event, SQLITE3_TEXT);
-		$handlers = $this->preparedSQL->selectHandlers->execute();
-		$result = null;
-		if($handlers instanceof \SQLite3Result){
-			$call = array();
-			while(($hn = $handlers->fetchArray(SQLITE3_ASSOC)) !== false){
-				$call[(int) $hn["ID"]] = true;
-			}
-			$handlers->finalize();
-			foreach($call as $hnid => $boolean){
-				if($result !== false and $result !== true){
-					$handler = $this->handlers[$hnid];
-					if(is_array($handler)){
-						$method = $handler[1];
-						$result = $handler[0]->$method($data, $event);
-					}else{
-						$result = $handler($data, $event);
-					}
-				}else{
-					break;
-				}
-			}
-		}
-
-		if($result !== false){
-			$this->trigger($event, $data);
-		}
-
-		return $result;
-	}
-
-	public function eventHandler($data, $event){
-		switch($event){
-
-		}
+	public function getTPS(){
+		return $this->tickScheduler->getTPS();
 	}
 
 	/**
-	 * TODO
-	 * @return string
+	 * Tries to execute a server tick
 	 */
-	public function getGamemode(){
-		switch($this->gamemode){
-			case 0:
-				return "survival";
-			case 1:
-				return "creative";
-			case 2:
-				return "adventure";
-			case 3:
-				return "view";
-		}
-	}
-
-
-	public function init(){
-		register_tick_function(array($this, "tick"));
-		declare(ticks = 5000); //Minimum TPS for main thread locks
-
-		$this->loadEvents();
-		register_shutdown_function(array($this, "dumpError"));
-		register_shutdown_function(array($this, "close"));
-		if(function_exists("pcntl_signal")){
-			pcntl_signal(SIGTERM, array($this, "close"));
-			pcntl_signal(SIGINT, array($this, "close"));
-			pcntl_signal(SIGHUP, array($this, "close"));
-		}
-		console("[INFO] Default game type: " . strtoupper($this->getGamemode()));
-		$this->trigger("server.start", microtime(true));
-		console('[INFO] Done (' . round(microtime(true) - \PocketMine\START_TIME, 3) . 's)! For help, type "help" or "?"');
-		$this->process();
-	}
-
-	public function dumpError(){
-		if($this->stop === true){
-			return;
-		}
-		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
-		console("[SEVERE] An unrecovereable has ocurred and the server has crashed. Creating an error dump");
-		$dump = "```\r\n# PocketMine-MP Error Dump " . date("D M j H:i:s T Y") . "\r\n";
-		$er = error_get_last();
-		$errorConversion = array(
-			E_ERROR => "E_ERROR",
-			E_WARNING => "E_WARNING",
-			E_PARSE => "E_PARSE",
-			E_NOTICE => "E_NOTICE",
-			E_CORE_ERROR => "E_CORE_ERROR",
-			E_CORE_WARNING => "E_CORE_WARNING",
-			E_COMPILE_ERROR => "E_COMPILE_ERROR",
-			E_COMPILE_WARNING => "E_COMPILE_WARNING",
-			E_USER_ERROR => "E_USER_ERROR",
-			E_USER_WARNING => "E_USER_WARNING",
-			E_USER_NOTICE => "E_USER_NOTICE",
-			E_STRICT => "E_STRICT",
-			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-			E_DEPRECATED => "E_DEPRECATED",
-			E_USER_DEPRECATED => "E_USER_DEPRECATED",
-		);
-		$er["type"] = isset($errorConversion[$er["type"]]) ? $errorConversion[$er["type"]] : $er["type"];
-		$dump .= "Error: " . var_export($er, true) . "\r\n\r\n";
-		if(stripos($er["file"], "plugin") !== false){
-			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";
-		}
-
-		$dump .= "Code: \r\n";
-		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
-		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
-			$dump .= "[" . ($l + 1) . "] " . @$file[$l] . "\r\n";
-		}
-		$dump .= "\r\n\r\n";
-		$dump .= "Backtrace: \r\n";
-		foreach(getTrace() as $line){
-			$dump .= "$line\r\n";
-		}
-		$dump .= "\r\n\r\n";
-		$version = new VersionString();
-		$dump .= "PocketMine-MP version: " . $version . " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]\r\n";
-		$dump .= "Git commit: " . GIT_COMMIT . "\r\n";
-		$dump .= "uname -a: " . php_uname("a") . "\r\n";
-		$dump .= "PHP Version: " . phpversion() . "\r\n";
-		$dump .= "Zend version: " . zend_version() . "\r\n";
-		$dump .= "OS : " . PHP_OS . ", " . Utils::getOS() . "\r\n";
-		$dump .= "Debug Info: " . var_export($this->debugInfo(false), true) . "\r\n\r\n\r\n";
-		global $arguments;
-		$dump .= "Parameters: " . var_export($arguments, true) . "\r\n\r\n\r\n";
-		$p = $this->api->getProperties();
-		if($p["rcon.password"] != ""){
-			$p["rcon.password"] = "******";
-		}
-		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
-		if(class_exists("PocketMine\\Plugin\\PluginManager", false)){
-			$dump .= "Loaded plugins:\r\n";
-			foreach(PluginManager::getPlugins() as $p){
-				$d = $p->getDescription();
-				$dump .= $d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . "\r\n";
-			}
-			$dump .= "\r\n\r\n";
-		}
-
-		$extensions = array();
-		foreach(get_loaded_extensions() as $ext){
-			$extensions[$ext] = phpversion($ext);
-		}
-
-		$dump .= "Loaded Modules: " . var_export($extensions, true) . "\r\n";
-		$this->checkMemory();
-		$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
-		ob_start();
-		phpinfo();
-		$dump .= "\r\nphpinfo(): \r\n" . chunk_split(base64_encode(gzdeflate(ob_get_contents(), 9))) . "\r\n";
-		ob_end_clean();
-		$dump .= "\r\n```";
-		$name = "Error_Dump_" . date("D_M_j-H.i.s-T_Y");
-		log($dump, $name, true, 0, true);
-		console("[SEVERE] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
-	}
-
 	public function tick(){
-		$time = microtime(true);
-		if($this->lastTick <= ($time - 0.05)){
-			$this->tickMeasure[] = $this->lastTick = $time;
-			unset($this->tickMeasure[key($this->tickMeasure)]);
-			++$this->ticks;
+		if($this->inTick === false and $this->tickScheduler->hasTick()){
+			$this->inTick = true; //Fix race conditions
+			++$this->tickCounter;
 
-			return $this->tickerFunction($time);
-		}
-
-		return 0;
-	}
-
-	public static function clientID($ip, $port){
-		return crc32($ip . $port) ^ crc32($port . $ip . BOOTUP_RANDOM);
-		//return $ip . ":" . $port;
-	}
-
-	public function packetHandler(Packet $packet){
-		$data =& $packet;
-		$CID = Server::clientID($packet->ip, $packet->port);
-		if(isset(Player::$list[$CID])){
-			Player::$list[$CID]->handlePacket($packet);
-		}else{
-			switch($packet->pid()){
-				case RakNetInfo::UNCONNECTED_PING:
-				case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
-					if($this->invisible === true){
-						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
-						$pk->pingID = $packet->pingID;
-						$pk->serverID = $this->serverID;
-						$pk->serverType = $this->serverType;
-						$pk->ip = $packet->ip;
-						$pk->port = $packet->port;
-						$this->send($pk);
-						break;
-					}
-					if(!isset($this->custom["times_" . $CID])){
-						$this->custom["times_" . $CID] = 0;
-					}
-					$ln = 15;
-					if($this->description == "" or substr($this->description, -1) != " "){
-						$this->description .= " ";
-					}
-					$txt = substr($this->description, $this->custom["times_" . $CID], $ln);
-					$txt .= substr($this->description, 0, $ln - strlen($txt));
-					$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
-					$pk->pingID = $packet->pingID;
-					$pk->serverID = $this->serverID;
-					$pk->serverType = $this->serverType . $this->name . " [" . count(Player::$list) . "/" . $this->maxClients . "] " . $txt;
-					$pk->ip = $packet->ip;
-					$pk->port = $packet->port;
-					$this->send($pk);
-					$this->custom["times_" . $CID] = ($this->custom["times_" . $CID] + 1) % strlen($this->description);
-					break;
-				case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
-					if($packet->structure !== RakNetInfo::STRUCTURE){
-						console("[DEBUG] Incorrect structure #" . $packet->structure . " from " . $packet->ip . ":" . $packet->port, true, true, 2);
-						$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
-						$pk->serverID = $this->serverID;
-						$pk->ip = $packet->ip;
-						$pk->port = $packet->port;
-						$this->send($pk);
-					}else{
-						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
-						$pk->serverID = $this->serverID;
-						$pk->mtuSize = strlen($packet->buffer);
-						$pk->ip = $packet->ip;
-						$pk->port = $packet->port;
-						$this->send($pk);
-					}
-					break;
-				case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
-					if($this->invisible === true){
-						break;
-					}
-
-					new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
-					$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
-					$pk->serverID = $this->serverID;
-					$pk->serverPort = $this->port;
-					$pk->mtuSize = $packet->mtuSize;
-					$pk->ip = $packet->ip;
-					$pk->port = $packet->port;
-					$this->send($pk);
-					break;
-			}
-		}
-	}
-
-	public function send(Packet $packet){
-		return $this->interface->writePacket($packet);
-	}
-
-	public function process(){
-		$lastLoop = 0;
-		while($this->stop === false){
-			$packet = $this->interface->readPacket();
-			if($packet instanceof Packet){
-				$this->packetHandler($packet);
-				$lastLoop = 0;
-			}
-			if(($ticks = $this->tick()) === 0){
-				++$lastLoop;
-				if($lastLoop < 16){
-					usleep(1);
-				}elseif($lastLoop < 128){
-					usleep(1000);
-				}elseif($lastLoop < 256){
-					usleep(2000);
-				}else{
-					usleep(4000);
+			$this->checkConsole();
+			$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+			if(($this->tickCounter & 0b1) === 0){
+				$this->checkTickUpdates();
+				if(($this->tickCounter & 0b1111) === 0){
+					$this->titleTick();
 				}
 			}
+			$this->tickScheduler->doTick();
+			$this->inTick = false;
+			return true;
 		}
-	}
-
-	public function trigger($event, $data = ""){
-		if(isset($this->events[$event])){
-			foreach($this->events[$event] as $evid => $ev){
-				if(!is_callable($ev)){
-					$this->deleteEvent($evid);
-					continue;
-				}
-				if(is_array($ev)){
-					$method = $ev[1];
-					$ev[0]->$method($data, $event);
-				}else{
-					$ev($data, $event);
-				}
-			}
-		}
-	}
-
-	public function schedule($ticks, callable $callback, $data = array(), $repeat = false, $eventName = "server.schedule"){
-		if(!is_callable($callback)){
-			return false;
-		}
-		$chcnt = $this->scheduleCnt++;
-		$this->schedule[$chcnt] = array($callback, $data, $eventName);
-		$this->query("INSERT INTO actions (ID, interval, last, repeat) VALUES(" . $chcnt . ", " . ($ticks / 20) . ", " . microtime(true) . ", " . (((bool) $repeat) === true ? 1 : 0) . ");");
-
-		return $chcnt;
-	}
-
-	public function tickerFunction($time){
-		//actions that repeat every x time will go here
-		$this->preparedSQL->selectActions->reset();
-		$this->preparedSQL->selectActions->bindValue(":time", $time, SQLITE3_FLOAT);
-		$actions = $this->preparedSQL->selectActions->execute();
-
-		$actionCount = 0;
-		if($actions instanceof \SQLite3Result){
-			while(($action = $actions->fetchArray(SQLITE3_ASSOC)) !== false){
-				$cid = $action["ID"];
-				$this->preparedSQL->updateAction->reset();
-				$this->preparedSQL->updateAction->bindValue(":time", $time, SQLITE3_FLOAT);
-				$this->preparedSQL->updateAction->bindValue(":id", $cid, SQLITE3_INTEGER);
-				$this->preparedSQL->updateAction->execute();
-				if(!@is_callable($this->schedule[$cid][0])){
-					$return = false;
-				}else{
-					++$actionCount;
-					$return = call_user_func($this->schedule[$cid][0], $this->schedule[$cid][1], $this->schedule[$cid][2]);
-				}
-
-				if($action["repeat"] == 0 or $return === false){
-					$this->query("DELETE FROM actions WHERE ID = " . $action["ID"] . ";");
-					$this->schedule[$cid] = null;
-					unset($this->schedule[$cid]);
-				}
-			}
-			$actions->finalize();
-		}
-
-		return $actionCount;
-	}
-
-	public function event($event, callable $func){
-		if(!is_callable($func)){
-			return false;
-		}
-		$evid = $this->evCnt++;
-		if(!isset($this->events[$event])){
-			$this->events[$event] = array();
-		}
-		$this->events[$event][$evid] = $func;
-		$this->eventsID[$evid] = $event;
-		console("[INTERNAL] Attached " . (is_array($func) ? get_class($func[0]) . "::" . $func[1] : $func) . " to event " . $event . " (ID " . $evid . ")", true, true, 3);
-
-		return $evid;
-	}
-
-	public function deleteEvent($id){
-		$id = (int) $id;
-		if(isset($this->eventsID[$id])){
-			$ev = $this->eventsID[$id];
-			$this->eventsID[$id] = null;
-			unset($this->eventsID[$id]);
-			$this->events[$ev][$id] = null;
-			unset($this->events[$ev][$id]);
-			if(count($this->events[$ev]) === 0){
-				unset($this->events[$ev]);
-			}
-		}
+		return false;
 	}
 
 }

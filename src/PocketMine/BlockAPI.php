@@ -227,7 +227,7 @@ class BlockAPI{
 	);
 
 	function __construct(){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 	}
 
 	public function init(){
@@ -262,7 +262,7 @@ class BlockAPI{
 						break;
 					}
 					$player->addItem(clone $item);
-					$output .= "Giving " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $player->getUsername() . "\n";
+					$output .= "Giving " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ") to " . $player->getName() . "\n";
 				}else{
 					$output .= "Unknown player.\n";
 				}

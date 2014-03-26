@@ -22,6 +22,7 @@
 namespace PocketMine\Permission;
 
 use PocketMine;
+use PocketMine\Plugin\Plugin;
 
 interface Permissible extends ServerOperator{
 
@@ -43,7 +44,21 @@ interface Permissible extends ServerOperator{
 	 */
 	public function hasPermission($name);
 
-	//TODO: Attachment
+	/**
+	 * @param Plugin $plugin
+	 * @param string $name
+	 * @param bool   $value
+	 *
+	 * @return PermissionAttachment
+	 */
+	public function addAttachment(Plugin $plugin, $name = null, $value = null);
+
+	/**
+	 * @param PermissionAttachment $attachment
+	 *
+	 * @return void
+	 */
+	public function removeAttachment(PermissionAttachment $attachment);
 
 
 	/**

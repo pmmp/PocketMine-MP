@@ -28,56 +28,68 @@ use PocketMine;
 /**
  * Manages all the plugins, Permissions and Permissibles
  */
-abstract class PluginManager{
+class PluginManager{
 
+	/**
+	 * @var PluginManager
+	 */
+	private static $instance = null;
+	
 	/**
 	 * @var Plugin[]
 	 */
-	protected static $plugins = array();
+	protected $plugins = array();
 
 	/**
 	 * @var Permission[]
 	 */
-	protected static $permissions = array();
+	protected $permissions = array();
 
 	/**
 	 * @var Permission[]
 	 */
-	protected static $defaultPerms = array();
+	protected $defaultPerms = array();
 
 	/**
 	 * @var Permission[]
 	 */
-	protected static $defaultPermsOp = array();
+	protected $defaultPermsOp = array();
 
 	/**
 	 * @var Permissible[]
 	 */
-	protected static $permSubs = array();
+	protected $permSubs = array();
 
 	/**
 	 * @var Permissible[]
 	 */
-	protected static $defSubs = array();
+	protected $defSubs = array();
 
 	/**
 	 * @var Permissible[]
 	 */
-	protected static $defSubsOp = array();
+	protected $defSubsOp = array();
 
 	/**
 	 * @var PluginLoader[]
 	 */
-	protected static $fileAssociations = array();
+	protected $fileAssociations = array();
 
+	/**
+	 * @return PluginManager
+	 */
+	public static function getInstance(){
+		return self::$instance;
+	}
+	
 	/**
 	 * @param string $name
 	 *
 	 * @return null|Plugin
 	 */
-	public static function getPlugin($name){
-		if(isset(static::$plugins[$name])){
-			return static::$plugins[$name];
+	public function getPlugin($name){
+		if(isset($this->plugins[$name])){
+			return $this->plugins[$name];
 		}
 
 		return null;
@@ -88,7 +100,7 @@ abstract class PluginManager{
 	 *
 	 * @return boolean
 	 */
-	public static function registerInterface($loader){
+	public function registerInterface($loader){
 		if(is_object($loader) and !($loader instanceof PluginLoader)){
 			return false;
 		}elseif(is_string($loader)){
@@ -99,7 +111,7 @@ abstract class PluginManager{
 			}
 		}
 
-		static::$fileAssociations[spl_object_hash($loader)] = array($loader, $loader->getPluginFilters());
+		$this->fileAssociations[spl_object_hash($loader)] = array($loader, $loader->getPluginFilters());
 
 		return true;
 	}
@@ -107,8 +119,8 @@ abstract class PluginManager{
 	/**
 	 * @return Plugin[]
 	 */
-	public static function getPlugins(){
-		return static::$plugins;
+	public function getPlugins(){
+		return $this->plugins;
 	}
 
 	/**
@@ -116,9 +128,9 @@ abstract class PluginManager{
 	 *
 	 * @return Plugin
 	 */
-	public static function loadPlugin($path){
-		foreach(static::$fileAssociations as $loader){
-			if(preg_match($loader[1], basename($file)) > 0){
+	public function loadPlugin($path){
+		foreach($this->fileAssociations as $loader){
+			if(preg_match($loader[1], basename($path)) > 0){
 				$description = $loader[0]->getPluginDescription($path);
 				if($description instanceof PluginDescription){
 					return $loader[0]->loadPlugin($path);
@@ -134,14 +146,14 @@ abstract class PluginManager{
 	 *
 	 * @return Plugin[]
 	 */
-	public static function loadPlugins($directory){
+	public function loadPlugins($directory){
 		if(is_dir($directory)){
 			$plugins = array();
 			$loadedPlugins = array();
 			$dependencies = array();
 			$softDependencies = array();
 			foreach(new \IteratorIterator(new \DirectoryIterator($directory)) as $file){
-				foreach(static::$fileAssociations as $loader){
+				foreach($this->fileAssociations as $loader){
 					if(preg_match($loader[1], basename($file)) > 0){
 						$description = $loader[0]->getPluginDescription($file);
 						if($description instanceof PluginDescription){
@@ -236,7 +248,7 @@ abstract class PluginManager{
 					if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 						unset($plugins[$name]);
 						$missingDependency = false;
-						if($plugin = static::loadPlugin($file) and $plugin instanceof Plugin){
+						if($plugin = $this->loadPlugin($file) and $plugin instanceof Plugin){
 							$loadedPlugins[$name] = $plugin;
 						}else{
 							console("[SEVERE] Could not load plugin '" . $name . "'");
@@ -250,7 +262,7 @@ abstract class PluginManager{
 							unset($softDependencies[$name]);
 							unset($plugins[$name]);
 							$missingDependency = false;
-							if($plugin = static::loadPlugin($file) and $plugin instanceof Plugin){
+							if($plugin = $this->loadPlugin($file) and $plugin instanceof Plugin){
 								$loadedPlugins[$name] = $plugin;
 							}else{
 								console("[SEVERE] Could not load plugin '" . $name . "'");
@@ -279,9 +291,9 @@ abstract class PluginManager{
 	 *
 	 * @return null|Permission
 	 */
-	public static function getPermission($name){
-		if(isset(static::$permissions[$name])){
-			return static::$permissions[$name];
+	public function getPermission($name){
+		if(isset($this->permissions[$name])){
+			return $this->permissions[$name];
 		}
 
 		return null;
@@ -292,10 +304,10 @@ abstract class PluginManager{
 	 *
 	 * @return bool
 	 */
-	public static function addPermission(Permission $permission){
-		if(!isset(static::$permissions[$permission->getName()])){
-			static::$permissions[$permission->getName()] = $permission;
-			static::calculatePermissionDefault($permission);
+	public function addPermission(Permission $permission){
+		if(!isset($this->permissions[$permission->getName()])){
+			$this->permissions[$permission->getName()] = $permission;
+			$this->calculatePermissionDefault($permission);
 
 			return true;
 		}
@@ -308,9 +320,9 @@ abstract class PluginManager{
 	 */
 	public function removePermission($permission){
 		if($permission instanceof Permission){
-			unset(static::$permissions[$permission->getName()]);
+			unset($this->permissions[$permission->getName()]);
 		}else{
-			unset(static::$permissions[$permission]);
+			unset($this->permissions[$permission]);
 		}
 	}
 
@@ -319,45 +331,45 @@ abstract class PluginManager{
 	 *
 	 * @return Permission[]
 	 */
-	public static function getDefaultPermissions($op){
+	public function getDefaultPermissions($op){
 		if($op === true){
-			return static::$defaultPermsOp;
+			return $this->defaultPermsOp;
 		}else{
-			return static::$defaultPerms;
+			return $this->defaultPerms;
 		}
 	}
 
 	/**
 	 * @param Permission $permission
 	 */
-	public static function recalculatePermissionDefaults(Permission $permission){
-		if(isset(static::$permissions[$permission->getName()])){
-			unset(static::$defaultPermsOp[$permission->getName()]);
-			unset(static::$defaultPerms[$permission->getName()]);
-			static::calculatePermissionDefault($permission);
+	public function recalculatePermissionDefaults(Permission $permission){
+		if(isset($this->permissions[$permission->getName()])){
+			unset($this->defaultPermsOp[$permission->getName()]);
+			unset($this->defaultPerms[$permission->getName()]);
+			$this->calculatePermissionDefault($permission);
 		}
 	}
 
 	/**
 	 * @param Permission $permission
 	 */
-	private static function calculatePermissionDefault(Permission $permission){
+	private function calculatePermissionDefault(Permission $permission){
 		if($permission->getDefault() === Permission::DEFAULT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
-			static::$defaultPermsOp[$permission->getName()] = $permission;
-			static::dirtyPermissibles(true);
+			$this->defaultPermsOp[$permission->getName()] = $permission;
+			$this->dirtyPermissibles(true);
 		}
 
 		if($permission->getDefault() === Permission::DEFAULT_NOT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
-			static::$defaultPerms[$permission->getName()] = $permission;
-			static::dirtyPermissibles(false);
+			$this->defaultPerms[$permission->getName()] = $permission;
+			$this->dirtyPermissibles(false);
 		}
 	}
 
 	/**
 	 * @param boolean $op
 	 */
-	private static function dirtyPermissibles($op){
-		foreach(static::getDefaultPermSubscriptions($op) as $p){
+	private function dirtyPermissibles($op){
+		foreach($this->getDefaultPermSubscriptions($op) as $p){
 			$p->recalculatePermissions();
 		}
 	}
@@ -366,21 +378,21 @@ abstract class PluginManager{
 	 * @param string      $permission
 	 * @param Permissible $permissible
 	 */
-	public static function subscribeToPermission($permission, Permissible $permissible){
-		if(!isset(static::$permSubs[$permission])){
+	public function subscribeToPermission($permission, Permissible $permissible){
+		if(!isset($this->permSubs[$permission])){
 			//TODO: Use WeakRef
-			static::$permSubs[$permission] = array();
+			$this->permSubs[$permission] = array();
 		}
-		static::$permSubs[$permission][spl_object_hash($permissible)] = $permissible;
+		$this->permSubs[$permission][spl_object_hash($permissible)] = $permissible;
 	}
 
 	/**
 	 * @param string      $permission
 	 * @param Permissible $permissible
 	 */
-	public static function unsubscribeFromPermission($permission, Permissible $permissible){
-		if(isset(static::$permSubs[$permission])){
-			unset(static::$permSubs[$permission][spl_object_hash($permissible)]);
+	public function unsubscribeFromPermission($permission, Permissible $permissible){
+		if(isset($this->permSubs[$permission])){
+			unset($this->permSubs[$permission][spl_object_hash($permissible)]);
 		}
 	}
 
@@ -389,9 +401,9 @@ abstract class PluginManager{
 	 *
 	 * @return Permissible[]
 	 */
-	public static function getPermissionSubscriptions($permission){
-		if(isset(static::$permSubs[$permission])){
-			return static::$permSubs[$permission];
+	public function getPermissionSubscriptions($permission){
+		if(isset($this->permSubs[$permission])){
+			return $this->permSubs[$permission];
 		}
 
 		return array();
@@ -401,11 +413,11 @@ abstract class PluginManager{
 	 * @param boolean     $op
 	 * @param Permissible $permissible
 	 */
-	public static function subscribeToDefaultPerms($op, Permissible $permissible){
+	public function subscribeToDefaultPerms($op, Permissible $permissible){
 		if($op === true){
-			static::$defSubsOp[spl_object_hash($permissible)] = $permissible;
+			$this->defSubsOp[spl_object_hash($permissible)] = $permissible;
 		}else{
-			static::$defSubs[spl_object_hash($permissible)] = $permissible;
+			$this->defSubs[spl_object_hash($permissible)] = $permissible;
 		}
 	}
 
@@ -413,11 +425,11 @@ abstract class PluginManager{
 	 * @param boolean     $op
 	 * @param Permissible $permissible
 	 */
-	public static function unsubscribeFromDefaultPerms($op, Permissible $permissible){
+	public function unsubscribeFromDefaultPerms($op, Permissible $permissible){
 		if($op === true){
-			unset(static::$defSubsOp[spl_object_hash($permissible)]);
+			unset($this->defSubsOp[spl_object_hash($permissible)]);
 		}else{
-			unset(static::$defSubs[spl_object_hash($permissible)]);
+			unset($this->defSubs[spl_object_hash($permissible)]);
 		}
 	}
 
@@ -426,19 +438,19 @@ abstract class PluginManager{
 	 *
 	 * @return Permissible[]
 	 */
-	public static function getDefaultPermSubscriptions($op){
+	public function getDefaultPermSubscriptions($op){
 		if($op === true){
-			return static::$defSubsOp;
+			return $this->defSubsOp;
 		}else{
-			return static::$defSubs;
+			return $this->defSubs;
 		}
 	}
 
 	/**
 	 * @return Permission[]
 	 */
-	public static function getPermissions(){
-		return static::$permissions;
+	public function getPermissions(){
+		return $this->permissions;
 	}
 
 

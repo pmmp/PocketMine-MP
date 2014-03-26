@@ -104,10 +104,10 @@ abstract class Achievement{
 
 	public static function broadcast(Player $player, $achievementId){
 		if(isset(Achievement::$list[$achievementId])){
-			if(ServerAPI::request()->api->getProperty("announce-player-achievements") == true){
-				Player::broadcastChat($player->getUsername() . " has just earned the achievement " . Achievement::$list[$achievementId]["name"]);
+			if(Server::getInstance()->api->getProperty("announce-player-achievements") == true){
+				Player::broadcastMessage($player->getDisplayName() . " has just earned the achievement " . Achievement::$list[$achievementId]["name"]);
 			}else{
-				$player->sendChat("You have just earned the achievement " . Achievement::$list[$achievementId]["name"]);
+				$player->sendMessage("You have just earned the achievement " . Achievement::$list[$achievementId]["name"]);
 			}
 
 			return true;

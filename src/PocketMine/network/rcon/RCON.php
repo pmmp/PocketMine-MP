@@ -26,7 +26,7 @@
 namespace PocketMine\Network\RCON;
 
 use PocketMine;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 
 
 class RCON{
@@ -55,7 +55,7 @@ class RCON{
 		}
 		@socket_getsockname($this->socket, $addr, $port);
 		console("[INFO] RCON running on $addr:$port");
-		ServerAPI::request()->schedule(2, array($this, "check"), array(), true);
+		Server::getInstance()->schedule(2, array($this, "check"), array(), true);
 	}
 
 	public function stop(){
@@ -78,7 +78,7 @@ class RCON{
 					console($this->workers[$n]->response);
 					$this->workers[$n]->notify();
 				}else{
-					$this->workers[$n]->response = ServerAPI::request()->api->console->run($this->workers[$n]->cmd, "rcon");
+					$this->workers[$n]->response = Server::getInstance()->api->console->run($this->workers[$n]->cmd, "rcon");
 					$this->workers[$n]->notify();
 				}
 			}

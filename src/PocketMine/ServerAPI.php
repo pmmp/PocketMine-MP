@@ -225,27 +225,6 @@ class ServerAPI{
 
 	}
 
-	public function checkTickUpdates(){
-		//Update entities that need update
-		if(count(Entity::$needUpdate) > 0){
-			foreach(Entity::$needUpdate as $id => $entity){
-				if($entity->onUpdate() === false){
-					unset(Entity::$needUpdate[$id]);
-				}
-			}
-		}
-
-		//Update tiles that need update
-		if(count(Tile::$needUpdate) > 0){
-			foreach(Tile::$needUpdate as $id => $tile){
-				if($tile->onUpdate() === false){
-					unset(Tile::$needUpdate[$id]);
-				}
-			}
-		}
-
-	}
-
 	public function async(callable $callable, $params = array(), $remove = false){
 		$cnt = $this->asyncCnt++;
 		$this->asyncCalls[$cnt] = new \Async($callable, $params);
@@ -263,38 +242,6 @@ class ServerAPI{
 		return $ob;
 	}
 
-	public function autoSave(){
-		console("[DEBUG] Saving....", true, true, 2);
-		Level::saveAll();
-	}
-
-	public function sendUsage(){
-		console("[DEBUG] Sending usage data...", true, true, 2);
-		$plist = "";
-		foreach(PluginManager::getPlugins() as $p){
-			$d = $p->getDescription();
-			$plist .= str_replace(array(";", ":"), "", $d->getName()) . ":" . str_replace(array(";", ":"), "", $d->getVersion()) . ";";
-		}
-
-		$this->asyncOperation(ASYNC_CURL_POST, array(
-			"url" => "http://stats.pocketmine.net/usage.php",
-			"data" => array(
-				"serverid" => $this->server->serverID,
-				"port" => $this->server->port,
-				"os" => Utils::getOS(),
-				"memory_total" => $this->getProperty("memory-limit"),
-				"memory_usage" => memory_get_usage(true),
-				"php_version" => PHP_VERSION,
-				"version" => VERSION,
-				"mc_version" => MINECRAFT_VERSION,
-				"protocol" => Info::CURRENT_PROTOCOL,
-				"online" => count(Player::$list),
-				"max" => $this->server->maxClients,
-				"plugins" => $plist,
-			),
-		), null);
-	}
-
 	public function __destruct(){
 		foreach($this->apiList as $i => $ob){
 			if(method_exists($ob, "__destruct")){
@@ -304,62 +251,8 @@ class ServerAPI{
 		}
 	}
 
-
-	private function loadProperties(){
-		if(($memory = str_replace("B", "", strtoupper($this->getProperty("memory-limit")))) !== false){
-			$value = array("M" => 1, "G" => 1024);
-			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
-			if($real < 128){
-				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
-			}
-			@ini_set("memory_limit", $memory);
-		}else{
-			$this->setProperty("memory-limit", "128M");
-		}
-
-		if($this->server instanceof Server){
-			$this->server->setType($this->getProperty("server-type"));
-			$this->server->maxClients = $this->getProperty("max-players");
-			$this->server->description = $this->getProperty("description");
-			$this->server->motd = $this->getProperty("motd");
-			$this->server->gamemode = $this->getProperty("gamemode");
-			$this->server->difficulty = $this->getProperty("difficulty");
-			$this->server->whitelist = $this->getProperty("white-list");
-		}
-	}
-
 	private function writeProperties(){
 		$this->config->save();
-	}
-
-	private function parseProperties(){
-		foreach($this->config->getAll() as $n => $v){
-			switch($n){
-				case "last-update":
-					if($v === false){
-						$v = time();
-					}else{
-						$v = (int) $v;
-					}
-					break;
-				case "gamemode":
-				case "max-players":
-				case "server-port":
-				case "debug":
-				case "difficulty":
-					$v = (int) $v;
-					break;
-				case "server-id":
-					if($v !== false){
-						$v = preg_match("/[^0-9\-]/", $v) > 0 ? Utils::readInt(substr(md5($v, true), 0, 4)) : $v;
-					}
-					break;
-			}
-			$this->config->set($n, $v);
-		}
-		if($this->getProperty("hardcore") == 1 and $this->getProperty("difficulty") < 3){
-			$this->setProperty("difficulty", 3);
-		}
 	}
 
 	public function init(){
@@ -367,10 +260,6 @@ class ServerAPI{
 			self::$serverRequest = $this->server;
 		}
 
-		Block::init();
-		Item::init();
-		Crafting::init();
-		Level::init();
 
 
 		if($this->getProperty("send-usage", true) !== false){

@@ -26,7 +26,7 @@ namespace PocketMine\Recipes;
 
 use PocketMine;
 use PocketMine\Item\Item;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 
 abstract class Crafting{
 
@@ -263,7 +263,6 @@ abstract class Crafting{
 		foreach(self::$small as $recipe){
 			$recipe = self::parseRecipe($recipe);
 			self::$recipes[$id] = $recipe;
-			self::$lookupTable[0][$recipe[2]];
 			if(!isset(self::$lookupTable[0][$recipe[2]])){
 				self::$lookupTable[0][$recipe[2]] = array();
 			}

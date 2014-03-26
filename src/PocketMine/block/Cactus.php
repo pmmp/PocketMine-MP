@@ -24,7 +24,7 @@ namespace PocketMine\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 use PocketMine;
 
 class Cactus extends Transparent{
@@ -39,7 +39,7 @@ class Cactus extends Transparent{
 			$down = $this->getSide(0);
 			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){ //Replace with common break method
 				$this->level->setBlock($this, new Air(), false);
-				ServerAPI::request()->api->entity->drop($this, Item::get($this->id));
+				Server::getInstance()->api->entity->drop($this, Item::get($this->id));
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

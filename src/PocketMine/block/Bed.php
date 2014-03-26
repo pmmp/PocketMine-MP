@@ -23,7 +23,7 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Network\Protocol\ChatPacket;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 use PocketMine;
 
 class Bed extends Transparent{
@@ -35,7 +35,7 @@ class Bed extends Transparent{
 	}
 
 	public function onActivate(Item $item, PocketMine\Player $player = null){
-		if($player instanceof PocketMine\Player and ServerAPI::request()->api->time->getPhase($this->level) !== "night"){
+		if($player instanceof PocketMine\Player and Server::getInstance()->api->time->getPhase($this->level) !== "night"){
 			$pk = new ChatPacket;
 			$pk->message = "You can only sleep at night";
 			$player->dataPacket($pk);

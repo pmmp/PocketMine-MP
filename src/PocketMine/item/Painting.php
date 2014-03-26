@@ -25,7 +25,7 @@ use PocketMine\Block\Block;
 use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Player;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){
@@ -35,7 +35,7 @@ class Painting extends Item{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1 and $block->isSolid === false){
-			$server = ServerAPI::request();
+			$server = Server::getInstance();
 			$faces = array(
 				2 => 1,
 				3 => 3,

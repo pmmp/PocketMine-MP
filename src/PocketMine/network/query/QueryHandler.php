@@ -28,7 +28,7 @@ namespace PocketMine\Network\Query;
 use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Player;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 use PocketMine\Utils\Utils;
 
 class QueryHandler{
@@ -36,9 +36,9 @@ class QueryHandler{
 
 	public function __construct(){
 		console("[INFO] Starting GS4 status listener");
-		$this->server = ServerAPI::request();
-		$addr = ($ip = $this->server->api->getProperty("server-ip")) != "" ? $ip : "0.0.0.0";
-		$port = $this->server->api->getProperty("server-port");
+		$this->server = Server::getInstance();
+		$addr = ($ip = $this->server->getIp()) != "" ? $ip : "0.0.0.0";
+		$port = $this->server->getPort();
 		console("[INFO] Setting query port to $port");
 		/*
 		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
@@ -59,7 +59,7 @@ class QueryHandler{
 	public function regenerateInfo(){
 		$str = "";
 		$plist = "PocketMine-MP " . PocketMine\VERSION;
-		$pl = PocketMine\Plugin\PluginManager::getPlugins();
+		$pl = $this->server->getPluginManager()->getPlugins();
 		if(count($pl) > 0){
 			$plist .= ":";
 			foreach($pl as $p){
@@ -70,26 +70,25 @@ class QueryHandler{
 		}
 		$KVdata = array(
 			"splitnum" => chr(128),
-			"hostname" => $this->server->name,
-			"gametype" => ($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP",
+			"hostname" => $this->server->getServerName(),
+			"gametype" => ($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP",
 			"game_id" => "MINECRAFTPE",
-			"version" => PocketMine\MINECRAFT_VERSION,
-			"server_engine" => "PocketMine-MP " . PocketMine\VERSION,
+			"version" => $this->server->getVersion(),
+			"server_engine" => $this->server->getName() . " " . $this->server->getPocketMineVersion(),
 			"plugins" => $plist,
 			"map" => Level::getDefault()->getName(),
 			"numplayers" => count(Player::$list),
-			"maxplayers" => $this->server->maxClients,
-			"whitelist" => $this->server->api->getProperty("white-list") === true ? "on" : "off",
-			"hostport" => $this->server->api->getProperty("server-port"),
-			//"hostip" => $this->server->api->getProperty("server-ip", "0.0.0.0")
+			"maxplayers" => $this->server->getMaxPlayers(),
+			"whitelist" => $this->server->hasWhitelist() === true ? "on" : "off",
+			"hostport" => $this->server->getPort()
 		);
 		foreach($KVdata as $key => $value){
 			$str .= $key . "\x00" . $value . "\x00";
 		}
 		$str .= "\x00\x01player_\x00\x00";
 		foreach(Player::$list as $player){
-			if($player->getUsername() != ""){
-				$str .= $player->getUsername() . "\x00";
+			if($player->getName() != ""){
+				$str .= $player->getName() . "\x00";
 			}
 		}
 		$str .= "\x00";
@@ -135,7 +134,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;
 				}else{
-					$pk->payload = $this->server->name . "\x00" . (($this->server->gamemode & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->maxClients . "\x00" . Utils::writeLShort($this->server->api->getProperty("server-port")) . $this->server->api->getProperty("server-ip", "0.0.0.0") . "\x00";
+					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
 				$pk->encode();
 				$this->server->send($pk);

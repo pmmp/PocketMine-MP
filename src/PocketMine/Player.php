@@ -37,6 +37,7 @@ use PocketMine\NBT\Tag\Float;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
+use PocketMine\Command\CommandSender;
 use PocketMine\Network\Protocol\AdventureSettingsPacket;
 use PocketMine\Network\Protocol\AnimatePacket;
 use PocketMine\Network\Protocol\ChunkDataPacket;
@@ -80,11 +81,25 @@ use PocketMine\Utils\Utils;
  * Class Player
  * @package PocketMine
  */
-class Player extends RealHuman{
+class Player extends RealHuman/*TODO: implements CommandSender*/{
+	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
+	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
+
+	const SURVIVAL = 0;
+	const CREATIVE = 1;
+	const ADVENTURE = 2;
+	const SPECTATOR = 3;
+	const VIEW = Player::SPECTATOR;
+
 	const MAX_QUEUE = 2048;
 	const SURVIVAL_SLOTS = 36;
 	const CREATIVE_SLOTS = 112;
-	public static $list = array(); //????
+
+	/**
+	 * @var Player[]
+	 */
+	public static $list = array();
+
 	public $auth = false;
 	public $CID;
 	public $MTU;
@@ -110,6 +125,7 @@ class Player extends RealHuman{
 	protected $port;
 	protected $username;
 	protected $iusername;
+	protected $displayName;
 	protected $startAction = false;
 	protected $sleeping = false;
 	protected $chunksOrder = array();
@@ -149,7 +165,7 @@ class Player extends RealHuman{
 	public function __construct($clientID, $ip, $port, $MTU){
 		$this->bigCnt = 0;
 		$this->MTU = $MTU;
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
 		$this->CID = Server::clientID($ip, $port);
@@ -160,7 +176,7 @@ class Player extends RealHuman{
 		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->gamemode;
 		$this->level = Level::getDefault();
-		$this->viewDistance = (int) $this->server->api->getProperty("view-distance");
+		$this->viewDistance = $this->server->getViewDistance();
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0, 0);
@@ -194,6 +210,14 @@ class Player extends RealHuman{
 
 	public function isConnected(){
 		return $this->connected === true;
+	}
+
+	public function getDisplayName(){
+		return $this->displayName;
+	}
+
+	public function setDisplayName($name){
+		$this->displayName = $name;
 	}
 
 	public function getIP(){
@@ -663,11 +687,11 @@ class Player extends RealHuman{
 
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
-			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ".\n");
+			$this->sendMessage("Your gamemode has been changed to " . $this->getGamemode() . ".\n");
 		}else{
 			$this->blocked = true;
 			$this->gamemode = $gm;
-			$this->sendChat("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
+			$this->sendMessage("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
 			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
 		}
 		$this->sendSettings();
@@ -969,7 +993,7 @@ class Player extends RealHuman{
 				if(count($u) > 0){
 					foreach($u as $p){
 						if($p !== $this){
-							$p->close($p->getUsername() . " has left the game", "logged in from another location");
+							$p->close($p->getDisplayName() . " has left the game", "logged in from another location");
 						}
 					}
 				}
@@ -1068,7 +1092,7 @@ class Player extends RealHuman{
 						//$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
 						$this->spawnToAll();
-						$this->sendChat($this->server->motd . "\n");
+						$this->sendMessage($this->server->motd . "\n");
 
 						$this->sendInventory();
 						$this->sendSettings();
@@ -1608,7 +1632,7 @@ class Player extends RealHuman{
 					}else{
 						$ev = new Event\Player\PlayerChatEvent($this, $message);
 						if(EventHandler::callEvent($ev) !== Event\Event::DENY){
-							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getUsername(), $ev->getMessage()), $ev->getRecipients());
+							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 						}
 					}
 				}
@@ -1865,7 +1889,7 @@ class Player extends RealHuman{
 	 */
 	public function kick($reason = ""){
 		if(EventHandler::callEvent($ev = new Event\Player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : ""))) !== Event\Event::DENY){
-			$this->sendChat("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
+			$this->sendMessage("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
 			$this->close($ev->getQuitMessage(), $reason);
 
 			return true;
@@ -1879,7 +1903,7 @@ class Player extends RealHuman{
 	 *
 	 * @param string $message
 	 */
-	public function sendChat($message){
+	public function sendMessage($message){
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if(preg_match_all('#@([@A-Za-z_]{1,})#', $m, $matches, PREG_OFFSET_CAPTURE) > 0){
@@ -1934,7 +1958,7 @@ class Player extends RealHuman{
 				Player::saveOffline($this->username, $this->namedtag);
 			}
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
-				Player::broadcastChat($ev->getQuitMessage());
+				Player::broadcastMessage($ev->getQuitMessage());
 			}
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
@@ -2007,7 +2031,7 @@ class Player extends RealHuman{
 	 *
 	 * @param string $message
 	 */
-	public static function broadcastChat($message){
+	public static function broadcastMessage($message){
 		self::groupChat($message, self::getAll());
 	}
 
@@ -2060,7 +2084,7 @@ class Player extends RealHuman{
 	 * @return Compound
 	 */
 	public static function getOffline($name){
-		$server = ServerAPI::request();
+		$server = Server::getInstance();
 		$iname = strtolower($name);
 		if(!file_exists(\PocketMine\DATA . "players/" . $iname . ".dat")){
 			$spawn = Level::getDefault()->getSafeSpawn();
@@ -2182,7 +2206,7 @@ class Player extends RealHuman{
 	 */
 	public static function groupChat($message, array $players){
 		foreach($players as $p){
-			$p->sendChat($message);
+			$p->sendMessage($message);
 		}
 	}
 
@@ -2191,7 +2215,7 @@ class Player extends RealHuman{
 	 *
 	 * @return string
 	 */
-	public function getUsername(){
+	public function getName(){
 		return $this->username;
 	}
 

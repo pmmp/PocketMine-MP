@@ -45,9 +45,20 @@ use PocketMine;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;
+
+	/**
+	 * @var Entity[]
+	 */
 	public static $list = array();
+
+	/**
+	 * @var Entity[]
+	 */
 	public static $needUpdate = array();
 
+	/**
+	 * @var Player[]
+	 */
 	protected $hasSpawned = array();
 
 	protected $id;

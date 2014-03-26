@@ -31,7 +31,7 @@ class ConsoleAPI{
 		$this->help = array();
 		$this->cmds = array();
 		$this->alias = array();
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 	}
 
 	public function init(){
@@ -185,7 +185,7 @@ class ConsoleAPI{
 				return $this->run($this->alias[$cmd] . ($params !== "" ? " " . $params : ""), $issuer, $cmd);
 			}
 			if($issuer instanceof Player){
-				console("[DEBUG] " . TextFormat::AQUA . $issuer->getUsername() . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
+				console("[DEBUG] " . TextFormat::AQUA . $issuer->getName() . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
 			}else{
 				console("[DEBUG] " . TextFormat::YELLOW . "*" . $issuer . TextFormat::RESET . " issued server command: " . ltrim("$alias ") . "/$cmd " . $params, true, true, 2);
 			}
@@ -202,7 +202,7 @@ class ConsoleAPI{
 						case "u":
 						case "player":
 						case "username":
-							$p = ($issuer instanceof Player) ? $issuer->getUsername() : $issuer;
+							$p = ($issuer instanceof Player) ? $issuer->getName() : $issuer;
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
@@ -215,18 +215,18 @@ class ConsoleAPI{
 						case "a":
 						case "all":
 							if($issuer instanceof Player){
-								if($this->server->api->ban->isOp($issuer->getUsername())){
+								if($this->server->api->ban->isOp($issuer->getName())){
 									$output = "";
 									foreach(Player::getAll() as $p){
-										$output .= $this->run($cmd . " " . substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+										$output .= $this->run($cmd . " " . substr_replace($params, $p->getName(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 									}
 								}else{
-									$issuer->sendChat("You don't have permissions to use this command.\n");
+									$issuer->sendMessage("You don't have permissions to use this command.\n");
 								}
 							}else{
 								$output = "";
 								foreach(Player::getAll() as $p){
-									$output .= $this->run($cmd . " " . substr_replace($params, $p->getUsername(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
+									$output .= $this->run($cmd . " " . substr_replace($params, $p->getName(), $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1), $issuer, $alias);
 								}
 							}
 
@@ -243,7 +243,7 @@ class ConsoleAPI{
 								return;
 							}
 
-							$p = $l[mt_rand(0, count($l) - 1)]->getUsername();
+							$p = $l[mt_rand(0, count($l) - 1)]->getName();
 							$params = substr_replace($params, $p, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
 							$offsetshift -= strlen($selector[0]) - strlen($p) + 1;
 							break;
@@ -268,7 +268,7 @@ class ConsoleAPI{
 			}
 
 			if($output != "" and ($issuer instanceof Player)){
-				$issuer->sendChat(trim($output));
+				$issuer->sendMessage(trim($output));
 			}
 
 			return $output;

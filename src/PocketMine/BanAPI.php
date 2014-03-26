@@ -40,7 +40,7 @@ class BanAPI{
 	private $bannedIPs;
 	private $cmdWhitelist = array(); //Command WhiteList
 	function __construct(){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 	}
 
 	public function init(){
@@ -97,13 +97,13 @@ class BanAPI{
 	public function permissionsCheck($data, $event){
 		switch($event){
 			case "player.flying": //OPs can fly around the server.
-				if($this->isOp($data->getUsername())){
+				if($this->isOp($data->getName())){
 					return true;
 				}
 				break;
 			case "player.block.break":
 			case "player.block.place": //Spawn protection detection. Allows OPs to place/break blocks in the spawn area.
-				if(!$this->isOp($data["player"]->getUsername())){
+				if(!$this->isOp($data["player"]->getName())){
 					$t = new Vector2($data["target"]->x, $data["target"]->z);
 					$s = new Vector2(Level::getDefault()->getSpawn()->x, Level::getDefault()->getSpawn()->z);
 					if($t->distance($s) <= $this->server->api->getProperty("spawn-protection") and $this->server->api->dhandle($event . ".spawn", $data) !== true){
@@ -118,7 +118,7 @@ class BanAPI{
 				}
 
 				if($data["issuer"] instanceof Player){
-					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->getUsername())){
+					if($this->server->api->handle("console.check", $data) === true or $this->isOp($data["issuer"]->getName())){
 						return;
 					}
 				}elseif($data["issuer"] === "console" or $data["issuer"] === "rcon"){
@@ -148,7 +148,7 @@ class BanAPI{
 					break;
 				}
 				$this->server->api->console->run(implode(" ", $params), $player);
-				$output .= "Command ran as " . $player->getUsername() . ".\n";
+				$output .= "Command ran as " . $player->getName() . ".\n";
 				break;
 			case "op":
 				$user = strtolower($params[0]);
@@ -163,10 +163,10 @@ class BanAPI{
 					$output .= $user . " is now op\n";
 					break;
 				}
-				$this->ops->set(strtolower($player->getUsername()));
+				$this->ops->set(strtolower($player->getName()));
 				$this->ops->save();
-				$output .= $player->getUsername() . " is now op\n";
-				$player->sendChat("You are now op.");
+				$output .= $player->getName() . " is now op\n";
+				$player->sendMessage("You are now op.");
 				break;
 			case "deop":
 				$user = strtolower($params[0]);
@@ -177,10 +177,10 @@ class BanAPI{
 					$output .= $user . " is no longer op\n";
 					break;
 				}
-				$this->ops->remove(strtolower($player->getUsername()));
+				$this->ops->remove(strtolower($player->getName()));
 				$this->ops->save();
-				$output .= $player->getUsername() . " is no longer op\n";
-				$player->sendChat("You are no longer op.");
+				$output .= $player->getName() . " is no longer op\n";
+				$player->sendMessage("You are no longer op.");
 				break;
 			case "kick":
 				if(!isset($params[0])){
@@ -197,9 +197,9 @@ class BanAPI{
 						$this->server->schedule(60, array($player, "close"), "You have been kicked: " . $reason); //Forces a kick
 						$player->blocked = true;
 						if($issuer instanceof Player){
-							Player::broadcastChat($player->getUsername() . " has been kicked by " . $issuer->getUsername() . ": $reason\n");
+							Player::broadcastMessage($player->getName() . " has been kicked by " . $issuer->getName() . ": $reason\n");
 						}else{
-							Player::broadcastChat($player->getUsername() . " has been kicked: $reason\n");
+							Player::broadcastMessage($player->getName() . " has been kicked: $reason\n");
 						}
 					}
 				}
@@ -295,9 +295,9 @@ class BanAPI{
 							$player->kick("You are banned");
 						}
 						if($issuer instanceof Player){
-							Player::broadcastChat($user . " has been banned by " . $issuer->getUsername() . "\n");
+							Player::broadcastMessage($user . " has been banned by " . $issuer->getName() . "\n");
 						}else{
-							Player::broadcastChat($user . " has been banned\n");
+							Player::broadcastMessage($user . " has been banned\n");
 						}
 						$this->kick($user, "Banned");
 						$output .= "Player \"$user\" added to ban list\n";

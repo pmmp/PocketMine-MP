@@ -28,7 +28,7 @@ class PluginAPI extends \stdClass{
 	private $server;
 
 	public function __construct(){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 		$this->server->api->console->register("plugins", "", array($this, "commandHandler"));
 		$this->server->api->console->register("version", "", array($this, "commandHandler"));
 		$this->server->api->ban->cmdWhitelist("version");
@@ -39,18 +39,11 @@ class PluginAPI extends \stdClass{
 		switch($cmd){
 			case "plugins":
 				$output = "Plugins: ";
-				foreach(PluginManager::getPlugins() as $plugin){
+				foreach($this->server->getPluginManager()->getPlugins() as $plugin){
 					$d = $plugin->getDescription();
 					$output .= $d->getName() . ": " . $d->getVersion() . ", ";
 				}
 				$output = $output === "Plugins: " ? "No plugins installed.\n" : substr($output, 0, -2) . "\n";
-				break;
-			case "version":
-				$output = "PocketMine-MP " . \PocketMine\VERSION . " 「" . \PocketMine\CODENAME . "」 API #" . \PocketMine\API_VERSION . " for Minecraft: PE " . \PocketMine\MINECRAFT_VERSION . " protocol #" . Info::CURRENT_PROTOCOL;
-				if(\PocketMine\GIT_COMMIT !== str_repeat("00", 20)){
-					$output .= " (git " . \PocketMine\GIT_COMMIT . ")";
-				}
-				$output .= "\n";
 				break;
 		}
 

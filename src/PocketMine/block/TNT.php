@@ -45,7 +45,7 @@ class TNT extends Solid{
 			);
 			$this->level->setBlock($this, new Air(), false, false, true);
 			//TODO
-			//$e = ServerAPI::request()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
+			//$e = Server::getInstance()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 			//$e->spawnToAll();
 
 			return true;

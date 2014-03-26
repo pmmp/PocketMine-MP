@@ -29,7 +29,7 @@ use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\PMF\LevelFormat;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 use PocketMine;
 
 abstract class Tile extends Position{
@@ -38,7 +38,15 @@ abstract class Tile extends Position{
 	const FURNACE = "Furnace";
 
 	public static $tileCount = 1;
+
+	/**
+	 * @var Tile[]
+	 */
 	public static $list = array();
+
+	/**
+	 * @var Tile[]
+	 */
 	public static $needUpdate = array();
 
 	public $chunkIndex;
@@ -68,7 +76,7 @@ abstract class Tile extends Position{
 
 
 	public function __construct(Level $level, Compound $nbt){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 		$this->level = $level;
 		$this->namedtag = $nbt;
 		$this->closed = false;

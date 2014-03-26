@@ -29,7 +29,7 @@ class ChatAPI{
 	private $server;
 
 	function __construct(){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 	}
 
 	public function init(){
@@ -59,7 +59,7 @@ class ChatAPI{
 					break;
 				}
 				$sender = ($issuer instanceof Player) ? "Server" : ucfirst($issuer);
-				Player::broadcastChat("[$sender] " . $s);
+				Player::broadcastMessage("[$sender] " . $s);
 				break;
 			case "me":
 				if(!($issuer instanceof Player)){
@@ -69,9 +69,9 @@ class ChatAPI{
 						$sender = ucfirst($issuer);
 					}
 				}else{
-					$sender = $issuer->getUsername();
+					$sender = $issuer->getDisplayName();
 				}
-				Player::broadcastChat("* $sender " . implode(" ", $params));
+				Player::broadcastMessage("* $sender " . implode(" ", $params));
 				break;
 			case "tell":
 				if(!isset($params[0]) or !isset($params[1])){
@@ -92,12 +92,12 @@ class ChatAPI{
 					}
 				}
 				$mes = implode(" ", $params);
-				$output .= "[me -> " . ($target instanceof Player ? $target->getUsername() : $target) . "] " . $mes . "\n";
+				$output .= "[me -> " . ($target instanceof Player ? $target->getDisplayName() : $target) . "] " . $mes . "\n";
 				if($target instanceof Player){
-					$target->sendChat("[" . ($sender instanceof Player ? $sender->getUsername() : $sender) . " -> me] " . $mes);
+					$target->sendMessage("[" . ($sender instanceof Player ? $sender->getDisplayName() : $sender) . " -> me] " . $mes);
 				}
 				if($target === "Console" or $sender === "Console"){
-					console("[INFO] [" . ($sender instanceof Player ? $sender->getUsername() : $sender) . " -> " . ($target instanceof Player ? $target->getUsername() : $target) . "] " . $mes);
+					console("[INFO] [" . ($sender instanceof Player ? $sender->getDisplayName() : $sender) . " -> " . ($target instanceof Player ? $target->getDisplayName() : $target) . "] " . $mes);
 				}
 				break;
 		}

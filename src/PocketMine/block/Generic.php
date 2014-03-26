@@ -23,7 +23,7 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 use PocketMine;
 
 class Generic extends Block{
@@ -59,7 +59,7 @@ class Generic extends Block{
 					"z" => $this->z + 0.5,
 					"Tile" => $this->id,
 				);
-				$server = ServerAPI::request();
+				$server = Server::getInstance();
 				$this->level->setBlock($this, new Air(), false, false, true);
 				//TODO
 				//$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);

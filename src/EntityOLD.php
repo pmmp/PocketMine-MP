@@ -69,7 +69,7 @@ function __construct(Level $level, $eid, $class, $type = 0, $data = array()){
 $this->level = $level;
 $this->fallY = false;
 $this->fallStart = false;
-$this->server = ServerAPI::request();
+$this->server = Server::getInstance();
 $this->eid = (int) $eid;
 $this->type = (int) $type;
 $this->class = (int) $class;

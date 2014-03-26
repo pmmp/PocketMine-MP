@@ -43,11 +43,12 @@ use PocketMine\Network\Protocol\SetTimePacket;
 use PocketMine\Network\Protocol\UpdateBlockPacket;
 use PocketMine\Player;
 use PocketMine\PMF\LevelFormat;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 use PocketMine\Tile\Chest;
 use PocketMine\Tile\Furnace;
 use PocketMine\Tile\Sign;
 use PocketMine\Tile\Tile;
+use PocketMine\Entity\Entity;
 use PocketMine\Utils\Cache;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
@@ -66,15 +67,39 @@ class Level{
 	const BLOCK_UPDATE_WEAK = 4;
 	const BLOCK_UPDATE_TOUCH = 5;
 
-	protected static $list = array();
+	/**
+	 * @var Level[]
+	 */
+	public static $list = array();
+
+	/**
+	 * @var Level
+	 */
 	public static $default = null;
 
+	/**
+	 * @var Player[]
+	 */
 	public $players = array();
 
+	/**
+	 * @var Entity[]
+	 */
 	public $entities = array();
+
+	/**
+	 * @var Entity[][]
+	 */
 	public $chunkEntities = array();
 
+	/**
+	 * @var Tile[]
+	 */
 	public $tiles = array();
+
+	/**
+	 * @var Tile[][]
+	 */
 	public $chunkTiles = array();
 
 	public $nextSave;
@@ -84,13 +109,22 @@ class Level{
 	 */
 	public $level;
 	public $stopTime;
-	private $time, $startCheck, $startTime, $server, $name, $usedChunks, $changedBlocks, $changedCount, $generator;
+	private $time, $startCheck, $startTime;
+	/**
+	 * @var Server
+	 */
+	private $server;
+	private $name, $usedChunks, $changedBlocks, $changedCount, $generator;
 
 	public static function init(){
 		if(self::$default === null){
-			$default = ServerAPI::request()->api->getProperty("level-name");
+			$default = Server::getInstance()->getConfigString("level-name", null);
+			if($default == ""){
+				trigger_error("level-name cannot be null", E_USER_ERROR);
+				return;
+			}
 			if(self::loadLevel($default) === false){
-				self::generateLevel($default, ServerAPI::request()->seed);
+				self::generateLevel($default, 0); //TODO: Server->getSeed();
 				self::loadLevel($default);
 			}
 			self::$default = self::get($default);
@@ -264,7 +298,7 @@ class Level{
 		}
 
 		foreach($blockUpdates->getAll() as $bupdate){
-			ServerAPI::request()->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $level), (float) $bupdate["delay"], (int) $bupdate["type"]);
+			Server::getInstance()->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $level), (float) $bupdate["delay"], (int) $bupdate["type"]);
 		}
 
 		return true;
@@ -285,14 +319,14 @@ class Level{
 			return false;
 		}
 		$options = array();
-		if($options === false and ServerAPI::request()->api->getProperty("generator-settings") !== false and trim(ServerAPI::request()->api->getProperty("generator-settings")) != ""){
-			$options["preset"] = ServerAPI::request()->api->getProperty("generator-settings");
+		if($options === false and trim(Server::getInstance()->getConfigString("generator-settings", "")) !== ""){
+			$options["preset"] = Server::getInstance()->getConfigString("generator-settings", "");
 		}
 
 		if($generator !== false and class_exists($generator)){
 			$generator = new $generator($options);
 		}else{
-			if(strtoupper(ServerAPI::request()->api->getProperty("level-type")) == "FLAT"){
+			if(strtoupper(Server::getInstance()->getLevelType()) == "FLAT"){
 				$generator = new Flat($options);
 			}else{
 				$generator = new Normal($options);
@@ -332,15 +366,13 @@ class Level{
 	}
 
 	public function __construct(LevelFormat $level, $name){
-		$this->server = ServerAPI::request();
+		$this->server = Server::getInstance();
 		$this->level = $level;
 		$this->level->level = $this;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave += 90;
 		$this->stopTime = false;
-		$this->server->schedule(1, array($this, "doTick"), array(), true);
-		$this->server->schedule(20 * 13, array($this, "checkTime"), array(), true);
 		$this->name = $name;
 		$this->usedChunks = array();
 		$this->changedBlocks = array();
@@ -372,7 +404,7 @@ class Level{
 		$this->save();
 		foreach($this->getPlayers() as $player){
 			if($this === self::getDefault()){
-				$player->close($player->getUsername() . " has left the game", "forced level unload");
+				$player->close($player->getName() . " has left the game", "forced level unload");
 			}else{
 				$player->teleport(Level::getDefault()->getSafeSpawn());
 			}
@@ -434,6 +466,10 @@ class Level{
 	public function doTick(){
 		if(!isset($this->level)){
 			return false;
+		}
+
+		if(($this->server->getTick() % 200) === 0){
+			$this->checkTime();
 		}
 
 		if($this->level->isGenerating === 0 and count($this->changedCount) > 0){
@@ -536,9 +572,10 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
-		if($this->server->saveEnabled === false and $force === false){
+		//TODO: save enabled/disabled
+		/*if($this->server->saveEnabled === false and $force === false){
 			return;
-		}
+		}*/
 
 		if($extra !== false){
 			$this->doSaveRoundExtra();
@@ -805,7 +842,7 @@ class Level{
 				new String("Text4", "")
 			)));
 			if($player instanceof Player){
-				$tile->namedtag->creator = new String("creator", $player->getUsername());
+				$tile->namedtag->creator = new String("creator", $player->getName());
 			}
 		}
 		$item->setCount($item->getCount() - 1);

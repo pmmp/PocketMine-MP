@@ -33,7 +33,7 @@ use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet;
-use PocketMine\ServerAPI;
+use PocketMine\Server;
 
 class Handler{
 	public $bandwidth;
@@ -77,7 +77,7 @@ class Handler{
 			}
 
 			return $packet;
-		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and ServerAPI::request()->api->query instanceof QueryHandler){
+		}elseif($pid === 0xfe and $buffer{1} === "\xfd" and Server::getInstance()->api->query instanceof QueryHandler){
 			$packet = new QueryPacket;
 			$packet->ip = $source;
 			$packet->port = $port;
@@ -85,7 +85,7 @@ class Handler{
 			if(EventHandler::callEvent(new PacketReceiveEvent($packet)) === Event::DENY){
 				return false;
 			}
-			ServerAPI::request()->api->query->handle($packet);
+			Server::getInstance()->api->query->handle($packet);
 		}else{
 			$packet = new Packet($pid);
 			$packet->ip = $source;

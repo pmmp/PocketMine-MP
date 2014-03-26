@@ -56,7 +56,7 @@ class ServerTask extends \Threaded{
 	 */
 	private $id;
 
-	public function __construct(Plugin $plugin, \Threaded $task, $id = -1, $period = -1){
+	public function __construct(Plugin $plugin = null, \Threaded $task = null, $id = -1, $period = -1){
 		$this->plugin = $plugin;
 		$this->task = $task;
 		$this->id = $id;

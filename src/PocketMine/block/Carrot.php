@@ -59,7 +59,7 @@ class Carrot extends Flowable{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
-				//ServerAPI::request()->api->entity->drop($this, Item::get(CARROT, 0, 1));
+				//Server::getInstance()->api->entity->drop($this, Item::get(CARROT, 0, 1));
 				$this->level->setBlock($this, new Air(), false, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;

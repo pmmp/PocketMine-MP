@@ -23,10 +23,10 @@ namespace {
 	/**
 	 * Output text to the console, can contain Minecraft-formatted text.
 	 *
-	 * @param      $message
-	 * @param bool $EOL
-	 * @param bool $log
-	 * @param int  $level
+	 * @param string $message
+	 * @param bool   $EOL
+	 * @param bool   $log
+	 * @param int    $level
 	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
 		PocketMine\console($message, $EOL, $log, $level);
@@ -156,8 +156,10 @@ namespace PocketMine {
 	ini_set("memory_limit", "128M"); //Default
 	define("PocketMine\\START_TIME", microtime(true));
 
-	$opts = getopt("", array("enable-ansi", "disable-ansi", "data-path:", "no-wizard"));
-	define("PocketMine\\DATA", isset($opts["data-path"]) ? realpath($opts["data-path"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH);
+	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard"));
+
+	define("PocketMine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH);
+	define("PocketMine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH . "plugins/");
 
 	if((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
 		define("PocketMine\\ANSI", true);
@@ -373,7 +375,6 @@ namespace PocketMine {
 		exit(1); //Exit with error
 	}
 
-	$gitsha1 = false;
 	if(file_exists(\PocketMine\PATH . ".git/refs/heads/master")){ //Found Git information!
 		define("PocketMine\\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH . ".git/refs/heads/master"))));
 	}else{ //Unknown :(
@@ -387,7 +388,7 @@ namespace PocketMine {
 	}
 
 	if(!defined("PARENT_API_EXISTENT")){
-		$server = new Server();
+		$server = new Server(\PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
 		$server->start();
 
 		kill(getmypid()); //Fix for ConsoleAPI being blocked

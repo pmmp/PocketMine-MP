@@ -46,8 +46,8 @@ class SpawnEgg extends Item{
 					"y" => $block->y,
 					"z" => $block->z + 0.5,
 				);
-				//$e = ServerAPI::request()->api->entity->add($block->level, ENTITY_MOB, $this->meta, $data);
-				//ServerAPI::request()->api->entity->spawnToAll($e);
+				//$e = Server::getInstance()->api->entity->add($block->level, ENTITY_MOB, $this->meta, $data);
+				//Server::getInstance()->api->entity->spawnToAll($e);
 				if(($player->gamemode & 0x01) === 0){
 					--$this->count;
 				}
