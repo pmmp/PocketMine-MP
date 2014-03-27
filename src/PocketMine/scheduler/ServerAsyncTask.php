@@ -53,7 +53,7 @@ class ServerAsyncTask extends ServerTask{
 				return;
 			}
 			$workers[] = new ServerWorker($asyncTask, $thread);
-		}, $this->workers, $thread, $this);
+		}, $thread, $this);
 
 		parent::run();
 

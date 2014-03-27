@@ -62,6 +62,11 @@ class Server{
 	private static $instance = null;
 
 	/**
+	 * @var bool
+	 */
+	private $isRunning = true;
+
+	/**
 	 * @var PluginManager
 	 */
 	private $pluginManager = null;
@@ -130,6 +135,13 @@ class Server{
 	 */
 	public function getName(){
 		return "PocketMine-MP";
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isRunning(){
+		return $this->isRunning === true;
 	}
 
 	/**
@@ -249,6 +261,41 @@ class Server{
 	 */
 	public function hasWhitelist(){
 		return $this->getConfigBoolean("white-list", false);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getSpawnRadius(){
+		return $this->getConfigInt("spawn-protection", 16);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getAllowFlight(){
+		return $this->getConfigBoolean("allow-flight", false);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isHardcore(){
+		return $this->getConfigBoolean("hardcore", false);
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDefaultGamemode(){
+		return $this->getConfigInt("gamemode", 0) & 0b11;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMotd(){
+		return $this->getConfigString("motd", "");
 	}
 
 	/**
@@ -421,7 +468,6 @@ class Server{
 			"server-name" => "Minecraft: PE Server",
 			"motd" => "Welcome @player to this server!",
 			"server-port" => 19132,
-			"server-type" => "normal",
 			"memory-limit" => "128M",
 			"white-list" => false,
 			"announce-player-achievements" => true,
@@ -484,6 +530,7 @@ class Server{
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
+		$this->pluginManager->subscribeToPermission(Player::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->registerInterface("PocketMine\\Plugin\\FolderPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -576,6 +623,10 @@ class Server{
 		return false;
 	}
 
+	public function shutdown(){
+		$this->isRunning = false;
+	}
+
 	/**
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
@@ -608,11 +659,24 @@ class Server{
 		}else{
 			$this->tickProcessor();
 		}
+
+		foreach(Player::getAll() as $player){
+			$player->kick("server stop");
+		}
+
+		foreach(Level::getAll() as $level){
+			$level->unload(true);
+		}
+
+		$this->pluginManager->disablePlugins();
+
+		$this->console->kill();
+		//TODO: kill scheduler
 	}
 
 	private function tickProcessorWindows(){
 		$lastLoop = 0;
-		while(true){
+		while($this->isRunning){
 			if(($packet = $this->interface->readPacket()) instanceof Packet){
 				if(EventHandler::callEvent(new PacketReceiveEvent($packet)) !== Event::DENY){
 					$this->handlePacket($packet);
@@ -632,7 +696,7 @@ class Server{
 
 	private function tickProcessor(){
 		$lastLoop = 0;
-		while(true){
+		while($this->isRunning){
 			if(($packet = $this->interface->readPacket()) instanceof Packet){
 				if(EventHandler::callEvent(new PacketReceiveEvent($packet)) !== Event::DENY){
 					$this->handlePacket($packet);

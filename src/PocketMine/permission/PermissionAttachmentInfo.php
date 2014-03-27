@@ -49,11 +49,8 @@ class PermissionAttachmentInfo{
 	 * @param PermissionAttachment $attachment
 	 * @param bool                 $value
 	 */
-	public function __construct(Permissible $permissible, $permission, PermissionAttachment $attachment, $value){
-		if($permissible === null){
-			trigger_error("Permissible may not be null", E_USER_WARNING);
-			return;
-		}elseif($permission === null){
+	public function __construct(Permissible $permissible, $permission, $attachment, $value){
+		if($permission === null){
 			trigger_error("Permission may not be null", E_USER_WARNING);
 			return;
 		}

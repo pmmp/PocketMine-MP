@@ -23,6 +23,7 @@ namespace PocketMine\Command;
 
 use PocketMine\Permission\PermissibleBase;
 use PocketMine\Permission\PermissionAttachment;
+use PocketMine\Player;
 use PocketMine\Plugin\Plugin;
 use PocketMine\Server;
 

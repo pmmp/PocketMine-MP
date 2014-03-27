@@ -53,7 +53,7 @@ class ServerScheduler{
 	private $temp = array();
 
 	/**
-	 * @var \Threaded<ServerTask>
+	 * @var ServerTask[]
 	 */
 	private $runners;
 
@@ -77,14 +77,14 @@ class ServerScheduler{
 	/**
 	 * @param int $workers
 	 */
-	public function __construct($workers = 2){
+	public function __construct($workers = 8){
 		self::$instance = $this;
 		$this->head = new ServerTask();
 		$this->tail = new ServerTask();
 		$this->pending = new \SplPriorityQueue();
 		$this->temp = array();
 		$this->runners = new \Threaded();
-		//TODO: $this->executor = new \Pool($workers);
+		$this->executor = new TaskPool($workers);
 
 	}
 
@@ -256,7 +256,7 @@ class ServerScheduler{
 		}
 
 		//TODO
-		$task = new ServerTask(null, new ServerTaskCanceller($taskId));
+		$task = new ServerTask(null, new ServerTaskCanceller($taskId, $this->temp, $this->pending, $this->runners));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
 			if($taskPending === $task){
@@ -277,7 +277,7 @@ class ServerScheduler{
 		}
 
 		//TODO
-		$task = new ServerTask(null, new ServerPluginTaskCanceller($plugin));
+		$task = new ServerTask(null, new ServerPluginTaskCanceller($plugin, $this->temp, $this->pending, $this->runners));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
 			if($taskPending === $task){
@@ -300,7 +300,7 @@ class ServerScheduler{
 	 */
 	public function cancelAllTasks(){
 		//TODO
-		$task = new ServerTask(null, new ServerAllTaskCanceller());
+		$task = new ServerTask(null, new ServerAllTaskCanceller($this->temp, $this->pending, $this->runners));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
 			if($taskPending === $task){

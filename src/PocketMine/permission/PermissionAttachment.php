@@ -49,10 +49,7 @@ class PermissionAttachment{
 	 * @param Permissible $permissible
 	 */
 	public function __construct(Plugin $plugin, Permissible $permissible){
-		if($plugin === null){
-			trigger_error("Plugin cannot be null", E_USER_WARNING);
-			return;
-		}elseif(!$plugin->isEnabled()){
+		if(!$plugin->isEnabled()){
 			trigger_error("Plugin ".$plugin->getDescription()->getName()." is disabled", E_USER_WARNING);
 			return;
 		}

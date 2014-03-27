@@ -24,6 +24,8 @@
  */
 namespace PocketMine\Command;
 
+use PocketMine\Player;
+use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
 abstract class Command{
@@ -290,6 +292,24 @@ abstract class Command{
 	 * @param bool          $sendToSource
 	 */
 	public static function broadcastCommandMessage(CommandSender $source, $message, $sendToSource = true){
+		$result = $source->getName() .": " . $message;
 
+		//Command minecarts or command blocks are not implemented
+
+		$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Player::BROADCAST_CHANNEL_ADMINISTRATIVE);
+		$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result".TextFormat::GRAY . TextFormat::ITALIC."]";
+		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
+			$source->sendMessage($message);
+		}
+
+		foreach($users as $user){
+			if($user instanceof CommandSender){
+				if($user instanceof ConsoleCommandSender){
+					$user->sendMessage($result);
+				}elseif($user !== $source){
+					$user->sendMessage($colored);
+				}
+			}
+		}
 	}
 }

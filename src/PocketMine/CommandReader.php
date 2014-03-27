@@ -77,7 +77,7 @@ class CommandReader extends \Thread{
 		}else{
 			$this->readline = false;
 			$this->fp = fopen($this->stream, "r");
-			stream_set_blocking($this->fp, 0); //Won't work on Windows :P
+			stream_set_blocking($this->fp, 1); //Non-blocking STDIN won't work on Windows
 		}
 
 		$lastLine = microtime(true);

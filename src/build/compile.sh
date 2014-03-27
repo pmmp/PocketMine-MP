@@ -637,6 +637,7 @@ $HAVE_READLINE \
 --without-pear \
 --without-iconv \
 --without-pdo-sqlite \
+--with-pic \
 --enable-phar \
 --enable-ctype \
 --enable-sockets \

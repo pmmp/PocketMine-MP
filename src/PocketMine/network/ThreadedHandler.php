@@ -117,12 +117,13 @@ class ThreadedHandler extends \Thread{
 	public function run(){
 		$this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		socket_set_option($this->socket, SOL_SOCKET, SO_BROADCAST, 1); //Allow sending broadcast messages
-		if(socket_bind($this->socket, $this->serverip, $this->port) === true){
+		if(@socket_bind($this->socket, $this->serverip, $this->port) === true){
 			socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 0);
 			@socket_set_option($this->socket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2); //2MB
 			@socket_set_option($this->socket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024); //1MB
 		}else{
-			console("[SEVERE] Couldn't bind to $this->serverip:" . $this->port, true, true, 0);
+			console("[SEVERE] **** FAILED TO BIND TO ".$this->serverip.":" . $this->port."!", true, true, 0);
+			console("[SEVERE] Perhaps a server is already running on that port?", true, true, 0);
 			exit(1);
 		}
 		socket_set_nonblock($this->socket);

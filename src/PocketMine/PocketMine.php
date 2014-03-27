@@ -394,7 +394,7 @@ namespace PocketMine {
 		$server = new Server(\PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
 		$server->start();
 
-		kill(getmypid()); //Fix for ConsoleAPI being blocked
+		kill(getmypid());
 		exit(0);
 	}
 
