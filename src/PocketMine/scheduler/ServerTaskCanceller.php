@@ -22,21 +22,21 @@
 namespace PocketMine\Scheduler;
 
 class ServerTaskCanceller extends \Threaded{
-	protected $taskId;
+	public $taskId;
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $temp;
+	public $temp;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $pending;
+	public $pending;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $runners;
+	public $runners;
 
 	public function __construct($taskId, $temp, $pending, $runners){
 		$this->taskId = $taskId;

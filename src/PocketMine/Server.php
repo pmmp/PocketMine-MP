@@ -26,6 +26,7 @@
 namespace PocketMine;
 
 use PocketMine\Block\Block;
+use PocketMine\Command\CommandReader;
 use PocketMine\Command\CommandSender;
 use PocketMine\Command\ConsoleCommandSender;
 use PocketMine\Command\PluginCommand;
@@ -320,6 +321,8 @@ class Server{
 	}
 
 	/**
+	 * Returns the last server TPS measure
+	 *
 	 * @return float
 	 */
 	public function getTicksPerSecond(){
@@ -660,6 +663,8 @@ class Server{
 			$this->tickProcessor();
 		}
 
+		$this->pluginManager->disablePlugins();
+
 		foreach(Player::getAll() as $player){
 			$player->kick("server stop");
 		}
@@ -668,10 +673,10 @@ class Server{
 			$level->unload(true);
 		}
 
-		$this->pluginManager->disablePlugins();
-
+		$this->scheduler->shutdown();
+		$this->tickScheduler->kill();
 		$this->console->kill();
-		//TODO: kill scheduler
+
 	}
 
 	private function tickProcessorWindows(){
@@ -801,18 +806,10 @@ class Server{
 
 	public function titleTick(){
 		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
+			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}
 
-	/**
-	 * Returns the last server TPS measure
-	 *
-	 * @return float
-	 */
-	public function getTPS(){
-		return $this->tickScheduler->getTPS();
-	}
 
 	/**
 	 * Tries to execute a server tick

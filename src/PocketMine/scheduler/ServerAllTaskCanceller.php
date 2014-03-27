@@ -26,17 +26,17 @@ class ServerAllTaskCanceller extends \Threaded{
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $temp;
+	public $temp;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $pending;
+	public $pending;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $runners;
+	public $runners;
 
 	public function __construct($temp, $pending, $runners){
 		$this->temp = $temp;

@@ -22,6 +22,7 @@
 namespace PocketMine\Scheduler;
 
 use PocketMine\Plugin\Plugin;
+use PocketMine\Server;
 
 class ServerScheduler{
 
@@ -86,6 +87,11 @@ class ServerScheduler{
 		$this->runners = new \Threaded();
 		$this->executor = new TaskPool($workers);
 
+	}
+
+	public function shutdown(){
+		$this->mainThreadHeartbeat($this->currentTick + 1);
+		$this->executor->shutdown();
 	}
 
 	/**
@@ -255,7 +261,6 @@ class ServerScheduler{
 			$this->runners[$taskId]->cancel0();
 		}
 
-		//TODO
 		$task = new ServerTask(null, new ServerTaskCanceller($taskId, $this->temp, $this->pending, $this->runners));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
@@ -276,7 +281,6 @@ class ServerScheduler{
 			return;
 		}
 
-		//TODO
 		$task = new ServerTask(null, new ServerPluginTaskCanceller($plugin, $this->temp, $this->pending, $this->runners));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
@@ -299,7 +303,6 @@ class ServerScheduler{
 	 *
 	 */
 	public function cancelAllTasks(){
-		//TODO
 		$task = new ServerTask(null, new ServerAllTaskCanceller($this->temp, $this->pending, $this->runners));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
@@ -407,6 +410,7 @@ class ServerScheduler{
 	public function mainThreadHeartbeat($currentTick){
 		$this->currentTick = $currentTick;
 		$this->parsePending();
+
 		while($this->isReady($currentTick)){
 			$task = $this->pending->extract();
 			if($task->getPeriod() < -1){
@@ -444,6 +448,7 @@ class ServerScheduler{
 	 */
 	private function addTask(ServerTask $task){
 		$this->tail->setNext($task);
+		$this->tail = $task;
 	}
 
 	/**

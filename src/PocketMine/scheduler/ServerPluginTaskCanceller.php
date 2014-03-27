@@ -28,22 +28,22 @@ class ServerPluginTaskCanceller extends \Threaded{
 	/**
 	 * @var Plugin
 	 */
-	protected $plugin;
+	public $plugin;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $temp;
+	public $temp;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $pending;
+	public $pending;
 
 	/**
 	 * @var ServerTask[]
 	 */
-	protected $runners;
+	public $runners;
 
 	public function __construct(Plugin $plugin, $temp, $pending, $runners){
 		$this->plugin = $plugin;

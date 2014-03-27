@@ -23,6 +23,7 @@ namespace PocketMine\Scheduler;
 
 class TaskPool extends \Pool{
 	public function __construct($workers){
+		$this->workers = array();
 		parent::__construct((int) $workers, "PocketMine\\Scheduler\\TaskWorker");
 	}
 
