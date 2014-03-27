@@ -24,6 +24,7 @@ namespace PocketMine\Plugin;
 use PocketMine\Command\Command;
 use PocketMine\Command\CommandExecutor;
 use PocketMine\Command\CommandSender;
+use PocketMine\Command\PluginCommand;
 use PocketMine\Server;
 use PocketMine\Utils\Config;
 
@@ -125,15 +126,23 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return false;
 	}
 
-	/* TODO
 	public function getCommand($name){
-		$this->get
-	}*/
+		$command = $this->getServer()->getPluginCommand($name);
+		if($command === null or $command->getPlugin() !== $this){
+			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
+		}
+
+		if($command instanceof PluginCommand and $command->getPlugin() === $this){
+			return $command;
+		}else{
+			return null;
+		}
+	}
 
 	/**
 	 * @return bool
 	 */
-	public function isPhar(){
+	protected function isPhar(){
 		return $this->description instanceof \PharFileInfo;
 	}
 

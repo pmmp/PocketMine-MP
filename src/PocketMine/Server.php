@@ -28,6 +28,7 @@ namespace PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Command\CommandSender;
 use PocketMine\Command\ConsoleCommandSender;
+use PocketMine\Command\PluginCommand;
 use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Entity\Entity;
 use PocketMine\Event\Event;
@@ -371,6 +372,19 @@ class Server{
 	 */
 	public function setConfigBool($variable, $value){
 		$this->properties->set($variable, $value == true ? "1" : "0");
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return PluginCommand
+	 */
+	public function getPluginCommand($name){
+		if(($command = $this->commandMap->getCommand($name)) instanceof PluginCommand){
+			return $command;
+		}else{
+			return null;
+		}
 	}
 
 	/**
