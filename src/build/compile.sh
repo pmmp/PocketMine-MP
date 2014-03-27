@@ -8,7 +8,7 @@ CURL_VERSION="curl-7_35_0"
 READLINE_VERSION="6.3"
 NCURSES_VERSION="5.9"
 PHPNCURSES_VERSION="1.0.2"
-PTHREADS_VERSION="2.0.2"
+PTHREADS_VERSION="2.0.3"
 WEAKREF_VERSION="0.2.2"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
@@ -515,10 +515,10 @@ mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
 echo " done!"
 
 #bcompiler
-echo -n "[bcompiler] downloading $BCOMPILER_VERSION..."
-download_file "http://pecl.php.net/get/bcompiler-$BCOMPILER_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-mv bcompiler-$BCOMPILER_VERSION "$DIR/install_data/php/ext/bcompiler"
-echo " done!"
+#echo -n "[bcompiler] downloading $BCOMPILER_VERSION..."
+#download_file "http://pecl.php.net/get/bcompiler-$BCOMPILER_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+#mv bcompiler-$BCOMPILER_VERSION "$DIR/install_data/php/ext/bcompiler"
+#echo " done!"
 
 #PHP ncurses
 echo -n "[PHP ncurses] downloading $PHPNCURSES_VERSION..."
@@ -619,7 +619,6 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --with-yaml="$DIR/bin/php5" \
 $HAVE_NCURSES \
 $HAVE_READLINE \
---enable-bcompiler \
 --enable-mbstring \
 --enable-calendar \
 --enable-weakref \

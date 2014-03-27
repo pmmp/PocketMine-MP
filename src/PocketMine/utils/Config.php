@@ -304,6 +304,13 @@ class Config{
 	}
 
 	/**
+	 * @param array $defaults
+	 */
+	public function setDefaults(array $defaults){
+		$this->fillDefaults($defaults, $this->config);
+	}
+
+	/**
 	 * @param $default
 	 * @param $data
 	 *

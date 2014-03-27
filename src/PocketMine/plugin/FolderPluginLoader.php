@@ -22,9 +22,9 @@
 namespace PocketMine\Plugin;
 
 use PocketMine\Event\EventHandler;
-use PocketMine\Server;
-use PocketMine\Event\Plugin\PluginEnableEvent;
 use PocketMine\Event\Plugin\PluginDisableEvent;
+use PocketMine\Event\Plugin\PluginEnableEvent;
+use PocketMine\Server;
 
 /**
  * Handles different types of plugins
@@ -53,6 +53,7 @@ class FolderPluginLoader implements PluginLoader{
 	public function loadPlugin($file){
 		if(is_dir($file) and file_exists($file . "/plugin.yml") and file_exists($file . "/src/")){
 			if(($description = $this->getPluginDescription($file)) instanceof PluginDescription){
+				console("[INFO] Loading " . $description->getName());
 				$dataFolder = basename($file) . "/" . $description->getName();
 				if(file_exists($dataFolder) and !is_dir($dataFolder)){
 					trigger_error("Projected dataFolder '".$dataFolder."' for ".$description->getName()." exists and is not a directory", E_USER_WARNING);
@@ -98,6 +99,7 @@ class FolderPluginLoader implements PluginLoader{
 
 	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
 		$plugin->init($this, $this->server, $description, $dataFolder, $file);
+		$plugin->onLoad();
 	}
 
 	public function enablePlugin(Plugin $plugin){

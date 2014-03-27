@@ -21,11 +21,11 @@
 
 namespace PocketMine\Plugin;
 
+use PocketMine\Command\Command;
 use PocketMine\Command\CommandExecutor;
+use PocketMine\Command\CommandSender;
 use PocketMine\Server;
 use PocketMine\Utils\Config;
-use PocketMine\Command\CommandSender;
-use PocketMine\Command\Command;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 
@@ -47,7 +47,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private $file;
 
 	/**
-	 * Called when the plugin is loaded, before calling onLoad()
+	 * Called when the plugin is loaded, before calling onEnable()
 	 */
 	public function onLoad(){
 
@@ -57,10 +57,20 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	}
 
+	public function onDisable(){
+
+	}
+
+	/**
+	 * @return bool
+	 */
 	public final function isEnabled(){
 		return $this->isEnabled === true;
 	}
 
+	/**
+	 * @param bool $boolean
+	 */
 	public final function setEnabled($boolean = true){
 		if($this->isEnabled !== $boolean){
 			$this->isEnabled = $boolean;
@@ -72,10 +82,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 	}
 
-	public function onDisable(){
-
-	}
-
+	/**
+	 * @return bool
+	 */
 	public final function isDisabled(){
 		return $this->isEnabled === false;
 	}
@@ -122,6 +131,13 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}*/
 
 	/**
+	 * @return bool
+	 */
+	public function isPhar(){
+		return $this->description instanceof \PharFileInfo;
+	}
+
+	/**
 	 * Gets an embedded resource on the plugin file.
 	 *
 	 * @param string $filename
@@ -130,7 +146,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 */
 	public function getResource($filename){
 		$filename = str_replace("\\", "/", $filename);
-		if(isset($this->phar) and $this->phar instanceof \Phar){
+		if($this->isPhar()){
 			//TODO
 		}else{
 			if(file_exists($this->dataFolder . "resources/" . $filename)){
@@ -189,11 +205,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function saveConfig(){
 		if($this->getConfig()->save() === false){
 			console("[SEVERE] Could not save config to " . $this->configFile);
-
-			return false;
 		}
-
-		return true;
 	}
 
 	public function saveDefaultConfig(){
@@ -209,10 +221,16 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 	}
 
+	/**
+	 * @return Server
+	 */
 	public final function getServer(){
 		return $this->dataFolder;
 	}
 
+	/**
+	 * @return string
+	 */
 	public final function getName(){
 		return $this->description->getName();
 	}
