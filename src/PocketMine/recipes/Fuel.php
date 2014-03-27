@@ -21,7 +21,6 @@
 
 namespace PocketMine\Recipes;
 
-use PocketMine;
 use PocketMine\Item\Item;
 
 abstract class Fuel{

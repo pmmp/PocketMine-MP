@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator;
 
-use PocketMine;
 use PocketMine\Block\CoalOre;
 use PocketMine\Block\DiamondOre;
 use PocketMine\Block\Dirt;

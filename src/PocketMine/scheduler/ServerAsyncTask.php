@@ -21,7 +21,6 @@
 
 namespace PocketMine\Scheduler;
 
-use PocketMine;
 use PocketMine\Plugin\Plugin;
 
 class ServerAsyncTask extends ServerTask{

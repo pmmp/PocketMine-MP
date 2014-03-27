@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class RotateHeadPacket extends DataPacket{
 	public $eid;

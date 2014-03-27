@@ -22,7 +22,6 @@
 namespace PocketMine\Tile;
 
 use PocketMine\Level\Level;
-use PocketMine;
 use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Int;

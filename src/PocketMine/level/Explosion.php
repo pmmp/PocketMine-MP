@@ -24,10 +24,12 @@ namespace PocketMine\Level;
 use PocketMine\Block\Block;
 use PocketMine\Block\TNT;
 use PocketMine\Entity\Entity;
+use PocketMine\Event\Entity\EntityExplodeEvent;
+use PocketMine\Event\Event;
+use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Network\Protocol\ExplodePacket;
-use PocketMine;
 use PocketMine\Player;
 
 class Explosion{
@@ -100,7 +102,7 @@ class Explosion{
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
-			if(PocketMine\Event\EventHandler::callEvent($ev = new PocketMine\Event\Entity\EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield)) === PocketMine\Event\Event::DENY){
+			if(EventHandler::callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield)) === Event::DENY){
 				return;
 			}else{
 				$yield = $ev->getYield();

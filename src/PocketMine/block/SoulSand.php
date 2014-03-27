@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class SoulSand extends Solid{
 	public function __construct(){

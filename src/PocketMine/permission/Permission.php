@@ -21,7 +21,7 @@
 
 namespace PocketMine\Permission;
 
-use PocketMine;
+use PocketMine\Server;
 
 /**
  * Represents a permission
@@ -34,9 +34,50 @@ class Permission{
 
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 
+	public static function getByName($value){
+		switch(strtolower($value)){
+			case "op":
+			case "isop":
+			case "operator":
+			case "isoperator":
+			case "admin":
+			case "isadmin":
+				return self::DEFAULT_OP;
+
+			case "!op":
+			case "notop":
+			case "!operator":
+			case "notoperator":
+			case "!admin":
+			case "notadmin":
+				return self::DEFAULT_NOT_OP;
+
+			case "true":
+				return self::DEFAULT_TRUE;
+
+			default:
+				return self::DEFAULT_FALSE;
+		}
+	}
+
+	/**
+	 * @var string
+	 */
 	private $name;
+
+	/**
+	 * @var string
+	 */
 	private $description;
+
+	/**
+	 * @var string[]
+	 */
 	private $children = array();
+
+	/**
+	 * @var string
+	 */
 	private $defaultValue;
 
 	/**
@@ -45,7 +86,7 @@ class Permission{
 	 * @param string $name
 	 * @param string $description
 	 * @param string $defaultValue
-	 * @param array  $children
+	 * @param Permission[] $children
 	 */
 	public function __construct($name, $description = null, $defaultValue = null, array $children = array()){
 		$this->name = $name;
@@ -64,9 +105,9 @@ class Permission{
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
-	public function getChildren(){
+	public function &getChildren(){
 		return $this->children;
 	}
 
@@ -101,17 +142,17 @@ class Permission{
 		$this->description = $value;
 	}
 
+	/**
+	 * @return Permissible[]
+	 */
 	public function getPermissibles(){
-		//TODO: get from plugin manager
-		//plugin handler -> getPermissionSubscriptions($this->name);
-		return array();
+		return Server::getInstance()->getPluginManager()->getPermissionSubscriptions($this->name);
 	}
 
 	public function recalculatePermissibles(){
-		//TODO: recalculate
 		$perms = $this->getPermissibles();
 
-		//plugin handler -> recalculatePermissionDefaults($this);
+		Server::getInstance()->getPluginManager()->recalculatePermissionDefaults($this);
 
 		foreach($perms as $p){
 			$p->recalculatePermissions();
@@ -119,12 +160,85 @@ class Permission{
 	}
 
 
-	public function addParent($name){
+	/**
+	 * @param string|Permission $name
+	 * @param $value
+	 *
+	 * @return Permission|void
+	 */
+	public function addParent($name, $value){
 		if($name instanceof Permission){
-
+			$name->getChildren()[$this->getName()] = $value;
+			$name->recalculatePermissibles();
 		}else{
+			$perm = Server::getInstance()->getPluginManager()->getPermission($name);
+			if($perm === null){
+				$perm = new Permission($name);
+				Server::getInstance()->getPluginManager()->addPermission($perm);
+			}
 
+			$this->addParent($perm, $value);
+			return $perm;
 		}
 	}
+
+	/**
+	 * @param array $data
+	 * @param       $default
+	 *
+	 * @return Permission[]
+	 */
+	public static function loadPermissions(array $data, $default){
+		$result = array();
+		foreach($data as $key => $entry){
+			$result[] = self::loadPermission($key, $entry, $default, $result);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param string $name
+	 * @param array  $data
+	 * @param string $default
+	 * @param array  $output
+	 *
+	 * @return Permission
+	 */
+	public static function loadPermission($name, array $data, $default = self::DEFAULT_OP, &$output = array()){
+		$desc = null;
+		$children = array();
+		if(isset($data["default"])){
+			$value = Permission::getByName($data["default"]);
+			if($value !== null){
+				$default = $value;
+			}else{
+				trigger_error("'default' key contained unknown value", E_USER_WARNING);
+			}
+		}
+
+		if(isset($data["children"])){
+			if(is_array($data["children"])){
+				foreach($data["children"] as $k => $v){
+					if(is_array($v)){
+						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
+							$output[] = $perm;
+						}
+					}
+					$children[$k] = true;
+				}
+			}else{
+				trigger_error("'children' key is of wrong type", E_USER_WARNING);
+			}
+		}
+
+		if(isset($data["description"])){
+			$desc = $data["description"];
+		}
+
+		return new Permission($name, $desc, $default, $children);
+
+	}
+
 
 }

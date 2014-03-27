@@ -24,10 +24,10 @@
  */
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
+use PocketMine\Player;
 
 abstract class Block extends Position{
 	const AIR = 0;
@@ -516,21 +516,21 @@ abstract class Block extends Position{
 	 * @param float              $fx
 	 * @param float              $fy
 	 * @param float              $fz
-	 * @param \PocketMine\Player $player = null
+	 * @param Player             $player = null
 	 *
 	 * @return bool
 	 */
-	abstract function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null);
+	abstract function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null);
 
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
 	 * @param Item               $item
-	 * @param \PocketMine\Player $player
+	 * @param Player $player
 	 *
 	 * @return bool
 	 */
-	abstract function onActivate(Item $item, PocketMine\Player $player = null);
+	abstract function onActivate(Item $item, Player $player = null);
 
 	/**
 	 * Fires a block update on the Block

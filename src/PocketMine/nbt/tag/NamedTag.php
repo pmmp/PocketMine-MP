@@ -21,7 +21,6 @@
 
 namespace PocketMine\NBT\Tag;
 
-use PocketMine;
 
 abstract class NamedTag extends Tag{
 

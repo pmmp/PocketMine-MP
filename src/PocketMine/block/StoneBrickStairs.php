@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class StoneBrickStairs extends Stair{
 	public function __construct($meta = 0){

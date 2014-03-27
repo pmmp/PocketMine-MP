@@ -47,11 +47,22 @@ interface PluginLoader{
 	/**
 	 * Returns the filename patterns that this loader accepts
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getPluginFilters();
 
+	/**
+	 * @param Plugin $plugin
+	 *
+	 * @return void
+	 */
 	public function enablePlugin(Plugin $plugin);
 
+	/**
+	 * @param Plugin $plugin
+	 *
+	 * @return void
+	 */
 	public function disablePlugin(Plugin $plugin);
+
 }

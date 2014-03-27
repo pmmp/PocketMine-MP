@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Level\Generator\Noise;
 
-use PocketMine;
 
 
 abstract class Generator{

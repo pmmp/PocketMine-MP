@@ -26,8 +26,10 @@ use PocketMine\Event\Entity\EntityInventoryChangeEvent;
 use PocketMine\Event\Event;
 use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
+use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Byte;
 use PocketMine\NBT\Tag\Compound;
+use PocketMine\NBT\Tag\Enum;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\Network;
 use PocketMine\Network\Protocol\AddPlayerPacket;
@@ -36,7 +38,6 @@ use PocketMine\Network\Protocol\PlayerEquipmentPacket;
 use PocketMine\Network\Protocol\RemovePlayerPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
 use PocketMine\Player;
-use PocketMine;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -75,8 +76,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Inventory = new PocketMine\NBT\Tag\Enum("Inventory", array());
-		$this->namedtag->Inventory->setTagType(PocketMine\NBT\NBT::TAG_Compound);
+		$this->namedtag->Inventory = new Enum("Inventory", array());
+		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
 		for($slot = 0; $slot < 9; ++$slot){
 			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
 				$item = $this->getSlot($this->hotbar[$slot]);

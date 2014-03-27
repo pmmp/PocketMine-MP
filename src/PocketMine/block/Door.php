@@ -25,7 +25,6 @@ use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Network\Protocol\LevelEventPacket;
 use PocketMine\Player;
-use PocketMine;
 
 
 abstract class Door extends Transparent{
@@ -49,7 +48,7 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face === 1){
 			$blockUp = $this->getSide(1);
 			$blockDown = $this->getSide(0);
@@ -96,7 +95,7 @@ abstract class Door extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		if(($this->meta & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){

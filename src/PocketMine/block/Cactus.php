@@ -24,8 +24,8 @@ namespace PocketMine\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Player;
 use PocketMine\Server;
-use PocketMine;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){
@@ -67,7 +67,7 @@ class Cactus extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::SAND or $down->getID() === self::CACTUS){
 			$block0 = $this->getSide(2);

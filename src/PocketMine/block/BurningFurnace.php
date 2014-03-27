@@ -27,8 +27,8 @@ use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
+use PocketMine\Player;
 use PocketMine\Tile\Furnace;
-use PocketMine;
 use PocketMine\Tile\Tile;
 
 class BurningFurnace extends Solid{
@@ -38,14 +38,14 @@ class BurningFurnace extends Solid{
 		$this->hardness = 17.5;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = array(
 			0 => 4,
 			1 => 2,
 			2 => 5,
 			3 => 3,
 		);
-		$this->meta = $faces[$player instanceof PocketMine\Player ? $player->getDirection() : 0];
+		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 		$this->level->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
 			new Enum("Items", array()),
@@ -66,8 +66,8 @@ class BurningFurnace extends Solid{
 		return true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
-		if($player instanceof PocketMine\Player){
+	public function onActivate(Item $item, Player $player = null){
+		if($player instanceof Player){
 			$t = $this->level->getTile($this);
 			$furnace = false;
 			if($t instanceof Furnace){

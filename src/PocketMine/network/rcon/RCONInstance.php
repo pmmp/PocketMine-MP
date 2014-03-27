@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\RCON;
 
-use PocketMine;
 use PocketMine\Utils\Utils;
 
 class RCONInstance extends \Thread{

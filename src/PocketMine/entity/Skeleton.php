@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 
 class Skeleton extends Monster implements ProjectileSource{
 

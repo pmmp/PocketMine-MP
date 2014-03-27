@@ -29,7 +29,6 @@ use PocketMine\Level\Level;
 use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
@@ -57,7 +56,7 @@ class QueryHandler{
 
 	public function regenerateInfo(){
 		$str = "";
-		$plist = "PocketMine-MP " . PocketMine\VERSION;
+		$plist = "PocketMine-MP " . $this->server->getPocketMineVersion();
 		$pl = $this->server->getPluginManager()->getPlugins();
 		if(count($pl) > 0){
 			$plist .= ":";

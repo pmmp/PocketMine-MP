@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class Flowable extends Transparent{
 	public function __construct($id, $meta = 0, $name = "Unknown"){

@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class Sponge extends Solid{
 	public function __construct(){

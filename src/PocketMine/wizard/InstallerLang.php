@@ -21,7 +21,6 @@
 
 namespace PocketMine\Wizard;
 
-use PocketMine;
 
 class InstallerLang{
 	public static $languages = array(

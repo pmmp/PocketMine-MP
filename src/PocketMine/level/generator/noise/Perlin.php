@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Noise;
 
-use PocketMine;
 use PocketMine\Utils\Random;
 
 class Perlin extends Generator{

@@ -27,7 +27,6 @@ use PocketMine\Command\Defaults\VersionCommand;
 use PocketMine\Command\Defaults\SeedCommand;
 use PocketMine\Command\Defaults\HelpCommand;
 use PocketMine\Server;
-use PocketMine;
 
 class SimpleCommandMap implements CommandMap{
 

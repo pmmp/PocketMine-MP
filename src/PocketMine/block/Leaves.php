@@ -23,7 +23,7 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
+use PocketMine\Player;
 
 class Leaves extends Transparent{
 	const OAK = 0;
@@ -140,7 +140,7 @@ class Leaves extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->meta |= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 	}

@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class Trapdoor extends Transparent{
 	public function __construct($meta = 0){
@@ -36,7 +36,7 @@ class Trapdoor extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if(($target->isTransparent === false or $target->getID() === self::SLAB) and $face !== 0 and $face !== 1){
 			$faces = array(
 				2 => 0,
@@ -62,7 +62,7 @@ class Trapdoor extends Transparent{
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		$this->meta ^= 0x04;
 		$this->level->setBlock($this, $this, true, false, true);
 

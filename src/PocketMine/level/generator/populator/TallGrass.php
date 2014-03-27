@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Block\TallGrass as BlockTallGrass;
 use PocketMine\Level\Level;

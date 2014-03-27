@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class NetherReactor extends Solid{
 	public function __construct($meta = 0){

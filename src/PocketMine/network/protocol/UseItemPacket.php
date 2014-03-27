@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class UseItemPacket extends DataPacket{
 	public $x;

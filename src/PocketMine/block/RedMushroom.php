@@ -23,7 +23,7 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
+use PocketMine\Player;
 
 class RedMushroom extends Flowable{
 	public function __construct(){
@@ -45,7 +45,7 @@ class RedMushroom extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$this->level->setBlock($block, $this, true, false, true);

@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class ReadyPacket extends DataPacket{
 	public $status;

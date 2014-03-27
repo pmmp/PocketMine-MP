@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Network\UPnP;
 
-use PocketMine;
 use PocketMine\Utils\Utils;
 
 abstract class UPnP{

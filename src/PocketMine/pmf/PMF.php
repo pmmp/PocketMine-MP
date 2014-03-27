@@ -25,7 +25,6 @@
  */
 namespace PocketMine\PMF;
 
-use PocketMine;
 
 class PMF{
 	const VERSION = 0x01;

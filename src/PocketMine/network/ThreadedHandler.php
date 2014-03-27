@@ -27,7 +27,6 @@ namespace PocketMine\Network;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
-use PocketMine;
 
 class ThreadedHandler extends \Thread{
 	protected $bandwidthUp;

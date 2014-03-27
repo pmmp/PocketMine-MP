@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network;
 
-use PocketMine;
 
 class Packet extends \stdClass{
 	public $ip;

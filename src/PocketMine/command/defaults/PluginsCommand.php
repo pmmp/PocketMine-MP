@@ -22,8 +22,8 @@
 namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\CommandSender;
+use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
-use PocketMine;
 
 class PluginsCommand extends VanillaCommand{
 
@@ -49,7 +49,7 @@ class PluginsCommand extends VanillaCommand{
 
 	private function getPluginList(){
 		$list = "";
-		foreach(($plugins = PocketMine\Server::getInstance()->getPluginManager()->getPlugins()) as $plugin){
+		foreach(($plugins = Server::getInstance()->getPluginManager()->getPlugins()) as $plugin){
 			if(strlen($list) > 0){
 				$list .= TextFormat::WHITE . ", ";
 			}

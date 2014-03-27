@@ -21,7 +21,6 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 
 class IronAxe extends Item{
 	public function __construct($meta = 0, $count = 1){

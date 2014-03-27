@@ -23,9 +23,6 @@ namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\CommandSender;
 use PocketMine\Utils\TextFormat;
-use PocketMine\Player;
-use PocketMine\Level\Level;
-use PocketMine;
 use PocketMine\Command\ConsoleCommandSender;
 use PocketMine\Server;
 use PocketMine\Command\Command;

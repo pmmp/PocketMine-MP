@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 
 abstract class Vehicle extends Entity implements Rideable{
 

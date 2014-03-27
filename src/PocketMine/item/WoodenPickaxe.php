@@ -21,7 +21,6 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 
 class WoodenPickaxe extends Item{
 	public function __construct($meta = 0, $count = 1){

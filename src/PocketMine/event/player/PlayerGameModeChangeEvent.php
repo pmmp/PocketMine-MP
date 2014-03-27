@@ -22,7 +22,6 @@
 namespace PocketMine\Event\Player;
 
 use PocketMine\Event\CancellableEvent;
-use PocketMine;
 use PocketMine\Player;
 
 /**

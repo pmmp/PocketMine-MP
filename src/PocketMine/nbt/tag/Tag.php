@@ -24,7 +24,6 @@
  */
 namespace PocketMine\NBT\Tag;
 
-use PocketMine;
 use PocketMine\NBT\NBT;
 
 abstract class Tag extends \stdClass{

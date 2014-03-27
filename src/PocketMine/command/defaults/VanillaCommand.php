@@ -21,7 +21,6 @@
 
 namespace PocketMine\Command\Defaults;
 
-use PocketMine;
 use PocketMine\Command\Command;
 use PocketMine\Command\CommandSender;
 

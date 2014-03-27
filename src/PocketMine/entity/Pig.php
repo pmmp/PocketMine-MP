@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 
 class Pig extends Animal implements Rideable{
 

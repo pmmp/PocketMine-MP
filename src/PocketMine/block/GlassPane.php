@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class GlassPane extends Transparent{
 	public function __construct(){

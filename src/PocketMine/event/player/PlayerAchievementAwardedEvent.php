@@ -23,7 +23,6 @@ namespace PocketMine\Event\Player;
 
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Player;
-use PocketMine;
 
 /**
  * Called when a player is awarded an achievement

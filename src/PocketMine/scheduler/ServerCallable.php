@@ -21,7 +21,6 @@
 
 namespace PocketMine\Scheduler;
 
-use PocketMine;
 
 abstract class ServerCallable extends ServerTask{
 

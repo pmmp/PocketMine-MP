@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class Workbench extends Solid{
 	public function __construct($meta = 0){
@@ -31,7 +31,7 @@ class Workbench extends Solid{
 		$this->hardness = 15;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		$player->toCraft[-1] = 1;
 
 		return true;

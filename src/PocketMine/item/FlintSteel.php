@@ -22,7 +22,6 @@
 namespace PocketMine\Item;
 
 use PocketMine\Block\Block;
-use PocketMine;
 use PocketMine\Block\Fire;
 use PocketMine\Block\Solid;
 use PocketMine\Level\Level;

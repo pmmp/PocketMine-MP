@@ -24,7 +24,7 @@
  */
 namespace PocketMine\Event;
 
-use PocketMine;
+use PocketMine\Plugin\Plugin;
 use PocketMine\Utils\Utils;
 
 abstract class Event{
@@ -32,6 +32,8 @@ abstract class Event{
 	const DENY = 1;
 	const NORMAL = 2;
 	const FORCE = 0x80000000;
+
+	private static $pluginEvents = array();
 
 	/**
 	 * Any callable event must declare the static variables
@@ -55,6 +57,12 @@ abstract class Event{
 		static::$handlerPriority = array();
 	}
 
+	/**
+	 * @param callable $handler
+	 * @param int      $priority
+	 *
+	 * @return bool
+	 */
 	public static function register(callable $handler, $priority = EventPriority::NORMAL){
 		if($priority < EventPriority::MONITOR or $priority > EventPriority::LOWEST){
 			return false;
@@ -63,6 +71,13 @@ abstract class Event{
 		if(isset(static::$handlers[$identifier])){ //Already registered
 			return false;
 		}else{
+			if(is_array($handler) and $handler[0] instanceof Plugin){
+				$name = $handler[0]->getDescription()->getName();
+				if(!isset(self::$pluginEvents[$name])){
+					self::$pluginEvents[$name] = array();
+				}
+				self::$pluginEvents[$name][get_called_class()] = $identifier;
+			}
 			static::$handlers[$identifier] = $handler;
 			if(!isset(static::$handlerPriority[(int) $priority])){
 				static::$handlerPriority[(int) $priority] = array();
@@ -74,9 +89,33 @@ abstract class Event{
 		}
 	}
 
+	/**
+	 * @param Plugin $plugin
+	 */
+	public static function unregisterPlugin(Plugin $plugin){
+		$name = $plugin->getDescription()->getName();
+		if(!isset(self::$pluginEvents[$name])){
+			return;
+		}
+		foreach(self::$pluginEvents[$name] as $className => $identifier){
+			if(isset($className::$handlers[$identifier])){
+				$className::unregister($className::$handlers[$identifier], -1);
+			}
+		}
+	}
+
+	/**
+	 * @param callable $handler
+	 * @param int      $priority
+	 *
+	 * @return bool
+	 */
 	public static function unregister(callable $handler, $priority = EventPriority::NORMAL){
 		$identifier = Utils::getCallableIdentifier($handler);
 		if(isset(static::$handlers[$identifier])){
+			if(is_array(static::$handlers[$identifier]) and static::$handlers[$identifier][0] instanceof Plugin){
+				unset(self::$pluginEvents[static::$handlers[$identifier][0]->getDescription()->getName()][get_called_class()]);
+			}
 			if(isset(static::$handlerPriority[(int) $priority][$identifier])){
 				unset(static::$handlerPriority[(int) $priority][$identifier]);
 			}else{

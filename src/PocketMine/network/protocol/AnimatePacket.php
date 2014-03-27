@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class AnimatePacket extends DataPacket{
 	public $action;

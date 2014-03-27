@@ -21,7 +21,6 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Entity;
 use PocketMine\Level\Level;

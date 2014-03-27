@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class Wood extends Solid{
 	const OAK = 0;
@@ -42,7 +42,7 @@ class Wood extends Solid{
 		$this->hardness = 10;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = array(
 			0 => 0,
 			1 => 0,

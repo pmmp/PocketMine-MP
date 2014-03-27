@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Event\Tile;
 
-use PocketMine;
 use PocketMine\Event\Event;
 
 abstract class TileEvent extends Event{

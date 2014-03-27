@@ -21,7 +21,6 @@
 
 namespace PocketMine\Plugin;
 
-use PocketMine;
 
 /**
  * It is recommended to use PluginBase for the actual plugin
@@ -72,5 +71,10 @@ interface Plugin{
 	public function getServer();
 
 	public function getName();
+
+	/**
+	 * @return PluginLoader
+	 */
+	public function getPluginLoader();
 
 }

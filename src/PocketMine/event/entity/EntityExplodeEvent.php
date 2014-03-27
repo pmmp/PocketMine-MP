@@ -21,7 +21,6 @@
 
 namespace PocketMine\Event\Entity;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Entity\Entity;
 use PocketMine\Event\CancellableEvent;

@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine;
 
 abstract class Object{
 

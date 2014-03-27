@@ -21,11 +21,19 @@
 
 namespace PocketMine\Plugin;
 
-use PocketMine;
+use PocketMine\Server;
 use PocketMine\Utils\Config;
+use PocketMine\Command\CommandSender;
+use PocketMine\Command\Command;
 
-abstract class PluginBase{
-	/** @var PocketMine\Server */
+abstract class PluginBase implements Plugin{
+
+	/**
+	 * @var PluginLoader
+	 */
+	private $loader;
+
+	/** @var \PocketMine\Server */
 	private $server;
 	private $isEnabled = false;
 	private $initialized = false;
@@ -79,9 +87,10 @@ abstract class PluginBase{
 		return $this->description;
 	}
 
-	protected final function initialize(PocketMine\Server $server, PluginDescription $description, $dataFolder, $file){
+	public final function init(PluginLoader $loader, Server $server, PluginDescription $description, $dataFolder, $file){
 		if($this->initialized === false){
 			$this->initialized = true;
+			$this->loader = $loader;
 			$this->server = $server;
 			$this->description = $description;
 			$this->dataFolder = $dataFolder;
@@ -201,6 +210,13 @@ abstract class PluginBase{
 
 	protected function getFile(){
 		return $this->file;
+	}
+
+	/**
+	 * @return PluginLoader
+	 */
+	public function getPluginLoader(){
+		return $this->loader;
 	}
 
 }

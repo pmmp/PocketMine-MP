@@ -21,7 +21,6 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine;
 use PocketMine\Player;
 
 /**

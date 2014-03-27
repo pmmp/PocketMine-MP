@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 
 class Ocelot extends Animal implements Tameable{
 

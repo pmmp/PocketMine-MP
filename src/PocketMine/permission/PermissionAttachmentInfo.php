@@ -21,7 +21,6 @@
 
 namespace PocketMine\Permission;
 
-use PocketMine;
 
 class PermissionAttachmentInfo{
 	/**

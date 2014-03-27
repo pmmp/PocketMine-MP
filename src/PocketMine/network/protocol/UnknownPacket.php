@@ -22,7 +22,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class UnknownPacket extends DataPacket{
 	public $packetID = -1;

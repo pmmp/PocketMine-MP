@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Math;
 
-use PocketMine;
 
 abstract class Math{
 

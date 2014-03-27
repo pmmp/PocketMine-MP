@@ -21,7 +21,6 @@
 
 namespace PocketMine\Math;
 
-use PocketMine;
 
 class AxisAlignedBB{
 	public $minX;

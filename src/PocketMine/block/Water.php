@@ -24,7 +24,7 @@ namespace PocketMine\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
-use PocketMine;
+use PocketMine\Player;
 use PocketMine\Server;
 
 class Water extends Liquid{
@@ -33,7 +33,7 @@ class Water extends Liquid{
 		$this->hardness = 500;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		Server::getInstance()->api->block->scheduleBlockUpdate(clone $this, 10, Level::BLOCK_UPDATE_NORMAL);
 

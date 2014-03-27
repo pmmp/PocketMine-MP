@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine;
 use PocketMine\Block\Dirt;
 use PocketMine\Block\Leaves;
 use PocketMine\Block\Wood;

@@ -21,8 +21,10 @@
 
 namespace PocketMine\Command\Defaults;
 
-use PocketMine;
 use PocketMine\Command\CommandSender;
+use PocketMine\Network\Protocol\Info;
+use PocketMine\Plugin\Plugin;
+use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
 class VersionCommand extends VanillaCommand{
@@ -43,23 +45,23 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$output = "This server is running PocketMine-MP version " . PocketMine\Server::getInstance()->getPocketMineVersion() . " 「" . PocketMine\Server::getInstance()->getCodename() . "」 (Implementing API version " . PocketMine\Server::getInstance()->getApiVersion() . " for Minecraft: PE " . PocketMine\Server::getInstance()->getVersion() . " protocol version " . PocketMine\Network\Protocol\Info::CURRENT_PROTOCOL . ")";
+			$output = "This server is running PocketMine-MP version " . Server::getInstance()->getPocketMineVersion() . " 「" . Server::getInstance()->getCodename() . "」 (Implementing API version " . Server::getInstance()->getApiVersion() . " for Minecraft: PE " . Server::getInstance()->getVersion() . " protocol version " . Info::CURRENT_PROTOCOL . ")";
 			if(\PocketMine\GIT_COMMIT !== str_repeat("00", 20)){
 				$output .= " [git " . \PocketMine\GIT_COMMIT . "]";
 			}
 			$sender->sendMessage($output);
 		}else{
 			$pluginName = implode(" ", $args);
-			$exactPlugin = PocketMine\Server::getInstance()->getPluginManager()->getPlugin($pluginName);
+			$exactPlugin = Server::getInstance()->getPluginManager()->getPlugin($pluginName);
 
-			if($exactPlugin instanceof PocketMine\Plugin\Plugin){
+			if($exactPlugin instanceof Plugin){
 				$this->describeToSender($exactPlugin, $sender);
 				return true;
 			}
 
 			$found = false;
 			$pluginName = strtolower($pluginName);
-			foreach(PocketMine\Server::getInstance()->getPluginManager()->getPlugins() as $plugin){
+			foreach(Server::getInstance()->getPluginManager()->getPlugins() as $plugin){
 				if(stripos($plugin->getName(), $pluginName) !== false){
 					$this->describeToSender($plugin, $sender);
 					$found = true;
@@ -74,7 +76,7 @@ class VersionCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function describeToSender(PocketMine\Plugin\Plugin $plugin, CommandSender $sender){
+	private function describeToSender(Plugin $plugin, CommandSender $sender){
 		$desc = $plugin->getDescription();
 		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
 

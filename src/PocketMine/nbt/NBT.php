@@ -39,7 +39,6 @@ use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
 use PocketMine\NBT\Tag\Tag;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 /**
  * Named Binary Tag encoder/decoder

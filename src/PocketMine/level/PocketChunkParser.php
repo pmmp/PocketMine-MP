@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Utils\Utils;
 
 /**

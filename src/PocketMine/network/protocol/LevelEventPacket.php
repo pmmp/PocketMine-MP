@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class LevelEventPacket extends DataPacket{
 	public $evid;

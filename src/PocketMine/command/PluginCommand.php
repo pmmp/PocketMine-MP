@@ -21,7 +21,6 @@
 
 namespace PocketMine\Command;
 
-use PocketMine;
 use PocketMine\Plugin\Plugin;
 
 class PluginCommand extends Command{
@@ -36,7 +35,11 @@ class PluginCommand extends Command{
 	 */
 	private $executor;
 
-	protected function __construct($name, Plugin $owner){
+	/**
+	 * @param string $name
+	 * @param Plugin $owner
+	 */
+	public function __construct($name, Plugin $owner){
 		parent::__construct($name);
 		$this->owningPlugin = $owner;
 		$this->executor = $owner;

@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 
 abstract class Info{

@@ -21,7 +21,6 @@
 
 namespace PocketMine\PMF;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;

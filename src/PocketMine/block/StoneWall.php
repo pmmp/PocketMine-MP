@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class StoneWall extends Transparent{
 	public function __construct($meta = 0){

@@ -27,7 +27,6 @@ namespace PocketMine\Wizard;
 
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Utils;
-use PocketMine;
 
 class Installer{
 	const DEFAULT_NAME = "Minecraft: PE Server";

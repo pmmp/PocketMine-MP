@@ -21,7 +21,6 @@
 
 namespace PocketMine\Scheduler;
 
-use PocketMine;
 use PocketMine\Plugin\Plugin;
 
 class ServerScheduler{
@@ -85,7 +84,7 @@ class ServerScheduler{
 		$this->pending = new \SplPriorityQueue();
 		$this->temp = array();
 		$this->runners = new \Threaded();
-		$this->executor = new \Pool($workers);
+		//TODO: $this->executor = new \Pool($workers);
 
 	}
 
@@ -256,6 +255,7 @@ class ServerScheduler{
 			$this->runners[$taskId]->cancel0();
 		}
 
+		//TODO
 		$task = new ServerTask(null, new ServerTaskCanceller($taskId));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
@@ -276,6 +276,7 @@ class ServerScheduler{
 			return;
 		}
 
+		//TODO
 		$task = new ServerTask(null, new ServerPluginTaskCanceller($plugin));
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
@@ -298,6 +299,7 @@ class ServerScheduler{
 	 *
 	 */
 	public function cancelAllTasks(){
+		//TODO
 		$task = new ServerTask(null, new ServerAllTaskCanceller());
 		$this->handle($task, 0);
 		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){

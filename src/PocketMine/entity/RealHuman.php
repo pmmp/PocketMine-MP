@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 use PocketMine\Player;
 
 abstract class RealHuman extends Human{

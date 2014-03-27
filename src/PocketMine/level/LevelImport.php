@@ -22,7 +22,6 @@
 namespace PocketMine\Level;
 
 use PocketMine\NBT\NBT;
-use PocketMine;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\Utils\Config;
 

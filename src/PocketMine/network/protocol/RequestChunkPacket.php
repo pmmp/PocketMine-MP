@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class RequestChunkPacket extends DataPacket{
 	public $chunkX;

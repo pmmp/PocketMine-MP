@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class Stonecutter extends Solid{
 	public function __construct($meta = 0){
@@ -30,7 +30,7 @@ class Stonecutter extends Solid{
 		$this->isActivable = true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		$player->toCraft[-1] = 2;
 
 		return true;

@@ -27,8 +27,8 @@ use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Enum;
 use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\String;
+use PocketMine\Player;
 use PocketMine\Tile\Chest as TileChest;
-use PocketMine;
 use PocketMine\Tile\Tile;
 
 class Chest extends Transparent{
@@ -41,7 +41,7 @@ class Chest extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = array(
 			0 => 4,
 			1 => 2,
@@ -50,7 +50,7 @@ class Chest extends Transparent{
 		);
 
 		$chest = false;
-		$this->meta = $faces[$player instanceof PocketMine\Player ? $player->getDirection() : 0];
+		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 
 		for($side = 2; $side <= 5; ++$side){
 			if(($this->meta === 4 or $this->meta === 5) and ($side === 4 or $side === 5)){
@@ -96,8 +96,8 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
-		if($player instanceof PocketMine\Player){
+	public function onActivate(Item $item, Player $player = null){
+		if($player instanceof Player){
 			$top = $this->getSide(1);
 			if($top->isTransparent !== true){
 				return true;

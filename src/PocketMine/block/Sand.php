@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class Sand extends Fallable{
 	public function __construct(){

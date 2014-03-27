@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Utils;
 
-use PocketMine;
 use PocketMine\Item\Item;
 
 /**

@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class Wool extends Solid{
 	public function __construct($meta = 0){

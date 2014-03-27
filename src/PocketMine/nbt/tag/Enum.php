@@ -22,7 +22,6 @@
 namespace PocketMine\NBT\Tag;
 
 use PocketMine\NBT\NBT;
-use PocketMine;
 use PocketMine\NBT\Tag\Enum as TagEnum;
 
 class Enum extends NamedTag implements \ArrayAccess{

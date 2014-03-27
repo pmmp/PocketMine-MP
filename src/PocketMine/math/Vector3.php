@@ -21,7 +21,6 @@
 
 namespace PocketMine\Math;
 
-use PocketMine;
 
 class Vector3{
 	public $x;

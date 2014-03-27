@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class SetEntityMotionPacket extends DataPacket{
 	public $eid;

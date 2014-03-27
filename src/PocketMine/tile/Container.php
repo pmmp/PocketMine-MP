@@ -21,7 +21,6 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine;
 use PocketMine\Event\Event;
 use PocketMine\Event\EventHandler;
 use PocketMine\Event\Tile\TileInventoryChangeEvent;

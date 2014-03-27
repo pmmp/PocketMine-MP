@@ -21,8 +21,12 @@
 
 namespace PocketMine\Event\Entity;
 
-use PocketMine;
+use PocketMine\Entity\Creature;
+use PocketMine\Entity\DroppedItem;
 use PocketMine\Entity\Entity;
+use PocketMine\Entity\Human;
+use PocketMine\Entity\Projectile;
+use PocketMine\Entity\Vehicle;
 
 /**
  * Called when a entity is spawned
@@ -39,7 +43,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
-	 * @return PocketMine\Level\Position
+	 * @return \PocketMine\Level\Position
 	 */
 	public function getPosition(){
 		return $this->entity->getPosition();
@@ -57,35 +61,35 @@ class EntitySpawnEvent extends EntityEvent{
 	 * @return bool
 	 */
 	public function isCreature(){
-		return $this->entity instanceof PocketMine\Entity\Creature;
+		return $this->entity instanceof Creature;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isHuman(){
-		return $this->entity instanceof PocketMine\Entity\Human;
+		return $this->entity instanceof Human;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isProjectile(){
-		return $this->entity instanceof PocketMine\Entity\Projectile;
+		return $this->entity instanceof Projectile;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isVehicle(){
-		return $this->entity instanceof PocketMine\Entity\Vehicle;
+		return $this->entity instanceof Vehicle;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isItem(){
-		return $this->entity instanceof PocketMine\Entity\DroppedItem;
+		return $this->entity instanceof DroppedItem;
 	}
 
 }

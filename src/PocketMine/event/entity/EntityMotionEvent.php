@@ -22,7 +22,6 @@
 namespace PocketMine\Event\Entity;
 
 use PocketMine\Entity\Entity;
-use PocketMine;
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Event;
 use PocketMine\Math\Vector3 as Vector3;

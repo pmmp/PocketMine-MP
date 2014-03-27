@@ -23,8 +23,8 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Network\Protocol\ChatPacket;
+use PocketMine\Player;
 use PocketMine\Server;
-use PocketMine;
 
 class Bed extends Transparent{
 	public function __construct($type = 0){
@@ -34,8 +34,8 @@ class Bed extends Transparent{
 		$this->hardness = 1;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
-		if($player instanceof PocketMine\Player and Server::getInstance()->api->time->getPhase($this->level) !== "night"){
+	public function onActivate(Item $item, Player $player = null){
+		if($player instanceof Player and Server::getInstance()->api->time->getPhase($this->level) !== "night"){
 			$pk = new ChatPacket;
 			$pk->message = "You can only sleep at night";
 			$player->dataPacket($pk);
@@ -58,7 +58,7 @@ class Bed extends Transparent{
 				$b = $blockEast;
 			}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 				$b = $blockWest;
-			}elseif($player instanceof PocketMine\Player){
+			}elseif($player instanceof Player){
 				$pk = new ChatPacket;
 				$pk->message = "This bed is incomplete";
 				$player->dataPacket($pk);
@@ -67,7 +67,7 @@ class Bed extends Transparent{
 			}
 		}
 
-		if($player instanceof PocketMine\Player and $player->sleepOn($b) === false){
+		if($player instanceof Player and $player->sleepOn($b) === false){
 			$pk = new ChatPacket;
 			$pk->message = "This bed is occupied";
 			$player->dataPacket($pk);
@@ -76,7 +76,7 @@ class Bed extends Transparent{
 		return true;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
 			$faces = array(
@@ -85,7 +85,7 @@ class Bed extends Transparent{
 				2 => 2,
 				3 => 5,
 			);
-			$d = $player instanceof PocketMine\Player ? $player->getDirection() : 0;
+			$d = $player instanceof Player ? $player->getDirection() : 0;
 			$next = $this->getSide($faces[(($d + 3) % 4)]);
 			$downNext = $this->getSide(0);
 			if($next->isReplaceable === true and $downNext->isTransparent === false){

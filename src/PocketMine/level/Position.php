@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Math\Vector3 as Vector3;
 
 class Position extends Vector3{

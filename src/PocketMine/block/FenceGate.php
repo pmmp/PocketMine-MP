@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class FenceGate extends Transparent{
 	public function __construct($meta = 0){
@@ -36,14 +36,14 @@ class FenceGate extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = array(
 			0 => 3,
 			1 => 0,
 			2 => 1,
 			3 => 2,
 		);
-		$this->meta = $faces[$player instanceof PocketMine\Player ? $player->getDirection() : 0] & 0x03;
+		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0] & 0x03;
 		$this->level->setBlock($block, $this, true, false, true);
 
 		return true;
@@ -55,14 +55,14 @@ class FenceGate extends Transparent{
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		$faces = array(
 			0 => 3,
 			1 => 0,
 			2 => 1,
 			3 => 2,
 		);
-		$this->meta = ($faces[$player instanceof PocketMine\Player ? $player->getDirection() : 0] & 0x03) | ((~$this->meta) & 0x04);
+		$this->meta = ($faces[$player instanceof Player ? $player->getDirection() : 0] & 0x03) | ((~$this->meta) & 0x04);
 		if(($this->meta & 0x04) === 0x04){
 			$this->isFullBlock = true;
 		}else{

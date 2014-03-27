@@ -21,7 +21,6 @@
 
 namespace PocketMine\Command;
 
-use PocketMine;
 
 interface RemoteConsoleCommandSender extends CommandSender{
 

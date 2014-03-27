@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine;
 use PocketMine\Block\Block;
 
 class OreType{

@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Level\Generator;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Utils\Random;
 

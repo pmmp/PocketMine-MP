@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Network\RakNet;
 
-use PocketMine;
 
 abstract class Info{
 	const STRUCTURE = 5;

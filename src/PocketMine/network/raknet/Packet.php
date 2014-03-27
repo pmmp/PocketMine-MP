@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\RakNet;
 
-use PocketMine;
 use PocketMine\Network;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
 use PocketMine\Utils\Utils;

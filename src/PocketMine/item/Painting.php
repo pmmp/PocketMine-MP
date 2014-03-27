@@ -22,7 +22,6 @@
 namespace PocketMine\Item;
 
 use PocketMine\Block\Block;
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Player;
 use PocketMine\Server;

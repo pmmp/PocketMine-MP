@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class LitPumpkin extends Solid{
 	public function __construct(){
@@ -30,7 +30,7 @@ class LitPumpkin extends Solid{
 		$this->hardness = 5;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = array(
 			0 => 4,
 			1 => 2,

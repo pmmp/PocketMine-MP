@@ -27,7 +27,6 @@ use PocketMine\Block\Lava;
 use PocketMine\Block\Liquid;
 use PocketMine\Block\Water;
 use PocketMine\Level\Level;
-use PocketMine;
 use PocketMine\Player;
 
 class Bucket extends Item{

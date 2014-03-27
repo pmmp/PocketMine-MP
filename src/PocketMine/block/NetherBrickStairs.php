@@ -21,7 +21,6 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 
 class NetherBrickStairs extends Stair{
 	public function __construct($meta = 0){

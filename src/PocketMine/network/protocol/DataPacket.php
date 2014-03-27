@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Utils\Utils;
 

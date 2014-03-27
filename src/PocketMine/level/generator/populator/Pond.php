@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
-use PocketMine;
 use PocketMine\Block\Water;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
@@ -39,7 +38,7 @@ class Pond extends Populator{
 				$random->nextRange(0, 128),
 				$random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16)
 			);
-			$pond = new PocketMine\Level\Generator\Object\Pond($random, new Water());
+			$pond = new \PocketMine\Level\Generator\Object\Pond($random, new Water());
 			if($pond->canPlaceObject($level, $v)){
 				$pond->placeObject($level, $v);
 			}

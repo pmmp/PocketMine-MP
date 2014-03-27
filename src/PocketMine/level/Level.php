@@ -24,9 +24,13 @@
  */
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
+use PocketMine\Event\Block\BlockBreakEvent;
+use PocketMine\Event\Block\BlockPlaceEvent;
+use PocketMine\Event\Event;
+use PocketMine\Event\EventHandler;
+use PocketMine\Event\Player\PlayerInteractEvent;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Flat;
 use PocketMine\Level\Generator\Generator;
@@ -742,11 +746,11 @@ class Level{
 
 		//TODO: Adventure mode checks
 		if($player instanceof Player){
-			$ev = new PocketMine\Event\Block\BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
+			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
 				$ev->setCancelled();
 			}
-			if(PocketMine\Event\EventHandler::callEvent($ev) === PocketMine\Event\Event::DENY){
+			if(EventHandler::callEvent($ev) === Event::DENY){
 				return false;
 			}
 		}elseif($item instanceof Item and !$target->isBreakable($item)){
@@ -789,7 +793,7 @@ class Level{
 			return false;
 		}
 
-		if($player instanceof Player and PocketMine\Event\EventHandler::callEvent($ev = new PocketMine\Event\Player\PlayerInteractEvent($player, $item, $target, $face)) !== PocketMine\Event\Event::DENY){
+		if($player instanceof Player and EventHandler::callEvent($ev = new PlayerInteractEvent($player, $item, $target, $face)) !== Event::DENY){
 			$target->onUpdate(Level::BLOCK_UPDATE_TOUCH);
 		}
 
@@ -801,7 +805,7 @@ class Level{
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
-			$this->setBlock($block, new PocketMine\Block\Air(), true, false, true);
+			$this->setBlock($block, new Air(), true, false, true);
 
 			return false;
 		}else{
@@ -822,9 +826,9 @@ class Level{
 		/*if($hand->isSolid === true and $player->inBlock($block)){
 			return false; //Entity in block
 		}*/
-		$ev = new PocketMine\Event\Block\BlockPlaceEvent($player, $hand, $block, $target, $item);
+		$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
 
-		if($player instanceof Player and PocketMine\Event\EventHandler::callEvent($ev) === PocketMine\Event\Event::DENY){
+		if($player instanceof Player and EventHandler::callEvent($ev) === Event::DENY){
 			return false;
 		}elseif($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
 			return false;
@@ -832,7 +836,7 @@ class Level{
 
 		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
 			$tile = new Sign($this, new Compound(false, array(
-				new String("id", PocketMine\Tile\Tile::SIGN),
+				new String("id", Tile::SIGN),
 				new Int("x", $block->x),
 				new Int("y", $block->y),
 				new Int("z", $block->z),

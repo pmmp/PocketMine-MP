@@ -21,7 +21,6 @@
 
 namespace PocketMine\Entity;
 
-use PocketMine;
 
 abstract class Animal extends Creature implements Ageable{
 

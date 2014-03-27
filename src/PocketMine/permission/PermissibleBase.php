@@ -21,7 +21,6 @@
 
 namespace PocketMine\Permission;
 
-use PocketMine;
 use PocketMine\Server;
 use PocketMine\Plugin\Plugin;
 

@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class Slab extends Transparent{
 	public function __construct($meta = 0){
@@ -46,7 +46,7 @@ class Slab extends Transparent{
 		$this->hardness = 30;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->meta &= 0x07;
 		if($face === 0){
 			if($target->getID() === self::SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
@@ -70,7 +70,7 @@ class Slab extends Transparent{
 
 				return true;
 			}
-		}elseif(!($player instanceof PocketMine\Player) or !$player->inBlock($block)){
+		}elseif(!($player instanceof Player) or !$player->inBlock($block)){
 			if($block->getID() === self::SLAB){
 				if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
 					$this->level->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);

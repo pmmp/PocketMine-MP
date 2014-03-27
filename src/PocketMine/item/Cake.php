@@ -21,7 +21,6 @@
 
 namespace PocketMine\Item;
 
-use PocketMine;
 use PocketMine\Block\Block;
 
 class Cake extends Item{

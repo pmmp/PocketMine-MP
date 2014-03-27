@@ -25,7 +25,6 @@
  */
 namespace PocketMine\Network\RCON;
 
-use PocketMine;
 use PocketMine\Server;
 
 

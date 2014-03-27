@@ -26,7 +26,6 @@
 namespace PocketMine;
 
 use PocketMine\Entity\Entity;
-use PocketMine\Network\Handler;
 use PocketMine\Network\Packet;
 use PocketMine\Network\Protocol\Info;
 use PocketMine\Network\RakNet\Info as RakNetInfo;
@@ -547,7 +546,9 @@ class ServerOld{
 		$data =& $packet;
 		$CID = Server::clientID($packet->ip, $packet->port);
 		if(isset(Player::$list[$CID])){
-			Player::$list[$CID]->handlePacket($packet);
+			if($packet instanceof RakNetPacket){
+				Player::$list[$CID]->handlePacket($packet);
+			}
 		}else{
 			switch($packet->pid()){
 				case RakNetInfo::UNCONNECTED_PING:

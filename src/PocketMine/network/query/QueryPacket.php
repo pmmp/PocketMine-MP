@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Query;
 
-use PocketMine;
 use PocketMine\Network\Packet;
 use PocketMine\Utils\Utils;
 

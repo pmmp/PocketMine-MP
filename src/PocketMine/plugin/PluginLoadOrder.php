@@ -21,18 +21,12 @@
 
 namespace PocketMine\Plugin;
 
-use PocketMine;
 
 abstract class PluginLoadOrder{
 	/*
-	 * Load before loading other PocketMine API's.
+	 * The plugin will be loaded at startup
 	 */
-	const SYSTEM = 0;
-
-	/*
-	 * The plugin will be loaded after the first world has been loaded/created.
-	 */
-	const PREWORLD = 1;
+	const STARTUP = 0;
 
 	/*
 	 * The plugin will be loaded after the first world has been loaded/created.

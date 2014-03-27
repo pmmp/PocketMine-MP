@@ -23,7 +23,6 @@ namespace PocketMine\Tile;
 
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine;
 use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Int;

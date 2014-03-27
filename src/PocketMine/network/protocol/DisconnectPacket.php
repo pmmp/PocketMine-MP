@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class DisconnectPacket extends DataPacket{
 	public function pid(){

@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Populator;
 
-use PocketMine;
 use PocketMine\Block\Block;
 use PocketMine\Block\Sapling;
 use PocketMine\Level\Generator\Object\Tree as ObjectTree;

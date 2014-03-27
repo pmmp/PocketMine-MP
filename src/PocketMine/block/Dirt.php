@@ -21,8 +21,8 @@
 
 namespace PocketMine\Block;
 
-use PocketMine;
 use PocketMine\Item\Item;
+use PocketMine\Player;
 
 class Dirt extends Solid{
 	public function __construct(){
@@ -31,7 +31,7 @@ class Dirt extends Solid{
 		$this->hardness = 2.5;
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		if($item->isHoe()){
 			$item->useOn($this);
 			$this->level->setBlock($this, Block::get(Item::FARMLAND, 0), true, false, true);

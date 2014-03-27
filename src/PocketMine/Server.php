@@ -41,6 +41,9 @@ use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\ThreadedHandler;
 use PocketMine\Network\UPnP\UPnP;
+use PocketMine\Permission\DefaultPermissions;
+use PocketMine\Plugin\Plugin;
+use PocketMine\Plugin\PluginLoadOrder;
 use PocketMine\Plugin\PluginManager;
 use PocketMine\Recipes\Crafting;
 use PocketMine\Scheduler\ServerScheduler;
@@ -390,7 +393,7 @@ class Server{
 		$this->pluginPath = $pluginPath;
 		@mkdir($this->dataPath . "worlds/", 0777);
 		@mkdir($this->dataPath . "players/", 0777);
-		@mkdir($this->pluginPath . "plugins/", 0777);
+		@mkdir($this->pluginPath, 0777);
 
 		$this->tickScheduler = new TickScheduler(20);
 		$this->scheduler = new ServerScheduler();
@@ -451,10 +454,6 @@ class Server{
 		if(ADVANCED_CACHE == true){
 			console("[INFO] Advanced cache enabled");
 		}
-		if($this->getConfigBoolean("upnp-forwarding", false) == true){
-			console("[INFO] [UPnP] Trying to port forward...");
-			UPnP::PortForward($this->getPort());
-		}
 
 		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and function_exists("cli_set_process_title")){
 			@cli_set_process_title("PocketMine-MP " . $this->getPocketMineVersion());
@@ -468,19 +467,19 @@ class Server{
 		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
 		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
 
+		$this->consoleSender = new ConsoleCommandSender();
+		$this->commandMap = new SimpleCommandMap($this);
+		$this->pluginManager = new PluginManager($this, $this->commandMap);
+		$this->pluginManager->registerInterface("PocketMine\\Plugin\\FolderPluginLoader");
+		$this->pluginManager->loadPlugins($this->pluginPath);
+
 		//TODO: update checking (async)
 
-		$this->commandMap = new SimpleCommandMap($this);
-
+		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		Block::init();
 		Item::init();
 		Crafting::init();
 		Level::init();
-
-		$this->pluginManager = new PluginManager();
-		console("[INFO] Loaded " . count($this->pluginManager->loadPlugins($this->pluginPath . "plugins/")) . " plugin(s).");
-
-		$this->consoleSender = new ConsoleCommandSender();
 
 		$this->properties->save();
 		//TODO
@@ -495,12 +494,44 @@ class Server{
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}*/
 
-		if($this->getConfigBoolean("enable-query", true) === true){
-			$this->queryHandler = new QueryHandler();
-		}
-
 		//$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
 
+		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+	}
+
+	/**
+	 * @param int $type
+	 */
+	public function enablePlugins($type){
+		foreach($this->pluginManager->getPlugins() as $plugin){
+			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
+				$this->loadPlugin($plugin);
+			}
+		}
+
+		if($type === PluginLoadOrder::POSTWORLD){
+			$this->commandMap->registerServerAliases();
+			$this->loadCustomPermissions();
+		}
+	}
+
+	private function loadCustomPermissions(){
+		DefaultPermissions::registerCorePermissions();
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 */
+	public function loadPlugin(Plugin $plugin){
+		$this->pluginManager->enablePlugin($plugin);
+
+		foreach($plugin->getDescription()->getPermisions() as $perm){
+			$this->pluginManager->addPermission($perm);
+		}
+	}
+
+	public function disablePlugins(){
+		$this->pluginManager->disablePlugins();
 	}
 
 	public function checkConsole(){
@@ -535,6 +566,15 @@ class Server{
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
 	public function start(){
+		if($this->getConfigBoolean("enable-query", true) === true){
+			$this->queryHandler = new QueryHandler();
+		}
+
+		if($this->getConfigBoolean("upnp-forwarding", false) == true){
+			console("[INFO] [UPnP] Trying to port forward...");
+			UPnP::PortForward($this->getPort());
+		}
+
 		$this->tickCounter = 0;
 		register_tick_function(array($this, "tick"));
 		/*
@@ -682,7 +722,6 @@ class Server{
 	}
 
 	public function titleTick(){
-		$time = microtime(true);
 		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
 			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}

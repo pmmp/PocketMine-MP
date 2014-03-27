@@ -21,7 +21,6 @@
 
 namespace PocketMine\Utils;
 
-use PocketMine;
 
 /**
  * Class VersionString
@@ -45,7 +44,7 @@ class VersionString{
 	private $development = false;
 	private $generation;
 
-	public function __construct($version = PocketMine\VERSION){
+	public function __construct($version = \PocketMine\VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
 			$this->major = ($version >> 5) & 0x0F;

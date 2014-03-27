@@ -21,7 +21,6 @@
 
 namespace PocketMine\Command;
 
-use PocketMine;
 use PocketMine\Permission\Permissible;
 
 interface CommandSender extends Permissible{
@@ -32,7 +31,7 @@ interface CommandSender extends Permissible{
 	public function sendMessage($message);
 
 	/**
-	 * @return PocketMine\Server
+	 * @return \PocketMine\Server
 	 */
 	public function getServer();
 

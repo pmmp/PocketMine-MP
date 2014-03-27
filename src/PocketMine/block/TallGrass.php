@@ -23,7 +23,6 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
 
 class TallGrass extends Flowable{
 	public function __construct($meta = 1){

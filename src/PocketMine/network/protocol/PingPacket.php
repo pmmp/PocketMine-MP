@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class PingPacket extends DataPacket{
 	public $time = 0;

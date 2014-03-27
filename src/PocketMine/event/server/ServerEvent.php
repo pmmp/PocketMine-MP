@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Event\Server;
 
-use PocketMine;
 use PocketMine\Event\Event;
 
 abstract class ServerEvent extends Event{

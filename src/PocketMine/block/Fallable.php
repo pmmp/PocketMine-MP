@@ -23,8 +23,8 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
+use PocketMine\Player;
 use PocketMine\Server;
-use PocketMine;
 
 class Fallable extends Solid{
 
@@ -33,7 +33,7 @@ class Fallable extends Solid{
 		$this->hasPhysics = true;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->level->setBlock($this, $this, true, false, true);
 		Server::getInstance()->api->block->blockUpdate(clone $this, Level::BLOCK_UPDATE_NORMAL);
 

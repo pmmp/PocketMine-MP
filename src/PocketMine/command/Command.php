@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Command;
 
-use PocketMine;
 use PocketMine\Utils\TextFormat;
 
 abstract class Command{

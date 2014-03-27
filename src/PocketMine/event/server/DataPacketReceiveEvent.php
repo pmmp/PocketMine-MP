@@ -22,7 +22,6 @@
 namespace PocketMine\Event\Server;
 
 use PocketMine\Event\CancellableEvent;
-use PocketMine;
 use PocketMine\Event;
 use PocketMine\Network\Protocol\DataPacket;
 use PocketMine\Player;

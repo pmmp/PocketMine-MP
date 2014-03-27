@@ -21,7 +21,6 @@
 
 namespace PocketMine\Permission;
 
-use PocketMine;
 use PocketMine\Plugin\Plugin;
 
 class PermissionAttachment{

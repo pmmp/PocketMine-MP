@@ -24,7 +24,7 @@ namespace PocketMine\Block;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
-use PocketMine;
+use PocketMine\Player;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){
@@ -38,7 +38,7 @@ class Sugarcane extends Flowable{
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
@@ -95,7 +95,7 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::SUGARCANE_BLOCK){
 			$this->level->setBlock($block, new Sugarcane(), true, false, true);

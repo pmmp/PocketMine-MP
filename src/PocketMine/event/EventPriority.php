@@ -21,7 +21,6 @@
 
 namespace PocketMine\Event;
 
-use PocketMine;
 
 /**
  * List of event prioritoes

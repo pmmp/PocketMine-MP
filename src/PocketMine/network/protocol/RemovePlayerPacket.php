@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class RemovePlayerPacket extends DataPacket{
 	public $eid;

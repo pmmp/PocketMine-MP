@@ -21,7 +21,6 @@
 
 namespace PocketMine\Plugin;
 
-use PocketMine;
 use PocketMine\Permission\Permission;
 
 class PluginDescription{
@@ -67,7 +66,9 @@ class PluginDescription{
 			return;
 		}
 
-		//TODO: commands
+		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
+			$this->commands = $plugin["commands"];
+		}
 
 		if(isset($plugin["depend"])){
 			$this->depend = (array) $plugin["depend"];

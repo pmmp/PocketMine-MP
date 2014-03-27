@@ -23,8 +23,8 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Object\TallGrass;
+use PocketMine\Player;
 use PocketMine\Utils\Random;
-use PocketMine;
 
 class Grass extends Solid{
 	public function __construct(){
@@ -39,7 +39,7 @@ class Grass extends Solid{
 		);
 	}
 
-	public function onActivate(Item $item, PocketMine\Player $player = null){
+	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){
 			$item->count--;
 			TallGrass::growGrass($this->level, $this, new Random(), 8, 2);

@@ -21,9 +21,12 @@
 
 namespace PocketMine\Plugin;
 
+use PocketMine\Command\PluginCommand;
+use PocketMine\Event\Event;
 use PocketMine\Permission\Permissible;
 use PocketMine\Permission\Permission;
-use PocketMine;
+use PocketMine\Server;
+use PocketMine\Command\SimpleCommandMap;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -34,7 +37,17 @@ class PluginManager{
 	 * @var PluginManager
 	 */
 	private static $instance = null;
-	
+
+	/**
+	 * @var Server
+	 */
+	private $server;
+
+	/**
+	 * @var SimpleCommandMap
+	 */
+	private $commandMap;
+
 	/**
 	 * @var Plugin[]
 	 */
@@ -81,6 +94,15 @@ class PluginManager{
 	public static function getInstance(){
 		return self::$instance;
 	}
+
+	/**
+	 * @param Server           $server
+	 * @param SimpleCommandMap $commandMap
+	 */
+	public function __construct(Server $server, SimpleCommandMap $commandMap){
+		$this->server = $server;
+		$this->commandMap = $commandMap;
+	}
 	
 	/**
 	 * @param string $name
@@ -96,22 +118,18 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string|PluginLoader $loader
+	 * @param string $loader A PluginLoader class name
 	 *
 	 * @return boolean
 	 */
 	public function registerInterface($loader){
-		if(is_object($loader) and !($loader instanceof PluginLoader)){
+		if(is_subclass_of($loader, "PocketMine\\Plugin\\PluginLoader")){
+			$loader = new $loader($this->server);
+		}else{
 			return false;
-		}elseif(is_string($loader)){
-			if(is_subclass_of($loader, "PocketMine\\Plugin\\PluginLoader")){
-				$loader = new $loader;
-			}else{
-				return false;
-			}
 		}
 
-		$this->fileAssociations[spl_object_hash($loader)] = array($loader, $loader->getPluginFilters());
+		$this->fileAssociations[spl_object_hash($loader)] = $loader;
 
 		return true;
 	}
@@ -130,10 +148,13 @@ class PluginManager{
 	 */
 	public function loadPlugin($path){
 		foreach($this->fileAssociations as $loader){
-			if(preg_match($loader[1], basename($path)) > 0){
-				$description = $loader[0]->getPluginDescription($path);
+			if(preg_match($loader->getPluginFilters(), basename($path)) > 0){
+				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
-					return $loader[0]->loadPlugin($path);
+					if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
+						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+						return $plugin;
+					}
 				}
 			}
 		}
@@ -153,9 +174,13 @@ class PluginManager{
 			$dependencies = array();
 			$softDependencies = array();
 			foreach(new \IteratorIterator(new \DirectoryIterator($directory)) as $file){
+				if($file === "." or $file === ".."){
+					continue;
+				}
+				$file = $directory . $file;
 				foreach($this->fileAssociations as $loader){
-					if(preg_match($loader[1], basename($file)) > 0){
-						$description = $loader[0]->getPluginDescription($file);
+					if(preg_match($loader->getPluginFilters(), basename($file)) > 0){
+						$description = $loader->getPluginDescription($file);
 						if($description instanceof PluginDescription){
 							$name = $description->getName();
 							if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
@@ -175,7 +200,7 @@ class PluginManager{
 							foreach($description->getCompatibleApis() as $version){
 								//Format: majorVersion.minorVersion.patch
 								$version = array_map("intval", explode(".", $version));
-								$apiVersion = array_map("intval", explode(".", PocketMine\API_VERSION));
+								$apiVersion = array_map("intval", explode(".", $this->server->getApiVersion()));
 
 								//Completely different API version
 								if($version[0] !== $apiVersion[0]){
@@ -451,6 +476,110 @@ class PluginManager{
 	 */
 	public function getPermissions(){
 		return $this->permissions;
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 *
+	 * @return bool
+	 */
+	public function isPluginEnabled(Plugin $plugin){
+		if($plugin instanceof Plugin and isset($this->plugins[$plugin->getDescription()->getName()])){
+			return $plugin->isEnabled();
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 */
+	public function enablePlugin(Plugin $plugin){
+		if(!$plugin->isEnabled()){
+			$pluginCommands = $this->parseYamlCommands($plugin);
+
+			if(count($pluginCommands) > 0){
+				$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
+			}
+
+			$plugin->getPluginLoader()->enablePlugin($plugin);
+		}
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 *
+	 * @return PluginCommand[]
+	 */
+	protected function parseYamlCommands(Plugin $plugin){
+		$pluginCmds = array();
+
+		foreach($plugin->getDescription()->getCommands() as $key => $data){
+			if(strpos($key, ":") !== false){
+				console("[SEVERE] Could not load command ".$key." for plugin ".$plugin->getDescription()->getName());
+				continue;
+			}
+			if(is_array($data)){
+				$newCmd = new PluginCommand($key, $plugin);
+				if(isset($data["description"])){
+					$newCmd->setDescription($data["description"]);
+				}
+
+				if(isset($data["usage"])){
+					$newCmd->setUsage($data["usage"]);
+				}
+
+				if(isset($data["aliases"]) and is_array($data["aliases"])){
+					$aliasList = array();
+					foreach($data["aliases"] as $alias){
+						if(strpos($alias, ":") !== false){
+							console("[SEVERE] Could not load alias ".$alias." for plugin ".$plugin->getDescription()->getName());
+							continue;
+						}
+						$aliasList[] = $alias;
+					}
+
+					$newCmd->setAliases($aliasList);
+				}
+
+				if(isset($data["permission"])){
+					$newCmd->setPermission($data["permission"]);
+				}
+
+				if(isset($data["permission-message"])){
+					$newCmd->setPermissionMessage($data["permission-message"]);
+				}
+
+				$pluginCmds[] = $newCmd;
+			}
+			return $pluginCmds;
+		}
+	}
+
+	public function disablePlugins(){
+		foreach($this->getPlugins() as $plugin){
+			$this->disablePlugin($plugin);
+		}
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 */
+	public function disablePlugin(Plugin $plugin){
+		if($plugin->isEnabled()){
+			$plugin->getPluginLoader()->disablePlugin($plugin);
+			$this->server->getScheduler()->cancelTasks($plugin);
+			Event::unregisterPlugin($plugin);
+		}
+	}
+
+	public function clearPlugins(){
+		$this->disablePlugins();
+		$this->plugins = array();
+		$this->fileAssociations = array();
+		$this->permissions = array();
+		$this->defaultPerms = array();
+		$this->defaultPermsOp = array();
 	}
 
 

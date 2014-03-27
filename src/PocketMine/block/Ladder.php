@@ -23,7 +23,7 @@ namespace PocketMine\Block;
 
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
-use PocketMine;
+use PocketMine\Player;
 
 class Ladder extends Transparent{
 	public function __construct($meta = 0){
@@ -33,7 +33,7 @@ class Ladder extends Transparent{
 		$this->hardness = 2;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, PocketMine\Player $player = null){
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target->isTransparent === false){
 			$faces = array(
 				2 => 2,

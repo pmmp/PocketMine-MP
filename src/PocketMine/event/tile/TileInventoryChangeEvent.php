@@ -23,7 +23,6 @@ namespace PocketMine\Event\Tile;
 
 use PocketMine\Event\CancellableEvent;
 use PocketMine\Event;
-use PocketMine;
 use PocketMine\Item\Item;
 use PocketMine\Tile\Tile;
 

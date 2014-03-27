@@ -21,7 +21,6 @@
 
 namespace PocketMine\NBT\Tag;
 
-use PocketMine;
 use PocketMine\NBT\NBT;
 
 class Double extends NamedTag{

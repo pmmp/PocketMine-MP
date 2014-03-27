@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 
 class ContainerOpenPacket extends DataPacket{
 	public $windowid;

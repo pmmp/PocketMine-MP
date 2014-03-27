@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level;
 
-use PocketMine;
 use PocketMine\Level\Generator\Generator;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\Utils\Config;

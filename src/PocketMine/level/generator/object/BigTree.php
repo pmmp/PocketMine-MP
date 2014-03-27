@@ -21,7 +21,6 @@
 
 namespace PocketMine\Level\Generator\Object;
 
-use PocketMine;
 use PocketMine\Level\Level;
 use PocketMine\Math\Vector3 as Vector3;
 

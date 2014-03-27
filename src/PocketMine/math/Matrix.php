@@ -21,7 +21,6 @@
 
 namespace PocketMine\Math;
 
-use PocketMine;
 
 class Matrix implements \ArrayAccess{
 	private $matrix = array();

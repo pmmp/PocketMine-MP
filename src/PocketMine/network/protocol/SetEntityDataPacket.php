@@ -21,7 +21,6 @@
 
 namespace PocketMine\Network\Protocol;
 
-use PocketMine;
 use PocketMine\Utils\Utils;
 
 class SetEntityDataPacket extends DataPacket{
