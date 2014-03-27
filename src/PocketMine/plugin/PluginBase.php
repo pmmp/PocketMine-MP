@@ -21,12 +21,13 @@
 
 namespace PocketMine\Plugin;
 
+use PocketMine\Command\CommandExecutor;
 use PocketMine\Server;
 use PocketMine\Utils\Config;
 use PocketMine\Command\CommandSender;
 use PocketMine\Command\Command;
 
-abstract class PluginBase implements Plugin{
+abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * @var PluginLoader
@@ -103,7 +104,15 @@ abstract class PluginBase implements Plugin{
 		return $this->initialized;
 	}
 
-	public function onCommand(CommandSender $sender, Command $command, $label, $args){
+	/**
+	 * @param CommandSender $sender
+	 * @param Command       $command
+	 * @param string        $label
+	 * @param string[]      $args
+	 *
+	 * @return bool
+	 */
+	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
 		return false;
 	}
 
