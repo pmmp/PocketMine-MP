@@ -218,7 +218,7 @@ namespace PocketMine {
 			$time = (\PocketMine\ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET : date("H:i:s")) . " ";
 			$replaced = Utils\TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
 			if($log === true and (!defined("LOG") or LOG === true)){
-				log(date("Y-m-d") . " " . $replaced, "console", false, $level);
+				log(date("Y-m-d") . " " . $replaced, "server", false, $level);
 			}
 			if(\PocketMine\ANSI === true){
 				$add = "";
