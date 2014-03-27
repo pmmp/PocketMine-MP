@@ -211,8 +211,8 @@ namespace PocketMine {
 	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
 		if(!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level){
-			$message .= $EOL === true ? PHP_EOL : "";
-			if($message{0} !== "["){
+			$message = Utils\TextFormat::GRAY . $message . ($EOL === true ? PHP_EOL : "");
+			if($message{3} !== "["){
 				$message = "[INFO] $message";
 			}
 			$time = (\PocketMine\ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET : date("H:i:s")) . " ";
