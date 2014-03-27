@@ -21,43 +21,53 @@
 
 namespace PocketMine\Scheduler;
 
-use PocketMine\Plugin\Plugin;
-
-class ServerWorker{
-	private $asyncTask;
-	private $thread;
+abstract class Task{
 
 	/**
-	 * @param ServerAsyncTask $asyncTask
-	 * @param \Thread         $thread
+	 * @var TaskHandler
 	 */
-	public function __construct(ServerAsyncTask $asyncTask, \Thread $thread){
-		$this->asyncTask = $asyncTask;
-		$this->thread = $thread;
-	}
+	private $taskHandler = null;
 
-	public function __destruct(){
-		unset($this->asyncTask, $this->thread);
+	/**
+	 * @return TaskHandler
+	 */
+	public final function getHandler(){
+		return $this->taskHandler;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getTaskId(){
-		return $this->asyncTask->getTaskId();
+	public final function getTaskId(){
+		if($this->taskHandler !== null){
+			return $this->taskHandler->getTaskId();
+		}
+		return -1;
 	}
 
 	/**
-	 * @return Plugin;
+	 * @param TaskHandler $taskHandler
 	 */
-	public function getOwner(){
-		return $this->asyncTask->getOwner();
+	public final function setHandler(TaskHandler $taskHandler){
+		if($this->taskHandler === null or $taskHandler === null){
+			$this->taskHandler = $taskHandler;
+		}
 	}
 
 	/**
-	 * @return \Thread
+	 * Actions to execute when run
+	 *
+	 * @param $currentTick
+	 *
+	 * @return void
 	 */
-	public function getThread(){
-		//TODO
+	public abstract function onRun($currentTick);
+
+	/**
+	 * Actions to execute if the Task is cancelled
+	 */
+	public function onCancel(){
+
 	}
+
 }

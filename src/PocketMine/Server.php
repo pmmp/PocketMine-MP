@@ -673,7 +673,9 @@ class Server{
 			$level->unload(true);
 		}
 
-		$this->scheduler->shutdown();
+		$this->scheduler->cancelAllTasks();
+		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
+
 		$this->tickScheduler->kill();
 		$this->console->kill();
 

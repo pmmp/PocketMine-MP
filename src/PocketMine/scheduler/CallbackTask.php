@@ -21,14 +21,36 @@
 
 namespace PocketMine\Scheduler;
 
-
-abstract class ServerCallable extends ServerTask{
+/**
+ * Allows the creation if simple callbacks with extra data
+ * The last parameter in the callback will be this object
+ *
+ * If you want to do a task in a Plugin, consider extending PluginTask to your needs
+ */
+class CallbackTask extends Task{
 
 	/**
-	 * Returns the computation result if finished, or null
-	 *
-	 * @return mixed|null
+	 * @var callable
 	 */
-	public abstract function getResult();
+	protected $callable;
+
+	/**
+	 * @var array
+	 */
+	protected $args;
+
+	/**
+	 * @param callable $callable
+	 * @param array    $args
+	 */
+	public function __construct(callable $callable, array $args){
+		$this->callable = $callable;
+		$this->args = $args;
+		$this->args[] = $this;
+	}
+
+	public function onRun($currentTicks){
+		call_user_func_array($this->callable, $this->args);
+	}
 
 }

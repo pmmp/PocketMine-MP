@@ -22,254 +22,80 @@
 namespace PocketMine\Scheduler;
 
 use PocketMine\Plugin\Plugin;
-use PocketMine\Server;
 
 class ServerScheduler{
 
 	/**
-	 * @var ServerScheduler
+	 * @var \SplPriorityQueue<Task>
 	 */
-	private static $instance = null;
-
-	private $ids = 1;
+	protected $queue;
 
 	/**
-	 * @var ServerTask
+	 * @var TaskHandler[]
 	 */
-	private $head;
-
-	/**
-	 * @var ServerTask
-	 */
-	private $tail;
-
-	/**
-	 * @var \SplPriorityQueue<ServerTask>
-	 */
-	private $pending;
-
-	/**
-	 * @var ServerTask[]
-	 */
-	private $temp = array();
-
-	/**
-	 * @var ServerTask[]
-	 */
-	private $runners;
+	protected $tasks = array();
 
 	/**
 	 * @var int
 	 */
-	private $currentTick = -1;
+	private $ids = 1;
 
 	/**
-	 * @var \Pool[]
+	 * @var int
 	 */
-	private $executor;
+	protected $currentTick = 0;
 
-	/**
-	 * @return ServerScheduler
-	 */
-	public static function getInstance(){
-		return self::$instance;
+	public function __construct(){
+		$this->queue = new \SplPriorityQueue();
 	}
 
 	/**
-	 * @param int $workers
-	 */
-	public function __construct($workers = 8){
-		self::$instance = $this;
-		$this->head = new ServerTask();
-		$this->tail = new ServerTask();
-		$this->pending = new \SplPriorityQueue();
-		$this->temp = array();
-		$this->runners = new \Threaded();
-		$this->executor = new TaskPool($workers);
-
-	}
-
-	public function shutdown(){
-		$this->mainThreadHeartbeat($this->currentTick + 1);
-		$this->executor->shutdown();
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
+	 * @param Task $task
 	 *
-	 * @return int taskId
+	 * @return null|TaskHandler
 	 */
-	public function scheduleSyncDelayedTask(Plugin $plugin, \Threaded $task, $delay = 0){
-		return $this->scheduleSyncRepeatingTask($plugin, $task, $delay, -1);
+	public function scheduleTask(Task $task){
+		return $this->addTask($task, -1, -1);
 	}
 
 	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
+	 * @param Task $task
+	 * @param int  $delay
 	 *
-	 * @return int taskId
+	 * @return null|TaskHandler
 	 */
-	public function scheduleAsyncDelayedTask(Plugin $plugin, \Threaded $task, $delay = 0){
-		return $this->scheduleAsyncRepeatingTask($plugin, $task, $delay, -1);
+	public function scheduleDelayedTask(Task $task, $delay){
+		return $this->addTask($task, (int) $delay, -1);
 	}
 
 	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
+	 * @param Task $task
+	 * @param int  $period
 	 *
-	 * @return ServerTask|null
+	 * @return null|TaskHandler
 	 */
-	public function runTaskAsynchronously(Plugin $plugin, \Threaded $task){
-		return $this->runTaskLaterAsynchronously($plugin, $task, 0);
+	public function scheduleRepeatingTask(Task $task, $period){
+		return $this->addTask($task, -1, (int) $period);
 	}
 
 	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
+	 * @param Task $task
+	 * @param int  $delay
+	 * @param int  $period
 	 *
-	 * @return ServerTask|null
+	 * @return null|TaskHandler
 	 */
-	public function runTask(Plugin $plugin, \Threaded $task){
-		return $this->runTaskLater($plugin, $task, 0);
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
-	 *
-	 * @return ServerTask|null
-	 */
-	public function runTaskLater(Plugin $plugin, \Threaded $task, $delay = 0){
-		return $this->runTaskTimer($plugin, $task, $delay, -1);
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
-	 *
-	 * @return ServerTask|null
-	 */
-	public function runTaskLaterAsynchronously(Plugin $plugin, \Threaded $task, $delay){
-		return $this->runTaskTimerAsynchronously($plugin, $task, $delay, -1);
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
-	 * @param int       $period
-	 *
-	 * @return int taskId
-	 */
-	public function scheduleSyncRepeatingTask(Plugin $plugin, \Threaded $task, $delay, $period){
-		return $this->runTaskTimer($plugin, $task, $delay, $period)->getTaskId();
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
-	 * @param int       $period
-	 *
-	 * @return int taskId
-	 */
-	public function scheduleAsyncRepeatingTask(Plugin $plugin, \Threaded $task, $delay, $period){
-		return $this->runTaskTimerAsynchronously($plugin, $task, $delay, $period)->getTaskId();
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
-	 * @param int       $period
-	 *
-	 * @return ServerTask|null
-	 */
-	public function runTaskTimer(Plugin $plugin, \Threaded $task, $delay, $period){
-		if(!$this->validate($plugin, $task)){
-			return null;
-		}
-
-		if($delay < 0){
-			$delay = 0;
-		}
-
-		if($period === 0){
-			$period = 1;
-		}elseif($period < -1){
-			$period = -1;
-		}
-
-		return $this->handle(new ServerTask($plugin, $task, $this->nextId(), $period), $delay);
-	}
-
-	/**
-	 * @param Plugin    $plugin
-	 * @param \Threaded $task
-	 * @param int       $delay
-	 * @param int       $period
-	 *
-	 * @return ServerTask|null
-	 */
-	public function runTaskTimerAsynchronously(Plugin $plugin, \Threaded $task, $delay, $period){
-		if(!$this->validate($plugin, $task)){
-			return null;
-		}
-
-		if($delay < 0){
-			$delay = 0;
-		}
-
-		if($period === 0){
-			$period = 1;
-		}elseif($period < -1){
-			$period = -1;
-		}
-
-		return $this->handle(new ServerAsyncTask($this->runners, $plugin, $task, $this->nextId(), $period), $delay);
-	}
-
-	/**
-	 * @param Plugin   $plugin
-	 * @param ServerCallable $task
-	 *
-	 * @return ServerFuture|null
-	 */
-	public function callSyncMethod(Plugin $plugin, ServerCallable $task){
-		if(!$this->validate($plugin, $task)){
-			return null;
-		}
-		$future = new ServerFuture($task, $plugin, $this->nextId());
-		$this->handle($future, 0);
-		return $future;
+	public function scheduleDelayedRepeatingTask(Task $task, $delay, $period){
+		return $this->addTask($task, (int) $delay, (int) $period);
 	}
 
 	/**
 	 * @param int $taskId
 	 */
 	public function cancelTask($taskId){
-		if($taskId < 0){
-			return;
-		}
-
-		if(isset($this->runners[$taskId])){
-			$this->runners[$taskId]->cancel0();
-		}
-
-		$task = new ServerTask(null, new ServerTaskCanceller($taskId, $this->temp, $this->pending, $this->runners));
-		$this->handle($task, 0);
-		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
-			if($taskPending === $task){
-				return;
-			}
-			if($taskPending->getTaskId() === $taskId){
-				$taskPending->cancel0();
-			}
+		if(isset($this->tasks[$taskId])){
+			$this->tasks[$taskId]->cancel();
+			unset($this->tasks[$taskId]);
 		}
 	}
 
@@ -277,60 +103,19 @@ class ServerScheduler{
 	 * @param Plugin $plugin
 	 */
 	public function cancelTasks(Plugin $plugin){
-		if($plugin === null){
-			return;
-		}
-
-		$task = new ServerTask(null, new ServerPluginTaskCanceller($plugin, $this->temp, $this->pending, $this->runners));
-		$this->handle($task, 0);
-		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
-			if($taskPending === $task){
-				return;
-			}
-			if($taskPending->getTaskId() !== -1 and $taskPending->getOwner() === $plugin){
-				$taskPending->cancel0();
-			}
-		}
-
-		foreach($this->runners as $runner){
-			if($runner->getOwner() === $plugin){
-				$runner->cancel0();
+		foreach($this->tasks as $taskId => $task){
+			if($task->getTask() instanceof PluginTask){
+				$task->cancel();
+				unset($this->tasks[$taskId]);
 			}
 		}
 	}
 
-	/**
-	 *
-	 */
 	public function cancelAllTasks(){
-		$task = new ServerTask(null, new ServerAllTaskCanceller($this->temp, $this->pending, $this->runners));
-		$this->handle($task, 0);
-		for($taskPending = $this->head->getNext(); $taskPending !== null; $taskPending = $taskPending->getNext()){
-			if($taskPending === $task){
-				break;
-			}
-			$taskPending->cancel0();
+		foreach($this->tasks as $task){
+			$task->cancel();
 		}
-
-		foreach($this->runners as $runner){
-			$runner->cancel0();
-		}
-	}
-
-	/**
-	 * @param int $taskId
-	 *
-	 * @return bool
-	 */
-	public function isCurrentlyRunning($taskId){
-		if(!isset($this->runners[$taskId]) or $this->runners[$taskId]->isSync()){
-			return false;
-		}
-
-		$asyncTask = $this->runners[$taskId];
-		return $asyncTask->syncronized(function($asyncTask){
-			return count($asyncTask->getWorkers()) === 0;
-		}, $asyncTask);
+		$this->tasks = array();
 	}
 
 	/**
@@ -339,69 +124,40 @@ class ServerScheduler{
 	 * @return bool
 	 */
 	public function isQueued($taskId){
-		if($taskId <= 0){
-			return false;
-		}
-
-		for($task = $this->head->getNext(); $task !== null; $task = $task->getNext()){
-			if($task->getTaskId() === $taskId){
-				return $task->getPeriod() >= -1;
-			}
-		}
-
-		if(isset($this->runners[$taskId])){
-			return $this->runners[$taskId]->getPeriod() >= -1;
-		}
-		return false;
+		return isset($this->tasks[$taskId]);
 	}
 
-	/**
-	 * @return ServerWorker[]
-	 */
-	public function getActiveWorkers(){
-		$workers = array();//new \Threaded();
-
-		foreach($this->runners as $taskObj){
-			if($taskObj->isSync()){
-				continue;
-			}
-
-			$taskObj->syncronized(function($workers, $taskObj){
-				foreach($taskObj->getWorkers() as $worker){
-					$workers[] = $worker;
-				}
-			}, $workers, $taskObj);
+	private function addTask(Task $task, $delay, $period){
+		if($task instanceof PluginTask and !$task->getOwner()->isEnabled()){
+			trigger_error("Plugin attempted to register a task while disabled", E_USER_WARNING);
+			return null;
 		}
 
-		//$workers->run(); //Protect against memory leaks
-		return $workers;
+		if($delay <= 0){
+			$delay = -1;
+		}
+
+		if($period === 1){
+			$period = 1;
+		}elseif($period < -1){
+			$period = -1;
+		}
+
+		return $this->handle(new TaskHandler($task, $this->nextId(), $delay, $period));
 	}
 
-	/**
-	 * @return ServerTask[]
-	 */
-	public function getPendingTasks(){
-		$truePending = array();
-		for($task = $this->head->getNext(); $task !== null; $task = $task->getNext()){
-			if($task->getTaskId() !== -1){
-				$truePending[] = $task;
-			}
+	private function handle(TaskHandler $handler){
+		if($handler->isDelayed()){
+			$nextRun = $this->currentTick + $handler->getDelay();
+		}else{
+			$nextRun = $this->currentTick;
 		}
 
-		$pending = array();
-		foreach($this->runners as $task){
-			if($task->getPeriod() >= -1){
-				$pending[] = $task;
-			}
-		}
+		$handler->setNextRun($nextRun);
+		$this->tasks[$handler->getTaskId()] = $handler;
+		$this->queue->insert($handler, $nextRun);
 
-		foreach($truePending as $task){
-			if($task->getPeriod() >= -1 and !in_array($pending, $task, true)){
-				$pending[] = $task;
-			}
-		}
-
-		return $pending;
+		return $handler;
 	}
 
 	/**
@@ -409,73 +165,27 @@ class ServerScheduler{
 	 */
 	public function mainThreadHeartbeat($currentTick){
 		$this->currentTick = $currentTick;
-		$this->parsePending();
 
-		while($this->isReady($currentTick)){
-			$task = $this->pending->extract();
-			if($task->getPeriod() < -1){
-				if($task->isSync()){
-					unset($this->runners[$task->getTaskId()]);
-				}
-				$this->parsePending();
+		while($this->isReady($this->currentTick)){
+			$task = $this->queue->extract();
+			if($task->isCancelled()){
+				unset($this->tasks[$task->getTaskId()]);
 				continue;
-			}
-
-			if($task->isSync()){
-				$task->run();
 			}else{
-				$this->executor->submit($task);
+				$task->run();
 			}
-
-			$period = $task->getPeriod();
-			if($period > 0){
-				$task->setNextRun($currentTick + $period);
-				$this->temp[] = $task;
-			}elseif($task->isSync()){
-				unset($this->runners[$task->getTaskId()]);
+			if($task->isRepeating()){
+				$task->setNextRun($this->currentTick + $task->getPeriod());
+				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
+			}else{
+				$task->remove();
+				unset($this->tasks[$task->getTaskId()]);
 			}
 		}
-
-		foreach($this->temp as $task){
-			$this->pending->insert($task, $task->getNextRun());
-		}
-		$this->temp = array();
-
 	}
 
-	/**
-	 * @param ServerTask $task
-	 */
-	private function addTask(ServerTask $task){
-		$this->tail->setNext($task);
-		$this->tail = $task;
-	}
-
-	/**
-	 * @param ServerTask $task
-	 * @param int        $delay
-	 *
-	 * @return ServerTask
-	 */
-	private function handle(ServerTask $task, $delay){
-		$task->setNextRun($this->currentTick + $delay);
-		$this->addTask($task);
-		return $task;
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 * @param \Threaded $task
-	 *
-	 * @return bool
-	 */
-	private function validate(Plugin $plugin, \Threaded $task){
-		if($plugin === null or $task === null){
-			return false;
-		}elseif(!$plugin->isEnabled()){
-			return false;
-		}
-		return true;
+	private function isReady($currentTicks){
+		return count($this->tasks) > 0 and $this->queue->current()->getNextRun() <= $currentTicks;
 	}
 
 	/**
@@ -485,33 +195,4 @@ class ServerScheduler{
 		return $this->ids++;
 	}
 
-	private function parsePending(){
-		$head = $this->head;
-		$task = $head->getNext();
-		$lastTask = $head;
-		for(; $task !== null; $task = $lastTask->getNext()){
-			if($task->getTaskId() === -1){
-				$task->run();
-			}elseif($task->getPeriod() >= -1){
-				$this->pending[] = $task;
-				$this->runners[$task->getTaskId()] = $task;
-			}
-			$lastTask = $task;
-		}
-
-		for($task = $head; $task !== $lastTask; $task = $head){
-			$head = $task->getNext();
-			$task->setNext(null);
-		}
-		$this->head = $lastTask;
-	}
-
-	/**
-	 * @param int $currentTick
-	 *
-	 * @return bool
-	 */
-	private function isReady($currentTick){
-		return $this->pending->count() > 0 and $this->pending->top()->getNextRun() <= $currentTick;
-	}
 }
