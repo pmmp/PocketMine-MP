@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Plugin related classes
+ */
 namespace PocketMine\Plugin;
 
 

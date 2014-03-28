@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Permission related classes
+ */
 namespace PocketMine\Permission;
 
 use PocketMine\Server;

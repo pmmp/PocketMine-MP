@@ -33,6 +33,7 @@ use PocketMine\Command\PluginCommand;
 use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Entity\Entity;
 use PocketMine\Event\Event;
+use PocketMine\Event\HandlerList;
 use PocketMine\Event\Server\PacketReceiveEvent;
 use PocketMine\Event\Server\PacketSendEvent;
 use PocketMine\Item\Item;
@@ -672,6 +673,7 @@ class Server{
 			$level->unload(true);
 		}
 
+		HandlerList::unregisterAll();
 		$this->scheduler->cancelAllTasks();
 		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 

@@ -19,6 +19,9 @@
  *
 */
 
+/**
+ * Task scheduling related classes
+ */
 namespace PocketMine\Scheduler;
 
 use PocketMine\Plugin\Plugin;
