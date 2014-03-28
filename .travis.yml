@@ -10,7 +10,7 @@ branches:
     - Core-Rewrite
 
 before_script:
- - pecl install channel://pecl.php.net/pthreads-2.0.2
+ - pecl install channel://pecl.php.net/pthreads-2.0.4
  - echo | pecl install channel://pecl.php.net/yaml-1.1.1
 
 script:
