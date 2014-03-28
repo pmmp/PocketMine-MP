@@ -96,17 +96,6 @@ namespace PocketMine {
 			if(file_exists($fPath)){
 				require_once($fPath);
 			}
-		}else{ //Try plugin
-			$className = array_pop($path);
-			if(count($path) > 0){
-				$path = implode(DIRECTORY_SEPARATOR, array_map("strtolower", $path)) . DIRECTORY_SEPARATOR;
-			}else{
-				$path = "";
-			}
-			$fPath = \PocketMine\PATH . "plugins" . DIRECTORY_SEPARATOR . $parent . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . $path . $className . ".php";
-			if(file_exists($fPath)){
-				require_once($fPath);
-			}
 		}
 	});
 

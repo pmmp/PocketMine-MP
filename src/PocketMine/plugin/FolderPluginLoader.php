@@ -59,6 +59,12 @@ class FolderPluginLoader implements PluginLoader{
 					return null;
 				}
 
+				foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($file . "/src/")) as $fName){
+					if(strtolower(substr($fName, -4)) === ".php"){
+						include_once($fName);
+					}
+				}
+
 				$className = $description->getMain();
 				if(class_exists($className, true)){ //call autoloader, TODO: replace this with a specific Plugin autoload
 					$plugin = new $className();
