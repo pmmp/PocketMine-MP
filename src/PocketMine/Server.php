@@ -36,6 +36,7 @@ use PocketMine\Event\HandlerList;
 use PocketMine\Event\Server\PacketReceiveEvent;
 use PocketMine\Event\Server\PacketSendEvent;
 use PocketMine\Item\Item;
+use PocketMine\Level\Generator\Generator;
 use PocketMine\Level\Level;
 use PocketMine\Network\Packet;
 use PocketMine\Network\Query\QueryHandler;
@@ -552,6 +553,10 @@ class Server{
 		Block::init();
 		Item::init();
 		Crafting::init();
+
+		Generator::addGenerator("PocketMine\\Level\\Generator\\Flat", "flat");
+		Generator::addGenerator("PocketMine\\Level\\Generator\\Normal", "normal");
+		Generator::addGenerator("PocketMine\\Level\\Generator\\Normal", "default");
 		Level::init();
 
 		$this->properties->save();

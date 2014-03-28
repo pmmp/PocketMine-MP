@@ -157,5 +157,3 @@ class Flat extends Generator{
 		return new Vector3(128, $this->floorLevel, 128);
 	}
 }
-
-Generator::addGenerator(__NAMESPACE__ . "\\Flat", "flat");

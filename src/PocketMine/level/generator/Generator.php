@@ -31,7 +31,7 @@ abstract class Generator{
 	private static $list = array();
 
 	public static function addGenerator($object, $name){
-		if(is_subclass_of($object, "\PocketMine\Level\Generator\Generator") and !isset(Generator::$list[$name])){
+		if(is_subclass_of($object, "\\PocketMine\\Level\\Generator\\Generator") and !isset(Generator::$list[$name])){
 			Generator::$list[$name] = $object;
 
 			return true;
@@ -45,7 +45,7 @@ abstract class Generator{
 			return Generator::$list[$name];
 		}
 
-		return "\PocketMine\Level\Generator\Normal";
+		return "\\PocketMine\\Level\\Generator\\Normal";
 	}
 
 	public abstract function __construct(array $settings = array());

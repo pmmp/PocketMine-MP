@@ -187,6 +187,3 @@ class Normal extends Generator{
 	}
 
 }
-
-Generator::addGenerator(__NAMESPACE__ . "\\Normal", "normal");
-Generator::addGenerator(__NAMESPACE__ . "\\Normal", "default");
