@@ -21,13 +21,13 @@
 
 namespace PocketMine\Command;
 
+use PocketMine\Command\Defaults\HelpCommand;
 use PocketMine\Command\Defaults\PluginsCommand;
+use PocketMine\Command\Defaults\SeedCommand;
 use PocketMine\Command\Defaults\StopCommand;
 use PocketMine\Command\Defaults\TellCommand;
 use PocketMine\Command\Defaults\VanillaCommand;
 use PocketMine\Command\Defaults\VersionCommand;
-use PocketMine\Command\Defaults\SeedCommand;
-use PocketMine\Command\Defaults\HelpCommand;
 use PocketMine\Server;
 
 class SimpleCommandMap implements CommandMap{
@@ -140,6 +140,7 @@ class SimpleCommandMap implements CommandMap{
 		if(isset($this->knownCommands[$name])){
 			return $this->knownCommands[$name];
 		}
+
 		return null;
 	}
 

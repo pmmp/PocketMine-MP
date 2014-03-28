@@ -55,10 +55,10 @@ class FolderPluginLoader implements PluginLoader{
 				console("[INFO] Loading " . $description->getName());
 				$dataFolder = basename($file) . "/" . $description->getName();
 				if(file_exists($dataFolder) and !is_dir($dataFolder)){
-					trigger_error("Projected dataFolder '".$dataFolder."' for ".$description->getName()." exists and is not a directory", E_USER_WARNING);
+					trigger_error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory", E_USER_WARNING);
+
 					return null;
 				}
-
 
 
 				$className = $description->getMain();
@@ -69,13 +69,16 @@ class FolderPluginLoader implements PluginLoader{
 				if(class_exists($className, true)){
 					$plugin = new $className();
 					$this->initPlugin($plugin, $description, $dataFolder, $file);
+
 					return $plugin;
 				}else{
-					trigger_error("Couldn't load plugin ".$description->getName().": main class not found", E_USER_WARNING);
+					trigger_error("Couldn't load plugin " . $description->getName() . ": main class not found", E_USER_WARNING);
+
 					return null;
 				}
 			}
 		}
+
 		return null;
 	}
 
@@ -93,6 +96,7 @@ class FolderPluginLoader implements PluginLoader{
 				return new PluginDescription($yaml);
 			}
 		}
+
 		return null;
 	}
 
@@ -121,7 +125,7 @@ class FolderPluginLoader implements PluginLoader{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and !$plugin->isEnabled()){
-			console("[INFO] Enabling ".$plugin->getDescription()->getName());
+			console("[INFO] Enabling " . $plugin->getDescription()->getName());
 
 			$plugin->setEnabled(true);
 
@@ -134,7 +138,7 @@ class FolderPluginLoader implements PluginLoader{
 	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and $plugin->isEnabled()){
-			console("[INFO] Disabling ".$plugin->getDescription()->getName());
+			console("[INFO] Disabling " . $plugin->getDescription()->getName());
 
 			Server::getInstance()->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
 

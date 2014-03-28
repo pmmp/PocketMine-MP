@@ -22,9 +22,8 @@
 namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\CommandSender;
-use PocketMine\Utils\TextFormat;
 use PocketMine\Player;
-use PocketMine\Level\Level;
+use PocketMine\Utils\TextFormat;
 
 class TellCommand extends VanillaCommand{
 
@@ -44,7 +43,8 @@ class TellCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 2){
-			$sender->sendMessage(TextFormat::RED . "Usage: ".$this->usageMessage);
+			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
@@ -53,8 +53,8 @@ class TellCommand extends VanillaCommand{
 		$player = Player::get($name, true, false);
 
 		if($player instanceof Player){
-			$sender->sendMessage("[me -> ".$player->getName()."] ".implode($args));
-			$player->sendMessage("[".$sender->getName()." -> me] ".implode($args));
+			$sender->sendMessage("[me -> " . $player->getName() . "] " . implode($args));
+			$player->sendMessage("[" . $sender->getName() . " -> me] " . implode($args));
 		}else{
 			$sender->sendMessage("There's no player by that name online.");
 		}

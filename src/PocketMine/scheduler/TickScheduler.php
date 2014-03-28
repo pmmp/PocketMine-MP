@@ -40,9 +40,10 @@ class TickScheduler extends \Thread{
 	 * @return bool
 	 */
 	public function hasTick(){
-		return $this->synchronized(function(){
+		return $this->synchronized(function (){
 			$hasTick = $this->hasTick;
 			$this->hasTick = false;
+
 			return $hasTick === true;
 		});
 	}
@@ -55,7 +56,7 @@ class TickScheduler extends \Thread{
 	 * @return float
 	 */
 	public function getTPS(){
-		return $this->synchronized(function(){
+		return $this->synchronized(function (){
 			return round(($this->sleepTime / $this->tickMeasure) * $this->ticksPerSecond, 2);
 		});
 	}
@@ -64,7 +65,7 @@ class TickScheduler extends \Thread{
 		$tickTime = microtime(true);
 		$this->hasTick = true;
 		while(true){
-			$this->synchronized(function(){
+			$this->synchronized(function (){
 				$this->hasTick = true;
 				$this->wait();
 				$this->hasTick = false;

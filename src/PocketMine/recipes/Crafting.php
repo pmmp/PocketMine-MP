@@ -25,7 +25,6 @@
 namespace PocketMine\Recipes;
 
 use PocketMine\Item\Item;
-use PocketMine\Server;
 
 abstract class Crafting{
 

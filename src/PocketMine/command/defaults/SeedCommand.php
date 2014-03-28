@@ -22,9 +22,8 @@
 namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\CommandSender;
-use PocketMine\Utils\TextFormat;
-use PocketMine\Player;
 use PocketMine\Level\Level;
+use PocketMine\Player;
 
 class SeedCommand extends VanillaCommand{
 

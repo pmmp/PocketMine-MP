@@ -23,8 +23,8 @@ namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\Command;
 use PocketMine\Command\CommandSender;
-use PocketMine\Server;
 use PocketMine\Player;
+use PocketMine\Server;
 
 class StopCommand extends VanillaCommand{
 

@@ -21,8 +21,8 @@
 
 namespace PocketMine\Permission;
 
-use PocketMine\Server;
 use PocketMine\Plugin\Plugin;
+use PocketMine\Server;
 
 class PermissibleBase implements Permissible{
 	/**
@@ -74,6 +74,7 @@ class PermissibleBase implements Permissible{
 	public function setOp($value){
 		if($this->opable === null){
 			trigger_error("Cannot change ip value as no ServerOperator is set", E_USER_WARNING);
+
 			return;
 		}else{
 			$this->opable->setOp($value);
@@ -105,6 +106,7 @@ class PermissibleBase implements Permissible{
 
 		if(($perm = Server::getInstance()->getPluginManager()->getPermission($name)) !== null){
 			$perm = $perm->getDefault();
+
 			return $perm === Permission::DEFAULT_TRUE or ($this->isOp() and $perm === Permission::DEFAULT_OP) or (!$this->isOp() and $perm === Permission::DEFAULT_NOT_OP);
 		}else{
 			return Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_TRUE or ($this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_OP) or (!$this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_NOT_OP);
@@ -116,7 +118,7 @@ class PermissibleBase implements Permissible{
 	 * //TODO: tick scheduled attachments
 	 *
 	 * @param Plugin $plugin
-	 * @param string   $name
+	 * @param string $name
 	 * @param bool   $value
 	 *
 	 * @return PermissionAttachment
@@ -124,9 +126,11 @@ class PermissibleBase implements Permissible{
 	public function addAttachment(Plugin $plugin, $name = null, $value = null){
 		if($plugin === null){
 			trigger_error("Plugin cannot be null", E_USER_WARNING);
+
 			return null;
 		}elseif(!$plugin->isEnabled()){
-			trigger_error("Plugin ".$plugin->getDescription()->getName()." is disabled", E_USER_WARNING);
+			trigger_error("Plugin " . $plugin->getDescription()->getName() . " is disabled", E_USER_WARNING);
+
 			return null;
 		}
 
@@ -149,6 +153,7 @@ class PermissibleBase implements Permissible{
 	public function removeAttachment(PermissionAttachment $attachment){
 		if($attachment === null){
 			trigger_error("Attachment cannot be null", E_USER_WARNING);
+
 			return;
 		}
 

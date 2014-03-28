@@ -52,6 +52,7 @@ class PermissionAttachmentInfo{
 	public function __construct(Permissible $permissible, $permission, $attachment, $value){
 		if($permission === null){
 			trigger_error("Permission may not be null", E_USER_WARNING);
+
 			return;
 		}
 

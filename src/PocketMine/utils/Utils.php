@@ -707,6 +707,7 @@ class Utils{
 		if($unpacked > 2147483647){
 			$unpacked -= 4294967296;
 		}
+
 		return (int) $unpacked;
 	}
 
@@ -719,6 +720,7 @@ class Utils{
 		if($unpacked >= 2147483648){
 			$unpacked -= 4294967296;
 		}
+
 		return (int) $unpacked;
 	}
 

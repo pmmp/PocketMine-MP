@@ -21,8 +21,8 @@
 
 namespace PocketMine\Event\Tile;
 
-use PocketMine\Event\Cancellable;
 use PocketMine\Event;
+use PocketMine\Event\Cancellable;
 use PocketMine\Item\Item;
 use PocketMine\Tile\Tile;
 

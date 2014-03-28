@@ -89,6 +89,7 @@ class ServerOld{
 		if(isset(self::$instance)){
 			return self::$instance;
 		}
+
 		return null;
 	}
 

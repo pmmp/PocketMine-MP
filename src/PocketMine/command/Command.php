@@ -80,9 +80,9 @@ abstract class Command{
 	private $permissionMessage = null;
 
 	/**
-	 * @param string $name
-	 * @param string $description
-	 * @param string $usageMessage
+	 * @param string   $name
+	 * @param string   $description
+	 * @param string   $usageMessage
 	 * @param string[] $aliases
 	 */
 	public function __construct($name, $description = "", $usageMessage = null, array $aliases = array()){
@@ -174,8 +174,10 @@ abstract class Command{
 		$this->nextLabel = $name;
 		if(!$this->isRegistered()){
 			$this->label = $name;
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -189,8 +191,10 @@ abstract class Command{
 	public function register(CommandMap $commandMap){
 		if($this->allowChangesFrom($commandMap)){
 			$this->commandMap = $commandMap;
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -204,8 +208,10 @@ abstract class Command{
 			$this->commandMap = null;
 			$this->activeAliases = $this->aliases;
 			$this->label = $this->nextLabel;
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -292,12 +298,12 @@ abstract class Command{
 	 * @param bool          $sendToSource
 	 */
 	public static function broadcastCommandMessage(CommandSender $source, $message, $sendToSource = true){
-		$result = $source->getName() .": " . $message;
+		$result = $source->getName() . ": " . $message;
 
 		//Command minecarts or command blocks are not implemented
 
 		$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Player::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result".TextFormat::GRAY . TextFormat::ITALIC."]";
+		$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
 		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);
 		}

@@ -133,6 +133,7 @@ class ServerScheduler{
 	private function addTask(Task $task, $delay, $period){
 		if($task instanceof PluginTask and !$task->getOwner()->isEnabled()){
 			trigger_error("Plugin attempted to register a task while disabled", E_USER_WARNING);
+
 			return null;
 		}
 

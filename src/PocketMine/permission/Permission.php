@@ -86,9 +86,9 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
-	 * @param string $description
-	 * @param string $defaultValue
+	 * @param string       $name
+	 * @param string       $description
+	 * @param string       $defaultValue
 	 * @param Permission[] $children
 	 */
 	public function __construct($name, $description = null, $defaultValue = null, array $children = array()){
@@ -165,7 +165,7 @@ class Permission{
 
 	/**
 	 * @param string|Permission $name
-	 * @param $value
+	 * @param                   $value
 	 *
 	 * @return Permission|void
 	 */
@@ -181,6 +181,7 @@ class Permission{
 			}
 
 			$this->addParent($perm, $value);
+
 			return $perm;
 		}
 	}

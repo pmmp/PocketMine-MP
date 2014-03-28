@@ -42,6 +42,7 @@ abstract class Task{
 		if($this->taskHandler !== null){
 			return $this->taskHandler->getTaskId();
 		}
+
 		return -1;
 	}
 

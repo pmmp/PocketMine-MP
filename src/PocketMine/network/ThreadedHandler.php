@@ -122,7 +122,7 @@ class ThreadedHandler extends \Thread{
 			@socket_set_option($this->socket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2); //2MB
 			@socket_set_option($this->socket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024); //1MB
 		}else{
-			console("[SEVERE] **** FAILED TO BIND TO ".$this->serverip.":" . $this->port."!", true, true, 0);
+			console("[SEVERE] **** FAILED TO BIND TO " . $this->serverip . ":" . $this->port . "!", true, true, 0);
 			console("[SEVERE] Perhaps a server is already running on that port?", true, true, 0);
 			exit(1);
 		}
@@ -142,7 +142,7 @@ class ThreadedHandler extends \Thread{
 	}
 
 	private function putPacket(){
-		if(($packet = $this->queue->synchronized(function(){
+		if(($packet = $this->queue->synchronized(function (){
 				return $this->queue->shift();
 			})) instanceof Packet
 		){

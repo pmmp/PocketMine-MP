@@ -20,7 +20,6 @@
 */
 
 namespace PocketMine\Plugin;
-use PocketMine\Event\Listener;
 
 /**
  * Handles different types of plugins

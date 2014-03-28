@@ -32,7 +32,6 @@ use PocketMine\Command\ConsoleCommandSender;
 use PocketMine\Command\PluginCommand;
 use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Entity\Entity;
-use PocketMine\Event\Event;
 use PocketMine\Event\HandlerList;
 use PocketMine\Event\Server\PacketReceiveEvent;
 use PocketMine\Event\Server\PacketSendEvent;
@@ -454,9 +453,9 @@ class Server{
 
 	/**
 	 * @param \SplClassLoader $autoloader
-	 * @param string $filePath
-	 * @param string $dataPath
-	 * @param string $pluginPath
+	 * @param string          $filePath
+	 * @param string          $dataPath
+	 * @param string          $pluginPath
 	 */
 	public function __construct(\SplClassLoader $autoloader, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;

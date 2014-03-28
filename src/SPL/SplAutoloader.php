@@ -5,8 +5,7 @@
  *
  * @author Guilherme Blanco <guilhermeblanco@php.net>
  */
-interface SplAutoloader
-{
+interface SplAutoloader{
 	/**
 	 * Defines autoloader to work silently if resource is not found.
 	 *
@@ -39,7 +38,7 @@ interface SplAutoloader
 	 * Add a new resource lookup path.
 	 *
 	 * @param string $resourceName Resource name, namespace or prefix.
-	 * @param mixed $resourcePath Resource single path or multiple paths (array).
+	 * @param mixed  $resourcePath Resource single path or multiple paths (array).
 	 */
 	public function add($resourceName, $resourcePath = null);
 

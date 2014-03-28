@@ -42,8 +42,7 @@ require_once("SplAutoLoader.php");
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
  * @author Fabien Potencier <fabien.potencier@symfony-project.org>
  */
-class SplClassLoader implements SplAutoloader
-{
+class SplClassLoader implements SplAutoloader{
 	/**
 	 * @var string
 	 */
@@ -67,9 +66,8 @@ class SplClassLoader implements SplAutoloader
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setMode($mode)
-	{
-		if ($mode & self::MODE_SILENT && $mode & self::MODE_NORMAL) {
+	public function setMode($mode){
+		if($mode & self::MODE_SILENT && $mode & self::MODE_NORMAL){
 			throw new \InvalidArgumentException(
 				sprintf('Cannot have %s working normally and silently at the same time!', __CLASS__)
 			);
@@ -83,8 +81,7 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @param string $fileExtension
 	 */
-	public function setFileExtension($fileExtension)
-	{
+	public function setFileExtension($fileExtension){
 		$this->fileExtension = $fileExtension;
 	}
 
@@ -93,8 +90,7 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @return string
 	 */
-	public function getFileExtension()
-	{
+	public function getFileExtension(){
 		return $this->fileExtension;
 	}
 
@@ -103,8 +99,7 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @param boolean $includePathLookup
 	 */
-	public function setIncludePathLookup($includePathLookup)
-	{
+	public function setIncludePathLookup($includePathLookup){
 		$this->includePathLookup = $includePathLookup;
 	}
 
@@ -113,45 +108,40 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @return boolean
 	 */
-	public function getIncludePathLookup()
-	{
+	public function getIncludePathLookup(){
 		return $this->includePathLookup;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register($prepend = false)
-	{
+	public function register($prepend = false){
 		spl_autoload_register(array($this, 'load'), true, $prepend);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function unregister()
-	{
+	public function unregister(){
 		spl_autoload_unregister(array($this, 'load'));
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function add($resource, $resourcePath = null)
-	{
+	public function add($resource, $resourcePath = null){
 		$this->resources[$resource] = (array) $resourcePath;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function load($resourceName)
-	{
+	public function load($resourceName){
 		$resourceAbsolutePath = $this->getResourceAbsolutePath($resourceName);
 
-		switch (true) {
+		switch(true){
 			case ($this->mode & self::MODE_SILENT):
-				if ($resourceAbsolutePath !== false) {
+				if($resourceAbsolutePath !== false){
 					require $resourceAbsolutePath;
 				}
 				break;
@@ -162,7 +152,7 @@ class SplClassLoader implements SplAutoloader
 				break;
 		}
 
-		if ($this->mode & self::MODE_DEBUG && ! $this->isResourceDeclared($resourceName)) {
+		if($this->mode & self::MODE_DEBUG && !$this->isResourceDeclared($resourceName)){
 			throw new \RuntimeException(
 				sprintf('Autoloader expected resource "%s" to be declared in file "%s".', $resourceName, $resourceAbsolutePath)
 			);
@@ -176,25 +166,24 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @return string Resource absolute path.
 	 */
-	private function getResourceAbsolutePath($resourceName)
-	{
+	private function getResourceAbsolutePath($resourceName){
 		$resourceRelativePath = $this->getResourceRelativePath($resourceName);
 
-		foreach ($this->resources as $resource => $resourcesPath) {
-			if (strpos($resourceName, $resource) !== 0) {
+		foreach($this->resources as $resource => $resourcesPath){
+			if(strpos($resourceName, $resource) !== 0){
 				continue;
 			}
 
-			foreach ($resourcesPath as $resourcePath) {
+			foreach($resourcesPath as $resourcePath){
 				$resourceAbsolutePath = $resourcePath . DIRECTORY_SEPARATOR . $resourceRelativePath;
 
-				if (is_file($resourceAbsolutePath)) {
+				if(is_file($resourceAbsolutePath)){
 					return $resourceAbsolutePath;
 				}
 			}
 		}
 
-		if ($this->includePathLookup && ($resourceAbsolutePath = stream_resolve_include_path($resourceRelativePath)) !== false) {
+		if($this->includePathLookup && ($resourceAbsolutePath = stream_resolve_include_path($resourceRelativePath)) !== false){
 			return $resourceAbsolutePath;
 		}
 
@@ -208,17 +197,16 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @return string Resource relative path.
 	 */
-	private function getResourceRelativePath($resourceName)
-	{
+	private function getResourceRelativePath($resourceName){
 		// We always work with FQCN in this context
 		$resourceName = ltrim($resourceName, '\\');
 		$resourcePath = '';
 
-		if (($lastNamespacePosition = strrpos($resourceName, '\\')) !== false) {
+		if(($lastNamespacePosition = strrpos($resourceName, '\\')) !== false){
 			// Namespaced resource name
 			$resourceNamespace = substr($resourceName, 0, $lastNamespacePosition);
-			$resourceName      = substr($resourceName, $lastNamespacePosition + 1);
-			$resourcePath      =  str_replace('\\', DIRECTORY_SEPARATOR, $resourceNamespace) . DIRECTORY_SEPARATOR;
+			$resourceName = substr($resourceName, $lastNamespacePosition + 1);
+			$resourcePath = str_replace('\\', DIRECTORY_SEPARATOR, $resourceNamespace) . DIRECTORY_SEPARATOR;
 		}
 
 		return $resourcePath . str_replace('_', DIRECTORY_SEPARATOR, $resourceName) . $this->fileExtension;
@@ -231,8 +219,7 @@ class SplClassLoader implements SplAutoloader
 	 *
 	 * @return boolean
 	 */
-	private function isResourceDeclared($resourceName)
-	{
+	private function isResourceDeclared($resourceName){
 		return class_exists($resourceName, false)
 		|| interface_exists($resourceName, false)
 		|| (function_exists('trait_exists') && trait_exists($resourceName, false));

@@ -26,9 +26,9 @@ namespace PocketMine\Level;
 
 use PocketMine\Block\Air;
 use PocketMine\Block\Block;
+use PocketMine\Entity\Entity;
 use PocketMine\Event\Block\BlockBreakEvent;
 use PocketMine\Event\Block\BlockPlaceEvent;
-use PocketMine\Event\Event;
 use PocketMine\Event\Player\PlayerInteractEvent;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Flat;
@@ -51,7 +51,6 @@ use PocketMine\Tile\Chest;
 use PocketMine\Tile\Furnace;
 use PocketMine\Tile\Sign;
 use PocketMine\Tile\Tile;
-use PocketMine\Entity\Entity;
 use PocketMine\Utils\Cache;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\Random;
@@ -124,6 +123,7 @@ class Level{
 			$default = Server::getInstance()->getConfigString("level-name", null);
 			if($default == ""){
 				trigger_error("level-name cannot be null", E_USER_ERROR);
+
 				return;
 			}
 			if(self::loadLevel($default) === false){

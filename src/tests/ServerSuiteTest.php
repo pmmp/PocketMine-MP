@@ -15,7 +15,7 @@ function testCase($name, $output, $expected){
 	global $testErrors;
 	if($output === $expected){
 		console("[TEST] $name: " . Utils\TextFormat::GREEN . "Ok.");
-	} else{
+	}else{
 		console("[TEST] $name: " . Utils\TextFormat::RED . "Error.");
 		console("Expected " . print_r($expected, true) . ", got " . print_r($output, true));
 		++$testErrors;
@@ -33,7 +33,7 @@ if(!class_exists("\\PocketMine\\Server", false)){
 	if($testErrors === 0){
 		console(Utils\TextFormat::GREEN . "[TEST] No errors. Test complete.");
 		exit(0);
-	} else{
+	}else{
 		console(Utils\TextFormat::RED . "[TEST] Errors found.");
 		exit(1);
 	}

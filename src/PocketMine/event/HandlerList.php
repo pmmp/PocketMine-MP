@@ -85,7 +85,8 @@ class HandlerList{
 			return;
 		}
 		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)])){
-			trigger_error("This listener is already registered to priority ".$listener->getPriority(), E_USER_WARNING);
+			trigger_error("This listener is already registered to priority " . $listener->getPriority(), E_USER_WARNING);
+
 			return;
 		}
 		$this->handlers = null;
@@ -110,7 +111,8 @@ class HandlerList{
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
 					if(($object instanceof Plugin and $listener->getPlugin() === $object)
-					or ($object instanceof Listener and $listener->getListener() === $object)){
+						or ($object instanceof Listener and $listener->getListener() === $object)
+					){
 						unset($this->handlerSlots[$priority][$hash]);
 						$changed = true;
 					}
@@ -153,11 +155,13 @@ class HandlerList{
 					$listeners[$hash] = $plugin;
 				}
 			}
+
 			return $listeners;
 		}else{
 			while(($handlers = $this->handlers) === null){
 				$this->bake();
 			}
+
 			return $handlers;
 		}
 	}

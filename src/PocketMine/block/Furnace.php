@@ -22,7 +22,6 @@
 namespace PocketMine\Block;
 
 
-
 class Furnace extends BurningFurnace{
 	public function __construct($meta = 0){
 		parent::__construct($meta);

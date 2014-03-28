@@ -509,14 +509,14 @@ abstract class Block extends Position{
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param Item               $item
-	 * @param Block              $block
-	 * @param Block              $target
-	 * @param int                $face
-	 * @param float              $fx
-	 * @param float              $fy
-	 * @param float              $fz
-	 * @param Player             $player = null
+	 * @param Item   $item
+	 * @param Block  $block
+	 * @param Block  $target
+	 * @param int    $face
+	 * @param float  $fx
+	 * @param float  $fy
+	 * @param float  $fz
+	 * @param Player $player = null
 	 *
 	 * @return bool
 	 */
@@ -525,7 +525,7 @@ abstract class Block extends Position{
 	/**
 	 * Do actions when activated by Item. Returns if it has done anything
 	 *
-	 * @param Item               $item
+	 * @param Item   $item
 	 * @param Player $player
 	 *
 	 * @return bool

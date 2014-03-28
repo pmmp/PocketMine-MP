@@ -25,7 +25,6 @@
 namespace PocketMine\Level\Generator\Noise;
 
 
-
 abstract class Generator{
 	protected $perm = array();
 	protected $offsetX = 0;

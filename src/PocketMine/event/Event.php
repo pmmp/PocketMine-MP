@@ -67,6 +67,7 @@ abstract class Event{
 		if(static::$handlerList === null){
 			static::$handlerList = new HandlerList();
 		}
+
 		return static::$handlerList;
 	}
 

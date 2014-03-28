@@ -48,8 +48,10 @@ abstract class VanillaCommand extends Command{
 	protected function getRelativeDouble($original, CommandSender $sender, $input){
 		if($input{0} === "~"){
 			$value = $this->getDouble($sender, substr($input, 1));
+
 			return $original + $value;
 		}
+
 		return $this->getDouble($input);
 	}
 

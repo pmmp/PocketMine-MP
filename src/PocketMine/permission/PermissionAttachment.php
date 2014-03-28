@@ -50,7 +50,8 @@ class PermissionAttachment{
 	 */
 	public function __construct(Plugin $plugin, Permissible $permissible){
 		if(!$plugin->isEnabled()){
-			trigger_error("Plugin ".$plugin->getDescription()->getName()." is disabled", E_USER_WARNING);
+			trigger_error("Plugin " . $plugin->getDescription()->getName() . " is disabled", E_USER_WARNING);
+
 			return;
 		}
 
@@ -95,7 +96,7 @@ class PermissionAttachment{
 
 	/**
 	 * @param string|Permission $name
-	 * @param bool $value
+	 * @param bool              $value
 	 */
 	public function setPermission($name, $value){
 		$this->permissions[$name instanceof Permission ? $name->getName() : $name] = $value;

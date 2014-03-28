@@ -22,14 +22,13 @@
 namespace PocketMine\Plugin;
 
 use PocketMine\Command\PluginCommand;
-use PocketMine\Event\Cancellable;
+use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Event\Event;
+use PocketMine\Event\HandlerList;
 use PocketMine\Event\Listener;
 use PocketMine\Permission\Permissible;
 use PocketMine\Permission\Permission;
 use PocketMine\Server;
-use PocketMine\Command\SimpleCommandMap;
-use PocketMine\Event\HandlerList;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -106,7 +105,7 @@ class PluginManager{
 		$this->server = $server;
 		$this->commandMap = $commandMap;
 	}
-	
+
 	/**
 	 * @param string $name
 	 *
@@ -156,6 +155,7 @@ class PluginManager{
 				if($description instanceof PluginDescription){
 					if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+
 						return $plugin;
 					}
 				}
@@ -519,7 +519,7 @@ class PluginManager{
 
 		foreach($plugin->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				console("[SEVERE] Could not load command ".$key." for plugin ".$plugin->getDescription()->getName());
+				console("[SEVERE] Could not load command " . $key . " for plugin " . $plugin->getDescription()->getName());
 				continue;
 			}
 			if(is_array($data)){
@@ -536,7 +536,7 @@ class PluginManager{
 					$aliasList = array();
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
-							console("[SEVERE] Could not load alias ".$alias." for plugin ".$plugin->getDescription()->getName());
+							console("[SEVERE] Could not load alias " . $alias . " for plugin " . $plugin->getDescription()->getName());
 							continue;
 						}
 						$aliasList[] = $alias;
@@ -555,6 +555,7 @@ class PluginManager{
 
 				$pluginCmds[] = $newCmd;
 			}
+
 			return $pluginCmds;
 		}
 	}
@@ -616,11 +617,13 @@ class PluginManager{
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
 		if(!is_subclass_of($event, "PocketMine\\Event\\Event")){
-			trigger_error($event ." is not a valid Event", E_USER_WARNING);
+			trigger_error($event . " is not a valid Event", E_USER_WARNING);
+
 			return;
 		}
 		if(!$plugin->isEnabled()){
-			trigger_error("Plugin attempted to register ".$event." while not enabled");
+			trigger_error("Plugin attempted to register " . $event . " while not enabled");
+
 			return;
 		}
 
@@ -636,6 +639,7 @@ class PluginManager{
 		if($event::$handlerList === null){
 			$event::$handlerList = new HandlerList();
 		}
+
 		return $event::$handlerList;
 	}
 

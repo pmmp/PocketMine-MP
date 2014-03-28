@@ -23,7 +23,6 @@ namespace PocketMine\Command;
 
 use PocketMine\Permission\PermissibleBase;
 use PocketMine\Permission\PermissionAttachment;
-use PocketMine\Player;
 use PocketMine\Plugin\Plugin;
 use PocketMine\Server;
 
@@ -55,7 +54,7 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param Plugin $plugin
-	 * @param string   $name
+	 * @param string $name
 	 * @param bool   $value
 	 *
 	 * @return \PocketMine\Permission\PermissionAttachment

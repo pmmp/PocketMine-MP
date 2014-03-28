@@ -56,6 +56,7 @@ class VersionCommand extends VanillaCommand{
 
 			if($exactPlugin instanceof Plugin){
 				$this->describeToSender($exactPlugin, $sender);
+
 				return true;
 			}
 

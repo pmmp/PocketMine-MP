@@ -21,11 +21,11 @@
 
 namespace PocketMine\Command\Defaults;
 
+use PocketMine\Command\Command;
 use PocketMine\Command\CommandSender;
-use PocketMine\Utils\TextFormat;
 use PocketMine\Command\ConsoleCommandSender;
 use PocketMine\Server;
-use PocketMine\Command\Command;
+use PocketMine\Utils\TextFormat;
 
 class HelpCommand extends VanillaCommand{
 
@@ -77,25 +77,28 @@ class HelpCommand extends VanillaCommand{
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
-			$message = TextFormat::RED . "-" . TextFormat::RESET . " Showing help page ".$pageNumber." of ".count($commands)." (/help <pageNumber>) " . TextFormat::RED . "-" . TextFormat::RESET . "\n";
+			$message = TextFormat::RED . "-" . TextFormat::RESET . " Showing help page " . $pageNumber . " of " . count($commands) . " (/help <pageNumber>) " . TextFormat::RED . "-" . TextFormat::RESET . "\n";
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
-					$message .= TextFormat::DARK_GREEN . "/" . $command->getName().": ". TextFormat::WHITE. $command->getDescription()."\n";
+					$message .= TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription() . "\n";
 				}
 			}
 			$sender->sendMessage($message);
+
 			return true;
 		}else{
 			if(($command = Server::getInstance()->getCommandMap()->getCommand(strtolower($command))) instanceof Command){
 				if($command->testPermissionSilent($sender)){
-					$message = TextFormat::YELLOW . "--------- ". TextFormat::WHITE . " Help: /" .$command->getName() . TextFormat::YELLOW . " ---------\n";
+					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $command->getName() . TextFormat::YELLOW . " ---------\n";
 					$message .= TextFormat::DARK_GREEN . "Description: " . TextFormat::WHITE . $command->getDescription() . "\n";
-					$message .= TextFormat::DARK_GREEN . "Usage: " . TextFormat::WHITE . implode("\n".TextFormat::WHITE, explode("\n", $command->getUsage())) . "\n";
+					$message .= TextFormat::DARK_GREEN . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $command->getUsage())) . "\n";
 					$sender->sendMessage($message);
+
 					return true;
 				}
 			}
-			$sender->sendMessage(TextFormat::RED . "No help for ".strtolower($command));
+			$sender->sendMessage(TextFormat::RED . "No help for " . strtolower($command));
+
 			return true;
 		}
 	}

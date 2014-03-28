@@ -25,7 +25,6 @@ use PocketMine\Block\Block;
 use PocketMine\Block\TNT;
 use PocketMine\Entity\Entity;
 use PocketMine\Event\Entity\EntityExplodeEvent;
-use PocketMine\Event\Event;
 use PocketMine\Item\Item;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Network\Protocol\ExplodePacket;

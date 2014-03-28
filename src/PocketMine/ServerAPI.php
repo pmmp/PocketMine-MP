@@ -21,17 +21,10 @@
 
 namespace PocketMine;
 
-use PocketMine\Block\Block;
-use PocketMine\Entity\Entity;
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Network\Protocol\Info;
 use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\RCON\RCON;
 use PocketMine\Network\UPnP\UPnP;
 use PocketMine\Plugin\PluginManager;
-use PocketMine\Recipes\Crafting;
-use PocketMine\Tile\Tile;
 use PocketMine\Utils\Config;
 use PocketMine\Utils\TextFormat;
 use PocketMine\Utils\Utils;
@@ -259,7 +252,6 @@ class ServerAPI{
 		if(!(self::$serverRequest instanceof Server)){
 			self::$serverRequest = $this->server;
 		}
-
 
 
 		if($this->getProperty("send-usage", true) !== false){

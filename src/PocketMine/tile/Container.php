@@ -21,7 +21,6 @@
 
 namespace PocketMine\Tile;
 
-use PocketMine\Event\Event;
 use PocketMine\Event\Tile\TileInventoryChangeEvent;
 use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Byte;
