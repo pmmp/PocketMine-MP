@@ -117,6 +117,7 @@ class Server{
 
 	private $serverID;
 
+	private $autoloader;
 	private $filePath;
 	private $dataPath;
 	private $pluginPath;
@@ -300,6 +301,13 @@ class Server{
 	}
 
 	/**
+	 * @return \SplClassLoader
+	 */
+	public function getLoader(){
+		return $this->autoloader;
+	}
+
+	/**
 	 * @return PluginManager
 	 */
 	public function getPluginManager(){
@@ -445,13 +453,15 @@ class Server{
 	}
 
 	/**
+	 * @param \SplClassLoader $autoloader
 	 * @param string $filePath
 	 * @param string $dataPath
 	 * @param string $pluginPath
 	 */
-	public function __construct($filePath, $dataPath, $pluginPath){
+	public function __construct(\SplClassLoader $autoloader, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
 
+		$this->autoloader = $autoloader;
 		$this->filePath = $filePath;
 		$this->dataPath = $dataPath;
 		$this->pluginPath = $pluginPath;

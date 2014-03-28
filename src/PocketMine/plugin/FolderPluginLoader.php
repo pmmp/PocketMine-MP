@@ -59,17 +59,20 @@ class FolderPluginLoader implements PluginLoader{
 					return null;
 				}
 
-				foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($file . "/src/")) as $fName){
-					if(strtolower(substr($fName, -4)) === ".php"){
-						include_once($fName);
-					}
-				}
+
 
 				$className = $description->getMain();
-				if(class_exists($className, true)){ //call autoloader, TODO: replace this with a specific Plugin autoload
+				$this->server->getLoader()->add(substr($className, 0, strpos($className, "\\")), array(
+					$file . "/src"
+				));
+
+				if(class_exists($className, true)){
 					$plugin = new $className();
 					$this->initPlugin($plugin, $description, $dataFolder, $file);
 					return $plugin;
+				}else{
+					trigger_error("Couldn't load plugin ".$description->getName().": main class not found", E_USER_WARNING);
+					return null;
 				}
 			}
 		}

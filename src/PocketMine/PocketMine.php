@@ -83,23 +83,18 @@ namespace PocketMine {
 	const MINECRAFT_VERSION = "v0.8.1 alpha";
 	const PHP_VERSION = "5.5";
 
-	\spl_autoload_register(function ($load){
-		$path = explode('\\', trim($load, '\\'));
-		if(($parent = array_shift($path)) === "PocketMine"){ //part of the PocketMine-MP code
-			$className = array_pop($path);
-			if(count($path) > 0){
-				$path = implode(DIRECTORY_SEPARATOR, array_map("strtolower", $path)) . DIRECTORY_SEPARATOR;
-			}else{
-				$path = "";
-			}
-			$fPath = \PocketMine\PATH . "src" . DIRECTORY_SEPARATOR . "PocketMine" . DIRECTORY_SEPARATOR . $path . $className . ".php";
-			if(file_exists($fPath)){
-				require_once($fPath);
-			}
-		}
-	});
-
 	define("PocketMine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+
+	if(!class_exists("SplClassLoader", false)){
+		require_once(\PocketMine\PATH . "src/SPL/SplClassLoader.php");
+	}
+
+
+	$autoloader = new \SplClassLoader();
+	$autoloader->add("PocketMine", array(
+		\PocketMine\PATH . "src"
+	));
+	$autoloader->register(true);
 
 	//Startup code. Do not look at it, it can harm you. Most of them are hacks to fix date-related bugs, or basic functions used after this
 
@@ -168,28 +163,6 @@ namespace PocketMine {
 		}
 	}
 
-	function hard_unset(&$var){
-		if(is_object($var)){
-			$unset = new \ReflectionClass($var);
-			foreach($unset->getProperties() as $prop){
-				$prop->setAccessible(true);
-				@hard_unset($prop->getValue($var));
-				$prop->setValue($var, null);
-			}
-			$var = null;
-			unset($var);
-		}elseif(is_array($var)){
-			foreach($var as $i => $v){
-				hard_unset($var[$i]);
-			}
-			$var = null;
-			unset($var);
-		}else{
-			$var = null;
-			unset($var);
-		}
-	}
-
 	/**
 	 * Output text to the console, can contain Minecraft-formatted text.
 	 *
@@ -200,8 +173,8 @@ namespace PocketMine {
 	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
 		if(!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level){
-			$message = Utils\TextFormat::GRAY . $message . ($EOL === true ? PHP_EOL : "");
-			if($message{3} !== "["){
+			$message .= $EOL === true ? PHP_EOL : "";
+			if($message{0} !== "["){
 				$message = "[INFO] $message";
 			}
 			$time = (\PocketMine\ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET : date("H:i:s")) . " ";
@@ -379,8 +352,9 @@ namespace PocketMine {
 		new Wizard\Installer();
 	}
 
+
 	if(!defined("PARENT_API_EXISTENT")){
-		$server = new Server(\PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
+		$server = new Server($autoloader, \PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
 		$server->start();
 
 		kill(getmypid());
