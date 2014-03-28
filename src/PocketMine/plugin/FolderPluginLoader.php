@@ -21,7 +21,6 @@
 
 namespace PocketMine\Plugin;
 
-use PocketMine\Event\EventHandler;
 use PocketMine\Event\Plugin\PluginDisableEvent;
 use PocketMine\Event\Plugin\PluginEnableEvent;
 use PocketMine\Server;
@@ -97,26 +96,38 @@ class FolderPluginLoader implements PluginLoader{
 		return "/[^\\.]/";
 	}
 
+	/**
+	 * @param PluginBase        $plugin
+	 * @param PluginDescription $description
+	 * @param string            $dataFolder
+	 * @param string            $file
+	 */
 	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
 		$plugin->init($this, $this->server, $description, $dataFolder, $file);
 		$plugin->onLoad();
 	}
 
+	/**
+	 * @param Plugin $plugin
+	 */
 	public function enablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and !$plugin->isEnabled()){
 			console("[INFO] Enabling ".$plugin->getDescription()->getName());
 
 			$plugin->setEnabled(true);
 
-			EventHandler::callEvent(new PluginEnableEvent($plugin));
+			Server::getInstance()->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
 		}
 	}
 
+	/**
+	 * @param Plugin $plugin
+	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and $plugin->isEnabled()){
 			console("[INFO] Disabling ".$plugin->getDescription()->getName());
 
-			EventHandler::callEvent(new PluginDisableEvent($plugin));
+			Server::getInstance()->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
 
 			$plugin->setEnabled(false);
 		}

@@ -21,14 +21,13 @@
 
 namespace PocketMine\Event\Server;
 
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Event;
 use PocketMine\Network\Protocol\DataPacket;
 use PocketMine\Player;
 
-class DataPacketReceiveEvent extends ServerEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
+	public static $handlerList = null;
 
 	private $packet;
 	private $player;

@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine\Plugin;
+use PocketMine\Event\Listener;
 
 /**
  * Handles different types of plugins
@@ -64,5 +65,6 @@ interface PluginLoader{
 	 * @return void
 	 */
 	public function disablePlugin(Plugin $plugin);
+
 
 }

@@ -32,8 +32,7 @@ use PocketMine\Entity\Vehicle;
  * Called when a entity is despawned
  */
 class EntityDespawnEvent extends EntityEvent{
-	public static $handlers;
-	public static $handlerPriority;
+	public static $handlerList = null;
 
 	/**
 	 * @param Entity $entity

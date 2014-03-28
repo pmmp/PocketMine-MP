@@ -21,15 +21,14 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Player;
 
 /**
  * Called when a player chats something
  */
-class PlayerChatEvent extends PlayerEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class PlayerChatEvent extends PlayerEvent implements Cancellable{
+	public static $handlerList = null;
 
 	/**
 	 * @var string

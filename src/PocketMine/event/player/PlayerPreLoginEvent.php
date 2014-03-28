@@ -21,15 +21,14 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Player;
 
 /**
  * Called when the player logs in, before things have been set up
  */
-class PlayerPreLoginEvent extends PlayerEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
+	public static $handlerList = null;
 
 	/**
 	 * @var string

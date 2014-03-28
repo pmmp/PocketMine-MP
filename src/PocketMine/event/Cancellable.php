@@ -23,8 +23,10 @@ namespace PocketMine\Event;
 
 
 /**
- * Events that can be cancelled must use the interface CancellableEvent
+ * Events that can be cancelled must use the interface Cancellable
  */
-interface CancellableEvent{
+interface Cancellable{
+	public function isCancelled();
 
+	public function setCancelled($forceCancel = false);
 }

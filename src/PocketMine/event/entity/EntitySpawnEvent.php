@@ -32,8 +32,7 @@ use PocketMine\Entity\Vehicle;
  * Called when a entity is spawned
  */
 class EntitySpawnEvent extends EntityEvent{
-	public static $handlers;
-	public static $handlerPriority;
+	public static $handlerList = null;
 
 	/**
 	 * @param Entity $entity

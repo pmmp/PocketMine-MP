@@ -23,15 +23,14 @@ namespace PocketMine\Event\Entity;
 
 use PocketMine\Block\Block;
 use PocketMine\Entity\Entity;
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Level\Position;
 
 /**
  * Called when a entity explodes
  */
-class EntityExplodeEvent extends EntityEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class EntityExplodeEvent extends EntityEvent implements Cancellable{
+	public static $handlerList = null;
 
 	/**
 	 * @var Position

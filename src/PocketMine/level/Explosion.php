@@ -26,11 +26,11 @@ use PocketMine\Block\TNT;
 use PocketMine\Entity\Entity;
 use PocketMine\Event\Entity\EntityExplodeEvent;
 use PocketMine\Event\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
 use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Network\Protocol\ExplodePacket;
 use PocketMine\Player;
+use PocketMine\Server;
 
 class Explosion{
 	public static $specialDrops = array(
@@ -102,8 +102,9 @@ class Explosion{
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
-			if(EventHandler::callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield)) === Event::DENY){
-				return;
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield));
+			if($ev->isCancelled()){
+				return false;
 			}else{
 				$yield = $ev->getYield();
 				$this->affectedBlocks = $ev->getBlockList();

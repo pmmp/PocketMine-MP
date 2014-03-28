@@ -22,7 +22,6 @@
 namespace PocketMine\Tile;
 
 use PocketMine\Event\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Event\Tile\TileInventoryChangeEvent;
 use PocketMine\Item\Item;
 use PocketMine\NBT\Tag\Byte;
@@ -30,6 +29,7 @@ use PocketMine\NBT\Tag\Compound;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\Network;
 use PocketMine\Player;
+use PocketMine\Server;
 
 trait Container{
 	public function openInventory(Player $player){
@@ -158,8 +158,11 @@ trait Container{
 
 	public function setSlot($s, Item $item, $update = true, $offset = 0){
 		$i = $this->getSlotIndex($s);
-
-		if($i === false or EventHandler::callEvent($ev = new TileInventoryChangeEvent($this, $this->getSlot($s), $item, $s, $offset)) === Event::DENY){
+		if($i === false){
+			return false;
+		}
+		Server::getInstance()->getPluginManager()->callEvent($ev = new TileInventoryChangeEvent($this, $this->getSlot($s), $item, $s, $offset));
+		if($ev->isCancelled()){
 			return false;
 		}
 

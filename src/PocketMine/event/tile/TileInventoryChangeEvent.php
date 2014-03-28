@@ -21,14 +21,13 @@
 
 namespace PocketMine\Event\Tile;
 
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Event;
 use PocketMine\Item\Item;
 use PocketMine\Tile\Tile;
 
-class TileInventoryChangeEvent extends TileEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class TileInventoryChangeEvent extends TileEvent implements Cancellable{
+	public static $handlerList = null;
 
 	private $oldItem;
 	private $newItem;

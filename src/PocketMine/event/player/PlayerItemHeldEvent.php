@@ -22,13 +22,12 @@
 namespace PocketMine\Event\Player;
 
 use PocketMine\Event;
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Item\Item;
 use PocketMine\Player;
 
-class PlayerItemHeldEvent extends PlayerEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
+	public static $handlerList = null;
 
 	private $item;
 	private $slot;

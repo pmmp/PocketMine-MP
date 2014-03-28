@@ -22,13 +22,12 @@
 namespace PocketMine\Event\Entity;
 
 use PocketMine\Entity\Entity;
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Event;
 use PocketMine\Item\Item;
 
-class EntityArmorChangeEvent extends EntityEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class EntityArmorChangeEvent extends EntityEvent implements Cancellable{
+	public static $handlerList = null;
 
 	private $oldItem;
 	private $newItem;

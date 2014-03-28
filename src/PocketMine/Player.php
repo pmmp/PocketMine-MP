@@ -23,7 +23,6 @@ namespace PocketMine;
 
 use PocketMine\Entity\RealHuman;
 use PocketMine\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
@@ -402,9 +401,9 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		if($this->connected === false){
 			return false;
 		}
-
-		if(EventHandler::callEvent(new Event\Server\DataPacketSendEvent($this, $packet)) === Event\Event::DENY){
-			return;
+		$this->server->getPluginManager()->callEvent($ev = new Event\Server\DataPacketSendEvent($this, $packet));
+		if($ev->isCancelled()){
+			return false;
 		}
 
 		$packet->encode();
@@ -660,7 +659,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					return false;
 				}
 			}
-			if(EventHandler::callEvent(new Event\Player\PlayerAchievementAwardedEvent($this, $achievementId)) !== Event\Event::DENY){
+			$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerAchievementAwardedEvent($this, $achievementId));
+			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
 
@@ -682,7 +682,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 			return false;
 		}
 
-		if(EventHandler::callEvent(new Event\Player\PlayerGameModeChangeEvent($this, (int) $gm)) === Event\Event::DENY){
+		$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerGameModeChangeEvent($this, (int) $gm));
+		if($ev->isCancelled()){
 			return false;
 		}
 
@@ -908,7 +909,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 			return;
 		}
 
-		if(EventHandler::callEvent(new Event\Server\DataPacketReceiveEvent($this, $packet)) === Event\Event::DENY){
+		$this->server->getPluginManager()->callEvent($ev = new Event\Server\DataPacketReceiveEvent($this, $packet));
+		if($ev->isCancelled()){
 			return;
 		}
 
@@ -973,7 +975,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					return;
 				}
 
-				if(EventHandler::callEvent($ev = new Event\Player\PlayerPreLoginEvent($this, "Plugin reason")) === Event\Event::DENY){
+				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerPreLoginEvent($this, "Plugin reason"));
+				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
 					return;
@@ -1037,7 +1040,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					$this->slot = $this->hotbar[0];
 				}
 
-				if(EventHandler::callEvent($ev = new Event\Player\PlayerLoginEvent($this, "Plugin reason")) === Event\Event::DENY){
+				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerLoginEvent($this, "Plugin reason"));
+				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
 					return;
@@ -1078,7 +1082,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				$this->server->schedule(50, array($this, "measureLag"), array(), true);
 				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
-				EventHandler::callEvent(new Event\Player\PlayerJoinEvent($this, $this->username . " joined the game"));
+				$this->server->getPluginManager()->callEvent(new Event\Player\PlayerJoinEvent($this, $this->username . " joined the game"));
 
 				break;
 			case ProtocolInfo::READY_PACKET:
@@ -1173,15 +1177,21 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					$item = $this->getSlot($packet->slot);
 				}
 
-				if($packet->slot === false or EventHandler::callEvent(new Event\Player\PlayerItemHeldEvent($this, $item, $packet->slot, 0)) === Event\Event::DENY){
+
+				if($packet->slot === false){
 					$this->sendInventorySlot($packet->slot);
-				}elseif($item instanceof Item){
-					$this->setEquipmentSlot(0, $packet->slot);
-					$this->setCurrentEquipmentSlot(0);
-					if(($this->gamemode & 0x01) === 0){
-						if(!in_array($this->slot, $this->hotbar)){
-							array_pop($this->hotbar);
-							array_unshift($this->hotbar, $this->slot);
+				}else{
+					$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerItemHeldEvent($this, $item, $packet->slot, 0));
+					if($ev->isCancelled()){
+						$this->sendInventorySlot($packet->slot);
+					}elseif($item instanceof Item){
+						$this->setEquipmentSlot(0, $packet->slot);
+						$this->setCurrentEquipmentSlot(0);
+						if(($this->gamemode & 0x01) === 0){
+							if(!in_array($this->slot, $this->hotbar)){
+								array_pop($this->hotbar);
+								array_unshift($this->hotbar, $this->slot);
+							}
 						}
 					}
 				}
@@ -1631,8 +1641,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					if($message{0} === "/"){ //Command
 						$this->server->api->console->run(substr($message, 1), $this);
 					}else{
-						$ev = new Event\Player\PlayerChatEvent($this, $message);
-						if(EventHandler::callEvent($ev) !== Event\Event::DENY){
+						$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerChatEvent($this, $message));
+						if(!$ev->isCancelled()){
 							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 						}
 					}
@@ -1889,7 +1899,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	 * @return bool
 	 */
 	public function kick($reason = ""){
-		if(EventHandler::callEvent($ev = new Event\Player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : ""))) !== Event\Event::DENY){
+		$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
+		if(!$ev->isCancelled()){
 			$this->sendMessage("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
 			$this->close($ev->getQuitMessage(), $reason);
 
@@ -1941,7 +1952,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	public function close($message = "", $reason = "generic reason"){
 		if($this->connected === true){
 			if($this->username != ""){
-				EventHandler::callEvent($ev = new Event\Player\PlayerQuitEvent($this, $message));
+				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerQuitEvent($this, $message));
 				$this->save();
 			}
 
@@ -2010,7 +2021,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 			return false;
 		}
 
-		if(EventHandler::callEvent(new Event\Server\DataPacketSendEvent($this, $packet)) === Event\Event::DENY){
+		$this->server->getPluginManager()->callEvent($ev = new Event\Server\DataPacketSendEvent($this, $packet));
+		if($ev->isCancelled()){
 			return array();
 		}
 		$packet->encode();

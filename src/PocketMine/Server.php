@@ -33,7 +33,6 @@ use PocketMine\Command\PluginCommand;
 use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Entity\Entity;
 use PocketMine\Event\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Event\Server\PacketReceiveEvent;
 use PocketMine\Event\Server\PacketSendEvent;
 use PocketMine\Item\Item;
@@ -685,7 +684,8 @@ class Server{
 		$lastLoop = 0;
 		while($this->isRunning){
 			if(($packet = $this->interface->readPacket()) instanceof Packet){
-				if(EventHandler::callEvent(new PacketReceiveEvent($packet)) !== Event::DENY){
+				$this->pluginManager->callEvent($ev = new PacketReceiveEvent($packet));
+				if(!$ev->isCancelled()){
 					$this->handlePacket($packet);
 				}
 				$lastLoop = 0;
@@ -705,7 +705,8 @@ class Server{
 		$lastLoop = 0;
 		while($this->isRunning){
 			if(($packet = $this->interface->readPacket()) instanceof Packet){
-				if(EventHandler::callEvent(new PacketReceiveEvent($packet)) !== Event::DENY){
+				$this->pluginManager->callEvent($ev = new PacketReceiveEvent($packet));
+				if(!$ev->isCancelled()){
 					$this->handlePacket($packet);
 				}
 				$lastLoop = 0;
@@ -739,7 +740,8 @@ class Server{
 	 * @return int
 	 */
 	public function sendPacket(Packet $packet){
-		if(EventHandler::callEvent(new PacketSendEvent($packet)) !== Event::DENY){
+		$this->pluginManager->callEvent($ev = new PacketSendEvent($packet));
+		if(!$ev->isCancelled()){
 			return $this->interface->writePacket($packet);
 		}
 

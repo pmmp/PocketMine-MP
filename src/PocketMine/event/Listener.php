@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -14,34 +14,13 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
-namespace PocketMine\Event\Entity;
+namespace PocketMine\Event;
 
-use PocketMine\Entity\Entity;
-use PocketMine\Event\Cancellable;
-use PocketMine\Event;
-use PocketMine\Math\Vector3 as Vector3;
-
-class EntityMoveEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
-
-	/**
-	 * @var \PocketMine\Math\Vector3
-	 */
-	private $pos;
-
-	public function __construct(Entity $entity, Vector3 $pos){
-		$this->entity = $entity;
-		$this->pos = $pos;
-	}
-
-	public function getVector(){
-		return $this->pos;
-	}
-
+interface Listener{
 
 }

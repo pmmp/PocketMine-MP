@@ -29,7 +29,6 @@ use PocketMine\Block\Block;
 use PocketMine\Event\Block\BlockBreakEvent;
 use PocketMine\Event\Block\BlockPlaceEvent;
 use PocketMine\Event\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Event\Player\PlayerInteractEvent;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Flat;
@@ -750,7 +749,8 @@ class Level{
 			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
 				$ev->setCancelled();
 			}
-			if(EventHandler::callEvent($ev) === Event::DENY){
+			$this->server->getPluginManager()->callEvent($ev);
+			if($ev->isCancelled()){
 				return false;
 			}
 		}elseif($item instanceof Item and !$target->isBreakable($item)){
@@ -793,8 +793,11 @@ class Level{
 			return false;
 		}
 
-		if($player instanceof Player and EventHandler::callEvent($ev = new PlayerInteractEvent($player, $item, $target, $face)) !== Event::DENY){
-			$target->onUpdate(Level::BLOCK_UPDATE_TOUCH);
+		if($player instanceof Player){
+			$this->server->getPluginManager()->callEvent($ev = new PlayerInteractEvent($player, $item, $target, $face));
+			if(!$ev->isCancelled()){
+				$target->onUpdate(Level::BLOCK_UPDATE_TOUCH);
+			}
 		}
 
 		if($target->isActivable === true and $target->onActivate($item, $player) === true){
@@ -826,10 +829,13 @@ class Level{
 		/*if($hand->isSolid === true and $player->inBlock($block)){
 			return false; //Entity in block
 		}*/
-		$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
 
-		if($player instanceof Player and EventHandler::callEvent($ev) === Event::DENY){
-			return false;
+
+		if($player instanceof Player){
+			$this->server->getPluginManager()->callEvent($ev = new BlockPlaceEvent($player, $hand, $block, $target, $item));
+			if($ev->isCancelled()){
+				return false;
+			}
 		}elseif($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
 			return false;
 		}

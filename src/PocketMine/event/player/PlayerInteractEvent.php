@@ -22,16 +22,15 @@
 namespace PocketMine\Event\Player;
 
 use PocketMine\Block\Block;
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Item\Item;
 use PocketMine\Player;
 
 /**
  * Called when a player interacts or touches a block (including air?)
  */
-class PlayerInteractEvent extends PlayerEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class PlayerInteractEvent extends PlayerEvent implements Cancellable{
+	public static $handlerList = null;
 
 	/**
 	 * @var \PocketMine\Block\Block;

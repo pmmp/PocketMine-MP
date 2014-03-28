@@ -30,7 +30,6 @@ use PocketMine\Event\Entity\EntityMotionEvent;
 use PocketMine\Event\Entity\EntityMoveEvent;
 use PocketMine\Event\Entity\EntitySpawnEvent;
 use PocketMine\Event\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Level\Level;
 use PocketMine\Level\Position;
 use PocketMine\Math\AxisAlignedBB;
@@ -43,6 +42,7 @@ use PocketMine\Network\Protocol\RemoveEntityPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
 use PocketMine\Player;
 use PocketMine\PMF\LevelFormat;
+use PocketMine\Server;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;
@@ -141,7 +141,7 @@ abstract class Entity extends Position{
 		$this->level->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		$this->lastUpdate = microtime(true);
 		$this->initEntity();
-		EventHandler::callEvent(new EntitySpawnEvent($this));
+		Server::getInstance()->getPluginManager()->callEvent(new EntitySpawnEvent($this));
 	}
 
 	public function saveNBT(){
@@ -353,7 +353,8 @@ abstract class Entity extends Position{
 
 	protected function switchLevel(Level $targetLevel){
 		if($this->level instanceof Level){
-			if(EventHandler::callEvent(new EntityLevelChangeEvent($this, $this->level, $targetLevel)) === Event::DENY){
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->level, $targetLevel));
+			if($ev->isCancelled()){
 				return false;
 			}
 			unset($this->level->entities[$this->id]);
@@ -423,7 +424,8 @@ abstract class Entity extends Position{
 				return false;
 			}
 		}
-		if(EventHandler::callEvent(new EntityMoveEvent($this, $pos)) === Event::DENY){
+		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityMoveEvent($this, $pos));
+		if($ev->isCancelled()){
 			return false;
 		}
 		$this->x = $pos->x;
@@ -464,7 +466,8 @@ abstract class Entity extends Position{
 	}
 
 	public function setMotion(Vector3 $motion){
-		if(EventHandler::callEvent(new EntityMotionEvent($this, $motion)) === Event::DENY){
+		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
+		if($ev->isCancelled()){
 			return false;
 		}
 		$this->motionX = $motion->x;
@@ -538,7 +541,7 @@ abstract class Entity extends Position{
 			unset($this->level->chunkEntities[$this->chunkIndex][$this->id]);
 			unset(Entity::$list[$this->id]);
 			$this->despawnFromAll();
-			EventHandler::callEvent(new EntityDespawnEvent($this));
+			Server::getInstance()->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 		}
 	}
 

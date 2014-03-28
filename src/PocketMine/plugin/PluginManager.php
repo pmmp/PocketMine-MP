@@ -22,11 +22,14 @@
 namespace PocketMine\Plugin;
 
 use PocketMine\Command\PluginCommand;
+use PocketMine\Event\Cancellable;
 use PocketMine\Event\Event;
+use PocketMine\Event\Listener;
 use PocketMine\Permission\Permissible;
 use PocketMine\Permission\Permission;
 use PocketMine\Server;
 use PocketMine\Command\SimpleCommandMap;
+use PocketMine\Event\HandlerList;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -569,7 +572,7 @@ class PluginManager{
 		if($plugin->isEnabled()){
 			$plugin->getPluginLoader()->disablePlugin($plugin);
 			$this->server->getScheduler()->cancelTasks($plugin);
-			Event::unregisterPlugin($plugin);
+			HandlerList::unregisterAll($plugin);
 		}
 	}
 
@@ -582,5 +585,58 @@ class PluginManager{
 		$this->defaultPermsOp = array();
 	}
 
+	/**
+	 * Calls an event
+	 *
+	 * @param Event $event
+	 */
+	public function callEvent(Event $event){
+		$this->fireEvent($event);
+	}
+
+	private function fireEvent(Event $event){
+		$handlers = $event->getHandlers();
+		$listeners = $handlers->getRegisteredListeners();
+
+		foreach($listeners as $registration){
+			if(!$registration->getPlugin()->isEnabled()){
+				continue;
+			}
+			$registration->callEvent($event);
+		}
+	}
+
+	/**
+	 * @param string        $event Class name that extends Event
+	 * @param Listener      $listener
+	 * @param int           $priority
+	 * @param EventExecutor $executor
+	 * @param Plugin        $plugin
+	 * @param bool          $ignoreCancelled
+	 */
+	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
+		if(!is_subclass_of($event, "PocketMine\\Event\\Event")){
+			trigger_error($event ." is not a valid Event", E_USER_WARNING);
+			return;
+		}
+		if(!$plugin->isEnabled()){
+			trigger_error("Plugin attempted to register ".$event." while not enabled");
+			return;
+		}
+
+		$this->getEventListeners($event)->register(new RegisteredListener($listener, $executor, $priority, $plugin, $ignoreCancelled));
+	}
+
+	/**
+	 * @param string $event
+	 *
+	 * @return HandlerList
+	 */
+	private function getEventListeners($event){
+		if($event::$handlerList === null){
+			$event::$handlerList = new HandlerList();
+		}
+		return $event::$handlerList;
+	}
 
 }

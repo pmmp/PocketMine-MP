@@ -21,15 +21,14 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Player;
 
 /**
  * Called when a player is awarded an achievement
  */
-class PlayerAchievementAwardedEvent extends PlayerEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class PlayerAchievementAwardedEvent extends PlayerEvent implements Cancellable{
+	public static $handlerList = null;
 
 	/**
 	 * @var string

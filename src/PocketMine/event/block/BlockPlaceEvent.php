@@ -22,16 +22,15 @@
 namespace PocketMine\Event\Block;
 
 use PocketMine\Block\Block;
-use PocketMine\Event\CancellableEvent;
+use PocketMine\Event\Cancellable;
 use PocketMine\Item\Item;
 use PocketMine\Player;
 
 /**
  * Called when a player places a block
  */
-class BlockPlaceEvent extends BlockEvent implements CancellableEvent{
-	public static $handlers;
-	public static $handlerPriority;
+class BlockPlaceEvent extends BlockEvent implements Cancellable{
+	public static $handlerList = null;
 
 	/**
 	 * @var \PocketMine\Player

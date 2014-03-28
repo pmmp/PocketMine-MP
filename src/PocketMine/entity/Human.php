@@ -24,7 +24,6 @@ namespace PocketMine\Entity;
 use PocketMine\Event\Entity\EntityArmorChangeEvent;
 use PocketMine\Event\Entity\EntityInventoryChangeEvent;
 use PocketMine\Event\Event;
-use PocketMine\Event\EventHandler;
 use PocketMine\Item\Item;
 use PocketMine\NBT\NBT;
 use PocketMine\NBT\Tag\Byte;
@@ -38,6 +37,7 @@ use PocketMine\Network\Protocol\PlayerEquipmentPacket;
 use PocketMine\Network\Protocol\RemovePlayerPacket;
 use PocketMine\Network\Protocol\SetEntityMotionPacket;
 use PocketMine\Player;
+use PocketMine\Server;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -197,7 +197,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 
 	public function setArmorSlot($slot, Item $item){
-		if(EventHandler::callEvent($ev = new EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot)) === Event::DENY){
+		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot));
+		if($ev->isCancelled()){
 			return false;
 		}
 		$this->armor[(int) $slot] = $ev->getNewItem();
@@ -379,7 +380,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 
 	public function setSlot($slot, Item $item){
-		if(EventHandler::callEvent($ev = new EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot)) === Event::DENY){
+		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot));
+		if($ev->isCancelled()){
 			return false;
 		}
 		$this->inventory[(int) $slot] = $ev->getNewItem();
