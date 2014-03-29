@@ -152,7 +152,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
 		[ -z "$march" ] && march=armv6zk;
 		[ -z "$mtune" ] && mtune=arm1176jzf-s;
-		[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+		CFLAGS="$CFLAGS -mfloat-abi=hard -mfpu=vfp";
 		if [ "$DO_OPTIMIZE" == "yes" ]; then
 			CFLAGS="$CFLAGS -mfloat-abi=hard -mfpu=vfp"
 		fi
@@ -164,13 +164,15 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	elif [ "$COMPILE_TARGET" == "mac" ]; then
 		[ -z "$march" ] && march=prescott;
 		[ -z "$mtune" ] && mtune=generic;
-		[ -z "$CFLAGS" ] && CFLAGS="-fomit-frame-pointer";
+		CFLAGS="$CFLAGS -fomit-frame-pointer";
 		TOOLCHAIN_PREFIX="i686-apple-darwin10"
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX"
 		#zlib doesn't use the correct ranlib
 		RANLIB=$TOOLCHAIN_PREFIX-ranlib
 		OPENSSL_TARGET="darwin64-x86_64-cc"
+		CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
+		ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
@@ -210,26 +212,28 @@ elif [ "$COMPILE_TARGET" == "linux64" ]; then
 elif [ "$COMPILE_TARGET" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
 	[ -z "$mtune" ] && mtune=arm1176jzf-s;
-	[ -z "$CFLAGS" ] && CFLAGS="-mfloat-abi=hard -mfpu=vfp";
+	CFLAGS="$CFLAGS -mfloat-abi=hard -mfpu=vfp";
 	OPENSSL_TARGET="linux-armv4"
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
 elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
-	#[ -z "$march" ] && march=prescott;
-	#[ -z "$mtune" ] && mtune=generic;
-	[ -z "$march" ] && march=i686;
+	[ -z "$march" ] && march=prescott;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch x86 -fomit-frame-pointer -mmacosx-version-min=10.5";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	CFLAGS="$CFLAGS -m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
+	LDFLAGS="$LDFLAGS -Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin-i386-cc"
+	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
+	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 	echo "[INFO] Compiling for Intel MacOS x86"
 elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m64 -arch x86-64 -fomit-frame-pointer -mmacosx-version-min=10.5";
-	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
+	CFLAGS="$CFLAGS -m64 -arch x86-64 -fomit-frame-pointer -mmacosx-version-min=10.5";
+	LDFLAGS="$LDFLAGS -Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
+	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
+	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$COMPILE_TARGET" == "ios" ]; then
 	[ -z "$march" ] && march=armv7-a;
