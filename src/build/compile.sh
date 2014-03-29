@@ -228,7 +228,7 @@ elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
 elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
 	[ -z "$mtune" ] && mtune=generic;
-	CFLAGS="$CFLAGS -m64 -arch x86-64 -fomit-frame-pointer -mmacosx-version-min=10.5";
+	CFLAGS="$CFLAGS -m64 -arch x86_64 -fomit-frame-pointer -mmacosx-version-min=10.5";
 	LDFLAGS="$LDFLAGS -Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
@@ -627,6 +627,7 @@ $HAVE_NCURSES \
 $HAVE_READLINE \
 --enable-mbstring \
 --enable-calendar \
+#--enable-weakref
 --enable-pthreads \
 --enable-pthreads-pedantic \
 --disable-libxml \
