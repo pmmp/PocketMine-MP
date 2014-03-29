@@ -675,6 +675,7 @@ if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	set +e
 	install_name_tool -delete_rpath "$DIR/bin/php5/lib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libz.1.dylib" "@loader_path/../lib/libz.1.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libcurl.4.dylib" "@loader_path/../lib/libcurl.4.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libyaml-0.2.dylib" "@loader_path/../lib/libyaml-0.2.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libreadline.$READLINE_VERSION.dylib" "@loader_path/../lib/libreadline.$READLINE_VERSION.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libhistory.$READLINE_VERSION.dylib" "@loader_path/../lib/libhistory.$READLINE_VERSION.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
