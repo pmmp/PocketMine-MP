@@ -509,10 +509,10 @@ mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
 #WeakRef
-echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
-download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
-echo " done!"
+#echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
+#download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+#mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
+#echo " done!"
 
 #PHP YAML
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
@@ -527,10 +527,10 @@ echo " done!"
 #echo " done!"
 
 #PHP ncurses
-echo -n "[PHP ncurses] downloading $PHPNCURSES_VERSION..."
-download_file "http://pecl.php.net/get/ncurses-$PHPNCURSES_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-mv ncurses-$PHPNCURSES_VERSION "$DIR/install_data/php/ext/ncurses"
-echo " done!"
+#echo -n "[PHP ncurses] downloading $PHPNCURSES_VERSION..."
+#download_file "http://pecl.php.net/get/ncurses-$PHPNCURSES_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+#mv ncurses-$PHPNCURSES_VERSION "$DIR/install_data/php/ext/ncurses"
+#echo " done!"
 
 
 if [ "$DO_STATIC" == "yes" ]; then
@@ -627,7 +627,6 @@ $HAVE_NCURSES \
 $HAVE_READLINE \
 --enable-mbstring \
 --enable-calendar \
---enable-weakref \
 --enable-pthreads \
 --enable-pthreads-pedantic \
 --disable-libxml \
