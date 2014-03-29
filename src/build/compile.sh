@@ -216,10 +216,8 @@ elif [ "$COMPILE_TARGET" == "rpi" ]; then
 	OPENSSL_TARGET="linux-armv4"
 	echo "[INFO] Compiling for Raspberry Pi ARMv6zk hard float"
 elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
-	#[ -z "$march" ] && march=prescott;
-	#[ -z "$mtune" ] && mtune=generic;
-	#[ -z "$march" ] && march=i386;
-	#[ -z "$mtune" ] && mtune=generic;
+	[ -z "$march" ] && march=prescott;
+	[ -z "$mtune" ] && mtune=generic;
 	CFLAGS="$CFLAGS -m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
 	LDFLAGS="$LDFLAGS -Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
