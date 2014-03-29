@@ -218,9 +218,9 @@ elif [ "$COMPILE_TARGET" == "rpi" ]; then
 elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
 	#[ -z "$march" ] && march=prescott;
 	#[ -z "$mtune" ] && mtune=generic;
-	[ -z "$march" ] && march=i686;
+	[ -z "$march" ] && march=i386;
 	[ -z "$mtune" ] && mtune=generic;
-	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch x86 -fomit-frame-pointer -mmacosx-version-min=10.5";
+	[ -z "$CFLAGS" ] && CFLAGS="-m32 -arch i386 -fomit-frame-pointer -mmacosx-version-min=10.5";
 	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin-i386-cc"
