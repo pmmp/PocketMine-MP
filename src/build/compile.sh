@@ -171,6 +171,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		#zlib doesn't use the correct ranlib
 		RANLIB=$TOOLCHAIN_PREFIX-ranlib
 		OPENSSL_TARGET="darwin64-x86_64-cc"
+		CFLAGS="$CFLAGS -Qunused-arguments -Wno-unused-command-line-argument-hard-error-in-future"
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
