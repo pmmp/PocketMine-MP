@@ -627,7 +627,6 @@ $HAVE_NCURSES \
 $HAVE_READLINE \
 --enable-mbstring \
 --enable-calendar \
-#--enable-weakref
 --enable-pthreads \
 --enable-pthreads-pedantic \
 --disable-libxml \
