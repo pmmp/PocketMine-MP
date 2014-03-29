@@ -171,7 +171,8 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		#zlib doesn't use the correct ranlib
 		RANLIB=$TOOLCHAIN_PREFIX-ranlib
 		OPENSSL_TARGET="darwin64-x86_64-cc"
-		CFLAGS="$CFLAGS -Qunused-arguments -Wno-unused-command-line-argument-hard-error-in-future"
+		CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
+		ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
@@ -223,6 +224,8 @@ elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
 	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin-i386-cc"
+	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
+	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 	echo "[INFO] Compiling for Intel MacOS x86"
 elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
@@ -231,6 +234,8 @@ elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	[ -z "$LDFLAGS" ] && LDFLAGS="-Wl,-rpath,@loader_path/../lib";
 	export DYLD_LIBRARY_PATH="@loader_path/../lib"
 	OPENSSL_TARGET="darwin64-x86_64-cc"
+	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
+	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$COMPILE_TARGET" == "ios" ]; then
 	[ -z "$march" ] && march=armv7-a;
