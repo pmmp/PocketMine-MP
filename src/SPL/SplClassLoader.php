@@ -43,24 +43,16 @@ require_once("SplAutoLoader.php");
  * @author Fabien Potencier <fabien.potencier@symfony-project.org>
  */
 class SplClassLoader implements SplAutoloader{
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $fileExtension = '.php';
 
-	/**
-	 * @var boolean
-	 */
+	/** @var boolean */
 	private $includePathLookup = false;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $resources = array();
 
-	/**
-	 * @var integer
-	 */
+	/** @var integer */
 	private $mode = self::MODE_NORMAL;
 
 	/**

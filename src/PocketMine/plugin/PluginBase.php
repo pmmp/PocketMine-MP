@@ -30,17 +30,22 @@ use PocketMine\Utils\Config;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 
-	/**
-	 * @var PluginLoader
-	 */
+	/** @var PluginLoader */
 	private $loader;
 
 	/** @var \PocketMine\Server */
 	private $server;
+
+	/** @var bool */
 	private $isEnabled = false;
+
+	/** @var bool */
 	private $initialized = false;
+
 	/** @var PluginDescription */
 	private $description;
+
+	/** @var string */
 	private $dataFolder;
 	private $config;
 	/** @var string */
@@ -234,7 +239,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return Server
 	 */
 	public final function getServer(){
-		return $this->dataFolder;
+		return $this->server;
 	}
 
 	/**
