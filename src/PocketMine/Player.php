@@ -63,6 +63,7 @@ use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\Recipes\Crafting;
+use PocketMine\Scheduler\CallbackTask;
 use PocketMine\Tile\Chest;
 use PocketMine\Tile\Furnace;
 use PocketMine\Tile\Sign;
@@ -79,7 +80,7 @@ use PocketMine\Utils\Utils;
  * Class Player
  * @package PocketMine
  */
-class Player extends RealHuman /*TODO: implements CommandSender*/{
+class Player extends RealHuman/* implements CommandSender*/{
 	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
@@ -155,6 +156,11 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	private $received = array();
 
 	/**
+	 * @var \PocketMine\Scheduler\TaskHandler[]
+	 */
+	private $tasks = array();
+
+	/**
 	 * @param integer $clientID
 	 * @param string  $ip
 	 * @param integer $port
@@ -166,7 +172,6 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		$this->server = Server::getInstance();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
-		$this->CID = Server::clientID($ip, $port);
 		Player::$list[$this->CID] = $this;
 		$this->ip = $ip;
 		$this->port = $port;
@@ -180,9 +185,9 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		$this->packetStats = array(0, 0);
 		$this->buffer = new Packet(Info::DATA_PACKET_0);
 		$this->buffer->data = array();
-		$this->server->schedule(2, array($this, "handlePacketQueues"), array(), true);
-		$this->server->schedule(20 * 60, array($this, "clearQueue"), array(), true);
-		$this->evid[] = $this->server->event("server.close", array($this, "close"));
+		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "handlePacketQueues")), 1);
+		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "clearQueue")), 20 * 60);
+
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
 	}
 
@@ -244,16 +249,16 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	 * Sends, if available, the next ordered chunk to the client
 	 *
 	 * @param bool $force
-	 * @param null $ev
+	 * @param bool $ev
 	 *
 	 * @return bool|void
 	 */
 	public function getNextChunk($force = false, $ev = null){
 		if($this->connected === false){
-			return false;
+			return;
 		}
 
-		if($ev === "server.schedule"){
+		if($ev === true){
 			--$this->chunkScheduled;
 			if($this->chunkScheduled < 0){
 				$this->chunkScheduled = 0;
@@ -263,10 +268,9 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		foreach($this->chunkCount as $count => $t){
 			if(isset($this->recoveryQueue[$count]) or isset($this->resendQueue[$count])){
 				if($this->chunkScheduled === 0){
-					$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+					$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
 					++$this->chunkScheduled;
 				}
-
 				return;
 			}else{
 				unset($this->chunkCount[$count]);
@@ -291,7 +295,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		$distance = @$this->chunksOrder[$index];
 		if($index === null or $distance === null){
 			if($this->chunkScheduled === 0){
-				$this->server->schedule(40, array($this, "getNextChunk"));
+				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk")), 60);
 			}
 
 			return false;
@@ -302,7 +306,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		if(!$this->level->isChunkPopulated($X, $Z)){
 			$this->orderChunks();
 			if($this->chunkScheduled === 0 or $force === true){
-				$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk")), MAX_CHUNK_RATE);
 				++$this->chunkScheduled;
 			}
 
@@ -331,7 +335,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		$this->lastChunk = array($X, $Z);
 
 		if($this->chunkScheduled === 0 or $force === true){
-			$this->server->schedule(MAX_CHUNK_RATE, array($this, "getNextChunk"));
+			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk")), MAX_CHUNK_RATE);
 			++$this->chunkScheduled;
 		}
 	}
@@ -501,7 +505,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 			$this->updateMetadata();
 		}*/
 		$this->setSpawn($pos);
-		$this->server->schedule(60, array($this, "checkSleep"));
+		$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "checkSleep")), 60);
 
 		return true;
 	}
@@ -534,6 +538,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 
 	public function checkSleep(){
 		if($this->sleeping !== false){
+			//TODO
 			if($this->server->api->time->getPhase($this->level) === "night"){
 				foreach($this->level->getPlayers() as $p){
 					if($p->sleeping === false){
@@ -554,6 +559,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	 */
 	public function eventHandler($data, $event){
 		switch($event){
+			//TODO, obsolete
 			case "tile.update":
 				if($data->level === $this->level){
 					if($data instanceof Furnace){
@@ -688,12 +694,13 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 
 		if(($this->gamemode & 0x01) === ($gm & 0x01)){
 			$this->gamemode = $gm;
-			$this->sendMessage("Your gamemode has been changed to " . $this->getGamemode() . ".\n");
+			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ".\n");
 		}else{
 			$this->blocked = true;
 			$this->gamemode = $gm;
-			$this->sendMessage("Your gamemode has been changed to " . $this->getGamemode() . ", you've to do a forced reconnect.\n");
-			$this->server->schedule(30, array($this, "close"), "gamemode change"); //Forces a kick
+			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ", you've to do a forced reconnect.\n");
+			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "close"), array($this->username . " has left the game", "gamemode change")), 30);
+
 		}
 		$this->sendSettings();
 
@@ -748,19 +755,6 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		$pk = new AdventureSettingsPacket;
 		$pk->flags = $flags;
 		$this->dataPacket($pk);
-	}
-
-	public function getGamemodeString(){
-		switch($this->gamemode){
-			case 0:
-				return "survival";
-			case 1:
-				return "creative";
-			case 2:
-				return "adventure";
-			case 3:
-				return "view";
-		}
 	}
 
 	public function measureLag(){
@@ -949,7 +943,9 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				$this->username = $packet->username;
 				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
-				if(count(Player::$list) > $this->server->maxClients and !$this->server->api->ban->isOp($this->iusername)){
+
+				//TODO: op things
+				if(count(Player::$list) > $this->server->getMaxPlayers() and !$this->server->api->ban->isOp($this->iusername)){
 					$this->kick("server full");
 
 					return;
@@ -981,10 +977,12 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					return;
 				}
 
+				//TODO: whitelist things
 				if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
 					$this->close($this->username . " has left the game", "Server is white-listed");
 
 					return;
+				//TODO: ban things
 				}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
 					$this->close($this->username . " has left the game", "You are banned");
 
@@ -1071,14 +1069,16 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					$this->dataPacket($pk);
 				}
 
-				$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
-				$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
+				//TODO: new events, or remove them!
+				//$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
+				//$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
+				//$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
+				//$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
+				//$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
+				//$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 				$this->lastMeasure = microtime(true);
-				$this->server->schedule(50, array($this, "measureLag"), array(), true);
+				$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "measureLag")), 50);
+
 				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
 				$this->server->getPluginManager()->callEvent(new Event\Player\PlayerJoinEvent($this, $this->username . " joined the game"));
@@ -1096,12 +1096,13 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 						//$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
 						$this->spawnToAll();
-						$this->sendMessage($this->server->motd . "\n");
+						$this->sendMessage($this->server->getMotd() . "\n");
 
 						$this->sendInventory();
 						$this->sendSettings();
 						$this->sendArmor();
-						$this->server->schedule(30, array($this, "orderChunks"), array(), true);
+						$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
+
 						$this->blocked = false;
 
 						$pk = new SetTimePacket;
@@ -1111,9 +1112,11 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 
 						$pos = new Position($this->x, $this->y, $this->z, $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
-						$this->teleport($pos);
+						$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerRespawnEvent($this, $pos));
+
+						$this->teleport($ev->getRespawnPosition());
 						$this->sendBuffer();
-						$this->server->handle("player.spawn", $this);
+
 						break;
 					case 2: //Chunk loaded?
 						break;
@@ -1273,7 +1276,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					$pk->meta = $block->getMetadata();
 					$this->dataPacket($pk);
 					break;
-				}elseif($packet->face === 0xff and $this->server->handle("player.action", $data) !== false){
+				}elseif($packet->face === 0xff){
+					//TODO: add event
 					$this->inAction = true;
 					$this->startAction = microtime(true);
 					//$this->updateMetadata();
@@ -1532,15 +1536,15 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				$this->server->api->dhandle("entity.animate", array("eid" => $packet->eid, "entity" => $this->entity, "action" => $packet->action));
 				break;*/
 			case ProtocolInfo::RESPAWN_PACKET:
-				if($this->spawned === false){
-					break;
-				}
-				if(@$this->entity->dead === false){
+				if($this->spawned === false or $this->dead === false){
 					break;
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$this->teleport($this->spawnPosition);
+
+				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerRespawnEvent($this, $this->spawnPosition));
+
+				$this->teleport($ev->getRespawnPosition());
 				//$this->entity->fire = 0;
 				//$this->entity->air = 300;
 				//$this->entity->setHealth(20, "respawn", true);
@@ -1548,7 +1552,6 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 
 				$this->sendInventory();
 				$this->blocked = false;
-				$this->server->handle("player.respawn", $this);
 				break;
 			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
@@ -1637,10 +1640,14 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
-					if($message{0} === "/"){ //Command
-						$this->server->api->console->run(substr($message, 1), $this);
+					$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerCommandPreprocessEvent($this, $message));
+					if($ev->isCancelled()){
+						break;
+					}
+					if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
+						$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 					}else{
-						$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerChatEvent($this, $message));
+						$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerChatEvent($this, $ev->getMessage()));
 						if(!$ev->isCancelled()){
 							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 						}
@@ -1757,7 +1764,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					$item = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($slotn);
-					if($this->server->api->dhandle("player.container.slot", array(
+					//TODO: container access events?
+					/*if($this->server->api->dhandle("player.container.slot", array(
 							"tile" => $tile,
 							"slot" => $packet->slot,
 							"offset" => $offset,
@@ -1772,7 +1780,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 						$pk->item = $slot;
 						$this->dataPacket($pk);
 						break;
-					}
+					}*/
 					if($item->getID() !== Item::AIR and $slot->getID() == $item->getID()){
 						if($slot->getCount() < $item->getCount()){
 							$it = clone $item;
@@ -1811,7 +1819,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 					$item = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($packet->slot);
-					if($this->server->api->dhandle("player.container.slot", array(
+					//TODO: container access events?
+					/*if($this->server->api->dhandle("player.container.slot", array(
 							"tile" => $tile,
 							"slot" => $packet->slot,
 							"slotdata" => $slot,
@@ -1825,7 +1834,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 						$pk->item = $slot;
 						$this->dataPacket($pk);
 						break;
-					}
+					}*/
 
 					if($tile instanceof Furnace and $packet->slot == 2){
 						switch($slot->getID()){
@@ -1885,7 +1894,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				}
 				break;
 			default:
-				console("[DEBUG] Unhandled 0x" . dechex($packet->pid()) . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true), true, true, 2);
+				console("[DEBUG] Unhandled " . $packet->pid() . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true), true, true, 2);
 				break;
 		}
 	}
@@ -2098,7 +2107,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	public static function getOffline($name){
 		$server = Server::getInstance();
 		$iname = strtolower($name);
-		if(!file_exists(\PocketMine\DATA . "players/" . $iname . ".dat")){
+		if(!file_exists(Server::getInstance()->getDataPath() . "players/" . $iname . ".dat")){
 			$spawn = Level::getDefault()->getSafeSpawn();
 			$nbt = new Compound(false, array(
 				new Enum("Pos", array(
@@ -2114,7 +2123,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				new Byte("SpawnForced", 1), //TODO
 				new Enum("Inventory", array()),
 				new Compound("Achievements", array()),
-				new Int("playerGameType", $server->gamemode),
+				new Int("playerGameType", $server->getGamemode()),
 				new Enum("Motion", array(
 					new Double(0, 0.0),
 					new Double(1, 0.0),
@@ -2135,8 +2144,8 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 			$nbt->Inventory->setTagType(NBT::TAG_Compound);
 			$nbt->Motion->setTagType(NBT::TAG_Double);
 			$nbt->Rotation->setTagType(NBT::TAG_Float);
-			if(file_exists(\PocketMine\DATA . "players/" . $iname . ".yml")){
-				$data = new Config(\PocketMine\DATA . "players/" . $iname . ".yml", Config::YAML, array());
+			if(file_exists(Server::getInstance()->getDataPath() . "players/" . $iname . ".yml")){
+				$data = new Config(Server::getInstance()->getDataPath() . "players/" . $iname . ".yml", Config::YAML, array());
 				$nbt["playerGameType"] = (int) $data->get("gamemode");
 				$nbt["Level"] = $data->get("position")["level"];
 				$nbt["Pos"][0] = $data->get("position")["x"];
@@ -2183,7 +2192,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 				foreach($data->get("achievements") as $achievement => $status){
 					$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
 				}
-				unlink(\PocketMine\DATA . "players/" . $iname . ".yml");
+				unlink(Server::getInstance()->getDataPath() . "players/" . $iname . ".yml");
 			}else{
 				console("[NOTICE] Player data not found for \"" . $iname . "\", creating new profile");
 				Player::saveOffline($name, $nbt);
@@ -2191,7 +2200,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 
 		}else{
 			$nbt = new NBT(NBT::BIG_ENDIAN);
-			$nbt->readCompressed(file_get_contents(\PocketMine\DATA . "players/" . $iname . ".dat"));
+			$nbt->readCompressed(file_get_contents(Server::getInstance()->getDataPath() . "players/" . $iname . ".dat"));
 			$nbt = $nbt->getData();
 		}
 
@@ -2207,7 +2216,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	public static function saveOffline($name, Compound $nbtTag){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($nbtTag);
-		file_put_contents(\PocketMine\DATA . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
+		file_put_contents(Server::getInstance()->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
 	}
 
 	/**
@@ -2234,7 +2243,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	/**
 	 * Broadcasts a Minecraft packet to a list of players
 	 *
-	 * @param array      $players
+	 * @param Player[]      $players
 	 * @param DataPacket $packet
 	 */
 	public static function broadcastPacket(array $players, DataPacket $packet){
@@ -2244,16 +2253,16 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 	}
 
 	/**
-	 * @param array $craft
-	 * @param array $recipe
-	 * @param       $type
+	 * @param Item[] $craft
+	 * @param Item[] $recipe
+	 * @param int    $type
 	 *
 	 * @return array|bool
 	 */
 	public function craftItems(array $craft, array $recipe, $type){
 		$craftItem = array(0, true, 0);
 		unset($craft[-1]);
-		foreach($craft as $slot => $item){
+		foreach($craft as $item){
 			if($item instanceof Item){
 				$craftItem[0] = $item->getID();
 				if($item->getMetadata() !== $craftItem[1] and $craftItem[1] !== true){
@@ -2267,7 +2276,7 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		}
 
 		$recipeItems = array();
-		foreach($recipe as $slot => $item){
+		foreach($recipe as $item){
 			if(!isset($recipeItems[$item->getID()])){
 				$recipeItems[$item->getID()] = array($item->getID(), $item->getMetadata(), $item->getCount());
 			}else{
@@ -2288,10 +2297,12 @@ class Player extends RealHuman /*TODO: implements CommandSender*/{
 		}
 
 		if(is_array($res)){
+			//TODO: CraftItemEvent
+			//$this->server->getPluginManager($ev = new CraftItemEvent($this, $recipe, $craft, $type));
+			//if($ev->isCancelled()){
+			//	return false;
+			//}
 
-			if($this->server->api->dhandle("player.craft", array("player" => $this, "recipe" => $recipe, "craft" => $craft, "type" => $type)) === false){
-				return false;
-			}
 			foreach($recipe as $slot => $item){
 				$s = $this->getSlot($slot);
 				$s->setCount($s->getCount() - $item->getCount());

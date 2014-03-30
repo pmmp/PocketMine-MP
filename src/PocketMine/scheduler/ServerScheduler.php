@@ -38,14 +38,10 @@ class ServerScheduler{
 	 */
 	protected $tasks = array();
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $ids = 1;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $currentTick = 0;
 
 	public function __construct(){

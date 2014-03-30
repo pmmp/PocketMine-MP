@@ -25,14 +25,10 @@ use PocketMine\Plugin\Plugin;
 
 class PluginCommand extends Command{
 
-	/**
-	 * @var Plugin
-	 */
+	/** @var Plugin */
 	private $owningPlugin;
 
-	/**
-	 * @var CommandExecutor
-	 */
+	/** @var CommandExecutor */
 	private $executor;
 
 	/**

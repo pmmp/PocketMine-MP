@@ -35,9 +35,7 @@ use PocketMine\Utils\Utils;
 use PocketMine\Utils\VersionString;
 
 class ServerOld{
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private static $instance;
 
 	public $tCnt;

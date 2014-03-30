@@ -23,9 +23,7 @@ namespace PocketMine\Scheduler;
 
 abstract class Task{
 
-	/**
-	 * @var TaskHandler
-	 */
+	/** @var TaskHandler */
 	private $taskHandler = null;
 
 	/**

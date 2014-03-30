@@ -37,14 +37,10 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	 */
 	protected $blockTouched;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $blockFace;
 
-	/**
-	 * @var \PocketMine\Item\Item
-	 */
+	/** @var \PocketMine\Item\Item */
 	protected $item;
 
 	public function __construct(Player $player, Item $item, Block $block, $face){

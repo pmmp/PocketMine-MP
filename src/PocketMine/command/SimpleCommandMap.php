@@ -21,6 +21,7 @@
 
 namespace PocketMine\Command;
 
+use PocketMine\Command\Defaults\DefaultGamemodeCommand;
 use PocketMine\Command\Defaults\HelpCommand;
 use PocketMine\Command\Defaults\PluginsCommand;
 use PocketMine\Command\Defaults\SeedCommand;
@@ -37,9 +38,7 @@ class SimpleCommandMap implements CommandMap{
 	 */
 	protected $knownCommands = array();
 
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private $server;
 
 	public function __construct(Server $server){
@@ -55,6 +54,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new HelpCommand("help"));
 		$this->register("pocketmine", new StopCommand("stop"));
 		$this->register("pocketmine", new TellCommand("tell"));
+		$this->register("pocketmine", new DefaultGamemodeCommand("defaultgamemode"));
 	}
 
 

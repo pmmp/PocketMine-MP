@@ -30,9 +30,7 @@ use PocketMine\Server;
  */
 class FolderPluginLoader implements PluginLoader{
 
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private $server;
 
 	/**

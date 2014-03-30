@@ -31,7 +31,6 @@ class LevelAPI{
 	}
 
 	public function init(){
-		$this->server->api->console->register("seed", "[world]", array($this, "commandHandler"));
 		$this->server->api->console->register("save-all", "", array($this, "commandHandler"));
 		$this->server->api->console->register("save-on", "", array($this, "commandHandler"));
 		$this->server->api->console->register("save-off", "", array($this, "commandHandler"));
@@ -52,16 +51,6 @@ class LevelAPI{
 			case "save-off":
 				$this->server->saveEnabled = false;
 				break;
-			case "seed":
-				if(!isset($params[0]) and ($issuer instanceof Player)){
-					$output .= "Seed: " . $issuer->level->getSeed() . "\n";
-				}elseif(isset($params[0])){
-					if(($lv = Level::get(trim(implode(" ", $params)))) !== false){
-						$output .= "Seed: " . $lv->getSeed() . "\n";
-					}
-				}else{
-					$output .= "Seed: " . Level::getDefault()->getSeed() . "\n";
-				}
 		}
 
 		return $output;

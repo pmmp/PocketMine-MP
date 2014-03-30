@@ -24,9 +24,7 @@ namespace PocketMine\Permission;
 use PocketMine\Plugin\Plugin;
 
 class PermissionAttachment{
-	/**
-	 * @var PermissionRemovedExecutor
-	 */
+	/** @var PermissionRemovedExecutor */
 	private $removed = null;
 
 	/**
@@ -34,14 +32,10 @@ class PermissionAttachment{
 	 */
 	private $permissions = array();
 
-	/**
-	 * @var Permissible
-	 */
+	/** @var Permissible */
 	private $permissible;
 
-	/**
-	 * @var Plugin
-	 */
+	/** @var Plugin */
 	private $plugin;
 
 	/**

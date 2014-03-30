@@ -27,29 +27,19 @@ use PocketMine\Event\Listener;
 
 class RegisteredListener{
 
-	/**
-	 * @var Listener
-	 */
+	/** @var Listener */
 	private $listener;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $priority;
 
-	/**
-	 * @var Plugin
-	 */
+	/** @var Plugin */
 	private $plugin;
 
-	/**
-	 * @var EventExecutor
-	 */
+	/** @var EventExecutor */
 	private $executor;
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	private $ignoreCancelled;
 
 	/**

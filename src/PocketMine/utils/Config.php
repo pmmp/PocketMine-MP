@@ -38,21 +38,13 @@ class Config{
 	const ENUM = 5; // .txt, .list, .enum
 	const ENUMERATION = Config::ENUM;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	private $config;
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $file;
-	/**
-	 * @var boolean
-	 */
+	/** @var boolean */
 	private $correct;
-	/**
-	 * @var integer
-	 */
+	/** @var integer */
 	private $type = Config::DETECT;
 
 	public static $formats = array(

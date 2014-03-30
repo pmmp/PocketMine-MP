@@ -23,27 +23,51 @@ namespace PocketMine\Event\Player;
 
 use PocketMine\Event\Cancellable;
 use PocketMine\Player;
+use PocketMine\Server;
 
 /**
- * Called when a player joins, after things have been correctly set up (you can change anything now)
+ * Called when a player runs a command or chats, early in the process
+ *
+ * You don't want to use this except for a few cases like logging commands,
+ * blocking commands on certain places, or applying modifiers.
+ *
+ * The message contains a slash at the start
  */
-class PlayerLoginEvent extends PlayerEvent implements Cancellable{
+class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
 	/** @var string */
-	protected $kickMessage;
+	protected $message;
 
-	public function __construct(Player $player, $kickMessage){
+
+	/**
+	 * @param Player   $player
+	 * @param string   $message
+	 */
+	public function __construct(Player $player, $message){
 		$this->player = $player;
-		$this->kickMessage = $kickMessage;
+		$this->message = $message;
 	}
 
-	public function setKickMessage($kickMessage){
-		$this->kickMessage = $kickMessage;
+	/**
+	 * @return string
+	 */
+	public function getMessage(){
+		return $this->message;
 	}
 
-	public function getKickMessage(){
-		return $this->kickMessage;
+	/**
+	 * @param string $message
+	 */
+	public function setMessage($message){
+		$this->message = $message;
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function setPlayer(Player $player){
+		$this->player = $player;
 	}
 
 }

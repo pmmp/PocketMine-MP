@@ -29,9 +29,7 @@ use PocketMine\Player;
 class PlayerJoinEvent extends PlayerEvent{
 	public static $handlerList = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $joinMessage;
 
 	public function __construct(Player $player, $joinMessage){

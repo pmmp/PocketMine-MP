@@ -30,9 +30,7 @@ use PocketMine\Player;
 class PlayerGameModeChangeEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $gamemode;
 
 	public function __construct(Player $player, $newGamemode){

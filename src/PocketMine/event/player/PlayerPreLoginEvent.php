@@ -30,9 +30,7 @@ use PocketMine\Player;
 class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $kickMessage;
 
 	public function __construct(Player $player, $kickMessage){

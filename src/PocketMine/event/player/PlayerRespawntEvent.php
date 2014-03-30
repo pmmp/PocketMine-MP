@@ -24,45 +24,38 @@ namespace PocketMine\Event\Player;
 use PocketMine\Block\Block;
 use PocketMine\Event\Cancellable;
 use PocketMine\Item\Item;
+use PocketMine\Level\Position;
 use PocketMine\Player;
 
 /**
- * Called when a player interacts or touches a block (including air?)
+ * Called when a player is respawned (or first time spawned)
  */
-class PlayerInteractEvent extends PlayerEvent implements Cancellable{
+class PlayerRespawnEvent extends PlayerEvent{
 	public static $handlerList = null;
 
-	/**
-	 * @var \PocketMine\Block\Block;
-	 */
-	protected $blockTouched;
+	/** @var Position */
+	protected $position;
 
 	/**
-	 * @var int
+	 * @param Player   $player
+	 * @param Position $position
 	 */
-	protected $blockFace;
-
-	/**
-	 * @var \PocketMine\Item\Item
-	 */
-	protected $item;
-
-	public function __construct(Player $player, Item $item, Block $block, $face){
-		$this->blockTouched = $block;
+	public function __construct(Player $player, Position $position){
 		$this->player = $player;
-		$this->item = $item;
-		$this->blockFace = (int) $face;
+		$this->position = $position;
 	}
 
-	public function getItem(){
-		return $this->item;
+	/**
+	 * @return Position
+	 */
+	public function getRespawnPosition(){
+		return $this->position;
 	}
 
-	public function getBlock(){
-		return $this->blockTouched;
-	}
-
-	public function getFace(){
-		return $this->blockFace;
+	/**
+	 * @param Position $position
+	 */
+	public function setRespawnPosition(Position $position){
+		$this->position = $position;
 	}
 }

@@ -27,9 +27,7 @@ namespace PocketMine\Event\Block;
 use PocketMine\Event\Event;
 
 abstract class BlockEvent extends Event{
-	/**
-	 * @var \PocketMine\Block\Block
-	 */
+	/** @var \PocketMine\Block\Block */
 	protected $block;
 
 	public function getBlock(){

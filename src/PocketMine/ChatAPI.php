@@ -23,9 +23,7 @@ namespace PocketMine;
 
 class ChatAPI{
 
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private $server;
 
 	function __construct(){
@@ -33,12 +31,9 @@ class ChatAPI{
 	}
 
 	public function init(){
-		$this->server->api->console->register("tell", "<player> <private message ...>", array($this, "commandHandler"));
 		$this->server->api->console->register("me", "<action ...>", array($this, "commandHandler"));
 		$this->server->api->console->register("say", "<message ...>", array($this, "commandHandler"));
-		$this->server->api->ban->cmdWhitelist("tell");
 		$this->server->api->ban->cmdWhitelist("me");
-		$this->server->api->console->alias("msg", "tell");
 	}
 
 	/**
@@ -60,18 +55,6 @@ class ChatAPI{
 				}
 				$sender = ($issuer instanceof Player) ? "Server" : ucfirst($issuer);
 				Player::broadcastMessage("[$sender] " . $s);
-				break;
-			case "me":
-				if(!($issuer instanceof Player)){
-					if($issuer === "rcon"){
-						$sender = "Rcon";
-					}else{
-						$sender = ucfirst($issuer);
-					}
-				}else{
-					$sender = $issuer->getDisplayName();
-				}
-				Player::broadcastMessage("* $sender " . implode(" ", $params));
 				break;
 			case "tell":
 				if(!isset($params[0]) or !isset($params[1])){

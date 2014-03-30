@@ -35,6 +35,7 @@ use PocketMine\Entity\Entity;
 use PocketMine\Event\HandlerList;
 use PocketMine\Event\Server\PacketReceiveEvent;
 use PocketMine\Event\Server\PacketSendEvent;
+use PocketMine\Event\Server\ServerCommandEvent;
 use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Generator;
 use PocketMine\Level\Level;
@@ -57,49 +58,31 @@ use PocketMine\Utils\Utils;
 use PocketMine\Utils\VersionString;
 
 class Server{
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private static $instance = null;
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	private $isRunning = true;
 
-	/**
-	 * @var PluginManager
-	 */
+	/** @var PluginManager */
 	private $pluginManager = null;
 
-	/**
-	 * @var ServerScheduler
-	 */
+	/** @var ServerScheduler */
 	private $scheduler = null;
 
-	/**
-	 * @var TickScheduler
-	 */
+	/** @var TickScheduler */
 	private $tickScheduler = null;
 
-	/**
-	 * @var CommandReader
-	 */
+	/** @var CommandReader */
 	private $console = null;
 
-	/**
-	 * @var SimpleCommandMap
-	 */
+	/** @var SimpleCommandMap */
 	private $commandMap = null;
 
-	/**
-	 * @var ConsoleCommandSender
-	 */
+	/** @var ConsoleCommandSender */
 	private $consoleSender;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $maxPlayers;
 
 	/**
@@ -110,9 +93,7 @@ class Server{
 	private $tickCounter;
 	private $inTick = false;
 
-	/**
-	 * @var ThreadedHandler
-	 */
+	/** @var ThreadedHandler */
 	private $interface;
 
 	private $serverID;
@@ -122,14 +103,10 @@ class Server{
 	private $dataPath;
 	private $pluginPath;
 
-	/**
-	 * @var QueryHandler
-	 */
+	/** @var QueryHandler */
 	private $queryHandler;
 
-	/**
-	 * @var Config
-	 */
+	/** @var Config */
 	private $properties;
 
 	/**
@@ -249,6 +226,61 @@ class Server{
 	 */
 	public function getGamemode(){
 		return $this->getConfigInt("gamemode", 0) & 0b11;
+	}
+
+	/**
+	 * Returns the gamemode text name
+	 *
+	 * @param int $mode
+	 *
+	 * @return string
+	 */
+	public static function getGamemodeString($mode){
+		switch((int) $mode){
+			case Player::SURVIVAL:
+				return "SURVIVAL";
+			case Player::CREATIVE:
+				return "CREATIVE";
+			case Player::ADVENTURE:
+				return "ADVENTURE";
+			case Player::SPECTATOR:
+				return "SPECTATOR";
+		}
+
+		return "UNKNOWN";
+	}
+
+	/**
+	 * Parses a string and returns a gamemode integer, -1 if not found
+	 *
+	 * @param string $str
+	 *
+	 * @return int
+	 */
+	public static function getGamemodeFromString($str){
+		switch(strtolower(trim($str))){
+			case (string) Player::SURVIVAL:
+			case "survival":
+			case "s":
+				return Player::SURVIVAL;
+
+			case (string) Player::CREATIVE:
+			case "creative":
+			case "c":
+				return Player::CREATIVE;
+
+			case (string) Player::ADVENTURE:
+			case "adventure":
+			case "a":
+				return Player::ADVENTURE;
+
+			case (string) Player::SPECTATOR:
+			case "spectator":
+			case "view":
+			case "v":
+				return Player::SPECTATOR;
+		}
+		return -1;
 	}
 
 	/**
@@ -614,7 +646,8 @@ class Server{
 
 	public function checkConsole(){
 		if(($line = $this->console->getLine()) !== null){
-			$this->dispatchCommand($this->consoleSender, $line);
+			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
+			$this->dispatchCommand($this->consoleSender, $ev->getCommand());
 		}
 	}
 
@@ -668,7 +701,7 @@ class Server{
 			pcntl_signal(SIGHUP, array($this, "close"));
 		}
 		*/
-		console("[INFO] Default game type: " . strtoupper($this->getGamemode())); //TODO: string name
+		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 		//$this->trigger("server.start", microtime(true));
 		console('[INFO] Done (' . round(microtime(true) - \PocketMine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
@@ -690,6 +723,8 @@ class Server{
 		HandlerList::unregisterAll();
 		$this->scheduler->cancelAllTasks();
 		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
+
+		$this->properties->save();
 
 		$this->tickScheduler->kill();
 		$this->console->kill();

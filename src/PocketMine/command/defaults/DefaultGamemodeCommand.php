@@ -22,21 +22,19 @@
 namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\CommandSender;
-use PocketMine\Network\Protocol\Info;
-use PocketMine\Plugin\Plugin;
+use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
-class VersionCommand extends VanillaCommand{
+class DefaultGamemodeCommand extends VanillaCommand{
 
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Gets the version of this server including any plugins in use",
-			"/version [plugin name]",
-			["ver", "about"]
+			"Set the default gamemode",
+			"/defaultgamemode <mode>"
 		);
-		$this->setPermission("pocketmine.command.version");
+		$this->setPermission("pocketmine.command.defaultgamemode");
 	}
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
@@ -45,56 +43,18 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$output = "This server is running PocketMine-MP version " . Server::getInstance()->getPocketMineVersion() . " 「" . Server::getInstance()->getCodename() . "」 (Implementing API version " . Server::getInstance()->getApiVersion() . " for Minecraft: PE " . Server::getInstance()->getVersion() . " protocol version " . Info::CURRENT_PROTOCOL . ")";
-			if(\PocketMine\GIT_COMMIT !== str_repeat("00", 20)){
-				$output .= " [git " . \PocketMine\GIT_COMMIT . "]";
-			}
-			$sender->sendMessage($output);
+			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+			return false;
+		}
+
+		$gameMode = Server::getGamemodeFromString($args[0]);
+
+		if($gameMode !== -1){
+			Server::getInstance()->setConfigInt("gamemode", $gameMode);
+			$sender->sendMessage("Default game mode set to ". strtolower(Server::getGamemodeString($gameMode)));
 		}else{
-			$pluginName = implode(" ", $args);
-			$exactPlugin = Server::getInstance()->getPluginManager()->getPlugin($pluginName);
-
-			if($exactPlugin instanceof Plugin){
-				$this->describeToSender($exactPlugin, $sender);
-
-				return true;
-			}
-
-			$found = false;
-			$pluginName = strtolower($pluginName);
-			foreach(Server::getInstance()->getPluginManager()->getPlugins() as $plugin){
-				if(stripos($plugin->getName(), $pluginName) !== false){
-					$this->describeToSender($plugin, $sender);
-					$found = true;
-				}
-			}
-
-			if(!$found){
-				$sender->sendMessage("This server is not running any plugin by that name.\nUse /plugins to get a list of plugins.");
-			}
+			$sender->sendMessage("Unknown game mode");
 		}
-
 		return true;
-	}
-
-	private function describeToSender(Plugin $plugin, CommandSender $sender){
-		$desc = $plugin->getDescription();
-		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
-
-		if($desc->getDescription() != null){
-			$sender->sendMessage($desc->getDescription());
-		}
-
-		if($desc->getWebsite() != null){
-			$sender->sendMessage("Website: " . $desc->getWebsite());
-		}
-
-		if(count($authors = $desc->getAuthors()) > 0){
-			if(count($authors) === 1){
-				$sender->sendMessage("Author: " . implode(", ", $authors));
-			}else{
-				$sender->sendMessage("Authors: " . implode(", ", $authors));
-			}
-		}
 	}
 }

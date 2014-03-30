@@ -29,21 +29,17 @@ namespace PocketMine\Scheduler;
  */
 class CallbackTask extends Task{
 
-	/**
-	 * @var callable
-	 */
+	/** @var callable */
 	protected $callable;
 
-	/**
-	 * @var array
-	 */
+	/** @var array */
 	protected $args;
 
 	/**
 	 * @param callable $callable
 	 * @param array    $args
 	 */
-	public function __construct(callable $callable, array $args){
+	public function __construct(callable $callable, array $args = array()){
 		$this->callable = $callable;
 		$this->args = $args;
 		$this->args[] = $this;

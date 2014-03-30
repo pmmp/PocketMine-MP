@@ -63,14 +63,10 @@ class Permission{
 		}
 	}
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $name;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $description;
 
 	/**
@@ -78,9 +74,7 @@ class Permission{
 	 */
 	private $children = array();
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $defaultValue;
 
 	/**

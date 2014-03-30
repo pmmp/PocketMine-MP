@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -19,27 +19,29 @@
  *
  */
 
-namespace PocketMine\Event\Entity;
+/**
+ * Inventory related events
+ */
+namespace PocketMine\Event\Player;
 
-use PocketMine\Entity\Entity;
-use PocketMine\Event\Cancellable;
-use PocketMine\Event;
-use PocketMine\Math\Vector3 as Vector3;
+use PocketMine\Event\Event;
 
-class EntityMoveEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
+abstract class InventoryEvent extends Event{
 
-	/** @var \PocketMine\Math\Vector3 */
-	private $pos;
+	/** @var Inventory */
+	protected $inventory;
 
-	public function __construct(Entity $entity, Vector3 $pos){
-		$this->entity = $entity;
-		$this->pos = $pos;
+	/**
+	 * @return Inventory
+	 */
+	public function getInventory(){
+		return $this->inventory;
 	}
 
-	public function getVector(){
-		return $this->pos;
+	/**
+	 * @return \PocketMine\Entity\Human[]
+	 */
+	public function getViewers(){
+		return $this->inventory->getViewers();
 	}
-
-
 }

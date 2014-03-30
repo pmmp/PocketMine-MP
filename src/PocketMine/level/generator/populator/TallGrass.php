@@ -28,9 +28,7 @@ use PocketMine\Math\Vector3 as Vector3;
 use PocketMine\Utils\Random;
 
 class TallGrass extends Populator{
-	/**
-	 * @var Level
-	 */
+	/** @var Level */
 	private $level;
 	private $randomAmount;
 	private $baseAmount;

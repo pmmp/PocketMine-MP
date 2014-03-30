@@ -74,9 +74,7 @@ class Level{
 	 */
 	public static $list = array();
 
-	/**
-	 * @var Level
-	 */
+	/** @var Level */
 	public static $default = null;
 
 	/**
@@ -106,15 +104,11 @@ class Level{
 
 	public $nextSave;
 
-	/**
-	 * @var LevelFormat
-	 */
+	/** @var LevelFormat */
 	public $level;
 	public $stopTime;
 	private $time, $startCheck, $startTime;
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private $server;
 	private $name, $usedChunks, $changedBlocks, $changedCount, $generator;
 
@@ -976,7 +970,7 @@ class Level{
 	 * @param int $X
 	 * @param int $Z
 	 *
-	 * @return array
+	 * @return Entity[]
 	 */
 	public function getChunkEntities($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
@@ -993,7 +987,7 @@ class Level{
 	 * @param int $X
 	 * @param int $Z
 	 *
-	 * @return array
+	 * @return Tile[]
 	 */
 	public function getChunkTiles($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);

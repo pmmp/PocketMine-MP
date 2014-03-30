@@ -30,9 +30,7 @@ use PocketMine\Player;
 class PlayerAchievementAwardedEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $achievement;
 
 	/**

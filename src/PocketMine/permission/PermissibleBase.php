@@ -25,14 +25,10 @@ use PocketMine\Plugin\Plugin;
 use PocketMine\Server;
 
 class PermissibleBase implements Permissible{
-	/**
-	 * @var ServerOperator
-	 */
+	/** @var ServerOperator */
 	private $opable = null;
 
-	/**
-	 * @var Permissible
-	 */
+	/** @var Permissible */
 	private $parent;
 
 	/**

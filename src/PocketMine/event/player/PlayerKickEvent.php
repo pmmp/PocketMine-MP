@@ -30,14 +30,10 @@ use PocketMine\Player;
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $quitMessage;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $reason;
 
 	public function __construct(Player $player, $reason, $quitMessage){

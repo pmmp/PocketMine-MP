@@ -44,39 +44,25 @@ class ServerAPI{
 
 	//TODO: Instead of hard-coding functions, use PHPDoc-compatible methods to load APIs.
 
-	/**
-	 * @var ConsoleAPI
-	 */
+	/** @var ConsoleAPI */
 	public $console;
 
-	/**
-	 * @var LevelAPI
-	 */
+	/** @var LevelAPI */
 	public $level;
 
-	/**
-	 * @var BlockAPI
-	 */
+	/** @var BlockAPI */
 	public $block;
 
-	/**
-	 * @var ChatAPI
-	 */
+	/** @var ChatAPI */
 	public $chat;
 
-	/**
-	 * @var BanAPI
-	 */
+	/** @var BanAPI */
 	public $ban;
 
-	/**
-	 * @var TimeAPI
-	 */
+	/** @var TimeAPI */
 	public $time;
 
-	/**
-	 * @var PlayerAPI
-	 */
+	/** @var PlayerAPI */
 	public $player;
 
 	/**

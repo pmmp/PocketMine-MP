@@ -24,15 +24,11 @@ namespace PocketMine\Command;
 class CommandReader extends \Thread{
 
 	private $stream;
-	/**
-	 * @var resource
-	 */
+	/** @var resource */
 	private $fp;
 	private $readline;
 
-	/**
-	 * @var \Threaded
-	 */
+	/** @var \Threaded */
 	private $buffer;
 
 	/**

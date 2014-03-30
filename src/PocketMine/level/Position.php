@@ -25,9 +25,7 @@ use PocketMine\Math\Vector3 as Vector3;
 
 class Position extends Vector3{
 
-	/**
-	 * @var Level
-	 */
+	/** @var Level */
 	public $level = null;
 
 	/**

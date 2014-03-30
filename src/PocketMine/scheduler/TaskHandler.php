@@ -23,34 +23,22 @@ namespace PocketMine\Scheduler;
 
 class TaskHandler{
 
-	/**
-	 * @var Task
-	 */
+	/** @var Task */
 	protected $task;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $taskId;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $delay;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $period;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	protected $nextRun;
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	protected $cancelled = false;
 
 	/**
@@ -130,7 +118,9 @@ class TaskHandler{
 	}
 
 	public function cancel(){
-		$this->task->onCancel();
+		if(!$this->isCancelled()){
+			$this->task->onCancel();
+		}
 		$this->remove();
 	}
 

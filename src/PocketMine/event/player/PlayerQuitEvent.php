@@ -29,9 +29,7 @@ use PocketMine\Player;
 class PlayerQuitEvent extends PlayerEvent{
 	public static $handlerList = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $quitMessage;
 
 	public function __construct(Player $player, $quitMessage){

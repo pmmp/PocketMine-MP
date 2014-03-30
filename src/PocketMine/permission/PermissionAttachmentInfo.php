@@ -23,24 +23,16 @@ namespace PocketMine\Permission;
 
 
 class PermissionAttachmentInfo{
-	/**
-	 * @var Permissible
-	 */
+	/** @var Permissible */
 	private $permissible;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $permission;
 
-	/**
-	 * @var PermissionAttachment
-	 */
+	/** @var PermissionAttachment */
 	private $attachment;
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	private $value;
 
 	/**

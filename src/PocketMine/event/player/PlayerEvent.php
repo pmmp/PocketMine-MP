@@ -27,9 +27,7 @@ namespace PocketMine\Event\Player;
 use PocketMine\Event\Event;
 
 abstract class PlayerEvent extends Event{
-	/**
-	 * @var \PocketMine\Player
-	 */
+	/** @var \PocketMine\Player */
 	protected $player;
 
 	public function getPlayer(){

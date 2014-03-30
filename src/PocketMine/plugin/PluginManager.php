@@ -35,19 +35,13 @@ use PocketMine\Server;
  */
 class PluginManager{
 
-	/**
-	 * @var PluginManager
-	 */
+	/** @var PluginManager */
 	private static $instance = null;
 
-	/**
-	 * @var Server
-	 */
+	/** @var Server */
 	private $server;
 
-	/**
-	 * @var SimpleCommandMap
-	 */
+	/** @var SimpleCommandMap */
 	private $commandMap;
 
 	/**

@@ -27,9 +27,7 @@ namespace PocketMine\Event\Entity;
 use PocketMine\Event\Event;
 
 abstract class EntityEvent extends Event{
-	/**
-	 * @var \PocketMine\Entity\Entity
-	 */
+	/** @var \PocketMine\Entity\Entity */
 	protected $entity;
 
 	public function getEntity(){

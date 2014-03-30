@@ -29,19 +29,13 @@ use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
 abstract class Command{
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $name;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $nextLabel;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $label;
 
 	/**
@@ -54,29 +48,19 @@ abstract class Command{
 	 */
 	private $activeAliases = array();
 
-	/**
-	 * @var CommandMap
-	 */
+	/** @var CommandMap */
 	private $commandMap = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $description = "";
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $usageMessage;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $permission = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $permissionMessage = null;
 
 	/**

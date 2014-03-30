@@ -28,9 +28,7 @@ use PocketMine\Plugin\Plugin;
  */
 abstract class PluginTask extends Task{
 
-	/**
-	 * @var Plugin
-	 */
+	/** @var Plugin */
 	protected $owner;
 
 	/**

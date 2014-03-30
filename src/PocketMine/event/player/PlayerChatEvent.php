@@ -30,14 +30,10 @@ use PocketMine\Player;
 class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $message;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $format;
 
 	/**

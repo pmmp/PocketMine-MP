@@ -29,19 +29,13 @@ use PocketMine\Player;
 class BlockBreakEvent extends BlockEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var \PocketMine\Player
-	 */
+	/** @var \PocketMine\Player */
 	protected $player;
 
-	/**
-	 * @var \PocketMine\Item\Item
-	 */
+	/** @var \PocketMine\Item\Item */
 	protected $item;
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	protected $instaBreak = false;
 
 	public function __construct(Player $player, Block $block, Item $item, $instaBreak = false){

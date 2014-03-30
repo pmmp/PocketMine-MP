@@ -32,9 +32,7 @@ use PocketMine\Level\Position;
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var Position
-	 */
+	/** @var Position */
 	protected $position;
 
 	/**
@@ -42,9 +40,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 */
 	protected $blocks;
 
-	/**
-	 * @var float
-	 */
+	/** @var float */
 	protected $yield;
 
 	/**

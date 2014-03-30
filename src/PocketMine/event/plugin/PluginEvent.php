@@ -30,9 +30,7 @@ use PocketMine\Plugin\Plugin;
 
 abstract class PluginEvent extends Event{
 
-	/**
-	 * @var Plugin
-	 */
+	/** @var Plugin */
 	private $plugin;
 
 	/**

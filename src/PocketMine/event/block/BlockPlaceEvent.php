@@ -32,14 +32,10 @@ use PocketMine\Player;
 class BlockPlaceEvent extends BlockEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/**
-	 * @var \PocketMine\Player
-	 */
+	/** @var \PocketMine\Player */
 	protected $player;
 
-	/**
-	 * @var \PocketMine\Item\Item
-	 */
+	/** @var \PocketMine\Item\Item */
 	protected $item;
 
 
