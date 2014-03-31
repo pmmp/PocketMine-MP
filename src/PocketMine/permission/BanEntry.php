@@ -61,7 +61,10 @@ class BanEntry{
 		return $this->expirationDate;
 	}
 
-	public function setExpires(\DateTime $date){
+	/**
+	 * @param \DateTime $date
+	 */
+	public function setExpires($date){
 		$this->expirationDate = $date;
 	}
 
@@ -89,7 +92,6 @@ class BanEntry{
 		$str .= $this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format);
 		$str .= "|";
 		$str .= $this->getReason();
-		$str .= "|";
 		return $str;
 	}
 

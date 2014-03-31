@@ -608,8 +608,12 @@ class Server{
 		if(file_exists($this->dataPath . "banned.txt") and !file_exists($this->dataPath . "banned-players.txt")){
 			@rename($this->dataPath . "banned.txt", $this->dataPath . "banned-players.txt");
 		}
+		@touch($this->dataPath . "banned-players.txt");
 		$this->banByName = new BanList($this->dataPath . "banned-players.txt");
+		$this->banByName->load();
+		@touch($this->dataPath . "banned-ips.txt");
 		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
+		$this->banByIP->load();
 
 		$this->tickScheduler = new TickScheduler(20);
 		$this->scheduler = new ServerScheduler();

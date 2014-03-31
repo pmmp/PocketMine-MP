@@ -25,7 +25,7 @@ use PocketMine\Server;
 
 class BanList{
 
-	/** @var string[] */
+	/** @var BanEntry[] */
 	private $list = array();
 
 	/** @var string */
@@ -56,7 +56,7 @@ class BanList{
 	}
 
 	/**
-	 * @return string[]
+	 * @return BanEntry[]
 	 */
 	public function getEntries(){
 		$this->removeExpired();
@@ -84,6 +84,25 @@ class BanList{
 	public function add(BanEntry $entry){
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
+	}
+
+	/**
+	 * @param string    $target
+	 * @param string    $reason
+	 * @param \DateTime $expires
+	 * @param string    $source
+	 *
+	 * @return BanEntry
+	 */
+	public function addBan($target, $reason = null, $expires = null, $source = null){
+		$entry = new BanEntry($target);
+		$entry->setSource($source != null ? $source : $entry->getSource());
+		$entry->setExpires($expires);
+		$entry->setReason($reason != null ? $reason : $entry->getReason());
+
+		$this->list[$entry->getName()] = $entry;
+		$this->save();
+		return $entry;
 	}
 
 	/**
