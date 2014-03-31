@@ -24,6 +24,7 @@ namespace PocketMine\Plugin;
 use PocketMine\Command\PluginCommand;
 use PocketMine\Command\SimpleCommandMap;
 use PocketMine\Event\Event;
+use PocketMine\Event\EventPriority;
 use PocketMine\Event\HandlerList;
 use PocketMine\Event\Listener;
 use PocketMine\Permission\Permissible;
@@ -598,6 +599,45 @@ class PluginManager{
 				continue;
 			}
 			$registration->callEvent($event);
+		}
+	}
+
+	/**
+	 * Registers all the events in the given Listener class
+	 *
+	 * @param Listener $listener
+	 * @param Plugin   $plugin
+	 */
+	public function registerEvents(Listener $listener, Plugin $plugin){
+		if(!$plugin->isEnabled()){
+			trigger_error("Plugin attempted to register ".get_class($listener)." while not enabled", E_USER_WARNING);
+			return;
+		}
+
+		$reflection = new \ReflectionClass(get_class($listener));
+		foreach($reflection->getMethods() as $method){
+			if(!$method->isStatic()){
+				$priority = EventPriority::NORMAL;
+				$ignoreCancelled = false;
+				if(preg_match("/^[\t ]*\\* @priority ([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
+					$matches[1] = strtoupper($matches[1]);
+					if(defined("PocketMine\\Event\\EventPriority::".$matches[1])){
+						$priority = constant("PocketMine\\Event\\EventPriority::".$matches[1]);
+					}
+				}
+				if(preg_match("/^[\t ]*\\* @ignoreCancelled ([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
+					$matches[1] = strtolower($matches[1]);
+					if($matches[1] === "false"){
+						$ignoreCancelled = false;
+					}elseif($matches[1] === "true"){
+						$ignoreCancelled = true;
+					}
+				}
+				$parameters = $method->getParameters();
+				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), "PocketMine\\Event\\Event")){
+					$this->registerEvent($parameters[0]->getClass()->getName(), $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
+				}
+			}
 		}
 	}
 
