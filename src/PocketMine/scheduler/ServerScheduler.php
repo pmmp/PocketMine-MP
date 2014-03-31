@@ -45,7 +45,7 @@ class ServerScheduler{
 	protected $currentTick = 0;
 
 	public function __construct(){
-		$this->queue = new \SplPriorityQueue();
+		$this->queue = new TaskQueue();
 	}
 
 	/**
@@ -165,14 +165,13 @@ class ServerScheduler{
 	 */
 	public function mainThreadHeartbeat($currentTick){
 		$this->currentTick = $currentTick;
-
 		while($this->isReady($this->currentTick)){
 			$task = $this->queue->extract();
 			if($task->isCancelled()){
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
 			}else{
-				$task->run();
+				$task->run($this->currentTick);
 			}
 			if($task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());

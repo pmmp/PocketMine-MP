@@ -27,6 +27,7 @@ namespace PocketMine\Network;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
+use PocketMine\Server;
 
 class ThreadedHandler extends \Thread{
 	protected $bandwidthUp;
@@ -61,7 +62,7 @@ class ThreadedHandler extends \Thread{
 	}
 
 	public function close(){
-		$this->synchronized(function (){
+		$this->synchronized(function(){
 			$this->stop = true;
 			socket_close($this->socket);
 		});
@@ -73,9 +74,7 @@ class ThreadedHandler extends \Thread{
 	 * @return float
 	 */
 	public function getUploadSpeed(){
-		return $this->synchronized(function (){
-			return $this->bandwidthUp / max(1, microtime(true) - $this->bandwidthTime);
-		});
+		return $this->bandwidthUp / max(1, microtime(true) - $this->bandwidthTime);
 	}
 
 	/**
@@ -84,9 +83,7 @@ class ThreadedHandler extends \Thread{
 	 * @return float
 	 */
 	public function getDownloadSpeed(){
-		return $this->synchronized(function (){
-			return $this->bandwidthDown / max(1, microtime(true) - $this->bandwidthTime);
-		});
+		return $this->bandwidthDown / max(1, microtime(true) - $this->bandwidthTime);
 	}
 
 
@@ -94,10 +91,7 @@ class ThreadedHandler extends \Thread{
 	 * @return Packet
 	 */
 	public function readPacket(){
-		return $this->packets->synchronized(function (){
-			//$this->notify();
-			return $this->packets->shift();
-		});
+		return $this->packets->shift();
 	}
 
 	/**
@@ -106,15 +100,17 @@ class ThreadedHandler extends \Thread{
 	 * @return int
 	 */
 	public function writePacket(Packet $packet){
-		return $this->queue->synchronized(function ($packet){
-			$this->queue[] = $packet;
-
-			//$this->notify();
-			return strlen($packet->buffer);
-		}, $packet);
+		$this->queue[] = $packet;
+		return strlen($packet->buffer);
 	}
 
 	public function run(){
+		$autoloader = new \SplClassLoader();
+		$autoloader->add("PocketMine", array(
+			\PocketMine\PATH . "src"
+		));
+		$autoloader->register(true);
+
 		$this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		socket_set_option($this->socket, SOL_SOCKET, SO_BROADCAST, 1); //Allow sending broadcast messages
 		if(@socket_bind($this->socket, $this->serverip, $this->port) === true){
@@ -142,10 +138,7 @@ class ThreadedHandler extends \Thread{
 	}
 
 	private function putPacket(){
-		if(($packet = $this->queue->synchronized(function (){
-				return $this->queue->shift();
-			})) instanceof Packet
-		){
+		if(($packet = $this->queue->shift()) instanceof Packet){
 			if($packet instanceof RakNetPacket){
 				$packet->encode();
 			}
@@ -184,9 +177,7 @@ class ThreadedHandler extends \Thread{
 			$packet->port = $port;
 			$packet->buffer =& $buffer;
 		}
-		$this->packets->synchronized(function (Packet $packet){
-			$this->packets[] = $packet;
-		}, $packet);
+		$this->packets[] = $packet;
 
 		return true;
 	}

@@ -40,6 +40,8 @@ use PocketMine\Item\Item;
 use PocketMine\Level\Generator\Generator;
 use PocketMine\Level\Level;
 use PocketMine\Network\Packet;
+use PocketMine\Network\RakNet\Info as RakNetInfo;
+use PocketMine\Network\RakNet\Packet as RakNetPacket;
 use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\ThreadedHandler;
@@ -342,7 +344,7 @@ class Server{
 	 * @return string
 	 */
 	public function getMotd(){
-		return $this->getConfigString("motd", "");
+		return $this->getConfigString("motd", "Minecraft: PE Server");
 	}
 
 	/**
@@ -455,6 +457,7 @@ class Server{
 		}else{
 			$value = $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
 		}
+
 		if(is_bool($value)){
 			return $value;
 		}
@@ -601,7 +604,7 @@ class Server{
 		@mkdir($this->pluginPath, 0777);
 
 		$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
-		$this->whitelist = new Config($this->dataPath . "whitelist.txt", Config::ENUM);
+		$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);
 		if(file_exists($this->dataPath . "banned.txt") and !file_exists($this->dataPath . "banned-players.txt")){
 			@rename($this->dataPath . "banned.txt", $this->dataPath . "banned-players.txt");
 		}
@@ -617,8 +620,7 @@ class Server{
 
 		console("[INFO] Loading properties...");
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, array(
-			"server-name" => "Minecraft: PE Server",
-			"motd" => "Welcome @player to this server!",
+			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
 			"memory-limit" => "128M",
 			"white-list" => false,
@@ -887,6 +889,51 @@ class Server{
 	public function handlePacket(Packet $packet){
 		if($packet instanceof QueryPacket and isset($this->queryHandler)){
 			$this->queryHandler->handle($packet);
+		}elseif($packet instanceof RakNetPacket){
+			$CID = $packet->ip . ":" . $packet->port;
+			if(isset(Player::$list[$CID])){
+				Player::$list[$CID]->handlePacket($packet);
+			}else{
+				switch($packet->pid()){
+					case RakNetInfo::UNCONNECTED_PING:
+					case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
+						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
+						$pk->pingID = $packet->pingID;
+						$pk->serverID = $this->serverID;
+						$pk->serverType = "MCCPP;Demo;" . $this->getMotd() . " [" . count(Player::$list) . "/" . $this->getMaxPlayers() . "]";
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->sendPacket($pk);
+						break;
+					case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
+						if($packet->structure !== RakNetInfo::STRUCTURE){
+							console("[DEBUG] Incorrect structure #" . $packet->structure . " from " . $packet->ip . ":" . $packet->port, true, true, 2);
+							$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
+							$pk->serverID = $this->serverID;
+							$pk->ip = $packet->ip;
+							$pk->port = $packet->port;
+							$this->sendPacket($pk);
+						}else{
+							$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
+							$pk->serverID = $this->serverID;
+							$pk->mtuSize = strlen($packet->buffer);
+							$pk->ip = $packet->ip;
+							$pk->port = $packet->port;
+							$this->sendPacket($pk);
+						}
+						break;
+					case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
+						new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
+						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
+						$pk->serverID = $this->serverID;
+						$pk->serverPort = $this->getPort();
+						$pk->mtuSize = $packet->mtuSize;
+						$pk->ip = $packet->ip;
+						$pk->port = $packet->port;
+						$this->sendPacket($pk);
+						break;
+				}
+			}
 		}
 	}
 

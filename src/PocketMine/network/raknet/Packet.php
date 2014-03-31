@@ -21,11 +21,66 @@
 
 namespace PocketMine\Network\RakNet;
 
-use PocketMine\Network;
+use PocketMine\Network\Packet as NetworkPacket;
+use PocketMine\Network\Protocol\AddEntityPacket;
+use PocketMine\Network\Protocol\AddItemEntityPacket;
+use PocketMine\Network\Protocol\AddMobPacket;
+use PocketMine\Network\Protocol\AddPaintingPacket;
+use PocketMine\Network\Protocol\AddPlayerPacket;
+use PocketMine\Network\Protocol\AdventureSettingsPacket;
+use PocketMine\Network\Protocol\AnimatePacket;
+use PocketMine\Network\Protocol\ChatPacket;
+use PocketMine\Network\Protocol\ChunkDataPacket;
+use PocketMine\Network\Protocol\ClientConnectPacket;
+use PocketMine\Network\Protocol\ContainerClosePacket;
+use PocketMine\Network\Protocol\ContainerOpenPacket;
+use PocketMine\Network\Protocol\ContainerSetContentPacket;
+use PocketMine\Network\Protocol\ContainerSetDataPacket;
+use PocketMine\Network\Protocol\ContainerSetSlotPacket;
+use PocketMine\Network\Protocol\DataPacket;
+use PocketMine\Network\Protocol\DisconnectPacket;
+use PocketMine\Network\Protocol\DropItemPacket;
+use PocketMine\Network\Protocol\EntityDataPacket;
+use PocketMine\Network\Protocol\EntityEventPacket;
+use PocketMine\Network\Protocol\ExplodePacket;
+use PocketMine\Network\Protocol\HurtArmorPacket;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
+use PocketMine\Network\Protocol\InteractPacket;
+use PocketMine\Network\Protocol\LevelEventPacket;
+use PocketMine\Network\Protocol\LoginPacket;
+use PocketMine\Network\Protocol\LoginStatusPacket;
+use PocketMine\Network\Protocol\MessagePacket;
+use PocketMine\Network\Protocol\MoveEntityPacket;
+use PocketMine\Network\Protocol\MoveEntityPacket_PosRot;
+use PocketMine\Network\Protocol\MovePlayerPacket;
+use PocketMine\Network\Protocol\PingPacket;
+use PocketMine\Network\Protocol\PlayerActionPacket;
+use PocketMine\Network\Protocol\PlayerArmorEquipmentPacket;
+use PocketMine\Network\Protocol\PlayerEquipmentPacket;
+use PocketMine\Network\Protocol\PongPacket;
+use PocketMine\Network\Protocol\ReadyPacket;
+use PocketMine\Network\Protocol\RemoveBlockPacket;
+use PocketMine\Network\Protocol\RemoveEntityPacket;
+use PocketMine\Network\Protocol\RemovePlayerPacket;
+use PocketMine\Network\Protocol\RequestChunkPacket;
+use PocketMine\Network\Protocol\RespawnPacket;
+use PocketMine\Network\Protocol\RotateHeadPacket;
+use PocketMine\Network\Protocol\SendInventoryPacket;
+use PocketMine\Network\Protocol\ServerHandshakePacket;
+use PocketMine\Network\Protocol\SetEntityDataPacket;
+use PocketMine\Network\Protocol\SetEntityMotionPacket;
+use PocketMine\Network\Protocol\SetHealthPacket;
+use PocketMine\Network\Protocol\SetSpawnPositionPacket;
+use PocketMine\Network\Protocol\SetTimePacket;
+use PocketMine\Network\Protocol\StartGamePacket;
+use PocketMine\Network\Protocol\TakeItemEntityPacket;
+use PocketMine\Network\Protocol\TileEventPacket;
+use PocketMine\Network\Protocol\UnknownPacket;
+use PocketMine\Network\Protocol\UpdateBlockPacket;
+use PocketMine\Network\Protocol\UseItemPacket;
 use PocketMine\Utils\Utils;
 
-class Packet extends Network\Packet{
+class Packet extends NetworkPacket{
 	private $packetID;
 	private $offset = 1;
 	public $data = array();
@@ -196,166 +251,166 @@ class Packet extends Network\Packet{
 			}
 			switch($pid){
 				case ProtocolInfo::PING_PACKET:
-					$data = new Network\Protocol\PingPacket;
+					$data = new PingPacket();
 					break;
 				case ProtocolInfo::PONG_PACKET:
-					$data = new Network\Protocol\PongPacket;
+					$data = new PongPacket();
 					break;
 				case ProtocolInfo::CLIENT_CONNECT_PACKET:
-					$data = new Network\Protocol\ClientConnectPacket;
+					$data = new ClientConnectPacket();
 					break;
 				case ProtocolInfo::SERVER_HANDSHAKE_PACKET:
-					$data = new Network\Protocol\ServerHandshakePacket;
+					$data = new ServerHandshakePacket();
 					break;
 				case ProtocolInfo::DISCONNECT_PACKET:
-					$data = new Network\Protocol\DisconnectPacket;
+					$data = new DisconnectPacket();
 					break;
 				case ProtocolInfo::LOGIN_PACKET:
-					$data = new Network\Protocol\LoginPacket;
+					$data = new LoginPacket();
 					break;
 				case ProtocolInfo::LOGIN_STATUS_PACKET:
-					$data = new Network\Protocol\LoginStatusPacket;
+					$data = new LoginStatusPacket();
 					break;
 				case ProtocolInfo::READY_PACKET:
-					$data = new Network\Protocol\ReadyPacket;
+					$data = new ReadyPacket();
 					break;
 				case ProtocolInfo::MESSAGE_PACKET:
-					$data = new Network\Protocol\MessagePacket;
+					$data = new MessagePacket();
 					break;
 				case ProtocolInfo::SET_TIME_PACKET:
-					$data = new Network\Protocol\SetTimePacket;
+					$data = new SetTimePacket();
 					break;
 				case ProtocolInfo::START_GAME_PACKET:
-					$data = new Network\Protocol\StartGamePacket;
+					$data = new StartGamePacket();
 					break;
 				case ProtocolInfo::ADD_MOB_PACKET:
-					$data = new Network\Protocol\AddMobPacket;
+					$data = new AddMobPacket();
 					break;
 				case ProtocolInfo::ADD_PLAYER_PACKET:
-					$data = new Network\Protocol\AddPlayerPacket;
+					$data = new AddPlayerPacket();
 					break;
 				case ProtocolInfo::REMOVE_PLAYER_PACKET:
-					$data = new Network\Protocol\RemovePlayerPacket;
+					$data = new RemovePlayerPacket();
 					break;
 				case ProtocolInfo::ADD_ENTITY_PACKET:
-					$data = new Network\Protocol\AddEntityPacket;
+					$data = new AddEntityPacket();
 					break;
 				case ProtocolInfo::REMOVE_ENTITY_PACKET:
-					$data = new Network\Protocol\RemoveEntityPacket;
+					$data = new RemoveEntityPacket();
 					break;
 				case ProtocolInfo::ADD_ITEM_ENTITY_PACKET:
-					$data = new Network\Protocol\AddItemEntityPacket;
+					$data = new AddItemEntityPacket();
 					break;
 				case ProtocolInfo::TAKE_ITEM_ENTITY_PACKET:
-					$data = new Network\Protocol\TakeItemEntityPacket;
+					$data = new TakeItemEntityPacket();
 					break;
 				case ProtocolInfo::MOVE_ENTITY_PACKET:
-					$data = new Network\Protocol\MoveEntityPacket;
+					$data = new MoveEntityPacket();
 					break;
 				case ProtocolInfo::MOVE_ENTITY_PACKET_POSROT:
-					$data = new Network\Protocol\MoveEntityPacket_PosRot;
+					$data = new MoveEntityPacket_PosRot();
 					break;
 				case ProtocolInfo::ROTATE_HEAD_PACKET:
-					$data = new Network\Protocol\RotateHeadPacket;
+					$data = new RotateHeadPacket();
 					break;
 				case ProtocolInfo::MOVE_PLAYER_PACKET:
-					$data = new Network\Protocol\MovePlayerPacket;
+					$data = new MovePlayerPacket();
 					break;
 				case ProtocolInfo::REMOVE_BLOCK_PACKET:
-					$data = new Network\Protocol\RemoveBlockPacket;
+					$data = new RemoveBlockPacket();
 					break;
 				case ProtocolInfo::UPDATE_BLOCK_PACKET:
-					$data = new Network\Protocol\UpdateBlockPacket;
+					$data = new UpdateBlockPacket();
 					break;
 				case ProtocolInfo::ADD_PAINTING_PACKET:
-					$data = new Network\Protocol\AddPaintingPacket;
+					$data = new AddPaintingPacket();
 					break;
 				case ProtocolInfo::EXPLODE_PACKET:
-					$data = new Network\Protocol\ExplodePacket;
+					$data = new ExplodePacket();
 					break;
 				case ProtocolInfo::LEVEL_EVENT_PACKET:
-					$data = new Network\Protocol\LevelEventPacket;
+					$data = new LevelEventPacket();
 					break;
 				case ProtocolInfo::TILE_EVENT_PACKET:
-					$data = new Network\Protocol\TileEventPacket;
+					$data = new TileEventPacket();
 					break;
 				case ProtocolInfo::ENTITY_EVENT_PACKET:
-					$data = new Network\Protocol\EntityEventPacket;
+					$data = new EntityEventPacket();
 					break;
 				case ProtocolInfo::REQUEST_CHUNK_PACKET:
-					$data = new Network\Protocol\RequestChunkPacket;
+					$data = new RequestChunkPacket();
 					break;
 				case ProtocolInfo::CHUNK_DATA_PACKET:
-					$data = new Network\Protocol\ChunkDataPacket;
+					$data = new ChunkDataPacket();
 					break;
 				case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
-					$data = new Network\Protocol\PlayerEquipmentPacket;
+					$data = new PlayerEquipmentPacket();
 					break;
 				case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
-					$data = new Network\Protocol\PlayerArmorEquipmentPacket;
+					$data = new PlayerArmorEquipmentPacket();
 					break;
 				case ProtocolInfo::INTERACT_PACKET:
-					$data = new Network\Protocol\InteractPacket;
+					$data = new InteractPacket();
 					break;
 				case ProtocolInfo::USE_ITEM_PACKET:
-					$data = new Network\Protocol\UseItemPacket;
+					$data = new UseItemPacket();
 					break;
 				case ProtocolInfo::PLAYER_ACTION_PACKET:
-					$data = new Network\Protocol\PlayerActionPacket;
+					$data = new PlayerActionPacket();
 					break;
 				case ProtocolInfo::HURT_ARMOR_PACKET:
-					$data = new Network\Protocol\HurtArmorPacket;
+					$data = new HurtArmorPacket();
 					break;
 				case ProtocolInfo::SET_ENTITY_DATA_PACKET:
-					$data = new Network\Protocol\SetEntityDataPacket;
+					$data = new SetEntityDataPacket();
 					break;
 				case ProtocolInfo::SET_ENTITY_MOTION_PACKET:
-					$data = new Network\Protocol\SetEntityMotionPacket;
+					$data = new SetEntityMotionPacket();
 					break;
 				case ProtocolInfo::SET_HEALTH_PACKET:
-					$data = new Network\Protocol\SetHealthPacket;
+					$data = new SetHealthPacket();
 					break;
 				case ProtocolInfo::SET_SPAWN_POSITION_PACKET:
-					$data = new Network\Protocol\SetSpawnPositionPacket;
+					$data = new SetSpawnPositionPacket();
 					break;
 				case ProtocolInfo::ANIMATE_PACKET:
-					$data = new Network\Protocol\AnimatePacket;
+					$data = new AnimatePacket();
 					break;
 				case ProtocolInfo::RESPAWN_PACKET:
-					$data = new Network\Protocol\RespawnPacket;
+					$data = new RespawnPacket();
 					break;
 				case ProtocolInfo::SEND_INVENTORY_PACKET:
-					$data = new Network\Protocol\SendInventoryPacket;
+					$data = new SendInventoryPacket();
 					break;
 				case ProtocolInfo::DROP_ITEM_PACKET:
-					$data = new Network\Protocol\DropItemPacket;
+					$data = new DropItemPacket();
 					break;
 				case ProtocolInfo::CONTAINER_OPEN_PACKET:
-					$data = new Network\Protocol\ContainerOpenPacket;
+					$data = new ContainerOpenPacket();
 					break;
 				case ProtocolInfo::CONTAINER_CLOSE_PACKET:
-					$data = new Network\Protocol\ContainerClosePacket;
+					$data = new ContainerClosePacket();
 					break;
 				case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
-					$data = new Network\Protocol\ContainerSetSlotPacket;
+					$data = new ContainerSetSlotPacket();
 					break;
 				case ProtocolInfo::CONTAINER_SET_DATA_PACKET:
-					$data = new Network\Protocol\ContainerSetDataPacket;
+					$data = new ContainerSetDataPacket();
 					break;
 				case ProtocolInfo::CONTAINER_SET_CONTENT_PACKET:
-					$data = new Network\Protocol\ContainerSetContentPacket;
+					$data = new ContainerSetContentPacket();
 					break;
 				case ProtocolInfo::CHAT_PACKET:
-					$data = new Network\Protocol\ChatPacket;
+					$data = new ChatPacket();
 					break;
 				case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
-					$data = new Network\Protocol\AdventureSettingsPacket;
+					$data = new AdventureSettingsPacket();
 					break;
 				case ProtocolInfo::ENTITY_DATA_PACKET:
-					$data = new Network\Protocol\EntityDataPacket;
+					$data = new EntityDataPacket();
 					break;
 				default:
-					$data = new Network\Protocol\UnknownPacket();
+					$data = new UnknownPacket();
 					$data->packetID = $pid;
 					break;
 			}
@@ -468,7 +523,7 @@ class Packet extends Network\Packet{
 
 	}
 
-	private function encodeDataPacket(Network\Protocol\DataPacket $pk){
+	private function encodeDataPacket(DataPacket $pk){
 		$this->putByte(($pk->reliability << 5) | ($pk->hasSplit > 0 ? 0b00010000 : 0));
 		$this->putShort(strlen($pk->buffer) << 3);
 		if($pk->reliability === 2

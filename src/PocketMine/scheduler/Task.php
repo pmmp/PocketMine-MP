@@ -47,7 +47,7 @@ abstract class Task{
 	/**
 	 * @param TaskHandler $taskHandler
 	 */
-	public final function setHandler(TaskHandler $taskHandler){
+	public final function setHandler($taskHandler){
 		if($this->taskHandler === null or $taskHandler === null){
 			$this->taskHandler = $taskHandler;
 		}

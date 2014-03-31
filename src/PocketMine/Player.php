@@ -253,17 +253,19 @@ class Player extends RealHuman implements CommandSender{
 	 */
 	public function __construct($clientID, $ip, $port, $MTU){
 		$this->perm = new PermissibleBase($this);
+		$this->namedtag = new Compound();
 		$this->bigCnt = 0;
 		$this->MTU = $MTU;
 		$this->server = Server::getInstance();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
+		$this->CID = $ip . ":" . $port;
 		Player::$list[$this->CID] = $this;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = Level::getDefault()->getSafeSpawn();
 		$this->timeout = microtime(true) + 20;
-		$this->gamemode = $this->server->gamemode;
+		$this->gamemode = $this->server->getGamemode();
 		$this->level = Level::getDefault();
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->slot = 0;
@@ -381,7 +383,7 @@ class Player extends RealHuman implements CommandSender{
 		$distance = @$this->chunksOrder[$index];
 		if($index === null or $distance === null){
 			if($this->chunkScheduled === 0){
-				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk")), 60);
+				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), 60);
 			}
 
 			return false;
@@ -392,7 +394,7 @@ class Player extends RealHuman implements CommandSender{
 		if(!$this->level->isChunkPopulated($X, $Z)){
 			$this->orderChunks();
 			if($this->chunkScheduled === 0 or $force === true){
-				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk")), MAX_CHUNK_RATE);
+				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
 				++$this->chunkScheduled;
 			}
 
@@ -421,7 +423,7 @@ class Player extends RealHuman implements CommandSender{
 		$this->lastChunk = array($X, $Z);
 
 		if($this->chunkScheduled === 0 or $force === true){
-			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk")), MAX_CHUNK_RATE);
+			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
 			++$this->chunkScheduled;
 		}
 	}
@@ -1063,7 +1065,7 @@ class Player extends RealHuman implements CommandSender{
 					return;
 				}
 
-				if($this->server->isWhitelisted(strtolower($this->getName()))){
+				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
 					$this->close($this->username . " has left the game", "Server is white-listed");
 
 					return;
@@ -1180,7 +1182,6 @@ class Player extends RealHuman implements CommandSender{
 						//$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
 						$this->spawnToAll();
-						$this->sendMessage($this->server->getMotd() . "\n");
 
 						$this->sendInventory();
 						$this->sendSettings();
@@ -2045,7 +2046,9 @@ class Player extends RealHuman implements CommandSender{
 		if($this->connected === true){
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerQuitEvent($this, $message));
-				$this->save();
+				if($this->loggedIn === true){
+					$this->save();
+				}
 			}
 
 			$this->sendBuffer();
