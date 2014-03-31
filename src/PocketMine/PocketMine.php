@@ -357,7 +357,7 @@ namespace PocketMine {
 		$server = new Server($autoloader, \PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
 		$server->start();
 
-		//kill(getmypid());
+		kill(getmypid());
 		exit(0);
 	}
 
