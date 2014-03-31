@@ -148,7 +148,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return bool
 	 */
 	protected function isPhar(){
-		return $this->description instanceof \PharFileInfo;
+		return substr($this->file, 0, 7) === "phar://";
 	}
 
 	/**
@@ -160,15 +160,11 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 */
 	public function getResource($filename){
 		$filename = str_replace("\\", "/", $filename);
-		if($this->isPhar()){
-			//TODO
-		}else{
-			if(file_exists($this->dataFolder . "resources/" . $filename)){
-				return file_get_contents($this->dataFolder . "resources/" . $filename);
-			}
-
-			return false;
+		if(file_exists($this->file . "resources/" . $filename)){
+			return file_get_contents($this->file . "resources/" . $filename);
 		}
+
+		return false;
 	}
 
 	public function saveResource($filename, $replace = false){
@@ -180,7 +176,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$out = $this->dataFolder . $filename;
+		$out = $this->file . $filename;
 		if(!file_exists($this->dataFolder)){
 			@mkdir($this->dataFolder, 0755, true);
 		}
@@ -200,7 +196,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function getResources(){
 		if(!$this->isPhar()){
 			$resources = array();
-			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dataFolder . "resources/")) as $resource){
+			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
 				$resources[] = $resource;
 			}
 

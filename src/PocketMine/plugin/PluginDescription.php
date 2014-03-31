@@ -96,13 +96,14 @@ class PluginDescription{
 				$this->order = constant("PocketMine\\Plugin\\PluginLoadOrder::" . $order);
 			}
 		}
-
+		$this->authors = array();
+		if(isset($plugin["author"])){
+			$this->authors[] = $plugin["author"];
+		}
 		if(isset($plugin["authors"])){
-			$this->authors = $plugin["authors"];
-		}elseif(isset($plugin["author"])){
-			$this->authors = array($plugin["author"]);
-		}else{
-			$this->authors = array();
+			foreach($plugin["authors"] as $author){
+				$this->authors[] = $author;
+			}
 		}
 
 		if(isset($plugin["permissions"])){
