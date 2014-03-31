@@ -38,25 +38,20 @@ use PocketMine\NBT\Tag\Int;
 use PocketMine\NBT\Tag\Short;
 use PocketMine\NBT\Tag\String;
 use PocketMine\Network\Protocol\AdventureSettingsPacket;
-use PocketMine\Network\Protocol\AnimatePacket;
 use PocketMine\Network\Protocol\ChunkDataPacket;
 use PocketMine\Network\Protocol\ContainerClosePacket;
 use PocketMine\Network\Protocol\ContainerSetContentPacket;
-use PocketMine\Network\Protocol\ContainerSetDataPacket;
 use PocketMine\Network\Protocol\ContainerSetSlotPacket;
 use PocketMine\Network\Protocol\DataPacket;
 use PocketMine\Network\Protocol\DisconnectPacket;
-use PocketMine\Network\Protocol\EntityEventPacket;
 use PocketMine\Network\Protocol\Info as ProtocolInfo;
 use PocketMine\Network\Protocol\LoginStatusPacket;
 use PocketMine\Network\Protocol\MessagePacket;
 use PocketMine\Network\Protocol\PongPacket;
 use PocketMine\Network\Protocol\ServerHandshakePacket;
-use PocketMine\Network\Protocol\SetEntityDataPacket;
 use PocketMine\Network\Protocol\SetSpawnPositionPacket;
 use PocketMine\Network\Protocol\SetTimePacket;
 use PocketMine\Network\Protocol\StartGamePacket;
-use PocketMine\Network\Protocol\TakeItemEntityPacket;
 use PocketMine\Network\Protocol\TileEventPacket;
 use PocketMine\Network\Protocol\UnknownPacket;
 use PocketMine\Network\Protocol\UpdateBlockPacket;
@@ -85,8 +80,6 @@ use PocketMine\Utils\Utils;
  * @package PocketMine
  */
 class Player extends Human implements CommandSender{
-	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
-	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -103,7 +96,6 @@ class Player extends Human implements CommandSender{
 	 */
 	public static $list = array();
 
-	public $auth = false;
 	public $CID;
 	public $MTU;
 	public $spawned = false;
@@ -139,10 +131,10 @@ class Player extends Human implements CommandSender{
 	private $resendQueue = array();
 	private $ackQueue = array();
 	private $receiveCount = -1;
+	/** @var \PocketMine\Network\RakNet\Packet */
 	private $buffer;
 	private $bufferLen = 0;
 	private $nextBuffer = 0;
-	private $evid = array();
 	private $timeout;
 	private $counter = array(0, 0, 0, 0);
 	private $viewDistance;
@@ -166,6 +158,7 @@ class Player extends Human implements CommandSender{
 	 */
 	private $tasks = array();
 
+	/** @var PermissibleBase */
 	private $perm = null;
 
 
@@ -342,12 +335,20 @@ class Player extends Human implements CommandSender{
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
 	}
 
+	/**
+	 * @param string $achievementId
+	 */
 	public function removeAchievement($achievementId){
 		if($this->hasAchievement($achievementId)){
 			$this->achievements[$achievementId] = false;
 		}
 	}
 
+	/**
+	 * @param string $achievementId
+	 *
+	 * @return bool
+	 */
 	public function hasAchievement($achievementId){
 		if(!isset(Achievement::$list[$achievementId]) or !isset($this->achievements)){
 			$this->achievements = array();
@@ -362,42 +363,79 @@ class Player extends Human implements CommandSender{
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isConnected(){
 		return $this->connected === true;
 	}
 
+	/**
+	 * Gets the "friendly" name to display of this player to use in the chat.
+	 *
+	 * @return string
+	 */
 	public function getDisplayName(){
 		return $this->displayName;
 	}
 
+	/**
+	 * @param string $name
+	 */
 	public function setDisplayName($name){
 		$this->displayName = $name;
 	}
 
-	public function getIP(){
+	/**
+	 * Gets the player IP address
+	 *
+	 * @return string
+	 */
+	public function getAddress(){
 		return $this->ip;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getPort(){
 		return $this->port;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isSleeping(){
 		return $this->sleeping instanceof Vector3;
 	}
 
+	/**
+	 * Sets the chunk send flags for a specific index
+	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param int $index
+	 * @param int $flags
+	 */
 	public function setChunkIndex($index, $flags){
 		if(isset($this->chunksLoaded[$index])){
 			$this->chunksLoaded[$index] |= $flags;
 		}
 	}
 
+	/**
+	 * @return Position
+	 */
 	public function getSpawn(){
 		return $this->spawnPosition;
 	}
 
 	/**
 	 * Sends, if available, the next ordered chunk to the client
+	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
 	 *
 	 * @param bool $force
 	 * @param bool $ev
@@ -492,6 +530,13 @@ class Player extends Human implements CommandSender{
 		}
 	}
 
+	/**
+	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @return bool
+	 */
 	public function orderChunks(){
 		if($this->connected === false){
 			return false;
@@ -548,6 +593,8 @@ class Player extends Human implements CommandSender{
 	}
 
 	/**
+	 * Sends an ordered DataPacket to the send buffer
+	 *
 	 * @param DataPacket $packet
 	 *
 	 * @return array|bool
@@ -617,6 +664,14 @@ class Player extends Human implements CommandSender{
 		return $cnts;
 	}
 
+	/**
+	 * Sends a raw Packet to the conection
+	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param Packet $packet
+	 */
 	public function send(Packet $packet){
 		if($this->connected === true){
 			$packet->ip = $this->ip;
@@ -625,6 +680,12 @@ class Player extends Human implements CommandSender{
 		}
 	}
 
+	/**
+	 * Forces sending the buffer
+	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 */
 	public function sendBuffer(){
 		if($this->connected === true){
 			if($this->bufferLen > 0 and $this->buffer instanceof Packet){
@@ -688,13 +749,17 @@ class Player extends Human implements CommandSender{
 		//}
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 */
 	public function checkSleep(){
 		if($this->sleeping !== false){
 			//TODO
 			if($this->server->api->time->getPhase($this->level) === "night"){
 				foreach($this->level->getPlayers() as $p){
 					if($p->sleeping === false){
-						return false;
+						return;
 					}
 				}
 				$this->server->api->time->set("day", $this->level);
@@ -703,13 +768,11 @@ class Player extends Human implements CommandSender{
 				}
 			}
 		}
+
+		return;
 	}
 
-	/**
-	 * @param mixed  $data
-	 * @param string $event
-	 */
-	public function eventHandler($data, $event){
+	/*public function eventHandler($data, $event){
 		switch($event){
 			//TODO, obsolete
 			case "tile.update":
@@ -807,8 +870,13 @@ class Player extends Human implements CommandSender{
 				}
 				break;
 		}
-	}
+	}*/
 
+	/**
+	 * @param string $achievementId
+	 *
+	 * @return bool
+	 */
 	public function awardAchievement($achievementId){
 		if(isset(Achievement::$list[$achievementId]) and !$this->hasAchievement($achievementId)){
 			foreach(Achievement::$list[$achievementId]["requires"] as $requerimentId){
@@ -830,10 +898,21 @@ class Player extends Human implements CommandSender{
 		return false;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getGamemode(){
 		return $this->gamemode;
 	}
 
+	/**
+	 * Sets the gamemode, and if needed, kicks the player
+	 * TODO: Check if Mojang adds the ability to change gamemode without kicking players
+	 *
+	 * @param int $gm
+	 *
+	 * @return bool
+	 */
 	public function setGamemode($gm){
 		if($gm < 0 or $gm > 3 or $this->gamemode === $gm){
 			return false;
@@ -859,6 +938,14 @@ class Player extends Human implements CommandSender{
 		return true;
 	}
 
+	/**
+	 * Sends all the option flags
+	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param bool $nametags
+	 */
 	public function sendSettings($nametags = true){
 		/*
 		 bit mask | flag name
@@ -909,6 +996,12 @@ class Player extends Human implements CommandSender{
 		$this->dataPacket($pk);
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @return bool
+	 */
 	public function measureLag(){
 		if($this->connected === false){
 			return false;
@@ -928,18 +1021,39 @@ class Player extends Human implements CommandSender{
 		$this->lastMeasure = microtime(true);
 	}
 
+	/**
+	 * WARNING: Experimental method
+	 *
+	 * @return int
+	 */
 	public function getLag(){
 		return $this->lagStat * 1000;
 	}
 
+	/**
+	 * WARNING: Experimental method
+	 *
+	 * @return int
+	 */
 	public function getPacketLoss(){
 		return $this->packetLoss;
 	}
 
+	/**
+	 * WARNING: Experimental method
+	 *
+	 * @return float
+	 */
 	public function getBandwidth(){
 		return array_sum($this->bandwidthStats) / max(1, count($this->bandwidthStats));
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @return bool
+	 */
 	public function clearQueue(){
 		if($this->connected === false){
 			return false;
@@ -956,6 +1070,12 @@ class Player extends Human implements CommandSender{
 		}
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @return bool
+	 */
 	public function handlePacketQueues(){
 		if($this->connected === false){
 			return false;
@@ -1047,6 +1167,9 @@ class Player extends Human implements CommandSender{
 	 * Handles a Minecraft packet
 	 * TODO: Separate all of this in handlers
 	 *
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
 	 * @param DataPacket $packet
 	 */
 	public function handleDataPacket(DataPacket $packet){
@@ -1098,10 +1221,10 @@ class Player extends Human implements CommandSender{
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
 
 				//TODO: op things
-				if(count(Player::$list) > $this->server->getMaxPlayers() and !$this->server->api->ban->isOp($this->iusername)){
-					$this->kick("server full");
-
-					return;
+				if(count(Player::$list) > $this->server->getMaxPlayers()){
+					if($this->kick("server full") === true){
+						return;
+					}
 				}
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
@@ -1134,14 +1257,13 @@ class Player extends Human implements CommandSender{
 					$this->close($this->username . " has left the game", "Server is white-listed");
 
 					return;
-				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getIP())){
+				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
 					$this->close($this->username . " has left the game", "You are banned");
 
 					return;
 				}
-				$this->server->getPluginManager()->subscribeToPermission(Player::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-				$this->server->getPluginManager()->subscribeToPermission(Player::BROADCAST_CHANNEL_USERS, $this);
-				$this->loggedIn = true;
+				$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+				$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 
 				$u = Player::get($this->iusername, false, true);
 				if(count($u) > 0){
@@ -1179,9 +1301,8 @@ class Player extends Human implements CommandSender{
 				}
 
 				Player::saveOffline($this->username, $nbt);
-				$this->auth = true;
-
 				parent::__construct($this->level, $nbt);
+				$this->loggedIn = true;
 
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->slot = 0;
@@ -1246,6 +1367,7 @@ class Player extends Human implements CommandSender{
 						if($this->spawned !== false){
 							break;
 						}
+						//TODO
 						//$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
 						$this->spawnToAll();
@@ -2138,10 +2260,10 @@ class Player extends Human implements CommandSender{
 				Player::saveOffline($this->username, $this->namedtag);
 			}
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
-				Player::broadcastMessage($ev->getQuitMessage());
+				$this->server->broadcastMessage($ev->getQuitMessage());
 			}
-			$this->server->getPluginManager()->unsubscribeFromPermission(Player::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-			$this->server->getPluginManager()->unsubscribeFromPermission(Player::BROADCAST_CHANNEL_USERS, $this);
+			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
 			$this->windows = array();
@@ -2206,15 +2328,6 @@ class Player extends Human implements CommandSender{
 		$this->send($pk);
 
 		return array($pk->seqNumber);
-	}
-
-	/**
-	 * Broadcasts a message to all the players
-	 *
-	 * @param string $message
-	 */
-	public static function broadcastMessage($message){
-		self::groupChat($message, Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Player::BROADCAST_CHANNEL_USERS));
 	}
 
 	/**
@@ -2378,20 +2491,6 @@ class Player extends Human implements CommandSender{
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($nbtTag);
 		file_put_contents(Server::getInstance()->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
-	}
-
-	/**
-	 * Sends a message to a group of players
-	 *
-	 * @param   string $message
-	 * @param Player[] $players
-	 */
-	public static function groupChat($message, array $players){
-		foreach($players as $p){
-			if($p instanceof CommandSender){
-				$p->sendMessage($message);
-			}
-		}
 	}
 
 	/**

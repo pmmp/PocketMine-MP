@@ -24,7 +24,7 @@ namespace PocketMine\Network\Protocol;
 use PocketMine\Item\Item;
 use PocketMine\Utils\Utils;
 
-abstract class DataPacket{
+abstract class DataPacket extends \stdClass{
 	private $offset = 0;
 	public $buffer = "";
 

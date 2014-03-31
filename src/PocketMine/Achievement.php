@@ -104,8 +104,8 @@ abstract class Achievement{
 
 	public static function broadcast(Player $player, $achievementId){
 		if(isset(Achievement::$list[$achievementId])){
-			if(Server::getInstance()->api->getProperty("announce-player-achievements") == true){
-				Player::broadcastMessage($player->getDisplayName() . " has just earned the achievement " . Achievement::$list[$achievementId]["name"]);
+			if(Server::getInstance()->getConfigString("announce-player-achievements", true) === true){
+				Server::getInstance()->broadcastMessage($player->getDisplayName() . " has just earned the achievement " . Achievement::$list[$achievementId]["name"]);
 			}else{
 				$player->sendMessage("You have just earned the achievement " . Achievement::$list[$achievementId]["name"]);
 			}

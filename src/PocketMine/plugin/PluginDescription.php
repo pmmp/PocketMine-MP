@@ -183,7 +183,7 @@ class PluginDescription{
 	/**
 	 * @return Permission[]
 	 */
-	public function getPermisions(){
+	public function getPermissions(){
 		return $this->permissions;
 	}
 

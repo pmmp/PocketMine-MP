@@ -24,7 +24,6 @@
  */
 namespace PocketMine\Command;
 
-use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
@@ -286,7 +285,7 @@ abstract class Command{
 
 		//Command minecarts or command blocks are not implemented
 
-		$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Player::BROADCAST_CHANNEL_ADMINISTRATIVE);
+		$users = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		$colored = TextFormat::GRAY . TextFormat::ITALIC . "[$result" . TextFormat::GRAY . TextFormat::ITALIC . "]";
 		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);

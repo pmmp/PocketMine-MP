@@ -296,9 +296,10 @@ class Level{
 			$level->save(true, true);
 		}
 
-		foreach($blockUpdates->getAll() as $bupdate){
+		//TODO
+		/*foreach($blockUpdates->getAll() as $bupdate){
 			Server::getInstance()->api->block->scheduleBlockUpdate(new Position((int) $bupdate["x"], (int) $bupdate["y"], (int) $bupdate["z"], $level), (float) $bupdate["delay"], (int) $bupdate["type"]);
-		}
+		}*/
 
 		return true;
 	}
@@ -306,7 +307,7 @@ class Level{
 	/**
 	 * Generates a new level
 	 *
-	 * @param            $name
+	 * @param string $name
 	 * @param bool       $seed
 	 * @param bool       $generator
 	 * @param bool|array $options
@@ -341,7 +342,7 @@ class Level{
 	/**
 	 * Searches if a level exists on file
 	 *
-	 * @param $name
+	 * @param string $name
 	 *
 	 * @return bool
 	 */
@@ -416,35 +417,75 @@ class Level{
 		return true;
 	}
 
+	/**
+	 * Gets the chunks being used by players
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return Player[][]
+	 */
 	public function getUsingChunk($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 
 		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index] : array();
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param int    $X
+	 * @param int    $Z
+	 * @param Player $player
+	 */
 	public function useChunk($X, $Z, Player $player){
 		$index = LevelFormat::getIndex($X, $Z);
 		$this->loadChunk($X, $Z);
 		$this->usedChunks[$index][$player->CID] = $player;
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param Player $player
+	 */
 	public function freeAllChunks(Player $player){
 		foreach($this->usedChunks as $i => $c){
 			unset($this->usedChunks[$i][$player->CID]);
 		}
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @param int    $X
+	 * @param int    $Z
+	 * @param Player $player
+	 */
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[LevelFormat::getIndex($X, $Z)][$player->CID]);
 	}
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function isChunkPopulated($X, $Z){
 		return $this->level->isPopulated($X, $Z);
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 */
 	public function checkTime(){
 		if(!isset($this->level)){
-			return false;
+			return;
 		}
 		$now = microtime(true);
 		if($this->stopTime == true){
@@ -462,6 +503,12 @@ class Level{
 		return;
 	}
 
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 *
+	 * @return bool
+	 */
 	public function doTick(){
 		if(!isset($this->level)){
 			return false;
@@ -518,7 +565,8 @@ class Level{
 							$block = $this->getBlockRaw(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
 							if($block instanceof Block){
 								if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
-									$this->server->api->block->blockUpdateAround($block);
+									//TODO
+									//$this->server->api->block->blockUpdateAround($block);
 								}
 							}
 						}
@@ -543,6 +591,12 @@ class Level{
 		}
 	}
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function generateChunk($X, $Z){
 		++$this->level->isGenerating;
 		$this->generator->generateChunk($X, $Z);
@@ -551,6 +605,12 @@ class Level{
 		return true;
 	}
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function populateChunk($X, $Z){
 		$this->level->setPopulated($X, $Z);
 		$this->generator->populateChunk($X, $Z);
@@ -567,6 +627,12 @@ class Level{
 		}
 	}
 
+	/**
+	 * @param bool $force
+	 * @param bool $extra
+	 *
+	 * @return bool
+	 */
 	public function save($force = false, $extra = true){
 		if(!isset($this->level)){
 			return false;
@@ -617,12 +683,22 @@ class Level{
 		}
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return Block
+	 */
 	public function getBlockRaw(Vector3 $pos){
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 
 		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return bool|Block
+	 */
 	public function getBlock(Vector3 $pos){
 		if($pos instanceof Position and $pos->level !== $this){
 			return false;
@@ -632,6 +708,14 @@ class Level{
 		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 * @param Block   $block
+	 * @param bool    $direct
+	 * @param bool    $send
+	 *
+	 * @return bool
+	 */
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
 			if($direct === true){
@@ -667,6 +751,15 @@ class Level{
 		return $ret;
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 * @param Block   $block
+	 * @param bool    $update
+	 * @param bool    $tiles
+	 * @param bool    $direct
+	 *
+	 * @return bool
+	 */
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
 		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
@@ -705,7 +798,8 @@ class Level{
 			}
 
 			if($update === true){
-				$this->server->api->block->blockUpdateAround($pos, self::BLOCK_UPDATE_NORMAL, 1);
+				//TODO
+				//$this->server->api->block->blockUpdateAround($pos, self::BLOCK_UPDATE_NORMAL, 1);
 			}
 			if($tiles === true){
 				if(($t = $this->getTile($pos)) instanceof Tile){
@@ -1286,6 +1380,7 @@ class Level{
 	}
 
 	public function scheduleBlockUpdate(Position $pos, $delay, $type = self::BLOCK_UPDATE_SCHEDULED){
-		return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
+		//TODO
+		//return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}
 }

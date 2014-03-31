@@ -56,7 +56,7 @@ class BanIpCommand extends VanillaCommand{
 			$this->processIPBan($value, $sender, $reason);
 		}else{
 			if(($player = Player::get($value, true)) instanceof Player){
-				$this->processIPBan($player->getIP(), $sender, $reason);
+				$this->processIPBan($player->getAddress(), $sender, $reason);
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
 
@@ -71,7 +71,7 @@ class BanIpCommand extends VanillaCommand{
 		Server::getInstance()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
 
 		foreach(Player::getAll() as $player){
-			if($player->getIP() === $ip){
+			if($player->getAddress() === $ip){
 				$player->kick("You have been IP banned.");
 			}
 		}

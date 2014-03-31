@@ -52,6 +52,7 @@ use PocketMine\Plugin\Plugin;
 use PocketMine\Plugin\PluginLoadOrder;
 use PocketMine\Plugin\PluginManager;
 use PocketMine\Recipes\Crafting;
+use PocketMine\Scheduler\CallbackTask;
 use PocketMine\Scheduler\ServerScheduler;
 use PocketMine\Scheduler\TickScheduler;
 use PocketMine\Tile\Tile;
@@ -61,6 +62,9 @@ use PocketMine\Utils\Utils;
 use PocketMine\Utils\VersionString;
 
 class Server{
+	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
+	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
+
 	/** @var Server */
 	private static $instance = null;
 
@@ -688,7 +692,7 @@ class Server{
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
-		$this->pluginManager->subscribeToPermission(Player::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
+		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->registerInterface("PocketMine\\Plugin\\FolderPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -710,17 +714,44 @@ class Server{
 			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
 			$this->sendUsage();
 		}
-		if($this->getProperty("auto-save") === true){
-			$this->server->schedule(18000, array($this, "autoSave"), array(), true);
-		}
 		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}*/
-
-		//$this->schedule(2, array($this, "checkTickUpdates"), array(), true);
+		$this->scheduler->scheduleRepeatingTask(new CallbackTask("PocketMine\\Utils\\Cache::cleanup"), 20 * 45);
+		if($this->getConfigBoolean("auto-save", true) === true){
+			$this->scheduler->scheduleRepeatingTask(new CallbackTask(array($this, "doAutoSave")), 18000);
+		}
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 	}
+
+	/**
+	 * @param $message
+	 *
+	 * @return int
+	 */
+	public function broadcastMessage($message){
+		return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
+	}
+
+	/**
+	 * @param string $message
+	 * @param string $permission
+	 *
+	 * @return int
+	 */
+	public function broadcast($message, $permission){
+		$count = 0;
+		foreach($this->pluginManager->getPermissionSubscriptions($permission) as $permissible){
+			if($permissible instanceof CommandSender and $permissible->hasPermission($permission)){
+				$permissible->sendMessage($message);
+				++$count;
+			}
+		}
+
+		return $count;
+	}
+
 
 	/**
 	 * @param int $type
@@ -747,10 +778,6 @@ class Server{
 	 */
 	public function loadPlugin(Plugin $plugin){
 		$this->pluginManager->enablePlugin($plugin);
-
-		foreach($plugin->getDescription()->getPermisions() as $perm){
-			$this->pluginManager->addPermission($perm);
-		}
 	}
 
 	public function disablePlugins(){
@@ -979,13 +1006,13 @@ class Server{
 		//TODO: Add level blocks
 
 		//Do level ticks
-		foreach(Level::$list as $level){
+		foreach(Level::getAll() as $level){
 			$level->doTick();
 		}
 	}
 
-	public function autoSave(){
-		console("[DEBUG] Saving....", true, true, 2);
+	public function doAutoSave(){
+		$this->broadcast(TextFormat::GRAY . "Saving...", self::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		Level::saveAll();
 	}
 
