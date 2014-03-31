@@ -45,6 +45,7 @@ class BanIpCommand extends VanillaCommand{
 
 		if(count($args) === 0){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
@@ -58,11 +59,13 @@ class BanIpCommand extends VanillaCommand{
 				$this->processIPBan($player->getIP(), $sender, $reason);
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 				return false;
 			}
 		}
 
-		Command::broadcastCommandMessage($sender, "Banned player ". $name);
+		Command::broadcastCommandMessage($sender, "Banned player " . $name);
+
 		return true;
 	}
 
@@ -75,6 +78,6 @@ class BanIpCommand extends VanillaCommand{
 			}
 		}
 
-		Command::broadcastCommandMessage($sender, "Banned IP Address ". $ip);
+		Command::broadcastCommandMessage($sender, "Banned IP Address " . $ip);
 	}
 }

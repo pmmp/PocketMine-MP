@@ -21,11 +21,8 @@
 
 namespace PocketMine\Command\Defaults;
 
-use PocketMine\Command\Command;
 use PocketMine\Command\CommandSender;
-use PocketMine\Player;
 use PocketMine\Server;
-use PocketMine\Utils\TextFormat;
 
 class BanListCommand extends VanillaCommand{
 
@@ -58,8 +55,9 @@ class BanListCommand extends VanillaCommand{
 			$message .= $entry->getName() . ", ";
 		}
 
-		$sender->sendMessage("There are ". count($list)." total banned players:");
+		$sender->sendMessage("There are " . count($list) . " total banned players:");
 		$sender->sendMessage(substr($message, 0, -2));
+
 		return true;
 	}
 }

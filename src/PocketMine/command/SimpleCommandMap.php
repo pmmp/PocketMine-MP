@@ -34,7 +34,6 @@ use PocketMine\Command\Defaults\StopCommand;
 use PocketMine\Command\Defaults\TellCommand;
 use PocketMine\Command\Defaults\VanillaCommand;
 use PocketMine\Command\Defaults\VersionCommand;
-use PocketMine\Permission\BanList;
 use PocketMine\Server;
 
 class SimpleCommandMap implements CommandMap{

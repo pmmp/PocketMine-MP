@@ -27,7 +27,6 @@ namespace PocketMine\Network;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet as RakNetPacket;
-use PocketMine\Server;
 
 class ThreadedHandler extends \Thread{
 	protected $bandwidthUp;
@@ -62,7 +61,7 @@ class ThreadedHandler extends \Thread{
 	}
 
 	public function close(){
-		$this->synchronized(function(){
+		$this->synchronized(function (){
 			$this->stop = true;
 			socket_close($this->socket);
 		});
@@ -101,6 +100,7 @@ class ThreadedHandler extends \Thread{
 	 */
 	public function writePacket(Packet $packet){
 		$this->queue[] = $packet;
+
 		return strlen($packet->buffer);
 	}
 

@@ -60,6 +60,7 @@ class BanList{
 	 */
 	public function getEntries(){
 		$this->removeExpired();
+
 		return $this->list;
 	}
 
@@ -74,6 +75,7 @@ class BanList{
 			return false;
 		}else{
 			$this->removeExpired();
+
 			return isset($this->list[$name]);
 		}
 	}
@@ -102,6 +104,7 @@ class BanList{
 
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
+
 		return $entry;
 	}
 
@@ -147,7 +150,7 @@ class BanList{
 		$fp = @fopen($this->file, "w");
 		if(is_resource($fp)){
 			if($flag === true){
-				fwrite($fp, "# Updated ".strftime("%x %H:%M", time())." by ".Server::getInstance()->getName() . " ".Server::getInstance()->getPocketMineVersion()."\n");
+				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
 				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
 			}
 

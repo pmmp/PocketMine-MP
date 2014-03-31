@@ -21,9 +21,6 @@
 
 namespace PocketMine\Event\Player;
 
-use PocketMine\Block\Block;
-use PocketMine\Event\Cancellable;
-use PocketMine\Item\Item;
 use PocketMine\Level\Position;
 use PocketMine\Player;
 

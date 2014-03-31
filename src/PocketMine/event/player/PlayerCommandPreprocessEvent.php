@@ -23,7 +23,6 @@ namespace PocketMine\Event\Player;
 
 use PocketMine\Event\Cancellable;
 use PocketMine\Player;
-use PocketMine\Server;
 
 /**
  * Called when a player runs a command or chats, early in the process
@@ -41,8 +40,8 @@ class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 
 
 	/**
-	 * @param Player   $player
-	 * @param string   $message
+	 * @param Player $player
+	 * @param string $message
 	 */
 	public function __construct(Player $player, $message){
 		$this->player = $player;

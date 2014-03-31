@@ -45,6 +45,7 @@ class BanCommand extends VanillaCommand{
 
 		if(count($args) === 0){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
@@ -57,7 +58,8 @@ class BanCommand extends VanillaCommand{
 			$player->kick("Banned by admin.");
 		}
 
-		Command::broadcastCommandMessage($sender, "Banned player ". $name);
+		Command::broadcastCommandMessage($sender, "Banned player " . $name);
+
 		return true;
 	}
 }

@@ -23,8 +23,6 @@ namespace PocketMine\Event\Server;
 
 use PocketMine\Command\CommandSender;
 use PocketMine\Event\Cancellable;
-use PocketMine\Player;
-use PocketMine\Server;
 
 /**
  * Called when the console runs a command, early in the process

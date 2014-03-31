@@ -22,7 +22,6 @@
 namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\CommandSender;
-use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
@@ -44,6 +43,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 
 		if(count($args) === 0){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
@@ -51,10 +51,11 @@ class DefaultGamemodeCommand extends VanillaCommand{
 
 		if($gameMode !== -1){
 			Server::getInstance()->setConfigInt("gamemode", $gameMode);
-			$sender->sendMessage("Default game mode set to ". strtolower(Server::getGamemodeString($gameMode)));
+			$sender->sendMessage("Default game mode set to " . strtolower(Server::getGamemodeString($gameMode)));
 		}else{
 			$sender->sendMessage("Unknown game mode");
 		}
+
 		return true;
 	}
 }

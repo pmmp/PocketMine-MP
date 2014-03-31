@@ -23,7 +23,6 @@ namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\Command;
 use PocketMine\Command\CommandSender;
-use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
@@ -45,12 +44,13 @@ class PardonIpCommand extends VanillaCommand{
 
 		if(count($args) !== 1){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])){
 			Server::getInstance()->getIPBans()->remove($args[0]);
-			Command::broadcastCommandMessage($sender, "Pardoned IP ". $name);
+			Command::broadcastCommandMessage($sender, "Pardoned IP " . $name);
 		}else{
 			$sender->sendMessage("Invalid IP");
 		}

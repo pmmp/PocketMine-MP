@@ -23,7 +23,6 @@ namespace PocketMine\Command\Defaults;
 
 use PocketMine\Command\Command;
 use PocketMine\Command\CommandSender;
-use PocketMine\Player;
 use PocketMine\Server;
 use PocketMine\Utils\TextFormat;
 
@@ -45,12 +44,14 @@ class PardonCommand extends VanillaCommand{
 
 		if(count($args) !== 1){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
 		Server::getInstance()->getNameBans()->remove($args[0]);
 
-		Command::broadcastCommandMessage($sender, "Pardoned ". $name);
+		Command::broadcastCommandMessage($sender, "Pardoned " . $name);
+
 		return true;
 	}
 }

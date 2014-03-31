@@ -359,6 +359,7 @@ class Player extends RealHuman implements CommandSender{
 					$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
 					++$this->chunkScheduled;
 				}
+
 				return;
 			}else{
 				unset($this->chunkCount[$count]);
@@ -2334,7 +2335,7 @@ class Player extends RealHuman implements CommandSender{
 	/**
 	 * Broadcasts a Minecraft packet to a list of players
 	 *
-	 * @param Player[]      $players
+	 * @param Player[]   $players
 	 * @param DataPacket $packet
 	 */
 	public static function broadcastPacket(array $players, DataPacket $packet){
