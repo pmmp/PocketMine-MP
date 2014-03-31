@@ -22,7 +22,7 @@
 namespace PocketMine;
 
 use PocketMine\Command\CommandSender;
-use PocketMine\Entity\RealHuman;
+use PocketMine\Entity\Human;
 use PocketMine\Event;
 use PocketMine\Item\Item;
 use PocketMine\Level\Level;
@@ -84,7 +84,7 @@ use PocketMine\Utils\Utils;
  * Class Player
  * @package PocketMine
  */
-class Player extends RealHuman implements CommandSender{
+class Player extends Human implements CommandSender{
 	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
@@ -132,6 +132,8 @@ class Player extends RealHuman implements CommandSender{
 	protected $startAction = false;
 	protected $sleeping = false;
 	protected $chunksOrder = array();
+	/** @var Player[] */
+	protected $hiddenPlayers = array();
 	private $recoveryQueue = array();
 	private $receiveQueue = array();
 	private $resendQueue = array();
@@ -166,11 +168,73 @@ class Player extends RealHuman implements CommandSender{
 
 	private $perm = null;
 
+
+	protected function initEntity(){
+		$this->level->players[$this->CID] = $this;
+		parent::initEntity();
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function spawnTo(Player $player){
+		if($this->spawned === true and $player->getLevel() === $this->getLevel() and $player->canSee($this)){
+			parent::spawnTo($player);
+		}
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function despawnFrom(Player $player){
+		if($this->spawned === true){
+			parent::despawnFrom($player);
+		}
+	}
+
 	/**
 	 * @return Server
 	 */
 	public function getServer(){
 		return $this->server;
+	}
+
+	/**
+	 * @param Player $player
+	 *
+	 * @return bool
+	 */
+	public function canSee(Player $player){
+		return !isset($this->hiddenPlayers[$player->getName()]);
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function hidePlayer(Player $player){
+		if($player === $this){
+			return;
+		}
+		$this->hiddenPlayers[$player->getName()] = $player;
+		$player->despawnFrom($this);
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function showPlayer(Player $player){
+		if($player === $this){
+			return;
+		}
+		unset($this->hiddenPlayers[$player->getName()]);
+		$player->spawnTo($this);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isOnline(){
+		return $this->connected === true and $this->loggedIn === true;
 	}
 
 	/**
@@ -1542,7 +1606,7 @@ class Player extends RealHuman implements CommandSender{
 				if($target instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
 					$data["entity"] = $this->entity;
-				if($target instanceof RealHuman and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
+				if($target instanceof Player and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
 					break;
 				}elseif($this->server->handle("player.interact", $data) !== false){
 						$slot = $this->getSlot($this->slot);
@@ -2086,6 +2150,7 @@ class Player extends RealHuman implements CommandSender{
 			$this->chunkCount = array();
 			$this->craftingItems = array();
 			$this->received = array();
+			unset($this->level->players[$this->CID]);
 			parent::close();
 			$this->buffer = null;
 			unset($this->buffer);
