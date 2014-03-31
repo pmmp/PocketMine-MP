@@ -275,7 +275,6 @@ class Player extends RealHuman implements CommandSender{
 		$this->buffer->data = array();
 		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "handlePacketQueues")), 1);
 		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "clearQueue")), 20 * 60);
-
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
 	}
 
@@ -1030,6 +1029,7 @@ class Player extends RealHuman implements CommandSender{
 					break;
 				}
 				$this->username = $packet->username;
+				$this->displayName = $this->username;
 				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
 
@@ -1075,6 +1075,8 @@ class Player extends RealHuman implements CommandSender{
 
 					return;
 				}
+				$this->server->getPluginManager()->subscribeToPermission(Player::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+				$this->server->getPluginManager()->subscribeToPermission(Player::BROADCAST_CHANNEL_USERS, $this);
 				$this->loggedIn = true;
 
 				$u = Player::get($this->iusername, false, true);
@@ -2072,6 +2074,8 @@ class Player extends RealHuman implements CommandSender{
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				Player::broadcastMessage($ev->getQuitMessage());
 			}
+			$this->server->getPluginManager()->unsubscribeFromPermission(Player::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+			$this->server->getPluginManager()->unsubscribeFromPermission(Player::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
 			$this->windows = array();
@@ -2145,7 +2149,7 @@ class Player extends RealHuman implements CommandSender{
 	 * @param string $message
 	 */
 	public static function broadcastMessage($message){
-		self::groupChat($message, self::getAll());
+		self::groupChat($message, Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Player::BROADCAST_CHANNEL_USERS));
 	}
 
 	/**
@@ -2319,7 +2323,9 @@ class Player extends RealHuman implements CommandSender{
 	 */
 	public static function groupChat($message, array $players){
 		foreach($players as $p){
-			$p->sendMessage($message);
+			if($p instanceof CommandSender){
+				$p->sendMessage($message);
+			}
 		}
 	}
 

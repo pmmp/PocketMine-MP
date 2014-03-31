@@ -77,6 +77,8 @@ class Level{
 	/** @var Level */
 	public static $default = null;
 
+	public static $saveEnabled = true;
+
 	/**
 	 * @var Player[]
 	 */
@@ -533,7 +535,7 @@ class Level{
 					unset($this->usedChunks[$i]);
 					LevelFormat::getXZ($i, $X, $Z);
 					if(!$this->isSpawnChunk($X, $Z)){
-						$this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
+						$this->level->unloadChunk($X, $Z, self::$saveEnabled);
 					}
 				}
 			}
@@ -570,7 +572,7 @@ class Level{
 			return false;
 		}
 		//TODO: save enabled/disabled
-		/*if($this->server->saveEnabled === false and $force === false){
+		/*if(self::$saveEnabled === false and $force === false){
 			return;
 		}*/
 
@@ -1070,7 +1072,7 @@ class Level{
 		unset($this->chunkTiles[$index]);
 		Cache::remove("world:{$this->name}:$X:$Z");
 
-		return $this->level->unloadChunk($X, $Z, $this->server->saveEnabled);
+		return $this->level->unloadChunk($X, $Z, self::$saveEnabled);
 	}
 
 	/**

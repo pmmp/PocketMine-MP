@@ -26,9 +26,11 @@ use PocketMine\Command\Defaults\BanIpCommand;
 use PocketMine\Command\Defaults\BanListCommand;
 use PocketMine\Command\Defaults\DefaultGamemodeCommand;
 use PocketMine\Command\Defaults\HelpCommand;
+use PocketMine\Command\Defaults\MeCommand;
 use PocketMine\Command\Defaults\PardonCommand;
 use PocketMine\Command\Defaults\PardonIpCommand;
 use PocketMine\Command\Defaults\PluginsCommand;
+use PocketMine\Command\Defaults\SayCommand;
 use PocketMine\Command\Defaults\SeedCommand;
 use PocketMine\Command\Defaults\StopCommand;
 use PocketMine\Command\Defaults\TellCommand;
@@ -52,7 +54,6 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	private function setDefaultCommands(){
-		//TODO
 		$this->register("pocketmine", new VersionCommand("version"));
 		$this->register("pocketmine", new PluginsCommand("plugins"));
 		$this->register("pocketmine", new SeedCommand("seed"));
@@ -65,6 +66,8 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new BanListCommand("banlist"));
 		$this->register("pocketmine", new PardonCommand("pardon"));
 		$this->register("pocketmine", new PardonIpCommand("pardon-ip"));
+		$this->register("pocketmine", new SayCommand("say"));
+		$this->register("pocketmine", new MeCommand("me"));
 	}
 
 

@@ -23,6 +23,7 @@ namespace PocketMine\Event\Player;
 
 use PocketMine\Event\Cancellable;
 use PocketMine\Player;
+use PocketMine\Server;
 
 /**
  * Called when a player chats something
@@ -46,7 +47,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->message = $message;
 		$this->format = $format;
 		if($recipients === null){
-			$this->recipients = Player::getAll();
+			$this->recipients = Server::getInstance()->getPluginManager()->getPermissionSubscriptions(Player::BROADCAST_CHANNEL_USERS);
 		}else{
 			$this->recipients = $recipients;
 		}
