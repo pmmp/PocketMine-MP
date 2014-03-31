@@ -2111,9 +2111,11 @@ class Player extends Human implements CommandSender{
 	 */
 	public function close($message = "", $reason = "generic reason"){
 		if($this->connected === true){
+			unset($this->level->players[$this->CID]);
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerQuitEvent($this, $message));
 				if($this->loggedIn === true){
+					parent::close();
 					$this->save();
 				}
 			}
@@ -2150,8 +2152,6 @@ class Player extends Human implements CommandSender{
 			$this->chunkCount = array();
 			$this->craftingItems = array();
 			$this->received = array();
-			unset($this->level->players[$this->CID]);
-			parent::close();
 			$this->buffer = null;
 			unset($this->buffer);
 		}

@@ -55,7 +55,7 @@ class BanIpCommand extends VanillaCommand{
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
 			$this->processIPBan($value, $sender, $reason);
 		}else{
-			if(($player = Player::get($name, true)) instanceof Player){
+			if(($player = Player::get($value, true)) instanceof Player){
 				$this->processIPBan($player->getIP(), $sender, $reason);
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
@@ -63,8 +63,6 @@ class BanIpCommand extends VanillaCommand{
 				return false;
 			}
 		}
-
-		Command::broadcastCommandMessage($sender, "Banned player " . $name);
 
 		return true;
 	}

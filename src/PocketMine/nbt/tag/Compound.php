@@ -51,7 +51,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 	public function offsetSet($offset, $value){
 		if($value instanceof Tag){
 			$this->{$offset} = $value;
-		}elseif($this->{$offset} instanceof Tag){
+		}elseif(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
 			$this->{$offset}->setValue($value);
 		}
 	}
