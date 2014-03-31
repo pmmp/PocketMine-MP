@@ -90,8 +90,8 @@ class HelpCommand extends VanillaCommand{
 			if(($command = Server::getInstance()->getCommandMap()->getCommand(strtolower($command))) instanceof Command){
 				if($command->testPermissionSilent($sender)){
 					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $command->getName() . TextFormat::YELLOW . " ---------\n";
-					$message .= TextFormat::DARK_GREEN . "Description: " . TextFormat::WHITE . $command->getDescription() . "\n";
-					$message .= TextFormat::DARK_GREEN . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $command->getUsage())) . "\n";
+					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $command->getDescription() . "\n";
+					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $command->getUsage())) . "\n";
 					$sender->sendMessage($message);
 
 					return true;

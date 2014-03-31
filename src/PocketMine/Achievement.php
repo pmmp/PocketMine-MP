@@ -20,6 +20,7 @@
 */
 
 namespace PocketMine;
+use PocketMine\Utils\TextFormat;
 
 /**
  * Handles the achievement list and a bit more
@@ -105,9 +106,9 @@ abstract class Achievement{
 	public static function broadcast(Player $player, $achievementId){
 		if(isset(Achievement::$list[$achievementId])){
 			if(Server::getInstance()->getConfigString("announce-player-achievements", true) === true){
-				Server::getInstance()->broadcastMessage($player->getDisplayName() . " has just earned the achievement " . Achievement::$list[$achievementId]["name"]);
+				Server::getInstance()->broadcastMessage($player->getDisplayName() . " has just earned the achievement " . TextFormat::GREEN . Achievement::$list[$achievementId]["name"]);
 			}else{
-				$player->sendMessage("You have just earned the achievement " . Achievement::$list[$achievementId]["name"]);
+				$player->sendMessage("You have just earned the achievement " . TextFormat::GREEN . Achievement::$list[$achievementId]["name"]);
 			}
 
 			return true;
