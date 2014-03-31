@@ -167,6 +167,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return false;
 	}
 
+	/**
+	 * @param string $filename
+	 * @param bool   $replace
+	 *
+	 * @return bool
+	 */
 	public function saveResource($filename, $replace = false){
 		if(trim($filename) === ""){
 			return false;

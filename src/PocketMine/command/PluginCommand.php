@@ -22,6 +22,7 @@
 namespace PocketMine\Command;
 
 use PocketMine\Plugin\Plugin;
+use PocketMine\Utils\TextFormat;
 
 class PluginCommand extends Command{
 
@@ -55,7 +56,7 @@ class PluginCommand extends Command{
 		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
 
 		if(!$success and $this->usageMessage !== ""){
-			$sender->sendMessage($this->usageMessage);
+			$sender->sendMessage(TextFormat::RED . "Usage: ". $this->usageMessage);
 		}
 
 		return $success;

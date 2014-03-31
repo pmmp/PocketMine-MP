@@ -303,6 +303,36 @@ class Server{
 	}
 
 	/**
+	 * @param string $str
+	 *
+	 * @return int
+	 */
+	public static function getDifficultyFromString($str){
+		switch(strtolower(trim($str))){
+			case "0":
+			case "peaceful":
+			case "p":
+				return 0;
+
+			case "1":
+			case "easy":
+			case "e":
+				return 1;
+
+			case "2":
+			case "normal":
+			case "n":
+				return 2;
+
+			case "3":
+			case "hard":
+			case "h":
+				return 3;
+		}
+		return -1;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getDifficulty(){
