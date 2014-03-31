@@ -44,6 +44,7 @@ use PocketMine\Network\Query\QueryHandler;
 use PocketMine\Network\Query\QueryPacket;
 use PocketMine\Network\ThreadedHandler;
 use PocketMine\Network\UPnP\UPnP;
+use PocketMine\Permission\BanList;
 use PocketMine\Permission\DefaultPermissions;
 use PocketMine\Plugin\Plugin;
 use PocketMine\Plugin\PluginLoadOrder;
@@ -60,6 +61,18 @@ use PocketMine\Utils\VersionString;
 class Server{
 	/** @var Server */
 	private static $instance = null;
+
+	/** @var BanList */
+	private $banByName = null;
+
+	/** @var BanList */
+	private $banByIP = null;
+
+	/** @var Config */
+	private $operators = null;
+
+	/** @var Config */
+	private $whitelist = null;
 
 	/** @var bool */
 	private $isRunning = true;
@@ -478,6 +491,92 @@ class Server{
 	}
 
 	/**
+	 * @return BanList
+	 */
+	public function getNameBans(){
+		return $this->banByName;
+	}
+
+	/**
+	 * @return BanList
+	 */
+	public function getIPBans(){
+		return $this->banByIP;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function addOp($name){
+		$this->operators->set(strtolower($name), true);
+
+		if(($player = Player::get($name, false, false)) instanceof Player){
+			$player->recalculatePermissions();
+		}
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function removeOp($name){
+		$this->operators->remove(strtolower($name));
+
+		if(($player = Player::get($name, false, false)) instanceof Player){
+			$player->recalculatePermissions();
+		}
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function addWhitelist($name){
+		$this->whitelist->set(strtolower($name), true);
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function removeWhitelist($name){
+		$this->whitelist->remove(strtolower($name));
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function isWhitelisted($name){
+		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function isOp($name){
+		return $this->operators->exists($name, true);
+	}
+
+	/**
+	 * @return Config
+	 */
+	public function getWhitelisted(){
+		return $this->whitelist;
+	}
+
+	/**
+	 * @return Config
+	 */
+	public function getOPs(){
+		return $this->operators;
+	}
+
+	public function reloadWhitelist(){
+		$this->whitelist->reload();
+	}
+
+	/**
 	 * @return Server
 	 */
 	public static function getInstance(){
@@ -500,6 +599,14 @@ class Server{
 		@mkdir($this->dataPath . "worlds/", 0777);
 		@mkdir($this->dataPath . "players/", 0777);
 		@mkdir($this->pluginPath, 0777);
+
+		$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
+		$this->whitelist = new Config($this->dataPath . "whitelist.txt", Config::ENUM);
+		if(file_exists($this->dataPath . "banned.txt") and !file_exists($this->dataPath . "banned-players.txt")){
+			@rename($this->dataPath . "banned.txt", $this->dataPath . "banned-players.txt");
+		}
+		$this->banByName = new BanList($this->dataPath . "banned-players.txt");
+		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 
 		$this->tickScheduler = new TickScheduler(20);
 		$this->scheduler = new ServerScheduler();

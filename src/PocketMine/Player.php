@@ -21,6 +21,7 @@
 
 namespace PocketMine;
 
+use PocketMine\Command\CommandSender;
 use PocketMine\Entity\RealHuman;
 use PocketMine\Event;
 use PocketMine\Item\Item;
@@ -61,6 +62,9 @@ use PocketMine\Network\Protocol\UnknownPacket;
 use PocketMine\Network\Protocol\UpdateBlockPacket;
 use PocketMine\Network\RakNet\Info;
 use PocketMine\Network\RakNet\Packet;
+use PocketMine\Permission\PermissibleBase;
+use PocketMine\Permission\PermissionAttachment;
+use PocketMine\Plugin\Plugin;
 use PocketMine\PMF\LevelFormat;
 use PocketMine\Recipes\Crafting;
 use PocketMine\Scheduler\CallbackTask;
@@ -80,7 +84,7 @@ use PocketMine\Utils\Utils;
  * Class Player
  * @package PocketMine
  */
-class Player extends RealHuman/* implements CommandSender*/{
+class Player extends RealHuman implements CommandSender{
 	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
@@ -160,6 +164,87 @@ class Player extends RealHuman/* implements CommandSender*/{
 	 */
 	private $tasks = array();
 
+	private $perm = null;
+
+	/**
+	 * @return Server
+	 */
+	public function getServer(){
+		return $this->server;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isOp(){
+		return $this->server->isOp($this->getName());
+	}
+
+	/**
+	 * @param bool $value
+	 */
+	public function setOp($value){
+		if($value === $this->isOp()){
+			return;
+		}
+
+		if($value === true){
+			$this->server->addOp($this->getName());
+		}else{
+			$this->server->removeOp($this->getName());
+		}
+
+		$this->perm->recalculatePermissions();
+	}
+
+	/**
+	 * @param Permission\Permission|string $name
+	 *
+	 * @return bool
+	 */
+	public function isPermissionSet($name){
+		return $this->perm->isPermissionSet($name);
+	}
+
+	/**
+	 * @param Permission\Permission|string $name
+	 *
+	 * @return bool
+	 */
+	public function hasPermission($name){
+		return $this->perm->hasPermission($name);
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 * @param string $name
+	 * @param bool   $value
+	 *
+	 * @return Permission\PermissionAttachment
+	 */
+	public function addAttachment(Plugin $plugin, $name = null, $value = null){
+		return $this->perm->addAttachment($plugin, $name, $value);
+	}
+
+	/**
+	 * @param PermissionAttachment $attachment
+	 */
+	public function removeAttachment(PermissionAttachment $attachment){
+		$this->perm->removeAttachment($attachment);
+	}
+
+	public function recalculatePermissions(){
+		$this->perm->recalculatePermissions();
+	}
+
+	/**
+	 * @return Permission\PermissionAttachmentInfo[]
+	 */
+	public function getEffectivePermissions(){
+		return $this->perm->getEffectivePermissions();
+	}
+
+
 	/**
 	 * @param integer $clientID
 	 * @param string  $ip
@@ -167,6 +252,7 @@ class Player extends RealHuman/* implements CommandSender*/{
 	 * @param integer $MTU
 	 */
 	public function __construct($clientID, $ip, $port, $MTU){
+		$this->perm = new PermissibleBase($this);
 		$this->bigCnt = 0;
 		$this->MTU = $MTU;
 		$this->server = Server::getInstance();
@@ -977,13 +1063,11 @@ class Player extends RealHuman/* implements CommandSender*/{
 					return;
 				}
 
-				//TODO: whitelist things
-				if($this->server->whitelist === true and !$this->server->api->ban->inWhitelist($this->iusername)){
+				if($this->server->isWhitelisted(strtolower($this->getName()))){
 					$this->close($this->username . " has left the game", "Server is white-listed");
 
 					return;
-				//TODO: ban things
-				}elseif($this->server->api->ban->isBanned($this->iusername) or $this->server->api->ban->isIPBanned($this->ip)){
+				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getIP())){
 					$this->close($this->username . " has left the game", "You are banned");
 
 					return;
@@ -1970,6 +2054,10 @@ class Player extends RealHuman/* implements CommandSender*/{
 			$this->connected = false;
 			$this->level->freeAllChunks($this);
 			$this->loggedIn = false;
+			foreach($this->tasks as $task){
+				$task->cancel();
+			}
+			$this->tasks = array();
 			$this->recoveryQueue = array();
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
