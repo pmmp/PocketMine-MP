@@ -37,7 +37,19 @@ class Permission{
 
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	public static function getByName($value){
+		if(is_bool($value)){
+			if($value === true){
+				return "true";
+			}else{
+				return "false";
+			}
+		}
 		switch(strtolower($value)){
 			case "op":
 			case "isop":
@@ -186,7 +198,7 @@ class Permission{
 	 *
 	 * @return Permission[]
 	 */
-	public static function loadPermissions(array $data, $default){
+	public static function loadPermissions(array $data, $default = self::DEFAULT_OP){
 		$result = array();
 		foreach($data as $key => $entry){
 			$result[] = self::loadPermission($key, $entry, $default, $result);

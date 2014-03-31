@@ -500,6 +500,10 @@ class PluginManager{
 				$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
 			}
 
+			foreach($plugin->getDescription()->getPermisions() as $perm){
+				$this->addPermission($perm);
+			}
+
 			$plugin->getPluginLoader()->enablePlugin($plugin);
 		}
 	}
@@ -569,6 +573,9 @@ class PluginManager{
 			$plugin->getPluginLoader()->disablePlugin($plugin);
 			$this->server->getScheduler()->cancelTasks($plugin);
 			HandlerList::unregisterAll($plugin);
+			foreach($plugin->getDescription()->getCommands() as $perm){
+				$this->removePermission($perm);
+			}
 		}
 	}
 

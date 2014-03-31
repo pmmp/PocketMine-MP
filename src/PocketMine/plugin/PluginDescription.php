@@ -105,7 +105,16 @@ class PluginDescription{
 			$this->authors = array();
 		}
 
-		//TODO: Do permissions
+		if(isset($plugin["permissions"])){
+			$this->permissions = Permission::loadPermissions($plugin["permissions"]);
+		}
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFullName(){
+		return $this->name . " v" . $this->version;
 	}
 
 	/**
