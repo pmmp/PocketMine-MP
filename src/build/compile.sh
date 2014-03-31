@@ -18,7 +18,7 @@ BCOMPILER_VERSION="1.0.2"
 echo "[PocketMine] PHP compiler for Linux, MacOS and Android"
 DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
-trap "echo \"# \$(eval echo \$BASH_COMMAND)\" >> \"$DIR/install.log\" 2>&1"  DEBUG
+trap "echo \"# \$(eval echo \$BASH_COMMAND)\" >> \"$DIR/install.log\" 2>&1" DEBUG
 uname -a >> "$DIR/install.log" 2>&1
 echo "[INFO] Checking dependecies"
 type make >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"make\""; read -p "Press [Enter] to continue..."; exit 1; }
@@ -693,7 +693,7 @@ if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 fi
 
 echo -n " generating php.ini..."
-
+trap - DEBUG
 TIMEZONE=$(date +%Z)
 echo "date.timezone=$TIMEZONE" > "$DIR/bin/php5/bin/php.ini"
 echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
