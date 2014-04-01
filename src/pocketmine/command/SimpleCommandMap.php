@@ -25,10 +25,13 @@ use pocketmine\command\defaults\BanCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
 use pocketmine\command\defaults\DefaultGamemodeCommand;
+use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\HelpCommand;
+use pocketmine\command\defaults\KickCommand;
 use pocketmine\command\defaults\ListCommand;
 use pocketmine\command\defaults\MeCommand;
+use pocketmine\command\defaults\OpCommand;
 use pocketmine\command\defaults\PardonCommand;
 use pocketmine\command\defaults\PardonIpCommand;
 use pocketmine\command\defaults\PluginsCommand;
@@ -72,6 +75,9 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new MeCommand("me"));
 		$this->register("pocketmine", new ListCommand("list"));
 		$this->register("pocketmine", new DifficultyCommand("difficulty"));
+		$this->register("pocketmine", new KickCommand("kick"));
+		$this->register("pocketmine", new OpCommand("op"));
+		$this->register("pocketmine", new DeopCommand("deop"));
 	}
 
 

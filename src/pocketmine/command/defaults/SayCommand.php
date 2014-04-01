@@ -35,7 +35,7 @@ class SayCommand extends VanillaCommand{
 			"Broadcasts the given message as the sender",
 			"/say <message...>"
 		);
-		$this->setPermission("pocketmine.command.seed");
+		$this->setPermission("pocketmine.command.say");
 	}
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){

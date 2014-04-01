@@ -75,7 +75,7 @@ class QueryHandler{
 			"server_engine" => $this->server->getName() . " " . $this->server->getPocketMineVersion(),
 			"plugins" => $plist,
 			"map" => Level::getDefault()->getName(),
-			"numplayers" => count(Player::$list),
+			"numplayers" => count($this->server->getOnlinePlayers()),
 			"maxplayers" => $this->server->getMaxPlayers(),
 			"whitelist" => $this->server->hasWhitelist() === true ? "on" : "off",
 			"hostport" => $this->server->getPort()
@@ -84,7 +84,7 @@ class QueryHandler{
 			$str .= $key . "\x00" . $value . "\x00";
 		}
 		$str .= "\x00\x01player_\x00\x00";
-		foreach(Player::$list as $player){
+		foreach($this->server->getOnlinePlayers() as $player){
 			if($player->getName() != ""){
 				$str .= $player->getName() . "\x00";
 			}
@@ -132,7 +132,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;
 				}else{
-					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count(Player::$list) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
+					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
 				$pk->encode();
 				$this->server->sendPacket($pk);

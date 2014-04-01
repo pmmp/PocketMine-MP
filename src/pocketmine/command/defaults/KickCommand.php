@@ -27,15 +27,15 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
-class BanIpCommand extends VanillaCommand{
+class KickCommand extends VanillaCommand{
 
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Prevents the specified IP address from using this server",
-			"/ban <address|player> [reason...]"
+			"Removes the specified player from the server",
+			"/kick <player> [reason...]"
 		);
-		$this->setPermission("pocketmine.command.ban.ip");
+		$this->setPermission("pocketmine.command.kick");
 	}
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
@@ -49,33 +49,21 @@ class BanIpCommand extends VanillaCommand{
 			return false;
 		}
 
-		$value = array_shift($args);
-		$reason = implode(" ", $args);
+		$name = array_shift($args);
+		$reason = trim(implode(" ", $args));
 
-		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
-			$this->processIPBan($value, $sender, $reason);
-		}else{
-			if(($player = Server::getInstance()->getPlayer($value)) instanceof Player){
-				$this->processIPBan($player->getAddress(), $sender, $reason);
-			}else{
-				$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
-
-				return false;
-			}
+		if($reason === ""){
+			$reason = "Kicked by an operator.";
 		}
+
+		if(($player = Server::getInstance()->getPlayer($name)) instanceof Player){
+			$player->kick("Banned by admin.");
+		}else{
+			$sender->sendMessage($name . " not found.");
+		}
+
+		Command::broadcastCommandMessage($sender, "Kicked player " . $name . ". With reason:\n" . $reason);
 
 		return true;
-	}
-
-	private function processIPBan($ip, CommandSender $sender, $reason){
-		Server::getInstance()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
-
-		foreach(Server::getInstance()->getOnlinePlayers() as $player){
-			if($player->getAddress() === $ip){
-				$player->kick("You have been IP banned.");
-			}
-		}
-
-		Command::broadcastCommandMessage($sender, "Banned IP Address " . $ip);
 	}
 }

@@ -39,6 +39,16 @@ use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\item\Item;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Long;
+use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\Packet;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryPacket;
@@ -127,6 +137,9 @@ class Server{
 
 	/** @var Config */
 	private $properties;
+
+	/** @var Player[] */
+	private $players = array();
 
 	/**
 	 * @return string
@@ -433,6 +446,216 @@ class Server{
 	}
 
 	/**
+	 * @return Player[]
+	 */
+	public function getOnlinePlayers(){
+		return $this->players;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return OfflinePlayer|Player
+	 */
+	public function getOfflinePlayer($name){
+		$name = strtolower($name);
+		$result = $this->getPlayerExact($name);
+
+		if($result === null){
+			$result = new OfflinePlayer($this, $name);
+		}
+		return $result;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return Compound
+	 */
+	public function getOfflinePlayerData($name){
+		$name = strtolower($name);
+		$path = $this->getDataPath() . "players/";
+		if(!file_exists($path . "$name.dat")){
+			$spawn = Level::getDefault()->getSafeSpawn();
+			$nbt = new Compound(false, array(
+				new Long("firstPlayed", floor(microtime(true) * 1000)),
+				new Long("lastPlayed", floor(microtime(true) * 1000)),
+				new Enum("Pos", array(
+					new Double(0, $spawn->x),
+					new Double(1, $spawn->y),
+					new Double(2, $spawn->z)
+				)),
+				new String("Level", Level::getDefault()->getName()),
+				new String("SpawnLevel", Level::getDefault()->getName()),
+				new Int("SpawnX", (int) $spawn->x),
+				new Int("SpawnY", (int) $spawn->y),
+				new Int("SpawnZ", (int) $spawn->z),
+				new Byte("SpawnForced", 1), //TODO
+				new Enum("Inventory", array()),
+				new Compound("Achievements", array()),
+				new Int("playerGameType", $this->getGamemode()),
+				new Enum("Motion", array(
+					new Double(0, 0.0),
+					new Double(1, 0.0),
+					new Double(2, 0.0)
+				)),
+				new Enum("Rotation", array(
+					new Float(0, 0.0),
+					new Float(1, 0.0)
+				)),
+				new Float("FallDistance", 0.0),
+				new Short("Fire", 0),
+				new Short("Air", 0),
+				new Byte("OnGround", 1),
+				new Byte("Invulnerable", 0),
+				new String("NameTag", $name),
+			));
+			$nbt->Pos->setTagType(NBT::TAG_Double);
+			$nbt->Inventory->setTagType(NBT::TAG_Compound);
+			$nbt->Motion->setTagType(NBT::TAG_Double);
+			$nbt->Rotation->setTagType(NBT::TAG_Float);
+
+			if(file_exists($path . "$name.yml")){ //Importing old PocketMine-MP files
+				$data = new Config($path . "$name.yml", Config::YAML, array());
+				$nbt["playerGameType"] = (int) $data->get("gamemode");
+				$nbt["Level"] = $data->get("position")["level"];
+				$nbt["Pos"][0] = $data->get("position")["x"];
+				$nbt["Pos"][1] = $data->get("position")["y"];
+				$nbt["Pos"][2] = $data->get("position")["z"];
+				$nbt["SpawnLevel"] = $data->get("spawn")["level"];
+				$nbt["SpawnX"] = (int) $data->get("spawn")["x"];
+				$nbt["SpawnY"] = (int) $data->get("spawn")["y"];
+				$nbt["SpawnZ"] = (int) $data->get("spawn")["z"];
+				console("[NOTICE] Old Player data found for \"" . $name . "\", upgrading profile");
+				foreach($data->get("inventory") as $slot => $item){
+					if(count($item) === 3){
+						$nbt->Inventory[$slot + 9] = new Compound(false, array(
+							new Short("id", $item[0]),
+							new Short("Damage", $item[1]),
+							new Byte("Count", $item[2]),
+							new Byte("Slot", $slot + 9),
+							new Byte("TrueSlot", $slot + 9)
+						));
+					}
+				}
+				foreach($data->get("hotbar") as $slot => $itemSlot){
+					if(isset($nbt->Inventory[$itemSlot + 9])){
+						$item = $nbt->Inventory[$itemSlot + 9];
+						$nbt->Inventory[$slot] = new Compound(false, array(
+							new Short("id", $item->id),
+							new Short("Damage", $item->Damage),
+							new Byte("Count", $item->Count),
+							new Byte("Slot", $slot),
+							new Byte("TrueSlot", $item->TrueSlot)
+						));
+					}
+				}
+				foreach($data->get("armor") as $slot => $item){
+					if(count($item) === 2){
+						$nbt->Inventory[$slot + 100] = new Compound(false, array(
+							new Short("id", $item[0]),
+							new Short("Damage", $item[1]),
+							new Byte("Count", 1),
+							new Byte("Slot", $slot + 100)
+						));
+					}
+				}
+				foreach($data->get("achievements") as $achievement => $status){
+					$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
+				}
+				unlink($path . "$name.yml");
+			}else{
+				console("[NOTICE] Player data not found for \"" . $name . "\", creating new profile");
+			}
+			$this->saveOfflinePlayerData($name, $nbt);
+			return $nbt;
+		}else{
+			$nbt = new NBT(NBT::BIG_ENDIAN);
+			$nbt->readCompressed(file_get_contents($path . "$name.dat"));
+			return $nbt->getData();
+		}
+	}
+
+	/**
+	 * @param string   $name
+	 * @param Compound $nbtTag
+	 */
+	public function saveOfflinePlayerData($name, Compound $nbtTag){
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setData($nbtTag);
+		file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return Player
+	 */
+	public function getPlayer($name){
+		$found = null;
+		$name = strtolower($name);
+		$delta = PHP_INT_MAX;
+		foreach($this->getOnlinePlayers() as $player){
+			if(stripos($player->getName(), $name) === 0){
+				$curDelta = strlen($player->getName()) - strlen($name);
+				if($curDelta < $delta){
+					$found = $player;
+					$delta = $curDelta;
+				}
+				if($curDelta === 0){
+					break;
+				}
+			}
+		}
+		return $found;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return Player
+	 */
+	public function getPlayerExact($name){
+		$name = strtolower($name);
+		foreach($this->getOnlinePlayers() as $player){
+			if(strtolower($player->getName()) === $name){
+				return $player;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param string $partialName
+	 *
+	 * @return Player[]
+	 */
+	public function matchPlayer($partialName){
+		$partialName = strtolower($partialName);
+		$matchedPlayers = array();
+		foreach($this->getOnlinePlayers() as $player){
+			if(strtolower($player->getName()) === $partialName){
+				$matchedPlayers = array($player);
+				break;
+			}elseif(stripos($player->getName(), $partialName) !== false){
+				$matchedPlayers[] = $player;
+			}
+		}
+
+		return $matchedPlayers;
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function removePlayer(Player $player){
+		if($player->isOnline() === false){
+			unset($this->players[$player->getAddress() . ":" . $player->getPort()]);
+		}
+	}
+
+	/**
 	 * @param string $variable
 	 * @param string $defaultValue
 	 *
@@ -547,9 +770,10 @@ class Server{
 	public function addOp($name){
 		$this->operators->set(strtolower($name), true);
 
-		if(($player = Player::get($name, false, false)) instanceof Player){
+		if(($player = $this->getPlayerExact($name)) instanceof Player){
 			$player->recalculatePermissions();
 		}
+		$this->operators->save();
 	}
 
 	/**
@@ -558,9 +782,10 @@ class Server{
 	public function removeOp($name){
 		$this->operators->remove(strtolower($name));
 
-		if(($player = Player::get($name, false, false)) instanceof Player){
+		if(($player = $this->getPlayerExact($name)) instanceof Player){
 			$player->recalculatePermissions();
 		}
+		$this->operators->save();
 	}
 
 	/**
@@ -568,6 +793,7 @@ class Server{
 	 */
 	public function addWhitelist($name){
 		$this->whitelist->set(strtolower($name), true);
+		$this->whitelist->save();
 	}
 
 	/**
@@ -575,6 +801,7 @@ class Server{
 	 */
 	public function removeWhitelist($name){
 		$this->whitelist->remove(strtolower($name));
+		$this->whitelist->save();
 	}
 
 	/**
@@ -748,9 +975,9 @@ class Server{
 		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}*/
-		$this->scheduler->scheduleRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), 20 * 45);
+		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), 20 * 45, 20 * 45);
 		if($this->getConfigBoolean("auto-save", true) === true){
-			$this->scheduler->scheduleRepeatingTask(new CallbackTask(array($this, "doAutoSave")), 18000);
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), 18000, 18000);
 		}
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
@@ -883,7 +1110,7 @@ class Server{
 
 		$this->pluginManager->disablePlugins();
 
-		foreach(Player::getAll() as $player){
+		foreach($this->players as $player){
 			$player->kick("server stop");
 		}
 
@@ -953,8 +1180,8 @@ class Server{
 			$this->queryHandler->handle($packet);
 		}elseif($packet instanceof RakNetPacket){
 			$CID = $packet->ip . ":" . $packet->port;
-			if(isset(Player::$list[$CID])){
-				Player::$list[$CID]->handlePacket($packet);
+			if(isset($this->players[$CID])){
+				$this->players[$CID]->handlePacket($packet);
 			}else{
 				switch($packet->pid()){
 					case RakNetInfo::UNCONNECTED_PING:
@@ -962,7 +1189,7 @@ class Server{
 						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
 						$pk->pingID = $packet->pingID;
 						$pk->serverID = $this->serverID;
-						$pk->serverType = "MCCPP;Demo;" . $this->getMotd() . " [" . count(Player::$list) . "/" . $this->getMaxPlayers() . "]";
+						$pk->serverType = "MCCPP;Demo;" . $this->getMotd() . " [" . count($this->players) . "/" . $this->getMaxPlayers() . "]";
 						$pk->ip = $packet->ip;
 						$pk->port = $packet->port;
 						$this->sendPacket($pk);
@@ -985,7 +1212,7 @@ class Server{
 						}
 						break;
 					case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
-						new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
+						$this->players[$CID] = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
 						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
 						$pk->serverID = $this->serverID;
 						$pk->serverPort = $this->getPort();
@@ -1068,7 +1295,7 @@ class Server{
 				"version" => VERSION,
 				"mc_version" => MINECRAFT_VERSION,
 				"protocol" => Info::CURRENT_PROTOCOL,
-				"online" => count(Player::$list),
+				"online" => count($this->players),
 				"max" => $this->server->maxClients,
 				"plugins" => $plist,
 			),
@@ -1077,7 +1304,7 @@ class Server{
 
 	public function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
+			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}
 

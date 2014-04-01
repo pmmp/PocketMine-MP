@@ -35,6 +35,7 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
@@ -75,11 +76,8 @@ use pocketmine\utils\Utils;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  * TODO: Move reliability layer
- *
- * Class Player
- * @package PocketMine
  */
-class Player extends Human implements CommandSender{
+class Player extends Human implements CommandSender, IPlayer{
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -90,11 +88,6 @@ class Player extends Human implements CommandSender{
 	const MAX_QUEUE = 2048;
 	const SURVIVAL_SLOTS = 36;
 	const CREATIVE_SLOTS = 112;
-
-	/**
-	 * @var Player[]
-	 */
-	public static $list = array();
 
 	public $CID;
 	public $MTU;
@@ -161,6 +154,45 @@ class Player extends Human implements CommandSender{
 	/** @var PermissibleBase */
 	private $perm = null;
 
+	public function isBanned(){
+		return $this->server->getNameBans()->isBanned(strtolower($this->getName()));
+	}
+
+	public function setBanned($value){
+		if($value === true){
+			$this->server->getNameBans()->addBan($this->getName(), null, null, null);
+		}else{
+			$this->server->getNameBans()->remove($this->getName());
+		}
+	}
+
+	public function isWhitelisted(){
+		return $this->server->isWhitelisted(strtolower($this->getName()));
+	}
+
+	public function setWhitelisted($value){
+		if($value === true){
+			$this->server->addWhitelist(strtolower($this->getName()));
+		}else{
+			$this->server->removeWhitelist(strtolower($this->getName()));
+		}
+	}
+
+	public function getPlayer(){
+		return $this;
+	}
+
+	public function getFirstPlayed(){
+		return $this->namedtag instanceof Compound ? $this->namedtag["firstPlayed"] : null;
+	}
+
+	public function getLastPlayed(){
+		return $this->namedtag instanceof Compound ? $this->namedtag["lastPlayed"] : null;
+	}
+
+	public function hasPlayedBefore(){
+		return $this->namedtag instanceof Compound;
+	}
 
 	protected function initEntity(){
 		$this->level->players[$this->CID] = $this;
@@ -317,7 +349,6 @@ class Player extends Human implements CommandSender{
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
 		$this->CID = $ip . ":" . $port;
-		Player::$list[$this->CID] = $this;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = Level::getDefault()->getSafeSpawn();
@@ -1220,8 +1251,7 @@ class Player extends Human implements CommandSender{
 				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
 
-				//TODO: op things
-				if(count(Player::$list) > $this->server->getMaxPlayers()){
+				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers()){
 					if($this->kick("server full") === true){
 						return;
 					}
@@ -1265,16 +1295,17 @@ class Player extends Human implements CommandSender{
 				$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 				$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 
-				$u = Player::get($this->iusername, false, true);
+				//TODO
+				/*$u = $this->server->matchPlayer($this->username);
 				if(count($u) > 0){
 					foreach($u as $p){
 						if($p !== $this){
 							$p->close($p->getDisplayName() . " has left the game", "logged in from another location");
 						}
 					}
-				}
+				}*/
 
-				$nbt = Player::getOffline($this->username);
+				$nbt = $this->server->getOfflinePlayerData($this->username);
 				if(!isset($nbt->NameTag)){
 					$nbt->NameTag = new String("NameTag", $this->username);
 				}else{
@@ -1300,7 +1331,8 @@ class Player extends Human implements CommandSender{
 					$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 				}
 
-				Player::saveOffline($this->username, $nbt);
+				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
+				$this->server->saveOfflinePlayerData($this->username, $nbt);
 				parent::__construct($this->level, $nbt);
 				$this->loggedIn = true;
 
@@ -2244,8 +2276,8 @@ class Player extends Human implements CommandSender{
 
 			$this->sendBuffer();
 			$this->directDataPacket(new DisconnectPacket);
-			unset(Player::$list[$this->CID]);
 			$this->connected = false;
+			$this->server->removePlayer($this);
 			$this->level->freeAllChunks($this);
 			$this->loggedIn = false;
 			foreach($this->tasks as $task){
@@ -2257,7 +2289,7 @@ class Player extends Human implements CommandSender{
 			$this->resendQueue = array();
 			$this->ackQueue = array();
 			if($this->username != "" and ($this->namedtag instanceof Compound)){
-				Player::saveOffline($this->username, $this->namedtag);
+				$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
 			}
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
@@ -2295,6 +2327,7 @@ class Player extends Human implements CommandSender{
 		}
 
 		$this->namedtag["playerGameType"] = $this->gamemode;
+		$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
 
 		//$this->data->set("health", $this->getHealth());
 	}
@@ -2328,169 +2361,6 @@ class Player extends Human implements CommandSender{
 		$this->send($pk);
 
 		return array($pk->seqNumber);
-	}
-
-	/**
-	 * @return Player[]
-	 */
-	public static function getAll(){
-		return Player::$list;
-	}
-
-	/**
-	 * Gets a player, or multiple
-	 *
-	 * @param string $name     name/partial name to search
-	 * @param bool   $alike    = true, if false, will only return exact matches
-	 * @param bool   $multiple = false, if true, will return an array with all the players that match
-	 *
-	 * @return Player[]|bool|Player
-	 */
-	public static function get($name, $alike = true, $multiple = false){
-		$name = trim(strtolower($name));
-		if($name === ""){
-			return false;
-		}
-		$players = array();
-		foreach(Player::$list as $player){
-			if($multiple === false and $player->iusername === $name){
-				return $player;
-			}elseif(strpos($player->iusername, $name) !== false){
-				$players[$player->CID] = $player;
-			}
-		}
-
-		if($multiple === false){
-			if(count($players) > 0){
-				return array_shift($players);
-			}else{
-				return false;
-			}
-		}else{
-			return $players;
-		}
-	}
-
-	/**
-	 * Gets or generates the NBT data for a player
-	 *
-	 * @param string $name
-	 *
-	 * @return Compound
-	 */
-	public static function getOffline($name){
-		$server = Server::getInstance();
-		$iname = strtolower($name);
-		if(!file_exists(Server::getInstance()->getDataPath() . "players/" . $iname . ".dat")){
-			$spawn = Level::getDefault()->getSafeSpawn();
-			$nbt = new Compound(false, array(
-				new Enum("Pos", array(
-					new Double(0, $spawn->x),
-					new Double(1, $spawn->y),
-					new Double(2, $spawn->z)
-				)),
-				new String("Level", Level::getDefault()->getName()),
-				new String("SpawnLevel", Level::getDefault()->getName()),
-				new Int("SpawnX", (int) $spawn->x),
-				new Int("SpawnY", (int) $spawn->y),
-				new Int("SpawnZ", (int) $spawn->z),
-				new Byte("SpawnForced", 1), //TODO
-				new Enum("Inventory", array()),
-				new Compound("Achievements", array()),
-				new Int("playerGameType", $server->getGamemode()),
-				new Enum("Motion", array(
-					new Double(0, 0.0),
-					new Double(1, 0.0),
-					new Double(2, 0.0)
-				)),
-				new Enum("Rotation", array(
-					new Float(0, 0.0),
-					new Float(1, 0.0)
-				)),
-				new Float("FallDistance", 0.0),
-				new Short("Fire", 0),
-				new Short("Air", 0),
-				new Byte("OnGround", 1),
-				new Byte("Invulnerable", 0),
-				new String("NameTag", $name),
-			));
-			$nbt->Pos->setTagType(NBT::TAG_Double);
-			$nbt->Inventory->setTagType(NBT::TAG_Compound);
-			$nbt->Motion->setTagType(NBT::TAG_Double);
-			$nbt->Rotation->setTagType(NBT::TAG_Float);
-			if(file_exists(Server::getInstance()->getDataPath() . "players/" . $iname . ".yml")){
-				$data = new Config(Server::getInstance()->getDataPath() . "players/" . $iname . ".yml", Config::YAML, array());
-				$nbt["playerGameType"] = (int) $data->get("gamemode");
-				$nbt["Level"] = $data->get("position")["level"];
-				$nbt["Pos"][0] = $data->get("position")["x"];
-				$nbt["Pos"][1] = $data->get("position")["y"];
-				$nbt["Pos"][2] = $data->get("position")["z"];
-				$nbt["SpawnLevel"] = $data->get("spawn")["level"];
-				$nbt["SpawnX"] = (int) $data->get("spawn")["x"];
-				$nbt["SpawnY"] = (int) $data->get("spawn")["y"];
-				$nbt["SpawnZ"] = (int) $data->get("spawn")["z"];
-				console("[NOTICE] Old Player data found for \"" . $iname . "\", upgrading profile");
-				foreach($data->get("inventory") as $slot => $item){
-					if(count($item) === 3){
-						$nbt->Inventory[$slot + 9] = new Compound(false, array(
-							new Short("id", $item[0]),
-							new Short("Damage", $item[1]),
-							new Byte("Count", $item[2]),
-							new Byte("Slot", $slot + 9),
-							new Byte("TrueSlot", $slot + 9)
-						));
-					}
-				}
-				foreach($data->get("hotbar") as $slot => $itemSlot){
-					if(isset($nbt->Inventory[$itemSlot + 9])){
-						$item = $nbt->Inventory[$itemSlot + 9];
-						$nbt->Inventory[$slot] = new Compound(false, array(
-							new Short("id", $item->id),
-							new Short("Damage", $item->Damage),
-							new Byte("Count", $item->Count),
-							new Byte("Slot", $slot),
-							new Byte("TrueSlot", $item->TrueSlot)
-						));
-					}
-				}
-				foreach($data->get("armor") as $slot => $item){
-					if(count($item) === 2){
-						$nbt->Inventory[$slot + 100] = new Compound(false, array(
-							new Short("id", $item[0]),
-							new Short("Damage", $item[1]),
-							new Byte("Count", 1),
-							new Byte("Slot", $slot + 100)
-						));
-					}
-				}
-				foreach($data->get("achievements") as $achievement => $status){
-					$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
-				}
-				unlink(Server::getInstance()->getDataPath() . "players/" . $iname . ".yml");
-			}else{
-				console("[NOTICE] Player data not found for \"" . $iname . "\", creating new profile");
-				Player::saveOffline($name, $nbt);
-			}
-
-		}else{
-			$nbt = new NBT(NBT::BIG_ENDIAN);
-			$nbt->readCompressed(file_get_contents(Server::getInstance()->getDataPath() . "players/" . $iname . ".dat"));
-			$nbt = $nbt->getData();
-		}
-
-		return $nbt;
-	}
-
-	/**
-	 * Saves a compressed NBT Coumpound tag as a player data
-	 *
-	 * @param string   $name
-	 * @param Compound $nbtTag
-	 */
-	public static function saveOffline($name, Compound $nbtTag){
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData($nbtTag);
-		file_put_contents(Server::getInstance()->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
 	}
 
 	/**

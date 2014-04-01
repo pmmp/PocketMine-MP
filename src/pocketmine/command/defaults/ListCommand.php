@@ -45,13 +45,13 @@ class ListCommand extends VanillaCommand{
 
 		$online = "";
 
-		foreach(Player::getAll() as $player){
+		foreach(Server::getInstance()->getOnlinePlayers() as $player){
 			if($player->isOnline() and (!($sender instanceof Player) or $sender->canSee($player))){
 				$online .= $player->getDisplayName() . ", ";
 			}
 		}
 
-		$sender->sendMessage("There are ".count(Player::getAll())."/".Server::getInstance()->getMaxPlayers()." players online:\n" . substr($online, 0, -2));
+		$sender->sendMessage("There are ".count(Server::getInstance()->getOnlinePlayers())."/".Server::getInstance()->getMaxPlayers()." players online:\n" . substr($online, 0, -2));
 
 		return true;
 	}

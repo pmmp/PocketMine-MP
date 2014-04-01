@@ -23,6 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 class TellCommand extends VanillaCommand{
@@ -50,7 +51,7 @@ class TellCommand extends VanillaCommand{
 
 		$name = strtolower(array_shift($args));
 
-		$player = Player::get($name, true, false);
+		$player = Server::getInstance()->getPlayer($name);
 
 		if($player instanceof Player){
 			$sender->sendMessage("[me -> " . $player->getName() . "] " . implode($args));

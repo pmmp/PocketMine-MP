@@ -46,7 +46,7 @@ class StopCommand extends VanillaCommand{
 
 		$reason = implode(" ", $args);
 		if($reason !== ""){
-			foreach(Player::getAll() as $player){
+			foreach(Server::getInstance()->getOnlinePlayers() as $player){
 				$player->kick($reason);
 			}
 		}
