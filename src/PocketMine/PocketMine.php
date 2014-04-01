@@ -83,7 +83,7 @@ namespace PocketMine {
 	const MINECRAFT_VERSION = "v0.8.1 alpha";
 	const PHP_VERSION = "5.5";
 
-	define("PocketMine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+	@define("PocketMine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 
 	if(!class_exists("SplClassLoader", false)){
 		require_once(\PocketMine\PATH . "src/SPL/SplClassLoader.php");
@@ -142,8 +142,8 @@ namespace PocketMine {
 
 	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard"));
 
-	define("PocketMine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH);
-	define("PocketMine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \PocketMine\PATH . "plugins/");
+	define("PocketMine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
+	define("PocketMine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
 	if((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
 		define("PocketMine\\ANSI", true);
@@ -353,12 +353,10 @@ namespace PocketMine {
 	}
 
 
-	if(!defined("PARENT_API_EXISTENT")){
-		$server = new Server($autoloader, \PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
-		$server->start();
+	$server = new Server($autoloader, \PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
+	$server->start();
 
-		kill(getmypid());
-		exit(0);
-	}
+	kill(getmypid());
+	exit(0);
 
 }

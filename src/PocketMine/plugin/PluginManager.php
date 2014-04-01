@@ -554,9 +554,8 @@ class PluginManager{
 
 				$pluginCmds[] = $newCmd;
 			}
-
-			return $pluginCmds;
 		}
+		return $pluginCmds;
 	}
 
 	public function disablePlugins(){
