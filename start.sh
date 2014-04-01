@@ -34,10 +34,10 @@ if [ "$PHP_BINARY" == "" ]; then
 fi
 
 if [ "$POCKETMINE_FILE" == "" ]; then
-	if [ -f ./src/PocketMine/PocketMine.php ]; then
-		POCKETMINE_FILE="./src/pocketmine/PocketMine.php"
-	elif [ -f ./PocketMine-MP.phar ]; then
+	if [ -f ./PocketMine-MP.phar ]; then
 		POCKETMINE_FILE="./PocketMine-MP.phar"
+	elif [ -f ./src/PocketMine/PocketMine.php ]; then
+		POCKETMINE_FILE="./src/pocketmine/PocketMine.php"
 	else
 		echo "Couldn't find a valid PocketMine-MP installation"
 		exit 1
