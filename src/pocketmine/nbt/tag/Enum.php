@@ -1,0 +1,170 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ * 
+ *
+*/
+
+namespace pocketmine\nbt\tag;
+
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Enum as TagEnum;
+
+class Enum extends NamedTag implements \ArrayAccess{
+
+	private $tagType;
+
+	public function __construct($name = "", $value = array()){
+		$this->name = $name;
+		foreach($value as $k => $v){
+			$this->{$k} = $v;
+		}
+	}
+
+	public function offsetExists($offset){
+		return isset($this->{$offset});
+	}
+
+	public function offsetGet($offset){
+		if($this->{$offset} instanceof Tag){
+			if($this->{$offset} instanceof \ArrayAccess){
+				return $this->{$offset};
+			}else{
+				return $this->{$offset}->getValue();
+			}
+		}
+
+		return null;
+	}
+
+	public function offsetSet($offset, $value){
+		if($value instanceof Tag){
+			$this->{$offset} = $value;
+		}elseif($this->{$offset} instanceof Tag){
+			$this->{$offset}->setValue($value);
+		}
+	}
+
+	public function offsetUnset($offset){
+		unset($this->{$offset});
+	}
+
+	public function getType(){
+		return NBT::TAG_Enum;
+	}
+
+	public function setTagType($type){
+		$this->tagType = $type;
+	}
+
+	public function getTagType(){
+		return $this->tagType;
+	}
+
+	public function read(NBT $nbt){
+		$this->value = array();
+		$this->tagType = $nbt->getByte();
+		$size = $nbt->getInt();
+		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
+			switch($this->tagType){
+				case NBT::TAG_Byte:
+					$tag = new Byte(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Short:
+					$tag = new Short(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Int:
+					$tag = new Int(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Long:
+					$tag = new Long(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Float:
+					$tag = new Float(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Double:
+					$tag = new Double(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Byte_Array:
+					$tag = new Byte_Array(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_String:
+					$tag = new String(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Enum:
+					$tag = new TagEnum(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Compound:
+					$tag = new Compound(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+				case NBT::TAG_Int_Array:
+					$tag = new Int_Array(false);
+					$tag->read($nbt);
+					$this->{$i} = $tag;
+					break;
+			}
+		}
+	}
+
+	public function write(NBT $nbt){
+		if(!isset($this->tagType)){
+			foreach($this as $tag){
+				if($tag instanceof Tag){
+					if(!isset($id)){
+						$id = $tag->getType();
+					}elseif($id !== $tag->getType()){
+						return false;
+					}
+				}
+			}
+			$this->tagType = @$id;
+		}
+
+		$nbt->putByte($this->tagType);
+
+		$tags = array();
+		foreach($this as $tag){
+			if($tag instanceof Tag){
+				$tags[] = $tag;
+			}
+		}
+		$nbt->putInt(count($tags));
+		foreach($tags as $tag){
+			$tag->write($nbt);
+		}
+	}
+}
