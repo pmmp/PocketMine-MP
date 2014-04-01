@@ -159,7 +159,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return bool|string Resource data, or false
 	 */
 	public function getResource($filename){
-		$filename = str_replace("\\", "/", $filename);
+		$filename = rtrim(str_replace("\\", "/", $filename), "/");
 		if(file_exists($this->file . "resources/" . $filename)){
 			return file_get_contents($this->file . "resources/" . $filename);
 		}
@@ -200,16 +200,19 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return string[]
 	 */
 	public function getResources(){
-		if(!$this->isPhar()){
-			$resources = array();
+		$resources = array();
+		if(is_dir($this->file . "resources/")){
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
 				$resources[] = $resource;
 			}
-
-			return $resources;
 		}
+
+		return $resources;
 	}
 
+	/**
+	 * @return Config
+	 */
 	public function getConfig(){
 		if(!isset($this->config)){
 			$this->reloadConfig();
