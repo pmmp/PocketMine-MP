@@ -356,7 +356,7 @@ namespace pocketmine {
 		new Installer();
 	}
 
-	if(substr(__FILE__, 0, 7) !== "phar"){
+	if(substr(__FILE__, 0, 7) !== "phar://"){
 		console("[WARNING] Non-packaged PocketMine-MP installation detected, do not use on production.");
 	}
 
