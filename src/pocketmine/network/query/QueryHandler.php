@@ -26,7 +26,6 @@
 namespace pocketmine\network\query;
 
 use pocketmine\level\Level;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
 

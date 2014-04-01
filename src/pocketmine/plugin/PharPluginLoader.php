@@ -73,6 +73,7 @@ class PharPluginLoader implements PluginLoader{
 				return null;
 			}
 		}
+
 		return null;
 	}
 

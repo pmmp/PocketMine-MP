@@ -56,7 +56,7 @@ class PluginCommand extends Command{
 		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
 
 		if(!$success and $this->usageMessage !== ""){
-			$sender->sendMessage(TextFormat::RED . "Usage: ". $this->usageMessage);
+			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
 		}
 
 		return $success;

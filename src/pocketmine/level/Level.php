@@ -305,7 +305,7 @@ class Level{
 	/**
 	 * Generates a new level
 	 *
-	 * @param string $name
+	 * @param string     $name
 	 * @param bool       $seed
 	 * @param bool       $generator
 	 * @param bool|array $options

@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine;
+
 use pocketmine\utils\TextFormat;
 
 /**

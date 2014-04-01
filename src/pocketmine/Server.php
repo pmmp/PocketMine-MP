@@ -464,6 +464,7 @@ class Server{
 		if($result === null){
 			$result = new OfflinePlayer($this, $name);
 		}
+
 		return $result;
 	}
 
@@ -568,10 +569,12 @@ class Server{
 				console("[NOTICE] Player data not found for \"" . $name . "\", creating new profile");
 			}
 			$this->saveOfflinePlayerData($name, $nbt);
+
 			return $nbt;
 		}else{
 			$nbt = new NBT(NBT::BIG_ENDIAN);
 			$nbt->readCompressed(file_get_contents($path . "$name.dat"));
+
 			return $nbt->getData();
 		}
 	}
@@ -607,6 +610,7 @@ class Server{
 				}
 			}
 		}
+
 		return $found;
 	}
 

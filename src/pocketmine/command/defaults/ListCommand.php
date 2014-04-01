@@ -21,11 +21,9 @@
 
 namespace pocketmine\command\defaults;
 
-use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\utils\TextFormat;
 
 class ListCommand extends VanillaCommand{
 
@@ -51,7 +49,7 @@ class ListCommand extends VanillaCommand{
 			}
 		}
 
-		$sender->sendMessage("There are ".count(Server::getInstance()->getOnlinePlayers())."/".Server::getInstance()->getMaxPlayers()." players online:\n" . substr($online, 0, -2));
+		$sender->sendMessage("There are " . count(Server::getInstance()->getOnlinePlayers()) . "/" . Server::getInstance()->getMaxPlayers() . " players online:\n" . substr($online, 0, -2));
 
 		return true;
 	}

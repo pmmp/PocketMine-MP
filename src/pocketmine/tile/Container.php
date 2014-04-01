@@ -26,10 +26,10 @@ use pocketmine\item\Item;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
-use pocketmine\Network;
 use pocketmine\network\protocol\ContainerOpenPacket;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\TileEventPacket;
+use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\Server;
 

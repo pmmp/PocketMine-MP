@@ -555,6 +555,7 @@ class PluginManager{
 				$pluginCmds[] = $newCmd;
 			}
 		}
+
 		return $pluginCmds;
 	}
 
@@ -616,7 +617,8 @@ class PluginManager{
 	 */
 	public function registerEvents(Listener $listener, Plugin $plugin){
 		if(!$plugin->isEnabled()){
-			trigger_error("Plugin attempted to register ".get_class($listener)." while not enabled", E_USER_WARNING);
+			trigger_error("Plugin attempted to register " . get_class($listener) . " while not enabled", E_USER_WARNING);
+
 			return;
 		}
 
@@ -627,8 +629,8 @@ class PluginManager{
 				$ignoreCancelled = false;
 				if(preg_match("/^[\t ]*\\* @priority[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
 					$matches[1] = strtoupper($matches[1]);
-					if(defined("pocketmine\\event\\EventPriority::".$matches[1])){
-						$priority = constant("pocketmine\\event\\EventPriority::".$matches[1]);
+					if(defined("pocketmine\\event\\EventPriority::" . $matches[1])){
+						$priority = constant("pocketmine\\event\\EventPriority::" . $matches[1]);
 					}
 				}
 				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){

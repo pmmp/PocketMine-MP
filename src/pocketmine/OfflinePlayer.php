@@ -22,7 +22,6 @@
 namespace pocketmine;
 
 
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 
 class OfflinePlayer implements IPlayer{
@@ -112,7 +111,6 @@ class OfflinePlayer implements IPlayer{
 	public function hasPlayedBefore(){
 		return $this->namedtag instanceof Compound;
 	}
-
 
 
 }

@@ -51,7 +51,7 @@ class FolderPluginLoader implements PluginLoader{
 		if(is_dir($file) and file_exists($file . "/plugin.yml") and file_exists($file . "/src/")){
 			if(($description = $this->getPluginDescription($file)) instanceof PluginDescription){
 				console("[INFO] Loading " . $description->getFullName());
-				console("[WARNING] Non-packaged plugin ".$description->getName() ." detected, do not use on production.");
+				console("[WARNING] Non-packaged plugin " . $description->getName() . " detected, do not use on production.");
 				$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
 				if(file_exists($dataFolder) and !is_dir($dataFolder)){
 					trigger_error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory", E_USER_WARNING);
