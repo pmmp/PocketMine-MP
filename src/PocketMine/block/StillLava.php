@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
 
 class StillLava extends Liquid{

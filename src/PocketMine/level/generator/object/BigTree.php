@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Object;
+namespace pocketmine\level\generator\object;
 
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
 
 class BigTree extends Tree{
 	private $trunkHeightMultiplier = 0.618;

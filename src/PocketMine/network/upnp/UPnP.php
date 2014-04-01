@@ -22,9 +22,9 @@
 /**
  * UPnP port forwarding support. Only for Windows
  */
-namespace PocketMine\Network\UPnP;
+namespace pocketmine\network\upnp;
 
-use PocketMine\Utils\Utils;
+use pocketmine\utils\Utils;
 
 abstract class UPnP{
 	public static function PortForward($port){

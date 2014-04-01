@@ -23,16 +23,16 @@
  * PocketMine-MP is the Minecraft: PE multiplayer server software
  * Homepage: http://www.pocketmine.net/
  */
-namespace PocketMine;
+namespace pocketmine;
 
-use PocketMine\Entity\Entity;
-use PocketMine\Network\Packet;
-use PocketMine\Network\Protocol\Info;
-use PocketMine\Network\RakNet\Info as RakNetInfo;
-use PocketMine\Network\RakNet\Packet as RakNetPacket;
-use PocketMine\Plugin\PluginManager;
-use PocketMine\Utils\Utils;
-use PocketMine\Utils\VersionString;
+use pocketmine\entity\Entity;
+use pocketmine\network\Packet;
+use pocketmine\network\protocol\Info;
+use pocketmine\network\raknet\Info as RakNetInfo;
+use pocketmine\network\raknet\Packet as RakNetPacket;
+use pocketmine\plugin\PluginManager;
+use pocketmine\utils\Utils;
+use pocketmine\utils\VersionString;
 
 class ServerOld{
 	/** @var Server */
@@ -93,8 +93,8 @@ class ServerOld{
 
 	private function load(){
 		$this->version = new VersionString();
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and function_exists("cli_set_process_title")){
-			@cli_set_process_title("PocketMine-MP " . \PocketMine\VERSION);
+		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and function_exists("cli_set_process_title")){
+			@cli_set_process_title("PocketMine-MP " . \pocketmine\VERSION);
 		}
 		console("[INFO] Starting Minecraft PE server on " . ($this->serverip === "0.0.0.0" ? "*" : $this->serverip) . ":" . $this->port);
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
@@ -155,19 +155,19 @@ class ServerOld{
 
 	public function titleTick(){
 		$time = microtime(true);
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
+		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
 			echo "\x1b]0;PocketMine-MP " . VERSION . " | Online " . count(Player::$list) . "/" . $this->maxClients . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "MB | U " . round(($this->interface->bandwidth[1] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " D " . round(($this->interface->bandwidth[0] / max(1, $time - $this->interface->bandwidth[2])) / 1024, 2) . " kB/s | TPS " . $this->getTPS() . "\x07";
 		}
 		$this->interface->bandwidth = array(0, 0, $time);
 	}
 
 	public function loadEvents(){
-		if(\PocketMine\ANSI === true){
+		if(\pocketmine\ANSI === true){
 			$this->schedule(30, array($this, "titleTick"), array(), true);
 		}
 		$this->schedule(20 * 15, array($this, "checkTicks"), array(), true);
 		$this->schedule(20 * 60, array($this, "checkMemory"), array(), true);
-		$this->schedule(20 * 45, "PocketMine\\Utils\\Cache::cleanup", array(), true);
+		$this->schedule(20 * 45, "pocketmine\\utils\\Cache::cleanup", array(), true);
 		$this->schedule(20, array($this, "asyncOperationChecker"), array(), true);
 	}
 
@@ -435,7 +435,7 @@ class ServerOld{
 		}
 		console("[INFO] Default game type: " . strtoupper($this->getGamemode()));
 		$this->trigger("server.start", microtime(true));
-		console('[INFO] Done (' . round(microtime(true) - \PocketMine\START_TIME, 3) . 's)! For help, type "help" or "?"');
+		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 		$this->process();
 	}
 
@@ -496,7 +496,7 @@ class ServerOld{
 			$p["rcon.password"] = "******";
 		}
 		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
-		if(class_exists("PocketMine\\Plugin\\PluginManager", false)){
+		if(class_exists("pocketmine\\plugin\\PluginManager", false)){
 			$dump .= "Loaded plugins:\r\n";
 			foreach(PluginManager::getPlugins() as $p){
 				$d = $p->getDescription();

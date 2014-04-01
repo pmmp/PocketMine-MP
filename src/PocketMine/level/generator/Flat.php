@@ -19,22 +19,22 @@
  *
 */
 
-namespace PocketMine\Level\Generator;
+namespace pocketmine\level\generator;
 
-use PocketMine\Block\Air;
-use PocketMine\Block\CoalOre;
-use PocketMine\Block\DiamondOre;
-use PocketMine\Block\Dirt;
-use PocketMine\Block\GoldOre;
-use PocketMine\Block\Gravel;
-use PocketMine\Block\IronOre;
-use PocketMine\Block\LapisOre;
-use PocketMine\Block\RedstoneOre;
-use PocketMine\Item\Item;
-use PocketMine\Level\Generator\Populator\Ore;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random;
+use pocketmine\block\Air;
+use pocketmine\block\CoalOre;
+use pocketmine\block\DiamondOre;
+use pocketmine\block\Dirt;
+use pocketmine\block\GoldOre;
+use pocketmine\block\Gravel;
+use pocketmine\block\IronOre;
+use pocketmine\block\LapisOre;
+use pocketmine\block\RedstoneOre;
+use pocketmine\item\Item;
+use pocketmine\level\generator\populator\Ore;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\utils\Random;
 
 class Flat extends Generator{
 	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
@@ -58,14 +58,14 @@ class Flat extends Generator{
 		if(isset($this->options["decoration"])){
 			$ores = new Ore();
 			$ores->setOreTypes(array(
-				new Object\OreType(new CoalOre(), 20, 16, 0, 128),
-				new Object\OreType(New IronOre(), 20, 8, 0, 64),
-				new Object\OreType(new RedstoneOre(), 8, 7, 0, 16),
-				new Object\OreType(new LapisOre(), 1, 6, 0, 32),
-				new Object\OreType(new GoldOre(), 2, 8, 0, 32),
-				new Object\OreType(new DiamondOre(), 1, 7, 0, 16),
-				new Object\OreType(new Dirt(), 20, 32, 0, 128),
-				new Object\OreType(new Gravel(), 10, 16, 0, 128),
+				new object\OreType(new CoalOre(), 20, 16, 0, 128),
+				new object\OreType(New IronOre(), 20, 8, 0, 64),
+				new object\OreType(new RedstoneOre(), 8, 7, 0, 16),
+				new object\OreType(new LapisOre(), 1, 6, 0, 32),
+				new object\OreType(new GoldOre(), 2, 8, 0, 32),
+				new object\OreType(new DiamondOre(), 1, 7, 0, 16),
+				new object\OreType(new Dirt(), 20, 32, 0, 128),
+				new object\OreType(new Gravel(), 10, 16, 0, 128),
 			));
 			$this->populators[] = $ores;
 		}

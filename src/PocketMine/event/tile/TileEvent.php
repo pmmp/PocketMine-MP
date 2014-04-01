@@ -22,9 +22,9 @@
 /**
  * Events used by Tiles
  */
-namespace PocketMine\Event\Tile;
+namespace pocketmine\event\tile;
 
-use PocketMine\Event\Event;
+use pocketmine\event\Event;
 
 abstract class TileEvent extends Event{
 	protected $tile;

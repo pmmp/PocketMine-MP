@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Network\RCON;
+namespace pocketmine\network\rcon;
 
-use PocketMine\Utils\Utils;
+use pocketmine\utils\Utils;
 
 class RCONInstance extends \Thread{
 	public $stop;

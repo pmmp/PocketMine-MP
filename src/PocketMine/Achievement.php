@@ -19,8 +19,8 @@
  *
 */
 
-namespace PocketMine;
-use PocketMine\Utils\TextFormat;
+namespace pocketmine;
+use pocketmine\utils\TextFormat;
 
 /**
  * Handles the achievement list and a bit more

@@ -22,29 +22,26 @@
 /**
  * Named Binary Tag handling classes
  */
-namespace PocketMine\NBT;
+namespace pocketmine\nbt;
 
-use PocketMine\NBT\Tag\Byte;
-use PocketMine\NBT\Tag\Byte_Array;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Double;
-use PocketMine\NBT\Tag\End;
-use PocketMine\NBT\Tag\Enum;
-use PocketMine\NBT\Tag\Float;
-use PocketMine\NBT\Tag\Int;
-use PocketMine\NBT\Tag\Int_Array;
-use PocketMine\NBT\Tag\Long;
-use PocketMine\NBT\Tag\NamedTAG;
-use PocketMine\NBT\Tag\Short;
-use PocketMine\NBT\Tag\String;
-use PocketMine\NBT\Tag\Tag;
-use PocketMine\Utils\Utils;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Byte_Array;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\End;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Int_Array;
+use pocketmine\nbt\tag\Long;
+use pocketmine\nbt\tag\NamedTAG;
+use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
+use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Utils;
 
 /**
  * Named Binary Tag encoder/decoder
- *
- * Class NBT
- * @package PocketMine\NBT
  */
 class NBT{
 	const LITTLE_ENDIAN = 0;

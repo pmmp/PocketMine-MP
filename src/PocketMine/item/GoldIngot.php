@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Item;
+namespace pocketmine\item;
 
 
 class GoldIngot extends Item{

@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Item;
+namespace pocketmine\item;
 
-use PocketMine\Block\Block;
+use pocketmine\block\Block;
 
 class MelonSeeds extends Item{
 	public function __construct($meta = 0, $count = 1){

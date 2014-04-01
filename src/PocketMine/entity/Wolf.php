@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Entity;
+namespace pocketmine\entity;
 
 
 class Wolf extends Animal implements Tameable{

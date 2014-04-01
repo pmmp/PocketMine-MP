@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Fallable extends Solid{
 

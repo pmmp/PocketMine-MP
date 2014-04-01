@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Event;
+namespace pocketmine\event;
 
-use PocketMine\Plugin\Plugin;
-use PocketMine\Plugin\RegisteredListener;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\RegisteredListener;
 
 class HandlerList{
 

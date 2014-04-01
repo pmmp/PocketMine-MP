@@ -19,10 +19,10 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Event\Cancellable;
-use PocketMine\Player;
+use pocketmine\event\Cancellable;
+use pocketmine\Player;
 
 /**
  * Called when a player is awarded an achievement

@@ -19,20 +19,20 @@
  *
  */
 
-namespace PocketMine\Event\Block;
+namespace pocketmine\event\block;
 
-use PocketMine\Block\Block;
-use PocketMine\Event\Cancellable;
-use PocketMine\Item\Item;
-use PocketMine\Player;
+use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class BlockBreakEvent extends BlockEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/** @var \PocketMine\Player */
+	/** @var \pocketmine\Player */
 	protected $player;
 
-	/** @var \PocketMine\Item\Item */
+	/** @var \pocketmine\item\Item */
 	protected $item;
 
 	/** @var bool */

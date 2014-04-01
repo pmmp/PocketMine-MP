@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Network\Protocol;
+namespace pocketmine\network\protocol;
 
-use PocketMine\Item\Item;
-use PocketMine\Utils\Utils;
+use pocketmine\item\Item;
+use pocketmine\utils\Utils;
 
 abstract class DataPacket extends \stdClass{
 	private $offset = 0;

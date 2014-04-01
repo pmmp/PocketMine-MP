@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Math;
+namespace pocketmine\math;
 
 
 class Matrix implements \ArrayAccess{

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Permission;
+namespace pocketmine\permission;
 
 
 interface ServerOperator{

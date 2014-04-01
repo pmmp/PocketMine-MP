@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
-use PocketMine\Event\Cancellable;
-use PocketMine\Event\Event;
-use PocketMine\Event\Listener;
+use pocketmine\event\Cancellable;
+use pocketmine\event\Event;
+use pocketmine\event\Listener;
 
 class RegisteredListener{
 

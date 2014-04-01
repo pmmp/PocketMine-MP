@@ -19,12 +19,12 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Event\Cancellable;
-use PocketMine\Event;
-use PocketMine\Item\Item;
-use PocketMine\Player;
+use pocketmine\event\Cancellable;
+use pocketmine\Event;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;

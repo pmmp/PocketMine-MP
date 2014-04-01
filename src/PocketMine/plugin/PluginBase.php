@@ -19,21 +19,21 @@
  *
 */
 
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
-use PocketMine\Command\Command;
-use PocketMine\Command\CommandExecutor;
-use PocketMine\Command\CommandSender;
-use PocketMine\Command\PluginCommand;
-use PocketMine\Server;
-use PocketMine\Utils\Config;
+use pocketmine\command\Command;
+use pocketmine\command\CommandExecutor;
+use pocketmine\command\CommandSender;
+use pocketmine\command\PluginCommand;
+use pocketmine\Server;
+use pocketmine\utils\Config;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/** @var PluginLoader */
 	private $loader;
 
-	/** @var \PocketMine\Server */
+	/** @var \pocketmine\Server */
 	private $server;
 
 	/** @var bool */

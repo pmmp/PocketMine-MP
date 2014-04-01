@@ -22,7 +22,7 @@
 /**
  * Math related classes, like matrices, bounding boxes and vector
  */
-namespace PocketMine\Math;
+namespace pocketmine\math;
 
 
 abstract class Math{

@@ -22,7 +22,7 @@
 /**
  * All the different object classes used in populators
  */
-namespace PocketMine\Level\Generator\Object;
+namespace pocketmine\level\generator\object;
 
 
 abstract class Object{

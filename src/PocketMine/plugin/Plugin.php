@@ -22,7 +22,7 @@
 /**
  * Plugin related classes
  */
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
 
 /**

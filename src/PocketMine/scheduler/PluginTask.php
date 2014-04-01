@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Scheduler;
+namespace pocketmine\scheduler;
 
-use PocketMine\Plugin\Plugin;
+use pocketmine\plugin\Plugin;
 
 /**
  * Base class for plugin tasks. Allows the Server to delete them easily when needed

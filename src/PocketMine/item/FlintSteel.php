@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Item;
+namespace pocketmine\item;
 
-use PocketMine\Block\Block;
-use PocketMine\Block\Fire;
-use PocketMine\Block\Solid;
-use PocketMine\Level\Level;
-use PocketMine\Player;
+use pocketmine\block\Block;
+use pocketmine\block\Fire;
+use pocketmine\block\Solid;
+use pocketmine\level\Level;
+use pocketmine\Player;
 
 class FlintSteel extends Item{
 	public function __construct($meta = 0, $count = 1){

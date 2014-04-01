@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Player;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class Workbench extends Solid{
 	public function __construct($meta = 0){

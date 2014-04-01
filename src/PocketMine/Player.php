@@ -19,58 +19,58 @@
  *
 */
 
-namespace PocketMine;
+namespace pocketmine;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Entity\Human;
-use PocketMine\Event;
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Level\Position;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Byte;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Double;
-use PocketMine\NBT\Tag\Enum;
-use PocketMine\NBT\Tag\Float;
-use PocketMine\NBT\Tag\Int;
-use PocketMine\NBT\Tag\Short;
-use PocketMine\NBT\Tag\String;
-use PocketMine\Network\Protocol\AdventureSettingsPacket;
-use PocketMine\Network\Protocol\ChunkDataPacket;
-use PocketMine\Network\Protocol\ContainerClosePacket;
-use PocketMine\Network\Protocol\ContainerSetContentPacket;
-use PocketMine\Network\Protocol\ContainerSetSlotPacket;
-use PocketMine\Network\Protocol\DataPacket;
-use PocketMine\Network\Protocol\DisconnectPacket;
-use PocketMine\Network\Protocol\Info as ProtocolInfo;
-use PocketMine\Network\Protocol\LoginStatusPacket;
-use PocketMine\Network\Protocol\MessagePacket;
-use PocketMine\Network\Protocol\PongPacket;
-use PocketMine\Network\Protocol\ServerHandshakePacket;
-use PocketMine\Network\Protocol\SetSpawnPositionPacket;
-use PocketMine\Network\Protocol\SetTimePacket;
-use PocketMine\Network\Protocol\StartGamePacket;
-use PocketMine\Network\Protocol\TileEventPacket;
-use PocketMine\Network\Protocol\UnknownPacket;
-use PocketMine\Network\Protocol\UpdateBlockPacket;
-use PocketMine\Network\RakNet\Info;
-use PocketMine\Network\RakNet\Packet;
-use PocketMine\Permission\PermissibleBase;
-use PocketMine\Permission\PermissionAttachment;
-use PocketMine\Plugin\Plugin;
-use PocketMine\PMF\LevelFormat;
-use PocketMine\Recipes\Crafting;
-use PocketMine\Scheduler\CallbackTask;
-use PocketMine\Tile\Chest;
-use PocketMine\Tile\Furnace;
-use PocketMine\Tile\Sign;
-use PocketMine\Tile\Spawnable;
-use PocketMine\Tile\Tile;
-use PocketMine\Utils\Config;
-use PocketMine\Utils\TextFormat;
-use PocketMine\Utils\Utils;
+use pocketmine\command\CommandSender;
+use pocketmine\entity\Human;
+use pocketmine\Event;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
+use pocketmine\network\protocol\AdventureSettingsPacket;
+use pocketmine\network\protocol\ChunkDataPacket;
+use pocketmine\network\protocol\ContainerClosePacket;
+use pocketmine\network\protocol\ContainerSetContentPacket;
+use pocketmine\network\protocol\ContainerSetSlotPacket;
+use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\protocol\DisconnectPacket;
+use pocketmine\network\protocol\Info as ProtocolInfo;
+use pocketmine\network\protocol\LoginStatusPacket;
+use pocketmine\network\protocol\MessagePacket;
+use pocketmine\network\protocol\PongPacket;
+use pocketmine\network\protocol\ServerHandshakePacket;
+use pocketmine\network\protocol\SetSpawnPositionPacket;
+use pocketmine\network\protocol\SetTimePacket;
+use pocketmine\network\protocol\StartGamePacket;
+use pocketmine\network\protocol\TileEventPacket;
+use pocketmine\network\protocol\UnknownPacket;
+use pocketmine\network\protocol\UpdateBlockPacket;
+use pocketmine\network\raknet\Info;
+use pocketmine\network\raknet\Packet;
+use pocketmine\permission\PermissibleBase;
+use pocketmine\permission\PermissionAttachment;
+use pocketmine\plugin\Plugin;
+use pocketmine\pmf\LevelFormat;
+use pocketmine\recipes\Crafting;
+use pocketmine\scheduler\CallbackTask;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Furnace;
+use pocketmine\tile\Sign;
+use pocketmine\tile\Spawnable;
+use pocketmine\tile\Tile;
+use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -131,7 +131,7 @@ class Player extends Human implements CommandSender{
 	private $resendQueue = array();
 	private $ackQueue = array();
 	private $receiveCount = -1;
-	/** @var \PocketMine\Network\RakNet\Packet */
+	/** @var \pocketmine\network\raknet\Packet */
 	private $buffer;
 	private $bufferLen = 0;
 	private $nextBuffer = 0;
@@ -154,7 +154,7 @@ class Player extends Human implements CommandSender{
 	private $received = array();
 
 	/**
-	 * @var \PocketMine\Scheduler\TaskHandler[]
+	 * @var \pocketmine\scheduler\TaskHandler[]
 	 */
 	private $tasks = array();
 
@@ -255,7 +255,7 @@ class Player extends Human implements CommandSender{
 	}
 
 	/**
-	 * @param Permission\Permission|string $name
+	 * @param permission\Permission|string $name
 	 *
 	 * @return bool
 	 */
@@ -264,7 +264,7 @@ class Player extends Human implements CommandSender{
 	}
 
 	/**
-	 * @param Permission\Permission|string $name
+	 * @param permission\Permission|string $name
 	 *
 	 * @return bool
 	 */
@@ -277,7 +277,7 @@ class Player extends Human implements CommandSender{
 	 * @param string $name
 	 * @param bool   $value
 	 *
-	 * @return Permission\PermissionAttachment
+	 * @return permission\PermissionAttachment
 	 */
 	public function addAttachment(Plugin $plugin, $name = null, $value = null){
 		return $this->perm->addAttachment($plugin, $name, $value);
@@ -295,7 +295,7 @@ class Player extends Human implements CommandSender{
 	}
 
 	/**
-	 * @return Permission\PermissionAttachmentInfo[]
+	 * @return permission\PermissionAttachmentInfo[]
 	 */
 	public function getEffectivePermissions(){
 		return $this->perm->getEffectivePermissions();
@@ -603,7 +603,7 @@ class Player extends Human implements CommandSender{
 		if($this->connected === false){
 			return false;
 		}
-		$this->server->getPluginManager()->callEvent($ev = new Event\Server\DataPacketSendEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = new event\server\DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -884,7 +884,7 @@ class Player extends Human implements CommandSender{
 					return false;
 				}
 			}
-			$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerAchievementAwardedEvent($this, $achievementId));
+			$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerAchievementAwardedEvent($this, $achievementId));
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
@@ -918,7 +918,7 @@ class Player extends Human implements CommandSender{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerGameModeChangeEvent($this, (int) $gm));
+		$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerGameModeChangeEvent($this, (int) $gm));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1177,7 +1177,7 @@ class Player extends Human implements CommandSender{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new Event\Server\DataPacketReceiveEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = new event\server\DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
 			return;
 		}
@@ -1246,7 +1246,7 @@ class Player extends Human implements CommandSender{
 					return;
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerPreLoginEvent($this, "Plugin reason"));
+				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
@@ -1311,7 +1311,7 @@ class Player extends Human implements CommandSender{
 					$this->slot = $this->hotbar[0];
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerLoginEvent($this, "Plugin reason"));
+				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
@@ -1355,7 +1355,7 @@ class Player extends Human implements CommandSender{
 
 				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
-				$this->server->getPluginManager()->callEvent(new Event\Player\PlayerJoinEvent($this, $this->username . " joined the game"));
+				$this->server->getPluginManager()->callEvent(new event\player\PlayerJoinEvent($this, $this->username . " joined the game"));
 
 				break;
 			case ProtocolInfo::READY_PACKET:
@@ -1386,7 +1386,7 @@ class Player extends Human implements CommandSender{
 
 						$pos = new Position($this->x, $this->y, $this->z, $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
-						$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerRespawnEvent($this, $pos));
+						$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerRespawnEvent($this, $pos));
 
 						$this->teleport($ev->getRespawnPosition());
 						$this->sendBuffer();
@@ -1457,7 +1457,7 @@ class Player extends Human implements CommandSender{
 				if($packet->slot === false){
 					$this->sendInventorySlot($packet->slot);
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerItemHeldEvent($this, $item, $packet->slot, 0));
+					$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerItemHeldEvent($this, $item, $packet->slot, 0));
 					if($ev->isCancelled()){
 						$this->sendInventorySlot($packet->slot);
 					}elseif($item instanceof Item){
@@ -1816,7 +1816,7 @@ class Player extends Human implements CommandSender{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 
-				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerRespawnEvent($this, $this->spawnPosition));
+				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerRespawnEvent($this, $this->spawnPosition));
 
 				$this->teleport($ev->getRespawnPosition());
 				//$this->entity->fire = 0;
@@ -1914,16 +1914,16 @@ class Player extends Human implements CommandSender{
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
-					$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerCommandPreprocessEvent($this, $message));
+					$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerCommandPreprocessEvent($this, $message));
 					if($ev->isCancelled()){
 						break;
 					}
 					if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
 						$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 					}else{
-						$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerChatEvent($this, $ev->getMessage()));
+						$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerChatEvent($this, $ev->getMessage()));
 						if(!$ev->isCancelled()){
-							Player::groupChat(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
+							$this->server->broadcastMessage(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 						}
 					}
 				}
@@ -2181,7 +2181,7 @@ class Player extends Human implements CommandSender{
 	 * @return bool
 	 */
 	public function kick($reason = ""){
-		$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
+		$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
 		if(!$ev->isCancelled()){
 			$this->sendMessage("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
 			$this->close($ev->getQuitMessage(), $reason);
@@ -2235,7 +2235,7 @@ class Player extends Human implements CommandSender{
 		if($this->connected === true){
 			unset($this->level->players[$this->CID]);
 			if($this->username != ""){
-				$this->server->getPluginManager()->callEvent($ev = new Event\Player\PlayerQuitEvent($this, $message));
+				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerQuitEvent($this, $message));
 				if($this->loggedIn === true){
 					parent::close();
 					$this->save();
@@ -2312,7 +2312,7 @@ class Player extends Human implements CommandSender{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new Event\Server\DataPacketSendEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = new event\server\DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
 			return array();
 		}

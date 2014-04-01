@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine;
+namespace pocketmine;
 
-use PocketMine\Level\Level;
+use pocketmine\level\Level;
 
 class TimeAPI{
 	public static $phases = array(

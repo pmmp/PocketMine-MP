@@ -19,15 +19,11 @@
  *
 */
 
-namespace PocketMine\Utils;
+namespace pocketmine\utils;
 
 
 /**
- * Class Random
- *
  * Unsecure Random Number Generator, used for fast seeded values
- *
- * @package PocketMine\Utils
  */
 class Random{
 	private $z, $w;

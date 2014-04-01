@@ -20,10 +20,10 @@
 */
 
 
-namespace PocketMine\Event\Plugin;
+namespace pocketmine\event\plugin;
 
-use PocketMine\Event\Event;
-use PocketMine\Plugin\Plugin;
+use pocketmine\event\Event;
+use pocketmine\plugin\Plugin;
 
 
 class PluginDisableEvent extends Event{

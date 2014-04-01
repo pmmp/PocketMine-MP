@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Permission;
+namespace pocketmine\permission;
 
 class BanEntry{
 	public static $format = "Y-m-d H:i:s O";

@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine;
+namespace pocketmine;
 
-use PocketMine\Block;
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Level\Position;
+use pocketmine\Block;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
 
 class BlockAPI{
 	private $server;
@@ -292,7 +292,7 @@ class BlockAPI{
 	}
 
 	public function blockUpdate(Position $pos, $type = Level::BLOCK_UPDATE_NORMAL){
-		if(!($pos instanceof BLock\Block)){
+		if(!($pos instanceof block\Block)){
 			$block = $pos->level->getBlock($pos);
 		}else{
 			$pos = new Position($pos->x, $pos->y, $pos->z, $pos->level);

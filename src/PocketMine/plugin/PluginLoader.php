@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
 /**
  * Handles different types of plugins

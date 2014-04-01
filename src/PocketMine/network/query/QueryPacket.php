@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Network\Query;
+namespace pocketmine\network\query;
 
-use PocketMine\Network\Packet;
-use PocketMine\Utils\Utils;
+use pocketmine\network\Packet;
+use pocketmine\utils\Utils;
 
 class QueryPacket extends Packet{
 	const HANDSHAKE = 9;

@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Level;
+namespace pocketmine\level;
 
-use PocketMine\Utils\Utils;
+use pocketmine\utils\Utils;
 
 /**
  * WARNING: This code is old, and only supports the file format partially (reverse engineering)

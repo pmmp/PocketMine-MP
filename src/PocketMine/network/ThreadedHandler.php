@@ -22,11 +22,11 @@
 /**
  * Network-related classes
  */
-namespace PocketMine\Network;
+namespace pocketmine\network;
 
-use PocketMine\Network\Query\QueryPacket;
-use PocketMine\Network\RakNet\Info;
-use PocketMine\Network\RakNet\Packet as RakNetPacket;
+use pocketmine\network\query\QueryPacket;
+use pocketmine\network\raknet\Info;
+use pocketmine\network\raknet\Packet as RakNetPacket;
 
 class ThreadedHandler extends \Thread{
 	protected $bandwidthUp;
@@ -106,8 +106,8 @@ class ThreadedHandler extends \Thread{
 
 	public function run(){
 		$autoloader = new \SplClassLoader();
-		$autoloader->add("PocketMine", array(
-			\PocketMine\PATH . "src"
+		$autoloader->add("pocketmine", array(
+			\pocketmine\PATH . "src"
 		));
 		$autoloader->register(true);
 

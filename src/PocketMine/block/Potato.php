@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Player;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\Player;
 
 class Potato extends Flowable{
 	public function __construct($meta = 0){

@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Recipes;
+namespace pocketmine\recipes;
 
-use PocketMine\Item\Item;
+use pocketmine\item\Item;
 
 class Smelt{
 	public static $product = array(

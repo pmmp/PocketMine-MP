@@ -22,7 +22,7 @@
 /**
  * RakNet UDP library implementation
  */
-namespace PocketMine\Network\RakNet;
+namespace pocketmine\network\raknet;
 
 
 abstract class Info{

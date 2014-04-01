@@ -19,26 +19,26 @@
  *
 */
 
-namespace PocketMine\Command;
+namespace pocketmine\command;
 
-use PocketMine\Command\Defaults\BanCommand;
-use PocketMine\Command\Defaults\BanIpCommand;
-use PocketMine\Command\Defaults\BanListCommand;
-use PocketMine\Command\Defaults\DefaultGamemodeCommand;
-use PocketMine\Command\Defaults\DifficultyCommand;
-use PocketMine\Command\Defaults\HelpCommand;
-use PocketMine\Command\Defaults\ListCommand;
-use PocketMine\Command\Defaults\MeCommand;
-use PocketMine\Command\Defaults\PardonCommand;
-use PocketMine\Command\Defaults\PardonIpCommand;
-use PocketMine\Command\Defaults\PluginsCommand;
-use PocketMine\Command\Defaults\SayCommand;
-use PocketMine\Command\Defaults\SeedCommand;
-use PocketMine\Command\Defaults\StopCommand;
-use PocketMine\Command\Defaults\TellCommand;
-use PocketMine\Command\Defaults\VanillaCommand;
-use PocketMine\Command\Defaults\VersionCommand;
-use PocketMine\Server;
+use pocketmine\command\defaults\BanCommand;
+use pocketmine\command\defaults\BanIpCommand;
+use pocketmine\command\defaults\BanListCommand;
+use pocketmine\command\defaults\DefaultGamemodeCommand;
+use pocketmine\command\defaults\DifficultyCommand;
+use pocketmine\command\defaults\HelpCommand;
+use pocketmine\command\defaults\ListCommand;
+use pocketmine\command\defaults\MeCommand;
+use pocketmine\command\defaults\PardonCommand;
+use pocketmine\command\defaults\PardonIpCommand;
+use pocketmine\command\defaults\PluginsCommand;
+use pocketmine\command\defaults\SayCommand;
+use pocketmine\command\defaults\SeedCommand;
+use pocketmine\command\defaults\StopCommand;
+use pocketmine\command\defaults\TellCommand;
+use pocketmine\command\defaults\VanillaCommand;
+use pocketmine\command\defaults\VersionCommand;
+use pocketmine\Server;
 
 class SimpleCommandMap implements CommandMap{
 

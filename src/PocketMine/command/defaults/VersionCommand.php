@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Network\Protocol\Info;
-use PocketMine\Plugin\Plugin;
-use PocketMine\Server;
-use PocketMine\Utils\TextFormat;
+use pocketmine\command\CommandSender;
+use pocketmine\network\protocol\Info;
+use pocketmine\plugin\Plugin;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class VersionCommand extends VanillaCommand{
 
@@ -46,8 +46,8 @@ class VersionCommand extends VanillaCommand{
 
 		if(count($args) === 0){
 			$output = "This server is running PocketMine-MP version " . Server::getInstance()->getPocketMineVersion() . " 「" . Server::getInstance()->getCodename() . "」 (Implementing API version " . Server::getInstance()->getApiVersion() . " for Minecraft: PE " . Server::getInstance()->getVersion() . " protocol version " . Info::CURRENT_PROTOCOL . ")";
-			if(\PocketMine\GIT_COMMIT !== str_repeat("00", 20)){
-				$output .= " [git " . \PocketMine\GIT_COMMIT . "]";
+			if(\pocketmine\GIT_COMMIT !== str_repeat("00", 20)){
+				$output .= " [git " . \pocketmine\GIT_COMMIT . "]";
 			}
 			$sender->sendMessage($output);
 		}else{

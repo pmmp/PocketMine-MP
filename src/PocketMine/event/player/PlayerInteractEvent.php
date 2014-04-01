@@ -19,12 +19,12 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Block\Block;
-use PocketMine\Event\Cancellable;
-use PocketMine\Item\Item;
-use PocketMine\Player;
+use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 /**
  * Called when a player interacts or touches a block (including air?)
@@ -33,14 +33,14 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
 	/**
-	 * @var \PocketMine\Block\Block;
+	 * @var \pocketmine\block\Block;
 	 */
 	protected $blockTouched;
 
 	/** @var int */
 	protected $blockFace;
 
-	/** @var \PocketMine\Item\Item */
+	/** @var \pocketmine\item\Item */
 	protected $item;
 
 	public function __construct(Player $player, Item $item, Block $block, $face){

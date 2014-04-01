@@ -5,6 +5,7 @@ bin/*
 .idea/*
 *.log
 *.txt
+*.phar
 server.properties
 
 # Windows image file caches

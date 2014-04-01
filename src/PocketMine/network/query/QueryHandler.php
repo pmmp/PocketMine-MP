@@ -23,12 +23,12 @@
  * Implementation of the UT3 Query Protocol (GameSpot)
  * Source: http://wiki.unrealadmin.org/UT3_query_protocol
  */
-namespace PocketMine\Network\Query;
+namespace pocketmine\network\query;
 
-use PocketMine\Level\Level;
-use PocketMine\Player;
-use PocketMine\Server;
-use PocketMine\Utils\Utils;
+use pocketmine\level\Level;
+use pocketmine\Player;
+use pocketmine\Server;
+use pocketmine\utils\Utils;
 
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;

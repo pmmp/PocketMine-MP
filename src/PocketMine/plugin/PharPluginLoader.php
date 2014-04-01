@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
-use PocketMine\Event\Plugin\PluginDisableEvent;
-use PocketMine\Event\Plugin\PluginEnableEvent;
-use PocketMine\Server;
+use pocketmine\event\plugin\PluginDisableEvent;
+use pocketmine\event\plugin\PluginEnableEvent;
+use pocketmine\Server;
 
 /**
  * Handles different types of plugins
@@ -49,7 +49,6 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function loadPlugin($file){
 		if(\Phar::isValidPharFilename($file) and ($description = $this->getPluginDescription($file)) instanceof PluginDescription){
-			$phar = new \Phar($file);
 			console("[INFO] Loading " . $description->getName());
 			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
 			if(file_exists($dataFolder) and !is_dir($dataFolder)){

@@ -22,10 +22,10 @@
 /**
  * Command handling related classes
  */
-namespace PocketMine\Command;
+namespace pocketmine\command;
 
-use PocketMine\Server;
-use PocketMine\Utils\TextFormat;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 abstract class Command{
 	/** @var string */

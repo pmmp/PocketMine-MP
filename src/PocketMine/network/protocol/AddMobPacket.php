@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Network\Protocol;
+namespace pocketmine\network\protocol;
 
-use PocketMine\Utils\Utils;
+use pocketmine\utils\Utils;
 
 class AddMobPacket extends DataPacket{
 	public $eid;

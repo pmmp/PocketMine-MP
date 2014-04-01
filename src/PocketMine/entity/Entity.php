@@ -22,26 +22,27 @@
 /**
  * All the entity classes
  */
-namespace PocketMine\Entity;
+namespace pocketmine\entity;
 
-use PocketMine\Event\Entity\EntityDespawnEvent;
-use PocketMine\Event\Entity\EntityLevelChangeEvent;
-use PocketMine\Event\Entity\EntityMotionEvent;
-use PocketMine\Event\Entity\EntityMoveEvent;
-use PocketMine\Event\Entity\EntitySpawnEvent;
-use PocketMine\Level\Level;
-use PocketMine\Level\Position;
-use PocketMine\Math\AxisAlignedBB;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\Network\Protocol\MoveEntityPacket_PosRot;
-use PocketMine\Network\Protocol\MovePlayerPacket;
-use PocketMine\Network\Protocol\RemoveEntityPacket;
-use PocketMine\Network\Protocol\SetEntityMotionPacket;
-use PocketMine\Network;
-use PocketMine\Player;
-use PocketMine\PMF\LevelFormat;
-use PocketMine\Server;
+use pocketmine\event\entity\EntityDespawnEvent;
+use pocketmine\event\entity\EntityLevelChangeEvent;
+use pocketmine\event\entity\EntityMotionEvent;
+use pocketmine\event\entity\EntityMoveEvent;
+use pocketmine\event\entity\EntitySpawnEvent;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\network\protocol\MoveEntityPacket_PosRot;
+use pocketmine\network\protocol\MovePlayerPacket;
+use pocketmine\network\protocol\RemoveEntityPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
+use pocketmine\Network;
+use pocketmine\network\protocol\SetTimePacket;
+use pocketmine\Player;
+use pocketmine\pmf\LevelFormat;
+use pocketmine\Server;
 
 abstract class Entity extends Position{
 	public static $entityCount = 1;
@@ -377,7 +378,7 @@ abstract class Entity extends Position{
 		$this->level->entities[$this->id] = $this;
 		if($this instanceof Player){
 			$this->chunksLoaded = array();
-			$pk = new Network\Protocol\SetTimePacket;
+			$pk = new SetTimePacket();
 			$pk->time = $this->level->getTime();
 			$pk->started = $this->level->stopTime == false;
 			$this->dataPacket($pk);

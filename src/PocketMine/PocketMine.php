@@ -29,7 +29,7 @@ namespace {
 	 * @param int    $level
 	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
-		PocketMine\console($message, $EOL, $log, $level);
+		pocketmine\console($message, $EOL, $log, $level);
 	}
 
 	function safe_var_dump(){
@@ -76,23 +76,27 @@ namespace {
 	}
 }
 
-namespace PocketMine {
+namespace pocketmine {
+	use pocketmine\utils\TextFormat;
+	use pocketmine\utils\Utils;
+	use pocketmine\wizard\Installer;
+
 	const VERSION = "Alpha_1.4dev";
 	const API_VERSION = "1.0.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
 	const MINECRAFT_VERSION = "v0.8.1 alpha";
 	const PHP_VERSION = "5.5";
 
-	@define("PocketMine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+	@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 
 	if(!class_exists("SplClassLoader", false)){
-		require_once(\PocketMine\PATH . "src/SPL/SplClassLoader.php");
+		require_once(\pocketmine\PATH . "src/spl/SplClassLoader.php");
 	}
 
 
 	$autoloader = new \SplClassLoader();
-	$autoloader->add("PocketMine", array(
-		\PocketMine\PATH . "src"
+	$autoloader->add("pocketmine", array(
+		\pocketmine\PATH . "src"
 	));
 	$autoloader->register(true);
 
@@ -138,21 +142,21 @@ namespace PocketMine {
 	ini_set("default_charset", "utf-8");
 
 	ini_set("memory_limit", "128M"); //Default
-	define("PocketMine\\START_TIME", microtime(true));
+	define("pocketmine\\START_TIME", microtime(true));
 
 	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard"));
 
-	define("PocketMine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
-	define("PocketMine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
+	define("pocketmine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
+	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
 	if((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
-		define("PocketMine\\ANSI", true);
+		define("pocketmine\\ANSI", true);
 	}else{
-		define("PocketMine\\ANSI", false);
+		define("pocketmine\\ANSI", false);
 	}
 
 	function kill($pid){
-		switch(Utils\Utils::getOS()){
+		switch(Utils::getOS()){
 			case "win":
 				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
 				break;
@@ -172,41 +176,41 @@ namespace PocketMine {
 	 * @param int  $level
 	 */
 	function console($message, $EOL = true, $log = true, $level = 1){
-		if(!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level){
+		if(!defined("pocketmine\\DEBUG") or \pocketmine\DEBUG >= $level){
 			$message .= $EOL === true ? PHP_EOL : "";
 			if($message{0} !== "["){
 				$message = "[INFO] $message";
 			}
-			$time = (\PocketMine\ANSI === true ? Utils\TextFormat::AQUA . date("H:i:s") . Utils\TextFormat::RESET : date("H:i:s")) . " ";
-			$replaced = Utils\TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
+			$time = (\pocketmine\ANSI === true ? TextFormat::AQUA . date("H:i:s") . TextFormat::RESET : date("H:i:s")) . " ";
+			$replaced = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
 			if($log === true and (!defined("LOG") or LOG === true)){
 				log(date("Y-m-d") . " " . $replaced, "server", false, $level);
 			}
-			if(\PocketMine\ANSI === true){
+			if(\pocketmine\ANSI === true){
 				$add = "";
 				if(preg_match("/^\\[([a-zA-Z0-9]*)\\]/", $message, $matches) > 0){
 					switch($matches[1]){
 						case "ERROR":
 						case "SEVERE":
-							$add .= Utils\TextFormat::RED;
+							$add .= TextFormat::RED;
 							break;
 						case "TRACE":
 						case "INTERNAL":
 						case "DEBUG":
-							$add .= Utils\TextFormat::GRAY;
+							$add .= TextFormat::GRAY;
 							break;
 						case "WARNING":
-							$add .= Utils\TextFormat::YELLOW;
+							$add .= TextFormat::YELLOW;
 							break;
 						case "NOTICE":
-							$add .= Utils\TextFormat::AQUA;
+							$add .= TextFormat::AQUA;
 							break;
 						default:
 							$add = "";
 							break;
 					}
 				}
-				$message = Utils\TextFormat::toANSI($time . $add . $message . Utils\TextFormat::RESET);
+				$message = TextFormat::toANSI($time . $add . $message . TextFormat::RESET);
 			}else{
 				$message = $replaced;
 			}
@@ -265,13 +269,13 @@ namespace PocketMine {
 
 	function log($message, $name, $EOL = true, $level = 2, $close = false){
 		global $fpointers;
-		if((!defined("PocketMine\\DEBUG") or \PocketMine\DEBUG >= $level) and (!defined("PocketMine\\LOG") or \PocketMine\LOG === true)){
+		if((!defined("pocketmine\\DEBUG") or \pocketmine\DEBUG >= $level) and (!defined("pocketmine\\LOG") or \pocketmine\LOG === true)){
 			$message .= $EOL === true ? PHP_EOL : "";
 			if(!isset($fpointers)){
 				$fpointers = array();
 			}
 			if(!isset($fpointers[$name]) or $fpointers[$name] === false){
-				$fpointers[$name] = @fopen(\PocketMine\DATA . "/" . $name . ".log", "ab");
+				$fpointers[$name] = @fopen(\pocketmine\DATA . "/" . $name . ".log", "ab");
 			}
 			@fwrite($fpointers[$name], $message);
 			if($close === true){
@@ -282,7 +286,7 @@ namespace PocketMine {
 	}
 
 
-	set_error_handler("\\PocketMine\\error_handler", E_ALL);
+	set_error_handler("\\pocketmine\\error_handler", E_ALL);
 
 	$errors = 0;
 
@@ -340,20 +344,20 @@ namespace PocketMine {
 		exit(1); //Exit with error
 	}
 
-	if(file_exists(\PocketMine\PATH . ".git/refs/heads/master")){ //Found Git information!
-		define("PocketMine\\GIT_COMMIT", strtolower(trim(file_get_contents(\PocketMine\PATH . ".git/refs/heads/master"))));
+	if(file_exists(\pocketmine\PATH . ".git/refs/heads/master")){ //Found Git information!
+		define("pocketmine\\GIT_COMMIT", strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/master"))));
 	}else{ //Unknown :(
-		define("PocketMine\\GIT_COMMIT", str_repeat("00", 20));
+		define("pocketmine\\GIT_COMMIT", str_repeat("00", 20));
 	}
 
-	@ini_set("opcache.mmap_base", bin2hex(Utils\Utils::getRandomBytes(8, false))); //Fix OPCache address errors
+	@ini_set("opcache.mmap_base", bin2hex(Utils::getRandomBytes(8, false))); //Fix OPCache address errors
 
-	if(!file_exists(\PocketMine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-		new Wizard\Installer();
+	if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
+		new Installer();
 	}
 
 
-	$server = new Server($autoloader, \PocketMine\PATH, \PocketMine\DATA, \PocketMine\PLUGIN_PATH);
+	$server = new Server($autoloader, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 	$server->start();
 
 	kill(getmypid());

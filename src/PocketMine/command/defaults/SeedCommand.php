@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Level\Level;
-use PocketMine\Player;
+use pocketmine\command\CommandSender;
+use pocketmine\level\Level;
+use pocketmine\Player;
 
 class SeedCommand extends VanillaCommand{
 

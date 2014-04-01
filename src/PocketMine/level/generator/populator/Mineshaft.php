@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Populator;
+namespace pocketmine\level\generator\populator;
 
-use PocketMine\Level\Level;
-use PocketMine\Utils\Random;
+use pocketmine\level\Level;
+use pocketmine\utils\Random;
 
 class Mineshaft extends Populator{
 	private static $DISTANCE = 256;

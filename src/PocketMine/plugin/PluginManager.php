@@ -19,17 +19,17 @@
  *
 */
 
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
-use PocketMine\Command\PluginCommand;
-use PocketMine\Command\SimpleCommandMap;
-use PocketMine\Event\Event;
-use PocketMine\Event\EventPriority;
-use PocketMine\Event\HandlerList;
-use PocketMine\Event\Listener;
-use PocketMine\Permission\Permissible;
-use PocketMine\Permission\Permission;
-use PocketMine\Server;
+use pocketmine\command\PluginCommand;
+use pocketmine\command\SimpleCommandMap;
+use pocketmine\event\Event;
+use pocketmine\event\EventPriority;
+use pocketmine\event\HandlerList;
+use pocketmine\event\Listener;
+use pocketmine\permission\Permissible;
+use pocketmine\permission\Permission;
+use pocketmine\Server;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -120,7 +120,7 @@ class PluginManager{
 	 * @return boolean
 	 */
 	public function registerInterface($loader){
-		if(is_subclass_of($loader, "PocketMine\\Plugin\\PluginLoader")){
+		if(is_subclass_of($loader, "pocketmine\\plugin\\PluginLoader")){
 			$loader = new $loader($this->server);
 		}else{
 			return false;
@@ -627,8 +627,8 @@ class PluginManager{
 				$ignoreCancelled = false;
 				if(preg_match("/^[\t ]*\\* @priority[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
 					$matches[1] = strtoupper($matches[1]);
-					if(defined("PocketMine\\Event\\EventPriority::".$matches[1])){
-						$priority = constant("PocketMine\\Event\\EventPriority::".$matches[1]);
+					if(defined("pocketmine\\event\\EventPriority::".$matches[1])){
+						$priority = constant("pocketmine\\event\\EventPriority::".$matches[1]);
 					}
 				}
 				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
@@ -640,7 +640,7 @@ class PluginManager{
 					}
 				}
 				$parameters = $method->getParameters();
-				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), "PocketMine\\Event\\Event")){
+				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), "pocketmine\\event\\Event")){
 					$this->registerEvent($parameters[0]->getClass()->getName(), $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
 			}
@@ -656,7 +656,7 @@ class PluginManager{
 	 * @param bool          $ignoreCancelled
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
-		if(!is_subclass_of($event, "PocketMine\\Event\\Event")){
+		if(!is_subclass_of($event, "pocketmine\\event\\Event")){
 			trigger_error($event . " is not a valid Event", E_USER_WARNING);
 
 			return;

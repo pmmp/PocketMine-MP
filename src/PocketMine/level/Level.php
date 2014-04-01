@@ -22,44 +22,42 @@
 /**
  * All Level related classes are here, like Generators, Populators, Noise, ...
  */
-namespace PocketMine\Level;
+namespace pocketmine\level;
 
-use PocketMine\Block\Air;
-use PocketMine\Block\Block;
-use PocketMine\Entity\Entity;
-use PocketMine\Event\Block\BlockBreakEvent;
-use PocketMine\Event\Block\BlockPlaceEvent;
-use PocketMine\Event\Player\PlayerInteractEvent;
-use PocketMine\Item\Item;
-use PocketMine\Level\Generator\Flat;
-use PocketMine\Level\Generator\Generator;
-use PocketMine\Level\Generator\Normal;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Byte;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Enum;
-use PocketMine\NBT\Tag\Int;
-use PocketMine\NBT\Tag\Short;
-use PocketMine\NBT\Tag\String;
-use PocketMine\Network\Protocol\SetTimePacket;
-use PocketMine\Network\Protocol\UpdateBlockPacket;
-use PocketMine\Player;
-use PocketMine\PMF\LevelFormat;
-use PocketMine\Server;
-use PocketMine\Tile\Chest;
-use PocketMine\Tile\Furnace;
-use PocketMine\Tile\Sign;
-use PocketMine\Tile\Tile;
-use PocketMine\Utils\Cache;
-use PocketMine\Utils\Config;
-use PocketMine\Utils\Random;
-use PocketMine\Utils\Utils;
+use pocketmine\block\Air;
+use pocketmine\block\Block;
+use pocketmine\entity\Entity;
+use pocketmine\event\block\BlockBreakEvent;
+use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\item\Item;
+use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\Normal;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
+use pocketmine\network\protocol\SetTimePacket;
+use pocketmine\network\protocol\UpdateBlockPacket;
+use pocketmine\Player;
+use pocketmine\pmf\LevelFormat;
+use pocketmine\Server;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Furnace;
+use pocketmine\tile\Sign;
+use pocketmine\tile\Tile;
+use pocketmine\utils\Cache;
+use pocketmine\utils\Config;
+use pocketmine\utils\Random;
+use pocketmine\utils\Utils;
 
 /**
- * Class Level
  * Main Level handling class, includes all the methods used on them.
- * @package PocketMine\Level
  */
 class Level{
 
@@ -189,7 +187,7 @@ class Level{
 
 			return false;
 		}
-		$path = \PocketMine\DATA . "worlds/" . $name . "/";
+		$path = \pocketmine\DATA . "worlds/" . $name . "/";
 		console("[INFO] Preparing level \"" . $name . "\"");
 		$level = new LevelFormat($path . "level.pmf");
 		if(!$level->isLoaded){
@@ -350,7 +348,7 @@ class Level{
 		if($name === ""){
 			return false;
 		}
-		$path = \PocketMine\DATA . "worlds/" . $name . "/";
+		$path = \pocketmine\DATA . "worlds/" . $name . "/";
 		if(self::get($name) === false and !file_exists($path . "level.pmf")){
 			if(file_exists($path)){
 				$level = new LevelImport($path);

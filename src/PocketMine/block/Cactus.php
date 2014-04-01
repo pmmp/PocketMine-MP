@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){

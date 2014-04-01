@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Object;
+namespace pocketmine\level\generator\object;
 
-use PocketMine\Block\Sapling;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random;
+use pocketmine\block\Sapling;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\utils\Random;
 
 class Tree{
 	public $overridable = array(

@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Tile;
+namespace pocketmine\tile;
 
-use PocketMine\Block\Block;
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\NBT\Tag\Compound;
+use pocketmine\block\Block;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\nbt\tag\Compound;
 
 class Furnace extends Tile{
 	use Container;

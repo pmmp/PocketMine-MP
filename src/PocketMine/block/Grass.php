@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Generator\Object\TallGrass;
-use PocketMine\Player;
-use PocketMine\Utils\Random;
+use pocketmine\item\Item;
+use pocketmine\level\generator\object\TallGrass;
+use pocketmine\Player;
+use pocketmine\utils\Random;
 
 class Grass extends Solid{
 	public function __construct(){

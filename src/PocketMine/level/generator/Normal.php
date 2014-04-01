@@ -19,24 +19,24 @@
  *
 */
 
-namespace PocketMine\Level\Generator;
+namespace pocketmine\level\generator;
 
-use PocketMine\Block\CoalOre;
-use PocketMine\Block\DiamondOre;
-use PocketMine\Block\Dirt;
-use PocketMine\Block\GoldOre;
-use PocketMine\Block\Gravel;
-use PocketMine\Block\IronOre;
-use PocketMine\Block\LapisOre;
-use PocketMine\Block\RedstoneOre;
-use PocketMine\Level\Generator\Noise\Simplex;
-use PocketMine\Level\Generator\Object\OreType;
-use PocketMine\Level\Generator\Populator\Ore;
-use PocketMine\Level\Generator\Populator\TallGrass;
-use PocketMine\Level\Generator\Populator\Tree;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random;
+use pocketmine\block\CoalOre;
+use pocketmine\block\DiamondOre;
+use pocketmine\block\Dirt;
+use pocketmine\block\GoldOre;
+use pocketmine\block\Gravel;
+use pocketmine\block\IronOre;
+use pocketmine\block\LapisOre;
+use pocketmine\block\RedstoneOre;
+use pocketmine\level\generator\noise\Simplex;
+use pocketmine\level\generator\object\OreType;
+use pocketmine\level\generator\populator\Ore;
+use pocketmine\level\generator\populator\TallGrass;
+use pocketmine\level\generator\populator\Tree;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\utils\Random;
 
 class Normal extends Generator{
 

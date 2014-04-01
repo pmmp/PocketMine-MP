@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\NBT\Tag;
+namespace pocketmine\nbt\tag;
 
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Enum as TagEnum;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Enum as TagEnum;
 
 class Enum extends NamedTag implements \ArrayAccess{
 

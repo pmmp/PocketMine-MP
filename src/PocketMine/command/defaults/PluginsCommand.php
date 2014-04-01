@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Server;
-use PocketMine\Utils\TextFormat;
+use pocketmine\command\CommandSender;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class PluginsCommand extends VanillaCommand{
 

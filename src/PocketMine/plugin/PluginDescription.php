@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Plugin;
+namespace pocketmine\plugin;
 
-use PocketMine\Permission\Permission;
+use pocketmine\permission\Permission;
 
 class PluginDescription{
 	private $name;
@@ -60,7 +60,7 @@ class PluginDescription{
 		$this->version = $plugin["version"];
 		$this->main = $plugin["main"];
 		$this->api = !is_array($plugin["api"]) ? array($plugin["api"]) : $plugin["api"];
-		if(stripos($this->main, "PocketMine\\") === 0){
+		if(stripos($this->main, "pocketmine\\") === 0){
 			trigger_error("Invalid PluginDescription main, cannot start within the PocketMine namespace", E_USER_ERROR);
 
 			return;
@@ -88,12 +88,12 @@ class PluginDescription{
 		}
 		if(isset($plugin["load"])){
 			$order = strtoupper($plugin["load"]);
-			if(!defined("PocketMine\\Plugin\\PluginLoadOrder::" . $order)){
+			if(!defined("pocketmine\\plugin\\PluginLoadOrder::" . $order)){
 				trigger_error("Invalid PluginDescription load", E_USER_ERROR);
 
 				return;
 			}else{
-				$this->order = constant("PocketMine\\Plugin\\PluginLoadOrder::" . $order);
+				$this->order = constant("pocketmine\\plugin\\PluginLoadOrder::" . $order);
 			}
 		}
 		$this->authors = array();

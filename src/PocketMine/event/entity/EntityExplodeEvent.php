@@ -19,12 +19,12 @@
  *
  */
 
-namespace PocketMine\Event\Entity;
+namespace pocketmine\event\entity;
 
-use PocketMine\Block\Block;
-use PocketMine\Entity\Entity;
-use PocketMine\Event\Cancellable;
-use PocketMine\Level\Position;
+use pocketmine\block\Block;
+use pocketmine\entity\Entity;
+use pocketmine\event\Cancellable;
+use pocketmine\level\Position;
 
 /**
  * Called when a entity explodes

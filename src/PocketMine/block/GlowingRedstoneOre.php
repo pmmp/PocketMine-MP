@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
 
 class GlowingRedstoneOre extends Solid{
 	public function __construct(){

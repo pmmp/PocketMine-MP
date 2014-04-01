@@ -7,8 +7,8 @@ if exist bin\php\php.exe (
 	set PHP_BINARY=php
 )
 
-if exist src\PocketMine\PocketMine.php (
-	set POCKETMINE_FILE=src\PocketMine\PocketMine.php
+if exist src\pocketmine\PocketMine.php (
+	set POCKETMINE_FILE=src\pocketmine\PocketMine.php
 ) else (
 	if exist PocketMine-MP.phar (
 		set POCKETMINE_FILE=PocketMine-MP.phar

@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Item;
+namespace pocketmine\item;
 
-use PocketMine\Block\Block;
-use PocketMine\Entity;
-use PocketMine\Level\Level;
-use PocketMine\Player;
+use pocketmine\block\Block;
+use pocketmine\Entity;
+use pocketmine\level\Level;
+use pocketmine\Player;
 
 class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){

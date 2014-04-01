@@ -22,9 +22,9 @@
 /**
  * Task scheduling related classes
  */
-namespace PocketMine\Scheduler;
+namespace pocketmine\scheduler;
 
-use PocketMine\Plugin\Plugin;
+use pocketmine\plugin\Plugin;
 
 class ServerScheduler{
 

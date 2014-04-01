@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Generator\Object\Tree;
-use PocketMine\Level\Level;
-use PocketMine\Player;
-use PocketMine\Utils\Random;
+use pocketmine\item\Item;
+use pocketmine\level\generator\object\Tree;
+use pocketmine\level\Level;
+use pocketmine\Player;
+use pocketmine\utils\Random;
 
 class Sapling extends Flowable{
 	const OAK = 0;

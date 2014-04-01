@@ -22,12 +22,12 @@
 /**
  * Entity related Events, like spawn, inventory, attack...
  */
-namespace PocketMine\Event\Entity;
+namespace pocketmine\event\entity;
 
-use PocketMine\Event\Event;
+use pocketmine\event\Event;
 
 abstract class EntityEvent extends Event{
-	/** @var \PocketMine\Entity\Entity */
+	/** @var \pocketmine\entity\Entity */
 	protected $entity;
 
 	public function getEntity(){

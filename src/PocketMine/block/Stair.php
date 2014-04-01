@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Player;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class Stair extends Transparent{
 

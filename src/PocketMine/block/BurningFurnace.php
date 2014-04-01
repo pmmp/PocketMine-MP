@@ -19,17 +19,17 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Enum;
-use PocketMine\NBT\Tag\Int;
-use PocketMine\NBT\Tag\String;
-use PocketMine\Player;
-use PocketMine\Tile\Furnace;
-use PocketMine\Tile\Tile;
+use pocketmine\item\Item;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\String;
+use pocketmine\Player;
+use pocketmine\tile\Furnace;
+use pocketmine\tile\Tile;
 
 class BurningFurnace extends Solid{
 	public function __construct($meta = 0){

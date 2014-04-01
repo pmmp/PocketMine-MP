@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Level\Position;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Lava extends Liquid{
 	public function __construct($meta = 0){

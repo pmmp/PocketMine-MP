@@ -23,43 +23,43 @@
  * PocketMine-MP is the Minecraft: PE multiplayer server software
  * Homepage: http://www.pocketmine.net/
  */
-namespace PocketMine;
+namespace pocketmine;
 
-use PocketMine\Block\Block;
-use PocketMine\Command\CommandReader;
-use PocketMine\Command\CommandSender;
-use PocketMine\Command\ConsoleCommandSender;
-use PocketMine\Command\PluginCommand;
-use PocketMine\Command\SimpleCommandMap;
-use PocketMine\Entity\Entity;
-use PocketMine\Event\HandlerList;
-use PocketMine\Event\Server\PacketReceiveEvent;
-use PocketMine\Event\Server\PacketSendEvent;
-use PocketMine\Event\Server\ServerCommandEvent;
-use PocketMine\Item\Item;
-use PocketMine\Level\Generator\Generator;
-use PocketMine\Level\Level;
-use PocketMine\Network\Packet;
-use PocketMine\Network\Query\QueryHandler;
-use PocketMine\Network\Query\QueryPacket;
-use PocketMine\Network\RakNet\Info as RakNetInfo;
-use PocketMine\Network\RakNet\Packet as RakNetPacket;
-use PocketMine\Network\ThreadedHandler;
-use PocketMine\Network\UPnP\UPnP;
-use PocketMine\Permission\BanList;
-use PocketMine\Permission\DefaultPermissions;
-use PocketMine\Plugin\Plugin;
-use PocketMine\Plugin\PluginLoadOrder;
-use PocketMine\Plugin\PluginManager;
-use PocketMine\Recipes\Crafting;
-use PocketMine\Scheduler\CallbackTask;
-use PocketMine\Scheduler\ServerScheduler;
-use PocketMine\Scheduler\TickScheduler;
-use PocketMine\Tile\Tile;
-use PocketMine\Utils\Config;
-use PocketMine\Utils\TextFormat;
-use PocketMine\Utils\Utils;
-use PocketMine\Utils\VersionString;
+use pocketmine\block\Block;
+use pocketmine\command\CommandReader;
+use pocketmine\command\CommandSender;
+use pocketmine\command\ConsoleCommandSender;
+use pocketmine\command\PluginCommand;
+use pocketmine\command\SimpleCommandMap;
+use pocketmine\entity\Entity;
+use pocketmine\event\HandlerList;
+use pocketmine\event\server\PacketReceiveEvent;
+use pocketmine\event\server\PacketSendEvent;
+use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\item\Item;
+use pocketmine\level\generator\Generator;
+use pocketmine\level\Level;
+use pocketmine\network\Packet;
+use pocketmine\network\query\QueryHandler;
+use pocketmine\network\query\QueryPacket;
+use pocketmine\network\raknet\Info as RakNetInfo;
+use pocketmine\network\raknet\Packet as RakNetPacket;
+use pocketmine\network\ThreadedHandler;
+use pocketmine\network\upnp\UPnP;
+use pocketmine\permission\BanList;
+use pocketmine\permission\DefaultPermissions;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginLoadOrder;
+use pocketmine\plugin\PluginManager;
+use pocketmine\recipes\Crafting;
+use pocketmine\scheduler\CallbackTask;
+use pocketmine\scheduler\ServerScheduler;
+use pocketmine\scheduler\TickScheduler;
+use pocketmine\tile\Tile;
+use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
+use pocketmine\utils\VersionString;
 
 class Server{
 	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
@@ -146,28 +146,28 @@ class Server{
 	 * @return string
 	 */
 	public function getPocketMineVersion(){
-		return \PocketMine\VERSION;
+		return \pocketmine\VERSION;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getCodename(){
-		return \PocketMine\CODENAME;
+		return \pocketmine\CODENAME;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getVersion(){
-		return \PocketMine\MINECRAFT_VERSION;
+		return \pocketmine\MINECRAFT_VERSION;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getApiVersion(){
-		return \PocketMine\API_VERSION;
+		return \pocketmine\API_VERSION;
 	}
 
 	/**
@@ -700,14 +700,14 @@ class Server{
 			$this->setConfigInt("difficulty", 3);
 		}
 
-		define("PocketMine\\DEBUG", $this->getConfigInt("debug", 1));
+		define("pocketmine\\DEBUG", $this->getConfigInt("debug", 1));
 		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
 			console("[INFO] Advanced cache enabled");
 		}
 
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and function_exists("cli_set_process_title")){
+		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and function_exists("cli_set_process_title")){
 			@cli_set_process_title("PocketMine-MP " . $this->getPocketMineVersion());
 		}
 
@@ -723,8 +723,8 @@ class Server{
 		$this->commandMap = new SimpleCommandMap($this);
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
-		$this->pluginManager->registerInterface("PocketMine\\Plugin\\FolderPluginLoader");
-		$this->pluginManager->registerInterface("PocketMine\\Plugin\\PharPluginLoader");
+		$this->pluginManager->registerInterface("pocketmine\\plugin\\FolderPluginLoader");
+		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
 		//TODO: update checking (async)
@@ -734,9 +734,9 @@ class Server{
 		Item::init();
 		Crafting::init();
 
-		Generator::addGenerator("PocketMine\\Level\\Generator\\Flat", "flat");
-		Generator::addGenerator("PocketMine\\Level\\Generator\\Normal", "normal");
-		Generator::addGenerator("PocketMine\\Level\\Generator\\Normal", "default");
+		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
+		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
+		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
 		Level::init();
 
 		$this->properties->save();
@@ -748,7 +748,7 @@ class Server{
 		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
 			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
 		}*/
-		$this->scheduler->scheduleRepeatingTask(new CallbackTask("PocketMine\\Utils\\Cache::cleanup"), 20 * 45);
+		$this->scheduler->scheduleRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), 20 * 45);
 		if($this->getConfigBoolean("auto-save", true) === true){
 			$this->scheduler->scheduleRepeatingTask(new CallbackTask(array($this, "doAutoSave")), 18000);
 		}
@@ -874,7 +874,7 @@ class Server{
 		*/
 		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 		//$this->trigger("server.start", microtime(true));
-		console('[INFO] Done (' . round(microtime(true) - \PocketMine\START_TIME, 3) . 's)! For help, type "help" or "?"');
+		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
 			$this->tickProcessorWindows();
 		}else{
@@ -1076,7 +1076,7 @@ class Server{
 	}
 
 	public function titleTick(){
-		if(defined("PocketMine\\DEBUG") and \PocketMine\DEBUG >= 0 and \PocketMine\ANSI === true){
+		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
 			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count(Player::$list) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}

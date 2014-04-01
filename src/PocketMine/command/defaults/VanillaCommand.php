@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\Command;
-use PocketMine\Command\CommandSender;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
 
 abstract class VanillaCommand extends Command{
 	//TODO: increment chunk indexes

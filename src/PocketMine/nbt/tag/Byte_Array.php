@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\NBT\Tag;
+namespace pocketmine\nbt\tag;
 
-use PocketMine\NBT\NBT;
+use pocketmine\nbt\NBT;
 
 class Byte_Array extends NamedTag{
 

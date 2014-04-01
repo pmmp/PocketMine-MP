@@ -19,16 +19,16 @@
  *
 */
 
-namespace PocketMine;
+namespace pocketmine;
 
-use PocketMine\Network\Query\QueryHandler;
-use PocketMine\Network\RCON\RCON;
-use PocketMine\Network\UPnP\UPnP;
-use PocketMine\Plugin\PluginManager;
-use PocketMine\Utils\Config;
-use PocketMine\Utils\TextFormat;
-use PocketMine\Utils\Utils;
-use PocketMine\Utils\VersionString;
+use pocketmine\network\query\QueryHandler;
+use pocketmine\network\rcon\RCON;
+use pocketmine\network\upnp\UPnP;
+use pocketmine\plugin\PluginManager;
+use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
+use pocketmine\utils\VersionString;
 
 class ServerAPI{
 	public $restart = false;
@@ -83,15 +83,15 @@ class ServerAPI{
 	}
 
 	public function load(){
-		@mkdir(\PocketMine\DATA . "players/", 0755);
-		@mkdir(\PocketMine\DATA . "worlds/", 0755);
-		@mkdir(\PocketMine\DATA . "plugins/", 0755);
+		@mkdir(\pocketmine\DATA . "players/", 0755);
+		@mkdir(\pocketmine\DATA . "worlds/", 0755);
+		@mkdir(\pocketmine\DATA . "plugins/", 0755);
 
 		$version = new VersionString();
 		console("[INFO] Starting Minecraft: PE server version " . TextFormat::AQUA . MINECRAFT_VERSION);
 
 		console("[INFO] Loading properties...");
-		$this->config = new Config(\PocketMine\DATA . "server.properties", Config::PROPERTIES, array(
+		$this->config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES, array(
 			"server-name" => "Minecraft: PE Server",
 			"description" => "Server made using PocketMine-MP",
 			"motd" => "Welcome @player to this server!",
@@ -124,7 +124,7 @@ class ServerAPI{
 		$this->parseProperties();
 
 		//Load advanced properties
-		define("PocketMine\\DEBUG", $this->getProperty("debug", 1));
+		define("pocketmine\\DEBUG", $this->getProperty("debug", 1));
 		define("ADVANCED_CACHE", $this->getProperty("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getProperty("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
@@ -150,7 +150,7 @@ class ServerAPI{
 				}else{
 					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
 					$last = $last->getTimestamp();
-					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \PocketMine\GIT_COMMIT != $info[0]["sha"]){
+					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \pocketmine\GIT_COMMIT != $info[0]["sha"]){
 						console("[NOTICE] " . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
 						console("[NOTICE] " . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
 						console("[NOTICE] " . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
@@ -200,7 +200,7 @@ class ServerAPI{
 			}
 		}
 
-		console("[INFO] Loaded " . count(PluginManager::loadPlugins(\PocketMine\DATA . "plugins/")) . " plugin(s).");
+		console("[INFO] Loaded " . count(PluginManager::loadPlugins(\pocketmine\DATA . "plugins/")) . " plugin(s).");
 
 	}
 

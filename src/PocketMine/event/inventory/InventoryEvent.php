@@ -22,9 +22,9 @@
 /**
  * Inventory related events
  */
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Event\Event;
+use pocketmine\event\Event;
 
 abstract class InventoryEvent extends Event{
 
@@ -39,7 +39,7 @@ abstract class InventoryEvent extends Event{
 	}
 
 	/**
-	 * @return \PocketMine\Entity\Human[]
+	 * @return \pocketmine\entity\Human[]
 	 */
 	public function getViewers(){
 		return $this->inventory->getViewers();

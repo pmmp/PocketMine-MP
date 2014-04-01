@@ -19,12 +19,12 @@
  *
  */
 
-namespace PocketMine\Event\Tile;
+namespace pocketmine\event\tile;
 
-use PocketMine\Event;
-use PocketMine\Event\Cancellable;
-use PocketMine\Item\Item;
-use PocketMine\Tile\Tile;
+use pocketmine\Event;
+use pocketmine\event\Cancellable;
+use pocketmine\item\Item;
+use pocketmine\tile\Tile;
 
 class TileInventoryChangeEvent extends TileEvent implements Cancellable{
 	public static $handlerList = null;

@@ -23,13 +23,13 @@
  * All the Tile classes and related classes
  * TODO: Add Nether Reactor tile
  */
-namespace PocketMine\Tile;
+namespace pocketmine\tile;
 
-use PocketMine\Level\Level;
-use PocketMine\Level\Position;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\PMF\LevelFormat;
-use PocketMine\Server;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\pmf\LevelFormat;
+use pocketmine\Server;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";

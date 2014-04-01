@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Level\Level;
+use pocketmine\level\Level;
 
 class DeadBush extends Flowable{
 	public function __construct(){

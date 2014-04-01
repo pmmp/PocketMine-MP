@@ -20,7 +20,7 @@
 */
 
 
-namespace PocketMine\Network\Protocol;
+namespace pocketmine\network\protocol;
 
 
 class UnknownPacket extends DataPacket{

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\NBT\Tag;
+namespace pocketmine\nbt\tag;
 
 
 abstract class NamedTag extends Tag{

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Network\Protocol;
+namespace pocketmine\network\protocol;
 
 
 class UpdateBlockPacket extends DataPacket{

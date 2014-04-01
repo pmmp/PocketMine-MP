@@ -1,6 +1,6 @@
 <?php
 
-use PocketMine\Utils;
+use pocketmine\Utils;
 
 $testErrors = 0;
 
@@ -22,12 +22,12 @@ function testCase($name, $output, $expected){
 	}
 }
 
-if(!class_exists("\\PocketMine\\Server", false)){
+if(!class_exists("\\pocketmine\\Server", false)){
 	define("NO_THREADS", true);
 	define("PARENT_API_EXISTENT", true);
 	require_once(dirname(__FILE__) . "/../PocketMine/PocketMine.php");
 	console(Utils\TextFormat::GREEN . "[TEST] Starting tests");
-	testCase("dummy", \PocketMine\dummy(), null);
+	testCase("dummy", \pocketmine\dummy(), null);
 	$t = new ServerSuiteTest;
 	echo PHP_EOL;
 	if($testErrors === 0){
@@ -50,7 +50,7 @@ class ServerSuiteTest{
 
 		//PocketMine-MP server startup
 		global $server;
-		$server = new \PocketMine\ServerAPI();
+		$server = new \pocketmine\ServerAPI();
 		$server->load();
 		testCase("event attached", is_integer($server->event("server.start", array($this, "hook"))), true);
 		$server->init();
@@ -58,7 +58,7 @@ class ServerSuiteTest{
 
 	public function hook(){
 		testCase("event fired", true, true);
-		$server = \PocketMine\Server::getInstance();
+		$server = \pocketmine\Server::getInstance();
 		testCase("defaultgamemode", $server->getGamemode(), "survival");
 
 

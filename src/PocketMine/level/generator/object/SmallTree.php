@@ -19,14 +19,14 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Object;
+namespace pocketmine\level\generator\object;
 
-use PocketMine\Block\Dirt;
-use PocketMine\Block\Leaves;
-use PocketMine\Block\Wood;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random;
+use pocketmine\block\Dirt;
+use pocketmine\block\Leaves;
+use pocketmine\block\Wood;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\utils\Random;
 
 class SmallTree extends Tree{
 	public $type = 0;

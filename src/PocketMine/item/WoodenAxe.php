@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Item;
+namespace pocketmine\item;
 
 
 class WoodenAxe extends Item{

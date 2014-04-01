@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
+use pocketmine\item\Item;
 
 class Melon extends Transparent{
 	public function __construct(){

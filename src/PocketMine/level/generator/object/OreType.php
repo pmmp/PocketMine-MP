@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Object;
+namespace pocketmine\level\generator\object;
 
-use PocketMine\Block\Block;
+use pocketmine\block\Block;
 
 class OreType{
 	public $material, $clusterCount, $clusterSize, $maxHeight, $minHeight;

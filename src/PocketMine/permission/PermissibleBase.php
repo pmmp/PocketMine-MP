@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Permission;
+namespace pocketmine\permission;
 
-use PocketMine\Plugin\Plugin;
-use PocketMine\Server;
+use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 
 class PermissibleBase implements Permissible{
 	/** @var ServerOperator */

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Item;
+namespace pocketmine\item;
 
 
 class BeetrootSoup extends Item{

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Command;
+namespace pocketmine\command;
 
 class CommandReader extends \Thread{
 

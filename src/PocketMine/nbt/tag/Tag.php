@@ -22,9 +22,9 @@
 /**
  * All the NBT Tags
  */
-namespace PocketMine\NBT\Tag;
+namespace pocketmine\nbt\tag;
 
-use PocketMine\NBT\NBT;
+use pocketmine\nbt\NBT;
 
 abstract class Tag extends \stdClass{
 

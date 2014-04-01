@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Level;
+namespace pocketmine\level;
 
-use PocketMine\Math\Vector3 as Vector3;
+use pocketmine\math\Vector3 as Vector3;
 
 class Position extends Vector3{
 

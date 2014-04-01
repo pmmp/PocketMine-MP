@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Network\Protocol\ChatPacket;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\item\Item;
+use pocketmine\network\protocol\ChatPacket;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Bed extends Transparent{
 	public function __construct($type = 0){

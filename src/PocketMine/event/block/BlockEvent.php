@@ -22,12 +22,12 @@
 /**
  * Block related events
  */
-namespace PocketMine\Event\Block;
+namespace pocketmine\event\block;
 
-use PocketMine\Event\Event;
+use pocketmine\event\Event;
 
 abstract class BlockEvent extends Event{
-	/** @var \PocketMine\Block\Block */
+	/** @var \pocketmine\block\Block */
 	protected $block;
 
 	public function getBlock(){

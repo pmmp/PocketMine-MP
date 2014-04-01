@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\PMF;
+namespace pocketmine\pmf;
 
-use PocketMine\Level\Level;
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Enum;
-use PocketMine\Utils\Utils;
+use pocketmine\level\Level;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\utils\Utils;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;

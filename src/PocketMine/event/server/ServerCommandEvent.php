@@ -19,10 +19,10 @@
  *
  */
 
-namespace PocketMine\Event\Server;
+namespace pocketmine\event\server;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Event\Cancellable;
+use pocketmine\command\CommandSender;
+use pocketmine\event\Cancellable;
 
 /**
  * Called when the console runs a command, early in the process

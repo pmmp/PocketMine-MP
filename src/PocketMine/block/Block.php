@@ -22,12 +22,12 @@
 /**
  * All Block classes are in here
  */
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Level\Position;
-use PocketMine\Player;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\Player;
 
 abstract class Block extends Position{
 	const AIR = 0;

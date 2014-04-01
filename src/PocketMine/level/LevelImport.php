@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Level;
+namespace pocketmine\level;
 
-use PocketMine\NBT\NBT;
-use PocketMine\PMF\LevelFormat;
-use PocketMine\Utils\Config;
+use pocketmine\nbt\NBT;
+use pocketmine\pmf\LevelFormat;
+use pocketmine\utils\Config;
 
 class LevelImport{
 	private $path;

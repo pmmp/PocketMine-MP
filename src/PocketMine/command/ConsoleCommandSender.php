@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Command;
+namespace pocketmine\command;
 
-use PocketMine\Permission\PermissibleBase;
-use PocketMine\Permission\PermissionAttachment;
-use PocketMine\Plugin\Plugin;
-use PocketMine\Server;
+use pocketmine\permission\PermissibleBase;
+use pocketmine\permission\PermissionAttachment;
+use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 
 class ConsoleCommandSender implements CommandSender{
 
@@ -35,7 +35,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @param \PocketMine\Permission\Permission|string $name
+	 * @param \pocketmine\permission\Permission|string $name
 	 *
 	 * @return bool
 	 */
@@ -44,7 +44,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @param \PocketMine\Permission\Permission|string $name
+	 * @param \pocketmine\permission\Permission|string $name
 	 *
 	 * @return bool
 	 */
@@ -57,7 +57,7 @@ class ConsoleCommandSender implements CommandSender{
 	 * @param string $name
 	 * @param bool   $value
 	 *
-	 * @return \PocketMine\Permission\PermissionAttachment
+	 * @return \pocketmine\permission\PermissionAttachment
 	 */
 	public function addAttachment(Plugin $plugin, $name = null, $value = null){
 		return $this->perm->addAttachment($plugin, $name, $value);
@@ -77,7 +77,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @return \PocketMine\Permission\PermissionAttachmentInfo[]
+	 * @return \pocketmine\permission\PermissionAttachmentInfo[]
 	 */
 	public function getEffectivePermissions(){
 		return $this->perm->getEffectivePermissions();
@@ -91,7 +91,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @return \PocketMine\Server
+	 * @return \pocketmine\Server
 	 */
 	public function getServer(){
 		return Server::getInstance();

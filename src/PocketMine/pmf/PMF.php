@@ -23,7 +23,7 @@
  * PMF (PocketMine Format) handling
  * TODO: Remove in favor of NBT
  */
-namespace PocketMine\PMF;
+namespace pocketmine\pmf;
 
 
 class PMF{

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Event;
+namespace pocketmine\event;
 
 interface Listener{
 

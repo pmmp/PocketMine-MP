@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Command;
+namespace pocketmine\command;
 
-use PocketMine\Plugin\Plugin;
-use PocketMine\Utils\TextFormat;
+use pocketmine\plugin\Plugin;
+use pocketmine\utils\TextFormat;
 
 class PluginCommand extends Command{
 

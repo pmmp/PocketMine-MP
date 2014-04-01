@@ -22,10 +22,10 @@
 /**
  * Events related Plugin enable / disable events
  */
-namespace PocketMine\Event\Plugin;
+namespace pocketmine\event\plugin;
 
-use PocketMine\Event\Event;
-use PocketMine\Plugin\Plugin;
+use pocketmine\event\Event;
+use pocketmine\plugin\Plugin;
 
 
 abstract class PluginEvent extends Event{

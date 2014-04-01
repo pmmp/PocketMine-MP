@@ -19,16 +19,19 @@
  *
 */
 
-namespace PocketMine\Tile;
+namespace pocketmine\tile;
 
-use PocketMine\Event\Tile\TileInventoryChangeEvent;
-use PocketMine\Item\Item;
-use PocketMine\NBT\Tag\Byte;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Short;
-use PocketMine\Network;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\event\tile\TileInventoryChangeEvent;
+use pocketmine\item\Item;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Short;
+use pocketmine\Network;
+use pocketmine\network\protocol\ContainerOpenPacket;
+use pocketmine\network\protocol\ContainerSetContentPacket;
+use pocketmine\network\protocol\TileEventPacket;
+use pocketmine\Player;
+use pocketmine\Server;
 
 trait Container{
 	public function openInventory(Player $player){
@@ -51,7 +54,7 @@ trait Container{
 				$player->windows[$id] = $this;
 			}
 
-			$pk = new Network\Protocol\ContainerOpenPacket;
+			$pk = new ContainerOpenPacket();
 			$pk->windowid = $id;
 			$pk->type = 0;
 			$pk->slots = is_array($player->windows[$id]) ? Chest::SLOTS << 1 : Chest::SLOTS;
@@ -64,7 +67,7 @@ trait Container{
 			if(is_array($player->windows[$id])){
 				$all = $this->level->getPlayers();
 				foreach($player->windows[$id] as $ob){
-					$pk = new Network\Protocol\TileEventPacket;
+					$pk = new TileEventPacket();
 					$pk->x = $ob->x;
 					$pk->y = $ob->y;
 					$pk->z = $ob->z;
@@ -81,7 +84,7 @@ trait Container{
 					}
 				}
 			}else{
-				$pk = new Network\Protocol\TileEventPacket;
+				$pk = new TileEventPacket();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -98,7 +101,7 @@ trait Container{
 				}
 			}
 
-			$pk = new Network\Protocol\ContainerSetContentPacket;
+			$pk = new ContainerSetContentPacket();
 			$pk->windowid = $id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);
@@ -109,7 +112,7 @@ trait Container{
 			$player->windowCnt = $id = max(2, $player->windowCnt % 99);
 			$player->windows[$id] = $this;
 
-			$pk = new Network\Protocol\ContainerOpenPacket;
+			$pk = new ContainerOpenPacket();
 			$pk->windowid = $id;
 			$pk->type = 2;
 			$pk->slots = Furnace::SLOTS;
@@ -127,7 +130,7 @@ trait Container{
 					$slots[] = Item::get(Item::AIR, 0, 0);
 				}
 			}
-			$pk = new Network\Protocol\ContainerSetContentPacket;
+			$pk = new ContainerSetContentPacket();
 			$pk->windowid = $id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);

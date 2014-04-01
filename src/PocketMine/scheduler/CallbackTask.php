@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Scheduler;
+namespace pocketmine\scheduler;
 
 /**
  * Allows the creation if simple callbacks with extra data

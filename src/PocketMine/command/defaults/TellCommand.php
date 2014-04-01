@@ -19,11 +19,11 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Player;
-use PocketMine\Utils\TextFormat;
+use pocketmine\command\CommandSender;
+use pocketmine\Player;
+use pocketmine\utils\TextFormat;
 
 class TellCommand extends VanillaCommand{
 

@@ -19,16 +19,16 @@
  *
 */
 
-namespace PocketMine\Tile;
+namespace pocketmine\tile;
 
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Int;
-use PocketMine\NBT\Tag\String;
-use PocketMine\Network\Protocol\EntityDataPacket;
-use PocketMine\Player;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\String;
+use pocketmine\network\protocol\EntityDataPacket;
+use pocketmine\Player;
 
 class Chest extends Spawnable{
 	use Container;

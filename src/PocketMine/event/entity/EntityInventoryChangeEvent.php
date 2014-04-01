@@ -19,12 +19,12 @@
  *
  */
 
-namespace PocketMine\Event\Entity;
+namespace pocketmine\event\entity;
 
-use PocketMine\Entity\Entity;
-use PocketMine\Event\Cancellable;
-use PocketMine\Event;
-use PocketMine\Item\Item;
+use pocketmine\entity\Entity;
+use pocketmine\event\Cancellable;
+use pocketmine\Event;
+use pocketmine\item\Item;
 
 class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;

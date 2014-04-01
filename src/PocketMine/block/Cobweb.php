@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
+use pocketmine\item\Item;
 
 class Cobweb extends Flowable{
 	public function __construct(){

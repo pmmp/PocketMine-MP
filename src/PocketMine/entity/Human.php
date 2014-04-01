@@ -19,24 +19,25 @@
  *
 */
 
-namespace PocketMine\Entity;
+namespace pocketmine\entity;
 
-use PocketMine\Event\Entity\EntityArmorChangeEvent;
-use PocketMine\Event\Entity\EntityInventoryChangeEvent;
-use PocketMine\Item\Item;
-use PocketMine\NBT\NBT;
-use PocketMine\NBT\Tag\Byte;
-use PocketMine\NBT\Tag\Compound;
-use PocketMine\NBT\Tag\Enum;
-use PocketMine\NBT\Tag\Short;
-use PocketMine\Network\Protocol\AddPlayerPacket;
-use PocketMine\Network\Protocol\ContainerSetContentPacket;
-use PocketMine\Network\Protocol\PlayerEquipmentPacket;
-use PocketMine\Network\Protocol\RemovePlayerPacket;
-use PocketMine\Network\Protocol\SetEntityMotionPacket;
-use PocketMine\Network;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\event\entity\EntityArmorChangeEvent;
+use pocketmine\event\entity\EntityInventoryChangeEvent;
+use pocketmine\item\Item;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Short;
+use pocketmine\network\protocol\AddPlayerPacket;
+use pocketmine\network\protocol\ContainerSetContentPacket;
+use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
+use pocketmine\network\protocol\PlayerEquipmentPacket;
+use pocketmine\network\protocol\RemovePlayerPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
+use pocketmine\Network;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Human extends Creature implements ProjectileSource, InventorySource{
 
@@ -231,7 +232,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			}
 		}
 		if($player instanceof Player){
-			$pk = new Network\Protocol\PlayerArmorEquipmentPacket;
+			$pk = new PlayerArmorEquipmentPacket();
 			$pk->eid = $this->id;
 			$pk->slots = $slots;
 			$player->dataPacket($pk);

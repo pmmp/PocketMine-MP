@@ -19,12 +19,12 @@
  *
 */
 
-namespace PocketMine\Block;
+namespace pocketmine\block;
 
-use PocketMine\Item\Item;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Player;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\Player;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){

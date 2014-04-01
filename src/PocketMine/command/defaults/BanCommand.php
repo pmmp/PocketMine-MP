@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\Command;
-use PocketMine\Command\CommandSender;
-use PocketMine\Player;
-use PocketMine\Server;
-use PocketMine\Utils\TextFormat;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
+use pocketmine\Player;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class BanCommand extends VanillaCommand{
 

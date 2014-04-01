@@ -19,10 +19,10 @@
  *
 */
 
-namespace PocketMine\Command\Defaults;
+namespace pocketmine\command\defaults;
 
-use PocketMine\Command\CommandSender;
-use PocketMine\Server;
+use pocketmine\command\CommandSender;
+use pocketmine\Server;
 
 class BanListCommand extends VanillaCommand{
 

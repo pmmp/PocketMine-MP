@@ -19,17 +19,17 @@
  *
 */
 
-namespace PocketMine\Level;
+namespace pocketmine\level;
 
-use PocketMine\Block\Block;
-use PocketMine\Block\TNT;
-use PocketMine\Entity\Entity;
-use PocketMine\Event\Entity\EntityExplodeEvent;
-use PocketMine\Item\Item;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Network\Protocol\ExplodePacket;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\block\Block;
+use pocketmine\block\TNT;
+use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityExplodeEvent;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\network\protocol\ExplodePacket;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Explosion{
 	public static $specialDrops = array(

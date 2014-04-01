@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Permission;
+namespace pocketmine\permission;
 
-use PocketMine\Plugin\Plugin;
+use pocketmine\plugin\Plugin;
 
 interface Permissible extends ServerOperator{
 

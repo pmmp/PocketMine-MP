@@ -19,14 +19,14 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Populator;
+namespace pocketmine\level\generator\populator;
 
-use PocketMine\Block\Block;
-use PocketMine\Block\Sapling;
-use PocketMine\Level\Generator\Object\Tree as ObjectTree;
-use PocketMine\Level\Level;
-use PocketMine\Math\Vector3 as Vector3;
-use PocketMine\Utils\Random;
+use pocketmine\block\Block;
+use pocketmine\block\Sapling;
+use pocketmine\level\generator\object\Tree as ObjectTree;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3 as Vector3;
+use pocketmine\utils\Random;
 
 class Tree extends Populator{
 	private $level;

@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Permission;
+namespace pocketmine\permission;
 
-use PocketMine\Server;
+use pocketmine\Server;
 
 abstract class DefaultPermissions{
 	const ROOT = "pocketmine";

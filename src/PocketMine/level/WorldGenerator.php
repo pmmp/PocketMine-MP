@@ -19,13 +19,13 @@
  *
 */
 
-namespace PocketMine\Level;
+namespace pocketmine\level;
 
-use PocketMine\Level\Generator\Generator;
-use PocketMine\PMF\LevelFormat;
-use PocketMine\Utils\Config;
-use PocketMine\Utils\Random;
-use PocketMine\Utils\Utils;
+use pocketmine\level\generator\Generator;
+use pocketmine\pmf\LevelFormat;
+use pocketmine\utils\Config;
+use pocketmine\utils\Random;
+use pocketmine\utils\Utils;
 
 class WorldGenerator{
 	private $seed, $level, $path, $random, $generator, $height;
@@ -34,7 +34,7 @@ class WorldGenerator{
 		$this->seed = $seed !== false ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->random = new Random($this->seed);
 		$this->height = (int) $height;
-		$this->path = \PocketMine\DATA . "worlds/" . $name . "/";
+		$this->path = \pocketmine\DATA . "worlds/" . $name . "/";
 		$this->generator = $generator;
 		$level = new LevelFormat($this->path . "level.pmf", array(
 			"name" => $name,

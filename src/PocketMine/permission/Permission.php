@@ -22,9 +22,9 @@
 /**
  * Permission related classes
  */
-namespace PocketMine\Permission;
+namespace pocketmine\permission;
 
-use PocketMine\Server;
+use pocketmine\Server;
 
 /**
  * Represents a permission

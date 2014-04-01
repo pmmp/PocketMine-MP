@@ -19,14 +19,11 @@
  *
 */
 
-namespace PocketMine\Utils;
+namespace pocketmine\utils;
 
 
 /**
- * Class VersionString
- * Manages PocketMine-MP Version strings, and compares them
- *
- * @package PocketMine\Utils
+ * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString{
 	public static $stageOrder = array(
@@ -44,7 +41,7 @@ class VersionString{
 	private $development = false;
 	private $generation;
 
-	public function __construct($version = \PocketMine\VERSION){
+	public function __construct($version = \pocketmine\VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
 			$this->major = ($version >> 5) & 0x0F;

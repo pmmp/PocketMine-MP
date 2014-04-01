@@ -23,9 +23,9 @@
  * Implementation of the Source RCON Protocol to allow remote console commands
  * Source: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
  */
-namespace PocketMine\Network\RCON;
+namespace pocketmine\network\rcon;
 
-use PocketMine\Server;
+use pocketmine\Server;
 
 
 class RCON{

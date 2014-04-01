@@ -22,7 +22,7 @@
 /**
  * Minecraft: PE multiplayer protocol implementation
  */
-namespace PocketMine\Network\Protocol;
+namespace pocketmine\network\protocol;
 
 
 abstract class Info{

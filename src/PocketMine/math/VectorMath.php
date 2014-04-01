@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Math;
+namespace pocketmine\math;
 
 
 abstract class VectorMath{

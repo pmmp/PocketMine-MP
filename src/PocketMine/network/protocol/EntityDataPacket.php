@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Network\Protocol;
+namespace pocketmine\network\protocol;
 
 
 class EntityDataPacket extends DataPacket{

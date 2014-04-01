@@ -19,9 +19,9 @@
  *
 */
 
-namespace PocketMine\Level\Generator\Noise;
+namespace pocketmine\level\generator\noise;
 
-use PocketMine\Utils\Random;
+use pocketmine\utils\Random;
 
 class Perlin extends Generator{
 	public static $grad3 = [

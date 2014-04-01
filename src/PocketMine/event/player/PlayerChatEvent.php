@@ -19,11 +19,11 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Event\Cancellable;
-use PocketMine\Player;
-use PocketMine\Server;
+use pocketmine\event\Cancellable;
+use pocketmine\Player;
+use pocketmine\Server;
 
 /**
  * Called when a player chats something

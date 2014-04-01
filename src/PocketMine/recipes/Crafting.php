@@ -22,9 +22,9 @@
 /**
  * Crafting / Smelting / Fuel data and fast search databases
  */
-namespace PocketMine\Recipes;
+namespace pocketmine\recipes;
 
-use PocketMine\Item\Item;
+use pocketmine\item\Item;
 
 abstract class Crafting{
 

@@ -22,16 +22,16 @@
 /**
  * Generator classes used in Levels
  */
-namespace PocketMine\Level\Generator;
+namespace pocketmine\level\generator;
 
-use PocketMine\Level\Level;
-use PocketMine\Utils\Random;
+use pocketmine\level\Level;
+use pocketmine\utils\Random;
 
 abstract class Generator{
 	private static $list = array();
 
 	public static function addGenerator($object, $name){
-		if(is_subclass_of($object, "\\PocketMine\\Level\\Generator\\Generator") and !isset(Generator::$list[$name])){
+		if(is_subclass_of($object, "pocketmine\\level\\generator\\Generator") and !isset(Generator::$list[$name])){
 			Generator::$list[$name] = $object;
 
 			return true;
@@ -45,7 +45,7 @@ abstract class Generator{
 			return Generator::$list[$name];
 		}
 
-		return "\\PocketMine\\Level\\Generator\\Normal";
+		return "pocketmine\\level\\generator\\Normal";
 	}
 
 	public abstract function __construct(array $settings = array());

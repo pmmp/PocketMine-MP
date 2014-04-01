@@ -19,11 +19,11 @@
  *
  */
 
-namespace PocketMine\Event\Server;
+namespace pocketmine\event\server;
 
-use PocketMine\Event\Cancellable;
-use PocketMine\Event;
-use PocketMine\Network\Packet;
+use pocketmine\event\Cancellable;
+use pocketmine\Event;
+use pocketmine\network\Packet;
 
 class PacketReceiveEvent extends ServerEvent implements Cancellable{
 	public static $handlerList = null;

@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Utils;
+namespace pocketmine\utils;
 
 
 class Cache{

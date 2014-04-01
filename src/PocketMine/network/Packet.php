@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Network;
+namespace pocketmine\network;
 
 
 class Packet extends \stdClass{

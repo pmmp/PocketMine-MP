@@ -181,7 +181,6 @@ class SplClassLoader implements SplAutoloader{
 
 		return false;
 	}
-
 	/**
 	 * Transform resource name into its relative resource path representation.
 	 *

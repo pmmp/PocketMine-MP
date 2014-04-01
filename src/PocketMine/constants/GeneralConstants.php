@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine;
+namespace pocketmine;
 
 //Entities
 const ENTITY_PLAYER = 1;

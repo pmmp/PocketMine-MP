@@ -22,7 +22,7 @@
 /**
  * Different noise generators for level generation
  */
-namespace PocketMine\Level\Generator\Noise;
+namespace pocketmine\level\generator\noise;
 
 
 abstract class Generator{

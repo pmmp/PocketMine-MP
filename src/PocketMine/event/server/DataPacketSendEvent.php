@@ -19,12 +19,12 @@
  *
  */
 
-namespace PocketMine\Event\Server;
+namespace pocketmine\event\server;
 
-use PocketMine\Event;
-use PocketMine\Event\Cancellable;
-use PocketMine\Network\Protocol\DataPacket;
-use PocketMine\Player;
+use pocketmine\Event;
+use pocketmine\event\Cancellable;
+use pocketmine\network\protocol\DataPacket;
+use pocketmine\Player;
 
 class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	public static $handlerList = null;

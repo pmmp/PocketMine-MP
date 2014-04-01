@@ -22,7 +22,7 @@
 /**
  * Event related classes
  */
-namespace PocketMine\Event;
+namespace pocketmine\event;
 
 abstract class Event{
 

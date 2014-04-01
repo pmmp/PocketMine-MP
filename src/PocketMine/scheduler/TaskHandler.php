@@ -19,7 +19,7 @@
  *
 */
 
-namespace PocketMine\Scheduler;
+namespace pocketmine\scheduler;
 
 class TaskHandler{
 

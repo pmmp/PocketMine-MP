@@ -19,9 +19,9 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Player;
+use pocketmine\Player;
 
 /**
  * Called when a player joins the server, after sending all the spawn packets

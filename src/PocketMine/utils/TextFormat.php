@@ -19,15 +19,11 @@
  *
 */
 
-namespace PocketMine\Utils;
+namespace pocketmine\utils;
 
 
 /**
- * Class TextFormat
- *
  * Class used to handle Minecraft chat format, and convert it to other formats like ANSI or HTML
- *
- * @package PocketMine\Utils
  */
 class TextFormat{
 	const BLACK = "§0";

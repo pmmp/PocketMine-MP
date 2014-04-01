@@ -19,10 +19,10 @@
  *
  */
 
-namespace PocketMine\Event\Player;
+namespace pocketmine\event\player;
 
-use PocketMine\Level\Position;
-use PocketMine\Player;
+use pocketmine\level\Position;
+use pocketmine\Player;
 
 /**
  * Called when a player is respawned (or first time spawned)
