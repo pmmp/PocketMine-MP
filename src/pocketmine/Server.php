@@ -676,12 +676,6 @@ class Server{
 		}
 	}
 
-	public function saveLevels(){
-		foreach($this->getLevels() as $level){
-			$level->save();
-		}
-	}
-
 	/**
 	 * @return Level[]
 	 */
@@ -1557,8 +1551,14 @@ class Server{
 	}
 
 	public function doAutoSave(){
-		$this->broadcast(TextFormat::GRAY . "Saving...", self::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		$this->saveLevels();
+
+		/*foreach($this->getOnlinePlayers() as $player){
+			$player->save();
+		}*/
+
+		foreach($this->getLevels() as $level){
+			$level->save();
+		}
 	}
 
 	public function sendUsage(){

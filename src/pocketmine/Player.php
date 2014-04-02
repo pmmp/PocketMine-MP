@@ -2272,9 +2272,6 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->loggedIn === true){
 					parent::close();
 					$this->save();
-					if($this->namedtag instanceof Compound){
-						$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
-					}
 				}
 			}
 
@@ -2331,6 +2328,10 @@ class Player extends Human implements CommandSender, IPlayer{
 		$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
 
 		//$this->data->set("health", $this->getHealth());
+
+		if($this->username != "" and $this->isOnline() and $this->namedtag instanceof Compound){
+			$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
+		}
 	}
 
 	/**

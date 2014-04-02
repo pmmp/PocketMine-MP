@@ -35,6 +35,9 @@ use pocketmine\command\defaults\OpCommand;
 use pocketmine\command\defaults\PardonCommand;
 use pocketmine\command\defaults\PardonIpCommand;
 use pocketmine\command\defaults\PluginsCommand;
+use pocketmine\command\defaults\SaveCommand;
+use pocketmine\command\defaults\SaveOffCommand;
+use pocketmine\command\defaults\SaveOnCommand;
 use pocketmine\command\defaults\SayCommand;
 use pocketmine\command\defaults\SeedCommand;
 use pocketmine\command\defaults\StopCommand;
@@ -80,6 +83,9 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new OpCommand("op"));
 		$this->register("pocketmine", new DeopCommand("deop"));
 		$this->register("pocketmine", new WhitelistCommand("whitelist"));
+		$this->register("pocketmine", new SaveOnCommand("save-on"));
+		$this->register("pocketmine", new SaveOffCommand("save-off"));
+		$this->register("pocketmine", new SaveCommand("save-all"));
 	}
 
 
