@@ -24,11 +24,23 @@ namespace pocketmine;
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Human;
-use pocketmine\Event;
+use pocketmine\event\player\PlayerAchievementAwardedEvent;
+use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerItemHeldEvent;
+use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerKickEvent;
+use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerPreLoginEvent;
+use pocketmine\event\player\PlayerQuitEvent;
+use pocketmine\event\player\PlayerRespawnEvent;
+use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -638,7 +650,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		if($this->connected === false){
 			return false;
 		}
-		$this->server->getPluginManager()->callEvent($ev = new event\server\DataPacketSendEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -919,7 +931,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					return false;
 				}
 			}
-			$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerAchievementAwardedEvent($this, $achievementId));
+			$this->server->getPluginManager()->callEvent($ev = new PlayerAchievementAwardedEvent($this, $achievementId));
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
@@ -953,7 +965,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerGameModeChangeEvent($this, (int) $gm));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerGameModeChangeEvent($this, (int) $gm));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1212,7 +1224,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new event\server\DataPacketReceiveEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
 			return;
 		}
@@ -1280,7 +1292,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					return;
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerPreLoginEvent($this, "Plugin reason"));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
@@ -1348,7 +1360,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					$this->slot = $this->hotbar[0];
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerLoginEvent($this, "Plugin reason"));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
@@ -1392,7 +1404,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
-				$this->server->getPluginManager()->callEvent(new event\player\PlayerJoinEvent($this, $this->username . " joined the game"));
+				$this->server->getPluginManager()->callEvent(new PlayerJoinEvent($this, $this->username . " joined the game"));
 
 				break;
 			case ProtocolInfo::READY_PACKET:
@@ -1423,7 +1435,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 						$pos = new Position($this->x, $this->y, $this->z, $this->level);
 						$pos = $this->level->getSafeSpawn($pos);
-						$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerRespawnEvent($this, $pos));
+						$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 						$this->teleport($ev->getRespawnPosition());
 						$this->sendBuffer();
@@ -1493,7 +1505,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($packet->slot === false){
 					$this->sendInventorySlot($packet->slot);
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerItemHeldEvent($this, $item, $packet->slot, 0));
+					$this->server->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this, $item, $packet->slot, 0));
 					if($ev->isCancelled()){
 						$this->sendInventorySlot($packet->slot);
 					}elseif($item instanceof Item){
@@ -1853,7 +1865,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$this->craftingItems = array();
 				$this->toCraft = array();
 
-				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerRespawnEvent($this, $this->spawnPosition));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
 
 				$this->teleport($ev->getRespawnPosition());
 				//$this->entity->fire = 0;
@@ -1951,14 +1963,14 @@ class Player extends Human implements CommandSender, IPlayer{
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
-					$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerCommandPreprocessEvent($this, $message));
+					$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
 					if($ev->isCancelled()){
 						break;
 					}
 					if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
 						$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 					}else{
-						$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerChatEvent($this, $ev->getMessage()));
+						$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
 						if(!$ev->isCancelled()){
 							$this->server->broadcastMessage(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 						}
@@ -2218,7 +2230,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	 * @return bool
 	 */
 	public function kick($reason = ""){
-		$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
 		if(!$ev->isCancelled()){
 			$this->sendMessage("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
 			$this->close($ev->getQuitMessage(), $reason);
@@ -2272,7 +2284,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		if($this->connected === true){
 			unset($this->level->players[$this->CID]);
 			if($this->username != ""){
-				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerQuitEvent($this, $message));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->loggedIn === true){
 					parent::close();
 					$this->save();
@@ -2351,7 +2363,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new event\server\DataPacketSendEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
 			return array();
 		}

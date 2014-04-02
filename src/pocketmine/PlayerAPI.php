@@ -36,14 +36,10 @@ class PlayerAPI{
 	public function init(){
 		$this->server->schedule(20 * 15, array($this, "handle"), 1, true, "server.regeneration");
 		$this->server->addHandler("player.death", array($this, "handle"), 1);
-		$this->server->api->console->register("list", "", array($this, "commandHandler"));
 		$this->server->api->console->register("kill", "<player>", array($this, "commandHandler"));
-		$this->server->api->console->register("gamemode", "<mode> [player]", array($this, "commandHandler"));
 		$this->server->api->console->register("tp", "[target player] <destination player | w:world> OR /tp [target player] <x> <y> <z>", array($this, "commandHandler"));
 		$this->server->api->console->register("spawnpoint", "[player | w:world] [x] [y] [z]", array($this, "commandHandler"));
-		$this->server->api->console->register("spawn", "", array($this, "commandHandler"));
-		$this->server->api->console->register("ping", "", array($this, "commandHandler"));
-		$this->server->api->console->alias("lag", "ping");
+
 		$this->server->api->console->alias("suicide", "kill");
 		$this->server->api->console->alias("tppos", "tp");
 		$this->server->api->ban->cmdWhitelist("list");

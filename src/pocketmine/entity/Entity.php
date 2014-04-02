@@ -92,6 +92,10 @@ abstract class Entity extends Position{
 	public $width;
 	public $length;
 
+	/** @var int */
+	private $health = 20;
+	private $maxHealth = 20;
+
 	public $fallDistance;
 	public $ticksLived;
 	public $lastUpdate;
@@ -183,6 +187,44 @@ abstract class Entity extends Position{
 	abstract function attack($damage, $source = "generic");
 
 	abstract function heal($amount, $source = "generic");
+
+	/**
+	 * @return int
+	 */
+	public function getHealth(){
+		return $this->health;
+	}
+
+	/**
+	 * Sets the health of the Entity. This won't send any update to the players
+	 *
+	 * @param int $amount
+	 */
+	public function setHealth($amount){
+		if($amount < 0){
+			$this->health = 0;
+			$this->dead = true;
+		}elseif($amount > $this->getMaxHealth()){
+			$this->health = $this->getMaxHealth();
+		}else{
+			$this->health = (int) $amount;
+		}
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxHealth(){
+		return $this->maxHealth;
+	}
+
+	/**
+	 * @param int $amount
+	 */
+	public function setMaxHealth($amount){
+		$this->maxHealth = (int) $amount;
+		$this->health = (int) min($this->health, $this->maxHealth);
+	}
 
 	public function onUpdate(){
 		if($this->closed !== false){

@@ -31,6 +31,7 @@ use pocketmine\command\defaults\GamemodeCommand;
 use pocketmine\command\defaults\GiveCommand;
 use pocketmine\command\defaults\HelpCommand;
 use pocketmine\command\defaults\KickCommand;
+use pocketmine\command\defaults\KillCommand;
 use pocketmine\command\defaults\ListCommand;
 use pocketmine\command\defaults\MeCommand;
 use pocketmine\command\defaults\OpCommand;
@@ -90,6 +91,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new SaveCommand("save-all"));
 		$this->register("pocketmine", new GiveCommand("give"));
 		$this->register("pocketmine", new GamemodeCommand("gamemode"));
+		$this->register("pocketmine", new KillCommand("kill"));
 	}
 
 
