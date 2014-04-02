@@ -2,11 +2,14 @@ players/*
 worlds/*
 plugins/*
 bin/*
-.idea/*
 *.log
 *.txt
 *.phar
 server.properties
+
+# Common IDEs
+.idea/*
+nbproject/*
 
 # Windows image file caches
 Thumbs.db
@@ -16,3 +19,4 @@ Desktop.ini
 
 # Mac crap
 .DS_Store
+/nbproject/private/
