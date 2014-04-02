@@ -1262,6 +1262,51 @@ class Server{
 		}
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+
+		/*
+		//TODO
+		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
+			console("[INFO] Checking for new server version");
+			console("[INFO] Last check: " . TextFormat::AQUA . date("Y-m-d H:i:s", $this->getProperty("last-update")) . "\x1b[0m");
+			if($this->server->version->isDev()){
+				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
+				if($info === false or !isset($info[0])){
+					console("[ERROR] Github API error");
+				}else{
+					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
+					$last = $last->getTimestamp();
+					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \pocketmine\GIT_COMMIT != $info[0]["sha"]){
+						console("[NOTICE] " . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
+						console("[NOTICE] " . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
+						console("[NOTICE] " . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
+						console("[NOTICE] This message will disappear after issuing the command \"/update-done\"");
+					}else{
+						$this->setProperty("last-update", time());
+						console("[INFO] " . TextFormat::AQUA . "This is the latest DEVELOPMENT version");
+					}
+				}
+			}else{
+				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
+				if($info === false or !isset($info[0])){
+					console("[ERROR] Github API error");
+				}else{
+					$newest = new VersionString(VERSION);
+					$newestN = $newest->getNumber();
+					$update = new VersionString($info[0]["name"]);
+					$updateN = $update->getNumber();
+					if($updateN > $newestN){
+						console("[NOTICE] " . TextFormat::GREEN . "A new STABLE version of PocketMine-MP has been released!");
+						console("[NOTICE] " . TextFormat::GREEN . "Version \"" . $info[0]["name"] . "\" #" . $updateN);
+						console("[NOTICE] Get it at PocketMine.net or at " . $info[0]["zipball_url"]);
+						console("[NOTICE] This message will disappear as soon as you update");
+					}else{
+						$this->setProperty("last-update", time());
+						console("[INFO] " . TextFormat::AQUA . "This is the latest STABLE version");
+					}
+				}
+			}
+		}
+		*/
 	}
 
 	/**
@@ -1352,6 +1397,9 @@ class Server{
 		return false;
 	}
 
+	/**
+	 * Shutdowns the server correctly
+	 */
 	public function shutdown(){
 		$this->isRunning = false;
 	}
@@ -1382,16 +1430,15 @@ class Server{
 		}
 
 		$this->tickCounter = 0;
-		register_tick_function(array($this, "tick"));
-		/*
-		register_shutdown_function(array($this, "dumpError"));
-		register_shutdown_function(array($this, "close"));
+
+		//register_shutdown_function(array($this, "dumpError"));
+		register_shutdown_function(array($this, "shutdown"));
 		if(function_exists("pcntl_signal")){
-			//pcntl_signal(SIGTERM, array($this, "close"));
-			pcntl_signal(SIGINT, array($this, "close"));
-			pcntl_signal(SIGHUP, array($this, "close"));
+			//pcntl_signal(SIGTERM, array($this, "shutdown"));
+			pcntl_signal(SIGINT, array($this, "shutdown"));
+			pcntl_signal(SIGHUP, array($this, "shutdown"));
 		}
-		*/
+
 		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 
 		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
@@ -1450,6 +1497,107 @@ class Server{
 				$lastLoop = 0;
 			}
 		}
+	}
+
+	public function checkTicks(){
+		if($this->getTicksPerSecond() < 12){
+			console("[WARNING] Can't keep up! Is the server overloaded?");
+		}
+	}
+
+	public function checkMemory(){
+		//TODO
+		$info = $this->debugInfo();
+		$data = $info["memory_usage"] . "," . $info["players"] . "," . $info["entities"];
+		$i = count($this->memoryStats) - 1;
+		if($i < 0 or $this->memoryStats[$i] !== $data){
+			$this->memoryStats[] = $data;
+		}
+	}
+
+	public function dumpError(){
+		//TODO
+		if($this->stop === true){
+			return;
+		}
+		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
+		console("[SEVERE] An unrecovereable has ocurred and the server has crashed. Creating an error dump");
+		$dump = "```\r\n# PocketMine-MP Error Dump " . date("D M j H:i:s T Y") . "\r\n";
+		$er = error_get_last();
+		$errorConversion = array(
+			E_ERROR => "E_ERROR",
+			E_WARNING => "E_WARNING",
+			E_PARSE => "E_PARSE",
+			E_NOTICE => "E_NOTICE",
+			E_CORE_ERROR => "E_CORE_ERROR",
+			E_CORE_WARNING => "E_CORE_WARNING",
+			E_COMPILE_ERROR => "E_COMPILE_ERROR",
+			E_COMPILE_WARNING => "E_COMPILE_WARNING",
+			E_USER_ERROR => "E_USER_ERROR",
+			E_USER_WARNING => "E_USER_WARNING",
+			E_USER_NOTICE => "E_USER_NOTICE",
+			E_STRICT => "E_STRICT",
+			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+			E_DEPRECATED => "E_DEPRECATED",
+			E_USER_DEPRECATED => "E_USER_DEPRECATED",
+		);
+		$er["type"] = isset($errorConversion[$er["type"]]) ? $errorConversion[$er["type"]] : $er["type"];
+		$dump .= "Error: " . var_export($er, true) . "\r\n\r\n";
+		if(stripos($er["file"], "plugin") !== false){
+			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";
+		}
+
+		$dump .= "Code: \r\n";
+		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
+		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
+			$dump .= "[" . ($l + 1) . "] " . @$file[$l] . "\r\n";
+		}
+		$dump .= "\r\n\r\n";
+		$dump .= "Backtrace: \r\n";
+		foreach(getTrace() as $line){
+			$dump .= "$line\r\n";
+		}
+		$dump .= "\r\n\r\n";
+		$version = new VersionString();
+		$dump .= "PocketMine-MP version: " . $version . " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]\r\n";
+		$dump .= "Git commit: " . GIT_COMMIT . "\r\n";
+		$dump .= "uname -a: " . php_uname("a") . "\r\n";
+		$dump .= "PHP Version: " . phpversion() . "\r\n";
+		$dump .= "Zend version: " . zend_version() . "\r\n";
+		$dump .= "OS : " . PHP_OS . ", " . Utils::getOS() . "\r\n";
+		$dump .= "Debug Info: " . var_export($this->debugInfo(false), true) . "\r\n\r\n\r\n";
+		global $arguments;
+		$dump .= "Parameters: " . var_export($arguments, true) . "\r\n\r\n\r\n";
+		$p = $this->api->getProperties();
+		if($p["rcon.password"] != ""){
+			$p["rcon.password"] = "******";
+		}
+		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
+		if(class_exists("pocketmine\\plugin\\PluginManager", false)){
+			$dump .= "Loaded plugins:\r\n";
+			foreach(PluginManager::getPlugins() as $p){
+				$d = $p->getDescription();
+				$dump .= $d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . "\r\n";
+			}
+			$dump .= "\r\n\r\n";
+		}
+
+		$extensions = array();
+		foreach(get_loaded_extensions() as $ext){
+			$extensions[$ext] = phpversion($ext);
+		}
+
+		$dump .= "Loaded Modules: " . var_export($extensions, true) . "\r\n";
+		$this->checkMemory();
+		$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
+		ob_start();
+		phpinfo();
+		$dump .= "\r\nphpinfo(): \r\n" . chunk_split(base64_encode(gzdeflate(ob_get_contents(), 9))) . "\r\n";
+		ob_end_clean();
+		$dump .= "\r\n```";
+		$name = "Error_Dump_" . date("D_M_j-H.i.s-T_Y");
+		log($dump, $name, true, 0, true);
+		console("[SEVERE] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
 	private function tickProcessor(){
