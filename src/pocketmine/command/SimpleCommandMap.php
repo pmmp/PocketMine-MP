@@ -45,6 +45,7 @@ use pocketmine\command\defaults\SayCommand;
 use pocketmine\command\defaults\SeedCommand;
 use pocketmine\command\defaults\SpawnpointCommand;
 use pocketmine\command\defaults\StopCommand;
+use pocketmine\command\defaults\TeleportCommand;
 use pocketmine\command\defaults\TellCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
@@ -94,6 +95,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new GamemodeCommand("gamemode"));
 		$this->register("pocketmine", new KillCommand("kill"));
 		$this->register("pocketmine", new SpawnpointCommand("spawnpoint"));
+		$this->register("pocketmine", new TeleportCommand("tp"));
 	}
 
 

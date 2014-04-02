@@ -24,19 +24,20 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\level\Position;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
-class SpawnpointCommand extends VanillaCommand{
+class TeleportCommand extends VanillaCommand{
 
 	public function __construct($name){
 		parent::__construct(
 			$name,
-			"Sets a player's spawn point",
-			"/spawnpoint OR /spawnpoint <player> OR /spawnpoint <player> <x> <y> <z>"
+			"Teleports the given player (or yourself) to another player or coordinates",
+			"/tp [player] <target> and/or <x> <y> <z>"
 		);
-		$this->setPermission("pocketmine.command.spawnpoint");
+		$this->setPermission("pocketmine.command.teleport");
 	}
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
@@ -44,9 +45,14 @@ class SpawnpointCommand extends VanillaCommand{
 			return true;
 		}
 
+		if(count($args) < 1 or count($args) > 4){
+			$sender->sendMessage(TextFormat::RED . "Usage: ".$this->usageMessage);
+			return true;
+		}
+
 		$target = null;
 
-		if(count($args) === 0){
+		if(count($args) === 1 or count($args) === 3){
 			if($sender instanceof Player){
 				$target = $sender;
 			}else{
@@ -61,21 +67,24 @@ class SpawnpointCommand extends VanillaCommand{
 			}
 		}
 
-		$level = $target->getLevel();
-
-		if(count($args) === 4){
-			if($level !== null){
-				$x = (int) $this->getRelativeDouble($sender->x, $sender, $args[1]);
-				$y = (int) $this->getRelativeDouble($sender->y, $sender, $args[2], 0, 128);
-				$z = (int) $this->getRelativeDouble($sender->z, $sender, $args[3]);
-				$target->setSpawn(new Position($x, $y, $z, $level));
-				Command::broadcastCommandMessage($sender, "Set ".$target->getName()."'s spawnpoint to ".$x.", ".$y.", ".$z);
-				return true;
-			}
-		}elseif(count($args) <= 1){
+		if(count($args) < 3){
 			$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 			$target->setSpawn($pos);
 			Command::broadcastCommandMessage($sender, "Set ".$target->getName()."'s spawnpoint to ".$pos->x.", ".$pos->y.", ".$pos->z);
+			return true;
+		}elseif($target->getLevel() !== null){
+			$pos = count($args) === 4 ? 2:1;
+			if($sender instanceof Player){
+				$x = $this->getRelativeDouble($sender->x, $sender, $args[$pos++]);
+				$y = $this->getRelativeDouble($sender->y, $sender, $args[$pos++], 0, 128);
+				$z = $this->getRelativeDouble($sender->z, $sender, $args[$pos]);
+			}else{
+				$x = $this->getDouble($sender, $args[$pos++]);
+				$y = $this->getDouble($sender, $args[$pos++], 0, 128);
+				$z = $this->getDouble($sender, $args[$pos]);
+			}
+			$target->teleport(new Vector3($x, $y, $z));
+			Command::broadcastCommandMessage($sender, "Teleported ".$target->getName()." to ".round($x, 2).", ".round($y, 2).", ".round($z, 2));
 			return true;
 		}
 
