@@ -109,8 +109,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$this->loader = $loader;
 			$this->server = $server;
 			$this->description = $description;
-			$this->dataFolder = $dataFolder;
-			$this->file = $file;
+			$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
+			$this->file = rtrim($file, "\\/") . "/";
 			$this->configFile = $this->dataFolder . "config.yml";
 		}
 	}
@@ -182,7 +182,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$out = $this->file . $filename;
+		$out = $this->dataFolder . $filename;
 		if(!file_exists($this->dataFolder)){
 			@mkdir($this->dataFolder, 0755, true);
 		}
