@@ -25,11 +25,20 @@
  */
 namespace pocketmine\network\rcon;
 
+use pocketmine\command\RemoteConsoleCommandSender;
+use pocketmine\scheduler\CallbackTask;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 
 class RCON{
-	private $socket, $password, $workers, $threads, $clientsPerThread;
+	private $socket;
+	private $password;
+	/** @var RCONInstance[] */
+	private $workers;
+	private $threads;
+	private $clientsPerThread;
+	private $rconSender;
 
 	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
 		$this->workers = array();
@@ -49,18 +58,18 @@ class RCON{
 			return;
 		}
 		@socket_set_block($this->socket);
+
 		for($n = 0; $n < $this->threads; ++$n){
 			$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 		}
 		@socket_getsockname($this->socket, $addr, $port);
 		console("[INFO] RCON running on $addr:$port");
-		Server::getInstance()->schedule(2, array($this, "check"), array(), true);
+		Server::getInstance()->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "check")), 3);
 	}
 
 	public function stop(){
 		for($n = 0; $n < $this->threads; ++$n){
 			$this->workers[$n]->close();
-			$this->workers[$n]->join();
 			usleep(50000);
 			$this->workers[$n]->kill();
 		}
@@ -77,7 +86,8 @@ class RCON{
 					console($this->workers[$n]->response);
 					$this->workers[$n]->notify();
 				}else{
-					$this->workers[$n]->response = Server::getInstance()->api->console->run($this->workers[$n]->cmd, "rcon");
+					Server::getInstance()->dispatchCommand($response = new RemoteConsoleCommandSender(), $this->workers[$n]->cmd);
+					$this->workers[$n]->response = TextFormat::clean($response->getMessage());
 					$this->workers[$n]->notify();
 				}
 			}

@@ -60,6 +60,7 @@ use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryPacket;
 use pocketmine\network\raknet\Info as RakNetInfo;
 use pocketmine\network\raknet\Packet as RakNetPacket;
+use pocketmine\network\rcon\RCON;
 use pocketmine\network\ThreadedHandler;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
@@ -1360,9 +1361,16 @@ class Server{
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
 	public function start(){
+
+		if($this->getConfigBoolean("enable-rcon", false) === true){
+			$this->rcon = new RCON($this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
+		}
+
 		if($this->getConfigBoolean("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
 		}
+
+
 
 		if($this->getConfigBoolean("upnp-forwarding", false) == true){
 			console("[INFO] [UPnP] Trying to port forward...");

@@ -22,6 +22,22 @@
 namespace pocketmine\command;
 
 
-interface RemoteConsoleCommandSender extends CommandSender{
+class RemoteConsoleCommandSender extends ConsoleCommandSender{
+
+	/** @var string */
+	private $messages = "";
+
+	public function sendMessage($message){
+		$this->messages .= trim($message, "\r\n")."\n";
+	}
+
+	public function getMessage(){
+		return $this->messages;
+	}
+
+	public function getName(){
+		return "Rcon";
+	}
+
 
 }

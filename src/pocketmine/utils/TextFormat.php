@@ -222,28 +222,28 @@ class TextFormat{
 
 				//Colors
 				case TextFormat::BLACK:
-					$newString .= "\x1b[30m";
+					$newString .= "\x1b[30;0m";
 					break;
 				case TextFormat::DARK_BLUE:
-					$newString .= "\x1b[34m";
+					$newString .= "\x1b[34;0m";
 					break;
 				case TextFormat::DARK_GREEN:
-					$newString .= "\x1b[32m";
+					$newString .= "\x1b[32;0m";
 					break;
 				case TextFormat::DARK_AQUA:
-					$newString .= "\x1b[36m";
+					$newString .= "\x1b[36;0m";
 					break;
 				case TextFormat::DARK_RED:
-					$newString .= "\x1b[31m";
+					$newString .= "\x1b[31;0m";
 					break;
 				case TextFormat::DARK_PURPLE:
-					$newString .= "\x1b[35m";
+					$newString .= "\x1b[35;0m";
 					break;
 				case TextFormat::GOLD:
-					$newString .= "\x1b[33m";
+					$newString .= "\x1b[33;0m";
 					break;
 				case TextFormat::GRAY:
-					$newString .= "\x1b[37m";
+					$newString .= "\x1b[37;0m";
 					break;
 				case TextFormat::DARK_GRAY:
 					$newString .= "\x1b[30;1m";
