@@ -28,7 +28,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
-
+	protected static $WORKERS = 3;
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */
@@ -39,6 +39,11 @@ class ServerScheduler{
 	 */
 	protected $tasks = array();
 
+	/** @var \Pool */
+	protected $asyncPool;
+
+	protected $asyncTasks = 0;
+
 	/** @var int */
 	private $ids = 1;
 
@@ -47,6 +52,7 @@ class ServerScheduler{
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
+		$this->asyncPool = new \Pool(self::$WORKERS, "Worker");
 	}
 
 	/**
@@ -56,6 +62,19 @@ class ServerScheduler{
 	 */
 	public function scheduleTask(Task $task){
 		return $this->addTask($task, -1, -1);
+	}
+
+	/**
+	 * Submits a asynchronous task to the Pool
+	 * If the AsyncTask sets a result, you have to get it so it can be deleted
+	 *
+	 * @param AsyncTask $task
+	 *
+	 * @return void
+	 */
+	public function scheduleAsyncTask(AsyncTask $task){
+		$this->asyncPool->submit($task);
+		++$this->asyncTasks;
 	}
 
 	/**
@@ -116,6 +135,8 @@ class ServerScheduler{
 			$task->cancel();
 		}
 		$this->tasks = array();
+		$this->asyncPool->shutdown();
+		$this->asyncTasks = 0;
 	}
 
 	/**
@@ -181,6 +202,16 @@ class ServerScheduler{
 				$task->remove();
 				unset($this->tasks[$task->getTaskId()]);
 			}
+		}
+
+		if($this->asyncTasks > 0){ //Garbage collector
+			$this->asyncPool->collect(function(AsyncTask $task){
+				if($task->isCompleted() or ($task->isFinished() and !$task->hasResult())){
+					--$this->asyncTasks;
+					return true;
+				}
+				return false;
+			});
 		}
 	}
 

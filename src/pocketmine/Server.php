@@ -71,6 +71,7 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\pmf\LevelFormat;
 use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
+use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\scheduler\TickScheduler;
 use pocketmine\tile\Sign;
@@ -126,6 +127,9 @@ class Server{
 	/** @var int */
 	private $maxPlayers;
 
+	/** @var RCON */
+	private $rcon;
+
 	/**
 	 * Counts the ticks since the server start
 	 *
@@ -143,6 +147,8 @@ class Server{
 	private $filePath;
 	private $dataPath;
 	private $pluginPath;
+
+	private $lastSendUsage = null;
 
 	/** @var QueryHandler */
 	private $queryHandler;
@@ -1249,14 +1255,7 @@ class Server{
 
 
 		$this->properties->save();
-		//TODO
-		/*if($this->getProperty("send-usage", true) !== false){
-			$this->server->schedule(6000, array($this, "sendUsage"), array(), true); //Send the info after 5 minutes have passed
-			$this->sendUsage();
-		}
-		if(!defined("NO_THREADS") and $this->getProperty("enable-rcon") === true){
-			$this->rcon = new RCON($this->getProperty("rcon.password", ""), $this->getProperty("rcon.port", $this->getProperty("server-port")), ($ip = $this->getProperty("server-ip")) != "" ? $ip : "0.0.0.0", $this->getProperty("rcon.threads", 1), $this->getProperty("rcon.clients-per-thread", 50));
-		}*/
+
 		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), 20 * 45, 20 * 45);
 		if($this->getConfigBoolean("auto-save", true) === true){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), 18000, 18000);
@@ -1371,6 +1370,11 @@ class Server{
 		}
 
 
+		if($this->getConfigBoolean("send-usage", true) !== false){
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "sendUsage")), 6000, 6000);
+			$this->sendUsage();
+		}
+
 
 		if($this->getConfigBoolean("upnp-forwarding", false) == true){
 			console("[INFO] [UPnP] Trying to port forward...");
@@ -1389,12 +1393,21 @@ class Server{
 		}
 		*/
 		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
-		//$this->trigger("server.start", microtime(true));
+
 		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
 			$this->tickProcessorWindows();
 		}else{
 			$this->tickProcessor();
+		}
+
+		if($this->rcon instanceof RCON){
+			$this->rcon->stop();
+		}
+
+		if($this->getConfigBoolean("upnp-forwarding", false) === true){
+			console("[INFO] [UPnP] Removing port forward...");
+			UPnP::RemovePortForward($this->getPort());
 		}
 
 		$this->pluginManager->disablePlugins();
@@ -1570,31 +1583,33 @@ class Server{
 	}
 
 	public function sendUsage(){
-		//TODO
-		/*console("[DEBUG] Sending usage data...", true, true, 2);
+		if($this->lastSendUsage instanceof SendUsageTask){
+			if(!$this->lastSendUsage->isFinished()){ //do not call multiple times
+				return;
+			}
+		}
 		$plist = "";
-		foreach(Server::getInstance()->getPluginManager()->getPlugins() as $p){
+		foreach($this->getPluginManager()->getPlugins() as $p){
 			$d = $p->getDescription();
 			$plist .= str_replace(array(";", ":"), "", $d->getName()) . ":" . str_replace(array(";", ":"), "", $d->getVersion()) . ";";
 		}
 
-		$this->asyncOperation(ASYNC_CURL_POST, array(
-			"url" => "http://stats.pocketmine.net/usage.php",
-			"data" => array(
-				"serverid" => $this->server->serverID,
-				"port" => $this->server->port,
-				"os" => Utils::getOS(),
-				"memory_total" => $this->getProperty("memory-limit"),
-				"memory_usage" => memory_get_usage(true),
-				"php_version" => PHP_VERSION,
-				"version" => VERSION,
-				"mc_version" => MINECRAFT_VERSION,
-				"protocol" => Info::CURRENT_PROTOCOL,
-				"online" => count($this->players),
-				"max" => $this->server->maxClients,
-				"plugins" => $plist,
-			),
-		), null);*/
+		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", array(
+			"serverid" => Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() .":". $this->getPort()), 0, 8)),
+			"port" => $this->getPort(),
+			"os" => Utils::getOS(),
+			"memory_total" => $this->getConfigString("memory-limit"),
+			"memory_usage" => memory_get_usage(),
+			"php_version" => \pocketmine\PHP_VERSION,
+			"version" => \pocketmine\VERSION,
+			"mc_version" => \pocketmine\MINECRAFT_VERSION,
+			"protocol" => network\protocol\Info::CURRENT_PROTOCOL,
+			"online" => count($this->players),
+			"max" => $this->getMaxPlayers(),
+			"plugins" => $plist,
+		));
+
+		$this->scheduler->scheduleAsyncTask($this->lastSendUsage);
 	}
 
 	public function titleTick(){
