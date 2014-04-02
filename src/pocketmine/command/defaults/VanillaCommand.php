@@ -45,14 +45,14 @@ abstract class VanillaCommand extends Command{
 		return $i;
 	}
 
-	protected function getRelativeDouble($original, CommandSender $sender, $input){
+	protected function getRelativeDouble($original, CommandSender $sender, $input, $min = self::MIN_COORD, $max = self::MAX_COORD){
 		if($input{0} === "~"){
 			$value = $this->getDouble($sender, substr($input, 1));
 
 			return $original + $value;
 		}
 
-		return $this->getDouble($input);
+		return $this->getDouble($sender, $input, $min, $max);
 	}
 
 	protected function getDouble(CommandSender $sender, $value, $min = self::MIN_COORD, $max = self::MAX_COORD){
