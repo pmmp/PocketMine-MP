@@ -41,6 +41,7 @@ use pocketmine\command\defaults\StopCommand;
 use pocketmine\command\defaults\TellCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
+use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\Server;
 
 class SimpleCommandMap implements CommandMap{
@@ -78,6 +79,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new KickCommand("kick"));
 		$this->register("pocketmine", new OpCommand("op"));
 		$this->register("pocketmine", new DeopCommand("deop"));
+		$this->register("pocketmine", new WhitelistCommand("whitelist"));
 	}
 
 

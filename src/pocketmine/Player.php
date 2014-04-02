@@ -1282,17 +1282,14 @@ class Player extends Human implements CommandSender, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
-
 					return;
 				}
 
 				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
 					$this->close($this->username . " has left the game", "Server is white-listed");
-
 					return;
 				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
 					$this->close($this->username . " has left the game", "You are banned");
-
 					return;
 				}
 
@@ -1303,15 +1300,11 @@ class Player extends Human implements CommandSender, IPlayer{
 					$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 				}
 
-				//TODO
-				/*$u = $this->server->matchPlayer($this->username);
-				if(count($u) > 0){
-					foreach($u as $p){
-						if($p !== $this){
-							$p->close($p->getDisplayName() . " has left the game", "logged in from another location");
-						}
+				foreach($this->server->getOnlinePlayers() as $p){
+					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
+						$p->close($p->getName() . " has left the game", "logged in from another location");
 					}
-				}*/
+				}
 
 				$nbt = $this->server->getOfflinePlayerData($this->username);
 				if(!isset($nbt->NameTag)){
@@ -2279,6 +2272,9 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->loggedIn === true){
 					parent::close();
 					$this->save();
+					if($this->namedtag instanceof Compound){
+						$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
+					}
 				}
 			}
 
@@ -2296,9 +2292,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			$this->receiveQueue = array();
 			$this->resendQueue = array();
 			$this->ackQueue = array();
-			if($this->username != "" and ($this->namedtag instanceof Compound)){
-				$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
-			}
+
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
 			}

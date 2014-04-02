@@ -32,6 +32,7 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\generator\Generator;
+use pocketmine\math\Vector2;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
@@ -382,7 +383,7 @@ class Level{
 	 * @return bool
 	 */
 	public function isLoaded(){
-		return $this->level instanceof LevelFormat;
+		return isset($this->level) and $this->level instanceof LevelFormat;
 	}
 
 	/**
@@ -594,10 +595,18 @@ class Level{
 		}
 
 		//TODO: Adventure mode checks
+
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
 				$ev->setCancelled();
+			}
+			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
+				$t = new Vector2($target->x, $target->z);
+				$s = new Vector2($this->getSpawn()->x, $this->getSpawn()->z);
+				if($t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
+					$ev->setCancelled();
+				}
 			}
 			$this->server->getPluginManager()->callEvent($ev);
 			if($ev->isCancelled()){
@@ -622,7 +631,7 @@ class Level{
 	 * Uses a item on a position and face, placing it or activating the block
 	 *
 	 * @param Vector3 $vector
-	 * @param Item    &$item
+	 * @param Item    $item
 	 * @param int     $face
 	 * @param float   $fx     default 0.0
 	 * @param float   $fy     default 0.0
@@ -644,7 +653,15 @@ class Level{
 		}
 
 		if($player instanceof Player){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerInteractEvent($player, $item, $target, $face));
+			$ev = new PlayerInteractEvent($player, $item, $target, $face);
+			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
+				$t = new Vector2($target->x, $target->z);
+				$s = new Vector2($this->getSpawn()->x, $this->getSpawn()->z);
+				if($t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
+					$ev->setCancelled();
+				}
+			}
+			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
 				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
 			}
@@ -682,7 +699,15 @@ class Level{
 
 
 		if($player instanceof Player){
-			$this->server->getPluginManager()->callEvent($ev = new BlockPlaceEvent($player, $hand, $block, $target, $item));
+			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
+			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
+				$t = new Vector2($target->x, $target->z);
+				$s = new Vector2($this->getSpawn()->x, $this->getSpawn()->z);
+				if($t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
+					$ev->setCancelled();
+				}
+			}
+			$this->server->getPluginManager()->callEvent($ev);
 			if($ev->isCancelled()){
 				return false;
 			}
