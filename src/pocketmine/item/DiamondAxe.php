@@ -22,9 +22,9 @@
 namespace pocketmine\item;
 
 
-class IronPickaxe extends Tool{
+class DiamondAxe extends Tool{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::IRON_PICKAXE, 0, $count, "Iron Pickaxe");
+		parent::__construct(self::DIAMOND_AXE, 0, $count, "Diamond Axe");
 	}
 
 }

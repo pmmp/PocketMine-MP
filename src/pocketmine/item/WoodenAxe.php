@@ -22,7 +22,7 @@
 namespace pocketmine\item;
 
 
-class WoodenAxe extends Item{
+class WoodenAxe extends Tool{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::WOODEN_AXE, 0, $count, "Wooden Axe");
 	}

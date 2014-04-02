@@ -27,11 +27,10 @@ use pocketmine\block\Solid;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class FlintSteel extends Item{
+class FlintSteel extends Tool{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::FLINT_STEEL, $meta, $count, "Flint and Steel");
 		$this->isActivable = true;
-		$this->maxStackSize = 1;
 	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
