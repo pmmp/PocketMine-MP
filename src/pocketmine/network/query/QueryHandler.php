@@ -25,7 +25,6 @@
  */
 namespace pocketmine\network\query;
 
-use pocketmine\level\Level;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
 
@@ -73,7 +72,7 @@ class QueryHandler{
 			"version" => $this->server->getVersion(),
 			"server_engine" => $this->server->getName() . " " . $this->server->getPocketMineVersion(),
 			"plugins" => $plist,
-			"map" => Level::getDefault()->getName(),
+			"map" => $this->server->getDefaultLevel()->getName(),
 			"numplayers" => count($this->server->getOnlinePlayers()),
 			"maxplayers" => $this->server->getMaxPlayers(),
 			"whitelist" => $this->server->hasWhitelist() === true ? "on" : "off",
@@ -131,7 +130,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;
 				}else{
-					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . Level::getDefault()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
+					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->getDefaultLevel()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
 				$pk->encode();
 				$this->server->sendPacket($pk);

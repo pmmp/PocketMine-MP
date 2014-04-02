@@ -23,18 +23,24 @@ namespace pocketmine\level;
 
 use pocketmine\level\generator\Generator;
 use pocketmine\pmf\LevelFormat;
-use pocketmine\utils\Config;
+use pocketmine\Server;
 use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
 
 class WorldGenerator{
-	private $seed, $level, $path, $random, $generator, $height;
+	private $seed, $level, $path, $random, $generator, $server;
 
-	public function __construct(Generator $generator, $name, $seed = false, $height = 8){
-		$this->seed = $seed !== false ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
+	/**
+	 * @param Server    $server
+	 * @param Generator $generator
+	 * @param string    $name
+	 * @param int       $seed
+	 */
+	public function __construct(Server $server, Generator $generator, $name, $seed = null){
+		$this->seed = $seed !== null ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
 		$this->random = new Random($this->seed);
-		$this->height = (int) $height;
-		$this->path = \pocketmine\DATA . "worlds/" . $name . "/";
+		$this->server = $server;
+		$this->path = $this->server->getDataPath() . "worlds/" . $name . "/";
 		$this->generator = $generator;
 		$level = new LevelFormat($this->path . "level.pmf", array(
 			"name" => $name,
@@ -43,13 +49,12 @@ class WorldGenerator{
 			"spawnX" => 128,
 			"spawnY" => 128,
 			"spawnZ" => 128,
-			"height" => $this->height,
+			"height" => 8,
 			"generator" => $this->generator->getName(),
 			"generatorSettings" => $this->generator->getSettings(),
 			"extra" => ""
 		));
-		$blockUpdates = new Config($this->path . "bupdates.yml", Config::YAML);
-		$this->level = new Level($level, $name);
+		$this->level = new Level($this->server, $level, $name);
 	}
 
 	public function generate(){

@@ -276,7 +276,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			$this->server->removeOp($this->getName());
 		}
 
-		$this->perm->recalculatePermissions();
+		$this->recalculatePermissions();
 	}
 
 	/**
@@ -316,7 +316,17 @@ class Player extends Human implements CommandSender, IPlayer{
 	}
 
 	public function recalculatePermissions(){
+		$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+		$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+
 		$this->perm->recalculatePermissions();
+
+		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
+			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+		}
+		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
+			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+		}
 	}
 
 	/**
@@ -344,10 +354,10 @@ class Player extends Human implements CommandSender, IPlayer{
 		$this->CID = $ip . ":" . $port;
 		$this->ip = $ip;
 		$this->port = $port;
-		$this->spawnPosition = Level::getDefault()->getSafeSpawn();
+		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
 		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->getGamemode();
-		$this->level = Level::getDefault();
+		$this->level = $this->server->getDefaultLevel();
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
@@ -1285,8 +1295,13 @@ class Player extends Human implements CommandSender, IPlayer{
 
 					return;
 				}
-				$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-				$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+
+				if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
+					$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+				}
+				if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
+					$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+				}
 
 				//TODO
 				/*$u = $this->server->matchPlayer($this->username);
@@ -1305,8 +1320,8 @@ class Player extends Human implements CommandSender, IPlayer{
 					$nbt["NameTag"] = $this->username;
 				}
 				$this->gamemode = $nbt["playerGameType"] & 0x03;
-				if(($this->level = Level::get($nbt["Level"])) === false){
-					$this->level = Level::getDefault();
+				if(($this->level = $this->server->getLevel($nbt["Level"])) === null){
+					$this->level = $this->server->getDefaultLevel();
 					$nbt["Level"] = $this->level->getName();
 					$nbt["Pos"][0] = $this->level->getSpawn()->x;
 					$nbt["Pos"][1] = $this->level->getSpawn()->y;
@@ -1358,7 +1373,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$this->dataPacket($pk);
 
 
-				if(($level = Level::get($this->namedtag["SpawnLevel"])) !== false){
+				if(($level = $this->server->getLevel($this->namedtag["SpawnLevel"])) instanceof Level){
 					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 
 					$pk = new SetSpawnPositionPacket;
@@ -2287,7 +2302,6 @@ class Player extends Human implements CommandSender, IPlayer{
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
 			}
-			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);

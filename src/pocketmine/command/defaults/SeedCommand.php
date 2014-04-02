@@ -22,8 +22,8 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\level\Level;
 use pocketmine\Player;
+use pocketmine\Server;
 
 class SeedCommand extends VanillaCommand{
 
@@ -44,7 +44,7 @@ class SeedCommand extends VanillaCommand{
 		if($sender instanceof Player){
 			$seed = $sender->getLevel()->getSeed();
 		}else{
-			$seed = Level::getDefault()->getSeed();
+			$seed = Server::getInstance()->getDefaultLevel()->getSeed();
 		}
 		$sender->sendMessage("Seed: " . $seed);
 

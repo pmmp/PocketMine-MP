@@ -26,6 +26,8 @@
 namespace pocketmine;
 
 use pocketmine\block\Block;
+use pocketmine\block\Chest;
+use pocketmine\block\Furnace;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -37,8 +39,12 @@ use pocketmine\event\server\PacketReceiveEvent;
 use pocketmine\event\server\PacketSendEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\item\Item;
+use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
+use pocketmine\level\LevelImport;
+use pocketmine\level\WorldGenerator;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -61,16 +67,21 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
+use pocketmine\pmf\LevelFormat;
 use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\scheduler\TickScheduler;
+use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 
+/**
+ * The class that manages everything
+ */
 class Server{
 	const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
@@ -140,6 +151,12 @@ class Server{
 
 	/** @var Player[] */
 	private $players = array();
+
+	/** @var Level[] */
+	private $levels = array();
+
+	/** @var Level */
+	private $levelDefault = null;
 
 	/**
 	 * @return string
@@ -477,7 +494,7 @@ class Server{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
 		if(!file_exists($path . "$name.dat")){
-			$spawn = Level::getDefault()->getSafeSpawn();
+			$spawn = $this->getDefaultLevel()->getSafeSpawn();
 			$nbt = new Compound(false, array(
 				new Long("firstPlayed", floor(microtime(true) * 1000)),
 				new Long("lastPlayed", floor(microtime(true) * 1000)),
@@ -486,8 +503,8 @@ class Server{
 					new Double(1, $spawn->y),
 					new Double(2, $spawn->z)
 				)),
-				new String("Level", Level::getDefault()->getName()),
-				new String("SpawnLevel", Level::getDefault()->getName()),
+				new String("Level", $this->getDefaultLevel()->getName()),
+				new String("SpawnLevel", $this->getDefaultLevel()->getName()),
 				new Int("SpawnX", (int) $spawn->x),
 				new Int("SpawnY", (int) $spawn->y),
 				new Int("SpawnZ", (int) $spawn->z),
@@ -657,6 +674,257 @@ class Server{
 		if($player->isOnline() === false){
 			unset($this->players[$player->getAddress() . ":" . $player->getPort()]);
 		}
+	}
+
+	public function saveLevels(){
+		foreach($this->getLevels() as $level){
+			$level->save();
+		}
+	}
+
+	/**
+	 * @return Level[]
+	 */
+	public function getLevels(){
+		return $this->levels;
+	}
+
+	/**
+	 * @return Level
+	 */
+	public function getDefaultLevel(){
+		return $this->levelDefault;
+	}
+
+	/**
+	 * Sets the default level to a different level
+	 * This won't change the level-name property,
+	 * it only affects the server on runtime
+	 *
+	 * @param Level $level
+	 */
+	public function setDefaultLevel($level){
+		if($level === null or ($this->isLevelLoaded($level->getName()) and $level !== $this->levelDefault)){
+			$this->levelDefault = $level;
+		}
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function isLevelLoaded($name){
+		return isset($this->levels[$name]);
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return Level
+	 */
+	public function getLevel($name){
+		if(isset($this->levels[$name])){
+			return $this->levels[$name];
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param Level $level
+	 * @param bool  $forceUnload
+	 */
+	public function unloadLevel(Level $level, $forceUnload = false){
+		if((!$level->isLoaded() or $level->unload($forceUnload) === true) and $this->isLevelLoaded($level->getName())){
+			unset($this->levels[$level->getName()]);
+		}
+	}
+
+	/**
+	 * Loads a level from the data directory
+	 *
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function loadLevel($name){
+		if(trim($name) === ""){
+			trigger_error("Invalid empty level name", E_USER_WARNING);
+
+			return false;
+		}
+		if($this->isLevelLoaded($name)){
+			return true;
+		}elseif(!$this->isLevelGenerated($name)){
+			console("[NOTICE] Level \"" . $name . "\" not found");
+		}
+
+		$path = $this->getDataPath() . "worlds/" . $name . "/";
+		console("[INFO] Preparing level \"" . $name . "\"");
+		$level = new LevelFormat($path . "level.pmf");
+		if(!$level->isLoaded){
+			console("[ERROR] Could not load level \"" . $name . "\"");
+
+			return false;
+		}
+		//$entities = new Config($path."entities.yml", Config::YAML);
+		if(file_exists($path . "tileEntities.yml")){
+			@rename($path . "tileEntities.yml", $path . "tiles.yml");
+		}
+
+		$level = new Level($this, $level, $name);
+		$this->levels[$level->getName()] = $level;
+		/*foreach($entities->getAll() as $entity){
+			if(!isset($entity["id"])){
+				break;
+			}
+			if($entity["id"] === 64){ //Item Drop
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_ITEM, $entity["Item"]["id"], array(
+					"meta" => $entity["Item"]["Damage"],
+					"stack" => $entity["Item"]["Count"],
+					"x" => $entity["Pos"][0],
+					"y" => $entity["Pos"][1],
+					"z" => $entity["Pos"][2],
+					"yaw" => $entity["Rotation"][0],
+					"pitch" => $entity["Rotation"][1],
+				));
+			}elseif($entity["id"] === FALLING_SAND){
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_FALLING, $entity["id"], $entity);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setHealth($entity["Health"]);
+			}elseif($entity["id"] === OBJECT_PAINTING or $entity["id"] === OBJECT_ARROW){ //Painting
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_OBJECT, $entity["id"], $entity);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setHealth(1);
+			}else{
+				$e = $this->server->api->entity->add($this->levels[$name], ENTITY_MOB, $entity["id"], $entity);
+				$e->setPosition(new Vector3($entity["Pos"][0], $entity["Pos"][1], $entity["Pos"][2]), $entity["Rotation"][0], $entity["Rotation"][1]);
+				$e->setHealth($entity["Health"]);
+			}
+		}*/
+
+		if(file_exists($path . "tiles.yml")){
+			$tiles = new Config($path . "tiles.yml", Config::YAML);
+			foreach($tiles->getAll() as $tile){
+				if(!isset($tile["id"])){
+					continue;
+				}
+				$level->loadChunk($tile["x"] >> 4, $tile["z"] >> 4);
+
+				$nbt = new Compound(false, array());
+				foreach($tile as $index => $data){
+					switch($index){
+						case "Items":
+							$tag = new Enum("Items", array());
+							$tag->setTagType(NBT::TAG_Compound);
+							foreach($data as $slot => $fields){
+								$tag[(int) $slot] = new Compound(false, array(
+									"Count" => new Byte("Count", $fields["Count"]),
+									"Slot" => new Short("Slot", $fields["Slot"]),
+									"Damage" => new Short("Damage", $fields["Damage"]),
+									"id" => new String("id", $fields["id"])
+								));
+							}
+							$nbt["Items"] = $tag;
+							break;
+
+						case "id":
+						case "Text1":
+						case "Text2":
+						case "Text3":
+						case "Text4":
+							$nbt[$index] = new String($index, $data);
+							break;
+
+						case "x":
+						case "y":
+						case "z":
+						case "pairx":
+						case "pairz":
+							$nbt[$index] = new Int($index, $data);
+							break;
+
+						case "BurnTime":
+						case "CookTime":
+						case "MaxTime":
+							$nbt[$index] = new Short($index, $data);
+							break;
+					}
+				}
+				switch($tile["id"]){
+					case Tile::FURNACE:
+						new Furnace($level, $nbt);
+						break;
+					case Tile::CHEST:
+						new Chest($level, $nbt);
+						break;
+					case Tile::SIGN:
+						new Sign($level, $nbt);
+						break;
+				}
+			}
+			unlink($path . "tiles.yml");
+			$level->save(true, true);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Generates a new level if it does not exists
+	 *
+	 * @param string $name
+	 * @param int    $seed
+	 * @param string $generator Class name that extends pocketmine\level\generator\Generator
+	 * @param array  $options
+	 *
+	 * @return bool
+	 */
+	public function generateLevel($name, $seed = null, $generator = null, array $options = array()){
+		if(trim($name) === "" or $this->isLevelGenerated($name)){
+			return false;
+		}
+
+		if($generator !== false and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
+			$generator = new $generator($options);
+		}else{
+			if(strtoupper($this->getLevelType()) == "FLAT"){
+				$generator = new Flat($options);
+				$options["preset"] = $this->getConfigString("generator-settings", "");
+			}else{
+				$generator = new Normal($options);
+			}
+		}
+		$gen = new WorldGenerator($this, $generator, $name, $seed === null ? Utils::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
+		$gen->generate();
+		$gen->close();
+
+		return true;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function isLevelGenerated($name){
+		if(trim($name) === ""){
+			return false;
+		}
+		$path = $this->getDataPath() . "worlds/" . $name . "/";
+		if($this->getLevel($name) === false and !file_exists($path . "level.pmf")){
+			if(file_exists($path)){
+				$level = new LevelImport($path);
+				if($level->import() === false){ //Try importing a world
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -968,7 +1236,22 @@ class Server{
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
-		Level::init();
+
+		if($this->getDefaultLevel() === null){
+			$default = $this->getConfigString("level-name", "world");
+			if(trim($default) == ""){
+				trigger_error("level-name cannot be null", E_USER_WARNING);
+				$default = "world";
+				$this->setConfigString("level-name", "world");
+			}
+			if($this->loadLevel($default) === false){
+				$this->generateLevel($default, $this->getConfigInt("level-seed", time()));
+				$this->loadLevel($default);
+			}
+
+			$this->setDefaultLevel($this->getLevel($default));
+		}
+
 
 		$this->properties->save();
 		//TODO
@@ -1118,8 +1401,8 @@ class Server{
 			$player->kick("server stop");
 		}
 
-		foreach(Level::getAll() as $level){
-			$level->unload(true);
+		foreach($this->getLevels() as $level){
+			$this->unloadLevel($level, true);
 		}
 
 		HandlerList::unregisterAll();
@@ -1268,14 +1551,14 @@ class Server{
 		//TODO: Add level blocks
 
 		//Do level ticks
-		foreach(Level::getAll() as $level){
+		foreach($this->getLevels() as $level){
 			$level->doTick();
 		}
 	}
 
 	public function doAutoSave(){
 		$this->broadcast(TextFormat::GRAY . "Saving...", self::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		Level::saveAll();
+		$this->saveLevels();
 	}
 
 	public function sendUsage(){

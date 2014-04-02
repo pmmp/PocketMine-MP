@@ -27,10 +27,7 @@ namespace pocketmine\utils;
 use pocketmine\item\Item;
 
 /**
- * Class Utils
  * Big collection of functions
- *
- * @package PocketMine\Utils
  */
 class Utils{
 	const BIG_ENDIAN = 0x00;
