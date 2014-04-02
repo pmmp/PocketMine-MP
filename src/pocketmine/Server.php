@@ -759,6 +759,7 @@ class Server{
 			return true;
 		}elseif(!$this->isLevelGenerated($name)){
 			console("[NOTICE] Level \"" . $name . "\" not found");
+			return false;
 		}
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
@@ -914,7 +915,7 @@ class Server{
 			return false;
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		if($this->getLevel($name) === false and !file_exists($path . "level.pmf")){
+		if(!($this->getLevel($name) instanceof Level) and !file_exists($path . "level.pmf")){
 			if(file_exists($path)){
 				$level = new LevelImport($path);
 				if($level->import() === false){ //Try importing a world
