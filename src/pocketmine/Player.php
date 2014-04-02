@@ -2622,3 +2622,55 @@ class Player extends Human implements CommandSender, IPlayer{
 
 
 }
+
+
+/*
+ * TODO death reasons
+if(is_numeric($data["cause"])){
+	$e = Entity::get($data["cause"]);
+	if($e instanceof Entity){
+		switch($e->class){
+			case ENTITY_PLAYER:
+				$message = " was killed by " . $e->name;
+				break;
+			default:
+				$message = " was killed";
+				break;
+		}
+	}
+}else{
+	switch($data["cause"]){
+		case "cactus":
+			$message = " was pricked to death";
+			break;
+		case "lava":
+			$message = " tried to swim in lava";
+			break;
+		case "fire":
+			$message = " went up in flames";
+			break;
+		case "burning":
+			$message = " burned to death";
+			break;
+		case "suffocation":
+			$message = " suffocated in a wall";
+			break;
+		case "water":
+			$message = " drowned";
+			break;
+		case "void":
+			$message = " fell out of the world";
+			break;
+		case "fall":
+			$message = " hit the ground too hard";
+			break;
+		case "explosion":
+			$message = " blew up";
+			break;
+		default:
+			$message = " died";
+			break;
+	}
+}
+Player::broadcastMessage($data["player"]->getName() . $message);
+*/
