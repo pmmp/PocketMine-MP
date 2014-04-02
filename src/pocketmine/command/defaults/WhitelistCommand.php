@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -51,14 +50,17 @@ class WhitelistCommand extends VanillaCommand{
 				case "reload":
 					Server::getInstance()->reloadWhitelist();
 					Command::broadcastCommandMessage($sender, "Reloaded white-list from file");
+
 					return true;
 				case "on":
 					Server::getInstance()->setConfigBool("white-list", true);
 					Command::broadcastCommandMessage($sender, "Turned on white-listing");
+
 					return true;
 				case "off":
 					Server::getInstance()->setConfigBool("white-list", false);
 					Command::broadcastCommandMessage($sender, "Turned off white-listing");
+
 					return true;
 				case "list":
 					$result = "";
@@ -66,6 +68,7 @@ class WhitelistCommand extends VanillaCommand{
 						$result .= $player . ", ";
 					}
 					$sender->sendMessage("White-listed players: " . substr($result, 0, -2));
+
 					return true;
 			}
 		}elseif(count($args) === 2){
@@ -75,24 +78,29 @@ class WhitelistCommand extends VanillaCommand{
 			switch(strtolower($args[0])){
 				case "add":
 					Server::getInstance()->getOfflinePlayer($args[1])->setWhitelisted(true);
-					Command::broadcastCommandMessage($sender, "Added ". $args[1] . " to white-list");
+					Command::broadcastCommandMessage($sender, "Added " . $args[1] . " to white-list");
+
 					return true;
 				case "remove":
 					Server::getInstance()->getOfflinePlayer($args[1])->setWhitelisted(false);
-					Command::broadcastCommandMessage($sender, "Removed ". $args[1] . " from white-list");
+					Command::broadcastCommandMessage($sender, "Removed " . $args[1] . " from white-list");
+
 					return true;
 			}
 		}
 
 		$sender->sendMessage(TextFormat::RED . "Usage:\n" . $this->usageMessage);
+
 		return true;
 	}
 
 	private function badPerm(CommandSender $sender, $perm){
 		if(!$sender->hasPermission("pocketmine.command.whitelist.$perm")){
 			$sender->sendMessage(TextFormat::RED . "You do not have permission to perform this action.");
+
 			return true;
 		}
+
 		return false;
 	}
 }

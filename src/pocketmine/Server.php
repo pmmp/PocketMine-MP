@@ -1523,7 +1523,7 @@ class Server{
 		return 0;
 	}
 
-	private function checkTickUpdates(){
+	private function checkTickUpdates($currentTick){
 		//Update entities that need update
 		if(count(Entity::$needUpdate) > 0){
 			foreach(Entity::$needUpdate as $id => $entity){
@@ -1546,7 +1546,7 @@ class Server{
 
 		//Do level ticks
 		foreach($this->getLevels() as $level){
-			$level->doTick();
+			$level->doTick($currentTick);
 		}
 	}
 
@@ -1606,15 +1606,15 @@ class Server{
 
 			$this->checkConsole();
 			$this->scheduler->mainThreadHeartbeat($this->tickCounter);
-			if(($this->tickCounter & 0b1) === 0){
-				$this->checkTickUpdates();
-				if(($this->tickCounter & 0b1111) === 0){
-					$this->titleTick();
-					if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
-						$this->queryHandler->regenerateInfo();
-					}
+			$this->checkTickUpdates($this->tickCounter);
+
+			if(($this->tickCounter & 0b1111) === 0){
+				$this->titleTick();
+				if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
+					$this->queryHandler->regenerateInfo();
 				}
 			}
+
 			$this->tickScheduler->doTick();
 			$this->inTick = false;
 

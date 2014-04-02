@@ -50,6 +50,7 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\Random;
+use pocketmine\utils\ReversePriorityQueue;
 
 /**
  * Main Level handling class, includes all the methods used on them.
@@ -94,6 +95,9 @@ class Level{
 	/** @var Generator */
 	private $generator;
 
+	/** @var ReversePriorityQueue */
+	private $updateQueue;
+
 	private $autoSave = true;
 
 	/**
@@ -103,6 +107,8 @@ class Level{
 	 */
 	public function __construct(Server $server, LevelFormat $level, $name){
 		$this->server = $server;
+		$this->updateQueue = new ReversePriorityQueue();
+		$this->updateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 		$this->level = $level;
 		$this->level->level = $this;
 		$this->startTime = $this->time = (int) $this->level->getData("time");
@@ -257,14 +263,16 @@ class Level{
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 *
+	 * @param int $currentTick
+	 *
 	 * @return bool
 	 */
-	public function doTick(){
+	public function doTick($currentTick){
 		if(!isset($this->level)){
 			return false;
 		}
 
-		if(($this->server->getTick() % 200) === 0){
+		if(($currentTick % 200) === 0){
 			$this->checkTime();
 		}
 
@@ -307,6 +315,11 @@ class Level{
 			$Z = null;
 
 			//Do chunk updates
+			while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
+				$block = $this->getBlockRaw($this->updateQueue->extract()["data"]);
+				$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
+			}
+
 			foreach($this->usedChunks as $index => $p){
 				LevelFormat::getXZ($index, $X, $Z);
 				for($Y = 0; $Y < 8; ++$Y){
@@ -315,8 +328,7 @@ class Level{
 							$block = $this->getBlockRaw(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
 							if($block instanceof Block){
 								if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
-									//TODO
-									//$this->server->api->block->blockUpdateAround($block);
+									$this->updateAround($block, self::BLOCK_UPDATE_NORMAL);
 								}
 							}
 						}
@@ -446,6 +458,28 @@ class Level{
 
 	/**
 	 * @param Vector3 $pos
+	 * @param int     $type
+	 */
+	public function updateAround(Vector3 $pos, $type = self::BLOCK_UPDATE_NORMAL){
+		$block = $this->getBlockRaw($pos);
+		$block->getSide(0)->onUpdate($type);
+		$block->getSide(1)->onUpdate($type);
+		$block->getSide(2)->onUpdate($type);
+		$block->getSide(3)->onUpdate($type);
+		$block->getSide(4)->onUpdate($type);
+		$block->getSide(5)->onUpdate($type);
+	}
+
+	/**
+	 * @param Vector3 $pos
+	 * @param int     $delay
+	 */
+	public function scheduleUpdate(Vector3 $pos, $delay){
+		$this->updateQueue->insert($pos, (int) $delay);
+	}
+
+	/**
+	 * @param Vector3 $pos
 	 *
 	 * @return Block
 	 */
@@ -559,8 +593,8 @@ class Level{
 			}
 
 			if($update === true){
-				//TODO
-				//$this->server->api->block->blockUpdateAround($pos, self::BLOCK_UPDATE_NORMAL, 1);
+				$this->updateAround($pos, self::BLOCK_UPDATE_NORMAL);
+				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);
 			}
 			if($tiles === true){
 				if(($t = $this->getTile($pos)) instanceof Tile){
@@ -664,10 +698,11 @@ class Level{
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
 				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
+				if($target->isActivable === true and $target->onActivate($item, $player) === true){
+					return true;
+				}
 			}
-		}
-
-		if($target->isActivable === true and $target->onActivate($item, $player) === true){
+		}elseif($target->isActivable === true and $target->onActivate($item, $player) === true){
 			return true;
 		}
 
@@ -711,7 +746,9 @@ class Level{
 			if($ev->isCancelled()){
 				return false;
 			}
-		}elseif($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
+		}
+
+		if($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false){
 			return false;
 		}
 
@@ -1154,18 +1191,8 @@ class Level{
 	 * Sets the seed for the level
 	 *
 	 * @param int $seed
-	 *
-	 * @return bool
 	 */
 	public function setSeed($seed){
-		if(!isset($this->level)){
-			return false;
-		}
 		$this->level->setData("seed", (int) $seed);
-	}
-
-	public function scheduleBlockUpdate(Position $pos, $delay, $type = self::BLOCK_UPDATE_SCHEDULED){
-		//TODO
-		//return $this->server->api->block->scheduleBlockUpdate($pos, $delay, $type);
 	}
 }

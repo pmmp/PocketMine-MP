@@ -29,13 +29,13 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
-use pocketmine\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
 use pocketmine\network\protocol\PlayerEquipmentPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
+use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -173,18 +173,34 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		$this->hotbar[$equipmentSlot] = $inventorySlot;
 		if($equipmentSlot === $this->slot){
 			foreach($this->hasSpawned as $p){
-				$this->sendEquipmentSlot($p);
+				$this->sendCurrentEquipmentSlot($p);
 			}
 		}
+	}
+
+	public function getEquipmentSlot($equipmentSlot){
+		if(isset($this->hotbar[$equipmentSlot])){
+			return $this->hotbar[$equipmentSlot];
+		}
+
+		return -1;
 	}
 
 	public function setCurrentEquipmentSlot($slot){
 		if(isset($this->hotbar[$slot])){
 			$this->slot = (int) $slot;
 			foreach($this->hasSpawned as $p){
-				$this->sendEquipmentSlot($p);
+				$this->sendCurrentEquipmentSlot($p);
 			}
 		}
+	}
+
+	public function getCurrentEquipmentSlot(){
+		return $this->slot;
+	}
+
+	public function getCurrentEquipment(){
+		return $this->hotbar[$this->slot];
 	}
 
 	public function sendCurrentEquipmentSlot(Player $player){

@@ -19,9 +19,9 @@
  *
 */
 
-namespace pocketmine\scheduler;
+namespace pocketmine\utils;
 
-class TaskQueue extends \SplPriorityQueue{
+class ReversePriorityQueue extends \SplPriorityQueue{
 
 	public function compare($priority1, $priority2){
 		return (int) -($priority1 - $priority2);

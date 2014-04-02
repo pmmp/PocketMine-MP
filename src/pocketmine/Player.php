@@ -21,6 +21,7 @@
 
 namespace pocketmine;
 
+use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Human;
 use pocketmine\Event;
@@ -1282,14 +1283,17 @@ class Player extends Human implements CommandSender, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev = new event\player\PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
+
 					return;
 				}
 
 				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
 					$this->close($this->username . " has left the game", "Server is white-listed");
+
 					return;
 				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
 					$this->close($this->username . " has left the game", "You are banned");
+
 					return;
 				}
 
@@ -1475,7 +1479,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 				if(($this->gamemode & 0x01) === 1){ //Creative mode match
 					$packet->slot = false;
-					foreach(BlockAPI::$creative as $i => $d){
+					foreach(Block::$creative as $i => $d){
 						if($d[0] === $packet->item and $d[1] === $packet->meta){
 							$packet->slot = $i;
 							$item = Item::get($d[0], $d[1], 1);
@@ -1485,7 +1489,6 @@ class Player extends Human implements CommandSender, IPlayer{
 				}else{
 					$item = $this->getSlot($packet->slot);
 				}
-
 
 				if($packet->slot === false){
 					$this->sendInventorySlot($packet->slot);
@@ -1502,6 +1505,7 @@ class Player extends Human implements CommandSender, IPlayer{
 								array_unshift($this->hotbar, $this->slot);
 							}
 						}
+
 					}
 				}
 
@@ -1548,19 +1552,19 @@ class Player extends Human implements CommandSender, IPlayer{
 
 					if($blockVector->distance($this) > 10){
 
-					}elseif(($this->gamemode & 0x01) === 1 and isset(BlockAPI::$creative[$this->slot]) and $packet->item === BlockAPI::$creative[$this->slot][0] and $packet->meta === BlockAPI::$creative[$this->slot][1]){
-						$item = Item::get(BlockAPI::$creative[$this->slot][0], BlockAPI::$creative[$this->slot][1], 1);
+					}elseif(($this->gamemode & 0x01) === 1){
+						$item = Item::get(Block::$creative[$this->getCurrentEquipment()][0], Block::$creative[$this->getCurrentEquipment()][1], 1);
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif($this->getSlot($this->slot)->getID() !== $packet->item or ($this->getSlot($this->slot)->isTool() === false and $this->getSlot($this->slot)->getMetadata() !== $packet->meta)){
-						$this->sendInventorySlot($this->slot);
+					}elseif($this->getSlot($this->getCurrentEquipment())->getID() !== $packet->item or ($this->getSlot($this->getCurrentEquipment())->isTool() === false and $this->getSlot($this->getCurrentEquipment())->getMetadata() !== $packet->meta)){
+						$this->sendInventorySlot($this->getCurrentEquipment());
 					}else{
-						$item = clone $this->getSlot($this->slot);
+						$item = clone $this->getSlot($this->getCurrentEquipment());
 						//TODO: Implement adventure mode checks
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
-							$this->setSlot($this->slot, $item);
-							$this->sendInventorySlot($this->slot);
+							$this->setSlot($this->getCurrentEquipment(), $item);
+							$this->sendInventorySlot($this->getCurrentEquipment());
 							break;
 						}
 					}
@@ -1601,7 +1605,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				switch($packet->action){
 					case 5: //Shot arrow
 						if($this->entity->inAction === true){
-							if($this->getSlot($this->slot)->getID() === BOW){
+							if($this->getSlot($this->getCurrentEquipment())->getID() === BOW){
 								if($this->startAction !== false){
 									$time = microtime(true) - $this->startAction;
 									$d = array(
@@ -1677,15 +1681,15 @@ class Player extends Human implements CommandSender, IPlayer{
 
 
 				if(($this->gamemode & 0x01) === 1){
-					$item = Item::get(BlockAPI::$creative[$this->slot][0], BlockAPI::$creative[$this->slot][1], 1);
+					$item = Item::get(Block::$creative[$this->getCurrentEquipment()][0], Block::$creative[$this->getCurrentEquipment()][1], 1);
 				}else{
-					$item = clone $this->getSlot($this->slot);
+					$item = clone $this->getSlot($this->getCurrentEquipment());
 				}
 
 				if(($drops = $this->level->useBreakOn($vector, $item)) !== true){
 					if(($this->gamemode & 0x01) === 0){
 						//TODO: drop items
-						$this->setSlot($this->slot, $item);
+						$this->setSlot($this->getCurrentEquipment(), $item);
 					}
 					break;
 				}
@@ -1764,7 +1768,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($target instanceof Player and ($this->server->api->getProperty("pvp") == false or $this->server->difficulty <= 0 or ($target->player->gamemode & 0x01) === 0x01)){
 					break;
 				}elseif($this->server->handle("player.interact", $data) !== false){
-						$slot = $this->getSlot($this->slot);
+						$slot = $this->getSlot($this->getCurrentEquipment());
 						switch($slot->getID()){
 							case WOODEN_SWORD:
 							case GOLD_SWORD:
@@ -1828,7 +1832,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						$target->harm($damage, $this->id);
 						if($slot->isTool() === true and ($this->gamemode & 0x01) === 0){
 							if($slot->useOn($target) and $slot->getMetadata() >= $slot->getMaxDurability()){
-								$this->setSlot($this->slot, new Item(AIR, 0, 0));
+								$this->setSlot($this->getCurrentEquipment(), new Item(AIR, 0, 0));
 							}
 						}
 					}
@@ -1896,7 +1900,7 @@ class Player extends Human implements CommandSender, IPlayer{
 							//Item::COOKED_FISH => 5,
 							//Item::RAW_FISH => 2,
 						);
-						$slot = $this->getSlot($this->slot);
+						$slot = $this->getSlot($this->getCurrentEquipment());
 						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
 
 							$pk = new EntityEventPacket;
@@ -1907,7 +1911,7 @@ class Player extends Human implements CommandSender, IPlayer{
 							$this->entity->heal($items[$slot->getID()], "eating");
 							//--$slot->count;
 							if($slot->getCount() <= 0){
-								$this->setSlot($this->slot, Item::get(AIR, 0, 0));
+								$this->setSlot($this->getCurrentEquipment(), Item::get(AIR, 0, 0));
 							}
 							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){
 								$this->addItem(Item::get(BOWL, 0, 1));
@@ -1921,7 +1925,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					break;
 				}
 				$packet->eid = $this->id;
-				$packet->item = $this->getSlot($this->slot);
+				$packet->item = $this->getSlot($this->getCurrentEquipment());
 				$this->craftingItems = array();
 				$this->toCraft = array();
 				$data = array();
@@ -1931,7 +1935,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$data["player"] = $this;
 				if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
 					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $packet->item);
-					$this->setSlot($this->slot, Item::get(AIR, 0, 0), false);
+					$this->setSlot($this->getCurrentEquipment(), Item::get(AIR, 0, 0), false);
 				}
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;

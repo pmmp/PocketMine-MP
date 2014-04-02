@@ -60,11 +60,11 @@ class Generic extends Block{
 					"Tile" => $this->id,
 				);
 				$server = Server::getInstance();
-				$this->level->setBlock($this, new Air(), false, false, true);
+				/*$this->level->setBlock($this, new Air(), false, false, true);
 				//TODO
 				//$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
 				//$e->spawnToAll();
-				$server->api->block->blockUpdateAround(clone $this, Level::BLOCK_UPDATE_NORMAL, 1);
+				$server->api->block->blockUpdateAround(clone $this, Level::BLOCK_UPDATE_NORMAL, 1);*/
 			}
 
 			return false;

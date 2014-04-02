@@ -25,11 +25,12 @@
 namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
 
 	/**
-	 * @var \SplPriorityQueue<Task>
+	 * @var ReversePriorityQueue<Task>
 	 */
 	protected $queue;
 
@@ -45,7 +46,7 @@ class ServerScheduler{
 	protected $currentTick = 0;
 
 	public function __construct(){
-		$this->queue = new TaskQueue();
+		$this->queue = new ReversePriorityQueue();
 	}
 
 	/**
