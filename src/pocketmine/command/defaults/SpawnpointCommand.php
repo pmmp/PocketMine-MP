@@ -78,6 +78,9 @@ class SpawnpointCommand extends VanillaCommand{
 				$target->setSpawn($pos);
 				Command::broadcastCommandMessage($sender, "Set ".$target->getName()."'s spawnpoint to ".$pos->x.", ".$pos->y.", ".$pos->z);
 				return true;
+			}else{
+				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
+				return true;
 			}
 		}
 
