@@ -25,6 +25,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
+use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
@@ -137,7 +138,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
 		}
 
-		if($command instanceof PluginCommand and $command->getPlugin() === $this){
+		if($command instanceof PluginIdentifiableCommand and $command->getPlugin() === $this){
 			return $command;
 		}else{
 			return null;

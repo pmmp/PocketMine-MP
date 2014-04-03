@@ -151,6 +151,11 @@ class PluginManager{
 					if(($plugin = $loader->loadPlugin($path)) instanceof Plugin){
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
+						$pluginCommands = $this->parseYamlCommands($plugin);
+
+						if(count($pluginCommands) > 0){
+							$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
+						}
 						return $plugin;
 					}
 				}
@@ -500,11 +505,6 @@ class PluginManager{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if(!$plugin->isEnabled()){
-			$pluginCommands = $this->parseYamlCommands($plugin);
-
-			if(count($pluginCommands) > 0){
-				$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
-			}
 
 			foreach($plugin->getDescription()->getPermissions() as $perm){
 				$this->addPermission($perm);

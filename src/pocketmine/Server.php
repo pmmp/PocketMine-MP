@@ -32,6 +32,7 @@ use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginCommand;
+use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
@@ -1014,10 +1015,10 @@ class Server{
 	/**
 	 * @param string $name
 	 *
-	 * @return PluginCommand
+	 * @return PluginIdentifiableCommand
 	 */
 	public function getPluginCommand($name){
-		if(($command = $this->commandMap->getCommand($name)) instanceof PluginCommand){
+		if(($command = $this->commandMap->getCommand($name)) instanceof PluginIdentifiableCommand){
 			return $command;
 		}else{
 			return null;

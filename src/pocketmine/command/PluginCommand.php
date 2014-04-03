@@ -24,7 +24,7 @@ namespace pocketmine\command;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 
-class PluginCommand extends Command{
+class PluginCommand extends Command implements PluginIdentifiableCommand{
 
 	/** @var Plugin */
 	private $owningPlugin;
@@ -39,7 +39,11 @@ class PluginCommand extends Command{
 	public function __construct($name, Plugin $owner){
 		parent::__construct($name);
 		$this->owningPlugin = $owner;
-		$this->executor = $owner;
+		if(!($owner instanceof CommandExecutor)){
+			trigger_error("Plugin does not implement CommandExecutor", E_USER_WARNING);
+		}else{
+			$this->executor = $owner;
+		}
 		$this->usageMessage = "";
 	}
 
