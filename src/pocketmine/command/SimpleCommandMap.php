@@ -96,6 +96,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new KillCommand("kill"));
 		$this->register("pocketmine", new SpawnpointCommand("spawnpoint"));
 		$this->register("pocketmine", new TeleportCommand("tp"));
+		$this->register("pocketmine", new StatusCommand("status"));
 	}
 
 
