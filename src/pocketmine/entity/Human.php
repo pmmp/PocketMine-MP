@@ -200,7 +200,9 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 
 	public function getCurrentEquipment(){
-		return $this->hotbar[$this->slot];
+		if($this->slot > -1) {
+			return $this->hotbar[$this->slot];
+		}
 	}
 
 	public function sendCurrentEquipmentSlot(Player $player){
