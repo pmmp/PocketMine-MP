@@ -197,6 +197,7 @@ class PluginManager{
 						}elseif(strpos($name, " ") !== false){
 							console("[WARNING] Plugin '" . $name . "' uses spaces in its name, this is discouraged");
 						}
+
 						if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
 							console("[ERROR] Could not load duplicate plugin '" . $name . "': plugin exists");
 							continue;
