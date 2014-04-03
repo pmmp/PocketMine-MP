@@ -1435,7 +1435,7 @@ class Server{
 		//register_shutdown_function(array($this, "dumpError"));
 		register_shutdown_function(array($this, "shutdown"));
 		if(function_exists("pcntl_signal")){
-			//pcntl_signal(SIGTERM, array($this, "shutdown"));
+			pcntl_signal(SIGTERM, array($this, "shutdown"));
 			pcntl_signal(SIGINT, array($this, "shutdown"));
 			pcntl_signal(SIGHUP, array($this, "shutdown"));
 		}
