@@ -18,7 +18,7 @@ else
 fi
 
 rm -rf $WORKSPACE/compile.sh
-download_file "https://github.com/PocketMine/PocketMine-MP/raw/master/src/build/compile.sh" > $WORKSPACE/compile.sh
+download_file "https://github.com/PocketMine/PocketMine-MP/raw/$BRANCH/src/build/compile.sh" > $WORKSPACE/compile.sh
 chmod +x $WORKSPACE/compile.sh
 SCRIPT="$WORKSPACE/compile.sh"
 ARCHIVE="$WORKSPACE/archive"
