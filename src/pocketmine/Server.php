@@ -1202,7 +1202,7 @@ class Server{
 			$this->setConfigInt("difficulty", 3);
 		}
 
-		define("pocketmine\\DEBUG", $this->getConfigInt("debug", 1));
+		define("pocketmine\\DEBUG", $this->getConfigInt("debug.level", 1));
 		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
