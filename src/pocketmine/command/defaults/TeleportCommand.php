@@ -67,6 +67,24 @@ class TeleportCommand extends VanillaCommand{
 			}
 		}
 
+		if(count($args) === 2){
+			$sourcePlayer = Server::getInstance()->getPlayer($args[0]);
+			$targetPlayer = Server::getInstance()->getPlayer($args[1]);
+			if($sourcePlayer === null){
+				$sender->sendMessage(TextFormat::RED . "Can't find player ".$args[0]);
+				return true;
+			} elseif($targetPlayer === null){
+				$sender->sendMessage(TextFormat::RED . "Can't find player ".$args[1]);
+				return true;
+			}
+			if($targetPlayer->getLevel() === null){
+				$sender->sendMessage(TextFormat::RED . "Teleport failed.");
+				return true;
+			}
+			$sourcePlayer->teleport(new Position($targetPlayer->x,$targetPlayer->y,$targetPlayer->z, $targetPlayer->getLevel()));
+			Command::broadcastCommandMessage($sender, "Teleported ".$sourcePlayer->getName()." to ".$targetPlayer->getName());
+		}
+
 		if(count($args) < 3){
 			$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 			$target->setSpawn($pos);
