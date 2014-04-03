@@ -43,7 +43,7 @@ class StatusCommand extends VanillaCommand{
 		}
 
 		$server = Server::getInstance();
-		
+		$sender->sendMessage(TextFormat::GREEN . "---- ".TextFormat::WHITE . "Server status".TextFormat::GREEN. " ----");
 		$sender->sendMessage(TextFormat::GOLD . "TPS: ".TextFormat::WHITE.$server->getTicksPerSecond());
 		$sender->sendMessage(TextFormat::GOLD . "Upload: ".TextFormat::WHITE . round($server->getNetwork()->getUploadSpeed() / 1024, 2) . " kB/s");
 		$sender->sendMessage(TextFormat::GOLD . "Download: ".TextFormat::WHITE . round($server->getNetwork()->getDownloadSpeed() / 1024, 2) . " kB/s");
