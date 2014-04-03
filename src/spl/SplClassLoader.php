@@ -140,7 +140,13 @@ class SplClassLoader implements SplAutoloader{
 
 			case ($this->mode & self::MODE_NORMAL):
 			default:
-				require $resourceAbsolutePath;
+				if(!file_exists($resourceAbsolutePath)){
+					throw new \RuntimeException(
+						sprintf('Autoloader expected in file "%s" to exist.',  $resourceAbsolutePath)
+					);
+				}else{
+					require $resourceAbsolutePath;
+				}
 				break;
 		}
 
