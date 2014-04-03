@@ -24,6 +24,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class StatusCommand extends VanillaCommand{
 
@@ -43,7 +44,9 @@ class StatusCommand extends VanillaCommand{
 
 		$server = Server::getInstance();
 		
-		$sender->sendMessage("TPS: ".$server->getTicksPerSecond()." Uploading: " . round($server->getNetwork()->getUploadSpeed() / 1024, 2) . " Downloading: " . round($server->getNetwork()->getDownloadSpeed() / 1024, 2) . " kB/s");
+		$sender->sendMessage(TextFormat::GOLD . "TPS: ".TextFormat::WHITE.$server->getTicksPerSecond());
+		$sender->sendMessage(TextFormat::GOLD . "Upload: ".TextFormat::WHITE . round($server->getNetwork()->getUploadSpeed() / 1024, 2) . " kB/s");
+		$sender->sendMessage(TextFormat::GOLD . "Download: ".TextFormat::WHITE . round($server->getNetwork()->getDownloadSpeed() / 1024, 2) . " kB/s");
 
 		return true;
 	}
