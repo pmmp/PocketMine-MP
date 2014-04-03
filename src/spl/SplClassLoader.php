@@ -1,6 +1,6 @@
 <?php
 
-require_once("SplAutoloader.php");
+require("SplAutoloader.php");
 
 /**
  * SplClassLoader implementation that implements the technical interoperability

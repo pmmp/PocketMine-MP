@@ -172,6 +172,7 @@ class PluginManager{
 	 * @return Plugin[]
 	 */
 	public function loadPlugins($directory, $newLoaders = null){
+
 		if(is_dir($directory)){
 			$plugins = array();
 			$loadedPlugins = array();

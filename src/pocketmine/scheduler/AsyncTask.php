@@ -33,12 +33,12 @@ abstract class AsyncTask extends \Threaded{
 	private $result;
 
 	public function run(){
-		$this->synchronized(function(){
-			$this->result = null;
-			$this->onRun(\Thread::getCurrentThread());
-			$this->finished = true;
-			$this->complete = $this->result === null ? true : false;
-		});
+		$this->lock();
+		$this->result = null;
+		$this->onRun();
+		$this->finished = true;
+		$this->complete = $this->result === null ? true : false;
+		$this->unlock();
 	}
 
 	/**
@@ -82,10 +82,8 @@ abstract class AsyncTask extends \Threaded{
 	/**
 	 * Actions to execute when run
 	 *
-	 * @param \Thread $thread
-	 *
 	 * @return void
 	 */
-	public abstract function onRun(\Thread $thread);
+	public abstract function onRun();
 
 }

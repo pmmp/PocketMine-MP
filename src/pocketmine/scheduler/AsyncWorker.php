@@ -14,27 +14,27 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
-
+ * @link http://www.pocketmine.net/
  *
  *
 */
 
 namespace pocketmine\scheduler;
 
-use pocketmine\utils\Utils;
+class AsyncWorker extends \Worker{
+	public $path;
 
-class SendUsageTask extends AsyncTask{
-
-	public $endpoint;
-	public $data;
-
-	public function __construct($endpoint, array $data){
-		$this->endpoint = $endpoint;
-		$this->data = serialize($data);
+	public function start($options = PTHREADS_INHERIT_CLASSES){
+		$this->path = \pocketmine\PATH;
+		return parent::start($options & ~PTHREADS_INHERIT_CLASSES);
 	}
 
-	public function onRun(){
-		Utils::postURL($this->endpoint, unserialize($this->data));
+	public function run(){
+		require($this->path . "src/spl/SplClassLoader.php");
+		$autoloader = new \SplClassLoader();
+		$autoloader->add("pocketmine", array(
+			$this->path . "src"
+		));
+		$autoloader->register(true);
 	}
-
 }

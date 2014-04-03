@@ -1185,6 +1185,10 @@ class Server{
 			"auto-save" => true,
 		));
 
+		if($this->getConfigBoolean("enable-rcon", false) === true){
+			$this->rcon = new RCON($this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
+		}
+
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
 		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "128M")))) !== false){
@@ -1215,7 +1219,7 @@ class Server{
 
 		console("[INFO] Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
-		$this->serverID = Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 8));
+		$this->serverID = Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
 		$this->interface = new ThreadedHandler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0" : $this->getIp());
 
 		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
@@ -1398,6 +1402,48 @@ class Server{
 		return false;
 	}
 
+	public function reload(){
+		console("[INFO] Saving levels...");
+
+		foreach($this->levels as $level){
+			$level->save();
+		}
+
+		$this->pluginManager->disablePlugins();
+		$this->pluginManager->clearPlugins();
+		$this->commandMap->clearCommands();
+
+		console("[INFO] Reloading properties...");
+		$this->properties->reload();
+		$this->maxPlayers = $this->getConfigInt("max-players", 20);
+
+		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "128M")))) !== false){
+			$value = array("M" => 1, "G" => 1024);
+			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
+			if($real < 128){
+				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
+			}
+			@ini_set("memory_limit", $memory);
+		}else{
+			$this->setConfigString("memory-limit", "128M");
+		}
+
+		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
+			$this->setConfigInt("difficulty", 3);
+		}
+
+		$this->banByIP->load();
+		$this->banByName->load();
+		$this->reloadWhitelist();
+		$this->operators->reload();
+
+
+		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
+		$this->pluginManager->loadPlugins($this->pluginPath);
+		$this->enablePlugins(PluginLoadOrder::STARTUP);
+		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+	}
+
 	/**
 	 * Shutdowns the server correctly
 	 */
@@ -1405,50 +1451,8 @@ class Server{
 		$this->isRunning = false;
 	}
 
-	/**
-	 * Starts the PocketMine-MP server and starts processing ticks and packets
-	 */
-	public function start(){
-
-		if($this->getConfigBoolean("enable-rcon", false) === true){
-			$this->rcon = new RCON($this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
-		}
-
-		if($this->getConfigBoolean("enable-query", true) === true){
-			$this->queryHandler = new QueryHandler();
-		}
-
-
-		if($this->getConfigBoolean("send-usage", true) !== false){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "sendUsage")), 6000, 6000);
-			$this->sendUsage();
-		}
-
-
-		if($this->getConfigBoolean("upnp-forwarding", false) == true){
-			console("[INFO] [UPnP] Trying to port forward...");
-			UPnP::PortForward($this->getPort());
-		}
-
-		$this->tickCounter = 0;
-
-		//register_shutdown_function(array($this, "dumpError"));
-		register_shutdown_function(array($this, "shutdown"));
-		if(function_exists("pcntl_signal")){
-			pcntl_signal(SIGTERM, array($this, "shutdown"));
-			pcntl_signal(SIGINT, array($this, "shutdown"));
-			pcntl_signal(SIGHUP, array($this, "shutdown"));
-		}
-
-		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
-
-		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
-		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
-			$this->tickProcessorWindows();
-		}else{
-			$this->tickProcessor();
-		}
-
+	public function forceShutdown(){
+		$this->shutdown();
 		if($this->rcon instanceof RCON){
 			$this->rcon->stop();
 		}
@@ -1476,7 +1480,48 @@ class Server{
 
 		$this->tickScheduler->kill();
 		$this->console->kill();
+	}
 
+	/**
+	 * Starts the PocketMine-MP server and starts processing ticks and packets
+	 */
+	public function start(){
+
+		if($this->getConfigBoolean("enable-query", true) === true){
+			$this->queryHandler = new QueryHandler();
+		}
+
+
+		if($this->getConfigBoolean("send-usage", true) !== false){
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "sendUsage")), 6000, 6000);
+			$this->sendUsage();
+		}
+
+
+		if($this->getConfigBoolean("upnp-forwarding", false) == true){
+			console("[INFO] [UPnP] Trying to port forward...");
+			UPnP::PortForward($this->getPort());
+		}
+
+		$this->tickCounter = 0;
+
+		//register_shutdown_function(array($this, "dumpError"));
+		register_shutdown_function(array($this, "forceShutdown"));
+		if(function_exists("pcntl_signal")){
+			pcntl_signal(SIGTERM, array($this, "shutdown"));
+			pcntl_signal(SIGINT, array($this, "shutdown"));
+			pcntl_signal(SIGHUP, array($this, "shutdown"));
+		}
+
+		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
+
+		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
+		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
+			$this->tickProcessorWindows();
+		}else{
+			$this->tickProcessor();
+		}
+		$this->forceShutdown();
 	}
 
 	private function tickProcessorWindows(){

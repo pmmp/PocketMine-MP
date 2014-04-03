@@ -52,7 +52,7 @@ class ServerScheduler{
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new \Pool(self::$WORKERS, "Worker");
+		$this->asyncPool = new \Pool(self::$WORKERS, "pocketmine\\scheduler\\AsyncWorker");
 	}
 
 	/**

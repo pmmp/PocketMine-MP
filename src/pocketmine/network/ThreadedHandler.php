@@ -39,6 +39,7 @@ class ThreadedHandler extends \Thread{
 	protected $server;
 	protected $port;
 	protected $serverip;
+	public $path;
 
 	function __construct($server, $port = 19132, $serverip = "0.0.0.0"){
 		$this->server = $server;
@@ -56,8 +57,8 @@ class ThreadedHandler extends \Thread{
 		new Packet(0);
 		new QueryPacket();
 		new RakNetPacket(0);
-
-		$this->start(PTHREADS_INHERIT_ALL);
+		$this->path = \pocketmine\PATH;
+		$this->start(PTHREADS_INHERIT_ALL & ~PTHREADS_INHERIT_CLASSES);
 	}
 
 	public function close(){
@@ -105,9 +106,10 @@ class ThreadedHandler extends \Thread{
 	}
 
 	public function run(){
+		require($this->path . "src/spl/SplClassLoader.php");
 		$autoloader = new \SplClassLoader();
 		$autoloader->add("pocketmine", array(
-			\pocketmine\PATH . "src"
+			$this->path . "src"
 		));
 		$autoloader->register(true);
 

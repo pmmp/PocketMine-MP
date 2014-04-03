@@ -31,6 +31,7 @@ class RCONInstance extends \Thread{
 	private $password;
 	private $maxClients;
 
+
 	public function __construct($socket, $password, $maxClients = 50){
 		$this->stop = false;
 		$this->cmd = "";
@@ -43,6 +44,7 @@ class RCONInstance extends \Thread{
 			$this->{"status" . $n} = 0;
 			$this->{"timeout" . $n} = 0;
 		}
+
 		$this->start();
 	}
 
@@ -80,6 +82,7 @@ class RCONInstance extends \Thread{
 	}
 
 	public function run(){
+
 		while($this->stop !== true){
 			usleep(2000);
 			$r = array($socket = $this->socket);

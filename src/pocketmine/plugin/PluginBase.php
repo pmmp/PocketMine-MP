@@ -29,7 +29,7 @@ use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
-abstract class PluginBase implements Plugin, CommandExecutor{
+abstract class PluginBase implements Plugin{
 
 	/** @var PluginLoader */
 	private $loader;
@@ -116,22 +116,18 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public final function isInitialized(){
 		return $this->initialized;
 	}
 
 	/**
-	 * @param CommandSender $sender
-	 * @param Command       $command
-	 * @param string        $label
-	 * @param string[]      $args
+	 * @param string $name
 	 *
-	 * @return bool
+	 * @return PluginIdentifiableCommand
 	 */
-	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
-		return false;
-	}
-
 	public function getCommand($name){
 		$command = $this->getServer()->getPluginCommand($name);
 		if($command === null or $command->getPlugin() !== $this){
