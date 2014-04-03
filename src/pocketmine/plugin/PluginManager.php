@@ -115,18 +115,18 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string $loader A PluginLoader class name
+	 * @param string $loaderName A PluginLoader class name
 	 *
 	 * @return boolean
 	 */
-	public function registerInterface($loader){
-		if(is_subclass_of($loader, "pocketmine\\plugin\\PluginLoader")){
-			$loader = new $loader($this->server);
+	public function registerInterface($loaderName){
+		if(is_subclass_of($loaderName, "pocketmine\\plugin\\PluginLoader")){
+			$loader = new $loaderName($this->server);
 		}else{
 			return false;
 		}
 
-		$this->fileAssociations[spl_object_hash($loader)] = $loader;
+		$this->fileAssociations[$loaderName] = $loader;
 
 		return true;
 	}
@@ -161,17 +161,28 @@ class PluginManager{
 	}
 
 	/**
-	 * @param $directory
+	 * @param string $directory
+	 * @param array $newLoaders
 	 *
 	 * @return Plugin[]
 	 */
-	public function loadPlugins($directory){
+	public function loadPlugins($directory, $newLoaders = null){
 		if(is_dir($directory)){
 			$plugins = array();
 			$loadedPlugins = array();
 			$dependencies = array();
 			$softDependencies = array();
-			foreach($this->fileAssociations as $loader){
+			if(is_array($newLoaders)){
+				$loaders = array();
+				foreach($newLoaders as $key){
+					if(isset($this->fileAssociations[$key])){
+						$loaders[$key] = $this->fileAssociations[$key];
+					}
+				}
+			}else{
+				$loaders = $this->fileAssociations;
+			}
+			foreach($loaders as $loader){
 				foreach(new \RegexIterator(new \DirectoryIterator($directory), $loader->getPluginFilters()) as $file){
 					if($file === "." or $file === ".."){
 						continue;
@@ -186,7 +197,7 @@ class PluginManager{
 						}elseif(strpos($name, " ") !== false){
 							console("[WARNING] Plugin '" . $name . "' uses spaces in its name, this is discouraged");
 						}
-						if(isset($plugins[$name])){
+						if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
 							console("[ERROR] Could not load duplicate plugin '" . $name . "': plugin exists");
 							continue;
 						}

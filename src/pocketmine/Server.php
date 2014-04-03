@@ -1225,7 +1225,6 @@ class Server{
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
-		$this->pluginManager->registerInterface("pocketmine\\plugin\\FolderPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
 		//TODO: update checking (async)
