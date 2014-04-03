@@ -68,12 +68,23 @@ rm -f LICENSE
 rm -f start.sh
 rm -f start.bat
 echo "[1/3] Downloading PocketMine-MP $PMMP_VERSION..."
-download_file "https://github.com/PocketMine/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
-mv -f PocketMine-MP-$PMMP_VERSION/* ./
-rm -f -r PocketMine-MP-$PMMP_VERSION/
-rm -f ./start.cmd
+set -e
+download_file "https://github.com/PocketMine/PocketMine-MP/releases/download/$PMMP_VERSION/PocketMine-MP.phar" > PocketMine-MP.phar
+if ! [ -s "PocketMine-MP.phar" ]; then
+	rm "PocketMine-MP.phar" > /dev/null
+	download_file "https://github.com/PocketMine/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
+	COMPILE_SCRIPT="./src/build/compile.sh"
+	mv -f PocketMine-MP-$PMMP_VERSION/* ./
+	rm -f -r PocketMine-MP-$PMMP_VERSION/
+	rm -f ./start.cmd
+else
+	download_file "https://raw.githubusercontent.com/PocketMine/PocketMine-MP/$PMMP_VERSION/start.sh" > start.sh
+	download_file "https://raw.githubusercontent.com/PocketMine/PocketMine-MP/$PMMP_VERSION/src/build/compile.sh" > compile.sh
+	COMPILE_SCRIPT="./compile.sh"
+fi
+set +e
+chmod +x "$COMPILE_SCRIPT"
 chmod +x ./start.sh
-chmod +x ./src/build/compile.sh
 if [ "$update" == "on" ]; then
 	echo "[3/3] Skipping PHP recompilation due to user request"
 else
@@ -93,6 +104,8 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
+				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
@@ -119,7 +132,9 @@ else
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -154,7 +169,9 @@ else
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -182,7 +199,9 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -216,7 +235,9 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -239,7 +260,7 @@ else
 		if [ "$alldone" == "no" ]; then
 			set -e
 			echo "[3/3] no build found, compiling PHP"
-			exec ./src/build/compile.sh
+			exec "$COMPILE_SCRIPT"
 		fi
 	fi
 fi

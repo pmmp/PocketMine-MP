@@ -9,6 +9,7 @@ READLINE_VERSION="6.3"
 NCURSES_VERSION="5.9"
 PHPNCURSES_VERSION="1.0.2"
 PTHREADS_VERSION="2.0.4"
+UOPZ_VERSION="2.0.3"
 WEAKREF_VERSION="0.2.2"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
@@ -508,6 +509,13 @@ download_file "http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz" | tar -zx
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
+
+#uopz
+echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
+download_file "http://pecl.php.net/get/uopz-$UOPZ_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv uopz-$UOPZ_VERSION "$DIR/install_data/php/ext/uopz"
+echo " done!"
+
 #WeakRef
 #echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
 #download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -629,6 +637,7 @@ $HAVE_READLINE \
 --enable-calendar \
 --enable-pthreads \
 --enable-pthreads-pedantic \
+--enable-uopz \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
@@ -700,6 +709,7 @@ echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "asp_tags=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "phar.readonly=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "phar.require_hash=1" >> "$DIR/bin/php5/bin/php.ini"
+echo "zend_extension=uopz.so" >> "$DIR/bin/php5/bin/php.ini"
 if [ "$IS_CROSSCOMPILE" != "crosscompile" ]; then
 	echo "zend_extension=opcache.so" >> "$DIR/bin/php5/bin/php.ini"
 	echo "opcache.enable=1" >> "$DIR/bin/php5/bin/php.ini"

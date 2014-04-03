@@ -319,6 +319,10 @@ namespace pocketmine {
 		}
 	}
 
+	if(!extension_loaded("uopz")){
+		console("[NOTICE] Couldn't find the uopz extension. Some functions may be limited", true, true, 0);
+	}
+
 	if(!extension_loaded("curl")){
 		console("[ERROR] Unable to find the cURL extension.", true, true, 0);
 		++$errors;
