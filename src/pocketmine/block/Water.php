@@ -110,7 +110,7 @@ class Water extends Liquid{
 			if($level !== 0x07){
 				if($down instanceof Air || $down instanceof Water){
 					$this->level->setBlock($down, new Water(0x01), false, false, true);
-					Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($down, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+					//Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($down, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 				}else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
@@ -120,7 +120,7 @@ class Water extends Liquid{
 							}
 						}elseif($b->isFlowable === true){
 							$this->level->setBlock($b, new Water($level + 1), false, false, true);
-							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
+							//Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
 				}
