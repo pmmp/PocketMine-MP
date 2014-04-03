@@ -264,5 +264,8 @@ else
 		fi
 	fi
 fi
+if [ "$COMPILE_SCRIPT" == "./compile.sh" ]; then
+	rm "$COMPILE_SCRIPT"
+fi
 echo "[INFO] Everything done! Run ./start.sh to start PocketMine-MP"
 exit 0
