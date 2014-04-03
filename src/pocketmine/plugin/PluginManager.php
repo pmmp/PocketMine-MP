@@ -255,7 +255,7 @@ class PluginManager{
 				foreach($plugins as $name => $file){
 					if(isset($dependencies[$name])){
 						foreach($dependencies[$name] as $key => $dependency){
-							if(isset($loadedPlugins[$dependency])){
+							if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 								unset($dependencies[$name][$key]);
 							}elseif(!isset($plugins[$dependency])){
 								console("[SEVERE] Could not load plugin '" . $name . "': Unknown dependency");
@@ -270,7 +270,7 @@ class PluginManager{
 
 					if(isset($softDependencies[$name])){
 						foreach($softDependencies[$name] as $key => $dependency){
-							if(isset($loadedPlugins[$dependency])){
+							if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 								unset($softDependencies[$name][$key]);
 							}
 						}
