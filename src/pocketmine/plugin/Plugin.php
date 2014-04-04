@@ -36,14 +36,24 @@ interface Plugin{
 	 */
 	public function onLoad();
 
+	/**
+	 * Called when the plugin is enabled
+	 */
 	public function onEnable();
 
 	public function isEnabled();
 
+	/**
+	 * Called when the plugin is disabled
+	 * Use this to free open things and finish actions
+	 */
 	public function onDisable();
 
 	public function isDisabled();
 
+	/**
+	 * Gets the plugin's data folder to save files and configuration
+	 */
 	public function getDataFolder();
 
 	/**
@@ -56,6 +66,12 @@ interface Plugin{
 	 */
 	public function getResource($filename);
 
+	/**
+	 * Saves an embedded resource to its relative location in the data folder
+	 *
+	 * @param string $filename
+	 * @param bool $replace
+	 */
 	public function saveResource($filename, $replace = false);
 
 	/**
@@ -63,6 +79,9 @@ interface Plugin{
 	 */
 	public function getResources();
 
+	/**
+	 * @return \pocketmine\utils\Config
+	 */
 	public function getConfig();
 
 	public function saveConfig();
@@ -71,9 +90,17 @@ interface Plugin{
 
 	public function reloadConfig();
 
+	/**
+	 * @return \pocketmine\Server
+	 */
 	public function getServer();
 
 	public function getName();
+
+	/**
+	 * @return PluginLogger
+	 */
+	public function getLogger();
 
 	/**
 	 * @return PluginLoader

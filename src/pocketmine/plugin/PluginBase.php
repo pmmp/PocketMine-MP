@@ -53,6 +53,9 @@ abstract class PluginBase implements Plugin{
 	private $configFile;
 	private $file;
 
+	/** @var PluginLogger */
+	private $logger;
+
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
 	 */
@@ -113,7 +116,15 @@ abstract class PluginBase implements Plugin{
 			$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
 			$this->file = rtrim($file, "\\/") . "/";
 			$this->configFile = $this->dataFolder . "config.yml";
+			$this->logger = new PluginLogger($this);
 		}
+	}
+
+	/**
+	 * @return PluginLogger
+	 */
+	public function getLogger(){
+		return $this->logger;
 	}
 
 	/**

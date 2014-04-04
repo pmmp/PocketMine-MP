@@ -35,6 +35,7 @@ class PluginDescription{
 	private $description = null;
 	private $authors = array();
 	private $website = null;
+	private $prefix = null;
 	private $order = PluginLoadOrder::POSTWORLD;
 
 	/**
@@ -86,6 +87,9 @@ class PluginDescription{
 		if(isset($plugin["description"])){
 			$this->description = $plugin["description"];
 		}
+		if(isset($plugin["prefix"])){
+			$this->prefix = $plugin["prefix"];
+		}
 		if(isset($plugin["load"])){
 			$order = strtoupper($plugin["load"]);
 			if(!defined("pocketmine\\plugin\\PluginLoadOrder::" . $order)){
@@ -130,6 +134,13 @@ class PluginDescription{
 	 */
 	public function getAuthors(){
 		return $this->authors;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPrefix(){
+		return $this->prefix;
 	}
 
 	/**
