@@ -4,9 +4,9 @@ LINUX_32_BUILD="PHP_5.5.10_x86_Linux"
 LINUX_64_BUILD="PHP_5.5.10_x86-64_Linux"
 MAC_32_BUILD="PHP_5.5.10_x86_MacOS"
 MAC_64_BUILD="PHP_5.5.10_x86-64_MacOS"
-RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
+RPI_BUILD="PHP_5.5.10_ARM_Raspbian_hard"
 # Temporal build
-ODROID_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
+ODROID_BUILD="PHP_5.5.10_ARM_Raspbian_hard"
 AND_BUILD="PHP_5.5.9_ARMv7_Android"
 IOS_BUILD="PHP_5.5.9_ARMv6_iOS"
 update=off
