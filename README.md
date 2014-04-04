@@ -15,26 +15,29 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-__PocketMine-MP is a Minecraft: PE server software.__
-
-The entire server is written in PHP, and has been tested, profiled and optimized to run smoothly.
+__PocketMine-MP is a free, open-source software that creates Minecraft: Pocket Edition servers and allows extending its functionalities__
 
 ### [Homepage](http://www.pocketmine.net/)
 
 ### [Forums](http://forums.pocketmine.net/)
 
-### [Wiki](https://github.com/PocketMine/PocketMine-MP/wiki/)
+### [Plugin Repository](http://plugins.pocketmine.net/)
 
-### [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)
+<!--## [FAQ: Frequently Asked Questions](https://github.com/PocketMine/PocketMine-MP/wiki/Frequently-Asked-Questions)-->
+
+### [Official Jenkins server](http://jenkins.pocketmine.net/)
 
 ### API Documentation
- * [Doxygen generated](http://docs.pocketmine.net/)
- * [PHPDoc generated](http://docs.pocketmine.net/phpdoc/)
+ * [Official Doxygen-generated documentation](http://docs.pocketmine.net/)
+ * [Latest Doxygen generated from development](http://jenkins.pocketmine.net/job/PocketMine-MP-doc/doxygen/)
 
 ### [Twitter @PocketMine](https://twitter.com/PocketMine)
 
-## IRC Chat #pocketmine (or #mcpedevs) @ irc.freenode.net
+### IRC Chat #pocketmine (or #mcpedevs) @ irc.freenode.net
 [#pocketmine + #mcpedevs channel WebIRC](http://webchat.freenode.net/?channels=pocketmine,mcpedevs)
+
+### Want to contribute?
+* Check the [Contributing Guidelines](CONTRIBUTING.md)
 
 
 ## Third-party Libraries/Protocols Used
