@@ -511,10 +511,10 @@ echo " done!"
 
 
 #uopz
-echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
-download_file "http://pecl.php.net/get/uopz-$UOPZ_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-mv uopz-$UOPZ_VERSION "$DIR/install_data/php/ext/uopz"
-echo " done!"
+#echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
+#download_file "http://pecl.php.net/get/uopz-$UOPZ_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+#mv uopz-$UOPZ_VERSION "$DIR/install_data/php/ext/uopz"
+#echo " done!"
 
 #WeakRef
 #echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
@@ -637,7 +637,6 @@ $HAVE_READLINE \
 --enable-calendar \
 --enable-pthreads \
 --enable-pthreads-pedantic \
---enable-uopz \
 --disable-libxml \
 --disable-xml \
 --disable-dom \
