@@ -122,7 +122,15 @@ class SplClassLoader implements SplAutoloader{
 	 * {@inheritdoc}
 	 */
 	public function add($resource, $resourcePath = null){
-		$this->resources[$resource] = (array) $resourcePath;
+		if(isset($this->resources[$resource])){
+			foreach((array) $resourcePath as $path){
+				if(!in_array($path, $this->resources[$resource], true)){
+					$this->resources[$resource][] = $path;
+				}
+			}
+		}else{
+			$this->resources[$resource] = (array) $resourcePath;
+		}
 	}
 
 	/**

@@ -58,7 +58,7 @@ class PharPluginLoader implements PluginLoader{
 			}
 			$file = "phar://$file";
 			$className = $description->getMain();
-			$this->server->getLoader()->add(substr($className, 0, strpos($className, "\\")), array(
+			$this->server->getLoader()->add(substr($className, 0, strrpos($className, "\\")), array(
 				"$file/src"
 			));
 
