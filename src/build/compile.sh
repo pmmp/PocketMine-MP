@@ -137,7 +137,6 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 		OPENSSL_TARGET="android"
-		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "android-armv7" ]; then
 		COMPILE_FOR_ANDROID=yes
 		[ -z "$march" ] && march=armv7-a;
@@ -148,7 +147,6 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 		OPENSSL_TARGET="android-armv7"
-		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "rpi" ]; then
 		TOOLCHAIN_PREFIX="arm-linux-gnueabihf"
 		[ -z "$march" ] && march=armv6zk;
@@ -182,7 +180,6 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
-		HAVE_MYSQLI="--without-mysqli"
 	elif [ "$COMPILE_TARGET" == "ios-armv7" ]; then
 		[ -z "$march" ] && march=armv7-a;
 		[ -z "$mtune" ] && mtune=cortex-a8;
@@ -190,7 +187,6 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX -miphoneos-version-min=4.2"
 		OPENSSL_TARGET="BSD-generic32"
-		HAVE_MYSQLI="--without-mysqli"
 		if [ "$DO_OPTIMIZE" == "yes" ]; then
 			CFLAGS="$CFLAGS -mfpu=neon"
 		fi
@@ -614,6 +610,8 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	else
 		export LIBS="$LIBS -lpthread"
 	fi
+	mv ext/mysqlnd/config9.m4 ext/mysqlnd/config.m4
+	sed  -i=".backup" "s{ext/mysqlnd/php_mysqlnd_config.h{config.h{" ext/mysqlnd/mysqlnd_portability.h
 	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --enable-opcache=no"
 fi
 
