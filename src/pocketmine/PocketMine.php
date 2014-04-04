@@ -87,7 +87,11 @@ namespace pocketmine {
 	const MINECRAFT_VERSION = "v0.8.1 alpha";
 	const PHP_VERSION = "5.5";
 
-	@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+	if(\Phar::running(true) !== ""){
+		@define("pocketmine\\PATH", \Phar::running(true)."/");
+	}else{
+		@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
+	}
 
 	if(!class_exists("SplClassLoader", false)){
 		require_once(\pocketmine\PATH . "src/spl/SplClassLoader.php");
