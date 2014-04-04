@@ -1319,7 +1319,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				foreach($this->server->getOnlinePlayers() as $p){
 					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
 						if($p->kick("logged in from another location") === false){
-							$this->close($p->getName() . " has left the game", "already logged in");
+							$this->close($this->getName() . " has left the game", "already logged in");
 							return;
 						}else{
 							break;
