@@ -59,7 +59,7 @@ fi
 
 echo "[INFO] PocketMine-MP $PMMP_VERSION downloader & installer for Linux & Mac"
 
-echo "[0/3] Cleaning..."
+echo "[1/3] Cleaning..."
 rm -r -f src/
 rm -f PocketMine-MP.php
 rm -f README.md
@@ -67,8 +67,8 @@ rm -f CONTRIBUTING.md
 rm -f LICENSE
 rm -f start.sh
 rm -f start.bat
-echo "[1/3] Downloading PocketMine-MP $PMMP_VERSION..."
-set -e
+echo "[2/3] Downloading PocketMine-MP $PMMP_VERSION..."
+set +e
 download_file "https://github.com/PocketMine/PocketMine-MP/releases/download/$PMMP_VERSION/PocketMine-MP.phar" > PocketMine-MP.phar
 if ! [ -s "PocketMine-MP.phar" ]; then
 	rm "PocketMine-MP.phar" > /dev/null
@@ -82,7 +82,7 @@ else
 	download_file "https://raw.githubusercontent.com/PocketMine/PocketMine-MP/$PMMP_VERSION/src/build/compile.sh" > compile.sh
 	COMPILE_SCRIPT="./compile.sh"
 fi
-set +e
+
 chmod +x "$COMPILE_SCRIPT"
 chmod +x ./start.sh
 if [ "$update" == "on" ]; then
@@ -104,8 +104,9 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
-				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
-				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
@@ -132,8 +133,9 @@ else
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
-				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
@@ -169,8 +171,9 @@ else
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
-				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
@@ -199,8 +202,9 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
-				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
@@ -235,8 +239,9 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				UOPZ_PATH="$(find $(pwd) -name uopz.so)"
-				echo "zend_extension=\"$UOPZ_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
