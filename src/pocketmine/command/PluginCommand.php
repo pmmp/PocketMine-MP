@@ -39,11 +39,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 	public function __construct($name, Plugin $owner){
 		parent::__construct($name);
 		$this->owningPlugin = $owner;
-		if(!($owner instanceof CommandExecutor)){
-			trigger_error("Plugin does not implement CommandExecutor", E_USER_WARNING);
-		}else{
-			$this->executor = $owner;
-		}
+		$this->executor = $owner;
 		$this->usageMessage = "";
 	}
 

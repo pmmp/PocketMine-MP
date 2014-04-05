@@ -22,9 +22,7 @@
 namespace pocketmine\plugin;
 
 use pocketmine\command\Command;
-use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
-use pocketmine\command\PluginCommand;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -150,6 +148,18 @@ abstract class PluginBase implements Plugin{
 		}else{
 			return null;
 		}
+	}
+
+	/**
+	 * @param CommandSender $sender
+	 * @param Command       $command
+	 * @param string        $label
+	 * @param array         $args
+	 *
+	 * @return bool
+	 */
+	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
+		return false;
 	}
 
 	/**
