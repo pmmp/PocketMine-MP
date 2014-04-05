@@ -249,6 +249,40 @@ class Config{
 	}
 
 	/**
+	 * @param string $path
+	 *
+	 * @return mixed
+	 */
+	public function &getPath($path){
+		$currPath =& $this->config;
+		foreach(explode(".", $path) as $component){
+			if(isset($currPath[$component])){
+				$currPath =& $currPath[$component];
+			}else{
+				$currPath = null;
+			}
+		}
+		return $currPath;
+	}
+
+	/**
+	 * @param string $path
+	 * @param mixed $value
+	 */
+	public function &setPath($path, $value){
+		$currPath =& $this->config;
+		$components = explode(".", $path);
+		$final = array_pop($components);
+		foreach($components as $component){
+			if(!isset($currPath[$component])){
+				$currPath[$component] = array();
+			}
+			$currPath =& $currPath[$component];
+		}
+		$currPath[$final] = $value;
+	}
+
+	/**
 	 * @param string $k key to be set
 	 * @param bool   $v value to set key
 	 */
