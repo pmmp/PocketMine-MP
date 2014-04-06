@@ -39,6 +39,10 @@ class ThreadedHandler extends \Thread{
 	protected $server;
 	protected $port;
 	protected $serverip;
+	protected $recvIn;
+	protected $recvOut;
+	protected $sendIn;
+
 	public $path;
 
 	function __construct($server, $port = 19132, $serverip = "0.0.0.0"){
