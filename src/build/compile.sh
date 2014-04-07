@@ -517,6 +517,7 @@ if [ "$HAS_ZEPHIR" == "yes" ]; then
 	mv PocketMine-MP-Zephir-master/pocketmine/ext "$DIR/install_data/php/ext/pocketmine"
 	rm -r PocketMine-MP-Zephir-master/
 	HAS_POCKETMINE="--enable-pocketmine"
+	echo " done!"
 fi
 
 #uopz
