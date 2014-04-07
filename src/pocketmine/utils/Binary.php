@@ -24,9 +24,6 @@
  */
 namespace pocketmine\utils;
 
-use pocketmine\item\Item;
-
-
 /**
  * WARNING: This class is available on the PocketMine-MP Zephir project.
  * If this class is modified, remember to modify the PHP C extension.
@@ -94,45 +91,15 @@ class Binary{
 					$m .= self::writeLShort($d[1][2]);
 					break;
 				case 6:
-					for($i = 0; $i < 3; ++$i){
-						$m .= self::writeLInt($d[1][$i]);
-					}
+					$m .= self::writeLInt($d[1][0]);
+					$m .= self::writeLInt($d[1][1]);
+					$m .= self::writeLInt($d[1][2]);
 					break;
 			}
 		}
 		$m .= "\x7f";
 
 		return $m;
-	}
-
-	/**
-	 * Writes a Item to binary (short id, byte Count, short Damage)
-	 *
-	 * @param Item $item
-	 *
-	 * @return string
-	 */
-	public static function writeSlot(Item $item){
-		return self::writeShort($item->getID()) . chr($item->getCount()) . self::writeShort($item->getMetadata());
-	}
-
-	/**
-	 * Reads a binary Item, returns an Item object
-	 *
-	 * @param object $ob
-	 *
-	 * @return Item
-	 */
-
-	public static function readSlot($ob){
-		$id = self::readShort($ob->get(2));
-		$cnt = ord($ob->get(1));
-
-		return Item::get(
-			$id,
-			self::readShort($ob->get(2)),
-			$cnt
-		);
 	}
 
 	/**
@@ -204,30 +171,6 @@ class Binary{
 
 		return $m;
 	}
-
-	public static function readDataArray($str, $len = 10, &$offset = null){
-		$data = array();
-		$offset = 0;
-		for($i = 1; $i <= $len and isset($str{$offset}); ++$i){
-			$l = self::readTriad(substr($str, $offset, 3));
-			$offset += 3;
-			$data[] = substr($str, $offset, $l);
-			$offset += $l;
-		}
-
-		return $data;
-	}
-
-	public static function writeDataArray($data){
-		$raw = "";
-		foreach($data as $v){
-			$raw .= self::writeTriad(strlen($v));
-			$raw .= $v;
-		}
-
-		return $raw;
-	}
-
 	/**
 	 * Reads a byte boolean
 	 *
@@ -253,7 +196,7 @@ class Binary{
 	/**
 	 * Reads an unsigned/signed byte
 	 *
-	 * @param      $c
+	 * @param string $c
 	 * @param bool $signed
 	 *
 	 * @return int
@@ -272,12 +215,9 @@ class Binary{
 	 *
 	 * @param $c
 	 *
-	 * @return bool|string
+	 * @return string
 	 */
 	public static function writeByte($c){
-		if($c > 0xff){
-			return false;
-		}
 		if($c < 0 and $c >= -0x80){
 			$c = 0xff + $c + 1;
 		}
@@ -396,7 +336,7 @@ class Binary{
 	}
 
 	public static function printFloat($value){
-		return preg_replace("/(\.\d+?)0+$/", "$1", sprintf("%F", $value));
+		return preg_replace("/(\\.\\d+?)0+$/", "$1", sprintf("%F", $value));
 	}
 
 	public static function readDouble($str){
@@ -421,43 +361,29 @@ class Binary{
 
 	public static function readLong($x, $signed = true){
 		$value = "0";
-		if($signed === true){
-			$negative = ((ord($x{0}) & 0x80) === 0x80) ? true : false;
-			if($negative){
-				$x = ~$x;
-			}
-		}else{
-			$negative = false;
+		for($i = 0; $i < 8; $i += 2){
+			$value = bcmul($value, "65536", 0);
+			$value = bcadd($value, self::readShort(substr($x, $i, 2), false), 0);
 		}
 
-		for($i = 0; $i < 8; $i += 4){
-			$value = bcmul($value, "4294967296", 0); //4294967296 == 2^32
-			$value = bcadd($value, 0x1000000 * ord(@$x{$i}) + ((ord(@$x{$i + 1}) << 16) | (ord(@$x{$i + 2}) << 8) | ord(@$x{$i + 3})), 0);
+		if($signed === true and bccomp($value, "9223372036854775807") == 1){
+			$value = bcadd($value, "-18446744073709551616");
 		}
 
-		return ($negative === true ? "-" . $value : $value);
+		return $value;
 	}
 
 	public static function writeLong($value){
 		$x = "";
-		if($value{0} === "-"){
-			$negative = true;
-			$value = bcadd($value, "1");
-			if($value{0} === "-"){
-				$value = substr($value, 1);
-			}
-		}else{
-			$negative = false;
+
+		if(bccomp($value, "0") == -1){
+			$value = bcadd($value, "18446744073709551616");
 		}
-		while(bccomp($value, "0", 0) > 0){
-			$temp = bcmod($value, "16777216");
-			$x = chr($temp >> 16) . chr($temp >> 8) . chr($temp) . $x;
-			$value = bcdiv($value, "16777216", 0);
-		}
-		$x = str_pad(substr($x, 0, 8), 8, "\x00", STR_PAD_LEFT);
-		if($negative === true){
-			$x = ~$x;
-		}
+
+		$x .= self::writeShort(bcmod(bcdiv($value, "281474976710656"), "65536"));
+		$x .= self::writeShort(bcmod(bcdiv($value, "4294967296"), "65536"));
+		$x .= self::writeShort(bcmod(bcdiv($value, "65536"), "65536"));
+		$x .= self::writeShort(bcmod($value, "65536"));
 
 		return $x;
 	}
