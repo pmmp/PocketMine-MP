@@ -26,6 +26,11 @@ namespace pocketmine\utils;
 
 use pocketmine\item\Item;
 
+
+/**
+ * WARNING: This class is available on the PocketMine-MP Zephir project.
+ * If this class is modified, remember to modify the PHP C extension.
+ */
 class Binary{
 	const BIG_ENDIAN = 0x00;
 	const LITTLE_ENDIAN = 0x01;
@@ -59,11 +64,11 @@ class Binary{
 	 * Writes a coded metadata string
 	 * TODO: Replace and move this to entity
 	 *
-	 * @param $data
+	 * @param array $data
 	 *
 	 * @return string
 	 */
-	public static function writeMetadata($data){
+	public static function writeMetadata(array $data){
 		$m = "";
 		foreach($data as $bottom => $d){
 			$m .= chr(($d[0] << 5) | ($bottom & 0b00011111));
@@ -81,8 +86,7 @@ class Binary{
 					$m .= self::writeLFloat($d[1]);
 					break;
 				case 4:
-					$m .= self::writeLShort(strlen($d[1]));
-					$m .= $data[1];
+					$m .= self::writeLShort(strlen($d[1])) . $d[1];
 					break;
 				case 5:
 					$m .= self::writeLShort($d[1][0]);

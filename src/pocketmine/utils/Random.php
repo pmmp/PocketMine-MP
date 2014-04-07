@@ -24,22 +24,23 @@ namespace pocketmine\utils;
 
 /**
  * Unsecure Random Number Generator, used for fast seeded values
+ * WARNING: This class is available on the PocketMine-MP Zephir project.
+ * If this class is modified, remember to modify the PHP C extension.
  */
 class Random{
 	private $z, $w;
 
 	/**
-	 * @param int|bool $seed Integer to be used as seed. If false, generates a Random one
+	 * @param int $seed Integer to be used as seed.
 	 */
-	public function __construct($seed = false){
+	public function __construct($seed = 0){
 		$this->setSeed($seed);
 	}
 
 	/**
-	 * @param int|bool $seed Integer to be used as seed. If false, generates a Random one
+	 * @param int $seed Integer to be used as seed.
 	 */
-	public function setSeed($seed = false){
-		$seed = $seed !== false ? (int) $seed : Binary::readInt(Utils::getRandomBytes(4, false));
+	public function setSeed($seed){
 		$this->z = $seed ^ 0xdeadbeef;
 		$this->w = $seed ^ 0xc0de1337;
 	}
