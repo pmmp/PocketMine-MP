@@ -514,8 +514,8 @@ HAS_POCKETMINE=""
 if [ "$HAS_ZEPHIR" == "yes" ]; then
 	echo -n "[C PocketMine extension] downloading latest..."
 	download_file https://github.com/PocketMine/PocketMine-MP-Zephir/archive/master.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
-	mv pocketmine-master/ext "$DIR/install_data/php/ext/pocketmine"
-	rm -r pocketmine-master/
+	mv PocketMine-MP-Zephir-master/ext "$DIR/install_data/php/ext/pocketmine"
+	rm -r PocketMine-MP-Zephir-master/
 	HAS_POCKETMINE="--enable-pocketmine"
 fi
 
