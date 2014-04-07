@@ -19,8 +19,9 @@
  *
 */
 
-namespace pocketmine\level;
+namespace pocketmine\level\format;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 /**
@@ -43,7 +44,7 @@ class PocketChunkParser{
 		$this->location = array();
 		console("[DEBUG] Loading Chunk Location table...", true, true, 2);
 		for($offset = 0; $offset < 0x1000; $offset += 4){
-			$data = Utils::readLInt(substr($this->raw, $offset, 4));
+			$data = Binary::readLInt(substr($this->raw, $offset, 4));
 			$sectors = $data & 0xff;
 			if($sectors === 0){
 				continue;
@@ -105,14 +106,14 @@ class PocketChunkParser{
 			}
 		}
 
-		return Utils::writeLInt(strlen($chunk)) . $chunk;
+		return Binary::writeLInt(strlen($chunk)) . $chunk;
 	}
 
 	public function parseChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;
 		$offset = $this->getOffset($X, $Z);
-		$len = Utils::readLInt(substr($this->raw, $offset, 4));
+		$len = Binary::readLInt(substr($this->raw, $offset, 4));
 		$offset += 4;
 		$chunk = array(
 			0 => array(), //Block

@@ -21,6 +21,7 @@
 
 namespace pocketmine\network\protocol;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class AddPlayerPacket extends DataPacket{
@@ -56,7 +57,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->putByte($this->pitch);
 		$this->putShort($this->unknown1);
 		$this->putShort($this->unknown2);
-		$this->put(Utils::writeMetadata($this->metadata));
+		$this->put(Binary::writeMetadata($this->metadata));
 	}
 
 }

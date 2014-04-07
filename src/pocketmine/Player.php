@@ -76,6 +76,7 @@ use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
+use pocketmine\utils\Binary;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 
@@ -1250,7 +1251,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$pk = new ServerHandshakePacket;
 				$pk->port = $this->port;
 				$pk->session = $packet->session;
-				$pk->session2 = Utils::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
+				$pk->session2 = Binary::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
 				$this->dataPacket($pk);
 				break;
 			case ProtocolInfo::CLIENT_HANDSHAKE_PACKET:

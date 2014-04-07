@@ -77,6 +77,7 @@ use pocketmine\scheduler\ServerScheduler;
 use pocketmine\scheduler\TickScheduler;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -899,7 +900,7 @@ class Server{
 				$generator = new Normal($options);
 			}
 		}
-		$gen = new WorldGenerator($this, $generator, $name, $seed === null ? Utils::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
+		$gen = new WorldGenerator($this, $generator, $name, $seed === null ? Binary::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
 		$gen->generate();
 		$gen->close();
 
@@ -1219,7 +1220,7 @@ class Server{
 
 		console("[INFO] Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
-		$this->serverID = Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
+		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
 		$this->interface = new ThreadedHandler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0" : $this->getIp());
 
 		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
@@ -1789,7 +1790,7 @@ class Server{
 		}
 
 		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", array(
-			"serverid" => Utils::readLong(substr(Utils::getUniqueID(true, $this->getIp() .":". $this->getPort()), 0, 8)),
+			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() .":". $this->getPort()), 0, 8)),
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
 			"memory_total" => $this->getConfigString("memory-limit"),

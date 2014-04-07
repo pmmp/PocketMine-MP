@@ -26,6 +26,7 @@
 namespace pocketmine\network\query;
 
 use pocketmine\Server;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class QueryHandler{
@@ -98,7 +99,7 @@ class QueryHandler{
 	}
 
 	public static function getTokenString($token, $salt){
-		return Utils::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
+		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
 	public function handle(QueryPacket $packet){
@@ -115,7 +116,7 @@ class QueryHandler{
 				$this->server->sendPacket($pk);
 				break;
 			case QueryPacket::STATISTICS: //Stat
-				$token = Utils::readInt(substr($packet->payload, 0, 4));
+				$token = Binary::readInt(substr($packet->payload, 0, 4));
 				if($token !== self::getTokenString($this->token, $packet->ip) and $token !== self::getTokenString($this->lastToken, $packet->ip)){
 					break;
 				}
@@ -130,7 +131,7 @@ class QueryHandler{
 					}
 					$pk->payload = $this->longData;
 				}else{
-					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->getDefaultLevel()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Utils::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
+					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->getDefaultLevel()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Binary::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
 				$pk->encode();
 				$this->server->sendPacket($pk);

@@ -42,11 +42,11 @@ if(!class_exists("\\pocketmine\\Server", false)){
 class ServerSuiteTest{
 	public function __construct(){
 		//binary things
-		testCase("Utils\\Utils::readTriad", Utils\Utils::readTriad("\x02\x01\x03"), 131331);
-		testCase("Utils\\Utils::readInt", Utils\Utils::readInt("\xff\x02\x01\x03"), -16645885);
-		testCase("Utils\\Utils::readFloat", abs(Utils\Utils::readFloat("\x49\x02\x01\x03") - 532496.1875) < 0.0001, true);
-		testCase("Utils\\Utils::readDouble", abs(Utils\Utils::readDouble("\x41\x02\x03\x04\x05\x06\x07\x08") - 147552.5024529) < 0.0001, true);
-		testCase("Utils\\Utils::readTriad", Utils\Utils::readLong("\x41\x02\x03\x04\x05\x06\x07\x08"), "4684309878217770760");
+		testCase("Utils\\Binary::readTriad", Utils\Binary::readTriad("\x02\x01\x03"), 131331);
+		testCase("Utils\\Binary::readInt", Utils\Binary::readInt("\xff\x02\x01\x03"), -16645885);
+		testCase("Utils\\Binary::readFloat", abs(Utils\Binary::readFloat("\x49\x02\x01\x03") - 532496.1875) < 0.0001, true);
+		testCase("Utils\\Binary::readDouble", abs(Utils\Binary::readDouble("\x41\x02\x03\x04\x05\x06\x07\x08") - 147552.5024529) < 0.0001, true);
+		testCase("Utils\\Binary::readTriad", Utils\Binary::readLong("\x41\x02\x03\x04\x05\x06\x07\x08"), "4684309878217770760");
 
 		//PocketMine-MP server startup
 		global $server;

@@ -78,6 +78,7 @@ use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class Packet extends NetworkPacket{
@@ -111,19 +112,19 @@ class Packet extends NetworkPacket{
 	}
 
 	private function getLong($unsigned = false){
-		return Utils::readLong($this->get(8), $unsigned);
+		return Binary::readLong($this->get(8), $unsigned);
 	}
 
 	private function getInt(){
-		return Utils::readInt($this->get(4));
+		return Binary::readInt($this->get(4));
 	}
 
 	private function getShort($unsigned = false){
-		return Utils::readShort($this->get(2), $unsigned);
+		return Binary::readShort($this->get(2), $unsigned);
 	}
 
 	private function getLTriad(){
-		return Utils::readTriad(strrev($this->get(3)));
+		return Binary::readTriad(strrev($this->get(3)));
 	}
 
 	private function getByte(){
@@ -506,11 +507,11 @@ class Packet extends NetworkPacket{
 					++$pointer;
 					if($type === false){
 						$payload .= "\x00";
-						$payload .= strrev(Utils::writeTriad($start));
-						$payload .= strrev(Utils::writeTriad($end));
+						$payload .= strrev(Binary::writeTriad($start));
+						$payload .= strrev(Binary::writeTriad($end));
 					}else{
-						$payload .= Utils::writeBool(true);
-						$payload .= strrev(Utils::writeTriad($start));
+						$payload .= Binary::writeBool(true);
+						$payload .= strrev(Binary::writeTriad($start));
 					}
 					++$records;
 				}
@@ -558,23 +559,23 @@ class Packet extends NetworkPacket{
 	}
 
 	protected function putLong($v){
-		$this->buffer .= Utils::writeLong($v);
+		$this->buffer .= Binary::writeLong($v);
 	}
 
 	protected function putInt($v){
-		$this->buffer .= Utils::writeInt($v);
+		$this->buffer .= Binary::writeInt($v);
 	}
 
 	protected function putShort($v){
-		$this->buffer .= Utils::writeShort($v);
+		$this->buffer .= Binary::writeShort($v);
 	}
 
 	protected function putTriad($v){
-		$this->buffer .= Utils::writeTriad($v);
+		$this->buffer .= Binary::writeTriad($v);
 	}
 
 	protected function putLTriad($v){
-		$this->buffer .= strrev(Utils::writeTriad($v));
+		$this->buffer .= strrev(Binary::writeTriad($v));
 	}
 
 	protected function putByte($v){

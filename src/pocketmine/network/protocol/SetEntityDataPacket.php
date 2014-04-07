@@ -21,6 +21,7 @@
 
 namespace pocketmine\network\protocol;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class SetEntityDataPacket extends DataPacket{
@@ -38,7 +39,7 @@ class SetEntityDataPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->put(Utils::writeMetadata($this->metadata));
+		$this->put(Binary::writeMetadata($this->metadata));
 	}
 
 }

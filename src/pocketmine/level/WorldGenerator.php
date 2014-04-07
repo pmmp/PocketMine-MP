@@ -24,6 +24,7 @@ namespace pocketmine\level;
 use pocketmine\level\generator\Generator;
 use pocketmine\pmf\LevelFormat;
 use pocketmine\Server;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
 
@@ -37,7 +38,7 @@ class WorldGenerator{
 	 * @param int       $seed
 	 */
 	public function __construct(Server $server, Generator $generator, $name, $seed = null){
-		$this->seed = $seed !== null ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
+		$this->seed = $seed !== null ? (int) $seed : Binary::readInt(Utils::getRandomBytes(4, false));
 		$this->random = new Random($this->seed);
 		$this->server = $server;
 		$this->path = $this->server->getDataPath() . "worlds/" . $name . "/";

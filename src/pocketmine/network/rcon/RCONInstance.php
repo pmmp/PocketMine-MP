@@ -21,6 +21,7 @@
 
 namespace pocketmine\network\rcon;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class RCONInstance extends \Thread{
@@ -49,11 +50,11 @@ class RCONInstance extends \Thread{
 	}
 
 	private function writePacket($client, $requestID, $packetType, $payload){
-		$pk = Utils::writeLInt((int) $requestID)
-			. Utils::writeLInt((int) $packetType)
+		$pk = Binary::writeLInt((int) $requestID)
+			. Binary::writeLInt((int) $packetType)
 			. $payload
 			. "\x00\x00"; //Terminate payload and packet
-		return socket_write($client, Utils::writeLInt(strlen($pk)) . $pk);
+		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
 	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
@@ -67,12 +68,12 @@ class RCONInstance extends \Thread{
 			return false;
 		}
 		@socket_set_block($client);
-		$size = Utils::readLInt($d);
+		$size = Binary::readLInt($d);
 		if($size < 0 or $size > 65535){
 			return false;
 		}
-		$requestID = Utils::readLInt(socket_read($client, 4));
-		$packetType = Utils::readLInt(socket_read($client, 4));
+		$requestID = Binary::readLInt(socket_read($client, 4));
+		$packetType = Binary::readLInt(socket_read($client, 4));
 		$payload = rtrim(socket_read($client, $size + 2)); //Strip two null bytes
 		return true;
 	}

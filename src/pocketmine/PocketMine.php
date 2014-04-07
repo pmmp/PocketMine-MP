@@ -77,6 +77,7 @@ namespace {
 }
 
 namespace pocketmine {
+	use pocketmine\utils\Binary;
 	use pocketmine\utils\TextFormat;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
@@ -358,6 +359,7 @@ namespace pocketmine {
 		define("pocketmine\\GIT_COMMIT", str_repeat("00", 20));
 	}
 
+	@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));
 	@ini_set("opcache.mmap_base", bin2hex(Utils::getRandomBytes(8, false))); //Fix OPCache address errors
 
 	if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){

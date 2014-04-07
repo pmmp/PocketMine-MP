@@ -21,6 +21,7 @@
 
 namespace pocketmine\network\protocol;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class AddMobPacket extends DataPacket{
@@ -50,7 +51,7 @@ class AddMobPacket extends DataPacket{
 		$this->putFloat($this->z);
 		$this->putByte($this->yaw);
 		$this->putByte($this->pitch);
-		$this->put(Utils::writeMetadata($this->metadata));
+		$this->put(Binary::writeMetadata($this->metadata));
 	}
 
 }

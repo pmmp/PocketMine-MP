@@ -39,7 +39,7 @@ class Random{
 	 * @param int|bool $seed Integer to be used as seed. If false, generates a Random one
 	 */
 	public function setSeed($seed = false){
-		$seed = $seed !== false ? (int) $seed : Utils::readInt(Utils::getRandomBytes(4, false));
+		$seed = $seed !== false ? (int) $seed : Binary::readInt(Utils::getRandomBytes(4, false));
 		$this->z = $seed ^ 0xdeadbeef;
 		$this->w = $seed ^ 0xc0de1337;
 	}
@@ -50,7 +50,7 @@ class Random{
 	 * @return int
 	 */
 	public function nextInt(){
-		return Utils::readInt($this->nextBytes(4)) & 0x7FFFFFFF;
+		return Binary::readInt($this->nextBytes(4)) & 0x7FFFFFFF;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		return Utils::readInt($this->nextBytes(4));
+		return Binary::readInt($this->nextBytes(4));
 	}
 
 	/**

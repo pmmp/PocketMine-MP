@@ -22,6 +22,7 @@
 namespace pocketmine\network\protocol;
 
 use pocketmine\item\Item;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 abstract class DataPacket extends \stdClass{
@@ -79,52 +80,52 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getLong($unsigned = false){
-		return Utils::readLong($this->get(8), $unsigned);
+		return Binary::readLong($this->get(8), $unsigned);
 	}
 
 	protected function putLong($v){
-		$this->buffer .= Utils::writeLong($v);
+		$this->buffer .= Binary::writeLong($v);
 	}
 
 	protected function getInt(){
-		return Utils::readInt($this->get(4));
+		return Binary::readInt($this->get(4));
 	}
 
 	protected function putInt($v){
-		$this->buffer .= Utils::writeInt($v);
+		$this->buffer .= Binary::writeInt($v);
 	}
 
 	protected function getShort($unsigned = false){
-		return Utils::readShort($this->get(2), $unsigned);
+		return Binary::readShort($this->get(2), $unsigned);
 	}
 
 	protected function putShort($v){
-		$this->buffer .= Utils::writeShort($v);
+		$this->buffer .= Binary::writeShort($v);
 	}
 
 	protected function getFloat(){
-		return Utils::readFloat($this->get(4));
+		return Binary::readFloat($this->get(4));
 	}
 
 	protected function putFloat($v){
-		$this->buffer .= Utils::writeFloat($v);
+		$this->buffer .= Binary::writeFloat($v);
 	}
 
 	protected function getTriad(){
-		return Utils::readTriad($this->get(3));
+		return Binary::readTriad($this->get(3));
 	}
 
 	protected function putTriad($v){
-		$this->buffer .= Utils::writeTriad($v);
+		$this->buffer .= Binary::writeTriad($v);
 	}
 
 
 	protected function getLTriad(){
-		return Utils::readTriad(strrev($this->get(3)));
+		return Binary::readTriad(strrev($this->get(3)));
 	}
 
 	protected function putLTriad($v){
-		$this->buffer .= strrev(Utils::writeTriad($v));
+		$this->buffer .= strrev(Binary::writeTriad($v));
 	}
 
 	protected function getByte(){

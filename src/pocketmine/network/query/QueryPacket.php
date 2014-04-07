@@ -22,6 +22,7 @@
 namespace pocketmine\network\query;
 
 use pocketmine\network\Packet;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class QueryPacket extends Packet{
@@ -34,13 +35,13 @@ class QueryPacket extends Packet{
 
 	public function decode(){
 		$this->packetType = ord($this->buffer{2});
-		$this->sessionID = Utils::readInt(substr($this->buffer, 3, 4));
+		$this->sessionID = Binary::readInt(substr($this->buffer, 3, 4));
 		$this->payload = substr($this->buffer, 7);
 	}
 
 	public function encode(){
 		$this->buffer .= chr($this->packetType);
-		$this->buffer .= Utils::writeInt($this->sessionID);
+		$this->buffer .= Binary::writeInt($this->sessionID);
 		$this->buffer .= $this->payload;
 	}
 }

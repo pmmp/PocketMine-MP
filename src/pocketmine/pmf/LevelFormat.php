@@ -25,6 +25,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class LevelFormat extends PMF{
@@ -95,18 +96,18 @@ class LevelFormat extends PMF{
 		@ftruncate($this->fp, 5);
 		$this->seek(5);
 		$this->write(chr($this->levelData["version"]));
-		$this->write(Utils::writeShort(strlen($this->levelData["name"])) . $this->levelData["name"]);
-		$this->write(Utils::writeInt($this->levelData["seed"]));
-		$this->write(Utils::writeInt($this->levelData["time"]));
-		$this->write(Utils::writeFloat($this->levelData["spawnX"]));
-		$this->write(Utils::writeFloat($this->levelData["spawnY"]));
-		$this->write(Utils::writeFloat($this->levelData["spawnZ"]));
+		$this->write(Binary::writeShort(strlen($this->levelData["name"])) . $this->levelData["name"]);
+		$this->write(Binary::writeInt($this->levelData["seed"]));
+		$this->write(Binary::writeInt($this->levelData["time"]));
+		$this->write(Binary::writeFloat($this->levelData["spawnX"]));
+		$this->write(Binary::writeFloat($this->levelData["spawnY"]));
+		$this->write(Binary::writeFloat($this->levelData["spawnZ"]));
 		$this->write(chr($this->levelData["height"]));
-		$this->write(Utils::writeShort(strlen($this->levelData["generator"])) . $this->levelData["generator"]);
+		$this->write(Binary::writeShort(strlen($this->levelData["generator"])) . $this->levelData["generator"]);
 		$settings = serialize($this->levelData["generatorSettings"]);
-		$this->write(Utils::writeShort(strlen($settings)) . $settings);
+		$this->write(Binary::writeShort(strlen($settings)) . $settings);
 		$extra = zlib_encode($this->levelData["extra"], self::ZLIB_ENCODING, self::ZLIB_LEVEL);
-		$this->write(Utils::writeShort(strlen($extra)) . $extra);
+		$this->write(Binary::writeShort(strlen($extra)) . $extra);
 	}
 
 	private function createBlank(){
@@ -125,12 +126,12 @@ class LevelFormat extends PMF{
 
 			return false;
 		}
-		$this->levelData["name"] = $this->read(Utils::readShort($this->read(2), false));
-		$this->levelData["seed"] = Utils::readInt($this->read(4));
-		$this->levelData["time"] = Utils::readInt($this->read(4));
-		$this->levelData["spawnX"] = Utils::readFloat($this->read(4));
-		$this->levelData["spawnY"] = Utils::readFloat($this->read(4));
-		$this->levelData["spawnZ"] = Utils::readFloat($this->read(4));
+		$this->levelData["name"] = $this->read(Binary::readShort($this->read(2), false));
+		$this->levelData["seed"] = Binary::readInt($this->read(4));
+		$this->levelData["time"] = Binary::readInt($this->read(4));
+		$this->levelData["spawnX"] = Binary::readFloat($this->read(4));
+		$this->levelData["spawnY"] = Binary::readFloat($this->read(4));
+		$this->levelData["spawnZ"] = Binary::readFloat($this->read(4));
 		if($this->levelData["version"] === 0){
 			$this->read(1);
 			$this->levelData["height"] = ord($this->read(1));
@@ -139,11 +140,11 @@ class LevelFormat extends PMF{
 			if($this->levelData["height"] !== 8){
 				return false;
 			}
-			$this->levelData["generator"] = $this->read(Utils::readShort($this->read(2), false));
-			$this->levelData["generatorSettings"] = unserialize($this->read(Utils::readShort($this->read(2), false)));
+			$this->levelData["generator"] = $this->read(Binary::readShort($this->read(2), false));
+			$this->levelData["generatorSettings"] = unserialize($this->read(Binary::readShort($this->read(2), false)));
 
 		}
-		$this->levelData["extra"] = @zlib_decode($this->read(Utils::readShort($this->read(2), false)));
+		$this->levelData["extra"] = @zlib_decode($this->read(Binary::readShort($this->read(2), false)));
 
 		$upgrade = false;
 		if($this->levelData["version"] === 0){
@@ -166,7 +167,7 @@ class LevelFormat extends PMF{
 			$X = $index & 0x0F;
 			$Z = $index >> 4;
 
-			$bitflags = Utils::readShort($this->read(2));
+			$bitflags = Binary::readShort($this->read(2));
 			$oldPath = dirname($this->file) . "/chunks/" . $Z . "." . $X . ".pmc";
 			$chunkOld = gzopen($oldPath, "rb");
 			$newPath = dirname($this->file) . "/chunks/" . (($X ^ $Z) & 0xff) . "/" . $Z . "." . $X . ".pmc";
@@ -196,7 +197,7 @@ class LevelFormat extends PMF{
 		$nbtCodec = new NBT(NBT::BIG_ENDIAN);
 		$nbtCodec->setData($nbt);
 		$namedtag = $nbtCodec->write();
-		$namedtag = Utils::writeInt(strlen($namedtag)) . $namedtag;
+		$namedtag = Binary::writeInt(strlen($namedtag)) . $namedtag;
 		foreach(glob(dirname($this->file) . "/chunks/*/*.*.pmc") as $chunkFile){
 			$oldChunk = zlib_decode(file_get_contents($chunkFile));
 			$newChunk = substr($oldChunk, 0, 5);
@@ -291,10 +292,10 @@ class LevelFormat extends PMF{
 
 		$this->chunkInfo[$index] = array(
 			0 => ord($chunk{0}),
-			1 => Utils::readInt(substr($chunk, 1, 4)),
+			1 => Binary::readInt(substr($chunk, 1, 4)),
 		);
 		$offset += 5;
-		$len = Utils::readInt(substr($chunk, $offset, 4));
+		$len = Binary::readInt(substr($chunk, $offset, 4));
 		$offset += 4;
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->read(substr($chunk, $offset, $len));
@@ -705,11 +706,11 @@ class LevelFormat extends PMF{
 		$this->chunkChange[$index][-1] = false;
 		$chunk = "";
 		$chunk .= chr($bitmap);
-		$chunk .= Utils::writeInt($this->chunkInfo[$index][1]);
+		$chunk .= Binary::writeInt($this->chunkInfo[$index][1]);
 		$namedtag = new NBT(NBT::BIG_ENDIAN);
 		$namedtag->setData($this->chunkInfo[$index][2]);
 		$namedtag = $namedtag->write();
-		$chunk .= Utils::writeInt(strlen($namedtag)) . $namedtag;
+		$chunk .= Binary::writeInt(strlen($namedtag)) . $namedtag;
 		$chunk .= $this->chunkInfo[$index][3]; //biomes
 		for($Y = 0; $Y < 8; ++$Y){
 			$t = 1 << $Y;
