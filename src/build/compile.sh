@@ -52,11 +52,12 @@ COMPILE_TARGET=""
 COMPILE_OPENSSL="no"
 COMPILE_CURL="default"
 COMPILE_FANCY="no"
+HAS_ZEPHIR="no"
 IS_CROSSCOMPILE="no"
 IS_WINDOWS="no"
 DO_OPTIMIZE="no"
 DO_STATIC="no"
-while getopts "::t:oj:srcxff:" OPTION; do
+while getopts "::t:oj:srcxzff:" OPTION; do
 	case $OPTION in
 		t)
 			echo "[opt] Set target to $OPTARG"
@@ -85,6 +86,10 @@ while getopts "::t:oj:srcxff:" OPTION; do
 		s)
 			echo "[opt] Will compile everything statically"
 			DO_STATIC="yes"
+			;;
+		z)
+			echo "[opt] Will add PocketMine C PHP extension"
+			HAS_ZEPHIR="yes"
 			;;
 		f)
 			echo "[opt] Enabling abusive optimizations..."
@@ -505,6 +510,14 @@ download_file "http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz" | tar -zx
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
+HAS_POCKETMINE=""
+if [ "$HAS_ZEPHIR" == "yes" ]; then
+	echo -n "[C PocketMine extension] downloading latest..."
+	download_file https://github.com/PocketMine/PocketMine-MP-Zephir/archive/master.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
+	mv pocketmine-master/ext "$DIR/install_data/php/ext/pocketmine"
+	rm -r pocketmine-master/
+	HAS_POCKETMINE="--enable-pocketmine"
+fi
 
 #uopz
 #echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
@@ -631,6 +644,7 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --with-yaml="$DIR/bin/php5" \
 $HAVE_NCURSES \
 $HAVE_READLINE \
+$HAS_POCKETMINE \
 --enable-mbstring \
 --enable-calendar \
 --enable-pthreads \
