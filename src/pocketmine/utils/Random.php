@@ -29,9 +29,7 @@ namespace pocketmine\utils;
  */
 class Random{
 
-	protected $x;
-	protected $y;
-	protected $z;
+	protected $seed;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
@@ -47,10 +45,7 @@ class Random{
 	 * @param int $seed Integer to be used as seed.
 	 */
 	public function setSeed($seed){
-		$seed = crc32($seed);
-		$this->x = ($seed ^ 1076543210) & INT32_MASK;
-		$this->z = ($seed ^ 0xdeadc0de) & INT32_MASK;
-		$this->y = ($seed ^ 1122334455) & INT32_MASK;
+		$this->seed = crc32(Binary::writeInt($seed));
 	}
 
 	/**
@@ -68,24 +63,8 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		if(INT32_MASK === -1){ //32 bit, do hacky things to shift sign
-			$this->x ^= $this->x << 16;
-			$hasBit = $this->x < 1;
-			$t = ($hasBit === true ? $this->x ^ ~0x7fffffff : $this->x) >> 5;
-			$this->x ^= ($hasBit === true ? $t ^ ~0x7fffffff : $t);
-			$this->x ^= $this->x << 1;
-		}else{ //64 bit
-			$this->x ^= ($this->x << 16) & INT32_MASK;
-			$this->x ^= $this->x >> 5;
-			$this->x ^= ($this->x << 1) & INT32_MASK;
-		}
-
-		$t = $this->x;
-		$this->x = $this->y;
-		$this->y = $this->z;
-		$this->z = $t ^ $this->x ^ $this->y;
-
-		$t = $this->z;
+		$t = crc32(Binary::writeInt($this->seed));
+		$this->seed ^= $t;
 
 		if($t > 2147483647){
 			$t -= 4294967296;
