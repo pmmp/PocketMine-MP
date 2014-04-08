@@ -48,9 +48,9 @@ class Random{
 	 */
 	public function setSeed($seed){
 		$seed = crc32($seed);
-		$this->x = ($seed ^ 9876543210) % 0x7fffffff;
-		$this->z = ($seed ^ -123456789) % 0x7fffffff;
-		$this->y = ($seed ^ 1122334455) % 0x7fffffff;
+		$this->x = ($seed ^ 1076543210) & INT32_MASK;
+		$this->z = ($seed ^ 0xdeadc0de) & INT32_MASK;
+		$this->y = ($seed ^ 1122334455) & INT32_MASK;
 	}
 
 	/**
@@ -68,9 +68,9 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		$this->x ^= ($this->x << 16) & 0xffffffff;
-		$this->x ^= ($this->x >> 5) & 0xffffffff;
-		$this->x ^= ($this->x << 1) & 0xffffffff;
+		$this->x ^= ($this->x << 16) & INT32_MASK;
+		$this->x ^= ($this->x >> 5) & INT32_MASK;
+		$this->x ^= ($this->x << 1) & INT32_MASK;
 
 		$t = $this->x;
 		$this->x = $this->y;
@@ -82,7 +82,7 @@ class Random{
 		if($t > 2147483647){
 			$t -= 4294967296;
 		}
-		return (int) $t % 0x7fffffff;
+		return (int) $t;
 	}
 
 	/**
