@@ -48,9 +48,9 @@ class Random{
 	 */
 	public function setSeed($seed){
 		$seed = crc32($seed);
-		$this->x = $seed ^ 0x0badc0de;
-		$this->z = $seed ^ -123456789;
-		$this->y = $seed ^ 0x12345678;
+		$this->x = ($seed ^ 9876543210) % 0x7fffffff;
+		$this->z = ($seed ^ -123456789) % 0x7fffffff;
+		$this->y = ($seed ^ 1122334455) % 0x7fffffff;
 	}
 
 	/**
