@@ -28,12 +28,18 @@ namespace pocketmine\utils;
  * If this class is modified, remember to modify the PHP C extension.
  */
 class Random{
-	private $z, $w;
+
+	protected $x;
+	protected $y;
+	protected $z;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
 	 */
-	public function __construct($seed = 0){
+	public function __construct($seed = -1){
+		if($seed == -1){
+			$seed = time();
+		}
 		$this->setSeed($seed);
 	}
 
@@ -41,8 +47,10 @@ class Random{
 	 * @param int $seed Integer to be used as seed.
 	 */
 	public function setSeed($seed){
+		$seed = 0xffffffff & crc32($seed);
+		$this->x = $seed ^ 0x0badc0de;
 		$this->z = $seed ^ 0xdeadbeef;
-		$this->w = $seed ^ 0xc0de1337;
+		$this->y = $seed ^ 0x12345678;
 	}
 
 	/**
@@ -51,7 +59,7 @@ class Random{
 	 * @return int
 	 */
 	public function nextInt(){
-		return Binary::readInt($this->nextBytes(4)) & 0x7FFFFFFF;
+		return $this->nextSignedInt() & 0x7FFFFFFF;
 	}
 
 	/**
@@ -60,7 +68,21 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		return Binary::readInt($this->nextBytes(4));
+		$this->x ^= ($this->x << 16);
+		$this->x ^= ($this->x >> 5);
+		$this->x ^= ($this->x << 1);
+
+		$t = $this->x;
+		$this->x = $this->y;
+		$this->y = $this->z;
+		$this->z = $t ^ $this->x ^ $this->y;
+
+		$t = $this->z;
+
+		if($t > 2147483647){
+			$t -= 4294967296;
+		}
+		return (int) $t;
 	}
 
 	/**
@@ -79,24 +101,6 @@ class Random{
 	 */
 	public function nextSignedFloat(){
 		return $this->nextSignedInt() / 0x7FFFFFFF;
-	}
-
-	/**
-	 * Returns $byteCount random bytes
-	 *
-	 * @param $byteCount
-	 *
-	 * @return string
-	 */
-	public function nextBytes($byteCount){
-		$bytes = "";
-		while(strlen($bytes) < $byteCount){
-			$this->z = 36969 * ($this->z & 65535) + ($this->z >> 16);
-			$this->w = 18000 * ($this->w & 65535) + ($this->w >> 16);
-			$bytes .= pack("N", ($this->z << 16) + $this->w);
-		}
-
-		return substr($bytes, 0, $byteCount);
 	}
 
 	/**
