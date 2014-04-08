@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,13 +15,16 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
 namespace pocketmine\math;
 
-
+/**
+ * WARNING: This class is available on the PocketMine-MP Zephir project.
+ * If this class is modified, remember to modify the PHP C extension.
+ */
 class Vector3{
 	public $x;
 	public $y;
@@ -58,27 +61,27 @@ class Vector3{
 	}
 
 	public function getRight(){
-		return $this->getX();
+		return $this->x;
 	}
 
 	public function getUp(){
-		return $this->getY();
+		return $this->y;
 	}
 
 	public function getForward(){
-		return $this->getZ();
+		return $this->z;
 	}
 
 	public function getSouth(){
-		return $this->getX();
+		return $this->x;
 	}
 
 	public function getWest(){
-		return $this->getZ();
+		return $this->z;
 	}
 
-	public function add($x = 0, $y = 0, $z = 0){
-		if(($x instanceof Vector3) === true){
+	public function add($x, $y = 0, $z = 0){
+		if($x instanceof Vector3){
 			return $this->add($x->x, $x->y, $x->z);
 		}else{
 			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
@@ -86,7 +89,7 @@ class Vector3{
 	}
 
 	public function subtract($x = 0, $y = 0, $z = 0){
-		if(($x instanceof Vector3) === true){
+		if($x instanceof Vector3){
 			return $this->add(-$x->x, -$x->y, -$x->z);
 		}else{
 			return $this->add(-$x, -$y, -$z);
@@ -117,20 +120,20 @@ class Vector3{
 		return new Vector3(abs($this->x), abs($this->y), abs($this->z));
 	}
 
-	public function getSide($side){
+	public function getSide($side, $step = 1){
 		switch((int) $side){
 			case 0:
-				return new Vector3($this->x, $this->y - 1, $this->z);
+				return new Vector3($this->x, $this->y - (int) $step, $this->z);
 			case 1:
-				return new Vector3($this->x, $this->y + 1, $this->z);
+				return new Vector3($this->x, $this->y + (int) $step, $this->z);
 			case 2:
-				return new Vector3($this->x, $this->y, $this->z - 1);
+				return new Vector3($this->x, $this->y, $this->z - (int) $step);
 			case 3:
-				return new Vector3($this->x, $this->y, $this->z + 1);
+				return new Vector3($this->x, $this->y, $this->z + (int) $step);
 			case 4:
-				return new Vector3($this->x - 1, $this->y, $this->z);
+				return new Vector3($this->x - (int) $step, $this->y, $this->z);
 			case 5:
-				return new Vector3($this->x + 1, $this->y, $this->z);
+				return new Vector3($this->x + (int) $step, $this->y, $this->z);
 			default:
 				return $this;
 		}
@@ -145,8 +148,10 @@ class Vector3{
 	}
 
 	public function maxPlainDistance($x = 0, $z = 0){
-		if(($x instanceof Vector3) === true){
+		if($x instanceof Vector3){
 			return $this->maxPlainDistance($x->x, $x->z);
+		}elseif($x instanceof Vector2){
+			return $this->maxPlainDistance($x->x, $x->y);
 		}else{
 			return max(abs($this->x - $x), abs($this->z - $z));
 		}
