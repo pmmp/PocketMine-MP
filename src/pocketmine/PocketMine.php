@@ -325,7 +325,12 @@ namespace pocketmine {
 	}
 
 	if(!extension_loaded("uopz")){
-		console("[NOTICE] Couldn't find the uopz extension. Some functions may be limited", true, true, 0);
+		//console("[NOTICE] Couldn't find the uopz extension. Some functions may be limited", true, true, 0);
+	}
+
+	if(extension_loaded("pocketmine") and version_compare(phpversion("pocketmine"), "0.0.1") < 0){
+		console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.1.", true, true, 0);
+		++$errors;
 	}
 
 	if(!extension_loaded("curl")){
