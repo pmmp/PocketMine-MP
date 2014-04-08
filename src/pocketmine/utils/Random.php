@@ -47,7 +47,7 @@ class Random{
 	 * @param int $seed Integer to be used as seed.
 	 */
 	public function setSeed($seed){
-		$seed = crc32($seed) % 0x7fffffff;
+		$seed = crc32($seed);
 		$this->x = $seed ^ 0x0badc0de;
 		$this->z = $seed ^ -123456789;
 		$this->y = $seed ^ 0x12345678;
@@ -91,7 +91,7 @@ class Random{
 	 * @return float
 	 */
 	public function nextFloat(){
-		return $this->nextInt() / 0x7FFFFFFF;
+		return $this->nextInt() / 0x7fffffff;
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Random{
 	 * @return float
 	 */
 	public function nextSignedFloat(){
-		return $this->nextSignedInt() / 0x7FFFFFFF;
+		return $this->nextSignedInt() / 0x7fffffff;
 	}
 
 	/**
