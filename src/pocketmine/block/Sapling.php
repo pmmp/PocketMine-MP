@@ -60,7 +60,7 @@ class Sapling extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
+			Tree::growTree($this->level, $this, new Random(mt_rand()), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}
@@ -83,7 +83,7 @@ class Sapling extends Flowable{
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
 				if(($this->meta & 0x08) === 0x08){
-					Tree::growTree($this->level, $this, new Random(), $this->meta & 0x03);
+					Tree::growTree($this->level, $this, new Random(mt_rand()), $this->meta & 0x03);
 				}else{
 					$this->meta |= 0x08;
 					$this->level->setBlock($this, $this, true, false, true);
