@@ -95,8 +95,8 @@ while getopts "::t:oj:srcxzff:" OPTION; do
 		f)
 			echo "[opt] Enabling abusive optimizations..."
 			DO_OPTIMIZE="yes"
-			ffast_math="-fno-math-errno -funsafe-math-optimizations -fno-trapping-math -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fcx-limited-range" #workaround SQLite3 fail
-			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $ffast_math -fno-signed-zeros -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funroll-loops -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -ftracer -ftree-loop-im -fivopts"
+			ffast_math="-fno-math-errno -funsafe-math-optimizations -fno-signed-zeros -fno-trapping-math -ffinite-math-only -fno-rounding-math -fno-signaling-nans -fcx-limited-range" #workaround SQLite3 fail
+			CFLAGS="$CFLAGS -O2 -DSQLITE_HAVE_ISNAN $ffast_math -funsafe-loop-optimizations -fomit-frame-pointer -frename-registers -funswitch-loops -fpredictive-commoning -ftree-vectorize -ftracer -ftree-loop-im -fivopts"
 			if [ "$OPTARG" == "arm" ]; then
 				CFLAGS="$CFLAGS -mfloat-abi=softfp -mfpu=vfp"
 			elif [ "$OPTARG" == "x86_64" ]; then
