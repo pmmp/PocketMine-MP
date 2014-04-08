@@ -47,9 +47,9 @@ class Random{
 	 * @param int $seed Integer to be used as seed.
 	 */
 	public function setSeed($seed){
-		$seed = 0xffffffff & crc32($seed);
+		$seed = crc32($seed) % 0x7fffffff;
 		$this->x = $seed ^ 0x0badc0de;
-		$this->z = $seed ^ 0xdeadbeef;
+		$this->z = $seed ^ -123456789;
 		$this->y = $seed ^ 0x12345678;
 	}
 
@@ -59,7 +59,7 @@ class Random{
 	 * @return int
 	 */
 	public function nextInt(){
-		return $this->nextSignedInt() & 0x7FFFFFFF;
+		return $this->nextSignedInt() & 0x7fffffff;
 	}
 
 	/**
@@ -68,9 +68,9 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		$this->x ^= ($this->x << 16);
-		$this->x ^= ($this->x >> 5);
-		$this->x ^= ($this->x << 1);
+		$this->x ^= ($this->x << 16) & 0xffffffff;
+		$this->x ^= ($this->x >> 5) & 0xffffffff;
+		$this->x ^= ($this->x << 1) & 0xffffffff;
 
 		$t = $this->x;
 		$this->x = $this->y;
