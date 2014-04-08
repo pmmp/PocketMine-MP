@@ -332,8 +332,8 @@ namespace pocketmine {
 		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
 			console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.1.", true, true, 0);
 			++$errors;
-		}elseif(version_compare(phpversion("pocketmine"), "0.0.2") > 0){
-			console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.2.", true, true, 0);
+		}elseif(version_compare(phpversion("pocketmine"), "0.0.3") > 0){
+			console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.3.", true, true, 0);
 			++$errors;
 		}
 	}
