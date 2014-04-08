@@ -9,6 +9,7 @@ READLINE_VERSION="6.3"
 NCURSES_VERSION="5.9"
 PHPNCURSES_VERSION="1.0.2"
 PTHREADS_VERSION="2.0.4"
+PHP_POCKETMINE_VERSION="3f780a57cf658687245c735534d0c0943ba798ef"
 UOPZ_VERSION="2.0.3"
 WEAKREF_VERSION="0.2.2"
 PHPYAML_VERSION="1.1.1"
@@ -512,10 +513,10 @@ echo " done!"
 
 HAS_POCKETMINE=""
 if [ "$HAS_ZEPHIR" == "yes" ]; then
-	echo -n "[C PocketMine extension] downloading latest..."
-	download_file https://github.com/PocketMine/PocketMine-MP-Zephir/archive/master.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
-	mv PocketMine-MP-Zephir-master/pocketmine/ext "$DIR/install_data/php/ext/pocketmine"
-	rm -r PocketMine-MP-Zephir-master/
+	echo -n "[C PocketMine extension] downloading $PHP_POCKETMINE_VERSION..."
+	download_file https://github.com/PocketMine/PocketMine-MP-Zephir/archive/$PHP_POCKETMINE_VERSION.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
+	mv PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/pocketmine/ext "$DIR/install_data/php/ext/pocketmine"
+	rm -r PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/
 	HAS_POCKETMINE="--enable-pocketmine"
 	echo " done!"
 fi
