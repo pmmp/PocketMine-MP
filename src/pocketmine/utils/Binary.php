@@ -68,7 +68,7 @@ class Binary{
 	public static function writeMetadata(array $data){
 		$m = "";
 		foreach($data as $bottom => $d){
-			$m .= chr(($d[0] << 5) | ($bottom & 0b00011111));
+			$m .= chr(($d[0] << 5) | ($bottom & 0x1F));
 			switch($d[0]){
 				case 0:
 					$m .= self::writeByte($d[1]);
