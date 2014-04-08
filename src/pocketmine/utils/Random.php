@@ -68,9 +68,17 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		$this->x ^= ($this->x << 16) & INT32_MASK;
-		$this->x ^= ($this->x >> 5) & INT32_MASK;
-		$this->x ^= ($this->x << 1) & INT32_MASK;
+		if(INT32_MASK === -1){ //32 bit, do hacky things to shift sign
+			$this->x ^= $this->x << 16;
+			$hasBit = $this->x < 1;
+			$t = ($hasBit === true ? $this->x ^ ~0x7fffffff : $this->x) >> 5;
+			$this->x ^= ($hasBit === true ? $t ^ ~0x7fffffff : $t);
+			$this->x ^= $this->x << 1;
+		}else{ //64 bit
+			$this->x ^= ($this->x << 16) & INT32_MASK;
+			$this->x ^= $this->x >> 5;
+			$this->x ^= ($this->x << 1) & INT32_MASK;
+		}
 
 		$t = $this->x;
 		$this->x = $this->y;
