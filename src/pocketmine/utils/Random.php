@@ -82,7 +82,7 @@ class Random{
 		if($t > 2147483647){
 			$t -= 4294967296;
 		}
-		return (int) $t;
+		return (int) $t % 0x7fffffff;
 	}
 
 	/**
