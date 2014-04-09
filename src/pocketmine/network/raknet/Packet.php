@@ -95,7 +95,7 @@ class Packet extends NetworkPacket{
 	}
 
 	protected function get($len){
-		if($len <= 0){
+		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
 
 			return "";

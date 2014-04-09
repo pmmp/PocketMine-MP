@@ -65,7 +65,7 @@ for($i = $iterations; $i > 0; --$i){
 	$random->nextSignedInt();
 }
 $taken = microtime(true) - $start;
-$score += $taken / $expect;
+$score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
@@ -78,7 +78,7 @@ for($i = $iterations; $i > 0; --$i){
 	$noise->getNoise2D($i, $i ^ 0xdead);
 }
 $taken = microtime(true) - $start;
-$score += $taken / $expect;
+$score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
@@ -91,7 +91,7 @@ for($i = $iterations; $i > 0; --$i){
 	$noise->getNoise2D($i, $i ^ 0xdead);
 }
 $taken = microtime(true) - $start;
-$score += $taken / $expect;
+$score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
@@ -104,7 +104,7 @@ for($i = $iterations; $i > 0; --$i){
 	$vector->distance(new Vector3(600, 300, 600));
 }
 $taken = microtime(true) - $start;
-$score += $taken / $expect;
+$score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
@@ -116,14 +116,14 @@ for($i = $iterations; $i > 0; --$i){
 	@file_exists("./$i.example");
 }
 $taken = microtime(true) - $start;
-$score += $taken / $expect;
+$score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
 
-$expect = 12.1;
+$expect = 4.5;
 echo "[*] Simple Packet decoding [$expect]... ";
-$packet = hex2bin("8400000000000815");
+$packet = hex2bin("8401000000000815");
 $start = microtime(true);
 for($i = $iterations; $i > 0; --$i){
 	$pk = new Packet(ord($packet{0}));
@@ -132,11 +132,11 @@ for($i = $iterations; $i > 0; --$i){
 }
 
 $taken = microtime(true) - $start;
-$score += $taken / $expect;
+$score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
 
-echo "\n\n[*] Total score (~1000 good; less is better): ".round(($score / $tests) * 1000, 3)."\n";
+echo "\n\n[*] Total score (~1000 good; less is better): ".round($score / $tests, 3)."\n";
 
 
