@@ -21,6 +21,7 @@
 
 use pocketmine\level\generator\noise\Perlin;
 use pocketmine\level\generator\noise\Simplex;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\raknet\Packet;
 use pocketmine\utils\Binary;
@@ -110,6 +111,19 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
+$expect = 0.4;
+echo "[*] Measuring AA Bounding Box [$expect]... ";
+$bb = new AxisAlignedBB(12, 219, 21, 15, 59, 51);
+$start = microtime(true);
+for($i = $iterations; $i > 0; --$i){
+	$bb = $bb->getOffsetBoundingBox(1, 2, -1);
+}
+$taken = microtime(true) - $start;
+$score += 1000 * ($taken / $expect);
+++$tests;
+echo round($taken, 6)."s\n";
+
+
 $expect = 2.5;
 echo "[*] Measuring file operations [$expect]... ";
 $start = microtime(true);
@@ -123,7 +137,7 @@ echo round($taken, 6)."s\n";
 
 
 $expect = 4.5;
-echo "[*] Simple Packet decoding [$expect]... ";
+echo "[*] Measuring Simple Packet decoding [$expect]... ";
 $packet = hex2bin("8401000000000815");
 $start = microtime(true);
 for($i = $iterations; $i > 0; --$i){
@@ -139,7 +153,7 @@ echo round($taken, 6)."s\n";
 
 
 $expect = 0.1;
-echo "[*] microtime() operations [$expect]... ";
+echo "[*] Measuring microtime() operations [$expect]... ";
 $start = microtime(true);
 for($i = $iterations; $i > 0; --$i){
 	microtime(true);
