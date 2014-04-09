@@ -109,7 +109,7 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
-$expect = 5.5;
+$expect = 2.5;
 echo "[*] Measuring file operations [$expect]... ";
 $start = microtime(true);
 for($i = $iterations; $i > 0; --$i){
