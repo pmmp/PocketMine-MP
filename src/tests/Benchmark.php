@@ -46,6 +46,7 @@ $autoloader->register(true);
 @define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 echo "=== PocketMine Benchmark suite ===\n";
+echo "[*] uname -a: ".php_uname("a")."\n";
 if(extension_loaded("pocketmine")){
 	echo "[*] PocketMine native PHP extension v".phpversion("pocketmine")." loaded.\n";
 }
@@ -136,6 +137,18 @@ $score += 1000 * ($taken / $expect);
 ++$tests;
 echo round($taken, 6)."s\n";
 
+
+$expect = 0.5;
+echo "[*] microtime() operations [$expect]... ";
+$start = microtime(true);
+for($i = $iterations; $i > 0; --$i){
+	microtime(true);
+}
+
+$taken = microtime(true) - $start;
+$score += 1000 * ($taken / $expect);
+++$tests;
+echo round($taken, 6)."s\n";
 
 echo "\n\n[*] Total score (~1000 good; less is better): ".round($score / $tests, 3)."\n";
 
