@@ -138,7 +138,7 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
-$expect = 0.5;
+$expect = 0.1;
 echo "[*] microtime() operations [$expect]... ";
 $start = microtime(true);
 for($i = $iterations; $i > 0; --$i){
