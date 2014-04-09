@@ -59,7 +59,7 @@ $tests = 0;
 echo "[*] Using $iterations iterations\n";
 
 
-$expect = 0.3;
+$expect = 0.2;
 echo "[*] Measuring Random integer generation [$expect]... ";
 $random = new Random(1337);
 $start = microtime(true);
@@ -72,7 +72,7 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
-$expect = 1.2;
+$expect = 0.95;
 echo "[*] Measuring Simplex noise (8 octaves) [$expect]... ";
 $noise = new Simplex(new Random(0), 8, 0.5, 8);
 $start = microtime(true);
@@ -85,7 +85,7 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
-$expect = 3.5;
+$expect = 2.9;
 echo "[*] Measuring Perlin noise (8 octaves) [$expect]... ";
 $noise = new Perlin(new Random(0), 8, 0.5, 8);
 $start = microtime(true);
@@ -98,7 +98,7 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
-$expect = 0.8;
+$expect = 0.6;
 echo "[*] Measuring Vector3 creation & distance [$expect]... ";
 $vector = new Vector3(1337, 31337, 0xff);
 $start = microtime(true);
@@ -136,7 +136,7 @@ $score += 1000 * ($taken / $expect);
 echo round($taken, 6)."s\n";
 
 
-$expect = 4.5;
+$expect = 3.75;
 echo "[*] Measuring Simple Packet decoding [$expect]... ";
 $packet = hex2bin("8401000000000815");
 $start = microtime(true);
