@@ -28,7 +28,7 @@ namespace pocketmine\tile;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\pmf\LevelFormat;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\Server;
 
 abstract class Tile extends Position{

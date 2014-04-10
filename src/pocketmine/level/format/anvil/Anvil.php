@@ -33,4 +33,9 @@ class Anvil implements LevelFormat{
 	public static function isValid($path){
 		return file_exists(realpath($path) . "region/");
 	}
+
+	public static function getRegionIndex($chunkX, $chunkZ, &$x, &$z){
+		$x = $chunkX >> 5;
+		$z = $chunkZ >> 5;
+	}
 }

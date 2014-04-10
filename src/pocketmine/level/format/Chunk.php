@@ -22,6 +22,7 @@
 namespace pocketmine\level\format;
 
 interface Chunk{
+	const SECTION_COUNT = 8;
 
 	/**
 	 * @return int
@@ -40,18 +41,71 @@ interface Chunk{
 
 
 	/**
+	 * Modifies $blockId and $meta
+	 *
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 * @param int &$blockId
+	 * @param int &$meta
+	 */
+	public function getBlock($x, $y, $z, &$blockId, &$meta = null);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 * @param int $blockId, if null, do not change
+	 * @param int $meta 0-15, if null, do not change
+	 */
+	public function setBlock($x, $y, $z, $blockId = null, $meta = null);
+
+	/**
 	 * @param int $x 0-15
 	 * @param int $y 0-127
 	 * @param int $z 0-15
 	 *
-	 * @return \pocketmine\block\Block
+	 * @return int 0-15
 	 */
-	public function getBlock($x, $y, $z);
+	public function getBlockSkyLight($x, $y, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 * @param int $level 0-15
+	 */
+	public function setBlockSkyLight($x, $y, $z, $level);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockLight($x, $y, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 * @param int $level 0-15
+	 */
+	public function setBlockLight($x, $y, $z, $level);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-127
+	 */
+	public function getHighestBlockAt($x, $z);
 
 	/**
 	 * Thread-safe read-only chunk
 	 *
-	 * @return ChunkSnapShot
+	 * @return ChunkSnapshot
 	 */
 	public function getChunkSnapshot();
 
@@ -86,5 +140,29 @@ interface Chunk{
 	 * @return bool
 	 */
 	public function unload($save = true, $safe = true);
+
+	/**
+	 * Tests whether a section (mini-chunk) is empty
+	 *
+	 * @param $fY 0-7, (Y / 16)
+	 *
+	 * @return bool
+	 */
+	public function isSectionEmpty($fY);
+
+	/**
+	 * @param int $fY 0-7
+	 *
+	 * @return ChunkSection
+	 */
+	public function getSection($fY);
+
+	/**
+	 * @param int          $fY 0-7
+	 * @param ChunkSection $section
+	 *
+	 * @return boolean
+	 */
+	public function setSection($fY, ChunkSection $section);
 
 }

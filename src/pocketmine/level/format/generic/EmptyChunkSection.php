@@ -19,7 +19,8 @@
  *
 */
 
-namespace pocketmine\level\format;
+namespace pocketmine\level\format\generic;
+use pocketmine\level\format\ChunkSection;
 
 /**
  * Stub used to detect empty chunks

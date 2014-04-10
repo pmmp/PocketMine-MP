@@ -57,6 +57,10 @@ interface LevelFormat{
 
 	public function unloadChunks();
 
+	public function loadChunk($X, $Z);
+
+	public function unloadChunk($X, $Z);
+
 	public function getName();
 
 	/**

@@ -73,7 +73,9 @@ class NBT{
 		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
-
+		if($len > 1024){
+			return substr($this->buffer, ($this->offset += $len) - $len, $len);
+		}
 		$buffer = "";
 		for(; $len > 0; --$len, ++$this->offset){
 			$buffer .= @$this->buffer{$this->offset};

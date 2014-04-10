@@ -23,7 +23,7 @@ namespace pocketmine\level;
 
 use pocketmine\level\format\PocketChunkParser;
 use pocketmine\nbt\NBT;
-use pocketmine\pmf\LevelFormat;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\utils\Config;
 
 class LevelImport{

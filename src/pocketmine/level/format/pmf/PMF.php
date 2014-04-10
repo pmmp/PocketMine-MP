@@ -21,9 +21,8 @@
 
 /**
  * PMF (PocketMine Format) handling
- * TODO: Remove in favor of NBT
  */
-namespace pocketmine\pmf;
+namespace pocketmine\level\format\pmf;
 
 
 class PMF{

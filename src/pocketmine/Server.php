@@ -69,7 +69,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
-use pocketmine\pmf\LevelFormat;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\SendUsageTask;

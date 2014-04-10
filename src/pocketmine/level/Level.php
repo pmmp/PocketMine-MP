@@ -42,7 +42,7 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\Player;
-use pocketmine\pmf\LevelFormat;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\Server;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Furnace;

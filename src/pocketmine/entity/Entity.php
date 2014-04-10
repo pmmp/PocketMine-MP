@@ -41,7 +41,7 @@ use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\Network;
 use pocketmine\Player;
-use pocketmine\pmf\LevelFormat;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\Server;
 
 abstract class Entity extends Position{

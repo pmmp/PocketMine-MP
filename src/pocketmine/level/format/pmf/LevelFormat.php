@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\pmf;
+namespace pocketmine\level\format\pmf;
 
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;

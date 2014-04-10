@@ -72,15 +72,6 @@ interface ChunkSnapshot{
 	 *
 	 * @return int 0-15
 	 */
-	public function getBlockEmittedLight($x, $y, $z);
-
-	/**
-	 * @param int $x 0-15
-	 * @param int $y 0-127
-	 * @param int $z 0-15
-	 *
-	 * @return int 0-15
-	 */
 	public function getBlockLight($x, $y, $z);
 
 	/**
@@ -107,5 +98,20 @@ interface ChunkSnapshot{
 	 * @return bool
 	 */
 	public function isSectionEmpty($fY);
+
+	/**
+	 * @param int $Y 0-7
+	 *
+	 * @return ChunkSection
+	 */
+	public function getSection($Y);
+
+	/**
+	 * @param int          $Y 0-7
+	 * @param ChunkSection $section
+	 *
+	 * @return boolean
+	 */
+	public function setSection($Y, ChunkSection $section);
 
 }

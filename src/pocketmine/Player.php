@@ -68,7 +68,7 @@ use pocketmine\network\raknet\Packet;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
-use pocketmine\pmf\LevelFormat;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Chest;
@@ -78,7 +78,6 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
