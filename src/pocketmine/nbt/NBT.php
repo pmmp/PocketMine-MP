@@ -25,14 +25,14 @@
 namespace pocketmine\nbt;
 
 use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\Byte_Array;
+use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\End;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\Int_Array;
+use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\NamedTAG;
 use pocketmine\nbt\tag\Short;
@@ -45,6 +45,9 @@ use pocketmine\utils\Utils;
  * Named Binary Tag encoder/decoder
  */
 class NBT{
+	const COMPRESSION_GZIP = 1;
+	const COMPRESSION_ZLIB = 2;
+
 	const LITTLE_ENDIAN = 0;
 	const BIG_ENDIAN = 1;
 	const TAG_End = 0;
@@ -54,11 +57,11 @@ class NBT{
 	const TAG_Long = 4;
 	const TAG_Float = 5;
 	const TAG_Double = 6;
-	const TAG_Byte_Array = 7;
+	const TAG_ByteArray = 7;
 	const TAG_String = 8;
 	const TAG_Enum = 9;
 	const TAG_Compound = 10;
-	const TAG_Int_Array = 11;
+	const TAG_IntArray = 11;
 
 	private $buffer;
 	private $offset;
@@ -104,8 +107,8 @@ class NBT{
 		$this->buffer = "";
 	}
 
-	public function readCompressed($buffer){
-		$this->read(\gzdecode($buffer));
+	public function readCompressed($buffer, $compression = self::COMPRESSION_ZLIB){
+		$this->read($compression === self::COMPRESSION_ZLIB ? zlib_decode($buffer) : zlib_decode($buffer));
 	}
 
 	public function write(){
@@ -119,9 +122,9 @@ class NBT{
 		}
 	}
 
-	public function writeCompressed(){
+	public function writeCompressed($compression = self::COMPRESSION_ZLIB, $level = 7){
 		if(($write = $this->write()) !== false){
-			return \gzencode($write, 9);
+			return $compression === self::COMPRESSION_ZLIB ? zlib_encode($write, 15, $level) : zlib_encode($write, 31, $level);
 		}
 
 		return false;
@@ -153,8 +156,8 @@ class NBT{
 				$tag = new Double($this->getString());
 				$tag->read($this);
 				break;
-			case NBT::TAG_Byte_Array:
-				$tag = new Byte_Array($this->getString());
+			case NBT::TAG_ByteArray:
+				$tag = new ByteArray($this->getString());
 				$tag->read($this);
 				break;
 			case NBT::TAG_String:
@@ -169,8 +172,8 @@ class NBT{
 				$tag = new Compound($this->getString());
 				$tag->read($this);
 				break;
-			case NBT::TAG_Int_Array:
-				$tag = new Int_Array($this->getString());
+			case NBT::TAG_IntArray:
+				$tag = new IntArray($this->getString());
 				$tag->read($this);
 				break;
 

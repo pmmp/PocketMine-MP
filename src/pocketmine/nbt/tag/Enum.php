@@ -111,8 +111,8 @@ class Enum extends NamedTag implements \ArrayAccess{
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
-				case NBT::TAG_Byte_Array:
-					$tag = new Byte_Array(false);
+				case NBT::TAG_ByteArray:
+					$tag = new ByteArray(false);
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
@@ -131,8 +131,8 @@ class Enum extends NamedTag implements \ArrayAccess{
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
-				case NBT::TAG_Int_Array:
-					$tag = new Int_Array(false);
+				case NBT::TAG_IntArray:
+					$tag = new IntArray(false);
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;

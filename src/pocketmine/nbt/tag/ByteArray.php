@@ -23,24 +23,18 @@ namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
 
-class Int_Array extends NamedTag{
+class ByteArray extends NamedTag{
 
 	public function getType(){
-		return NBT::TAG_Int_Array;
+		return NBT::TAG_ByteArray;
 	}
 
 	public function read(NBT $nbt){
-		$this->value = array();
-		$size = $nbt->getInt();
-		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
-			$this->value[] = $nbt->getInt();
-		}
+		$this->value = $nbt->get($nbt->getInt());
 	}
 
 	public function write(NBT $nbt){
-		$nbt->putInt(count($this->value));
-		foreach($this->value as $v){
-			$nbt->putInt($v);
-		}
+		$nbt->putInt(strlen($this->value));
+		$nbt->put($this->value);
 	}
 }
