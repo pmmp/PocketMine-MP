@@ -49,9 +49,46 @@ class RegionLoader{
 
 	public function __destruct(){
 		if(is_resource($this->filePointer)){
+			$this->cleanGarbage();
+			$this->writeLocationTable();
 			flock($this->filePointer, LOCK_UN);
 			fclose($this->filePointer);
 		}
+	}
+
+	private function cleanGarbage(){
+		$sectors = array();
+		foreach($this->locationTable as $index => $data){ //Calculate file usage
+			if($data[0] === 0 or $data[1] === 0){
+				$this->locationTable[$index] = array(0, 0);
+				continue;
+			}
+			for($i = 0; $i < $data[1]; ++$i){
+				$sectors[$data[0]] = $index;
+			}
+		}
+
+		ksort($sectors);
+		$shift = 0;
+		$lastSector = 1; //First chunk - 1
+
+		fseek($this->filePointer, 8192);
+		$sector = 2;
+		foreach($sectors as $sector => $index){
+			if(($sector - $lastSector) > 1){
+				$shift += $sector - $lastSector - 1;
+			}
+			if($shift > 0){
+				fseek($this->filePointer, $sector << 12);
+				$old = fread($this->filePointer, 4096);
+				fseek($this->filePointer, ($sector - $shift) << 12);
+				fwrite($this->filePointer, $old, 4096);
+			}
+			$this->locationTable[$index][0] -= $shift;
+		}
+		ftruncate($this->filePointer, ($sector + 1) << 12); //Truncate to the end of file written
+
+		return $shift;
 	}
 
 	private function loadLocationTable(){
@@ -62,17 +99,27 @@ class RegionLoader{
 		}
 	}
 
+	private function writeLocationTable(){
+		fseek($this->filePointer, 0);
+		for($i = 0; $i < 1024; ++$i){
+			fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]));
+		}
+	}
+
+	private function writeLocationIndex($index){
+		fseek($this->filePointer, $index << 2);
+		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]));
+	}
+
 	private function createBlank(){
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 0);
 		for($i = 0; $i < 1024; ++$i){
-			$this->locationTable[$i] = array($i, 1);
-			fwrite($this->filePointer, Binary::writeInt(($i << 8) | 1)); //Default: 1 sector per chunk
+			$this->locationTable[$i] = array(0, 0);
+			fwrite($this->filePointer, Binary::writeInt(0));
 		}
-
-		$data = str_pad(Binary::writeInt(-1) . chr(self::COMPRESSION_ZLIB), 4096, "\x00", STR_PAD_RIGHT);
 		for($i = 0; $i < 1024; ++$i){
-			fwrite($this->filePointer, $data);
+			fwrite($this->filePointer, Binary::writeInt(0));
 		}
 	}
 
