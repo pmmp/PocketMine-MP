@@ -58,6 +58,7 @@ class RegionLoader{
 
 	private function cleanGarbage(){
 		$sectors = array();
+		$maxSector = 1;
 		foreach($this->locationTable as $index => $data){ //Calculate file usage
 			if($data[0] === 0 or $data[1] === 0){
 				$this->locationTable[$index] = array(0, 0);
@@ -65,7 +66,14 @@ class RegionLoader{
 			}
 			for($i = 0; $i < $data[1]; ++$i){
 				$sectors[$data[0]] = $index;
+				if($data[0] > $maxSector){
+					$maxSector = $data[0];
+				}
 			}
+		}
+
+		if(count($sectors) === ($maxSector - 2)){ //No collection needed
+			return 0;
 		}
 
 		ksort($sectors);
