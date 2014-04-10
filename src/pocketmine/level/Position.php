@@ -48,12 +48,13 @@ class Position extends Vector3{
 	/**
 	 * Returns a side Vector
 	 *
-	 * @param $side
+	 * @param int $side
+	 * @param int $step
 	 *
 	 * @return Position
 	 */
-	public function getSide($side){
-		return Position::fromObject(parent::getSide($side), $this->level);
+	public function getSide($side, $step = 1){
+		return Position::fromObject(parent::getSide($side, $step), $this->level);
 	}
 
 	/**
