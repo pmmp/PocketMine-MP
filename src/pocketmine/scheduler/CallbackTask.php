@@ -22,7 +22,7 @@
 namespace pocketmine\scheduler;
 
 /**
- * Allows the creation if simple callbacks with extra data
+ * Allows the creation of simple callbacks with extra data
  * The last parameter in the callback will be this object
  *
  * If you want to do a task in a Plugin, consider extending PluginTask to your needs
