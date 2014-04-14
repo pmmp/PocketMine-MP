@@ -52,7 +52,7 @@ class RegionLoader{
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
 		flock($this->filePointer, LOCK_EX);
-		stream_set_read_buffer($this->filePointer, 4096);
+		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
 		if(!file_exists($this->filePath)){
 			$this->createBlank();
@@ -195,38 +195,56 @@ class RegionLoader{
 	private function loadLocationTable(){
 		fseek($this->filePointer, 0);
 		$this->lastSector = 1;
+		$table = fread($this->filePointer, 4 * 1024 * 2);
 		for($i = 0; $i < 1024; ++$i){
-			$index = Binary::readInt(fread($this->filePointer, 4));
+			$index = Binary::readInt(substr($table, $i << 2, 4));
 			$this->locationTable[$i] = array(($index & ~0xff) >> 8, $index & 0xff);
 			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
 				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
 			}
 		}
+
+		//Time of modification
+		for($i = 0; $i < 1024; ++$i){
+			$this->locationTable[$i][2] = Binary::readInt(substr($table, 4096 + ($i << 2), 4));
+		}
 	}
 
 	private function writeLocationTable(){
-		fseek($this->filePointer, 0);
+		$table = "";
 		for($i = 0; $i < 1024; ++$i){
-			fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]));
+			$table .= Binary::writeInt(($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]);
 		}
+		for($i = 0; $i < 1024; ++$i){
+			$table .= Binary::writeInt($this->locationTable[$i][2]);
+		}
+		fseek($this->filePointer, 0);
+		fwrite($this->filePointer, $table, 4096 * 2);
 	}
 
 	private function writeLocationIndex($index){
 		fseek($this->filePointer, $index << 2);
-		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]));
+		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]), 4);
+		fseek($this->filePointer, 4096 + ($index << 2));
+		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index][2]), 4);
 	}
 
 	private function createBlank(){
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 0);
 		$this->lastSector = 1;
+		$table = "";
 		for($i = 0; $i < 1024; ++$i){
 			$this->locationTable[$i] = array(0, 0);
-			fwrite($this->filePointer, Binary::writeInt(0));
+			$table .= Binary::writeInt(0);
 		}
+
+		$time = time();
 		for($i = 0; $i < 1024; ++$i){
-			fwrite($this->filePointer, Binary::writeInt(0));
+			$table .= Binary::writeInt($time);
 		}
+
+		fwrite($this->filePointer, $table, 4096 * 2);
 	}
 
 	public function getX(){
