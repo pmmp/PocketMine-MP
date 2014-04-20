@@ -500,12 +500,14 @@ class PlayerAPI{
 			"achievements" => array(),
 		);
 
-		if(!file_exists(DATA_PATH."players/".$iname.".yml")){
+        @mkdir(DATA_PATH."players/".substr($iname, 0, 1).'/'.substr($iname, 1, 1), 0755, true);//Recursive
+
+		if(!file_exists(DATA_PATH."players/".(substr($iname, 0, 1).'/'.substr($iname, 1, 1).'/'.$iname).".yml")){
 			console("[NOTICE] Player data not found for \"".$iname."\", creating new profile");
-			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
+			$data = new Config(DATA_PATH."players/".(substr($iname, 0, 1).'/'.substr($iname, 1, 1).'/'.$iname).".yml", CONFIG_YAML, $default);
 			$data->save();
 		}else{
-			$data = new Config(DATA_PATH."players/".$iname.".yml", CONFIG_YAML, $default);
+			$data = new Config(DATA_PATH."players/".(substr($iname, 0, 1).'/'.substr($iname, 1, 1).'/'.$iname).".yml", CONFIG_YAML, $default);
 		}
 
 		if(($data->get("gamemode") & 0x01) === 1){
