@@ -32,7 +32,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/32bit
     cd $COMPILEDIR/linux/32bit
     
-    OPENSSL_TARGET="linux-generic32" CFLAGS="-m32" march=i686 mtune=pentium4 $SCRIPT -t linux -o -j 1 -c -f x86
+    $SCRIPT -t linux32 -o -j 1 -c -f x86
     
     tar -czf PHP_${PHP_VERSION}_x86_Linux.tar.gz bin/
     cp -r $COMPILEDIR/linux/32bit/{install.log,PHP_${PHP_VERSION}_x86_Linux.tar.gz,install_data/*} $ARCHIVE/linux/32bit/
@@ -46,7 +46,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/linux/64bit
     cd $COMPILEDIR/linux/64bit
     
-    OPENSSL_TARGET="linux-x86_64" CFLAGS="-m64" march=x86-64 mtune=nocona $SCRIPT -t linux -o -j 1 -c -f x86_64
+    $SCRIPT -t linux64 -o -j 1 -c -f x86_64
     
     tar -czf PHP_${PHP_VERSION}_x86-64_Linux.tar.gz bin/
     cp -r $COMPILEDIR/linux/64bit/{install.log,PHP_${PHP_VERSION}_x86-64_Linux.tar.gz,install_data/*} $ARCHIVE/linux/64bit/
@@ -120,7 +120,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/android-armv6
     cd $COMPILEDIR/crosscompile/android-armv6
     
-    $SCRIPT -t android-armv6 -o -j 1 -c -x -f arm
+    $SCRIPT -t android-armv6 -o -j 1 -c -x -s -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARMv6_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv6/{install.log,PHP_${PHP_VERSION}_ARMv6_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv6/
@@ -134,7 +134,7 @@ then
     mkdir -p {$COMPILEDIR,$ARCHIVE}/crosscompile/android-armv7
     cd $COMPILEDIR/crosscompile/android-armv7
     
-    $SCRIPT -t android-armv7 -o -j 1 -c -x -f arm
+    $SCRIPT -t android-armv7 -o -j 1 -c -x -s -f arm
     
     tar -czf PHP_${PHP_VERSION}_ARMv7_Android.tar.gz bin/
     cp -r $COMPILEDIR/crosscompile/android-armv7/{install.log,PHP_${PHP_VERSION}_ARMv7_Android.tar.gz,install_data/*} $ARCHIVE/crosscompile/android-armv7/
