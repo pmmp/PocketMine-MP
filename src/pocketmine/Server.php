@@ -890,7 +890,7 @@ class Server{
 			return false;
 		}
 
-		if($generator !== false and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
+		if($generator !== null and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
 			$generator = new $generator($options);
 		}else{
 			if(strtoupper($this->getLevelType()) == "FLAT"){
