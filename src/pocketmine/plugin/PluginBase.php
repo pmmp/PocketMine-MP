@@ -174,15 +174,15 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @param string $filename
 	 *
-	 * @return bool|string Resource data, or false
+	 * @return \SplFileObject Resource data, or null
 	 */
 	public function getResource($filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");
 		if(file_exists($this->file . "resources/" . $filename)){
-			return file_get_contents($this->file . "resources/" . $filename);
+			return fopen($this->file . "resources/" . $filename, "rb");
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -196,7 +196,7 @@ abstract class PluginBase implements Plugin{
 			return false;
 		}
 
-		if(($resource = $this->getResource($filename)) === false){
+		if(($resource = $this->getResource($filename)) === null){
 			return false;
 		}
 
@@ -209,7 +209,7 @@ abstract class PluginBase implements Plugin{
 			return false;
 		}
 
-		return @file_put_contents($out, $resource) !== false;
+		return stream_copy_to_stream($resource, fopen($out, "wb")) > 0;
 	}
 
 	/**
@@ -253,8 +253,8 @@ abstract class PluginBase implements Plugin{
 
 	public function reloadConfig(){
 		$this->config = new Config($this->configFile);
-		if(($configStream = $this->getResource("config.yml")) !== false){
-			$this->config->setDefaults(yaml_parse(config::fixYAMLIndexes($configStream)));
+		if(($configStream = $this->getResource("config.yml")) !== null){
+			$this->config->setDefaults(yaml_parse(config::fixYAMLIndexes(stream_get_contents($configStream))));
 		}
 	}
 
