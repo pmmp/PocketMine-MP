@@ -27,9 +27,10 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\metadata\Metadatable;
 use pocketmine\Player;
 
-abstract class Block extends Position{
+abstract class Block extends Position implements Metadatable{
 	const AIR = 0;
 	const STONE = 1;
 	const GRASS = 2;

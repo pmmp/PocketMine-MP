@@ -55,12 +55,12 @@ class PluginManager{
 	/**
 	 * @var Permission[]
 	 */
-	protected $defaultPerms = array();
+	protected $defaultPerms = [];
 
 	/**
 	 * @var Permission[]
 	 */
-	protected $defaultPermsOp = array();
+	protected $defaultPermsOp = [];
 
 	/**
 	 * @var Permissible[]
@@ -70,12 +70,12 @@ class PluginManager{
 	/**
 	 * @var Permissible[]
 	 */
-	protected $defSubs = array();
+	protected $defSubs;
 
 	/**
 	 * @var Permissible[]
 	 */
-	protected $defSubsOp = array();
+	protected $defSubsOp;
 
 	/**
 	 * @var PluginLoader[]
@@ -89,6 +89,8 @@ class PluginManager{
 	public function __construct(Server $server, SimpleCommandMap $commandMap){
 		$this->server = $server;
 		$this->commandMap = $commandMap;
+		$this->defSubs = new \WeakMap();
+		$this->defSubsOp = new \WeakMap();
 	}
 
 	/**
@@ -405,10 +407,9 @@ class PluginManager{
 	 */
 	public function subscribeToPermission($permission, Permissible $permissible){
 		if(!isset($this->permSubs[$permission])){
-			//TODO: Use WeakRef
-			$this->permSubs[$permission] = array();
+			$this->permSubs[$permission] = new \WeakRef();
 		}
-		$this->permSubs[$permission][spl_object_hash($permissible)] = $permissible;
+		$this->permSubs[$permission][$permissible] = true;
 	}
 
 	/**
@@ -417,7 +418,7 @@ class PluginManager{
 	 */
 	public function unsubscribeFromPermission($permission, Permissible $permissible){
 		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][spl_object_hash($permissible)]);
+			unset($this->permSubs[$permission][$permissible]);
 		}
 	}
 
@@ -440,9 +441,9 @@ class PluginManager{
 	 */
 	public function subscribeToDefaultPerms($op, Permissible $permissible){
 		if($op === true){
-			$this->defSubsOp[spl_object_hash($permissible)] = $permissible;
+			$this->defSubsOp[$permissible] = true;
 		}else{
-			$this->defSubs[spl_object_hash($permissible)] = $permissible;
+			$this->defSubs[$permissible] = true;
 		}
 	}
 
@@ -452,9 +453,9 @@ class PluginManager{
 	 */
 	public function unsubscribeFromDefaultPerms($op, Permissible $permissible){
 		if($op === true){
-			unset($this->defSubsOp[spl_object_hash($permissible)]);
+			unset($this->defSubsOp[$permissible]);
 		}else{
-			unset($this->defSubs[spl_object_hash($permissible)]);
+			unset($this->defSubs[$permissible]);
 		}
 	}
 

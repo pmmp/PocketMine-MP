@@ -46,6 +46,9 @@ use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
 use pocketmine\level\LevelImport;
 use pocketmine\level\WorldGenerator;
+use pocketmine\metadata\EntityMetadataStore;
+use pocketmine\metadata\LevelMetadataStore;
+use pocketmine\metadata\PlayerMetadataStore;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -131,6 +134,15 @@ class Server{
 
 	/** @var RCON */
 	private $rcon;
+
+	/** @var EntityMetadataStore */
+	private $entityMetadata;
+
+	/** @var PlayerMetadataStore */
+	private $playerMetadata;
+
+	/** @var LevelMetadataStore */
+	private $levelMetadata;
 
 	/**
 	 * Counts the ticks since the server start
@@ -425,6 +437,27 @@ class Server{
 	 */
 	public function getLoader(){
 		return $this->autoloader;
+	}
+
+	/**
+	 * @return EntityMetadataStore
+	 */
+	public function getEntityMetadata(){
+		return $this->entityMetadata;
+	}
+
+	/**
+	 * @return PlayerMetadataStore
+	 */
+	public function getPlayerMetadata(){
+		return $this->playerMetadata;
+	}
+
+	/**
+	 * @return LevelMetadataStore
+	 */
+	public function getLevelMetadata(){
+		return $this->levelMetadata;
 	}
 
 	/**
@@ -1139,6 +1172,10 @@ class Server{
 		@mkdir($this->dataPath . "worlds/", 0777);
 		@mkdir($this->dataPath . "players/", 0777);
 		@mkdir($this->pluginPath, 0777);
+
+		$this->entityMetadata = new EntityMetadataStore();
+		$this->playerMetadata = new PlayerMetadataStore();
+		$this->levelMetadata = new LevelMetadataStore();
 
 		$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
 		$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);

@@ -33,6 +33,8 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3 as Vector3;
+use pocketmine\metadata\Metadatable;
+use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\network\protocol\MoveEntityPacket_PosRot;
 use pocketmine\network\protocol\MovePlayerPacket;
@@ -42,9 +44,10 @@ use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\level\format\pmf\LevelFormat;
+use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 
-abstract class Entity extends Position{
+abstract class Entity extends Position implements Metadatable{
 	public static $entityCount = 1;
 
 	/**
@@ -110,6 +113,9 @@ abstract class Entity extends Position{
 	protected $fireProof;
 	private $invulnerable;
 
+	/** @var Server */
+	protected $server;
+
 	public $closed;
 
 	public static function get($entityID){
@@ -127,6 +133,7 @@ abstract class Entity extends Position{
 		$this->closed = false;
 		$this->namedtag = $nbt;
 		$this->level = $level;
+		$this->server = Server::getInstance();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->setPositionAndRotation(new Vector3($this->namedtag["Pos"][0], $this->namedtag["Pos"][1], $this->namedtag["Pos"][2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
@@ -314,8 +321,6 @@ abstract class Entity extends Position{
 	public final function scheduleUpdate(){
 		Entity::$needUpdate[$this->id] = $this;
 	}
-
-	public abstract function getMetadata();
 
 	public function setOnFire($seconds){
 		$ticks = $seconds * 20;
@@ -587,8 +592,26 @@ abstract class Entity extends Position{
 		}
 	}
 
+	abstract public function getData();
+
 	public function __destruct(){
 		$this->close();
+	}
+
+	public function setMetadata($metadataKey, MetadataValue $metadataValue){
+		$this->server->getEntityMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+	}
+
+	public function getMetadata($metadataKey){
+		return $this->server->getEntityMetadata()->getMetadata($this, $metadataKey);
+	}
+
+	public function hasMetadata($metadataKey){
+		return $this->server->getEntityMetadata()->hasMetadata($this, $metadataKey);
+	}
+
+	public function removeMetadata($metadataKey, Plugin $plugin){
+		$this->server->getEntityMetadata()->removeMetadata($this, $metadataKey, $plugin);
 	}
 
 }

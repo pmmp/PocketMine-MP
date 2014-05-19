@@ -22,7 +22,9 @@
 namespace pocketmine;
 
 
+use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\plugin\Plugin;
 
 class OfflinePlayer implements IPlayer{
 
@@ -110,6 +112,22 @@ class OfflinePlayer implements IPlayer{
 
 	public function hasPlayedBefore(){
 		return $this->namedtag instanceof Compound;
+	}
+
+	public function setMetadata($metadataKey, MetadataValue $metadataValue){
+		$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+	}
+
+	public function getMetadata($metadataKey){
+		return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
+	}
+
+	public function hasMetadata($metadataKey){
+		return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
+	}
+
+	public function removeMetadata($metadataKey, Plugin $plugin){
+		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
 	}
 
 

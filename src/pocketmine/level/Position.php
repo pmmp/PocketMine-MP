@@ -45,6 +45,10 @@ class Position extends Vector3{
 		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
 
+	public function getLevel(){
+		return $this->level;
+	}
+
 	/**
 	 * Returns a side Vector
 	 *

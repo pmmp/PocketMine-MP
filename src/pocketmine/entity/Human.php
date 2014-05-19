@@ -143,7 +143,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->pitch = 0;
 			$pk->unknown1 = 0;
 			$pk->unknown2 = 0;
-			$pk->metadata = $this->getMetadata();
+			$pk->metadata = $this->getData();
 			$player->dataPacket($pk);
 
 			$pk = new SetEntityMotionPacket;
@@ -262,7 +262,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		}
 	}
 
-	public function getMetadata(){ //TODO
+	public function getData(){ //TODO
 		$flags = 0;
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
