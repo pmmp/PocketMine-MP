@@ -8,7 +8,7 @@ CURL_VERSION="curl-7_36_0"
 READLINE_VERSION="6.3"
 NCURSES_VERSION="5.9"
 PHPNCURSES_VERSION="1.0.2"
-PTHREADS_VERSION="2.0.4"
+PTHREADS_VERSION="2.0.7"
 PHP_POCKETMINE_VERSION="0.0.4"
 UOPZ_VERSION="2.0.3"
 WEAKREF_VERSION="0.2.4"
@@ -527,7 +527,7 @@ fi
 #mv uopz-$UOPZ_VERSION "$DIR/install_data/php/ext/uopz"
 #echo " done!"
 
-WeakRef
+#WeakRef
 echo -n "[PHP Weakref] downloading $WEAKREF_VERSION..."
 download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
@@ -649,6 +649,7 @@ $HAVE_READLINE \
 $HAS_POCKETMINE \
 --enable-mbstring \
 --enable-calendar \
+--enable-weakref \
 --enable-pthreads \
 --enable-pthreads-pedantic \
 --disable-libxml \
