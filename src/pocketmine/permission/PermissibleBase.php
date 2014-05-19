@@ -69,7 +69,7 @@ class PermissibleBase implements Permissible{
 	 */
 	public function setOp($value){
 		if($this->opable === null){
-			trigger_error("Cannot change ip value as no ServerOperator is set", E_USER_WARNING);
+			trigger_error("Cannot change op value as no ServerOperator is set", E_USER_WARNING);
 
 			return;
 		}else{

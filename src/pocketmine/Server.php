@@ -890,7 +890,7 @@ class Server{
 			return false;
 		}
 
-		if($generator !== false and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
+		if($generator !== null and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
 			$generator = new $generator($options);
 		}else{
 			if(strtoupper($this->getLevelType()) == "FLAT"){
@@ -1568,7 +1568,7 @@ class Server{
 			return;
 		}
 		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
-		console("[SEVERE] An unrecovereable has ocurred and the server has crashed. Creating an error dump");
+		console("[SEVERE] An unrecoverable has occurred and the server has crashed. Creating an error dump");
 		$dump = "```\r\n# PocketMine-MP Error Dump " . date("D M j H:i:s T Y") . "\r\n";
 		$er = error_get_last();
 		$errorConversion = array(

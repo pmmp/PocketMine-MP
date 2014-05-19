@@ -36,9 +36,6 @@ use pocketmine\Server;
  */
 class PluginManager{
 
-	/** @var PluginManager */
-	private static $instance = null;
-
 	/** @var Server */
 	private $server;
 
@@ -84,13 +81,6 @@ class PluginManager{
 	 * @var PluginLoader[]
 	 */
 	protected $fileAssociations = array();
-
-	/**
-	 * @return PluginManager
-	 */
-	public static function getInstance(){
-		return self::$instance;
-	}
 
 	/**
 	 * @param Server           $server

@@ -70,7 +70,7 @@ rm -f start.bat
 echo "[2/3] Downloading PocketMine-MP $PMMP_VERSION..."
 set +e
 download_file "https://github.com/PocketMine/PocketMine-MP/releases/download/$PMMP_VERSION/PocketMine-MP.phar" > PocketMine-MP.phar
-if ! [ -s "PocketMine-MP.phar" ]; then
+if ! [ -s "PocketMine-MP.phar" ] || [ "$(head -n 1 PocketMine-MP.phar)" == '<!DOCTYPE html>' ]; then
 	rm "PocketMine-MP.phar" > /dev/null
 	download_file "https://github.com/PocketMine/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
 	COMPILE_SCRIPT="./src/build/compile.sh"
