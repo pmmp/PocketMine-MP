@@ -333,9 +333,14 @@ namespace pocketmine {
 			console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.1.", true, true, 0);
 			++$errors;
 		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-			console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.4.", true, true, 0);
+			console("[ERROR] You have the native PocketMine extension, but your version is higher than 0.0.4.", true, true, 0);
 			++$errors;
 		}
+	}
+
+	if(!extension_loaded("Weakref") and !extension_loaded("weakref")){
+		console("[ERROR] Unable to find the Weakref extension.", true, true, 0);
+		++$errors;
 	}
 
 	if(!extension_loaded("curl")){

@@ -11,7 +11,7 @@ PHPNCURSES_VERSION="1.0.2"
 PTHREADS_VERSION="2.0.4"
 PHP_POCKETMINE_VERSION="0.0.4"
 UOPZ_VERSION="2.0.3"
-WEAKREF_VERSION="0.2.2"
+WEAKREF_VERSION="0.2.4"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.4"
 LIBXML_VERSION="2.9.1"
@@ -527,11 +527,11 @@ fi
 #mv uopz-$UOPZ_VERSION "$DIR/install_data/php/ext/uopz"
 #echo " done!"
 
-#WeakRef
-#echo -n "[PHP WeakRef] downloading $WEAKREF_VERSION..."
-#download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-#mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
-#echo " done!"
+WeakRef
+echo -n "[PHP Weakref] downloading $WEAKREF_VERSION..."
+download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
+echo " done!"
 
 #PHP YAML
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
