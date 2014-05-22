@@ -149,6 +149,11 @@ trait Container{
 		return -1;
 	}
 
+	/**
+	 * @param int $s
+	 *
+	 * @return Item
+	 */
 	public function getSlot($s){
 		$i = $this->getSlotIndex($s);
 		if($i === false or $i < 0){

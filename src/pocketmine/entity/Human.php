@@ -230,6 +230,11 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		return true;
 	}
 
+	/**
+	 * @param int $slot
+	 *
+	 * @return Item
+	 */
 	public function getArmorSlot($slot){
 		$slot = (int) $slot;
 		if(!isset($this->armor[$slot])){

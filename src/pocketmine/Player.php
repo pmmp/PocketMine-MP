@@ -371,7 +371,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
 		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->getGamemode();
-		$this->getLevel() = $this->server->getDefaultLevel();
+		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
@@ -488,7 +488,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	 * @param bool $force
 	 * @param bool $ev
 	 *
-	 * @return bool|void
+	 * @return void|bool
 	 */
 	public function getNextChunk($force = false, $ev = null){
 		if($this->connected === false){
@@ -566,7 +566,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			return false;
 		}
 		$this->chunkCount = [];
-		foreach($cnt as $i => $count){
+		foreach($cnt as $count){
 			$this->chunkCount[$count] = true;
 		}
 
@@ -803,8 +803,8 @@ class Player extends Human implements CommandSender, IPlayer{
 	 */
 	public function checkSleep(){
 		if($this->sleeping !== false){
-			//TODO
-			if($this->server->api->time->getPhase($this->getLevel()) === "night"){
+			//TODO: Move to Level
+			/*if($this->server->api->time->getPhase($this->getLevel()) === "night"){
 				foreach($this->getLevel()->getPlayers() as $p){
 					if($p->sleeping === false){
 						return;
@@ -814,7 +814,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				foreach($this->getLevel()->getPlayers() as $p){
 					$p->stopSleep();
 				}
-			}
+			}*/
 		}
 
 		return;
@@ -1336,12 +1336,14 @@ class Player extends Human implements CommandSender, IPlayer{
 					$nbt["NameTag"] = $this->username;
 				}
 				$this->gamemode = $nbt["playerGameType"] & 0x03;
-				if(($this->getLevel() = $this->server->getLevel($nbt["Level"])) === null){
-					$this->getLevel() = $this->server->getDefaultLevel();
+				if(($level = $this->server->getLevel($nbt["Level"])) === null){
+					$this->setLevel($this->server->getDefaultLevel(), true);
 					$nbt["Level"] = $this->getLevel()->getName();
 					$nbt["Pos"][0] = $this->getLevel()->getSpawn()->x;
 					$nbt["Pos"][1] = $this->getLevel()->getSpawn()->y;
 					$nbt["Pos"][2] = $this->getLevel()->getSpawn()->z;
+				}else{
+					$this->setLevel($level, true);
 				}
 
 				if(!($nbt instanceof Compound)){
@@ -1351,6 +1353,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 
 				$this->achievements = [];
+
+				/** @var Byte $achievement */
 				foreach($nbt->Achievements as $achievement){
 					$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 				}
@@ -1509,7 +1513,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					$item = $this->getSlot($packet->slot);
 				}
 
-				if($packet->slot === false){
+				if(!isset($item) or $packet->slot === false){
 					$this->sendInventorySlot($packet->slot);
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this, $item, $packet->slot, 0));
@@ -2078,6 +2082,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 
 				if(is_array($this->windows[$packet->windowid])){
+					/** @var \pocketmine\tile\Container[] $tiles */
 					$tiles = $this->windows[$packet->windowid];
 					if($packet->slot >= 0 and $packet->slot < Chest::SLOTS){
 						$tile = $tiles[0];
@@ -2090,7 +2095,6 @@ class Player extends Human implements CommandSender, IPlayer{
 					}else{
 						break;
 					}
-
 					$item = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($slotn);
