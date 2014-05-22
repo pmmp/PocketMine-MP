@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 interface Inventory{
+	const MAX_STACK = 64;
 
 	public function getSize();
 
@@ -150,4 +151,8 @@ interface Inventory{
 	 * @return InventoryHolder
 	 */
 	public function getHolder();
+
+	public function onOpen(Player $who);
+
+	public function onClose(Player $who);
 }

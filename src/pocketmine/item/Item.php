@@ -475,8 +475,8 @@ class Item{
 	}
 
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
-		$this->id = (int) $id;
-		$this->meta = (int) $meta;
+		$this->id = $id & 0xffff;
+		$this->meta = $meta !== null ? $meta & 0xffff : null;
 		$this->count = (int) $count;
 		$this->name = $name;
 		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$list[$this->id])){
@@ -522,7 +522,7 @@ class Item{
 	}
 
 	public function setDamage($meta){
-		$this->meta = $meta & 0xFFFF;
+		$this->meta = $meta !== null ? $meta & 0xFFFF : null;
 	}
 
 	final public function getMaxStackSize(){
