@@ -21,6 +21,7 @@
 
 namespace pocketmine\inventory;
 
+use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\Player;
 use pocketmine\item\Item;
 
@@ -95,7 +96,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function getItem($index){
-		return isset($this->slots[$index]) ? $this->slots[$index] : null;
+		return isset($this->slots[$index]) ? $this->slots[$index] : Item::get(Item::AIR, null, 0);
 	}
 
 	public function getContents(){
@@ -288,6 +289,30 @@ abstract class BaseInventory implements Inventory{
 
 	public function setMaxStackSize($size){
 		$this->setMaxStackSize($size);
+	}
+
+	public function onOpen(Player $who){
+
+	}
+
+	public function onClose(Player $who){
+
+	}
+
+	public function onSlotChange($index, $before){
+		$pk = new ContainerSetSlotPacket;
+		$pk->slot = $index;
+		$pk->item = clone $this->getItem($index);
+
+		/** @var Player $player */
+		foreach($this->getViewers() as $player){
+			$pk->windowid = $player->getWindowId($this);
+			$player->dataPacket(clone $pk);
+		}
+	}
+
+	public function getType(){
+		return $this->type;
 	}
 
 }
