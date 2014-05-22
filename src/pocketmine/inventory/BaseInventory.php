@@ -205,7 +205,7 @@ abstract class BaseInventory implements Inventory{
 			foreach($slots as $index => $slot){
 				if($slot->equals($item, $slot->getDamage() === null ? false : true)){
 					if($item->getCount() < $item->getMaxStackSize()){
-						$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount());
+						$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
 						$slot->setCount($slot->getCount() - $amount);
 						$old = clone $item;
 						$item->setCount($item->getCount() + $amount);
