@@ -38,7 +38,7 @@ class LitPumpkin extends Solid{
 			3 => 3,
 		);
 		$this->meta = $faces[$player->getDirection()];
-		$this->level->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, false, true);
 
 		return true;
 	}

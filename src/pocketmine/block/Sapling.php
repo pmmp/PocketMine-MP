@@ -50,7 +50,7 @@ class Sapling extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::FARMLAND){
-			$this->level->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, false, true);
 
 			return true;
 		}
@@ -60,7 +60,7 @@ class Sapling extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
-			Tree::growTree($this->level, $this, new Random(mt_rand()), $this->meta & 0x03);
+			Tree::growTree($this->getLevel(), $this, new Random(mt_rand()), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}
@@ -76,17 +76,17 @@ class Sapling extends Flowable{
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
 				//Server::getInstance()->api->entity->drop($this, Item::get($this->id));
-				$this->level->setBlock($this, new Air(), false, false, true);
+				$this->getLevel()->setBlock($this, new Air(), false, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
 				if(($this->meta & 0x08) === 0x08){
-					Tree::growTree($this->level, $this, new Random(mt_rand()), $this->meta & 0x03);
+					Tree::growTree($this->getLevel(), $this, new Random(mt_rand()), $this->meta & 0x03);
 				}else{
 					$this->meta |= 0x08;
-					$this->level->setBlock($this, $this, true, false, true);
+					$this->getLevel()->setBlock($this, $this, true, false, true);
 
 					return Level::BLOCK_UPDATE_RANDOM;
 				}

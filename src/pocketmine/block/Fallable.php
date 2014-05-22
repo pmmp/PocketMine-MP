@@ -32,7 +32,7 @@ class Fallable extends Solid{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$ret = $this->level->setBlock($this, $this, true, false, true);
+		$ret = $this->getLevel()->setBlock($this, $this, true, false, true);
 
 		return $ret;
 	}

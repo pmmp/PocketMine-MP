@@ -37,7 +37,7 @@ class Cake extends Transparent{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() !== self::AIR){
-			$this->level->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, false, true);
 
 			return true;
 		}
@@ -48,7 +48,7 @@ class Cake extends Transparent{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
-				$this->level->setBlock($this, new Air(), true, false, true);
+				$this->getLevel()->setBlock($this, new Air(), true, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -66,9 +66,9 @@ class Cake extends Transparent{
 			++$this->meta;
 			$player->heal(3, "cake");
 			if($this->meta >= 0x06){
-				$this->level->setBlock($this, new Air(), true, false, true);
+				$this->getLevel()->setBlock($this, new Air(), true, false, true);
 			}else{
-				$this->level->setBlock($this, $this, true, false, true);
+				$this->getLevel()->setBlock($this, $this, true, false, true);
 			}
 
 			return true;

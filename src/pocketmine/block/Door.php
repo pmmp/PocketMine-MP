@@ -36,9 +36,9 @@ abstract class Door extends Transparent{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
-				$this->level->setBlock($this, new Air(), false);
+				$this->getLevel()->setBlock($this, new Air(), false);
 				if($this->getSide(1) instanceof Door){
-					$this->level->setBlock($this->getSide(1), new Air(), false);
+					$this->getLevel()->setBlock($this->getSide(1), new Air(), false);
 				}
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -68,10 +68,10 @@ abstract class Door extends Transparent{
 			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
-			$this->level->setBlock($blockUp, Block::get($this->id, $metaUp), true, false, true); //Top
+			$this->getLevel()->setBlock($blockUp, Block::get($this->id, $metaUp), true, false, true); //Top
 
 			$this->meta = $player->getDirection() & 0x03;
-			$this->level->setBlock($block, $this, true, false, true); //Bottom
+			$this->getLevel()->setBlock($block, $this, true, false, true); //Bottom
 			return true;
 		}
 
@@ -82,15 +82,15 @@ abstract class Door extends Transparent{
 		if(($this->meta & 0x08) === 0x08){
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
-				$this->level->setBlock($down, new Air(), true, false, true);
+				$this->getLevel()->setBlock($down, new Air(), true, false, true);
 			}
 		}else{
 			$up = $this->getSide(1);
 			if($up->getID() === $this->id){
-				$this->level->setBlock($up, new Air(), true, false, true);
+				$this->getLevel()->setBlock($up, new Air(), true, false, true);
 			}
 		}
-		$this->level->setBlock($this, new Air(), true, false, true);
+		$this->getLevel()->setBlock($this, new Air(), true, false, true);
 
 		return true;
 	}
@@ -100,8 +100,8 @@ abstract class Door extends Transparent{
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
 				$meta = $down->getMetadata() ^ 0x04;
-				$this->level->setBlock($down, Block::get($this->id, $meta), true, false, true);
-				$players = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
+				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true, false, true);
+				$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 				if($player instanceof Player){
 					unset($players[$player->CID]);
 				}
@@ -119,8 +119,8 @@ abstract class Door extends Transparent{
 			return false;
 		}else{
 			$this->meta ^= 0x04;
-			$this->level->setBlock($this, $this, true, false, true);
-			$players = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
+			$this->getLevel()->setBlock($this, $this, true, false, true);
+			$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 			if($player instanceof Player){
 				unset($players[$player->CID]);
 			}

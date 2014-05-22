@@ -65,7 +65,7 @@ trait Container{
 			$slots = array();
 
 			if(is_array($player->windows[$id])){
-				$all = $this->level->getPlayers();
+				$all = $this->getLevel()->getPlayers();
 				foreach($player->windows[$id] as $ob){
 					$pk = new TileEventPacket();
 					$pk->x = $ob->x;
@@ -90,7 +90,7 @@ trait Container{
 				$pk->z = $this->z;
 				$pk->case1 = 1;
 				$pk->case2 = 2;
-				Player::broadcastPacket($this->level->getPlayers(), $pk);
+				Player::broadcastPacket($this->getLevel()->getPlayers(), $pk);
 				for($s = 0; $s < Chest::SLOTS; ++$s){
 					$slot = $this->getSlot($s);
 					if($slot->getID() > Item::AIR and $slot->getCount() > 0){

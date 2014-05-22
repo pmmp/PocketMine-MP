@@ -44,7 +44,7 @@ class FenceGate extends Transparent{
 			3 => 2,
 		);
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0] & 0x03;
-		$this->level->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, false, true);
 
 		return true;
 	}
@@ -68,7 +68,7 @@ class FenceGate extends Transparent{
 		}else{
 			$this->isFullBlock = false;
 		}
-		$this->level->setBlock($this, $this, true, false, true);
+		$this->getLevel()->setBlock($this, $this, true, false, true);
 
 		return true;
 	}

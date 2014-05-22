@@ -46,11 +46,11 @@ class WoodSlab extends Transparent{
 		$this->meta &= 0x07;
 		if($face === 0){
 			if($target->getID() === self::WOOD_SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($target, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}elseif($block->getID() === self::WOOD_SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}else{
@@ -58,18 +58,18 @@ class WoodSlab extends Transparent{
 			}
 		}elseif($face === 1){
 			if($target->getID() === self::WOOD_SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($target, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}elseif($block->getID() === self::WOOD_SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-				$this->level->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}
 		}elseif(!($player instanceof Player) or !$player->inBlock($block)){
 			if($block->getID() === self::WOOD_SLAB){
 				if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
-					$this->level->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
+					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);
 
 					return true;
 				}
@@ -86,7 +86,7 @@ class WoodSlab extends Transparent{
 		if($block->getID() === self::WOOD_SLAB and ($target->getMetadata() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}
-		$this->level->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, false, true);
 
 		return true;
 	}

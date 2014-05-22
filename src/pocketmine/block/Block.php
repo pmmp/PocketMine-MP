@@ -626,12 +626,17 @@ abstract class Block extends Position implements Metadatable{
 	 * Sets the block position to a new Position object
 	 *
 	 * @param Position $v
+	 *
+	 * @throws \RuntimeException
 	 */
 	final public function position(Position $v){
-		$this->level = $v->level;
+		if(!$v->isValid()){
+			throw new \RuntimeException("Undefined Level reference");
+		}
 		$this->x = (int) $v->x;
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
+		$this->setLevel($v->getLevel(), false);
 	}
 
 	/**
@@ -672,8 +677,8 @@ abstract class Block extends Position implements Metadatable{
 	 */
 	public function getSide($side, $step = 1){
 		$v = parent::getSide($side, $step);
-		if($this->level instanceof Level){
-			return $this->level->getBlock($v);
+		if($this->isValid()){
+			return $this->getLevel()->getBlock($v);
 		}
 
 		return $v;

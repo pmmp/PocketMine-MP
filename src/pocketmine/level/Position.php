@@ -25,7 +25,7 @@ use pocketmine\math\Vector3 as Vector3;
 
 class Position extends Vector3{
 
-	/** @var Level */
+	/** @var \WeakRef<Level> */
 	public $level = null;
 
 	/**
@@ -33,20 +33,63 @@ class Position extends Vector3{
 	 * @param int   $y
 	 * @param int   $z
 	 * @param Level $level
+	 * @param bool  $strong
 	 */
-	public function __construct($x = 0, $y = 0, $z = 0, Level $level){
+	public function __construct($x = 0, $y = 0, $z = 0, Level $level, $strong = false){
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
-		$this->level = $level;
+		$this->level = new \WeakRef($level);
+		if($strong === true){
+			$this->level->acquire();
+		}
 	}
 
-	public static function fromObject(Vector3 $pos, Level $level){
+	public static function fromObject(Vector3 $pos, Level $level, $strong = false){
 		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
 
+	/**
+	 * @return Level
+	 */
 	public function getLevel(){
-		return $this->level;
+		return $this->level->get();
+	}
+
+	public function setLevel(Level $level, $strong = false){
+		$this->level = new \WeakRef($level);
+		if($strong === true){
+			$this->level->acquire();
+		}
+	}
+
+	/**
+	 * Checks if this object has a valid reference to a Level
+	 *
+	 * @return bool
+	 */
+	public function isValid(){
+		return isset($this->level) and $this->level->valid();
+	}
+
+	/**
+	 * Marks the level reference as strong so it won't be collected
+	 * by the garbage collector.
+	 *
+	 * @return bool
+	 */
+	public function setStrong(){
+		return $this->level->acquire();
+	}
+
+	/**
+	 * Marks the level reference as weak so it won't have effect against
+	 * the garbage collector decision.
+	 *
+	 * @return bool
+	 */
+	public function setWeak(){
+		return $this->level->release();
 	}
 
 	/**
@@ -56,9 +99,14 @@ class Position extends Vector3{
 	 * @param int $step
 	 *
 	 * @return Position
+	 *
+	 * @throws \RuntimeException
 	 */
 	public function getSide($side, $step = 1){
-		return Position::fromObject(parent::getSide($side, $step), $this->level);
+		if(!$this->isValid()){
+			throw new \RuntimeException("Undefined Level reference");
+		}
+		return Position::fromObject(parent::getSide($side, $step), $this->getLevel());
 	}
 
 	/**
@@ -69,7 +117,7 @@ class Position extends Vector3{
 	 * @return float
 	 */
 	public function distance(Vector3 $pos){
-		if(($pos instanceof Position) and $pos->level !== $this->level){
+		if(($pos instanceof Position) and $pos->getLevel() !== $this->getLevel()){
 			return PHP_INT_MAX;
 		}
 
@@ -77,7 +125,7 @@ class Position extends Vector3{
 	}
 
 	public function __toString(){
-		return "Position(level=" . $this->level->getName() . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
+		return "Position(level=" . ($this->isValid() ? $this->getLevel()->getID() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
 }

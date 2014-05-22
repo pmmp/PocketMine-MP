@@ -36,7 +36,7 @@ class BrownMushroom extends Flowable{
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
 				//Server::getInstance()->api->entity->drop($this, Item::get($this->id));
-				$this->level->setBlock($this, new Air(), false, false, true);
+				$this->getLevel()->setBlock($this, new Air(), false, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -48,7 +48,7 @@ class BrownMushroom extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
-			$this->level->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, false, true);
 
 			return true;
 		}

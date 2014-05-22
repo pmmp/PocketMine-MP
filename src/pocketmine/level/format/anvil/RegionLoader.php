@@ -45,10 +45,10 @@ class RegionLoader{
 	protected $lastSector;
 	protected $locationTable = array();
 
-	public function __construct($path, $regionX, $regionZ){
+	public function __construct($path,/*Level $level, */$regionX, $regionZ){
 		$this->x = $regionX;
 		$this->z = $regionZ;
-		$this->filePath = $path . "region/r.$regionX.$regionZ.mca";
+		$this->filePath = /*$level->getPath()*/$path . "region/r.$regionX.$regionZ.mca";
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
 		flock($this->filePointer, LOCK_EX);
@@ -113,6 +113,8 @@ class RegionLoader{
 		if(!$chunk instanceof Compound){
 			return false;
 		}
+		return $chunk;
+		//$chunk = new Chunk($level, $chunk);
 	}
 
 	public function generateChunk($x, $z){
@@ -138,7 +140,7 @@ class RegionLoader{
 		$writer->setData(new Compound("", array($nbt)));
 		$chunkData = $writer->writeCompressed(self::COMPRESSION_ZLIB, self::$COMPRESSION_LEVEL);
 		$length = strlen($chunkData) + 1;
-		$sectors = ($length + 4) >> 12;
+		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
 		if($this->locationTable[$index][1] < $sectors){
 			$this->locationTable[$index][0] = $this->lastSector += $sectors; //The GC will clean this shift later
@@ -153,11 +155,42 @@ class RegionLoader{
 		return $x + ($z << 5);
 	}
 
+	public function doSlowCleanUp(){
+		for($i = 0; $i < 1024; ++$i){
+			if($this->locationTable[$i][0] === 0 or $this->locationTable[$i][1] === 0){
+				continue;
+			}
+			fseek($this->filePointer, $this->locationTable[$i][0] << 12);
+			$chunk = fread($this->filePointer, $this->locationTable[$i][1] << 12);
+			$length = Binary::readInt(substr($chunk, 0, 4));
+			if($length <= 1){
+				$this->locationTable[$i] = array(0, 0, 0); //Non-generated chunk, remove it from index
+			}
+			$chunk = zlib_decode(substr($chunk, 5));
+			if(strlen($chunk) <= 1){
+				$this->locationTable[$i] = array(0, 0, 0); //Corrupted chunk, remove it
+				continue;
+			}
+			$chunk = chr(self::COMPRESSION_ZLIB) . zlib_encode($chunk, 15, 9);
+			$chunk = Binary::writeInt(strlen($chunk)) . $chunk;
+			$sectors = (int) ceil(strlen($chunk) / 4096);
+			if($sectors > $this->locationTable[$i][1]){
+				$this->locationTable[$i][0] = $this->lastSector += $sectors;
+			}
+			fseek($this->filePointer, $this->locationTable[$i][0] << 12);
+			fwrite($this->filePointer, str_pad($chunk, $sectors << 12, "\x00", STR_PAD_RIGHT));
+		}
+		$this->writeLocationTable();
+		$n = $this->cleanGarbage();
+		$this->writeLocationTable();
+		return $n;
+	}
+
 	private function cleanGarbage(){
 		$sectors = array();
 		foreach($this->locationTable as $index => $data){ //Calculate file usage
 			if($data[0] === 0 or $data[1] === 0){
-				$this->locationTable[$index] = array(0, 0);
+				$this->locationTable[$index] = array(0, 0, 0);
 				continue;
 			}
 			for($i = 0; $i < $data[1]; ++$i){
@@ -186,9 +219,9 @@ class RegionLoader{
 				fwrite($this->filePointer, $old, 4096);
 			}
 			$this->locationTable[$index][0] -= $shift;
+			$lastSector = $sector;
 		}
 		ftruncate($this->filePointer, ($sector + 1) << 12); //Truncate to the end of file written
-
 		return $shift;
 	}
 
@@ -198,20 +231,16 @@ class RegionLoader{
 		$table = fread($this->filePointer, 4 * 1024 * 2);
 		for($i = 0; $i < 1024; ++$i){
 			$index = Binary::readInt(substr($table, $i << 2, 4));
-			$this->locationTable[$i] = array(($index & ~0xff) >> 8, $index & 0xff);
+			$this->locationTable[$i] = array(($index & ~0xff) >> 8, $index & 0xff, Binary::readInt(substr($table, 4096 + ($i << 2), 4)));
 			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
 				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
 			}
-		}
-
-		//Time of modification
-		for($i = 0; $i < 1024; ++$i){
-			$this->locationTable[$i][2] = Binary::readInt(substr($table, 4096 + ($i << 2), 4));
 		}
 	}
 
 	private function writeLocationTable(){
 		$table = "";
+
 		for($i = 0; $i < 1024; ++$i){
 			$table .= Binary::writeInt(($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]);
 		}
@@ -241,6 +270,7 @@ class RegionLoader{
 
 		$time = time();
 		for($i = 0; $i < 1024; ++$i){
+			$this->locationTable[$i][2] = $time;
 			$table .= Binary::writeInt($time);
 		}
 

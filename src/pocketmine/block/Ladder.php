@@ -43,7 +43,7 @@ class Ladder extends Transparent{
 			);
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
-				$this->level->setBlock($block, $this, true, false, true);
+				$this->getLevel()->setBlock($block, $this, true, false, true);
 
 				return true;
 			}
@@ -56,7 +56,7 @@ class Ladder extends Transparent{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			/*if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
 				Server::getInstance()->api->entity->drop($this, Item::get(LADDER, 0, 1));
-				$this->level->setBlock($this, new Air(), true, true, true);
+				$this->getLevel()->setBlock($this, new Air(), true, true, true);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}*/
 		}

@@ -56,6 +56,20 @@ class Chunk extends BaseChunk{
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}
 
+		if($this->nbt->Sections instanceof Enum){
+			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
+		}else{
+			$this->nbt->Sections = new Enum("Sections", array());
+			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
+		}
+
+		$sections = array();
+		foreach($this->nbt->Sections as $section){
+			if($section instanceof Compound){
+				$sections[(int) $section["Y"]] = new ChunkSection($section);
+			}
+		}
+
 		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections);
 	}
 }

@@ -43,12 +43,12 @@ class SignPost extends Transparent{
 			);
 			if(!isset($faces[$face])){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
-				$this->level->setBlock($block, Block::get(Item::SIGN_POST, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::SIGN_POST, $this->meta), true, false, true);
 
 				return true;
 			}else{
 				$this->meta = $faces[$face];
-				$this->level->setBlock($block, Block::get(Item::WALL_SIGN, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::WALL_SIGN, $this->meta), true, false, true);
 
 				return true;
 			}
@@ -62,7 +62,7 @@ class SignPost extends Transparent{
 			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
 				//TODO
 				//Server::getInstance()->api->entity->drop($this, Item::get(SIGN, 0, 1));
-				$this->level->setBlock($this, new Air(), true, true, true);
+				$this->getLevel()->setBlock($this, new Air(), true, true, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -72,7 +72,7 @@ class SignPost extends Transparent{
 	}
 
 	public function onBreak(Item $item){
-		$this->level->setBlock($this, new Air(), true, true, true);
+		$this->getLevel()->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}

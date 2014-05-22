@@ -38,7 +38,7 @@ class Generic extends Block{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		return $this->level->setBlock($this, $this, true, false, true);
+		return $this->getLevel()->setBlock($this, $this, true, false, true);
 	}
 
 	public function isBreakable(Item $item){
@@ -46,7 +46,7 @@ class Generic extends Block{
 	}
 
 	public function onBreak(Item $item){
-		return $this->level->setBlock($this, new Air(), true, false, true);
+		return $this->getLevel()->setBlock($this, new Air(), true, false, true);
 	}
 
 	public function onUpdate($type){
@@ -60,9 +60,9 @@ class Generic extends Block{
 					"Tile" => $this->id,
 				);
 				$server = Server::getInstance();
-				/*$this->level->setBlock($this, new Air(), false, false, true);
+				/*$this->getLevel()->setBlock($this, new Air(), false, false, true);
 				//TODO
-				//$e = $server->api->entity->add($this->level, ENTITY_FALLING, FALLING_SAND, $data);
+				//$e = $server->api->entity->add($this->getLevel(), ENTITY_FALLING, FALLING_SAND, $data);
 				//$e->spawnToAll();
 				$server->api->block->blockUpdateAround(clone $this, Level::BLOCK_UPDATE_NORMAL, 1);*/
 			}

@@ -43,8 +43,7 @@ abstract class BaseChunk implements Chunk{
 		$this->level = $level;
 		$this->x = (int) $x;
 		$this->z = (int) $z;
-		$Y = 0;
-		foreach($sections as $section){
+		foreach($sections as $Y => $section){
 			if($section instanceof ChunkSection){
 				$this->sections[$Y] = $section;
 			}else{
@@ -52,7 +51,6 @@ abstract class BaseChunk implements Chunk{
 				return;
 			}
 
-			++$Y;
 			if($section >= self::SECTION_COUNT){
 				trigger_error("Invalid amount of chunks", E_USER_WARNING);
 				return;

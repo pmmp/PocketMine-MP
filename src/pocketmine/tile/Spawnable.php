@@ -27,7 +27,7 @@ abstract class Spawnable extends Tile{
 	public abstract function spawnTo(Player $player);
 
 	public function spawnToAll(){
-		foreach($this->level->getPlayers() as $player){
+		foreach($this->getLevel()->getPlayers() as $player){
 			if($player->eid !== false or $player->spawned !== true){
 				$this->spawnTo($player);
 			}

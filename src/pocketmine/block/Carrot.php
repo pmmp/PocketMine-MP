@@ -35,7 +35,7 @@ class Carrot extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::FARMLAND){
-			$this->level->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, false, true);
 
 			return true;
 		}
@@ -46,7 +46,7 @@ class Carrot extends Flowable{
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
-			$this->level->setBlock($this, $this, true, false, true);
+			$this->getLevel()->setBlock($this, $this, true, false, true);
 			$item->count--;
 
 			return true;
@@ -60,7 +60,7 @@ class Carrot extends Flowable{
 			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
 				//TODO
 				//Server::getInstance()->api->entity->drop($this, Item::get(CARROT, 0, 1));
-				$this->level->setBlock($this, new Air(), false, false, true);
+				$this->getLevel()->setBlock($this, new Air(), false, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -68,7 +68,7 @@ class Carrot extends Flowable{
 			if(mt_rand(0, 2) == 1){
 				if($this->meta < 0x07){
 					++$this->meta;
-					$this->level->setBlock($this, $this, true, false, true);
+					$this->getLevel()->setBlock($this, $this, true, false, true);
 
 					return Level::BLOCK_UPDATE_RANDOM;
 				}

@@ -43,7 +43,7 @@ class TNT extends Solid{
 				"power" => 4,
 				"fuse" => 20 * 4, //4 seconds
 			);
-			$this->level->setBlock($this, new Air(), false, false, true);
+			$this->getLevel()->setBlock($this, new Air(), false, false, true);
 			//TODO
 			//$e = Server::getInstance()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 			//$e->spawnToAll();

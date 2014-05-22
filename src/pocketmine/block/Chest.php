@@ -60,14 +60,14 @@ class Chest extends Transparent{
 			}
 			$c = $this->getSide($side);
 			if(($c instanceof TileChest) and $c->getMetadata() === $this->meta){
-				if((($tile = $this->level->getTile($c)) instanceof TileChest) and !$tile->isPaired()){
+				if((($tile = $this->getLevel()->getTile($c)) instanceof TileChest) and !$tile->isPaired()){
 					$chest = $tile;
 					break;
 				}
 			}
 		}
 
-		$this->level->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
 			new Enum("Items", array()),
 			new String("id", Tile::CHEST),
@@ -76,7 +76,7 @@ class Chest extends Transparent{
 			new Int("z", $this->z)
 		));
 		$nbt->Items->setTagType(NBT::TAG_Compound);
-		$tile = new TileChest($this->level, $nbt);
+		$tile = new TileChest($this->getLevel(), $nbt);
 
 		if($chest instanceof TileChest){
 			$chest->pairWith($tile);
@@ -87,11 +87,11 @@ class Chest extends Transparent{
 	}
 
 	public function onBreak(Item $item){
-		$t = $this->level->getTile($this);
+		$t = $this->getLevel()->getTile($this);
 		if($t instanceof TileChest){
 			$t->unpair();
 		}
-		$this->level->setBlock($this, new Air(), true, true, true);
+		$this->getLevel()->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
@@ -103,7 +103,7 @@ class Chest extends Transparent{
 				return true;
 			}
 
-			$t = $this->level->getTile($this);
+			$t = $this->getLevel()->getTile($this);
 			$chest = false;
 			if($t instanceof TileChest){
 				$chest = $t;
@@ -116,7 +116,7 @@ class Chest extends Transparent{
 					new Int("z", $this->z)
 				));
 				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$chest = new TileChest($this->level, $nbt);
+				$chest = new TileChest($this->getLevel(), $nbt);
 			}
 
 
@@ -134,7 +134,7 @@ class Chest extends Transparent{
 		$drops = array(
 			array($this->id, 0, 1),
 		);
-		$t = $this->level->getTile($this);
+		$t = $this->getLevel()->getTile($this);
 		if($t instanceof Chest){
 			for($s = 0; $s < Chest::SLOTS; ++$s){
 				$slot = $t->getSlot($s);

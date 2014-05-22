@@ -70,9 +70,9 @@ class Furnace extends Tile{
 				$fuel = Item::get(Item::AIR, 0, 0);
 			}
 			$this->setSlot(1, $fuel, false);
-			$current = $this->level->getBlock($this);
+			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::FURNACE){
-				$this->level->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getMetadata()), true, false, true);
+				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getMetadata()), true, false, true);
 			}
 		}
 		if($this->namedtag->BurnTime > 0){
@@ -100,9 +100,9 @@ class Furnace extends Tile{
 			}
 			$ret = true;
 		}else{
-			$current = $this->level->getBlock($this);
+			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::BURNING_FURNACE){
-				$this->level->setBlock($this, Block::get(Item::FURNACE, $current->getMetadata()), true, false, true);
+				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $current->getMetadata()), true, false, true);
 			}
 			$this->namedtag->CookTime = 0;
 			$this->namedtag->BurnTime = 0;

@@ -76,7 +76,7 @@ abstract class Tile extends Position{
 
 	public function __construct(Level $level, Compound $nbt){
 		$this->server = Server::getInstance();
-		$this->level = $level;
+		$this->setLevel($level, true); //Strong reference
 		$this->namedtag = $nbt;
 		$this->closed = false;
 		$this->name = "";

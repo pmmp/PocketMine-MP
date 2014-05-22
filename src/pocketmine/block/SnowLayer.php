@@ -37,7 +37,7 @@ class SnowLayer extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down instanceof Solid){
-			$this->level->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, false, true);
 
 			return true;
 		}
@@ -48,7 +48,7 @@ class SnowLayer extends Flowable{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
-				$this->level->setBlock($this, new Air(), true, false, true);
+				$this->getLevel()->setBlock($this, new Air(), true, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

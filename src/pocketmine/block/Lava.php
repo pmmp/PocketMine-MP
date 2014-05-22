@@ -34,7 +34,7 @@ class Lava extends Liquid{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$ret = $this->level->setBlock($this, $this, true, false, true);
+		$ret = $this->getLevel()->setBlock($this, $this, true, false, true);
 		Server::getInstance()->api->block->scheduleBlockUpdate(clone $this, 40, Level::BLOCK_UPDATE_NORMAL);
 
 		return $ret;
@@ -61,9 +61,9 @@ class Lava extends Liquid{
 			if($b instanceof Water){
 				$level = $this->meta & 0x07;
 				if($level == 0x00){
-					$this->level->setBlock($this, new Obsidian(), false, false, true);
+					$this->getLevel()->setBlock($this, new Obsidian(), false, false, true);
 				}else{
-					$this->level->setBlock($this, new Cobblestone(), false, false, true);
+					$this->getLevel()->setBlock($this, new Cobblestone(), false, false, true);
 				}
 			}
 		}
@@ -103,7 +103,7 @@ class Lava extends Liquid{
 		if($from !== null || $level == 0x00){
 			if($level !== 0x07){
 				if($down instanceof Air || $down instanceof Lava){
-					$this->level->setBlock($down, new Lava(0x01), false, false, true);
+					$this->getLevel()->setBlock($down, new Lava(0x01), false, false, true);
 					Server::getInstance()->api->block->scheduleBlockUpdate(new Position($down, 0, 0, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 				}else{
 					for($side = 2; $side <= 5; ++$side){
@@ -111,7 +111,7 @@ class Lava extends Liquid{
 						if($b instanceof Lava){
 
 						}elseif($b->isFlowable === true){
-							$this->level->setBlock($b, new Lava(min($level + 2, 7)), false, false, true);
+							$this->getLevel()->setBlock($b, new Lava(min($level + 2, 7)), false, false, true);
 							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
 					}
@@ -128,7 +128,7 @@ class Lava extends Liquid{
 							$ssb = $sb->getSide($s);
 							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
-						$this->level->setBlock($sb, new Air(), false, false, true);
+						$this->getLevel()->setBlock($sb, new Air(), false, false, true);
 					}
 				}
 				$b = $this->getSide(0)->getSide($side);
@@ -139,13 +139,13 @@ class Lava extends Liquid{
 							$ssb = $sb->getSide($s);
 							Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($ssb, $this->level), 40, Level::BLOCK_UPDATE_NORMAL);
 						}
-						$this->level->setBlock($b, new Air(), false, false, true);
+						$this->getLevel()->setBlock($b, new Air(), false, false, true);
 					}
 				}
 				//Server::getInstance()->api->block->scheduleBlockUpdate(Position::fromObject($b, $this->level), 10, Level::BLOCK_UPDATE_NORMAL);
 			}
 
-			$this->level->setBlock($this, new Air(), false, false, true);
+			$this->getLevel()->setBlock($this, new Air(), false, false, true);
 		}
 
 		return false;

@@ -202,7 +202,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	}
 
 	protected function initEntity(){
-		$this->level->players[$this->CID] = $this;
+		$this->getLevel()->players[$this->CID] = $this;
 		parent::initEntity();
 	}
 
@@ -371,7 +371,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
 		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->getGamemode();
-		$this->level = $this->server->getDefaultLevel();
+		$this->getLevel() = $this->server->getDefaultLevel();
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
@@ -516,12 +516,12 @@ class Player extends Human implements CommandSender, IPlayer{
 		}
 
 		if(is_array($this->lastChunk)){
-			foreach($this->level->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
+			foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
 				if($entity !== $this){
 					$entity->spawnTo($this);
 				}
 			}
-			foreach($this->level->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
+			foreach($this->getLevel()->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
 				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
 				}
@@ -541,7 +541,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		$X = null;
 		$Z = null;
 		LevelFormat::getXZ($index, $X, $Z);
-		if(!$this->level->isChunkPopulated($X, $Z)){
+		if(!$this->getLevel()->isChunkPopulated($X, $Z)){
 			$this->orderChunks();
 			if($this->chunkScheduled === 0 or $force === true){
 				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
@@ -556,11 +556,11 @@ class Player extends Human implements CommandSender, IPlayer{
 		}
 		$Yndex = $this->chunksLoaded[$index];
 		$this->chunksLoaded[$index] = 0; //Load them all
-		$this->level->useChunk($X, $Z, $this);
+		$this->getLevel()->useChunk($X, $Z, $this);
 		$pk = new ChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
-		$pk->data = $this->level->getOrderedChunk($X, $Z, $Yndex);
+		$pk->data = $this->getLevel()->getOrderedChunk($X, $Z, $Yndex);
 		$cnt = $this->dataPacket($pk);
 		if($cnt === false){
 			return false;
@@ -613,16 +613,16 @@ class Player extends Human implements CommandSender, IPlayer{
 
 		$index = key($this->chunksOrder);
 		LevelFormat::getXZ($index, $X, $Z);
-		$this->level->loadChunk($X, $Z);
-		if(!$this->level->isChunkPopulated($X, $Z)){
-			$this->level->loadChunk($X - 1, $Z);
-			$this->level->loadChunk($X + 1, $Z);
-			$this->level->loadChunk($X, $Z - 1);
-			$this->level->loadChunk($X, $Z + 1);
-			$this->level->loadChunk($X + 1, $Z + 1);
-			$this->level->loadChunk($X + 1, $Z - 1);
-			$this->level->loadChunk($X - 1, $Z - 1);
-			$this->level->loadChunk($X - 1, $Z + 1);
+		$this->getLevel()->loadChunk($X, $Z);
+		if(!$this->getLevel()->isChunkPopulated($X, $Z)){
+			$this->getLevel()->loadChunk($X - 1, $Z);
+			$this->getLevel()->loadChunk($X + 1, $Z);
+			$this->getLevel()->loadChunk($X, $Z - 1);
+			$this->getLevel()->loadChunk($X, $Z + 1);
+			$this->getLevel()->loadChunk($X + 1, $Z + 1);
+			$this->getLevel()->loadChunk($X + 1, $Z - 1);
+			$this->getLevel()->loadChunk($X - 1, $Z - 1);
+			$this->getLevel()->loadChunk($X - 1, $Z + 1);
 		}
 
 		foreach($lastChunk as $index => $Yndex){
@@ -630,7 +630,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$X = null;
 				$Z = null;
 				LevelFormat::getXZ($index, $X, $Z);
-				foreach($this->level->getChunkEntities($X, $Z) as $entity){
+				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
 					if($entity !== $this){
 						$entity->despawnFrom($this);
 					}
@@ -753,7 +753,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	 * @return boolean
 	 */
 	public function sleepOn(Vector3 $pos){
-		foreach($this->level->getPlayers() as $p){
+		foreach($this->getLevel()->getPlayers() as $p){
 			if($p->sleeping instanceof Vector3){
 				if($pos->distance($p->sleeping) <= 0.1){
 					return false;
@@ -761,7 +761,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			}
 		}
 		$this->sleeping = $pos;
-		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
+		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->getLevel()));
 		/*if($this->entity instanceof Entity){
 			$this->updateMetadata();
 		}*/
@@ -778,9 +778,9 @@ class Player extends Human implements CommandSender, IPlayer{
 	 */
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Position)){
-			$level = $this->level;
+			$level = $this->getLevel();
 		}else{
-			$level = $pos->level;
+			$level = $pos->getLevel();
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
 		$pk = new SetSpawnPositionPacket;
@@ -804,14 +804,14 @@ class Player extends Human implements CommandSender, IPlayer{
 	public function checkSleep(){
 		if($this->sleeping !== false){
 			//TODO
-			if($this->server->api->time->getPhase($this->level) === "night"){
-				foreach($this->level->getPlayers() as $p){
+			if($this->server->api->time->getPhase($this->getLevel()) === "night"){
+				foreach($this->getLevel()->getPlayers() as $p){
 					if($p->sleeping === false){
 						return;
 					}
 				}
-				$this->server->api->time->set("day", $this->level);
-				foreach($this->level->getPlayers() as $p){
+				$this->server->api->time->set("day", $this->getLevel());
+				foreach($this->getLevel()->getPlayers() as $p){
 					$p->stopSleep();
 				}
 			}
@@ -824,7 +824,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		switch($event){
 			//TODO, obsolete
 			case "tile.update":
-				if($data->level === $this->level){
+				if($data->getLevel() === $this->getLevel()){
 					if($data instanceof Furnace){
 						foreach($this->windows as $id => $w){
 							if($w === $data){
@@ -845,7 +845,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 				break;
 			case "tile.container.slot":
-				if($data["tile"]->level === $this->level){
+				if($data["tile"]->getLevel() === $this->getLevel()){
 					foreach($this->windows as $id => $w){
 						if($w === $data["tile"]){
 							$pk = new ContainerSetSlotPacket;
@@ -875,7 +875,7 @@ class Player extends Human implements CommandSender, IPlayer{
 							$this->awardAchievement("diamond");
 							break;
 					}
-				}elseif($data["entity"]->level === $this->level){
+				}elseif($data["entity"]->getLevel() === $this->getLevel()){
 					$pk = new TakeItemEntityPacket;
 					$pk->eid = $data["eid"];
 					$pk->target = $data["entity"]->getID();
@@ -883,7 +883,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 				break;
 			case "entity.animate":
-				if($data["eid"] === $this->id or $data["entity"]->level !== $this->level){
+				if($data["eid"] === $this->id or $data["entity"]->getLevel() !== $this->getLevel()){
 					break;
 				}
 				$pk = new AnimatePacket;
@@ -897,7 +897,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}else{
 					$eid = $data->getID();
 				}
-				if($data->level === $this->level){
+				if($data->getLevel() === $this->getLevel()){
 					$pk = new SetEntityDataPacket;
 					$pk->eid = $eid;
 					$pk->metadata = $data->getMetadata();
@@ -910,7 +910,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}else{
 					$eid = $data["entity"]->getID();
 				}
-				if($data["entity"]->level === $this->level){
+				if($data["entity"]->getLevel() === $this->getLevel()){
 					$pk = new EntityEventPacket;
 					$pk->eid = $eid;
 					$pk->event = $data["event"];
@@ -1336,12 +1336,12 @@ class Player extends Human implements CommandSender, IPlayer{
 					$nbt["NameTag"] = $this->username;
 				}
 				$this->gamemode = $nbt["playerGameType"] & 0x03;
-				if(($this->level = $this->server->getLevel($nbt["Level"])) === null){
-					$this->level = $this->server->getDefaultLevel();
-					$nbt["Level"] = $this->level->getName();
-					$nbt["Pos"][0] = $this->level->getSpawn()->x;
-					$nbt["Pos"][1] = $this->level->getSpawn()->y;
-					$nbt["Pos"][2] = $this->level->getSpawn()->z;
+				if(($this->getLevel() = $this->server->getLevel($nbt["Level"])) === null){
+					$this->getLevel() = $this->server->getDefaultLevel();
+					$nbt["Level"] = $this->getLevel()->getName();
+					$nbt["Pos"][0] = $this->getLevel()->getSpawn()->x;
+					$nbt["Pos"][1] = $this->getLevel()->getSpawn()->y;
+					$nbt["Pos"][2] = $this->getLevel()->getSpawn()->z;
 				}
 
 				if(!($nbt instanceof Compound)){
@@ -1357,7 +1357,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
 				$this->server->saveOfflinePlayerData($this->username, $nbt);
-				parent::__construct($this->level, $nbt);
+				parent::__construct($this->getLevel(), $nbt);
 				$this->loggedIn = true;
 
 				if(($this->gamemode & 0x01) === 0x01){
@@ -1379,7 +1379,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$this->dataPacket($pk);
 
 				$pk = new StartGamePacket;
-				$pk->seed = $this->level->getSeed();
+				$pk->seed = $this->getLevel()->getSeed();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -1409,7 +1409,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$this->lastMeasure = microtime(true);
 				$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "measureLag")), 50);
 
-				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
+				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
 				$this->server->getPluginManager()->callEvent(new PlayerJoinEvent($this, $this->username . " joined the game"));
 
@@ -1436,12 +1436,12 @@ class Player extends Human implements CommandSender, IPlayer{
 						$this->blocked = false;
 
 						$pk = new SetTimePacket;
-						$pk->time = $this->level->getTime();
-						$pk->started = $this->level->stopTime == false;
+						$pk->time = $this->getLevel()->getTime();
+						$pk->started = $this->getLevel()->stopTime == false;
 						$this->dataPacket($pk);
 
-						$pos = new Position($this->x, $this->y, $this->z, $this->level);
-						$pos = $this->level->getSafeSpawn($pos);
+						$pos = new Position($this->x, $this->y, $this->z, $this->getLevel());
+						$pos = $this->getLevel()->getSafeSpawn($pos);
 						$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 						$this->teleport($ev->getRespawnPosition());
@@ -1539,7 +1539,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
-					$target = $this->level->getBlock($blockVector);
+					$target = $this->getLevel()->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
 					$pk = new UpdateBlockPacket;
@@ -1573,7 +1573,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 					}elseif(($this->gamemode & 0x01) === 1){
 						$item = Item::get(Block::$creative[$this->getCurrentEquipment()][0], Block::$creative[$this->getCurrentEquipment()][1], 1);
-						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
+						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
 					}elseif($this->getSlot($this->getCurrentEquipment())->getID() !== $packet->item or ($this->getSlot($this->getCurrentEquipment())->isTool() === false and $this->getSlot($this->getCurrentEquipment())->getMetadata() !== $packet->meta)){
@@ -1581,13 +1581,13 @@ class Player extends Human implements CommandSender, IPlayer{
 					}else{
 						$item = clone $this->getSlot($this->getCurrentEquipment());
 						//TODO: Implement adventure mode checks
-						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
+						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							$this->setSlot($this->getCurrentEquipment(), $item);
 							$this->sendInventorySlot($this->getCurrentEquipment());
 							break;
 						}
 					}
-					$target = $this->level->getBlock($blockVector);
+					$target = $this->getLevel()->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
 					$pk = new UpdateBlockPacket;
@@ -1632,7 +1632,7 @@ class Player extends Human implements CommandSender, IPlayer{
 										"y" => $this->entity->y + 1.6,
 										"z" => $this->entity->z,
 									);
-									$e = $this->server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_ARROW, $d);
+									$e = $this->server->api->entity->add($this->getLevel(), ENTITY_OBJECT, OBJECT_ARROW, $d);
 									$e->yaw = $this->entity->yaw;
 									$e->pitch = $this->entity->pitch;
 									$rotation = ($this->entity->yaw - 90) % 360;
@@ -1705,14 +1705,14 @@ class Player extends Human implements CommandSender, IPlayer{
 					$item = clone $this->getSlot($this->getCurrentEquipment());
 				}
 
-				if(($drops = $this->level->useBreakOn($vector, $item)) !== true){
+				if(($drops = $this->getLevel()->useBreakOn($vector, $item)) !== true){
 					if(($this->gamemode & 0x01) === 0){
 						//TODO: drop items
 						$this->setSlot($this->getCurrentEquipment(), $item);
 					}
 					break;
 				}
-				$target = $this->level->getBlock($vector);
+				$target = $this->getLevel()->getBlock($vector);
 				$pk = new UpdateBlockPacket;
 				$pk->x = $target->x;
 				$pk->y = $target->y;
@@ -1953,7 +1953,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$data["item"] = $packet->item;
 				$data["player"] = $this;
 				if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
-					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->level), $packet->item);
+					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->getLevel()), $packet->item);
 					$this->setSlot($this->getCurrentEquipment(), Item::get(AIR, 0, 0), false);
 				}
 				if($this->entity->inAction === true){
@@ -1999,7 +1999,7 @@ class Player extends Human implements CommandSender, IPlayer{
 							$pk->z = $ob->z;
 							$pk->case1 = 1;
 							$pk->case2 = 0;
-							Player::broadcastPacket($this->level->players, $pk);
+							Player::broadcastPacket($this->getLevel()->players, $pk);
 						}
 					}elseif($this->windows[$packet->windowid] instanceof Chest){
 						$pk = new TileEventPacket;
@@ -2008,7 +2008,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						$pk->z = $this->windows[$packet->windowid]->z;
 						$pk->case1 = 1;
 						$pk->case2 = 0;
-						Player::broadcastPacket($this->level->players, $pk);
+						Player::broadcastPacket($this->getLevel()->players, $pk);
 					}
 				}
 				unset($this->windows[$packet->windowid]);
@@ -2208,7 +2208,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 				$this->craftingItems = array();
 				$this->toCraft = array();
-				$t = $this->level->getTile(new Vector3($packet->x, $packet->y, $packet->z));
+				$t = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){
 					if($t->namedtag->creator !== $this->username){
 						$t->spawnTo($this);
@@ -2289,7 +2289,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	 */
 	public function close($message = "", $reason = "generic reason"){
 		if($this->connected === true){
-			unset($this->level->players[$this->CID]);
+			unset($this->getLevel()->players[$this->CID]);
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->loggedIn === true){
@@ -2302,7 +2302,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			$this->directDataPacket(new DisconnectPacket);
 			$this->connected = false;
 			$this->server->removePlayer($this);
-			$this->level->freeAllChunks($this);
+			$this->getLevel()->freeAllChunks($this);
 			$this->loggedIn = false;
 			foreach($this->tasks as $task){
 				$task->cancel();
@@ -2337,8 +2337,8 @@ class Player extends Human implements CommandSender, IPlayer{
 	 */
 	public function save(){
 		parent::saveNBT();
-		$this->namedtag["Level"] = $this->level->getName();
-		$this->namedtag["SpawnLevel"] = $this->level->getName();
+		$this->namedtag["Level"] = $this->getLevel()->getName();
+		$this->namedtag["SpawnLevel"] = $this->getLevel()->getName();
 		$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
 		$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
 		$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;

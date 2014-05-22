@@ -65,6 +65,40 @@ interface Chunk{
 	 * @param int $y 0-127
 	 * @param int $z 0-15
 	 *
+	 * @return int 0-255
+	 */
+	public function getBlockId($x, $y, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 * @param int $id 0-255
+	 */
+	public function setBlockId($x, $y, $z, $id);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockData($x, $y, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 * @param int $data 0-15
+	 */
+	public function setBlockData($x, $y, $z, $data);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 *
 	 * @return int 0-15
 	 */
 	public function getBlockSkyLight($x, $y, $z);

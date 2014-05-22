@@ -50,13 +50,13 @@ class Chest extends Spawnable{
 
 	public function getPair(){
 		if($this->isPaired()){
-			return $this->level->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
+			return $this->getLevel()->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
 		}
 
 		return false;
 	}
 
-	public function pairWith(Tile $tile){
+	public function pairWith(Chest $tile){
 		if($this->isPaired() or $tile->isPaired()){
 			return false;
 		}
@@ -69,6 +69,8 @@ class Chest extends Spawnable{
 
 		$this->spawnToAll();
 		$tile->spawnToAll();
+
+		//TODO: Update to new events
 		$this->server->handle("tile.update", $this);
 		$this->server->handle("tile.update", $tile);
 

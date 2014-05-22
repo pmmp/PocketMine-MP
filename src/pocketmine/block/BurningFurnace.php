@@ -46,7 +46,7 @@ class BurningFurnace extends Solid{
 			3 => 3,
 		);
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
-		$this->level->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
 			new Enum("Items", array()),
 			new String("id", Tile::FURNACE),
@@ -55,20 +55,20 @@ class BurningFurnace extends Solid{
 			new Int("z", $this->z)
 		));
 		$nbt->Items->setTagType(NBT::TAG_Compound);
-		new Furnace($this->level, $nbt);
+		new Furnace($this->getLevel(), $nbt);
 
 		return true;
 	}
 
 	public function onBreak(Item $item){
-		$this->level->setBlock($this, new Air(), true, true, true);
+		$this->getLevel()->setBlock($this, new Air(), true, true, true);
 
 		return true;
 	}
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
-			$t = $this->level->getTile($this);
+			$t = $this->getLevel()->getTile($this);
 			$furnace = false;
 			if($t instanceof Furnace){
 				$furnace = $t;
@@ -81,7 +81,7 @@ class BurningFurnace extends Solid{
 					new Int("z", $this->z)
 				));
 				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$furnace = new Furnace($this->level, $nbt);
+				$furnace = new Furnace($this->getLevel(), $nbt);
 			}
 
 			if(($player->getGamemode() & 0x01) === 0x01){
@@ -116,7 +116,7 @@ class BurningFurnace extends Solid{
 		if($item->isPickaxe() >= 1){
 			$drops[] = array(Item::FURNACE, 0, 1);
 		}
-		$t = $this->level->getTile($this);
+		$t = $this->getLevel()->getTile($this);
 		if($t instanceof Furnace){
 			for($s = 0; $s < Furnace::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
