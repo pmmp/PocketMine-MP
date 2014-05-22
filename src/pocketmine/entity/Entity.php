@@ -70,6 +70,15 @@ abstract class Entity extends Position implements Metadatable{
 	public $passenger = null;
 	public $vehicle = null;
 
+	/** @var int */
+	public $chunkX;
+	/** @var int */
+	public $chunkZ;
+
+	/**
+	 * TODO: REMOVE
+	 * @var int
+	 */
 	public $chunkIndex;
 
 	public $lastX;

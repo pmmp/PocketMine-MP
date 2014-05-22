@@ -131,4 +131,12 @@ interface ChunkSection{
 	 */
 	public function getBlockDataColumn($x, $z);
 
+	public function getIdArray();
+
+	public function getDataArray();
+
+	public function getSkyLightArray();
+
+	public function getLightArray();
+
 }

@@ -150,4 +150,20 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		return $column;
 	}
 
+	public function getIdArray(){
+		return $this->blocks;
+	}
+
+	public function getDataArray(){
+		return $this->data;
+	}
+
+	public function getSkyLightArray(){
+		return $this->skyLight;
+	}
+
+	public function getLightArray(){
+		return $this->blockLight;
+	}
+
 }

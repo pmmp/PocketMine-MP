@@ -22,6 +22,7 @@
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\generic\BaseChunk;
+use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
@@ -71,5 +72,35 @@ class Chunk extends BaseChunk{
 		}
 
 		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections);
+	}
+
+	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false){
+		$blockId = "";
+		$blockData = "";
+		$blockSkyLight = "";
+		$blockLight = "";
+		$emptySections = [false, false, false, false, false, false, false, false];
+
+		$emptyBlocks = str_repeat("\x00", 4096);
+		$emptyHalf = str_repeat("\x00", 2048);
+
+		foreach($this->sections as $i => $section){
+			if($section instanceof EmptyChunkSection){
+				$blockId .= $emptyBlocks;
+				$blockData .= $emptyHalf;
+				$blockSkyLight .= $emptyHalf;
+				$blockLight .= $emptyHalf;
+				$emptySections[$i] = true;
+			}else{
+				$blockId .= $section->getIdArray();
+				$blockData .= $section->getDataArray();
+				$blockSkyLight .= $section->getSkyLightArray();
+				$blockLight .= $section->getLightArray();
+			}
+		}
+
+		//TODO: maxBlockY, biomeMap, biomeTemp
+
+		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), $this->getLevel()->getTime(), $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
 	}
 }
