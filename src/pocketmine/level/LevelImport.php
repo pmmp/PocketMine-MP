@@ -53,7 +53,7 @@ class LevelImport{
 			$nbt->read(substr(file_get_contents($this->path . "entities.dat"), 12));
 			$entities = $nbt->getData();
 			if(!isset($entities->TileEntities)){
-				$entities->TileEntities = array();
+				$entities->TileEntities = [];
 			}
 			$tiles = $entities->TileEntities;
 			$entities = $entities->Entities;

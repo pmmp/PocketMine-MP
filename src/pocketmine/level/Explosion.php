@@ -46,7 +46,7 @@ class Explosion{
 	/**
 	 * @var Block[]
 	 */
-	public $affectedBlocks = array();
+	public $affectedBlocks = [];
 	public $stepLen = 0.3;
 	private $what;
 
@@ -95,7 +95,7 @@ class Explosion{
 			}
 		}
 
-		$send = array();
+		$send = [];
 		$source = $this->source->floor();
 		$radius = 2 * $this->size;
 		$yield = (1 / $this->size) * 100;

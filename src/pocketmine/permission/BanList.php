@@ -26,7 +26,7 @@ use pocketmine\Server;
 class BanList{
 
 	/** @var BanEntry[] */
-	private $list = array();
+	private $list = [];
 
 	/** @var string */
 	private $file;
@@ -128,7 +128,7 @@ class BanList{
 	}
 
 	public function load(){
-		$this->list = array();
+		$this->list = [];
 		$fp = @fopen($this->file, "r");
 		if(is_resource($fp)){
 			while(($line = fgets($fp)) !== false){

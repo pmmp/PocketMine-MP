@@ -27,7 +27,7 @@ use pocketmine\level\Level;
 abstract class BaseChunk implements Chunk{
 
 	/** @var ChunkSection[] */
-	protected $sections = array();
+	protected $sections = [];
 	protected $level;
 
 	protected $x;

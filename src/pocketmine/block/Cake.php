@@ -58,7 +58,7 @@ class Cake extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array();
+		return [];
 	}
 
 	public function onActivate(Item $item, Player $player = null){

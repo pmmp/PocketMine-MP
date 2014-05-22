@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 
 class PlayerArmorEquipmentPacket extends DataPacket{
 	public $eid;
-	public $slots = array();
+	public $slots = [];
 
 	public function pid(){
 		return Info::PLAYER_ARMOR_EQUIPMENT_PACKET;

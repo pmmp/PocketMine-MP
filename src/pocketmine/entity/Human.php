@@ -42,10 +42,10 @@ use pocketmine\Server;
 class Human extends Creature implements ProjectileSource, InventorySource{
 
 	protected $nameTag = "TESTIFICATE";
-	protected $inventory = array();
+	protected $inventory = [];
 	public $slot;
-	protected $hotbar = array();
-	protected $armor = array();
+	protected $hotbar = [];
+	protected $armor = [];
 
 	protected function initEntity(){
 		if(isset($this->namedtag->NameTag)){
@@ -76,7 +76,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Inventory = new Enum("Inventory", array());
+		$this->namedtag->Inventory = new Enum("Inventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
 		for($slot = 0; $slot < 9; ++$slot){
 			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
@@ -240,7 +240,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 	}
 
 	public function sendArmor($player = null){
-		$slots = array();
+		$slots = [];
 		for($i = 0; $i < 4; ++$i){
 			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > Item::AIR){
 				$slots[$i] = $this->armor[$i]->getID() !== Item::AIR ? $this->armor[$i]->getID() - 256 : 0;

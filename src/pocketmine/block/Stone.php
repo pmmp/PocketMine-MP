@@ -53,7 +53,7 @@ class Stone extends Solid{
 				array(Item::COBBLESTONE, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 

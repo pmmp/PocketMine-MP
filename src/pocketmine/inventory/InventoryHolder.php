@@ -14,39 +14,19 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
-
+ * @link http://www.pocketmine.net/
  *
  *
 */
 
-namespace pocketmine\scheduler;
+namespace pocketmine\inventory;
 
-/**
- * Allows the creation of simple callbacks with extra data
- * The last parameter in the callback will be this object
- *
- * If you want to do a task in a Plugin, consider extending PluginTask to your needs
- */
-class CallbackTask extends Task{
-
-	/** @var callable */
-	protected $callable;
-
-	/** @var array */
-	protected $args;
+interface InventoryHolder{
 
 	/**
-	 * @param callable $callable
-	 * @param array    $args
+	 * Get the object related inventory
+	 *
+	 * @return Inventory
 	 */
-	public function __construct(callable $callable, array $args = []){
-		$this->callable = $callable;
-		$this->args = $args;
-		$this->args[] = $this;
-	}
-
-	public function onRun($currentTicks){
-		call_user_func_array($this->callable, $this->args);
-	}
-
+	public function getInventory();
 }

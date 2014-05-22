@@ -39,6 +39,7 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\server\PacketReceiveEvent;
 use pocketmine\event\server\PacketSendEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\inventory\InventoryType;
 use pocketmine\item\Item;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
@@ -171,10 +172,10 @@ class Server{
 	private $properties;
 
 	/** @var Player[] */
-	private $players = array();
+	private $players = [];
 
 	/** @var Level[] */
-	private $levels = array();
+	private $levels = [];
 
 	/** @var Level */
 	private $levelDefault = null;
@@ -551,8 +552,8 @@ class Server{
 				new Int("SpawnY", (int) $spawn->y),
 				new Int("SpawnZ", (int) $spawn->z),
 				new Byte("SpawnForced", 1), //TODO
-				new Enum("Inventory", array()),
-				new Compound("Achievements", array()),
+				new Enum("Inventory", []),
+				new Compound("Achievements", []),
 				new Int("playerGameType", $this->getGamemode()),
 				new Enum("Motion", array(
 					new Double(0, 0.0),
@@ -576,7 +577,7 @@ class Server{
 			$nbt->Rotation->setTagType(NBT::TAG_Float);
 
 			if(file_exists($path . "$name.yml")){ //Importing old PocketMine-MP files
-				$data = new Config($path . "$name.yml", Config::YAML, array());
+				$data = new Config($path . "$name.yml", Config::YAML, []);
 				$nbt["playerGameType"] = (int) $data->get("gamemode");
 				$nbt["Level"] = $data->get("position")["level"];
 				$nbt["Pos"][0] = $data->get("position")["x"];
@@ -696,7 +697,7 @@ class Server{
 	 */
 	public function matchPlayer($partialName){
 		$partialName = strtolower($partialName);
-		$matchedPlayers = array();
+		$matchedPlayers = [];
 		foreach($this->getOnlinePlayers() as $player){
 			if(strtolower($player->getName()) === $partialName){
 				$matchedPlayers = array($player);
@@ -849,11 +850,11 @@ class Server{
 				}
 				$level->loadChunk($tile["x"] >> 4, $tile["z"] >> 4);
 
-				$nbt = new Compound(false, array());
+				$nbt = new Compound(false, []);
 				foreach($tile as $index => $data){
 					switch($index){
 						case "Items":
-							$tag = new Enum("Items", array());
+							$tag = new Enum("Items", []);
 							$tag->setTagType(NBT::TAG_Compound);
 							foreach($data as $slot => $fields){
 								$tag[(int) $slot] = new Compound(false, array(
@@ -918,7 +919,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function generateLevel($name, $seed = null, $generator = null, array $options = array()){
+	public function generateLevel($name, $seed = null, $generator = null, array $options = []){
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
@@ -1273,6 +1274,8 @@ class Server{
 		//TODO: update checking (async)
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
+
+		InventoryType::init();
 		Block::init();
 		Item::init();
 		Crafting::init();
@@ -1666,7 +1669,7 @@ class Server{
 			$dump .= "\r\n\r\n";
 		}
 
-		$extensions = array();
+		$extensions = [];
 		foreach(get_loaded_extensions() as $ext){
 			$extensions[$ext] = phpversion($ext);
 		}

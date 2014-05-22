@@ -45,12 +45,12 @@ class PluginManager{
 	/**
 	 * @var Plugin[]
 	 */
-	protected $plugins = array();
+	protected $plugins = [];
 
 	/**
 	 * @var Permission[]
 	 */
-	protected $permissions = array();
+	protected $permissions = [];
 
 	/**
 	 * @var Permission[]
@@ -65,7 +65,7 @@ class PluginManager{
 	/**
 	 * @var Permissible[]
 	 */
-	protected $permSubs = array();
+	protected $permSubs = [];
 
 	/**
 	 * @var Permissible[]
@@ -80,7 +80,7 @@ class PluginManager{
 	/**
 	 * @var PluginLoader[]
 	 */
-	protected $fileAssociations = array();
+	protected $fileAssociations = [];
 
 	/**
 	 * @param Server           $server
@@ -166,12 +166,12 @@ class PluginManager{
 	public function loadPlugins($directory, $newLoaders = null){
 
 		if(is_dir($directory)){
-			$plugins = array();
-			$loadedPlugins = array();
-			$dependencies = array();
-			$softDependencies = array();
+			$plugins = [];
+			$loadedPlugins = [];
+			$dependencies = [];
+			$softDependencies = [];
 			if(is_array($newLoaders)){
-				$loaders = array();
+				$loaders = [];
 				foreach($newLoaders as $key){
 					if(isset($this->fileAssociations[$key])){
 						$loaders[$key] = $this->fileAssociations[$key];
@@ -302,14 +302,14 @@ class PluginManager{
 						foreach($plugins as $name => $file){
 							console("[SEVERE] Could not load plugin '" . $name . "': circular dependency detected");
 						}
-						$plugins = array();
+						$plugins = [];
 					}
 				}
 			}
 
 			return $loadedPlugins;
 		}else{
-			return array();
+			return [];
 		}
 	}
 
@@ -432,7 +432,7 @@ class PluginManager{
 			return $this->permSubs[$permission];
 		}
 
-		return array();
+		return [];
 	}
 
 	/**
@@ -512,7 +512,7 @@ class PluginManager{
 	 * @return PluginCommand[]
 	 */
 	protected function parseYamlCommands(Plugin $plugin){
-		$pluginCmds = array();
+		$pluginCmds = [];
 
 		foreach($plugin->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
@@ -530,7 +530,7 @@ class PluginManager{
 				}
 
 				if(isset($data["aliases"]) and is_array($data["aliases"])){
-					$aliasList = array();
+					$aliasList = [];
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
 							console("[SEVERE] Could not load alias " . $alias . " for plugin " . $plugin->getDescription()->getName());
@@ -579,11 +579,11 @@ class PluginManager{
 
 	public function clearPlugins(){
 		$this->disablePlugins();
-		$this->plugins = array();
-		$this->fileAssociations = array();
-		$this->permissions = array();
-		$this->defaultPerms = array();
-		$this->defaultPermsOp = array();
+		$this->plugins = [];
+		$this->fileAssociations = [];
+		$this->permissions = [];
+		$this->defaultPerms = [];
+		$this->defaultPermsOp = [];
 	}
 
 	/**

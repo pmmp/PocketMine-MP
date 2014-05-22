@@ -46,7 +46,7 @@ class Gold extends Solid{
 				array(Item::GOLD_BLOCK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

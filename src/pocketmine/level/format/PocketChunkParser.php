@@ -35,13 +35,13 @@ class PocketChunkParser{
 	private $file;
 	public $sectorLength = 4096; //16 * 16 * 16
 	public $chunkLength = 86016; //21 * $sectorLength
-	public $map = array();
+	public $map = [];
 
 	public function __construct(){
 	}
 
 	private function loadLocationTable(){
-		$this->location = array();
+		$this->location = [];
 		console("[DEBUG] Loading Chunk Location table...", true, true, 2);
 		for($offset = 0; $offset < 0x1000; $offset += 4){
 			$data = Binary::readLInt(substr($this->raw, $offset, 4));
@@ -116,10 +116,10 @@ class PocketChunkParser{
 		$len = Binary::readLInt(substr($this->raw, $offset, 4));
 		$offset += 4;
 		$chunk = array(
-			0 => array(), //Block
-			1 => array(), //Data
-			2 => array(), //SkyLight
-			3 => array(), //BlockLight
+			0 => [], //Block
+			1 => [], //Data
+			2 => [], //SkyLight
+			3 => [], //BlockLight
 		);
 		foreach($chunk as $section => &$data){
 			$l = $section === 0 ? 128 : 64;
@@ -139,7 +139,7 @@ class PocketChunkParser{
 		$this->loadLocationTable();
 		console("[DEBUG] Loading chunks...", true, true, 2);
 		for($x = 0; $x < 16; ++$x){
-			$this->map[$x] = array();
+			$this->map[$x] = [];
 			for($z = 0; $z < 16; ++$z){
 				$this->map[$x][$z] = $this->parseChunk($x, $z);
 			}

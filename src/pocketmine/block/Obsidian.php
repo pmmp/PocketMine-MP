@@ -44,7 +44,7 @@ class Obsidian extends Solid{
 				array(Item::OBSIDIAN, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

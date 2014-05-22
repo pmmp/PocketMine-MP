@@ -405,7 +405,7 @@ abstract class Block extends Position implements Metadatable{
 	);
 
 	/** @var Block[] */
-	public static $list = array();
+	public static $list = [];
 	protected $id;
 	protected $meta;
 	protected $name;
@@ -650,7 +650,7 @@ abstract class Block extends Position implements Metadatable{
 	 */
 	public function getDrops(Item $item){
 		if(!isset(self::$list[$this->id])){ //Unknown blocks
-			return array();
+			return [];
 		}else{
 			return array(
 				array($this->id, $this->meta, 1),

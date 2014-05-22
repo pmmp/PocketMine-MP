@@ -58,7 +58,7 @@ class Stair extends Transparent{
 				array($this->id, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

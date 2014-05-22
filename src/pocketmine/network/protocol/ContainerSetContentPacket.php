@@ -24,8 +24,8 @@ namespace pocketmine\network\protocol;
 
 class ContainerSetContentPacket extends DataPacket{
 	public $windowid;
-	public $slots = array();
-	public $hotbar = array();
+	public $slots = [];
+	public $hotbar = [];
 
 	public function pid(){
 		return Info::CONTAINER_SET_CONTENT_PACKET;

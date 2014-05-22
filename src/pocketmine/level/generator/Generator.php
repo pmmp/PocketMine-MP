@@ -28,7 +28,7 @@ use pocketmine\level\Level;
 use pocketmine\utils\Random;
 
 abstract class Generator{
-	private static $list = array();
+	private static $list = [];
 
 	public static function addGenerator($object, $name){
 		if(is_subclass_of($object, "pocketmine\\level\\generator\\Generator") and !isset(Generator::$list[$name])){
@@ -48,7 +48,7 @@ abstract class Generator{
 		return "pocketmine\\level\\generator\\Normal";
 	}
 
-	public abstract function __construct(array $settings = array());
+	public abstract function __construct(array $settings = []);
 
 	public abstract function init(Level $level, Random $random);
 

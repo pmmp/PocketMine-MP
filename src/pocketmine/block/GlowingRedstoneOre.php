@@ -58,7 +58,7 @@ class GlowingRedstoneOre extends Solid{
 				array(Item::REDSTONE_DUST, 0, mt_rand(4, 5)),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 

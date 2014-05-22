@@ -53,7 +53,7 @@ class NetherBrick extends Solid{
 				array(Item::NETHER_BRICKS, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

@@ -65,7 +65,7 @@ class HelpCommand extends VanillaCommand{
 		}
 
 		if($command === ""){
-			$commands = array();
+			$commands = [];
 			foreach(Server::getInstance()->getCommandMap()->getCommands() as $command){
 				if($command->testPermissionSilent($sender)){
 					$commands[$command->getName()] = $command;

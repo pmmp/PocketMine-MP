@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 
 abstract class Crafting{
 
-	private static $lookupTable = array();
+	private static $lookupTable = [];
 
 	private static $small = array( //Probably means craftable on crafting bench and in inventory. Name it better!
 		//Building
@@ -221,11 +221,11 @@ abstract class Crafting{
 		"COBBLESTONE:?x6=>COBBLESTONE_STAIRS:0x4",
 	);
 
-	private static $recipes = array();
+	private static $recipes = [];
 
 	private static function parseRecipe($recipe){
 		$recipe = explode("=>", $recipe);
-		$recipeItems = array();
+		$recipeItems = [];
 		foreach(explode(",", $recipe[0]) as $item){
 			$item = explode("x", $item);
 			$id = explode(":", $item[0]);
@@ -257,34 +257,34 @@ abstract class Crafting{
 	public static function init(){
 		$id = 1;
 
-		self::$lookupTable[0] = array();
+		self::$lookupTable[0] = [];
 		foreach(self::$small as $recipe){
 			$recipe = self::parseRecipe($recipe);
 			self::$recipes[$id] = $recipe;
 			if(!isset(self::$lookupTable[0][$recipe[2]])){
-				self::$lookupTable[0][$recipe[2]] = array();
+				self::$lookupTable[0][$recipe[2]] = [];
 			}
 			self::$lookupTable[0][$recipe[2]][] = $id;
 			++$id;
 		}
 
-		self::$lookupTable[1] = array();
+		self::$lookupTable[1] = [];
 		foreach(self::$big as $recipe){
 			$recipe = self::parseRecipe($recipe);
 			self::$recipes[$id] = $recipe;
 			if(!isset(self::$lookupTable[1][$recipe[2]])){
-				self::$lookupTable[1][$recipe[2]] = array();
+				self::$lookupTable[1][$recipe[2]] = [];
 			}
 			self::$lookupTable[1][$recipe[2]][] = $id;
 			++$id;
 		}
 
-		self::$lookupTable[2] = array();
+		self::$lookupTable[2] = [];
 		foreach(self::$stone as $recipe){
 			$recipe = self::parseRecipe($recipe);
 			self::$recipes[$id] = $recipe;
 			if(!isset(self::$lookupTable[2][$recipe[2]])){
-				self::$lookupTable[2][$recipe[2]] = array();
+				self::$lookupTable[2][$recipe[2]] = [];
 			}
 			self::$lookupTable[2][$recipe[2]][] = $id;
 			++$id;

@@ -52,7 +52,7 @@ class Bricks extends Solid{
 				array(Item::BRICKS_BLOCK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

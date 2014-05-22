@@ -25,7 +25,7 @@ use pocketmine\nbt\NBT;
 
 class Compound extends NamedTag implements \ArrayAccess{
 
-	public function __construct($name = "", $value = array()){
+	public function __construct($name = "", $value = []){
 		$this->name = $name;
 		foreach($value as $tag){
 			$this->{$tag->getName()} = $tag;
@@ -65,7 +65,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 	}
 
 	public function read(NBT $nbt){
-		$this->value = array();
+		$this->value = [];
 		do{
 			$tag = $nbt->readTag();
 			if($tag instanceof NamedTag and $tag->getName() !== ""){

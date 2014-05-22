@@ -61,7 +61,7 @@ class SimpleCommandMap implements CommandMap{
 	/**
 	 * @var Command[]
 	 */
-	protected $knownCommands = array();
+	protected $knownCommands = [];
 
 	/** @var Server */
 	private $server;
@@ -184,7 +184,7 @@ class SimpleCommandMap implements CommandMap{
 		foreach($this->knownCommands as $command){
 			$command->unregister($this);
 		}
-		$this->knownCommands = array();
+		$this->knownCommands = [];
 		$this->setDefaultCommands();
 	}
 

@@ -119,7 +119,7 @@ class Slab extends Transparent{
 				array($this->id, $this->meta & 0x07, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

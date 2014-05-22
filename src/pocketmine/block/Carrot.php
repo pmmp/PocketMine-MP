@@ -81,7 +81,7 @@ class Carrot extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		$drops = array();
+		$drops = [];
 		if($this->meta >= 0x07){
 			$drops[] = array(Item::CARROT, 0, mt_rand(1, 4));
 		}else{

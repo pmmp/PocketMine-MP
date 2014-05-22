@@ -40,7 +40,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @var Player[]
 	 */
-	protected $recipients = array();
+	protected $recipients = [];
 
 	public function __construct(Player $player, $message, $format = "<%s> %s", array $recipients = null){
 		$this->player = $player;

@@ -48,7 +48,7 @@ class Lapis extends Solid{
 				array(Item::LAPIS_BLOCK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 

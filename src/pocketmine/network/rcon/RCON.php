@@ -41,7 +41,7 @@ class RCON{
 	private $rconSender;
 
 	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
-		$this->workers = array();
+		$this->workers = [];
 		$this->password = (string) $password;
 		console("[INFO] Starting remote control listener");
 		if($this->password === ""){

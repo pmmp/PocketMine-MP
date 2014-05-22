@@ -32,6 +32,6 @@ class Cobweb extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return array();
+		return [];
 	}
 }

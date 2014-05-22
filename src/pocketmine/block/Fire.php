@@ -34,7 +34,7 @@ class Fire extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return array();
+		return [];
 	}
 
 	public function onUpdate($type){

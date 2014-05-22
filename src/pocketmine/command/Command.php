@@ -40,12 +40,12 @@ abstract class Command{
 	/**
 	 * @var string[]
 	 */
-	private $aliases = array();
+	private $aliases = [];
 
 	/**
 	 * @var string[]
 	 */
-	private $activeAliases = array();
+	private $activeAliases = [];
 
 	/** @var CommandMap */
 	private $commandMap = null;
@@ -68,7 +68,7 @@ abstract class Command{
 	 * @param string   $usageMessage
 	 * @param string[] $aliases
 	 */
-	public function __construct($name, $description = "", $usageMessage = null, array $aliases = array()){
+	public function __construct($name, $description = "", $usageMessage = null, array $aliases = []){
 		$this->name = $name;
 		$this->nextLabel = $name;
 		$this->label = $name;

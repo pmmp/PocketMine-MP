@@ -103,15 +103,15 @@ class Player extends Human implements CommandSender, IPlayer{
 	public $gamemode;
 	public $lastBreak;
 	public $windowCnt = 2;
-	public $windows = array();
+	public $windows = [];
 	public $blocked = true;
-	public $achievements = array();
-	public $chunksLoaded = array();
+	public $achievements = [];
+	public $chunksLoaded = [];
 	public $lastCorrect;
-	public $craftingItems = array();
-	public $toCraft = array();
+	public $craftingItems = [];
+	public $toCraft = [];
 	public $lastCraft = 0;
-	public $loginData = array();
+	public $loginData = [];
 	protected $lastMovement = 0;
 	protected $forceMovement = false;
 	protected $connected = true;
@@ -123,13 +123,13 @@ class Player extends Human implements CommandSender, IPlayer{
 	protected $displayName;
 	protected $startAction = false;
 	protected $sleeping = false;
-	protected $chunksOrder = array();
+	protected $chunksOrder = [];
 	/** @var Player[] */
-	protected $hiddenPlayers = array();
-	private $recoveryQueue = array();
-	private $receiveQueue = array();
-	private $resendQueue = array();
-	private $ackQueue = array();
+	protected $hiddenPlayers = [];
+	private $recoveryQueue = [];
+	private $receiveQueue = [];
+	private $resendQueue = [];
+	private $ackQueue = [];
 	private $receiveCount = -1;
 	/** @var \pocketmine\network\raknet\Packet */
 	private $buffer;
@@ -141,7 +141,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	private $lastMeasure = 0;
 	private $bandwidthRaw = 0;
 	private $bandwidthStats = array(0, 0, 0);
-	private $lag = array();
+	private $lag = [];
 	private $lagStat = 0;
 	private $spawnPosition;
 	private $packetLoss = 0;
@@ -150,13 +150,13 @@ class Player extends Human implements CommandSender, IPlayer{
 	private $inAction = false;
 	private $bigCnt;
 	private $packetStats;
-	private $chunkCount = array();
-	private $received = array();
+	private $chunkCount = [];
+	private $received = [];
 
 	/**
 	 * @var \pocketmine\scheduler\TaskHandler[]
 	 */
-	private $tasks = array();
+	private $tasks = [];
 
 	/** @var PermissibleBase */
 	private $perm = null;
@@ -377,7 +377,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 		$this->packetStats = array(0, 0);
 		$this->buffer = new Packet(Info::DATA_PACKET_0);
-		$this->buffer->data = array();
+		$this->buffer->data = [];
 		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "handlePacketQueues")), 1);
 		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "clearQueue")), 20 * 60);
 		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
@@ -399,7 +399,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	 */
 	public function hasAchievement($achievementId){
 		if(!isset(Achievement::$list[$achievementId]) or !isset($this->achievements)){
-			$this->achievements = array();
+			$this->achievements = [];
 
 			return false;
 		}
@@ -565,7 +565,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		if($cnt === false){
 			return false;
 		}
-		$this->chunkCount = array();
+		$this->chunkCount = [];
 		foreach($cnt as $i => $count){
 			$this->chunkCount[$count] = true;
 		}
@@ -590,7 +590,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			return false;
 		}
 
-		$newOrder = array();
+		$newOrder = [];
 		$lastChunk = $this->chunksLoaded;
 		$centerX = $this->x >> 4;
 		$centerZ = $this->z >> 4;
@@ -672,7 +672,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		@$this->buffer->data[] = $packet;
 		$this->bufferLen += 6 + $len;
 
-		return array();
+		return [];
 	}
 
 	private function directBigRawPacket(DataPacket $packet){
@@ -686,7 +686,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		$buffer = str_split($packet->buffer, $size);
 		$bigCnt = $this->bigCnt;
 		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
-		$cnts = array();
+		$cnts = [];
 		$bufCount = count($buffer);
 		foreach($buffer as $i => $buf){
 			$cnts[] = $count = $this->counter[0]++;
@@ -742,7 +742,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			}
 			$this->bufferLen = 0;
 			$this->buffer = new Packet(Info::DATA_PACKET_0);
-			$this->buffer->data = array();
+			$this->buffer->data = [];
 			$this->nextBuffer = microtime(true) + 0.1;
 		}
 	}
@@ -1064,7 +1064,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		$this->bandwidthStats[] = $this->bandwidthRaw / max(0.00001, microtime(true) - $this->lastMeasure);
 		$this->bandwidthRaw = 0;
 		$this->lagStat = array_sum($this->lag) / max(1, count($this->lag));
-		$this->lag = array();
+		$this->lag = [];
 		$this->sendBuffer();
 		$this->lastMeasure = microtime(true);
 	}
@@ -1141,7 +1141,7 @@ class Player extends Human implements CommandSender, IPlayer{
 			$packetCnt = (int) ($ackCnt / $safeCount + 1);
 			for($p = 0; $p < $packetCnt; ++$p){
 				$pk = new Packet(Info::ACK);
-				$pk->packets = array();
+				$pk->packets = [];
 				for($c = 0; $c < $safeCount; ++$c){
 					if(($k = array_pop($this->ackQueue)) === null){
 						break;
@@ -1150,7 +1150,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 				$this->send($pk);
 			}
-			$this->ackQueue = array();
+			$this->ackQueue = [];
 		}
 
 		if(($receiveCnt = count($this->receiveQueue)) > 0){
@@ -1350,7 +1350,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					return;
 				}
 
-				$this->achievements = array();
+				$this->achievements = [];
 				foreach($nbt->Achievements as $achievement){
 					$this->achievements[$achievement->getName()] = $achievement->getValue() > 0 ? true : false;
 				}
@@ -1559,8 +1559,8 @@ class Player extends Human implements CommandSender, IPlayer{
 					$this->dataPacket($pk);
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 				$packet->eid = $this->id;
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
@@ -1618,8 +1618,8 @@ class Player extends Human implements CommandSender, IPlayer{
 					break;
 				}
 				$packet->eid = $this->id;
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 
 				switch($packet->action){
 					case 5: //Shot arrow
@@ -1693,8 +1693,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 
 				$vector = new Vector3($packet->x, $packet->y, $packet->z);
 
@@ -1725,8 +1725,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 
 				for($i = 0; $i < 4; ++$i){
 					$s = $packet->slots[$i];
@@ -1774,12 +1774,12 @@ class Player extends Human implements CommandSender, IPlayer{
 					break;
 				}
 				$packet->eid = $this->id;
-				$data = array();
+				$data = [];
 				$data["target"] = $packet->target;
 				$data["eid"] = $packet->eid;
 				$data["action"] = $packet->action;
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 				$target = Entity::get($packet->target);
 				if($target instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
@@ -1869,8 +1869,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false or $this->dead === false){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
 
@@ -1889,8 +1889,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 				$packet->eid = $this->id;
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -1945,9 +1945,9 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 				$packet->eid = $this->id;
 				$packet->item = $this->getSlot($this->getCurrentEquipment());
-				$this->craftingItems = array();
-				$this->toCraft = array();
-				$data = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
+				$data = [];
 				$data["eid"] = $packet->eid;
 				$data["unknown"] = $packet->unknown;
 				$data["item"] = $packet->item;
@@ -1965,8 +1965,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
@@ -1988,8 +1988,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 				if(isset($this->windows[$packet->windowid])){
 					if(is_array($this->windows[$packet->windowid])){
 						foreach($this->windows[$packet->windowid] as $ob){
@@ -2026,9 +2026,9 @@ class Player extends Human implements CommandSender, IPlayer{
 					if(isset($this->toCraft[-1])){
 						$this->toCraft = array(-1 => $this->toCraft[-1]);
 					}else{
-						$this->toCraft = array();
+						$this->toCraft = [];
 					}
-					$this->craftingItems = array();
+					$this->craftingItems = [];
 				}
 
 				if($packet->windowid === 0){
@@ -2063,15 +2063,15 @@ class Player extends Human implements CommandSender, IPlayer{
 					if($craft === true and count($this->craftingItems) > 0 and count($this->toCraft) > 0 and ($recipe = $this->craftItems($this->toCraft, $this->craftingItems, $this->toCraft[-1])) !== true){
 						if($recipe === false){
 							$this->sendInventory();
-							$this->toCraft = array();
+							$this->toCraft = [];
 						}else{
 							$this->toCraft = array(-1 => $this->toCraft[-1]);
 						}
-						$this->craftingItems = array();
+						$this->craftingItems = [];
 					}
 				}else{
-					$this->toCraft = array();
-					$this->craftingItems = array();
+					$this->toCraft = [];
+					$this->craftingItems = [];
 				}
 				if(!isset($this->windows[$packet->windowid])){
 					break;
@@ -2206,8 +2206,8 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = array();
-				$this->toCraft = array();
+				$this->craftingItems = [];
+				$this->toCraft = [];
 				$t = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){
 					if($t->namedtag->creator !== $this->username){
@@ -2307,11 +2307,11 @@ class Player extends Human implements CommandSender, IPlayer{
 			foreach($this->tasks as $task){
 				$task->cancel();
 			}
-			$this->tasks = array();
-			$this->recoveryQueue = array();
-			$this->receiveQueue = array();
-			$this->resendQueue = array();
-			$this->ackQueue = array();
+			$this->tasks = [];
+			$this->recoveryQueue = [];
+			$this->receiveQueue = [];
+			$this->resendQueue = [];
+			$this->ackQueue = [];
 
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
@@ -2319,14 +2319,14 @@ class Player extends Human implements CommandSender, IPlayer{
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
-			$this->windows = array();
-			$this->armor = array();
-			$this->inventory = array();
-			$this->chunksLoaded = array();
-			$this->chunksOrder = array();
-			$this->chunkCount = array();
-			$this->craftingItems = array();
-			$this->received = array();
+			$this->windows = [];
+			$this->armor = [];
+			$this->inventory = [];
+			$this->chunksLoaded = [];
+			$this->chunksOrder = [];
+			$this->chunkCount = [];
+			$this->craftingItems = [];
+			$this->received = [];
 			$this->buffer = null;
 			unset($this->buffer);
 		}
@@ -2372,7 +2372,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
 		if($ev->isCancelled()){
-			return array();
+			return [];
 		}
 		$packet->encode();
 		$pk = new Packet(Info::DATA_PACKET_0);
@@ -2432,7 +2432,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 		}
 
-		$recipeItems = array();
+		$recipeItems = [];
 		foreach($recipe as $item){
 			if(!isset($recipeItems[$item->getID()])){
 				$recipeItems[$item->getID()] = array($item->getID(), $item->getDamage(), $item->getCount());
@@ -2558,7 +2558,7 @@ class Player extends Human implements CommandSender, IPlayer{
 		if(($this->gamemode & 0x01) === 1){
 			return;
 		}
-		$hotbar = array();
+		$hotbar = [];
 		foreach($this->hotbar as $slot){
 			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
 		}
@@ -2634,7 +2634,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				case Info::DATA_PACKET_E:
 				case Info::DATA_PACKET_F:
 					$this->ackQueue[] = $packet->seqNumber;
-					$this->receiveQueue[$packet->seqNumber] = array();
+					$this->receiveQueue[$packet->seqNumber] = [];
 					foreach($packet->data as $pk){
 						$this->receiveQueue[$packet->seqNumber][] = $pk;
 					}

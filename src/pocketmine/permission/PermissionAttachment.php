@@ -30,7 +30,7 @@ class PermissionAttachment{
 	/**
 	 * @var bool[]
 	 */
-	private $permissions = array();
+	private $permissions = [];
 
 	/** @var Permissible */
 	private $permissible;

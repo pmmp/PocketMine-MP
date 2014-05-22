@@ -53,7 +53,7 @@ class MossStone extends Solid{
 				array(Item::MOSS_STONE, $this->meta, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

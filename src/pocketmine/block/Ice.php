@@ -53,6 +53,6 @@ class Ice extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array();
+		return [];
 	}
 }

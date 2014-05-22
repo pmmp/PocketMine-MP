@@ -48,7 +48,7 @@ class BurningFurnace extends Solid{
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 		$this->getLevel()->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
-			new Enum("Items", array()),
+			new Enum("Items", []),
 			new String("id", Tile::FURNACE),
 			new Int("x", $this->x),
 			new Int("y", $this->y),
@@ -74,7 +74,7 @@ class BurningFurnace extends Solid{
 				$furnace = $t;
 			}else{
 				$nbt = new Compound(false, array(
-					new Enum("Items", array()),
+					new Enum("Items", []),
 					new String("id", Tile::FURNACE),
 					new Int("x", $this->x),
 					new Int("y", $this->y),
@@ -112,7 +112,7 @@ class BurningFurnace extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		$drops = array();
+		$drops = [];
 		if($item->isPickaxe() >= 1){
 			$drops[] = array(Item::FURNACE, 0, 1);
 		}

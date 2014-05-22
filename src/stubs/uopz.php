@@ -153,7 +153,7 @@ function uopz_backup($name, $classMethod = null){}
  * @param array  $properties An associative array of properties, keys are names, values are modifiers
  * @param int    $flags Entry type, by default ZEND_ACC_CLASS
  */
-function uopz_compose($name, array $classes, array $methods = array(), array $properties = array(), $flags = ZEND_USER_ACC_CLASS){}
+function uopz_compose($name, array $classes, array $methods = [], array $properties = [], $flags = ZEND_USER_ACC_CLASS){}
 
 /**
  * Copy a function by name

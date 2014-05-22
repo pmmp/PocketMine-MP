@@ -34,12 +34,12 @@ class HandlerList{
 	/**
 	 * @var RegisteredListener[][]
 	 */
-	private $handlerSlots = array();
+	private $handlerSlots = [];
 
 	/**
 	 * @var HandlerList[]
 	 */
-	private static $allLists = array();
+	private static $allLists = [];
 
 	public static function bakeAll(){
 		foreach(self::$allLists as $h){
@@ -61,7 +61,7 @@ class HandlerList{
 		}else{
 			foreach(self::$allLists as $h){
 				foreach($h->handlerSlots as $key => $list){
-					$h->handlerSlots[$key] = array();
+					$h->handlerSlots[$key] = [];
 				}
 				$h->handlers = null;
 			}
@@ -70,12 +70,12 @@ class HandlerList{
 
 	public function __construct(){
 		$this->handlerSlots = array(
-			EventPriority::MONITOR => array(),
-			EventPriority::HIGHEST => array(),
-			EventPriority::HIGH => array(),
-			EventPriority::NORMAL => array(),
-			EventPriority::LOW => array(),
-			EventPriority::LOWEST => array()
+			EventPriority::MONITOR => [],
+			EventPriority::HIGHEST => [],
+			EventPriority::HIGH => [],
+			EventPriority::NORMAL => [],
+			EventPriority::LOW => [],
+			EventPriority::LOWEST => []
 		);
 		self::$allLists[] = $this;
 	}
@@ -133,7 +133,7 @@ class HandlerList{
 		if($this->handlers !== null){
 			return;
 		}
-		$entries = array();
+		$entries = [];
 		foreach($this->handlerSlots as $list){
 			foreach($list as $hash => $listener){
 				$entries[$hash] = $listener;
@@ -149,7 +149,7 @@ class HandlerList{
 	 */
 	public function getRegisteredListeners($plugin = null){
 		if($plugin instanceof Plugin){
-			$listeners = array();
+			$listeners = [];
 			foreach($this->getRegisteredListeners(null) as $hash => $listener){
 				if($listener->getPlugin() === $plugin){
 					$listeners[$hash] = $plugin;

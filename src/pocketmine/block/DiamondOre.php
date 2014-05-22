@@ -46,7 +46,7 @@ class DiamondOre extends Solid{
 				array(Item::DIAMOND, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

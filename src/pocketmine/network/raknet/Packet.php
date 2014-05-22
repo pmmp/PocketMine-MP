@@ -84,7 +84,7 @@ use pocketmine\utils\Utils;
 class Packet extends NetworkPacket{
 	private $packetID;
 	private $offset = 1;
-	public $data = array();
+	public $data = [];
 
 	public function __construct($packetID){
 		$this->packetID = (int) $packetID;
@@ -172,7 +172,7 @@ class Packet extends NetworkPacket{
 			case Info::DATA_PACKET_E:
 			case Info::DATA_PACKET_F:
 				$this->seqNumber = $this->getLTriad();
-				$this->data = array();
+				$this->data = [];
 				while(!$this->feof() and $this->parseDataPacket() !== false){
 
 				}
@@ -180,7 +180,7 @@ class Packet extends NetworkPacket{
 			case Info::NACK:
 			case Info::ACK:
 				$count = $this->getShort();
-				$this->packets = array();
+				$this->packets = [];
 				for($i = 0; $i < $count and !$this->feof(); ++$i){
 					if($this->getByte() === 0){
 						$start = $this->getLTriad();

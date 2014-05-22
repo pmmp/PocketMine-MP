@@ -218,7 +218,7 @@ abstract class PluginBase implements Plugin{
 	 * @return string[]
 	 */
 	public function getResources(){
-		$resources = array();
+		$resources = [];
 		if(is_dir($this->file . "resources/")){
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
 				$resources[] = $resource;

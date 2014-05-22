@@ -29,7 +29,7 @@ namespace pocketmine\level\generator\noise;
 
 
 abstract class Generator{
-	protected $perm = array();
+	protected $perm = [];
 	protected $offsetX = 0;
 	protected $offsetY = 0;
 	protected $offsetZ = 0;

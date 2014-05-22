@@ -50,7 +50,7 @@ class SplClassLoader implements SplAutoloader{
 	private $includePathLookup = false;
 
 	/** @var array */
-	private $resources = array();
+	private $resources = [];
 
 	/** @var integer */
 	private $mode = self::MODE_NORMAL;

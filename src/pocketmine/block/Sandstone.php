@@ -59,7 +59,7 @@ class Sandstone extends Solid{
 				array(Item::SANDSTONE, $this->meta & 0x03, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 

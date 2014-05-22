@@ -226,7 +226,7 @@ namespace pocketmine {
 	function getTrace($start = 1){
 		$e = new \Exception();
 		$trace = $e->getTrace();
-		$messages = array();
+		$messages = [];
 		$j = 0;
 		for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
 			$params = "";
@@ -277,7 +277,7 @@ namespace pocketmine {
 		if((!defined("pocketmine\\DEBUG") or \pocketmine\DEBUG >= $level) and (!defined("pocketmine\\LOG") or \pocketmine\LOG === true)){
 			$message .= $EOL === true ? PHP_EOL : "";
 			if(!isset($fpointers)){
-				$fpointers = array();
+				$fpointers = [];
 			}
 			if(!isset($fpointers[$name]) or $fpointers[$name] === false){
 				$fpointers[$name] = @fopen(\pocketmine\DATA . "/" . $name . ".log", "ab");

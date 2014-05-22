@@ -23,7 +23,7 @@ namespace pocketmine\math;
 
 
 class Matrix implements \ArrayAccess{
-	private $matrix = array();
+	private $matrix = [];
 	private $rows = 0;
 	private $columns = 0;
 
@@ -43,7 +43,7 @@ class Matrix implements \ArrayAccess{
 		unset($this->matrix[(int) $offset]);
 	}
 
-	public function __construct($rows, $columns, array $set = array()){
+	public function __construct($rows, $columns, array $set = []){
 		$this->rows = max(1, (int) $rows);
 		$this->columns = max(1, (int) $columns);
 		$this->set($set);
@@ -51,7 +51,7 @@ class Matrix implements \ArrayAccess{
 
 	public function set(array $m){
 		for($r = 0; $r < $this->rows; ++$r){
-			$this->matrix[$r] = array();
+			$this->matrix[$r] = [];
 			for($c = 0; $c < $this->columns; ++$c){
 				$this->matrix[$r][$c] = isset($m[$r][$c]) ? $m[$r][$c] : 0;
 			}

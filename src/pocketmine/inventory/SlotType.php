@@ -14,39 +14,26 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
-
+ * @link http://www.pocketmine.net/
  *
  *
 */
 
-namespace pocketmine\scheduler;
+namespace pocketmine\inventory;
 
 /**
- * Allows the creation of simple callbacks with extra data
- * The last parameter in the callback will be this object
- *
- * If you want to do a task in a Plugin, consider extending PluginTask to your needs
+ * Saves all the information regarding default inventory sizes and types
  */
-class CallbackTask extends Task{
+abstract class SlotType{
+	const RESULT = 0;
 
-	/** @var callable */
-	protected $callable;
+	const CRAFTING = 1; //Not used in Minecraft: PE yet
 
-	/** @var array */
-	protected $args;
+	const ARMOR = 2;
 
-	/**
-	 * @param callable $callable
-	 * @param array    $args
-	 */
-	public function __construct(callable $callable, array $args = []){
-		$this->callable = $callable;
-		$this->args = $args;
-		$this->args[] = $this;
-	}
+	const CONTAINER = 3;
 
-	public function onRun($currentTicks){
-		call_user_func_array($this->callable, $this->args);
-	}
+	const HOTBAR = 4;
 
+	const FUEL = 5;
 }

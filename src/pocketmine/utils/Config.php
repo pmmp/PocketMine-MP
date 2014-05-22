@@ -71,7 +71,7 @@ class Config{
 	 * @param array  $default  Array with the default values, will be set if not existent
 	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
 	 */
-	public function __construct($file, $type = Config::DETECT, $default = array(), &$correct = null){
+	public function __construct($file, $type = Config::DETECT, $default = [], &$correct = null){
 		$this->load($file, $type, $default);
 		$correct = $this->correct;
 	}
@@ -102,12 +102,12 @@ class Config{
 	 *
 	 * @return bool
 	 */
-	public function load($file, $type = Config::DETECT, $default = array()){
+	public function load($file, $type = Config::DETECT, $default = []){
 		$this->correct = true;
 		$this->type = (int) $type;
 		$this->file = $file;
 		if(!is_array($default)){
-			$default = array();
+			$default = [];
 		}
 		if(!file_exists($file)){
 			$this->config = $default;
@@ -275,7 +275,7 @@ class Config{
 		$final = array_pop($components);
 		foreach($components as $component){
 			if(!isset($currPath[$component])){
-				$currPath[$component] = array();
+				$currPath[$component] = [];
 			}
 			$currPath =& $currPath[$component];
 		}
@@ -347,7 +347,7 @@ class Config{
 		foreach($default as $k => $v){
 			if(is_array($v)){
 				if(!isset($data[$k]) or !is_array($data[$k])){
-					$data[$k] = array();
+					$data[$k] = [];
 				}
 				$changed += $this->fillDefaults($v, $data[$k]);
 			}elseif(!isset($data[$k])){

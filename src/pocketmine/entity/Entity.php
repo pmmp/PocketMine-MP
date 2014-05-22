@@ -53,17 +53,17 @@ abstract class Entity extends Position implements Metadatable{
 	/**
 	 * @var Entity[]
 	 */
-	public static $list = array();
+	public static $list = [];
 
 	/**
 	 * @var Entity[]
 	 */
-	public static $needUpdate = array();
+	public static $needUpdate = [];
 
 	/**
 	 * @var Player[]
 	 */
-	protected $hasSpawned = array();
+	protected $hasSpawned = [];
 
 	protected $id;
 
@@ -424,7 +424,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->setLevel($targetLevel, true); //Hard reference
 		$this->getLevel()->entities[$this->id] = $this; //Oops, TODO!!
 		if($this instanceof Player){
-			$this->chunksLoaded = array();
+			$this->chunksLoaded = [];
 			$pk = new SetTimePacket();
 			$pk->time = $this->getLevel()->getTime();
 			$pk->started = $this->getLevel()->stopTime == false;

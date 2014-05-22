@@ -40,7 +40,7 @@ use pocketmine\utils\Random;
 
 class Normal extends Generator{
 
-	private $populators = array();
+	private $populators = [];
 	private $level;
 	private $random;
 	private $worldHeight = 65;
@@ -50,7 +50,7 @@ class Normal extends Generator{
 	private $noisePatchesSmall;
 	private $noiseBase;
 
-	public function __construct(array $options = array()){
+	public function __construct(array $options = []){
 
 	}
 
@@ -59,7 +59,7 @@ class Normal extends Generator{
 	}
 
 	public function getSettings(){
-		return array();
+		return [];
 	}
 
 	public function init(Level $level, Random $random){
@@ -98,10 +98,10 @@ class Normal extends Generator{
 
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
-		$hills = array();
-		$patches = array();
-		$patchesSmall = array();
-		$base = array();
+		$hills = [];
+		$patches = [];
+		$patchesSmall = [];
+		$base = [];
 		for($z = 0; $z < 16; ++$z){
 			for($x = 0; $x < 16; ++$x){
 				$i = ($z << 4) + $x;

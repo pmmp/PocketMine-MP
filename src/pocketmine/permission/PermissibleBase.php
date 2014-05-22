@@ -34,12 +34,12 @@ class PermissibleBase implements Permissible{
 	/**
 	 * @var PermissionAttachment[]
 	 */
-	private $attachments = array();
+	private $attachments = [];
 
 	/**
 	 * @var PermissionAttachmentInfo[]
 	 */
-	private $permissions = array();
+	private $permissions = [];
 
 	/**
 	 * @param ServerOperator $opable
@@ -190,7 +190,7 @@ class PermissibleBase implements Permissible{
 		Server::getInstance()->getPluginManager()->unsubscribeFromDefaultPerms(false, $this->parent);
 		Server::getInstance()->getPluginManager()->unsubscribeFromDefaultPerms(true, $this->parent);
 
-		$this->permissions = array();
+		$this->permissions = [];
 	}
 
 	/**

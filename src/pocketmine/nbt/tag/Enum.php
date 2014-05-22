@@ -28,7 +28,7 @@ class Enum extends NamedTag implements \ArrayAccess{
 
 	private $tagType;
 
-	public function __construct($name = "", $value = array()){
+	public function __construct($name = "", $value = []){
 		$this->name = $name;
 		foreach($value as $k => $v){
 			$this->{$k} = $v;
@@ -76,7 +76,7 @@ class Enum extends NamedTag implements \ArrayAccess{
 	}
 
 	public function read(NBT $nbt){
-		$this->value = array();
+		$this->value = [];
 		$this->tagType = $nbt->getByte();
 		$size = $nbt->getInt();
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
@@ -156,7 +156,7 @@ class Enum extends NamedTag implements \ArrayAccess{
 
 		$nbt->putByte($this->tagType);
 
-		$tags = array();
+		$tags = [];
 		foreach($this as $tag){
 			if($tag instanceof Tag){
 				$tags[] = $tag;

@@ -69,7 +69,7 @@ class Chest extends Transparent{
 
 		$this->getLevel()->setBlock($block, $this, true, false, true);
 		$nbt = new Compound(false, array(
-			new Enum("Items", array()),
+			new Enum("Items", []),
 			new String("id", Tile::CHEST),
 			new Int("x", $this->x),
 			new Int("y", $this->y),
@@ -109,7 +109,7 @@ class Chest extends Transparent{
 				$chest = $t;
 			}else{
 				$nbt = new Compound(false, array(
-					new Enum("Items", array()),
+					new Enum("Items", []),
 					new String("id", Tile::CHEST),
 					new Int("x", $this->x),
 					new Int("y", $this->y),

@@ -79,7 +79,7 @@ class Wheat extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		$drops = array();
+		$drops = [];
 		if($this->meta >= 0x07){
 			$drops[] = array(Item::WHEAT, 0, 1);
 			$drops[] = array(Item::WHEAT_SEEDS, 0, mt_rand(0, 3));

@@ -629,7 +629,7 @@ class Pool{
 	 *
 	 * @link http://www.php.net/manual/en/pool.__construct.php
 	 */
-	public function __construct($size, $class, array $ctor = array()){
+	public function __construct($size, $class, array $ctor = []){
 	}
 
 	/**

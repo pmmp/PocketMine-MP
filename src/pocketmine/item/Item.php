@@ -359,7 +359,7 @@ class Item{
 
 
 	/** @var Item[] */
-	public static $list = array();
+	public static $list = [];
 	protected $block;
 	protected $id;
 	protected $meta;
@@ -447,7 +447,7 @@ class Item{
 
 	public static function fromString($str, $multiple = false){
 		if($multiple === true){
-			$blocks = array();
+			$blocks = [];
 			foreach(explode(",", $str) as $b){
 				$blocks[] = self::fromString($b, false);
 			}

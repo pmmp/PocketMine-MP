@@ -46,7 +46,7 @@ class GoldOre extends Solid{
 				array(Item::GOLD_ORE, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

@@ -62,7 +62,7 @@ class DoubleSlab extends Solid{
 				array(Item::SLAB, $this->meta & 0x07, 2),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 

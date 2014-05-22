@@ -53,7 +53,7 @@ class IronDoor extends Door{
 				array(Item::IRON_DOOR, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

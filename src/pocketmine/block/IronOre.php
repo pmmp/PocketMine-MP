@@ -48,7 +48,7 @@ class IronOre extends Solid{
 				array(Item::IRON_ORE, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

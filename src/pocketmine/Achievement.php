@@ -33,7 +33,7 @@ abstract class Achievement{
 	public static $list = array(
 		/*"openInventory" => array(
 			"name" => "Taking Inventory",
-			"requires" => array(),
+			"requires" => [],
 		),*/
 		"mineWood" => array(
 			"name" => "Getting Wood",
@@ -118,7 +118,7 @@ abstract class Achievement{
 		return false;
 	}
 
-	public static function add($achievementId, $achievementName, array $requires = array()){
+	public static function add($achievementId, $achievementName, array $requires = []){
 		if(!isset(Achievement::$list[$achievementId])){
 			Achievement::$list[$achievementId] = array(
 				"name" => $achievementName,

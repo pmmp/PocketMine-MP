@@ -48,7 +48,7 @@ class Iron extends Solid{
 				array(Item::IRON_BLOCK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

@@ -46,7 +46,7 @@ class Diamond extends Solid{
 				array(Item::DIAMOND_BLOCK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

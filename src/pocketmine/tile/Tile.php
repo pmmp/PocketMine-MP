@@ -41,12 +41,12 @@ abstract class Tile extends Position{
 	/**
 	 * @var Tile[]
 	 */
-	public static $list = array();
+	public static $list = [];
 
 	/**
 	 * @var Tile[]
 	 */
-	public static $needUpdate = array();
+	public static $needUpdate = [];
 
 	public $chunkIndex;
 	public $name;

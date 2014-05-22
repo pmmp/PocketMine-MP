@@ -43,7 +43,7 @@ class RegionLoader{
 	protected $filePath;
 	protected $filePointer;
 	protected $lastSector;
-	protected $locationTable = array();
+	protected $locationTable = [];
 
 	public function __construct($path,/*Level $level, */$regionX, $regionZ){
 		$this->x = $regionX;
@@ -118,7 +118,7 @@ class RegionLoader{
 	}
 
 	public function generateChunk($x, $z){
-		$nbt = new Compound("Level", array());
+		$nbt = new Compound("Level", []);
 		$nbt->xPos = new Int("xPos", ($this->getX() * 32) + $x);
 		$nbt->zPos = new Int("xPos", ($this->getZ() * 32) + $z);
 		$nbt->LastUpdate = new Long("LastUpdate", 0);
@@ -128,13 +128,13 @@ class RegionLoader{
 		$nbt->InhabitedTime = new Long("InhabitedTime", 0);
 		$nbt->Biomes = new ByteArray("Biomes", str_repeat(Binary::writeByte(-1), 256));
 		$nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
-		$nbt->Sections = new Enum("Sections", array());
+		$nbt->Sections = new Enum("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
-		$nbt->Entities = new Enum("Entities", array());
+		$nbt->Entities = new Enum("Entities", []);
 		$nbt->Entities->setTagType(NBT::TAG_Compound);
-		$nbt->TileEntities = new Enum("TileEntities", array());
+		$nbt->TileEntities = new Enum("TileEntities", []);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		$nbt->TileTicks = new Enum("TileTicks", array());
+		$nbt->TileTicks = new Enum("TileTicks", []);
 		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$writer->setData(new Compound("", array($nbt)));
@@ -187,7 +187,7 @@ class RegionLoader{
 	}
 
 	private function cleanGarbage(){
-		$sectors = array();
+		$sectors = [];
 		foreach($this->locationTable as $index => $data){ //Calculate file usage
 			if($data[0] === 0 or $data[1] === 0){
 				$this->locationTable[$index] = array(0, 0, 0);

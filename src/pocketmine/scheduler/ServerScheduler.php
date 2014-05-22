@@ -37,7 +37,7 @@ class ServerScheduler{
 	/**
 	 * @var TaskHandler[]
 	 */
-	protected $tasks = array();
+	protected $tasks = [];
 
 	/** @var \Pool */
 	protected $asyncPool;
@@ -134,7 +134,7 @@ class ServerScheduler{
 		foreach($this->tasks as $task){
 			$task->cancel();
 		}
-		$this->tasks = array();
+		$this->tasks = [];
 		$this->asyncPool->shutdown();
 		$this->asyncTasks = 0;
 	}

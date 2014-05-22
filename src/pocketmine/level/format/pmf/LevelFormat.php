@@ -34,11 +34,11 @@ class LevelFormat extends PMF{
 	const ZLIB_ENCODING = 15; //15 = zlib, -15 = raw deflate, 31 = gzip
 
 	public $level;
-	public $levelData = array();
+	public $levelData = [];
 	public $isLoaded = true;
-	private $chunks = array();
-	private $chunkChange = array();
-	private $chunkInfo = array();
+	private $chunks = [];
+	private $chunkChange = [];
+	private $chunkInfo = [];
 	public $isGenerating = 0;
 
 	public function getData($index){
@@ -69,9 +69,9 @@ class LevelFormat extends PMF{
 	 * @param bool|array $blank default false
 	 */
 	public function __construct($file, $blank = false){
-		$this->chunks = array();
-		$this->chunkChange = array();
-		$this->chunkInfo = array();
+		$this->chunks = [];
+		$this->chunkChange = [];
+		$this->chunkInfo = [];
 		if(is_array($blank)){
 			$this->create($file, 0);
 			$this->levelData = $blank;
@@ -189,8 +189,8 @@ class LevelFormat extends PMF{
 	private function upgrade_From1_To2(){
 		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
 		$nbt = new Compound("", array(
-			new Enum("Entities", array()),
-			new Enum("TileEntities", array())
+			new Enum("Entities", []),
+			new Enum("TileEntities", [])
 		));
 		$nbt->Entities->setTagType(NBT::TAG_Compound);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
@@ -301,7 +301,7 @@ class LevelFormat extends PMF{
 		$nbt->read(substr($chunk, $offset, $len));
 		$this->chunkInfo[$index][2] = $nbt->getData();
 		$offset += $len;
-		$this->chunks[$index] = array();
+		$this->chunks[$index] = [];
 		$this->chunkChange[$index] = array(-1 => false);
 		$this->chunkInfo[$index][3] = substr($chunk, $offset, 256); //Biome data
 		$offset += 256;
@@ -421,8 +421,8 @@ class LevelFormat extends PMF{
 				7 => 8192,
 			);
 			$nbt = new Compound("", array(
-				new Enum("Entities", array()),
-				new Enum("TileEntities", array())
+				new Enum("Entities", []),
+				new Enum("TileEntities", [])
 			));
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);

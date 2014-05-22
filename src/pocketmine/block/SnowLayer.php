@@ -64,6 +64,6 @@ class SnowLayer extends Flowable{
 			);
 		}
 
-		return array();
+		return [];
 	}
 }

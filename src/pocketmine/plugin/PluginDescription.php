@@ -27,13 +27,13 @@ class PluginDescription{
 	private $name;
 	private $main;
 	private $api;
-	private $depend = array();
-	private $softDepend = array();
-	private $loadBefore = array();
+	private $depend = [];
+	private $softDepend = [];
+	private $loadBefore = [];
 	private $version;
-	private $commands = array();
+	private $commands = [];
 	private $description = null;
-	private $authors = array();
+	private $authors = [];
 	private $website = null;
 	private $prefix = null;
 	private $order = PluginLoadOrder::POSTWORLD;
@@ -41,7 +41,7 @@ class PluginDescription{
 	/**
 	 * @var Permission[]
 	 */
-	private $permissions = array();
+	private $permissions = [];
 
 	/**
 	 * @param string $yamlString
@@ -100,7 +100,7 @@ class PluginDescription{
 				$this->order = constant("pocketmine\\plugin\\PluginLoadOrder::" . $order);
 			}
 		}
-		$this->authors = array();
+		$this->authors = [];
 		if(isset($plugin["author"])){
 			$this->authors[] = $plugin["author"];
 		}

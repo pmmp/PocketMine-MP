@@ -113,7 +113,7 @@ class Binary{
 	 */
 	public static function readMetadata($value, $types = false){
 		$offset = 0;
-		$m = array();
+		$m = [];
 		$b = ord($value{$offset});
 		++$offset;
 		while($b !== 127 and isset($value{$offset})){
@@ -143,7 +143,7 @@ class Binary{
 					$offset += $len;
 					break;
 				case 5:
-					$r = array();
+					$r = [];
 					$r[] = self::readLShort(substr($value, $offset, 2));
 					$offset += 2;
 					$r[] = ord($value{$offset});
@@ -152,7 +152,7 @@ class Binary{
 					$offset += 2;
 					break;
 				case 6:
-					$r = array();
+					$r = [];
 					for($i = 0; $i < 3; ++$i){
 						$r[] = self::readLInt(substr($value, $offset, 4));
 						$offset += 4;

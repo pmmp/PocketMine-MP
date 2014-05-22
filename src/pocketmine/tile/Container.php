@@ -62,7 +62,7 @@ trait Container{
 			$pk->y = $this->y;
 			$pk->z = $this->z;
 			$player->dataPacket($pk);
-			$slots = array();
+			$slots = [];
 
 			if(is_array($player->windows[$id])){
 				$all = $this->getLevel()->getPlayers();
@@ -121,7 +121,7 @@ trait Container{
 			$pk->z = $this->z;
 			$player->dataPacket($pk);
 
-			$slots = array();
+			$slots = [];
 			for($s = 0; $s < Furnace::SLOTS; ++$s){
 				$slot = $this->getSlot($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){

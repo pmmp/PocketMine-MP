@@ -30,7 +30,7 @@ class IntArray extends NamedTag{
 	}
 
 	public function read(NBT $nbt){
-		$this->value = array();
+		$this->value = [];
 		$size = $nbt->getInt();
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			$this->value[] = $nbt->getInt();

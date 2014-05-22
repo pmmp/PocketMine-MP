@@ -37,7 +37,7 @@ use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class Flat extends Generator{
-	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = array();
+	private $level, $random, $structure, $chunks, $options, $floorLevel, $preset, $populators = [];
 
 	public function getSettings(){
 		return $this->options;
@@ -47,7 +47,7 @@ class Flat extends Generator{
 		return "flat";
 	}
 
-	public function __construct(array $options = array()){
+	public function __construct(array $options = []){
 		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		$this->options = $options;
 		if(isset($options["preset"])){
@@ -84,8 +84,8 @@ class Flat extends Generator{
 		$options = isset($preset[3]) ? $preset[3] : "";
 		preg_match_all('#(([0-9]{0,})x?([0-9]{1,3}:?[0-9]{0,2})),?#', $blocks, $matches);
 		$y = 0;
-		$this->structure = array();
-		$this->chunks = array();
+		$this->structure = [];
+		$this->chunks = [];
 		foreach($matches[3] as $i => $b){
 			$b = Item::fromString($b);
 			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
@@ -122,7 +122,7 @@ class Flat extends Generator{
 		foreach($matches[2] as $i => $option){
 			$params = true;
 			if($matches[3][$i] !== ""){
-				$params = array();
+				$params = [];
 				$p = explode(" ", $matches[3][$i]);
 				foreach($p as $k){
 					$k = explode("=", $k);

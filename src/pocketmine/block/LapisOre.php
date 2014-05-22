@@ -49,7 +49,7 @@ class LapisOre extends Solid{
 				array(Item::DYE, 4, mt_rand(4, 8)),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 

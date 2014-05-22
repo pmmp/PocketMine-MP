@@ -53,7 +53,7 @@ class Netherrack extends Solid{
 				array(Item::NETHERRACK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

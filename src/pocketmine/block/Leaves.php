@@ -117,7 +117,7 @@ class Leaves extends Transparent{
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(($this->meta & 0b00001100) === 0x08){
 				$this->meta &= 0x03;
-				$visited = array();
+				$visited = [];
 				$check = 0;
 				if($this->findLog($this, $visited, 0, $check) === true){
 					$this->getLevel()->setBlock($this, $this, false, false, true);
@@ -146,7 +146,7 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		$drops = array();
+		$drops = [];
 		if($item->isShears()){
 			$drops[] = array(Item::LEAVES, $this->meta & 0x03, 1);
 		}else{

@@ -50,7 +50,7 @@ class TallGrass extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		$drops = array();
+		$drops = [];
 		$possibleDrops = array(
 			array(Item::WHEAT_SEEDS, 0, 1),
 			array(Item::CARROT, 0, 1),

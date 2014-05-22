@@ -27,7 +27,7 @@ use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class Ore extends Populator{
-	private $oreTypes = array();
+	private $oreTypes = [];
 
 	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
 		foreach($this->oreTypes as $type){

@@ -38,32 +38,32 @@ class Chunk extends BaseChunk{
 		if($this->nbt->Entities instanceof Enum){
 			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
 		}else{
-			$this->nbt->Entities = new Enum("Entities", array());
+			$this->nbt->Entities = new Enum("Entities", []);
 			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
 		}
 
 		if($this->nbt->TileEntities instanceof Enum){
 			$this->nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		}else{
-			$this->nbt->TileEntities = new Enum("TileEntities", array());
+			$this->nbt->TileEntities = new Enum("TileEntities", []);
 			$this->nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		}
 
 		if($this->nbt->TileTicks instanceof Enum){
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}else{
-			$this->nbt->TileTicks = new Enum("TileTicks", array());
+			$this->nbt->TileTicks = new Enum("TileTicks", []);
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}
 
 		if($this->nbt->Sections instanceof Enum){
 			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
 		}else{
-			$this->nbt->Sections = new Enum("Sections", array());
+			$this->nbt->Sections = new Enum("Sections", []);
 			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
 		}
 
-		$sections = array();
+		$sections = [];
 		foreach($this->nbt->Sections as $section){
 			if($section instanceof Compound){
 				$sections[(int) $section["Y"]] = new ChunkSection($section);

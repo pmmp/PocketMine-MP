@@ -137,7 +137,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getDataArray($len = 10){
-		$data = array();
+		$data = [];
 		for($i = 1; $i <= $len and !$this->feof(); ++$i){
 			$data[] = $this->get($this->getTriad());
 		}
@@ -145,7 +145,7 @@ abstract class DataPacket extends \stdClass{
 		return $data;
 	}
 
-	protected function putDataArray(array $data = array()){
+	protected function putDataArray(array $data = []){
 		foreach($data as $v){
 			$this->putTriad(strlen($v));
 			$this->put($v);

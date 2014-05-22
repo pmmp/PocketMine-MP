@@ -23,7 +23,7 @@ namespace pocketmine\utils;
 
 
 class Cache{
-	public static $cached = array();
+	public static $cached = [];
 
 	/**
 	 * Adds something to the cache

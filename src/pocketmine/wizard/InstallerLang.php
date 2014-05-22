@@ -42,7 +42,7 @@ class InstallerLang{
 		"tr" => "Türkçe",
 		//"et" => "Eesti",
 	);
-	private $texts = array();
+	private $texts = [];
 	private $lang;
 	private $langfile;
 
@@ -53,7 +53,7 @@ class InstallerLang{
 		}else{
 			$l = glob(\pocketmine\PATH . "src/lang/Installer/" . $lang . "_*.ini");
 			if(count($l) > 0){
-				$files = array();
+				$files = [];
 				foreach($l as $file){
 					$files[$file] = filesize($file);
 				}
@@ -81,7 +81,7 @@ class InstallerLang{
 	}
 
 	public function loadLang($langfile, $lang = "en"){
-		$this->texts[$lang] = array();
+		$this->texts[$lang] = [];
 		$texts = explode("\n", str_replace(array("\r", "\/\/"), array("", "//"), file_get_contents($langfile)));
 		foreach($texts as $line){
 			$line = trim($line);
@@ -93,7 +93,7 @@ class InstallerLang{
 		}
 	}
 
-	public function get($name, $search = array(), $replace = array()){
+	public function get($name, $search = [], $replace = []){
 		if(!isset($this->texts[$this->lang][$name])){
 			if($this->lang !== "en" and isset($this->texts["en"][$name])){
 				return $this->texts["en"][$name];

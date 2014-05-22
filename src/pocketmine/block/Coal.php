@@ -52,7 +52,7 @@ class Coal extends Solid{
 				array(Item::COAL_BLOCK, 0, 1),
 			);
 		}else{
-			return array();
+			return [];
 		}
 	}
 }

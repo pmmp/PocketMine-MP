@@ -64,19 +64,19 @@ class Level{
 	const BLOCK_UPDATE_TOUCH = 5;
 
 	/** @var Player[] */
-	public $players = array();
+	public $players = [];
 
 	/** @var Entity[] */
-	public $entities = array();
+	public $entities = [];
 
 	/** @var Entity[][] */
-	public $chunkEntities = array();
+	public $chunkEntities = [];
 
 	/** @var Tile[] */
-	public $tiles = array();
+	public $tiles = [];
 
 	/** @var Tile[][] */
-	public $chunkTiles = array();
+	public $chunkTiles = [];
 
 	public $nextSave;
 
@@ -116,9 +116,9 @@ class Level{
 		$this->nextSave += 90;
 		$this->stopTime = false;
 		$this->name = $name;
-		$this->usedChunks = array();
-		$this->changedBlocks = array();
-		$this->changedCount = array();
+		$this->usedChunks = [];
+		$this->changedBlocks = [];
+		$this->changedCount = [];
 		$gen = Generator::getGenerator($this->level->levelData["generator"]);
 		$this->generator = new $gen((array) $this->level->levelData["generatorSettings"]);
 		$this->generator->init($this, new Random($this->level->levelData["seed"]));
@@ -184,7 +184,7 @@ class Level{
 	public function getUsingChunk($X, $Z){
 		$index = LevelFormat::getIndex($X, $Z);
 
-		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index] : array();
+		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index] : [];
 	}
 
 	/**
@@ -292,7 +292,7 @@ class Level{
 					}
 				}
 			}
-			$this->changedCount = array();
+			$this->changedCount = [];
 
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $index => $mini){
@@ -308,7 +308,7 @@ class Level{
 						}
 					}
 				}
-				$this->changedBlocks = array();
+				$this->changedBlocks = [];
 			}
 
 			$X = null;
@@ -429,8 +429,8 @@ class Level{
 		foreach($this->usedChunks as $index => $d){
 			LevelFormat::getXZ($index, $X, $Z);
 			$nbt = new Compound("", array(
-				new Enum("Entities", array()),
-				new Enum("TileEntities", array()),
+				new Enum("Entities", []),
+				new Enum("TileEntities", []),
 			));
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
@@ -531,12 +531,12 @@ class Level{
 					Cache::remove("world:{$this->name}:{$index}");
 				}
 				if(!isset($this->changedBlocks[$index])){
-					$this->changedBlocks[$index] = array();
+					$this->changedBlocks[$index] = [];
 					$this->changedCount[$index] = 0;
 				}
 				$Y = $pos->y >> 4;
 				if(!isset($this->changedBlocks[$index][$Y])){
-					$this->changedBlocks[$index][$Y] = array();
+					$this->changedBlocks[$index][$Y] = [];
 					$this->changedCount[$index] |= 1 << $Y;
 				}
 				$this->changedBlocks[$index][$Y][] = clone $block;
@@ -581,12 +581,12 @@ class Level{
 					Cache::remove("world:{$this->name}:{$index}");
 				}
 				if(!isset($this->changedBlocks[$index])){
-					$this->changedBlocks[$index] = array();
+					$this->changedBlocks[$index] = [];
 					$this->changedCount[$index] = 0;
 				}
 				$Y = $pos->y >> 4;
 				if(!isset($this->changedBlocks[$index][$Y])){
-					$this->changedBlocks[$index][$Y] = array();
+					$this->changedBlocks[$index][$Y] = [];
 					$this->changedCount[$index] |= 1 << $Y;
 				}
 				$this->changedBlocks[$index][$Y][] = clone $block;
@@ -896,7 +896,7 @@ class Level{
 			return $this->chunkEntities[$index];
 		}
 
-		return array();
+		return [];
 	}
 
 	/**
@@ -913,7 +913,7 @@ class Level{
 			return $this->chunkTiles[$index];
 		}
 
-		return array();
+		return [];
 	}
 
 	/**
@@ -929,9 +929,9 @@ class Level{
 		if(isset($this->usedChunks[$index])){
 			return true;
 		}elseif($this->level->loadChunk($X, $Z) !== false){
-			$this->usedChunks[$index] = array();
-			$this->chunkTiles[$index] = array();
-			$this->chunkEntities[$index] = array();
+			$this->usedChunks[$index] = [];
+			$this->chunkTiles[$index] = [];
+			$this->chunkEntities[$index] = [];
 			$tags = $this->level->getChunkNBT($X, $Z);
 			if(isset($tags->Entities)){
 				foreach($tags->Entities as $nbt){
@@ -1027,7 +1027,7 @@ class Level{
 		}
 
 
-		$raw = array();
+		$raw = [];
 		for($Y = 0; $Y < 8; ++$Y){
 			if(($Yndex & (1 << $Y)) !== 0){
 				$raw[$Y] = $this->level->getMiniChunk($X, $Z, $Y);
