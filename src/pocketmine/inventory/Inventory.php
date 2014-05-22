@@ -58,21 +58,21 @@ interface Inventory{
 	 *
 	 * Returns the Items that did not fit
 	 *
-	 * @param Item|Item[] $items
+	 * @param Item ...$item
 	 *
 	 * @return Item[]
 	 */
-	public function addItem($items);
+	public function addItem();
 
 	/**
 	 * Removes the given Item from the inventory.
 	 * It will return the Items that couldn't be removed.
 	 *
-	 * @param Item|Item[] $items
+	 * @param Item ...$item
 	 *
 	 * @return Item[]
 	 */
-	public function removeItem($items);
+	public function removeItem();
 
 	/**
 	 * @return Item[]
@@ -90,7 +90,8 @@ interface Inventory{
 	public function contains(Item $item);
 
 	/**
-	 * Will return all the Items that has the same id and metadata (if not null)
+	 * Will return all the Items that has the same id and metadata (if not null).
+	 * Won't check amount
 	 *
 	 * @param Item $item
 	 *
@@ -100,7 +101,7 @@ interface Inventory{
 
 	/**
 	 * Will return the first slot has the same id and metadata (if not null) as the Item.
-	 * -1 if not found
+	 * -1 if not found, will check amount
 	 *
 	 * @param Item $item
 	 *
@@ -152,7 +153,19 @@ interface Inventory{
 	 */
 	public function getHolder();
 
+	/**
+	 * @param Player $who
+	 */
 	public function onOpen(Player $who);
 
+	/**
+	 * @param Player $who
+	 */
 	public function onClose(Player $who);
+
+	/**
+	 * @param int $index
+	 * @param Item|null $before
+	 */
+	public function onSlotChange($index, $before);
 }
