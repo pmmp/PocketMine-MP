@@ -77,7 +77,7 @@ class GiveCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, "Gave " . $player->getName() . " " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getMetadata() . ")");
+		Command::broadcastCommandMessage($sender, "Gave " . $player->getName() . " " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getDamage() . ")");
 
 		return true;
 	}

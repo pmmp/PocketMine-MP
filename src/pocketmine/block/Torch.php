@@ -33,7 +33,7 @@ class Torch extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$side = $this->getMetadata();
+			$side = $this->getDamage();
 			$faces = array(
 				1 => 4,
 				2 => 5,

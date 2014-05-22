@@ -436,7 +436,7 @@ class Item{
 	public static function get($id, $meta = 0, $count = 1){
 		if(isset(self::$list[$id])){
 			$item = clone self::$list[$id];
-			$item->setMetadata($meta);
+			$item->setDamage($meta);
 			$item->setCount($count);
 		}else{
 			$item = new Item($id, $meta, $count);
@@ -517,11 +517,11 @@ class Item{
 		return $this->id;
 	}
 
-	final public function getMetadata(){
+	final public function getDamage(){
 		return $this->meta;
 	}
 
-	public function setMetadata($meta){
+	public function setDamage($meta){
 		$this->meta = $meta & 0xFFFF;
 	}
 
@@ -617,7 +617,7 @@ class Item{
 	}
 
 	public final function equals(Item $item, $checkDamage = false){
-		return $this->id === $item->getID() and ($checkDamage === false or $this->getMetadata() === $item->getMetadata());
+		return $this->id === $item->getID() and ($checkDamage === false or $this->getDamage() === $item->getDamage());
 	}
 
 }

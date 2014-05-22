@@ -49,11 +49,11 @@ class Slab extends Transparent{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->meta &= 0x07;
 		if($face === 0){
-			if($target->getID() === self::SLAB and ($target->getMetadata() & 0x08) === 0x08 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
+			if($target->getID() === self::SLAB and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === ($this->meta & 0x07)){
 				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
-			}elseif($block->getID() === self::SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+			}elseif($block->getID() === self::SLAB and ($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
@@ -61,18 +61,18 @@ class Slab extends Transparent{
 				$this->meta |= 0x08;
 			}
 		}elseif($face === 1){
-			if($target->getID() === self::SLAB and ($target->getMetadata() & 0x08) === 0 and ($target->getMetadata() & 0x07) === ($this->meta & 0x07)){
+			if($target->getID() === self::SLAB and ($target->getDamage() & 0x08) === 0 and ($target->getDamage() & 0x07) === ($this->meta & 0x07)){
 				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
-			}elseif($block->getID() === self::SLAB and ($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+			}elseif($block->getID() === self::SLAB and ($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 				return true;
 			}
 		}elseif(!($player instanceof Player) or !$player->inBlock($block)){
 			if($block->getID() === self::SLAB){
-				if(($block->getMetadata() & 0x07) === ($this->meta & 0x07)){
+				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
 
 					return true;
@@ -87,7 +87,7 @@ class Slab extends Transparent{
 		}else{
 			return false;
 		}
-		if($block->getID() === self::SLAB and ($target->getMetadata() & 0x07) !== ($this->meta & 0x07)){
+		if($block->getID() === self::SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}
 		$this->getLevel()->setBlock($block, $this, true, false, true);

@@ -60,7 +60,7 @@ class Furnace extends Tile{
 		$raw = $this->getSlot(0);
 		$product = $this->getSlot(2);
 		$smelt = $raw->getSmeltItem();
-		$canSmelt = ($smelt !== false and $raw->getCount() > 0 and (($product->getID() === $smelt->getID() and $product->getMetadata() === $smelt->getMetadata() and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
+		$canSmelt = ($smelt !== false and $raw->getCount() > 0 and (($product->getID() === $smelt->getID() and $product->getDamage() === $smelt->getDamage() and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
 		if($this->namedtag->BurnTime <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->getCount() > 0){
 			$this->lastUpdate = microtime(true);
 			$this->namedtag->MaxTime = $this->namedtag->BurnTime = floor($fuel->getFuelTime() * 20);
@@ -72,7 +72,7 @@ class Furnace extends Tile{
 			$this->setSlot(1, $fuel, false);
 			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getMetadata()), true, false, true);
+				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getDamage()), true, false, true);
 			}
 		}
 		if($this->namedtag->BurnTime > 0){
@@ -82,7 +82,7 @@ class Furnace extends Tile{
 			if($smelt !== false and $canSmelt){
 				$this->namedtag->CookTime += $ticks;
 				if($this->namedtag->CookTime >= 200){ //10 seconds
-					$product = Item::get($smelt->getID(), $smelt->getMetadata(), $product->getCount() + 1);
+					$product = Item::get($smelt->getID(), $smelt->getDamage(), $product->getCount() + 1);
 					$this->setSlot(2, $product, false);
 					$raw->setCount($raw->getCount() - 1);
 					if($raw->getCount() === 0){
@@ -102,7 +102,7 @@ class Furnace extends Tile{
 		}else{
 			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::BURNING_FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $current->getMetadata()), true, false, true);
+				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $current->getDamage()), true, false, true);
 			}
 			$this->namedtag->CookTime = 0;
 			$this->namedtag->BurnTime = 0;

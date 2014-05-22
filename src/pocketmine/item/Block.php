@@ -29,12 +29,12 @@ use pocketmine\block\Block as BlockBlock;
 class Block extends Item{
 	public function __construct(BlockBlock $block, $meta = 0, $count = 1){
 		$this->block = clone $block;
-		parent::__construct($block->getID(), $block->getMetadata(), $count, $block->getName());
+		parent::__construct($block->getID(), $block->getDamage(), $count, $block->getName());
 	}
 
-	public function setMetadata($meta){
+	public function setDamage($meta){
 		$this->meta = $meta & 0x0F;
-		$this->block->setMetadata($this->meta);
+		$this->block->setDamage($this->meta);
 	}
 
 	public function getBlock(){

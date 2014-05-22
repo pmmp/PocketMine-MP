@@ -173,7 +173,7 @@ trait Container{
 			new Byte("Count", $item->getCount()),
 			new Byte("Slot", $s),
 			new Short("id", $item->getID()),
-			new Short("Damage", $item->getMetadata()),
+			new Short("Damage", $item->getDamage()),
 		));
 
 		if($item->getID() === Item::AIR or $item->getCount() <= 0){

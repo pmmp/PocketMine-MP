@@ -48,7 +48,7 @@ class Bucket extends Item{
 			}
 		}elseif($this->meta === Item::WATER){
 			//Support Make Non-Support Water to Support Water
-			if($block->getID() === self::AIR || ($block instanceof Water && ($block->getMetadata() & 0x07) != 0x00)){
+			if($block->getID() === self::AIR || ($block instanceof Water && ($block->getDamage() & 0x07) != 0x00)){
 				$water = new Water();
 				$level->setBlock($block, $water, true, false, true);
 				$water->place(clone $this, $block, $target, $face, $fx, $fy, $fz, $player);

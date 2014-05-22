@@ -99,7 +99,7 @@ abstract class Door extends Transparent{
 		if(($this->meta & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
-				$meta = $down->getMetadata() ^ 0x04;
+				$meta = $down->getDamage() ^ 0x04;
 				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true, false, true);
 				$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 				if($player instanceof Player){

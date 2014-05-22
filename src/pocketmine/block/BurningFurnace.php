@@ -121,7 +121,7 @@ class BurningFurnace extends Solid{
 			for($s = 0; $s < Furnace::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
-					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
+					$drops[] = array($slot->getID(), $slot->getDamage(), $slot->getCount());
 				}
 			}
 		}

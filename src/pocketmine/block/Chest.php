@@ -59,7 +59,7 @@ class Chest extends Transparent{
 				continue;
 			}
 			$c = $this->getSide($side);
-			if(($c instanceof TileChest) and $c->getMetadata() === $this->meta){
+			if(($c instanceof TileChest) and $c->getDamage() === $this->meta){
 				if((($tile = $this->getLevel()->getTile($c)) instanceof TileChest) and !$tile->isPaired()){
 					$chest = $tile;
 					break;
@@ -139,7 +139,7 @@ class Chest extends Transparent{
 			for($s = 0; $s < Chest::SLOTS; ++$s){
 				$slot = $t->getSlot($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
-					$drops[] = array($slot->getID(), $slot->getMetadata(), $slot->getCount());
+					$drops[] = array($slot->getID(), $slot->getDamage(), $slot->getCount());
 				}
 			}
 		}

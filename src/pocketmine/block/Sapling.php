@@ -59,7 +59,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			Tree::growTree($this->getLevel(), $this, new Random(mt_rand()), $this->meta & 0x03);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;

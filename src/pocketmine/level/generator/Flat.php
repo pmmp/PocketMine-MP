@@ -111,7 +111,7 @@ class Flat extends Generator{
 					$metas = "";
 					for($y = $startY; $y < $endY; ++$y){
 						$blocks .= chr($this->structure[$y]->getID());
-						$metas .= substr(dechex($this->structure[$y]->getMetadata()), -1);
+						$metas .= substr(dechex($this->structure[$y]->getDamage()), -1);
 					}
 					$this->chunks[$Y] .= $blocks . hex2bin($metas) . "\x00\x00\x00\x00\x00\x00\x00\x00";
 				}

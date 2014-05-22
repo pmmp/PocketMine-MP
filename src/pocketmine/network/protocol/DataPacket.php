@@ -166,7 +166,7 @@ abstract class DataPacket extends \stdClass{
 	protected function putSlot(Item $item){
 		$this->putShort($item->getID());
 		$this->putByte($item->getCount());
-		$this->putShort($item->getMetadata());
+		$this->putShort($item->getDamage());
 	}
 
 	protected function getString(){

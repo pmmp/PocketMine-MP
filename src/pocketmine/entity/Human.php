@@ -84,7 +84,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 				if($item->getID() !== 0 and $item->getCount() > 0){
 					$this->namedtag->Inventory[$slot] = new Compound(false, array(
 						new Byte("Count", $item->getCount()),
-						new Short("Damage", $item->getMetadata()),
+						new Short("Damage", $item->getDamage()),
 						new Byte("Slot", $slot),
 						new Byte("TrueSlot", $this->hotbar[$slot]),
 						new Short("id", $item->getID()),
@@ -108,7 +108,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$item = $this->getSlot($slot - 9);
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
 				new Byte("Count", $item->getCount()),
-				new Short("Damage", $item->getMetadata()),
+				new Short("Damage", $item->getDamage()),
 				new Byte("Slot", $slot),
 				new Short("id", $item->getID()),
 			));
@@ -120,7 +120,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			if($item instanceof Item){
 				$this->namedtag->Inventory[$slot] = new Compound(false, array(
 					new Byte("Count", $item->getCount()),
-					new Short("Damage", $item->getMetadata()),
+					new Short("Damage", $item->getDamage()),
 					new Byte("Slot", $slot),
 					new Short("id", $item->getID()),
 				));
@@ -209,7 +209,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		$pk = new PlayerEquipmentPacket;
 		$pk->eid = $this->id;
 		$pk->item = $this->getSlot($this->slot)->getID();
-		$pk->meta = $this->getSlot($this->slot)->getMetadata();
+		$pk->meta = $this->getSlot($this->slot)->getDamage();
 		$pk->slot = 0;
 		$player->dataPacket($pk);
 	}

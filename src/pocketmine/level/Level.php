@@ -303,7 +303,7 @@ class Level{
 							$pk->y = $b->y;
 							$pk->z = $b->z;
 							$pk->block = $b->getID();
-							$pk->meta = $b->getMetadata();
+							$pk->meta = $b->getDamage();
 							Player::broadcastPacket($this->players, $pk);
 						}
 					}
@@ -512,14 +512,14 @@ class Level{
 	 * @return bool
 	 */
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
-		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata())) === true and $send !== false){
+		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getDamage())) === true and $send !== false){
 			if($direct === true){
 				$pk = new UpdateBlockPacket;
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
-				$pk->meta = $block->getMetadata();
+				$pk->meta = $block->getDamage();
 				Player::broadcastPacket($this->players, $pk);
 			}elseif($direct === false){
 				if(!($pos instanceof Position)){
@@ -560,7 +560,7 @@ class Level{
 			return false;
 		}
 
-		$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getMetadata());
+		$ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getDamage());
 		if($ret === true){
 			if(!($pos instanceof Position)){
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
@@ -573,7 +573,7 @@ class Level{
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
-				$pk->meta = $block->getMetadata();
+				$pk->meta = $block->getDamage();
 				Player::broadcastPacket($this->players, $pk);
 			}else{
 				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
@@ -653,7 +653,7 @@ class Level{
 		$target->onBreak($item);
 		if($item instanceof Item){
 			$item->useOn($target);
-			if($item->isTool() and $item->getMetadata() >= $item->getMaxDurability()){
+			if($item->isTool() and $item->getDamage() >= $item->getMaxDurability()){
 				$item = Item::get(Item::AIR, 0, 0);
 			}
 		}

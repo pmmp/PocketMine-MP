@@ -28,7 +28,9 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\metadata\Metadatable;
+use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
+use pocketmine\plugin\Plugin;
 
 abstract class Block extends Position implements Metadatable{
 	const AIR = 0;
@@ -563,7 +565,7 @@ abstract class Block extends Position implements Metadatable{
 	public static function get($id, $meta = 0, Position $pos = null){
 		if(isset(self::$list[$id])){
 			$block = clone self::$list[$id];
-			$block->setMetadata($meta);
+			$block->setDamage($meta);
 		}else{
 			$block = new Generic($id, $meta);
 		}
@@ -611,14 +613,14 @@ abstract class Block extends Position implements Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getMetadata(){
+	final public function getDamage(){
 		return $this->meta;
 	}
 
 	/**
 	 * @param int $meta
 	 */
-	final public function setMetadata($meta){
+	final public function setDamage($meta){
 		$this->meta = $meta & 0x0F;
 	}
 
@@ -743,4 +745,22 @@ abstract class Block extends Position implements Metadatable{
 	 * @return void
 	 */
 	abstract function onUpdate($type);
+
+	//TODO: Level block metadata
+
+	public function setMetadata($metadataKey, MetadataValue $metadataValue){
+		//$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+	}
+
+	public function getMetadata($metadataKey){
+		return null;//return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
+	}
+
+	public function hasMetadata($metadataKey){
+		return false;//return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
+	}
+
+	public function removeMetadata($metadataKey, Plugin $plugin){
+		//$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
+	}
 }

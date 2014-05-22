@@ -900,7 +900,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($data->getLevel() === $this->getLevel()){
 					$pk = new SetEntityDataPacket;
 					$pk->eid = $eid;
-					$pk->metadata = $data->getMetadata();
+					$pk->metadata = $data->getDamage();
 					$this->dataPacket($pk);
 				}
 				break;
@@ -1547,7 +1547,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					$pk->y = $target->y;
 					$pk->z = $target->z;
 					$pk->block = $target->getID();
-					$pk->meta = $target->getMetadata();
+					$pk->meta = $target->getDamage();
 					$this->dataPacket($pk);
 
 					$pk = new UpdateBlockPacket;
@@ -1555,7 +1555,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					$pk->y = $block->y;
 					$pk->z = $block->z;
 					$pk->block = $block->getID();
-					$pk->meta = $block->getMetadata();
+					$pk->meta = $block->getDamage();
 					$this->dataPacket($pk);
 					break;
 				}
@@ -1576,7 +1576,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif($this->getSlot($this->getCurrentEquipment())->getID() !== $packet->item or ($this->getSlot($this->getCurrentEquipment())->isTool() === false and $this->getSlot($this->getCurrentEquipment())->getMetadata() !== $packet->meta)){
+					}elseif($this->getSlot($this->getCurrentEquipment())->getID() !== $packet->item or ($this->getSlot($this->getCurrentEquipment())->isTool() === false and $this->getSlot($this->getCurrentEquipment())->getDamage() !== $packet->meta)){
 						$this->sendInventorySlot($this->getCurrentEquipment());
 					}else{
 						$item = clone $this->getSlot($this->getCurrentEquipment());
@@ -1595,7 +1595,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					$pk->y = $target->y;
 					$pk->z = $target->z;
 					$pk->block = $target->getID();
-					$pk->meta = $target->getMetadata();
+					$pk->meta = $target->getDamage();
 					$this->dataPacket($pk);
 
 					$pk = new UpdateBlockPacket;
@@ -1603,7 +1603,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					$pk->y = $block->y;
 					$pk->z = $block->z;
 					$pk->block = $block->getID();
-					$pk->meta = $block->getMetadata();
+					$pk->meta = $block->getDamage();
 					$this->dataPacket($pk);
 					break;
 				}elseif($packet->face === 0xff){
@@ -1718,7 +1718,7 @@ class Player extends Human implements CommandSender, IPlayer{
 				$pk->y = $target->y;
 				$pk->z = $target->z;
 				$pk->block = $target->getID();
-				$pk->meta = $target->getMetadata();
+				$pk->meta = $target->getDamage();
 				$this->directDataPacket($pk);
 				break;
 			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
@@ -1751,7 +1751,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						}else{
 							$this->setSlot($sl, Item::get(Item::AIR, 0, 0));
 						}
-					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getMetadata() !== $s->getMetadata()) and ($sl = $this->hasItem($s, false)) !== false){
+					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getDamage() !== $s->getDamage()) and ($sl = $this->hasItem($s, false)) !== false){
 						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
 							$this->sendArmor();
 							$this->sendInventory();
@@ -1850,7 +1850,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						}
 						$target->harm($damage, $this->id);
 						if($slot->isTool() === true and ($this->gamemode & 0x01) === 0){
-							if($slot->useOn($target) and $slot->getMetadata() >= $slot->getMaxDurability()){
+							if($slot->useOn($target) and $slot->getDamage() >= $slot->getMaxDurability()){
 								$this->setSlot($this->getCurrentEquipment(), new Item(AIR, 0, 0));
 							}
 						}
@@ -2034,23 +2034,23 @@ class Player extends Human implements CommandSender, IPlayer{
 				if($packet->windowid === 0){
 					$craft = false;
 					$slot = $this->getSlot($packet->slot);
-					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						$use = Item::get($slot->getID(), $slot->getMetadata(), $slot->getCount() - $packet->item->getCount());
+					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
+						$use = Item::get($slot->getID(), $slot->getDamage(), $slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
-					}elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getMetadata() === $packet->item->getMetadata()))){ //Crafting final
-						$craftItem = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount() - $slot->getCount());
+					}elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()))){ //Crafting final
+						$craftItem = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount() - $slot->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
-					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > Item::AIR and ($slot->getID() !== $packet->item->getID() or $slot->getMetadata() !== $packet->item->getMetadata())){ //Crafting final
-						$craftItem = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
+					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > Item::AIR and ($slot->getID() !== $packet->item->getID() or $slot->getDamage() !== $packet->item->getDamage())){ //Crafting final
+						$craftItem = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
-						$use = Item::get($slot->getID(), $slot->getMetadata(), $slot->getCount());
+						$use = Item::get($slot->getID(), $slot->getDamage(), $slot->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
@@ -2091,7 +2091,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						break;
 					}
 
-					$item = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
+					$item = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($slotn);
 					//TODO: container access events?
@@ -2146,7 +2146,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					){
 						break;
 					}
-					$item = Item::get($packet->item->getID(), $packet->item->getMetadata(), $packet->item->getCount());
+					$item = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
 
 					$slot = $tile->getSlot($packet->slot);
 					//TODO: container access events?
@@ -2422,10 +2422,10 @@ class Player extends Human implements CommandSender, IPlayer{
 		foreach($craft as $item){
 			if($item instanceof Item){
 				$craftItem[0] = $item->getID();
-				if($item->getMetadata() !== $craftItem[1] and $craftItem[1] !== true){
+				if($item->getDamage() !== $craftItem[1] and $craftItem[1] !== true){
 					$craftItem[1] = false;
 				}else{
-					$craftItem[1] = $item->getMetadata();
+					$craftItem[1] = $item->getDamage();
 				}
 				$craftItem[2] += $item->getCount();
 			}
@@ -2435,9 +2435,9 @@ class Player extends Human implements CommandSender, IPlayer{
 		$recipeItems = array();
 		foreach($recipe as $item){
 			if(!isset($recipeItems[$item->getID()])){
-				$recipeItems[$item->getID()] = array($item->getID(), $item->getMetadata(), $item->getCount());
+				$recipeItems[$item->getID()] = array($item->getID(), $item->getDamage(), $item->getCount());
 			}else{
-				if($item->getMetadata() !== $recipeItems[$item->getID()][1]){
+				if($item->getDamage() !== $recipeItems[$item->getID()][1]){
 					$recipeItems[$item->getID()][1] = false;
 				}
 				$recipeItems[$item->getID()][2] += $item->getCount();
@@ -2470,9 +2470,9 @@ class Player extends Human implements CommandSender, IPlayer{
 			foreach($craft as $slot => $item){
 				$s = $this->getSlot($slot);
 				if($s->getCount() <= 0 or $s->getID() === Item::AIR){
-					$this->setSlot($slot, Item::get($item->getID(), $item->getMetadata(), $item->getCount()));
+					$this->setSlot($slot, Item::get($item->getID(), $item->getDamage(), $item->getCount()));
 				}else{
-					$this->setSlot($slot, Item::get($item->getID(), $item->getMetadata(), $s->getCount() + $item->getCount()));
+					$this->setSlot($slot, Item::get($item->getID(), $item->getDamage(), $s->getCount() + $item->getCount()));
 				}
 
 				switch($item->getID()){

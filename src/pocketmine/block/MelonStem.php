@@ -81,7 +81,7 @@ class MelonStem extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($item->getID() === Item::DYE and $item->getMetadata() === 0x0F){ //Bonemeal
+		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
 			$this->getLevel()->setBlock($this, $this, true, false, true);
 			if(($player->gamemode & 0x01) === 0){
