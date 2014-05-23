@@ -102,7 +102,6 @@ class SimpleCommandMap implements CommandMap{
 		$this->register("pocketmine", new SetWorldSpawnCommand("setworldspawn"));
 		$this->register("pocketmine", new TeleportCommand("tp"));
 		$this->register("pocketmine", new ReloadCommand("reload"));
-		$this->register("pocketmine", new TimeCommand("time"));
 
 		if($this->server->getConfigBoolean("debug.commands", false) === true){
 			$this->register("pocketmine", new StatusCommand("status"));
