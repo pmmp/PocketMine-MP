@@ -171,6 +171,7 @@ class Binary{
 
 		return $m;
 	}
+
 	/**
 	 * Reads a byte boolean
 	 *
@@ -197,7 +198,7 @@ class Binary{
 	 * Reads an unsigned/signed byte
 	 *
 	 * @param string $c
-	 * @param bool $signed
+	 * @param bool   $signed
 	 *
 	 * @return int
 	 */

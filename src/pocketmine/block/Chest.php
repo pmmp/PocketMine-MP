@@ -59,8 +59,9 @@ class Chest extends Transparent{
 				continue;
 			}
 			$c = $this->getSide($side);
-			if(($c instanceof TileChest) and $c->getDamage() === $this->meta){
-				if((($tile = $this->getLevel()->getTile($c)) instanceof TileChest) and !$tile->isPaired()){
+			if($c instanceof Chest and $c->getDamage() === $this->meta){
+				$tile = $this->getLevel()->getTile($c);
+				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;
 					break;
 				}
@@ -104,7 +105,7 @@ class Chest extends Transparent{
 			}
 
 			$t = $this->getLevel()->getTile($this);
-			$chest = false;
+			$chest = null;
 			if($t instanceof TileChest){
 				$chest = $t;
 			}else{
@@ -123,8 +124,7 @@ class Chest extends Transparent{
 			if(($player->gamemode & 0x01) === 0x01){
 				return true;
 			}
-
-			$chest->openInventory($player);
+			$player->addWindow($chest->getInventory());
 		}
 
 		return true;
@@ -135,9 +135,9 @@ class Chest extends Transparent{
 			array($this->id, 0, 1),
 		);
 		$t = $this->getLevel()->getTile($this);
-		if($t instanceof Chest){
-			for($s = 0; $s < Chest::SLOTS; ++$s){
-				$slot = $t->getSlot($s);
+		if($t instanceof TileChest){
+			for($s = 0; $s < $t->getInventory()->getSize(); ++$s){
+				$slot = $t->getInventory()->getItem($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$drops[] = array($slot->getID(), $slot->getDamage(), $slot->getCount());
 				}

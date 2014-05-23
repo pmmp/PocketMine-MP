@@ -50,6 +50,15 @@ interface Inventory{
 	 */
 	public function getItem($index);
 
+	/**
+	 * Puts an Item in a slot.
+	 * If a plugin refuses the update or $index is invalid, it'll return false
+	 *
+	 * @param int  $index
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
 	public function setItem($index, Item $item);
 
 	/**
@@ -127,6 +136,8 @@ interface Inventory{
 	 * Will clear a specific slot
 	 *
 	 * @param int $index
+	 *
+	 * @return bool
 	 */
 	public function clear($index);
 
@@ -164,7 +175,7 @@ interface Inventory{
 	public function onClose(Player $who);
 
 	/**
-	 * @param int $index
+	 * @param int       $index
 	 * @param Item|null $before
 	 */
 	public function onSlotChange($index, $before);

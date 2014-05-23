@@ -50,10 +50,10 @@ use pocketmine\command\defaults\StatusCommand;
 use pocketmine\command\defaults\StopCommand;
 use pocketmine\command\defaults\TeleportCommand;
 use pocketmine\command\defaults\TellCommand;
+use pocketmine\command\defaults\TimeCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
-use pocketmine\command\defaults\TimeCommand;
 use pocketmine\Server;
 
 class SimpleCommandMap implements CommandMap{

@@ -26,6 +26,7 @@ class AsyncWorker extends \Worker{
 
 	public function start($options = PTHREADS_INHERIT_CLASSES){
 		$this->path = \pocketmine\PATH;
+
 		return parent::start($options & ~PTHREADS_INHERIT_CLASSES);
 	}
 

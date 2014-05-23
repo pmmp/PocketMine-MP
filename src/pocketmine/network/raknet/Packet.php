@@ -79,7 +79,6 @@ use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Utils;
 
 class Packet extends NetworkPacket{
 	private $packetID;

@@ -205,11 +205,13 @@ class ServerScheduler{
 		}
 
 		if($this->asyncTasks > 0){ //Garbage collector
-			$this->asyncPool->collect(function(AsyncTask $task){
+			$this->asyncPool->collect(function (AsyncTask $task){
 				if($task->isCompleted() or ($task->isFinished() and !$task->hasResult())){
 					--$this->asyncTasks;
+
 					return true;
 				}
+
 				return false;
 			});
 		}

@@ -28,7 +28,7 @@ class RemoteConsoleCommandSender extends ConsoleCommandSender{
 	private $messages = "";
 
 	public function sendMessage($message){
-		$this->messages .= trim($message, "\r\n")."\n";
+		$this->messages .= trim($message, "\r\n") . "\n";
 	}
 
 	public function getMessage(){

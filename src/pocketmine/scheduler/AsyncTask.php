@@ -52,8 +52,9 @@ abstract class AsyncTask extends \Threaded{
 	 * @return mixed
 	 */
 	public function getResult(){
-		return $this->synchronized(function(){
+		return $this->synchronized(function (){
 			$this->finished = true;
+
 			return @unserialize($this->result);
 		});
 	}

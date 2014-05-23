@@ -25,7 +25,6 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -753,11 +752,11 @@ abstract class Block extends Position implements Metadatable{
 	}
 
 	public function getMetadata($metadataKey){
-		return null;//return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
+		return null; //return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
 	}
 
 	public function hasMetadata($metadataKey){
-		return false;//return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
+		return false; //return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
 	}
 
 	public function removeMetadata($metadataKey, Plugin $plugin){

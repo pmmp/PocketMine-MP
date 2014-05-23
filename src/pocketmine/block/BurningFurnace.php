@@ -118,8 +118,8 @@ class BurningFurnace extends Solid{
 		}
 		$t = $this->getLevel()->getTile($this);
 		if($t instanceof Furnace){
-			for($s = 0; $s < Furnace::SLOTS; ++$s){
-				$slot = $t->getSlot($s);
+			for($s = 0; $s < $t->getInventory()->getSize(); ++$s){
+				$slot = $t->getInventory()->getItem($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$drops[] = array($slot->getID(), $slot->getDamage(), $slot->getCount());
 				}

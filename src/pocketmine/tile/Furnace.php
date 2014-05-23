@@ -22,18 +22,26 @@
 namespace pocketmine\tile;
 
 use pocketmine\block\Block;
+use pocketmine\inventory\FurnaceInventory;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Short;
 
-class Furnace extends Tile{
-	use Container;
-
-	const SLOTS = 3;
+class Furnace extends Tile implements InventoryHolder, Container{
+	/** @var FurnaceInventory */
+	protected $inventory;
 
 	public function __construct(Level $level, Compound $nbt){
 		$nbt["id"] = Tile::FURNACE;
 		parent::__construct($level, $nbt);
+		$this->inventory = new FurnaceInventory($this);
+		for($i = 0; $i < $this->getSize(); ++$i){
+			$this->inventory->setItem($i, $this->getItem($i));
+		}
+
 		if(!isset($this->namedtag->BurnTime) or $this->namedtag->BurnTime < 0){
 			$this->namedtag->BurnTime = 0;
 		}
@@ -49,6 +57,85 @@ class Furnace extends Tile{
 		}
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getSize(){
+		return 3;
+	}
+
+	/**
+	 * @param $index
+	 *
+	 * @return int
+	 */
+	protected function getSlotIndex($index){
+		foreach($this->namedtag->Items as $i => $slot){
+			if($slot["Slot"] === $s){
+				return $i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int $index
+	 *
+	 * @return Item
+	 */
+	public function getItem($index){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return Item::get(Item::AIR, 0, 0);
+		}else{
+			return Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
+		}
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int  $index
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function setItem($index, Item $item){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return false;
+		}
+
+		$d = new Compound(false, array(
+			new Byte("Count", $item->getCount()),
+			new Byte("Slot", $index),
+			new Short("id", $item->getID()),
+			new Short("Damage", $item->getDamage()),
+		));
+
+		if($item->getID() === Item::AIR or $item->getCount() <= 0){
+			if($i >= 0){
+				unset($this->namedtag->Items[$i]);
+			}
+		}elseif($i < 0){
+			$this->namedtag->Items[] = $d;
+		}else{
+			$this->namedtag->Items[$i] = $d;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return FurnaceInventory
+	 */
+	public function getInventory(){
+		return $this->inventory;
+	}
+
 	public function onUpdate(){
 		if($this->closed === true){
 			return false;
@@ -56,9 +143,9 @@ class Furnace extends Tile{
 
 		$ret = false;
 
-		$fuel = $this->getSlot(1);
-		$raw = $this->getSlot(0);
-		$product = $this->getSlot(2);
+		$fuel = $this->inventory->getFuel();
+		$raw = $this->inventory->getSmelting();
+		$product = $this->inventory->getResult();
 		$smelt = $raw->getSmeltItem();
 		$canSmelt = ($smelt !== false and $raw->getCount() > 0 and (($product->getID() === $smelt->getID() and $product->getDamage() === $smelt->getDamage() and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
 		if($this->namedtag->BurnTime <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->getCount() > 0){
@@ -69,7 +156,7 @@ class Furnace extends Tile{
 			if($fuel->getCount() === 0){
 				$fuel = Item::get(Item::AIR, 0, 0);
 			}
-			$this->setSlot(1, $fuel, false);
+			$this->inventory->setFuel($fuel);
 			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::FURNACE){
 				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getDamage()), true, false, true);
@@ -83,12 +170,12 @@ class Furnace extends Tile{
 				$this->namedtag->CookTime += $ticks;
 				if($this->namedtag->CookTime >= 200){ //10 seconds
 					$product = Item::get($smelt->getID(), $smelt->getDamage(), $product->getCount() + 1);
-					$this->setSlot(2, $product, false);
+					$this->inventory->setResult($product);
 					$raw->setCount($raw->getCount() - 1);
 					if($raw->getCount() === 0){
 						$raw = Item::get(Item::AIR, 0, 0);
 					}
-					$this->setSlot(0, $raw, false);
+					$this->inventory->setSmelting($raw);
 					$this->namedtag->CookTime -= 200;
 				}
 			}elseif($this->namedtag->BurnTime <= 0){
@@ -109,8 +196,8 @@ class Furnace extends Tile{
 			$this->namedtag->BurnTicks = 0;
 		}
 
-
-		$this->server->handle("tile.update", $this);
+		//TODO: tile update event
+		//$this->server->handle("tile.update", $this);
 		$this->lastUpdate = microtime(true);
 
 		return $ret;

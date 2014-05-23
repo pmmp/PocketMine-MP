@@ -262,12 +262,13 @@ class Config{
 				$currPath = null;
 			}
 		}
+
 		return $currPath;
 	}
 
 	/**
 	 * @param string $path
-	 * @param mixed $value
+	 * @param mixed  $value
 	 */
 	public function &setPath($path, $value){
 		$currPath =& $this->config;

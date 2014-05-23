@@ -23,7 +23,6 @@ namespace pocketmine\network\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Utils;
 
 abstract class DataPacket extends \stdClass{
 	private $offset = 0;

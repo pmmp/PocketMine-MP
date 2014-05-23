@@ -24,8 +24,6 @@
  */
 namespace pocketmine\utils;
 
-use pocketmine\item\Item;
-
 /**
  * Big collection of functions
  */

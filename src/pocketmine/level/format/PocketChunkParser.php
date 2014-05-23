@@ -22,7 +22,6 @@
 namespace pocketmine\level\format;
 
 use pocketmine\utils\Binary;
-use pocketmine\utils\Utils;
 
 /**
  * WARNING: This code is old, and only supports the file format partially (reverse engineering)

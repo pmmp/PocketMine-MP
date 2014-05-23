@@ -89,7 +89,7 @@ namespace pocketmine {
 	const PHP_VERSION = "5.5";
 
 	if(\Phar::running(true) !== ""){
-		@define("pocketmine\\PATH", \Phar::running(true)."/");
+		@define("pocketmine\\PATH", \Phar::running(true) . "/");
 	}else{
 		@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 	}

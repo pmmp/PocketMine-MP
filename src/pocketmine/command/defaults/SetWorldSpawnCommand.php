@@ -23,8 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\ConsoleCommandSender;
-use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -52,19 +50,22 @@ class SetWorldSpawnCommand extends VanillaCommand{
 				$pos = $sender->round();
 			}else{
 				$sender->sendMessage(TextFormat::RED . "You can only perform this command as a player");
+
 				return true;
 			}
 		}elseif(count($args) === 3){
 			$level = Server::getInstance()->getDefaultLevel();
 			$pos = new Vector3($this->getInteger($sender, $args[0]), $this->getInteger($sender, $args[1]), $this->getInteger($sender, $args[2]));
 		}else{
-			$sender->sendMessage(TextFormat::RED . "Usage: ".$this->usageMessage);
+			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return true;
 		}
 
 		$level->setSpawn($pos);
 
-		Command::broadcastCommandMessage($sender, "Set world ".$level->getName()."'s spawnpoint to ".$pos->x.", ".$pos->y.", ".$pos->z);
+		Command::broadcastCommandMessage($sender, "Set world " . $level->getName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
+
 		return true;
 	}
 }

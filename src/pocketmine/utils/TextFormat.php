@@ -274,6 +274,7 @@ class TextFormat{
 					break;
 			}
 		}
+
 		return $newString;
 	}
 

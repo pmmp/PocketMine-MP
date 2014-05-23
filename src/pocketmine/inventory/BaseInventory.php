@@ -21,9 +21,13 @@
 
 namespace pocketmine\inventory;
 
+use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityInventoryChangeEvent;
+use pocketmine\item\Item;
+use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\Player;
-use pocketmine\item\Item;
+use pocketmine\Server;
 
 abstract class BaseInventory implements Inventory{
 
@@ -57,7 +61,7 @@ abstract class BaseInventory implements Inventory{
 
 		//A holder can be a plugin, or an entity
 		if($this->holder instanceof Player){
-			$this->viewers->attach($this->holder);
+			$this->holder->addWindow($this, 0);
 		}
 
 
@@ -123,18 +127,34 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function setItem($index, Item $item){
-		if($index < 0 or $index >= $this->size or $item->getID() === 0){
-			return;
+		if($index < 0 or $index >= $this->size){
+			return false;
+		}elseif($item->getID() === 0){
+			$this->clear($index);
 		}
+
+		$holder = $this->getHolder();
+		if($holder instanceof Entity){
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
+			if($ev->isCancelled()){
+				$this->sendContents($this->getViewers());
+
+				return false;
+			}
+			$item = $ev->getNewItem();
+		}
+
 		$old = $this->slots[$index];
 		$this->slots[$index] = clone $item;
 		$this->onSlotChange($index, $old);
+
+		return true;
 	}
 
 	public function contains(Item $item){
 		$count = max(1, $item->getCount());
 		$checkDamage = $item->getDamage() === null ? false : true;
-		foreach($this->slots as $i){
+		foreach($this->getContents() as $i){
 			if($item->equals($i, $checkDamage)){
 				$count -= $i->getCount();
 				if($count <= 0){
@@ -149,7 +169,7 @@ abstract class BaseInventory implements Inventory{
 	public function all(Item $item){
 		$slots = [];
 		$checkDamage = $item->getDamage() === null ? false : true;
-		foreach($this->slots as $index => $i){
+		foreach($this->getContents() as $index => $i){
 			if($item->equals($i, $checkDamage)){
 				$slots[$index] = $i;
 			}
@@ -160,7 +180,7 @@ abstract class BaseInventory implements Inventory{
 
 	public function remove(Item $item){
 		$checkDamage = $item->getDamage() === null ? false : true;
-		foreach($this->slots as $index => $i){
+		foreach($this->getContents() as $index => $i){
 			if($item->equals($i, $checkDamage)){
 				$this->clear($index);
 			}
@@ -170,7 +190,7 @@ abstract class BaseInventory implements Inventory{
 	public function first(Item $item){
 		$count = max(1, $item->getCount());
 		$checkDamage = $item->getDamage() === null ? false : true;
-		foreach($this->slots as $index => $i){
+		foreach($this->getContents() as $index => $i){
 			if($item->equals($i, $checkDamage) and $i->getCount() >= $count){
 				return $index;
 			}
@@ -181,10 +201,7 @@ abstract class BaseInventory implements Inventory{
 
 	public function firstEmpty(){
 		for($i = 0; $i < $this->size; ++$i){
-			if(!isset($this->slots[$i])){
-				return $i;
-			}elseif(!($this->slots[$i] instanceof Item) or $this->slots[$i]->getID() === 0 or $this->slots[$i]->getCount() <= 0){
-				unset($this->slots[$i]);
+			if($this->getItem($i)->getID() === Item::AIR){
 				return $i;
 			}
 		}
@@ -196,11 +213,10 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$slots = func_get_args();
 		for($i = 0; $i < $this->size; ++$i){
-			if(!isset($this->slots[$i])){
-				$item = $this->slots[$i] = array_shift($slots);
-				$this->onSlotChange($i, null);
-			}else{
-				$item = $this->slots[$i];
+			$item = $this->getItem($i);
+			if($item->getID() === Item::AIR){
+				$item = array_shift($slots);
+				$this->setItem($i, $item);
 			}
 
 			foreach($slots as $index => $slot){
@@ -230,10 +246,9 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$slots = func_get_args();
 		for($i = 0; $i < $this->size; ++$i){
-			if(!isset($this->slots[$i])){
+			$item = $this->getItem($i);
+			if($item->getID() === Item::AIR){
 				continue;
-			}else{
-				$item = $this->slots[$i];
 			}
 
 			foreach($slots as $index => $slot){
@@ -263,14 +278,32 @@ abstract class BaseInventory implements Inventory{
 
 	public function clear($index){
 		if(isset($this->slots[$index])){
+			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
-			unset($this->slots[$index]);
+			$holder = $this->getHolder();
+			if($holder instanceof Entity){
+				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $old, $item, $index));
+				if($ev->isCancelled()){
+					$this->sendContents($this->getViewers());
+
+					return false;
+				}
+				$item = $ev->getNewItem();
+			}
+			if($item->getID() !== Item::AIR){
+				$this->slots[$index] = clone $item;
+			}else{
+				unset($this->slots[$index]);
+			}
+
 			$this->onSlotChange($index, $old);
 		}
+
+		return true;
 	}
 
 	public function clearAll(){
-		foreach($this->slots as $index => $i){
+		foreach($this->getContents() as $index => $i){
 			$this->clear($index);
 		}
 	}
@@ -280,6 +313,7 @@ abstract class BaseInventory implements Inventory{
 		foreach($this->viewers as $viewer){
 			$viewers[] = $viewer;
 		}
+
 		return $viewers;
 	}
 
@@ -300,12 +334,44 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function onSlotChange($index, $before){
+		$this->sendSlot($index, $this->getViewers());
+	}
+
+
+	/**
+	 * @param Player|Player[] $target
+	 */
+	public function sendContents($target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$pk = new ContainerSetContentPacket();
+		$pk->slots = [];
+		for($i = 0; $i < $this->getSize(); ++$i){
+			$pk->slots[$i] = $this->getItem($i);
+		}
+
+		foreach($target as $player){
+			$pk->windowid = $player->getWindowId($this);
+			$player->dataPacket(clone $pk);
+		}
+	}
+
+	/**
+	 * @param int             $index
+	 * @param Player|Player[] $target
+	 */
+	public function sendSlot($index, $target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
 		$pk = new ContainerSetSlotPacket;
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 
-		/** @var Player $player */
-		foreach($this->getViewers() as $player){
+		foreach($target as $player){
 			$pk->windowid = $player->getWindowId($this);
 			$player->dataPacket(clone $pk);
 		}

@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\level\format\generic;
+
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkSection;
 use pocketmine\level\Level;
@@ -34,9 +35,9 @@ abstract class BaseChunk implements Chunk{
 	protected $z;
 
 	/**
-	 * @param Level $level
-	 * @param int $x
-	 * @param int $z
+	 * @param Level          $level
+	 * @param int            $x
+	 * @param int            $z
 	 * @param ChunkSection[] $sections
 	 */
 	public function __construct(Level $level, $x, $z, array $sections){
@@ -48,11 +49,13 @@ abstract class BaseChunk implements Chunk{
 				$this->sections[$Y] = $section;
 			}else{
 				trigger_error("Received invalid ChunkSection instance", E_USER_ERROR);
+
 				return;
 			}
 
 			if($section >= self::SECTION_COUNT){
 				trigger_error("Invalid amount of chunks", E_USER_WARNING);
+
 				return;
 			}
 		}

@@ -21,54 +21,46 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\EntityArmorChangeEvent;
-use pocketmine\event\entity\EntityInventoryChangeEvent;
+use pocketmine\inventory\InventoryHolder;
+use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
-use pocketmine\network\protocol\PlayerEquipmentPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
-use pocketmine\Network;
 use pocketmine\Player;
-use pocketmine\Server;
 
-class Human extends Creature implements ProjectileSource, InventorySource{
+class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	protected $nameTag = "TESTIFICATE";
-	protected $inventory = [];
-	public $slot;
-	protected $hotbar = [];
-	protected $armor = [];
+	/** @var PlayerInventory */
+	protected $inventory;
+
+	public function getInventory(){
+		return $this->inventory;
+	}
 
 	protected function initEntity(){
+		$this->inventory = new PlayerInventory($this);
+
 		if(isset($this->namedtag->NameTag)){
 			$this->nameTag = $this->namedtag["NameTag"];
 		}
-		$this->hotbar = array(-1, -1, -1, -1, -1, -1, -1, -1, -1);
-		$this->armor = array(
-			0 => Item::get(Item::AIR, 0, 0),
-			1 => Item::get(Item::AIR, 0, 0),
-			2 => Item::get(Item::AIR, 0, 0),
-			3 => Item::get(Item::AIR, 0, 0)
-		);
 
 		foreach($this->namedtag->Inventory as $item){
 			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
-				$this->hotbar[$item["Slot"]] = isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1;
+				$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 			}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-				$this->armor[$item["Slot"] - 100] = Item::get($item["id"], $item["Damage"], $item["Count"]);
+				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, Item::get($item["id"], $item["Damage"], $item["Count"]));
 			}else{
-				$this->inventory[$item["Slot"] - 9] = Item::get($item["id"], $item["Damage"], $item["Count"]);
+				$this->inventory->setItem($item["Slot"] - 9, Item::get($item["id"], $item["Damage"], $item["Count"]));
 			}
 		}
-		$this->slot = $this->hotbar[0];
 
 		$this->height = 1.8; //Or 1.62?
 		$this->width = 0.6;
@@ -79,14 +71,15 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		$this->namedtag->Inventory = new Enum("Inventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
 		for($slot = 0; $slot < 9; ++$slot){
-			if(isset($this->hotbar[$slot]) and $this->hotbar[$slot] !== -1){
-				$item = $this->getSlot($this->hotbar[$slot]);
+			$hotbarSlot = $this->inventory->getHotbarSlotIndex($slot);
+			if($hotbarSlot !== -1){
+				$item = $this->inventory->getItem($hotbarSlot);
 				if($item->getID() !== 0 and $item->getCount() > 0){
 					$this->namedtag->Inventory[$slot] = new Compound(false, array(
 						new Byte("Count", $item->getCount()),
 						new Short("Damage", $item->getDamage()),
 						new Byte("Slot", $slot),
-						new Byte("TrueSlot", $this->hotbar[$slot]),
+						new Byte("TrueSlot", $hotbarSlot),
 						new Short("id", $item->getID()),
 					));
 					continue;
@@ -105,7 +98,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 		$slotCount = Player::SURVIVAL_SLOTS + 9;
 		//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
 		for($slot = 9; $slot < $slotCount; ++$slot){
-			$item = $this->getSlot($slot - 9);
+			$item = $this->inventory->getItem($slot - 9);
 			$this->namedtag->Inventory[$slot] = new Compound(false, array(
 				new Byte("Count", $item->getCount()),
 				new Short("Damage", $item->getDamage()),
@@ -116,8 +109,8 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 		//Armor
 		for($slot = 100; $slot < 104; ++$slot){
-			$item = $this->armor[$slot - 100];
-			if($item instanceof Item){
+			$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
+			if($item instanceof Item and $item->getID() !== Item::AIR){
 				$this->namedtag->Inventory[$slot] = new Compound(false, array(
 					new Byte("Count", $item->getCount()),
 					new Short("Damage", $item->getDamage()),
@@ -135,7 +128,7 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk = new AddPlayerPacket;
 			$pk->clientID = 0;
 			$pk->username = $this->nameTag;
-			$pk->eid = $this->id;
+			$pk->eid = $this->getID();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;
@@ -147,15 +140,15 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$player->dataPacket($pk);
 
 			$pk = new SetEntityMotionPacket;
-			$pk->eid = $this->id;
+			$pk->eid = $this->getID();
 			$pk->speedX = $this->motionX;
 			$pk->speedY = $this->motionY;
 			$pk->speedZ = $this->motionZ;
 			$player->dataPacket($pk);
 
-			$this->sendCurrentEquipmentSlot($player);
+			$this->inventory->sendHeldItem($player);
 
-			$this->sendArmor($player);
+			$this->inventory->sendArmorContents($player);
 		}
 	}
 
@@ -166,104 +159,6 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 			$pk->clientID = 0;
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getID()]);
-		}
-	}
-
-	public function setEquipmentSlot($equipmentSlot, $inventorySlot){
-		$this->hotbar[$equipmentSlot] = $inventorySlot;
-		if($equipmentSlot === $this->slot){
-			foreach($this->hasSpawned as $p){
-				$this->sendCurrentEquipmentSlot($p);
-			}
-		}
-	}
-
-	public function getEquipmentSlot($equipmentSlot){
-		if(isset($this->hotbar[$equipmentSlot])){
-			return $this->hotbar[$equipmentSlot];
-		}
-
-		return -1;
-	}
-
-	public function setCurrentEquipmentSlot($slot){
-		if(isset($this->hotbar[$slot])){
-			$this->slot = (int) $slot;
-			foreach($this->hasSpawned as $p){
-				$this->sendCurrentEquipmentSlot($p);
-			}
-		}
-	}
-
-	public function getCurrentEquipmentSlot(){
-		return $this->slot;
-	}
-
-	public function getCurrentEquipment(){
-		if($this->slot > -1) {
-			return $this->hotbar[$this->slot];
-		}
-	}
-
-	public function sendCurrentEquipmentSlot(Player $player){
-		$pk = new PlayerEquipmentPacket;
-		$pk->eid = $this->id;
-		$pk->item = $this->getSlot($this->slot)->getID();
-		$pk->meta = $this->getSlot($this->slot)->getDamage();
-		$pk->slot = 0;
-		$player->dataPacket($pk);
-	}
-
-	public function setArmorSlot($slot, Item $item){
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this, $this->getArmorSlot($slot), $item, $slot));
-		if($ev->isCancelled()){
-			return false;
-		}
-		$this->armor[(int) $slot] = $ev->getNewItem();
-		foreach($this->hasSpawned as $p){
-			$this->sendArmor($p);
-		}
-		if($this instanceof Player){
-			$this->sendArmor();
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param int $slot
-	 *
-	 * @return Item
-	 */
-	public function getArmorSlot($slot){
-		$slot = (int) $slot;
-		if(!isset($this->armor[$slot])){
-			$this->armor[$slot] = Item::get(Item::AIR, 0, 0);
-		}
-
-		return $this->armor[$slot];
-	}
-
-	public function sendArmor($player = null){
-		$slots = [];
-		for($i = 0; $i < 4; ++$i){
-			if(isset($this->armor[$i]) and ($this->armor[$i] instanceof Item) and $this->armor[$i]->getID() > Item::AIR){
-				$slots[$i] = $this->armor[$i]->getID() !== Item::AIR ? $this->armor[$i]->getID() - 256 : 0;
-			}else{
-				$this->armor[$i] = Item::get(Item::AIR, 0, 0);
-				$slots[$i] = 255;
-			}
-		}
-		if($player instanceof Player){
-			$pk = new PlayerArmorEquipmentPacket();
-			$pk->eid = $this->id;
-			$pk->slots = $slots;
-			$player->dataPacket($pk);
-		}elseif($this instanceof Player){
-			$pk = new ContainerSetContentPacket;
-			$pk->windowid = 0x78; //Armor window id
-			$pk->slots = $this->armor;
-			$this->dataPacket($pk);
 		}
 	}
 
@@ -305,132 +200,4 @@ class Human extends Creature implements ProjectileSource, InventorySource{
 
 	}
 
-	public function hasItem(Item $item, $checkDamage = true){
-		foreach($this->inventory as $s => $i){
-			if($i->equals($item, $checkDamage)){
-				return $i;
-			}
-		}
-
-		return false;
-	}
-
-	public function canAddItem(Item $item){
-		$inv = $this->inventory;
-		while($item->getCount() > 0){
-			$add = 0;
-			foreach($inv as $s => $i){
-				if($i->getID() === Item::AIR){
-					$add = min($i->getMaxStackSize(), $item->getCount());
-					$inv[$s] = clone $item;
-					$inv[$s]->setCount($add);
-					break;
-				}elseif($i->equals($item)){
-					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
-					if($add <= 0){
-						continue;
-					}
-					$inv[$s] = clone $item;
-					$inv[$s]->setCount($i->getCount() + $add);
-					break;
-				}
-			}
-			if($add <= 0){
-				return false;
-			}
-			$item->setCount($item->getCount() - $add);
-		}
-
-		return true;
-	}
-
-	public function addItem(Item $item){
-		while($item->getCount() > 0){
-			$add = 0;
-			foreach($this->inventory as $s => $i){
-				if($i->getID() === Item::AIR){
-					$add = min($i->getMaxStackSize(), $item->getCount());
-					$i2 = clone $item;
-					$i2->setCount($add);
-					$this->setSlot($s, $i2);
-					break;
-				}elseif($i->equals($item)){
-					$add = min($i->getMaxStackSize() - $i->getCount(), $item->getCount());
-					if($add <= 0){
-						continue;
-					}
-					$i2 = clone $item;
-					$i2->setCount($i->getCount() + $add);
-					$this->setSlot($s, $i2);
-					break;
-				}
-			}
-			if($add <= 0){
-				return false;
-			}
-			$item->setCount($item->getCount() - $add);
-		}
-
-		return true;
-	}
-
-	public function canRemoveItem(Item $item, $checkDamage = true){
-		return $this->hasItem($item, $checkDamage);
-	}
-
-	public function removeItem(Item $item, $checkDamage = true){
-		while($item->getCount() > 0){
-			$remove = 0;
-			foreach($this->inventory as $s => $i){
-				if($i->equals($item, $checkDamage)){
-					$remove = min($item->getCount(), $i->getCount());
-					if($item->getCount() < $i->getCount()){
-						$i->setCount($i->getCount() - $item->getCount());
-						$this->setSlot($s, $i);
-					}else{
-						$this->setSlot($s, Item::get(Item::AIR, 0, 0));
-					}
-					break;
-				}
-			}
-			if($remove <= 0){
-				return false;
-			}
-			$item->setCount($item->getCount() - $remove);
-		}
-
-		return true;
-	}
-
-	public function setSlot($slot, Item $item){
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this, $this->getSlot($slot), $item, $slot));
-		if($ev->isCancelled()){
-			return false;
-		}
-		$this->inventory[(int) $slot] = $ev->getNewItem();
-
-		return true;
-	}
-
-	/**
-	 * @param int $slot
-	 *
-	 * @return Item
-	 */
-	public function getSlot($slot){
-		$slot = (int) $slot;
-		if(!isset($this->inventory[$slot])){
-			$this->inventory[$slot] = Item::get(Item::AIR, 0, 0);
-		}
-
-		return $this->inventory[$slot];
-	}
-
-	public function getAllSlots(){
-		return $this->inventory;
-	}
-
-	public function getSlotCount(){
-		return count($this->inventory);
-	}
 }

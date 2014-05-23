@@ -25,16 +25,18 @@
  */
 namespace pocketmine\tile;
 
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\Server;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
 	const CHEST = "Chest";
 	const FURNACE = "Furnace";
+
+	//TODO: pre-close step NBT data saving method
 
 	public static $tileCount = 1;
 
@@ -89,8 +91,8 @@ abstract class Tile extends Position{
 
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
-		$this->level->tiles[$this->id] = $this;
-		$this->level->chunkTiles[$this->chunkIndex][$this->id] = $this;
+		$this->getLevel()->tiles[$this->id] = $this;
+		$this->getLevel()->chunkTiles[$this->chunkIndex][$this->id] = $this;
 	}
 
 	public function onUpdate(){
@@ -105,8 +107,8 @@ abstract class Tile extends Position{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Tile::$needUpdate[$this->id]);
-			unset($this->level->tiles[$this->id]);
-			unset($this->level->chunkTiles[$this->chunkIndex][$this->id]);
+			unset($this->getLevel()->tiles[$this->id]);
+			unset($this->getLevel()->chunkTiles[$this->chunkIndex][$this->id]);
 			unset(Tile::$list[$this->id]);
 		}
 	}

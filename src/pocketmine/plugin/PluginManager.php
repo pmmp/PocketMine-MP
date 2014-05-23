@@ -148,6 +148,7 @@ class PluginManager{
 						if(count($pluginCommands) > 0){
 							$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
 						}
+
 						return $plugin;
 					}
 				}
@@ -159,7 +160,7 @@ class PluginManager{
 
 	/**
 	 * @param string $directory
-	 * @param array $newLoaders
+	 * @param array  $newLoaders
 	 *
 	 * @return Plugin[]
 	 */

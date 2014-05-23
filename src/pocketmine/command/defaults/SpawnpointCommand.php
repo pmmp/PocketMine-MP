@@ -51,12 +51,14 @@ class SpawnpointCommand extends VanillaCommand{
 				$target = $sender;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
+
 				return true;
 			}
 		}else{
 			$target = Server::getInstance()->getPlayer($args[0]);
 			if($target === null){
-				$sender->sendMessage(TextFormat::RED . "Can't find player ".$args[0]);
+				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
+
 				return true;
 			}
 		}
@@ -69,22 +71,26 @@ class SpawnpointCommand extends VanillaCommand{
 				$y = (int) $this->getRelativeDouble($sender->y, $sender, $args[2], 0, 128);
 				$z = (int) $this->getRelativeDouble($sender->z, $sender, $args[3]);
 				$target->setSpawn(new Position($x, $y, $z, $level));
-				Command::broadcastCommandMessage($sender, "Set ".$target->getName()."'s spawnpoint to ".$x.", ".$y.", ".$z);
+				Command::broadcastCommandMessage($sender, "Set " . $target->getName() . "'s spawnpoint to " . $x . ", " . $y . ", " . $z);
+
 				return true;
 			}
 		}elseif(count($args) <= 1){
-			if($sender instanceof Player) {
+			if($sender instanceof Player){
 				$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 				$target->setSpawn($pos);
-				Command::broadcastCommandMessage($sender, "Set ".$target->getName()."'s spawnpoint to ".$pos->x.", ".$pos->y.", ".$pos->z);
+				Command::broadcastCommandMessage($sender, "Set " . $target->getName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
+
 				return true;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
+
 				return true;
 			}
 		}
 
-		$sender->sendMessage(TextFormat::RED . "Usage: ".$this->usageMessage);
+		$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 		return true;
 	}
 }

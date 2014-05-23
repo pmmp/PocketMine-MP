@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
@@ -36,14 +37,13 @@ use pocketmine\math\Vector3 as Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\Network;
 use pocketmine\network\protocol\MoveEntityPacket_PosRot;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
-use pocketmine\Network;
 use pocketmine\Player;
-use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 
@@ -175,6 +175,10 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	protected abstract function initEntity();
+
+	public function getViewers(){
+		return $this->hasSpawned;
+	}
 
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getID()]) and $player->chunksLoaded[$this->chunkIndex] !== 0xff){

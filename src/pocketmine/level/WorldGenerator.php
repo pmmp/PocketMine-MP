@@ -21,8 +21,8 @@
 
 namespace pocketmine\level;
 
-use pocketmine\level\generator\Generator;
 use pocketmine\level\format\pmf\LevelFormat;
+use pocketmine\level\generator\Generator;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Random;

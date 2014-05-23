@@ -31,7 +31,6 @@ use pocketmine\block\Furnace;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
-use pocketmine\command\PluginCommand;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
@@ -41,6 +40,7 @@ use pocketmine\event\server\PacketSendEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\InventoryType;
 use pocketmine\item\Item;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\Normal;
@@ -73,7 +73,6 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
-use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\SendUsageTask;
@@ -795,6 +794,7 @@ class Server{
 			return true;
 		}elseif(!$this->isLevelGenerated($name)){
 			console("[NOTICE] Level \"" . $name . "\" not found");
+
 			return false;
 		}
 
@@ -1830,7 +1830,7 @@ class Server{
 		}
 
 		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", array(
-			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() .":". $this->getPort()), 0, 8)),
+			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . ":" . $this->getPort()), 0, 8)),
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
 			"memory_total" => $this->getConfigString("memory-limit"),

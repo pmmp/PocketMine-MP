@@ -46,7 +46,8 @@ class TeleportCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 1 or count($args) > 4){
-			$sender->sendMessage(TextFormat::RED . "Usage: ".$this->usageMessage);
+			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return true;
 		}
 
@@ -58,19 +59,22 @@ class TeleportCommand extends VanillaCommand{
 				$target = $sender;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
+
 				return true;
 			}
 		}else{
 			$target = Server::getInstance()->getPlayer($args[0]);
 			if($target === null){
-				$sender->sendMessage(TextFormat::RED . "Can't find player ".$args[0]);
+				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
+
 				return true;
 			}
 			if(count($args) === 2){
 				$origin = $target;
 				$target = Server::getInstance()->getPlayer($args[1]);
 				if($target === null){
-					$sender->sendMessage(TextFormat::RED . "Can't find player ".$args[1]);
+					$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[1]);
+
 					return true;
 				}
 			}
@@ -79,19 +83,22 @@ class TeleportCommand extends VanillaCommand{
 		if(count($args) < 3){
 			$pos = new Position($target->x, $target->y, $target->z, $target->getLevel());
 			$origin->teleport($pos);
-			Command::broadcastCommandMessage($sender, "Teleported ".$origin->getName()." to ".$target->getName());
+			Command::broadcastCommandMessage($sender, "Teleported " . $origin->getName() . " to " . $target->getName());
+
 			return true;
 		}elseif($target->getLevel() !== null){
-			$pos = count($args) === 4 ? 1:0;
+			$pos = count($args) === 4 ? 1 : 0;
 			$x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
 			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
 			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos]);
 			$target->teleport(new Vector3($x, $y, $z));
-			Command::broadcastCommandMessage($sender, "Teleported ".$target->getName()." to ".round($x, 2).", ".round($y, 2).", ".round($z, 2));
+			Command::broadcastCommandMessage($sender, "Teleported " . $target->getName() . " to " . round($x, 2) . ", " . round($y, 2) . ", " . round($z, 2));
+
 			return true;
 		}
 
-		$sender->sendMessage(TextFormat::RED . "Usage: ".$this->usageMessage);
+		$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 		return true;
 	}
 }

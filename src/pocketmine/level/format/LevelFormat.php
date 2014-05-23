@@ -20,8 +20,9 @@
 */
 
 namespace pocketmine\level\format;
-use pocketmine\Server;
+
 use pocketmine\math\Vector3;
+use pocketmine\Server;
 
 /**
  * All Level formats must implement this interface
@@ -48,8 +49,8 @@ interface LevelFormat{
 	 * Gets the Chunk object
 	 * This method must be implemented by all the level formats.
 	 *
-	 * @param int $X absolute Chunk X value
-	 * @param int $Z absolute Chunk Z value
+	 * @param int  $X      absolute Chunk X value
+	 * @param int  $Z      absolute Chunk Z value
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
 	 * @return ChunkSnapshot

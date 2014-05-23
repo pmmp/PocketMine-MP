@@ -138,6 +138,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		for($y = 15; $y >= 0; --$y){
 			$column{15 - $y} = $this->blocks{($y << 8) + $i};
 		}
+
 		return $column;
 	}
 
@@ -147,6 +148,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		for($y = 7; $y >= 0; --$y){
 			$column{7 - $y} = $this->data{($y << 7) + $i};
 		}
+
 		return $column;
 	}
 

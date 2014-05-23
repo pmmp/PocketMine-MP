@@ -26,7 +26,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Utils;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;

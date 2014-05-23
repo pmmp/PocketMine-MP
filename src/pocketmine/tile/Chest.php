@@ -21,23 +21,134 @@
 
 namespace pocketmine\tile;
 
+use pocketmine\inventory\ChestInventory;
+use pocketmine\inventory\DoubleChestInventory;
+use pocketmine\inventory\InventoryHolder;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\EntityDataPacket;
 use pocketmine\Player;
 
-class Chest extends Spawnable{
-	use Container;
+class Chest extends Spawnable implements InventoryHolder, Container{
 
-	const SLOTS = 27;
+	/** @var ChestInventory */
+	protected $inventory;
+	/** @var DoubleChestInventory */
+	protected $doubleInventory = null;
 
 	public function __construct(Level $level, Compound $nbt){
 		$nbt["id"] = Tile::CHEST;
 		parent::__construct($level, $nbt);
+		$this->inventory = new ChestInventory($this);
+		for($i = 0; $i < $this->getSize(); ++$i){
+			$this->inventory->setItem($i, $this->getItem($i));
+		}
+		$this->checkPairing();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getSize(){
+		return 27;
+	}
+
+	/**
+	 * @param $index
+	 *
+	 * @return int
+	 */
+	protected function getSlotIndex($index){
+		foreach($this->namedtag->Items as $i => $slot){
+			if($slot["Slot"] === $s){
+				return $i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int $index
+	 *
+	 * @return Item
+	 */
+	public function getItem($index){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return Item::get(Item::AIR, 0, 0);
+		}else{
+			return Item::get($this->namedtag->Items[$i]["id"], $this->namedtag->Items[$i]["Damage"], $this->namedtag->Items[$i]["Count"]);
+		}
+	}
+
+	/**
+	 * This method should not be used by plugins, use the Inventory
+	 *
+	 * @param int  $index
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function setItem($index, Item $item){
+		$i = $this->getSlotIndex($index);
+		if($i < 0){
+			return false;
+		}
+
+		$d = new Compound(false, array(
+			new Byte("Count", $item->getCount()),
+			new Byte("Slot", $index),
+			new Short("id", $item->getID()),
+			new Short("Damage", $item->getDamage()),
+		));
+
+		if($item->getID() === Item::AIR or $item->getCount() <= 0){
+			if($i >= 0){
+				unset($this->namedtag->Items[$i]);
+			}
+		}elseif($i < 0){
+			$this->namedtag->Items[] = $d;
+		}else{
+			$this->namedtag->Items[$i] = $d;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return ChestInventory|DoubleChestInventory
+	 */
+	public function getInventory(){
+		return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
+	}
+
+	/**
+	 * @return ChestInventory
+	 */
+	public function getRealInventory(){
+		return $this->inventory;
+	}
+
+	protected function checkPairing(){
+		if(($pair = $this->getPair()) instanceof Chest){
+			if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
+				$this->doubleInventory = new DoubleChestInventory($pair, $this);
+			}else{
+				$this->doubleInventory = new DoubleChestInventory($this, $pair);
+			}
+		}else{
+			$this->doubleInventory = null;
+		}
 	}
 
 	public function isPaired(){
@@ -48,12 +159,18 @@ class Chest extends Spawnable{
 		return true;
 	}
 
+	/**
+	 * @return Chest
+	 */
 	public function getPair(){
 		if($this->isPaired()){
-			return $this->getLevel()->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
+			$tile = $this->getLevel()->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
+			if($tile instanceof Chest){
+				return $tile;
+			}
 		}
 
-		return false;
+		return null;
 	}
 
 	public function pairWith(Chest $tile){
@@ -69,10 +186,11 @@ class Chest extends Spawnable{
 
 		$this->spawnToAll();
 		$tile->spawnToAll();
+		$this->checkPairing();
 
 		//TODO: Update to new events
-		$this->server->handle("tile.update", $this);
-		$this->server->handle("tile.update", $tile);
+		//$this->server->handle("tile.update", $this);
+		//$this->server->handle("tile.update", $tile);
 
 		return true;
 	}
@@ -86,10 +204,12 @@ class Chest extends Spawnable{
 		unset($this->namedtag->pairx, $this->namedtag->pairz, $tile->namedtag->pairx, $tile->namedtag->pairz);
 
 		$this->spawnToAll();
-		$this->server->handle("tile.update", $this);
+		$this->checkPairing();
+		//TODO: tile update event
+		//$this->server->handle("tile.update", $this);
 		if($tile instanceof Chest){
 			$tile->spawnToAll();
-			$this->server->handle("tile.update", $tile);
+			//$this->server->handle("tile.update", $tile);
 		}
 
 		return true;

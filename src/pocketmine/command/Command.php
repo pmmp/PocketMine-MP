@@ -301,7 +301,7 @@ abstract class Command{
 			}
 		}
 	}
-	
+
 	/**
 	 * @return string
 	 */

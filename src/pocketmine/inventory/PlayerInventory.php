@@ -22,11 +22,15 @@
 namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
+use pocketmine\event\entity\EntityArmorChangeEvent;
+use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
 use pocketmine\network\protocol\ContainerSetContentPacket;
+use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
 use pocketmine\network\protocol\PlayerEquipmentPacket;
 use pocketmine\Player;
+use pocketmine\Server;
 
 class PlayerInventory extends BaseInventory{
 
@@ -83,8 +87,13 @@ class PlayerInventory extends BaseInventory{
 		}
 	}
 
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
 	public function setItemInHand(Item $item){
-		$this->setItem($this->getHeldItemSlot(), $item);
+		return $this->setItem($this->getHeldItemSlot(), $item);
 	}
 
 	public function getHeldItemSlot(){
@@ -93,16 +102,47 @@ class PlayerInventory extends BaseInventory{
 
 	public function setHeldItemSlot($slot){
 		if($slot >= 0 and $slot < $this->getSize()){
+			$item = $this->getItem($slot);
+			if($this->getHolder() instanceof Player){
+				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, 0));
+				if($ev->isCancelled()){
+					$this->sendHeldItem($this->getHolder());
+
+					return;
+				}
+			}
+
 			$this->setHotbarSlotIndex($this->itemInHandIndex, $slot);
-			$item = $this->getItemInHand();
+			$this->sendHeldItem($this->getHolder()->getViewers());
 
-			$pk = new PlayerEquipmentPacket;
-			$pk->eid = $this->getHolder()->getID();
-			$pk->item = $item->getID();
-			$pk->meta = $item->getDamage();
-			$pk->slot = 0;
+			if($this->getHolder() instanceof Player){
+				$this->sendHeldItem($this->getHolder());
+			}
+		}
+	}
 
-			foreach($this->getHolder()->getViewers() as $player){
+	/**
+	 * @param Player|Player[] $target
+	 */
+	public function sendHeldItem($target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$item = $this->getItemInHand();
+
+		$pk = new PlayerEquipmentPacket;
+		$pk->eid = $this->getHolder()->getID();
+		$pk->item = $item->getID();
+		$pk->meta = $item->getDamage();
+		$pk->slot = 0;
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				//TODO: Check if Mojang enabled sending a single slot this
+				//$this->sendSlot($this->getHeldItemSlot());
+				$this->sendContents($this->getHolder());
+			}else{
 				$player->dataPacket(clone $pk);
 			}
 		}
@@ -112,39 +152,24 @@ class PlayerInventory extends BaseInventory{
 		parent::onSlotChange($index, $before);
 
 		if($index >= $this->getSize()){
-			$armor = $this->getArmorContents();
-			$slots = [];
+			$this->sendArmorContents($this->getHolder()->getViewers());
+		}
 
-			foreach($armor as $i => $slot){
-				if($slot->getID() === Item::AIR){
-					$slots[$i] = 255;
-				}else{
-					$slots[$i] = $slot->getID();
-				}
-			}
-
-			$pk = new PlayerArmorEquipmentPacket;
-			$pk->eid = $this->getHolder()->getID();
-			$pk->slots = $slots;
-
-			if($index >= $this->getSize()){ //Armor change
-				foreach($this->getHolder()->getViewers() as $player){
-					if($player === $this->getHolder()){
-						/** @var Player $player */
-						$pk2 = new ContainerSetContentPacket;
-						$pk2->windowid = 0x78; //Armor window id constant
-						$pk2->slots = $armor;
-						$player->dataPacket($pk2);
-					}else{
-						$player->dataPacket(clone $pk);
-					}
-				}
-			}
+		if($this->getHolder() instanceof Player){
+			$this->sendArmorContents($this->getHolder());
 		}
 	}
 
 	public function getHotbarSize(){
 		return 9;
+	}
+
+	public function getArmorItem($index){
+		return $this->getItem($this->getSize() + $index);
+	}
+
+	public function setArmorItem($index, Item $item){
+		return $this->setItem($this->getSize() + $index, $item);
 	}
 
 	public function getHelmet(){
@@ -164,19 +189,66 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function setHelmet(Item $helmet){
-		$this->setItem($this->getSize() + 3, $helmet);
+		return $this->setItem($this->getSize() + 3, $helmet);
 	}
 
 	public function setChestplate(Item $chestplate){
-		$this->setItem($this->getSize() + 2, $chestplate);
+		return $this->setItem($this->getSize() + 2, $chestplate);
 	}
 
 	public function setLeggings(Item $leggings){
-		$this->setItem($this->getSize() + 1, $leggings);
+		return $this->setItem($this->getSize() + 1, $leggings);
 	}
 
 	public function setBoots(Item $boots){
-		$this->setItem($this->getSize(), $boots);
+		return $this->setItem($this->getSize(), $boots);
+	}
+
+	public function setItem($index, Item $item){
+		if($index < 0 or $index >= $this->size){
+			return false;
+		}
+
+		if($index >= $this->getSize()){ //Armor change
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+			if($ev->isCancelled()){
+				$this->sendArmorContents($this);
+				$this->sendContents($this);
+
+				return false;
+			}
+			$item = $ev->getNewItem();
+		}
+
+		$old = $this->slots[$index];
+		$this->slots[$index] = clone $item;
+		$this->onSlotChange($index, $old);
+
+		return true;
+	}
+
+	public function clear($index){
+		if(isset($this->slots[$index])){
+			$item = Item::get(Item::AIR, null, 0);
+			$old = $this->slots[$index];
+			if($index >= $this->getSize() and $index < $this->size){ //Armor change
+				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
+				if($ev->isCancelled()){
+					$this->sendArmorContents($this);
+					$this->sendContents($this);
+
+					return;
+				}
+				$item = $ev->getNewItem();
+			}
+			if($item->getID() !== Item::AIR){
+				$this->slots[$index] = clone $item;
+			}else{
+				unset($this->slots[$index]);
+			}
+
+			$this->onSlotChange($index, $old);
+		}
 	}
 
 	/**
@@ -193,6 +265,41 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
+	 * @param Player|Player[] $target
+	 */
+	public function sendArmorContents($target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+		$armor = $this->getArmorContents();
+		$slots = [];
+
+		foreach($armor as $i => $slot){
+			if($slot->getID() === Item::AIR){
+				$slots[$i] = 255;
+			}else{
+				$slots[$i] = $slot->getID();
+			}
+		}
+
+		$pk = new PlayerArmorEquipmentPacket;
+		$pk->eid = $this->getHolder()->getID();
+		$pk->slots = $slots;
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				/** @var Player $player */
+				$pk2 = new ContainerSetContentPacket;
+				$pk2->windowid = 0x78; //Armor window id constant
+				$pk2->slots = $armor;
+				$player->dataPacket($pk2);
+			}else{
+				$player->dataPacket(clone $pk);
+			}
+		}
+	}
+
+	/**
 	 * @param Item[] $items
 	 */
 	public function setArmorContents(array $items){
@@ -205,6 +312,62 @@ class PlayerInventory extends BaseInventory{
 				$this->clear($this->getSize() + $i);
 			}else{
 				$this->setItem($this->getSize() + $i, $items[$i]);
+			}
+		}
+	}
+
+	/**
+	 * @param Player|Player[] $target
+	 */
+	public function sendContents($target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$holder = $this->getHolder();
+		if($holder instanceof Player and ($holder->getGamemode() & 0x01) === 1){
+			return;
+		}
+
+		$pk = new ContainerSetContentPacket();
+		$pk->slots = [];
+		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
+			$pk->slots[$i] = $this->getItem($i);
+		}
+
+		foreach($target as $player){
+			$pk->hotbar = [];
+			if($player === $this->getHolder()){
+				for($i = 0; $i < $this->getHotbarSize(); ++$i){
+					$index = $this->getHotbarSlotIndex($i);
+					$pk->hotbar[] = $index <= -1 ? -1 : $index + 9;
+				}
+			}
+			$pk->windowid = $player->getWindowId($this);
+			$player->dataPacket(clone $pk);
+		}
+	}
+
+	/**
+	 * @param int             $index
+	 * @param Player|Player[] $target
+	 */
+	public function sendSlot($index, $target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$pk = new ContainerSetSlotPacket;
+		$pk->slot = $index;
+		$pk->item = clone $this->getItem($index);
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				//TODO: Check if Mojang has implemented this (for the player inventory) on Minecraft: PE 0.9.0
+				$this->sendContents($player);
+			}else{
+				$pk->windowid = $player->getWindowId($this);
+				$player->dataPacket(clone $pk);
 			}
 		}
 	}

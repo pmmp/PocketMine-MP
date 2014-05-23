@@ -28,7 +28,6 @@ use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
-use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
@@ -37,7 +36,10 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
+use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -48,9 +50,6 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\ChunkDataPacket;
-use pocketmine\network\protocol\ContainerClosePacket;
-use pocketmine\network\protocol\ContainerSetContentPacket;
-use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
@@ -61,7 +60,6 @@ use pocketmine\network\protocol\ServerHandshakePacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
-use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\raknet\Info;
@@ -69,11 +67,8 @@ use pocketmine\network\raknet\Packet;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
-use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\tile\Chest;
-use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -84,7 +79,7 @@ use pocketmine\utils\TextFormat;
  * Main class that handles networking, recovery, and packet sending to the server part
  * TODO: Move reliability layer
  */
-class Player extends Human implements CommandSender, IPlayer{
+class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -102,8 +97,13 @@ class Player extends Human implements CommandSender, IPlayer{
 	public $loggedIn = false;
 	public $gamemode;
 	public $lastBreak;
-	public $windowCnt = 2;
-	public $windows = [];
+
+	protected $windowCnt = 2;
+	/** @var \SplObjectStorage<Inventory> */
+	protected $windows;
+	/** @var Inventory[] */
+	protected $windowIndex = [];
+
 	public $blocked = true;
 	public $achievements = [];
 	public $chunksLoaded = [];
@@ -358,6 +358,7 @@ class Player extends Human implements CommandSender, IPlayer{
 	 * @param integer $MTU
 	 */
 	public function __construct($clientID, $ip, $port, $MTU){
+		$this->windows = new \SplObjectStorage();
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new Compound();
 		$this->bigCnt = 0;
@@ -1322,6 +1323,7 @@ class Player extends Human implements CommandSender, IPlayer{
 					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
 						if($p->kick("logged in from another location") === false){
 							$this->close($this->getName() . " has left the game", "already logged in");
+
 							return;
 						}else{
 							break;
@@ -1432,9 +1434,9 @@ class Player extends Human implements CommandSender, IPlayer{
 						$this->spawned = true;
 						$this->spawnToAll();
 
-						$this->sendInventory();
 						$this->sendSettings();
-						$this->sendArmor();
+						$this->getInventory()->sendContents($this);
+						$this->getInventory()->sendArmorContents($this);
 						$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
 
 						$this->blocked = false;
@@ -1510,26 +1512,13 @@ class Player extends Human implements CommandSender, IPlayer{
 						}
 					}
 				}else{
-					$item = $this->getSlot($packet->slot);
+					$item = $this->inventory->getItem($packet->slot);
 				}
 
 				if(!isset($item) or $packet->slot === false){
-					$this->sendInventorySlot($packet->slot);
+					$this->inventory->sendSlot($packet->slot, $this);
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this, $item, $packet->slot, 0));
-					if($ev->isCancelled()){
-						$this->sendInventorySlot($packet->slot);
-					}elseif($item instanceof Item){
-						$this->setEquipmentSlot(0, $packet->slot);
-						$this->setCurrentEquipmentSlot(0);
-						if(($this->gamemode & 0x01) === 0){
-							if(!in_array($this->slot, $this->hotbar)){
-								array_pop($this->hotbar);
-								array_unshift($this->hotbar, $this->slot);
-							}
-						}
-
-					}
+					$this->inventory->setHeldItemSlot($packet->slot);
 				}
 
 				if($this->inAction === true){
@@ -1576,18 +1565,21 @@ class Player extends Human implements CommandSender, IPlayer{
 					if($blockVector->distance($this) > 10){
 
 					}elseif(($this->gamemode & 0x01) === 1){
-						$item = Item::get(Block::$creative[$this->getCurrentEquipment()][0], Block::$creative[$this->getCurrentEquipment()][1], 1);
+						$item = Item::get(
+							Block::$creative[$this->inventory->getHeldItemSlot()][0],
+							Block::$creative[$this->inventory->getHeldItemSlot()][1],
+							1
+						);
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif($this->getSlot($this->getCurrentEquipment())->getID() !== $packet->item or ($this->getSlot($this->getCurrentEquipment())->isTool() === false and $this->getSlot($this->getCurrentEquipment())->getDamage() !== $packet->meta)){
-						$this->sendInventorySlot($this->getCurrentEquipment());
+					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or ($this->inventory->getItemInHand()->isTool() === false and $this->inventory->getItemInHand()->getDamage() !== $packet->meta)){
+						$this->inventory->sendHeldItem($this);
 					}else{
-						$item = clone $this->getSlot($this->getCurrentEquipment());
+						$item = clone $this->inventory->getItemInHand();
 						//TODO: Implement adventure mode checks
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
-							$this->setSlot($this->getCurrentEquipment(), $item);
-							$this->sendInventorySlot($this->getCurrentEquipment());
+							$this->inventory->setItemInHand($item);
 							break;
 						}
 					}
@@ -1704,15 +1696,19 @@ class Player extends Human implements CommandSender, IPlayer{
 
 
 				if(($this->gamemode & 0x01) === 1){
-					$item = Item::get(Block::$creative[$this->getCurrentEquipment()][0], Block::$creative[$this->getCurrentEquipment()][1], 1);
+					$item = Item::get(
+						Block::$creative[$this->inventory->getHeldItemSlot()][0],
+						Block::$creative[$this->inventory->getHeldItemSlot()][1],
+						1
+					);
 				}else{
-					$item = clone $this->getSlot($this->getCurrentEquipment());
+					$item = clone $this->inventory->getItemInHand();
 				}
 
 				if(($drops = $this->getLevel()->useBreakOn($vector, $item)) !== true){
 					if(($this->gamemode & 0x01) === 0){
 						//TODO: drop items
-						$this->setSlot($this->getCurrentEquipment(), $item);
+						$this->inventory->setItemInHand($item);
 					}
 					break;
 				}
@@ -1739,33 +1735,22 @@ class Player extends Human implements CommandSender, IPlayer{
 					}else{
 						$s = Item::get($s + 256, 0, 1);
 					}
-					$slot = $this->getArmorSlot($i);
+					$slot = $this->inventory->getArmorItem($i);
 					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){
-						if($this->setArmorSlot($i, Item::get(Item::AIR, 0, 0)) === false){
-							$this->sendArmor();
-							$this->sendInventory();
+						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 0));
+					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->inventory->first($s)) !== -1){
+						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl)) === false){
+							$this->inventory->sendContents($this);
 						}else{
-							$this->addItem($slot);
-							$packet->slots[$i] = 255;
+							$this->inventory->setItem($sl, Item::get(Item::AIR, 0, 0));
 						}
-					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->hasItem($s, false)) !== false){
-						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
-							$this->sendArmor();
-							$this->sendInventory();
+					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getDamage() !== $s->getDamage()) and ($sl = $this->inventory->first($s)) !== -1){
+						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl)) === false){
+							$this->inventory->sendContents($this);
 						}else{
-							$this->setSlot($sl, Item::get(Item::AIR, 0, 0));
+							$this->inventory->setItem($sl, $slot);
 						}
-					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getDamage() !== $s->getDamage()) and ($sl = $this->hasItem($s, false)) !== false){
-						if($this->setArmorSlot($i, $this->getSlot($sl)) === false){
-							$this->sendArmor();
-							$this->sendInventory();
-						}else{
-							$this->setSlot($sl, $slot);
-						}
-					}else{
-						$packet->slots[$i] = 255;
 					}
-
 				}
 
 				if($this->inAction === true){
@@ -1884,7 +1869,10 @@ class Player extends Human implements CommandSender, IPlayer{
 				//$this->entity->setHealth(20, "respawn", true);
 				//$this->entity->updateMetadata();
 
-				$this->sendInventory();
+				$this->sendSettings();
+				$this->inventory->sendContents($this);
+				$this->inventory->sendArmorContents($this);
+
 				$this->blocked = false;
 				break;
 			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
@@ -1989,37 +1977,16 @@ class Player extends Human implements CommandSender, IPlayer{
 				}
 				break;
 			case ProtocolInfo::CONTAINER_CLOSE_PACKET:
-				if($this->spawned === false){
+				if($this->spawned === false or $packet->windowid === 0){
 					break;
 				}
 				$this->craftingItems = [];
 				$this->toCraft = [];
-				if(isset($this->windows[$packet->windowid])){
-					if(is_array($this->windows[$packet->windowid])){
-						foreach($this->windows[$packet->windowid] as $ob){
-							$pk = new TileEventPacket;
-							$pk->x = $ob->x;
-							$pk->y = $ob->y;
-							$pk->z = $ob->z;
-							$pk->case1 = 1;
-							$pk->case2 = 0;
-							Player::broadcastPacket($this->getLevel()->players, $pk);
-						}
-					}elseif($this->windows[$packet->windowid] instanceof Chest){
-						$pk = new TileEventPacket;
-						$pk->x = $this->windows[$packet->windowid]->x;
-						$pk->y = $this->windows[$packet->windowid]->y;
-						$pk->z = $this->windows[$packet->windowid]->z;
-						$pk->case1 = 1;
-						$pk->case2 = 0;
-						Player::broadcastPacket($this->getLevel()->players, $pk);
-					}
+				if(isset($this->windowIndex[$packet->windowid])){
+					$this->removeWindow($this->windowIndex[$packet->windowid]);
+				}else{
+					unset($this->windowIndex[$packet->windowid]);
 				}
-				unset($this->windows[$packet->windowid]);
-
-				$pk = new ContainerClosePacket;
-				$pk->windowid = $packet->windowid;
-				$this->dataPacket($pk);
 				break;
 			case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
@@ -2035,9 +2002,9 @@ class Player extends Human implements CommandSender, IPlayer{
 					$this->craftingItems = [];
 				}
 
-				if($packet->windowid === 0){
+				if($packet->windowid === 0){ //Crafting!
 					$craft = false;
-					$slot = $this->getSlot($packet->slot);
+					$slot = $this->inventory->getItem($packet->slot);
 					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
 						$use = Item::get($slot->getID(), $slot->getDamage(), $slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
@@ -2066,7 +2033,7 @@ class Player extends Human implements CommandSender, IPlayer{
 
 					if($craft === true and count($this->craftingItems) > 0 and count($this->toCraft) > 0 and ($recipe = $this->craftItems($this->toCraft, $this->craftingItems, $this->toCraft[-1])) !== true){
 						if($recipe === false){
-							$this->sendInventory();
+							$this->inventory->sendContents($this);
 							$this->toCraft = [];
 						}else{
 							$this->toCraft = array(-1 => $this->toCraft[-1]);
@@ -2077,129 +2044,57 @@ class Player extends Human implements CommandSender, IPlayer{
 					$this->toCraft = [];
 					$this->craftingItems = [];
 				}
-				if(!isset($this->windows[$packet->windowid])){
+				if(!isset($this->windowIndex[$packet->windowid])){
 					break;
 				}
 
-				if(is_array($this->windows[$packet->windowid])){
-					/** @var \pocketmine\tile\Container[] $tiles */
-					$tiles = $this->windows[$packet->windowid];
-					if($packet->slot >= 0 and $packet->slot < Chest::SLOTS){
-						$tile = $tiles[0];
-						$slotn = $packet->slot;
-						$offset = 0;
-					}elseif($packet->slot >= Chest::SLOTS and $packet->slot <= (Chest::SLOTS << 1)){
-						$tile = $tiles[1];
-						$slotn = $packet->slot - Chest::SLOTS;
-						$offset = Chest::SLOTS;
-					}else{
-						break;
-					}
-					$item = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
+				$inv = $this->windowIndex[$packet->windowid];
+				if($packet->slot < 0 or $packet->slot >= $inv->getSize()){
+					break;
+				}
 
-					$slot = $tile->getSlot($slotn);
-					//TODO: container access events?
-					/*if($this->server->api->dhandle("player.container.slot", array(
-							"tile" => $tile,
-							"slot" => $packet->slot,
-							"offset" => $offset,
-							"slotdata" => $slot,
-							"itemdata" => $item,
-							"player" => $this,
-						)) === false
-					){
-						$pk = new ContainerSetSlotPacket;
-						$pk->windowid = $packet->windowid;
-						$pk->slot = $packet->slot;
-						$pk->item = $slot;
-						$this->dataPacket($pk);
-						break;
-					}*/
-					if($item->getID() !== Item::AIR and $slot->getID() == $item->getID()){
-						if($slot->getCount() < $item->getCount()){
-							$it = clone $item;
-							$it->setCount($item->getCount() - $slot->getCount());
-							if($this->removeItem($it) === false){
-								$this->sendInventory();
-								break;
-							}
-						}elseif($slot->getCount() > $item->getCount()){
-							$it = clone $item;
-							$it->setCount($slot->getCount() - $item->getCount());
-							$this->addItem($it);
+				/** @var Item $item */
+				$item = clone $packet->item;
+
+				$slot = $inv->getItem($packet->slot);
+
+				if($item->getID() !== Item::AIR and $slot->equals($item, true)){
+					if($slot->getCount() < $item->getCount()){
+						$it = clone $item;
+						$it->setCount($item->getCount() - $slot->getCount());
+						$remaining = $this->inventory->removeItem($it);
+						if(count($remaining) > 0){
+							/** @var Item $it */
+							$it = array_pop($remaining);
+							$item->setCount($item->getCount() - $it->getCount());
 						}
-					}else{
-						if($this->removeItem($item) === false){
-							$this->sendInventory();
-							break;
+					}elseif($slot->getCount() > $item->getCount()){
+						$it = clone $item;
+						$it->setCount($slot->count - $item->count);
+						$remaining = $this->inventory->addItem($it);
+						if(count($remaining) > 0){
+							/** @var Item $it */
+							$it = array_pop($remaining);
+							$item->setCount($item->getCount() + $it->getCount());
 						}
-						$this->addItem($slot);
 					}
-					$tile->setSlot($slotn, $item, true, $offset);
-				}else{
-					$tile = $this->windows[$packet->windowid];
-					if(
-						!($tile instanceof Chest or $tile instanceof Furnace)
-						or $packet->slot < 0
-						or (
-							$tile instanceof Chest
-							and $packet->slot >= Chest::SLOTS
-						) or (
-							$tile instanceof Furnace and $packet->slot >= Furnace::SLOTS
-						)
-					){
-						break;
-					}
-					$item = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
-
-					$slot = $tile->getSlot($packet->slot);
-					//TODO: container access events?
-					/*if($this->server->api->dhandle("player.container.slot", array(
-							"tile" => $tile,
-							"slot" => $packet->slot,
-							"slotdata" => $slot,
-							"itemdata" => $item,
-							"player" => $this,
-						)) === false
-					){
-						$pk = new ContainerSetSlotPacket;
-						$pk->windowid = $packet->windowid;
-						$pk->slot = $packet->slot;
-						$pk->item = $slot;
-						$this->dataPacket($pk);
-						break;
-					}*/
-
-					if($tile instanceof Furnace and $packet->slot == 2){
+					if($inv->getType()->getDefaultTitle() === "Furnace" and $packet->slot == 2){
 						switch($slot->getID()){
 							case Item::IRON_INGOT:
 								$this->awardAchievement("acquireIron");
 								break;
 						}
 					}
-
-					if($item->getID() !== Item::AIR and $slot->getID() == $item->getID()){
-						if($slot->getCount() < $item->getCount()){
-							$it = clone $item;
-							$it->setCount($item->getCount() - $slot->getCount());
-							if($this->removeItem($it) === false){
-								$this->sendInventory();
-								break;
-							}
-						}elseif($slot->getCount() > $item->getCount()){
-							$it = clone $item;
-							$it->setCount($slot->count - $item->count);
-							$this->addItem($it);
-						}
-					}else{
-						if($this->removeItem($item) === false){
-							$this->sendInventory();
-							break;
-						}
-						$this->addItem($slot);
+				}else{ //TODO: check this. I don't know what is this for
+					$remaining = $this->inventory->removeItem($item);
+					if(count($remaining) > 0){
+						$this->inventory->removeItem();
+						break;
 					}
-					$tile->setSlot($packet->slot, $item);
+					$this->inventory->addItem($slot);
 				}
+				$inv->setItem($packet->slot, $item);
+
 				break;
 			case ProtocolInfo::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
 				if($this->spawned === false){
@@ -2323,9 +2218,8 @@ class Player extends Human implements CommandSender, IPlayer{
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
-			$this->windows = [];
-			$this->armor = [];
-			$this->inventory = [];
+			$this->windows = new \SplObjectStorage();
+			$this->windowIndex = [];
 			$this->chunksLoaded = [];
 			$this->chunksOrder = [];
 			$this->chunkCount = [];
@@ -2465,18 +2359,18 @@ class Player extends Human implements CommandSender, IPlayer{
 			//}
 
 			foreach($recipe as $slot => $item){
-				$s = $this->getSlot($slot);
+				$s = $this->inventory->getItem($slot);
 				$s->setCount($s->getCount() - $item->getCount());
 				if($s->getCount() <= 0){
-					$this->setSlot($slot, Item::get(Item::AIR, 0, 0));
+					$this->inventory->setItem($slot, Item::get(Item::AIR, 0, 0));
 				}
 			}
 			foreach($craft as $slot => $item){
-				$s = $this->getSlot($slot);
+				$s = $this->inventory->getItem($slot);
 				if($s->getCount() <= 0 or $s->getID() === Item::AIR){
-					$this->setSlot($slot, Item::get($item->getID(), $item->getDamage(), $item->getCount()));
+					$this->inventory->setItem($slot, Item::get($item->getID(), $item->getDamage(), $item->getCount()));
 				}else{
-					$this->setSlot($slot, Item::get($item->getID(), $item->getDamage(), $s->getCount() + $item->getCount()));
+					$this->inventory->setItem($slot, Item::get($item->getID(), $item->getDamage(), $s->getCount() + $item->getCount()));
 				}
 
 				switch($item->getID()){
@@ -2497,7 +2391,7 @@ class Player extends Human implements CommandSender, IPlayer{
 						break;
 					case Item::CAKE:
 						$this->awardAchievement("bakeCake");
-						$this->addItem(Item::get(Item::BUCKET, 0, 3));
+						$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
 						break;
 					case Item::STONE_PICKAXE:
 					case Item::GOLD_PICKAXE:
@@ -2519,59 +2413,46 @@ class Player extends Human implements CommandSender, IPlayer{
 		return $res;
 	}
 
-	public function setSlot($slot, Item $item){
-		parent::setSlot($slot, $item);
-		$this->sendInventorySlot($slot);
+
+	/**
+	 * @param Inventory $inventory
+	 *
+	 * @return int
+	 */
+	public function getWindowId(Inventory $inventory){
+		if($this->windows->contains($inventory)){
+			return $this->windows[$inventory];
+		}
+
+		return -1;
 	}
 
 	/**
-	 * Sends a single slot
-	 * TODO: Check if Mojang has implemented this on Minecraft: PE 0.9.0
+	 * Returns the created/existing window id
 	 *
-	 * @param int $s
+	 * @param Inventory $inventory
 	 *
-	 * @return bool
+	 * @return int
 	 */
-	public function sendInventorySlot($s){
-		$this->sendInventory();
-
-		return; //TODO: Check if Mojang adds this
-		$s = (int) $s;
-		if(!isset($this->inventory[$s])){
-			$pk = new ContainerSetSlotPacket;
-			$pk->windowid = 0;
-			$pk->slot = (int) $s;
-			$pk->item = Item::get(Item::AIR, 0, 0);
-			$this->dataPacket($pk);
+	public function addWindow(Inventory $inventory){
+		if($this->windows->contains($inventory)){
+			return $this->windows[$inventory];
 		}
+		$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
+		$this->windowIndex[$cnt] = $inventory;
+		$this->windows->attach($inventory, $cnt);
+		$this->inventory->onOpen($this);
 
-		$slot = $this->inventory[$s];
-		$pk = new ContainerSetSlotPacket;
-		$pk->windowid = 0;
-		$pk->slot = (int) $s;
-		$pk->item = $slot;
-		$this->dataPacket($pk);
-
-		return true;
+		return $cnt;
 	}
 
-	/**
-	 * Sends the full inventory
-	 */
-	public function sendInventory(){
-		if(($this->gamemode & 0x01) === 1){
-			return;
+	public function removeWindow(Inventory $inventory){
+		$inventory->onClose($this);
+		if($this->windows->contains($inventory)){
+			$inventory->onClose($this);
+			$id = $this->windows[$inventory];
+			unset($this->windowIndex[$id]);
 		}
-		$hotbar = [];
-		foreach($this->hotbar as $slot){
-			$hotbar[] = $slot <= -1 ? -1 : $slot + 9;
-		}
-
-		$pk = new ContainerSetContentPacket;
-		$pk->windowid = 0;
-		$pk->slots = $this->inventory;
-		$pk->hotbar = $hotbar;
-		$this->dataPacket($pk);
 	}
 
 	public function setMetadata($metadataKey, MetadataValue $metadataValue){

@@ -32,6 +32,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		if($section !== null){
 			if(strlen($section) !== 8192){
 				trigger_error("Invalid ChunkSection generated", E_USER_WARNING);
+
 				return;
 			}
 			$this->section = $section;

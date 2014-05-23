@@ -26,10 +26,11 @@ namespace pocketmine\inventory;
  */
 class InventoryType{
 	const CHEST = 0;
-	const PLAYER = 1;
-	const FURNACE = 2;
-	const CRAFTING = 3;
-	const WORKBENCH = 4;
+	const DOUBLE_CHEST = 1;
+	const PLAYER = 2;
+	const FURNACE = 3;
+	const CRAFTING = 4;
+	const WORKBENCH = 5;
 
 	private static $default = [];
 
@@ -46,6 +47,7 @@ class InventoryType{
 		}
 
 		static::$default[static::CHEST] = new InventoryType(27, "Chest");
+		static::$default[static::DOUBLE_CHEST] = new InventoryType(27 + 27, "Double Chest");
 		static::$default[static::PLAYER] = new InventoryType(31, "Player"); //27 CONTAINER, 4 ARMOR (9 reference HOTBAR slots)
 		static::$default[static::FURNACE] = new InventoryType(3, "Furnace");
 		static::$default[static::CRAFTING] = new InventoryType(5, "Crafting"); //4 CRAFTING slots, 1 RESULT
@@ -53,7 +55,7 @@ class InventoryType{
 	}
 
 	/**
-	 * @param int $defaultSize
+	 * @param int    $defaultSize
 	 * @param string $defaultTitle
 	 */
 	private function __construct($defaultSize, $defaultTitle){

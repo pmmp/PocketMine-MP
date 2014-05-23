@@ -22,7 +22,6 @@
 namespace pocketmine\network\rcon;
 
 use pocketmine\utils\Binary;
-use pocketmine\utils\Utils;
 
 class RCONInstance extends \Thread{
 	public $stop;

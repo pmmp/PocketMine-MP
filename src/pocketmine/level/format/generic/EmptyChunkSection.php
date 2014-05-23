@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\level\format\generic;
+
 use pocketmine\level\format\ChunkSection;
 
 /**

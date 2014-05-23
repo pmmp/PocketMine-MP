@@ -21,7 +21,6 @@
 
 namespace pocketmine\level\format\anvil;
 
-use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
@@ -45,10 +44,12 @@ class RegionLoader{
 	protected $lastSector;
 	protected $locationTable = [];
 
-	public function __construct($path,/*Level $level, */$regionX, $regionZ){
+	public function __construct($path, /*Level $level, */
+	                            $regionX, $regionZ){
 		$this->x = $regionX;
 		$this->z = $regionZ;
-		$this->filePath = /*$level->getPath()*/$path . "region/r.$regionX.$regionZ.mca";
+		$this->filePath = /*$level->getPath()*/
+			$path . "region/r.$regionX.$regionZ.mca";
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
 		flock($this->filePointer, LOCK_EX);
@@ -103,6 +104,7 @@ class RegionLoader{
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			trigger_error("Invalid compression type", E_USER_WARNING);
+
 			return false;
 		}
 
@@ -113,6 +115,7 @@ class RegionLoader{
 		if(!$chunk instanceof Compound){
 			return false;
 		}
+
 		return $chunk;
 		//$chunk = new Chunk($level, $chunk);
 	}
@@ -183,6 +186,7 @@ class RegionLoader{
 		$this->writeLocationTable();
 		$n = $this->cleanGarbage();
 		$this->writeLocationTable();
+
 		return $n;
 	}
 
