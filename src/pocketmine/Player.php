@@ -2431,17 +2431,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * Returns the created/existing window id
 	 *
 	 * @param Inventory $inventory
+	 * @param int       $forceId
 	 *
 	 * @return int
 	 */
-	public function addWindow(Inventory $inventory){
+	public function addWindow(Inventory $inventory, $forceId = null){
 		if($this->windows->contains($inventory)){
 			return $this->windows[$inventory];
 		}
-		$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
+		if($forceId === null){
+			$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
+		}else{
+			$cnt = (int) $forceId;
+		}
 		$this->windowIndex[$cnt] = $inventory;
 		$this->windows->attach($inventory, $cnt);
-		$this->inventory->onOpen($this);
+		$inventory->onOpen($this);
 
 		return $cnt;
 	}

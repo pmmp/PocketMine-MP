@@ -682,7 +682,7 @@ abstract class Block extends Position implements Metadatable{
 			return $this->getLevel()->getBlock($v);
 		}
 
-		return $v;
+		return Block::get(Item::AIR, 0, $v);
 	}
 
 	/**

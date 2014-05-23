@@ -479,14 +479,14 @@ class Level{
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * @param Vector3 $pos
 	 *
 	 * @return Block
 	 */
 	public function getBlockRaw(Vector3 $pos){
-		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
-
-		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
+		return $this->getBlock($pos);
 	}
 
 	/**
@@ -495,9 +495,6 @@ class Level{
 	 * @return bool|Block
 	 */
 	public function getBlock(Vector3 $pos){
-		if($pos instanceof Position and $pos->level !== $this){
-			return false;
-		}
 		$b = $this->level->getBlock($pos->x, $pos->y, $pos->z);
 
 		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));

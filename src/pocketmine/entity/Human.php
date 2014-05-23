@@ -47,6 +47,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	protected function initEntity(){
 		$this->inventory = new PlayerInventory($this);
+		if($this instanceof Player){
+			$this->addWindow($this->inventory, 0);
+		}
+
 
 		if(isset($this->namedtag->NameTag)){
 			$this->nameTag = $this->namedtag["NameTag"];

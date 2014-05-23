@@ -59,12 +59,6 @@ abstract class BaseInventory implements Inventory{
 		$this->holder = $holder;
 		$this->viewers = new \SplObjectStorage();
 
-		//A holder can be a plugin, or an entity
-		if($this->holder instanceof Player){
-			$this->holder->addWindow($this, 0);
-		}
-
-
 		$this->type = $type;
 		if($overrideSize !== null){
 			$this->size = (int) $overrideSize;
@@ -138,13 +132,12 @@ abstract class BaseInventory implements Inventory{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
 				$this->sendContents($this->getViewers());
-
 				return false;
 			}
 			$item = $ev->getNewItem();
 		}
 
-		$old = $this->slots[$index];
+		$old = $this->getItem($index);
 		$this->slots[$index] = clone $item;
 		$this->onSlotChange($index, $old);
 

@@ -211,16 +211,16 @@ class PlayerInventory extends BaseInventory{
 
 		if($index >= $this->getSize()){ //Armor change
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
-			if($ev->isCancelled()){
-				$this->sendArmorContents($this);
-				$this->sendContents($this);
+			if($ev->isCancelled() and $this->getHolder() instanceof Player){
+				$this->sendArmorContents($this->getHolder());
+				$this->sendContents($this->getHolder());
 
 				return false;
 			}
 			$item = $ev->getNewItem();
 		}
 
-		$old = $this->slots[$index];
+		$old = $this->getItem($index);
 		$this->slots[$index] = clone $item;
 		$this->onSlotChange($index, $old);
 
