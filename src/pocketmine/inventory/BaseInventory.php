@@ -319,11 +319,11 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function onOpen(Player $who){
-
+		$this->viewers->attach($who);
 	}
 
 	public function onClose(Player $who){
-
+		$this->viewers->detach($who);
 	}
 
 	public function onSlotChange($index, $before){

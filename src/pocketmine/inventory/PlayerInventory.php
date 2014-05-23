@@ -141,7 +141,7 @@ class PlayerInventory extends BaseInventory{
 			if($player === $this->getHolder()){
 				//TODO: Check if Mojang enabled sending a single slot this
 				//$this->sendSlot($this->getHeldItemSlot());
-				$this->sendContents($this->getHolder());
+				$this->sendContents($player);
 			}else{
 				$player->dataPacket(clone $pk);
 			}
@@ -153,11 +153,6 @@ class PlayerInventory extends BaseInventory{
 
 		if($index >= $this->getSize()){
 			$this->sendArmorContents($this->getHolder()->getViewers());
-			if($this->getHolder() instanceof Player){
-				$this->sendArmorContents($this->getHolder());
-			}
-		}elseif($this->getHolder() instanceof Player){
-			$this->sendSlot($index, $this->getHolder());
 		}
 	}
 
@@ -213,8 +208,8 @@ class PlayerInventory extends BaseInventory{
 		if($index >= $this->getSize()){ //Armor change
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled() and $this->getHolder() instanceof Player){
-				$this->sendArmorContents($this->getHolder());
-				$this->sendContents($this->getHolder());
+				$this->sendArmorContents($this->getViewers());
+				$this->sendContents($this->getViewers());
 
 				return false;
 			}
@@ -235,8 +230,8 @@ class PlayerInventory extends BaseInventory{
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
 				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
 				if($ev->isCancelled()){
-					$this->sendArmorContents($this);
-					$this->sendContents($this);
+					$this->sendArmorContents($this->getViewers());
+					$this->sendContents($this->getViewers());
 
 					return;
 				}

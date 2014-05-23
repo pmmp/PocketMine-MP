@@ -24,26 +24,22 @@ namespace pocketmine\inventory;
 use pocketmine\network\protocol\ContainerClosePacket;
 use pocketmine\network\protocol\ContainerOpenPacket;
 use pocketmine\Player;
-use pocketmine\tile\Chest;
-use pocketmine\tile\Furnace;
+use pocketmine\math\Vector3;
 
 abstract class ContainerInventory extends BaseInventory{
-
-	/**
-	 * @return Chest|Furnace
-	 */
-	public function getHolder(){
-		return $this->holder;
-	}
-
 	public function onOpen(Player $who){
 		$pk = new ContainerOpenPacket;
 		$pk->windowid = $who->getWindowId($this);
-		$pk->type = 0;
+		$pk->type = $this->getType()->getNetworkType();
 		$pk->slots = $this->getSize();
-		$pk->x = $this->getHolder()->getX();
-		$pk->y = $this->getHolder()->getY();
-		$pk->z = $this->getHolder()->getZ();
+		if($this->holder instanceof Vector3){
+			$pk->x = $this->holder->getX();
+			$pk->y = $this->holder->getY();
+			$pk->z = $this->holder->getZ();
+		}else{
+			$pk->x = $pk->y = $pk->z = 0;
+		}
+
 		$who->dataPacket($pk);
 	}
 
