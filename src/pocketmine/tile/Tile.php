@@ -85,9 +85,9 @@ abstract class Tile extends Position{
 		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
 		Tile::$list[$this->id] = $this;
-		$this->x = (int) $this->namedtag->x;
-		$this->y = (int) $this->namedtag->y;
-		$this->z = (int) $this->namedtag->z;
+		$this->x = (int) $this->namedtag["x"];
+		$this->y = (int) $this->namedtag["y"];
+		$this->z = (int) $this->namedtag["z"];
 
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;

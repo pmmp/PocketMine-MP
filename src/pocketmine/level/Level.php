@@ -553,7 +553,7 @@ class Level{
 	 * @return bool
 	 */
 	public function setBlock(Vector3 $pos, Block $block, $update = true, $tiles = false, $direct = false){
-		if((($pos instanceof Position) and $pos->level !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
+		if((($pos instanceof Position) and $pos->getLevel() !== $this) or $pos->x < 0 or $pos->y < 0 or $pos->z < 0){
 			return false;
 		}
 
@@ -708,7 +708,6 @@ class Level{
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
 			$this->setBlock($block, new Air(), true, false, true);
-
 			return false;
 		}else{
 			return false;
@@ -768,7 +767,6 @@ class Level{
 		if($item->getCount() <= 0){
 			$item = Item::get(Item::AIR, 0, 0);
 		}
-
 		return true;
 	}
 
