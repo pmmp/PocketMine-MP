@@ -33,8 +33,10 @@ class BlockMetadataStore extends MetadataStore{
 		$this->owningLevel = $owningLevel;
 	}
 
-	/** @noinspection PhpHierarchyChecksInspection */
-	public function disambiguate(Block $block, $metadataKey){
+	public function disambiguate(Metadatable $block, $metadataKey){
+		if(!($block instanceof Block)){
+			throw new \InvalidArgumentException("Argument must be a Block instance");
+		}
 		return $block->x . ":" . $block->y . ":" . $block->z . ":" . $metadataKey;
 	}
 

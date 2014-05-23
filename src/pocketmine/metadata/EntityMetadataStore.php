@@ -25,8 +25,10 @@ use pocketmine\entity\Entity;
 
 class EntityMetadataStore extends MetadataStore{
 
-	/** @noinspection PhpHierarchyChecksInspection */
-	public function disambiguate(Entity $entity, $metadataKey){
+	public function disambiguate(Metadatable $entity, $metadataKey){
+		if(!($entity instanceof Entity)){
+			throw new \InvalidArgumentException("Argument must be an Entity instance");
+		}
 		return $entity->getID() . ":" . $metadataKey;
 	}
 }

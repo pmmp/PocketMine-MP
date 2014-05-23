@@ -70,12 +70,12 @@ class PluginManager{
 	/**
 	 * @var Permissible[]
 	 */
-	protected $defSubs;
+	protected $defSubs = [];
 
 	/**
 	 * @var Permissible[]
 	 */
-	protected $defSubsOp;
+	protected $defSubsOp = [];
 
 	/**
 	 * @var PluginLoader[]
@@ -89,8 +89,6 @@ class PluginManager{
 	public function __construct(Server $server, SimpleCommandMap $commandMap){
 		$this->server = $server;
 		$this->commandMap = $commandMap;
-		$this->defSubs = new \WeakMap();
-		$this->defSubsOp = new \WeakMap();
 	}
 
 	/**
@@ -408,9 +406,9 @@ class PluginManager{
 	 */
 	public function subscribeToPermission($permission, Permissible $permissible){
 		if(!isset($this->permSubs[$permission])){
-			$this->permSubs[$permission] = new \WeakRef();
+			$this->permSubs[$permission] = [];
 		}
-		$this->permSubs[$permission][$permissible] = true;
+		$this->permSubs[$permission][spl_object_hash($permissible)] = new \WeakRef($permissible);
 	}
 
 	/**
@@ -419,7 +417,7 @@ class PluginManager{
 	 */
 	public function unsubscribeFromPermission($permission, Permissible $permissible){
 		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][$permissible]);
+			unset($this->permSubs[$permission][spl_object_hash($permissible)]);
 		}
 	}
 
@@ -430,7 +428,16 @@ class PluginManager{
 	 */
 	public function getPermissionSubscriptions($permission){
 		if(isset($this->permSubs[$permission])){
-			return $this->permSubs[$permission];
+			$subs = [];
+			foreach($this->permSubs[$permission] as $k => $perm){
+				/** @var \WeakRef $perm */
+				if($perm->valid()){
+					$subs[] = $perm->get();
+				}else{
+					unset($this->permSubs[$permission][$k]);
+				}
+			}
+			return $subs;
 		}
 
 		return [];
@@ -442,9 +449,9 @@ class PluginManager{
 	 */
 	public function subscribeToDefaultPerms($op, Permissible $permissible){
 		if($op === true){
-			$this->defSubsOp[$permissible] = true;
+			$this->defSubsOp[spl_object_hash($permissible)] = new \WeakRef($permissible);
 		}else{
-			$this->defSubs[$permissible] = true;
+			$this->defSubs[spl_object_hash($permissible)] = new \WeakRef($permissible);
 		}
 	}
 
@@ -454,9 +461,9 @@ class PluginManager{
 	 */
 	public function unsubscribeFromDefaultPerms($op, Permissible $permissible){
 		if($op === true){
-			unset($this->defSubsOp[$permissible]);
+			unset($this->defSubsOp[spl_object_hash($permissible)]);
 		}else{
-			unset($this->defSubs[$permissible]);
+			unset($this->defSubs[spl_object_hash($permissible)]);
 		}
 	}
 
@@ -466,11 +473,29 @@ class PluginManager{
 	 * @return Permissible[]
 	 */
 	public function getDefaultPermSubscriptions($op){
+		$subs = [];
+
 		if($op === true){
-			return $this->defSubsOp;
+			foreach($this->defSubsOp as $k => $perm){
+				/** @var \WeakRef $perm */
+				if($perm->valid()){
+					$subs[] = $perm->get();
+				}else{
+					unset($this->defSubsOp[$k]);
+				}
+			}
 		}else{
-			return $this->defSubs;
+			foreach($this->defSubs as $k => $perm){
+				/** @var \WeakRef $perm */
+				if($perm->valid()){
+					$subs[] = $perm->get();
+				}else{
+					unset($this->defSubs[$k]);
+				}
+			}
 		}
+
+		return $subs;
 	}
 
 	/**

@@ -45,7 +45,7 @@ abstract class MetadataStore{
 			return;
 		}
 
-		$key = $this->disambiguate($subject, $newMetadataValue);
+		$key = $this->disambiguate($subject, $metadataKey);
 		if(!isset($this->metadataMap[$key])){
 			$entry = new \WeakMap();
 			$this->metadataMap[$key] = $entry;
@@ -122,10 +122,12 @@ abstract class MetadataStore{
 	 * Creates a unique name for the object receiving metadata by combining
 	 * unique data from the subject with a metadataKey.
 	 *
-	 * @param mixed  $subject
-	 * @param string $metadataKey
+	 * @param Metadatable $subject
+	 * @param string      $metadataKey
 	 *
 	 * @return string
+	 *
+	 * @throws \InvalidArgumentException
 	 */
-	public abstract function disambiguate($subject, $metadataKey);
+	public abstract function disambiguate(Metadatable $subject, $metadataKey);
 }

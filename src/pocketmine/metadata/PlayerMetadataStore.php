@@ -25,8 +25,10 @@ use pocketmine\OfflinePlayer;
 
 class PlayerMetadataStore extends MetadataStore{
 
-	/** @noinspection PhpHierarchyChecksInspection */
-	public function disambiguate(OfflinePlayer $player, $metadataKey){
+	public function disambiguate(Metadatable $player, $metadataKey){
+		if(!($player instanceof OfflinePlayer)){
+			throw new \InvalidArgumentException("Argument must be an OfflinePlayer instance");
+		}
 		return strtolower($player->getName()) . ":" . $metadataKey;
 	}
 }
