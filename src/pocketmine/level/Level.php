@@ -73,7 +73,7 @@ class Level{
 	public $chunkEntities = [];
 
 	/** @var Tile[] */
-	public $tiles = [];
+	protected $tiles = [];
 
 	/** @var Tile[][] */
 	public $chunkTiles = [];
@@ -816,6 +816,22 @@ class Level{
 		return $this->entities;
 	}
 
+	public function addEntity(Entity $entity){
+		$this->entities[$entity->getID()] = $entity;
+	}
+
+	public function removeEntity(Entity $entity){
+		unset($this->entities[$entity->getID()]);
+	}
+
+	public function addTile(Tile $tile){
+		$this->tiles[$tile->getID()] = $tile;
+	}
+
+	public function removeTile(Tile $tile){
+		unset($this->tiles[$tile->getID()]);
+	}
+
 	/**
 	 * Returns a list of the Tile entities in this level
 	 *
@@ -823,6 +839,15 @@ class Level{
 	 */
 	public function getTiles(){
 		return $this->tiles;
+	}
+
+	/**
+	 * @param $tileId
+	 *
+	 * @return Tile
+	 */
+	public function getTileById($tileId){
+		return isset($this->tiles[$tileId]) ? $this->tiles[$tileId] : null;
 	}
 
 	/**

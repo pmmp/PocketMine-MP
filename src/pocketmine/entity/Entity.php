@@ -53,11 +53,6 @@ abstract class Entity extends Position implements Metadatable{
 	/**
 	 * @var Entity[]
 	 */
-	public static $list = [];
-
-	/**
-	 * @var Entity[]
-	 */
 	public static $needUpdate = [];
 
 	/**
@@ -139,12 +134,10 @@ abstract class Entity extends Position implements Metadatable{
 
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
-		Entity::$list[$this->id] = $this;
-		$this->getLevel()->entities[$this->id] = $this;
+		$this->getLevel()->addEntity($this);
 		$this->getLevel()->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		$this->lastUpdate = microtime(true);
-		$this->initEntity();
-		Server::getInstance()->getPluginManager()->callEvent(new EntitySpawnEvent($this));
+		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
 	}
 
 	public function saveNBT(){
@@ -400,7 +393,8 @@ abstract class Entity extends Position implements Metadatable{
 			if($ev->isCancelled()){
 				return false;
 			}
-			unset($this->getLevel()->entities[$this->id]);
+
+			$this->getLevel()->removeEntity($this);
 			unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
 			$this->despawnFromAll();
 			if($this instanceof Player){
@@ -418,7 +412,7 @@ abstract class Entity extends Position implements Metadatable{
 			}
 		}
 		$this->setLevel($targetLevel, true); //Hard reference
-		$this->getLevel()->entities[$this->id] = $this; //Oops, TODO!!
+		$this->getLevel()->addEntity($this);
 		if($this instanceof Player){
 			$this->chunksLoaded = [];
 			$pk = new SetTimePacket();
@@ -576,9 +570,8 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Entity::$needUpdate[$this->id]);
-			unset($this->getLevel()->entities[$this->id]);
+			$this->getLevel()->removeEntity($this);
 			unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
-			unset(Entity::$list[$this->id]);
 			$this->despawnFromAll();
 			Server::getInstance()->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 		}

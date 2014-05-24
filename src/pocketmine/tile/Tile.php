@@ -63,14 +63,6 @@ abstract class Tile extends Position{
 	protected $lastUpdate;
 	protected $server;
 
-	public static function getByID($tileID){
-		return isset(Tile::$list[$tileID]) ? Tile::$list[$tileID] : false;
-	}
-
-	public static function getAll(){
-		return Tile::$list;
-	}
-
 	public function getID(){
 		return $this->id;
 	}
@@ -91,7 +83,7 @@ abstract class Tile extends Position{
 
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
-		$this->getLevel()->tiles[$this->id] = $this;
+		$this->getLevel()->addTile($this);
 		$this->getLevel()->chunkTiles[$this->chunkIndex][$this->id] = $this;
 	}
 
@@ -113,7 +105,7 @@ abstract class Tile extends Position{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Tile::$needUpdate[$this->id]);
-			unset($this->getLevel()->tiles[$this->id]);
+			$this->getLevel()->removeTile($this);
 			unset($this->getLevel()->chunkTiles[$this->chunkIndex][$this->id]);
 			unset(Tile::$list[$this->id]);
 		}
