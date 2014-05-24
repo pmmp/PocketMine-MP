@@ -61,6 +61,7 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\Packet;
+use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryPacket;
 use pocketmine\network\raknet\Info as RakNetInfo;
@@ -1380,6 +1381,18 @@ class Server{
 		}
 
 		return $count;
+	}
+
+	/**
+	 * Broadcasts a Minecraft packet to a list of players
+	 *
+	 * @param Player[]   $players
+	 * @param DataPacket $packet
+	 */
+	public function broadcastPacket(array $players, DataPacket $packet){
+		foreach($players as $player){
+			$player->dataPacket(clone $packet);
+		}
 	}
 
 

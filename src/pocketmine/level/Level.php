@@ -254,7 +254,7 @@ class Level{
 		$pk = new SetTimePacket;
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
-		Player::broadcastPacket($this->players, $pk);
+		$this->server->broadcastPacket($this->players, $pk);
 
 		return;
 	}
@@ -304,7 +304,7 @@ class Level{
 							$pk->z = $b->z;
 							$pk->block = $b->getID();
 							$pk->meta = $b->getDamage();
-							Player::broadcastPacket($this->players, $pk);
+							$this->server->broadcastPacket($this->players, $pk);
 						}
 					}
 				}
@@ -437,6 +437,7 @@ class Level{
 
 			$i = 0;
 			foreach($this->chunkEntities[$index] as $entity){
+				/** @var Entity $entity */
 				if($entity->closed !== true){
 					$entity->saveNBT();
 					$nbt->Entities[$i] = $entity->namedtag;
@@ -446,7 +447,9 @@ class Level{
 
 			$i = 0;
 			foreach($this->chunkTiles[$index] as $tile){
+				/** @var Tile $tile */
 				if($tile->closed !== true){
+					$tile->saveNBT();
 					$nbt->TileEntities[$i] = $tile->namedtag;
 					++$i;
 				}
@@ -517,7 +520,7 @@ class Level{
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
 				$pk->meta = $block->getDamage();
-				Player::broadcastPacket($this->players, $pk);
+				$this->server->broadcastPacket($this->players, $pk);
 			}elseif($direct === false){
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
@@ -571,7 +574,7 @@ class Level{
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
 				$pk->meta = $block->getDamage();
-				Player::broadcastPacket($this->players, $pk);
+				$this->server->broadcastPacket($this->players, $pk);
 			}else{
 				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
@@ -1037,7 +1040,7 @@ class Level{
 				$ordered .= substr($mini, $j << 5, 24); //16 + 8
 			}
 		}
-		if(ADVANCED_CACHE == true and $Yndex == 0xff){
+		if(ADVANCED_CACHE == true and $Yndex === 0xff){
 			Cache::add($identifier, $ordered, 60);
 		}
 

@@ -156,6 +156,7 @@ class Enum extends NamedTag implements \ArrayAccess{
 
 		$nbt->putByte($this->tagType);
 
+		/** @var Tag[] $tags */
 		$tags = [];
 		foreach($this as $tag){
 			if($tag instanceof Tag){

@@ -2296,18 +2296,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	/**
-	 * Broadcasts a Minecraft packet to a list of players
-	 *
-	 * @param Player[]   $players
-	 * @param DataPacket $packet
-	 */
-	public static function broadcastPacket(array $players, DataPacket $packet){
-		foreach($players as $player){
-			$player->dataPacket(clone $packet);
-		}
-	}
-
-	/**
 	 * @param Item[] $craft
 	 * @param Item[] $recipe
 	 * @param int    $type

@@ -148,7 +148,7 @@ class Explosion{
 		$pk->z = $this->source->z;
 		$pk->radius = $this->size;
 		$pk->records = $send;
-		Player::broadcastPacket($this->level->getPlayers(), $pk);
+		Server::getInstance()->broadcastPacket($this->level->getPlayers(), $pk);
 
 	}
 }

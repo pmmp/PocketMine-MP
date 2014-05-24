@@ -25,6 +25,7 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\Player;
+use pocketmine\Server;
 
 
 abstract class Door extends Transparent{
@@ -111,7 +112,7 @@ abstract class Door extends Transparent{
 				$pk->z = $this->z;
 				$pk->evid = 1003;
 				$pk->data = 0;
-				Player::broadcastPacket($players, $pk);
+				Server::getInstance()->broadcastPacket($players, $pk);
 
 				return true;
 			}
@@ -130,7 +131,7 @@ abstract class Door extends Transparent{
 			$pk->z = $this->z;
 			$pk->evid = 1003;
 			$pk->data = 0;
-			Player::broadcastPacket($players, $pk);
+			Server::getInstance()->broadcastPacket($players, $pk);
 		}
 
 		return true;

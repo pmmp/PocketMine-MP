@@ -95,6 +95,12 @@ abstract class Tile extends Position{
 		$this->getLevel()->chunkTiles[$this->chunkIndex][$this->id] = $this;
 	}
 
+	public function saveNBT(){
+		$this->namedtag["x"] = $this->x;
+		$this->namedtag["y"] = $this->y;
+		$this->namedtag["z"] = $this->z;
+	}
+
 	public function onUpdate(){
 		return false;
 	}

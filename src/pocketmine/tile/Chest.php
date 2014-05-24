@@ -30,6 +30,7 @@ use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
@@ -53,6 +54,14 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		$this->checkPairing();
 	}
 
+	public function saveNBT(){
+		$this->namedtag->Inventory = new Enum("Inventory", []);
+		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
+		for($index = 0; $index < $this->getSize(); ++$index){
+			$this->setItem($index, $this->inventory->getItem($index));
+		}
+	}
+
 	/**
 	 * @return int
 	 */
@@ -67,7 +76,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	 */
 	protected function getSlotIndex($index){
 		foreach($this->namedtag->Items as $i => $slot){
-			if($slot["Slot"] === $s){
+			if($slot["Slot"] === $index){
 				return $i;
 			}
 		}

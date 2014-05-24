@@ -303,7 +303,7 @@ abstract class Entity extends Position implements Metadatable{
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;
 			}
-			Player::broadcastPacket($this->hasSpawned, $pk);
+			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 
 		if($this->motionChanged === true){
@@ -314,7 +314,7 @@ abstract class Entity extends Position implements Metadatable{
 			$pk->speedX = $this->motionX;
 			$pk->speedY = $this->motionY;
 			$pk->speedZ = $this->motionZ;
-			Player::broadcastPacket($this->hasSpawned, $pk);
+			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 
 		$this->lastUpdate = $timeNow;
