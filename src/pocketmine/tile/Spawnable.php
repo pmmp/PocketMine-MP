@@ -21,10 +21,17 @@
 
 namespace pocketmine\tile;
 
+use pocketmine\level\Level;
+use pocketmine\nbt\tag\Compound;
 use pocketmine\Player;
 
 abstract class Spawnable extends Tile{
 	public abstract function spawnTo(Player $player);
+
+	public function __construct(Level $level, Compound $nbt){
+		parent::__construct($level, $nbt);
+		$this->spawnToAll();
+	}
 
 	public function spawnToAll(){
 		foreach($this->getLevel()->getPlayers() as $player){

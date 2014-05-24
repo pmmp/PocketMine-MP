@@ -1432,11 +1432,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						//TODO
 						//$this->heal($this->data->get("health"), "spawn", true);
 						$this->spawned = true;
-						$this->spawnToAll();
 
 						$this->sendSettings();
-						$this->getInventory()->sendContents($this);
-						$this->getInventory()->sendArmorContents($this);
+						$this->inventory->sendContents($this);
+						$this->inventory->sendArmorContents($this);
 						$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
 
 						$this->blocked = false;
@@ -1451,6 +1450,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 						$this->teleport($ev->getRespawnPosition());
+						$this->spawnToAll();
 						$this->sendBuffer();
 
 						break;
@@ -1705,9 +1705,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$item = clone $this->inventory->getItemInHand();
 				}
 
-				if(($drops = $this->getLevel()->useBreakOn($vector, $item)) !== true){
+				if($this->getLevel()->useBreakOn($vector, $item) === true){
 					if(($this->gamemode & 0x01) === 0){
-						//TODO: drop items
 						$this->inventory->setItemInHand($item);
 					}
 					break;

@@ -43,11 +43,6 @@ abstract class Tile extends Position{
 	/**
 	 * @var Tile[]
 	 */
-	public static $list = [];
-
-	/**
-	 * @var Tile[]
-	 */
 	public static $needUpdate = [];
 
 	public $chunkIndex;
@@ -76,7 +71,6 @@ abstract class Tile extends Position{
 		$this->name = "";
 		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
-		Tile::$list[$this->id] = $this;
 		$this->x = (int) $this->namedtag["x"];
 		$this->y = (int) $this->namedtag["y"];
 		$this->z = (int) $this->namedtag["z"];

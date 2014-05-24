@@ -26,19 +26,25 @@ namespace pocketmine\level;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
+use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\pmf\LevelFormat;
+use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
@@ -297,6 +303,7 @@ class Level{
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $index => $mini){
 					foreach($mini as $blocks){
+						/** @var Block $b */
 						foreach($blocks as $b){
 							$pk = new UpdateBlockPacket;
 							$pk->x = $b->x;
@@ -606,6 +613,35 @@ class Level{
 		return $ret;
 	}
 
+	public function dropItem(Vector3 $pos, Item $item){
+		if($item->getID() !== Item::AIR and $item->getCount() > 0){
+			$itemEntity = new DroppedItem($this, new Compound("", [
+				"Pos" => new Enum("Pos", [
+					new Double("", $pos->getX()),
+					new Double("", $pos->getY()),
+					new Double("", $pos->getZ())
+				]),
+				//TODO: add random motion with physics
+				"Motion" => new Enum("Motion", [
+					new Double("", 0),
+					new Double("", 0),
+					new Double("", 0)
+				]),
+				"Rotation" => new Enum("Rotation", [
+					new Float("", 0),
+					new Float("", 0)
+				]),
+				"Health" => new Short("Health", 5),
+				"Item" => new Compound("Item", [
+					"id" => new Short("id", $item->getID()),
+					"Damage" => new Short("Damage", $item->getDamage()),
+					"Count" => new Byte("Count", $item->getCount())
+				]),
+			]));
+			$itemEntity->spawnToAll();
+		}
+	}
+
 	/**
 	 * Tries to break a block using a item, including Player time checks if available
 	 *
@@ -658,7 +694,12 @@ class Level{
 			}
 		}
 
-		return $target->getDrops($item);
+		if(!($player instanceof Player) or ($player->getGamemode() & 0x01) === 0){
+			foreach($target->getDrops($item) as $drop){
+				$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]));
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -817,6 +858,7 @@ class Level{
 	}
 
 	public function addEntity(Entity $entity){
+		//TODO: chunkIndex
 		$this->entities[$entity->getID()] = $entity;
 	}
 
@@ -825,6 +867,7 @@ class Level{
 	}
 
 	public function addTile(Tile $tile){
+		//TODO: chunkIndex
 		$this->tiles[$tile->getID()] = $tile;
 	}
 
@@ -962,21 +1005,35 @@ class Level{
 			return true;
 		}elseif($this->level->loadChunk($X, $Z) !== false){
 			$this->usedChunks[$index] = [];
-			$this->chunkTiles[$index] = [];
-			$this->chunkEntities[$index] = [];
+			if(!isset($this->chunkTiles[$index])){
+				$this->chunkTiles[$index] = [];
+			}
+			if(!isset($this->chunkEntities[$index])){
+				$this->chunkEntities[$index] = [];
+			}
 			$tags = $this->level->getChunkNBT($X, $Z);
 			if(isset($tags->Entities)){
 				foreach($tags->Entities as $nbt){
-					if(!isset($nbt["id"])){
+					if(!isset($nbt->id)){
 						continue;
 					}
-					switch($nbt["id"]){
-						//TODO: spawn entities
+
+					if($nbt->id instanceof String){ //New format
+						switch($nbt["id"]){
+							case "Ttem":
+								(new DroppedItem($this, $nbt))->spawnToAll();
+								break;
+						}
+					}else{ //Old format
+
 					}
 				}
 			}
 			if(isset($tags->TileEntities)){
 				foreach($tags->TileEntities as $nbt){
+					if(!isset($nbt->id)){
+						continue;
+					}
 					switch($nbt["id"]){
 						case Tile::CHEST:
 							new Chest($this, $nbt);

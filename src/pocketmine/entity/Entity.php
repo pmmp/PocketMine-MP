@@ -36,7 +36,10 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
+use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Short;
 use pocketmine\Network;
 use pocketmine\network\protocol\MoveEntityPacket_PosRot;
 use pocketmine\network\protocol\MovePlayerPacket;
@@ -108,35 +111,67 @@ abstract class Entity extends Position implements Metadatable{
 	protected $fireProof;
 	private $invulnerable;
 
+	protected $spawnTime;
+
 	/** @var Server */
 	protected $server;
 
-	public $closed;
+	public $closed = false;
 
 
 	public function __construct(Level $level, Compound $nbt){
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
-		$this->closed = false;
 		$this->namedtag = $nbt;
 		$this->setLevel($level, true); //Create a hard reference
 		$this->server = Server::getInstance();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPositionAndRotation(new Vector3($this->namedtag["Pos"][0], $this->namedtag["Pos"][1], $this->namedtag["Pos"][2]), $this->namedtag->Rotation[0], $this->namedtag->Rotation[1]);
-		$this->setMotion(new Vector3($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+		$this->setPositionAndRotation(new Vector3(
+			$this->namedtag["Pos"][0],
+			$this->namedtag["Pos"][1],
+			$this->namedtag["Pos"][2]),
+			$this->namedtag->Rotation[0],
+			$this->namedtag->Rotation[1]
+		);
+		$this->setMotion(new Vector3(
+			$this->namedtag["Motion"][0],
+			$this->namedtag["Motion"][1],
+			$this->namedtag["Motion"][2])
+		);
 
+		if(!isset($this->namedtag->FallDistance)){
+			$this->namedtag->FallDistance = new Float("FallDistance", 0);
+		}
 		$this->fallDistance = $this->namedtag["FallDistance"];
+
+		if(!isset($this->namedtag->Fire)){
+			$this->namedtag->Fire = new Short("Fire", 0);
+		}
 		$this->fireTicks = $this->namedtag["Fire"];
+
+		if(!isset($this->namedtag->Air)){
+			$this->namedtag->Air = new Short("Air", 300);
+		}
 		$this->airTicks = $this->namedtag["Air"];
+
+		if(!isset($this->namedtag->OnGround)){
+			$this->namedtag->OnGround = new Byte("OnGround", 1);
+		}
 		$this->onGround = $this->namedtag["OnGround"] > 0 ? true : false;
+
+		if(!isset($this->namedtag->Invulnerable)){
+			$this->namedtag->Invulnerable = new Byte("Invulnerable", 0);
+		}
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
 		$this->chunkIndex = $index;
 		$this->getLevel()->addEntity($this);
+		$this->initEntity();
 		$this->getLevel()->chunkEntities[$this->chunkIndex][$this->id] = $this;
-		$this->lastUpdate = microtime(true);
+		$this->lastUpdate = $this->spawnTime = microtime(true);
+		$this->justCreated = false;
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
 	}
 
@@ -165,12 +200,18 @@ abstract class Entity extends Position implements Metadatable{
 		return $this->hasSpawned;
 	}
 
+	/**
+	 * @param Player $player
+	 */
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getID()]) and $player->chunksLoaded[$this->chunkIndex] !== 0xff){
 			$this->hasSpawned[$player->getID()] = $player;
 		}
 	}
 
+	/**
+	 * @param Player $player
+	 */
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
 			$pk = new RemoveEntityPacket;
@@ -246,14 +287,14 @@ abstract class Entity extends Position implements Metadatable{
 				}
 			}else{
 				if(($this->fireTicks % 20) === 0){
-					$this->attackEntity(1, "onFire");
+					$this->attack(1, "onFire");
 				}
 				--$this->fireTicks;
 			}
 		}
 
 		if($this->handleLavaMovement()){
-			$this->attackEntity(4, "lava");
+			$this->attack(4, "lava");
 			$this->setOnFire(15);
 			$this->fallDistance *= 0.5;
 		}
@@ -389,7 +430,7 @@ abstract class Entity extends Position implements Metadatable{
 
 	protected function switchLevel(Level $targetLevel){
 		if($this->isValid()){
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->getLevel(), $targetLevel));
+			$this->server->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->getLevel(), $targetLevel));
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -433,9 +474,6 @@ abstract class Entity extends Position implements Metadatable{
 			return;
 		}
 
-		$x = $this->x;
-		$y = $this->y;
-		$z = $this->z;
 		$this->scheduleUpdate();
 	}
 
@@ -461,15 +499,20 @@ abstract class Entity extends Position implements Metadatable{
 				return false;
 			}
 		}
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityMoveEvent($this, $pos));
-		if($ev->isCancelled()){
-			return false;
+		if(!$this->justCreated){
+			$this->server->getPluginManager()->callEvent($ev = new EntityMoveEvent($this, $pos));
+			if($ev->isCancelled()){
+				return false;
+			}
 		}
 		$this->x = $pos->x;
 		$this->y = $pos->y;
 		$this->z = $pos->z;
 
 		$radius = $this->width / 2;
+		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+
+
 		if(($index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
 			if($this->chunkIndex !== false){
 				unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
@@ -477,21 +520,22 @@ abstract class Entity extends Position implements Metadatable{
 			$this->chunkIndex = $index;
 			$this->getLevel()->loadChunk($this->x >> 4, $this->z >> 4);
 
-			$newChunk = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
-			foreach($this->hasSpawned as $player){
-				if(!isset($newChunk[$player->CID])){
-					$this->despawnFrom($player);
-				}else{
-					unset($newChunk[$player->CID]);
+			if(!$this->justCreated){
+				$newChunk = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
+				foreach($this->hasSpawned as $player){
+					if(!isset($newChunk[$player->CID])){
+						$this->despawnFrom($player);
+					}else{
+						unset($newChunk[$player->CID]);
+					}
 				}
-			}
-			foreach($newChunk as $player){
-				$this->spawnTo($player);
+				foreach($newChunk as $player){
+					$this->spawnTo($player);
+				}
 			}
 
 			$this->getLevel()->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		}
-		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
 
 		$this->scheduleUpdate();
 
@@ -503,14 +547,18 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function setMotion(Vector3 $motion){
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
-		if($ev->isCancelled()){
-			return false;
+		if(!$this->justCreated){
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
+			if($ev->isCancelled()){
+				return false;
+			}
 		}
 		$this->motionX = $motion->x;
 		$this->motionY = $motion->y;
 		$this->motionZ = $motion->z;
-		$this->scheduleUpdate();
+		if(!$this->justCreated){
+			$this->scheduleUpdate();
+		}
 	}
 
 	public function isOnGround(){
@@ -553,7 +601,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function spawnToAll(){
-		foreach($this->getLevel()->getPlayers() as $player){
+		foreach($this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4) as $player){
 			if(isset($player->id) and $player->spawned === true){
 				$this->spawnTo($player);
 			}
@@ -573,7 +621,7 @@ abstract class Entity extends Position implements Metadatable{
 			$this->getLevel()->removeEntity($this);
 			unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
 			$this->despawnFromAll();
-			Server::getInstance()->getPluginManager()->callEvent(new EntityDespawnEvent($this));
+			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 		}
 	}
 

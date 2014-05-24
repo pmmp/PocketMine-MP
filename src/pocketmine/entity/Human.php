@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -46,6 +47,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function initEntity(){
+
 		$this->inventory = new PlayerInventory($this);
 		if($this instanceof Player){
 			$this->addWindow($this->inventory, 0);
@@ -68,6 +70,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$this->height = 1.8; //Or 1.62?
 		$this->width = 0.6;
+
+		parent::initEntity();
 	}
 
 	public function saveNBT(){
