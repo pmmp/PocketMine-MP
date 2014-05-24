@@ -212,7 +212,7 @@ class SplClassLoader implements SplAutoloader{
 			$resourcePath = str_replace('\\', DIRECTORY_SEPARATOR, $resourceNamespace) . DIRECTORY_SEPARATOR;
 		}
 
-		return $resourcePath . str_replace('_', DIRECTORY_SEPARATOR, $resourceName) . $this->fileExtension;
+		return $resourcePath . $resourceName . $this->fileExtension;
 	}
 
 	/**
