@@ -118,14 +118,6 @@ abstract class Entity extends Position implements Metadatable{
 
 	public $closed;
 
-	public static function get($entityID){
-		return isset(Entity::$list[$entityID]) ? Entity::$list[$entityID] : false;
-	}
-
-	public static function getAll(){
-		return Entity::$list;
-	}
-
 
 	public function __construct(Level $level, Compound $nbt){
 		$this->id = Entity::$entityCount++;

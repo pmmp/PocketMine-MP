@@ -67,7 +67,7 @@ class Level{
 	public $players = [];
 
 	/** @var Entity[] */
-	public $entities = [];
+	protected $entities = [];
 
 	/** @var Entity[][] */
 	public $chunkEntities = [];
@@ -796,6 +796,15 @@ class Level{
 	 */
 	public function setBiome($x, $z, $biome){
 		return $this->level->getBiome((int) $x, (int) $z, $biome);
+	}
+
+	/**
+	 * @param int $entityId
+	 *
+	 * @return Entity
+	 */
+	public function getEntity($entityId){
+		return isset($this->entities[$entityId]) ? $this->entities[$entityId] : null;
 	}
 
 	/**
