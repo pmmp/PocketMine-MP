@@ -35,6 +35,7 @@ use pocketmine\item\Item;
 use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
@@ -323,7 +324,7 @@ class Level{
 
 			//Do chunk updates
 			while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
-				$block = $this->getBlockRaw($this->updateQueue->extract()["data"]);
+				$block = $this->getBlock($this->updateQueue->extract()["data"]);
 				$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
 			}
 
@@ -332,7 +333,7 @@ class Level{
 				for($Y = 0; $Y < 8; ++$Y){
 					if(!$this->level->isMiniChunkEmpty($X, $Z, $Y)){
 						for($i = 0; $i < 3; ++$i){
-							$block = $this->getBlockRaw(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
+							$block = $this->getBlock(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
 							if($block instanceof Block){
 								if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
 									$this->updateAround($block, self::BLOCK_UPDATE_NORMAL);
@@ -511,6 +512,39 @@ class Level{
 	}
 
 	/**
+	 * @param Entity        $entity
+	 * @param AxisAlignedBB $bb
+	 *
+	 * @return AxisAlignedBB[]
+	 */
+	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb){
+		$minX = floor($bb->minX);
+		$minY = floor($bb->minY);
+		$minZ = floor($bb->minZ);
+		$maxX = floor($bb->maxX + 1);
+		$maxY = floor($bb->maxY + 1);
+		$maxZ = floor($bb->maxZ + 1);
+
+		$collides = [];
+
+		for($z = $minZ; $z < $maxZ; ++$z){
+			for($x = $minX; $x < $maxX; ++$x){
+				if($this->isChunkLoaded($x >> 4, $z >> 4)){
+					for($y = $minY - 1; $y < $maxY; ++$y){
+						$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
+					}
+				}
+			}
+		}
+
+		foreach($entity->getNearbyEntities($bb->expand(0.25, 0.25, 0.25)) as $ent){
+			$collides[] = $ent->boundingBox;
+		}
+
+		return $collides;
+	}
+
+	/**
 	 * @param Vector3 $pos
 	 * @param Block   $block
 	 * @param bool    $direct
@@ -624,7 +658,7 @@ class Level{
 				//TODO: add random motion with physics
 				"Motion" => new Enum("Motion", [
 					new Double("", 0),
-					new Double("", 0),
+					new Double("", 0.05),
 					new Double("", 0)
 				]),
 				"Rotation" => new Enum("Rotation", [
@@ -989,6 +1023,10 @@ class Level{
 		}
 
 		return [];
+	}
+
+	public function isChunkLoaded($X, $Z){
+		return $this->level->isChunkLoaded($X, $Z);
 	}
 
 	/**

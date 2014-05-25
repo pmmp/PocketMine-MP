@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\block;
+use pocketmine\math\AxisAlignedBB;
 
 
 /**
@@ -38,6 +39,10 @@ class Air extends Transparent{
 		$this->isSolid = false;
 		$this->isFullBlock = true;
 		$this->hardness = 0;
+
+	}
+
+	public function collidesWithBB(AxisAlignedBB $bb, &$list = array()){
 
 	}
 

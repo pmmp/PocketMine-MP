@@ -42,6 +42,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/** @var PlayerInventory */
 	protected $inventory;
 
+	public $width = 0.6;
+	public $length = 0.6;
+	public $height = 1.8;
+
 	public function getInventory(){
 		return $this->inventory;
 	}
@@ -67,9 +71,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$this->inventory->setItem($item["Slot"] - 9, Item::get($item["id"], $item["Damage"], $item["Count"]));
 			}
 		}
-
-		$this->height = 1.8; //Or 1.62?
-		$this->width = 0.6;
 
 		parent::initEntity();
 	}

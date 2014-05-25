@@ -54,26 +54,25 @@ class AxisAlignedBB{
 	}
 
 	public function addCoord($x, $y, $z){
-		$vec = clone $this;
 		if($x < 0){
-			$vec->minX += $x;
+			$this->minX += $x;
 		}elseif($x > 0){
-			$vec->maxX += $x;
+			$this->maxX += $x;
 		}
 
 		if($y < 0){
-			$vec->minY += $y;
+			$this->minY += $y;
 		}elseif($y > 0){
-			$vec->maxY += $y;
+			$this->maxY += $y;
 		}
 
 		if($z < 0){
-			$vec->minZ += $z;
+			$this->minZ += $z;
 		}elseif($z > 0){
-			$vec->maxZ += $z;
+			$this->maxZ += $z;
 		}
 
-		return $vec;
+		return $this;
 	}
 
 	public function expand($x, $y, $z){
@@ -197,14 +196,13 @@ class AxisAlignedBB{
 	}
 
 	public function intersectsWith(AxisAlignedBB $bb){
-		if($bb->maxX <= $this->minX or $bb->minX >= $this->maxX){
-			return false;
-		}
-		if($bb->maxY <= $this->minY or $bb->minY >= $this->maxY){
-			return false;
+		if($bb->maxX > $this->minX and $bb->minX < $this->maxX){
+			if($bb->maxY > $this->minY and $bb->minY < $this->maxY){
+				return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
+			}
 		}
 
-		return $bb->maxZ > $this->minZ and $bb->minZ < $this->maxZ;
+		return false;
 	}
 
 	public function isVectorInside(Vector3 $vector){

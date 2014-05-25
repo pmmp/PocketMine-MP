@@ -27,6 +27,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddItemEntityPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
 class DroppedItem extends Entity{
@@ -37,6 +38,12 @@ class DroppedItem extends Entity{
 	protected $pickupDelay = 0;
 	/** @var Item */
 	protected $item;
+
+	public $width = 0.25;
+	public $length = 0.25;
+	public $height = 0.25;
+	protected $gravity = 0.04;
+	protected $drag = 0.02;
 
 	protected function initEntity(){
 		//TODO: upgrade old numeric entity ids
@@ -154,6 +161,13 @@ class DroppedItem extends Entity{
 		$pk->roll = 0;
 		$pk->item = $this->getItem();
 		$pk->metadata = $this->getData();
+		$player->dataPacket($pk);
+
+		$pk = new SetEntityMotionPacket;
+		$pk->eid = $this->getID();
+		$pk->speedX = $this->motionX;
+		$pk->speedY = $this->motionY;
+		$pk->speedZ = $this->motionZ;
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);

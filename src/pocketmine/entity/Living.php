@@ -23,6 +23,10 @@ namespace pocketmine\entity;
 
 
 abstract class Living extends Entity implements Damageable{
+
+	protected $gravity = 0.08;
+	protected $drag = 0.02;
+
 	protected function initEntity(){
 
 	}

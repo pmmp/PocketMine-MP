@@ -49,6 +49,7 @@ use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\block\Block;
 
 abstract class Entity extends Position implements Metadatable{
 	public static $entityCount = 1;
@@ -83,6 +84,7 @@ abstract class Entity extends Position implements Metadatable{
 	public $lastYaw;
 	public $lastPitch;
 
+	/** @var AxisAlignedBB */
 	public $boundingBox;
 	public $onGround;
 	public $positionChanged;
@@ -105,6 +107,8 @@ abstract class Entity extends Position implements Metadatable{
 	public $airTicks;
 	public $namedtag;
 
+	protected $isColliding = false;
+
 	protected $inWater;
 	public $noDamageTicks;
 	private $justCreated;
@@ -112,6 +116,9 @@ abstract class Entity extends Position implements Metadatable{
 	private $invulnerable;
 
 	protected $spawnTime;
+
+	protected $gravity;
+	protected $drag;
 
 	/** @var Server */
 	protected $server;
@@ -173,6 +180,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->lastUpdate = $this->spawnTime = microtime(true);
 		$this->justCreated = false;
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
+		$this->scheduleUpdate();
 	}
 
 	public function saveNBT(){
@@ -268,8 +276,19 @@ abstract class Entity extends Position implements Metadatable{
 			return false;
 		}
 
+		$hasUpdate = false;
 		$timeNow = microtime(true);
-		$this->ticksLived += ($timeNow - $this->lastUpdate) * 20;
+		$ticksOffset = min(20, max(1, floor(($timeNow - $this->lastUpdate) * 20))); //Simulate min one tic and max 20
+		$this->ticksLived += $ticksOffset;
+		if(!($this instanceof Player)){
+			for($tick = 0; $tick < $ticksOffset; ++$tick){
+				$this->move($this->motionX, $this->motionY, $this->motionZ);
+				if($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0){
+					break;
+				}
+			}
+		}
+
 
 		if($this->handleWaterMovement()){
 			$this->fallDistance = 0;
@@ -345,7 +364,7 @@ abstract class Entity extends Position implements Metadatable{
 
 		$this->lastUpdate = $timeNow;
 
-		return false;
+		return !($this instanceof Player) and ($this->motionX != 0 or $this->motionY == 0 or $this->motionZ == 0 or $hasUpdate);
 	}
 
 	public final function scheduleUpdate(){
@@ -469,12 +488,242 @@ abstract class Entity extends Position implements Metadatable{
 		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 
-	public function move(Vector3 $displacement){
-		if($displacement->x == 0 and $displacement->y == 0 and $displacement->z == 0){
+	public function collision(){
+		$this->isColliding = true;
+		$this->fallDistance = 0;
+	}
+
+	/**
+	 * Returns the entities near the current one inside the AxisAlignedBB
+	 *
+	 * @param AxisAlignedBB $bb
+	 *
+	 * @return Entity[]
+	 */
+	public function getNearbyEntities(AxisAlignedBB $bb){
+
+		$nearby = [];
+
+		$minX = ($bb->minX - 2) >> 4;
+		$maxX = ($bb->maxX + 2) >> 4;
+		$minZ = ($bb->minZ - 2) >> 4;
+		$maxZ = ($bb->maxX + 2) >> 4;
+
+		for($x = $minX; $x <= $maxX; ++$x){
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				if($this->getLevel()->isChunkLoaded($x, $z)){
+					foreach($this->getLevel()->getChunkEntities($x, $z) as $ent){
+						if($ent !== $this and $ent->boundingBox->intersectsWith($this->boundingBox)){
+							$nearby[] = $ent;
+						}
+					}
+				}
+			}
+		}
+
+		return $nearby;
+	}
+
+	public function move($dx, $dy, $dz){
+		//$collision = [];
+		//$this->checkBlockCollision($collision);
+		if($dx == 0 and $dz == 0 and $dy == 0){
 			return;
 		}
 
-		$this->scheduleUpdate();
+		$ox = $this->x;
+		$oy = $this->y;
+		$oz = $this->z;
+
+		if($this->isColliding){ //With an entity
+			$this->isColliding = false;
+			$dx *= 0.25;
+			$dy *= 0.05;
+			$dz *= 0.25;
+			$this->motionX = 0;
+			$this->motionY = 0;
+			$this->motionZ = 0;
+		}
+
+		$movX = $dx;
+		$movY = $dy;
+		$movZ = $dz;
+
+		/*$sneakFlag = $this->onGround and $this instanceof Player;
+
+		if($sneakFlag){
+			for($mov = 0.05; $dx != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){
+				if($dx < $mov and $dx >= -$mov){
+					$dx = 0;
+				}elseif($dx > 0){
+					$dx -= $mov;
+				}else{
+					$dx += $mov;
+				}
+			}
+
+			for(; $dz != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz){
+				if($dz < $mov and $dz >= -$mov){
+					$dz = 0;
+				}elseif($dz > 0){
+					$dz -= $mov;
+				}else{
+					$dz += $mov;
+				}
+			}
+
+			//TODO: big messy loop
+		}*/
+
+		if(count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, $dy, 0))) > 0){
+			$dy = 0;
+			$dx = 0;
+			$dz = 0;
+		}
+
+		$fallingFlag = $this->onGround or ($dy != $movY and $movY < 0);
+
+		if($dx != 0){
+			if(count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, 0, 0))) > 0){
+				$dy = 0;
+				$dx = 0;
+				$dz = 0;
+			}
+		}
+
+		if($dz != 0){
+			if(count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, 0, $dz))) > 0){
+				$dy = 0;
+				$dx = 0;
+				$dz = 0;
+			}
+		}
+
+		if($movX != $dx or $movZ != $dz or $fallingFlag){
+
+			$cx = $dx;
+			$cy = $dy;
+			$cz = $dz;
+			$dx = $movX;
+			$dy = 0.05;
+			$dz = $movZ;
+			$oldBB = clone $this->boundingBox;
+			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ));
+
+
+			foreach($list as $bb){
+				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+			}
+
+			$this->boundingBox->addCoord(0, $dy, 0);
+
+			if($movY != $dy){
+				$dx = 0;
+				$dy = 0;
+				$dz = 0;
+			}
+
+			foreach($list as $bb){
+				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+			}
+
+			$this->boundingBox->addCoord($dx, 0, 0);
+
+			if($movX != $dx){
+				$dx = 0;
+				$dy = 0;
+				$dz = 0;
+			}
+
+			foreach($list as $bb){
+				$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+			}
+
+			$this->boundingBox->addCoord(0, 0, $dz);
+
+			if($movZ != $dz){
+				$dx = 0;
+				$dy = 0;
+				$dz = 0;
+			}
+
+			if($movY != $dy){
+				$dy = -0.05;
+				foreach($list as $bb){
+					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+				}
+
+				$this->boundingBox->addCoord(0, $dy, 0);
+			}
+
+			if($cx * $cx + $cz * $cz > $dx * $dx + $dz * $dz){
+				$dx = $cx;
+				$dy = $cy;
+				$dz = $cz;
+				$this->boundingBox->setBB($oldBB);
+			}
+		}
+
+		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		$this->y = $this->boundingBox->minY + $this->height;
+		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+		$this->onGround = $movY != $dy and $movY < 0;
+		$this->updateFallState($dy, $this->onGround);
+
+		if($movX != $dx){
+			$this->motionX = 0;
+		}else{
+			$this->motionX -= $this->motionX * $this->drag;
+		}
+
+		if($movY != $dy){
+			$this->motionY = 0;
+		}else{
+			$this->motionY -= $this->motionY * $this->drag;
+		}
+
+		if($movZ != $dz){
+			$this->motionZ = 0;
+		}else{
+			$this->motionY -= $this->motionY * $this->drag;
+		}
+
+		//$this->boundingBox->addCoord($dx, $dy, $dz);
+		//$this->x += $dx;
+		//$this->y += $dy;
+		//$this->z += $dz;
+
+		$cx = $this->x - $ox;
+		$cy = $this->y - $oy;
+		$cz = $this->z - $oz;
+
+		//TODO: vehicle collision events (first we need to spawn them!)
+
+
+	}
+
+	/**
+	 * @param Block[] $list
+	 *
+	 * @return Block[]
+	 */
+	protected function checkBlockCollision(&$list = array()){
+		$minX = floor($this->boundingBox->minX + 0.001);
+		$minY = floor($this->boundingBox->minY + 0.001);
+		$minZ = floor($this->boundingBox->minZ + 0.001);
+		$maxX = floor($this->boundingBox->maxX + 0.001);
+		$maxY = floor($this->boundingBox->maxY + 0.001);
+		$maxZ = floor($this->boundingBox->maxZ + 0.001);
+
+		for($z = $minZ; $z <= $maxZ; ++$z){
+			for($x = $minX; $x <= $maxX; ++$x){
+				for($y = $minY; $y <= $maxY; ++$y){
+					$this->getLevel()->getBlock(new Vector3($x, $y, $z))->collidesWithBB($this->boundingBox, $list);
+				}
+			}
+		}
+
+		return $list;
 	}
 
 	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){
