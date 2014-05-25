@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
@@ -32,7 +33,6 @@ use pocketmine\Player;
 
 class DroppedItem extends Entity{
 
-	protected $age = 0;
 	protected $owner = null;
 	protected $thrower = null;
 	protected $pickupDelay = 0;
@@ -63,6 +63,41 @@ class DroppedItem extends Entity{
 			$this->thrower = $this->namedtag["Thrower"];
 		}
 		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], min(64, $this->namedtag->Item["Count"]));
+	}
+
+	public function onUpdate(){
+		$this->entityBaseTick();
+		//TODO: manage pickupDelay
+
+		$this->motionY -= $this->gravity;
+		$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+		$this->move($this->motionX, $this->motionY, $this->motionZ);
+
+		$friction = 1 - $this->drag;
+
+		if($this->onGround){
+			$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
+		}
+
+		$this->motionX *= $friction;
+		$this->motionY *= 1 - $this->drag;
+		$this->motionZ *= $friction;
+
+		if($this->onGround){
+			$this->motionY *= -0.5;
+		}
+
+		if(abs($this->motionX) < 0.01){
+			$this->motionX = 0;
+		}
+		if(abs($this->motionZ) < 0.01){
+			$this->motionZ = 0;
+		}
+
+		//TODO: update age in base entity tick
+		//TODO: kill entity if it's old enough
+		$this->updateMovement();
+		//$this->server->broadcastMessage("{$this->ticksLived}: ".round($this->x, 2).",".round($this->y, 2).",".round($this->z, 2));
 	}
 
 	public function attack($damage, $source = "generic"){

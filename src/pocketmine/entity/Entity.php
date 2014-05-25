@@ -78,6 +78,9 @@ abstract class Entity extends Position implements Metadatable{
 	public $motionX;
 	public $motionY;
 	public $motionZ;
+	public $lastMotionX;
+	public $lastMotionY;
+	public $lastMotionZ;
 
 	public $yaw;
 	public $pitch;
@@ -87,9 +90,11 @@ abstract class Entity extends Position implements Metadatable{
 	/** @var AxisAlignedBB */
 	public $boundingBox;
 	public $onGround;
+	public $inBlock = false;
 	public $positionChanged;
 	public $motionChanged;
 	public $dead;
+	protected $age = 0;
 
 	public $height;
 	public $width;
@@ -106,7 +111,7 @@ abstract class Entity extends Position implements Metadatable{
 	public $fireTicks;
 	public $airTicks;
 	public $namedtag;
-
+	protected $isStatic = false;
 	protected $isColliding = false;
 
 	protected $inWater;
@@ -271,24 +276,97 @@ abstract class Entity extends Position implements Metadatable{
 		$this->health = (int) min($this->health, $this->maxHealth);
 	}
 
-	public function onUpdate(){
-		if($this->closed !== false){
+	protected function checkObstruction($x, $y, $z){
+		$i = (int) $x;
+		$j = (int) $y;
+		$k = (int) $z;
+
+		$diffX = $x - $i;
+		$diffY = $y - $j;
+		$diffZ = $z - $k;
+
+		$start = microtime(true);
+		$list = $this->getLevel()->getCollisionBlocks($this->boundingBox);
+
+		if(count($list) === 0 and $this->getLevel()->isFullBlock(new Vector3($i, $j, $k))){
 			return false;
-		}
+		}else{
+			$flag = !$this->getLevel()->isFullBlock(new Vector3($i - 1, $j, $k));
+			$flag1 = !$this->getLevel()->isFullBlock(new Vector3($i + 1, $j, $k));
+			//$flag2 = !$this->getLevel()->isFullBlock(new Vector3($i, $j - 1, $k));
+			$flag3 = !$this->getLevel()->isFullBlock(new Vector3($i, $j + 1, $k));
+			$flag4 = !$this->getLevel()->isFullBlock(new Vector3($i, $j, $k - 1));
+			$flag5 = !$this->getLevel()->isFullBlock(new Vector3($i, $j, $k + 1));
 
-		$hasUpdate = false;
-		$timeNow = microtime(true);
-		$ticksOffset = min(20, max(1, floor(($timeNow - $this->lastUpdate) * 20))); //Simulate min one tic and max 20
-		$this->ticksLived += $ticksOffset;
-		if(!($this instanceof Player)){
-			for($tick = 0; $tick < $ticksOffset; ++$tick){
-				$this->move($this->motionX, $this->motionY, $this->motionZ);
-				if($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0){
-					break;
-				}
+			$direction = 3; //UP!
+			$limit = 9999;
+
+			if($flag){
+				$limit = $diffX;
+				$direction = 0;
 			}
-		}
 
+			if($flag1 and 1 - $diffX < $limit){
+				$limit = 1 - $diffX;
+				$direction = 1;
+			}
+
+			if($flag3 and 1 - $diffY < $limit){
+				$limit = 1 - $diffY;
+				$direction = 3;
+			}
+
+			if($flag4 and $diffZ < $limit){
+				$limit = $diffZ;
+				$direction = 4;
+			}
+
+			if($flag5 and 1 - $diffZ < $limit){
+				$direction = 5;
+			}
+
+			$force = lcg_value() * 0.2 + 0.1;
+
+			if($direction === 0){
+				$this->motionX = -$force;
+				return true;
+			}
+
+			if($direction === 1){
+				$this->motionX = $force;
+				return true;
+			}
+
+			//No direction 2
+
+			if($direction === 3){
+				$this->motionY = $force;
+				return true;
+			}
+
+			if($direction === 4){
+				$this->motionZ = -$force;
+				return true;
+			}
+
+			if($direction === 5){
+				$this->motionY = $force;
+			}
+
+			return true;
+
+		}
+	}
+
+	public function entityBaseTick(){
+		//TODO: check vehicles
+		$hasUpdate = false;
+		$this->lastX = $this->x;
+		$this->lastY = $this->y;
+		$this->lastZ = $this->z;
+		$this->lastMotionX = $this->motionX;
+		$this->lastPitch = $this->pitch;
+		$this->lastYaw = $this->yaw;
 
 		if($this->handleWaterMovement()){
 			$this->fallDistance = 0;
@@ -298,8 +376,12 @@ abstract class Entity extends Position implements Metadatable{
 			$this->inWater = false;
 		}
 
+		if($this->y < -64){
+			$this->kill();
+		}
+
 		if($this->fireTicks > 0){
-			if($this->fireProof === true){
+			if($this->fireProof){
 				$this->fireTicks -= 4;
 				if($this->fireTicks < 0){
 					$this->fireTicks = 0;
@@ -310,18 +392,21 @@ abstract class Entity extends Position implements Metadatable{
 				}
 				--$this->fireTicks;
 			}
+			$hasUpdate = true;
 		}
 
 		if($this->handleLavaMovement()){
 			$this->attack(4, "lava");
 			$this->setOnFire(15);
+			$hasUpdate = true;
 			$this->fallDistance *= 0.5;
 		}
 
-		if($this->y < -64){
-			$this->kill();
-		}
+		++$this->age;
+		++$this->ticksLived;
+	}
 
+	public function updateMovement(){
 		if($this->x !== $this->lastX or $this->y !== $this->lastY or $this->z !== $this->lastZ or $this->yaw !== $this->lastYaw or $this->pitch !== $this->lastPitch){
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
@@ -351,7 +436,7 @@ abstract class Entity extends Position implements Metadatable{
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 
-		if($this->motionChanged === true){
+		if(!($this instanceof Player) and ($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
 			$this->motionChanged = false;
 
 			$pk = new SetEntityMotionPacket;
@@ -361,10 +446,18 @@ abstract class Entity extends Position implements Metadatable{
 			$pk->speedZ = $this->motionZ;
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
+	}
 
-		$this->lastUpdate = $timeNow;
+	public function onUpdate(){
+		if($this->closed !== false){
+			return false;
+		}
 
-		return !($this instanceof Player) and ($this->motionX != 0 or $this->motionY == 0 or $this->motionZ == 0 or $hasUpdate);
+		$hasUpdate = $this->entityBaseTick();
+		$this->updateMovement();
+		//if($this->isStatic())
+		return true;
+		//return !($this instanceof Player);
 	}
 
 	public final function scheduleUpdate(){
@@ -605,7 +698,7 @@ abstract class Entity extends Position implements Metadatable{
 			$cy = $dy;
 			$cz = $dz;
 			$dx = $movX;
-			$dy = 0.05;
+			$dy = 0;
 			$dz = $movZ;
 			$oldBB = clone $this->boundingBox;
 			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ));
@@ -648,7 +741,7 @@ abstract class Entity extends Position implements Metadatable{
 			}
 
 			if($movY != $dy){
-				$dy = -0.05;
+				$dy = 0;
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 				}
@@ -667,25 +760,20 @@ abstract class Entity extends Position implements Metadatable{
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
 		$this->y = $this->boundingBox->minY + $this->height;
 		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+
 		$this->onGround = $movY != $dy and $movY < 0;
 		$this->updateFallState($dy, $this->onGround);
 
 		if($movX != $dx){
 			$this->motionX = 0;
-		}else{
-			$this->motionX -= $this->motionX * $this->drag;
 		}
 
 		if($movY != $dy){
 			$this->motionY = 0;
-		}else{
-			$this->motionY -= $this->motionY * $this->drag;
 		}
 
 		if($movZ != $dz){
 			$this->motionZ = 0;
-		}else{
-			$this->motionY -= $this->motionY * $this->drag;
 		}
 
 		//$this->boundingBox->addCoord($dx, $dy, $dz);

@@ -42,8 +42,8 @@ class Air extends Transparent{
 
 	}
 
-	public function collidesWithBB(AxisAlignedBB $bb, &$list = array()){
-
+	public function getBoundingBox(){
+		return new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 	}
 
 }

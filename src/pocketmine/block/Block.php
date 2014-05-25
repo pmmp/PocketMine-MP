@@ -426,6 +426,7 @@ abstract class Block extends Position implements Metadatable{
 	public $x = 0;
 	public $y = 0;
 	public $z = 0;
+	public $frictionFactor = 0.6;
 
 	public static function init(){
 		if(count(self::$list) === 0){
@@ -720,7 +721,17 @@ abstract class Block extends Position implements Metadatable{
 	 * @param Block[] $list
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb, &$list = array()){
-		$bb2 = new AxisAlignedBB(
+		$bb2 = $this->getBoundingBox();
+		if($bb2->intersectsWith($bb)){
+			$list[] = $bb2;
+		}
+	}
+
+	/**
+	 * @return AxisAlignedBB
+	 */
+	public function getBoundingBox(){
+		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
 			$this->z,
@@ -728,9 +739,6 @@ abstract class Block extends Position implements Metadatable{
 			$this->y + 1,
 			$this->z + 1
 		);
-		if($bb2->intersectsWith($bb)){
-			$list[] = $bb2;
-		}
 	}
 
 	/**

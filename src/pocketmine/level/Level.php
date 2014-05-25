@@ -511,6 +511,34 @@ class Level{
 		return Block::get($b[0], $b[1], new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
+	public function getCollisionBlocks(AxisAlignedBB $bb){
+		$minX = floor($bb->minX);
+		$minY = floor($bb->minY);
+		$minZ = floor($bb->minZ);
+		$maxX = floor($bb->maxX + 1);
+		$maxY = floor($bb->maxY + 1);
+		$maxZ = floor($bb->maxZ + 1);
+
+		$collides = [];
+
+		for($z = $minZ; $z < $maxZ; ++$z){
+			for($x = $minX; $x < $maxX; ++$x){
+				if($this->isChunkLoaded($x >> 4, $z >> 4)){
+					for($y = $minY - 1; $y < $maxY; ++$y){
+						$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
+					}
+				}
+			}
+		}
+
+		return $collides;
+	}
+
+	public function isFullBlock(Vector3 $pos){
+		$bb = $this->getBlock($pos)->getBoundingBox();
+		return $bb instanceof AxisAlignedBB and $bb->getAverageEdgeLength() >= 1;
+	}
+
 	/**
 	 * @param Entity        $entity
 	 * @param AxisAlignedBB $bb
@@ -537,9 +565,10 @@ class Level{
 			}
 		}
 
-		foreach($entity->getNearbyEntities($bb->expand(0.25, 0.25, 0.25)) as $ent){
+		//TODO: fix this
+		/*foreach($entity->getNearbyEntities($bb->expand(0.25, 0.25, 0.25)) as $ent){
 			$collides[] = $ent->boundingBox;
-		}
+		}*/
 
 		return $collides;
 	}
@@ -647,22 +676,27 @@ class Level{
 		return $ret;
 	}
 
-	public function dropItem(Vector3 $pos, Item $item){
+	/**
+	 * @param Vector3 $source
+	 * @param Item    $item
+	 * @param float   $force
+	 */
+	public function dropItem(Vector3 $source, Item $item, $force = 1.0){
 		if($item->getID() !== Item::AIR and $item->getCount() > 0){
 			$itemEntity = new DroppedItem($this, new Compound("", [
 				"Pos" => new Enum("Pos", [
-					new Double("", $pos->getX()),
-					new Double("", $pos->getY()),
-					new Double("", $pos->getZ())
+					new Double("", $source->getX()),
+					new Double("", $source->getY()),
+					new Double("", $source->getZ())
 				]),
 				//TODO: add random motion with physics
 				"Motion" => new Enum("Motion", [
-					new Double("", 0),
-					new Double("", 0.05),
-					new Double("", 0)
+					new Double("", (lcg_value() * 0.2 - 0.1) * $force),
+					new Double("", 0.2 * $force),
+					new Double("", (lcg_value() * 0.2 - 0.1) * $force)
 				]),
 				"Rotation" => new Enum("Rotation", [
-					new Float("", 0),
+					new Float("", lcg_value() * 360),
 					new Float("", 0)
 				]),
 				"Health" => new Short("Health", 5),
@@ -730,7 +764,7 @@ class Level{
 
 		if(!($player instanceof Player) or ($player->getGamemode() & 0x01) === 0){
 			foreach($target->getDrops($item) as $drop){
-				$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]));
+				$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]), 5);
 			}
 		}
 		return true;
