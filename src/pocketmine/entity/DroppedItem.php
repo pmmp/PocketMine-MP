@@ -62,12 +62,15 @@ class DroppedItem extends Entity{
 		if(isset($this->namedtag->Thrower)){
 			$this->thrower = $this->namedtag["Thrower"];
 		}
-		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], min(64, $this->namedtag->Item["Count"]));
+		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
 	}
 
 	public function onUpdate(){
 		$this->entityBaseTick();
-		//TODO: manage pickupDelay
+
+		if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
+			--$this->pickupDelay;
+		}
 
 		$this->motionY -= $this->gravity;
 		$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
@@ -94,10 +97,13 @@ class DroppedItem extends Entity{
 			$this->motionZ = 0;
 		}
 
-		//TODO: update age in base entity tick
-		//TODO: kill entity if it's old enough
+		if($this->age > 6000){
+			$this->kill();
+		}
 		$this->updateMovement();
-		//$this->server->broadcastMessage("{$this->ticksLived}: ".round($this->x, 2).",".round($this->y, 2).",".round($this->z, 2));
+
+		//TODO: handle scheduled updates
+		return true;
 	}
 
 	public function attack($damage, $source = "generic"){

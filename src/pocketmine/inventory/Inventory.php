@@ -62,7 +62,7 @@ interface Inventory{
 	public function setItem($index, Item $item);
 
 	/**
-	 * Stores the given Item in the inventory. This will try to fill
+	 * Stores the given Items in the inventory. This will try to fill
 	 * existing stacks and empty slots as well as it can.
 	 *
 	 * Returns the Items that did not fit
@@ -72,6 +72,15 @@ interface Inventory{
 	 * @return Item[]
 	 */
 	public function addItem();
+
+	/**
+	 * Checks if a given Item can be added to the inventory
+	 *
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function canAddItem(Item $item);
 
 	/**
 	 * Removes the given Item from the inventory.

@@ -360,6 +360,11 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function entityBaseTick(){
 		//TODO: check vehicles
+		if($this->dead === true){
+			$this->close();
+			return false;
+		}
+
 		$hasUpdate = false;
 		$this->lastX = $this->x;
 		$this->lastY = $this->y;
@@ -600,7 +605,7 @@ abstract class Entity extends Position implements Metadatable{
 		$minX = ($bb->minX - 2) >> 4;
 		$maxX = ($bb->maxX + 2) >> 4;
 		$minZ = ($bb->minZ - 2) >> 4;
-		$maxZ = ($bb->maxX + 2) >> 4;
+		$maxZ = ($bb->maxZ + 2) >> 4;
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
@@ -904,6 +909,7 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function kill(){
 		$this->dead = true;
+		$this->scheduleUpdate();
 	}
 
 	public function teleport(Vector3 $pos, $yaw = false, $pitch = false){

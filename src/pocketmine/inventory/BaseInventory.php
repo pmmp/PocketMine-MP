@@ -202,25 +202,44 @@ abstract class BaseInventory implements Inventory{
 		return -1;
 	}
 
+	public function canAddItem(Item $item){
+		$item = clone $item;
+		$checkDamage = $item->getDamage() === null ? false : true;
+		for($i = 0; $i < $this->getSize(); ++$i){
+			$slot = $this->getItem($i);
+			if($item->equals($slot, $checkDamage)){
+				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
+					$item->setCount($item->getCount() - $diff);
+				}
+			}elseif($slot->getID() === Item::AIR){
+				$item->setCount($item->getCount() - $this->getMaxStackSize());
+			}
+
+			if($item->getCount() <= 0){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function addItem(){
 		/** @var Item[] $slots */
 		$slots = func_get_args();
 		foreach($slots as $i => $slot){
-			if($slot->getCount() > $slot->getMaxStackSize()){
-				while($slot->getCount() > $slot->getMaxStackSize()){
-					$slots[] = Item::get($slot->getID(), $slot->getDamage(), $slot->getMaxStackSize());
-					$slot->setCount($slot->getCount() - $slot->getMaxStackSize());
-					if(count($slots) > $this->getSize()){ //Protect against large give commands
-						break;
-					}
+			while($slot->getCount() > $slot->getMaxStackSize()){
+				$slots[] = Item::get($slot->getID(), $slot->getDamage(), $slot->getMaxStackSize());
+				$slot->setCount($slot->getCount() - $slot->getMaxStackSize());
+				if(count($slots) > $this->getSize()){ //Protect against large give commands
+					break;
 				}
 			}
 		}
-		for($i = 0; $i < $this->size; ++$i){
+
+		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
 			if($item->getID() === Item::AIR){
-				$item = array_shift($slots);
-				$this->setItem($i, $item);
+				$this->setItem($i, array_shift($slots));
+				$item = $this->getItem($i);
 			}
 
 			foreach($slots as $index => $slot){
@@ -242,14 +261,13 @@ abstract class BaseInventory implements Inventory{
 				break;
 			}
 		}
-
 		return $slots;
 	}
 
 	public function removeItem(){
 		/** @var Item[] $slots */
 		$slots = func_get_args();
-		for($i = 0; $i < $this->size; ++$i){
+		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
 			if($item->getID() === Item::AIR){
 				continue;

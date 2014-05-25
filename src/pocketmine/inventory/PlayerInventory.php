@@ -114,10 +114,6 @@ class PlayerInventory extends BaseInventory{
 
 			$this->setHotbarSlotIndex($this->itemInHandIndex, $slot);
 			$this->sendHeldItem($this->getHolder()->getViewers());
-
-			if($this->getHolder() instanceof Player){
-				$this->sendHeldItem($this->getHolder());
-			}
 		}
 	}
 

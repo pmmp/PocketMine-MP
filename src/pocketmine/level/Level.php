@@ -705,7 +705,9 @@ class Level{
 					"Damage" => new Short("Damage", $item->getDamage()),
 					"Count" => new Byte("Count", $item->getCount())
 				]),
+				"PickupDelay" => new Short("PickupDelay", 10)
 			]));
+
 			$itemEntity->spawnToAll();
 		}
 	}
@@ -764,7 +766,9 @@ class Level{
 
 		if(!($player instanceof Player) or ($player->getGamemode() & 0x01) === 0){
 			foreach($target->getDrops($item) as $drop){
-				$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]), 5);
+				if($drop[2] > 0){
+					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]), 1);
+				}
 			}
 		}
 		return true;

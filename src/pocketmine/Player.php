@@ -23,6 +23,7 @@ namespace pocketmine;
 
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Human;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerChatEvent;
@@ -60,6 +61,7 @@ use pocketmine\network\protocol\ServerHandshakePacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
+use pocketmine\network\protocol\TakeItemEntityPacket;
 use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\raknet\Info;
@@ -858,31 +860,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 				break;
-			case "player.pickup":
-				if($data["eid"] === $this->id){
-					$data["eid"] = 0;
-					$pk = new TakeItemEntityPacket;
-					$pk->eid = 0;
-					$pk->target = $data["entity"]->getID();
-					$this->dataPacket($pk);
-					if(($this->gamemode & 0x01) === 0x00){
-						//$this->addItem($data["entity"]->type, $data["entity"]->meta, $data["entity"]->stack);
-					}
-					switch($data["entity"]->type){
-						case Item::WOOD:
-							$this->awardAchievement("mineWood");
-							break;
-						case Item::DIAMOND:
-							$this->awardAchievement("diamond");
-							break;
-					}
-				}elseif($data["entity"]->getLevel() === $this->getLevel()){
-					$pk = new TakeItemEntityPacket;
-					$pk->eid = $data["eid"];
-					$pk->target = $data["entity"]->getID();
-					$this->dataPacket($pk);
-				}
-				break;
 			case "entity.animate":
 				if($data["eid"] === $this->id or $data["entity"]->getLevel() !== $this->getLevel()){
 					break;
@@ -1212,6 +1189,48 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
+	public function onUpdate(){
+		if($this->spawned === false){
+			return true;
+		}
+		$hasUpdate = $this->entityBaseTick();
+		foreach($this->getNearbyEntities($this->boundingBox->expand(3, 3, 3)) as $entity){
+			if($entity instanceof DroppedItem){
+				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
+					$item = $entity->getItem();
+
+					if($item instanceof Item){
+						if(($this->gamemode & 0x01) === 0 and !$this->inventory->canAddItem($item)){
+							continue;
+						}
+
+						switch($item->getID()){
+							case Item::WOOD:
+								$this->awardAchievement("mineWood");
+								break;
+							case Item::DIAMOND:
+								$this->awardAchievement("diamond");
+								break;
+						}
+						$pk = new TakeItemEntityPacket;
+						$pk->eid = 0;
+						$pk->target = $entity->getID();
+						$this->dataPacket($pk);
+
+						$pk = new TakeItemEntityPacket;
+						$pk->eid = $this->getID();
+						$pk->target = $entity->getID();
+						$this->server->broadcastPacket($entity->getViewers(), $pk);
+						$this->inventory->addItem(clone $item);
+						$entity->kill();
+					}
+				}
+			}
+		}
+
+		$this->updateMovement();
+	}
+
 	/**
 	 * Handles a Minecraft packet
 	 * TODO: Separate all of this in handlers
@@ -1409,7 +1428,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				//$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
 				//$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
 				//$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
-				//$this->evid[] = $this->server->event("player.pickup", array($this, "eventHandler"));
 				//$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 				//$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 				$this->lastMeasure = microtime(true);
@@ -2001,7 +2019,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->craftingItems = [];
 				}
 
-				if($packet->windowid === 0){ //Crafting!
+				if($packet->windowid == 0){ //Crafting!
 					$craft = false;
 					$slot = $this->inventory->getItem($packet->slot);
 					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
@@ -2039,6 +2057,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 						$this->craftingItems = [];
 					}
+					break;
 				}else{
 					$this->toCraft = [];
 					$this->craftingItems = [];
