@@ -205,6 +205,17 @@ abstract class BaseInventory implements Inventory{
 	public function addItem(){
 		/** @var Item[] $slots */
 		$slots = func_get_args();
+		foreach($slots as $i => $slot){
+			if($slot->getCount() > $slot->getMaxStackSize()){
+				while($slot->getCount() > $slot->getMaxStackSize()){
+					$slots[] = Item::get($slot->getID(), $slot->getDamage(), $slot->getMaxStackSize());
+					$slot->setCount($slot->getCount() - $slot->getMaxStackSize());
+					if(count($slots) > $this->getSize()){ //Protect against large give commands
+						break;
+					}
+				}
+			}
+		}
 		for($i = 0; $i < $this->size; ++$i){
 			$item = $this->getItem($i);
 			if($item->getID() === Item::AIR){
