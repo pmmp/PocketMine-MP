@@ -40,12 +40,12 @@ class PermissionAttachmentInfo{
 	 * @param string               $permission
 	 * @param PermissionAttachment $attachment
 	 * @param bool                 $value
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct(Permissible $permissible, $permission, $attachment, $value){
 		if($permission === null){
-			trigger_error("Permission may not be null", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Permission may not be null");
 		}
 
 		$this->permissible = $permissible;

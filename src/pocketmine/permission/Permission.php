@@ -214,6 +214,8 @@ class Permission{
 	 * @param array  $output
 	 *
 	 * @return Permission
+	 *
+	 * @throws \Exception
 	 */
 	public static function loadPermission($name, array $data, $default = self::DEFAULT_OP, &$output = []){
 		$desc = null;
@@ -223,7 +225,7 @@ class Permission{
 			if($value !== null){
 				$default = $value;
 			}else{
-				trigger_error("'default' key contained unknown value", E_USER_WARNING);
+				throw new \Exception("'default' key contained unknown value");
 			}
 		}
 
@@ -238,7 +240,7 @@ class Permission{
 					$children[$k] = true;
 				}
 			}else{
-				trigger_error("'children' key is of wrong type", E_USER_WARNING);
+				throw new \Exception("'children' key is of wrong type");
 			}
 		}
 

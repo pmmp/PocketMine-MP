@@ -123,7 +123,8 @@ class ServerScheduler{
 	 */
 	public function cancelTasks(Plugin $plugin){
 		foreach($this->tasks as $taskId => $task){
-			if($task->getTask() instanceof PluginTask){
+			$ptask = $task->getTask();
+			if($ptask instanceof PluginTask and $ptask->getOwner() === $plugin){
 				$task->cancel();
 				unset($this->tasks[$taskId]);
 			}
@@ -148,11 +149,18 @@ class ServerScheduler{
 		return isset($this->tasks[$taskId]);
 	}
 
+	/**
+	 * @param Task $task
+	 * @param      $delay
+	 * @param      $period
+	 *
+	 * @return null|TaskHandler
+	 *
+	 * @throws \Exception
+	 */
 	private function addTask(Task $task, $delay, $period){
 		if($task instanceof PluginTask and !$task->getOwner()->isEnabled()){
-			trigger_error("Plugin attempted to register a task while disabled", E_USER_WARNING);
-
-			return null;
+			throw new \Exception("Plugin attempted to register a task while disabled");
 		}
 
 		if($delay <= 0){

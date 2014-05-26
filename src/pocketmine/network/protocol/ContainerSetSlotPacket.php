@@ -21,10 +21,12 @@
 
 namespace pocketmine\network\protocol;
 
+use pocketmine\item\Item;
 
 class ContainerSetSlotPacket extends DataPacket{
 	public $windowid;
 	public $slot;
+	/** @var Item */
 	public $item;
 
 	public function pid(){

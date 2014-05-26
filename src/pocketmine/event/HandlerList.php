@@ -80,14 +80,17 @@ class HandlerList{
 		self::$allLists[] = $this;
 	}
 
+	/**
+	 * @param RegisteredListener $listener
+	 *
+	 * @throws \Exception
+	 */
 	public function register(RegisteredListener $listener){
 		if($listener->getPriority() < EventPriority::MONITOR or $listener->getPriority() > EventPriority::LOWEST){
 			return;
 		}
 		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)])){
-			trigger_error("This listener is already registered to priority " . $listener->getPriority(), E_USER_WARNING);
-
-			return;
+			throw new \Exception("This listener is already registered to priority " . $listener->getPriority());
 		}
 		$this->handlers = null;
 		$this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)] = $listener;

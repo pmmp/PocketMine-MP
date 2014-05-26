@@ -66,12 +66,12 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @throws \Exception
 	 */
 	public function setOp($value){
 		if($this->opable === null){
-			trigger_error("Cannot change op value as no ServerOperator is set", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Cannot change op value as no ServerOperator is set");
 		}else{
 			$this->opable->setOp($value);
 		}
@@ -118,16 +118,14 @@ class PermissibleBase implements Permissible{
 	 * @param bool   $value
 	 *
 	 * @return PermissionAttachment
+	 *
+	 * @throws \Exception
 	 */
 	public function addAttachment(Plugin $plugin, $name = null, $value = null){
 		if($plugin === null){
-			trigger_error("Plugin cannot be null", E_USER_WARNING);
-
-			return null;
+			throw new \Exception("Plugin cannot be null");
 		}elseif(!$plugin->isEnabled()){
-			trigger_error("Plugin " . $plugin->getDescription()->getName() . " is disabled", E_USER_WARNING);
-
-			return null;
+			throw new \Exception("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
 		$result = new PermissionAttachment($plugin, $this->parent);
@@ -144,13 +142,11 @@ class PermissibleBase implements Permissible{
 	/**
 	 * @param PermissionAttachment $attachment
 	 *
-	 * @return void
+	 * @throws \Exception
 	 */
 	public function removeAttachment(PermissionAttachment $attachment){
 		if($attachment === null){
-			trigger_error("Attachment cannot be null", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Attachment cannot be null");
 		}
 
 		if(isset($this->attachments[spl_object_hash($attachment)])){

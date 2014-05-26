@@ -784,12 +784,12 @@ class Server{
 	 * @param string $name
 	 *
 	 * @return bool
+	 *
+	 * @throws \Exception
 	 */
 	public function loadLevel($name){
 		if(trim($name) === ""){
-			trigger_error("Invalid empty level name", E_USER_WARNING);
-
-			return false;
+			throw new \Exception("Invalid empty level name");
 		}
 		if($this->isLevelLoaded($name)){
 			return true;
@@ -1288,7 +1288,7 @@ class Server{
 		if($this->getDefaultLevel() === null){
 			$default = $this->getConfigString("level-name", "world");
 			if(trim($default) == ""){
-				trigger_error("level-name cannot be null", E_USER_WARNING);
+				trigger_error("level-name cannot be null, using default", E_USER_WARNING);
 				$default = "world";
 				$this->setConfigString("level-name", "world");
 			}

@@ -638,12 +638,12 @@ class PluginManager{
 	 *
 	 * @param Listener $listener
 	 * @param Plugin   $plugin
+	 *
+	 * @throws \Exception
 	 */
 	public function registerEvents(Listener $listener, Plugin $plugin){
 		if(!$plugin->isEnabled()){
-			trigger_error("Plugin attempted to register " . get_class($listener) . " while not enabled", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Plugin attempted to register " . get_class($listener) . " while not enabled");
 		}
 
 		$reflection = new \ReflectionClass(get_class($listener));
@@ -680,17 +680,15 @@ class PluginManager{
 	 * @param EventExecutor $executor
 	 * @param Plugin        $plugin
 	 * @param bool          $ignoreCancelled
+	 *
+	 * @throws \Exception
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
 		if(!is_subclass_of($event, "pocketmine\\event\\Event")){
-			trigger_error($event . " is not a valid Event", E_USER_WARNING);
-
-			return;
+			throw new \Exception($event . " is not a valid Event");
 		}
 		if(!$plugin->isEnabled()){
-			trigger_error("Plugin attempted to register " . $event . " while not enabled");
-
-			return;
+			throw new \Exception("Plugin attempted to register " . $event . " while not enabled");
 		}
 
 		$this->getEventListeners($event)->register(new RegisteredListener($listener, $executor, $priority, $plugin, $ignoreCancelled));

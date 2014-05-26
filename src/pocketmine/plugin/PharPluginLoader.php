@@ -46,15 +46,15 @@ class PharPluginLoader implements PluginLoader{
 	 * @param string $file
 	 *
 	 * @return Plugin
+	 *
+	 * @throws \Exception
 	 */
 	public function loadPlugin($file){
 		if(\Phar::isValidPharFilename($file) and ($description = $this->getPluginDescription($file)) instanceof PluginDescription){
 			console("[INFO] Loading " . $description->getFullName());
 			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
 			if(file_exists($dataFolder) and !is_dir($dataFolder)){
-				trigger_error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory", E_USER_WARNING);
-
-				return null;
+				throw new \Exception("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
 			}
 			$file = "phar://$file";
 			$className = $description->getMain();
@@ -68,9 +68,7 @@ class PharPluginLoader implements PluginLoader{
 
 				return $plugin;
 			}else{
-				trigger_error("Couldn't load plugin " . $description->getName() . ": main class not found", E_USER_WARNING);
-
-				return null;
+				throw new \Exception("Couldn't load plugin " . $description->getName() . ": main class not found");
 			}
 		}
 

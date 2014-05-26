@@ -41,12 +41,12 @@ class PermissionAttachment{
 	/**
 	 * @param Plugin      $plugin
 	 * @param Permissible $permissible
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct(Plugin $plugin, Permissible $permissible){
 		if(!$plugin->isEnabled()){
-			trigger_error("Plugin " . $plugin->getDescription()->getName() . " is disabled", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
 		$this->permissible = $permissible;

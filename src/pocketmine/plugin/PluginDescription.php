@@ -50,12 +50,14 @@ class PluginDescription{
 		$this->loadMap(\yaml_parse($yamlString));
 	}
 
+	/**
+	 * @param array $plugin
+	 * @throws \Exception
+	 */
 	private function loadMap(array $plugin){
 		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
 		if($this->name === ""){
-			trigger_error("Invalid PluginDescription name", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Invalid PluginDescription name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = $plugin["version"];

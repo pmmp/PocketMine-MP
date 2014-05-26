@@ -36,13 +36,13 @@ abstract class MetadataStore{
 	 * @param mixed         $subject
 	 * @param string        $metadataKey
 	 * @param MetadataValue $newMetadataValue
+	 *
+	 * @throws \Exception
 	 */
 	public function setMetadata($subject, $metadataKey, MetadataValue $newMetadataValue){
 		$owningPlugin = $newMetadataValue->getOwningPlugin();
 		if($owningPlugin === null){
-			trigger_error("Plugin cannot be null", E_USER_WARNING);
-
-			return;
+			throw new \Exception("Plugin cannot be null");
 		}
 
 		$key = $this->disambiguate($subject, $metadataKey);
@@ -63,6 +63,8 @@ abstract class MetadataStore{
 	 * @param string $metadataKey
 	 *
 	 * @return MetadataValue[]
+	 *
+	 * @throws \Exception
 	 */
 	public function getMetadata($subject, $metadataKey){
 		$key = $this->disambiguate($subject, $metadataKey);
@@ -80,6 +82,8 @@ abstract class MetadataStore{
 	 * @param string $metadataKey
 	 *
 	 * @return bool
+	 *
+	 * @throws \Exception
 	 */
 	public function hasMetadata($subject, $metadataKey){
 		return isset($this->metadataMap[$this->disambiguate($subject, $metadataKey)]);
@@ -91,6 +95,8 @@ abstract class MetadataStore{
 	 * @param mixed  $subject
 	 * @param string $metadataKey
 	 * @param Plugin $owningPlugin
+	 *
+	 * @throws \Exception
 	 */
 	public function removeMetadata($subject, $metadataKey, Plugin $owningPlugin){
 		$key = $this->disambiguate($subject, $metadataKey);

@@ -2009,6 +2009,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+				/** @var $packet \pocketmine\network\protocol\ContainerSetContentPacket */
+
+				console("[TRANSACTION] {$this->username} {$packet->windowid}[ ".$packet->item->getID().":".$packet->item->getDamage()."(".$packet->item->getCount().") -> #{$packet->slot} ]");
 
 				if($this->lastCraft <= (microtime(true) - 1)){
 					if(isset($this->toCraft[-1])){
@@ -2020,14 +2023,20 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if($packet->windowid == 0){ //Crafting!
+					//TODO: crafting event
+
+
 					$craft = false;
 					$slot = $this->inventory->getItem($packet->slot);
 					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						$use = Item::get($slot->getID(), $slot->getDamage(), $slot->getCount() - $packet->item->getCount());
+						$use = clone $slot;
+						$use->setCount($slot->getCount() - $packet->item->getCount());
 						$this->craftingItems[$packet->slot] = $use;
 						$craft = true;
 					}elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()))){ //Crafting final
-						$craftItem = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount() - $slot->getCount());
+						/** @var Item $craftItem */
+						$craftItem = clone $packet->item;
+						$craftItem->setCount($packet->item->getCount() - $slot->getCount());
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
@@ -2038,7 +2047,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						if(count($this->toCraft) === 0){
 							$this->toCraft[-1] = 0;
 						}
-						$use = Item::get($slot->getID(), $slot->getDamage(), $slot->getCount());
+						$use = clone $slot;
 						$this->craftingItems[$packet->slot] = $use;
 						$this->toCraft[$packet->slot] = $craftItem;
 						$craft = true;
@@ -2057,11 +2066,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 						$this->craftingItems = [];
 					}
+					break;
 				}else{
 					$this->toCraft = [];
 					$this->craftingItems = [];
 				}
-				if($packet->windowid == 0 or !isset($this->windowIndex[$packet->windowid])){
+				if(!isset($this->windowIndex[$packet->windowid])){
 					break;
 				}
 
@@ -2079,37 +2089,40 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($slot->getCount() < $item->getCount()){
 						$it = clone $item;
 						$it->setCount($item->getCount() - $slot->getCount());
-						$remaining = $this->inventory->removeItem($it);
-						if(count($remaining) > 0){
-							/** @var Item $it */
-							$it = array_pop($remaining);
-							$item->setCount($item->getCount() - $it->getCount());
+						if(!$this->inventory->contains($it)){
+							$this->inventory->sendContents($this);
+							$inv->sendContents($this);
+							break;
 						}
+						$this->inventory->removeItem($it);
 					}elseif($slot->getCount() > $item->getCount()){
 						$it = clone $item;
-						$it->setCount($slot->count - $item->count);
-						$remaining = $this->inventory->addItem($it);
-						if(count($remaining) > 0){
-							/** @var Item $it */
-							$it = array_pop($remaining);
-							$item->setCount($item->getCount() + $it->getCount());
+						$it->setCount($slot->getCount() - $item->getCount());
+						if(!$this->inventory->canAddItem($it)){
+							$this->inventory->sendContents($this);
+							$inv->sendContents($this);
+							break;
 						}
+						$this->inventory->addItem($it);
 					}
-					if($inv->getType()->getDefaultTitle() === "Furnace" and $packet->slot == 2){
-						switch($slot->getID()){
-							case Item::IRON_INGOT:
-								$this->awardAchievement("acquireIron");
-								break;
-						}
-					}
-				}else{ //TODO: check this. I don't know what is this for
-					$remaining = $this->inventory->removeItem($item);
-					if(count($remaining) > 0){
-						$this->inventory->removeItem();
+				}else{ //same slot replace
+					if(!$this->inventory->contains($item)){
+						$this->inventory->sendContents($this);
+						$inv->sendContents($this);
 						break;
 					}
+					$this->inventory->removeItem($item);
 					$this->inventory->addItem($slot);
 				}
+
+				if($inv->getType()->getDefaultTitle() === "Furnace" and $packet->slot === 2){
+					switch($slot->getID()){
+						case Item::IRON_INGOT:
+							$this->awardAchievement("acquireIron");
+							break;
+					}
+				}
+
 				$inv->setItem($packet->slot, $item);
 
 				break;
