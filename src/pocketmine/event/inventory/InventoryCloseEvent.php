@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -19,34 +19,33 @@
  *
  */
 
-/**
- * Inventory related events
- */
 namespace pocketmine\event\inventory;
-
-use pocketmine\event\Event;
 use pocketmine\inventory\Inventory;
+use pocketmine\Player;
 
-abstract class InventoryEvent extends Event{
+/**
+ * Called when a entity is despawned
+ */
+class InventoryCloseEvent extends InventoryEvent{
+	public static $handlerList = null;
 
-	/** @var Inventory */
-	protected $inventory;
+	/** @var Player */
+	private $who;
 
-	public function __construct(Inventory $inventory){
-		$this->inventory = $inventory;
+	/**
+	 * @param Inventory $inventory
+	 * @param Player    $who
+	 */
+	public function __construct(Inventory $inventory, Player $who){
+		$this->who = $who;
+		parent::__construct($inventory);
 	}
 
 	/**
-	 * @return Inventory
+	 * @return Player
 	 */
-	public function getInventory(){
-		return $this->inventory;
+	public function getPlayer(){
+		return $this->who;
 	}
 
-	/**
-	 * @return \pocketmine\entity\Human[]
-	 */
-	public function getViewers(){
-		return $this->inventory->getViewers();
-	}
 }

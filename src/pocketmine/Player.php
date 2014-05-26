@@ -25,6 +25,7 @@ use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Human;
+use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
@@ -1986,6 +1987,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 				if(isset($this->windowIndex[$packet->windowid])){
+					$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this));
 					$this->removeWindow($this->windowIndex[$packet->windowid]);
 				}else{
 					unset($this->windowIndex[$packet->windowid]);
