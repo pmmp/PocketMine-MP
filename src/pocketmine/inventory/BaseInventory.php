@@ -94,7 +94,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function getItem($index){
-		return isset($this->slots[$index]) ? $this->slots[$index] : Item::get(Item::AIR, null, 0);
+		return isset($this->slots[$index]) ? clone $this->slots[$index] : Item::get(Item::AIR, null, 0);
 	}
 
 	public function getContents(){
@@ -121,6 +121,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function setItem($index, Item $item){
+		$item = clone $item;
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getID() === 0){

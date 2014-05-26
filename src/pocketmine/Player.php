@@ -37,8 +37,12 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\inventory\BaseTransaction;
+use pocketmine\inventory\CraftingTransactionGroup;
+use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
+use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\item\Item;
 use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\Level;
@@ -110,9 +114,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public $achievements = [];
 	public $chunksLoaded = [];
 	public $lastCorrect;
-	public $craftingItems = [];
-	public $toCraft = [];
-	public $lastCraft = 0;
+	/** @var SimpleTransactionGroup */
+	public $currentTransaction = null;
+	protected $isCrafting = false;
 	public $loginData = [];
 	protected $lastMovement = 0;
 	protected $forceMovement = false;
@@ -1570,8 +1574,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->dataPacket($pk);
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
+
 				$packet->eid = $this->id;
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
@@ -1632,8 +1635,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 				$packet->eid = $this->id;
-				$this->craftingItems = [];
-				$this->toCraft = [];
 
 				switch($packet->action){
 					case 5: //Shot arrow
@@ -1707,8 +1708,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
 
 				$vector = new Vector3($packet->x, $packet->y, $packet->z);
 
@@ -1742,8 +1741,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
 
 				for($i = 0; $i < 4; ++$i){
 					$s = $packet->slots[$i];
@@ -1784,8 +1781,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$data["target"] = $packet->target;
 				$data["eid"] = $packet->eid;
 				$data["action"] = $packet->action;
-				$this->craftingItems = [];
-				$this->toCraft = [];
 				$target = Entity::get($packet->target);
 				if($target instanceof Entity and $this->gamemode !== VIEW and $this->blocked === false and ($target instanceof Entity) and $this->entity->distance($target) <= 8){
 					$data["targetentity"] = $target;
@@ -1875,8 +1870,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->dead === false){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
 
@@ -1898,8 +1891,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
+
 				$packet->eid = $this->id;
 				if($this->entity->inAction === true){
 					$this->entity->inAction = false;
@@ -1954,8 +1946,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$packet->eid = $this->id;
 				$packet->item = $this->getSlot($this->getCurrentEquipment());
-				$this->craftingItems = [];
-				$this->toCraft = [];
 				$data = [];
 				$data["eid"] = $packet->eid;
 				$data["unknown"] = $packet->unknown;
@@ -1974,8 +1964,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
@@ -1997,8 +1985,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $packet->windowid === 0){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
 				if(isset($this->windowIndex[$packet->windowid])){
 					$this->removeWindow($this->windowIndex[$packet->windowid]);
 				}else{
@@ -2009,121 +1995,61 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				/** @var $packet \pocketmine\network\protocol\ContainerSetContentPacket */
 
 				console("[TRANSACTION] {$this->username} {$packet->windowid}[ ".$packet->item->getID().":".$packet->item->getDamage()."(".$packet->item->getCount().") -> #{$packet->slot} ]");
-
-				if($this->lastCraft <= (microtime(true) - 1)){
-					if(isset($this->toCraft[-1])){
-						$this->toCraft = array(-1 => $this->toCraft[-1]);
-					}else{
-						$this->toCraft = [];
-					}
-					$this->craftingItems = [];
+				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() > (microtime(true) - 1)){
+					$this->currentTransaction = new SimpleTransactionGroup();
 				}
 
-				if($packet->windowid == 0){ //Crafting!
-					//TODO: crafting event
-
-
-					$craft = false;
-					$slot = $this->inventory->getItem($packet->slot);
-					if($slot->getCount() >= $packet->item->getCount() and (($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()) or ($packet->item->getID() === Item::AIR and $packet->item->getCount() === 0)) and !isset($this->craftingItems[$packet->slot])){ //Crafting recipe
-						$use = clone $slot;
-						$use->setCount($slot->getCount() - $packet->item->getCount());
-						$this->craftingItems[$packet->slot] = $use;
-						$craft = true;
-					}elseif($slot->getCount() <= $packet->item->getCount() and ($slot->getID() === Item::AIR or ($slot->getID() === $packet->item->getID() and $slot->getDamage() === $packet->item->getDamage()))){ //Crafting final
-						/** @var Item $craftItem */
-						$craftItem = clone $packet->item;
-						$craftItem->setCount($packet->item->getCount() - $slot->getCount());
-						if(count($this->toCraft) === 0){
-							$this->toCraft[-1] = 0;
-						}
-						$this->toCraft[$packet->slot] = $craftItem;
-						$craft = true;
-					}elseif(((count($this->toCraft) === 1 and isset($this->toCraft[-1])) or count($this->toCraft) === 0) and $slot->getCount() > 0 and $slot->getID() > Item::AIR and ($slot->getID() !== $packet->item->getID() or $slot->getDamage() !== $packet->item->getDamage())){ //Crafting final
-						$craftItem = Item::get($packet->item->getID(), $packet->item->getDamage(), $packet->item->getCount());
-						if(count($this->toCraft) === 0){
-							$this->toCraft[-1] = 0;
-						}
-						$use = clone $slot;
-						$this->craftingItems[$packet->slot] = $use;
-						$this->toCraft[$packet->slot] = $craftItem;
-						$craft = true;
-					}
-
-					if($craft === true){
-						$this->lastCraft = microtime(true);
-					}
-
-					if($craft === true and count($this->craftingItems) > 0 and count($this->toCraft) > 0 and ($recipe = $this->craftItems($this->toCraft, $this->craftingItems, $this->toCraft[-1])) !== true){
-						if($recipe === false){
-							$this->inventory->sendContents($this);
-							$this->toCraft = [];
-						}else{
-							$this->toCraft = array(-1 => $this->toCraft[-1]);
-						}
-						$this->craftingItems = [];
-					}
-					break;
-				}else{
-					$this->toCraft = [];
-					$this->craftingItems = [];
-				}
-				if(!isset($this->windowIndex[$packet->windowid])){
+				if($packet->slot < 0){
 					break;
 				}
 
-				$inv = $this->windowIndex[$packet->windowid];
-				if($packet->slot < 0 or $packet->slot >= $inv->getSize()){
-					break;
-				}
-
-				/** @var Item $item */
-				$item = clone $packet->item;
-
-				$slot = $inv->getItem($packet->slot);
-
-				if($item->getID() !== Item::AIR and $slot->equals($item, true)){
-					if($slot->getCount() < $item->getCount()){
-						$it = clone $item;
-						$it->setCount($item->getCount() - $slot->getCount());
-						if(!$this->inventory->contains($it)){
-							$this->inventory->sendContents($this);
-							$inv->sendContents($this);
-							break;
-						}
-						$this->inventory->removeItem($it);
-					}elseif($slot->getCount() > $item->getCount()){
-						$it = clone $item;
-						$it->setCount($slot->getCount() - $item->getCount());
-						if(!$this->inventory->canAddItem($it)){
-							$this->inventory->sendContents($this);
-							$inv->sendContents($this);
-							break;
-						}
-						$this->inventory->addItem($it);
-					}
-				}else{ //same slot replace
-					if(!$this->inventory->contains($item)){
-						$this->inventory->sendContents($this);
-						$inv->sendContents($this);
+				if($packet->windowid === 0){ //Our inventory
+					if($packet->slot > $this->inventory->getSize()){
 						break;
 					}
-					$this->inventory->removeItem($item);
-					$this->inventory->addItem($slot);
+					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
+				}elseif(isset($this->windowIndex[$packet->windowid])){
+					$inv = $this->windowIndex[$packet->windowid];
+					$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
+				}else{
+					break;
 				}
 
-				if($inv->getType()->getDefaultTitle() === "Furnace" and $packet->slot === 2){
-					switch($slot->getID()){
-						case Item::IRON_INGOT:
-							$this->awardAchievement("acquireIron");
-							break;
+				$this->currentTransaction->addTransaction($transaction);
+
+				if($this->currentTransaction->canExecute()){
+					foreach($this->currentTransaction->getTransactions() as $ts){
+						$inv = $ts->getInventory();
+						if($inv instanceof FurnaceInventory){
+							if($ts->getSlot() === 2){
+								switch($inv->getResult()){
+									case Item::IRON_INGOT:
+										$this->awardAchievement("acquireIron");
+										break;
+								}
+							}
+						}
+
+						$this->currentTransaction = null;
 					}
+				}elseif($packet->windowid == 0){ //Try crafting
+					$craftingGroup = new CraftingTransactionGroup($this->currentTransaction);
+					if($craftingGroup->canExecute()){ //We can craft!
+						//TODO: CraftItemEvent
+						//$this->server->getPluginManager($ev = new CraftItemEvent($this, $recipe, $craft, $type));
+						//if($ev->isCancelled()){
+						//	return false;
+						//}
+
+						$craftingGroup->execute();
+					}
+
+					$this->currentTransaction = null;
 				}
 
-				$inv->setItem($packet->slot, $item);
+
 
 				break;
 			case ProtocolInfo::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
@@ -2135,8 +2061,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
-				$this->craftingItems = [];
-				$this->toCraft = [];
+
 				$t = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){
 					if($t->namedtag->creator !== $this->username){
@@ -2253,7 +2178,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->chunksLoaded = [];
 			$this->chunksOrder = [];
 			$this->chunkCount = [];
-			$this->craftingItems = [];
 			$this->received = [];
 			$this->buffer = null;
 			unset($this->buffer);
@@ -2323,112 +2247,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function getName(){
 		return $this->username;
-	}
-
-	/**
-	 * @param Item[] $craft
-	 * @param Item[] $recipe
-	 * @param int    $type
-	 *
-	 * @return array|bool
-	 */
-	public function craftItems(array $craft, array $recipe, $type){
-		$craftItem = array(0, true, 0);
-		unset($craft[-1]);
-		foreach($craft as $item){
-			if($item instanceof Item){
-				$craftItem[0] = $item->getID();
-				if($item->getDamage() !== $craftItem[1] and $craftItem[1] !== true){
-					$craftItem[1] = false;
-				}else{
-					$craftItem[1] = $item->getDamage();
-				}
-				$craftItem[2] += $item->getCount();
-			}
-
-		}
-
-		$recipeItems = [];
-		foreach($recipe as $item){
-			if(!isset($recipeItems[$item->getID()])){
-				$recipeItems[$item->getID()] = array($item->getID(), $item->getDamage(), $item->getCount());
-			}else{
-				if($item->getDamage() !== $recipeItems[$item->getID()][1]){
-					$recipeItems[$item->getID()][1] = false;
-				}
-				$recipeItems[$item->getID()][2] += $item->getCount();
-			}
-		}
-
-		$res = Crafting::canCraft($craftItem, $recipeItems, $type);
-
-		if(!is_array($res) and $type === 1){
-			$res2 = Crafting::canCraft($craftItem, $recipeItems, 0);
-			if(is_array($res2)){
-				$res = $res2;
-			}
-		}
-
-		if(is_array($res)){
-			//TODO: CraftItemEvent
-			//$this->server->getPluginManager($ev = new CraftItemEvent($this, $recipe, $craft, $type));
-			//if($ev->isCancelled()){
-			//	return false;
-			//}
-
-			foreach($recipe as $slot => $item){
-				$s = $this->inventory->getItem($slot);
-				$s->setCount($s->getCount() - $item->getCount());
-				if($s->getCount() <= 0){
-					$this->inventory->setItem($slot, Item::get(Item::AIR, 0, 0));
-				}
-			}
-			foreach($craft as $slot => $item){
-				$s = $this->inventory->getItem($slot);
-				if($s->getCount() <= 0 or $s->getID() === Item::AIR){
-					$this->inventory->setItem($slot, Item::get($item->getID(), $item->getDamage(), $item->getCount()));
-				}else{
-					$this->inventory->setItem($slot, Item::get($item->getID(), $item->getDamage(), $s->getCount() + $item->getCount()));
-				}
-
-				switch($item->getID()){
-					case Item::WORKBENCH:
-						$this->awardAchievement("buildWorkBench");
-						break;
-					case Item::WOODEN_PICKAXE:
-						$this->awardAchievement("buildPickaxe");
-						break;
-					case Item::FURNACE:
-						$this->awardAchievement("buildFurnace");
-						break;
-					case Item::WOODEN_HOE:
-						$this->awardAchievement("buildHoe");
-						break;
-					case Item::BREAD:
-						$this->awardAchievement("makeBread");
-						break;
-					case Item::CAKE:
-						$this->awardAchievement("bakeCake");
-						$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
-						break;
-					case Item::STONE_PICKAXE:
-					case Item::GOLD_PICKAXE:
-					case Item::IRON_PICKAXE:
-					case Item::DIAMOND_PICKAXE:
-						$this->awardAchievement("buildBetterPickaxe");
-						break;
-					case Item::WOODEN_SWORD:
-						$this->awardAchievement("buildSword");
-						break;
-					case Item::DIAMOND:
-						$this->awardAchievement("diamond");
-						break;
-
-				}
-			}
-		}
-
-		return $res;
 	}
 
 
