@@ -23,6 +23,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
+use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
@@ -346,6 +347,19 @@ abstract class BaseInventory implements Inventory{
 
 	public function setMaxStackSize($size){
 		$this->setMaxStackSize($size);
+	}
+
+	public function open(Player $who){
+		$who->getServer()->getPluginManager()->callEvent($ev = new InventoryOpenEvent($this, $who));
+		if($ev->isCancelled()){
+			return false;
+		}
+		$this->onOpen($who);
+		return true;
+	}
+
+	public function close(Player $who){
+		$this->onClose($who);
 	}
 
 	public function onOpen(Player $who){

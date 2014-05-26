@@ -26,6 +26,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Human;
 use pocketmine\event\inventory\InventoryCloseEvent;
+use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
@@ -1209,6 +1210,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							continue;
 						}
 
+						$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
+						if($ev->isCancelled()){
+							continue;
+						}
+
 						switch($item->getID()){
 							case Item::WOOD:
 								$this->awardAchievement("mineWood");
@@ -1217,6 +1223,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								$this->awardAchievement("diamond");
 								break;
 						}
+
 						$pk = new TakeItemEntityPacket;
 						$pk->eid = 0;
 						$pk->target = $entity->getID();
@@ -1998,7 +2005,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				console("[TRANSACTION] {$this->username} {$packet->windowid}[ ".$packet->item->getID().":".$packet->item->getDamage()."(".$packet->item->getCount().") -> #{$packet->slot} ]");
 				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() > (microtime(true) - 1)){
 					$this->currentTransaction = new SimpleTransactionGroup();
 				}
@@ -2044,6 +2050,40 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						//if($ev->isCancelled()){
 						//	return false;
 						//}
+
+						/*switch($item->getID()){
+							case Item::WORKBENCH:
+								$this->awardAchievement("buildWorkBench");
+								break;
+							case Item::WOODEN_PICKAXE:
+								$this->awardAchievement("buildPickaxe");
+								break;
+							case Item::FURNACE:
+								$this->awardAchievement("buildFurnace");
+								break;
+							case Item::WOODEN_HOE:
+								$this->awardAchievement("buildHoe");
+								break;
+							case Item::BREAD:
+								$this->awardAchievement("makeBread");
+								break;
+							case Item::CAKE:
+								$this->awardAchievement("bakeCake");
+								$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
+								break;
+							case Item::STONE_PICKAXE:
+							case Item::GOLD_PICKAXE:
+							case Item::IRON_PICKAXE:
+							case Item::DIAMOND_PICKAXE:
+								$this->awardAchievement("buildBetterPickaxe");
+								break;
+							case Item::WOODEN_SWORD:
+								$this->awardAchievement("buildSword");
+								break;
+							case Item::DIAMOND:
+								$this->awardAchievement("diamond");
+								break;
+						}*/
 
 						$craftingGroup->execute();
 					}
@@ -2277,24 +2317,29 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->windows->contains($inventory)){
 			return $this->windows[$inventory];
 		}
-		if($forceId === null){
-			$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
-		}else{
-			$cnt = (int) $forceId;
-		}
-		$this->windowIndex[$cnt] = $inventory;
-		$this->windows->attach($inventory, $cnt);
-		$inventory->onOpen($this);
 
-		return $cnt;
+		if($forceId === 0 or $inventory->open($this)){
+			if($forceId === null){
+				$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
+			}else{
+				$cnt = (int) $forceId;
+			}
+			$this->windowIndex[$cnt] = $inventory;
+			$this->windows->attach($inventory, $cnt);
+			return $cnt;
+		}else{
+			return -1;
+		}
+
+
 	}
 
 	public function removeWindow(Inventory $inventory){
-		$inventory->onClose($this);
+		$inventory->close($this);
 		if($this->windows->contains($inventory)){
-			$inventory->onClose($this);
 			$id = $this->windows[$inventory];
 			unset($this->windowIndex[$id]);
+			$this->windows->detach($this->windows[$inventory]);
 		}
 	}
 

@@ -195,6 +195,17 @@ interface Inventory{
 	public function onOpen(Player $who);
 
 	/**
+	 * Tries to open the inventory to a player
+	 *
+	 * @param Player $who
+	 *
+	 * @return bool
+	 */
+	public function open(Player $who);
+
+	public function close(Player $who);
+
+	/**
 	 * @param Player $who
 	 */
 	public function onClose(Player $who);
