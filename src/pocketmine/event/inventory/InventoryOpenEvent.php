@@ -24,9 +24,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
 use pocketmine\Player;
 
-/**
- * Called when a entity is despawned
- */
 class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 	public static $handlerList = null;
 

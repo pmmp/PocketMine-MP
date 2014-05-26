@@ -23,9 +23,6 @@ namespace pocketmine\event\inventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\Player;
 
-/**
- * Called when a entity is despawned
- */
 class InventoryCloseEvent extends InventoryEvent{
 	public static $handlerList = null;
 

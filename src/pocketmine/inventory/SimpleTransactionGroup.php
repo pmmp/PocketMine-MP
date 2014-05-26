@@ -21,7 +21,9 @@
 
 namespace pocketmine\inventory;
 
+use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\item\Item;
+use pocketmine\Server;
 
 /**
  * This TransactionGroup only allows doing Transaction between one / two inventories
@@ -96,6 +98,12 @@ class SimpleTransactionGroup implements TransactionGroup{
 		if($this->hasExecuted() or !$this->canExecute()){
 			return false;
 		}
+
+		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+		if($ev->isCancelled()){
+			return false;
+		}
+
 		foreach($this->transactions as $transaction){
 			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem());
 		}

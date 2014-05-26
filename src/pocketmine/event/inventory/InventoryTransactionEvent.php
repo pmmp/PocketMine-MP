@@ -21,29 +21,30 @@
 
 namespace pocketmine\event\inventory;
 use pocketmine\event\Cancellable;
+use pocketmine\event\Event;
 use pocketmine\inventory\Inventory;
-use pocketmine\item\Item;
+use pocketmine\inventory\TransactionGroup;
+use pocketmine\Player;
 
-class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
+/**
+ * Called when there is a transaction between two Inventory objects.
+ * The source of this can be a Player, entities, mods, or even hoppers in the future!
+ */
+class InventoryTransactionEvent extends Event implements Cancellable{
 	public static $handlerList = null;
 
-	/** @var Item */
-	private $item;
+	/** @var TransactionGroup */
+	private $ts;
 
 	/**
-	 * @param Inventory $inventory
-	 * @param Item      $item
+	 * @param TransactionGroup $ts
 	 */
-	public function __construct(Inventory $inventory, Item $item){
-		$this->item = $item;
-		parent::__construct($inventory);
+	public function __construct(TransactionGroup $ts){
+		$this->ts = $ts;
 	}
 
-	/**
-	 * @return Item
-	 */
-	public function getItem(){
-		return $this->item;
+	public function getTransaction(){
+		return $this->ts;
 	}
 
 }
