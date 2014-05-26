@@ -2057,12 +2057,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 						$this->craftingItems = [];
 					}
-					break;
 				}else{
 					$this->toCraft = [];
 					$this->craftingItems = [];
 				}
-				if(!isset($this->windowIndex[$packet->windowid])){
+				if($packet->windowid == 0 or !isset($this->windowIndex[$packet->windowid])){
 					break;
 				}
 
