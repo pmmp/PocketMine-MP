@@ -46,6 +46,7 @@ use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\SimpleTransactionGroup;
+use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\Level;
@@ -76,7 +77,6 @@ use pocketmine\network\raknet\Packet;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
-use pocketmine\recipes\Crafting;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
@@ -2082,7 +2082,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$recipe = $craftingGroup->getMatchingRecipe();
 						if($recipe instanceof BigShapelessRecipe and $this->craftingType !== 1){
 							break;
-						}//TODO: do stonecutter
+						}elseif($recipe instanceof StonecutterShapelessRecipe and $this->craftingType !== 2){
+							break;
+						}
 
 						if($craftingGroup->execute()){
 							switch($craftingGroup->getResult()->getID()){

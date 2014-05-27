@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\block\Planks;
+use pocketmine\block\Slab;
 use pocketmine\block\Wood;
 use pocketmine\item\Item;
 
@@ -37,7 +38,10 @@ class CraftingManager{
 	public $furnaceRecipes = [];
 
 	public function __construct(){
-		//TODO: add crafting recipes
+
+		$this->registerStonecutter();
+
+
 		$this->registerDyes();
 		$this->registerIngots();
 		$this->registerTools();
@@ -95,9 +99,31 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::PAPER, 0, 1)))->addIngredient(Item::get(Item::SUGARCANE, 0, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::SIGN, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 1))->addIngredient(Item::get(Item::WOODEN_PLANKS, null, 6))); //TODO: check if it gives one sign or three
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::IRON_BARS, 0, 16)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 6)));
+	}
 
-		//$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::, 0, )))->addIngredient(Item::get(Item::, 0, )));
-		//TODO: Stonecutter recipes
+	protected function registerStonecutter(){
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::QUARTZ_BLOCK, 0, 1)))->addIngredient(Item::get(Item::QUARTZ, 0, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::BRICK_STAIRS, 0, 4)))->addIngredient(Item::get(Item::BRICKS_BLOCK, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::BRICKS_BLOCK, 0, 1)))->addIngredient(Item::get(Item::BRICK, 0, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 4, 6)))->addIngredient(Item::get(Item::BRICKS_BLOCK, 0, 3)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::QUARTZ_BLOCK, 1, 1)))->addIngredient(Item::get(Item::SLAB, 6, 2)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 3, 6)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 3)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::COBBLESTONE_WALL, 0, 6)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::COBBLESTONE_WALL, 1, 6)))->addIngredient(Item::get(Item::MOSS_STONE, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::NETHER_BRICKS, 0, 1)))->addIngredient(Item::get(Item::NETHER_BRICK, 0, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::NETHER_BRICKS_STAIRS, 0, 4)))->addIngredient(Item::get(Item::NETHER_BRICKS, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::QUARTZ_BLOCK, 2, 2)))->addIngredient(Item::get(Item::QUARTZ_BLOCK, 0, 2)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 6, 6)))->addIngredient(Item::get(Item::QUARTZ_BLOCK, 0, 3)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SANDSTONE_STAIRS, 0, 4)))->addIngredient(Item::get(Item::SANDSTONE, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SANDSTONE, 0, 1)))->addIngredient(Item::get(Item::SAND, 0, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SANDSTONE, 2, 4)))->addIngredient(Item::get(Item::SANDSTONE, 0, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SANDSTONE, 1, 1)))->addIngredient(Item::get(Item::SLAB, 1, 2)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 1, 6)))->addIngredient(Item::get(Item::SANDSTONE, 0, 3)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE_BRICK_STAIRS, 0, 4)))->addIngredient(Item::get(Item::STONE_BRICK, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE_BRICK, 0, 4)))->addIngredient(Item::get(Item::STONE, 0, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 5, 6)))->addIngredient(Item::get(Item::STONE_BRICK, 0, 3)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 0, 6)))->addIngredient(Item::get(Item::STONE, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::COBBLESTONE_STAIRS, 0, 4)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 6)));
 	}
 
 	protected function registerFood(){
