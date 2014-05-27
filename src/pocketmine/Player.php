@@ -1737,6 +1737,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 				$target = $this->getLevel()->getBlock($vector);
+				$tile = $this->getLevel()->getTile($vector);
 				$pk = new UpdateBlockPacket;
 				$pk->x = $target->x;
 				$pk->y = $target->y;
@@ -1744,6 +1745,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->block = $target->getID();
 				$pk->meta = $target->getDamage();
 				$this->directDataPacket($pk);
+				if($tile instanceof Spawnable){
+					$tile->spawnTo($this);
+				}
 				break;
 			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
