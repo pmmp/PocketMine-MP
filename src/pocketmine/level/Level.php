@@ -982,7 +982,7 @@ class Level{
 	 * @return bool|Tile
 	 */
 	public function getTile(Vector3 $pos){
-		if($pos instanceof Position and $pos->level !== $this){
+		if($pos instanceof Position and $pos->getLevel() !== $this){
 			return false;
 		}
 		$tiles = $this->getChunkTiles($pos->x >> 4, $pos->z >> 4);
