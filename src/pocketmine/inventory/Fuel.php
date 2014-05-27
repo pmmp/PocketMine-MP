@@ -19,10 +19,11 @@
  *
 */
 
-namespace pocketmine\recipes;
+namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 
+//TODO: remove this
 abstract class Fuel{
 	public static $duration = array(
 		Item::COAL => 80,

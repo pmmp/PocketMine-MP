@@ -40,6 +40,7 @@ class CraftingManager{
 	public function __construct(){
 
 		$this->registerStonecutter();
+		$this->registerFurnace();
 
 
 		$this->registerDyes();
@@ -99,6 +100,23 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::PAPER, 0, 1)))->addIngredient(Item::get(Item::SUGARCANE, 0, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::SIGN, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 1))->addIngredient(Item::get(Item::WOODEN_PLANKS, null, 6))); //TODO: check if it gives one sign or three
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::IRON_BARS, 0, 16)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 6)));
+	}
+
+	protected function registerFurnace(){
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::STONE, 0, 1), Item::get(Item::COBBLESTONE, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GLASS, 0, 1), Item::get(Item::SAND, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COAL, 1, 1), Item::get(Item::TRUNK, null, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GOLD_INGOT, 0, 1), Item::get(Item::GOLD_ORE, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::IRON_INGOT, 0, 1), Item::get(Item::IRON_ORE, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::NETHER_BRICK, 0, 1), Item::get(Item::NETHERRACK, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_PORKCHOP, 0, 1), Item::get(Item::RAW_PORKCHOP, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::BRICK, 0, 1), Item::get(Item::CLAY, 0, 1)));
+		//$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_FISH, 0, 1), Item::get(Item::RAW_FISH, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::DYE, 2, 1), Item::get(Item::CACTUS, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::DYE, 1, 1), Item::get(Item::RED_MUSHROOM, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::STEAK, 0, 1), Item::get(Item::RAW_BEEF, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COOKED_CHICKEN, 0, 1), Item::get(Item::RAW_CHICKEN, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::BAKED_POTATO, 0, 1), Item::get(Item::POTATO, 0, 1)));
 	}
 
 	protected function registerStonecutter(){
@@ -273,6 +291,28 @@ class CraftingManager{
 	}
 
 	/**
+	 * @return FurnaceRecipe[]
+	 */
+	public function getFurnaceRecipes(){
+		return $this->furnaceRecipes;
+	}
+
+	/**
+	 * @param Item $input
+	 *
+	 * @return FurnaceRecipe
+	 */
+	public function matchFurnaceRecipe(Item $input){
+		if(isset($this->furnaceRecipes[$input->getID().":".$input->getDamage()])){
+			return $this->furnaceRecipes[$input->getID().":".$input->getDamage()];
+		}elseif($this->furnaceRecipes[$input->getID().":?"]){
+			return $this->furnaceRecipes[$input->getID().":?"];
+		}
+
+		return null;
+	}
+
+	/**
 	 * @param ShapedRecipe $recipe
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe){
@@ -298,7 +338,8 @@ class CraftingManager{
 	 * @param FurnaceRecipe $recipe
 	 */
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe){
-
+		$input = $recipe->getInput();
+		$this->furnaceRecipes[$input->getID().":".($input->getDamage() === null ? "?":$input->getDamage())] = $recipe;
 	}
 
 	/**

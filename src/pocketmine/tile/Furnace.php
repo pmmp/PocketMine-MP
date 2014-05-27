@@ -23,6 +23,7 @@ namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\inventory\FurnaceInventory;
+use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -158,8 +159,8 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		$fuel = $this->inventory->getFuel();
 		$raw = $this->inventory->getSmelting();
 		$product = $this->inventory->getResult();
-		$smelt = $raw->getSmeltItem();
-		$canSmelt = ($smelt !== false and $raw->getCount() > 0 and (($product->getID() === $smelt->getID() and $product->getDamage() === $smelt->getDamage() and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
+		$smelt = $this->server->getCraftingManager()->matchFurnaceRecipe($raw);
+		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product, true) and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
 		if($this->namedtag->BurnTime <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->getCount() > 0){
 			$this->lastUpdate = microtime(true);
 			$this->namedtag->MaxTime = $this->namedtag->BurnTime = floor($fuel->getFuelTime() * 20);
@@ -178,10 +179,10 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			$ticks = (microtime(true) - $this->lastUpdate) * 20;
 			$this->namedtag->BurnTime -= $ticks;
 			$this->namedtag->BurnTicks = ceil(($this->namedtag->BurnTime / $this->namedtag->MaxTime) * 200);
-			if($smelt !== false and $canSmelt){
+			if($smelt instanceof FurnaceRecipe and $canSmelt){
 				$this->namedtag->CookTime += $ticks;
 				if($this->namedtag->CookTime >= 200){ //10 seconds
-					$product = Item::get($smelt->getID(), $smelt->getDamage(), $product->getCount() + 1);
+					$product = Item::get($smelt->getResult()->getID(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
 					$this->inventory->setResult($product);
 					$raw->setCount($raw->getCount() - 1);
 					if($raw->getCount() === 0){

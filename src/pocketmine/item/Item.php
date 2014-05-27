@@ -30,7 +30,6 @@ use pocketmine\item\Block as ItemBlock;
 use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\recipes\Fuel;
-use pocketmine\recipes\Smelt;
 
 class Item{
 	//All Block IDs are here too
@@ -538,23 +537,6 @@ class Item{
 		}
 
 		return false;
-	}
-
-	final public function getSmeltItem(){
-		if(!isset(Smelt::$product[$this->id])){
-			return false;
-		}
-
-		if(isset(Smelt::$product[$this->id][0]) and !is_array(Smelt::$product[$this->id][0])){
-			return self::get(Smelt::$product[$this->id][0], Smelt::$product[$this->id][1]);
-		}
-
-		if(!isset(Smelt::$product[$this->id][$this->meta])){
-			return false;
-		}
-
-		return self::get(Smelt::$product[$this->id][$this->meta][0], Smelt::$product[$this->id][$this->meta][1]);
-
 	}
 
 	/**
