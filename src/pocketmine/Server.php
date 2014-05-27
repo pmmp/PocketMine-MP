@@ -38,7 +38,9 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\server\PacketReceiveEvent;
 use pocketmine\event\server\PacketSendEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
+use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
 use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\generator\Flat;
@@ -126,6 +128,9 @@ class Server{
 
 	/** @var SimpleCommandMap */
 	private $commandMap = null;
+
+	/** @var CraftingManager */
+	private $craftingManager;
 
 	/** @var ConsoleCommandSender */
 	private $consoleSender;
@@ -469,6 +474,13 @@ class Server{
 	}
 
 	/**
+	 * @return CraftingManager
+	 */
+	public function getCraftingManager(){
+		return $this->craftingManager;
+	}
+
+	/**
 	 * @return ServerScheduler
 	 */
 	public function getScheduler(){
@@ -510,6 +522,10 @@ class Server{
 	 */
 	public function getOnlinePlayers(){
 		return $this->players;
+	}
+
+	public function addRecipe(Recipe $recipe){
+		$this->craftingManager->registerRecipe($recipe);
 	}
 
 	/**
@@ -1267,6 +1283,13 @@ class Server{
 
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
+
+		InventoryType::init();
+		Block::init();
+		Item::init();
+		Crafting::init();
+		$this->craftingManager = new CraftingManager();
+
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
@@ -1276,10 +1299,7 @@ class Server{
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-		InventoryType::init();
-		Block::init();
-		Item::init();
-		Crafting::init();
+
 
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");

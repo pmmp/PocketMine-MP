@@ -41,6 +41,8 @@ abstract class ContainerInventory extends BaseInventory{
 		}
 
 		$who->dataPacket($pk);
+
+		$this->sendContents($who);
 	}
 
 	public function onClose(Player $who){

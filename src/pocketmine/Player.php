@@ -2009,10 +2009,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() > (microtime(true) - 1)){
-					$this->currentTransaction = new SimpleTransactionGroup();
-				}
-
 				if($packet->slot < 0){
 					break;
 				}
@@ -2029,9 +2025,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
+				if($transaction->getSourceItem()->equals($transaction->getTargetItem(), true) and $transaction->getTargetItem()->getCount() === $transaction->getSourceItem()->getCount()){ //No changes!
+					//No changes, just a local inventory update sent by the server
+					break;
+				}
+
+
+				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 0.5)){
+					if($this->currentTransaction instanceof SimpleTransactionGroup){
+						foreach($this->currentTransaction->getInventories() as $inventory){
+							$inventory->sendContents($inventory->getViewers());
+						}
+					}
+					$this->currentTransaction = new SimpleTransactionGroup();
+				}
+
 				$this->currentTransaction->addTransaction($transaction);
 
 				if($this->currentTransaction->canExecute()){
+					if(!$this->currentTransaction->execute()){
+						$this->currentTransaction = null;
+						break;
+					}
 					foreach($this->currentTransaction->getTransactions() as $ts){
 						$inv = $ts->getInventory();
 						if($inv instanceof FurnaceInventory){
@@ -2043,19 +2058,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								}
 							}
 						}
-
-						$this->currentTransaction = null;
 					}
+
+					$this->currentTransaction = null;
 				}elseif($packet->windowid == 0){ //Try crafting
 					$craftingGroup = new CraftingTransactionGroup($this->currentTransaction);
-					if($craftingGroup->canExecute()){ //We can craft!
-						//TODO: CraftItemEvent
-						//$this->server->getPluginManager($ev = new CraftItemEvent($this, $recipe, $craft, $type));
-						//if($ev->isCancelled()){
-						//	return false;
-						//}
-
-						/*switch($item->getID()){
+					if($craftingGroup->canExecute() and $craftingGroup->execute()){ //We can craft!
+						switch($craftingGroup->getResult()->getID()){
 							case Item::WORKBENCH:
 								$this->awardAchievement("buildWorkBench");
 								break;
@@ -2072,6 +2081,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								$this->awardAchievement("makeBread");
 								break;
 							case Item::CAKE:
+								//TODO: detect complex recipes like cake that leave remainings
 								$this->awardAchievement("bakeCake");
 								$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
 								break;
@@ -2087,12 +2097,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							case Item::DIAMOND:
 								$this->awardAchievement("diamond");
 								break;
-						}*/
+						}
 
-						$craftingGroup->execute();
+
+
+						$this->currentTransaction = null;
 					}
 
-					$this->currentTransaction = null;
+
 				}
 
 
@@ -2322,28 +2334,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return $this->windows[$inventory];
 		}
 
-		if($forceId === 0 or $inventory->open($this)){
-			if($forceId === null){
-				$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
-			}else{
-				$cnt = (int) $forceId;
-			}
-			$this->windowIndex[$cnt] = $inventory;
-			$this->windows->attach($inventory, $cnt);
+		if($forceId === null){
+			$this->windowCnt = $cnt = max(2, ++$this->windowCnt % 99);
+		}else{
+			$cnt = (int) $forceId;
+		}
+		$this->windowIndex[$cnt] = $inventory;
+		$this->windows->attach($inventory, $cnt);
+		if($inventory->open($this)){
 			return $cnt;
 		}else{
+			$this->removeWindow($inventory);
 			return -1;
 		}
-
-
 	}
 
 	public function removeWindow(Inventory $inventory){
 		$inventory->close($this);
 		if($this->windows->contains($inventory)){
 			$id = $this->windows[$inventory];
+			$this->windows->detach($this->windowIndex[$id]);
 			unset($this->windowIndex[$id]);
-			$this->windows->detach($this->windows[$inventory]);
 		}
 	}
 

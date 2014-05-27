@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\Server;
 
 class ShapelessRecipe implements Recipe{
 	/** @var Item */
@@ -88,5 +89,9 @@ class ShapelessRecipe implements Recipe{
 			$ingredients[] = clone $ingredient;
 		}
 		return $ingredients;
+	}
+
+	public function registerToCraftingManager(){
+		Server::getInstance()->getCraftingManager()->registerShapelessRecipe($this);
 	}
 }

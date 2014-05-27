@@ -390,7 +390,11 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		foreach($target as $player){
-			$pk->windowid = $player->getWindowId($this);
+			if(($id = $player->getWindowId($this)) === -1){
+				$this->close($player);
+				continue;
+			}
+			$pk->windowid = $id;
 			$player->dataPacket(clone $pk);
 		}
 	}
@@ -409,7 +413,11 @@ abstract class BaseInventory implements Inventory{
 		$pk->item = clone $this->getItem($index);
 
 		foreach($target as $player){
-			$pk->windowid = $player->getWindowId($this);
+			if(($id = $player->getWindowId($this)) === -1){
+				$this->close($player);
+				continue;
+			}
+			$pk->windowid = $id;
 			$player->dataPacket(clone $pk);
 		}
 	}

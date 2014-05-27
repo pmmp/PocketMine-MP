@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\Server;
 
 class ShapedRecipe implements Recipe{
 	/** @var Item */
@@ -97,5 +98,9 @@ class ShapedRecipe implements Recipe{
 	 */
 	public function getShape(){
 		return $this->rows;
+	}
+
+	public function registerToCraftingManager(){
+		Server::getInstance()->getCraftingManager()->registerShapedRecipe($this);
 	}
 }

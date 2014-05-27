@@ -59,19 +59,23 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$this->inventories[spl_object_hash($transaction->getInventory())] = $transaction->getInventory();
 	}
 
-	public function canExecute(){
-		/** @var Item[] $needItems */
-		$needItems = [];
-		/** @var Item[] $haveItems */
-		$haveItems = [];
+	/**
+	 * @param Item[] $needItems
+	 * @param Item[] $haveItems
+	 */
+	protected function matchItems(array &$needItems, array &$haveItems){
 		foreach($this->transactions as $key => $ts){
-			$needItems[] = $ts->getTargetItem();
+			if($ts->getTargetItem()->getID() !== Item::AIR){
+				$needItems[] = $ts->getTargetItem();
+			}
 			$checkSourceItem = $ts->getInventory()->getItem($ts->getSlot());
 			$sourceItem = $ts->getSourceItem();
 			if(!$checkSourceItem->equals($sourceItem, true) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
 				return false;
 			}
-			$haveItems[] = $sourceItem;
+			if($sourceItem->getID() !== Item::AIR){
+				$haveItems[] = $sourceItem;
+			}
 		}
 
 		foreach($needItems as $i => $needItem){
@@ -90,7 +94,12 @@ class SimpleTransactionGroup implements TransactionGroup{
 				}
 			}
 		}
+	}
 
+	public function canExecute(){
+		$haveItems = [];
+		$needItems = [];
+		$this->matchItems($haveItems, $needItems);
 		return count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
 	}
 
@@ -110,6 +119,8 @@ class SimpleTransactionGroup implements TransactionGroup{
 		foreach($this->transactions as $transaction){
 			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem());
 		}
+
+		$this->hasExecuted = true;
 
 		return true;
 	}

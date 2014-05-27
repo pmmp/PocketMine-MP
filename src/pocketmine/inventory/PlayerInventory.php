@@ -335,7 +335,11 @@ class PlayerInventory extends BaseInventory{
 					$pk->hotbar[] = $index <= -1 ? -1 : $index + 9;
 				}
 			}
-			$pk->windowid = $player->getWindowId($this);
+			if(($id = $player->getWindowId($this)) === -1){
+				$this->close($player);
+				continue;
+			}
+			$pk->windowid = $id;
 			$player->dataPacket(clone $pk);
 		}
 	}
@@ -355,10 +359,15 @@ class PlayerInventory extends BaseInventory{
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
+				/** @var Player $player */
 				//TODO: Check if Mojang has implemented this (for the player inventory) on Minecraft: PE 0.9.0
 				$this->sendContents($player);
 			}else{
-				$pk->windowid = $player->getWindowId($this);
+				if(($id = $player->getWindowId($this)) === -1){
+					$this->close($player);
+					continue;
+				}
+				$pk->windowid = $id;
 				$player->dataPacket(clone $pk);
 			}
 		}
