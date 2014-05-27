@@ -72,7 +72,6 @@ abstract class Crafting{
 		"PUMPKIN:?x1,EGG:?x1,SUGAR:?x1=>PUMPKIN_PIE:0x1",
 		"BROWN_MUSHROOM:?x1,RED_MUSHROOM:?x1,BOWL:?x1=>MUSHROOM_STEW:0x1",
 		"SUGARCANE:?x1=>SUGAR:0x1",
-		"MELON_SLICE:?x1=>MELON_SEEDS:0x1",
 		"HAY_BALE:?x1=>WHEAT:0x9",
 
 		//Items

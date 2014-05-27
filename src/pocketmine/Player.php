@@ -40,6 +40,7 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\inventory\BaseTransaction;
+use pocketmine\inventory\BigShapelessRecipe;
 use pocketmine\inventory\CraftingTransactionGroup;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
@@ -117,7 +118,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public $chunksLoaded = [];
 	public $lastCorrect;
 	/** @var SimpleTransactionGroup */
-	public $currentTransaction = null;
+	protected $currentTransaction = null;
+	public $craftingType = 0; //0 = 2x2 crafting, 1 = 3x3 crafting, 2 = stonecutter
+
 	protected $isCrafting = false;
 	public $loginData = [];
 	protected $lastMovement = 0;
@@ -1561,6 +1564,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			case ProtocolInfo::USE_ITEM_PACKET:
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
 
+				$this->craftingType = 0;
+
 				if(($this->spawned === false or $this->blocked === true) and $packet->face >= 0 and $packet->face <= 5){
 					$target = $this->getLevel()->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
@@ -1642,6 +1647,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+
+				$this->craftingType = 0;
 				$packet->eid = $this->id;
 
 				switch($packet->action){
@@ -1716,6 +1723,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+				$this->craftingType = 0;
 
 				$vector = new Vector3($packet->x, $packet->y, $packet->z);
 
@@ -1788,6 +1796,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false){
 					break;
 				}
+
+				$this->craftingType = 0;
 				$packet->eid = $this->id;
 				$data = [];
 				$data["target"] = $packet->target;
@@ -1882,6 +1892,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->dead === false){
 					break;
 				}
+				$this->craftingType = 0;
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
 
@@ -1903,6 +1914,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+				$this->craftingType = 0;
 
 				$packet->eid = $this->id;
 				if($this->entity->inAction === true){
@@ -1976,6 +1988,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false){
 					break;
 				}
+				$this->craftingType = 0;
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
@@ -1997,6 +2010,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $packet->windowid === 0){
 					break;
 				}
+				$this->craftingType = 0;
 				if(isset($this->windowIndex[$packet->windowid])){
 					$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this));
 					$this->removeWindow($this->windowIndex[$packet->windowid]);
@@ -2019,6 +2033,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 				}elseif(isset($this->windowIndex[$packet->windowid])){
+					$this->craftingType = 0;
 					$inv = $this->windowIndex[$packet->windowid];
 					$transaction = new BaseTransaction($inv, $packet->slot, $inv->getItem($packet->slot), $packet->item);
 				}else{
@@ -2063,40 +2078,47 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->currentTransaction = null;
 				}elseif($packet->windowid == 0){ //Try crafting
 					$craftingGroup = new CraftingTransactionGroup($this->currentTransaction);
-					if($craftingGroup->canExecute() and $craftingGroup->execute()){ //We can craft!
-						switch($craftingGroup->getResult()->getID()){
-							case Item::WORKBENCH:
-								$this->awardAchievement("buildWorkBench");
-								break;
-							case Item::WOODEN_PICKAXE:
-								$this->awardAchievement("buildPickaxe");
-								break;
-							case Item::FURNACE:
-								$this->awardAchievement("buildFurnace");
-								break;
-							case Item::WOODEN_HOE:
-								$this->awardAchievement("buildHoe");
-								break;
-							case Item::BREAD:
-								$this->awardAchievement("makeBread");
-								break;
-							case Item::CAKE:
-								//TODO: detect complex recipes like cake that leave remainings
-								$this->awardAchievement("bakeCake");
-								$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
-								break;
-							case Item::STONE_PICKAXE:
-							case Item::GOLD_PICKAXE:
-							case Item::IRON_PICKAXE:
-							case Item::DIAMOND_PICKAXE:
-								$this->awardAchievement("buildBetterPickaxe");
-								break;
-							case Item::WOODEN_SWORD:
-								$this->awardAchievement("buildSword");
-								break;
-							case Item::DIAMOND:
-								$this->awardAchievement("diamond");
-								break;
+					if($craftingGroup->canExecute()){ //We can craft!
+						$recipe = $craftingGroup->getMatchingRecipe();
+						if($recipe instanceof BigShapelessRecipe and $this->craftingType !== 1){
+							break;
+						}//TODO: do stonecutter
+
+						if($craftingGroup->execute()){
+							switch($craftingGroup->getResult()->getID()){
+								case Item::WORKBENCH:
+									$this->awardAchievement("buildWorkBench");
+									break;
+								case Item::WOODEN_PICKAXE:
+									$this->awardAchievement("buildPickaxe");
+									break;
+								case Item::FURNACE:
+									$this->awardAchievement("buildFurnace");
+									break;
+								case Item::WOODEN_HOE:
+									$this->awardAchievement("buildHoe");
+									break;
+								case Item::BREAD:
+									$this->awardAchievement("makeBread");
+									break;
+								case Item::CAKE:
+									//TODO: detect complex recipes like cake that leave remainings
+									$this->awardAchievement("bakeCake");
+									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
+									break;
+								case Item::STONE_PICKAXE:
+								case Item::GOLD_PICKAXE:
+								case Item::IRON_PICKAXE:
+								case Item::DIAMOND_PICKAXE:
+									$this->awardAchievement("buildBetterPickaxe");
+									break;
+								case Item::WOODEN_SWORD:
+									$this->awardAchievement("buildSword");
+									break;
+								case Item::DIAMOND:
+									$this->awardAchievement("diamond");
+									break;
+							}
 						}
 
 
@@ -2119,6 +2141,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
+				$this->craftingType = 0;
 
 				$t = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){

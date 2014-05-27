@@ -91,6 +91,17 @@ class ShapelessRecipe implements Recipe{
 		return $ingredients;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getIngredientCount(){
+		$count = 0;
+		foreach($this->ingredients as $ingredient){
+			$count += $ingredient->getCount();
+		}
+		return $count;
+	}
+
 	public function registerToCraftingManager(){
 		Server::getInstance()->getCraftingManager()->registerShapelessRecipe($this);
 	}

@@ -30,21 +30,16 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 	protected $input = [];
 	/** @var Item[] */
 	protected $output = [];
+
+	/** @var Recipe */
+	protected $recipe = null;
+
 	public function __construct(TransactionGroup $group){
 		parent::__construct();
 		$this->transactions = $group->getTransactions();
 		$this->inventories = $group->getInventories();
 
 		$this->matchItems($this->output, $this->input);
-		/*$input = "";
-		$output = "";
-		foreach($this->input as $item){
-			$input .= $item->getID().":".$item->getDamage()."(".$item->getCount()."), ";
-		}
-		foreach($this->output as $item){
-			$output .= $item->getID().":".$item->getDamage()."(".$item->getCount()."), ";
-		}
-		console("craft_tx#".spl_object_hash($this).": ".substr($input, 0, -2)." => ".substr($output, 0, -2));*/
 	}
 
 	public function addTransaction(Transaction $transaction){
@@ -82,7 +77,10 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 	 * @return Recipe
 	 */
 	public function getMatchingRecipe(){
-		return Server::getInstance()->getCraftingManager()->matchTransaction($this);
+		if($this->recipe === null){
+			$this->recipe = Server::getInstance()->getCraftingManager()->matchTransaction($this);
+		}
+		return $this->recipe;
 	}
 
 	public function execute(){

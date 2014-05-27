@@ -100,6 +100,9 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$haveItems = [];
 		$needItems = [];
 		$this->matchItems($haveItems, $needItems);
+		$input = "";
+		$output = "";
+
 		return count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
 	}
 

@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
+//TODO: check orientation
 class Workbench extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::WORKBENCH, $meta, "Crafting Table");
@@ -32,7 +33,9 @@ class Workbench extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		$player->toCraft[-1] = 1;
+		if($player instanceof Player){
+			$player->craftingType = 1;
+		}
 
 		return true;
 	}

@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
+//TODO: check orientation
 class Stonecutter extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::STONECUTTER, $meta, "Stonecutter");
@@ -31,7 +32,9 @@ class Stonecutter extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		$player->toCraft[-1] = 2;
+		if($player instanceof Player){
+			$player->craftingType = 2;
+		}
 
 		return true;
 	}
