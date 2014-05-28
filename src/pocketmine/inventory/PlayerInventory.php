@@ -34,7 +34,7 @@ use pocketmine\Server;
 
 class PlayerInventory extends BaseInventory{
 
-	protected $itemInHandIndex = 0;
+	protected $itemInHandIndex = -1;
 	/** @var int[] */
 	protected $hotbar;
 
@@ -101,10 +101,10 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function setHeldItemSlot($slot){
-		if($slot >= 0 and $slot < $this->getSize()){
+		if($slot >= -1 and $slot < $this->getSize()){
 			$item = $this->getItem($slot);
 			if($this->getHolder() instanceof Player){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, 0));
+				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $this->itemInHandIndex));
 				if($ev->isCancelled()){
 					$this->sendHeldItem($this->getHolder());
 
