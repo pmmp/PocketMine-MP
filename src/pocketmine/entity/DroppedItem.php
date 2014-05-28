@@ -134,6 +134,7 @@ class DroppedItem extends Entity{
 	public function getData(){
 		$flags = 0;
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
+
 		return [
 			0 => array("type" => 0, "value" => $flags),
 			1 => array("type" => 1, "value" => 0),

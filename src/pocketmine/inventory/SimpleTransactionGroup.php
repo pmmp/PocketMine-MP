@@ -126,6 +126,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$haveItems = [];
 		$needItems = [];
 		$this->matchItems($haveItems, $needItems);
+
 		return count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
 	}
 
@@ -139,6 +140,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 			foreach($this->inventories as $inventory){
 				$inventory->sendContents($inventory->getViewers());
 			}
+
 			return false;
 		}
 

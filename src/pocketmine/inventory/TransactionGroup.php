@@ -21,8 +21,6 @@
 
 namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
-
 interface TransactionGroup{
 
 	/**

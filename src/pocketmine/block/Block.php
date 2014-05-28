@@ -24,11 +24,9 @@
  */
 namespace pocketmine\block;
 
-use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
@@ -718,7 +716,7 @@ abstract class Block extends Position implements Metadatable{
 	 * Checks for collision against an AxisAlignedBB
 	 *
 	 * @param AxisAlignedBB $bb
-	 * @param Block[] $list
+	 * @param Block[]       $list
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb, &$list = array()){
 		$bb2 = $this->getBoundingBox();

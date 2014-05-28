@@ -24,6 +24,7 @@
  */
 namespace pocketmine\entity;
 
+use pocketmine\block\Block;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\entity\EntityMotionEvent;
@@ -40,16 +41,15 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
-use pocketmine\Network;
 use pocketmine\network\protocol\MoveEntityPacket_PosRot;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
+use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use pocketmine\block\Block;
 
 abstract class Entity extends Position implements Metadatable{
 	public static $entityCount = 1;
@@ -140,16 +140,16 @@ abstract class Entity extends Position implements Metadatable{
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->setPositionAndRotation(new Vector3(
-			$this->namedtag["Pos"][0],
-			$this->namedtag["Pos"][1],
-			$this->namedtag["Pos"][2]),
+				$this->namedtag["Pos"][0],
+				$this->namedtag["Pos"][1],
+				$this->namedtag["Pos"][2]),
 			$this->namedtag->Rotation[0],
 			$this->namedtag->Rotation[1]
 		);
 		$this->setMotion(new Vector3(
-			$this->namedtag["Motion"][0],
-			$this->namedtag["Motion"][1],
-			$this->namedtag["Motion"][2])
+				$this->namedtag["Motion"][0],
+				$this->namedtag["Motion"][1],
+				$this->namedtag["Motion"][2])
 		);
 
 		if(!isset($this->namedtag->FallDistance)){
@@ -330,11 +330,13 @@ abstract class Entity extends Position implements Metadatable{
 
 			if($direction === 0){
 				$this->motionX = -$force;
+
 				return true;
 			}
 
 			if($direction === 1){
 				$this->motionX = $force;
+
 				return true;
 			}
 
@@ -342,11 +344,13 @@ abstract class Entity extends Position implements Metadatable{
 
 			if($direction === 3){
 				$this->motionY = $force;
+
 				return true;
 			}
 
 			if($direction === 4){
 				$this->motionZ = -$force;
+
 				return true;
 			}
 
@@ -363,6 +367,7 @@ abstract class Entity extends Position implements Metadatable{
 		//TODO: check vehicles
 		if($this->dead === true){
 			$this->close();
+
 			return false;
 		}
 
@@ -461,6 +466,7 @@ abstract class Entity extends Position implements Metadatable{
 
 		$hasUpdate = $this->entityBaseTick();
 		$this->updateMovement();
+
 		//if($this->isStatic())
 		return true;
 		//return !($this instanceof Player);

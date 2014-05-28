@@ -82,7 +82,6 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
 /**
@@ -2128,13 +2127,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 
 
-
 						$this->currentTransaction = null;
 					}
 
 
 				}
-
 
 
 				break;
@@ -2374,6 +2371,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return $cnt;
 		}else{
 			$this->removeWindow($inventory);
+
 			return -1;
 		}
 	}

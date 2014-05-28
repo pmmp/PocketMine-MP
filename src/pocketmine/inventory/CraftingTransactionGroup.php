@@ -64,6 +64,7 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 	 */
 	public function getResult(){
 		reset($this->output);
+
 		return current($this->output);
 	}
 
@@ -71,6 +72,7 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 		if(count($this->output) !== 1 or count($this->input) === 0){
 			return false;
 		}
+
 		return $this->getMatchingRecipe() instanceof Recipe;
 	}
 
@@ -81,6 +83,7 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 		if($this->recipe === null){
 			$this->recipe = Server::getInstance()->getCraftingManager()->matchTransaction($this);
 		}
+
 		return $this->recipe;
 	}
 
@@ -94,6 +97,7 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 			foreach($this->inventories as $inventory){
 				$inventory->sendContents($inventory->getViewers());
 			}
+
 			return false;
 		}
 

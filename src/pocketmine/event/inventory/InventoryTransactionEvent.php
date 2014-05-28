@@ -20,11 +20,10 @@
  */
 
 namespace pocketmine\event\inventory;
+
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\TransactionGroup;
-use pocketmine\Player;
 
 /**
  * Called when there is a transaction between two Inventory objects.

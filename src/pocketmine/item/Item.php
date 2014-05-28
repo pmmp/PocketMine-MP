@@ -440,6 +440,7 @@ class Item{
 		}else{
 			$item = new Item($id, $meta, $count);
 		}
+
 		return $item;
 	}
 

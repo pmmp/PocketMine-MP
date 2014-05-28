@@ -26,6 +26,7 @@ class MainLogger extends \Thread implements Logger{
 	protected $logStream;
 	protected $shutdown;
 	protected $hasANSI;
+	protected $logDebug;
 	private $logResource;
 	/** @var MainLogger */
 	public static $logger = null;
@@ -33,10 +34,11 @@ class MainLogger extends \Thread implements Logger{
 	/**
 	 * @param string $logFile
 	 * @param bool   $hasANSI
+	 * @param bool   $logDebug
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function __construct($logFile, $hasANSI = false){
+	public function __construct($logFile, $hasANSI = false, $logDebug = false){
 		if(static::$logger instanceof MainLogger){
 			throw new \RuntimeException("MainLogger has been already created");
 		}
@@ -44,6 +46,7 @@ class MainLogger extends \Thread implements Logger{
 		@mkdir(basename($logFile), 0777, true);
 		$this->logFile = $logFile;
 		$this->hasANSI = (bool) $hasANSI;
+		$this->logDebug = (bool) $logDebug;
 		$this->logStream = "";
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
@@ -56,35 +59,45 @@ class MainLogger extends \Thread implements Logger{
 	}
 
 	public function emergency($message){
-		$this->send(TextFormat::RED . "[EMERGENCY] ". $message);
+		$this->send(TextFormat::RED . "[EMERGENCY] " . $message);
 	}
 
 	public function alert($message){
-		$this->send(TextFormat::RED . "[ALERT] ". $message);
+		$this->send(TextFormat::RED . "[ALERT] " . $message);
 	}
 
 	public function critical($message){
-		$this->send(TextFormat::RED . "[CRITICAL] ". $message);
+		$this->send(TextFormat::RED . "[CRITICAL] " . $message);
 	}
 
 	public function error($message){
-		$this->send(TextFormat::DARK_RED . "[ERROR] ". $message);
+		$this->send(TextFormat::DARK_RED . "[ERROR] " . $message);
 	}
 
 	public function warning($message){
-		$this->send(TextFormat::YELLOW . "[WARNING] ". $message);
+		$this->send(TextFormat::YELLOW . "[WARNING] " . $message);
 	}
 
 	public function notice($message){
-		$this->send(TextFormat::AQUA . "[NOTICE] ". $message);
+		$this->send(TextFormat::AQUA . "[NOTICE] " . $message);
 	}
 
 	public function info($message){
-		$this->send(TextFormat::WHITE . "[INFO] ". $message);
+		$this->send(TextFormat::WHITE . "[INFO] " . $message);
 	}
 
 	public function debug($message){
-		$this->send(TextFormat::GRAY . "[DEBUG] ". $message);
+		if($this->logDebug === false){
+			return;
+		}
+		$this->send(TextFormat::GRAY . "[DEBUG] " . $message);
+	}
+
+	/**
+	 * @param bool $logDebug
+	 */
+	public function setLogDebug($logDebug){
+		$this->logDebug = (bool) $logDebug;
 	}
 
 	public function log($level, $message){
@@ -143,7 +156,7 @@ class MainLogger extends \Thread implements Logger{
 
 		while($this->shutdown === false){
 			if(strlen($this->logStream) >= 4096){
-				$this->synchronized(function(){
+				$this->synchronized(function (){
 					$chunks = strlen($this->logStream) >> 12;
 					$chunk = substr($this->logStream, 0, $chunks << 12);
 					$this->logStream = substr($this->logStream, $chunks << 12);

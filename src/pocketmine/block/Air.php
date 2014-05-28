@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\block;
+
 use pocketmine\math\AxisAlignedBB;
 
 

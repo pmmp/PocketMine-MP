@@ -28,7 +28,6 @@ use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\network\protocol\ExplodePacket;
-use pocketmine\Player;
 use pocketmine\Server;
 
 class Explosion{

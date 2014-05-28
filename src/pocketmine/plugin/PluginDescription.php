@@ -52,6 +52,7 @@ class PluginDescription{
 
 	/**
 	 * @param array $plugin
+	 *
 	 * @throws \Exception
 	 */
 	private function loadMap(array $plugin){

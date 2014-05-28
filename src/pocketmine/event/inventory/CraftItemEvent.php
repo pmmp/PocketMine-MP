@@ -20,12 +20,11 @@
  */
 
 namespace pocketmine\event\inventory;
+
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\CraftingTransactionGroup;
 use pocketmine\inventory\Recipe;
-use pocketmine\Player;
 
 class CraftItemEvent extends Event implements Cancellable{
 	public static $handlerList = null;

@@ -33,7 +33,6 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\pmf\LevelFormat;
-use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\Generator;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
@@ -536,6 +535,7 @@ class Level{
 
 	public function isFullBlock(Vector3 $pos){
 		$bb = $this->getBlock($pos)->getBoundingBox();
+
 		return $bb instanceof AxisAlignedBB and $bb->getAverageEdgeLength() >= 1;
 	}
 
@@ -685,26 +685,26 @@ class Level{
 		if($item->getID() !== Item::AIR and $item->getCount() > 0){
 			$itemEntity = new DroppedItem($this, new Compound("", [
 				"Pos" => new Enum("Pos", [
-					new Double("", $source->getX()),
-					new Double("", $source->getY()),
-					new Double("", $source->getZ())
-				]),
+						new Double("", $source->getX()),
+						new Double("", $source->getY()),
+						new Double("", $source->getZ())
+					]),
 				//TODO: add random motion with physics
 				"Motion" => new Enum("Motion", [
-					new Double("", (lcg_value() * 0.2 - 0.1) * $force),
-					new Double("", 0.2 * $force),
-					new Double("", (lcg_value() * 0.2 - 0.1) * $force)
-				]),
+						new Double("", (lcg_value() * 0.2 - 0.1) * $force),
+						new Double("", 0.2 * $force),
+						new Double("", (lcg_value() * 0.2 - 0.1) * $force)
+					]),
 				"Rotation" => new Enum("Rotation", [
-					new Float("", lcg_value() * 360),
-					new Float("", 0)
-				]),
+						new Float("", lcg_value() * 360),
+						new Float("", 0)
+					]),
 				"Health" => new Short("Health", 5),
 				"Item" => new Compound("Item", [
-					"id" => new Short("id", $item->getID()),
-					"Damage" => new Short("Damage", $item->getDamage()),
-					"Count" => new Byte("Count", $item->getCount())
-				]),
+						"id" => new Short("id", $item->getID()),
+						"Damage" => new Short("Damage", $item->getDamage()),
+						"Count" => new Byte("Count", $item->getCount())
+					]),
 				"PickupDelay" => new Short("PickupDelay", 10)
 			]));
 
@@ -772,6 +772,7 @@ class Level{
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -825,6 +826,7 @@ class Level{
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
 			$this->setBlock($block, new Air(), true, false, true);
+
 			return false;
 		}else{
 			return false;
@@ -884,6 +886,7 @@ class Level{
 		if($item->getCount() <= 0){
 			$item = Item::get(Item::AIR, 0, 0);
 		}
+
 		return true;
 	}
 

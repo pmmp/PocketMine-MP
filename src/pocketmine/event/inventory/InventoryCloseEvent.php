@@ -20,6 +20,7 @@
  */
 
 namespace pocketmine\event\inventory;
+
 use pocketmine\inventory\Inventory;
 use pocketmine\Player;
 

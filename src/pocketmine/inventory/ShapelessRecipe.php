@@ -77,6 +77,7 @@ class ShapelessRecipe implements Recipe{
 				$item->setCount($item->getCount() - 1);
 			}
 		}
+
 		return $this;
 	}
 
@@ -88,6 +89,7 @@ class ShapelessRecipe implements Recipe{
 		foreach($this->ingredients as $ingredient){
 			$ingredients[] = clone $ingredient;
 		}
+
 		return $ingredients;
 	}
 
@@ -99,6 +101,7 @@ class ShapelessRecipe implements Recipe{
 		foreach($this->ingredients as $ingredient){
 			$count += $ingredient->getCount();
 		}
+
 		return $count;
 	}
 

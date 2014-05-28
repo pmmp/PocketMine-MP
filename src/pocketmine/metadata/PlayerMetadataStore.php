@@ -29,6 +29,7 @@ class PlayerMetadataStore extends MetadataStore{
 		if(!($player instanceof OfflinePlayer)){
 			throw new \InvalidArgumentException("Argument must be an OfflinePlayer instance");
 		}
+
 		return strtolower($player->getName()) . ":" . $metadataKey;
 	}
 }

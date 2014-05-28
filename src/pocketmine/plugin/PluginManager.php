@@ -437,6 +437,7 @@ class PluginManager{
 					unset($this->permSubs[$permission][$k]);
 				}
 			}
+
 			return $subs;
 		}
 

@@ -85,6 +85,7 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\Logger;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
@@ -1275,6 +1276,9 @@ class Server{
 		}
 
 		define("pocketmine\\DEBUG", $this->getConfigInt("debug.level", 1));
+		if($this->logger instanceof MainLogger){
+			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+		}
 		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
@@ -1309,7 +1313,6 @@ class Server{
 		//TODO: update checking (async)
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
-
 
 
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");

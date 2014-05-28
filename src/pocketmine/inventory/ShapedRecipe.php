@@ -45,11 +45,11 @@ class ShapedRecipe implements Recipe{
 			throw new \Exception("Must provide a shape");
 		}
 		if(count($shape) > 3){
-			throw new \Exception("Crafting recipes should  be 1, 2, 3 rows, not ".count($shape));
+			throw new \Exception("Crafting recipes should  be 1, 2, 3 rows, not " . count($shape));
 		}
 		foreach($shape as $row){
 			if(strlen($row) === 0 or strlen($row) > 3){
-				throw new \Exception("Crafting rows should  be 1, 2, 3 characters, not ".count($row));
+				throw new \Exception("Crafting rows should  be 1, 2, 3 characters, not " . count($row));
 			}
 			$this->rows[] = $row;
 			$len = strlen($row);
@@ -70,7 +70,7 @@ class ShapedRecipe implements Recipe{
 	 */
 	public function setIngredient($key, Item $item){
 		if(!isset($this->ingredients[$key])){
-			throw new \Exception("Symbol does not appear in the shape: ". $key);
+			throw new \Exception("Symbol does not appear in the shape: " . $key);
 		}
 
 		$this->ingredients[$key] = $item;
@@ -90,6 +90,7 @@ class ShapedRecipe implements Recipe{
 				$ingredients[$key] = $ingredient;
 			}
 		}
+
 		return $ingredients;
 	}
 

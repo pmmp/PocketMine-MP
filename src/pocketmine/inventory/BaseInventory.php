@@ -133,6 +133,7 @@ abstract class BaseInventory implements Inventory{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
 				$this->sendContents($this->getViewers());
+
 				return false;
 			}
 			$item = $ev->getNewItem();
@@ -220,6 +221,7 @@ abstract class BaseInventory implements Inventory{
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -258,6 +260,7 @@ abstract class BaseInventory implements Inventory{
 				break;
 			}
 		}
+
 		return $slots;
 	}
 
@@ -353,6 +356,7 @@ abstract class BaseInventory implements Inventory{
 			return false;
 		}
 		$this->onOpen($who);
+
 		return true;
 	}
 

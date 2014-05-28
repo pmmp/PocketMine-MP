@@ -68,7 +68,6 @@ namespace pocketmine {
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\LogLevel;
 	use pocketmine\utils\MainLogger;
-	use pocketmine\utils\TextFormat;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
@@ -209,25 +208,6 @@ namespace pocketmine {
 
 		return true;
 	}
-
-	function log($message, $name, $EOL = true, $level = 2, $close = false){
-		global $fpointers;
-		if((!defined("pocketmine\\DEBUG") or \pocketmine\DEBUG >= $level) and (!defined("pocketmine\\LOG") or \pocketmine\LOG === true)){
-			$message .= $EOL === true ? PHP_EOL : "";
-			if(!isset($fpointers)){
-				$fpointers = [];
-			}
-			if(!isset($fpointers[$name]) or $fpointers[$name] === false){
-				$fpointers[$name] = @fopen(\pocketmine\DATA . "/" . $name . ".log", "ab");
-			}
-			@fwrite($fpointers[$name], $message);
-			if($close === true){
-				fclose($fpointers[$name]);
-				unset($fpointers[$name]);
-			}
-		}
-	}
-
 
 	set_error_handler("\\pocketmine\\error_handler", E_ALL);
 

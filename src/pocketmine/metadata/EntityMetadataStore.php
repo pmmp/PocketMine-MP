@@ -29,6 +29,7 @@ class EntityMetadataStore extends MetadataStore{
 		if(!($entity instanceof Entity)){
 			throw new \InvalidArgumentException("Argument must be an Entity instance");
 		}
+
 		return $entity->getID() . ":" . $metadataKey;
 	}
 }
