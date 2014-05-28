@@ -20,18 +20,6 @@
 */
 
 namespace {
-	/**
-	 * Output text to the console, can contain Minecraft-formatted text.
-	 *
-	 * @param string $message
-	 * @param bool   $EOL
-	 * @param bool   $log
-	 * @param int    $level
-	 */
-	function console($message, $EOL = true, $log = true, $level = 1){
-		pocketmine\console($message, $EOL, $log, $level);
-	}
-
 	function safe_var_dump(){
 		static $cnt = 0;
 		foreach(func_get_args() as $var){
@@ -78,6 +66,8 @@ namespace {
 
 namespace pocketmine {
 	use pocketmine\utils\Binary;
+	use pocketmine\utils\LogLevel;
+	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\TextFormat;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
@@ -154,11 +144,9 @@ namespace pocketmine {
 	define("pocketmine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
-	if((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])){
-		define("pocketmine\\ANSI", true);
-	}else{
-		define("pocketmine\\ANSI", false);
-	}
+	define("pocketmine\\ANSI", ((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])));
+
+	$logger = new MainLogger(\pocketmine\PATH . "server.log", \pocketmine\ANSI);
 
 	function kill($pid){
 		switch(Utils::getOS()){
@@ -169,57 +157,6 @@ namespace pocketmine {
 			case "linux":
 			default:
 				exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
-		}
-	}
-
-	/**
-	 * Output text to the console, can contain Minecraft-formatted text.
-	 *
-	 * @param      $message
-	 * @param bool $EOL
-	 * @param bool $log
-	 * @param int  $level
-	 */
-	function console($message, $EOL = true, $log = true, $level = 1){
-		if(!defined("pocketmine\\DEBUG") or \pocketmine\DEBUG >= $level){
-			$message .= $EOL === true ? PHP_EOL : "";
-			if($message{0} !== "["){
-				$message = "[INFO] $message";
-			}
-			$time = (\pocketmine\ANSI === true ? TextFormat::AQUA . date("H:i:s") . TextFormat::RESET : date("H:i:s")) . " ";
-			$replaced = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $time . $message));
-			if($log === true and (!defined("LOG") or LOG === true)){
-				log(date("Y-m-d") . " " . $replaced, "server", false, $level);
-			}
-			if(\pocketmine\ANSI === true){
-				$add = "";
-				if(preg_match("/^\\[([a-zA-Z0-9]*)\\]/", $message, $matches) > 0){
-					switch($matches[1]){
-						case "ERROR":
-						case "SEVERE":
-							$add .= TextFormat::RED;
-							break;
-						case "TRACE":
-						case "INTERNAL":
-						case "DEBUG":
-							$add .= TextFormat::GRAY;
-							break;
-						case "WARNING":
-							$add .= TextFormat::YELLOW;
-							break;
-						case "NOTICE":
-							$add .= TextFormat::AQUA;
-							break;
-						default:
-							$add = "";
-							break;
-					}
-				}
-				$message = TextFormat::toANSI($time . $add . $message . TextFormat::RESET);
-			}else{
-				$message = $replaced;
-			}
-			echo $message;
 		}
 	}
 
@@ -262,11 +199,12 @@ namespace pocketmine {
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		);
-		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? "ERROR" : "NOTICE";
+		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? LogLevel::ERROR : LogLevel::NOTICE;
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
-		console("[$type] A $errno error happened: \"$errstr\" in \"$errfile\" at line $errline", true, true, 0);
+		$logger = MainLogger::getLogger();
+		$logger->log($type, "A $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
 		foreach(getTrace() as $i => $line){
-			console("[TRACE] $line");
+			$logger->debug($line);
 		}
 
 		return true;
@@ -296,22 +234,22 @@ namespace pocketmine {
 	$errors = 0;
 
 	if(version_compare("5.4.0", PHP_VERSION) > 0){
-		console("[ERROR] Use PHP >= 5.4.0", true, true, 0);
+		$logger->critical("Use PHP >= 5.4.0");
 		++$errors;
 	}
 
 	if(php_sapi_name() !== "cli"){
-		console("[ERROR] You must run PocketMine-MP using the CLI.", true, true, 0);
+		$logger->critical("You must run PocketMine-MP using the CLI.");
 		++$errors;
 	}
 
 	if(!extension_loaded("sockets")){
-		console("[ERROR] Unable to find the Socket extension.", true, true, 0);
+		$logger->critical("Unable to find the Socket extension.");
 		++$errors;
 	}
 
 	if(!extension_loaded("pthreads")){
-		console("[ERROR] Unable to find the pthreads extension.", true, true, 0);
+		$logger->critical("Unable to find the pthreads extension.");
 		++$errors;
 	}else{
 		$pthreads_version = phpversion("pthreads");
@@ -319,52 +257,54 @@ namespace pocketmine {
 			$pthreads_version = "0.$pthreads_version";
 		}
 		if(version_compare($pthreads_version, "2.0.4") < 0){
-			console("[ERROR] pthreads >= 2.0.4 is required, while you have $pthreads_version.", true, true, 0);
+			$logger->critical("pthreads >= 2.0.4 is required, while you have $pthreads_version.");
 			++$errors;
 		}
 	}
 
 	if(!extension_loaded("uopz")){
-		//console("[NOTICE] Couldn't find the uopz extension. Some functions may be limited", true, true, 0);
+		//$logger->notice("Couldn't find the uopz extension. Some functions may be limited");
 	}
 
 	if(extension_loaded("pocketmine")){
 		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
-			console("[ERROR] You have the native PocketMine extension, but your version is lower than 0.0.1.", true, true, 0);
+			$logger->critical("You have the native PocketMine extension, but your version is lower than 0.0.1.");
 			++$errors;
 		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-			console("[ERROR] You have the native PocketMine extension, but your version is higher than 0.0.4.", true, true, 0);
+			$logger->critical("You have the native PocketMine extension, but your version is higher than 0.0.4.");
 			++$errors;
 		}
 	}
 
 	if(!extension_loaded("Weakref") and !extension_loaded("weakref")){
-		console("[ERROR] Unable to find the Weakref extension.", true, true, 0);
+		$logger->critical("Unable to find the Weakref extension.");
 		++$errors;
 	}
 
 	if(!extension_loaded("curl")){
-		console("[ERROR] Unable to find the cURL extension.", true, true, 0);
+		$logger->critical("Unable to find the cURL extension.");
 		++$errors;
 	}
 
 	if(!extension_loaded("sqlite3")){
-		console("[ERROR] Unable to find the SQLite3 extension.", true, true, 0);
+		$logger->critical("Unable to find the SQLite3 extension.");
 		++$errors;
 	}
 
 	if(!extension_loaded("yaml")){
-		console("[ERROR] Unable to find the YAML extension.", true, true, 0);
+		$logger->critical("Unable to find the YAML extension.");
 		++$errors;
 	}
 
 	if(!extension_loaded("zlib")){
-		console("[ERROR] Unable to find the Zlib extension.", true, true, 0);
+		$logger->critical("Unable to find the Zlib extension.");
 		++$errors;
 	}
 
 	if($errors > 0){
-		console("[ERROR] Please use the installer provided on the homepage, or recompile PHP again.", true, true, 0);
+		$logger->critical("Please use the installer provided on the homepage, or recompile PHP again.");
+		$logger->shutdown();
+		$logger->join();
 		exit(1); //Exit with error
 	}
 
@@ -383,11 +323,13 @@ namespace pocketmine {
 	}
 
 	if(substr(__FILE__, 0, 7) !== "phar://"){
-		console("[WARNING] Non-packaged PocketMine-MP installation detected, do not use on production.");
+		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
 	}
 
-	$server = new Server($autoloader, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
+	$server = new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 	$server->start();
+	$logger->shutdown();
+	$logger->join();
 
 	kill(getmypid());
 	exit(0);

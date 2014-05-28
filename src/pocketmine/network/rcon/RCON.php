@@ -28,6 +28,7 @@ namespace pocketmine\network\rcon;
 use pocketmine\command\RemoteConsoleCommandSender;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
 
@@ -43,9 +44,9 @@ class RCON{
 	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
 		$this->workers = [];
 		$this->password = (string) $password;
-		console("[INFO] Starting remote control listener");
+		MainLogger::getLogger()->info("Starting remote control listener");
 		if($this->password === ""){
-			console("[ERROR] RCON can't be started: Empty password");
+			MainLogger::getLogger()->critical("RCON can't be started: Empty password");
 
 			return;
 		}
@@ -53,7 +54,7 @@ class RCON{
 		$this->clientsPerThread = (int) max(1, $clientsPerThread);
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 		if($this->socket === false or !socket_bind($this->socket, $interface, (int) $port) or !socket_listen($this->socket)){
-			console("[ERROR] RCON can't be started: " . socket_strerror(socket_last_error()));
+			MainLogger::getLogger()->critical("RCON can't be started: " . socket_strerror(socket_last_error()));
 
 			return;
 		}
@@ -63,7 +64,7 @@ class RCON{
 			$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 		}
 		@socket_getsockname($this->socket, $addr, $port);
-		console("[INFO] RCON running on $addr:$port");
+		MainLogger::getLogger()->info("RCON running on $addr:$port");
 		Server::getInstance()->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "check")), 3);
 	}
 
@@ -83,7 +84,7 @@ class RCON{
 				$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 			}elseif($this->workers[$n]->isWaiting()){
 				if($this->workers[$n]->response !== ""){
-					console($this->workers[$n]->response);
+					MainLogger::getLogger()->info($this->workers[$n]->response);
 					$this->workers[$n]->notify();
 				}else{
 					Server::getInstance()->dispatchCommand($response = new RemoteConsoleCommandSender(), $this->workers[$n]->cmd);

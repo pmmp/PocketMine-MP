@@ -25,6 +25,8 @@
 namespace pocketmine\level\format\pmf;
 
 
+use pocketmine\utils\MainLogger;
+
 class PMF{
 	const VERSION = 0x01;
 
@@ -78,7 +80,7 @@ class PMF{
 				$this->type = ord($this->read(1));
 				break;
 			default:
-				console("[ERROR] Tried loading non-supported PMF version " . $this->version . " on file " . $this->file);
+				MainLogger::getLogger()->alert("Tried loading non-supported PMF version " . $this->version . " on file " . $this->file);
 
 				return false;
 		}

@@ -25,6 +25,7 @@ use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\format\PocketChunkParser;
 use pocketmine\nbt\NBT;
 use pocketmine\utils\Config;
+use pocketmine\utils\MainLogger;
 
 class LevelImport{
 	private $path;
@@ -36,7 +37,7 @@ class LevelImport{
 	public function import(){
 		if(file_exists($this->path . "tileEntities.dat")){ //OldPM
 			$level = unserialize(file_get_contents($this->path . "level.dat"));
-			console("[INFO] Importing OldPM level \"" . $level["LevelName"] . "\" to PMF format");
+			MainLogger::getLogger()->info("Importing OldPM level \"" . $level["LevelName"] . "\" to PMF format");
 			$entities = new Config($this->path . "entities.yml", Config::YAML, unserialize(file_get_contents($this->path . "entities.dat")));
 			$entities->save();
 			$tiles = new Config($this->path . "tiles.yml", Config::YAML, unserialize(file_get_contents($this->path . "tileEntities.dat")));
@@ -48,7 +49,7 @@ class LevelImport{
 			if($level["LevelName"] == ""){
 				$level["LevelName"] = "world" . time();
 			}
-			console("[INFO] Importing Pocket level \"" . $level->LevelName . "\" to PMF format");
+			MainLogger::getLogger()->info("Importing Pocket level \"" . $level->LevelName . "\" to PMF format");
 			unset($level->Player);
 			$nbt->read(substr(file_get_contents($this->path . "entities.dat"), 12));
 			$entities = $nbt->getData();
@@ -111,7 +112,7 @@ class LevelImport{
 				$pmf->setPopulated($X, $Z);
 				$pmf->saveChunk($X, $Z);
 			}
-			console("[NOTICE] Importing level " . ceil(($Z + 1) / 0.16) . "%");
+			MainLogger::getLogger()->notice("Importing level " . ceil(($Z + 1) / 0.16) . "%");
 		}
 		$chunks->map = null;
 		$chunks = null;

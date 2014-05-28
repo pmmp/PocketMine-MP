@@ -26,6 +26,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\utils\Binary;
+use pocketmine\utils\MainLogger;
 
 class LevelFormat extends PMF{
 	const VERSION = 2;
@@ -121,7 +122,7 @@ class LevelFormat extends PMF{
 		$this->seek(5);
 		$this->levelData["version"] = ord($this->read(1));
 		if($this->levelData["version"] > self::VERSION){
-			console("[ERROR] New unsupported PMF Level format version #" . $this->levelData["version"] . ", current version is #" . self::VERSION);
+			MainLogger::getLogger()->error("New unsupported PMF Level format version #" . $this->levelData["version"] . ", current version is #" . self::VERSION);
 
 			return false;
 		}
@@ -161,7 +162,7 @@ class LevelFormat extends PMF{
 	}
 
 	private function upgrade_From0_To1(){
-		console("[NOTICE] Old PMF Level format version #0 detected, upgrading to version #1");
+		MainLogger::getLogger()->notice("Old PMF Level format version #0 detected, upgrading to version #1");
 		for($index = 0; $index < 256; ++$index){
 			$X = $index & 0x0F;
 			$Z = $index >> 4;
@@ -186,7 +187,7 @@ class LevelFormat extends PMF{
 	}
 
 	private function upgrade_From1_To2(){
-		console("[NOTICE] Old PMF Level format version #1 detected, upgrading to version #2");
+		MainLogger::getLogger()->notice("Old PMF Level format version #1 detected, upgrading to version #2");
 		$nbt = new Compound("", array(
 			new Enum("Entities", []),
 			new Enum("TileEntities", [])
@@ -308,7 +309,7 @@ class LevelFormat extends PMF{
 			if(($this->chunkInfo[$index][0] & (1 << $Y)) !== 0){
 				// 4096 + 2048 + 2048, Block Data, Meta, Light
 				if(strlen($this->chunks[$index][$Y] = substr($chunk, $offset, 8192)) < 8192){
-					console("[NOTICE] Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents", true, true, 2);
+					MainLogger::getLogger()->notice("Empty corrupt chunk detected [$X,$Z,:$Y], recovering contents");
 					$this->fillMiniChunk($X, $Z, $Y);
 				}
 				$offset += 8192;

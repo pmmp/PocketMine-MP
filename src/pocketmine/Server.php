@@ -84,6 +84,7 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
+use pocketmine\utils\Logger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
@@ -121,6 +122,9 @@ class Server{
 
 	/** @var TickScheduler */
 	private $tickScheduler = null;
+
+	/** @var \pocketmine\utils\Logger */
+	private $logger;
 
 	/** @var CommandReader */
 	private $console = null;
@@ -445,6 +449,13 @@ class Server{
 	}
 
 	/**
+	 * @return Logger
+	 */
+	public function getLogger(){
+		return $this->logger;
+	}
+
+	/**
 	 * @return EntityMetadataStore
 	 */
 	public function getEntityMetadata(){
@@ -602,7 +613,7 @@ class Server{
 				$nbt["SpawnX"] = (int) $data->get("spawn")["x"];
 				$nbt["SpawnY"] = (int) $data->get("spawn")["y"];
 				$nbt["SpawnZ"] = (int) $data->get("spawn")["z"];
-				console("[NOTICE] Old Player data found for \"" . $name . "\", upgrading profile");
+				$this->logger->notice("Old Player data found for \"" . $name . "\", upgrading profile");
 				foreach($data->get("inventory") as $slot => $item){
 					if(count($item) === 3){
 						$nbt->Inventory[$slot + 9] = new Compound(false, array(
@@ -641,7 +652,7 @@ class Server{
 				}
 				unlink($path . "$name.yml");
 			}else{
-				console("[NOTICE] Player data not found for \"" . $name . "\", creating new profile");
+				$this->logger->notice("Player data not found for \"" . $name . "\", creating new profile");
 			}
 			$this->saveOfflinePlayerData($name, $nbt);
 
@@ -809,13 +820,13 @@ class Server{
 		if($this->isLevelLoaded($name)){
 			return true;
 		}elseif(!$this->isLevelGenerated($name)){
-			console("[NOTICE] Level \"" . $name . "\" not found");
+			$this->logger->notice("Level \"" . $name . "\" not found");
 
 			return false;
 		}
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		console("[INFO] Preparing level \"" . $name . "\"");
+		$this->logger->info("Preparing level \"" . $name . "\"");
 		$level = new LevelFormat($path . "level.pmf");
 		if(!$level->isLoaded){
 			console("[ERROR] Could not load level \"" . $name . "\"");
@@ -1175,14 +1186,16 @@ class Server{
 
 	/**
 	 * @param \SplClassLoader $autoloader
+	 * @param Logger          $logger
 	 * @param string          $filePath
 	 * @param string          $dataPath
 	 * @param string          $pluginPath
 	 */
-	public function __construct(\SplClassLoader $autoloader, $filePath, $dataPath, $pluginPath){
+	public function __construct(\SplClassLoader $autoloader, Logger $logger, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
 
 		$this->autoloader = $autoloader;
+		$this->logger = $logger;
 		$this->filePath = $filePath;
 		$this->dataPath = $dataPath;
 		$this->pluginPath = $pluginPath;
@@ -1211,9 +1224,9 @@ class Server{
 		$this->console = new CommandReader();
 
 		$version = new VersionString($this->getPocketMineVersion());
-		console("[INFO] Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());
+		$this->logger->info("Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());
 
-		console("[INFO] Loading properties...");
+		$this->logger->info("Loading properties...");
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, array(
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
@@ -1250,7 +1263,7 @@ class Server{
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
+				$this->logger->warning("PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -1265,20 +1278,20 @@ class Server{
 		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
 		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~448 kB/s
 		if(ADVANCED_CACHE == true){
-			console("[INFO] Advanced cache enabled");
+			$this->logger->info("Advanced cache enabled");
 		}
 
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and function_exists("cli_set_process_title")){
 			@cli_set_process_title("PocketMine-MP " . $this->getPocketMineVersion());
 		}
 
-		console("[INFO] Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
+		$this->logger->info("Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
 		$this->interface = new ThreadedHandler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0" : $this->getIp());
 
-		console("[INFO] This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
-		console("[INFO] PocketMine-MP is distributed under the LGPL License", true, true, 0);
+		$this->logger->info("This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
+		$this->logger->info("PocketMine-MP is distributed under the LGPL License", true, true, 0);
 
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
@@ -1331,8 +1344,8 @@ class Server{
 		/*
 		//TODO
 		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
-			console("[INFO] Checking for new server version");
-			console("[INFO] Last check: " . TextFormat::AQUA . date("Y-m-d H:i:s", $this->getProperty("last-update")) . "\x1b[0m");
+			$this->logger->info("Checking for new server version");
+			$this->logger->info("Last check: " . TextFormat::AQUA . date("Y-m-d H:i:s", $this->getProperty("last-update")));
 			if($this->server->version->isDev()){
 				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
 				if($info === false or !isset($info[0])){
@@ -1341,13 +1354,13 @@ class Server{
 					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
 					$last = $last->getTimestamp();
 					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \pocketmine\GIT_COMMIT != $info[0]["sha"]){
-						console("[NOTICE] " . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
-						console("[NOTICE] " . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
-						console("[NOTICE] " . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
-						console("[NOTICE] This message will disappear after issuing the command \"/update-done\"");
+						$this->logger->notice("" . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
+						$this->logger->notice("" . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
+						$this->logger->notice("" . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
+						$this->logger->notice("This message will disappear after issuing the command \"/update-done\"");
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] " . TextFormat::AQUA . "This is the latest DEVELOPMENT version");
+						$this->logger->info("" . TextFormat::AQUA . "This is the latest DEVELOPMENT version");
 					}
 				}
 			}else{
@@ -1360,13 +1373,13 @@ class Server{
 					$update = new VersionString($info[0]["name"]);
 					$updateN = $update->getNumber();
 					if($updateN > $newestN){
-						console("[NOTICE] " . TextFormat::GREEN . "A new STABLE version of PocketMine-MP has been released!");
-						console("[NOTICE] " . TextFormat::GREEN . "Version \"" . $info[0]["name"] . "\" #" . $updateN);
-						console("[NOTICE] Get it at PocketMine.net or at " . $info[0]["zipball_url"]);
-						console("[NOTICE] This message will disappear as soon as you update");
+						$this->logger->notice("" . TextFormat::GREEN . "A new STABLE version of PocketMine-MP has been released!");
+						$this->logger->notice("" . TextFormat::GREEN . "Version \"" . $info[0]["name"] . "\" #" . $updateN);
+						$this->logger->notice("Get it at PocketMine.net or at " . $info[0]["zipball_url"]);
+						$this->logger->notice("This message will disappear as soon as you update");
 					}else{
 						$this->setProperty("last-update", time());
-						console("[INFO] " . TextFormat::AQUA . "This is the latest STABLE version");
+						$this->logger->info("" . TextFormat::AQUA . "This is the latest STABLE version");
 					}
 				}
 			}
@@ -1475,7 +1488,7 @@ class Server{
 	}
 
 	public function reload(){
-		console("[INFO] Saving levels...");
+		$this->logger->info("Saving levels...");
 
 		foreach($this->levels as $level){
 			$level->save();
@@ -1485,7 +1498,7 @@ class Server{
 		$this->pluginManager->clearPlugins();
 		$this->commandMap->clearCommands();
 
-		console("[INFO] Reloading properties...");
+		$this->logger->info("Reloading properties...");
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
@@ -1493,7 +1506,7 @@ class Server{
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				console("[WARNING] PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
+				$this->logger->warning("PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -1530,7 +1543,7 @@ class Server{
 		}
 
 		if($this->getConfigBoolean("upnp-forwarding", false) === true){
-			console("[INFO] [UPnP] Removing port forward...");
+			$this->logger->info("[UPnP] Removing port forward...");
 			UPnP::RemovePortForward($this->getPort());
 		}
 
@@ -1571,7 +1584,7 @@ class Server{
 
 
 		if($this->getConfigBoolean("upnp-forwarding", false) == true){
-			console("[INFO] [UPnP] Trying to port forward...");
+			$this->logger->info("[UPnP] Trying to port forward...");
 			UPnP::PortForward($this->getPort());
 		}
 
@@ -1585,9 +1598,9 @@ class Server{
 			pcntl_signal(SIGHUP, array($this, "shutdown"));
 		}
 
-		console("[INFO] Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
+		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 
-		console('[INFO] Done (' . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
+		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
 			$this->tickProcessorWindows();
 		}else{
@@ -1619,7 +1632,7 @@ class Server{
 
 	public function checkTicks(){
 		if($this->getTicksPerSecond() < 12){
-			console("[WARNING] Can't keep up! Is the server overloaded?");
+			$this->logger->warning("Can't keep up! Is the server overloaded?");
 		}
 	}
 
@@ -1639,7 +1652,7 @@ class Server{
 			return;
 		}
 		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
-		console("[SEVERE] An unrecoverable has occurred and the server has crashed. Creating an error dump");
+		$this->logger->emergency("An unrecoverable has occurred and the server has crashed. Creating an error dump");
 		$dump = "```\r\n# PocketMine-MP Error Dump " . date("D M j H:i:s T Y") . "\r\n";
 		$er = error_get_last();
 		$errorConversion = array(
@@ -1715,7 +1728,7 @@ class Server{
 		$dump .= "\r\n```";
 		$name = "Error_Dump_" . date("D_M_j-H.i.s-T_Y");
 		log($dump, $name, true, 0, true);
-		console("[SEVERE] Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
+		$this->logger->emergency("Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
 	private function tickProcessor(){
@@ -1764,7 +1777,7 @@ class Server{
 						break;
 					case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
 						if($packet->structure !== RakNetInfo::STRUCTURE){
-							console("[DEBUG] Incorrect structure #" . $packet->structure . " from " . $packet->ip . ":" . $packet->port, true, true, 2);
+							$this->logger->debug("Incorrect structure #" . $packet->structure . " from " . $packet->ip . ":" . $packet->port);
 							$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
 							$pk->serverID = $this->serverID;
 							$pk->ip = $packet->ip;

@@ -25,6 +25,7 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 class ConsoleCommandSender implements CommandSender{
 
@@ -102,8 +103,7 @@ class ConsoleCommandSender implements CommandSender{
 	 */
 	public function sendMessage($message){
 		foreach(explode("\n", trim($message)) as $line){
-			$line = trim($line);
-			console($line);
+			MainLogger::getLogger()->info($line);
 		}
 	}
 

@@ -22,6 +22,7 @@
 namespace pocketmine\permission;
 
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 class BanList{
 
@@ -141,7 +142,7 @@ class BanList{
 			}
 			fclose($fp);
 		}else{
-			console("[ERROR] Could not load ban list");
+			MainLogger::getLogger()->error("Could not load ban list");
 		}
 	}
 
@@ -159,7 +160,7 @@ class BanList{
 			}
 			fclose($fp);
 		}else{
-			console("[ERROR] Could not save ban list");
+			MainLogger::getLogger()->error("Could not save ban list");
 		}
 	}
 

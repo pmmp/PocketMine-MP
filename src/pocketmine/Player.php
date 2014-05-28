@@ -82,6 +82,7 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
 /**
@@ -392,7 +393,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->buffer->data = [];
 		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "handlePacketQueues")), 1);
 		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "clearQueue")), 20 * 60);
-		console("[DEBUG] New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID, true, true, 2);
+
+		$this->server->getLogger()->debug("New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID);
 	}
 
 	/**
@@ -1448,7 +1450,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->lastMeasure = microtime(true);
 				$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "measureLag")), 50);
 
-				console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
+				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
 				$this->server->getPluginManager()->callEvent(new PlayerJoinEvent($this, $this->username . " joined the game"));
 
@@ -1517,7 +1519,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
 						}
 						if($this->blocked !== true){
-							console("[WARNING] ".$this->username." moved too quickly!");
+							$this->server->getLogger()->warning($this->username." moved too quickly!");
 						}
 					}else{*/
 					$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch);
@@ -2163,7 +2165,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			default:
-				console("[DEBUG] Unhandled " . $packet->pid() . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true), true, true, 2);
+				$this->server->getLogger()->debug("Unhandled " . $packet->pid() . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true));
 				break;
 		}
 	}
@@ -2257,7 +2259,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
-			console("[INFO] " . TextFormat::AQUA . $this->username . TextFormat::RESET . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
+			$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
 			$this->windows = new \SplObjectStorage();
 			$this->windowIndex = [];
 			$this->chunksLoaded = [];

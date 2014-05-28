@@ -33,11 +33,11 @@ class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
 
 	public function __construct(){
-		console("[INFO] Starting GS4 status listener");
 		$this->server = Server::getInstance();
+		$this->server->getLogger()->info("Starting GS4 status listener");
 		$addr = ($ip = $this->server->getIp()) != "" ? $ip : "0.0.0.0";
 		$port = $this->server->getPort();
-		console("[INFO] Setting query port to $port");
+		$this->server->getLogger()->info("Setting query port to $port");
 		/*
 		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
 		Because the 0xFE packet does not exist in the MCPE protocol,
@@ -50,7 +50,7 @@ class QueryHandler{
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
 		$this->regenerateInfo();
-		console("[INFO] Query running on $addr:$port");
+		$this->server->getLogger()->info("Query running on $addr:$port");
 	}
 
 	public function regenerateInfo(){

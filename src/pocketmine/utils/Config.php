@@ -410,7 +410,7 @@ class Config{
 						break;
 				}
 				if(isset($this->config[$k])){
-					console("[NOTICE] [Config] Repeated property " . $k . " on file " . $this->file, true, true, 2);
+					MainLogger::getLogger()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
 				}
 				$this->config[$k] = $v;
 			}

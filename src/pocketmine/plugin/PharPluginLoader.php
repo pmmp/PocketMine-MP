@@ -24,6 +24,7 @@ namespace pocketmine\plugin;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 /**
  * Handles different types of plugins
@@ -51,7 +52,7 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function loadPlugin($file){
 		if(\Phar::isValidPharFilename($file) and ($description = $this->getPluginDescription($file)) instanceof PluginDescription){
-			console("[INFO] Loading " . $description->getFullName());
+			MainLogger::getLogger()->info("Loading " . $description->getFullName());
 			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
 			if(file_exists($dataFolder) and !is_dir($dataFolder)){
 				throw new \Exception("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
@@ -121,7 +122,7 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and !$plugin->isEnabled()){
-			console("[INFO] Enabling " . $plugin->getDescription()->getFullName());
+			MainLogger::getLogger()->info("Enabling " . $plugin->getDescription()->getFullName());
 
 			$plugin->setEnabled(true);
 
@@ -134,7 +135,7 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and $plugin->isEnabled()){
-			console("[INFO] Disabling " . $plugin->getDescription()->getFullName());
+			MainLogger::getLogger()->info("Disabling " . $plugin->getDescription()->getFullName());
 
 			Server::getInstance()->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
 

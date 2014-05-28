@@ -241,7 +241,7 @@ abstract class PluginBase implements Plugin{
 
 	public function saveConfig(){
 		if($this->getConfig()->save() === false){
-			console("[SEVERE] Could not save config to " . $this->configFile);
+			$this->getLogger()->critical("Could not save config to " . $this->configFile);
 		}
 	}
 

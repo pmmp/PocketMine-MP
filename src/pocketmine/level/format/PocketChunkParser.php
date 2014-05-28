@@ -41,7 +41,6 @@ class PocketChunkParser{
 
 	private function loadLocationTable(){
 		$this->location = [];
-		console("[DEBUG] Loading Chunk Location table...", true, true, 2);
 		for($offset = 0; $offset < 0x1000; $offset += 4){
 			$data = Binary::readLInt(substr($this->raw, $offset, 4));
 			$sectors = $data & 0xff;
@@ -136,7 +135,6 @@ class PocketChunkParser{
 			return false;
 		}
 		$this->loadLocationTable();
-		console("[DEBUG] Loading chunks...", true, true, 2);
 		for($x = 0; $x < 16; ++$x){
 			$this->map[$x] = [];
 			for($z = 0; $z < 16; ++$z){
@@ -144,13 +142,11 @@ class PocketChunkParser{
 			}
 		}
 		$this->raw = "";
-		console("[DEBUG] Chunks loaded!", true, true, 2);
 
 		return true;
 	}
 
 	public function saveMap($final = false){
-		console("[DEBUG] Saving chunks...", true, true, 2);
 
 		$fp = fopen($this->file, "r+b");
 		flock($fp, LOCK_EX);
@@ -165,7 +161,6 @@ class PocketChunkParser{
 		$original = filesize($this->file);
 		file_put_contents($this->file . ".gz", gzdeflate(gzdeflate(file_get_contents($this->file), 9), 9)); //Double compression for flat maps
 		$compressed = filesize($this->file . ".gz");
-		console("[DEBUG] Saved chunks.dat.gz with " . round(($compressed / $original) * 100, 2) . "% (" . round($compressed / 1024, 2) . "KB) of the original size", true, true, 2);
 		if($final === true){
 			@unlink($this->file);
 		}

@@ -27,6 +27,7 @@ namespace pocketmine\network;
 use pocketmine\network\query\QueryPacket;
 use pocketmine\network\raknet\Info;
 use pocketmine\network\raknet\Packet as RakNetPacket;
+use pocketmine\utils\MainLogger;
 
 class ThreadedHandler extends \Thread{
 	protected $bandwidthUp;
@@ -124,8 +125,8 @@ class ThreadedHandler extends \Thread{
 			@socket_set_option($this->socket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2); //2MB
 			@socket_set_option($this->socket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024); //1MB
 		}else{
-			console("[SEVERE] **** FAILED TO BIND TO " . $this->serverip . ":" . $this->port . "!", true, true, 0);
-			console("[SEVERE] Perhaps a server is already running on that port?", true, true, 0);
+			MainLogger::getLogger()->critical("**** FAILED TO BIND TO " . $this->serverip . ":" . $this->port . "!", true, true, 0);
+			MainLogger::getLogger()->critical("Perhaps a server is already running on that port?", true, true, 0);
 			exit(1);
 		}
 		socket_set_nonblock($this->socket);

@@ -161,7 +161,7 @@ class Level{
 		if($this === $this->server->getDefaultLevel() and $force !== true){
 			return false;
 		}
-		console("[INFO] Unloading level \"" . $this->getName() . "\"");
+		$this->server->getLogger()->info("Unloading level \"" . $this->getName() . "\"");
 		$this->nextSave = PHP_INT_MAX;
 		$this->save();
 		$defaultLevel = $this->server->getDefaultLevel();

@@ -189,14 +189,14 @@ class PluginManager{
 					if($description instanceof PluginDescription){
 						$name = $description->getName();
 						if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-							console("[ERROR] Could not load plugin '" . $name . "': restricted name");
+							$this->server->getLogger()->error("Could not load plugin '" . $name . "': restricted name");
 							continue;
 						}elseif(strpos($name, " ") !== false){
-							console("[WARNING] Plugin '" . $name . "' uses spaces in its name, this is discouraged");
+							$this->server->getLogger()->warning("Plugin '" . $name . "' uses spaces in its name, this is discouraged");
 						}
 
 						if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-							console("[ERROR] Could not load duplicate plugin '" . $name . "': plugin exists");
+							$this->server->getLogger()->error("Could not load duplicate plugin '" . $name . "': plugin exists");
 							continue;
 						}
 
@@ -220,7 +220,7 @@ class PluginManager{
 						}
 
 						if($compatible === false){
-							console("[ERROR] Could not load plugin '" . $name . "': API version not compatible");
+							$this->server->getLogger()->error("Could not load plugin '" . $name . "': API version not compatible");
 							continue;
 						}
 
@@ -249,7 +249,7 @@ class PluginManager{
 							if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 								unset($dependencies[$name][$key]);
 							}elseif(!isset($plugins[$dependency])){
-								console("[SEVERE] Could not load plugin '" . $name . "': Unknown dependency");
+								$this->server->getLogger()->critical("Could not load plugin '" . $name . "': Unknown dependency");
 								break;
 							}
 						}
@@ -277,7 +277,7 @@ class PluginManager{
 						if($plugin = $this->loadPlugin($file) and $plugin instanceof Plugin){
 							$loadedPlugins[$name] = $plugin;
 						}else{
-							console("[SEVERE] Could not load plugin '" . $name . "'");
+							$this->server->getLogger()->critical("Could not load plugin '" . $name . "'");
 						}
 					}
 				}
@@ -291,7 +291,7 @@ class PluginManager{
 							if($plugin = $this->loadPlugin($file) and $plugin instanceof Plugin){
 								$loadedPlugins[$name] = $plugin;
 							}else{
-								console("[SEVERE] Could not load plugin '" . $name . "'");
+								$this->server->getLogger()->critical("Could not load plugin '" . $name . "'");
 							}
 						}
 					}
@@ -299,7 +299,7 @@ class PluginManager{
 					//No plugins loaded :(
 					if($missingDependency === true){
 						foreach($plugins as $name => $file){
-							console("[SEVERE] Could not load plugin '" . $name . "': circular dependency detected");
+							$this->server->getLogger()->critical("Could not load plugin '" . $name . "': circular dependency detected");
 						}
 						$plugins = [];
 					}
@@ -542,7 +542,7 @@ class PluginManager{
 
 		foreach($plugin->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				console("[SEVERE] Could not load command " . $key . " for plugin " . $plugin->getDescription()->getName());
+				$this->server->getLogger()->critical("Could not load command " . $key . " for plugin " . $plugin->getDescription()->getName());
 				continue;
 			}
 			if(is_array($data)){
@@ -559,7 +559,7 @@ class PluginManager{
 					$aliasList = [];
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
-							console("[SEVERE] Could not load alias " . $alias . " for plugin " . $plugin->getDescription()->getName());
+							$this->server->getLogger()->critical("Could not load alias " . $alias . " for plugin " . $plugin->getDescription()->getName());
 							continue;
 						}
 						$aliasList[] = $alias;
