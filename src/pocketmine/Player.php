@@ -2063,7 +2063,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->currentTransaction = null;
 						break;
 					}
-					console("tx#".spl_object_hash($this->currentTransaction)." EXECUTED");
+
 					foreach($this->currentTransaction->getTransactions() as $ts){
 						$inv = $ts->getInventory();
 						if($inv instanceof FurnaceInventory){
