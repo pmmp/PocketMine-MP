@@ -228,33 +228,29 @@ abstract class BaseInventory implements Inventory{
 		/** @var Item[] $slots */
 		$slots = func_get_args();
 		foreach($slots as $i => $slot){
-			while($slot->getCount() > $slot->getMaxStackSize()){
-				$slots[] = Item::get($slot->getID(), $slot->getDamage(), $slot->getMaxStackSize());
-				$slot->setCount($slot->getCount() - $slot->getMaxStackSize());
-				if(count($slots) > $this->getSize()){ //Protect against large give commands
-					break;
-				}
-			}
+			$slots[$i] = clone $slot;
 		}
 
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
-			if($item->getID() === Item::AIR){
-				$this->setItem($i, array_shift($slots));
-				$item = $this->getItem($i);
-			}
-
 			foreach($slots as $index => $slot){
-				if($slot->equals($item, $slot->getDamage() === null ? false : true)){
-					if($item->getCount() < $item->getMaxStackSize()){
-						$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
-						$slot->setCount($slot->getCount() - $amount);
-						$old = clone $item;
-						$item->setCount($item->getCount() + $amount);
-						$this->onSlotChange($i, $old);
-						if($slot->getCount() <= 0){
-							unset($slots[$index]);
-						}
+				if($item->getID() === Item::AIR){
+					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
+					$slot->setCount($slot->getCount() - $amount);
+					$item = clone $slot;
+					$item->setCount($amount);
+					$this->setItem($i, $item);
+					$item = $this->getItem($i);
+					if($slot->getCount() <= 0){
+						unset($slots[$index]);
+					}
+				}elseif($slot->equals($item, true) and $item->getCount() < $item->getMaxStackSize()){
+					$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
+					$slot->setCount($slot->getCount() - $amount);
+					$item->setCount($item->getCount() + $amount);
+					$this->setItem($i, $item);
+					if($slot->getCount() <= 0){
+						unset($slots[$index]);
 					}
 				}
 			}
