@@ -929,6 +929,37 @@ class Level{
 		return $this->entities;
 	}
 
+	/**
+	 * Returns the entities near the current one inside the AxisAlignedBB
+	 *
+	 * @param AxisAlignedBB $bb
+	 * @param Entity        $entity
+	 *
+	 * @return Entity[]
+	 */
+	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity = null){
+		$nearby = [];
+
+		$minX = ($bb->minX - 2) >> 4;
+		$maxX = ($bb->maxX + 2) >> 4;
+		$minZ = ($bb->minZ - 2) >> 4;
+		$maxZ = ($bb->maxZ + 2) >> 4;
+
+		for($x = $minX; $x <= $maxX; ++$x){
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				if($this->isChunkLoaded($x, $z)){
+					foreach($this->getChunkEntities($x, $z) as $ent){
+						if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
+							$nearby[] = $ent;
+						}
+					}
+				}
+			}
+		}
+
+		return $nearby;
+	}
+
 	public function addEntity(Entity $entity){
 		//TODO: chunkIndex
 		$this->entities[$entity->getID()] = $entity;

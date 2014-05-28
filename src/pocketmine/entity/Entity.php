@@ -591,37 +591,6 @@ abstract class Entity extends Position implements Metadatable{
 		$this->fallDistance = 0;
 	}
 
-	/**
-	 * Returns the entities near the current one inside the AxisAlignedBB
-	 *
-	 * @param AxisAlignedBB $bb
-	 *
-	 * @return Entity[]
-	 */
-	public function getNearbyEntities(AxisAlignedBB $bb){
-
-		$nearby = [];
-
-		$minX = ($bb->minX - 2) >> 4;
-		$maxX = ($bb->maxX + 2) >> 4;
-		$minZ = ($bb->minZ - 2) >> 4;
-		$maxZ = ($bb->maxZ + 2) >> 4;
-
-		for($x = $minX; $x <= $maxX; ++$x){
-			for($z = $minZ; $z <= $maxZ; ++$z){
-				if($this->getLevel()->isChunkLoaded($x, $z)){
-					foreach($this->getLevel()->getChunkEntities($x, $z) as $ent){
-						if($ent !== $this and $ent->boundingBox->intersectsWith($this->boundingBox)){
-							$nearby[] = $ent;
-						}
-					}
-				}
-			}
-		}
-
-		return $nearby;
-	}
-
 	public function move($dx, $dy, $dz){
 		//$collision = [];
 		//$this->checkBlockCollision($collision);

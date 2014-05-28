@@ -1203,7 +1203,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 		$hasUpdate = $this->entityBaseTick();
-		foreach($this->getNearbyEntities($this->boundingBox->expand(3, 3, 3)) as $entity){
+		foreach($this->getLevel()->getCollidingEntities($this->boundingBox->expand(1.5, 1, 1.5), $this) as $entity){
 			if($entity instanceof DroppedItem){
 				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
@@ -1227,6 +1227,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								break;
 						}
 
+						$this->inventory->addItem(clone $item);
+
 						$pk = new TakeItemEntityPacket;
 						$pk->eid = 0;
 						$pk->target = $entity->getID();
@@ -1236,7 +1238,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$pk->eid = $this->getID();
 						$pk->target = $entity->getID();
 						$this->server->broadcastPacket($entity->getViewers(), $pk);
-						$this->inventory->addItem(clone $item);
 						$entity->kill();
 					}
 				}
