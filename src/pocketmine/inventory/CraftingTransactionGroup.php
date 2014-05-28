@@ -34,10 +34,11 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 	/** @var Recipe */
 	protected $recipe = null;
 
-	public function __construct(TransactionGroup $group){
+	public function __construct(SimpleTransactionGroup $group){
 		parent::__construct();
 		$this->transactions = $group->getTransactions();
 		$this->inventories = $group->getInventories();
+		$this->source = $group->getSource();
 
 		$this->matchItems($this->output, $this->input);
 	}
@@ -97,7 +98,7 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 		}
 
 		foreach($this->transactions as $transaction){
-			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem());
+			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem(), $this->getSource());
 		}
 		$this->hasExecuted = true;
 

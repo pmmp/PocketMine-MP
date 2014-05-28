@@ -2011,6 +2011,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 				$this->craftingType = 0;
+				$this->currentTransaction = null;
 				if(isset($this->windowIndex[$packet->windowid])){
 					$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this));
 					$this->removeWindow($this->windowIndex[$packet->windowid]);
@@ -2046,13 +2047,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 
-				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 0.5)){
+				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 0.4)){
 					if($this->currentTransaction instanceof SimpleTransactionGroup){
 						foreach($this->currentTransaction->getInventories() as $inventory){
 							$inventory->sendContents($inventory->getViewers());
 						}
 					}
-					$this->currentTransaction = new SimpleTransactionGroup();
+					$this->currentTransaction = new SimpleTransactionGroup($this);
 				}
 
 				$this->currentTransaction->addTransaction($transaction);
@@ -2062,6 +2063,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->currentTransaction = null;
 						break;
 					}
+					console("tx#".spl_object_hash($this->currentTransaction)." EXECUTED");
 					foreach($this->currentTransaction->getTransactions() as $ts){
 						$inv = $ts->getInventory();
 						if($inv instanceof FurnaceInventory){

@@ -144,7 +144,7 @@ class PlayerInventory extends BaseInventory{
 		}
 	}
 
-	public function onSlotChange($index, $before){
+	public function onSlotChange($index, $before, $source = null){
 		parent::onSlotChange($index, $before);
 
 		if($index >= $this->getSize()){
@@ -196,7 +196,7 @@ class PlayerInventory extends BaseInventory{
 		return $this->setItem($this->getSize(), $boots);
 	}
 
-	public function setItem($index, Item $item){
+	public function setItem($index, Item $item, $source = null){
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}
@@ -211,15 +211,18 @@ class PlayerInventory extends BaseInventory{
 			}
 			$item = $ev->getNewItem();
 		}
-
-		$old = $this->getItem($index);
-		$this->slots[$index] = clone $item;
-		$this->onSlotChange($index, $old);
+		if($item->getID() === 0){
+			$this->clear($index, $source);
+		}else{
+			$old = $this->getItem($index);
+			$this->slots[$index] = clone $item;
+			$this->onSlotChange($index, $old, $source);
+		}
 
 		return true;
 	}
 
-	public function clear($index){
+	public function clear($index, $source = null){
 		if(isset($this->slots[$index])){
 			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
@@ -239,7 +242,7 @@ class PlayerInventory extends BaseInventory{
 				unset($this->slots[$index]);
 			}
 
-			$this->onSlotChange($index, $old);
+			$this->onSlotChange($index, $old, $source);
 		}
 	}
 

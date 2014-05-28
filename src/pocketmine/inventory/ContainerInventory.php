@@ -28,6 +28,7 @@ use pocketmine\math\Vector3;
 
 abstract class ContainerInventory extends BaseInventory{
 	public function onOpen(Player $who){
+		parent::onOpen($who);
 		$pk = new ContainerOpenPacket;
 		$pk->windowid = $who->getWindowId($this);
 		$pk->type = $this->getType()->getNetworkType();
@@ -49,5 +50,6 @@ abstract class ContainerInventory extends BaseInventory{
 		$pk = new ContainerClosePacket;
 		$pk->windowid = $who->getWindowId($this);
 		$who->dataPacket($pk);
+		parent::onClose($who);
 	}
 }

@@ -53,8 +53,6 @@ class ChestInventory extends ContainerInventory{
 	}
 
 	public function onClose(Player $who){
-		parent::onClose($who);
-
 		if(count($this->getViewers()) === 1){
 			$pk = new TileEventPacket;
 			$pk->x = $this->getHolder()->getX();
@@ -64,5 +62,6 @@ class ChestInventory extends ContainerInventory{
 			$pk->case2 = 0;
 			Server::getInstance()->broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
 		}
+		parent::onClose($who);
 	}
 }

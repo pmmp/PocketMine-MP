@@ -44,7 +44,7 @@ abstract class BaseInventory implements Inventory{
 	protected $title;
 	/** @var Item[] */
 	protected $slots = [];
-	/** @var \SplObjectStorage<Player> */
+	/** @var Player[] */
 	protected $viewers = [];
 	/** @var InventoryHolder */
 	protected $holder;
@@ -58,7 +58,6 @@ abstract class BaseInventory implements Inventory{
 	 */
 	public function __construct(InventoryHolder $holder, InventoryType $type, array $items = [], $overrideSize = null, $overrideTitle = null){
 		$this->holder = $holder;
-		$this->viewers = new \SplObjectStorage();
 
 		$this->type = $type;
 		if($overrideSize !== null){
@@ -121,12 +120,12 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-	public function setItem($index, Item $item){
+	public function setItem($index, Item $item, $source = null){
 		$item = clone $item;
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getID() === 0){
-			$this->clear($index);
+			$this->clear($index, $source);
 		}
 
 		$holder = $this->getHolder();
@@ -141,7 +140,7 @@ abstract class BaseInventory implements Inventory{
 
 		$old = $this->getItem($index);
 		$this->slots[$index] = clone $item;
-		$this->onSlotChange($index, $old);
+		$this->onSlotChange($index, $old, $source);
 
 		return true;
 	}
@@ -296,7 +295,7 @@ abstract class BaseInventory implements Inventory{
 		return $slots;
 	}
 
-	public function clear($index){
+	public function clear($index, $source = null){
 		if(isset($this->slots[$index])){
 			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
@@ -316,7 +315,7 @@ abstract class BaseInventory implements Inventory{
 				unset($this->slots[$index]);
 			}
 
-			$this->onSlotChange($index, $old);
+			$this->onSlotChange($index, $old, $source);
 		}
 
 		return true;
@@ -328,9 +327,12 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-	public function getViewers(){
+	public function getViewers($source = null){
 		$viewers = [];
 		foreach($this->viewers as $viewer){
+			if($viewer === $source){
+				continue;
+			}
 			$viewers[] = $viewer;
 		}
 
@@ -359,15 +361,15 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function onOpen(Player $who){
-		$this->viewers->attach($who);
+		$this->viewers[spl_object_hash($who)] = $who;
 	}
 
 	public function onClose(Player $who){
-		$this->viewers->detach($who);
+		unset($this->viewers[spl_object_hash($who)]);
 	}
 
-	public function onSlotChange($index, $before){
-		$this->sendSlot($index, $this->getViewers());
+	public function onSlotChange($index, $before, $source = null){
+		$this->sendSlot($index, $this->getViewers($source));
 	}
 
 

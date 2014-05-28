@@ -53,13 +53,15 @@ interface Inventory{
 	/**
 	 * Puts an Item in a slot.
 	 * If a plugin refuses the update or $index is invalid, it'll return false
+	 * If a source Player is specified, it won't send a Inventory update to it
 	 *
-	 * @param int  $index
-	 * @param Item $item
+	 * @param int    $index
+	 * @param Item   $item
+	 * @param Player $source
 	 *
 	 * @return bool
 	 */
-	public function setItem($index, Item $item);
+	public function setItem($index, Item $item, $source = null);
 
 	/**
 	 * Stores the given Items in the inventory. This will try to fill
@@ -160,11 +162,12 @@ interface Inventory{
 	/**
 	 * Will clear a specific slot
 	 *
-	 * @param int $index
+	 * @param int    $index
+	 * @param Player $source
 	 *
 	 * @return bool
 	 */
-	public function clear($index);
+	public function clear($index, $source = null);
 
 	/**
 	 * Clears all the slots
@@ -175,9 +178,11 @@ interface Inventory{
 	 * Gets all the Players viewing the inventory
 	 * Players will be viewing their inventory at all times, even when not open.
 	 *
+	 * @param Player $source
+	 *
 	 * @return Player[]
 	 */
-	public function getViewers();
+	public function getViewers($source = null);
 
 	/**
 	 * @return InventoryType
@@ -211,8 +216,9 @@ interface Inventory{
 	public function onClose(Player $who);
 
 	/**
-	 * @param int       $index
-	 * @param Item|null $before
+	 * @param int    $index
+	 * @param Item   $before
+	 * @param Player $source
 	 */
-	public function onSlotChange($index, $before);
+	public function onSlotChange($index, $before, $source = null);
 }

@@ -23,6 +23,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\item\Item;
+use pocketmine\Player;
 use pocketmine\Server;
 
 /**
@@ -31,6 +32,8 @@ use pocketmine\Server;
 class SimpleTransactionGroup implements TransactionGroup{
 	private $creationTime;
 	protected $hasExecuted = false;
+	/** @var Player */
+	protected $source = null;
 
 	/** @var Inventory[] */
 	protected $inventories = [];
@@ -38,8 +41,19 @@ class SimpleTransactionGroup implements TransactionGroup{
 	/** @var Transaction[] */
 	protected $transactions = [];
 
-	public function __construct(){
+	/**
+	 * @param Player $source
+	 */
+	public function __construct(Player $source = null){
 		$this->creationTime = microtime(true);
+		$this->source = $source;
+	}
+
+	/**
+	 * @return Player
+	 */
+	public function getSource(){
+		return $this->source;
 	}
 
 	public function getCreationTime(){
@@ -55,6 +69,18 @@ class SimpleTransactionGroup implements TransactionGroup{
 	}
 
 	public function addTransaction(Transaction $transaction){
+		if(isset($this->transactions[spl_object_hash($transaction)])){
+			return;
+		}
+		foreach($this->transactions as $hash => $tx){
+			if($tx->getInventory() === $transaction->getInventory() and $tx->getSlot() === $transaction->getSlot()){
+				if($transaction->getCreationTime() >= $tx->getCreationTime()){
+					unset($this->transactions[$hash]);
+				}else{
+					return;
+				}
+			}
+		}
 		$this->transactions[spl_object_hash($transaction)] = $transaction;
 		$this->inventories[spl_object_hash($transaction->getInventory())] = $transaction->getInventory();
 	}
@@ -100,9 +126,6 @@ class SimpleTransactionGroup implements TransactionGroup{
 		$haveItems = [];
 		$needItems = [];
 		$this->matchItems($haveItems, $needItems);
-		$input = "";
-		$output = "";
-
 		return count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
 	}
 
@@ -120,7 +143,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 		}
 
 		foreach($this->transactions as $transaction){
-			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem());
+			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem(), $this->getSource());
 		}
 
 		$this->hasExecuted = true;

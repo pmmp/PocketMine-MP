@@ -32,6 +32,8 @@ class BaseTransaction implements Transaction{
 	protected $sourceItem;
 	/** @var Item */
 	protected $targetItem;
+	/** @var float */
+	protected $creationTime;
 
 	/**
 	 * @param Inventory $inventory
@@ -44,6 +46,11 @@ class BaseTransaction implements Transaction{
 		$this->slot = (int) $slot;
 		$this->sourceItem = clone $sourceItem;
 		$this->targetItem = clone $targetItem;
+		$this->creationTime = microtime(true);
+	}
+
+	public function getCreationTime(){
+		return $this->creationTime;
 	}
 
 	public function getInventory(){

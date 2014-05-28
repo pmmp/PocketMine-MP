@@ -44,4 +44,9 @@ interface Transaction{
 	 * @return Item
 	 */
 	public function getTargetItem();
+
+	/**
+	 * @return float
+	 */
+	public function getCreationTime();
 }
