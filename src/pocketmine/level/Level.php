@@ -756,6 +756,7 @@ class Level{
 			return false;
 		}
 
+		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 		$target->onBreak($item);
 		if($item instanceof Item){
 			$item->useOn($target);
@@ -765,7 +766,7 @@ class Level{
 		}
 
 		if(!($player instanceof Player) or ($player->getGamemode() & 0x01) === 0){
-			foreach($target->getDrops($item) as $drop){
+			foreach($drops as $drop){
 				if($drop[2] > 0){
 					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]), 1);
 				}

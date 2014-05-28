@@ -136,8 +136,8 @@ class Chest extends Transparent{
 		);
 		$t = $this->getLevel()->getTile($this);
 		if($t instanceof TileChest){
-			for($s = 0; $s < $t->getInventory()->getSize(); ++$s){
-				$slot = $t->getInventory()->getItem($s);
+			for($s = 0; $s < $t->getRealInventory()->getSize(); ++$s){
+				$slot = $t->getRealInventory()->getItem($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
 					$drops[] = array($slot->getID(), $slot->getDamage(), $slot->getCount());
 				}

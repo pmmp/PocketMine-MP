@@ -34,7 +34,7 @@ use pocketmine\Server;
 
 class PlayerInventory extends BaseInventory{
 
-	protected $itemInHandIndex = -1;
+	protected $itemInHandIndex = 0;
 	/** @var int[] */
 	protected $hotbar;
 
