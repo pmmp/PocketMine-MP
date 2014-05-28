@@ -390,6 +390,7 @@ class CraftingManager{
 							}
 						}
 					}
+
 					if(count($checkInput) === 0){
 						$hasRecipe = $recipe;
 						break;

@@ -26,10 +26,10 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\inventory\Fuel;
 use pocketmine\item\Block as ItemBlock;
 use pocketmine\level\Level;
 use pocketmine\Player;
-use pocketmine\recipes\Fuel;
 
 class Item{
 	//All Block IDs are here too
@@ -440,7 +440,6 @@ class Item{
 		}else{
 			$item = new Item($id, $meta, $count);
 		}
-
 		return $item;
 	}
 
@@ -587,7 +586,7 @@ class Item{
 	}
 
 	final public function __toString(){
-		return "Item " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")";
 	}
 
 	public function getDestroySpeed(Block $block, Player $player){

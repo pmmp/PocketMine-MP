@@ -33,7 +33,7 @@ class Block extends Item{
 	}
 
 	public function setDamage($meta){
-		$this->meta = $meta & 0x0F;
+		$this->meta = $meta !== null ? $meta & 0xFF : null;
 		$this->block->setDamage($this->meta);
 	}
 
