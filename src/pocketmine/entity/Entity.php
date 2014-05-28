@@ -186,6 +186,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->justCreated = false;
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
 		$this->scheduleUpdate();
+
 	}
 
 	public function saveNBT(){

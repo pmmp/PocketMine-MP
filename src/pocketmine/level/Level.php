@@ -1128,7 +1128,7 @@ class Level{
 
 					if($nbt->id instanceof String){ //New format
 						switch($nbt["id"]){
-							case "Ttem":
+							case "Item":
 								(new DroppedItem($this, $nbt))->spawnToAll();
 								break;
 						}
