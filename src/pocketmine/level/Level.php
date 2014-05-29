@@ -842,10 +842,9 @@ class Level{
 			//$face = -1;
 		}
 
-		//TODO: Implement using Bounding Boxes, all entities
-		/*if($hand->isSolid === true and $player->inBlock($block)){
+		if($hand->isSolid === true and $this->getCollidingEntities($hand->getBoundingBox())){
 			return false; //Entity in block
-		}*/
+		}
 
 
 		if($player instanceof Player){
