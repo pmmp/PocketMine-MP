@@ -145,7 +145,7 @@ namespace pocketmine {
 
 	define("pocketmine\\ANSI", ((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])));
 
-	$logger = new MainLogger(\pocketmine\PATH . "server.log", \pocketmine\ANSI);
+	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
 
 	function kill($pid){
 		switch(Utils::getOS()){
