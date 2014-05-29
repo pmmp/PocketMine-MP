@@ -145,7 +145,7 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function onSlotChange($index, $before, $source = null){
-		parent::onSlotChange($index, $before);
+		parent::onSlotChange($index, $before, $source);
 
 		if($index >= $this->getSize()){
 			$this->sendArmorContents($this->getHolder()->getViewers());

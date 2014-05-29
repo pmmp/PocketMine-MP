@@ -65,9 +65,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 				$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 			}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, Item::get($item["id"], $item["Damage"], $item["Count"]));
+				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, Item::get($item["id"], $item["Damage"], $item["Count"]), $this);
 			}else{
-				$this->inventory->setItem($item["Slot"] - 9, Item::get($item["id"], $item["Damage"], $item["Count"]));
+				$this->inventory->setItem($item["Slot"] - 9, Item::get($item["id"], $item["Damage"], $item["Count"]), $this);
 			}
 		}
 
