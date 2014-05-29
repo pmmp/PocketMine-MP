@@ -152,16 +152,15 @@ class MainLogger extends \Thread implements Logger{
 		if(!is_resource($this->logResource)){
 			throw new \RuntimeException("Couldn't open log file");
 		}
-		flock($this->logResource, LOCK_EX);
 
 		while($this->shutdown === false){
 			if(strlen($this->logStream) >= 4096){
-				$this->synchronized(function (){
-					$chunks = strlen($this->logStream) >> 12;
-					$chunk = substr($this->logStream, 0, $chunks << 12);
-					$this->logStream = substr($this->logStream, $chunks << 12);
-					fwrite($this->logResource, $chunk);
-				});
+				$this->lock();
+				$chunks = strlen($this->logStream) >> 12;
+				$chunk = substr($this->logStream, 0, $chunks << 12);
+				$this->logStream = substr($this->logStream, $chunks << 12);
+				$this->unlock();
+				fwrite($this->logResource, $chunk);
 			}else{
 				usleep(250000); //sleep for 0.25 seconds
 			}
@@ -170,7 +169,6 @@ class MainLogger extends \Thread implements Logger{
 			fwrite($this->logResource, $this->logStream);
 		}
 
-		flock($this->logResource, LOCK_UN);
 		fclose($this->logResource);
 	}
 }
