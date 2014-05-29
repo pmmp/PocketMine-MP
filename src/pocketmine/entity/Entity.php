@@ -446,11 +446,11 @@ abstract class Entity extends Position implements Metadatable{
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 
-		if(!($this instanceof Player) and ($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
+		if(!($this instanceof Player) and ($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ) and ($this->ticksLived % 20) === 0){
 			$this->lastMotionX = $this->motionX;
 			$this->lastMotionY = $this->motionY;
 			$this->lastMotionZ = $this->motionZ;
-			
+
 			$pk = new SetEntityMotionPacket;
 			$pk->eid = $this->id;
 			$pk->speedX = $this->motionX;
