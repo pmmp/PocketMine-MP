@@ -285,7 +285,7 @@ class Config{
 
 	/**
 	 * @param string $k key to be set
-	 * @param bool   $v value to set key
+	 * @param mixed  $v value to set key
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
