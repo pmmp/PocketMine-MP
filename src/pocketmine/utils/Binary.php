@@ -68,32 +68,32 @@ class Binary{
 	public static function writeMetadata(array $data){
 		$m = "";
 		foreach($data as $bottom => $d){
-			$m .= chr(($d[0] << 5) | ($bottom & 0x1F));
-			switch($d[0]){
+			$m .= chr(($d["type"] << 5) | ($bottom & 0x1F));
+			switch($d["type"]){
 				case 0:
-					$m .= self::writeByte($d[1]);
+					$m .= self::writeByte($d["value"]);
 					break;
 				case 1:
-					$m .= self::writeLShort($d[1]);
+					$m .= self::writeLShort($d["value"]);
 					break;
 				case 2:
-					$m .= self::writeLInt($d[1]);
+					$m .= self::writeLInt($d["value"]);
 					break;
 				case 3:
-					$m .= self::writeLFloat($d[1]);
+					$m .= self::writeLFloat($d["value"]);
 					break;
 				case 4:
-					$m .= self::writeLShort(strlen($d[1])) . $d[1];
+					$m .= self::writeLShort(strlen($d["value"])) . $d["value"];
 					break;
 				case 5:
-					$m .= self::writeLShort($d[1][0]);
-					$m .= self::writeByte($d[1][1]);
-					$m .= self::writeLShort($d[1][2]);
+					$m .= self::writeLShort($d["value"][0]);
+					$m .= self::writeByte($d["value"][1]);
+					$m .= self::writeLShort($d["value"][2]);
 					break;
 				case 6:
-					$m .= self::writeLInt($d[1][0]);
-					$m .= self::writeLInt($d[1][1]);
-					$m .= self::writeLInt($d[1][2]);
+					$m .= self::writeLInt($d["value"][0]);
+					$m .= self::writeLInt($d["value"][1]);
+					$m .= self::writeLInt($d["value"][2]);
 					break;
 			}
 		}
@@ -158,10 +158,12 @@ class Binary{
 						$offset += 4;
 					}
 					break;
+				default:
+					return [];
 
 			}
 			if($types === true){
-				$m[$bottom] = array($r, $type);
+				$m[$bottom] = array("value" => $r, "type" => $type);
 			}else{
 				$m[$bottom] = $r;
 			}

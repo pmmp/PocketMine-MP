@@ -376,12 +376,7 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		$hasUpdate = false;
-		$this->lastX = $this->x;
-		$this->lastY = $this->y;
-		$this->lastZ = $this->z;
-		$this->lastMotionX = $this->motionX;
-		$this->lastPitch = $this->pitch;
-		$this->lastYaw = $this->yaw;
+		$this->updateMovement();
 
 		if($this->handleWaterMovement()){
 			$this->fallDistance = 0;
@@ -469,7 +464,6 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		$hasUpdate = $this->entityBaseTick();
-		$this->updateMovement();
 
 		//if($this->isStatic())
 		return true;

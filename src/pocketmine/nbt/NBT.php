@@ -44,8 +44,6 @@ use pocketmine\utils\Binary;
  * Named Binary Tag encoder/decoder
  */
 class NBT{
-	const COMPRESSION_GZIP = 1;
-	const COMPRESSION_ZLIB = 2;
 
 	const LITTLE_ENDIAN = 0;
 	const BIG_ENDIAN = 1;
@@ -106,8 +104,8 @@ class NBT{
 		$this->buffer = "";
 	}
 
-	public function readCompressed($buffer, $compression = self::COMPRESSION_ZLIB){
-		$this->read($compression === self::COMPRESSION_ZLIB ? zlib_decode($buffer) : zlib_decode($buffer));
+	public function readCompressed($buffer, $compression = ZLIB_ENCODING_GZIP){
+		$this->read(zlib_decode($buffer));
 	}
 
 	public function write(){
@@ -121,9 +119,9 @@ class NBT{
 		}
 	}
 
-	public function writeCompressed($compression = self::COMPRESSION_ZLIB, $level = 7){
+	public function writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
 		if(($write = $this->write()) !== false){
-			return $compression === self::COMPRESSION_ZLIB ? zlib_encode($write, 15, $level) : zlib_encode($write, 31, $level);
+			return zlib_encode($write, ZLIB_ENCODING_GZIP, $level);
 		}
 
 		return false;

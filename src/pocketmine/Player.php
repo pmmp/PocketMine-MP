@@ -1066,6 +1066,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return $this->lagStat * 1000;
 	}
 
+	protected function getCreativeBlock(Item $item){
+		foreach(Block::$creative as $i => $d){
+			if($d[0] === $item->getID() and $d[1] === $item->getDamage()){
+				return $i;
+			}
+		}
+		return -1;
+	}
+
 	/**
 	 * WARNING: Experimental method
 	 *
@@ -1243,8 +1252,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 		}
-
-		$this->updateMovement();
 	}
 
 	/**
@@ -1399,6 +1406,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
 				$this->server->saveOfflinePlayerData($this->username, $nbt);
 				parent::__construct($this->getLevel(), $nbt);
+				$this->inventory->setHeldItemSlot($this->getCreativeBlock(Item::get(Item::STONE, 0, 1)));
 				$this->loggedIn = true;
 
 				if(($this->gamemode & 0x01) === 0x01){
@@ -1411,7 +1419,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
-
 					return;
 				}
 
@@ -1537,19 +1544,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if(($this->gamemode & 0x01) === 1){ //Creative mode match
-					$packet->slot = false;
-					foreach(Block::$creative as $i => $d){
-						if($d[0] === $packet->item and $d[1] === $packet->meta){
-							$packet->slot = $i;
-							$item = Item::get($d[0], $d[1], 1);
-							break;
-						}
-					}
+					$item = Item::get($packet->item, $packet->meta, 1);
+					$packet->slot = $this->getCreativeBlock($item);
 				}else{
 					$item = $this->inventory->getItem($packet->slot);
 				}
 
-				if(!isset($item) or $packet->slot === false){
+				if(!isset($item) or $packet->slot === -1){
 					$this->inventory->sendSlot($packet->slot, $this);
 				}else{
 					$this->inventory->setHeldItemSlot($packet->slot);

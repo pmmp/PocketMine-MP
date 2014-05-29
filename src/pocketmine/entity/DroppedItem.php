@@ -135,10 +135,7 @@ class DroppedItem extends Entity{
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 
 		return [
-			0 => array("type" => 0, "value" => $flags),
-			1 => array("type" => 1, "value" => 0),
-			16 => array("type" => 0, "value" => 0),
-			17 => array("type" => 6, "value" => array(0, 0, 0)),
+			0 => array("type" => 0, "value" => $flags)
 		];
 	}
 
@@ -205,7 +202,6 @@ class DroppedItem extends Entity{
 		$pk->pitch = $this->pitch;
 		$pk->roll = 0;
 		$pk->item = $this->getItem();
-		$pk->metadata = $this->getData();
 		$player->dataPacket($pk);
 
 		$pk = new SetEntityMotionPacket;
