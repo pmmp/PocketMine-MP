@@ -1204,7 +1204,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 		$hasUpdate = $this->entityBaseTick();
-		foreach($this->getLevel()->getCollidingEntities($this->boundingBox->expand(1.5, 1, 1.5), $this) as $entity){
+		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->expand(1.5, 1, 1.5), $this) as $entity){
 			if($entity instanceof DroppedItem){
 				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();

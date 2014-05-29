@@ -566,9 +566,9 @@ class Level{
 		}
 
 		//TODO: fix this
-		/*foreach($entity->getNearbyEntities($bb->expand(0.25, 0.25, 0.25)) as $ent){
+		foreach($this->getCollidingEntities($bb->expand(0.25, 0.25, 0.25), $entity) as $ent){
 			$collides[] = $ent->boundingBox;
-		}*/
+		}
 
 		return $collides;
 	}
@@ -842,7 +842,7 @@ class Level{
 			//$face = -1;
 		}
 
-		if($hand->isSolid === true and $this->getCollidingEntities($hand->getBoundingBox())){
+		if($hand->isSolid === true and count($this->getCollidingEntities($hand->getBoundingBox())) > 0){
 			return false; //Entity in block
 		}
 
@@ -941,6 +941,37 @@ class Level{
 	 * @return Entity[]
 	 */
 	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity = null){
+		$nearby = [];
+
+		$minX = ($bb->minX - 2) >> 4;
+		$maxX = ($bb->maxX + 2) >> 4;
+		$minZ = ($bb->minZ - 2) >> 4;
+		$maxZ = ($bb->maxZ + 2) >> 4;
+
+		for($x = $minX; $x <= $maxX; ++$x){
+			for($z = $minZ; $z <= $maxZ; ++$z){
+				if($this->isChunkLoaded($x, $z)){
+					foreach($this->getChunkEntities($x, $z) as $ent){
+						if($ent !== $entity and ($entity === null or ($ent->canCollideWith($entity) and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
+							$nearby[] = $ent;
+						}
+					}
+				}
+			}
+		}
+
+		return $nearby;
+	}
+
+	/**
+	 * Returns the entities near the current one inside the AxisAlignedBB
+	 *
+	 * @param AxisAlignedBB $bb
+	 * @param Entity        $entity
+	 *
+	 * @return Entity[]
+	 */
+	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null){
 		$nearby = [];
 
 		$minX = ($bb->minX - 2) >> 4;

@@ -277,6 +277,10 @@ abstract class Entity extends Position implements Metadatable{
 		$this->health = (int) min($this->health, $this->maxHealth);
 	}
 
+	public function canCollideWith(Entity $entity){
+		return true;
+	}
+
 	protected function checkObstruction($x, $y, $z){
 		$i = (int) $x;
 		$j = (int) $y;

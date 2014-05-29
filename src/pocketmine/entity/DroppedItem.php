@@ -46,7 +46,6 @@ class DroppedItem extends Entity{
 	protected $drag = 0.02;
 
 	protected function initEntity(){
-		//TODO: upgrade old numeric entity ids
 		$this->namedtag->id = new String("id", "Item");
 		$this->setMaxHealth(5);
 		$this->setHealth(@$this->namedtag["Health"]);
@@ -148,6 +147,10 @@ class DroppedItem extends Entity{
 	 */
 	public function getItem(){
 		return $this->item;
+	}
+
+	public function canCollideWith(Entity $entity){
+		return false;
 	}
 
 	/**
