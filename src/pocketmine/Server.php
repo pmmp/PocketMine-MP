@@ -674,7 +674,6 @@ class Server{
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($nbtTag);
 		file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
-		file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".raw.dat", $nbt->write());
 	}
 
 	/**
