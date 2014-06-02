@@ -21,8 +21,8 @@
 
 namespace pocketmine\plugin;
 
-use pocketmine\utils\Logger;
-use pocketmine\utils\LogLevel;
+use \Logger;
+use \LogLevel;
 use pocketmine\utils\MainLogger;
 
 class PluginLogger implements Logger{

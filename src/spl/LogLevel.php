@@ -19,8 +19,6 @@
  *
 */
 
-namespace pocketmine\utils;
-
 interface LogLevel{
 	const EMERGENCY = "emergency";
 	const ALERT = "alert";

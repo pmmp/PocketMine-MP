@@ -14,7 +14,7 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
-
+ * @link http://www.pocketmine.net/
  * 
  *
 */
@@ -66,7 +66,7 @@ namespace {
 
 namespace pocketmine {
 	use pocketmine\utils\Binary;
-	use pocketmine\utils\LogLevel;
+	use \LogLevel;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;

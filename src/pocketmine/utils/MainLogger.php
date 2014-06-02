@@ -20,6 +20,8 @@
 */
 
 namespace pocketmine\utils;
+use \Logger;
+use \LogLevel;
 
 class MainLogger extends \Thread implements Logger{
 	protected $logFile;
