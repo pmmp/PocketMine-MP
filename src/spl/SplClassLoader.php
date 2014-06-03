@@ -1,6 +1,8 @@
 <?php
 
-require("SplAutoloader.php");
+if(!class_exists("SplAutoloader")){
+	require("SplAutoloader.php");
+}
 
 /**
  * SplClassLoader implementation that implements the technical interoperability
