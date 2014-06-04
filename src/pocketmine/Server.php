@@ -84,7 +84,6 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
-use pocketmine\utils\Logger;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -124,7 +123,7 @@ class Server{
 	/** @var TickScheduler */
 	private $tickScheduler = null;
 
-	/** @var \pocketmine\utils\Logger */
+	/** @var \Logger */
 	private $logger;
 
 	/** @var CommandReader */
@@ -1187,12 +1186,12 @@ class Server{
 
 	/**
 	 * @param \SplClassLoader $autoloader
-	 * @param Logger          $logger
+	 * @param \Logger          $logger
 	 * @param string          $filePath
 	 * @param string          $dataPath
 	 * @param string          $pluginPath
 	 */
-	public function __construct(\SplClassLoader $autoloader, Logger $logger, $filePath, $dataPath, $pluginPath){
+	public function __construct(\SplClassLoader $autoloader, \Logger $logger, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
 
 		$this->autoloader = $autoloader;
