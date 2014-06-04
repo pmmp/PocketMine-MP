@@ -38,13 +38,14 @@ It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accept
 * Long arrays MAY be split across multiple lines, where each subsequent line is indented once. 
 * Files MUST use only the `<?php` tag.
 * Files MUST NOT have an ending `?>` tag.
-* Code MUST NOT use namespaces. Descriptive and unique class names are enforced.
+* Code MUST use namespaces.
 * Strings SHOULD use the double quote `"` except when the single quote is required.
-* Arrays SHOULD be declared using `array()`, not the `[]` shortcut.
 * Argument lists MAY NOT be split across multiple lines, except long arrays.
 
 ```php
 <?php 
+
+namespace pocketmine\Example;
 
 class ExampleClass{
 	const EXAMPLE_CLASS_CONSTANT = 1;

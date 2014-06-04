@@ -1,14 +1,14 @@
 #!/bin/bash
 PMMP_VERSION=""
-LINUX_32_BUILD="PHP_5.5.10_x86_Linux"
-LINUX_64_BUILD="PHP_5.5.10_x86-64_Linux"
-MAC_32_BUILD="PHP_5.5.10_x86_MacOS"
-MAC_64_BUILD="PHP_5.5.10_x86-64_MacOS"
-RPI_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
+LINUX_32_BUILD="PHP_5.5.13_x86_Linux"
+LINUX_64_BUILD="PHP_5.5.13_x86-64_Linux"
+MAC_32_BUILD="PHP_5.5.13_x86_MacOS"
+MAC_64_BUILD="PHP_5.5.13_x86-64_MacOS"
+RPI_BUILD="PHP_5.5.13_ARM_Raspbian_hard"
 # Temporal build
-ODROID_BUILD="PHP_5.5.9_ARM_Raspbian_hard"
-AND_BUILD="PHP_5.5.9_ARMv7_Android"
-IOS_BUILD="PHP_5.5.9_ARMv6_iOS"
+ODROID_BUILD="PHP_5.5.13_ARM_Raspbian_hard"
+AND_BUILD="PHP_5.5.13_ARMv7_Android"
+IOS_BUILD="PHP_5.5.13_ARMv6_iOS"
 update=off
 forcecompile=off
 alldone=no
@@ -59,7 +59,7 @@ fi
 
 echo "[INFO] PocketMine-MP $PMMP_VERSION downloader & installer for Linux & Mac"
 
-echo "[0/3] Cleaning..."
+echo "[1/3] Cleaning..."
 rm -r -f src/
 rm -f PocketMine-MP.php
 rm -f README.md
@@ -67,13 +67,24 @@ rm -f CONTRIBUTING.md
 rm -f LICENSE
 rm -f start.sh
 rm -f start.bat
-echo "[1/3] Downloading PocketMine-MP $PMMP_VERSION..."
-download_file "https://github.com/PocketMine/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
-mv -f PocketMine-MP-$PMMP_VERSION/* ./
-rm -f -r PocketMine-MP-$PMMP_VERSION/
-rm -f ./start.cmd
+echo "[2/3] Downloading PocketMine-MP $PMMP_VERSION..."
+set +e
+download_file "https://github.com/PocketMine/PocketMine-MP/releases/download/$PMMP_VERSION/PocketMine-MP.phar" > PocketMine-MP.phar
+if ! [ -s "PocketMine-MP.phar" ] || [ "$(head -n 1 PocketMine-MP.phar)" == '<!DOCTYPE html>' ]; then
+	rm "PocketMine-MP.phar" > /dev/null
+	download_file "https://github.com/PocketMine/PocketMine-MP/archive/$PMMP_VERSION.tar.gz" | tar -zx > /dev/null
+	COMPILE_SCRIPT="./src/build/compile.sh"
+	mv -f PocketMine-MP-$PMMP_VERSION/* ./
+	rm -f -r PocketMine-MP-$PMMP_VERSION/
+	rm -f ./start.cmd
+else
+	download_file "https://raw.githubusercontent.com/PocketMine/PocketMine-MP/$PMMP_VERSION/start.sh" > start.sh
+	download_file "https://raw.githubusercontent.com/PocketMine/PocketMine-MP/$PMMP_VERSION/src/build/compile.sh" > compile.sh
+	COMPILE_SCRIPT="./compile.sh"
+fi
+
+chmod +x "$COMPILE_SCRIPT"
 chmod +x ./start.sh
-chmod +x ./src/build/compile.sh
 if [ "$update" == "on" ]; then
 	echo "[3/3] Skipping PHP recompilation due to user request"
 else
@@ -93,6 +104,9 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "date.timezone=$TIMEZONE" >> "./bin/php5/bin/php.ini"
 				echo "short_open_tag=0" >> "./bin/php5/bin/php.ini"
 				echo "asp_tags=0" >> "./bin/php5/bin/php.ini"
@@ -119,7 +133,10 @@ else
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -154,7 +171,10 @@ else
 				echo -n " regenerating php.ini..."
 				TIMEZONE=$(date +%Z)
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -182,7 +202,10 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -216,7 +239,10 @@ else
 			if [ $(./bin/php5/bin/php -r 'echo "yes";' 2>/dev/null) == "yes" ]; then
 				echo -n " regenerating php.ini..."
 				OPCACHE_PATH="$(find $(pwd) -name opcache.so)"
-				echo "zend_extension=\"$OPCACHE_PATH\"" > "./bin/php5/bin/php.ini"
+				echo "" > "./bin/php5/bin/php.ini"
+				#UOPZ_PATH="$(find $(pwd) -name uopz.so)"
+				#echo "zend_extension=\"$UOPZ_PATH\"" >> "./bin/php5/bin/php.ini"
+				echo "zend_extension=\"$OPCACHE_PATH\"" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.enable_cli=1" >> "./bin/php5/bin/php.ini"
 				echo "opcache.save_comments=0" >> "./bin/php5/bin/php.ini"
@@ -239,9 +265,12 @@ else
 		if [ "$alldone" == "no" ]; then
 			set -e
 			echo "[3/3] no build found, compiling PHP"
-			exec ./src/build/compile.sh
+			exec "$COMPILE_SCRIPT"
 		fi
 	fi
+fi
+if [ "$COMPILE_SCRIPT" == "./compile.sh" ]; then
+	rm "$COMPILE_SCRIPT"
 fi
 echo "[INFO] Everything done! Run ./start.sh to start PocketMine-MP"
 exit 0
