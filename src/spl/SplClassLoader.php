@@ -1,6 +1,6 @@
 <?php
 
-if(!class_exists("SplAutoloader")){
+if(!interface_exists("SplAutoloader", false)){
 	require("SplAutoloader.php");
 }
 

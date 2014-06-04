@@ -28,16 +28,6 @@ abstract class DataPacket extends \stdClass{
 	private $offset = 0;
 	public $buffer = "";
 
-	public $reliability = 0;
-	public $hasSplit = false;
-	public $messageIndex;
-	public $orderIndex;
-	public $orderChannel;
-	public $splitCount;
-	public $splitID;
-	public $splitIndex;
-
-
 	abstract public function pid();
 
 	abstract public function encode();

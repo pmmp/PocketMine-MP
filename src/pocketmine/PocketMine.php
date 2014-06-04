@@ -315,12 +315,31 @@ namespace pocketmine {
 		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
 	}
 
-	$server = new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
+	include_once("../RakLib/raklib/RakLib.php");
+	\raklib\RakLib::bootstrap($autoloader);
+	$server = new \raklib\server\RakLibServer($logger, $autoloader, 19132, "192.168.1.1");
+	$socket = $server->getExternalSocket();
+	while(true){
+		if(($len = @socket_read($socket, 4)) !== ""){
+			$packet = socket_read($socket, Binary::readInt($len));
+			$id = ord($packet{0});
+			if($id === \raklib\RakLib::PACKET_ENCAPSULATED){
+				$len = ord($packet{1});
+				$identifier = substr($packet, 2, $len);
+				$buffer = substr($packet, 2 + $len);
+				$pk = \raklib\protocol\EncapsulatedPacket::fromBinary($buffer);
+				var_dump($pk);
+
+			}
+		}
+		usleep(1000);
+	}
+	/*$server = new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 	$server->start();
 	$logger->shutdown();
 	$logger->join();
 
 	kill(getmypid());
-	exit(0);
+	exit(0);*/
 
 }
