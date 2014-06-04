@@ -124,12 +124,10 @@ class Leaves extends Transparent{
 				}else{
 					$this->getLevel()->setBlock($this, new Air(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
-						//TODO
-						//Server::getInstance()->api->entity->drop($this, Item::get(Item::SAPLING, $this->meta & 0x03, 1));
+						$this->getLevel()->dropItem($this, Item::get($this->id, $this->meta & 0x03, 1));
 					}
 					if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-						//TODO
-						//Server::getInstance()->api->entity->drop($this, Item::get(Item::APPLE, 0, 1));
+						$this->getLevel()->dropItem($this, Item::get(Item::APPLE, 0, 1));
 					}
 
 					return Level::BLOCK_UPDATE_NORMAL;

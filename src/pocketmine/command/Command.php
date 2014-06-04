@@ -274,8 +274,6 @@ abstract class Command{
 	}
 
 	/**
-	 * TODO: static::broadcastCommandMessage()
-	 *
 	 * @param CommandSender $source
 	 * @param string        $message
 	 * @param bool          $sendToSource

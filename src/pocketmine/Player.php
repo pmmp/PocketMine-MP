@@ -81,12 +81,10 @@ use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
-use pocketmine\utils\Binary;
 use pocketmine\utils\TextFormat;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
- * TODO: Move reliability layer
  */
 class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
@@ -729,19 +727,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 				break;
-			case "tile.container.slot":
-				if($data["tile"]->getLevel() === $this->getLevel()){
-					foreach($this->windows as $id => $w){
-						if($w === $data["tile"]){
-							$pk = new ContainerSetSlotPacket;
-							$pk->windowid = $id;
-							$pk->slot = $data["slot"] + (isset($data["offset"]) ? $data["offset"] : 0);
-							$pk->item = $data["slotdata"];
-							$this->dataPacket($pk);
-						}
-					}
-				}
-				break;
 			case "entity.metadata":
 				if($data->getID() === $this->id){
 					$eid = 0;
@@ -752,19 +737,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk = new SetEntityDataPacket;
 					$pk->eid = $eid;
 					$pk->metadata = $data->getDamage();
-					$this->dataPacket($pk);
-				}
-				break;
-			case "entity.event":
-				if($data["entity"]->getID() === $this->id){
-					$eid = 0;
-				}else{
-					$eid = $data["entity"]->getID();
-				}
-				if($data["entity"]->getLevel() === $this->getLevel()){
-					$pk = new EntityEventPacket;
-					$pk->eid = $eid;
-					$pk->event = $data["event"];
 					$this->dataPacket($pk);
 				}
 				break;

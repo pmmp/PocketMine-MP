@@ -36,12 +36,10 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		BaseInventory::__construct($this, InventoryType::get(InventoryType::DOUBLE_CHEST));
 	}
 
-	//TODO
 	public function getInventory(){
 		return $this;
 	}
 
-	//TODO
 	public function getHolder(){
 		return $this->left;
 	}

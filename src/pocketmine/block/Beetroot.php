@@ -57,9 +57,8 @@ class Beetroot extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				//TODO
-				//Server::getInstance()->api->entity->drop($this, Item::get(BEETROOT_SEEDS, 0, 1));
+			if($this->getSide(0)->isTransparent === true){ //TODO: Replace with common break method
+				$this->getLevel()->dropItem($this, Item::get(Item::BEETROOT_SEEDS, 0, 1));
 				$this->getLevel()->setBlock($this, new Air(), false, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;

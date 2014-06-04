@@ -45,9 +45,8 @@ class MelonStem extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				//TODO
-				//Server::getInstance()->api->entity->drop($this, Item::get(MELON_SEEDS, 0, mt_rand(0, 2)));
+			if($this->getSide(0)->isTransparent === true){ //TODO: Replace with common break method
+				$this->getLevel()->dropItem($this, Item::get(Item::MELON_SEEDS, 0, mt_rand(0, 2)));
 				$this->getLevel()->setBlock($this, new Air(), false, false, true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
