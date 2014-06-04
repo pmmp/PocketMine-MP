@@ -70,6 +70,7 @@ namespace pocketmine {
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
+	use raklib\RakLib;
 
 	const VERSION = "Alpha_1.4dev";
 	const API_VERSION = "1.0.0";
@@ -101,7 +102,12 @@ namespace pocketmine {
 	$autoloader->add("pocketmine", array(
 		\pocketmine\PATH . "src"
 	));
+
 	$autoloader->register(true);
+	if(!class_exists("raklib\\RakLib", false)){
+		require(\pocketmine\PATH . "src/raklib/raklib/RakLib.php");
+	}
+	RakLib::bootstrap($autoloader);
 
 	//Startup code. Do not look at it, it can harm you. Most of them are hacks to fix date-related bugs, or basic functions used after this
 

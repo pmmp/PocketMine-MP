@@ -74,6 +74,7 @@ use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\raknet\Info;
 use pocketmine\network\raknet\Packet;
+use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
@@ -100,8 +101,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	const SURVIVAL_SLOTS = 36;
 	const CREATIVE_SLOTS = 112;
 
-	public $CID;
-	public $MTU;
+	/** @var SourceInterface */
+	protected $interface;
+
 	public $spawned = false;
 	public $loggedIn = false;
 	public $gamemode;
@@ -112,6 +114,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $windows;
 	/** @var Inventory[] */
 	protected $windowIndex = [];
+
+	protected $sendIndex = 0;
 
 	public $blocked = true;
 	public $achievements = [];
@@ -137,32 +141,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $chunksOrder = [];
 	/** @var Player[] */
 	protected $hiddenPlayers = [];
-	private $recoveryQueue = [];
-	private $receiveQueue = [];
-	private $resendQueue = [];
-	private $ackQueue = [];
-	private $receiveCount = -1;
-	/** @var \pocketmine\network\raknet\Packet */
-	private $buffer;
-	private $bufferLen = 0;
-	private $nextBuffer = 0;
-	private $timeout;
-	private $counter = array(0, 0, 0, 0);
+
 	private $viewDistance;
-	private $lastMeasure = 0;
-	private $bandwidthRaw = 0;
-	private $bandwidthStats = array(0, 0, 0);
-	private $lag = [];
-	private $lagStat = 0;
 	private $spawnPosition;
-	private $packetLoss = 0;
+
 	private $lastChunk = false;
 	private $chunkScheduled = 0;
 	private $inAction = false;
-	private $bigCnt;
-	private $packetStats;
-	private $chunkCount = [];
-	private $received = [];
 
 	/**
 	 * @var \pocketmine\scheduler\TaskHandler[]
@@ -213,7 +198,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	protected function initEntity(){
-		$this->getLevel()->players[$this->CID] = $this;
+		$this->getLevel()->players[spl_object_hash($this)] = $this;
 		parent::initEntity();
 	}
 
@@ -363,21 +348,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 	/**
-	 * @param integer $clientID
-	 * @param string  $ip
-	 * @param integer $port
-	 * @param integer $MTU
+	 * @param SourceInterface $interface
+	 * @param integer         $clientID
+	 * @param string          $ip
+	 * @param integer         $port
 	 */
-	public function __construct($clientID, $ip, $port, $MTU){
+	public function __construct(SourceInterface $interface, $clientID, $ip, $port){
+		$this->interface = $interface;
 		$this->windows = new \SplObjectStorage();
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new Compound();
-		$this->bigCnt = 0;
-		$this->MTU = $MTU;
 		$this->server = Server::getInstance();
 		$this->lastBreak = microtime(true);
 		$this->clientID = $clientID;
-		$this->CID = $ip . ":" . $port;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
@@ -387,13 +370,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->slot = 0;
 		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
-		$this->packetStats = array(0, 0);
-		$this->buffer = new Packet(Info::DATA_PACKET_0);
-		$this->buffer->data = [];
-		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "handlePacketQueues")), 1);
-		$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "clearQueue")), 20 * 60);
 
-		$this->server->getLogger()->debug("New Session started with " . $ip . ":" . $port . ". MTU " . $this->MTU . ", Client ID " . $this->clientID);
+		$this->server->getLogger()->debug("New Session started with " . $ip . ":" . $port . ", Client ID " . $this->clientID);
 	}
 
 	/**
@@ -515,19 +493,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		foreach($this->chunkCount as $count => $t){
-			if(isset($this->recoveryQueue[$count]) or isset($this->resendQueue[$count])){
-				if($this->chunkScheduled === 0){
-					$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
-					++$this->chunkScheduled;
-				}
-
-				return;
-			}else{
-				unset($this->chunkCount[$count]);
-			}
-		}
-
 		if(is_array($this->lastChunk)){
 			foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
 				if($entity !== $this){
@@ -577,10 +542,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$cnt = $this->dataPacket($pk);
 		if($cnt === false){
 			return false;
-		}
-		$this->chunkCount = [];
-		foreach($cnt as $count){
-			$this->chunkCount[$count] = true;
 		}
 
 		$this->lastChunk = array($X, $Z);
@@ -669,95 +630,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
-		$packet->encode();
-		$len = strlen($packet->buffer) + 1;
-		$MTU = $this->MTU - 24;
-		if($len > $MTU){
-			return $this->directBigRawPacket($packet);
-		}
-
-		if(($this->bufferLen + $len) >= $MTU){
-			$this->sendBuffer();
-		}
-
-		$packet->messageIndex = $this->counter[3]++;
-		$packet->reliability = 2;
-		@$this->buffer->data[] = $packet;
-		$this->bufferLen += 6 + $len;
-
-		return [];
-	}
-
-	private function directBigRawPacket(DataPacket $packet){
-		if($this->connected === false){
-			return false;
-		}
-
-		$sendtime = microtime(true);
-
-		$size = $this->MTU - 34;
-		$buffer = str_split($packet->buffer, $size);
-		$bigCnt = $this->bigCnt;
-		$this->bigCnt = ($this->bigCnt + 1) % 0x10000;
-		$cnts = [];
-		$bufCount = count($buffer);
-		foreach($buffer as $i => $buf){
-			$cnts[] = $count = $this->counter[0]++;
-
-			$pk = new UnknownPacket;
-			$pk->packetID = $packet->pid();
-			$pk->reliability = 2;
-			$pk->hasSplit = true;
-			$pk->splitCount = $bufCount;
-			$pk->splitID = $bigCnt;
-			$pk->splitIndex = $i;
-			$pk->buffer = $buf;
-			$pk->messageIndex = $this->counter[3]++;
-
-			$rk = new Packet(Info::DATA_PACKET_0);
-			$rk->data[] = $pk;
-			$rk->seqNumber = $count;
-			$rk->sendtime = $sendtime;
-			$this->recoveryQueue[$count] = $rk;
-			$this->send($rk);
-		}
-
-		return $cnts;
-	}
-
-	/**
-	 * Sends a raw Packet to the conection
-	 *
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @param Packet $packet
-	 */
-	public function send(Packet $packet){
-		if($this->connected === true){
-			$packet->ip = $this->ip;
-			$packet->port = $this->port;
-			$this->bandwidthRaw += $this->server->sendPacket($packet);
-		}
-	}
-
-	/**
-	 * Forces sending the buffer
-	 *
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 */
-	public function sendBuffer(){
-		if($this->connected === true){
-			if($this->bufferLen > 0 and $this->buffer instanceof Packet){
-				$this->buffer->seqNumber = $this->counter[0]++;
-				$this->send($this->buffer);
-			}
-			$this->bufferLen = 0;
-			$this->buffer = new Packet(Info::DATA_PACKET_0);
-			$this->buffer->data = [];
-			$this->nextBuffer = microtime(true) + 0.1;
-		}
+		$this->interface->putPacket($this, $packet);
 	}
 
 	/**
@@ -1032,40 +905,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->dataPacket($pk);
 	}
 
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @return bool
-	 */
-	public function measureLag(){
-		if($this->connected === false){
-			return false;
-		}
-		if($this->packetStats[1] > 2){
-			$this->packetLoss = $this->packetStats[1] / max(1, $this->packetStats[0] + $this->packetStats[1]);
-		}else{
-			$this->packetLoss = 0;
-		}
-		$this->packetStats = array(0, 0);
-		array_shift($this->bandwidthStats);
-		$this->bandwidthStats[] = $this->bandwidthRaw / max(0.00001, microtime(true) - $this->lastMeasure);
-		$this->bandwidthRaw = 0;
-		$this->lagStat = array_sum($this->lag) / max(1, count($this->lag));
-		$this->lag = [];
-		$this->sendBuffer();
-		$this->lastMeasure = microtime(true);
-	}
-
-	/**
-	 * WARNING: Experimental method
-	 *
-	 * @return int
-	 */
-	public function getLag(){
-		return $this->lagStat * 1000;
-	}
-
 	protected function getCreativeBlock(Item $item){
 		foreach(Block::$creative as $i => $d){
 			if($d[0] === $item->getID() and $d[1] === $item->getDamage()){
@@ -1073,139 +912,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 		return -1;
-	}
-
-	/**
-	 * WARNING: Experimental method
-	 *
-	 * @return int
-	 */
-	public function getPacketLoss(){
-		return $this->packetLoss;
-	}
-
-	/**
-	 * WARNING: Experimental method
-	 *
-	 * @return float
-	 */
-	public function getBandwidth(){
-		return array_sum($this->bandwidthStats) / max(1, count($this->bandwidthStats));
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @return bool
-	 */
-	public function clearQueue(){
-		if($this->connected === false){
-			return false;
-		}
-		ksort($this->received);
-		if(($cnt = count($this->received)) > self::MAX_QUEUE){
-			foreach($this->received as $c => $t){
-				unset($this->received[$c]);
-				--$cnt;
-				if($cnt <= self::MAX_QUEUE){
-					break;
-				}
-			}
-		}
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @return bool
-	 */
-	public function handlePacketQueues(){
-		if($this->connected === false){
-			return false;
-		}
-		$time = microtime(true);
-		if($time > $this->timeout){
-			$this->close($this->username . " has left the game", "timeout");
-
-			return false;
-		}
-
-		if(($ackCnt = count($this->ackQueue)) > 0){
-			rsort($this->ackQueue);
-			$safeCount = (int) (($this->MTU - 1) / 4);
-			$packetCnt = (int) ($ackCnt / $safeCount + 1);
-			for($p = 0; $p < $packetCnt; ++$p){
-				$pk = new Packet(Info::ACK);
-				$pk->packets = [];
-				for($c = 0; $c < $safeCount; ++$c){
-					if(($k = array_pop($this->ackQueue)) === null){
-						break;
-					}
-					$pk->packets[] = $k;
-				}
-				$this->send($pk);
-			}
-			$this->ackQueue = [];
-		}
-
-		if(($receiveCnt = count($this->receiveQueue)) > 0){
-			ksort($this->receiveQueue);
-			foreach($this->receiveQueue as $count => $packets){
-				unset($this->receiveQueue[$count]);
-				foreach($packets as $p){
-					if($p instanceof DataPacket and $p->hasSplit === false){
-						if(isset($p->messageIndex) and $p->messageIndex !== false){
-							if($p->messageIndex > $this->receiveCount){
-								$this->receiveCount = $p->messageIndex;
-							}elseif($p->messageIndex !== 0){
-								if(isset($this->received[$p->messageIndex])){
-									continue;
-								}
-								switch($p->pid()){
-									case 0x01:
-									case ProtocolInfo::PING_PACKET:
-									case ProtocolInfo::PONG_PACKET:
-									case ProtocolInfo::MOVE_PLAYER_PACKET:
-									case ProtocolInfo::REQUEST_CHUNK_PACKET:
-									case ProtocolInfo::ANIMATE_PACKET:
-									case ProtocolInfo::SET_HEALTH_PACKET:
-										continue;
-								}
-							}
-							$this->received[$p->messageIndex] = true;
-						}
-						$p->decode();
-						$this->handleDataPacket($p);
-					}
-				}
-			}
-		}
-
-		if($this->nextBuffer <= $time and $this->bufferLen > 0){
-			$this->sendBuffer();
-		}
-
-		$limit = $time - 5; //max lag
-		foreach($this->recoveryQueue as $count => $data){
-			if($data->sendtime > $limit){
-				break;
-			}
-			unset($this->recoveryQueue[$count]);
-			$this->resendQueue[$count] = $data;
-		}
-
-		if(($resendCnt = count($this->resendQueue)) > 0){
-			foreach($this->resendQueue as $count => $data){
-				unset($this->resendQueue[$count]);
-				$this->packetStats[1]++;
-				$this->lag[] = microtime(true) - $data->sendtime;
-				$data->sendtime = microtime(true);
-				$this->send($data);
-				$this->recoveryQueue[$count] = $data;
-			}
-		}
 	}
 
 	public function onUpdate(){
@@ -1267,6 +973,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === false){
 			return;
 		}
+		$packet->decode();
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
@@ -1274,34 +981,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		switch($packet->pid()){
-			case 0x01:
-				break;
-			case ProtocolInfo::PONG_PACKET:
-				break;
-			case ProtocolInfo::PING_PACKET:
-				$pk = new PongPacket;
-				$pk->ptime = $packet->time;
-				$pk->time = abs(microtime(true) * 1000);
-				$this->directDataPacket($pk);
-				break;
-			case ProtocolInfo::DISCONNECT_PACKET:
-				$this->close($this->username . " has left the game", "client disconnect");
-				break;
-			case ProtocolInfo::CLIENT_CONNECT_PACKET:
-				if($this->loggedIn === true){
-					break;
-				}
-				$pk = new ServerHandshakePacket;
-				$pk->port = $this->port;
-				$pk->session = $packet->session;
-				$pk->session2 = Binary::readLong("\x00\x00\x00\x00\x04\x44\x0b\xa9");
-				$this->dataPacket($pk);
-				break;
-			case ProtocolInfo::CLIENT_HANDSHAKE_PACKET:
-				if($this->loggedIn === true){
-					break;
-				}
-				break;
 			case ProtocolInfo::LOGIN_PACKET:
 				if($this->loggedIn === true){
 					break;
@@ -1321,11 +1000,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
 						$pk = new LoginStatusPacket;
 						$pk->status = 1;
-						$this->directDataPacket($pk);
+						$this->dataPacket($pk);
 					}else{
 						$pk = new LoginStatusPacket;
 						$pk->status = 2;
-						$this->directDataPacket($pk);
+						$this->dataPacket($pk);
 					}
 					$this->close("", "Incorrect protocol #" . $packet->protocol1, false);
 
@@ -1454,7 +1133,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				//$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
 				//$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
 				$this->lastMeasure = microtime(true);
-				$this->tasks[] = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "measureLag")), 50);
 
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
@@ -1492,7 +1170,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 						$this->teleport($ev->getRespawnPosition());
 						$this->spawnToAll();
-						$this->sendBuffer();
 
 						break;
 					case 2: //Chunk loaded?
@@ -1509,28 +1186,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false){
 					break;
 				}
-				if($packet->messageIndex > $this->lastMovement){
-					$this->lastMovement = $packet->messageIndex;
-					$newPos = new Vector3($packet->x, $packet->y, $packet->z);
-					if($this->forceMovement instanceof Vector3){
-						if($this->forceMovement->distance($newPos) <= 0.7){
-							$this->forceMovement = false;
-						}else{
-							$this->setPosition($this->forceMovement);
-						}
+
+				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
+				if($this->forceMovement instanceof Vector3){
+					if($this->forceMovement->distance($newPos) <= 0.7){
+						$this->forceMovement = false;
+					}else{
+						$this->setPosition($this->forceMovement);
 					}
-					/*$speed = $this->entity->getSpeedMeasure();
-					if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
-						if($this->lastCorrect instanceof Vector3){
-							$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
-						}
-						if($this->blocked !== true){
-							$this->server->getLogger()->warning($this->username." moved too quickly!");
-						}
-					}else{*/
-					$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch);
-					//}
 				}
+				/*$speed = $this->entity->getSpeedMeasure();
+				if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
+					if($this->lastCorrect instanceof Vector3){
+						$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
+					}
+					if($this->blocked !== true){
+						$this->server->getLogger()->warning($this->username." moved too quickly!");
+					}
+				}else{*/
+				$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch);
+				//}
+
 				break;
 			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				if($this->spawned === false){
@@ -1754,7 +1430,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->z = $target->z;
 				$pk->block = $target->getID();
 				$pk->meta = $target->getDamage();
-				$this->directDataPacket($pk);
+				$this->dataPacket($pk);
+				//TODO: priority
 				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
 				}
@@ -2228,7 +1905,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function close($message = "", $reason = "generic reason"){
 		if($this->connected === true){
-			unset($this->getLevel()->players[$this->CID]);
+			unset($this->getLevel()->players[spl_object_hash($this)]);
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->loggedIn === true){
@@ -2237,8 +1914,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->sendBuffer();
-			$this->directDataPacket(new DisconnectPacket);
+			$this->interface->close($this, $reason);
 			$this->connected = false;
 			$this->server->removePlayer($this);
 			$this->getLevel()->freeAllChunks($this);
@@ -2247,10 +1923,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$task->cancel();
 			}
 			$this->tasks = [];
-			$this->recoveryQueue = [];
-			$this->receiveQueue = [];
-			$this->resendQueue = [];
-			$this->ackQueue = [];
 
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
@@ -2262,9 +1934,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->windowIndex = [];
 			$this->chunksLoaded = [];
 			$this->chunksOrder = [];
-			$this->chunkCount = [];
-			$this->received = [];
-			$this->buffer = null;
 			unset($this->buffer);
 		}
 	}
@@ -2292,37 +1961,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->username != "" and $this->isOnline() and $this->namedtag instanceof Compound){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
 		}
-	}
-
-	/**
-	 * Sends a Minecraft packet directly, bypassing the send buffers
-	 *
-	 * @param DataPacket $packet
-	 * @param bool       $recover
-	 *
-	 * @return array|bool
-	 */
-	public function directDataPacket(DataPacket $packet, $recover = true){
-		if($this->connected === false){
-			return false;
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
-		if($ev->isCancelled()){
-			return [];
-		}
-		$packet->encode();
-		$pk = new Packet(Info::DATA_PACKET_0);
-		$pk->data[] = $packet;
-		$pk->seqNumber = $this->counter[0]++;
-		$pk->sendtime = microtime(true);
-		if($recover !== false){
-			$this->recoveryQueue[$pk->seqNumber] = $pk;
-		}
-
-		$this->send($pk);
-
-		return array($pk->seqNumber);
 	}
 
 	/**
@@ -2400,63 +2038,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function removeMetadata($metadataKey, Plugin $plugin){
 		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
-	}
-
-	/**
-	 * Handles a RakNet Packet
-	 *
-	 * @param Packet $packet
-	 */
-	public function handlePacket(Packet $packet){
-		if($this->connected === true){
-			$this->timeout = microtime(true) + 20;
-			switch($packet->pid()){
-				case Info::NACK:
-					foreach($packet->packets as $count){
-						if(isset($this->recoveryQueue[$count])){
-							$this->resendQueue[$count] =& $this->recoveryQueue[$count];
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
-							unset($this->recoveryQueue[$count]);
-						}
-						++$this->packetStats[1];
-					}
-					break;
-
-				case Info::ACK:
-					foreach($packet->packets as $count){
-						if(isset($this->recoveryQueue[$count])){
-							$this->lag[] = microtime(true) - $this->recoveryQueue[$count]->sendtime;
-							unset($this->recoveryQueue[$count]);
-							unset($this->resendQueue[$count]);
-						}
-						++$this->packetStats[0];
-					}
-					break;
-
-				case Info::DATA_PACKET_0:
-				case Info::DATA_PACKET_1:
-				case Info::DATA_PACKET_2:
-				case Info::DATA_PACKET_3:
-				case Info::DATA_PACKET_4:
-				case Info::DATA_PACKET_5:
-				case Info::DATA_PACKET_6:
-				case Info::DATA_PACKET_7:
-				case Info::DATA_PACKET_8:
-				case Info::DATA_PACKET_9:
-				case Info::DATA_PACKET_A:
-				case Info::DATA_PACKET_B:
-				case Info::DATA_PACKET_C:
-				case Info::DATA_PACKET_D:
-				case Info::DATA_PACKET_E:
-				case Info::DATA_PACKET_F:
-					$this->ackQueue[] = $packet->seqNumber;
-					$this->receiveQueue[$packet->seqNumber] = [];
-					foreach($packet->data as $pk){
-						$this->receiveQueue[$packet->seqNumber][] = $pk;
-					}
-					break;
-			}
-		}
 	}
 
 

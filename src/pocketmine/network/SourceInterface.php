@@ -25,6 +25,7 @@
 namespace pocketmine\network;
 
 use pocketmine\network\protocol\DataPacket;
+use pocketmine\Player;
 
 /**
  * Classes that implement this interface will be able to be attached to players
@@ -34,20 +35,27 @@ interface SourceInterface{
 	/**
 	 * Sends a DataPacket to the interface
 	 *
+	 * @param Player     $player
 	 * @param DataPacket $packet
 	 */
-	public function putPacket(DataPacket $packet);
-
-	/**
-	 * Gets the next data packet to handle, null if none
-	 *
-	 * @return DataPacket
-	 */
-	public function getPacket();
+	public function putPacket(Player $player, DataPacket $packet);
 
 	/**
 	 * Terminates the connection
+	 *
+	 * @param Player $player
+	 * @param string $reason
+	 *
 	 */
-	public function close();
+	public function close(Player $player, $reason = "unknown reason");
+
+	/**
+	 * @return bool
+	 */
+	public function process();
+
+	public function shutdown();
+
+	public function emergencyShutdown();
 
 }

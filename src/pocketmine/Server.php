@@ -35,8 +35,6 @@ use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
-use pocketmine\event\server\PacketReceiveEvent;
-use pocketmine\event\server\PacketSendEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
@@ -62,14 +60,11 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
-use pocketmine\network\Packet;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryPacket;
-use pocketmine\network\raknet\Info as RakNetInfo;
-use pocketmine\network\raknet\Packet as RakNetPacket;
+use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
-use pocketmine\network\ThreadedHandler;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
@@ -88,6 +83,7 @@ use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
+use pocketmine\network\SourceInterface;
 
 /**
  * The class that manages everything
@@ -161,8 +157,8 @@ class Server{
 	private $tickCounter;
 	private $inTick = false;
 
-	/** @var ThreadedHandler */
-	private $interface;
+	/** @var SourceInterface[] */
+	private $interfaces = [];
 
 	private $serverID;
 
@@ -449,7 +445,7 @@ class Server{
 	}
 
 	/**
-	 * @return Logger
+	 * @return \ThreadedLogger
 	 */
 	public function getLogger(){
 		return $this->logger;
@@ -514,10 +510,17 @@ class Server{
 	}
 
 	/**
-	 * @return ThreadedHandler
+	 * @return SourceInterface[]
 	 */
-	public function getNetwork(){
-		return $this->interface;
+	public function getInterfaces(){
+		return $this->interfaces;
+	}
+
+	/**
+	 * @param SourceInterface $interface
+	 */
+	public function addInterface(SourceInterface $interface){
+		$this->interfaces[] = $interface;
 	}
 
 	/**
@@ -829,7 +832,7 @@ class Server{
 		$this->logger->info("Preparing level \"" . $name . "\"");
 		$level = new LevelFormat($path . "level.pmf");
 		if(!$level->isLoaded){
-			console("[ERROR] Could not load level \"" . $name . "\"");
+			$this->logger->error("Could not load level \"" . $name . "\"");
 
 			return false;
 		}
@@ -1186,12 +1189,12 @@ class Server{
 
 	/**
 	 * @param \SplClassLoader $autoloader
-	 * @param \Logger          $logger
+	 * @param \ThreadedLogger $logger
 	 * @param string          $filePath
 	 * @param string          $dataPath
 	 * @param string          $pluginPath
 	 */
-	public function __construct(\SplClassLoader $autoloader, \Logger $logger, $filePath, $dataPath, $pluginPath){
+	public function __construct(\SplClassLoader $autoloader, \ThreadedLogger $logger, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
 
 		$this->autoloader = $autoloader;
@@ -1279,7 +1282,7 @@ class Server{
 			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 		}
 		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
-		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~448 kB/s
+		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 3)); //Default rate ~144 kB/s, TODO: increment this, add backwards notification of packets
 		if(ADVANCED_CACHE == true){
 			$this->logger->info("Advanced cache enabled");
 		}
@@ -1291,7 +1294,8 @@ class Server{
 		$this->logger->info("Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
-		$this->interface = new ThreadedHandler("255.255.255.255", $this->getPort(), $this->getIp() === "" ? "0.0.0.0" : $this->getIp());
+
+		$this->interfaces[] = new RakLibInterface($this);
 
 		$this->logger->info("This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
 		$this->logger->info("PocketMine-MP is distributed under the LGPL License", true, true, 0);
@@ -1575,7 +1579,8 @@ class Server{
 	public function start(){
 
 		if($this->getConfigBoolean("enable-query", true) === true){
-			$this->queryHandler = new QueryHandler();
+			//$this->queryHandler = new QueryHandler();
+			//TODO: query
 		}
 
 
@@ -1614,13 +1619,12 @@ class Server{
 	private function tickProcessorWindows(){
 		$lastLoop = 0;
 		while($this->isRunning){
-			if(($packet = $this->interface->readPacket()) instanceof Packet){
-				$this->pluginManager->callEvent($ev = new PacketReceiveEvent($packet));
-				if(!$ev->isCancelled()){
-					$this->handlePacket($packet);
+			foreach($this->interfaces as $interface){
+				if($interface->process()){
+					$lastLoop = 0;
 				}
-				$lastLoop = 0;
 			}
+
 			if(($ticks = $this->tick()) !== true){
 				++$lastLoop;
 				if($lastLoop > 128){
@@ -1729,20 +1733,20 @@ class Server{
 		ob_end_clean();
 		$dump .= "\r\n```";
 		$name = "Error_Dump_" . date("D_M_j-H.i.s-T_Y");
-		log($dump, $name, true, 0, true);
+		//log($dump, $name, true, 0, true);
 		$this->logger->emergency("Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
 	}
 
 	private function tickProcessor(){
 		$lastLoop = 0;
 		while($this->isRunning){
-			if(($packet = $this->interface->readPacket()) instanceof Packet){
-				$this->pluginManager->callEvent($ev = new PacketReceiveEvent($packet));
-				if(!$ev->isCancelled()){
-					$this->handlePacket($packet);
+
+			foreach($this->interfaces as $interface){
+				if($interface->process()){
+					$lastLoop = 0;
 				}
-				$lastLoop = 0;
 			}
+
 			if(($ticks = $this->tick()) !== true){
 				++$lastLoop;
 				if($lastLoop > 16 and $lastLoop < 128){
@@ -1761,68 +1765,11 @@ class Server{
 	public function handlePacket(Packet $packet){
 		if($packet instanceof QueryPacket and isset($this->queryHandler)){
 			$this->queryHandler->handle($packet);
-		}elseif($packet instanceof RakNetPacket){
-			$CID = $packet->ip . ":" . $packet->port;
-			if(isset($this->players[$CID])){
-				$this->players[$CID]->handlePacket($packet);
-			}else{
-				switch($packet->pid()){
-					case RakNetInfo::UNCONNECTED_PING:
-					case RakNetInfo::UNCONNECTED_PING_OPEN_CONNECTIONS:
-						$pk = new RakNetPacket(RakNetInfo::UNCONNECTED_PONG);
-						$pk->pingID = $packet->pingID;
-						$pk->serverID = $this->serverID;
-						$pk->serverType = "MCCPP;Demo;" . $this->getMotd() . " [" . count($this->players) . "/" . $this->getMaxPlayers() . "]";
-						$pk->ip = $packet->ip;
-						$pk->port = $packet->port;
-						$this->sendPacket($pk);
-						break;
-					case RakNetInfo::OPEN_CONNECTION_REQUEST_1:
-						if($packet->structure !== RakNetInfo::STRUCTURE){
-							$this->logger->debug("Incorrect structure #" . $packet->structure . " from " . $packet->ip . ":" . $packet->port);
-							$pk = new RakNetPacket(RakNetInfo::INCOMPATIBLE_PROTOCOL_VERSION);
-							$pk->serverID = $this->serverID;
-							$pk->ip = $packet->ip;
-							$pk->port = $packet->port;
-							$this->sendPacket($pk);
-						}else{
-							$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_1);
-							$pk->serverID = $this->serverID;
-							$pk->mtuSize = strlen($packet->buffer);
-							$pk->ip = $packet->ip;
-							$pk->port = $packet->port;
-							$this->sendPacket($pk);
-						}
-						break;
-					case RakNetInfo::OPEN_CONNECTION_REQUEST_2:
-						$this->players[$CID] = new Player($packet->clientID, $packet->ip, $packet->port, $packet->mtuSize); //New Session!
-						$pk = new RakNetPacket(RakNetInfo::OPEN_CONNECTION_REPLY_2);
-						$pk->serverID = $this->serverID;
-						$pk->serverPort = $this->getPort();
-						$pk->mtuSize = $packet->mtuSize;
-						$pk->ip = $packet->ip;
-						$pk->port = $packet->port;
-						$this->sendPacket($pk);
-						break;
-				}
-			}
 		}
 	}
 
-	/**
-	 * Sends a packet to the processing queue. Returns the number of bytes
-	 *
-	 * @param Packet $packet
-	 *
-	 * @return int
-	 */
-	public function sendPacket(Packet $packet){
-		$this->pluginManager->callEvent($ev = new PacketSendEvent($packet));
-		if(!$ev->isCancelled()){
-			return $this->interface->writePacket($packet);
-		}
-
-		return 0;
+	public function addPlayer($identifier, Player $player){
+		$this->players[$identifier] = $player;
 	}
 
 	private function checkTickUpdates($currentTick){
@@ -1895,7 +1842,7 @@ class Server{
 
 	public function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->interface->getUploadSpeed() / 1024, 2) . " D " . round($this->interface->getDownloadSpeed() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
+			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U -1 D -1 kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}
 
