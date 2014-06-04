@@ -26,29 +26,28 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
- * Called when a player does an animation
+ * Called when a player eats something
  */
-class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
+class PlayerItemConsumeEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	const ARM_SWING = 1;
-
-	private $animationType;
+	/** @var Item */
+	private $item;
 
 	/**
 	 * @param Player $player
-	 * @param int    $animation
+	 * @param Item   $item
 	 */
-	public function __construct(Player $player, $animation = self::ARM_SWING){
+	public function __construct(Player $player, Item $item){
 		$this->player = $player;
-		$this->animationType = $animation;
+		$this->item = $item;
 	}
 
 	/**
-	 * @return int
+	 * @return Item
 	 */
-	public function getAnimationType(){
-		return $this->animationType;
+	public function getItem(){
+		return clone $this->item;
 	}
 
 }

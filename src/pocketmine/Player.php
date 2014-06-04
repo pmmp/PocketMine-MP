@@ -28,10 +28,12 @@ use pocketmine\entity\Human;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
+use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
@@ -59,22 +61,18 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
+use pocketmine\network\protocol\AnimatePacket;
 use pocketmine\network\protocol\ChunkDataPacket;
 use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\DisconnectPacket;
+use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
-use pocketmine\network\protocol\PongPacket;
-use pocketmine\network\protocol\ServerHandshakePacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
-use pocketmine\network\protocol\UnknownPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
-use pocketmine\network\raknet\Info;
-use pocketmine\network\raknet\Packet;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -744,15 +742,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 				break;
-			case "entity.animate":
-				if($data["eid"] === $this->id or $data["entity"]->getLevel() !== $this->getLevel()){
-					break;
-				}
-				$pk = new AnimatePacket;
-				$pk->eid = $data["eid"];
-				$pk->action = $data["action"]; //1 swing arm,
-				$this->dataPacket($pk);
-				break;
 			case "entity.metadata":
 				if($data->getID() === $this->id){
 					$eid = 0;
@@ -1011,7 +1000,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					return;
 				}
-				if(preg_match('#^[a-zA-Z0-9_]{3,16}$#', $packet->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console"){
+				if(preg_match('#^[a-zA-Z0-9_]{3,16}$#', $packet->username) == 0 or $this->username === "" or $this->iusername === "rcon" or $this->iusername === "console" or strlen($packet->username) > 16 or strlen($packet->username) < 3){
 					$this->close("", "Bad username");
 
 					return;
@@ -1126,14 +1115,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->z = (int) $this->spawnPosition->z;
 					$this->dataPacket($pk);
 				}
-
-				//TODO: new events, or remove them!
-				//$this->evid[] = $this->server->event("entity.animate", array($this, "eventHandler"));
-				//$this->evid[] = $this->server->event("entity.event", array($this, "eventHandler"));
-				//$this->evid[] = $this->server->event("entity.metadata", array($this, "eventHandler"));
-				//$this->evid[] = $this->server->event("tile.container.slot", array($this, "eventHandler"));
-				//$this->evid[] = $this->server->event("tile.update", array($this, "eventHandler"));
-				$this->lastMeasure = microtime(true);
 
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
@@ -1322,7 +1303,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					//$this->updateMetadata();
 				}
 				break;
-			/*case ProtocolInfo::PLAYER_ACTION_PACKET:
+			case ProtocolInfo::PLAYER_ACTION_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
@@ -1331,7 +1312,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$packet->eid = $this->id;
 
 				switch($packet->action){
-					case 5: //Shot arrow
+					/*case 5: //Shot arrow
 						if($this->entity->inAction === true){
 							if($this->getSlot($this->getCurrentEquipment())->getID() === BOW){
 								if($this->startAction !== false){
@@ -1394,10 +1375,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->entity->inAction = false;
 						$this->entity->updateMetadata();
 						break;
+					*/
 					case 6: //get out of the bed
 						$this->stopSleep();
+						break;
 				}
-				break;*/
+				break;
 			case ProtocolInfo::REMOVE_BLOCK_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
@@ -1561,13 +1544,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				break;*/
-			/*case ProtocolInfo::ANIMATE_PACKET:
+			case ProtocolInfo::ANIMATE_PACKET:
 				if($this->spawned === false){
 					break;
 				}
-				$packet->eid = $this->id;
-				$this->server->api->dhandle("entity.animate", array("eid" => $packet->eid, "entity" => $this->entity, "action" => $packet->action));
-				break;*/
+
+				$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $packet->action));
+				if($ev->isCancelled()){
+					break;
+				}
+
+				$pk = new AnimatePacket();
+				$pk->eid = $this->getID();
+				$pk->action = $ev->getAnimationType();
+				$this->server->broadcastPacket($this->getViewers(), $pk);
+				break;
 			case ProtocolInfo::RESPAWN_PACKET:
 				if($this->spawned === false or $this->dead === false){
 					break;
@@ -1590,16 +1581,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				break;
 			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
-			/*case ProtocolInfo::ENTITY_EVENT_PACKET:
+			case ProtocolInfo::ENTITY_EVENT_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$this->craftingType = 0;
 
-				$packet->eid = $this->id;
-				if($this->entity->inAction === true){
-					$this->entity->inAction = false;
-					$this->entity->updateMetadata();
+				if($this->inAction === true){
+					$this->inAction = false;
+					//$this->updateMetadata();
 				}
 				switch($packet->event){
 					case 9: //Eating
@@ -1624,26 +1614,31 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							//Item::COOKED_FISH => 5,
 							//Item::RAW_FISH => 2,
 						);
-						$slot = $this->getSlot($this->getCurrentEquipment());
-						if($this->entity->getHealth() < 20 and isset($items[$slot->getID()])){
+						$slot = $this->inventory->getItemInHand();
+						if($this->getHealth() < 20 and isset($items[$slot->getID()])){
+							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
+							if($ev->isCancelled()){
+								$this->inventory->sendContents($this);
+								break;
+							}
 
-							$pk = new EntityEventPacket;
+							$pk = new EntityEventPacket();
 							$pk->eid = 0;
 							$pk->event = 9;
 							$this->dataPacket($pk);
+							$pk->eid = $this->getID();
+							$this->server->broadcastPacket($this->getViewers(), $pk);
 
-							$this->entity->heal($items[$slot->getID()], "eating");
-							//--$slot->count;
-							if($slot->getCount() <= 0){
-								$this->setSlot($this->getCurrentEquipment(), Item::get(AIR, 0, 0));
-							}
+							$this->heal($items[$slot->getID()], "eating");
+							--$slot->count;
+							$this->inventory->setItemInHand($slot);
 							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){
-								$this->addItem(Item::get(BOWL, 0, 1));
+								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
 							}
 						}
 						break;
 				}
-				break;*/
+				break;
 			case ProtocolInfo::DROP_ITEM_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;

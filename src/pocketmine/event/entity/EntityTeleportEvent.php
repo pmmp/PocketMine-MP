@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  *
  *  ____            _        _   __  __ _                  __  __ ____
  * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
@@ -19,36 +19,55 @@
  *
  */
 
-namespace pocketmine\event\player;
+namespace pocketmine\event\entity;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
-use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\Event;
+use pocketmine\level\Position;
+use pocketmine\math\Vector3 as Vector3;
 
-/**
- * Called when a player does an animation
- */
-class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
+class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 
-	const ARM_SWING = 1;
+	/** @var Position */
+	private $from;
+	/** @var Position */
+	private $to;
 
-	private $animationType;
-
-	/**
-	 * @param Player $player
-	 * @param int    $animation
-	 */
-	public function __construct(Player $player, $animation = self::ARM_SWING){
-		$this->player = $player;
-		$this->animationType = $animation;
+	public function __construct(Entity $entity, Position $from, Position $to){
+		$this->entity = $entity;
+		$this->from = $from;
+		$this->to = $to;
 	}
 
 	/**
-	 * @return int
+	 * @return Position
 	 */
-	public function getAnimationType(){
-		return $this->animationType;
+	public function getFrom(){
+		return $this->from;
 	}
+
+	/**
+	 * @param Position $from
+	 */
+	public function setFrom(Position $from){
+		$this->from = $from;
+	}
+
+	/**
+	 * @return Position
+	 */
+	public function getTo(){
+		return $this->to;
+	}
+
+	/**
+	 * @param Position $to
+	 */
+	public function setTo(Position $to){
+		$this->to = $to;
+	}
+
 
 }
