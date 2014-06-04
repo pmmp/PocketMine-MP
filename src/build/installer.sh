@@ -1,14 +1,14 @@
 #!/bin/bash
 PMMP_VERSION=""
-LINUX_32_BUILD="PHP_5.5.11_x86_Linux"
-LINUX_64_BUILD="PHP_5.5.11_x86-64_Linux"
-MAC_32_BUILD="PHP_5.5.11_x86_MacOS"
-MAC_64_BUILD="PHP_5.5.11_x86-64_MacOS"
-RPI_BUILD="PHP_5.5.11_ARM_Raspbian_hard"
+LINUX_32_BUILD="PHP_5.5.13_x86_Linux"
+LINUX_64_BUILD="PHP_5.5.13_x86-64_Linux"
+MAC_32_BUILD="PHP_5.5.13_x86_MacOS"
+MAC_64_BUILD="PHP_5.5.13_x86-64_MacOS"
+RPI_BUILD="PHP_5.5.13_ARM_Raspbian_hard"
 # Temporal build
-ODROID_BUILD="PHP_5.5.11_ARM_Raspbian_hard"
-AND_BUILD="PHP_5.5.11_ARMv7_Android"
-IOS_BUILD="PHP_5.5.9_ARMv6_iOS"
+ODROID_BUILD="PHP_5.5.13_ARM_Raspbian_hard"
+AND_BUILD="PHP_5.5.13_ARMv7_Android"
+IOS_BUILD="PHP_5.5.13_ARMv6_iOS"
 update=off
 forcecompile=off
 alldone=no
