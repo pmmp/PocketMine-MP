@@ -460,6 +460,21 @@ abstract class Entity extends Position implements Metadatable{
 		}
 	}
 
+	/**
+	 * @return Vector3
+	 */
+	public function getDirectionVector(){
+		$pitch = ($this->pitch * M_PI) / 180;
+		$yaw = (($this->yaw + 90) * M_PI) / 180;
+
+		$y = -sin(deg2rad($this->pitch));
+		$xz = cos(deg2rad($this->pitch));
+		$x = -$xz * sin(deg2rad($this->yaw));
+		$z = $xz * cos(deg2rad($this->yaw));
+
+		return new Vector3($x, $y, $z);
+	}
+
 	public function onUpdate(){
 		if($this->closed !== false){
 			return false;

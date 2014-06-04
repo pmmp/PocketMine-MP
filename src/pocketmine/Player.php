@@ -30,6 +30,7 @@ use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
@@ -919,7 +920,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 		$hasUpdate = $this->entityBaseTick();
-		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->expand(1.5, 1, 1.5), $this) as $entity){
+		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->expand(1, 1, 1), $this) as $entity){
 			if($entity instanceof DroppedItem){
 				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
@@ -1643,26 +1644,32 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						break;
 				}
 				break;*/
-			/*case ProtocolInfo::DROP_ITEM_PACKET:
+			case ProtocolInfo::DROP_ITEM_PACKET:
 				if($this->spawned === false or $this->blocked === true){
 					break;
 				}
 				$packet->eid = $this->id;
-				$packet->item = $this->getSlot($this->getCurrentEquipment());
-				$data = [];
-				$data["eid"] = $packet->eid;
-				$data["unknown"] = $packet->unknown;
-				$data["item"] = $packet->item;
-				$data["player"] = $this;
-				if($this->blocked === false and $this->server->handle("player.drop", $data) !== false){
-					$this->server->api->entity->drop(new Position($this->entity->x - 0.5, $this->entity->y, $this->entity->z - 0.5, $this->getLevel()), $packet->item);
-					$this->setSlot($this->getCurrentEquipment(), Item::get(AIR, 0, 0), false);
+				$item = $this->inventory->getItemInHand();
+				$ev = new PlayerDropItemEvent($this, $item);
+				if($this->blocked === true){
+					$ev->setCancelled(true);
 				}
-				if($this->entity->inAction === true){
-					$this->entity->inAction = false;
-					$this->entity->updateMetadata();
+				$this->server->getPluginManager()->callEvent($ev);
+				if($ev->isCancelled()){
+					$this->inventory->sendContents($this);
+					break;
 				}
-				break;*/
+
+				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+				$motion = $this->getDirectionVector()->multiply(10);
+
+				$this->getLevel()->dropItem($this->add(0, 1, 0), $item, $motion);
+
+				if($this->inAction === true){
+					$this->inAction = false;
+					//$this->updateMetadata();
+				}
+				break;
 			case ProtocolInfo::MESSAGE_PACKET:
 				if($this->spawned === false){
 					break;

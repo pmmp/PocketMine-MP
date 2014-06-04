@@ -679,9 +679,10 @@ class Level{
 	/**
 	 * @param Vector3 $source
 	 * @param Item    $item
-	 * @param float   $force
+	 * @param Vector3 $motion
 	 */
-	public function dropItem(Vector3 $source, Item $item, $force = 1.0){
+	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null){
+		$motion = $motion === null ? new Vector3(0, 0, 0) : $motion;
 		if($item->getID() !== Item::AIR and $item->getCount() > 0){
 			$itemEntity = new DroppedItem($this, new Compound("", [
 				"Pos" => new Enum("Pos", [
@@ -691,9 +692,9 @@ class Level{
 					]),
 				//TODO: add random motion with physics
 				"Motion" => new Enum("Motion", [
-						new Double("", (lcg_value() * 0.2 - 0.1) * $force),
-						new Double("", 0.2 * $force),
-						new Double("", (lcg_value() * 0.2 - 0.1) * $force)
+						new Double("", $motion->x + (lcg_value() * 0.2 - 0.1)),
+						new Double("", $motion->y + 0.2),
+						new Double("", $motion->z + (lcg_value() * 0.2 - 0.1))
 					]),
 				"Rotation" => new Enum("Rotation", [
 						new Float("", lcg_value() * 360),
@@ -705,7 +706,7 @@ class Level{
 						"Damage" => new Short("Damage", $item->getDamage()),
 						"Count" => new Byte("Count", $item->getCount())
 					]),
-				"PickupDelay" => new Short("PickupDelay", 10)
+				"PickupDelay" => new Short("PickupDelay", 25)
 			]));
 
 			$itemEntity->spawnToAll();
@@ -768,7 +769,7 @@ class Level{
 		if(!($player instanceof Player) or ($player->getGamemode() & 0x01) === 0){
 			foreach($drops as $drop){
 				if($drop[2] > 0){
-					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]), 1);
+					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]));
 				}
 			}
 		}

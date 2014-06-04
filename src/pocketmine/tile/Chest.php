@@ -199,10 +199,6 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		$tile->spawnToAll();
 		$this->checkPairing();
 
-		//TODO: Update to new events
-		//$this->server->handle("tile.update", $this);
-		//$this->server->handle("tile.update", $tile);
-
 		return true;
 	}
 
@@ -216,11 +212,9 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 
 		$this->spawnToAll();
 		$this->checkPairing();
-		//TODO: tile update event
-		//$this->server->handle("tile.update", $this);
+
 		if($tile instanceof Chest){
 			$tile->spawnToAll();
-			//$this->server->handle("tile.update", $tile);
 		}
 
 		return true;

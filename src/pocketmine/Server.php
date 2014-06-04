@@ -1762,12 +1762,6 @@ class Server{
 		}
 	}
 
-	public function handlePacket(Packet $packet){
-		if($packet instanceof QueryPacket and isset($this->queryHandler)){
-			$this->queryHandler->handle($packet);
-		}
-	}
-
 	public function addPlayer($identifier, Player $player){
 		$this->players[$identifier] = $player;
 	}
