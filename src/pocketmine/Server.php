@@ -964,6 +964,7 @@ class Server{
 				$generator = new Normal($options);
 			}
 		}
+
 		$gen = new WorldGenerator($this, $generator, $name, $seed === null ? Binary::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
 		$gen->generate();
 		$gen->close();
@@ -1330,7 +1331,8 @@ class Server{
 				$this->setConfigString("level-name", "world");
 			}
 			if($this->loadLevel($default) === false){
-				$this->generateLevel($default, $this->getConfigInt("level-seed", time()));
+				$seed = $this->getConfigInt("level-seed", time());
+				$this->generateLevel($default, $seed === 0 ? time() : $seed);
 				$this->loadLevel($default);
 			}
 

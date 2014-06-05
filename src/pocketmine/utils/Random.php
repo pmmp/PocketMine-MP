@@ -38,6 +38,7 @@ class Random{
 		if($seed == -1){
 			$seed = time();
 		}
+
 		$this->setSeed($seed);
 	}
 
