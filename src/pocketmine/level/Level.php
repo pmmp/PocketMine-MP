@@ -726,7 +726,7 @@ class Level{
 		$target = $this->getBlock($vector);
 
 		if($player instanceof Player){
-			$lastTime = $player->lastBreak - $player->getLag() / 1000;
+			$lastTime = $player->lastBreak - 0.2; //TODO: replace with true lag
 			if(($player->getGamemode() & 0x01) === 1 and ($lastTime + 0.15) >= microtime(true)){
 				return false;
 			}elseif(($lastTime + $target->getBreakTime($item)) >= microtime(true)){

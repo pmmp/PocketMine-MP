@@ -1433,7 +1433,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$item = clone $this->inventory->getItemInHand();
 				}
 
-				if($this->getLevel()->useBreakOn($vector, $item) === true){
+				if($this->getLevel()->useBreakOn($vector, $item, $this) === true){
 					if(($this->gamemode & 0x01) === 0){
 						$this->inventory->setItemInHand($item);
 					}
