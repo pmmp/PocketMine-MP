@@ -92,6 +92,9 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	/** @var \SplObjectStorage */
 	private $identifers;
 
+	/** @var int[] */
+	private $identifiersACK = [];
+
 	/** @var ServerHandler */
 	private $interface;
 
@@ -101,6 +104,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 		$server = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
 		$this->interface = new ServerHandler($server, $this);
+		$this->setName($this->server->getMotd());
 
 	}
 
@@ -113,6 +117,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			$player = $this->players[$identifier];
 			$this->identifers->detach($player);
 			unset($this->players[$identifier]);
+			unset($this->identifiersACK[$identifier]);
 			$player->close($player->getName() . " has left the game", $reason);
 		}
 	}
@@ -120,6 +125,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	public function close(Player $player, $reason = "unknown reason"){
 		if(isset($this->identifers[$player])){
 			unset($this->players[$this->identifers[$player]]);
+			unset($this->identifiersACK[$this->identifers[$player]]);
 			$this->interface->closeSession($this->identifers[$player], $reason);
 			$this->identifers->detach($player);
 		}
@@ -136,24 +142,47 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	public function openSession($identifier, $address, $port, $clientID){
 		$player = new Player($this, $clientID, $address, $port);
 		$this->players[$identifier] = $player;
+		$this->identifiersACK[$identifier] = 0;
 		$this->identifers->attach($player, $identifier);
 		$this->server->addPlayer($identifier, $player);
 	}
 
-	public function handleEncapsulated($identifier, EncapsulatedPacket $packet){
+	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
 			$this->players[$identifier]->handleDataPacket($this->getPacket($packet->buffer));
 		}
 	}
 
-	public function putPacket(Player $player, DataPacket $packet){
+	public function notifyACK($identifier, $identifierACK){
+		if(isset($this->players[$identifier])){
+			$this->players[$identifier]->handleACK($identifierACK);
+		}
+	}
+
+	public function setName($name){
+		$this->interface->sendOption("name", "MCCPP;Demo;$name");
+	}
+
+	public function handleOption($name, $value){
+		//TODO
+	}
+
+	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
 		if(isset($this->identifers[$player])){
+			$identifier = $this->identifers[$player];
 			$packet->encode();
 			$pk = new EncapsulatedPacket();
 			$pk->buffer = $packet->buffer;
 			$pk->reliability = 2;
-			$this->interface->sendEncapsulated($this->identifers[$player], $pk);
+			if($needACK === true){
+				$pk->identifierACK = $this->identifiersACK[$identifier]++;
+			}
+			$this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+
+			return $pk->identifierACK;
 		}
+
+		return null;
 	}
 
 	private function getPacket($buffer){

@@ -1282,7 +1282,7 @@ class Server{
 			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 		}
 		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
-		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 3)); //Default rate ~144 kB/s, TODO: increment this, add backwards notification of packets
+		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 7)); //Default rate ~336 kB/s
 		if(ADVANCED_CACHE == true){
 			$this->logger->info("Advanced cache enabled");
 		}
@@ -1571,6 +1571,9 @@ class Server{
 
 		$this->tickScheduler->kill();
 		$this->console->kill();
+		foreach($this->interfaces as $interface){
+			$interface->shutdown();
+		}
 	}
 
 	/**

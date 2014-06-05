@@ -146,6 +146,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $chunkScheduled = 0;
 	private $inAction = false;
 
+	private $needACK = [];
+
 	/**
 	 * @var \pocketmine\scheduler\TaskHandler[]
 	 */
@@ -468,6 +470,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	/**
+	 * @param int $identifier
+	 *
+	 * @return bool
+	 */
+	public function checkACK($identifier){
+		return !isset($this->needACK[$identifier]);
+	}
+
+	public function handleACK($identifier){
+		unset($this->needACK[$identifier]);
+	}
+
+	/**
 	 * Sends, if available, the next ordered chunk to the client
 	 *
 	 * WARNING: Do not use this, it's only for internal use.
@@ -491,15 +506,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		if(is_array($this->lastChunk)){
-			foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
-				if($entity !== $this){
-					$entity->spawnTo($this);
+			$identifier = $this->lastChunk[2];
+			if(!$this->checkACK($identifier)){
+				if((microtime(true) - $this->lastChunk[3]) < 1.5){
+					$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
+					return false;
+				}else{
+					$index = null;
+					LevelFormat::getXZ($index, $this->lastChunk[0], $this->lastChunk[1]);
+					unset($this->chunksLoaded[$index]);
 				}
-			}
-			foreach($this->getLevel()->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
-				if($tile instanceof Spawnable){
-					$tile->spawnTo($this);
+			}else{
+				foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
+					if($entity !== $this){
+						$entity->spawnTo($this);
+					}
 				}
+				foreach($this->getLevel()->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
+					if($tile instanceof Spawnable){
+						$tile->spawnTo($this);
+					}
+				}
+
 			}
 			$this->lastChunk = false;
 		}
@@ -536,12 +564,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
 		$pk->data = $this->getLevel()->getOrderedChunk($X, $Z, $Yndex);
-		$cnt = $this->dataPacket($pk);
+		$cnt = $this->dataPacket($pk, true);
 		if($cnt === false){
 			return false;
 		}
 
-		$this->lastChunk = array($X, $Z);
+		$this->lastChunk = array($X, $Z, $cnt, microtime(true));
 
 		if($this->chunkScheduled === 0 or $force === true){
 			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
@@ -615,10 +643,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * Sends an ordered DataPacket to the send buffer
 	 *
 	 * @param DataPacket $packet
+	 * @param bool       $needACK
 	 *
-	 * @return array|bool
+	 * @return int|bool
 	 */
-	public function dataPacket(DataPacket $packet){
+	public function dataPacket(DataPacket $packet, $needACK = false){
 		if($this->connected === false){
 			return false;
 		}
@@ -627,7 +656,39 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
-		$this->interface->putPacket($this, $packet);
+		$identifier = $this->interface->putPacket($this, $packet, $needACK);
+
+		if($needACK and $identifier !== null){
+			$this->needACK[$identifier] = false;
+			return $identifier;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param DataPacket $packet
+	 * @param bool       $needACK
+	 *
+	 * @return bool|int
+	 */
+	public function directDataPacket(DataPacket $packet, $needACK = false){
+		if($this->connected === false){
+			return false;
+		}
+		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		$identifier = $this->interface->putPacket($this, $packet, $needACK, true);
+
+		if($needACK and $identifier !== null){
+			$this->needACK[$identifier] = false;
+			return $identifier;
+		}
+
+		return true;
 	}
 
 	/**
