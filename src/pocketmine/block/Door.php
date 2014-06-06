@@ -104,7 +104,7 @@ abstract class Door extends Transparent{
 				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true, false, true);
 				$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 				if($player instanceof Player){
-					unset($players[$player->CID]);
+					unset($players[$player->getID()]);
 				}
 				$pk = new LevelEventPacket;
 				$pk->x = $this->x;
@@ -123,7 +123,7 @@ abstract class Door extends Transparent{
 			$this->getLevel()->setBlock($this, $this, true, false, true);
 			$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 			if($player instanceof Player){
-				unset($players[$player->CID]);
+				unset($players[$player->getID()]);
 			}
 			$pk = new LevelEventPacket;
 			$pk->x = $this->x;

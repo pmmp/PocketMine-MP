@@ -857,10 +857,10 @@ abstract class Entity extends Position implements Metadatable{
 			if(!$this->justCreated){
 				$newChunk = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 				foreach($this->hasSpawned as $player){
-					if(!isset($newChunk[$player->CID])){
+					if(!isset($newChunk[$player->getID()])){
 						$this->despawnFrom($player);
 					}else{
-						unset($newChunk[$player->CID]);
+						unset($newChunk[$player->getID()]);
 					}
 				}
 				foreach($newChunk as $player){
