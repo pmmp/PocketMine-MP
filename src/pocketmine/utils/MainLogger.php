@@ -44,7 +44,7 @@ class MainLogger extends \ThreadedLogger{
 			throw new \RuntimeException("MainLogger has been already created");
 		}
 		static::$logger = $this;
-		@mkdir(basename($logFile), 0777, true);
+		touch(basename($logFile));
 		$this->logFile = $logFile;
 		$this->hasANSI = (bool) $hasANSI;
 		$this->logDebug = (bool) $logDebug;
