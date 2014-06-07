@@ -24,16 +24,16 @@ namespace pocketmine\level\format;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 
-/**
- * All Level formats must implement this interface
- */
-interface LevelFormat{
+interface LevelProvider{
 
 	/**
 	 * @param Server $server
 	 * @param string $path
 	 */
 	public function __construct(Server $server, $path);
+
+	/** @return string */
+	public function getPath();
 
 	/**
 	 * Tells if the path is a valid level.
@@ -53,7 +53,7 @@ interface LevelFormat{
 	 * @param int  $Z      absolute Chunk Z value
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return ChunkSnapshot
+	 * @return Chunk
 	 */
 	public function getChunk($X, $Z, $create = false);
 
@@ -68,17 +68,22 @@ interface LevelFormat{
 
 	public function unloadChunk($X, $Z);
 
-	public function isChunkLoaded($X, $Z);
+	public function isChunkGenerated($X, $Z);
+
+	public function getName();
 
 	/**
 	 * @return Vector3
 	 */
 	public function getSpawn();
 
-	public function getName();
+	/**
+	 * @param Vector3 $pos
+	 */
+	public function setSpawn(Vector3 $pos);
 
 	/**
-	 * @return ChunkSnapshot
+	 * @return Chunk
 	 */
 	public function getLoadedChunks();
 

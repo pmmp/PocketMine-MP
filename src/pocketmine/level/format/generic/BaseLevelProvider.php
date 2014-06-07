@@ -19,23 +19,18 @@
  *
 */
 
-namespace pocketmine\level\format\anvil;
+namespace pocketmine\level\format\generic;
+use pocketmine\level\format\LevelProvider;
+use pocketmine\Server;
 
-use pocketmine\level\format\generic\BaseLevelProvider;
+abstract class BaseLevelProvider implements LevelProvider{
+	/** @var Server */
+	protected $server;
+	/** @var string */
+	protected $path;
 
-class Anvil extends BaseLevelProvider{
-	protected $basePath;
-
-	public function __construct($path, $levelName){
-		$this->basePath = realpath($path) . "/";
-	}
-
-	public static function isValid($path){
-		return file_exists(realpath($path) . "region/");
-	}
-
-	public static function getRegionIndex($chunkX, $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
+	public function __construct(Server $server, $path){
+		$this->server = $server;
+		$this->path = $path;
 	}
 }

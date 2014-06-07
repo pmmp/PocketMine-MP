@@ -14,28 +14,26 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @link   http://www.pocketmine.net/
  *
  *
-*/
+ */
 
-namespace pocketmine\level\format\anvil;
+/**
+ * Level related events
+ */
+namespace pocketmine\event\level;
 
-use pocketmine\level\format\generic\BaseLevelProvider;
+use pocketmine\event\Event;
 
-class Anvil extends BaseLevelProvider{
-	protected $basePath;
+abstract class LevelEvent extends Event{
+	/** @var \pocketmine\level\Level */
+	protected $level;
 
-	public function __construct($path, $levelName){
-		$this->basePath = realpath($path) . "/";
-	}
-
-	public static function isValid($path){
-		return file_exists(realpath($path) . "region/");
-	}
-
-	public static function getRegionIndex($chunkX, $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
+	/**
+	 * @return \pocketmine\level\Level
+	 */
+	public function getLevel(){
+		return $this->level;
 	}
 }

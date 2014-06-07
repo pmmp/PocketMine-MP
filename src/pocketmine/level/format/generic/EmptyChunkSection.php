@@ -39,6 +39,22 @@ class EmptyChunkSection implements ChunkSection{
 		return "\x00\x00\x00\x00\x00\x00\x00\x00";
 	}
 
+	public function getIdArray(){
+		return str_repeat("\x00", 4096);
+	}
+
+	public function getDataArray(){
+		return str_repeat("\x00", 2048);
+	}
+
+	public function getSkyLightArray(){
+		return str_repeat("\x00", 2048);
+	}
+
+	public function getLightArray(){
+		return str_repeat("\x00", 2048);
+	}
+
 	final public function setBlockId($x, $y, $z, $id){
 
 	}

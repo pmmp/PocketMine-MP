@@ -14,28 +14,35 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @link   http://www.pocketmine.net/
  *
  *
-*/
+ */
 
-namespace pocketmine\level\format\anvil;
+namespace pocketmine\event\level;
 
-use pocketmine\level\format\generic\BaseLevelProvider;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
 
-class Anvil extends BaseLevelProvider{
-	protected $basePath;
+/**
+ * An event that is called when a level spawn changes.
+ * The previous spawn is included
+ */
+class SpawnChangeEvent extends LevelEvent{
+	public static $handlerList = null;
 
-	public function __construct($path, $levelName){
-		$this->basePath = realpath($path) . "/";
+	/** @var Position */
+	private $previousSpawn;
+
+	public function __construct(Level $level, Position $previousSpawn){
+		$this->level = $level;
+		$this->previousSpawn = $previousSpawn;
 	}
 
-	public static function isValid($path){
-		return file_exists(realpath($path) . "region/");
-	}
-
-	public static function getRegionIndex($chunkX, $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
+	/**
+	 * @return Position
+	 */
+	public function getPreviousSpawn(){
+		return $this->previousSpawn;
 	}
 }

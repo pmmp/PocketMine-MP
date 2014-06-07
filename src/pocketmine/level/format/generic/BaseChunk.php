@@ -74,11 +74,27 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
-		$this->sections[$y >> 4]->getBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
+		return $this->sections[$y >> 4]->getBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
 		$this->sections[$y >> 4]->setBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
+	}
+
+	public function getBlockId($x, $y, $z){
+		return $this->sections[$y >> 4]->getBlockId($x, $y - ($y >> 4), $z);
+	}
+
+	public function setBlockId($x, $y, $z, $id){
+		$this->sections[$y >> 4]->setBlockId($x, $y - ($y >> 4), $z, $id);
+	}
+
+	public function getBlockData($x, $y, $z){
+		return $this->sections[$y >> 4]->getBlockData($x, $y - ($y >> 4), $z);
+	}
+
+	public function setBlockData($x, $y, $z, $data){
+		$this->sections[$y >> 4]->setBlockData($x, $y - ($y >> 4), $z, $data);
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
@@ -123,4 +139,9 @@ abstract class BaseChunk implements Chunk{
 	public function setSection($fY, ChunkSection $section){
 		$this->sections[(int) $fY] = $section;
 	}
+
+	public function getSections(){
+		return $this->sections;
+	}
+
 }

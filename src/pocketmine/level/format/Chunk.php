@@ -21,6 +21,9 @@
 
 namespace pocketmine\level\format;
 
+use pocketmine\entity\Entity;
+use pocketmine\tile\Tile;
+
 interface Chunk{
 	const SECTION_COUNT = 8;
 
@@ -139,9 +142,22 @@ interface Chunk{
 	/**
 	 * Thread-safe read-only chunk
 	 *
+	 * @param bool $includeMaxBlockY
+	 * @param bool $includeBiome
+	 * @param bool $includeBiomeTemp
+	 *
 	 * @return ChunkSnapshot
 	 */
-	public function getChunkSnapshot();
+	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false);
+
+
+	public function addEntity(Entity $entity);
+
+	public function removeEntity(Entity $entity);
+
+	public function addTile(Tile $tile);
+
+	public function removeTile(Tile $tile);
 
 	/**
 	 * @return \pocketmine\entity\Entity[]
@@ -198,5 +214,10 @@ interface Chunk{
 	 * @return boolean
 	 */
 	public function setSection($fY, ChunkSection $section);
+
+	/**
+	 * @return ChunkSection[]
+	 */
+	public function getSections();
 
 }

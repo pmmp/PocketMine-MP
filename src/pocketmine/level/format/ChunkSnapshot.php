@@ -90,28 +90,4 @@ interface ChunkSnapshot{
 	 */
 	public function getBiome($x, $z);
 
-	/**
-	 * Tests whether a section (mini-chunk) is empty
-	 *
-	 * @param $fY 0-7, (Y / 16)
-	 *
-	 * @return bool
-	 */
-	public function isSectionEmpty($fY);
-
-	/**
-	 * @param int $Y 0-7
-	 *
-	 * @return ChunkSection
-	 */
-	public function getSection($Y);
-
-	/**
-	 * @param int          $Y 0-7
-	 * @param ChunkSection $section
-	 *
-	 * @return boolean
-	 */
-	public function setSection($Y, ChunkSection $section);
-
 }
