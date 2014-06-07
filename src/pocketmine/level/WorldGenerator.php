@@ -61,8 +61,8 @@ class WorldGenerator{
 	public function generate(){
 		$this->generator->init($this->level, $this->random);
 
-		for($Z = 7; $Z <= 9; ++$Z){
-			for($X = 7; $X <= 9; ++$X){
+		for($Z = 6; $Z <= 10; ++$Z){
+			for($X = 6; $X <= 10; ++$X){
 				$this->level->level->loadChunk($X, $Z);
 			}
 		}

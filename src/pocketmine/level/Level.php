@@ -95,6 +95,7 @@ class Level{
 	/** @var Server */
 	private $server;
 	private $name;
+	/** @var Player[][] */
 	private $usedChunks;
 	private $changedBlocks;
 	private $changedCount;
@@ -302,16 +303,18 @@ class Level{
 
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $index => $mini){
-					foreach($mini as $blocks){
-						/** @var Block $b */
-						foreach($blocks as $b){
-							$pk = new UpdateBlockPacket;
-							$pk->x = $b->x;
-							$pk->y = $b->y;
-							$pk->z = $b->z;
-							$pk->block = $b->getID();
-							$pk->meta = $b->getDamage();
-							$this->server->broadcastPacket($this->players, $pk);
+					if(isset($this->usedChunks[$index]) and count($this->usedChunks[$index]) > 0){
+						foreach($mini as $blocks){
+							/** @var Block $b */
+							foreach($blocks as $b){
+								$pk = new UpdateBlockPacket;
+								$pk->x = $b->x;
+								$pk->y = $b->y;
+								$pk->z = $b->z;
+								$pk->block = $b->getID();
+								$pk->meta = $b->getDamage();
+								$this->server->broadcastPacket($this->usedChunks[$index], $pk);
+							}
 						}
 					}
 				}
@@ -383,7 +386,6 @@ class Level{
 	public function populateChunk($X, $Z){
 		$this->level->setPopulated($X, $Z);
 		$this->generator->populateChunk($X, $Z);
-
 		return true;
 	}
 
@@ -471,7 +473,7 @@ class Level{
 	 * @param int     $type
 	 */
 	public function updateAround(Vector3 $pos, $type = self::BLOCK_UPDATE_NORMAL){
-		$block = $this->getBlockRaw($pos);
+		$block = $this->getBlock($pos);
 		$block->getSide(0)->onUpdate($type);
 		$block->getSide(1)->onUpdate($type);
 		$block->getSide(2)->onUpdate($type);
@@ -583,33 +585,35 @@ class Level{
 	 */
 	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getDamage())) === true and $send !== false){
-			if($direct === true){
-				$pk = new UpdateBlockPacket;
-				$pk->x = $pos->x;
-				$pk->y = $pos->y;
-				$pk->z = $pos->z;
-				$pk->block = $block->getID();
-				$pk->meta = $block->getDamage();
-				$this->server->broadcastPacket($this->players, $pk);
-			}elseif($direct === false){
-				if(!($pos instanceof Position)){
-					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
+			$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
+			if(isset($this->usedChunks[$index]) and count($this->usedChunks[$index]) > 0){
+				if($direct === true){
+					$pk = new UpdateBlockPacket;
+					$pk->x = $pos->x;
+					$pk->y = $pos->y;
+					$pk->z = $pos->z;
+					$pk->block = $block->getID();
+					$pk->meta = $block->getDamage();
+					$this->server->broadcastPacket($this->usedChunks[$index], $pk);
+				}elseif($direct === false){
+					if(!($pos instanceof Position)){
+						$pos = new Position($pos->x, $pos->y, $pos->z, $this);
+					}
+					$block->position($pos);
+					if(ADVANCED_CACHE == true){
+						Cache::remove("world:{$this->name}:{$index}");
+					}
+					if(!isset($this->changedBlocks[$index])){
+						$this->changedBlocks[$index] = [];
+						$this->changedCount[$index] = 0;
+					}
+					$Y = $pos->y >> 4;
+					if(!isset($this->changedBlocks[$index][$Y])){
+						$this->changedBlocks[$index][$Y] = [];
+						$this->changedCount[$index] |= 1 << $Y;
+					}
+					$this->changedBlocks[$index][$Y][] = clone $block;
 				}
-				$block->position($pos);
-				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
-				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->name}:{$index}");
-				}
-				if(!isset($this->changedBlocks[$index])){
-					$this->changedBlocks[$index] = [];
-					$this->changedCount[$index] = 0;
-				}
-				$Y = $pos->y >> 4;
-				if(!isset($this->changedBlocks[$index][$Y])){
-					$this->changedBlocks[$index][$Y] = [];
-					$this->changedCount[$index] |= 1 << $Y;
-				}
-				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
 		}
 
@@ -637,29 +641,32 @@ class Level{
 			}
 			$block->position($pos);
 
-			if($direct === true){
-				$pk = new UpdateBlockPacket;
-				$pk->x = $pos->x;
-				$pk->y = $pos->y;
-				$pk->z = $pos->z;
-				$pk->block = $block->getID();
-				$pk->meta = $block->getDamage();
-				$this->server->broadcastPacket($this->players, $pk);
-			}else{
-				$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
-				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->name}:{$index}");
+			$index = LevelFormat::getIndex($pos->x >> 4, $pos->z >> 4);
+			if(isset($this->usedChunks[$index]) and count($this->usedChunks[$index]) > 0){
+				if($direct === true){
+					$pk = new UpdateBlockPacket;
+					$pk->x = $pos->x;
+					$pk->y = $pos->y;
+					$pk->z = $pos->z;
+					$pk->block = $block->getID();
+					$pk->meta = $block->getDamage();
+					$this->server->broadcastPacket($this->usedChunks[$index], $pk);
+				}else{
+
+					if(ADVANCED_CACHE == true){
+						Cache::remove("world:{$this->name}:{$index}");
+					}
+					if(!isset($this->changedBlocks[$index])){
+						$this->changedBlocks[$index] = [];
+						$this->changedCount[$index] = 0;
+					}
+					$Y = $pos->y >> 4;
+					if(!isset($this->changedBlocks[$index][$Y])){
+						$this->changedBlocks[$index][$Y] = [];
+						$this->changedCount[$index] |= 1 << $Y;
+					}
+					$this->changedBlocks[$index][$Y][] = clone $block;
 				}
-				if(!isset($this->changedBlocks[$index])){
-					$this->changedBlocks[$index] = [];
-					$this->changedCount[$index] = 0;
-				}
-				$Y = $pos->y >> 4;
-				if(!isset($this->changedBlocks[$index][$Y])){
-					$this->changedBlocks[$index][$Y] = [];
-					$this->changedCount[$index] |= 1 << $Y;
-				}
-				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
 
 			if($update === true){

@@ -40,7 +40,7 @@ class Ore{
 	}
 
 	public function canPlaceObject(Level $level, $x, $y, $z){
-		return ($level->level->getBlockID($x, $y, $z) !== 0);
+		return ($level->level->getBlockID($x, $y, $z) === 1);
 	}
 
 	public function placeObject(Level $level, Vector3 $pos){
