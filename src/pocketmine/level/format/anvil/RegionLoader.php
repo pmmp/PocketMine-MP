@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\format\anvil;
 
+use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
@@ -29,6 +30,7 @@ use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
+use pocketmine\Player;
 use pocketmine\utils\Binary;
 
 class RegionLoader{
@@ -42,14 +44,15 @@ class RegionLoader{
 	protected $filePath;
 	protected $filePointer;
 	protected $lastSector;
+	/** @var LevelProvider */
+	protected $levelProvider;
 	protected $locationTable = [];
 
-	public function __construct($path, /*Level $level, */
-	                            $regionX, $regionZ){
+	public function __construct(LevelProvider $level, $regionX, $regionZ){
 		$this->x = $regionX;
 		$this->z = $regionZ;
-		$this->filePath = /*$level->getPath()*/
-			$path . "region/r.$regionX.$regionZ.mca";
+		$this->levelProvider = $level;
+		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mca";
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
 		flock($this->filePointer, LOCK_EX);
@@ -71,13 +74,17 @@ class RegionLoader{
 		}
 	}
 
+	protected function isChunkGenerated($index){
+		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
+	}
+
 	public function readChunk($x, $z, $generate = true){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
 			return false;
 		}
 
-		if($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0){
+		if(!$this->isChunkGenerated($index)){
 			if($generate === true){
 				//Allocate space
 				$this->locationTable[$index][0] = ++$this->lastSector;
@@ -116,8 +123,11 @@ class RegionLoader{
 			return false;
 		}
 
-		return $chunk;
-		//$chunk = new Chunk($level, $chunk);
+		return new Chunk($this->levelProvider, $chunk);
+	}
+
+	public function chunkExists($x, $z){
+		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
 	public function generateChunk($x, $z){
@@ -131,6 +141,8 @@ class RegionLoader{
 		$nbt->InhabitedTime = new Long("InhabitedTime", 0);
 		$nbt->Biomes = new ByteArray("Biomes", str_repeat(Binary::writeByte(-1), 256));
 		$nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
+		//TODO: check type and name
+		//$nbt->GrassMap = new IntArray("GrassMap", array_fill(0, 256, 127));
 		$nbt->Sections = new Enum("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
 		$nbt->Entities = new Enum("Entities", []);
@@ -139,6 +151,10 @@ class RegionLoader{
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		$nbt->TileTicks = new Enum("TileTicks", []);
 		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
+		$this->saveChunk($x, $z, $nbt);
+	}
+
+	protected function saveChunk($x, $z, Compound $nbt){
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$writer->setData(new Compound("", array($nbt)));
 		$chunkData = $writer->writeCompressed(self::COMPRESSION_ZLIB, self::$COMPRESSION_LEVEL);
@@ -152,6 +168,47 @@ class RegionLoader{
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $sectors << 12, "\x00", STR_PAD_RIGHT));
+	}
+
+	public function writeChunk(Chunk $chunk){
+		$nbt = $chunk->getNBT();
+		$nbt->Sections = new Enum("Sections", []);
+		$nbt->Sections->setTagType(NBT::TAG_Compound);
+		foreach($chunk->getSections() as $section){
+			$nbt->Sections[$section->getY()] = new Compound(null, [
+				"Y" => new Byte("Y", $section->getY()),
+				"Blocks" => new ByteArray("Blocks", $section->getIdArray()),
+				"Data" => new ByteArray("Data", $section->getDataArray()),
+				"BlockLight" => new ByteArray("BlockLight", $section->getLightArray()),
+				"SkyLight" => new ByteArray("SkyLight", $section->getSkyLightArray())
+			]);
+		}
+
+		$entities = [];
+
+		foreach($chunk->getEntities() as $entity){
+			if(!($entity instanceof Player) and $entity->closed !== true){
+				$entity->saveNBT();
+				$entities[] = $entity->namedtag;
+			}
+		}
+
+		$nbt->Entities = new Enum("Entities", $entities);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+
+
+		$tiles = [];
+		foreach($chunk->getTiles() as $tile){
+			if($tile->closed !== true){
+				$tile->saveNBT();
+				$tiles[] = $tile->namedtag;
+			}
+		}
+
+		$nbt->Entities = new Enum("TileEntities", $tiles);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+
+		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $nbt);
 	}
 
 	protected static function getChunkOffset($x, $z){

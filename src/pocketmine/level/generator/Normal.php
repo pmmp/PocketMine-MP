@@ -37,11 +37,15 @@ use pocketmine\level\generator\populator\Tree;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
+use pocketmine\level\generator\populator\Populator;
 
 class Normal extends Generator{
 
+	/** @var Populator[] */
 	private $populators = [];
+	/** @var GenerationChunkManager */
 	private $level;
+	/** @var Random */
 	private $random;
 	private $worldHeight = 65;
 	private $waterHeight = 63;
@@ -62,7 +66,7 @@ class Normal extends Generator{
 		return [];
 	}
 
-	public function init(Level $level, Random $random){
+	public function init(GenerationChunkManager $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());

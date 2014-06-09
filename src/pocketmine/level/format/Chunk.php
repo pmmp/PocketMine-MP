@@ -38,7 +38,7 @@ interface Chunk{
 	public function getZ();
 
 	/**
-	 * @return \pocketmine\level\Level
+	 * @return \pocketmine\level\format\LevelProvider
 	 */
 	public function getLevel();
 
@@ -60,6 +60,7 @@ interface Chunk{
 	 * @param int $z       0-15
 	 * @param int $blockId , if null, do not change
 	 * @param int $meta    0-15, if null, do not change
+	 *
 	 */
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null);
 

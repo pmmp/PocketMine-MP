@@ -24,11 +24,8 @@
  */
 namespace pocketmine\level;
 use pocketmine\block\Block;
-use pocketmine\entity\Human;
 use pocketmine\event\level\SpawnChangeEvent;
-use pocketmine\level\format\BaseLevelProvider;
 use pocketmine\level\format\LevelProvider;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
 use pocketmine\level\generator\Generator;
@@ -42,7 +39,7 @@ use pocketmine\tile\Tile;
 use pocketmine\level\format\Chunk;
 
 
-class Level implements Metadatable{
+class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
 
@@ -80,7 +77,6 @@ class Level implements Metadatable{
 
 	/**
 	 * Returns the chunk unique hash/key
-	 * TODO: return integer values (port from PMF)
 	 *
 	 * @param int $x
 	 * @param int $z
@@ -95,15 +91,29 @@ class Level implements Metadatable{
 	 * Init the default level data
 	 *
 	 * @param Server $server
-	 * @param LevelProvider $provider
+	 * @param string $path
+	 * @param string $provider Class that extends LevelProvider
+	 *
+	 * @throws \Exception
 	 */
-	public function __construct(Server $server, LevelProvider $provider){
+	public function __construct(Server $server, $path, $provider){
 		$this->levelId = static::$levelIdCounter++;
 		$this->server = $server;
-		$this->provider = $provider;
+		if(is_subclass_of($provider, "pocketmine\\level\\format\\LevelProvider", true)){
+			$this->provider = new $provider($this, $path);
+		}else{
+			throw new \Exception("Provider is not a subclass of LevelProvider");
+		}
 		$this->players = new \SplObjectStorage();
 		$this->entities = new \SplObjectStorage();
 		$this->tiles = new \SplObjectStorage();
+	}
+
+	/**
+	 * @return Server
+	 */
+	public function getServer(){
+		return $this->server;
 	}
 
 	/**
@@ -136,35 +146,6 @@ class Level implements Metadatable{
 		return Block::get($blockId, $meta, Position::fromObject(clone $pos, $this));
 	}
 
-	public function getCollisionBlocks(AxisAlignedBB $bb){
-		$minX = floor($bb->minX);
-		$minY = floor($bb->minY);
-		$minZ = floor($bb->minZ);
-		$maxX = floor($bb->maxX + 1);
-		$maxY = floor($bb->maxY + 1);
-		$maxZ = floor($bb->maxZ + 1);
-
-		$collides = [];
-
-		for($z = $minZ; $z < $maxZ; ++$z){
-			for($x = $minX; $x < $maxX; ++$x){
-				if($this->isChunkLoaded($x >> 4, $z >> 4)){
-					for($y = $minY - 1; $y < $maxY; ++$y){
-						$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
-					}
-				}
-			}
-		}
-
-		return $collides;
-	}
-
-	public function isFullBlock(Vector3 $pos){
-		$bb = $this->getBlock($pos)->getBoundingBox();
-
-		return $bb instanceof AxisAlignedBB and $bb->getAverageEdgeLength() >= 1;
-	}
-
 	/**
 	 * Sets on Vector3 the data from a Block object,
 	 * does block updates and puts the changes to the send queue.
@@ -173,7 +154,8 @@ class Level implements Metadatable{
 	 * @param Block   $block
 	 */
 	public function setBlock(Vector3 $pos, Block $block){
-		//TODO: handle block setting
+		$this->getChunkAt($pos->x >> 4, $pos->z >> 4)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getID(), $block->getDamage());
+		//TODO:
 		//block updates
 		//block change send queue
 		//etc.
@@ -288,7 +270,7 @@ class Level implements Metadatable{
 	 *
 	 * @return Chunk
 	 */
-	protected function getChunkAt($x, $z, $create = false){
+	public function getChunkAt($x, $z, $create = false){
 		$this->provider->getChunk($x, $z, $create);
 	}
 
@@ -314,8 +296,7 @@ class Level implements Metadatable{
 	 * @return bool
 	 */
 	public function isChunkLoaded($x, $z){
-		//TODO
-		return false;
+		return $this->provider->isChunkLoaded($x, $z);
 	}
 
 	/**

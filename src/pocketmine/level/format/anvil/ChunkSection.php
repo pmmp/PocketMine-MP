@@ -39,6 +39,10 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		$this->skyLight = (string) $nbt["SkyLight"];
 	}
 
+	public function getY(){
+		return $this->y;
+	}
+
 	public function getBlockId($x, $y, $z){
 		return ord($this->blocks{($y << 8) + ($z << 4) + $x});
 	}

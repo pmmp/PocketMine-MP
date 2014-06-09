@@ -23,12 +23,14 @@ namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\Block;
 use pocketmine\block\Sapling;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\object\Tree as ObjectTree;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class Tree extends Populator{
+	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;
 	private $baseAmount;
@@ -41,7 +43,7 @@ class Tree extends Populator{
 		$this->baseAmount = $amount;
 	}
 
-	public function populate(Level $level, $chunkX, $chunkZ, Random $random){
+	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		$this->level = $level;
 		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
@@ -56,14 +58,14 @@ class Tree extends Populator{
 			}else{
 				$meta = Sapling::OAK;
 			}
-			ObjectTree::growTree($this->level, new Vector3($x, $y, $z), $random, $meta);
+			ObjectTree::growTree($this->level, $x, $y, $z, $random, $meta);
 		}
 	}
 
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 128; $y > 0; --$y){
-			$b = $this->level->getBlockRaw(new Vector3($x, $y, $z));
-			if($b->getID() !== Block::DIRT and $b->getID() !== Block::GRASS){
+			$b = $this->level->getBlockIdAt($x, $y, $z);
+			if($b !== Block::DIRT and $b !== Block::GRASS){
 				if(--$y <= 0){
 					return -1;
 				}

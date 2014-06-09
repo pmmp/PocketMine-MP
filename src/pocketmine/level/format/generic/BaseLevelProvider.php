@@ -21,16 +21,83 @@
 
 namespace pocketmine\level\format\generic;
 use pocketmine\level\format\LevelProvider;
-use pocketmine\Server;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Int;
 
 abstract class BaseLevelProvider implements LevelProvider{
-	/** @var Server */
-	protected $server;
+	/** @var Level */
+	protected $level;
 	/** @var string */
 	protected $path;
+	/** @var Compound */
+	protected $levelData;
 
-	public function __construct(Server $server, $path){
-		$this->server = $server;
+	public function __construct(Level $level, $path){
+		$this->level = $level->getServer();
 		$this->path = $path;
+		@mkdir($this->path, 0777, true);
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
+		$levelData = $nbt->getData();
+		if($levelData->Data instanceof Compound){
+			$this->levelData = $levelData->Data;
+		}else{
+			throw new \Exception("Invalid level.dat");
+		}
 	}
+
+	public function getPath(){
+		return $this->path;
+	}
+
+	public function getServer(){
+		return $this->level->getServer();
+	}
+
+	public function getLevel(){
+		return $this->level;
+	}
+
+	public function getName(){
+		return $this->levelData["LevelName"];
+	}
+
+	public function getTime(){
+		return $this->levelData["Time"];
+	}
+
+	public function setTime($value){
+		$this->levelData->Time = new Int("Time", (int) $value);
+	}
+
+	public function getSpawn(){
+		return new Vector3($this->levelData["SpawnX"], $this->levelData["SpawnY"], $this->levelData["SpawnZ"]);
+	}
+
+	public function setSpawn(Vector3 $pos){
+		$this->levelData->SpawnX = new Int("SpawnX", $pos->x);
+		$this->levelData->SpawnY = new Int("SpawnY", $pos->y);
+		$this->levelData->SpawnZ = new Int("SpawnZ", $pos->z);
+	}
+
+	/**
+	 * @return Compound
+	 */
+	public function getLevelData(){
+		return $this->levelData;
+	}
+
+	public function saveLevelData(){
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setData(new Compound(null, [
+			"Data" => $this->levelData
+		]));
+		$buffer = $nbt->writeCompressed();
+		@file_put_contents($this->getPath() . "level.dat", $buffer);
+	}
+
+
 }

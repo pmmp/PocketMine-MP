@@ -1141,69 +1141,6 @@ class Level{
 	}
 
 	/**
-	 * Loads a chunk
-	 *
-	 * @param int $X
-	 * @param int $Z
-	 *
-	 * @return bool
-	 */
-	public function loadChunk($X, $Z){
-		$index = LevelFormat::getIndex($X, $Z);
-		if(isset($this->usedChunks[$index])){
-			return true;
-		}elseif($this->level->loadChunk($X, $Z) !== false){
-			$this->usedChunks[$index] = [];
-			if(!isset($this->chunkTiles[$index])){
-				$this->chunkTiles[$index] = [];
-			}
-			if(!isset($this->chunkEntities[$index])){
-				$this->chunkEntities[$index] = [];
-			}
-			$tags = $this->level->getChunkNBT($X, $Z);
-			if(isset($tags->Entities)){
-				foreach($tags->Entities as $nbt){
-					if(!isset($nbt->id)){
-						continue;
-					}
-
-					if($nbt->id instanceof String){ //New format
-						switch($nbt["id"]){
-							case "Item":
-								(new DroppedItem($this, $nbt))->spawnToAll();
-								break;
-						}
-					}else{ //Old format
-
-					}
-				}
-			}
-			if(isset($tags->TileEntities)){
-				foreach($tags->TileEntities as $nbt){
-					if(!isset($nbt->id)){
-						continue;
-					}
-					switch($nbt["id"]){
-						case Tile::CHEST:
-							new Chest($this, $nbt);
-							break;
-						case Tile::FURNACE:
-							new Furnace($this, $nbt);
-							break;
-						case Tile::SIGN:
-							new Sign($this, $nbt);
-							break;
-					}
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Unloads a chunk
 	 *
 	 * @param int  $X

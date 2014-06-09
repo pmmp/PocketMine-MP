@@ -25,6 +25,7 @@ use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
@@ -44,9 +45,9 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	/** @var DoubleChestInventory */
 	protected $doubleInventory = null;
 
-	public function __construct(Level $level, Compound $nbt){
+	public function __construct(Chunk $chunk, Compound $nbt){
 		$nbt["id"] = Tile::CHEST;
-		parent::__construct($level, $nbt);
+		parent::__construct($chunk, $nbt);
 		$this->inventory = new ChestInventory($this);
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));

@@ -21,6 +21,7 @@
 
 namespace pocketmine\tile;
 
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
@@ -31,9 +32,9 @@ use pocketmine\Player;
 
 class Sign extends Spawnable{
 
-	public function __construct(Level $level, Compound $nbt){
+	public function __construct(Chunk $chunk, Compound $nbt){
 		$nbt["id"] = Tile::SIGN;
-		parent::__construct($level, $nbt);
+		parent::__construct($chunk, $nbt);
 	}
 
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
@@ -42,7 +43,6 @@ class Sign extends Spawnable{
 		$this->namedtag->Text3 = $line3;
 		$this->namedtag->Text4 = $line4;
 		$this->spawnToAll();
-		$this->server->handle("tile.update", $this);
 
 		return true;
 	}

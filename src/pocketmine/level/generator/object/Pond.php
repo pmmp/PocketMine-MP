@@ -22,6 +22,7 @@
 namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
@@ -35,10 +36,10 @@ class Pond{
 		$this->random = $random;
 	}
 
-	public function canPlaceObject(Level $level, Vector3 $pos){
+	public function canPlaceObject(ChunkManager $level, Vector3 $pos){
 	}
 
-	public function placeObject(Level $level, Vector3 $pos){
+	public function placeObject(ChunkManager $level, Vector3 $pos){
 	}
 
 }

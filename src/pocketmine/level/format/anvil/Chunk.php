@@ -23,6 +23,7 @@ namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\generic\BaseChunk;
 use pocketmine\level\format\generic\EmptyChunkSection;
+use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
@@ -33,7 +34,7 @@ class Chunk extends BaseChunk{
 	/** @var Compound */
 	protected $nbt;
 
-	public function __construct(Level $level, Compound $nbt){
+	public function __construct(LevelProvider $level, Compound $nbt){
 		$this->nbt = $nbt;
 
 		if($this->nbt->Entities instanceof Enum){
@@ -71,7 +72,7 @@ class Chunk extends BaseChunk{
 			}
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections);
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt["Entities"], $this->nbt["TileEntities"]);
 	}
 
 	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false){
@@ -101,6 +102,14 @@ class Chunk extends BaseChunk{
 
 		//TODO: maxBlockY, biomeMap, biomeTemp
 
-		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), $this->getLevel()->getTime(), $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
+		//TODO: time
+		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0/*$this->getLevel()->getTime()*/, $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
+	}
+
+	/**
+	 * @return Compound
+	 */
+	public function getNBT(){
+		return $this->nbt;
 	}
 }

@@ -21,16 +21,16 @@
 
 namespace pocketmine\level\format;
 
+use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\Server;
 
 interface LevelProvider{
 
 	/**
-	 * @param Server $server
+	 * @param Level  $level
 	 * @param string $path
 	 */
-	public function __construct(Server $server, $path);
+	public function __construct(Level $level, $path);
 
 	/** @return string */
 	public function getPath();
@@ -57,20 +57,63 @@ interface LevelProvider{
 	 */
 	public function getChunk($X, $Z, $create = false);
 
-	/**
-	 * @return bool
-	 */
 	public function saveChunks();
+
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 */
+	public function saveChunk($X, $Z);
 
 	public function unloadChunks();
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function loadChunk($X, $Z);
 
-	public function unloadChunk($X, $Z);
+	/**
+	 * @param int  $X
+	 * @param int  $Z
+	 * @param bool $safe
+	 *
+	 * @return bool
+	 */
+	public function unloadChunk($X, $Z, $safe = true);
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function isChunkGenerated($X, $Z);
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
+	public function isChunkLoaded($X, $Z);
+
+	/**
+	 * @return string
+	 */
 	public function getName();
+
+	/**
+	 * @return int
+	 */
+	public function getTime();
+
+	/**
+	 * @param int $value
+	 */
+	public function setTime($value);
 
 	/**
 	 * @return Vector3
@@ -86,5 +129,10 @@ interface LevelProvider{
 	 * @return Chunk
 	 */
 	public function getLoadedChunks();
+
+	/**
+	 * @return Level
+	 */
+	public function getLevel();
 
 }
