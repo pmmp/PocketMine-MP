@@ -22,15 +22,12 @@
 namespace pocketmine\network\protocol;
 
 
-class LevelEventPacket extends DataPacket{
-	public $evid;
-	public $x;
-	public $y;
-	public $z;
-	public $data;
+class UnloadChunkPacket extends DataPacket{
+	public $chunkX;
+	public $chunkZ;
 
 	public function pid(){
-		return Info::LEVEL_EVENT_PACKET;
+		return Info::UNLOAD_CHUNK_PACKET;
 	}
 
 	public function decode(){
@@ -39,11 +36,8 @@ class LevelEventPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putShort($this->evid);
-		$this->putInt($this->x);
-		$this->putShort($this->y);
-		$this->putInt($this->z);
-		$this->putInt($this->data);
+		$this->putInt($this->chunkX);
+		$this->putInt($this->chunkZ);
 	}
 
 }

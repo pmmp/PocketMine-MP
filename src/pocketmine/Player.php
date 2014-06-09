@@ -62,16 +62,18 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
-use pocketmine\network\protocol\ChunkDataPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
+use pocketmine\network\protocol\ReadyPacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
+use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -560,13 +562,37 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$Yndex = $this->chunksLoaded[$index];
 		$this->chunksLoaded[$index] = 0; //Load them all
 		$this->getLevel()->useChunk($X, $Z, $this);
-		$pk = new ChunkDataPacket;
+		$pk = new FullChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
 		$pk->data = $this->getLevel()->getOrderedChunk($X, $Z, $Yndex);
 		$cnt = $this->dataPacket($pk, true);
 		if($cnt === false){
 			return false;
+		}
+
+		if(count($this->chunksLoaded) >= 56 and $this->spawned === false){
+			//TODO
+			//$this->heal($this->data->get("health"), "spawn", true);
+			$this->spawned = true;
+
+			$this->sendSettings();
+			$this->inventory->sendContents($this);
+			$this->inventory->sendArmorContents($this);
+
+			$this->blocked = false;
+
+			$pk = new SetTimePacket;
+			$pk->time = $this->getLevel()->getTime();
+			$pk->started = $this->getLevel()->stopTime == false;
+			$this->dataPacket($pk);
+
+			$pos = new Position($this->x, $this->y, $this->z, $this->getLevel());
+			$pos = $this->getLevel()->getSafeSpawn($pos);
+			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
+
+			$this->teleport($ev->getRespawnPosition());
+			$this->spawnToAll();
 		}
 
 		$this->lastChunk = array($X, $Z, $cnt, microtime(true));
@@ -634,6 +660,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$entity->despawnFrom($this);
 					}
 				}
+				$pk = new UnloadChunkPacket();
+				$pk->chunkX = $X;
+				$pk->chunkZ = $Z;
+				$this->dataPacket($pk);
 			}
 			unset($this->chunksLoaded[$index]);
 		}
@@ -1126,7 +1156,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$pk = new LoginStatusPacket;
 				$pk->status = 0;
-				$this->dataPacket($pk);
+				$this->directDataPacket($pk);
 
 				$pk = new StartGamePacket;
 				$pk->seed = $this->getLevel()->getSeed();
@@ -1136,7 +1166,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->generator = 0;
 				$pk->gamemode = $this->gamemode & 0x01;
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
-				$this->dataPacket($pk);
+				$this->directDataPacket($pk);
+
+				$pk = new SetTimePacket();
+				$pk->time = $this->getLevel()->getTime();
+				$this->directDataPacket($pk);
 
 
 				if(($level = $this->server->getLevel($this->namedtag["SpawnLevel"])) instanceof Level){
@@ -1153,39 +1187,25 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->server->getPluginManager()->callEvent(new PlayerJoinEvent($this, $this->username . " joined the game"));
 
+				$this->orderChunks();
+				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
+				$this->getNextChunk();
+
+				$pk = new ReadyPacket();
+				$pk->x = $this->x;
+				$pk->y = $this->y;
+				$pk->z = $this->z;
+				$this->dataPacket($pk);
+
 				break;
 			case ProtocolInfo::READY_PACKET:
+
+				//TODO: check
 				if($this->loggedIn === false){
 					break;
 				}
 				switch($packet->status){
 					case 1: //Spawn!!
-						if($this->spawned !== false){
-							break;
-						}
-						//TODO
-						//$this->heal($this->data->get("health"), "spawn", true);
-						$this->spawned = true;
-
-						$this->sendSettings();
-						$this->inventory->sendContents($this);
-						$this->inventory->sendArmorContents($this);
-						$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
-
-						$this->blocked = false;
-
-						$pk = new SetTimePacket;
-						$pk->time = $this->getLevel()->getTime();
-						$pk->started = $this->getLevel()->stopTime == false;
-						$this->dataPacket($pk);
-
-						$pos = new Position($this->x, $this->y, $this->z, $this->getLevel());
-						$pos = $this->getLevel()->getSafeSpawn($pos);
-						$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
-
-						$this->teleport($ev->getRespawnPosition());
-						$this->spawnToAll();
-
 						break;
 					case 2: //Chunk loaded?
 						break;

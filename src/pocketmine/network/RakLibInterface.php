@@ -73,6 +73,7 @@ use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
 use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\network\protocol\UnknownPacket;
+use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
@@ -263,9 +264,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				$data = new RequestChunkPacket();
 				break;
-			case ProtocolInfo::CHUNK_DATA_PACKET:
-				$data = new ChunkDataPacket();
-				break;
 			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				$data = new PlayerEquipmentPacket();
 				break;
@@ -331,6 +329,9 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 				break;
 			case ProtocolInfo::ENTITY_DATA_PACKET:
 				$data = new EntityDataPacket();
+				break;
+			case ProtocolInfo::UNLOAD_CHUNK_PACKET:
+				$data = new UnloadChunkPacket();
 				break;
 			default:
 				$data = new UnknownPacket();

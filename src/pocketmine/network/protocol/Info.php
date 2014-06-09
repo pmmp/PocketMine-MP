@@ -30,7 +30,7 @@ interface Info{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	const CURRENT_PROTOCOL = 15;
+	const CURRENT_PROTOCOL = 14; //WTF Mojang
 
 
 	const LOGIN_PACKET = 0x82;
@@ -61,7 +61,7 @@ interface Info{
 	const TILE_EVENT_PACKET = 0x9c;
 	const ENTITY_EVENT_PACKET = 0x9d;
 	const REQUEST_CHUNK_PACKET = 0x9e;
-	const CHUNK_DATA_PACKET = 0x9f;
+
 	const PLAYER_EQUIPMENT_PACKET = 0xa0;
 	const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa1;
 	const INTERACT_PACKET = 0xa2;
@@ -88,5 +88,7 @@ interface Info{
 	const ADVENTURE_SETTINGS_PACKET = 0xb7;
 	const ENTITY_DATA_PACKET = 0xb8;
 	//const PLAYER_INPUT_PACKET = 0xb9;
+	const FULL_CHUNK_DATA_PACKET = 0xba;
+	const UNLOAD_CHUNK_PACKET = 0xbb;
 
 }

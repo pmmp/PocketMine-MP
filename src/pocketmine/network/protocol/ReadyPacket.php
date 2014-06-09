@@ -30,11 +30,15 @@ class ReadyPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->status = $this->getByte();
+		$this->x = $this->getFloat();
+		$this->y = $this->getFloat();
+		$this->z = $this->getFloat();
 	}
 
 	public function encode(){
-
+		$this->putFloat($this->x);
+		$this->putFloat($this->y);
+		$this->putFloat($this->z);
 	}
 
 }

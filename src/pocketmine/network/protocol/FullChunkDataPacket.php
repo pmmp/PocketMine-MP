@@ -22,13 +22,13 @@
 namespace pocketmine\network\protocol;
 
 
-class ChunkDataPacket extends DataPacket{
+class FullChunkDataPacket extends DataPacket{
 	public $chunkX;
 	public $chunkZ;
 	public $data;
 
 	public function pid(){
-		return Info::CHUNK_DATA_PACKET;
+		return Info::FULL_CHUNK_DATA_PACKET;
 	}
 
 	public function decode(){
@@ -37,8 +37,6 @@ class ChunkDataPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->chunkX);
-		$this->putInt($this->chunkZ);
 		$this->put($this->data);
 	}
 

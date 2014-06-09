@@ -54,6 +54,7 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
+use pocketmine\utils\Binary;
 use pocketmine\utils\Cache;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
@@ -1250,6 +1251,9 @@ class Level{
 		if(!isset($this->level)){
 			return false;
 		}
+
+		$Yndex = 0xff;
+
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
 			$identifier = "world:{$this->name}:" . LevelFormat::getIndex($X, $Z);
 			if(($cache = Cache::get($identifier)) !== false){
@@ -1265,14 +1269,23 @@ class Level{
 			}
 		}
 
-		$ordered = "";
+		$orderedIds = "";
+		$orderedData = "";
 		$flag = chr($Yndex);
+
 		for($j = 0; $j < 256; ++$j){
-			$ordered .= $flag;
+			//$ordered .= $flag;
 			foreach($raw as $mini){
-				$ordered .= substr($mini, $j << 5, 24); //16 + 8
+				$orderedIds .= substr($mini, $j << 5, 16); //16
+				$orderedData .= substr($mini, ($j << 5) + 16, 8); //16
 			}
 		}
+		$light = str_repeat("\xff", 2048 * 8);
+		$null = str_repeat("\x00", 2048 * 8);
+		$biomeIDs = str_repeat("\x3f", 256);
+		$grassColor = str_repeat("\x01\x85\xb2\x4a", 256);
+		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $light . $null . $biomeIDs . $grassColor, ZLIB_ENCODING_DEFLATE, 7);
+
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
 			Cache::add($identifier, $ordered, 60);
 		}
