@@ -8,6 +8,8 @@ php:
 branches:
   except:
     - Core-Rewrite
+    - master
+    - 0.9.0
 
 before_script:
  - pecl install channel://pecl.php.net/pthreads-2.0.4
