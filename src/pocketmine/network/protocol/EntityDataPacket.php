@@ -33,17 +33,17 @@ class EntityDataPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->x = $this->getShort();
+		$this->x = $this->getInt();
 		$this->y = $this->getByte();
-		$this->z = $this->getShort();
+		$this->z = $this->getInt();
 		$this->namedtag = $this->get(true);
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putShort($this->x);
+		$this->putInt($this->x);
 		$this->putByte($this->y);
-		$this->putShort($this->z);
+		$this->putInt($this->z);
 		$this->put($this->namedtag);
 	}
 

@@ -42,7 +42,7 @@ class ContainerOpenPacket extends DataPacket{
 		$this->reset();
 		$this->putByte($this->windowid);
 		$this->putByte($this->type);
-		$this->putByte($this->slots);
+		$this->putShort($this->slots);
 		$this->putInt($this->x);
 		$this->putInt($this->y);
 		$this->putInt($this->z);

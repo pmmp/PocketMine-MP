@@ -581,7 +581,7 @@ class Level{
 	 *
 	 * @return bool
 	 */
-	public function setBlockRaw(Vector3 $pos, Block $block, $direct = true, $send = true){
+	public function setBlockRaw(Vector3 $pos, Block $block, $direct = false, $send = true){
 		if(($ret = $this->level->setBlock($pos->x, $pos->y, $pos->z, $block->getID(), $block->getDamage())) === true and $send !== false){
 			if($direct === true){
 				$pk = new UpdateBlockPacket;

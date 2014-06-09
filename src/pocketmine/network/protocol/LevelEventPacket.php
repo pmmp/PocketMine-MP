@@ -40,9 +40,9 @@ class LevelEventPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putShort($this->evid);
-		$this->putShort($this->x);
-		$this->putShort($this->y);
-		$this->putShort($this->z);
+		$this->putInt($this->x);
+		$this->putInt($this->y);
+		$this->putInt($this->z);
 		$this->putInt($this->data);
 	}
 
