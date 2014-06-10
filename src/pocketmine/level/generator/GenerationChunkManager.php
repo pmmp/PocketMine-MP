@@ -83,6 +83,7 @@ class GenerationChunkManager implements ChunkManager{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = new SimpleChunk($chunkX, $chunkZ, 0);
 		$this->generator->generateChunk($chunkX, $chunkZ);
+		$this->setChunkGenerated($chunkX, $chunkZ);
 	}
 
 	public function populateChunk($chunkX, $chunkZ){
@@ -99,6 +100,8 @@ class GenerationChunkManager implements ChunkManager{
 		}
 
 		$this->generator->populateChunk($chunkX, $chunkZ);
+		$this->setChunkPopulated($chunkX, $chunkZ);
+
 	}
 
 	public function isChunkGenerated($chunkX, $chunkZ){
@@ -107,6 +110,14 @@ class GenerationChunkManager implements ChunkManager{
 
 	public function isChunkPopulated($chunkX, $chunkZ){
 		return $this->getChunk($chunkX, $chunkZ)->isPopulated();
+	}
+
+	public function setChunkGenerated($chunkX, $chunkZ){
+		$this->getChunk($chunkX, $chunkZ)->setGenerated(true);
+	}
+
+	public function setChunkPopulated($chunkX, $chunkZ){
+		$this->getChunk($chunkX, $chunkZ)->setPopulated(true);
 	}
 
 	protected function requestChunk($chunkX, $chunkZ){

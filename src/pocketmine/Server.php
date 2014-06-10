@@ -776,7 +776,7 @@ class Server{
 	 * @param Level $level
 	 */
 	public function setDefaultLevel($level){
-		if($level === null or ($this->isLevelLoaded($level->getName()) and $level !== $this->levelDefault)){
+		if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelDefault)){
 			$this->levelDefault = $level;
 		}
 	}
@@ -810,7 +810,7 @@ class Server{
 	 */
 	public function getLevelByName($name){
 		foreach($this->getLevels() as $level){
-			if($level->getName() === $name){
+			if($level->getFolderName() === $name){
 				return $level;
 			}
 		}
@@ -823,7 +823,7 @@ class Server{
 	 * @param bool  $forceUnload
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
-		if($level->unload($forceUnload) === true and $this->isLevelLoaded($level->getName())){
+		if($level->unload($forceUnload) === true and $this->isLevelLoaded($level->getFolderName())){
 			unset($this->levels[$level->getID()]);
 		}
 	}
@@ -852,6 +852,7 @@ class Server{
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 
 		$provider = LevelProviderManager::getProvider($path);
+
 		if($provider === null){
 			$this->logger->error("Could not load level \"" . $name . "\"");
 
@@ -862,7 +863,7 @@ class Server{
 		//	@rename($path . "tileEntities.yml", $path . "tiles.yml");
 		//}
 
-		$level = new Level($this, $path, $provider);
+		$level = new Level($this, $name, $path, $provider);
 		$this->levels[$level->getID()] = $level;
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
@@ -994,7 +995,7 @@ class Server{
 		/** @var \pocketmine\level\format\LevelProvider $provider */
 		$provider::generate($path, $name, $seed, $generator, $options);
 
-		$level = new Level($this, $path, $provider);
+		$level = new Level($this, $name, $path, $provider);
 		$this->levels[$level->getID()] = $level;
 		for($Z = 6; $Z <= 10; ++$Z){
 			for($X = 6; $X <= 10; ++$X){
@@ -1015,15 +1016,19 @@ class Server{
 			return false;
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		if(!($this->getLevelByName($name) instanceof Level) and !file_exists($path . "level.pmf")){
-			if(file_exists($path)){
+		if(!($this->getLevelByName($name) instanceof Level)){
+
+			if(LevelProviderManager::getProvider($path) === null){
+				return false;
+			}
+			/*if(file_exists($path)){
 				$level = new LevelImport($path);
 				if($level->import() === false){ //Try importing a world
 					return false;
 				}
 			}else{
 				return false;
-			}
+			}*/
 		}
 
 		return true;
@@ -1356,9 +1361,9 @@ class Server{
 		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\anvil\\Anvil");
 
 
-		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
-		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
-		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
+		//Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
+		//Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
+		//Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
 
 		if($this->getDefaultLevel() === null){
 			$default = $this->getConfigString("level-name", "world");

@@ -60,6 +60,7 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\ReversePriorityQueue;
+use raklib\Binary;
 
 
 class Level implements ChunkManager, Metadatable{
@@ -109,6 +110,8 @@ class Level implements ChunkManager, Metadatable{
 	private $startCheck;
 	private $startTime;
 
+	private $folderName;
+
 	/** @var Block[][] */
 	protected $changedBlocks = [];
 	protected $changedCount = [];
@@ -140,12 +143,13 @@ class Level implements ChunkManager, Metadatable{
 	 * Init the default level data
 	 *
 	 * @param Server $server
+	 * @param string $name
 	 * @param string $path
 	 * @param string $provider Class that extends LevelProvider
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct(Server $server, $path, $provider){
+	public function __construct(Server $server, $name, $path, $provider){
 		$this->levelId = static::$levelIdCounter++;
 		$this->server = $server;
 		if(is_subclass_of($provider, "pocketmine\\level\\format\\LevelProvider", true)){
@@ -156,6 +160,8 @@ class Level implements ChunkManager, Metadatable{
 		$server->getLogger()->info("Preparing level \"" . $this->provider->getName() . "\"");
 		$generator = Generator::getGenerator($this->provider->getGenerator());
 		$this->server->getGenerationManager()->openLevel($this, $generator, $this->provider->getGeneratorOptions());
+
+		$this->folderName = $name;
 
 		$this->startTime = $this->time = (int) $this->provider->getTime();
 		$this->nextSave = $this->startCheck = microtime(true);
@@ -523,7 +529,7 @@ class Level implements ChunkManager, Metadatable{
 	public function getBlock(Vector3 $pos){
 		$blockId = null;
 		$meta = null;
-		$this->getChunkAt($pos->x >> 4, $pos->z >> 4)->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
+		$this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
 
 		return Block::get($blockId, $meta, Position::fromObject(clone $pos, $this));
 	}
@@ -1059,7 +1065,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Chunk
 	 */
 	public function getChunkAt($x, $z, $create = false){
-		$this->provider->getChunk($x, $z, $create);
+		return $this->provider->getChunk($x, $z, $create);
 	}
 
 	/**
@@ -1158,6 +1164,63 @@ class Level implements ChunkManager, Metadatable{
 		$previousSpawn = $this->getSpawnLocation();
 		$this->provider->setSpawn($pos);
 		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
+	}
+
+	/**
+	 * Gets a full chunk or parts of it for networking usage, allows cache usage
+	 *
+	 * @param int $X
+	 * @param int $Z
+	 * @param int $Yndex bitmap of chunks to be returned
+	 *
+	 * @return bool|mixed|string
+	 */
+	public function getNetworkChunk($X, $Z, $Yndex){
+		if(ADVANCED_CACHE == true and $Yndex === 0xff){
+			$identifier = "world:".($this->getName()).":" . Level::chunkHash($X, $Z);
+			if(($cache = Cache::get($identifier)) !== false){
+				return $cache;
+			}
+		}
+
+		$orderedIds = "";
+		$orderedData = "";
+		$orderedSkyLight = "";
+		$orderedLight = "";
+		$flag = chr($Yndex);
+
+		/** @var \pocketmine\level\format\ChunkSection[] $sections */
+		$sections = [];
+		foreach($this->getChunkAt($X, $Z, true)->getSections() as $section){
+			$sections[$section->getY()] = $section;
+		}
+
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				for($Y = 0; $Y < 8; ++$Y){
+					$orderedIds .= $sections[$Y]->getBlockIdColumn($x, $z);
+					$orderedData .= $sections[$Y]->getBlockDataColumn($x, $z);
+					$orderedSkyLight .= $sections[$Y]->getBlockSkyLightColumn($x, $z);
+					$orderedLight .= $sections[$Y]->getBlockLightColumn($x, $z);
+				}
+			}
+		}
+
+
+		$biomeIDs = str_repeat("\x04", 256);
+		if($X % 5 === 0 and $Z % 5 === 0){
+			$ppm = base64_decode("mpqahISEbW1tZmZmZmZmXl5eXl5eXl5eXl5eXl5eXl5eZmZmZmZmbW1thISEmpqafX19bW1tbW1tS5ubS5qdfbXTSpSbS5ubTJ6cSpWZfbXTSpWZTJ6cbW1tbW1tfX19bW1tbW1tfbXSfbbVSI+dfdL/fbrafbfVSZKefbjYfbjYfbXSSpWZfbTRbW1tbW1tZmZmTKGdSpSbfbrbfbzdfdL/SI+dfbnZfdL/fdL/SZKeSpKYSYyWfbbVS5iaZmZmXl5eS6CiSZmmfdL/fbzeSZCcSpSbfbfVSJKifdL/SpegfbXTfbfWfbXTS5ubXl5eXl5efdL/fdL/fdL/fbrbfbbVSpKYfbTRSpecSpieSZCcfbjYSZCcSpegS52iXl5eXl5eSpegfbnZSZSfSZGafbbVxsYAxsYAxsYAxsYAfbjYfdL/SZikfdL/fdL/Xl5eXl5eSpSbfbjYSpegS5qdfbTRxsYA1tYA1tYAxsYASpegfdL/SZahfbfXSpegXl5eXl5efbfWfdL/AAAAAAAAAAAAxsYA1tYAAAAAxsYAS56gSp2lAAAAfbfVS5iaXl5eXl5efbXSSZWjAAAAfbnZfbjYAAAAxsYAAAAAAAAASZOgAAAAAAAAfbfWSpWZXl5eXl5eTJ6cS56gAAAAAAAAAAAASpegS5ubAAAAfdL/AAAAfdL/AAAASZOgfbfVXl5eXl5eTKKfSp2lAAAAfdL/fdL/Sp2lS56gAAAAfdL/SZamSpyjAAAAfdL/fdL/Xl5eZmZmS6CifdL/AAAASZamSZmmfdL/SZqoAAAAfdL/SJOlfdL/AAAAfbnZSpegZmZmbW1tbW1tfdL/AAAAfbXSSpegfdL/fdL/AAAAfbfXfbrbfdL/AAAAfbbVbW1tbW1tfX19bW1tbW1tAAAAfbTRS5qdSp2lfdL/AAAAS5ubSpSbfbfVAAAAbW1tbW1tfX19mpqahISEbW1tZmZmZmZmXl5eXl5eXl5eXl5eXl5eXl5eZmZmZmZmbW1thISEmpqa");
+			$grassColor = "\x01" . implode("\x01", str_split($ppm, 3));
+		}else{
+			$grassColor = str_repeat("\x01\x85\xb2\x4a", 256);
+		}
+		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIDs . $grassColor, ZLIB_ENCODING_DEFLATE, 8);
+
+		if(ADVANCED_CACHE == true and $Yndex === 0xff){
+			Cache::add($identifier, $ordered, 60);
+		}
+
+		return $ordered;
 	}
 
 	/**
@@ -1352,6 +1415,15 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns the Level folder name
+	 *
+	 * @return string
+	 */
+	public function getFolderName(){
+		return $this->folderName;
+	}
+
+	/**
 	 * Sets the current time on the level
 	 *
 	 * @param int $time
@@ -1395,7 +1467,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $seed
 	 */
 	public function setSeed($seed){
-		$this->provider->setSeed();
+		$this->provider->setSeed($seed);
 	}
 
 

@@ -59,7 +59,7 @@ class Flat extends Generator{
 		$this->preset = "2;7,2x3,2;1;";
 		//$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		$this->options = $options;
-		if(isset($options["preset"])){
+		if(isset($options["preset"]) and $options["preset"] != ""){
 			$this->parsePreset($options["preset"]);
 		}else{
 			$this->parsePreset($this->preset);
@@ -112,19 +112,14 @@ class Flat extends Generator{
 
 		$this->chunk = new SimpleChunk(null, null, SimpleChunk::FLAG_GENERATED);
 
-		for($Y = 0; $Y < 8; ++$Y){
-			$this->chunks[$Y] = "";
-			$startY = $Y << 4;
-			$endY = $startY + 16;
-			for($Z = 0; $Z < 16; ++$Z){
-				for($X = 0; $X < 16; ++$X){
-					for($y = $startY; $y < $endY; ++$y){
-						if($this->structure[$y][0] !== 0){
-							$this->chunk->setBlockId($X, $y, $Z, $this->structure[$y][0]);
-						}
-						if($this->structure[$y][0] !== 0){
-							$this->chunk->setBlockData($X, $y, $Z, $this->structure[$y][1]);
-						}
+		for($Z = 0; $Z < 16; ++$Z){
+			for($X = 0; $X < 16; ++$X){
+				for($y = 0; $y < 128; ++$y){
+					if($this->structure[$y][0] !== 0){
+						$this->chunk->setBlockId($X, $y, $Z, $this->structure[$y][0]);
+					}
+					if($this->structure[$y][0] !== 0){
+						$this->chunk->setBlockData($X, $y, $Z, $this->structure[$y][1]);
 					}
 				}
 			}
@@ -164,6 +159,7 @@ class Flat extends Generator{
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
+
 	}
 
 	public function getSpawn(){

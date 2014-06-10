@@ -117,7 +117,7 @@ interface ChunkSection{
 	public function setBlockLight($x, $y, $z, $level);
 
 	/**
-	 * Returns a id column from high y to low y
+	 * Returns a id column from low y to high y
 	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
@@ -127,7 +127,7 @@ interface ChunkSection{
 	public function getBlockIdColumn($x, $z);
 
 	/**
-	 * Returns a data column from high y to low y
+	 * Returns a data column from low y to high y
 	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
@@ -135,6 +135,26 @@ interface ChunkSection{
 	 * @return string[8]
 	 */
 	public function getBlockDataColumn($x, $z);
+
+	/**
+	 * Returns a skylight column from low y to high y
+	 *
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return string[8]
+	 */
+	public function getBlockSkyLightColumn($x, $z);
+
+	/**
+	 * Returns a data column from low y to high y
+	 *
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return string[8]
+	 */
+	public function getBlockLightColumn($x, $z);
 
 	public function getIdArray();
 

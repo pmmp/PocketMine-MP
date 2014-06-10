@@ -589,7 +589,7 @@ abstract class Entity extends Position implements Metadatable{
 					if($Yndex !== 0xff){
 						$X = null;
 						$Z = null;
-						LevelFormat::getXZ($index, $X, $Z);
+						Level::getXZ($index, $X, $Z);
 						foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
 							$entity->despawnFrom($this);
 						}

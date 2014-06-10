@@ -37,7 +37,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	protected $levelData;
 
 	public function __construct(Level $level, $path){
-		$this->level = $level->getServer();
+		$this->level = $level;
 		$this->path = $path;
 		@mkdir($this->path, 0777, true);
 		$nbt = new NBT(NBT::BIG_ENDIAN);

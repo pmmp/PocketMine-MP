@@ -37,28 +37,28 @@ class Chunk extends BaseChunk{
 	public function __construct(LevelProvider $level, Compound $nbt){
 		$this->nbt = $nbt;
 
-		if($this->nbt->Entities instanceof Enum){
+		if(isset($this->nbt->Entities) and $this->nbt->Entities instanceof Enum){
 			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
 		}else{
 			$this->nbt->Entities = new Enum("Entities", []);
 			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
 		}
 
-		if($this->nbt->TileEntities instanceof Enum){
+		if(isset($this->nbt->TileEntities) and $this->nbt->TileEntities instanceof Enum){
 			$this->nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		}else{
 			$this->nbt->TileEntities = new Enum("TileEntities", []);
 			$this->nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		}
 
-		if($this->nbt->TileTicks instanceof Enum){
+		if(isset($this->nbt->TileTicks) and $this->nbt->TileTicks instanceof Enum){
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}else{
 			$this->nbt->TileTicks = new Enum("TileTicks", []);
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}
 
-		if($this->nbt->Sections instanceof Enum){
+		if(isset($this->nbt->Sections) and $this->nbt->Sections instanceof Enum){
 			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
 		}else{
 			$this->nbt->Sections = new Enum("Sections", []);

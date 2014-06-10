@@ -120,13 +120,12 @@ class RegionLoader{
 
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->readCompressed(fread($this->filePointer, $length - 1), $compression);
-		$chunk = $nbt->getData()->Level;
-
-		if(!$chunk instanceof Compound){
+		$chunk = $nbt->getData();
+		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
 			return false;
 		}
 
-		return new Chunk($this->levelProvider, $chunk);
+		return new Chunk($this->levelProvider, $chunk->Level);
 	}
 
 	public function chunkExists($x, $z){
@@ -159,7 +158,8 @@ class RegionLoader{
 
 	protected function saveChunk($x, $z, Compound $nbt){
 		$writer = new NBT(NBT::BIG_ENDIAN);
-		$writer->setData(new Compound("", array($nbt)));
+		$nbt->setName("Level");
+		$writer->setData(new Compound("", array("Level" => $nbt)));
 		$chunkData = $writer->writeCompressed(self::COMPRESSION_ZLIB, self::$COMPRESSION_LEVEL);
 		$length = strlen($chunkData) + 1;
 		$sectors = (int) ceil(($length + 4) / 4096);
@@ -171,6 +171,7 @@ class RegionLoader{
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $sectors << 12, "\x00", STR_PAD_RIGHT));
+		$this->writeLocationIndex($index);
 	}
 
 	public function removeChunk($x, $z){
@@ -225,6 +226,7 @@ class RegionLoader{
 	}
 
 	public function close(){
+		$this->writeLocationTable();
 		flock($this->filePointer, LOCK_UN);
 		fclose($this->filePointer);
 	}

@@ -132,43 +132,43 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
-		return $this->sections[$y >> 4]->getBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
+		return $this->sections[$y >> 4]->getBlock($x, $y & 0x0f, $z, $blockId, $meta);
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
-		$this->sections[$y >> 4]->setBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
+		$this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId, $meta);
 	}
 
 	public function getBlockId($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockId($x, $y - ($y >> 4), $z);
+		return $this->sections[$y >> 4]->getBlockId($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockId($x, $y, $z, $id){
-		$this->sections[$y >> 4]->setBlockId($x, $y - ($y >> 4), $z, $id);
+		$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
 	}
 
 	public function getBlockData($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockData($x, $y - ($y >> 4), $z);
+		return $this->sections[$y >> 4]->getBlockData($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockData($x, $y, $z, $data){
-		$this->sections[$y >> 4]->setBlockData($x, $y - ($y >> 4), $z, $data);
+		$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockSkyLight($x, $y - ($y >> 4), $z);
+		return $this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockSkyLight($x, $y, $z, $data){
-		$this->sections[$y >> 4]->getBlockSkyLight($x, $y - ($y >> 4), $z, $data);
+		$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 	}
 
 	public function getBlockLight($x, $y, $z){
-		return $this->sections[$y >> 4]->getBlockSkyLight($x, $y - ($y >> 4), $z);
+		return $this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z);
 	}
 
 	public function setBlockLight($x, $y, $z, $data){
-		$this->sections[$y >> 4]->getBlockSkyLight($x, $y - ($y >> 4), $z, $data);
+		$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 	}
 
 	public function getHighestBlockAt($x, $z){

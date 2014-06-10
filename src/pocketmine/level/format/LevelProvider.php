@@ -91,12 +91,13 @@ interface LevelProvider{
 	public function unloadChunks();
 
 	/**
-	 * @param int $X
-	 * @param int $Z
+	 * @param int  $X
+	 * @param int  $Z
+	 * @param bool $create
 	 *
 	 * @return bool
 	 */
-	public function loadChunk($X, $Z);
+	public function loadChunk($X, $Z, $create = false);
 
 	/**
 	 * @param int  $X

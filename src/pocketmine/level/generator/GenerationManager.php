@@ -122,9 +122,9 @@ class GenerationManager{
 				$chunkX = $r[1];
 				$chunkZ = $r[2];
 				$this->generateChunk($levelID, $chunkX, $chunkZ);
-
+			}else{
+				$this->readPacket();
 			}
-			$this->readPacket();
 		}
 	}
 

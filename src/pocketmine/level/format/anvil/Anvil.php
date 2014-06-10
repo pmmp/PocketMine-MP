@@ -44,7 +44,7 @@ class Anvil extends BaseLevelProvider{
 
 
 	public static function isValid($path){
-		return file_exists(realpath($path) . "level.dat") and file_exists(realpath($path) . "region/");
+		return file_exists($path . "/level.dat") and is_dir($path . "/region/");
 	}
 
 	public static function generate($path, $name, $seed, $generator, array $options = []){
@@ -109,7 +109,7 @@ class Anvil extends BaseLevelProvider{
 		}
 	}
 
-	public function loadChunk($chunkX, $chunkZ){
+	public function loadChunk($chunkX, $chunkZ, $create = false){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunks[$index])){
 			return true;
@@ -117,7 +117,8 @@ class Anvil extends BaseLevelProvider{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ);
-		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32, true); //generate empty chunk if not loaded
+		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32, $create); //generate empty chunk if not loaded
+
 		if($chunk instanceof Chunk){
 			$this->chunks[$index] = $chunk;
 		}else{
@@ -173,13 +174,10 @@ class Anvil extends BaseLevelProvider{
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunks[$index])){
 			return $this->chunks[$index];
-		}elseif($create !== true){
-			return null;
+		}else{
+			$this->loadChunk($chunkX, $chunkZ, $create);
+			return isset($this->chunks[$index]) ? $this->chunks[$index] : null;
 		}
-
-		$this->loadChunk($chunkX, $chunkZ);
-
-		return $this->getChunk($chunkX, $chunkZ, false);
 	}
 
 	public function setChunk($chunkX, $chunkZ, SimpleChunk $chunk){
@@ -195,8 +193,8 @@ class Anvil extends BaseLevelProvider{
 					"Y" => new Byte("Y", $y),
 					"Blocks" => new ByteArray("Blocks", $chunk->getSectionIds($y)),
 					"Data" => new ByteArray("Data", $chunk->getSectionData($y)),
-					"BlockLight" => new ByteArray("BlockLight", str_repeat("\xff", 2048)), //TODO
-					"SkyLight" => new ByteArray("SkyLight", str_repeat("\x00", 2048)) //TODO
+					"SkyLight" => new ByteArray("SkyLight", str_repeat("\xff", 2048)), //TODO
+					"BlockLight" => new ByteArray("BlockLight", str_repeat("\x00", 2048)) //TODO
 				]));
 				$newChunk->setSection($y, $section);
 			}
@@ -239,7 +237,6 @@ class Anvil extends BaseLevelProvider{
 	public function close(){
 		$this->unloadChunks();
 		foreach($this->regions as $index => $region){
-			$region->doSlowCleanUp();
 			$region->close();
 			unset($this->regions[$index]);
 		}

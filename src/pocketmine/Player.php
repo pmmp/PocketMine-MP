@@ -83,6 +83,7 @@ use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
+use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 
 /**
@@ -199,7 +200,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	protected function initEntity(){
-		$this->getLevel()->players[spl_object_hash($this)] = $this;
 		parent::initEntity();
 	}
 
@@ -515,7 +515,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					return false;
 				}else{
 					$index = null;
-					LevelFormat::getXZ($index, $this->lastChunk[0], $this->lastChunk[1]);
+					Level::getXZ($index, $this->lastChunk[0], $this->lastChunk[1]);
 					unset($this->chunksLoaded[$index]);
 				}
 			}else{*/
@@ -535,16 +535,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$index = key($this->chunksOrder);
 		$distance = @$this->chunksOrder[$index];
+
 		if($index === null or $distance === null){
+			$this->orderChunks();
 			if($this->chunkScheduled === 0){
 				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), 60);
 			}
-
 			return false;
 		}
 		$X = null;
 		$Z = null;
-		LevelFormat::getXZ($index, $X, $Z);
+		Level::getXZ($index, $X, $Z);
 		if(!$this->getLevel()->isChunkPopulated($X, $Z)){
 			$this->orderChunks();
 			if($this->chunkScheduled === 0 or $force === true){
@@ -564,8 +565,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk = new FullChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
-		$pk->data = $this->getLevel()->getOrderedChunk($X, $Z, $Yndex);
+		$pk->data = $this->getLevel()->getNetworkChunk($X, $Z, $Yndex);
 		$cnt = $this->dataPacket($pk, true);
+
 		if($cnt === false){
 			return false;
 		}
@@ -622,43 +624,38 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$startZ = $centerZ - $this->viewDistance;
 		$finalX = $centerX + $this->viewDistance;
 		$finalZ = $centerZ + $this->viewDistance;
+		$generateQueue = new ReversePriorityQueue();
 		for($X = $startX; $X <= $finalX; ++$X){
 			for($Z = $startZ; $Z <= $finalZ; ++$Z){
 				$distance = abs($X - $centerX) + abs($Z - $centerZ);
-				$index = LevelFormat::getIndex($X, $Z);
+				$index = Level::chunkHash($X, $Z);
 				if(!isset($this->chunksLoaded[$index]) or $this->chunksLoaded[$index] !== 0){
-					$newOrder[$index] = $distance;
+					if($this->getLevel()->isChunkPopulated($X, $Z)){
+						$newOrder[$index] = $distance;
+					}else{
+						$generateQueue->insert([$X, $Z], $distance);
+					}
 				}
 				unset($lastChunk[$index]);
 			}
 		}
+
 		asort($newOrder);
 		$this->chunksOrder = $newOrder;
 
-		$index = key($this->chunksOrder);
-		LevelFormat::getXZ($index, $X, $Z);
-		$radius = 1;
-		for($z = $Z - $radius; $z <= ($Z + $radius); ++$z){
-			for($x = $X - $radius; $x <= ($X + $radius); ++$x){
-				$this->getLevel()->loadChunk($x, $z);
-				if(!$this->getLevel()->isChunkPopulated($x, $z)){
-					$this->getLevel()->loadChunk($x - 1, $z);
-					$this->getLevel()->loadChunk($x + 1, $z);
-					$this->getLevel()->loadChunk($x, $z - 1);
-					$this->getLevel()->loadChunk($x, $z + 1);
-					$this->getLevel()->loadChunk($x + 1, $z + 1);
-					$this->getLevel()->loadChunk($x + 1, $z - 1);
-					$this->getLevel()->loadChunk($x - 1, $z - 1);
-					$this->getLevel()->loadChunk($x - 1, $z + 1);
-				}
-			}
+		$i = 0;
+		while($generateQueue->count() > 0 and $i < 8){
+			$d = $generateQueue->extract();
+			$this->getLevel()->generateChunk($d[0], $d[1]);
+			++$i;
 		}
+
 
 		foreach($lastChunk as $index => $Yndex){
 			if($Yndex === 0){
 				$X = null;
 				$Z = null;
-				LevelFormat::getXZ($index, $X, $Z);
+				Level::getXZ($index, $X, $Z);
 				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
 					if($entity !== $this){
 						$entity->despawnFrom($this);
@@ -1146,7 +1143,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
 				$this->server->saveOfflinePlayerData($this->username, $nbt);
-				parent::__construct($this->getLevel(), $nbt);
+				parent::__construct($this->getLevel()->getChunkAt($nbt["Pos"][0], $nbt["Pos"][2], true), $nbt);
 				$this->inventory->setHeldItemSlot($this->getCreativeBlock(Item::get(Item::STONE, 0, 1)));
 				$this->loggedIn = true;
 
@@ -1971,7 +1968,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function close($message = "", $reason = "generic reason"){
 		if($this->connected === true){
-			unset($this->getLevel()->players[spl_object_hash($this)]);
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->loggedIn === true){
