@@ -44,8 +44,7 @@ abstract class Generator{
 			return Generator::$list[$name];
 		}
 
-		//return "pocketmine\\level\\generator\\Normal";
-		return "pocketmine\\level\\generator\\Flat";
+		return "pocketmine\\level\\generator\\Normal";
 	}
 
 	public static function getGeneratorName($class){

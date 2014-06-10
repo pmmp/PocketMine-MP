@@ -1361,9 +1361,9 @@ class Server{
 		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\anvil\\Anvil");
 
 
-		//Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
-		//Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
-		//Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
+		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
+		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
+		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
 
 		if($this->getDefaultLevel() === null){
 			$default = $this->getConfigString("level-name", "world");
