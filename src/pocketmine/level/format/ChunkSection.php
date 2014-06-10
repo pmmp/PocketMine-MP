@@ -24,6 +24,11 @@ namespace pocketmine\level\format;
 interface ChunkSection{
 
 	/**
+	 * @return int
+	 */
+	public function getY();
+
+	/**
 	 * @param int $x 0-15
 	 * @param int $y 0-15
 	 * @param int $z 0-15
@@ -130,5 +135,13 @@ interface ChunkSection{
 	 * @return string[8]
 	 */
 	public function getBlockDataColumn($x, $z);
+
+	public function getIdArray();
+
+	public function getDataArray();
+
+	public function getSkyLightArray();
+
+	public function getLightArray();
 
 }

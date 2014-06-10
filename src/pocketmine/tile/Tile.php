@@ -25,11 +25,10 @@
  */
 namespace pocketmine\tile;
 
-use pocketmine\level\format\pmf\LevelFormat;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\Server;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
@@ -45,7 +44,8 @@ abstract class Tile extends Position{
 	 */
 	public static $needUpdate = [];
 
-	public $chunkIndex;
+	/** @var Chunk */
+	public $chunk;
 	public $name;
 	public $id;
 	public $x;
@@ -63,9 +63,10 @@ abstract class Tile extends Position{
 	}
 
 
-	public function __construct(Level $level, Compound $nbt){
-		$this->server = Server::getInstance();
-		$this->setLevel($level, true); //Strong reference
+	public function __construct(Chunk $chunk, Compound $nbt){
+		$this->server = $chunk->getLevel()->getLevel()->getServer();
+		$this->chunk = $chunk;
+		$this->setLevel($chunk->getLevel()->getLevel(), true); //Strong reference
 		$this->namedtag = $nbt;
 		$this->closed = false;
 		$this->name = "";
@@ -75,10 +76,8 @@ abstract class Tile extends Position{
 		$this->y = (int) $this->namedtag["y"];
 		$this->z = (int) $this->namedtag["z"];
 
-		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
-		$this->chunkIndex = $index;
+		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
-		$this->getLevel()->chunkTiles[$this->chunkIndex][$this->id] = $this;
 	}
 
 	public function saveNBT(){
@@ -100,7 +99,7 @@ abstract class Tile extends Position{
 			$this->closed = true;
 			unset(Tile::$needUpdate[$this->id]);
 			$this->getLevel()->removeTile($this);
-			unset($this->getLevel()->chunkTiles[$this->chunkIndex][$this->id]);
+			$this->chunk->removeTile($this);
 		}
 	}
 

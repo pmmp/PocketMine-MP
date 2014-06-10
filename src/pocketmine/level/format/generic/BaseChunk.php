@@ -21,27 +21,46 @@
 
 namespace pocketmine\level\format\generic;
 
+use pocketmine\entity\DroppedItem;
+use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkSection;
+use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\String;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Furnace;
+use pocketmine\tile\Sign;
+use pocketmine\tile\Tile;
 
 abstract class BaseChunk implements Chunk{
 
 	/** @var ChunkSection[] */
 	protected $sections = [];
+
+	/** @var Entity[] */
+	protected $entities = [];
+
+	/** @var Tile[] */
+	protected $tiles = [];
+
+	/** @var \WeakRef<LevelProvider> */
 	protected $level;
 
 	protected $x;
 	protected $z;
 
 	/**
-	 * @param Level          $level
+	 * @param LevelProvider  $level
 	 * @param int            $x
 	 * @param int            $z
 	 * @param ChunkSection[] $sections
+	 * @param Compound[]     $entities
+	 * @param Compound[]     $tiles
 	 */
-	public function __construct(Level $level, $x, $z, array $sections){
-		$this->level = $level;
+	protected function __construct(LevelProvider $level, $x, $z, array $sections, array $entities = [], array $tiles = []){
+		$this->level = new \WeakRef($level);
 		$this->x = (int) $x;
 		$this->z = (int) $z;
 		foreach($sections as $Y => $section){
@@ -59,6 +78,44 @@ abstract class BaseChunk implements Chunk{
 				return;
 			}
 		}
+
+		foreach($entities as $nbt){
+			if($nbt instanceof Compound){
+				if(!isset($nbt->id)){
+					continue;
+				}
+
+				if($nbt->id instanceof String){ //New format
+					switch($nbt["id"]){
+						case "Item":
+							(new DroppedItem($this, $nbt))->spawnToAll();
+							break;
+					}
+				}else{ //Old format
+
+				}
+			}
+		}
+
+
+		foreach($tiles as $nbt){
+			if($nbt instanceof Compound){
+				if(!isset($nbt->id)){
+					continue;
+				}
+				switch($nbt["id"]){
+					case Tile::CHEST:
+						new Chest($this, $nbt);
+						break;
+					case Tile::FURNACE:
+						new Furnace($this, $nbt);
+						break;
+					case Tile::SIGN:
+						new Sign($this, $nbt);
+						break;
+				}
+			}
+		}
 	}
 
 	public function getX(){
@@ -69,16 +126,35 @@ abstract class BaseChunk implements Chunk{
 		return $this->z;
 	}
 
+	/**
+	 * @return LevelProvider
+	 */
 	public function getLevel(){
-		return $this->level;
+		return $this->level->valid() ? $this->level->get() : null;
 	}
 
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
-		$this->sections[$y >> 4]->getBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
+		return $this->sections[$y >> 4]->getBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
 		$this->sections[$y >> 4]->setBlock($x, $y - ($y >> 4), $z, $blockId, $meta);
+	}
+
+	public function getBlockId($x, $y, $z){
+		return $this->sections[$y >> 4]->getBlockId($x, $y - ($y >> 4), $z);
+	}
+
+	public function setBlockId($x, $y, $z, $id){
+		$this->sections[$y >> 4]->setBlockId($x, $y - ($y >> 4), $z, $id);
+	}
+
+	public function getBlockData($x, $y, $z){
+		return $this->sections[$y >> 4]->getBlockData($x, $y - ($y >> 4), $z);
+	}
+
+	public function setBlockData($x, $y, $z, $data){
+		$this->sections[$y >> 4]->setBlockData($x, $y - ($y >> 4), $z, $data);
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
@@ -123,4 +199,62 @@ abstract class BaseChunk implements Chunk{
 	public function setSection($fY, ChunkSection $section){
 		$this->sections[(int) $fY] = $section;
 	}
+
+	public function addEntity(Entity $entity){
+		$this->entities[$entity->getID()] = $entity;
+	}
+
+	public function removeEntity(Entity $entity){
+		unset($this->entities[$entity->getID()]);
+	}
+
+	public function addTile(Tile $tile){
+		$this->tiles[$tile->getID()] = $tile;
+	}
+
+	public function removeTile(Tile $tile){
+		unset($this->tiles[$tile->getID()]);
+	}
+
+	public function getEntities(){
+		return $this->entities;
+	}
+
+	public function getTiles(){
+		return $this->tiles;
+	}
+
+	public function isLoaded(){
+		return $this->getLevel() === null ? false : $this->getLevel()->isChunkLoaded($this->getX(), $this->getZ());
+	}
+
+	public function load($generate = true){
+		return $this->getLevel() === null ? false : $this->getLevel()->getChunk($this->getX(), $this->getZ(), true) instanceof Chunk;
+	}
+
+	public function unload($save = true, $safe = true){
+		$level = $this->getLevel();
+		if($level === null){
+			return true;
+		}
+		if($save === true){
+			$level->saveChunk($this->getX(), $this->getZ());
+		}
+		if($this->getLevel()->unloadChunk($this->getX(), $this->getZ(), $safe)){
+			foreach($this->getEntities() as $entity){
+				$entity->close();
+			}
+			foreach($this->getTiles() as $tile){
+				$tile->close();
+			}
+		}
+	}
+
+	/**
+	 * @return ChunkSection[]
+	 */
+	public function getSections(){
+		return $this->sections;
+	}
+
 }

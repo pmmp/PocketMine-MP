@@ -50,7 +50,7 @@ abstract class Generator{
 
 	public abstract function __construct(array $settings = []);
 
-	public abstract function init(Level $level, Random $random);
+	public abstract function init(GenerationChunkManager $level, Random $random);
 
 	public abstract function generateChunk($chunkX, $chunkZ);
 

@@ -24,6 +24,8 @@ namespace pocketmine\level\generator\object;
 use pocketmine\block\Dirt;
 use pocketmine\block\Leaves;
 use pocketmine\block\Wood;
+use pocketmine\item\Block;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
@@ -34,7 +36,7 @@ class SpruceTree extends Tree{
 	private $leavesBottomY = -1;
 	private $leavesMaxRadius = -1;
 
-	public function canPlaceObject(Level $level, Vector3 $pos, Random $random){
+	public function canPlaceObject(ChunkManager $level, $x, $y, $z, Random $random){
 		$this->findRandomLeavesSize($random);
 		$checkRadius = 0;
 		for($yy = 0; $yy < $this->totalHeight + 2; ++$yy){
@@ -43,7 +45,7 @@ class SpruceTree extends Tree{
 			}
 			for($xx = -$checkRadius; $xx < ($checkRadius + 1); ++$xx){
 				for($zz = -$checkRadius; $zz < ($checkRadius + 1); ++$zz){
-					if(!isset($this->overridable[$level->level->getBlockID($pos->x + $xx, $pos->y + $yy, $pos->z + $zz)])){
+					if(!isset($this->overridable[$level->getBlockIdAt($x + $xx, $y + $yy, $z + $zz)])){
 						return false;
 					}
 				}
@@ -59,28 +61,30 @@ class SpruceTree extends Tree{
 		$this->leavesMaxRadius = 1 + $random->nextRange(0, 1);
 	}
 
-	public function placeObject(Level $level, Vector3 $pos, Random $random){
+	public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
 		if($this->leavesBottomY === -1 or $this->leavesMaxRadius === -1){
 			$this->findRandomLeavesSize($random);
 		}
-		$level->setBlockRaw(new Vector3($pos->x, $pos->y - 1, $pos->z), new Dirt());
+		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
 		$leavesRadius = 0;
 		for($yy = $this->totalHeight; $yy >= $this->leavesBottomY; --$yy){
 			for($xx = -$leavesRadius; $xx <= $leavesRadius; ++$xx){
 				for($zz = -$leavesRadius; $zz <= $leavesRadius; ++$zz){
 					if(abs($xx) != $leavesRadius or abs($zz) != $leavesRadius or $leavesRadius <= 0){
-						$level->setBlockRaw(new Vector3($pos->x + $xx, $pos->y + $yy, $pos->z + $zz), new Leaves($this->type));
+						$level->setBlockIdAt($x + $xx, $y + $yy, $z + $zz, Block::LEAVES);
+						$level->setBlockDataAt($x + $xx, $y + $yy, $z + $zz, $this->type);
 					}
 				}
 			}
-			if($leavesRadius > 0 and $yy === ($pos->y + $this->leavesBottomY + 1)){
+			if($leavesRadius > 0 and $yy === ($y + $this->leavesBottomY + 1)){
 				--$leavesRadius;
 			}elseif($leavesRadius < $this->leavesMaxRadius){
 				++$leavesRadius;
 			}
 		}
 		for($yy = 0; $yy < ($this->totalHeight - 1); ++$yy){
-			$level->setBlockRaw(new Vector3($pos->x, $pos->y + $yy, $pos->z), new Wood($this->type));
+			$level->setBlockIdAt($x, $y + $yy, $z, Block::TRUNK);
+			$level->setBlockDataAt($x, $y + $yy, $z, $this->type);
 		}
 	}
 

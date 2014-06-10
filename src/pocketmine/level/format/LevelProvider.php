@@ -21,19 +21,19 @@
 
 namespace pocketmine\level\format;
 
+use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\Server;
 
-/**
- * All Level formats must implement this interface
- */
-interface LevelFormat{
+interface LevelProvider{
 
 	/**
-	 * @param Server $server
+	 * @param Level  $level
 	 * @param string $path
 	 */
-	public function __construct(Server $server, $path);
+	public function __construct(Level $level, $path);
+
+	/** @return string */
+	public function getPath();
 
 	/**
 	 * Tells if the path is a valid level.
@@ -53,33 +53,86 @@ interface LevelFormat{
 	 * @param int  $Z      absolute Chunk Z value
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return ChunkSnapshot
+	 * @return Chunk
 	 */
 	public function getChunk($X, $Z, $create = false);
 
-	/**
-	 * @return bool
-	 */
 	public function saveChunks();
+
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 */
+	public function saveChunk($X, $Z);
 
 	public function unloadChunks();
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function loadChunk($X, $Z);
 
-	public function unloadChunk($X, $Z);
+	/**
+	 * @param int  $X
+	 * @param int  $Z
+	 * @param bool $safe
+	 *
+	 * @return bool
+	 */
+	public function unloadChunk($X, $Z, $safe = true);
 
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
+	public function isChunkGenerated($X, $Z);
+
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function isChunkLoaded($X, $Z);
+
+	/**
+	 * @return string
+	 */
+	public function getName();
+
+	/**
+	 * @return int
+	 */
+	public function getTime();
+
+	/**
+	 * @param int $value
+	 */
+	public function setTime($value);
 
 	/**
 	 * @return Vector3
 	 */
 	public function getSpawn();
 
-	public function getName();
+	/**
+	 * @param Vector3 $pos
+	 */
+	public function setSpawn(Vector3 $pos);
 
 	/**
-	 * @return ChunkSnapshot
+	 * @return Chunk
 	 */
 	public function getLoadedChunks();
+
+	/**
+	 * @return Level
+	 */
+	public function getLevel();
 
 }

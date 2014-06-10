@@ -31,6 +31,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\level\format\Chunk;
 use pocketmine\level\format\pmf\LevelFormat;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -70,7 +71,13 @@ abstract class Entity extends Position implements Metadatable{
 	public $passenger = null;
 	public $vehicle = null;
 
-	public $chunkIndex;
+	/** @var int */
+	public $chunkX;
+	/** @var int */
+	public $chunkZ;
+
+	/** @var Chunk */
+	public $chunk;
 
 	public $lastX;
 	public $lastY;
@@ -132,12 +139,13 @@ abstract class Entity extends Position implements Metadatable{
 	public $closed = false;
 
 
-	public function __construct(Level $level, Compound $nbt){
+	public function __construct(Chunk $chunk, Compound $nbt){
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
 		$this->namedtag = $nbt;
-		$this->setLevel($level, true); //Create a hard reference
-		$this->server = Server::getInstance();
+		$this->chunk = $chunk;
+		$this->setLevel($chunk->getLevel()->getLevel(), true); //Create a hard reference
+		$this->server = $chunk->getLevel()->getLevel()->getServer();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->setPositionAndRotation(new Vector3(
@@ -178,11 +186,9 @@ abstract class Entity extends Position implements Metadatable{
 		}
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
-		$index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4);
-		$this->chunkIndex = $index;
+		$this->chunk->addEntity($this);
 		$this->getLevel()->addEntity($this);
 		$this->initEntity();
-		$this->getLevel()->chunkEntities[$this->chunkIndex][$this->id] = $this;
 		$this->lastUpdate = $this->spawnTime = microtime(true);
 		$this->justCreated = false;
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
@@ -219,7 +225,7 @@ abstract class Entity extends Position implements Metadatable{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getID()]) and $player->chunksLoaded[$this->chunkIndex] !== 0xff){
+		if(!isset($this->hasSpawned[$player->getID()]) and $player->chunksLoaded[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())] !== 0xff){
 			$this->hasSpawned[$player->getID()] = $player;
 		}
 	}
@@ -576,7 +582,7 @@ abstract class Entity extends Position implements Metadatable{
 			}
 
 			$this->getLevel()->removeEntity($this);
-			unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
+			$this->chunk->removeEntity($this);
 			$this->despawnFromAll();
 			if($this instanceof Player){
 				foreach($this->chunksLoaded as $index => $Yndex){
@@ -602,7 +608,7 @@ abstract class Entity extends Position implements Metadatable{
 			$this->dataPacket($pk);
 		}
 		$this->spawnToAll();
-		$this->chunkIndex = false;
+		$this->chunk = null;
 	}
 
 	public function getPosition(){
@@ -847,12 +853,12 @@ abstract class Entity extends Position implements Metadatable{
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
 
 
-		if(($index = LevelFormat::getIndex($this->x >> 4, $this->z >> 4)) !== $this->chunkIndex){
-			if($this->chunkIndex !== false){
-				unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
+		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) and $this->chunk->getZ() !== ($this->z >> 4))){
+			if($this->chunk instanceof Chunk){
+				$this->chunk->removeEntity($this);
 			}
-			$this->chunkIndex = $index;
 			$this->getLevel()->loadChunk($this->x >> 4, $this->z >> 4);
+			$this->chunk = $this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4);
 
 			if(!$this->justCreated){
 				$newChunk = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
@@ -868,7 +874,7 @@ abstract class Entity extends Position implements Metadatable{
 				}
 			}
 
-			$this->getLevel()->chunkEntities[$this->chunkIndex][$this->id] = $this;
+			$this->chunk->addEntity($this);
 		}
 
 		$this->scheduleUpdate();
@@ -961,8 +967,10 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Entity::$needUpdate[$this->id]);
+			if($this->chunk instanceof Chunk){
+				$this->chunk->removeEntity($this);
+			}
 			$this->getLevel()->removeEntity($this);
-			unset($this->getLevel()->chunkEntities[$this->chunkIndex][$this->id]);
 			$this->despawnFromAll();
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 		}

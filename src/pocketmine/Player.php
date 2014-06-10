@@ -637,20 +637,25 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$index = key($this->chunksOrder);
 		LevelFormat::getXZ($index, $X, $Z);
-		$this->getLevel()->loadChunk($X, $Z);
-		if(!$this->getLevel()->isChunkPopulated($X, $Z)){
-			$this->getLevel()->loadChunk($X - 1, $Z);
-			$this->getLevel()->loadChunk($X + 1, $Z);
-			$this->getLevel()->loadChunk($X, $Z - 1);
-			$this->getLevel()->loadChunk($X, $Z + 1);
-			$this->getLevel()->loadChunk($X + 1, $Z + 1);
-			$this->getLevel()->loadChunk($X + 1, $Z - 1);
-			$this->getLevel()->loadChunk($X - 1, $Z - 1);
-			$this->getLevel()->loadChunk($X - 1, $Z + 1);
+		$radius = 1;
+		for($z = $Z - $radius; $z <= ($Z + $radius); ++$z){
+			for($x = $X - $radius; $x <= ($X + $radius); ++$x){
+				$this->getLevel()->loadChunk($x, $z);
+				if(!$this->getLevel()->isChunkPopulated($x, $z)){
+					$this->getLevel()->loadChunk($x - 1, $z);
+					$this->getLevel()->loadChunk($x + 1, $z);
+					$this->getLevel()->loadChunk($x, $z - 1);
+					$this->getLevel()->loadChunk($x, $z + 1);
+					$this->getLevel()->loadChunk($x + 1, $z + 1);
+					$this->getLevel()->loadChunk($x + 1, $z - 1);
+					$this->getLevel()->loadChunk($x - 1, $z - 1);
+					$this->getLevel()->loadChunk($x - 1, $z + 1);
+				}
+			}
 		}
 
 		foreach($lastChunk as $index => $Yndex){
-			if($Yndex !== 0xff){
+			if($Yndex === 0){
 				$X = null;
 				$Z = null;
 				LevelFormat::getXZ($index, $X, $Z);
@@ -1187,6 +1192,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
 				$this->server->getPluginManager()->callEvent(new PlayerJoinEvent($this, $this->username . " joined the game"));
+
 
 				$this->orderChunks();
 				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
