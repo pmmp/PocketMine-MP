@@ -1282,8 +1282,13 @@ class Level{
 		}
 		$light = str_repeat("\xff", 2048 * 8);
 		$null = str_repeat("\x00", 2048 * 8);
-		$biomeIDs = str_repeat("\x3f", 256);
-		$grassColor = str_repeat("\x01\x85\xb2\x4a", 256);
+		$biomeIDs = str_repeat("\x04", 256);
+		if($X % 5 === 0 and $Z % 5 === 0){
+			$ppm = base64_decode("mpqahISEbW1tZmZmZmZmXl5eXl5eXl5eXl5eXl5eXl5eZmZmZmZmbW1thISEmpqafX19bW1tbW1tS5ubS5qdfbXTSpSbS5ubTJ6cSpWZfbXTSpWZTJ6cbW1tbW1tfX19bW1tbW1tfbXSfbbVSI+dfdL/fbrafbfVSZKefbjYfbjYfbXSSpWZfbTRbW1tbW1tZmZmTKGdSpSbfbrbfbzdfdL/SI+dfbnZfdL/fdL/SZKeSpKYSYyWfbbVS5iaZmZmXl5eS6CiSZmmfdL/fbzeSZCcSpSbfbfVSJKifdL/SpegfbXTfbfWfbXTS5ubXl5eXl5efdL/fdL/fdL/fbrbfbbVSpKYfbTRSpecSpieSZCcfbjYSZCcSpegS52iXl5eXl5eSpegfbnZSZSfSZGafbbVxsYAxsYAxsYAxsYAfbjYfdL/SZikfdL/fdL/Xl5eXl5eSpSbfbjYSpegS5qdfbTRxsYA1tYA1tYAxsYASpegfdL/SZahfbfXSpegXl5eXl5efbfWfdL/AAAAAAAAAAAAxsYA1tYAAAAAxsYAS56gSp2lAAAAfbfVS5iaXl5eXl5efbXSSZWjAAAAfbnZfbjYAAAAxsYAAAAAAAAASZOgAAAAAAAAfbfWSpWZXl5eXl5eTJ6cS56gAAAAAAAAAAAASpegS5ubAAAAfdL/AAAAfdL/AAAASZOgfbfVXl5eXl5eTKKfSp2lAAAAfdL/fdL/Sp2lS56gAAAAfdL/SZamSpyjAAAAfdL/fdL/Xl5eZmZmS6CifdL/AAAASZamSZmmfdL/SZqoAAAAfdL/SJOlfdL/AAAAfbnZSpegZmZmbW1tbW1tfdL/AAAAfbXSSpegfdL/fdL/AAAAfbfXfbrbfdL/AAAAfbbVbW1tbW1tfX19bW1tbW1tAAAAfbTRS5qdSp2lfdL/AAAAS5ubSpSbfbfVAAAAbW1tbW1tfX19mpqahISEbW1tZmZmZmZmXl5eXl5eXl5eXl5eXl5eXl5eZmZmZmZmbW1thISEmpqa");
+			$grassColor = "\x01" . implode("\x01", str_split($ppm, 3));
+		}else{
+			$grassColor = str_repeat("\x01\x85\xb2\x4a", 256);
+		}
 		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $light . $null . $biomeIDs . $grassColor, ZLIB_ENCODING_DEFLATE, 7);
 
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){

@@ -529,7 +529,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$tile->spawnTo($this);
 					}
 				}
-
 			//}
 			$this->lastChunk = false;
 		}

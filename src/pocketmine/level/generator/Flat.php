@@ -48,7 +48,8 @@ class Flat extends Generator{
 	}
 
 	public function __construct(array $options = []){
-		$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
+		$this->preset = "2;7,2x3,2;1;";
+		//$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		$this->options = $options;
 		if(isset($options["preset"])){
 			$this->parsePreset($options["preset"]);
