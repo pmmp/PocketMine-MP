@@ -508,7 +508,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		if(is_array($this->lastChunk)){
-			$identifier = $this->lastChunk[2];
+			/*$identifier = $this->lastChunk[2];
 			if(!$this->checkACK($identifier)){
 				if((microtime(true) - $this->lastChunk[3]) < 1.5){
 					$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
@@ -518,7 +518,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					LevelFormat::getXZ($index, $this->lastChunk[0], $this->lastChunk[1]);
 					unset($this->chunksLoaded[$index]);
 				}
-			}else{
+			}else{*/
 				foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
 					if($entity !== $this){
 						$entity->spawnTo($this);
@@ -530,7 +530,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 
-			}
+			//}
 			$this->lastChunk = false;
 		}
 
@@ -660,6 +660,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$entity->despawnFrom($this);
 					}
 				}
+
+			}else{
 				$pk = new UnloadChunkPacket();
 				$pk->chunkX = $X;
 				$pk->chunkZ = $Z;
