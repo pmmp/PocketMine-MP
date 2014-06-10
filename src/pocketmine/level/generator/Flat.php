@@ -21,7 +21,6 @@
 
 namespace pocketmine\level\generator;
 
-use pocketmine\level\generator\populator\Populator;
 use pocketmine\block\CoalOre;
 use pocketmine\block\DiamondOre;
 use pocketmine\block\Dirt;
@@ -33,7 +32,7 @@ use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
 use pocketmine\level\format\SimpleChunk;
 use pocketmine\level\generator\populator\Ore;
-use pocketmine\level\Level;
+use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
@@ -100,7 +99,7 @@ class Flat extends Generator{
 			$b = Item::fromString($b);
 			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$this->structure[$cY] = [$b->getID(),$b->getDamage()];
+				$this->structure[$cY] = [$b->getID(), $b->getDamage()];
 			}
 		}
 

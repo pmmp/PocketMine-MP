@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\level\format\generic;
+
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -73,14 +74,22 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->levelData->Time = new Int("Time", (int) $value);
 	}
 
+	public function getSeed(){
+		return $this->levelData["RandomSeed"];
+	}
+
+	public function setSeed($value){
+		$this->levelData->RandomSeed = new Int("RandomSeed", (int) $value);
+	}
+
 	public function getSpawn(){
 		return new Vector3($this->levelData["SpawnX"], $this->levelData["SpawnY"], $this->levelData["SpawnZ"]);
 	}
 
 	public function setSpawn(Vector3 $pos){
-		$this->levelData->SpawnX = new Int("SpawnX", $pos->x);
-		$this->levelData->SpawnY = new Int("SpawnY", $pos->y);
-		$this->levelData->SpawnZ = new Int("SpawnZ", $pos->z);
+		$this->levelData->SpawnX = new Int("SpawnX", (int) $pos->x);
+		$this->levelData->SpawnY = new Int("SpawnY", (int) $pos->y);
+		$this->levelData->SpawnZ = new Int("SpawnZ", (int) $pos->z);
 	}
 
 	/**

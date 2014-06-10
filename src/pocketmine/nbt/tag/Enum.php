@@ -35,6 +35,16 @@ class Enum extends NamedTag implements \ArrayAccess{
 		}
 	}
 
+	public function &getValue(){
+		$value = [];
+		foreach($this as $k => $v){
+			if($v instanceof Tag){
+				$value[$k] = $v;
+			}
+		}
+		return $value;
+	}
+
 	public function offsetExists($offset){
 		return isset($this->{$offset});
 	}

@@ -24,7 +24,6 @@
  */
 namespace pocketmine\level\generator;
 
-use pocketmine\level\Level;
 use pocketmine\utils\Random;
 
 abstract class Generator{
@@ -46,6 +45,16 @@ abstract class Generator{
 		}
 
 		return "pocketmine\\level\\generator\\Normal";
+	}
+
+	public static function getGeneratorName($class){
+		foreach(Generator::$list as $name => $c){
+			if($c === $class){
+				return $name;
+			}
+		}
+
+		return "unknown";
 	}
 
 	public abstract function __construct(array $settings = []);

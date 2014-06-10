@@ -125,9 +125,9 @@ class SimpleChunk{
 	}
 
 	/**
-	 * @param int $x 0-15
-	 * @param int $y 0-127
-	 * @param int $z 0-15
+	 * @param int $x       0-15
+	 * @param int $y       0-127
+	 * @param int $z       0-15
 	 * @param int $blockId 0-255
 	 */
 	public function setBlockId($x, $y, $z, $blockId){
@@ -151,9 +151,9 @@ class SimpleChunk{
 	}
 
 	/**
-	 * @param int $x 0-15
-	 * @param int $y 0-127
-	 * @param int $z 0-15
+	 * @param int $x    0-15
+	 * @param int $y    0-127
+	 * @param int $z    0-15
 	 * @param int $data 0-15
 	 */
 	public function setBlockData($x, $y, $z, $data){
@@ -236,6 +236,7 @@ class SimpleChunk{
 				$offset += 2048;
 			}
 		}
+
 		return new SimpleChunk($chunkX, $chunkZ, $flags, $ids, $meta);
 	}
 

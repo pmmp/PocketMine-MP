@@ -21,13 +21,8 @@
 
 namespace pocketmine\level\generator\object;
 
-use pocketmine\block\Dirt;
-use pocketmine\block\Leaves;
-use pocketmine\block\Wood;
 use pocketmine\item\Block;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class SpruceTree extends Tree{

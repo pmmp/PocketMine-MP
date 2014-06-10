@@ -26,7 +26,6 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
 
@@ -58,11 +57,6 @@ abstract class Tile extends Position{
 	protected $lastUpdate;
 	protected $server;
 
-	public function getID(){
-		return $this->id;
-	}
-
-
 	public function __construct(Chunk $chunk, Compound $nbt){
 		$this->server = $chunk->getLevel()->getLevel()->getServer();
 		$this->chunk = $chunk;
@@ -80,6 +74,10 @@ abstract class Tile extends Position{
 		$this->getLevel()->addTile($this);
 	}
 
+	public function getID(){
+		return $this->id;
+	}
+
 	public function saveNBT(){
 		$this->namedtag["x"] = $this->x;
 		$this->namedtag["y"] = $this->y;
@@ -94,6 +92,10 @@ abstract class Tile extends Position{
 		Tile::$needUpdate[$this->id] = $this;
 	}
 
+	public function __destruct(){
+		$this->close();
+	}
+
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
@@ -101,10 +103,6 @@ abstract class Tile extends Position{
 			$this->getLevel()->removeTile($this);
 			$this->chunk->removeTile($this);
 		}
-	}
-
-	public function __destruct(){
-		$this->close();
 	}
 
 	public function getName(){

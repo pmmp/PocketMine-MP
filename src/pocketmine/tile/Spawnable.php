@@ -22,7 +22,6 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\Player;
 

@@ -21,8 +21,7 @@
 
 namespace pocketmine\network\query;
 
-use pocketmine\network\Packet;
-use pocketmine\utils\Binary;
+se pocketmine\utils\Binary;
 
 class QueryPacket extends Packet{
 	const HANDSHAKE = 9;

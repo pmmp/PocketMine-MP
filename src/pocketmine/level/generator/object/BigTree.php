@@ -22,8 +22,6 @@
 namespace pocketmine\level\generator\object;
 
 use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3 as Vector3;
 
 class BigTree extends Tree{
 	private $trunkHeightMultiplier = 0.618;

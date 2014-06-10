@@ -65,8 +65,8 @@ namespace {
 }
 
 namespace pocketmine {
+	use LogLevel;
 	use pocketmine\utils\Binary;
-	use \LogLevel;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;

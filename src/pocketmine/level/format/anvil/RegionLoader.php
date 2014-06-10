@@ -103,6 +103,9 @@ class RegionLoader{
 
 		if($length <= 0){ //Not yet generated
 			$this->generateChunk($x, $z);
+			fseek($this->filePointer, $this->locationTable[$index][0] << 12);
+			$length = Binary::readInt(fread($this->filePointer, 4));
+			$compression = ord(fgetc($this->filePointer));
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
@@ -133,7 +136,7 @@ class RegionLoader{
 	public function generateChunk($x, $z){
 		$nbt = new Compound("Level", []);
 		$nbt->xPos = new Int("xPos", ($this->getX() * 32) + $x);
-		$nbt->zPos = new Int("xPos", ($this->getZ() * 32) + $z);
+		$nbt->zPos = new Int("zPos", ($this->getZ() * 32) + $z);
 		$nbt->LastUpdate = new Long("LastUpdate", 0);
 		$nbt->LightPopulated = new Byte("LightPopulated", 0);
 		$nbt->TerrainPopulated = new Byte("TerrainPopulated", 0);
@@ -168,6 +171,12 @@ class RegionLoader{
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $sectors << 12, "\x00", STR_PAD_RIGHT));
+	}
+
+	public function removeChunk($x, $z){
+		$index = self::getChunkOffset($x, $z);
+		$this->locationTable[$index][0] = 0;
+		$this->locationTable[$index][1] = 0;
 	}
 
 	public function writeChunk(Chunk $chunk){
@@ -213,6 +222,11 @@ class RegionLoader{
 
 	protected static function getChunkOffset($x, $z){
 		return $x + ($z << 5);
+	}
+
+	public function close(){
+		flock($this->filePointer, LOCK_UN);
+		fclose($this->filePointer);
 	}
 
 	public function doSlowCleanUp(){

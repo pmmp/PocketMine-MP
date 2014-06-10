@@ -27,8 +27,8 @@ class ChunkSnapshot extends BaseChunkSnapshot{
 
 	public function getBlockId($x, $y, $z){
 		return ord($this->blockId{
-			(($y >> 4) << 12) //get section index
-			+ ($y << 8) + ($z << 4) + $x //get block index in section
+		(($y >> 4) << 12) //get section index
+		+ ($y << 8) + ($z << 4) + $x //get block index in section
 		});
 	}
 

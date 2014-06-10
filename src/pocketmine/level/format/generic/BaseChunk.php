@@ -26,7 +26,6 @@ use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkSection;
 use pocketmine\level\format\LevelProvider;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\String;
 use pocketmine\tile\Chest;
@@ -58,6 +57,8 @@ abstract class BaseChunk implements Chunk{
 	 * @param ChunkSection[] $sections
 	 * @param Compound[]     $entities
 	 * @param Compound[]     $tiles
+	 *
+	 * @throws \Exception
 	 */
 	protected function __construct(LevelProvider $level, $x, $z, array $sections, array $entities = [], array $tiles = []){
 		$this->level = new \WeakRef($level);
@@ -68,14 +69,11 @@ abstract class BaseChunk implements Chunk{
 				$this->sections[$Y] = $section;
 			}else{
 				trigger_error("Received invalid ChunkSection instance", E_USER_ERROR);
-
-				return;
+				throw new \Exception("Received invalid ChunkSection instance");
 			}
 
-			if($section >= self::SECTION_COUNT){
-				trigger_error("Invalid amount of chunks", E_USER_WARNING);
-
-				return;
+			if($Y >= self::SECTION_COUNT){
+				throw new \Exception("Invalid amount of chunks");
 			}
 		}
 

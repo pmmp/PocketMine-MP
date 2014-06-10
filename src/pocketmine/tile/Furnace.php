@@ -27,7 +27,6 @@ use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;

@@ -22,8 +22,6 @@
 namespace pocketmine\level\generator\object;
 
 use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3 as Vector3;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 

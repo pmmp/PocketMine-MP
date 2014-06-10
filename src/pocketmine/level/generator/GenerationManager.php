@@ -88,7 +88,6 @@ class GenerationManager{
 	const PACKET_SHUTDOWN = 0xff;
 
 
-
 	protected $socket;
 	/** @var \Logger */
 	protected $logger;
@@ -138,6 +137,9 @@ class GenerationManager{
 	protected function generateChunk($levelID, $chunkX, $chunkZ){
 		if(isset($this->levels[$levelID])){
 			$this->levels[$levelID]->populateChunk($chunkX, $chunkZ); //Request population directly
+			if(isset($this->levels[$levelID])){
+				$this->sendChunk($levelID, $this->levels[$levelID]->getChunk($chunkX, $chunkZ));
+			}
 			//TODO: wait for queue generation (to wait for extra chunk changes)
 		}
 	}
@@ -171,7 +173,7 @@ class GenerationManager{
 	 */
 	public function requestChunk($levelID, $chunkX, $chunkZ){
 		$this->needsChunk = [$levelID, $chunkX, $chunkZ];
-		$binary = chr(self::PACKET_REQUEST_CHUNK . Binary::writeInt($levelID) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ));
+		$binary = chr(self::PACKET_REQUEST_CHUNK) . Binary::writeInt($levelID) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
 		@socket_write($this->socket, Binary::writeInt(strlen($binary)) . $binary);
 		do{
 			$this->readPacket();
@@ -187,14 +189,14 @@ class GenerationManager{
 	}
 
 	public function sendChunk($levelID, SimpleChunk $chunk){
-		$binary = chr(self::PACKET_SEND_CHUNK . Binary::writeInt($levelID) . $chunk->toBinary());
+		$binary = chr(self::PACKET_SEND_CHUNK) . Binary::writeInt($levelID) . $chunk->toBinary();
 		@socket_write($this->socket, Binary::writeInt(strlen($binary)) . $binary);
 	}
 
 	protected function readPacket(){
-		$len = socket_read($this->socket, 4);
+		$len = @socket_read($this->socket, 4);
 		if($len === false or $len === ""){
-			usleep(5000);
+			$this->shutdown = true;
 			return;
 		}
 		$packet = socket_read($this->socket, Binary::readInt($len));

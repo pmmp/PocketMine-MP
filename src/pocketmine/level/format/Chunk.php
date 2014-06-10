@@ -151,13 +151,24 @@ interface Chunk{
 	 */
 	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false);
 
-
+	/**
+	 * @param Entity $entity
+	 */
 	public function addEntity(Entity $entity);
 
+	/**
+	 * @param Entity $entity
+	 */
 	public function removeEntity(Entity $entity);
 
+	/**
+	 * @param Tile $tile
+	 */
 	public function addTile(Tile $tile);
 
+	/**
+	 * @param Tile $tile
+	 */
 	public function removeTile(Tile $tile);
 
 	/**

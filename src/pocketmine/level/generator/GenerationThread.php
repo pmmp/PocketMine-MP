@@ -50,6 +50,7 @@ class GenerationThread extends \Thread{
 
 	public function __construct(\ThreadedLogger $logger, \SplAutoloader $loader){
 		$this->loader = $loader;
+		$this->logger = $logger;
 		$loadPaths = [];
 		$this->addDependency($loadPaths, new \ReflectionClass($this->logger));
 		$this->addDependency($loadPaths, new \ReflectionClass($this->loader));
@@ -57,7 +58,7 @@ class GenerationThread extends \Thread{
 
 		$sockets = [];
 		if(!socket_create_pair((strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? AF_INET : AF_UNIX), SOCK_STREAM, 0, $sockets)){
-			throw new \Exception("Could not create IPC sockets. Reason: ".socket_strerror(socket_last_error()));
+			throw new \Exception("Could not create IPC sockets. Reason: " . socket_strerror(socket_last_error()));
 		}
 
 		$this->internalSocket = $sockets[0];

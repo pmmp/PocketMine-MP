@@ -34,7 +34,6 @@ class Painting extends Item{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent === false and $face > 1 and $block->isSolid === false){
-			$server = Server::getInstance();
 			$faces = array(
 				2 => 1,
 				3 => 3,

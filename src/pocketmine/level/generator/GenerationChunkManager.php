@@ -23,7 +23,6 @@ namespace pocketmine\level\generator;
 
 use pocketmine\level\ChunkManager;
 use pocketmine\level\format\SimpleChunk;
-use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\utils\Random;
 
@@ -77,6 +76,7 @@ class GenerationChunkManager implements ChunkManager{
 	 */
 	public function getChunk($chunkX, $chunkZ){
 		$index = Level::chunkHash($chunkX, $chunkZ);
+
 		return !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
 	}
 
@@ -112,6 +112,7 @@ class GenerationChunkManager implements ChunkManager{
 	protected function requestChunk($chunkX, $chunkZ){
 		$chunk = $this->manager->requestChunk($this->levelID, $chunkX, $chunkZ);
 		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
+
 		return $chunk;
 	}
 

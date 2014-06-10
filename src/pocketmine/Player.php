@@ -519,16 +519,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					unset($this->chunksLoaded[$index]);
 				}
 			}else{*/
-				foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
-					if($entity !== $this){
-						$entity->spawnTo($this);
-					}
+			foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
+				if($entity !== $this){
+					$entity->spawnTo($this);
 				}
-				foreach($this->getLevel()->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
-					if($tile instanceof Spawnable){
-						$tile->spawnTo($this);
-					}
+			}
+			foreach($this->getLevel()->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
+				if($tile instanceof Spawnable){
+					$tile->spawnTo($this);
 				}
+			}
 			//}
 			$this->lastChunk = false;
 		}
@@ -696,6 +696,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($needACK and $identifier !== null){
 			$this->needACK[$identifier] = false;
+
 			return $identifier;
 		}
 
@@ -721,6 +722,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($needACK and $identifier !== null){
 			$this->needACK[$identifier] = false;
+
 			return $identifier;
 		}
 
@@ -970,6 +972,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				return $i;
 			}
 		}
+
 		return -1;
 	}
 
@@ -1157,6 +1160,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
+
 					return;
 				}
 

@@ -32,12 +32,11 @@ use pocketmine\block\RedstoneOre;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
+use pocketmine\level\generator\populator\Populator;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
-use pocketmine\level\generator\populator\Populator;
 
 class Normal extends Generator{
 

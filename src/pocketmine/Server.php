@@ -26,8 +26,6 @@
 namespace pocketmine;
 
 use pocketmine\block\Block;
-use pocketmine\block\Chest;
-use pocketmine\block\Furnace;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -40,10 +38,9 @@ use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
-use pocketmine\level\format\pmf\LevelFormat;
-use pocketmine\level\generator\Flat;
+use pocketmine\level\format\LevelProviderManager;
+use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
-use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
 use pocketmine\level\LevelImport;
 use pocketmine\level\WorldGenerator;
@@ -61,10 +58,11 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\protocol\Info;
 use pocketmine\network\query\QueryHandler;
-use pocketmine\network\query\QueryPacket;
 use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
+use pocketmine\network\SourceInterface;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
@@ -75,7 +73,6 @@ use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\scheduler\TickScheduler;
-use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
@@ -83,7 +80,6 @@ use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
-use pocketmine\network\SourceInterface;
 
 /**
  * The class that manages everything
@@ -115,6 +111,9 @@ class Server{
 
 	/** @var ServerScheduler */
 	private $scheduler = null;
+
+	/** @var GenerationRequestManager */
+	private $generationManager = null;
 
 	/** @var TickScheduler */
 	private $tickScheduler = null;
@@ -494,6 +493,13 @@ class Server{
 	}
 
 	/**
+	 * @return GenerationRequestManager
+	 */
+	public function getGenerationManager(){
+		return $this->generationManager;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getTick(){
@@ -781,17 +787,32 @@ class Server{
 	 * @return bool
 	 */
 	public function isLevelLoaded($name){
-		return isset($this->levels[$name]);
+		return $this->getLevelByName($name) instanceof Level;
 	}
 
 	/**
-	 * @param string $name
+	 * @param int $levelId
 	 *
 	 * @return Level
 	 */
-	public function getLevel($name){
-		if(isset($this->levels[$name])){
-			return $this->levels[$name];
+	public function getLevel($levelId){
+		if(isset($this->levels[$levelId])){
+			return $this->levels[$levelId];
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param $name
+	 *
+	 * @return Level
+	 */
+	public function getLevelByName($name){
+		foreach($this->getLevels() as $level){
+			if($level->getName() === $name){
+				return $level;
+			}
 		}
 
 		return null;
@@ -802,8 +823,8 @@ class Server{
 	 * @param bool  $forceUnload
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
-		if((!$level->isLoaded() or $level->unload($forceUnload) === true) and $this->isLevelLoaded($level->getName())){
-			unset($this->levels[$level->getName()]);
+		if($level->unload($forceUnload) === true and $this->isLevelLoaded($level->getName())){
+			unset($this->levels[$level->getID()]);
 		}
 	}
 
@@ -829,20 +850,20 @@ class Server{
 		}
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		$this->logger->info("Preparing level \"" . $name . "\"");
-		$level = new LevelFormat($path . "level.pmf");
-		if(!$level->isLoaded){
+
+		$provider = LevelProviderManager::getProvider($path);
+		if($provider === null){
 			$this->logger->error("Could not load level \"" . $name . "\"");
 
 			return false;
 		}
 		//$entities = new Config($path."entities.yml", Config::YAML);
-		if(file_exists($path . "tileEntities.yml")){
-			@rename($path . "tileEntities.yml", $path . "tiles.yml");
-		}
+		//if(file_exists($path . "tileEntities.yml")){
+		//	@rename($path . "tileEntities.yml", $path . "tiles.yml");
+		//}
 
-		$level = new Level($this, $level, $name);
-		$this->levels[$level->getName()] = $level;
+		$level = new Level($this, $path, $provider);
+		$this->levels[$level->getID()] = $level;
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
 				break;
@@ -872,7 +893,7 @@ class Server{
 			}
 		}*/
 
-		if(file_exists($path . "tiles.yml")){
+		/*if(file_exists($path . "tiles.yml")){
 			$tiles = new Config($path . "tiles.yml", Config::YAML);
 			foreach($tiles->getAll() as $tile){
 				if(!isset($tile["id"])){
@@ -934,7 +955,7 @@ class Server{
 			}
 			unlink($path . "tiles.yml");
 			$level->save(true, true);
-		}
+		}*/
 
 		return true;
 	}
@@ -954,20 +975,32 @@ class Server{
 			return false;
 		}
 
+		$seed = $seed === null ? Binary::readInt(Utils::getRandomBytes(4, false)) : (int) $seed;
+
 		if($generator !== null and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
 			$generator = new $generator($options);
 		}else{
 			if(strtoupper($this->getLevelType()) == "FLAT"){
-				$generator = new Flat($options);
+				$generator = Generator::getGenerator("flat");
 				$options["preset"] = $this->getConfigString("generator-settings", "");
 			}else{
-				$generator = new Normal($options);
+				$generator = Generator::getGenerator("normal");
 			}
 		}
 
-		$gen = new WorldGenerator($this, $generator, $name, $seed === null ? Binary::readInt(Utils::getRandomBytes(4, false)) : (int) $seed);
-		$gen->generate();
-		$gen->close();
+		$provider = "pocketmine\\level\\format\\anvil\\Anvil";
+
+		$path = $this->getDataPath() . "worlds/" . $name . "/";
+		/** @var \pocketmine\level\format\LevelProvider $provider */
+		$provider::generate($path, $name, $seed, $generator, $options);
+
+		$level = new Level($this, $path, $provider);
+		$this->levels[$level->getID()] = $level;
+		for($Z = 6; $Z <= 10; ++$Z){
+			for($X = 6; $X <= 10; ++$X){
+				$level->generateChunk($X, $Z);
+			}
+		}
 
 		return true;
 	}
@@ -982,7 +1015,7 @@ class Server{
 			return false;
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		if(!($this->getLevel($name) instanceof Level) and !file_exists($path . "level.pmf")){
+		if(!($this->getLevelByName($name) instanceof Level) and !file_exists($path . "level.pmf")){
 			if(file_exists($path)){
 				$level = new LevelImport($path);
 				if($level->import() === false){ //Try importing a world
@@ -1318,6 +1351,10 @@ class Server{
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
+		$this->generationManager = new GenerationRequestManager($this);
+
+		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\anvil\\Anvil");
+
 
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
@@ -1333,10 +1370,9 @@ class Server{
 			if($this->loadLevel($default) === false){
 				$seed = $this->getConfigInt("level-seed", time());
 				$this->generateLevel($default, $seed === 0 ? time() : $seed);
-				$this->loadLevel($default);
 			}
 
-			$this->setDefaultLevel($this->getLevel($default));
+			$this->setDefaultLevel($this->getLevelByName($default));
 		}
 
 
@@ -1564,6 +1600,7 @@ class Server{
 		foreach($this->getLevels() as $level){
 			$this->unloadLevel($level, true);
 		}
+		$this->generationManager->shutdown();
 
 		HandlerList::unregisterAll();
 		$this->scheduler->cancelAllTasks();
@@ -1629,6 +1666,7 @@ class Server{
 					$lastLoop = 0;
 				}
 			}
+			$this->generationManager->handlePackets();
 
 			if(($ticks = $this->tick()) !== true){
 				++$lastLoop;
@@ -1717,7 +1755,7 @@ class Server{
 		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
 		if(class_exists("pocketmine\\plugin\\PluginManager", false)){
 			$dump .= "Loaded plugins:\r\n";
-			foreach(PluginManager::getPlugins() as $p){
+			foreach($this->getPluginManager()->getPlugins() as $p){
 				$d = $p->getDescription();
 				$dump .= $d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . "\r\n";
 			}
@@ -1751,6 +1789,7 @@ class Server{
 					$lastLoop = 0;
 				}
 			}
+			$this->generationManager->handlePackets();
 
 			if(($ticks = $this->tick()) !== true){
 				++$lastLoop;

@@ -46,6 +46,29 @@ interface LevelProvider{
 	public static function isValid($path);
 
 	/**
+	 * Generate the needed files in the path given
+	 *
+	 * @param string  $path
+	 * @param string  $name
+	 * @param int     $seed
+	 * @param string  $generator
+	 * @param array[] $options
+	 */
+	public static function generate($path, $name, $seed, $generator, array $options = []);
+
+	/**
+	 * Returns the generator name
+	 *
+	 * @return string
+	 */
+	public function getGenerator();
+
+	/**
+	 * @return array
+	 */
+	public function getGeneratorOptions();
+
+	/**
 	 * Gets the Chunk object
 	 * This method must be implemented by all the level formats.
 	 *
@@ -98,7 +121,24 @@ interface LevelProvider{
 	 *
 	 * @return bool
 	 */
+	public function isChunkPopulated($X, $Z);
+
+	/**
+	 * @param int $X
+	 * @param int $Z
+	 *
+	 * @return bool
+	 */
 	public function isChunkLoaded($X, $Z);
+
+	/**
+	 * @param int         $chunkX
+	 * @param int         $chunkZ
+	 * @param SimpleChunk $chunk
+	 *
+	 * @return mixed
+	 */
+	public function setChunk($chunkX, $chunkZ, SimpleChunk $chunk);
 
 	/**
 	 * @return string
@@ -114,6 +154,16 @@ interface LevelProvider{
 	 * @param int $value
 	 */
 	public function setTime($value);
+
+	/**
+	 * @return int
+	 */
+	public function getSeed();
+
+	/**
+	 * @param int $value
+	 */
+	public function setSeed($value);
 
 	/**
 	 * @return Vector3
@@ -134,5 +184,7 @@ interface LevelProvider{
 	 * @return Level
 	 */
 	public function getLevel();
+
+	public function close();
 
 }

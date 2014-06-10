@@ -24,8 +24,8 @@ namespace pocketmine\level\format\anvil;
 use pocketmine\level\format\generic\BaseChunk;
 use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
-use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 
@@ -68,11 +68,33 @@ class Chunk extends BaseChunk{
 		$sections = [];
 		foreach($this->nbt->Sections as $section){
 			if($section instanceof Compound){
-				$sections[(int) $section["Y"]] = new ChunkSection($section);
+				$y = (int) $section["Y"];
+				if($y < 8){
+					$sections[$y] = new ChunkSection($section);
+				}
+			}
+		}
+		for($y = 0; $y < 8; ++$y){
+			if(!isset($sections[$y])){
+				$sections[$y] = new EmptyChunkSection($y);
 			}
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt["Entities"], $this->nbt["TileEntities"]);
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPopulated(){
+		return $this->nbt["TerrainPopulated"] > 0;
+	}
+
+	/**
+	 * @param int $value
+	 */
+	public function setPopulated($value = 1){
+		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", $value);
 	}
 
 	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false){
@@ -103,7 +125,7 @@ class Chunk extends BaseChunk{
 		//TODO: maxBlockY, biomeMap, biomeTemp
 
 		//TODO: time
-		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0/*$this->getLevel()->getTime()*/, $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
+		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0 /*$this->getLevel()->getTime()*/, $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
 	}
 
 	/**

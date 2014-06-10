@@ -22,7 +22,6 @@
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
 use pocketmine\utils\Random;
 
 class Mineshaft extends Populator{

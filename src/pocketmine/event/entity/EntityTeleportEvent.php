@@ -25,7 +25,6 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\Event;
 use pocketmine\level\Position;
-use pocketmine\math\Vector3 as Vector3;
 
 class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;

@@ -26,7 +26,6 @@ use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;

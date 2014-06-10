@@ -22,10 +22,7 @@
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\Block;
-use pocketmine\block\TallGrass as BlockTallGrass;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class TallGrass extends Populator{
