@@ -148,8 +148,8 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	public function getBlockDataColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
-		for($y = 0; $y < 8; ++$y){
-			$column .= $this->data{($y << 7) + $i};
+		for($y = 0; $y < 16; $y += 2){
+			$column .= ($this->data{($y << 7) + $i} & "\x0f") | ($this->data{(($y + 1) << 7) + $i} & "\xf0");
 		}
 
 		return $column;
@@ -158,8 +158,8 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	public function getBlockSkyLightColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
-		for($y = 0; $y < 8; ++$y){
-			$column .= $this->skyLight{($y << 7) + $i};
+		for($y = 0; $y < 16; $y += 2){
+			$column .= ($this->skyLight{($y << 7) + $i} & "\x0f") | ($this->skyLight{(($y + 1) << 7) + $i} & "\xf0");
 		}
 
 		return $column;
@@ -168,8 +168,8 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	public function getBlockLightColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
-		for($y = 0; $y < 8; ++$y){
-			$column .= $this->blockLight{($y << 7) + $i};
+		for($y = 0; $y < 16; $y += 2){
+			$column .= ($this->blockLight{($y << 7) + $i} & "\x0f") | ($this->blockLight{(($y + 1) << 7) + $i} & "\xf0");
 		}
 
 		return $column;
