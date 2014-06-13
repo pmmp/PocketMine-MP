@@ -68,6 +68,7 @@ use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
+use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\ReadyPacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -1247,7 +1248,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->server->getLogger()->warning($this->username." moved too quickly!");
 					}
 				}else{*/
-				$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch);
+				if(!$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch)){
+					$pk = new MovePlayerPacket();
+					$pk->eid = 0;
+					$pk->x = $this->x;
+					$pk->y = $this->y;
+					$pk->z = $this->z;
+					$pk->bodyYaw = $this->yaw;
+					$pk->pitch = $this->pitch;
+					$pk->yaw = $this->yaw;
+					$this->directDataPacket($pk);
+				}
 				//}
 
 				break;
