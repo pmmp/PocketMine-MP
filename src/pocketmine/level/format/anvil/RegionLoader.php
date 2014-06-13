@@ -194,6 +194,9 @@ class RegionLoader{
 			]);
 		}
 
+		$nbt->Biomes = new ByteArray("Biomes", $chunk->getBiomeIdArray());
+		$nbt->BiomeColors = new IntArray("BiomeColors", $chunk->getBiomeColorArray());
+
 		$entities = [];
 
 		foreach($chunk->getEntities() as $entity){

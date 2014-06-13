@@ -1056,6 +1056,46 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int
+	 */
+	public function getBiomeId($x, $z){
+		return $this->getChunkAt($x >> 4, $z >> 4)->getBiomeId($x & 0x0f, $z & 0x0f);
+	}
+
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int[]
+	 */
+	public function getBiomeColor($x, $z){
+		return $this->getChunkAt($x >> 4, $z >> 4)->getBiomeColor($x & 0x0f, $z & 0x0f);
+	}
+
+	/**
+	 * @param int $x
+	 * @param int $z
+	 * @param int $biomeId
+	 */
+	public function setBiomeId($x, $z, $biomeId){
+		$this->getChunkAt($x >> 4, $z >> 4)->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
+	}
+
+	/**
+	 * @param int $x
+	 * @param int $z
+	 * @param int $R
+	 * @param int $G
+	 * @param int $B
+	 */
+	public function setBiomeColor($x, $z, $R, $G, $B){
+		$this->getChunkAt($x >> 4, $z >> 4)->setBiomeColor($x & 0x0f, $z & 0x0f, $R, $G, $B);
+	}
+
+	/**
 	 * Gets the Chunk object
 	 *
 	 * @param int  $x
@@ -1189,9 +1229,13 @@ class Level implements ChunkManager, Metadatable{
 		$orderedLight = "";
 		$flag = chr($Yndex);
 
+		$chunk = $this->getChunkAt($X, $Z, true);
+		$biomeIds = $chunk->getBiomeIdArray();
+		$biomeColors = implode(array_map("pocketmine\\utils\\Binary::writeInt", $chunk->getBiomeColorArray()));
+
 		/** @var \pocketmine\level\format\ChunkSection[] $sections */
 		$sections = [];
-		foreach($this->getChunkAt($X, $Z, true)->getSections() as $section){
+		foreach($chunk->getSections() as $section){
 			$sections[$section->getY()] = $section;
 		}
 
@@ -1206,15 +1250,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-
-		$biomeIDs = str_repeat("\x04", 256);
-		if($X % 5 === 0 and $Z % 5 === 0){
-			$ppm = base64_decode("mpqahISEbW1tZmZmZmZmXl5eXl5eXl5eXl5eXl5eXl5eZmZmZmZmbW1thISEmpqafX19bW1tbW1tS5ubS5qdfbXTSpSbS5ubTJ6cSpWZfbXTSpWZTJ6cbW1tbW1tfX19bW1tbW1tfbXSfbbVSI+dfdL/fbrafbfVSZKefbjYfbjYfbXSSpWZfbTRbW1tbW1tZmZmTKGdSpSbfbrbfbzdfdL/SI+dfbnZfdL/fdL/SZKeSpKYSYyWfbbVS5iaZmZmXl5eS6CiSZmmfdL/fbzeSZCcSpSbfbfVSJKifdL/SpegfbXTfbfWfbXTS5ubXl5eXl5efdL/fdL/fdL/fbrbfbbVSpKYfbTRSpecSpieSZCcfbjYSZCcSpegS52iXl5eXl5eSpegfbnZSZSfSZGafbbVxsYAxsYAxsYAxsYAfbjYfdL/SZikfdL/fdL/Xl5eXl5eSpSbfbjYSpegS5qdfbTRxsYA1tYA1tYAxsYASpegfdL/SZahfbfXSpegXl5eXl5efbfWfdL/AAAAAAAAAAAAxsYA1tYAAAAAxsYAS56gSp2lAAAAfbfVS5iaXl5eXl5efbXSSZWjAAAAfbnZfbjYAAAAxsYAAAAAAAAASZOgAAAAAAAAfbfWSpWZXl5eXl5eTJ6cS56gAAAAAAAAAAAASpegS5ubAAAAfdL/AAAAfdL/AAAASZOgfbfVXl5eXl5eTKKfSp2lAAAAfdL/fdL/Sp2lS56gAAAAfdL/SZamSpyjAAAAfdL/fdL/Xl5eZmZmS6CifdL/AAAASZamSZmmfdL/SZqoAAAAfdL/SJOlfdL/AAAAfbnZSpegZmZmbW1tbW1tfdL/AAAAfbXSSpegfdL/fdL/AAAAfbfXfbrbfdL/AAAAfbbVbW1tbW1tfX19bW1tbW1tAAAAfbTRS5qdSp2lfdL/AAAAS5ubSpSbfbfVAAAAbW1tbW1tfX19mpqahISEbW1tZmZmZmZmXl5eXl5eXl5eXl5eXl5eXl5eZmZmZmZmbW1thISEmpqa");
-			$grassColor = "\x01" . implode("\x01", str_split($ppm, 3));
-		}else{
-			$grassColor = str_repeat("\x01\x85\xb2\x4a", 256);
-		}
-		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIDs . $grassColor, ZLIB_ENCODING_DEFLATE, 8);
+		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIds . $biomeColors, ZLIB_ENCODING_DEFLATE, 8);
 
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
 			Cache::add($identifier, $ordered, 60);

@@ -26,8 +26,12 @@ use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\IntArray;
+use pocketmine\utils\Binary;
 
 class Chunk extends BaseChunk{
 
@@ -65,6 +69,14 @@ class Chunk extends BaseChunk{
 			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
 		}
 
+		if(!isset($this->nbt->Biomes) or !($this->nbt->Biomes instanceof ByteArray)){
+			$this->nbt->Biomes = new ByteArray("Biomes", str_repeat("\x01", 256));
+		}
+
+		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
+			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x01\x85\xb2\x4a")));
+		}
+
 		$sections = [];
 		foreach($this->nbt->Sections as $section){
 			if($section instanceof Compound){
@@ -80,7 +92,7 @@ class Chunk extends BaseChunk{
 			}
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
 	}
 
 	/**

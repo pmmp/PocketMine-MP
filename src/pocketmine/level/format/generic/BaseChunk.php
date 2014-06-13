@@ -32,6 +32,7 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
+use pocketmine\utils\Binary;
 
 abstract class BaseChunk implements Chunk{
 
@@ -44,6 +45,12 @@ abstract class BaseChunk implements Chunk{
 	/** @var Tile[] */
 	protected $tiles = [];
 
+	/** @var string */
+	protected $biomeIds;
+
+	/** @var int[256] */
+	protected $biomeColors;
+
 	/** @var \WeakRef<LevelProvider> */
 	protected $level;
 
@@ -55,12 +62,14 @@ abstract class BaseChunk implements Chunk{
 	 * @param int            $x
 	 * @param int            $z
 	 * @param ChunkSection[] $sections
+	 * @param string         $biomeIds
+	 * @param int[]          $biomeColors
 	 * @param Compound[]     $entities
 	 * @param Compound[]     $tiles
 	 *
 	 * @throws \Exception
 	 */
-	protected function __construct(LevelProvider $level, $x, $z, array $sections, array $entities = [], array $tiles = []){
+	protected function __construct(LevelProvider $level, $x, $z, array $sections, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
 		$this->level = new \WeakRef($level);
 		$this->x = (int) $x;
 		$this->z = (int) $z;
@@ -75,6 +84,18 @@ abstract class BaseChunk implements Chunk{
 			if($Y >= self::SECTION_COUNT){
 				throw new \Exception("Invalid amount of chunks");
 			}
+		}
+
+		if(strlen($biomeIds) === 256){
+			$this->biomeIds = $biomeIds;
+		}else{
+			$this->biomeIds = str_repeat("\x01", 256);
+		}
+
+		if(count($biomeColors) === 256){
+			$this->biomeColors = $biomeColors;
+		}else{
+			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x01\x85\xb2\x4a"));
 		}
 
 		foreach($entities as $nbt){
@@ -171,6 +192,23 @@ abstract class BaseChunk implements Chunk{
 		$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 	}
 
+	public function getBiomeId($x, $z){
+		return ord($this->biomeIds{($z << 4) + $x});
+	}
+
+	public function setBiomeId($x, $z, $biomeId){
+		$this->biomeIds{($z << 4) + $x} = chr($biomeId);
+	}
+
+	public function getBiomeColor($x, $z){
+		$color = $this->biomeColors[($z << 4) + $x] & 0xFFFFFF;
+		return [$color >> 16, ($color >> 8) & 0xFF, $color & 0xFF];
+	}
+
+	public function setBiomeColor($x, $z, $R, $G, $B){
+		$this->biomeColors = 0xFF000000 | (($R & 0xFF) << 16) | (($G & 0xFF) << 8) | ($B & 0xFF);
+	}
+
 	public function getHighestBlockAt($x, $z){
 		for($Y = self::SECTION_COUNT; $Y >= 0; --$Y){
 			if(!$this->isSectionEmpty($Y)){
@@ -253,6 +291,14 @@ abstract class BaseChunk implements Chunk{
 	 */
 	public function getSections(){
 		return $this->sections;
+	}
+
+	public function getBiomeIdArray(){
+		return $this->biomeIds;
+	}
+
+	public function getBiomeColorArray(){
+		return $this->biomeColors;
 	}
 
 }

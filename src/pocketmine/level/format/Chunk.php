@@ -141,6 +141,38 @@ interface Chunk{
 	public function getHighestBlockAt($x, $z);
 
 	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-255
+	 */
+	public function getBiomeId($x, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 * @param int $biomeId 0-255
+	 */
+	public function setBiomeId($x, $z, $biomeId);
+
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int[] RGB bytes
+	 */
+	public function getBiomeColor($x, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 * @param int $R 0-255
+	 * @param int $G 0-255
+	 * @param int $B 0-255
+	 */
+	public function setBiomeColor($x, $z, $R, $G, $B);
+
+	/**
 	 * Thread-safe read-only chunk
 	 *
 	 * @param bool $includeMaxBlockY
@@ -231,5 +263,15 @@ interface Chunk{
 	 * @return ChunkSection[]
 	 */
 	public function getSections();
+
+	/**
+	 * @return string[]
+	 */
+	public function getBiomeIdArray();
+
+	/**
+	 * @return int[]
+	 */
+	public function getBiomeColorArray();
 
 }

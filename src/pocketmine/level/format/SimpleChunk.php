@@ -52,8 +52,8 @@ class SimpleChunk{
 		$this->z = $chunkZ;
 		$this->flags = $flags;
 		for($y = 0; $y < self::$HEIGHT; ++$y){
-			$this->ids[$y] = isset($ids[$y]) ? $ids[$y] : str_repeat("\x00", 4096);
-			$this->meta[$y] = isset($meta[$y]) ? $meta[$y] : str_repeat("\x00", 2048);
+			$this->ids[$y] = (isset($ids[$y]) and strlen($ids[$y]) === 4096) ? $ids[$y] : str_repeat("\x00", 4096);
+			$this->meta[$y] = (isset($meta[$y]) and strlen($meta[$y]) === 2048) ? $meta[$y] : str_repeat("\x00", 2048);
 		}
 	}
 
