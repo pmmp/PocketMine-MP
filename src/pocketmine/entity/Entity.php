@@ -594,7 +594,7 @@ abstract class Entity extends Position implements Metadatable{
 						foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
 							$entity->despawnFrom($this);
 						}
-						
+
 						$pk = new UnloadChunkPacket();
 						$pk->chunkX = $X;
 						$pk->chunkZ = $Z;

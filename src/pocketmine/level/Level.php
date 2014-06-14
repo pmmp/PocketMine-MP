@@ -1294,6 +1294,11 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->entities[$entity->getID()]);
 	}
 
+	/**
+	 * @param Entity $entity
+	 *
+	 * @throws \RuntimeException
+	 */
 	public function addEntity(Entity $entity){
 		if($entity->getLevel() !== $this){
 			throw new \RuntimeException("Invalid Entity level");
@@ -1304,6 +1309,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->entities[$entity->getID()] = $entity;
 	}
 
+	/**
+	 * @param Tile $tile
+	 *
+	 * @throws \RuntimeException
+	 */
 	public function addTile(Tile $tile){
 		if($tile->getLevel() !== $this){
 			throw new \RuntimeException("Invalid Tile level");
@@ -1311,6 +1321,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->tiles[$tile->getID()] = $tile;
 	}
 
+	/**
+	 * @param Tile $tile
+	 *
+	 * @throws \RuntimeException
+	 */
 	public function removeTile(Tile $tile){
 		if($tile->getLevel() !== $this){
 			throw new \RuntimeException("Invalid Tile level");
@@ -1321,10 +1336,23 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->tiles[$tile->getID()]);
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return bool
+	 */
 	public function isChunkInUse($x, $z){
 		return isset($this->usedChunks[static::chunkHash($x, $z)]);
 	}
 
+	/**
+	 * @param int  $x
+	 * @param int  $z
+	 * @param bool $generate
+	 *
+	 * @return bool
+	 */
 	public function loadChunk($x, $z, $generate = true){
 		if($generate === true){
 			return $this->getChunkAt($x, $z, true) instanceof Chunk;
