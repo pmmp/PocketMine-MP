@@ -653,17 +653,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 		foreach($lastChunk as $index => $Yndex){
-			$X = null;
-			$Z = null;
-			Level::getXZ($index, $X, $Z);
 			if($Yndex === 0){
+				$X = null;
+				$Z = null;
+				Level::getXZ($index, $X, $Z);
 				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
 					if($entity !== $this){
 						$entity->despawnFrom($this);
 					}
 				}
-
-			}else{
 				$pk = new UnloadChunkPacket();
 				$pk->chunkX = $X;
 				$pk->chunkZ = $Z;

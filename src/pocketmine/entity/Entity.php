@@ -49,6 +49,7 @@ use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
+use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -593,6 +594,11 @@ abstract class Entity extends Position implements Metadatable{
 						foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
 							$entity->despawnFrom($this);
 						}
+						
+						$pk = new UnloadChunkPacket();
+						$pk->chunkX = $X;
+						$pk->chunkZ = $Z;
+						$this->dataPacket($pk);
 					}
 				}
 				$this->getLevel()->freeAllChunks($this);
