@@ -149,7 +149,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		for($y = 0; $y < 16; $y += 2){
-			$column .= ($this->data{($y << 7) + $i} & "\x0f") | ($this->data{(($y + 1) << 7) + $i} & "\xf0");
+			$column .= chr((ord($this->data{($y << 7) + $i}) & 0x0f) | ((ord($this->data{(($y + 1) << 7) + $i}) & 0x0f) << 4));
 		}
 
 		return $column;
@@ -159,7 +159,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		for($y = 0; $y < 16; $y += 2){
-			$column .= ($this->skyLight{($y << 7) + $i} & "\x0f") | ($this->skyLight{(($y + 1) << 7) + $i} & "\xf0");
+			$column .= chr((ord($this->skyLight{($y << 7) + $i}) & 0x0f) | ((ord($this->skyLight{(($y + 1) << 7) + $i}) & 0x0f) << 4));
 		}
 
 		return $column;
@@ -169,7 +169,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		for($y = 0; $y < 16; $y += 2){
-			$column .= ($this->blockLight{($y << 7) + $i} & "\x0f") | ($this->blockLight{(($y + 1) << 7) + $i} & "\xf0");
+			$column .= chr((ord($this->blockLight{($y << 7) + $i}) & 0x0f) | ((ord($this->blockLight{(($y + 1) << 7) + $i}) & 0x0f) << 4));
 		}
 
 		return $column;
