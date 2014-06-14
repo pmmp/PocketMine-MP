@@ -143,7 +143,7 @@ class SimpleChunk{
 	 */
 	public function getBlockData($x, $y, $z){
 		$m = ord($this->meta[$y >> 4]{(($y & 0x0f) << 7) + ($z << 3) + ($x >> 1)});
-		if(($y & 1) === 0){
+		if(($x & 1) === 0){
 			return $m & 0x0F;
 		}else{
 			return $m >> 4;
@@ -159,7 +159,7 @@ class SimpleChunk{
 	public function setBlockData($x, $y, $z, $data){
 		$i = (($y & 0x0f) << 7) + ($z << 3) + ($x >> 1);
 		$old_m = ord($this->meta[$y >> 4]{$i});
-		if(($y & 1) === 0){
+		if(($x & 1) === 0){
 			$this->meta[$y >> 4]{$i} = chr(($old_m & 0xf0) | ($data & 0x0f));
 		}else{
 			$this->meta[$y >> 4]{$i} = chr((($data & 0x0f) << 4) | ($old_m & 0x0f));
