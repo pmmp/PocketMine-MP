@@ -41,6 +41,7 @@ use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
+use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\Byte;
@@ -66,11 +67,6 @@ use raklib\Binary;
 class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
-
-	/** @var Generator */
-	private $generator;
-	/** @var Populator[] */
-	private $populators;
 
 
 	const BLOCK_UPDATE_NORMAL = 1;
@@ -121,6 +117,9 @@ class Level implements ChunkManager, Metadatable{
 
 	private $autoSave = true;
 
+	/** @var BlockMetadataStore */
+	private $blockMetadata;
+
 	/**
 	 * Returns the chunk unique hash/key
 	 *
@@ -151,6 +150,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function __construct(Server $server, $name, $path, $provider){
 		$this->levelId = static::$levelIdCounter++;
+		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
 		if(is_subclass_of($provider, "pocketmine\\level\\format\\LevelProvider", true)){
 			$this->provider = new $provider($this, $path);
@@ -166,6 +166,13 @@ class Level implements ChunkManager, Metadatable{
 		$this->startTime = $this->time = (int) $this->provider->getTime();
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave = microtime(true) + 90;
+	}
+
+	/**
+	 * @return BlockMetadataStore
+	 */
+	public function getBlockMetadata(){
+		return $this->blockMetadata;
 	}
 
 	/**

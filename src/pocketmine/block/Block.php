@@ -25,12 +25,14 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 
 abstract class Block extends Position implements Metadatable{
 	const AIR = 0;
@@ -774,21 +776,27 @@ abstract class Block extends Position implements Metadatable{
 	 */
 	abstract function onUpdate($type);
 
-	//TODO: Level block metadata
-
 	public function setMetadata($metadataKey, MetadataValue $metadataValue){
-		//$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+		if($this->getLevel() instanceof Level){
+			$this->getLevel()->getBlockMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+		}
 	}
 
 	public function getMetadata($metadataKey){
-		return null; //return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
+		if($this->getLevel() instanceof Level){
+			$this->getLevel()->getBlockMetadata()->getMetadata($this, $metadataKey);
+		}
 	}
 
 	public function hasMetadata($metadataKey){
-		return false; //return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
+		if($this->getLevel() instanceof Level){
+			$this->getLevel()->getBlockMetadata()->hasMetadata($this, $metadataKey);
+		}
 	}
 
 	public function removeMetadata($metadataKey, Plugin $plugin){
-		//$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
+		if($this->getLevel() instanceof Level){
+			$this->getLevel()->getBlockMetadata()->removeMetadata($this, $metadataKey, $plugin);
+		}
 	}
 }
