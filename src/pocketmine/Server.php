@@ -997,8 +997,8 @@ class Server{
 
 		$level = new Level($this, $name, $path, $provider);
 		$this->levels[$level->getID()] = $level;
-		for($Z = 6; $Z <= 10; ++$Z){
-			for($X = 6; $X <= 10; ++$X){
+		for($Z = 5; $Z <= 11; ++$Z){
+			for($X = 5; $X <= 11; ++$X){
 				$level->generateChunk($X, $Z);
 			}
 		}

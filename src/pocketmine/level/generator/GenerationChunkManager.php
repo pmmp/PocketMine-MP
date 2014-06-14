@@ -33,6 +33,9 @@ class GenerationChunkManager implements ChunkManager{
 	/** @var SimpleChunk[] */
 	protected $chunks = [];
 
+	/** @var \SplObjectStorage<SimpleChunk> */
+	protected $unloadQueue;
+
 	/** @var Generator */
 	protected $generator;
 
@@ -49,6 +52,8 @@ class GenerationChunkManager implements ChunkManager{
 		$this->levelID = $levelID;
 		$this->seed = $seed;
 		$this->manager = $manager;
+
+		$this->unloadQueue = new \SplObjectStorage();
 
 		$this->generator = new $class($options);
 		$this->generator->init($this, new Random($seed));
@@ -76,8 +81,41 @@ class GenerationChunkManager implements ChunkManager{
 	 */
 	public function getChunk($chunkX, $chunkZ){
 		$index = Level::chunkHash($chunkX, $chunkZ);
+		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
+		$this->unloadQueue->detach($chunk);
+		return $chunk;
+	}
 
-		return !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
+	/**
+	 * @param bool $set
+	 *
+	 * @return SimpleChunk[]
+	 */
+	public function getChangedChunks($set = true){
+		$changed = [];
+		foreach($this->chunks as $chunk){
+			if($chunk->hasChanged($set)){
+				$changed[] = $chunk;
+			}
+		}
+
+		return $changed;
+	}
+
+	public function doGarbageCollection(){
+		if($this->unloadQueue->count() > 0){
+			/** @var SimpleChunk $chunk */
+			foreach($this->unloadQueue as $chunk){
+				if(!$chunk->hasChanged(false)){
+					unset($this->chunks[Level::chunkHash($chunk->getX(), $chunk->getZ())]);
+				}
+				$this->unloadQueue->detach($chunk);
+			}
+		}
+
+		foreach($this->chunks as $chunk){
+			$this->unloadQueue->attach($chunk);
+		}
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -101,7 +139,6 @@ class GenerationChunkManager implements ChunkManager{
 
 		$this->generator->populateChunk($chunkX, $chunkZ);
 		$this->setChunkPopulated($chunkX, $chunkZ);
-
 	}
 
 	public function isChunkGenerated($chunkX, $chunkZ){
@@ -123,9 +160,6 @@ class GenerationChunkManager implements ChunkManager{
 	protected function requestChunk($chunkX, $chunkZ){
 		$chunk = $this->manager->requestChunk($this->levelID, $chunkX, $chunkZ);
 		$this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] = $chunk;
-		if(!$chunk->isGenerated()){
-			$this->generateChunk($chunkX, $chunkZ);
-		}
 		return $this->chunks[$index];
 	}
 

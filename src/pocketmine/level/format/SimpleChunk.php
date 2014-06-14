@@ -40,6 +40,8 @@ class SimpleChunk{
 
 	protected $flags = 0;
 
+	protected $changed = false;
+
 	/**
 	 * @param int      $chunkX
 	 * @param int      $chunkZ
@@ -55,6 +57,15 @@ class SimpleChunk{
 			$this->ids[$y] = (isset($ids[$y]) and strlen($ids[$y]) === 4096) ? $ids[$y] : str_repeat("\x00", 4096);
 			$this->meta[$y] = (isset($meta[$y]) and strlen($meta[$y]) === 2048) ? $meta[$y] : str_repeat("\x00", 2048);
 		}
+	}
+
+	public function hasChanged($set = true){
+		if($this->changed === true and $set === true){
+			$this->changed = false;
+			return true;
+		}
+
+		return $this->changed;
 	}
 
 	/**
@@ -103,6 +114,7 @@ class SimpleChunk{
 	 * @param bool $value
 	 */
 	public function setGenerated($value = true){
+		$this->changed = true;
 		$this->flags = ($this->flags & ~self::FLAG_GENERATED) | ($value === true ? self::FLAG_GENERATED : 0);
 	}
 
@@ -110,6 +122,7 @@ class SimpleChunk{
 	 * @param bool $value
 	 */
 	public function setPopulated($value = true){
+		$this->changed = true;
 		$this->flags = ($this->flags & ~self::FLAG_POPULATED) | ($value === true ? self::FLAG_POPULATED : 0);
 	}
 
@@ -131,6 +144,7 @@ class SimpleChunk{
 	 * @param int $blockId 0-255
 	 */
 	public function setBlockId($x, $y, $z, $blockId){
+		$this->changed = true;
 		@$this->ids[$y >> 4]{(($y & 0x0f) << 8) + ($z << 4) + $x} = chr($blockId);
 	}
 
@@ -157,6 +171,7 @@ class SimpleChunk{
 	 * @param int $data 0-15
 	 */
 	public function setBlockData($x, $y, $z, $data){
+		$this->changed = true;
 		$i = (($y & 0x0f) << 7) + ($z << 3) + ($x >> 1);
 		$old_m = ord($this->meta[$y >> 4]{$i});
 		if(($x & 1) === 0){
@@ -190,6 +205,7 @@ class SimpleChunk{
 	 * @param string $meta
 	 */
 	public function setSection($y, $ids = null, $meta = null){
+		$this->changed = true;
 		if($ids !== null){
 			$this->ids[$y] = $ids;
 		}

@@ -1144,6 +1144,10 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function setChunk($x, $z, SimpleChunk $chunk){
+		$index = Level::chunkHash($x, $z);
+		foreach($this->getUsingChunk($x, $z) as $player){
+			$player->setChunkIndex($index, 0xff);
+		}
 		$this->provider->setChunk($x, $z, $chunk);
 	}
 
