@@ -1119,7 +1119,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$nbt["NameTag"] = $this->username;
 				}
 				$this->gamemode = $nbt["playerGameType"] & 0x03;
-				if(($level = $this->server->getLevel($nbt["Level"])) === null){
+				if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
 					$this->setLevel($this->server->getDefaultLevel(), true);
 					$nbt["Level"] = $this->getLevel()->getName();
 					$nbt["Pos"][0] = $this->getLevel()->getSpawn()->x;
@@ -1181,7 +1181,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->directDataPacket($pk);
 
 
-				if(($level = $this->server->getLevel($this->namedtag["SpawnLevel"])) instanceof Level){
+				if(($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
 					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 
 					$pk = new SetSpawnPositionPacket;
