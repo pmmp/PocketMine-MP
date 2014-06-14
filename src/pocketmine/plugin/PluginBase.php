@@ -174,7 +174,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @param string $filename
 	 *
-	 * @return \SplFileObject Resource data, or null
+	 * @return resource Resource data, or null
 	 */
 	public function getResource($filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");

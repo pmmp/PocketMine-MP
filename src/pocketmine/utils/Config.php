@@ -39,11 +39,11 @@ class Config{
 	const ENUMERATION = Config::ENUM;
 
 	/** @var array */
-	private $config;
+	private $config = [];
 	/** @var string */
 	private $file;
 	/** @var boolean */
-	private $correct;
+	private $correct = false;
 	/** @var integer */
 	private $type = Config::DETECT;
 
@@ -80,8 +80,8 @@ class Config{
 	 * Removes all the changes in memory and loads the file again
 	 */
 	public function reload(){
-		unset($this->config);
-		unset($this->correct);
+		$this->config = [];
+		$this->correct = false;
 		unset($this->type);
 		$this->load($this->file);
 	}
