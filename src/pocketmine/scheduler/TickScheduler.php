@@ -63,7 +63,7 @@ class TickScheduler extends \Thread{
 
 	public function run(){
 		$tickTime = microtime(true);
-		$this->hasTick = true;
+		$this->tickMeasure = $this->sleepTime;
 		while(true){
 			$this->synchronized(function (){
 				$this->hasTick = true;
@@ -73,7 +73,8 @@ class TickScheduler extends \Thread{
 
 			$this->tickMeasure = (int) ((($time = microtime(true)) - $tickTime) * 1000000);
 			$tickTime = $time;
-			usleep($this->sleepTime - 100); //Remove a few ms for processing
+			$sleepTime = $this->sleepTime * ($this->sleepTime / max($this->sleepTime, $this->tickMeasure));
+			usleep($sleepTime - 100); //Remove a few ms for processing
 		}
 	}
 }

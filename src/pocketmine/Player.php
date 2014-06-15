@@ -644,7 +644,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->chunksOrder = $newOrder;
 
 		$i = 0;
-		while(count($this->chunksOrder) === 0 and $generateQueue->count() > 0 and $i < 8){
+		while(count($this->chunksOrder) < 3 and $generateQueue->count() > 0 and $i < 16){
 			$d = $generateQueue->extract();
 			$this->getLevel()->generateChunk($d[0], $d[1]);
 			++$i;
