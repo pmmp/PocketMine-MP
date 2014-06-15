@@ -1190,8 +1190,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, $this->username . " joined the game"));
-				$this->server->broadcastMessage($ev->getJoinMessage());
+				$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, $this->getName() . " joined the game"));
+				if(strlen(trim($ev->getJoinMessage())) > 0){
+					$this->server->broadcastMessage($ev->getJoinMessage());
+				}
 
 
 				$this->orderChunks();
