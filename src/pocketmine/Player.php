@@ -1142,7 +1142,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
 				$this->server->saveOfflinePlayerData($this->username, $nbt);
 				parent::__construct($this->getLevel()->getChunkAt($nbt["Pos"][0], $nbt["Pos"][2], true), $nbt);
-				$this->inventory->setHeldItemSlot($this->getCreativeBlock(Item::get(Item::STONE, 0, 1)));
 				$this->loggedIn = true;
 
 				if(($this->gamemode & 0x01) === 0x01){
@@ -1150,6 +1149,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->hotbar[0] = 0;
 				}else{
 					$this->slot = $this->hotbar[0];
+					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
 				}
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
@@ -1282,6 +1282,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if(!isset($item) or $packet->slot === -1){
 					$this->inventory->sendSlot($packet->slot, $this);
+				}elseif(($this->gamemode & 0x01) === Player::CREATIVE){
+					$item = Item::get(
+						Block::$creative[$packet->slot][0],
+						Block::$creative[$packet->slot][1],
+						1
+					);
+					$this->inventory->setItemInHand($item);
 				}else{
 					$this->inventory->setHeldItemSlot($packet->slot);
 				}
@@ -1331,11 +1338,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($blockVector->distance($this) > 10){
 
 					}elseif(($this->gamemode & 0x01) === 1){
-						$item = Item::get(
-							Block::$creative[$this->inventory->getHeldItemSlot()][0],
-							Block::$creative[$this->inventory->getHeldItemSlot()][1],
-							1
-						);
+						$item = $this->inventory->getItemInHand();
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
@@ -1463,11 +1466,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 				if(($this->gamemode & 0x01) === 1){
-					$item = Item::get(
-						Block::$creative[$this->inventory->getHeldItemSlot()][0],
-						Block::$creative[$this->inventory->getHeldItemSlot()][1],
-						1
-					);
+					$item = $this->inventory->getItemInHand();
 				}else{
 					$item = clone $this->inventory->getItemInHand();
 				}
