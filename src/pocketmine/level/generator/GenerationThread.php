@@ -63,8 +63,12 @@ class GenerationThread extends \Thread{
 
 		$this->internalSocket = $sockets[0];
 		socket_set_block($this->internalSocket); //IMPORTANT!
+		@socket_set_option($this->internalSocket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2);
+		@socket_set_option($this->internalSocket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024 * 2);
 		$this->externalSocket = $sockets[1];
 		socket_set_nonblock($this->externalSocket);
+		@socket_set_option($this->externalSocket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2);
+		@socket_set_option($this->externalSocket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024 * 2);
 
 		$this->start(PTHREADS_INHERIT_ALL & ~PTHREADS_INHERIT_CLASSES);
 	}

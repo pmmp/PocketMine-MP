@@ -183,6 +183,7 @@ class Anvil extends BaseLevelProvider{
 	public function setChunk($chunkX, $chunkZ, SimpleChunk $chunk){
 		if($chunk->isGenerated() === false){
 			$this->unloadChunk($chunkX, $chunkZ, false);
+			$this->loadRegion($chunkX >> 4, $chunkZ >> 4);
 			$region = $this->getRegion($chunkX >> 4, $chunkZ >> 4);
 			$region->removeChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);
 			$this->loadChunk($chunkX, $chunkZ);
