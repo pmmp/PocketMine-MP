@@ -42,8 +42,10 @@ class Sapling extends Flowable{
 			1 => "Spruce Sapling",
 			2 => "Birch Sapling",
 			3 => "Jungle Sapling",
+			4 => "Acacia Sapling",
+			5 => "Dark Oak Sapling",
 		);
-		$this->name = $names[$this->meta & 0x03];
+		$this->name = $names[$this->meta & 0x07];
 		$this->hardness = 0;
 	}
 
@@ -60,7 +62,7 @@ class Sapling extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			Tree::growTree($this->getLevel(), $this, new Random(mt_rand()), $this->meta & 0x03);
+			Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->meta & 0x07);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
 			}
@@ -83,7 +85,7 @@ class Sapling extends Flowable{
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
 				if(($this->meta & 0x08) === 0x08){
-					Tree::growTree($this->getLevel(), $this, new Random(mt_rand()), $this->meta & 0x03);
+					Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->meta & 0x07);
 				}else{
 					$this->meta |= 0x08;
 					$this->getLevel()->setBlock($this, $this, true, false, true);
@@ -100,7 +102,7 @@ class Sapling extends Flowable{
 
 	public function getDrops(Item $item){
 		return array(
-			array($this->id, $this->meta & 0x03, 1),
+			array($this->id, $this->meta & 0x07, 1),
 		);
 	}
 }
