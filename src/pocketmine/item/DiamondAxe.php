@@ -24,7 +24,7 @@ namespace pocketmine\item;
 
 class DiamondAxe extends Tool{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::DIAMOND_AXE, 0, $count, "Diamond Axe");
+		parent::__construct(self::DIAMOND_AXE, $meta, $count, "Diamond Axe");
 	}
 
 }

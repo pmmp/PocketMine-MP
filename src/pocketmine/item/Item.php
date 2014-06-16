@@ -412,6 +412,7 @@ class Item{
 				self::BOWL => new Bowl(),
 				self::FEATHER => new Feather(),
 				self::BRICK => new Brick(),
+				self::IRON_SWORD => new IronSword(),
 				self::IRON_INGOT => new IronIngot(),
 				self::GOLD_INGOT => new GoldIngot(),
 				self::IRON_SHOVEL => new IronShovel(),

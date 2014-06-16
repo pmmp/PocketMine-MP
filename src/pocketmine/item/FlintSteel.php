@@ -35,7 +35,7 @@ class FlintSteel extends Tool{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if(($player->gamemode & 0x01) === 0 and $this->useOn($block) and $this->getDamage() >= $this->getMaxDurability()){
-			$player->setSlot($player->getCurrentEquipment(), new Item(Item::AIR, 0, 0));
+			$player->getInventory()->setItemInHand(new Item(Item::AIR, 0, 0));
 		}
 
 		if($block->getID() === self::AIR and ($target instanceof Solid)){
