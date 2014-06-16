@@ -115,6 +115,14 @@ class AutoUpdater{
 		$logger->info("----- -------------------------- -----");
 	}
 
+	public function getUpdateInfo(){
+		return $this->updateInfo;
+	}
+
+	public function doCheck(){
+		$this->check();
+	}
+
 	protected function checkUpdate(){
 		if($this->updateInfo === null){
 			return;
