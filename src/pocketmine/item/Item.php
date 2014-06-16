@@ -171,7 +171,9 @@ class Item{
 	const NETHER_BRICKS_STAIRS = 114;
 
 	const SANDSTONE_STAIRS = 128;
+	const EMERALD_ORE = 129;
 
+	const EMERALD_BLOCK = 133;
 	const SPRUCE_WOOD_STAIRS = 134;
 	const SPRUCE_WOODEN_STAIRS = 134;
 	const BIRCH_WOOD_STAIRS = 135;
@@ -347,6 +349,8 @@ class Item{
 	const COOKED_CHICKEN = 366;
 
 	const SPAWN_EGG = 383;
+
+	const EMERALD = 388;
 
 	const CARROT = 391;
 	const CARROTS = 391;

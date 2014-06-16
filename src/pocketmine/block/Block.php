@@ -173,7 +173,9 @@ abstract class Block extends Position implements Metadatable{
 	const NETHER_BRICKS_STAIRS = 114;
 
 	const SANDSTONE_STAIRS = 128;
+	const EMERALD_ORE = 129;
 
+	const EMERALD_BLOCK = 133;
 	const SPRUCE_WOOD_STAIRS = 134;
 	const SPRUCE_WOODEN_STAIRS = 134;
 	const BIRCH_WOOD_STAIRS = 135;
@@ -542,7 +544,9 @@ abstract class Block extends Position implements Metadatable{
 				self::NETHER_BRICKS_STAIRS => new NetherBrickStairs(),
 
 				self::SANDSTONE_STAIRS => new SandstoneStairs(),
+				self::EMERALD_ORE => new EmeraldOre(),
 
+				self::EMERALD_BLOCK => new Emerald(),
 				self::SPRUCE_WOOD_STAIRS => new SpruceWoodStairs(),
 				self::BIRCH_WOOD_STAIRS => new BirchWoodStairs(),
 				self::JUNGLE_WOOD_STAIRS => new JungleWoodStairs(),
