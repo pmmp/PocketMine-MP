@@ -124,9 +124,10 @@ class AutoUpdater{
 
 		if($currentVersion->compare($newVersion) > 0){
 			$this->hasUpdate = true;
+		}else{
+			$this->hasUpdate = false;
 		}
 
-		$this->hasUpdate = false;
 	}
 
 	public function getChannel(){

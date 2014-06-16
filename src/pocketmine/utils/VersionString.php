@@ -83,7 +83,7 @@ class VersionString{
 	}
 
 	public function getRelease(){
-		return $this->generation . "." . $this->major . "." . $this->minor;
+		return $this->generation . "." . $this->major . ($this->minor > 0 ? "." . $this->minor : "");
 	}
 
 	public function getBuild(){
@@ -117,7 +117,7 @@ class VersionString{
 			return 1; //Target is newer
 		}elseif($target->getBuild() > $this->getBuild()){
 			return 1;
-		}elseif($target->getBuild() > $this->getBuild()){
+		}elseif($target->getBuild() < $this->getBuild()){
 			return -1;
 		}else{
 			return 0; //Same version
