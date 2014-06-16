@@ -24,8 +24,26 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Stone extends Solid{
-	public function __construct(){
-		parent::__construct(self::STONE, 0, "Stone");
+	const STONE = 0;
+	const GRANITE = 1;
+	const POLISHED_GRANITE = 2;
+	const DIORITE = 3;
+	const POLISHED_DIORITE = 4;
+	const ANDESITE = 5;
+	const POLISHED_ANDESITE = 6;
+
+	public function __construct($meta = 0){
+		parent::__construct(self::STONE, $meta, "Stone");
+		$names = [
+			self::STONE => "Stone",
+			self::GRANITE => "Granite",
+			self::POLISHED_GRANITE => "Polished Granite",
+			self::DIORITE => "Diorite",
+			self::POLISHED_DIORITE => "Polished Diorite",
+			self::ANDESITE => "Andesite",
+			self::POLISHED_ANDESITE => "Polished Andesite",
+		];
+		$this->name = $names[$this->meta & 0x07];
 		$this->hardness = 30;
 	}
 

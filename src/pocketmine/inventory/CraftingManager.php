@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\block\Planks;
+use pocketmine\block\Stone;
 use pocketmine\block\Wood;
 use pocketmine\block\Wood2;
 use pocketmine\item\Item;
@@ -145,8 +146,15 @@ class CraftingManager{
 		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE_BRICK_STAIRS, 0, 4)))->addIngredient(Item::get(Item::STONE_BRICK, 0, 6)));
 		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE_BRICK, 0, 4)))->addIngredient(Item::get(Item::STONE, 0, 4)));
 		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 5, 6)))->addIngredient(Item::get(Item::STONE_BRICK, 0, 3)));
-		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 0, 6)))->addIngredient(Item::get(Item::STONE, 0, 6)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::SLAB, 0, 6)))->addIngredient(Item::get(Item::STONE, null, 3)));
 		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::COBBLESTONE_STAIRS, 0, 4)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 6)));
+
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE, Stone::POLISHED_GRANITE, 4)))->addIngredient(Item::get(Item::STONE, Stone::GRANITE, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE, Stone::POLISHED_DIORITE, 4)))->addIngredient(Item::get(Item::STONE, Stone::DIORITE, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE, Stone::POLISHED_ANDESITE, 4)))->addIngredient(Item::get(Item::STONE, Stone::ANDESITE, 4)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE, Stone::GRANITE, 1)))->addIngredient(Item::get(Item::STONE, Stone::DIORITE, 1))->addIngredient(Item::get(Item::QUARTZ, 0, 1)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE, Stone::DIORITE, 2)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 2))->addIngredient(Item::get(Item::QUARTZ, 0, 2)));
+		$this->registerRecipe((new StonecutterShapelessRecipe(Item::get(Item::STONE, Stone::ANDESITE, 2)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 1))->addIngredient(Item::get(Item::STONE, Stone::DIORITE, 1)));
 	}
 
 	protected function registerFood(){
