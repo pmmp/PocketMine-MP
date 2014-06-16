@@ -55,6 +55,7 @@ class Item{
 	const GOLD_ORE = 14;
 	const IRON_ORE = 15;
 	const COAL_ORE = 16;
+	const LOG = 17;
 	const WOOD = 17;
 	const TRUNK = 17;
 	const LEAVES = 18;
@@ -195,6 +196,14 @@ class Item{
 	const WOODEN_SLAB = 158;
 	const WOOD_SLABS = 158;
 	const WOODEN_SLABS = 158;
+
+	const LEAVES2 = 161;
+	const LEAVE2 = 161;
+	const WOOD2 = 162;
+	const TRUNK2 = 162;
+	const LOG2 = 162;
+	const ACACIA_WOOD_STAIRS = 163;
+	const DARK_OAK_WOOD_STAIRS = 163;
 
 	const HAY_BALE = 170;
 	const CARPET = 171;

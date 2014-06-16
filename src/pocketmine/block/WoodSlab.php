@@ -32,6 +32,8 @@ class WoodSlab extends Transparent{
 			1 => "Spruce",
 			2 => "Birch",
 			3 => "Jungle",
+			4 => "Acacia",
+			5 => "Dark Oak",
 		);
 		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
 		if(($this->meta & 0x08) === 0x08){
@@ -66,7 +68,7 @@ class WoodSlab extends Transparent{
 
 				return true;
 			}
-		}elseif(!($player instanceof Player) or !$player->inBlock($block)){
+		}elseif(!($player instanceof Player)){ //TODO: collision
 			if($block->getID() === self::WOOD_SLAB){
 				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true, false, true);

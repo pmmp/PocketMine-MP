@@ -25,21 +25,13 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class Leaves extends Transparent{
-	const OAK = 0;
-	const SPRUCE = 1;
-	const BIRCH = 2;
-	const JUNGLE = 3;
-	const ACACIA = 0;
-	const DARK_OAK = 1;
+class Leaves2 extends Leaves{
 
 	public function __construct($meta = 0){
-		parent::__construct(self::LEAVES, $meta, "Leaves");
+		Transparent::__construct(self::LEAVES, $meta, "Leaves");
 		$names = array(
-			self::OAK => "Oak Leaves",
-			self::SPRUCE => "Spruce Leaves",
-			self::BIRCH => "Birch Leaves",
-			self::JUNGLE => "Jungle Leaves",
+			self::ACACIA => "Acacia Leaves",
+			self::DARK_OAK => "Dark Oak Leaves",
 		);
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 1;
@@ -51,12 +43,12 @@ class Leaves extends Transparent{
 		if(isset($visited[$index])){
 			return false;
 		}
-		if($pos->getID() === self::WOOD){
+		if($pos->getID() === self::WOOD2){
 			return true;
-		}elseif($pos->getID() === self::LEAVES and $distance < 3){
+		}elseif($pos->getID() === self::LEAVES2 and $distance < 3){
 			$visited[$index] = true;
 			$down = $pos->getSide(0)->getID();
-			if($down === Item::WOOD){
+			if($down === Item::WOOD2){
 				return true;
 			}
 			if($fromSide === null){
@@ -128,9 +120,6 @@ class Leaves extends Transparent{
 					if(mt_rand(1, 20) === 1){ //Saplings
 						$this->getLevel()->dropItem($this, Item::get($this->id, $this->meta & 0x03, 1));
 					}
-					if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-						$this->getLevel()->dropItem($this, Item::get(Item::APPLE, 0, 1));
-					}
 
 					return Level::BLOCK_UPDATE_NORMAL;
 				}
@@ -148,13 +137,10 @@ class Leaves extends Transparent{
 	public function getDrops(Item $item){
 		$drops = [];
 		if($item->isShears()){
-			$drops[] = array(Item::LEAVES, $this->meta & 0x03, 1);
+			$drops[] = array(Item::LEAVES2, $this->meta & 0x03, 1);
 		}else{
 			if(mt_rand(1, 20) === 1){ //Saplings
 				$drops[] = array(Item::SAPLING, $this->meta & 0x03, 1);
-			}
-			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = array(Item::APPLE, 0, 1);
 			}
 		}
 
