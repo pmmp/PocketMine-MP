@@ -74,6 +74,7 @@ use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\scheduler\TickScheduler;
 use pocketmine\tile\Tile;
+use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
@@ -108,6 +109,9 @@ class Server{
 
 	/** @var PluginManager */
 	private $pluginManager = null;
+
+	/** @var AutoUpdater */
+	private $updater = null;
 
 	/** @var ServerScheduler */
 	private $scheduler = null;
@@ -173,6 +177,9 @@ class Server{
 
 	/** @var Config */
 	private $properties;
+
+	/** @var Config */
+	private $config;
 
 	/** @var Player[] */
 	private $players = [];
@@ -469,6 +476,13 @@ class Server{
 	 */
 	public function getLevelMetadata(){
 		return $this->levelMetadata;
+	}
+
+	/**
+	 * @return AutoUpdater
+	 */
+	public function getUpdater(){
+		return $this->updater;
 	}
 
 	/**
@@ -1051,6 +1065,33 @@ class Server{
 
 	/**
 	 * @param string $variable
+	 * @param mixed  $defaultValue
+	 *
+	 * @return mixed
+	 */
+	public function getProperty($variable, $defaultValue = null){
+		$vars = explode(".", $variable);
+		$base = array_shift($vars);
+		if($this->config->exists($base)){
+			$base = $this->config->get($base);
+		}else{
+			return $defaultValue;
+		}
+
+		while(count($vars) > 0){
+			$baseKey = array_shift($vars);
+			if(is_array($base) and isset($base[$baseKey])){
+				$base = $base[$baseKey];
+			}else{
+				return $defaultValue;
+			}
+		}
+
+		return $base;
+	}
+
+	/**
+	 * @param string $variable
 	 * @param string $value
 	 */
 	public function setConfigString($variable, $value){
@@ -1269,10 +1310,14 @@ class Server{
 		$this->logger->info("Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());
 
 		$this->logger->info("Loading properties...");
+		if(!file_exists($this->dataPath . "pocketmine.yml")){
+			@file_put_contents($this->dataPath . "pocketmine.yml", file_get_contents($this->filePath . "src/pocketmine/resources/pocketmine.yml"));
+		}
+		$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, array(
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
-			"memory-limit" => "128M",
+			"memory-limit" => "256M",
 			"white-list" => false,
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
@@ -1316,12 +1361,12 @@ class Server{
 			$this->setConfigInt("difficulty", 3);
 		}
 
-		define("pocketmine\\DEBUG", $this->getConfigInt("debug.level", 1));
+		define("pocketmine\\DEBUG", $this->getProperty("debug.level", 1));
 		if($this->logger instanceof MainLogger){
 			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 		}
-		define("ADVANCED_CACHE", $this->getConfigBoolean("enable-advanced-cache", false));
-		define("MAX_CHUNK_RATE", 20 / $this->getConfigInt("max-chunks-per-second", 20));
+		define("ADVANCED_CACHE", $this->getProperty("settings.advanced-cache", false));
+		define("MAX_CHUNK_RATE", 20 / $this->getProperty("chunk-sending.per-second", 20));
 		if(ADVANCED_CACHE == true){
 			$this->logger->info("Advanced cache enabled");
 		}
@@ -1336,7 +1381,7 @@ class Server{
 
 		$this->interfaces[] = new RakLibInterface($this);
 
-		$this->logger->info("This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
+		$this->logger->info("This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(false) . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
 		$this->logger->info("PocketMine-MP is distributed under the LGPL License", true, true, 0);
 
 		$this->consoleSender = new ConsoleCommandSender();
@@ -1352,7 +1397,7 @@ class Server{
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
-		//TODO: update checking (async)
+		$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "www.pocketmine.net"));
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
@@ -1383,57 +1428,16 @@ class Server{
 
 		$this->properties->save();
 
-		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), 20 * 45, 20 * 45);
-		if($this->getConfigBoolean("auto-save", true) === true){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), 18000, 18000);
+		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
+		if($this->getConfigBoolean("auto-save", true) === true and $this->getProperty("ticks-per.autosave", 6000) > 0){
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
+
+		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doLevelGC")), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
-		/*
-		//TODO
-		if($this->getProperty("last-update") === false or ($this->getProperty("last-update") + 3600) < time()){
-			$this->logger->info("Checking for new server version");
-			$this->logger->info("Last check: " . TextFormat::AQUA . date("Y-m-d H:i:s", $this->getProperty("last-update")));
-			if($this->server->version->isDev()){
-				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/commits"), true);
-				if($info === false or !isset($info[0])){
-					console("[ERROR] Github API error");
-				}else{
-					$last = new \DateTime($info[0]["commit"]["committer"]["date"]);
-					$last = $last->getTimestamp();
-					if($last >= $this->getProperty("last-update") and $this->getProperty("last-update") !== false and \pocketmine\GIT_COMMIT != $info[0]["sha"]){
-						$this->logger->notice("" . TextFormat::YELLOW . "A new DEVELOPMENT version of PocketMine-MP has been released!");
-						$this->logger->notice("" . TextFormat::YELLOW . "Commit \"" . $info[0]["commit"]["message"] . "\" [" . substr($info[0]["sha"], 0, 10) . "] by " . $info[0]["commit"]["committer"]["name"]);
-						$this->logger->notice("" . TextFormat::YELLOW . "Get it at PocketMine.net or at https://github.com/PocketMine/PocketMine-MP/archive/" . $info[0]["sha"] . ".zip");
-						$this->logger->notice("This message will disappear after issuing the command \"/update-done\"");
-					}else{
-						$this->setProperty("last-update", time());
-						$this->logger->info("" . TextFormat::AQUA . "This is the latest DEVELOPMENT version");
-					}
-				}
-			}else{
-				$info = json_decode(Utils::getURL("https://api.github.com/repos/PocketMine/PocketMine-MP/tags"), true);
-				if($info === false or !isset($info[0])){
-					console("[ERROR] Github API error");
-				}else{
-					$newest = new VersionString(VERSION);
-					$newestN = $newest->getNumber();
-					$update = new VersionString($info[0]["name"]);
-					$updateN = $update->getNumber();
-					if($updateN > $newestN){
-						$this->logger->notice("" . TextFormat::GREEN . "A new STABLE version of PocketMine-MP has been released!");
-						$this->logger->notice("" . TextFormat::GREEN . "Version \"" . $info[0]["name"] . "\" #" . $updateN);
-						$this->logger->notice("Get it at PocketMine.net or at " . $info[0]["zipball_url"]);
-						$this->logger->notice("This message will disappear as soon as you update");
-					}else{
-						$this->setProperty("last-update", time());
-						$this->logger->info("" . TextFormat::AQUA . "This is the latest STABLE version");
-					}
-				}
-			}
-		}
-		*/
+
 	}
 
 	/**
@@ -1551,11 +1555,11 @@ class Server{
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
-		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "128M")))) !== false){
+		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
-			if($real < 128){
-				$this->logger->warning("PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
+			if($real < 256){
+				$this->logger->warning("PocketMine-MP may not work right with less than 256MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -1591,7 +1595,7 @@ class Server{
 			$this->rcon->stop();
 		}
 
-		if($this->getConfigBoolean("upnp-forwarding", false) === true){
+		if($this->getProperty("settings.upnp-forwarding", false) === true){
 			$this->logger->info("[UPnP] Removing port forward...");
 			UPnP::RemovePortForward($this->getPort());
 		}
@@ -1599,7 +1603,7 @@ class Server{
 		$this->pluginManager->disablePlugins();
 
 		foreach($this->players as $player){
-			$player->kick("server stop");
+			$player->kick($this->getProperty("settings.shutdown-message", "Server closed"));
 		}
 
 		foreach($this->getLevels() as $level){
@@ -1631,13 +1635,13 @@ class Server{
 		}
 
 
-		if($this->getConfigBoolean("send-usage", true) !== false){
+		if($this->getProperty("settings.send-usage", true) !== false){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "sendUsage")), 6000, 6000);
 			$this->sendUsage();
 		}
 
 
-		if($this->getConfigBoolean("upnp-forwarding", false) == true){
+		if($this->getProperty("settings.upnp-forwarding", false) == true){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			UPnP::PortForward($this->getPort());
 		}
@@ -1744,7 +1748,7 @@ class Server{
 		}
 		$dump .= "\r\n\r\n";
 		$version = new VersionString();
-		$dump .= "PocketMine-MP version: " . $version . " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]\r\n";
+		$dump .= "PocketMine-MP version: " . $version->get(false). " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]\r\n";
 		$dump .= "Git commit: " . GIT_COMMIT . "\r\n";
 		$dump .= "uname -a: " . php_uname("a") . "\r\n";
 		$dump .= "PHP Version: " . phpversion() . "\r\n";
@@ -1853,6 +1857,12 @@ class Server{
 		}
 	}
 
+	public function doLevelGC(){
+		foreach($this->getLevels() as $level){
+			$level->doChunkGarbageCollection();
+		}
+	}
+
 	public function sendUsage(){
 		if($this->lastSendUsage instanceof SendUsageTask){
 			if(!$this->lastSendUsage->isFinished()){ //do not call multiple times
@@ -1865,6 +1875,7 @@ class Server{
 			$plist .= str_replace(array(";", ":"), "", $d->getName()) . ":" . str_replace(array(";", ":"), "", $d->getVersion()) . ";";
 		}
 
+		$version = new VersionString();
 		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", array(
 			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . ":" . $this->getPort()), 0, 8)),
 			"port" => $this->getPort(),
@@ -1872,7 +1883,8 @@ class Server{
 			"memory_total" => $this->getConfigString("memory-limit"),
 			"memory_usage" => memory_get_usage(),
 			"php_version" => \pocketmine\PHP_VERSION,
-			"version" => \pocketmine\VERSION,
+			"version" => $version->get(false),
+			"build" => $version->getBuild(),
 			"mc_version" => \pocketmine\MINECRAFT_VERSION,
 			"protocol" => network\protocol\Info::CURRENT_PROTOCOL,
 			"online" => count($this->players),

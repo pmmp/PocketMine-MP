@@ -1,0 +1,50 @@
+# Main configuration file for PocketMine-MP
+# These settings are the ones that cannot be included in server.properties
+# Some of these settings are safe, others can break your server if modified incorrectly
+
+settings:
+ shutdown-message: "Server closed"
+ advanced-cache: false
+ upnp-forwarding: false
+ send-usage: true
+
+debug:
+ #If > 1, it will show debug messages in the console
+ level: 1
+ #Enables /status
+ commands: false
+
+chunk-sending:
+ per-second: 20
+ compression-level: 7
+
+chunk-gc:
+ period-in-ticks: 600
+
+ticks-per:
+ animal-spawns: 400
+ monster-spawns: 1
+ autosave: 6000
+ cache-cleanup: 900
+
+spawn-limits:
+  monsters: 70
+  animals: 15
+  water-animals: 5
+  ambient: 15
+
+auto-updater:
+ enabled: true
+ on-update:
+  warn-console: true
+  warn-ops: true
+ #Can be development, beta or stable.
+ preferred-channel: stable
+ #If using a development version, it will suggest changing the channel
+ suggest-channels: true
+ host: www.pocketmine.net
+
+aliases:
+ #Examples
+ #showtheversion: version
+ #savestop: [save-all, stop]
