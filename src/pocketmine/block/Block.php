@@ -199,6 +199,10 @@ abstract class Block extends Position implements Metadatable{
 	const WOOD_SLABS = 158;
 	const WOODEN_SLABS = 158;
 
+	const WOOD2 = 162;
+	const TRUNK2 = 162;
+	const LOG2 = 162;
+
 	const HAY_BALE = 170;
 	const CARPET = 171;
 
@@ -545,6 +549,8 @@ abstract class Block extends Position implements Metadatable{
 				self::QUARTZ_STAIRS => new QuartzStairs(),
 				self::DOUBLE_WOOD_SLAB => new DoubleWoodSlab(),
 				self::WOOD_SLAB => new WoodSlab(),
+
+				self::WOOD2 => new Wood2(),
 
 				self::HAY_BALE => new HayBale(),
 				self::CARPET => new Carpet(),
