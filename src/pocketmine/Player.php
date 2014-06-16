@@ -369,8 +369,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
-		$this->slot = 0;
-		$this->hotbar = array(0, -1, -1, -1, -1, -1, -1, -1, -1);
 
 		$this->server->getLogger()->debug("New Session started with " . $ip . ":" . $port . ", Client ID " . $this->clientID);
 	}
@@ -1145,10 +1143,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->loggedIn = true;
 
 				if(($this->gamemode & 0x01) === 0x01){
-					$this->slot = 0;
-					$this->hotbar[0] = 0;
-				}else{
-					$this->slot = $this->hotbar[0];
+					$this->inventory->setHeldItemSlot(0);
 					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
 				}
 
@@ -1288,6 +1283,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						Block::$creative[$packet->slot][1],
 						1
 					);
+					$this->inventory->setHeldItemSlot(0);
 					$this->inventory->setItemInHand($item);
 				}else{
 					$this->inventory->setHeldItemSlot($packet->slot);
@@ -1338,7 +1334,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($blockVector->distance($this) > 10){
 
 					}elseif(($this->gamemode & 0x01) === 1){
-						$item = $this->inventory->getItemInHand();
+						$item = $this->inventory->getItemInHand();;
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
