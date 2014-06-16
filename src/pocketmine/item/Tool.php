@@ -87,12 +87,12 @@ abstract class Tool extends Item{
 
 	public function isPickaxe(){
 		switch($this->id){
-			case self::IRON_PICKAXE:
-				return 4;
 			case self::WOODEN_PICKAXE:
 				return 1;
 			case self::STONE_PICKAXE:
 				return 3;
+			case self::IRON_PICKAXE:
+				return 4;
 			case self::DIAMOND_PICKAXE:
 				return 5;
 			case self::GOLD_PICKAXE:

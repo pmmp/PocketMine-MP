@@ -198,6 +198,8 @@ abstract class Block extends Position implements Metadatable{
 	const WOODEN_SLAB = 158;
 	const WOOD_SLABS = 158;
 	const WOODEN_SLABS = 158;
+	const STAINED_CLAY = 159;
+	const STAINED_HARDENED_CLAY = 159;
 
 	const LEAVES2 = 161;
 	const LEAVE2 = 161;
@@ -209,7 +211,7 @@ abstract class Block extends Position implements Metadatable{
 
 	const HAY_BALE = 170;
 	const CARPET = 171;
-
+	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 
 	const BEETROOT_BLOCK = 244;
@@ -553,14 +555,16 @@ abstract class Block extends Position implements Metadatable{
 				self::QUARTZ_STAIRS => new QuartzStairs(),
 				self::DOUBLE_WOOD_SLAB => new DoubleWoodSlab(),
 				self::WOOD_SLAB => new WoodSlab(),
+				self::STAINED_CLAY => new StainedClay(),
 
+				self::LEAVES2 => new Leaves2(),
 				self::WOOD2 => new Wood2(),
 				self::ACACIA_WOOD_STAIRS => new AcaciaWoodStairs(),
 				self::DARK_OAK_WOOD_STAIRS => new DarkOakWoodStairs(),
 
 				self::HAY_BALE => new HayBale(),
 				self::CARPET => new Carpet(),
-
+				self::HARDENED_CLAY => new HardenedClay(),
 				self::COAL_BLOCK => new Coal(),
 
 				self::BEETROOT_BLOCK => new Beetroot(),

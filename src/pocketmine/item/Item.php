@@ -196,6 +196,8 @@ class Item{
 	const WOODEN_SLAB = 158;
 	const WOOD_SLABS = 158;
 	const WOODEN_SLABS = 158;
+	const STAINED_CLAY = 159;
+	const STAINED_HARDENED_CLAY = 159;
 
 	const LEAVES2 = 161;
 	const LEAVE2 = 161;
@@ -207,7 +209,7 @@ class Item{
 
 	const HAY_BALE = 170;
 	const CARPET = 171;
-
+	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 
 	const BEETROOT_BLOCK = 244;
