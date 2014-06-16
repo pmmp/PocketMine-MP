@@ -27,7 +27,7 @@ use pocketmine\Player;
 
 class CyanFlower extends Flowable{
 	public function __construct(){
-		parent::__construct(self::CYAN_FLOWER, 0, "Cyan Flower");
+		parent::__construct(self::POPPY, 0, "Cyan Flower");
 		$this->hardness = 0;
 	}
 

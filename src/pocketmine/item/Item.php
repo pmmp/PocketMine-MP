@@ -77,7 +77,7 @@ class Item{
 	const WOOL = 35;
 	const DANDELION = 37;
 	const ROSE = 38;
-	const CYAN_FLOWER = 38;
+	const POPPY = 38;
 	const BROWN_MUSHROOM = 39;
 	const RED_MUSHROOM = 40;
 	const GOLD_BLOCK = 41;
@@ -207,7 +207,9 @@ class Item{
 	const TRUNK2 = 162;
 	const LOG2 = 162;
 	const ACACIA_WOOD_STAIRS = 163;
-	const DARK_OAK_WOOD_STAIRS = 163;
+	const ACACIA_WOODEN_STAIRS = 163;
+	const DARK_OAK_WOOD_STAIRS = 164;
+	const DARK_OAK_WOODEN_STAIRS = 164;
 
 	const HAY_BALE = 170;
 	const CARPET = 171;

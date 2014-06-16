@@ -79,7 +79,7 @@ abstract class Block extends Position implements Metadatable{
 	const WOOL = 35;
 	const DANDELION = 37;
 	const ROSE = 38;
-	const CYAN_FLOWER = 38;
+	const POPPY = 38;
 	const BROWN_MUSHROOM = 39;
 	const RED_MUSHROOM = 40;
 	const GOLD_BLOCK = 41;
@@ -209,7 +209,9 @@ abstract class Block extends Position implements Metadatable{
 	const TRUNK2 = 162;
 	const LOG2 = 162;
 	const ACACIA_WOOD_STAIRS = 163;
-	const DARK_OAK_WOOD_STAIRS = 163;
+	const ACACIA_WOODEN_STAIRS = 163;
+	const DARK_OAK_WOOD_STAIRS = 164;
+	const DARK_OAK_WOODEN_STAIRS = 164;
 
 	const HAY_BALE = 170;
 	const CARPET = 171;
@@ -223,7 +225,6 @@ abstract class Block extends Position implements Metadatable{
 
 	public static $creative = array(
 		//Building
-		[Item::STONE, 0],
 		[Item::COBBLESTONE, 0],
 		[Item::STONE_BRICKS, 0],
 		[Item::STONE_BRICKS, 1],
@@ -233,11 +234,39 @@ abstract class Block extends Position implements Metadatable{
 		[Item::WOODEN_PLANKS, 1],
 		[Item::WOODEN_PLANKS, 2],
 		[Item::WOODEN_PLANKS, 3],
+		[Item::WOODEN_PLANKS, 4],
+		[Item::WOODEN_PLANKS, 5],
 		[Item::BRICKS, 0],
 
+		[Item::STONE, 0],
+		[Item::STONE, 1],
+		[Item::STONE, 2],
+		[Item::STONE, 3],
+		[Item::STONE, 4],
+		[Item::STONE, 5],
+		[Item::STONE, 6],
 		[Item::DIRT, 0],
+		//TODO: PODZOL
 		[Item::GRASS, 0],
+		//TODO: MYCELIUM
 		[Item::CLAY_BLOCK, 0],
+		[Item::HARDENED_CLAY, 0],
+		[Item::STAINED_CLAY, 0],
+		[Item::STAINED_CLAY, 7],
+		[Item::STAINED_CLAY, 6],
+		[Item::STAINED_CLAY, 5],
+		[Item::STAINED_CLAY, 4],
+		[Item::STAINED_CLAY, 3],
+		[Item::STAINED_CLAY, 2],
+		[Item::STAINED_CLAY, 1],
+		[Item::STAINED_CLAY, 15],
+		[Item::STAINED_CLAY, 14],
+		[Item::STAINED_CLAY, 13],
+		[Item::STAINED_CLAY, 12],
+		[Item::STAINED_CLAY, 11],
+		[Item::STAINED_CLAY, 10],
+		[Item::STAINED_CLAY, 9],
+		[Item::STAINED_CLAY, 8],
 		[Item::SANDSTONE, 0],
 		[Item::SANDSTONE, 1],
 		[Item::SANDSTONE, 2],
@@ -247,6 +276,8 @@ abstract class Block extends Position implements Metadatable{
 		[Item::TRUNK, 1],
 		[Item::TRUNK, 2],
 		[Item::TRUNK, 3],
+		[Item::TRUNK2, 0],
+		[Item::TRUNK2, 1],
 		[Item::NETHER_BRICKS, 0],
 		[Item::NETHERRACK, 0],
 		[Item::BEDROCK, 0],
@@ -255,6 +286,8 @@ abstract class Block extends Position implements Metadatable{
 		[Item::SPRUCE_WOODEN_STAIRS, 0],
 		[Item::BIRCH_WOODEN_STAIRS, 0],
 		[Item::JUNGLE_WOODEN_STAIRS, 0],
+		[Item::ACACIA_WOODEN_STAIRS, 0],
+		[Item::DARK_OAK_WOODEN_STAIRS, 0],
 		[Item::BRICK_STAIRS, 0],
 		[Item::SANDSTONE_STAIRS, 0],
 		[Item::STONE_BRICK_STAIRS, 0],
@@ -266,6 +299,8 @@ abstract class Block extends Position implements Metadatable{
 		[Item::WOODEN_SLAB, 1],
 		[Item::WOODEN_SLAB, 2],
 		[Item::WOODEN_SLAB, 3],
+		[Item::WOODEN_SLAB, 4],
+		[Item::WOODEN_SLAB, 5],
 		[Item::SLAB, 3],
 		[Item::SLAB, 4],
 		[Item::SLAB, 5],
@@ -279,22 +314,90 @@ abstract class Block extends Position implements Metadatable{
 		[Item::DIAMOND_ORE, 0],
 		[Item::LAPIS_ORE, 0],
 		[Item::REDSTONE_ORE, 0],
+		[Item::EMERALD_ORE, 0],
 		[Item::OBSIDIAN, 0],
 		[Item::ICE, 0],
 		[Item::SNOW_BLOCK, 0],
+		//TODO: ENDSTONE
 
 		//Decoration
 		[Item::COBBLESTONE_WALL, 0],
 		[Item::COBBLESTONE_WALL, 1],
+		//TODO: Lilly Pad
 		[Item::GOLD_BLOCK, 0],
 		[Item::IRON_BLOCK, 0],
 		[Item::DIAMOND_BLOCK, 0],
 		[Item::LAPIS_BLOCK, 0],
 		[Item::COAL_BLOCK, 0],
+		[Item::EMERALD_BLOCK, 0],
 		[Item::SNOW_LAYER, 0],
 		[Item::GLASS, 0],
 		[Item::GLOWSTONE_BLOCK, 0],
+		//TODO: Vines
 		[Item::NETHER_REACTOR, 0],
+		[Item::LADDER, 0],
+		[Item::SPONGE, 0],
+		[Item::GLASS_PANE, 0],
+		[Item::WOODEN_DOOR, 0],
+		[Item::TRAPDOOR, 0],
+		[Item::FENCE, 0],
+		[Item::FENCE_GATE, 0],
+		[Item::IRON_BARS, 0],
+		[Item::BED, 0],
+		[Item::BOOKSHELF, 0],
+		[Item::PAINTING, 0],
+		[Item::WORKBENCH, 0],
+		[Item::STONECUTTER, 0],
+		[Item::CHEST, 0],
+		[Item::FURNACE, 0],
+		//TODO: End Portal
+		//TODO: End Portal (filled)
+		[Item::DANDELION, 0],
+		[Item::POPPY, 0],
+		//TODO: blue orchid
+		//TODO: Allium
+		//TODO: Azure Bluet
+		//TODO: Red Tulip
+		//TODO: Orange Tulip
+		//TODO: White Tulip
+		//TODO: Pink Tulip
+		//TODO: Oxeye Daisy
+		//TODO: Lilac
+		//TODO: Double Tallgrass
+		//TODO: Large Fern
+		//TODO: Rose Bush
+		//TODO: Peony
+		[Item::BROWN_MUSHROOM, 0],
+		[Item::RED_MUSHROOM, 0],
+		//TODO: Mushroom block (brown, cover)
+		//TODO: Mushroom block (red, cover)
+		//TODO: Mushroom block (brown, stem)
+		//TODO: Mushroom block (red, stem)
+		[Item::CACTUS, 0],
+		[Item::MELON_BLOCK, 0],
+		[Item::PUMPKIN, 0],
+		[Item::LIT_PUMPKIN, 0],
+		[Item::COBWEB, 0],
+		[Item::HAY_BALE, 0],
+		[Item::TALL_GRASS, 1],
+		[Item::TALL_GRASS, 2],
+		[Item::DEAD_BUSH, 0],
+		[Item::SAPLING, 0],
+		[Item::SAPLING, 1],
+		[Item::SAPLING, 2],
+		[Item::SAPLING, 3],
+		[Item::SAPLING, 4],
+		[Item::SAPLING, 5],
+		[Item::LEAVES, 0],
+		[Item::LEAVES, 1],
+		[Item::LEAVES, 2],
+		[Item::LEAVES, 3],
+		[Item::LEAVES, 3],
+		[Item::LEAVES2, 0],
+		[Item::LEAVES2, 1],
+		[Item::CAKE, 0],
+		[Item::SIGN, 0],
+		//TODO: Monster Spawner
 		[Item::WOOL, 0],
 		[Item::WOOL, 7],
 		[Item::WOOL, 6],
@@ -311,44 +414,6 @@ abstract class Block extends Position implements Metadatable{
 		[Item::WOOL, 10],
 		[Item::WOOL, 9],
 		[Item::WOOL, 8],
-		[Item::LADDER, 0],
-		[Item::SPONGE, 0],
-		[Item::GLASS_PANE, 0],
-		[Item::WOODEN_DOOR, 0],
-		[Item::TRAPDOOR, 0],
-		[Item::FENCE, 0],
-		[Item::FENCE_GATE, 0],
-		[Item::IRON_BARS, 0],
-		[Item::BED, 0],
-		[Item::BOOKSHELF, 0],
-		[Item::PAINTING, 0],
-		[Item::WORKBENCH, 0],
-		[Item::STONECUTTER, 0],
-		[Item::CHEST, 0],
-		[Item::FURNACE, 0],
-		[Item::DANDELION, 0],
-		[Item::CYAN_FLOWER, 0],
-		[Item::BROWN_MUSHROOM, 0],
-		[Item::RED_MUSHROOM, 0],
-		[Item::CACTUS, 0],
-		[Item::MELON_BLOCK, 0],
-		[Item::PUMPKIN, 0],
-		[Item::LIT_PUMPKIN, 0],
-		[Item::COBWEB, 0],
-		[Item::HAY_BALE, 0],
-		[Item::TALL_GRASS, 1],
-		[Item::TALL_GRASS, 2],
-		[Item::DEAD_BUSH, 0],
-		[Item::SAPLING, 0],
-		[Item::SAPLING, 1],
-		[Item::SAPLING, 2],
-		[Item::SAPLING, 3],
-		[Item::LEAVES, 0],
-		[Item::LEAVES, 1],
-		[Item::LEAVES, 2],
-		[Item::LEAVES, 3],
-		[Item::CAKE, 0],
-		[Item::SIGN, 0],
 		[Item::CARPET, 0],
 		[Item::CARPET, 7],
 		[Item::CARPET, 6],
@@ -367,8 +432,8 @@ abstract class Block extends Position implements Metadatable{
 		[Item::CARPET, 8],
 
 		//Tools
-		//[Item::RAILS, 0],
-		//[Item::POWERED_RAILS, 0],
+		//TODO [Item::RAILS, 0],
+		//TODO [Item::POWERED_RAILS, 0],
 		[Item::TORCH, 0],
 		[Item::BUCKET, 0],
 		[Item::BUCKET, 8],
@@ -382,10 +447,20 @@ abstract class Block extends Position implements Metadatable{
 		[Item::CLOCK, 0],
 		[Item::COMPASS, 0],
 		[Item::MINECART, 0],
+		//TODO: Villager
 		[Item::SPAWN_EGG, 10], //Chicken
 		[Item::SPAWN_EGG, 11], //Cow
 		[Item::SPAWN_EGG, 12], //Pig
 		[Item::SPAWN_EGG, 13], //Sheep
+		//TODO: Wolf
+		//TODO: Mooshroom
+		//TODO: Creeper
+		//TODO: Enderman
+		//TODO: Silverfish
+		//TODO: Skeleton
+		//TODO: Slime
+		//TODO: Zombie
+		//TODO: PigZombie
 		//TODO: Replace with Entity constants
 
 
@@ -473,7 +548,7 @@ abstract class Block extends Position implements Metadatable{
 				self::DEAD_BUSH => new DeadBush(),
 				self::WOOL => new Wool(),
 				self::DANDELION => new Dandelion(),
-				self::CYAN_FLOWER => new CyanFlower(),
+				self::POPPY => new CyanFlower(),
 				self::BROWN_MUSHROOM => new BrownMushroom(),
 				self::RED_MUSHROOM => new RedMushroom(),
 				self::GOLD_BLOCK => new Gold(),

@@ -30,7 +30,7 @@ class TallGrass{
 	public static function growGrass(ChunkManager $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = [
 			[Block::DANDELION, 0],
-			[Block::CYAN_FLOWER, 0],
+			[Block::POPPY, 0],
 			[Block::TALL_GRASS, 1],
 			[Block::TALL_GRASS, 1],
 			[Block::TALL_GRASS, 1],
