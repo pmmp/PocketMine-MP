@@ -42,8 +42,7 @@ use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
-use pocketmine\level\LevelImport;
-use pocketmine\level\WorldGenerator;
+
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;

@@ -21,8 +21,6 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\Player;
 
 class Wood2 extends Wood{
 

@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\pmf\LevelFormat;
+
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;

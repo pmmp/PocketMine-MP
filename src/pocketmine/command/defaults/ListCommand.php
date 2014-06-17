@@ -23,7 +23,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
-use pocketmine\Server;
+
 
 class ListCommand extends VanillaCommand{
 

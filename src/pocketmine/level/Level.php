@@ -37,7 +37,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\SimpleChunk;
 use pocketmine\level\generator\Generator;
-use pocketmine\level\generator\populator\Populator;
+
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;

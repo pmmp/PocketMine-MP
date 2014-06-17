@@ -23,6 +23,7 @@
 namespace pocketmine\item;
 
 use pocketmine\entity\Entity;
+use pocketmine\block\Block;
 
 abstract class Tool extends Item{
 

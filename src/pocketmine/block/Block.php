@@ -32,7 +32,7 @@ use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
-use pocketmine\Server;
+
 
 abstract class Block extends Position implements Metadatable{
 	const AIR = 0;

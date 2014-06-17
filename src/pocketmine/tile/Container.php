@@ -21,7 +21,6 @@
 
 namespace pocketmine\tile;
 
-use pocketmine\event\tile\TileInventoryChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\Network;
 
