@@ -1933,15 +1933,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$t = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){
-					if($t->namedtag->creator !== $this->username){
+					if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->username){
 						$t->spawnTo($this);
 					}else{
 						$nbt = new NBT(NBT::LITTLE_ENDIAN);
 						$nbt->read($packet->namedtag);
-						if($nbt->id !== Tile::SIGN){
+						$nbt = $nbt->getData();
+						if($nbt["id"] !== Tile::SIGN){
 							$t->spawnTo($this);
 						}else{
-							$t->setText($nbt->Text1, $nbt->Text2, $nbt->Text3, $nbt->Text4);
+							$t->setText($nbt["Text1"], $nbt["Text2"], $nbt["Text3"], $nbt["Text4"]);
 						}
 					}
 				}
