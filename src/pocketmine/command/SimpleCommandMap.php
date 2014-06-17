@@ -207,7 +207,44 @@ class SimpleCommandMap implements CommandMap{
 	 * @return void
 	 */
 	public function registerServerAliases(){
-		//TODO
+		$values = $this->server->getCommandAliases();
+
+		foreach($values as $alias => $commandStrings){
+			if(strpos($alias, ":") !== false or strpos($alias, " ") !== false){
+				$this->server->getLogger()->warning("Could not register alias ". $alias ." because it contains illegal characters");
+				continue;
+			}
+
+			$targets = [];
+
+			$bad = "";
+			foreach($commandStrings as $commandString){
+				$args = explode(" ", $commandString);
+				$command = $this->getCommand($args[0]);
+
+				if($command === null){
+					if(strlen($bad) > 0){
+						$bad .= ", ";
+					}
+					$bad .= $commandString;
+				}else{
+					$targets[] = $commandString;
+				}
+			}
+
+			if(strlen($bad) > 0){
+				$this->server->getLogger()->warning("Could not register alias ". $alias ." because it contains commands that do not exist: ". $bad);
+				continue;
+			}
+
+			//These registered commands have absolute priority
+			if(count($targets) > 0){
+				$this->knownCommands[strtolower($alias)] = new FormattedCommandAlias(strtolower($alias), $targets);
+			}else{
+				unset($this->knownCommands[strtolower($alias)]);
+			}
+
+		}
 	}
 
 

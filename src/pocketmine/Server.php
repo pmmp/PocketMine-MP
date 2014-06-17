@@ -1261,6 +1261,28 @@ class Server{
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function getCommandAliases(){
+		$section = $this->getProperty("aliases");
+		$result = [];
+		if(is_array($section)){
+			foreach($section as $key => $value){
+				$commands = [];
+				if(is_array($value)){
+					$commands = $value;
+				}else{
+					$commands[] = $value;
+				}
+
+				$result[$key] = $commands;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * @return Server
 	 */
 	public static function getInstance(){
@@ -1435,10 +1457,11 @@ class Server{
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
 
-		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doLevelGC")), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
+		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doLevelGC")), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
+		}
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
-
 
 	}
 
@@ -1494,12 +1517,8 @@ class Server{
 
 		if($type === PluginLoadOrder::POSTWORLD){
 			$this->commandMap->registerServerAliases();
-			$this->loadCustomPermissions();
+			DefaultPermissions::registerCorePermissions();
 		}
-	}
-
-	private function loadCustomPermissions(){
-		DefaultPermissions::registerCorePermissions();
 	}
 
 	/**
