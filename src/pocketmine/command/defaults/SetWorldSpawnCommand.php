@@ -54,7 +54,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 				return true;
 			}
 		}elseif(count($args) === 3){
-			$level = Server::getInstance()->getDefaultLevel();
+			$level = $sender->getServer()->getDefaultLevel();
 			$pos = new Vector3($this->getInteger($sender, $args[0]), $this->getInteger($sender, $args[1]), $this->getInteger($sender, $args[2]));
 		}else{
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);

@@ -41,7 +41,7 @@ class StatusCommand extends VanillaCommand{
 			return true;
 		}
 
-		$server = Server::getInstance();
+		$server = $sender->getServer();
 		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
 		$sender->sendMessage(TextFormat::GOLD . "TPS: " . TextFormat::WHITE . $server->getTicksPerSecond());
 		//TODO: implement network speed

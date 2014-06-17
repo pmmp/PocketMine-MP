@@ -48,23 +48,23 @@ class WhitelistCommand extends VanillaCommand{
 			}
 			switch(strtolower($args[0])){
 				case "reload":
-					Server::getInstance()->reloadWhitelist();
+					$sender->getServer()->reloadWhitelist();
 					Command::broadcastCommandMessage($sender, "Reloaded white-list from file");
 
 					return true;
 				case "on":
-					Server::getInstance()->setConfigBool("white-list", true);
+					$sender->getServer()->setConfigBool("white-list", true);
 					Command::broadcastCommandMessage($sender, "Turned on white-listing");
 
 					return true;
 				case "off":
-					Server::getInstance()->setConfigBool("white-list", false);
+					$sender->getServer()->setConfigBool("white-list", false);
 					Command::broadcastCommandMessage($sender, "Turned off white-listing");
 
 					return true;
 				case "list":
 					$result = "";
-					foreach(Server::getInstance()->getWhitelisted() as $player){
+					foreach($sender->getServer()->getWhitelisted() as $player){
 						$result .= $player . ", ";
 					}
 					$sender->sendMessage("White-listed players: " . substr($result, 0, -2));
@@ -77,12 +77,12 @@ class WhitelistCommand extends VanillaCommand{
 			}
 			switch(strtolower($args[0])){
 				case "add":
-					Server::getInstance()->getOfflinePlayer($args[1])->setWhitelisted(true);
+					$sender->getServer()->getOfflinePlayer($args[1])->setWhitelisted(true);
 					Command::broadcastCommandMessage($sender, "Added " . $args[1] . " to white-list");
 
 					return true;
 				case "remove":
-					Server::getInstance()->getOfflinePlayer($args[1])->setWhitelisted(false);
+					$sender->getServer()->getOfflinePlayer($args[1])->setWhitelisted(false);
 					Command::broadcastCommandMessage($sender, "Removed " . $args[1] . " from white-list");
 
 					return true;

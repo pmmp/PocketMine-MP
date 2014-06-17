@@ -43,11 +43,11 @@ class SaveCommand extends VanillaCommand{
 
 		Command::broadcastCommandMessage($sender, "Forcing save...");
 
-		foreach(Server::getInstance()->getOnlinePlayers() as $player){
+		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			$player->save();
 		}
 
-		foreach(Server::getInstance()->getLevels() as $level){
+		foreach($sender->getServer()->getLevels() as $level){
 			$level->save(true);
 		}
 

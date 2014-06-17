@@ -49,7 +49,7 @@ class PluginsCommand extends VanillaCommand{
 
 	private function getPluginList(){
 		$list = "";
-		foreach(($plugins = Server::getInstance()->getPluginManager()->getPlugins()) as $plugin){
+		foreach(($plugins = $sender->getServer()->getPluginManager()->getPlugins()) as $plugin){
 			if(strlen($list) > 0){
 				$list .= TextFormat::WHITE . ", ";
 			}

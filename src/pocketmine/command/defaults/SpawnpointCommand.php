@@ -55,7 +55,7 @@ class SpawnpointCommand extends VanillaCommand{
 				return true;
 			}
 		}else{
-			$target = Server::getInstance()->getPlayer($args[0]);
+			$target = $sender->getServer()->getPlayer($args[0]);
 			if($target === null){
 				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
 

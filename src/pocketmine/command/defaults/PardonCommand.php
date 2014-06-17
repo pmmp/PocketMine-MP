@@ -48,7 +48,7 @@ class PardonCommand extends VanillaCommand{
 			return false;
 		}
 
-		Server::getInstance()->getNameBans()->remove($args[0]);
+		$sender->getServer()->getNameBans()->remove($args[0]);
 
 		Command::broadcastCommandMessage($sender, "Pardoned " . $name);
 

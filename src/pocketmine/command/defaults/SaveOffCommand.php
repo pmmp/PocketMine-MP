@@ -41,7 +41,7 @@ class SaveOffCommand extends VanillaCommand{
 			return true;
 		}
 
-		foreach(Server::getInstance()->getLevels() as $level){
+		foreach($sender->getServer()->getLevels() as $level){
 			$level->setAutoSave(false);
 		}
 

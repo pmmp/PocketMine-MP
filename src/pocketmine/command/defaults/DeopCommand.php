@@ -51,7 +51,7 @@ class DeopCommand extends VanillaCommand{
 
 		$name = array_shift($args);
 
-		$player = Server::getInstance()->getOfflinePlayer($name);
+		$player = $sender->getServer()->getOfflinePlayer($name);
 		$player->setOp(false);
 		if($player instanceof Player){
 			$player->sendMessage(TextFormat::YELLOW . "You are no longer op!");

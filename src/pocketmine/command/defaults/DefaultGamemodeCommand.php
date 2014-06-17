@@ -50,7 +50,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 		$gameMode = Server::getGamemodeFromString($args[0]);
 
 		if($gameMode !== -1){
-			Server::getInstance()->setConfigInt("gamemode", $gameMode);
+			$sender->getServer()->setConfigInt("gamemode", $gameMode);
 			$sender->sendMessage("Default game mode set to " . strtolower(Server::getGamemodeString($gameMode)));
 		}else{
 			$sender->sendMessage("Unknown game mode");

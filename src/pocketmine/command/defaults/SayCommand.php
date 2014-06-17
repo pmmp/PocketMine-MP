@@ -58,7 +58,7 @@ class SayCommand extends VanillaCommand{
 			$message .= $sender->getName();
 		}
 		$message .= TextFormat::LIGHT_PURPLE . "] " . implode(" ", $args);
-		Server::getInstance()->broadcastMessage($message);
+		$sender->getServer()->broadcastMessage($message);
 
 		return true;
 	}

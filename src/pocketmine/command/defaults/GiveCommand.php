@@ -50,7 +50,7 @@ class GiveCommand extends VanillaCommand{
 			return false;
 		}
 
-		$player = Server::getInstance()->getPlayer($args[0]);
+		$player = $sender->getServer()->getPlayer($args[0]);
 		$item = Item::fromString($args[1]);
 
 		if(!isset($args[2])){

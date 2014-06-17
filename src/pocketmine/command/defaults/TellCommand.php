@@ -51,7 +51,7 @@ class TellCommand extends VanillaCommand{
 
 		$name = strtolower(array_shift($args));
 
-		$player = Server::getInstance()->getPlayer($name);
+		$player = $sender->getServer()->getPlayer($name);
 
 		if($player instanceof Player){
 			$sender->sendMessage("[me -> " . $player->getName() . "] " . implode($args));

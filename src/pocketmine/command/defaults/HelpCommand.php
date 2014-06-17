@@ -66,7 +66,7 @@ class HelpCommand extends VanillaCommand{
 
 		if($command === ""){
 			$commands = [];
-			foreach(Server::getInstance()->getCommandMap()->getCommands() as $command){
+			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
 				if($command->testPermissionSilent($sender)){
 					$commands[$command->getName()] = $command;
 				}
@@ -87,7 +87,7 @@ class HelpCommand extends VanillaCommand{
 
 			return true;
 		}else{
-			if(($command = Server::getInstance()->getCommandMap()->getCommand(strtolower($command))) instanceof Command){
+			if(($command = $sender->getServer()->getCommandMap()->getCommand(strtolower($command))) instanceof Command){
 				if($command->testPermissionSilent($sender)){
 					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $command->getName() . TextFormat::YELLOW . " ---------\n";
 					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $command->getDescription() . "\n";

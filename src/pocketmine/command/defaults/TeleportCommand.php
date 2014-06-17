@@ -63,7 +63,7 @@ class TeleportCommand extends VanillaCommand{
 				return true;
 			}
 		}else{
-			$target = Server::getInstance()->getPlayer($args[0]);
+			$target = $sender->getServer()->getPlayer($args[0]);
 			if($target === null){
 				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
 
@@ -71,7 +71,7 @@ class TeleportCommand extends VanillaCommand{
 			}
 			if(count($args) === 2){
 				$origin = $target;
-				$target = Server::getInstance()->getPlayer($args[1]);
+				$target = $sender->getServer()->getPlayer($args[1]);
 				if($target === null){
 					$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[1]);
 

@@ -49,12 +49,12 @@ class DifficultyCommand extends VanillaCommand{
 
 		$difficulty = Server::getDifficultyFromString($args[0]);
 
-		if(Server::getInstance()->isHardcore()){
+		if($sender->getServer()->isHardcore()){
 			$difficulty = 3;
 		}
 
 		if($difficulty !== -1){
-			Server::getInstance()->setConfigInt("difficulty", $difficulty);
+			$sender->getServer()->setConfigInt("difficulty", $difficulty);
 			$sender->sendMessage("Set difficulty to " . $difficulty);
 		}else{
 			$sender->sendMessage("Unknown difficulty");

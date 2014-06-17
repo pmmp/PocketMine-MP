@@ -55,7 +55,7 @@ class MeCommand extends VanillaCommand{
 			$message .= $sender->getName();
 		}
 
-		Server::getInstance()->broadcastMessage($message . " " . implode(" ", $args));
+		$sender->getServer()->broadcastMessage($message . " " . implode(" ", $args));
 
 		return true;
 	}

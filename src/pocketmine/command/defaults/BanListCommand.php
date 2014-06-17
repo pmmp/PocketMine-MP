@@ -39,13 +39,13 @@ class BanListCommand extends VanillaCommand{
 		if(!$this->testPermission($sender)){
 			return true;
 		}
-		$list = Server::getInstance()->getNameBans();
+		$list = $sender->getServer()->getNameBans();
 		if(isset($args[0])){
 			$args[0] = strtolower($args[0]);
 			if($args[0] === "ips"){
-				$list = Server::getInstance()->getIPBans();
+				$list = $sender->getServer()->getIPBans();
 			}elseif($args[0] === "players"){
-				$list = Server::getInstance()->getNameBans();
+				$list = $sender->getServer()->getNameBans();
 			}
 		}
 

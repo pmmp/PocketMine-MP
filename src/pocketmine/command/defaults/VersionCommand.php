@@ -45,14 +45,14 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$output = "This server is running PocketMine-MP version " . Server::getInstance()->getPocketMineVersion() . " 「" . Server::getInstance()->getCodename() . "」 (Implementing API version " . Server::getInstance()->getApiVersion() . " for Minecraft: PE " . Server::getInstance()->getVersion() . " protocol version " . Info::CURRENT_PROTOCOL . ")";
+			$output = "This server is running PocketMine-MP version " . $sender->getServer()->getPocketMineVersion() . " 「" . $sender->getServer()->getCodename() . "」 (Implementing API version " . $sender->getServer()->getApiVersion() . " for Minecraft: PE " . $sender->getServer()->getVersion() . " protocol version " . Info::CURRENT_PROTOCOL . ")";
 			if(\pocketmine\GIT_COMMIT !== str_repeat("00", 20)){
 				$output .= " [git " . \pocketmine\GIT_COMMIT . "]";
 			}
 			$sender->sendMessage($output);
 		}else{
 			$pluginName = implode(" ", $args);
-			$exactPlugin = Server::getInstance()->getPluginManager()->getPlugin($pluginName);
+			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
 
 			if($exactPlugin instanceof Plugin){
 				$this->describeToSender($exactPlugin, $sender);
@@ -62,7 +62,7 @@ class VersionCommand extends VanillaCommand{
 
 			$found = false;
 			$pluginName = strtolower($pluginName);
-			foreach(Server::getInstance()->getPluginManager()->getPlugins() as $plugin){
+			foreach($sender->getServer()->getPluginManager()->getPlugins() as $plugin){
 				if(stripos($plugin->getName(), $pluginName) !== false){
 					$this->describeToSender($plugin, $sender);
 					$found = true;

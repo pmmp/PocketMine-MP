@@ -49,7 +49,7 @@ class PardonIpCommand extends VanillaCommand{
 		}
 
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])){
-			Server::getInstance()->getIPBans()->remove($args[0]);
+			$sender->getServer()->getIPBans()->remove($args[0]);
 			Command::broadcastCommandMessage($sender, "Pardoned IP " . $args[0]);
 		}else{
 			$sender->sendMessage("Invalid IP");
