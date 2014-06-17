@@ -424,6 +424,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->displayName = $name;
 	}
 
+	public function getNameTag(){
+		return $this->nameTag;
+	}
+
+	public function setNameTag($name){
+		$this->nameTag = $name;
+		$this->despawnFromAll();
+		if($this->spawned === true){
+			$this->spawnToAll();
+		}
+	}
+
 	/**
 	 * Gets the player IP address
 	 *
@@ -1052,6 +1064,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->username = TextFormat::clean($packet->username);
 				$this->displayName = $this->username;
+				$this->nameTag = $this->username;
 				$this->iusername = strtolower($this->username);
 				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
 
