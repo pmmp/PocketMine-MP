@@ -121,7 +121,7 @@ class NBT{
 
 	public function writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
 		if(($write = $this->write()) !== false){
-			return zlib_encode($write, ZLIB_ENCODING_GZIP, $level);
+			return zlib_encode($write, $compression, $level);
 		}
 
 		return false;
