@@ -132,6 +132,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $connected = true;
 	protected $clientID;
 	protected $ip;
+	protected $removeFormat = true;
 	protected $port;
 	protected $username;
 	protected $iusername;
@@ -226,6 +227,20 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function getServer(){
 		return $this->server;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getRemoveFormat(){
+		return $this->removeFormat;
+	}
+
+	/**
+	 * @param bool $remove
+	 */
+	public function setRemoveFormat($remove = true){
+		$this->removeFormat = (bool) $remove;
 	}
 
 	/**
@@ -424,10 +439,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->displayName = $name;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getNameTag(){
 		return $this->nameTag;
 	}
 
+	/**
+	 * @param string $name
+	 */
 	public function setNameTag($name){
 		$this->nameTag = $name;
 		$this->despawnFromAll();
@@ -1979,7 +2000,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if($m !== ""){
 				$pk = new MessagePacket;
 				$pk->author = ""; //Do not use this ;)
-				$pk->message = TextFormat::clean($m); //Colors not implemented :(
+				$pk->message = $this->removeFormat === false ? $m : TextFormat::clean($m);
 				$this->dataPacket($pk);
 			}
 		}

@@ -34,6 +34,7 @@ use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
+use pocketmine\utils\TextFormat;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
@@ -135,7 +136,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 			$pk = new AddPlayerPacket;
 			$pk->clientID = 0;
-			$pk->username = $this->nameTag;
+			if($player->getRemoveFormat()){
+				$pk->username = TextFormat::clean($this->nameTag);
+			}else{
+				$pk->username = $this->nameTag;
+			}
 			$pk->eid = $this->getID();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
