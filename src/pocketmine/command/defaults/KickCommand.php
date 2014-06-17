@@ -57,7 +57,7 @@ class KickCommand extends VanillaCommand{
 		}
 
 		if(($player = Server::getInstance()->getPlayer($name)) instanceof Player){
-			$player->kick("Banned by admin.");
+			$player->kick("Kicked by admin.");
 		}else{
 			$sender->sendMessage($name . " not found.");
 		}
