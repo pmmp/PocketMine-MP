@@ -67,6 +67,7 @@ use raklib\Binary;
 class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
+	public static $COMPRESSION_LEVEL = 7;
 
 
 	const BLOCK_UPDATE_NORMAL = 1;
@@ -1261,7 +1262,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIds . $biomeColors, ZLIB_ENCODING_DEFLATE, 8);
+		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIds . $biomeColors, ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
 
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
 			Cache::add($identifier, $ordered, 60);

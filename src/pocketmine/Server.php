@@ -1371,6 +1371,8 @@ class Server{
 			$this->logger->info("Advanced cache enabled");
 		}
 
+		Level::$COMPRESSION_LEVEL = $this->getProperty("chunk-sending.compression-level", 7);
+
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and function_exists("cli_set_process_title")){
 			@cli_set_process_title("PocketMine-MP " . $this->getPocketMineVersion());
 		}
