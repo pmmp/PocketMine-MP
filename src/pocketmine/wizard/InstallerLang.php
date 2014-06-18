@@ -47,11 +47,11 @@ class InstallerLang{
 	private $langfile;
 
 	public function __construct($lang = ""){
-		if(file_exists(\pocketmine\PATH . "src/lang/Installer/" . $lang . ".ini")){
+		if(file_exists(\pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . ".ini")){
 			$this->lang = $lang;
-			$this->langfile = \pocketmine\PATH . "src/lang/Installer/" . $lang . ".ini";
+			$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . ".ini";
 		}else{
-			$l = glob(\pocketmine\PATH . "src/lang/Installer/" . $lang . "_*.ini");
+			$l = glob(\pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . "_*.ini");
 			if(count($l) > 0){
 				$files = [];
 				foreach($l as $file){
@@ -62,14 +62,14 @@ class InstallerLang{
 				$l = key($files);
 				$l = substr($l, strrpos($l, "/") + 1, -4);
 				$this->lang = isset(self::$languages[$l]) ? $l : $lang;
-				$this->langfile = \pocketmine\PATH . "src/lang/Installer/" . $l . ".ini";
+				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/" . $l . ".ini";
 			}else{
 				$this->lang = "en";
-				$this->langfile = \pocketmine\PATH . "src/lang/Installer/en.ini";
+				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/en.ini";
 			}
 		}
 
-		$this->loadLang(\pocketmine\PATH . "src/lang/Installer/en.ini", "en");
+		$this->loadLang(\pocketmine\PATH . "src/pocketmine/lang/Installer/en.ini", "en");
 		if($this->lang !== "en"){
 			$this->loadLang($this->langfile, $this->lang);
 		}
@@ -82,14 +82,14 @@ class InstallerLang{
 
 	public function loadLang($langfile, $lang = "en"){
 		$this->texts[$lang] = [];
-		$texts = explode("\n", str_replace(array("\r", "\/\/"), array("", "//"), file_get_contents($langfile)));
+		$texts = explode("\n", str_replace(array("\r", "\\/\\/"), array("", "//"), file_get_contents($langfile)));
 		foreach($texts as $line){
 			$line = trim($line);
 			if($line === ""){
 				continue;
 			}
 			$line = explode("=", $line);
-			$this->texts[$lang][array_shift($line)] = str_replace(array("\\n", "\\N",), "\n", implode("=", $line));
+			$this->texts[$lang][trim(array_shift($line))] = trim(str_replace(array("\\n", "\\N",), "\n", implode("=", $line)));
 		}
 	}
 

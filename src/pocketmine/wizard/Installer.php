@@ -31,7 +31,7 @@ use pocketmine\utils\Utils;
 class Installer{
 	const DEFAULT_NAME = "Minecraft: PE Server";
 	const DEFAULT_PORT = 19132;
-	const DEFAULT_MEMORY = 128;
+	const DEFAULT_MEMORY = 256;
 	const DEFAULT_PLAYERS = 20;
 	const DEFAULT_GAMEMODE = 0;
 
@@ -52,7 +52,15 @@ class Installer{
 			}
 		}while($lang == false);
 		$this->lang = new InstallerLang($lang);
+
+
 		echo "[*] " . $this->lang->language_has_been_selected . "\n";
+
+		if(!$this->showLicense()){
+			\pocketmine\kill(getmypid());
+			exit(-1);
+		}
+
 		echo "[?] " . $this->lang->skip_installer . " (y/N): ";
 		if(strtolower($this->getInput()) === "y"){
 			return;
@@ -67,7 +75,7 @@ class Installer{
 		$this->endWizard();
 	}
 
-	private function welcome(){
+	private function showLicense(){
 		echo $this->lang->welcome_to_pocketmine . "\n";
 		echo <<<LICENSE
 
@@ -81,8 +89,13 @@ LICENSE;
 		if(strtolower($this->getInput("n")) != "y"){
 			echo "[!] " . $this->lang->you_have_to_accept_the_license . "\n";
 			sleep(5);
-			exit(0);
+			return false;
 		}
+
+		return true;
+	}
+
+	private function welcome(){
 		echo "[*] " . $this->lang->setting_up_server_now . "\n";
 		echo "[*] " . $this->lang->default_values_info . "\n";
 		echo "[*] " . $this->lang->server_properties . "\n";
@@ -168,13 +181,13 @@ LICENSE;
 			$config->set("enable-rcon", false);
 		}
 
-		echo "[*] " . $this->lang->usage_info . "\n";
+		/*echo "[*] " . $this->lang->usage_info . "\n";
 		echo "[?] " . $this->lang->usage_disable . " (y/N): ";
 		if(strtolower($this->getInput("n")) === "y"){
 			$config->set("send-usage", false);
 		}else{
 			$config->set("send-usage", true);
-		}
+		}*/
 		$config->save();
 
 

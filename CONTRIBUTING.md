@@ -16,7 +16,7 @@ Before contributing to PocketMine-MP, please read this. Also, take a look if you
 * When reporting, give as much info as you can, and if the Issue is a crash, give the Crash Dump.
 * Issues should be written in English.
 
-## I want to contribute code
+## I want a new feature / I want to contribute code
 * Use the [Pull Request](https://github.com/PocketMine/PocketMine-MP/pull/new) system, your request will be checked and discussed.
 * __Create a single branch for that pull request__
 * If you want to be part of PocketMine-MP, we will ask you to.
@@ -57,14 +57,14 @@ class ExampleClass{
 			//do things
 		}elseif($firstArgument === "otherValue"){
 			$secondArgument = function(){
-				return array(
+				return [
 					0 => "value1",
 					1 => "value2",
 					2 => "value3",
 					3 => "value4",
 					4 => "value5",
 					5 => "value6",
-				);
+				];
 			}
 		}
 	}
