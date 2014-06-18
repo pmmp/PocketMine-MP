@@ -50,7 +50,7 @@ class Explosion{
 	private $what;
 
 	public function __construct(Position $center, $size, $what = null){
-		$this->level = $center->level;
+		$this->level = $center->getLevel();
 		$this->source = $center;
 		$this->size = max($size, 0);
 		$this->what = $what;
