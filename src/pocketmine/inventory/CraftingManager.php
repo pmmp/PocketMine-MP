@@ -102,7 +102,7 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BOOKSHELF, 0, 1)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 6))->addIngredient(Item::get(Item::BOOK, 0, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::PAINTING, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 8))->addIngredient(Item::get(Item::WOOL, null, 1)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::PAPER, 0, 1)))->addIngredient(Item::get(Item::SUGARCANE, 0, 3)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::SIGN, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 1))->addIngredient(Item::get(Item::WOODEN_PLANKS, null, 6))); //TODO: check if it gives one sign or three
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::SIGN, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 1))->addIngredient(Item::get(Item::WOODEN_PLANKS, null, 6))); //TODO: check if it gives one sign or three
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::IRON_BARS, 0, 16)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 6)));
 	}
 
