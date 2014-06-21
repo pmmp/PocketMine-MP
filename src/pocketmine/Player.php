@@ -119,7 +119,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public $blocked = true;
 	public $achievements = [];
-	public $chunksLoaded = [];
 	public $lastCorrect;
 	/** @var SimpleTransactionGroup */
 	protected $currentTransaction = null;
@@ -139,16 +138,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $displayName;
 	protected $startAction = false;
 	protected $sleeping = false;
-	protected $chunksOrder = [];
+
+	protected $usedChunks = [];
+	protected $loadQueue = [];
+	protected $chunkACK = [];
+	/** @var \pocketmine\scheduler\TaskHandler */
+	protected $chunkLoadTask;
+
 	/** @var Player[] */
 	protected $hiddenPlayers = [];
 
 	private $viewDistance;
 	private $spawnPosition;
-
-	private $lastChunk = false;
-	private $chunkScheduled = 0;
 	private $inAction = false;
+
+
 
 	private $needACK = [];
 
@@ -480,19 +484,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return $this->sleeping instanceof Vector3;
 	}
 
-	/**
-	 * Sets the chunk send flags for a specific index
-	 *
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @param int $index
-	 * @param int $flags
-	 */
-	public function setChunkIndex($index, $flags){
-		if(isset($this->chunksLoaded[$index])){
-			$this->chunksLoaded[$index] |= $flags;
+	public function unloadChunk($x, $z){
+		$index = Level::chunkHash($x, $z);
+		if(isset($this->usedChunks[$index])){
+			foreach($this->getLevel()->getChunkEntities($x, $z) as $entity){
+				if($entity !== $this){
+					$entity->despawnFrom($this);
+				}
+			}
+			$pk = new UnloadChunkPacket();
+			$pk->chunkX = $x;
+			$pk->chunkZ = $z;
+			$this->dataPacket($pk);
+			unset($this->usedChunks[$index]);
 		}
+		unset($this->loadQueue[$index]);
+		$this->orderChunks();
 	}
 
 	/**
@@ -513,6 +520,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function handleACK($identifier){
 		unset($this->needACK[$identifier]);
+		if(isset($this->chunkACK[$identifier])){
+			$index = $this->chunkACK[$identifier];
+			unset($this->chunkACK[$identifier]);
+			if(isset($this->usedChunks[$index])){
+				$this->usedChunks[$index][0] = true;
+				if($this->spawned === true){
+					$X = null;
+					$Z = null;
+					Level::getXZ($index, $X, $Z);
+					foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
+						if($entity !== $this){
+							$entity->spawnTo($this);
+						}
+					}
+					foreach($this->getLevel()->getChunkTiles($X, $Z) as $tile){
+						if($tile instanceof Spawnable){
+							$tile->spawnTo($this);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -521,89 +550,72 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 *
-	 * @param bool $force
-	 * @param bool $ev
-	 *
-	 * @return void|bool
 	 */
-	public function getNextChunk($force = false, $ev = null){
-		if($this->connected === false){
+
+	public function sendNextChunk(){
+		if($this->connected === false or !isset($this->chunkLoadTask)){
 			return;
 		}
 
-		if($ev === true){
-			--$this->chunkScheduled;
-			if($this->chunkScheduled < 0){
-				$this->chunkScheduled = 0;
-			}
-		}
-
-		if(is_array($this->lastChunk)){
-			/*$identifier = $this->lastChunk[2];
-			if(!$this->checkACK($identifier)){
-				if((microtime(true) - $this->lastChunk[3]) < 1.5){
-					$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
-					return false;
-				}else{
-					$index = null;
-					Level::getXZ($index, $this->lastChunk[0], $this->lastChunk[1]);
-					unset($this->chunksLoaded[$index]);
-				}
-			}else{*/
-			foreach($this->getLevel()->getChunkEntities($this->lastChunk[0], $this->lastChunk[1]) as $entity){
-				if($entity !== $this){
-					$entity->spawnTo($this);
-				}
-			}
-			foreach($this->getLevel()->getChunkTiles($this->lastChunk[0], $this->lastChunk[1]) as $tile){
-				if($tile instanceof Spawnable){
-					$tile->spawnTo($this);
-				}
-			}
-			//}
-			$this->lastChunk = false;
-		}
-
-		$index = key($this->chunksOrder);
-		$distance = @$this->chunksOrder[$index];
+		$index = key($this->loadQueue);
+		$distance = @$this->loadQueue[$index];
 
 		if($index === null or $distance === null){
-			$this->orderChunks();
-			if($this->chunkScheduled === 0){
-				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), 60);
-			}
-			return false;
+			$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 30);
+			return;
 		}
 		$X = null;
 		$Z = null;
 		Level::getXZ($index, $X, $Z);
 		if(!$this->getLevel()->isChunkPopulated($X, $Z)){
-			$this->orderChunks();
-			if($this->chunkScheduled === 0 or $force === true){
-				$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
-				++$this->chunkScheduled;
-			}
+			return;
+		}
+		unset($this->loadQueue[$index]);
+		$this->usedChunks[$index] = [false, 0];
 
-			return false;
-		}
-		unset($this->chunksOrder[$index]);
-		if(!isset($this->chunksLoaded[$index])){
-			$this->chunksLoaded[$index] = 0xff;
-		}
-		$Yndex = $this->chunksLoaded[$index];
-		$this->chunksLoaded[$index] = 0; //Load them all
 		$this->getLevel()->useChunk($X, $Z, $this);
 		$pk = new FullChunkDataPacket;
 		$pk->chunkX = $X;
 		$pk->chunkZ = $Z;
-		$pk->data = $this->getLevel()->getNetworkChunk($X, $Z, $Yndex);
+		$pk->data = $this->getLevel()->getNetworkChunk($X, $Z, 0xff);
 		$cnt = $this->dataPacket($pk, true);
 
-		if($cnt === false){
-			return false;
+		if($cnt === false or $cnt === true){
+			return;
 		}
+		$this->chunkACK[$cnt] = $index;
 
-		if(count($this->chunksLoaded) >= 56 and $this->spawned === false){
+		if(count($this->usedChunks) >= 56 and $this->spawned === false){
+			$spawned = 0;
+			foreach($this->usedChunks as $d){
+				if($d[0] === true){
+					$spawned++;
+				}
+			}
+
+			if($spawned < 56){
+				return;
+			}
+
+			foreach($this->usedChunks as $index => $d){
+				if($d[0] === false){
+					continue;
+				}
+				$X = null;
+				$Z = null;
+				Level::getXZ($index, $X, $Z);
+				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
+					if($entity !== $this){
+						$entity->spawnTo($this);
+					}
+				}
+				foreach($this->getLevel()->getChunkTiles($X, $Z) as $tile){
+					if($tile instanceof Spawnable){
+						$tile->spawnTo($this);
+					}
+				}
+			}
+
 			//TODO
 			//$this->heal($this->data->get("health"), "spawn", true);
 			$this->spawned = true;
@@ -635,13 +647,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getUpdater()->showPlayerUpdate($this);
 			}
 		}
-
-		$this->lastChunk = array($X, $Z, $cnt, microtime(true));
-
-		if($this->chunkScheduled === 0 or $force === true){
-			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "getNextChunk"), array(false, true)), MAX_CHUNK_RATE);
-			++$this->chunkScheduled;
-		}
 	}
 
 	/**
@@ -657,7 +662,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$newOrder = [];
-		$lastChunk = $this->chunksLoaded;
+		$lastChunk = $this->usedChunks;
 		$centerX = $this->x >> 4;
 		$centerZ = $this->z >> 4;
 		$startX = $centerX - $this->viewDistance;
@@ -669,7 +674,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			for($Z = $startZ; $Z <= $finalZ; ++$Z){
 				$distance = abs($X - $centerX) + abs($Z - $centerZ);
 				$index = Level::chunkHash($X, $Z);
-				if(!isset($this->chunksLoaded[$index]) or $this->chunksLoaded[$index] !== 0){
+				if(!isset($this->usedChunks[$index])){
 					if($this->getLevel()->isChunkPopulated($X, $Z)){
 						$newOrder[$index] = $distance;
 					}else{
@@ -681,10 +686,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		asort($newOrder);
-		$this->chunksOrder = $newOrder;
+		$this->loadQueue = $newOrder;
 
 		$i = 0;
-		while(count($this->chunksOrder) < 3 and $generateQueue->count() > 0 and $i < 16){
+		while(count($this->loadQueue) < 3 and $generateQueue->count() > 0 and $i < 16){
 			$d = $generateQueue->extract();
 			$this->getLevel()->generateChunk($d[0], $d[1]);
 			++$i;
@@ -692,21 +697,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 		foreach($lastChunk as $index => $Yndex){
-			if($Yndex === 0){
-				$X = null;
-				$Z = null;
-				Level::getXZ($index, $X, $Z);
-				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
-					if($entity !== $this){
-						$entity->despawnFrom($this);
-					}
+			$X = null;
+			$Z = null;
+			Level::getXZ($index, $X, $Z);
+			foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
+				if($entity !== $this){
+					$entity->despawnFrom($this);
 				}
-				$pk = new UnloadChunkPacket();
-				$pk->chunkX = $X;
-				$pk->chunkZ = $Z;
-				$this->dataPacket($pk);
 			}
-			unset($this->chunksLoaded[$index]);
+			$pk = new UnloadChunkPacket();
+			$pk->chunkX = $X;
+			$pk->chunkZ = $Z;
+			$this->dataPacket($pk);
+			unset($this->usedChunks[$index]);
 		}
 	}
 
@@ -1230,8 +1233,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 				$this->orderChunks();
-				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "orderChunks")), 30);
-				$this->getNextChunk();
+				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "orderChunks")), 10, 40);
+				$this->sendNextChunk();
+				$this->tasks[] = $this->chunkLoadTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "sendNextChunk")), MAX_CHUNK_RATE);
 
 				$pk = new ReadyPacket();
 				$pk->x = $this->x;
@@ -2039,8 +2043,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
 			$this->windows = new \SplObjectStorage();
 			$this->windowIndex = [];
-			$this->chunksLoaded = [];
-			$this->chunksOrder = [];
+			$this->usedChunks = [];
+			$this->loadQueue = [];
 			unset($this->buffer);
 		}
 	}

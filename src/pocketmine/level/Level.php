@@ -345,8 +345,11 @@ class Level implements ChunkManager, Metadatable{
 					if(count($this->changedBlocks[$index][$Y]) < 582){ //Optimal value, calculated using the relation between minichunks and single packets
 						continue;
 					}else{
+						$X = null;
+						$Z = null;
+						Level::getXZ($index, $X, $Z);
 						foreach($this->players as $p){
-							$p->setChunkIndex($index, $mini);
+							$p->unloadChunk($X, $Z);
 						}
 						unset($this->changedBlocks[$index][$Y]);
 					}
@@ -1147,7 +1150,7 @@ class Level implements ChunkManager, Metadatable{
 	public function setChunk($x, $z, SimpleChunk $chunk){
 		$index = Level::chunkHash($x, $z);
 		foreach($this->getUsingChunk($x, $z) as $player){
-			$player->setChunkIndex($index, 0xff);
+			$player->unloadChunk($x, $z);
 		}
 		$this->provider->setChunk($x, $z, $chunk);
 	}

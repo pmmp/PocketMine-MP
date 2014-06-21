@@ -931,7 +931,7 @@ abstract class Entity extends Position implements Metadatable{
 				$this->airTicks = 300;
 				$this->fallDistance = 0;
 				$this->orderChunks();
-				$this->getNextChunk(true);
+				$this->sendNextChunk();
 				$this->forceMovement = $pos;
 
 				$pk = new MovePlayerPacket;
