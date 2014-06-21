@@ -41,7 +41,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	}
 
 	public function getHolder(){
-		return $this->left;
+		return $this->left->getHolder();
 	}
 
 	public function getItem($index){
