@@ -269,7 +269,7 @@ class Server{
 	 * @return int
 	 */
 	public function getViewDistance(){
-		return $this->getConfigInt("view-distance", 8);
+		return min(11, max($this->getConfigInt("view-distance", 7), 4));
 	}
 
 	/**

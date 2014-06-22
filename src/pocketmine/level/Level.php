@@ -401,8 +401,9 @@ class Level implements ChunkManager, Metadatable{
 						$x = mt_rand(0, 15);
 						$y = mt_rand(0, 15);
 						$z = mt_rand(0, 15);
-						if($section->getBlockId($x, $y, $z) !== 0){
-							$this->getBlock(new Vector3($X * 16 + $x, $Y * 16 + $y, $Z * 16 + $z))->onUpdate(self::BLOCK_UPDATE_RANDOM);
+						if(($blockId = $section->getBlockId($x, $y, $z)) !== 0){
+							$block = Block::get($blockId, $section->getBlockData($x, $y, $z), new Position($X * 16 + $x, $Y * 16 + $y, $Z * 16 + $z, $this));
+							$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
 						}
 					}
 				}
