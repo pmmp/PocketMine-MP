@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\generator\object\TallGrass;
+use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -37,6 +38,10 @@ class Grass extends Solid{
 		return array(
 			array(Item::DIRT, 0, 1),
 		);
+	}
+
+	public function onUpdate($type){
+
 	}
 
 	public function onActivate(Item $item, Player $player = null){

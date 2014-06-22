@@ -79,6 +79,8 @@ interface ChunkSection{
 	 * @param int $z       0-15
 	 * @param int $blockId , if null, do not change
 	 * @param int $meta    0-15, if null, do not change
+	 *
+	 * @return bool
 	 */
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null);
 

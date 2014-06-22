@@ -318,7 +318,9 @@ class Level implements ChunkManager, Metadatable{
 		$pk = new SetTimePacket;
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
-		$this->server->broadcastPacket($this->players, $pk);
+		foreach($this->players as $player){
+			$player->dataPacket($pk);
+		}
 
 		return;
 	}
@@ -357,7 +359,6 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 			$this->changedCount = [];
-
 			if(count($this->changedBlocks) > 0){
 				foreach($this->changedBlocks as $index => $mini){
 					foreach($mini as $blocks){
@@ -369,7 +370,9 @@ class Level implements ChunkManager, Metadatable{
 							$pk->z = $b->z;
 							$pk->block = $b->getID();
 							$pk->meta = $b->getDamage();
-							$this->server->broadcastPacket($this->players, $pk);
+							foreach($this->players as $player){
+								$player->dataPacket($pk);
+							}
 						}
 					}
 				}
@@ -574,8 +577,11 @@ class Level implements ChunkManager, Metadatable{
 				$pk->z = $pos->z;
 				$pk->block = $block->getID();
 				$pk->meta = $block->getDamage();
-				$this->server->broadcastPacket($this->players, $pk);
-			}elseif($direct === false){
+
+				foreach($this->players as $player){
+					$player->dataPacket($pk);
+				}
+			}else{
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}

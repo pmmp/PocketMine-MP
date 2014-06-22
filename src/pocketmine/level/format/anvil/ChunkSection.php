@@ -83,8 +83,15 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
 		$i = ($y << 8) + ($z << 4) + $x;
+
+		$changed = false;
+
 		if($blockId !== null){
-			$this->blocks{$i} = chr($blockId);
+			$blockId = chr($blockId);
+			if($this->blocks{$i} !== $blockId){
+				$this->blocks{$i} = $blockId;
+				$changed = true;
+			}
 		}
 
 		if($meta !== null){
@@ -92,10 +99,18 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 			$old_m = ord($this->data{$i});
 			if(($x & 1) === 0){
 				$this->data{$i} = chr(($old_m & 0xf0) | ($meta & 0x0f));
+				if(($old_m & 0x0f) !== $meta){
+					$changed = true;
+				}
 			}else{
 				$this->data{$i} = chr((($meta & 0x0f) << 4) | ($old_m & 0x0f));
+				if((($old_m & 0xf0) >> 4) !== $meta){
+					$changed = true;
+				}
 			}
 		}
+
+		return $changed;
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
