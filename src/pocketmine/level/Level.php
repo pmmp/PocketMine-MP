@@ -393,14 +393,16 @@ class Level implements ChunkManager, Metadatable{
 
 		foreach($this->usedChunks as $index => $p){
 			Level::getXZ($index, $X, $Z);
+			$chunk = $this->getChunkAt($X, $Z, true);
 			for($Y = 0; $Y < 8; ++$Y){
-				if(!$this->getChunkAt($X, $Z, true)->isSectionEmpty($Y)){
+				if(!$chunk->isSectionEmpty($Y)){
+					$section = $chunk->getSection($Y);
 					for($i = 0; $i < 3; ++$i){
-						$block = $this->getBlock(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
-						if($block instanceof Block){
-							if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
-								$this->updateAround($block, self::BLOCK_UPDATE_NORMAL);
-							}
+						$x = mt_rand(0, 15);
+						$y = mt_rand(0, 15);
+						$z = mt_rand(0, 15);
+						if($section->getBlockId($x, $y, $z) !== 0){
+							$this->getBlock(new Vector3($X * 16 + $x, $Y * 16 + $y, $Z * 16 + $z))->onUpdate(self::BLOCK_UPDATE_RANDOM);
 						}
 					}
 				}

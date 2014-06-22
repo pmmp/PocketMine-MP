@@ -568,6 +568,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 30);
 					return;
 				}
+
 				unset($this->loadQueue[$index]);
 				$this->usedChunks[$index] = [false, 0];
 

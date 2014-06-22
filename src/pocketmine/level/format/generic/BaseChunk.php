@@ -233,7 +233,11 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setSection($fY, ChunkSection $section){
-		$this->sections[(int) $fY] = $section;
+		if(substr_count($section->getIdArray(), "\x00") === 4096 and substr_count($section->getDataArray(), "\x00") === 2048){
+			$this->sections[(int) $fY] = new EmptyChunkSection($fY);
+		}else{
+			$this->sections[(int) $fY] = $section;
+		}
 	}
 
 	public function addEntity(Entity $entity){
