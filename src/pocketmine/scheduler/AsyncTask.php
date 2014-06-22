@@ -33,19 +33,30 @@ abstract class AsyncTask extends \Threaded{
 	private $result;
 
 	public function run(){
-		$this->lock();
+		$this->finished = false;
+		$this->complete = false;
 		$this->result = null;
 		$this->onRun();
 		$this->finished = true;
 		$this->complete = $this->result === null ? true : false;
-		$this->unlock();
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isCompleted(){
-		return $this->complete === true;
+		return $this->synchronized(function(){
+			return $this->complete === true;
+		});
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isFinished(){
+		return $this->synchronized(function(){
+			return $this->finished === true;
+		});
 	}
 
 	/**
@@ -71,13 +82,6 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	public function setResult($result){
 		$this->result = @serialize($result);
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isFinished(){
-		return $this->finished === true;
 	}
 
 	/**

@@ -42,7 +42,6 @@ use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
-
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -69,9 +68,9 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
+use pocketmine\scheduler\ExampleTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
-use pocketmine\scheduler\TickScheduler;
 use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
@@ -118,8 +117,16 @@ class Server{
 	/** @var GenerationRequestManager */
 	private $generationManager = null;
 
-	/** @var TickScheduler */
-	private $tickScheduler = null;
+	/**
+	 * Counts the ticks since the server start
+	 *
+	 * @var int
+	 */
+	private $tickCounter;
+	private $nextTick = 0;
+	private $tickMeasure = 20;
+	private $tickTime = 0;
+	private $inTick = false;
 
 	/** @var \Logger */
 	private $logger;
@@ -150,14 +157,6 @@ class Server{
 
 	/** @var LevelMetadataStore */
 	private $levelMetadata;
-
-	/**
-	 * Counts the ticks since the server start
-	 *
-	 * @var int
-	 */
-	private $tickCounter;
-	private $inTick = false;
 
 	/** @var SourceInterface[] */
 	private $interfaces = [];
@@ -525,7 +524,7 @@ class Server{
 	 * @return float
 	 */
 	public function getTicksPerSecond(){
-		return $this->tickScheduler->getTPS();
+		return round((0.05 / $this->tickMeasure) * 20, 2);
 	}
 
 	/**
@@ -1323,7 +1322,6 @@ class Server{
 		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 		$this->banByIP->load();
 
-		$this->tickScheduler = new TickScheduler(20);
 		$this->scheduler = new ServerScheduler();
 		$this->console = new CommandReader();
 
@@ -1640,7 +1638,6 @@ class Server{
 
 		$this->properties->save();
 
-		$this->tickScheduler->kill();
 		$this->console->kill();
 		foreach($this->interfaces as $interface){
 			$interface->shutdown();
@@ -1682,6 +1679,7 @@ class Server{
 		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
+		$this->scheduler->scheduleAsyncTask(new ExampleTask());
 		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
 			$this->tickProcessorWindows();
 		}else{
@@ -1929,7 +1927,12 @@ class Server{
 	 * Tries to execute a server tick
 	 */
 	public function tick(){
-		if($this->inTick === false and $this->tickScheduler->hasTick()){
+		if($this->inTick === false){
+			$tickTime = microtime(true);
+			if($tickTime < $this->nextTick){
+				return false;
+			}
+
 			$this->inTick = true; //Fix race conditions
 			++$this->tickCounter;
 
@@ -1944,7 +1947,9 @@ class Server{
 				}
 			}
 
-			$this->tickScheduler->doTick();
+			$this->tickMeasure = (($time = microtime(true)) - $this->tickTime);
+			$this->tickTime = $time;
+			$this->nextTick = 0.05 * (0.05 / max(0.05, $this->tickMeasure)) + $time;
 			$this->inTick = false;
 
 			return true;
