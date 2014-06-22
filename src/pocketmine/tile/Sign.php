@@ -22,12 +22,9 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
-use pocketmine\network\protocol\EntityDataPacket;
-use pocketmine\Player;
 
 class Sign extends Spawnable{
 
@@ -45,6 +42,7 @@ class Sign extends Spawnable{
 		if(!isset($nbt->Text4)){
 			$nbt->Text4 = new String("Text4", "");
 		}
+
 		parent::__construct($chunk, $nbt);
 	}
 
@@ -67,30 +65,17 @@ class Sign extends Spawnable{
 		);
 	}
 
-	public function spawnTo(Player $player){
-		if($this->closed){
-			return false;
-		}
-
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		$nbt->setData(new Compound("", array(
+	public function getSpawnCompound(){
+		return new Compound("", array(
 			new String("Text1", $this->namedtag["Text1"]),
 			new String("Text2", $this->namedtag["Text2"]),
-			new String("Text3", $this->namedtag["Text4"]),
+			new String("Text3", $this->namedtag["Text3"]),
 			new String("Text4", $this->namedtag["Text4"]),
 			new String("id", Tile::SIGN),
 			new Int("x", (int) $this->x),
 			new Int("y", (int) $this->y),
 			new Int("z", (int) $this->z)
-		)));
-		$pk = new EntityDataPacket;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->namedtag = $nbt->write();
-		$player->dataPacket($pk);
-
-		return true;
+		));
 	}
 
 }

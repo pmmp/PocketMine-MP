@@ -22,7 +22,6 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-
 use pocketmine\utils\TextFormat;
 
 class StatusCommand extends VanillaCommand{

@@ -34,8 +34,6 @@ use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
-use pocketmine\network\protocol\EntityDataPacket;
-use pocketmine\Player;
 
 class Chest extends Spawnable implements InventoryHolder, Container{
 
@@ -220,37 +218,23 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		return true;
 	}
 
-	public function spawnTo(Player $player){
-		if($this->closed){
-			return false;
-		}
-
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+	public function getSpawnCompound(){
 		if($this->isPaired()){
-			$nbt->setData(new Compound("", array(
+			return new Compound("", array(
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
 				new Int("z", (int) $this->z),
 				new Int("pairx", (int) $this->namedtag->pairx),
 				new Int("pairz", (int) $this->namedtag->pairz)
-			)));
+			));
 		}else{
-			$nbt->setData(new Compound("", array(
+			return new Compound("", array(
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
 				new Int("z", (int) $this->z)
-			)));
+			));
 		}
-
-		$pk = new EntityDataPacket;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->namedtag = $nbt->write();
-		$player->dataPacket($pk);
-
-		return true;
 	}
 }

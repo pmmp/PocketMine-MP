@@ -26,7 +26,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-
 use pocketmine\utils\TextFormat;
 
 class TeleportCommand extends VanillaCommand{

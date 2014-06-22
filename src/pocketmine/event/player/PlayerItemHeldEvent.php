@@ -21,8 +21,8 @@
 
 namespace pocketmine\event\player;
 
-use pocketmine\Event;
 use pocketmine\event\Cancellable;
+use pocketmine\Event;
 use pocketmine\item\Item;
 use pocketmine\Player;
 

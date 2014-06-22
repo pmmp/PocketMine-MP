@@ -525,19 +525,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			unset($this->chunkACK[$identifier]);
 			if(isset($this->usedChunks[$index])){
 				$this->usedChunks[$index][0] = true;
-				if($this->spawned === true){
-					$X = null;
-					$Z = null;
-					Level::getXZ($index, $X, $Z);
-					foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
-						if($entity !== $this){
-							$entity->spawnTo($this);
-						}
-					}
-					foreach($this->getLevel()->getChunkTiles($X, $Z) as $tile){
-						if($tile instanceof Spawnable){
-							$tile->spawnTo($this);
-						}
+				$X = null;
+				$Z = null;
+				Level::getXZ($index, $X, $Z);
+
+				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
+					if($entity !== $this){
+						$entity->spawnTo($this);
 					}
 				}
 			}

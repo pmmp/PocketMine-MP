@@ -206,7 +206,7 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setBiomeColor($x, $z, $R, $G, $B){
-		$this->biomeColors[($z << 4) + $x] = 0x01000000 | (($R & 0xFF) << 16) | (($G & 0xFF) << 8) | ($B & 0xFF);
+		$this->biomeColors[($z << 4) + $x] = 0 | (($R & 0xFF) << 16) | (($G & 0xFF) << 8) | ($B & 0xFF);
 	}
 
 	public function getHighestBlockAt($x, $z){

@@ -37,13 +37,13 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\SimpleChunk;
 use pocketmine\level\generator\Generator;
-
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
@@ -58,6 +58,7 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\tile\Sign;
+use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\ReversePriorityQueue;
@@ -1266,7 +1267,16 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIds . $biomeColors, ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
+		$tiles = "";
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		foreach($chunk->getTiles() as $tile){
+			if($tile instanceof Spawnable){
+				$nbt->setData($tile->getSpawnCompound());
+				$tiles .= $nbt->write();
+			}
+		}
+
+		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIds . $biomeColors . $tiles, ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
 
 		if(ADVANCED_CACHE == true and $Yndex === 0xff){
 			Cache::add($identifier, $ordered, 60);

@@ -22,11 +22,31 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\format\Chunk;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\network\protocol\EntityDataPacket;
 use pocketmine\Player;
 
 abstract class Spawnable extends Tile{
-	public abstract function spawnTo(Player $player);
+
+	public function spawnTo(Player $player){
+		if($this->closed){
+			return false;
+		}
+
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		$nbt->setData($this->getSpawnCompound());
+		$pk = new EntityDataPacket;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->namedtag = $nbt->write();
+		$player->dataPacket($pk);
+
+		return true;
+	}
+
+	public abstract function getSpawnCompound();
 
 	public function __construct(Chunk $chunk, Compound $nbt){
 		parent::__construct($chunk, $nbt);

@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-
 use pocketmine\utils\TextFormat;
 
 class WhitelistCommand extends VanillaCommand{

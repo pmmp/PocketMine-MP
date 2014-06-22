@@ -24,7 +24,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
-
 use pocketmine\utils\TextFormat;
 
 class HelpCommand extends VanillaCommand{
