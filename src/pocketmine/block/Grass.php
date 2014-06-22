@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\generator\object\TallGrass;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -41,7 +42,19 @@ class Grass extends Solid{
 	}
 
 	public function onUpdate($type){
-
+		if($type === Level::BLOCK_UPDATE_RANDOM){
+			//TODO: light levels
+			$x = mt_rand($this->x - 1, $this->x + 1);
+			$y = mt_rand($this->y - 2, $this->y + 2);
+			$z = mt_rand($this->z - 1, $this->z + 1);
+			$block = $this->getLevel()->getBlockIdAt($x, $y, $z);
+			if($block === Block::DIRT){
+				$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
+				if($block->getSide(1) instanceof Transparent){
+					$this->getLevel()->setBlock($block, new Grass());
+				}
+			}
+		}
 	}
 
 	public function onActivate(Item $item, Player $player = null){
