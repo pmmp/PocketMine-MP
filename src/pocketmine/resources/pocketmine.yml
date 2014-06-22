@@ -16,7 +16,7 @@ debug:
  commands: false
 
 chunk-sending:
- per-second: 20
+ per-tick: 1
  compression-level: 7
 
 chunk-gc:

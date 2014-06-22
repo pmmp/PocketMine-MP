@@ -150,11 +150,11 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		$column = "";
 		if(($x & 1) === 0){
 			for($y = 0; $y < 16; $y += 2){
-				$column .= chr((ord($this->data{($y << 7) + $i}) & 0x0f) | ((ord($this->data{(($y + 1) << 7) + $i}) & 0x0f) << 4));
+				$column .= ($this->data{($y << 7) + $i} & "\x0f") | chr((ord($this->data{(($y + 1) << 7) + $i}) & 0x0f) << 4);
 			}
 		}else{
 			for($y = 0; $y < 16; $y += 2){
-				$column .= chr(((ord($this->data{($y << 7) + $i}) & 0xf0) >> 4) | (ord($this->data{(($y + 1) << 7) + $i}) & 0xf0));
+				$column .= chr((ord($this->data{($y << 7) + $i}) & 0xf0) >> 4) | ($this->data{(($y + 1) << 7) + $i} & "\xf0");
 			}
 		}
 
@@ -164,8 +164,14 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	public function getBlockSkyLightColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
-		for($y = 0; $y < 16; $y += 2){
-			$column .= chr((ord($this->skyLight{($y << 7) + $i}) & 0x0f) | ((ord($this->skyLight{(($y + 1) << 7) + $i}) & 0x0f) << 4));
+		if(($x & 1) === 0){
+			for($y = 0; $y < 16; $y += 2){
+				$column .= ($this->skyLight{($y << 7) + $i} & "\x0f") | chr((ord($this->skyLight{(($y + 1) << 7) + $i}) & 0x0f) << 4);
+			}
+		}else{
+			for($y = 0; $y < 16; $y += 2){
+				$column .= chr((ord($this->skyLight{($y << 7) + $i}) & 0xf0) >> 4) | ($this->skyLight{(($y + 1) << 7) + $i} & "\xf0");
+			}
 		}
 
 		return $column;
@@ -174,8 +180,14 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	public function getBlockLightColumn($x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
-		for($y = 0; $y < 16; $y += 2){
-			$column .= chr((ord($this->blockLight{($y << 7) + $i}) & 0x0f) | ((ord($this->blockLight{(($y + 1) << 7) + $i}) & 0x0f) << 4));
+		if(($x & 1) === 0){
+			for($y = 0; $y < 16; $y += 2){
+				$column .= ($this->blockLight{($y << 7) + $i} & "\x0f") | chr((ord($this->blockLight{(($y + 1) << 7) + $i}) & 0x0f) << 4);
+			}
+		}else{
+			for($y = 0; $y < 16; $y += 2){
+				$column .= chr((ord($this->blockLight{($y << 7) + $i}) & 0xf0) >> 4) | ($this->blockLight{(($y + 1) << 7) + $i} & "\xf0");
+			}
 		}
 
 		return $column;
