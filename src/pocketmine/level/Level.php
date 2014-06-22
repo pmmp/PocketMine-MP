@@ -429,6 +429,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->provider->setTime((int) $this->time);
+		$this->provider->saveChunks();
 		$this->nextSave = microtime(true) + 45;
 
 		return true;
