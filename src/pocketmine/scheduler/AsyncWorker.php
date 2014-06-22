@@ -24,13 +24,10 @@ namespace pocketmine\scheduler;
 class AsyncWorker extends \Worker{
 	public $path;
 
-	public function __construct(){
+	public function start($options = PTHREADS_INHERIT_ALL){
 		$this->path = \pocketmine\PATH;
-		return parent::start(PTHREADS_INHERIT_ALL & ~PTHREADS_INHERIT_CLASSES);
-	}
 
-	public function start(){
-
+		return parent::start($options & ~PTHREADS_INHERIT_CLASSES);
 	}
 
 	public function run(){

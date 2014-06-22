@@ -1322,7 +1322,6 @@ class Server{
 		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 		$this->banByIP->load();
 
-		$this->scheduler = new ServerScheduler();
 		$this->console = new CommandReader();
 
 		$version = new VersionString($this->getPocketMineVersion());
@@ -1358,6 +1357,10 @@ class Server{
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
 		));
+
+		ServerScheduler::$WORKERS = $this->getProperty("settings.async-workers", ServerScheduler::$WORKERS);
+
+		$this->scheduler = new ServerScheduler();
 
 		if($this->getConfigBoolean("enable-rcon", false) === true){
 			$this->rcon = new RCON($this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
@@ -1679,7 +1682,7 @@ class Server{
 		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
-		$this->scheduler->scheduleAsyncTask(new ExampleTask());
+
 		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
 			$this->tickProcessorWindows();
 		}else{
