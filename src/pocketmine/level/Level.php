@@ -164,7 +164,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getGenerationManager()->openLevel($this, $generator, $this->provider->getGeneratorOptions());
 
 		$this->folderName = $name;
-
+		$this->updateQueue = new ReversePriorityQueue();
 		$this->startTime = $this->time = (int) $this->provider->getTime();
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave = microtime(true) + 90;
@@ -376,25 +376,27 @@ class Level implements ChunkManager, Metadatable{
 				$this->changedBlocks = [];
 			}
 
-			$X = null;
-			$Z = null;
+		}
 
-			//Do chunk updates
-			while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
-				$block = $this->getBlock($this->updateQueue->extract()["data"]);
-				$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
-			}
+		$X = null;
+		$Z = null;
 
-			foreach($this->usedChunks as $index => $p){
-				Level::getXZ($index, $X, $Z);
-				for($Y = 0; $Y < 8; ++$Y){
-					if(!$this->getChunkAt($X, $Z, true)->isSectionEmpty($Y)){
-						for($i = 0; $i < 3; ++$i){
-							$block = $this->getBlock(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
-							if($block instanceof Block){
-								if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
-									$this->updateAround($block, self::BLOCK_UPDATE_NORMAL);
-								}
+		//Do chunk updates
+		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
+			$block = $this->getBlock($this->updateQueue->extract()["data"]);
+			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
+
+		}
+
+		foreach($this->usedChunks as $index => $p){
+			Level::getXZ($index, $X, $Z);
+			for($Y = 0; $Y < 8; ++$Y){
+				if(!$this->getChunkAt($X, $Z, true)->isSectionEmpty($Y)){
+					for($i = 0; $i < 3; ++$i){
+						$block = $this->getBlock(new Vector3(($X << 4) + mt_rand(0, 15), ($Y << 4) + mt_rand(0, 15), ($Z << 4) + mt_rand(0, 15)));
+						if($block instanceof Block){
+							if($block->onUpdate(self::BLOCK_UPDATE_RANDOM) === self::BLOCK_UPDATE_NORMAL){
+								$this->updateAround($block, self::BLOCK_UPDATE_NORMAL);
 							}
 						}
 					}
