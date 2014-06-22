@@ -1567,6 +1567,9 @@ class Level implements ChunkManager, Metadatable{
 		if(count($this->unloadQueue) > 0){
 			foreach($this->unloadQueue as $index => $chunk){
 
+				if($this->autoSave){
+					$this->provider->saveChunk($chunk->getX(), $chunk->getZ());
+				}
 				//If the chunk can't be unloaded, it stays on the queue
 				if($this->unloadChunk($chunk->getX(), $chunk->getZ(), true)){
 					unset($this->unloadQueue[$index]);
