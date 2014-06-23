@@ -225,7 +225,7 @@ abstract class Entity extends Position implements Metadatable{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getID()]) and $player->chunksLoaded[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())] !== 0xff){
+		if(!isset($this->hasSpawned[$player->getID()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getID()] = $player;
 		}
 	}
@@ -585,20 +585,18 @@ abstract class Entity extends Position implements Metadatable{
 			$this->chunk->removeEntity($this);
 			$this->despawnFromAll();
 			if($this instanceof Player){
-				foreach($this->chunksLoaded as $index => $Yndex){
-					if($Yndex !== 0xff){
-						$X = null;
-						$Z = null;
-						Level::getXZ($index, $X, $Z);
-						foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
-							$entity->despawnFrom($this);
-						}
-
-						$pk = new UnloadChunkPacket();
-						$pk->chunkX = $X;
-						$pk->chunkZ = $Z;
-						$this->dataPacket($pk);
+				foreach($this->usedChunks as $index => $d){
+					$X = null;
+					$Z = null;
+					Level::getXZ($index, $X, $Z);
+					foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
+						$entity->despawnFrom($this);
 					}
+
+					$pk = new UnloadChunkPacket();
+					$pk->chunkX = $X;
+					$pk->chunkZ = $Z;
+					$this->dataPacket($pk);
 				}
 				$this->getLevel()->freeAllChunks($this);
 			}
@@ -606,7 +604,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->setLevel($targetLevel, true); //Hard reference
 		$this->getLevel()->addEntity($this);
 		if($this instanceof Player){
-			$this->chunksLoaded = [];
+			$this->usedChunks = [];
 			$pk = new SetTimePacket();
 			$pk->time = $this->getLevel()->getTime();
 			$pk->started = $this->getLevel()->stopTime == false;

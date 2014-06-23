@@ -139,7 +139,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $startAction = false;
 	protected $sleeping = false;
 
-	protected $usedChunks = [];
+	public $usedChunks = [];
 	protected $loadQueue = [];
 	protected $chunkACK = [];
 	/** @var \pocketmine\scheduler\TaskHandler */
