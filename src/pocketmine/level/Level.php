@@ -351,7 +351,7 @@ class Level implements ChunkManager, Metadatable{
 						$X = null;
 						$Z = null;
 						Level::getXZ($index, $X, $Z);
-						foreach($this->players as $p){
+						foreach($this->getUsingChunk($X, $Z) as $p){
 							$p->unloadChunk($X, $Z);
 						}
 						unset($this->changedBlocks[$index][$Y]);
@@ -370,7 +370,7 @@ class Level implements ChunkManager, Metadatable{
 							$pk->z = $b->z;
 							$pk->block = $b->getID();
 							$pk->meta = $b->getDamage();
-							foreach($this->players as $player){
+							foreach($this->getUsingChunk($b->x >> 4, $b->z >> 4) as $player){
 								$player->dataPacket($pk);
 							}
 						}
@@ -581,7 +581,7 @@ class Level implements ChunkManager, Metadatable{
 				$pk->block = $block->getID();
 				$pk->meta = $block->getDamage();
 
-				foreach($this->players as $player){
+				foreach($this->getUsingChunk($pos->x >> 4, $pos->z >> 4) as $player){
 					$player->dataPacket($pk);
 				}
 			}else{
