@@ -616,7 +616,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function getPosition(){
-		return new Position($this->x, $this->y, $this->z, $this->level);
+		return new Position($this->x, $this->y, $this->z, $this->getLevel());
 	}
 
 	public function collision(){
