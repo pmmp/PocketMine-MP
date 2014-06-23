@@ -41,12 +41,12 @@ class PluginsCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->sendMessage("Plugins " . $this->getPluginList());
+		$sender->sendMessage("Plugins " . $this->getPluginList($sender));
 
 		return true;
 	}
 
-	private function getPluginList(){
+	private function getPluginList(CommandSender $sender){
 		$list = "";
 		foreach(($plugins = $sender->getServer()->getPluginManager()->getPlugins()) as $plugin){
 			if(strlen($list) > 0){
