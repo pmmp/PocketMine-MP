@@ -275,7 +275,7 @@ class Level implements ChunkManager, Metadatable{
 	public function useChunk($X, $Z, Player $player){
 		$index = Level::chunkHash($X, $Z);
 		$this->loadChunk($X, $Z);
-		$this->usedChunks[$index][spl_object_hash($player)] = $player;
+		$this->usedChunks[$index][$player->getID()] = $player;
 	}
 
 	/**
@@ -299,7 +299,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Player $player
 	 */
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[Level::chunkHash($X, $Z)][spl_object_hash($player)]);
+		unset($this->usedChunks[Level::chunkHash($X, $Z)][$player->getID()]);
 	}
 
 	/**

@@ -610,8 +610,9 @@ abstract class Entity extends Position implements Metadatable{
 			$pk->started = $this->getLevel()->stopTime == false;
 			$this->dataPacket($pk);
 		}
-		$this->spawnToAll();
 		$this->chunk = null;
+
+		return true;
 	}
 
 	public function getPosition(){
