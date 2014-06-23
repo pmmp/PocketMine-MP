@@ -1313,6 +1313,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->inventory->setHeldItemSlot($packet->slot);
 				}
 
+				$this->inventory->sendHeldItem($this->hasSpawned);
+
 				if($this->inAction === true){
 					$this->inAction = false;
 					//$this->entity->updateMetadata();
@@ -1369,6 +1371,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						//TODO: Implement adventure mode checks
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							$this->inventory->setItemInHand($item);
+							$this->inventory->sendHeldItem($this->hasSpawned);
 							break;
 						}
 					}
@@ -1494,6 +1497,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->getLevel()->useBreakOn($vector, $item, $this) === true){
 					if(($this->gamemode & 0x01) === 0){
 						$this->inventory->setItemInHand($item);
+						$this->inventory->sendHeldItem($this->hasSpawned);
 					}
 					break;
 				}
