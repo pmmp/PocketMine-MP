@@ -210,7 +210,7 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function getHighestBlockAt($x, $z){
-		for($Y = self::SECTION_COUNT; $Y >= 0; --$Y){
+		for($Y = self::SECTION_COUNT - 1; $Y >= 0; --$Y){
 			if(!$this->isSectionEmpty($Y)){
 				$column = $this->sections[$Y]->getBlockIdColumn($x, $z);
 				for($y = 15; $y >= 0; --$y){

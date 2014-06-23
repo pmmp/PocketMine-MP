@@ -821,8 +821,8 @@ abstract class Entity extends Position implements Metadatable{
 		return $list;
 	}
 
-	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){
-		if($this->setPosition($pos) === true){
+	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch, $force = false){
+		if($this->setPosition($pos, $force) === true){
 			$this->setRotation($yaw, $pitch);
 
 			return true;
@@ -837,14 +837,14 @@ abstract class Entity extends Position implements Metadatable{
 		$this->scheduleUpdate();
 	}
 
-	public function setPosition(Vector3 $pos){
+	public function setPosition(Vector3 $pos, $force = false){
 		if($pos instanceof Position and $pos->getLevel() instanceof Level and $pos->getLevel() !== $this->getLevel()){
 			if($this->switchLevel($pos->getLevel()) === false){
 				return false;
 			}
 		}
 
-		if(!$this->justCreated){
+		if(!$this->justCreated and $force !== true){
 			$ev = new EntityMoveEvent($this, $pos);
 			if($this instanceof Player){
 				for($side = 2; $side <= 5; ++$side){
@@ -936,7 +936,7 @@ abstract class Entity extends Position implements Metadatable{
 		$pos = $ev->getTo();
 
 		$this->setMotion(new Vector3(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw === false ? $this->yaw : $yaw, $pitch === false ? $this->pitch : $pitch) !== false){
+		if($this->setPositionAndRotation($pos, $yaw === false ? $this->yaw : $yaw, $pitch === false ? $this->pitch : $pitch, true) !== false){
 			if($this instanceof Player){
 				$this->airTicks = 300;
 				$this->fallDistance = 0;
