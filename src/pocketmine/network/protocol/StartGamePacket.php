@@ -27,6 +27,9 @@ class StartGamePacket extends DataPacket{
 	public $generator;
 	public $gamemode;
 	public $eid;
+	public $spawnX;
+	public $spawnY;
+	public $spawnZ;
 	public $x;
 	public $y;
 	public $z;
@@ -45,6 +48,9 @@ class StartGamePacket extends DataPacket{
 		$this->putInt($this->generator);
 		$this->putInt($this->gamemode);
 		$this->putInt($this->eid);
+		$this->putInt($this->spawnX);
+		$this->putInt($this->spawnY);
+		$this->putInt($this->spawnZ);
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);

@@ -1186,12 +1186,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->status = 0;
 				$this->directDataPacket($pk);
 
+				if(($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
+					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+				}
+
 				$pk = new StartGamePacket;
 				$pk->seed = $this->getLevel()->getSeed();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
-				$pk->generator = 2; //0 ??, 1 ??, 2 infinite
+				$pk->spawnX = (int) $this->spawnPosition->x;
+				$pk->spawnY = (int) $this->spawnPosition->y;
+				$pk->spawnZ = (int) $this->spawnPosition->z;
+				$pk->generator = 1; //0 old, 1 infinite, 2 flat
 				$pk->gamemode = $this->gamemode & 0x01;
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
 				$this->directDataPacket($pk);
@@ -1199,17 +1206,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk = new SetTimePacket();
 				$pk->time = $this->getLevel()->getTime();
 				$this->directDataPacket($pk);
-
-
-				if(($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
-					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
-
-					$pk = new SetSpawnPositionPacket;
-					$pk->x = (int) $this->spawnPosition->x;
-					$pk->y = (int) $this->spawnPosition->y;
-					$pk->z = (int) $this->spawnPosition->z;
-					$this->dataPacket($pk);
-				}
 
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
