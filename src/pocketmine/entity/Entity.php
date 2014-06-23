@@ -843,12 +843,24 @@ abstract class Entity extends Position implements Metadatable{
 				return false;
 			}
 		}
+
 		if(!$this->justCreated){
-			$this->server->getPluginManager()->callEvent($ev = new EntityMoveEvent($this, $pos));
+			$ev = new EntityMoveEvent($this, $pos);
+			if($this instanceof Player){
+				for($side = 2; $side <= 5; ++$side){
+					$vector = $pos->getSide($side, 2);
+					if(!isset($this->usedChunks[Level::chunkHash($vector->x >> 4, $vector->z >> 4)])){
+						$ev->setCancelled(true);
+						break;
+					}
+				}
+			}
+			$this->server->getPluginManager()->callEvent($ev);
 			if($ev->isCancelled()){
 				return false;
 			}
 		}
+
 		$this->x = $pos->x;
 		$this->y = $pos->y;
 		$this->z = $pos->z;
