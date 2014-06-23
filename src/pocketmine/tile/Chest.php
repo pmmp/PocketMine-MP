@@ -46,6 +46,12 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		$nbt["id"] = Tile::CHEST;
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new ChestInventory($this);
+
+		if(!isset($this->namedtag->Items) or !($this->namedtag->Items instanceof Enum)){
+			$this->namedtag->Items = new Enum("Inventory", []);
+			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
+		}
+
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));
 		}

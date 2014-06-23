@@ -45,6 +45,11 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
 
+		if(!isset($this->namedtag->Items) or !($this->namedtag->Items instanceof Enum)){
+			$this->namedtag->Items = new Enum("Inventory", []);
+			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
+		}
+
 		if(!isset($this->namedtag->BurnTime) or $this->namedtag["BurnTime"] < 0){
 			$this->namedtag->BurnTime = new Short("BurnTime", 0);
 		}
