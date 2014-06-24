@@ -319,11 +319,6 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$holder = $this->getHolder();
-		if($holder instanceof Player and ($holder->getGamemode() & 0x01) === 1){
-			return;
-		}
-
 		$pk = new ContainerSetContentPacket();
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here

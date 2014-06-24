@@ -619,6 +619,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 			$this->teleport($ev->getRespawnPosition());
+
+			//Hack to have the correct amount of slots when changing gamemode
+			$pk = new StartGamePacket;
+			$pk->seed = $this->getLevel()->getSeed();
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$pk->spawnX = (int) $this->spawnPosition->x;
+			$pk->spawnY = (int) $this->spawnPosition->y;
+			$pk->spawnZ = (int) $this->spawnPosition->z;
+			$pk->generator = 1;
+			$pk->gamemode = $this->gamemode & 0x01;
+			$pk->eid = 0;
+			$this->dataPacket($pk);
+
 			$this->spawnToAll();
 
 			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, $this->getName() . " joined the game"));
@@ -918,12 +933,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->gamemode = $gm;
 			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ".\n");
 		}else{
-			$this->blocked = true;
 			$this->gamemode = $gm;
-			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ", you've to do a forced reconnect.\n");
-			$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "close"), array($this->username . " has left the game", "gamemode change")), 30);
-
+			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ".\n");
+			$this->inventory->clearAll();
+			$this->inventory->sendContents($this->getViewers());
+			$this->inventory->sendHeldItem($this->hasSpawned);
 		}
+
+		$this->namedtag->playerGameType = new Int("playerGameType", $this->gamemode);
+
+		$pk = new StartGamePacket;
+		$pk->seed = $this->getLevel()->getSeed();
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->spawnX = (int) $this->spawnPosition->x;
+		$pk->spawnY = (int) $this->spawnPosition->y;
+		$pk->spawnZ = (int) $this->spawnPosition->z;
+		$pk->generator = 1; //0 old, 1 infinite, 2 flat
+		$pk->gamemode = $this->gamemode & 0x01;
+		$pk->eid = 0; //Always use EntityID as zero for the actual player
+		$this->dataPacket($pk);
 		$this->sendSettings();
 
 		return true;
@@ -1204,7 +1234,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->spawnY = (int) $this->spawnPosition->y;
 				$pk->spawnZ = (int) $this->spawnPosition->z;
 				$pk->generator = 1; //0 old, 1 infinite, 2 flat
-				$pk->gamemode = $this->gamemode & 0x01;
+				$pk->gamemode = 0; //Hack to have the correct amount of slots on gamemode change
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
 				$this->directDataPacket($pk);
 
@@ -1300,8 +1330,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$item = $this->inventory->getItem($packet->slot);
 				}
 
-				if(!isset($item) or $packet->slot === -1){
-					$this->inventory->sendSlot($packet->slot, $this);
+				if(!isset($item) or $packet->slot === -1 or $item->getID() !== $packet->item or $item->getDamage() !== $packet->meta){
+					$this->inventory->sendContents($this);
+					break;
 				}elseif(($this->gamemode & 0x01) === Player::CREATIVE){
 					$item = Item::get(
 						Block::$creative[$packet->slot][0],
