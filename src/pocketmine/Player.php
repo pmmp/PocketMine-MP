@@ -58,6 +58,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
@@ -1142,6 +1143,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$nbt["NameTag"] = $this->username;
 				}
 				$this->gamemode = $nbt["playerGameType"] & 0x03;
+				if($this->server->getForceGamemode()){
+					$this->gamemode = $this->server->getGamemode();
+					$nbt->playerGameType = new Int("playerGameType", $this->gamemode);
+				}
 				if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
 					$this->setLevel($this->server->getDefaultLevel(), true);
 					$nbt["Level"] = $this->getLevel()->getName();

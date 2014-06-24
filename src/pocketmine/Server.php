@@ -308,6 +308,13 @@ class Server{
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function getForceGamemode(){
+		return $this->getConfigBoolean("force-gamemode", false);
+	}
+
+	/**
 	 * Returns the gamemode text name
 	 *
 	 * @param int $mode
