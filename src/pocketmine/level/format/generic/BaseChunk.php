@@ -215,7 +215,7 @@ abstract class BaseChunk implements Chunk{
 				$column = $this->sections[$Y]->getBlockIdColumn($x, $z);
 				for($y = 15; $y >= 0; --$y){
 					if($column{$y} !== "\x00"){
-						return $y + $Y << 4;
+						return $y + ($Y << 4);
 					}
 				}
 			}
