@@ -68,6 +68,7 @@ namespace pocketmine {
 	use LogLevel;
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\TextFormat;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 	use raklib\RakLib;

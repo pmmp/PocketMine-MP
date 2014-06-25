@@ -73,6 +73,161 @@ class TextFormat{
 	}
 
 	/**
+	 * Returns an JSON-formatted string with colors/markup
+	 *
+	 * @param string|array $string
+	 *
+	 * @return string
+	 */
+	public static function toJSON($string){
+		if(!is_array($string)){
+			$string = self::tokenize($string);
+		}
+		$newString = [];
+		$pointer =& $newString;
+		$color = "white";
+		$bold = false;
+		$italic = false;
+		$underlined = false;
+		$strikethrough = false;
+		$obfuscated = false;
+
+		foreach($string as $token){
+			switch($token){
+				case TextFormat::BOLD:
+					if($bold === false){
+						$pointer["bold"] = true;
+						$bold = true;
+					}
+					break;
+				case TextFormat::OBFUSCATED:
+					if($obfuscated === false){
+						$pointer["obfuscated"] = true;
+						$obfuscated = true;
+					}
+					break;
+				case TextFormat::ITALIC:
+					if($italic === false){
+						$pointer["italic"] = true;
+						$italic = true;
+					}
+					break;
+				case TextFormat::UNDERLINE:
+					if($underlined === false){
+						$pointer["underlined"] = true;
+						$underlined = true;
+					}
+					break;
+				case TextFormat::STRIKETHROUGH:
+					if($strikethrough === false){
+						$pointer["strikethrough"] = true;
+						$strikethrough = true;
+					}
+					break;
+				case TextFormat::RESET:
+					if($color !== "white"){
+						$pointer["color"] = "white";
+						$color = "white";
+					}
+					if($bold !== false){
+						$pointer["bold"] = false;
+						$bold = false;
+					}
+					if($italic !== false){
+						$pointer["italic"] = false;
+						$italic = false;
+					}
+					if($underlined !== false){
+						$pointer["underlined"] = false;
+						$underlined = false;
+					}
+					if($strikethrough !== false){
+						$pointer["strikethrough"] = false;
+						$strikethrough = false;
+					}
+					if($obfuscated !== false){
+						$pointer["obfuscated"] = false;
+						$obfuscated = false;
+					}
+					break;
+
+				//Colors
+				case TextFormat::BLACK:
+					$pointer["color"] = "black";
+					$color = "black";
+					break;
+				case TextFormat::DARK_BLUE:
+					$pointer["color"] = "dark_blue";
+					$color = "dark_blue";
+					break;
+				case TextFormat::DARK_GREEN:
+					$pointer["color"] = "dark_green";
+					$color = "dark_green";
+					break;
+				case TextFormat::DARK_AQUA:
+					$pointer["color"] = "dark_aqua";
+					$color = "dark_aqua";
+					break;
+				case TextFormat::DARK_RED:
+					$pointer["color"] = "dark_red";
+					$color = "dark_red";
+					break;
+				case TextFormat::DARK_PURPLE:
+					$pointer["color"] = "dark_purple";
+					$color = "dark_purple";
+					break;
+				case TextFormat::GOLD:
+					$pointer["color"] = "gold";
+					$color = "gold";
+					break;
+				case TextFormat::GRAY:
+					$pointer["color"] = "gray";
+					$color = "gray";
+					break;
+				case TextFormat::DARK_GRAY:
+					$pointer["color"] = "dark_gray";
+					$color = "dark_gray";
+					break;
+				case TextFormat::BLUE:
+					$pointer["color"] = "blue";
+					$color = "blue";
+					break;
+				case TextFormat::GREEN:
+					$pointer["color"] = "green";
+					$color = "green";
+					break;
+				case TextFormat::AQUA:
+					$pointer["color"] = "aqua";
+					$color = "aqua";
+					break;
+				case TextFormat::RED:
+					$pointer["color"] = "red";
+					$color = "red";
+					break;
+				case TextFormat::LIGHT_PURPLE:
+					$pointer["color"] = "light_purple";
+					$color = "light_purple";
+					break;
+				case TextFormat::YELLOW:
+					$pointer["color"] = "yellow";
+					$color = "yellow";
+					break;
+				case TextFormat::WHITE:
+					$pointer["color"] = "white";
+					$color = "white";
+					break;
+				default:
+					$pointer["text"] = $token;
+					$pointer["extra"] = [];
+					$pointer =& $pointer["extra"];
+					break;
+			}
+		}
+
+		return json_encode($newString, JSON_UNESCAPED_SLASHES);
+	}
+
+	/**
 	 * Returns an HTML-formatted string with colors/markup
 	 *
 	 * @param string|array $string
