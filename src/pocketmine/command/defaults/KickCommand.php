@@ -61,7 +61,7 @@ class KickCommand extends VanillaCommand{
 			$sender->sendMessage($name . " not found.");
 		}
 
-		Command::broadcastCommandMessage($sender, "Kicked player " . $name . ". With reason:\n" . $reason);
+		Command::broadcastCommandMessage($sender, "Kicked player " . $name . ". With reason: " . $reason);
 
 		return true;
 	}

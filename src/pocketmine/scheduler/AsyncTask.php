@@ -39,16 +39,6 @@ abstract class AsyncTask extends \Threaded{
 		$this->result = null;
 		$this->onRun();
 		$this->finished = true;
-		$this->complete = $this->result === null ? true : false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isCompleted(){
-		return $this->synchronized(function(){
-			return $this->complete === true;
-		});
 	}
 
 	/**

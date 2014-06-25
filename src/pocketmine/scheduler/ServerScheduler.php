@@ -215,7 +215,7 @@ class ServerScheduler{
 
 		if($this->asyncTasks > 0){ //Garbage collector
 			$this->asyncPool->collect(function (AsyncTask $task){
-				if($task->isCompleted() or ($task->isFinished() and !$task->hasResult())){
+				if($task->isFinished()){
 					--$this->asyncTasks;
 					$task->onCompletion(Server::getInstance());
 					return true;

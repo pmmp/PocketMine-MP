@@ -1970,8 +1970,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function kick($reason = ""){
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
 		if(!$ev->isCancelled()){
-			$this->sendMessage("You have been kicked. " . ($reason !== "" ? " Reason: $reason" : "") . "\n");
-			$this->close($ev->getQuitMessage(), $reason);
+			$message = TextFormat::BOLD . "You have been kicked." . ($reason !== "" ? TextFormat::RESET."\nReason: $reason" : "");
+			$this->sendMessage($message);
+			$this->close($ev->getQuitMessage(), $message);
 
 			return true;
 		}
