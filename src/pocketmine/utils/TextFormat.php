@@ -100,6 +100,24 @@ class TextFormat{
 				}
 				$newString["extra"][$index] = [];
 				$pointer =& $newString["extra"][$index];
+				if($color !== "white"){
+					$pointer["color"] = $color;
+				}
+				if($bold !== false){
+					$pointer["bold"] = true;
+				}
+				if($italic !== false){
+					$pointer["italic"] = true;
+				}
+				if($underlined !== false){
+					$pointer["underlined"] = true;
+				}
+				if($strikethrough !== false){
+					$pointer["strikethrough"] = true;
+				}
+				if($obfuscated !== false){
+					$pointer["obfuscated"] = true;
+				}
 				++$index;
 			}
 			switch($token){
