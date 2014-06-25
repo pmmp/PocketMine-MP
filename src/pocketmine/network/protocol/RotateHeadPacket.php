@@ -37,7 +37,7 @@ class RotateHeadPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putInt($this->eid);
-		$this->putByte($this->yaw);
+		$this->putByte((int) ($this->yaw / 360));
 	}
 
 }

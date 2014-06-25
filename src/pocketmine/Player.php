@@ -1283,6 +1283,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->server->getLogger()->warning($this->username." moved too quickly!");
 					}
 				}else{*/
+
 				if(!$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch)){
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
