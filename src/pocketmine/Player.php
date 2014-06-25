@@ -160,7 +160,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	/**
 	 * @var \pocketmine\scheduler\TaskHandler[]
 	 */
-	private $tasks = [];
+	protected $tasks = [];
 
 	/** @var PermissibleBase */
 	private $perm = null;
@@ -728,7 +728,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
-		$identifier = $this->interface->putPacket($this, $packet, $needACK);
+		$identifier = $this->interface->putPacket($this, $packet, $needACK, false);
 
 		if($needACK and $identifier !== null){
 			$this->needACK[$identifier] = false;
@@ -1086,7 +1086,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === false){
 			return;
 		}
-		$packet->decode();
 
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
@@ -2022,7 +2021,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			if($m !== ""){
 				$pk = new MessagePacket;
-				$pk->author = ""; //Do not use this ;)
+				$pk->source = ""; //Do not use this ;)
 				$pk->message = $this->removeFormat === false ? $m : TextFormat::clean($m);
 				$this->dataPacket($pk);
 			}
@@ -2043,8 +2042,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->interface->close($this, $reason);
 			$this->connected = false;
+			$this->interface->close($this, $reason);
 			$this->server->removePlayer($this);
 			$this->getLevel()->freeAllChunks($this);
 			$this->loggedIn = false;

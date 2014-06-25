@@ -38,9 +38,6 @@ class PlayerJoinEvent extends PlayerEvent{
 	}
 
 	/**
-	 * Sets the join message. This won't work on Minecraft: PE <= 0.8.1, since the join message is client-side
-	 * We'll see if Mojang adds this in Minecraft: PE 0.9.0 ^.^
-	 *
 	 * @param string $joinMessage
 	 */
 	public function setJoinMessage($joinMessage){

@@ -68,7 +68,6 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\scheduler\ExampleTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Tile;
@@ -1352,6 +1351,7 @@ class Server{
 			"spawn-animals" => true,
 			"spawn-mobs" => true,
 			"gamemode" => 0,
+			"force-gamemode" => false,
 			"hardcore" => false,
 			"pvp" => true,
 			"difficulty" => 1,
@@ -1487,6 +1487,7 @@ class Server{
 	 * @return int
 	 */
 	public function broadcast($message, $permissions){
+		/** @var CommandSender[] $recipients */
 		$recipients = [];
 		foreach(explode(";", $permissions) as $permission){
 			foreach($this->pluginManager->getPermissionSubscriptions($permission) as $permissible){
@@ -1495,6 +1496,7 @@ class Server{
 				}
 			}
 		}
+
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
@@ -1633,7 +1635,7 @@ class Server{
 		$this->pluginManager->disablePlugins();
 
 		foreach($this->players as $player){
-			$player->kick($this->getProperty("settings.shutdown-message", "Server closed"));
+			$player->close($this->getProperty("settings.shutdown-message", "Server closed"), "server closed");
 		}
 
 		foreach($this->getLevels() as $level){

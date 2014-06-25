@@ -149,7 +149,9 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
-			$this->players[$identifier]->handleDataPacket($this->getPacket($packet->buffer));
+			$pk = $this->getPacket($packet->buffer);
+			$pk->decode();
+			$this->players[$identifier]->handleDataPacket($pk);
 		}
 	}
 
