@@ -58,14 +58,19 @@ class TeleportCommand extends VanillaCommand{
 				$target = $sender;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
-
 				return true;
+			}
+			if(count($args) === 1){
+				$target = $sender->getServer()->getPlayer($args[0]);
+				if($target === null){
+					$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
+					return true;
+				}
 			}
 		}else{
 			$target = $sender->getServer()->getPlayer($args[0]);
 			if($target === null){
 				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
-
 				return true;
 			}
 			if(count($args) === 2){
@@ -73,7 +78,6 @@ class TeleportCommand extends VanillaCommand{
 				$target = $sender->getServer()->getPlayer($args[1]);
 				if($target === null){
 					$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[1]);
-
 					return true;
 				}
 			}

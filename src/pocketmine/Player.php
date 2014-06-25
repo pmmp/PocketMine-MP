@@ -1970,7 +1970,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function kick($reason = ""){
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
 		if(!$ev->isCancelled()){
-			$message = TextFormat::BOLD . "You have been kicked." . ($reason !== "" ? TextFormat::RESET."\nReason: $reason" : "");
+			$message = $reason !== "" ? $reason : "Kicked from server";
 			$this->sendMessage($message);
 			$this->close($ev->getQuitMessage(), $message);
 
@@ -2044,7 +2044,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
-			$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . $reason);
+			$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . str_replace(["\n", "\r"], [" ", ""], $reason));
 			$this->windows = new \SplObjectStorage();
 			$this->windowIndex = [];
 			$this->usedChunks = [];
