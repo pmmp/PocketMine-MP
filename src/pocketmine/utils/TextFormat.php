@@ -91,8 +91,17 @@ class TextFormat{
 		$underlined = false;
 		$strikethrough = false;
 		$obfuscated = false;
+		$index = 0;
 
 		foreach($string as $token){
+			if(isset($pointer["text"])){
+				if(!isset($newString["extra"])){
+					$newString["extra"] = [];
+				}
+				$newString["extra"][$index] = [];
+				$pointer =& $newString["extra"][$index];
+				++$index;
+			}
 			switch($token){
 				case TextFormat::BOLD:
 					if($bold === false){
@@ -218,9 +227,15 @@ class TextFormat{
 					break;
 				default:
 					$pointer["text"] = $token;
-					$pointer["extra"] = [];
-					$pointer =& $pointer["extra"];
 					break;
+			}
+		}
+
+		if(isset($newString["extra"])){
+			foreach($newString["extra"] as $k => $d){
+				if(!isset($d["text"])){
+					unset($newString["extra"][$k]);
+				}
 			}
 		}
 
