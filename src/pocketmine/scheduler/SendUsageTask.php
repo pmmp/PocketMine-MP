@@ -21,6 +21,7 @@
 
 namespace pocketmine\scheduler;
 
+use pocketmine\Server;
 use pocketmine\utils\Utils;
 
 class SendUsageTask extends AsyncTask{
@@ -35,6 +36,10 @@ class SendUsageTask extends AsyncTask{
 
 	public function onRun(){
 		Utils::postURL($this->endpoint, unserialize($this->data));
+	}
+
+	public function onCompletion(Server $server){
+
 	}
 
 }
