@@ -620,20 +620,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->teleport($ev->getRespawnPosition());
 
-			//Hack to have the correct amount of slots when changing gamemode
-			$pk = new StartGamePacket;
-			$pk->seed = $this->getLevel()->getSeed();
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->spawnX = (int) $this->spawnPosition->x;
-			$pk->spawnY = (int) $this->spawnPosition->y;
-			$pk->spawnZ = (int) $this->spawnPosition->z;
-			$pk->generator = 1;
-			$pk->gamemode = $this->gamemode & 0x01;
-			$pk->eid = 0;
-			$this->dataPacket($pk);
-
 			$this->spawnToAll();
 
 			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, $this->getName() . " joined the game"));
@@ -1233,7 +1219,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->spawnY = (int) $this->spawnPosition->y;
 				$pk->spawnZ = (int) $this->spawnPosition->z;
 				$pk->generator = 1; //0 old, 1 infinite, 2 flat
-				$pk->gamemode = 0; //Hack to have the correct amount of slots on gamemode change
+				$pk->gamemode = $this->gamemode & 0x01;
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
 				$this->directDataPacket($pk);
 
