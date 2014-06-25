@@ -1635,7 +1635,7 @@ class Server{
 		$this->pluginManager->disablePlugins();
 
 		foreach($this->players as $player){
-			$player->close($this->getProperty("settings.shutdown-message", "Server closed"), "server closed");
+			$player->close($player->getName() . " has left the game", $this->getProperty("settings.shutdown-message", "Server closed"));
 		}
 
 		foreach($this->getLevels() as $level){

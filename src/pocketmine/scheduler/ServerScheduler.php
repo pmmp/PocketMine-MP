@@ -25,6 +25,7 @@
 namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
@@ -216,7 +217,7 @@ class ServerScheduler{
 			$this->asyncPool->collect(function (AsyncTask $task){
 				if($task->isCompleted() or ($task->isFinished() and !$task->hasResult())){
 					--$this->asyncTasks;
-
+					$task->onCompletion(Server::getInstance());
 					return true;
 				}
 

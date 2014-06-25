@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\scheduler;
+use pocketmine\Server;
 
 /**
  * Class used to run async tasks in other threads.
@@ -90,5 +91,14 @@ abstract class AsyncTask extends \Threaded{
 	 * @return void
 	 */
 	public abstract function onRun();
+
+	/**
+	 * Actions to execute when completed (on main thread)
+	 *
+	 * @param Server $server
+	 *
+	 * @return void
+	 */
+	public abstract function onCompletion(Server $server);
 
 }

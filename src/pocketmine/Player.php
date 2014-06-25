@@ -1142,7 +1142,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				foreach($this->server->getOnlinePlayers() as $p){
 					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
 						if($p->kick("logged in from another location") === false){
-							$this->close($this->getName() . " has left the game", "already logged in");
+							$this->close($this->getName() . " has left the game", "Already logged in");
 
 							return;
 						}else{
@@ -1190,16 +1190,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				parent::__construct($this->getLevel()->getChunkAt($nbt["Pos"][0], $nbt["Pos"][2], true), $nbt);
 				$this->loggedIn = true;
 
-				if(($this->gamemode & 0x01) === 0x01){
-					$this->inventory->setHeldItemSlot(0);
-					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
-				}
-
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close($ev->getKickMessage(), "Plugin reason");
 
 					return;
+				}
+
+				if(($this->gamemode & 0x01) === 0x01){
+					$this->inventory->setHeldItemSlot(0);
+					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
 				}
 
 				$pk = new LoginStatusPacket;
