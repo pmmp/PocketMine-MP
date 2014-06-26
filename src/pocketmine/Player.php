@@ -1267,13 +1267,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
-				if($this->forceMovement instanceof Vector3){
+				/*if($this->forceMovement instanceof Vector3){
 					if($this->forceMovement->distance($newPos) <= 0.7){
 						$this->forceMovement = false;
 					}else{
 						$this->setPosition($this->forceMovement);
 					}
-				}
+				}*/
 				/*$speed = $this->entity->getSpeedMeasure();
 				if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
 					if($this->lastCorrect instanceof Vector3){
