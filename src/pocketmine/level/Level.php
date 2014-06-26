@@ -659,21 +659,19 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null){
 		$target = $this->getBlock($vector);
-
-		if($player instanceof Player){
-			$lastTime = $player->lastBreak - 0.2; //TODO: replace with true lag
-			if(($player->getGamemode() & 0x01) === 1 and ($lastTime + 0.15) >= microtime(true)){
-				return false;
-			}elseif(($lastTime + $target->getBreakTime($item)) >= microtime(true)){
-				return false;
-			}
-			$player->lastBreak = microtime(true);
-		}
-
 		//TODO: Adventure mode checks
 
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
+
+			$lastTime = $player->lastBreak - 0.1; //TODO: replace with true lag
+			if(($player->getGamemode() & 0x01)){
+				$ev->setInstaBreak(true);
+			}elseif(($lastTime + $target->getBreakTime($item)) >= microtime(true)){
+				$ev->setCancelled(true);
+			}
+			$player->lastBreak = microtime(true);
+
 			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
 				$ev->setCancelled();
 			}
