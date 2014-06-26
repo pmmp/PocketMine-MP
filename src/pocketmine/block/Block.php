@@ -351,7 +351,6 @@ abstract class Block extends Position implements Metadatable{
 		[Item::CHEST, 0],
 		[Item::FURNACE, 0],
 		//TODO: End Portal
-		//TODO: End Portal (filled)
 		[Item::DANDELION, 0],
 		[Item::POPPY, 0],
 		//TODO: blue orchid
@@ -649,6 +648,7 @@ abstract class Block extends Position implements Metadatable{
 				self::BEETROOT_BLOCK => new Beetroot(),
 				self::STONECUTTER => new Stonecutter(),
 				self::GLOWING_OBSIDIAN => new GlowingObsidian(),
+				self::NETHER_REACTOR => new NetherReactor(),
 			);
 		}
 	}
