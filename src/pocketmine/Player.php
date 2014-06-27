@@ -622,7 +622,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->spawnToAll();
 
-			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, $this->getName() . " joined the game"));
+			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
 			if(strlen(trim($ev->getJoinMessage())) > 0){
 				$this->server->broadcastMessage($ev->getJoinMessage());
 			}
@@ -1117,17 +1117,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
-					$this->close($ev->getKickMessage(), "Plugin reason");
+					$this->close("", $ev->getKickMessage());
 
 					return;
 				}
 
 				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
-					$this->close($this->username . " has left the game", "Server is white-listed");
+					$this->close(TextFormat::YELLOW . $this->username . " has left the game", "Server is white-listed");
 
 					return;
 				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
-					$this->close($this->username . " has left the game", "You are banned");
+					$this->close(TextFormat::YELLOW . $this->username . " has left the game", "You are banned");
 
 					return;
 				}
@@ -1142,7 +1142,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				foreach($this->server->getOnlinePlayers() as $p){
 					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
 						if($p->kick("logged in from another location") === false){
-							$this->close($this->getName() . " has left the game", "Already logged in");
+							$this->close(TextFormat::YELLOW . $this->getName() . " has left the game", "Logged in from another location");
 
 							return;
 						}else{
@@ -1173,7 +1173,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if(!($nbt instanceof Compound)){
-					$this->close($this->username . " has left the game", "invalid data");
+					$this->close(TextFormat::YELLOW . $this->username . " has left the game", "Invalid data");
 
 					return;
 				}
@@ -1192,7 +1192,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
-					$this->close($ev->getKickMessage(), "Plugin reason");
+					$this->close(TextFormat::YELLOW . $this->username . " has left the game", $ev->getKickMessage());
 
 					return;
 				}

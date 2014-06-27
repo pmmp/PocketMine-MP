@@ -77,6 +77,7 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\RakLib;
 use raklib\server\RakLibServer;
@@ -118,7 +119,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			$this->identifers->detach($player);
 			unset($this->players[$identifier]);
 			unset($this->identifiersACK[$identifier]);
-			$player->close($player->getName() . " has left the game", $reason);
+			$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $reason);
 		}
 	}
 

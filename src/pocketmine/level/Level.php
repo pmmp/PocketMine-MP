@@ -62,6 +62,7 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\ReversePriorityQueue;
+use pocketmine\utils\TextFormat;
 use raklib\Binary;
 
 
@@ -237,7 +238,7 @@ class Level implements ChunkManager, Metadatable{
 		$defaultLevel = $this->server->getDefaultLevel();
 		foreach($this->getPlayers() as $player){
 			if($this === $defaultLevel or $defaultLevel === null){
-				$player->close($player->getName() . " has left the game", "forced default level unload");
+				$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", "Forced default level unload");
 			}elseif($defaultLevel instanceof Level){
 				$player->teleport($this->server->getDefaultLevel()->getSafeSpawn());
 			}
