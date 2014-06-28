@@ -70,7 +70,8 @@ class Slab extends Transparent{
 
 				return true;
 			}
-		}elseif(!($player instanceof Player) or !$player->inBlock($block)){
+			//TODO: check for collision
+		}elseif(!($player instanceof Player)){
 			if($block->getID() === self::SLAB){
 				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
