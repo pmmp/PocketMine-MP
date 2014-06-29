@@ -414,13 +414,6 @@ rm -r -f ./zlib
 	fi
 echo " done!"
 
-
-if [ "$DO_STATIC" == "yes" ]; then
-	EXTRA_FLAGS="--enable-static --disable-shared"
-else
-	EXTRA_FLAGS="--disable-static --enable-shared"
-fi
-
 export jm_cv_func_working_malloc=yes
 export ac_cv_func_malloc_0_nonnull=yes
 export jm_cv_func_working_realloc=yes
@@ -438,7 +431,8 @@ rm -f config.sub
 download_file "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" > config.sub
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
-$EXTRA_FLAGS \
+--enable-static \
+--disable-shared \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 sed -i=".backup" 's,/* #undef malloc */,#undef malloc,' config.h
 sed -i=".backup" 's,/* #undef realloc */,#undef realloc,' config.h
@@ -459,7 +453,8 @@ echo -n " checking..."
 cd gmp
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
-$EXTRA_FLAGS \
+--enable-static \
+--disable-shared \
 $CONFIGURE_FLAGS ABI="$GMP_ABI" >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
@@ -784,8 +779,6 @@ if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	install_name_tool -change "$DIR/bin/php5/lib/libmenu.6.0.dylib" "@loader_path/../lib/libmenu.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libncurses.6.0.dylib" "@loader_path/../lib/libncurses.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libpanel.6.0.dylib" "@loader_path/../lib/libpanel.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
-	install_name_tool -change "$DIR/bin/php5/lib/libgmp.10.dylib" "@loader_path/../lib/libgmp.10.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
-	install_name_tool -change "$DIR/bin/php5/lib/libmcrypt.4.4.8.dylib" "@loader_path/../lib/libmcrypt.4.4.8.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libssl.1.0.0.dylib" "@loader_path/../lib/libssl.1.0.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libssl.1.0.0.dylib" "@loader_path/../lib/libssl.1.0.0.dylib" "$DIR/bin/php5/lib/libcurl.4.dylib" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libcrypto.1.0.0.dylib" "@loader_path/../lib/libcrypto.1.0.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
