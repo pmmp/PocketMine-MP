@@ -440,6 +440,7 @@ RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 $EXTRA_FLAGS \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 sed -i=".backup" 's,/* #undef malloc */,#undef malloc,' config.h
+sed -i=".backup" 's,/* #undef realloc */,#undef realloc,' config.h
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
