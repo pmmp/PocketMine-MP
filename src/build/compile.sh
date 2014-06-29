@@ -128,7 +128,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX --build=$TOOLCHAIN_PREFIX"
 		OPENSSL_TARGET="mingw"
 		IS_WINDOWS="yes"
-		GMP_ABI=32
+		GMP_ABI="32"
 		echo "[INFO] Cross-compiling for Windows 32-bit"
 	elif [ "$COMPILE_TARGET" == "win64" ]; then
 		TOOLCHAIN_PREFIX="x86_64-w64-mingw32"
@@ -139,7 +139,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX --build=$TOOLCHAIN_PREFIX"
 		OPENSSL_TARGET="mingw"
 		IS_WINDOWS="yes"
-		GMP_ABI=64
+		GMP_ABI="64"
 		echo "[INFO] Cross-compiling for Windows 64-bit"
 	elif [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
@@ -186,7 +186,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		OPENSSL_TARGET="darwin64-x86_64-cc"
 		CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
 		ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
-		GMP_ABI=32
+		GMP_ABI="32"
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
@@ -214,14 +214,14 @@ elif [ "$COMPILE_TARGET" == "linux" ] || [ "$COMPILE_TARGET" == "linux32" ]; the
 	[ -z "$mtune" ] && mtune=pentium4;
 	CFLAGS="$CFLAGS -m32";
 	OPENSSL_TARGET="linux-generic32"
-	GMP_ABI=32
+	GMP_ABI="32"
 	echo "[INFO] Compiling for Linux x86"
 elif [ "$COMPILE_TARGET" == "linux64" ]; then
 	[ -z "$march" ] && march=x86-64;
 	[ -z "$mtune" ] && mtune=nocona;
 	CFLAGS="$CFLAGS -m64"
 	OPENSSL_TARGET="linux-x86_64"
-	GMP_ABI=64
+	GMP_ABI="64"
 	echo "[INFO] Compiling for Linux x86_64"
 elif [ "$COMPILE_TARGET" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
@@ -238,7 +238,7 @@ elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
 	OPENSSL_TARGET="darwin-i386-cc"
 	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
 	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
-	GMP_ABI=32
+	GMP_ABI="32"
 	echo "[INFO] Compiling for Intel MacOS x86"
 elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
@@ -249,7 +249,7 @@ elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	OPENSSL_TARGET="darwin64-x86_64-cc"
 	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
 	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
-	GMP_ABI=64
+	GMP_ABI="64"
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$COMPILE_TARGET" == "ios" ]; then
 	[ -z "$march" ] && march=armv7-a;
@@ -261,13 +261,13 @@ elif [ -z "$CFLAGS" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
 		CFLAGS="-m64 $CFLAGS"
 		OPENSSL_TARGET="linux-x86_64"
-		GMP_ABI=64
+		GMP_ABI="64"
 	else
 		echo "[INFO] Compiling for current machine using 32-bit"
 		CFLAGS="-m32 $CFLAGS"
 		OPENSSL_TARGET="linux-generic32"
-		GMP_ABI=32
-GM	fi
+		GMP_ABI="32"
+	fi
 fi
 
 echo "#include <stdio.h> \
