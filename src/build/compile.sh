@@ -436,6 +436,7 @@ RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
 $EXTRA_FLAGS \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+sed -i=".backup" 's,/* #undef malloc */,#undef malloc,' config.h
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
