@@ -1,10 +1,13 @@
 #!/bin/bash
-PHP_VERSION="5.5.13"
+PHP_VERSION="5.5.14"
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
-OPENSSL_VERSION="1.0.1g"
-CURL_VERSION="curl-7_36_0"
+OPENSSL_VERSION="1.0.1h"
+LIBMCRYPT_VERSION="2.5.8"
+GMP_VERSION="6.0.0a"
+GMP_VERSION_DIR="6.0.0"
+CURL_VERSION="curl-7_37_0"
 READLINE_VERSION="6.3"
 NCURSES_VERSION="5.9"
 PHPNCURSES_VERSION="1.0.2"
@@ -381,8 +384,8 @@ else
 fi
 
 #zlib
-download_file "https://github.com/madler/zlib/archive/v$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 echo -n "[zlib] downloading $ZLIB_VERSION..."
+download_file "https://github.com/madler/zlib/archive/v$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
@@ -398,6 +401,51 @@ rm -r -f ./zlib
 	if [ "$DO_STATIC" != "yes" ]; then
 		rm -f "$DIR/bin/php5/lib/libz.a"
 	fi
+echo " done!"
+
+
+if [ "$DO_STATIC" == "yes" ]; then
+	EXTRA_FLAGS="--enable-static --disable-shared"
+else
+	EXTRA_FLAGS="--disable-static --enable-shared"
+fi
+
+#mcrypt
+echo -n "[mcrypt] downloading $LIBMCRYPT_VERSION..."
+download_file "http://sourceforge.net/projects/mcrypt/files/Libmcrypt/$LIBMCRYPT_VERSION/libmcrypt-$LIBMCRYPT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+mv libmcrypt-$LIBMCRYPT_VERSION libmcrypt
+echo -n " checking..."
+cd libmcrypt
+RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
+--disable-posix-threads \
+$EXTRA_FLAGS \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make -j $THREADS >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+echo -n " cleaning..."
+cd ..
+rm -r -f ./libmcrypt
+echo " done!"
+
+#GMP
+echo -n "[GMP] downloading $GMP_VERSION..."
+download_file "https://gmplib.org/download/gmp/gmp-$GMP_VERSION.tar.bz2" | tar -jx >> "$DIR/install.log" 2>&1
+mv gmp-$GMP_VERSION_DIR gmp
+echo -n " checking..."
+cd gmp
+RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
+--disable-posix-threads \
+$EXTRA_FLAGS \
+$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+echo -n " compiling..."
+make -j $THREADS >> "$DIR/install.log" 2>&1
+echo -n " installing..."
+make install >> "$DIR/install.log" 2>&1
+echo -n " cleaning..."
+cd ..
+rm -r -f ./gmp
 echo " done!"
 
 if [ "$COMPILE_OPENSSL" == "yes" ] || [ "$COMPILE_CURL" != "no" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
@@ -646,6 +694,8 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --with-zlib="$DIR/bin/php5" \
 --with-zlib-dir="$DIR/bin/php5" \
 --with-yaml="$DIR/bin/php5" \
+--with-mcrypt="$DIR/bin/php5" \
+--with-gmp="$DIR/bin/php5" \
 $HAVE_NCURSES \
 $HAVE_READLINE \
 $HAS_POCKETMINE \
@@ -707,6 +757,8 @@ if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	install_name_tool -change "$DIR/bin/php5/lib/libmenu.6.0.dylib" "@loader_path/../lib/libmenu.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libncurses.6.0.dylib" "@loader_path/../lib/libncurses.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libpanel.6.0.dylib" "@loader_path/../lib/libpanel.6.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libgmp.10.dylib" "@loader_path/../lib/libgmp.10.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
+	install_name_tool -change "$DIR/bin/php5/lib/libmcrypt.4.4.8.dylib" "@loader_path/../lib/libmcrypt.4.4.8.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libssl.1.0.0.dylib" "@loader_path/../lib/libssl.1.0.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libssl.1.0.0.dylib" "@loader_path/../lib/libssl.1.0.0.dylib" "$DIR/bin/php5/lib/libcurl.4.dylib" >> "$DIR/install.log" 2>&1
 	install_name_tool -change "$DIR/bin/php5/lib/libcrypto.1.0.0.dylib" "@loader_path/../lib/libcrypto.1.0.0.dylib" "$DIR/bin/php5/bin/php" >> "$DIR/install.log" 2>&1
