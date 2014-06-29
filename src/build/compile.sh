@@ -710,6 +710,10 @@ else
 	sed 's:@PREFIX@:$DIR/bin/php5:' ./main/config.w32.h.in > ./wmain/config.w32.h 2>> "$DIR/install.log"
 fi
 
+if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
+	sed -i=".backup" 's/flock_type=unknown/flock_type=bsd/' ./configure
+fi
+
 RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
