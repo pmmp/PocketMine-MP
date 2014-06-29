@@ -149,6 +149,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
 		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
+		LDFLAGS="-static -uclibc -Wl,-Bdynamic"
 		echo "[INFO] Cross-compiling for Android ARMv6"
 		OPENSSL_TARGET="android"
 	elif [ "$COMPILE_TARGET" == "android-armv7" ]; then
@@ -159,6 +160,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		export CC="$TOOLCHAIN_PREFIX-gcc"
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --enable-static-link --disable-ipv6"
 		CFLAGS="-static -uclibc -Wl,-Bdynamic $CFLAGS"
+		LDFLAGS="-static -uclibc -Wl,-Bdynamic"
 		echo "[INFO] Cross-compiling for Android ARMv7"
 		OPENSSL_TARGET="android-armv7"
 	elif [ "$COMPILE_TARGET" == "rpi" ]; then
