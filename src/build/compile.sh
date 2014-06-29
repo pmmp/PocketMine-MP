@@ -712,6 +712,7 @@ fi
 
 if [ "$(uname -s)" == "Darwin" ] && [ "$IS_CROSSCOMPILE" != "yes" ]; then
 	sed -i=".backup" 's/flock_type=unknown/flock_type=bsd/' ./configure
+	export EXTRA_CFLAGS=-lresolv
 fi
 
 RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
