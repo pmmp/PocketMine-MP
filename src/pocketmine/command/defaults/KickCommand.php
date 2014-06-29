@@ -51,12 +51,8 @@ class KickCommand extends VanillaCommand{
 		$name = array_shift($args);
 		$reason = trim(implode(" ", $args));
 
-		if($reason === ""){
-			$reason = "Kicked by an operator.";
-		}
-
 		if(($player = $sender->getServer()->getPlayer($name)) instanceof Player){
-			$player->kick("Kicked by admin.");
+			$player->kick($reason);
 		}else{
 			$sender->sendMessage($name . " not found.");
 		}

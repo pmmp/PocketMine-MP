@@ -1969,9 +1969,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @return bool
 	 */
 	public function kick($reason = ""){
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, "Kicked player " . $this->username . "." . ($reason !== "" ? " With reason: $reason" : "")));
+		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, TextFormat::YELLOW . $this->username . " has left the game"));
 		if(!$ev->isCancelled()){
-			$message = $reason !== "" ? $reason : "Kicked from server";
+			$message = "Kicked by admin.". ($reason !== "" ? " Reason: ". $reason : "");
 			$this->sendMessage($message);
 			$this->close($ev->getQuitMessage(), $message);
 
