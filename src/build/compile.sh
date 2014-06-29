@@ -432,7 +432,6 @@ download_file "http://sourceforge.net/projects/mcrypt/files/Libmcrypt/$LIBMCRYPT
 mv libmcrypt-$LIBMCRYPT_VERSION libmcrypt
 echo -n " checking..."
 cd libmcrypt
-./buildconf --force >> "$DIR/install.log" 2>&1
 rm -f config.guess
 download_file "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" > config.guess
 rm -f config.sub
