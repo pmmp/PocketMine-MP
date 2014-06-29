@@ -421,6 +421,9 @@ else
 	EXTRA_FLAGS="--disable-static --enable-shared"
 fi
 
+export jm_cv_func_working_malloc=yes
+export ac_cv_func_malloc_0_nonnull=yes
+
 #mcrypt
 echo -n "[mcrypt] downloading $LIBMCRYPT_VERSION..."
 download_file "http://sourceforge.net/projects/mcrypt/files/Libmcrypt/$LIBMCRYPT_VERSION/libmcrypt-$LIBMCRYPT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -452,7 +455,6 @@ download_file "https://gmplib.org/download/gmp/gmp-$GMP_VERSION.tar.bz2" | tar -
 mv gmp-$GMP_VERSION_DIR gmp
 echo -n " checking..."
 cd gmp
-export ac_cv_func_malloc_0_nonnull=yes
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
 $EXTRA_FLAGS \
