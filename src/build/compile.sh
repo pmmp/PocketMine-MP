@@ -116,6 +116,8 @@ while getopts "::t:oj:srcxzff:" OPTION; do
 	esac
 done
 
+GMP_ABI=""
+
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 	if [ "$COMPILE_TARGET" == "win" ] || [ "$COMPILE_TARGET" == "win32" ]; then
 		TOOLCHAIN_PREFIX="i686-w64-mingw32"
@@ -126,6 +128,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX --build=$TOOLCHAIN_PREFIX"
 		OPENSSL_TARGET="mingw"
 		IS_WINDOWS="yes"
+		GMP_ABI=32
 		echo "[INFO] Cross-compiling for Windows 32-bit"
 	elif [ "$COMPILE_TARGET" == "win64" ]; then
 		TOOLCHAIN_PREFIX="x86_64-w64-mingw32"
@@ -136,6 +139,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		CONFIGURE_FLAGS="--host=$TOOLCHAIN_PREFIX --target=$TOOLCHAIN_PREFIX --build=$TOOLCHAIN_PREFIX"
 		OPENSSL_TARGET="mingw"
 		IS_WINDOWS="yes"
+		GMP_ABI=64
 		echo "[INFO] Cross-compiling for Windows 64-bit"
 	elif [ "$COMPILE_TARGET" == "android" ] || [ "$COMPILE_TARGET" == "android-armv6" ]; then
 		COMPILE_FOR_ANDROID=yes
@@ -182,6 +186,7 @@ if [ "$IS_CROSSCOMPILE" == "yes" ]; then
 		OPENSSL_TARGET="darwin64-x86_64-cc"
 		CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
 		ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
+		GMP_ABI=32
 		echo "[INFO] Cross-compiling for Intel MacOS"
 	elif [ "$COMPILE_TARGET" == "ios" ] || [ "$COMPILE_TARGET" == "ios-armv6" ]; then
 		[ -z "$march" ] && march=armv6;
@@ -209,12 +214,14 @@ elif [ "$COMPILE_TARGET" == "linux" ] || [ "$COMPILE_TARGET" == "linux32" ]; the
 	[ -z "$mtune" ] && mtune=pentium4;
 	CFLAGS="$CFLAGS -m32";
 	OPENSSL_TARGET="linux-generic32"
+	GMP_ABI=32
 	echo "[INFO] Compiling for Linux x86"
 elif [ "$COMPILE_TARGET" == "linux64" ]; then
 	[ -z "$march" ] && march=x86-64;
 	[ -z "$mtune" ] && mtune=nocona;
 	CFLAGS="$CFLAGS -m64"
 	OPENSSL_TARGET="linux-x86_64"
+	GMP_ABI=64
 	echo "[INFO] Compiling for Linux x86_64"
 elif [ "$COMPILE_TARGET" == "rpi" ]; then
 	[ -z "$march" ] && march=armv6zk;
@@ -231,6 +238,7 @@ elif [ "$COMPILE_TARGET" == "mac" ] || [ "$COMPILE_TARGET" == "mac32" ]; then
 	OPENSSL_TARGET="darwin-i386-cc"
 	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
 	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
+	GMP_ABI=32
 	echo "[INFO] Compiling for Intel MacOS x86"
 elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	[ -z "$march" ] && march=core2;
@@ -241,6 +249,7 @@ elif [ "$COMPILE_TARGET" == "mac64" ]; then
 	OPENSSL_TARGET="darwin64-x86_64-cc"
 	CFLAGS="$CFLAGS -Qunused-arguments -Wno-error=unused-command-line-argument-hard-error-in-future"
 	ARCHFLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
+	GMP_ABI=64
 	echo "[INFO] Compiling for Intel MacOS x86_64"
 elif [ "$COMPILE_TARGET" == "ios" ]; then
 	[ -z "$march" ] && march=armv7-a;
@@ -252,11 +261,13 @@ elif [ -z "$CFLAGS" ]; then
 		echo "[INFO] Compiling for current machine using 64-bit"
 		CFLAGS="-m64 $CFLAGS"
 		OPENSSL_TARGET="linux-x86_64"
+		GMP_ABI=64
 	else
 		echo "[INFO] Compiling for current machine using 32-bit"
 		CFLAGS="-m32 $CFLAGS"
 		OPENSSL_TARGET="linux-generic32"
-	fi
+		GMP_ABI=32
+GM	fi
 fi
 
 echo "#include <stdio.h> \
@@ -416,6 +427,7 @@ download_file "http://sourceforge.net/projects/mcrypt/files/Libmcrypt/$LIBMCRYPT
 mv libmcrypt-$LIBMCRYPT_VERSION libmcrypt
 echo -n " checking..."
 cd libmcrypt
+./buildconf --force >> "$DIR/install.log" 2>&1
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
 $EXTRA_FLAGS \
@@ -435,10 +447,12 @@ download_file "https://gmplib.org/download/gmp/gmp-$GMP_VERSION.tar.bz2" | tar -
 mv gmp-$GMP_VERSION_DIR gmp
 echo -n " checking..."
 cd gmp
+export ac_cv_func_malloc_0_nonnull=yes
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
 $EXTRA_FLAGS \
-$CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
+$CONFIGURE_FLAGS \
+$GMP_ABI >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
