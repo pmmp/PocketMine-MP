@@ -451,8 +451,7 @@ export ac_cv_func_malloc_0_nonnull=yes
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
 $EXTRA_FLAGS \
-$CONFIGURE_FLAGS \
-$GMP_ABI >> "$DIR/install.log" 2>&1
+$CONFIGURE_FLAGS ABI="$GMP_ABI" >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 make -j $THREADS >> "$DIR/install.log" 2>&1
 echo -n " installing..."
