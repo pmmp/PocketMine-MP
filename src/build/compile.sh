@@ -454,6 +454,7 @@ mv gmp-$GMP_VERSION_DIR gmp
 echo -n " checking..."
 cd gmp
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
+--disable-assembly \
 --disable-posix-threads \
 --enable-static \
 --disable-shared \
