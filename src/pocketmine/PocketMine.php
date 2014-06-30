@@ -76,7 +76,7 @@ namespace pocketmine {
 	const VERSION = "Alpha_1.4dev";
 	const API_VERSION = "1.0.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
-	const MINECRAFT_VERSION = "v0.9.0 alpha build 9";
+	const MINECRAFT_VERSION = "v0.9.0 alpha";
 	const PHP_VERSION = "5.5";
 
 	if(\Phar::running(true) !== ""){

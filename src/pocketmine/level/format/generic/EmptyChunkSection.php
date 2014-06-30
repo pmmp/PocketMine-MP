@@ -51,7 +51,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function getBlockSkyLightColumn($x, $z){
-		return "\x00\x00\x00\x00\x00\x00\x00\x00";
+		return "\xff\xff\xff\xff\xff\xff\xff\xff";
 	}
 
 	final public function getBlockLightColumn($x, $z){
