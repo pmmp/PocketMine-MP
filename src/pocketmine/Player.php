@@ -585,6 +585,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
+		if(count($this->usedChunks) < 8 and $this->spawned === true){
+			$this->blocked = true;
+		}elseif($this->spawned === true){
+			$this->blocked = false;
+		}
+
 		if(count($this->usedChunks) >= 56 and $this->spawned === false){
 			$spawned = 0;
 			foreach($this->usedChunks as $d){
