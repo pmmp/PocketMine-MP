@@ -447,6 +447,12 @@ cd ..
 rm -r -f ./libmcrypt
 echo " done!"
 
+if [ "$IS_CROSSCOMPILE" == "yes" ]; then
+	EXTRA_FLAGS=""
+else
+	EXTRA_FLAGS="--disable-assembly"
+fi
+
 #GMP
 echo -n "[GMP] downloading $GMP_VERSION..."
 download_file "https://gmplib.org/download/gmp/gmp-$GMP_VERSION.tar.bz2" | tar -jx >> "$DIR/install.log" 2>&1
@@ -454,7 +460,7 @@ mv gmp-$GMP_VERSION_DIR gmp
 echo -n " checking..."
 cd gmp
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
---disable-assembly \
+$EXTRA_FLAGS \
 --disable-posix-threads \
 --enable-static \
 --disable-shared \
