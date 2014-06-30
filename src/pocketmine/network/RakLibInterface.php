@@ -50,16 +50,13 @@ use pocketmine\network\protocol\LoginPacket;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
 use pocketmine\network\protocol\MoveEntityPacket;
-use pocketmine\network\protocol\MoveEntityPacket_PosRot;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\PlayerActionPacket;
 use pocketmine\network\protocol\PlayerArmorEquipmentPacket;
 use pocketmine\network\protocol\PlayerEquipmentPacket;
-use pocketmine\network\protocol\ReadyPacket;
 use pocketmine\network\protocol\RemoveBlockPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
-use pocketmine\network\protocol\RequestChunkPacket;
 use pocketmine\network\protocol\RespawnPacket;
 use pocketmine\network\protocol\RotateHeadPacket;
 use pocketmine\network\protocol\SendInventoryPacket;
@@ -197,9 +194,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			case ProtocolInfo::LOGIN_STATUS_PACKET:
 				$data = new LoginStatusPacket();
 				break;
-			case ProtocolInfo::READY_PACKET:
-				$data = new ReadyPacket();
-				break;
 			case ProtocolInfo::MESSAGE_PACKET:
 				$data = new MessagePacket();
 				break;
@@ -233,9 +227,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			case ProtocolInfo::MOVE_ENTITY_PACKET:
 				$data = new MoveEntityPacket();
 				break;
-			case ProtocolInfo::MOVE_ENTITY_PACKET_POSROT:
-				$data = new MoveEntityPacket_PosRot();
-				break;
 			case ProtocolInfo::ROTATE_HEAD_PACKET:
 				$data = new RotateHeadPacket();
 				break;
@@ -262,9 +253,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 				break;
 			case ProtocolInfo::ENTITY_EVENT_PACKET:
 				$data = new EntityEventPacket();
-				break;
-			case ProtocolInfo::REQUEST_CHUNK_PACKET:
-				$data = new RequestChunkPacket();
 				break;
 			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
 				$data = new PlayerEquipmentPacket();

@@ -69,7 +69,6 @@ use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
 use pocketmine\network\protocol\MovePlayerPacket;
-use pocketmine\network\protocol\ReadyPacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
@@ -1227,6 +1226,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->time = $this->getLevel()->getTime();
 				$this->directDataPacket($pk);
 
+				$pk = new SetSpawnPositionPacket;
+				$pk->x = (int) $this->spawnPosition->x;
+				$pk->y = (int) $this->spawnPosition->y;
+				$pk->z = (int) $this->spawnPosition->z;
+				$this->directDataPacket($pk);
+
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
 
@@ -1235,25 +1240,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->sendNextChunk();
 				$this->tasks[] = $this->chunkLoadTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "sendNextChunk")), 1);
 
-				$pk = new ReadyPacket();
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$this->dataPacket($pk);
-
-				break;
-			case ProtocolInfo::READY_PACKET:
-
-				//TODO: check
-				if($this->loggedIn === false){
-					break;
-				}
-				switch($packet->status){
-					case 1: //Spawn!!
-						break;
-					case 2: //Chunk loaded?
-						break;
-				}
 				break;
 			case ProtocolInfo::ROTATE_HEAD_PACKET:
 				if($this->spawned === false){
@@ -1337,8 +1323,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->inAction = false;
 					//$this->entity->updateMetadata();
 				}
-				break;
-			case ProtocolInfo::REQUEST_CHUNK_PACKET:
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
 				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);

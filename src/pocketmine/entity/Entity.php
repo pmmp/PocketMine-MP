@@ -42,7 +42,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
-use pocketmine\network\protocol\MoveEntityPacket_PosRot;
+use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
@@ -442,13 +442,11 @@ abstract class Entity extends Position implements Metadatable{
 				$pk->pitch = $this->pitch;
 				$pk->bodyYaw = $this->yaw;
 			}else{
-				$pk = new MoveEntityPacket_PosRot;
-				$pk->eid = $this->id;
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$pk->yaw = $this->yaw;
-				$pk->pitch = $this->pitch;
+				//TODO: add to move list
+				$pk = new MoveEntityPacket();
+				$pk->entities = [
+					[$this->id, $this->x, $this->y, $this->z, $this->yaw, $this->pitch]
+				];
 			}
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
@@ -459,10 +457,9 @@ abstract class Entity extends Position implements Metadatable{
 			$this->lastMotionZ = $this->motionZ;
 
 			$pk = new SetEntityMotionPacket;
-			$pk->eid = $this->id;
-			$pk->speedX = $this->motionX;
-			$pk->speedY = $this->motionY;
-			$pk->speedZ = $this->motionZ;
+			$pk->entities = [
+				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
+			];
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 	}

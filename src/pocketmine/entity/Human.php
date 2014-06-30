@@ -30,8 +30,6 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\AddPlayerPacket;
-use pocketmine\network\protocol\MoveEntityPacket_PosRot;
-use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Network;
@@ -155,10 +153,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$player->dataPacket($pk);
 
 			$pk = new SetEntityMotionPacket;
-			$pk->eid = $this->getID();
-			$pk->speedX = $this->motionX;
-			$pk->speedY = $this->motionY;
-			$pk->speedZ = $this->motionZ;
+			$pk->entities = [
+				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
+			];
 			$player->dataPacket($pk);
 
 			$this->inventory->sendHeldItem($player);

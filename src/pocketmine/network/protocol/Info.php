@@ -30,12 +30,12 @@ interface Info{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	const CURRENT_PROTOCOL = 16;
+	const CURRENT_PROTOCOL = 17;
 
 
 	const LOGIN_PACKET = 0x82;
 	const LOGIN_STATUS_PACKET = 0x83;
-	const READY_PACKET = 0x84;
+
 	const MESSAGE_PACKET = 0x85;
 	const SET_TIME_PACKET = 0x86;
 	const START_GAME_PACKET = 0x87;
@@ -49,7 +49,6 @@ interface Info{
 	const TAKE_ITEM_ENTITY_PACKET = 0x8f;
 	const MOVE_ENTITY_PACKET = 0x90;
 
-	const MOVE_ENTITY_PACKET_POSROT = 0x93;
 	const ROTATE_HEAD_PACKET = 0x94;
 	const MOVE_PLAYER_PACKET = 0x95;
 	//const PLACE_BLOCK_PACKET = 0x96;
@@ -60,7 +59,6 @@ interface Info{
 	const LEVEL_EVENT_PACKET = 0x9b;
 	const TILE_EVENT_PACKET = 0x9c;
 	const ENTITY_EVENT_PACKET = 0x9d;
-	const REQUEST_CHUNK_PACKET = 0x9e;
 
 	const PLAYER_EQUIPMENT_PACKET = 0xa0;
 	const PLAYER_ARMOR_EQUIPMENT_PACKET = 0xa1;

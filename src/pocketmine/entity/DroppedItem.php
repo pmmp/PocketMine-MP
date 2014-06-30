@@ -205,10 +205,9 @@ class DroppedItem extends Entity{
 		$player->dataPacket($pk);
 
 		$pk = new SetEntityMotionPacket;
-		$pk->eid = $this->getID();
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+		$pk->entities = [
+			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
+		];
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
