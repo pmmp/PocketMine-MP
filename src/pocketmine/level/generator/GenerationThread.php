@@ -52,7 +52,6 @@ class GenerationThread extends \Thread{
 		$this->loader = $loader;
 		$this->logger = $logger;
 		$loadPaths = [];
-		$this->addDependency($loadPaths, new \ReflectionClass($this->logger));
 		$this->addDependency($loadPaths, new \ReflectionClass($this->loader));
 		$this->loadPaths = array_reverse($loadPaths);
 

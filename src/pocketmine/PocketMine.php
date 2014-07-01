@@ -89,21 +89,11 @@ namespace pocketmine {
 		require_once(\pocketmine\PATH . "src/spl/SplClassLoader.php");
 	}
 
-	if(!class_exists("Logger", false)){
-		require_once(\pocketmine\PATH . "src/spl/Logger.php");
-		require_once(\pocketmine\PATH . "src/spl/LogLevel.php");
-	}
-
-	if(!class_exists("ThreadedLogger", false)){
-		require_once(\pocketmine\PATH . "src/spl/ThreadedLoggerAttachment.php");
-		require_once(\pocketmine\PATH . "src/spl/ThreadedLogger.php");
-	}
-
-
 	$autoloader = new \SplClassLoader();
-	$autoloader->add("pocketmine", array(
+	$autoloader->setMode(\SplAutoloader::MODE_DEBUG);
+	$autoloader->add("pocketmine", [
 		\pocketmine\PATH . "src"
-	));
+	]);
 
 	$autoloader->register(true);
 	if(!class_exists("raklib\\RakLib", false)){

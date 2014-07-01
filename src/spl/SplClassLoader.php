@@ -141,6 +141,14 @@ class SplClassLoader implements SplAutoloader{
 	public function load($resourceName){
 		$resourceAbsolutePath = $this->getResourceAbsolutePath($resourceName);
 		if($resourceAbsolutePath == ""){
+			if($resourceName{0} !== "\\"){
+				if(file_exists(dirname(__FILE__) ."/" . $resourceName . $this->fileExtension)){
+					require dirname(__FILE__) ."/" . $resourceName . $this->fileExtension;
+					if($this->isResourceDeclared($resourceName)){
+						return;
+					}
+				}
+			}
 			throw new \RuntimeException(
 				sprintf('Autoloader couldn\'t find a file to include for %s', $resourceName)
 			);
