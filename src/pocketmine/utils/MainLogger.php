@@ -145,6 +145,11 @@ class MainLogger extends \ThreadedLogger{
 		}else{
 			echo $message;
 		}
+
+		if($this->attachment instanceof \ThreadedLoggerAttachment){
+			$this->attachment->call($message);
+		}
+
 		$this->logStream .= date("Y-m-d", $now) . " " . $cleanMessage;
 	}
 

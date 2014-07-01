@@ -95,6 +95,7 @@ namespace pocketmine {
 	}
 
 	if(!class_exists("ThreadedLogger", false)){
+		require_once(\pocketmine\PATH . "src/spl/ThreadedLoggerAttachment.php");
 		require_once(\pocketmine\PATH . "src/spl/ThreadedLogger.php");
 	}
 
