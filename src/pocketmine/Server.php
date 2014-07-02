@@ -127,7 +127,7 @@ class Server{
 	private $tickTime = 0;
 	private $inTick = false;
 
-	/** @var \Logger */
+	/** @var \AttachableThreadedLogger */
 	private $logger;
 
 	/** @var CommandReader */
@@ -455,7 +455,7 @@ class Server{
 	}
 
 	/**
-	 * @return \ThreadedLogger
+	 * @return \AttachableThreadedLogger
 	 */
 	public function getLogger(){
 		return $this->logger;
