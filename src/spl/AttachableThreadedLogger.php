@@ -19,20 +19,10 @@
  *
 */
 
-abstract class ThreadedLoggerAttachment extends \Threaded implements \LoggerAttachment{
+abstract class AttachableThreadedLogger extends \ThreadedLogger{
 
 	/** @var \ThreadedLoggerAttachment */
 	protected $attachment = null;
-
-	/**
-	 * @param string $message
-	 */
-	public final function call($message){
-		$this->log($message);
-		if($this->attachment instanceof \ThreadedLoggerAttachment){
-			$this->attachment->call($message);
-		}
-	}
 
 	/**
 	 * @param ThreadedLoggerAttachment $attachment

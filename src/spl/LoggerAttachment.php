@@ -19,6 +19,16 @@
  *
 */
 
-abstract class ThreadedLogger extends \Thread implements Logger{
+interface LoggerAttachment{
+
+	/**
+	 * @param string $message
+	 */
+	public function log($message);
+
+	/**
+	 * @param string $message
+	 */
+	public function call($message);
 
 }
