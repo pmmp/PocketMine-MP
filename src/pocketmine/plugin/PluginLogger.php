@@ -25,9 +25,28 @@ use Logger;
 use LogLevel;
 use pocketmine\utils\MainLogger;
 
-class PluginLogger implements Logger{
+class PluginLogger implements \AttachableLogger{
 
 	private $pluginName;
+
+	/** @var \LoggerAttachment[] */
+	private $attachments = [];
+
+	public function addAttachment(\LoggerAttachment $attachment){
+		$this->attachments[spl_object_hash($attachment)] = $attachment;
+	}
+
+	public function removeAttachment(\LoggerAttachment $attachment){
+		unset($this->attachments[spl_object_hash($attachment)]);
+	}
+
+	public function removeAttachments(){
+		$this->attachments = [];
+	}
+
+	public function getAttachments(){
+		return $this->attachments;
+	}
 
 	/**
 	 * @param Plugin $context
@@ -71,5 +90,8 @@ class PluginLogger implements Logger{
 
 	public function log($level, $message){
 		MainLogger::getLogger()->log($level, $this->pluginName . $message);
+		foreach($this->attachments as $attachment){
+			$attachment->log($level, $message);
+		}
 	}
 }

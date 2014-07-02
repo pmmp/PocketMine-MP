@@ -22,13 +22,9 @@
 interface LoggerAttachment{
 
 	/**
+	 * @param mixed  $level
 	 * @param string $message
 	 */
-	public function log($message);
-
-	/**
-	 * @param string $message
-	 */
-	public function call($message);
+	public function log($level, $message);
 
 }

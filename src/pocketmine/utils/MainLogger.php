@@ -23,7 +23,7 @@ namespace pocketmine\utils;
 
 use LogLevel;
 
-class MainLogger extends \ThreadedLogger{
+class MainLogger extends \AttachableThreadedLogger{
 	protected $logFile;
 	protected $logStream;
 	protected $shutdown;
@@ -61,38 +61,38 @@ class MainLogger extends \ThreadedLogger{
 	}
 
 	public function emergency($message){
-		$this->send(TextFormat::RED . "[EMERGENCY] " . $message);
+		$this->send(TextFormat::RED . "[EMERGENCY] " . $message, \LogLevel::EMERGENCY);
 	}
 
 	public function alert($message){
-		$this->send(TextFormat::RED . "[ALERT] " . $message);
+		$this->send(TextFormat::RED . "[ALERT] " . $message, \LogLevel::ALERT);
 	}
 
 	public function critical($message){
-		$this->send(TextFormat::RED . "[CRITICAL] " . $message);
+		$this->send(TextFormat::RED . "[CRITICAL] " . $message, \LogLevel::CRITICAL);
 	}
 
 	public function error($message){
-		$this->send(TextFormat::DARK_RED . "[ERROR] " . $message);
+		$this->send(TextFormat::DARK_RED . "[ERROR] " . $message, \LogLevel::ERROR);
 	}
 
 	public function warning($message){
-		$this->send(TextFormat::YELLOW . "[WARNING] " . $message);
+		$this->send(TextFormat::YELLOW . "[WARNING] " . $message, \LogLevel::WARNING);
 	}
 
 	public function notice($message){
-		$this->send(TextFormat::AQUA . "[NOTICE] " . $message);
+		$this->send(TextFormat::AQUA . "[NOTICE] " . $message, \LogLevel::NOTICE);
 	}
 
 	public function info($message){
-		$this->send(TextFormat::WHITE . "[INFO] " . $message);
+		$this->send(TextFormat::WHITE . "[INFO] " . $message, \LogLevel::INFO);
 	}
 
 	public function debug($message){
 		if($this->logDebug === false){
 			return;
 		}
-		$this->send(TextFormat::GRAY . "[DEBUG] " . $message);
+		$this->send(TextFormat::GRAY . "[DEBUG] " . $message, \LogLevel::DEBUG);
 	}
 
 	/**
@@ -135,7 +135,7 @@ class MainLogger extends \ThreadedLogger{
 		$this->shutdown = true;
 	}
 
-	protected function send($message){
+	protected function send($message, $level = -1){
 		$now = time();
 		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET . PHP_EOL);
 		$cleanMessage = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $message));
@@ -147,7 +147,7 @@ class MainLogger extends \ThreadedLogger{
 		}
 
 		if($this->attachment instanceof \ThreadedLoggerAttachment){
-			$this->attachment->call($message);
+			$this->attachment->call($level, $message);
 		}
 
 		$this->logStream .= date("Y-m-d", $now) . " " . $cleanMessage;

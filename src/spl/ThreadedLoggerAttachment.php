@@ -25,12 +25,13 @@ abstract class ThreadedLoggerAttachment extends \Threaded implements \LoggerAtta
 	protected $attachment = null;
 
 	/**
+	 * @param mixed  $level
 	 * @param string $message
 	 */
-	public final function call($message){
-		$this->log($message);
+	public final function call($level, $message){
+		$this->log($level, $message);
 		if($this->attachment instanceof \ThreadedLoggerAttachment){
-			$this->attachment->call($message);
+			$this->attachment->call($level, $message);
 		}
 	}
 
