@@ -21,9 +21,8 @@
 
 namespace pocketmine\plugin;
 
-use Logger;
 use LogLevel;
-use pocketmine\utils\MainLogger;
+use pocketmine\Server;
 
 class PluginLogger implements \AttachableLogger{
 
@@ -89,7 +88,7 @@ class PluginLogger implements \AttachableLogger{
 	}
 
 	public function log($level, $message){
-		MainLogger::getLogger()->log($level, $this->pluginName . $message);
+		Server::getInstance()->getLogger()->log($level, $this->pluginName . $message);
 		foreach($this->attachments as $attachment){
 			$attachment->log($level, $message);
 		}
