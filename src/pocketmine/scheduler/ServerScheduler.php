@@ -168,10 +168,10 @@ class ServerScheduler{
 			$delay = -1;
 		}
 
-		if($period === 1){
-			$period = 1;
-		}elseif($period < -1){
+		if($period < -1){
 			$period = -1;
+		}elseif($period < 1){
+			$period = 1;
 		}
 
 		return $this->handle(new TaskHandler($task, $this->nextId(), $delay, $period));
