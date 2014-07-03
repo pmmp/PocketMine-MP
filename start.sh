@@ -4,7 +4,7 @@ cd "$DIR"
 
 DO_LOOP="no"
 
-while getopts "p:f:l" OPTION; do
+while getopts "p:f:l" OPTION 2> /dev/null; do
 	case $OPTION in
 		p)
 			PHP_BINARY="$OPTARG"
@@ -16,8 +16,7 @@ while getopts "p:f:l" OPTION; do
 			DO_LOOP="yes"
 			;;
 		\?)
-			echo "Invalid option: -$OPTION$OPTARG" >&2
-			exit 1
+			break
 			;;
 	esac
 done
