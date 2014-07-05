@@ -123,6 +123,34 @@ class Level implements ChunkManager, Metadatable{
 	/** @var BlockMetadataStore */
 	private $blockMetadata;
 
+	protected $chunkTickRadius;
+	protected $chunkTickList = [];
+	protected $chunksPerTick;
+	protected $clearChunksOnTick;
+	protected $randomTickBlocks = [
+		Block::GRASS => true,
+		Block::SAPLING => true,
+		Block::LEAVES => true,
+		Block::WHEAT_BLOCK => true,
+		Block::FARMLAND => true,
+		Block::SNOW_LAYER => true,
+		Block::ICE => true,
+		Block::CACTUS => true,
+		Block::SUGARCANE_BLOCK => true,
+		Block::RED_MUSHROOM => true,
+		Block::BROWN_MUSHROOM => true,
+		Block::PUMPKIN_STEM => true,
+		Block::MELON_STEM => true,
+		//Block::VINE => true,
+		//Block::MYCELIUM => true,
+		//Block::COCOA_BLOCK => true,
+		Block::CARROT_BLOCK => true,
+		Block::POTATO_BLOCK => true,
+		Block::LEAVES2,
+
+		Block::BEETROOT_BLOCK,
+	];
+
 	/**
 	 * Returns the chunk unique hash/key
 	 *
@@ -160,7 +188,7 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			throw new \Exception("Provider is not a subclass of LevelProvider");
 		}
-		$server->getLogger()->info("Preparing level \"" . $this->provider->getName() . "\"");
+		$this->server->getLogger()->info("Preparing level \"" . $this->provider->getName() . "\"");
 		$generator = Generator::getGenerator($this->provider->getGenerator());
 		$this->server->getGenerationManager()->openLevel($this, $generator, $this->provider->getGeneratorOptions());
 
@@ -169,6 +197,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->startTime = $this->time = (int) $this->provider->getTime();
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave = microtime(true) + 90;
+
+		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 3)));
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 128);
+		$this->chunkTickList = [];
+		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 	}
 
 	/**
@@ -341,42 +374,47 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if(count($this->changedCount) > 0){
-			foreach($this->changedCount as $index => $mini){
-				for($Y = 0; $Y < 8; ++$Y){
-					if(($mini & (1 << $Y)) === 0){
-						continue;
-					}
-					if(count($this->changedBlocks[$index][$Y]) < 582){ //Optimal value, calculated using the relation between minichunks and single packets
-						continue;
-					}else{
-						$X = null;
-						$Z = null;
-						Level::getXZ($index, $X, $Z);
-						foreach($this->getUsingChunk($X, $Z) as $p){
-							$p->unloadChunk($X, $Z);
+			if(count($this->players) > 0){
+				foreach($this->changedCount as $index => $mini){
+					for($Y = 0; $Y < 8; ++$Y){
+						if(($mini & (1 << $Y)) === 0){
+							continue;
 						}
-						unset($this->changedBlocks[$index][$Y]);
+						if(count($this->changedBlocks[$index][$Y]) < 582){ //Optimal value, calculated using the relation between minichunks and single packets
+							continue;
+						}else{
+							$X = null;
+							$Z = null;
+							Level::getXZ($index, $X, $Z);
+							foreach($this->getUsingChunk($X, $Z) as $p){
+								$p->unloadChunk($X, $Z);
+							}
+							unset($this->changedBlocks[$index][$Y]);
+						}
 					}
 				}
-			}
-			$this->changedCount = [];
-			if(count($this->changedBlocks) > 0){
-				foreach($this->changedBlocks as $index => $mini){
-					foreach($mini as $blocks){
-						/** @var Block $b */
-						foreach($blocks as $b){
-							$pk = new UpdateBlockPacket();
-							$pk->x = $b->x;
-							$pk->y = $b->y;
-							$pk->z = $b->z;
-							$pk->block = $b->getID();
-							$pk->meta = $b->getDamage();
-							foreach($this->getUsingChunk($b->x >> 4, $b->z >> 4) as $player){
-								$player->dataPacket($pk);
+				$this->changedCount = [];
+				if(count($this->changedBlocks) > 0){
+					foreach($this->changedBlocks as $index => $mini){
+						foreach($mini as $blocks){
+							/** @var Block $b */
+							foreach($blocks as $b){
+								$pk = new UpdateBlockPacket();
+								$pk->x = $b->x;
+								$pk->y = $b->y;
+								$pk->z = $b->z;
+								$pk->block = $b->getID();
+								$pk->meta = $b->getDamage();
+								foreach($this->getUsingChunk($b->x >> 4, $b->z >> 4) as $player){
+									$player->dataPacket($pk);
+								}
 							}
 						}
 					}
+					$this->changedBlocks = [];
 				}
+			}else{
+				$this->changedCount = [];
 				$this->changedBlocks = [];
 			}
 
@@ -392,24 +430,7 @@ class Level implements ChunkManager, Metadatable{
 
 		}
 
-		foreach($this->usedChunks as $index => $p){
-			Level::getXZ($index, $X, $Z);
-			$chunk = $this->getChunkAt($X, $Z, true);
-			for($Y = 0; $Y < 8; ++$Y){
-				if(!$chunk->isSectionEmpty($Y)){
-					$section = $chunk->getSection($Y);
-					for($i = 0; $i < 3; ++$i){
-						$x = mt_rand(0, 15);
-						$y = mt_rand(0, 15);
-						$z = mt_rand(0, 15);
-						if(($blockId = $section->getBlockId($x, $y, $z)) !== 0){
-							$block = Block::get($blockId, $section->getBlockData($x, $y, $z), new Position($X * 16 + $x, $Y * 16 + $y, $Z * 16 + $z, $this));
-							$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
-						}
-					}
-				}
-			}
-		}
+		$this->tickChunks();
 
 		if($this->nextSave < microtime(true)){
 			$X = null;
@@ -424,6 +445,67 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 			$this->save(false);
+		}
+	}
+
+	private function tickChunks(){
+		if($this->chunksPerTick <= 0 or count($this->players) === 0){
+			return;
+		}
+
+		$chunksPerPlayer = min(200, max(1, (int) ( ( ( $this->chunksPerTick - count($this->players)) / count($this->players)) + 0.5)));
+		$randRange = 3 + $chunksPerPlayer / 30;
+		$randRange = $randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange;
+
+		foreach($this->players as $player){
+			$x = $player->x >> 4;
+			$z = $player->x >> 4;
+
+			$index = Level::chunkHash($x, $z);
+			$existingPlayers = max(0, isset($this->chunkTickList[$index]) ? $this->chunkTickList[$index] : 0);
+			$this->chunkTickList[$index] = $existingPlayers + 1;
+			for($chunk = 0; $chunk < $chunksPerPlayer; ++$chunk){
+				$dx = mt_rand(-$randRange, $randRange);
+				$dz = mt_rand(-$randRange, $randRange);
+				$hash = Level::chunkHash($dx + $x, $dz + $z);
+				if(!isset($this->chunkTickList[$hash]) and $this->isChunkLoaded($dx + $x, $dz + $z)){
+					$this->chunkTickList[$hash] = -1;
+				}
+			}
+		}
+
+		$chunkX = $chunkZ = null;
+
+		foreach($this->chunkTickList as $index => $players){
+			Level::getXZ($index, $chunkX, $chunkZ);
+
+			if(!$this->isChunkLoaded($chunkX, $chunkZ) or isset($this->unloadQueue[$index]) and $players > 0){
+				unset($this->chunkTickList[$index]);
+				continue;
+			}
+			$chunk = $this->getChunkAt($chunkX, $chunkZ, true);
+
+			for($Y = 0; $Y < 8; ++$Y){
+				if(!$chunk->isSectionEmpty($Y)){
+					$section = $chunk->getSection($Y);
+					for($i = 0; $i < 3; ++$i){
+						$k = mt_rand(0, PHP_INT_MAX);
+						$j = $k >> 2;
+						$x = $j & 0x0f;
+						$y = ($j >> 8) & 0x0f;
+						$z = ($j >> 16) & 0x0f;
+						$blockId = $section->getBlockId($x, $y, $z);
+						if(isset($this->randomTickBlocks[$blockId])){
+							$block = Block::get($blockId, $section->getBlockData($x, $y, $z), new Position($chunkX * 16 + $x, $Y * 16 + $y, $chunkZ * 16 + $z, $this));
+							$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
+						}
+					}
+				}
+			}
+		}
+
+		if($this->clearChunksOnTick){
+			$this->chunkTickList = [];
 		}
 	}
 

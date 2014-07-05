@@ -16,8 +16,14 @@ debug:
  commands: false
 
 chunk-sending:
- per-tick: 1
+ per-tick: 1 #may be safe to increase later
  compression-level: 7
+
+chunk-ticking:
+ per-tick: 80
+ tick-radius: 2
+ light-updates: false
+ clear-tick-list: true
 
 chunk-gc:
  period-in-ticks: 600
