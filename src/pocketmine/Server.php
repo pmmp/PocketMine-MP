@@ -33,6 +33,7 @@ use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
+use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
@@ -1015,6 +1016,9 @@ class Server{
 
 		$level = new Level($this, $name, $path, $provider);
 		$this->levels[$level->getID()] = $level;
+
+		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
+
 		for($Z = 5; $Z <= 11; ++$Z){
 			for($X = 5; $X <= 11; ++$X){
 				$level->generateChunk($X, $Z);
