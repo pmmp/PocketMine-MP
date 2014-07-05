@@ -45,6 +45,9 @@ class ServerScheduler{
 
 	protected $asyncTasks = 0;
 
+	/** @var AsyncTask[] */
+	protected $asyncTaskStorage = [];
+
 	/** @var int */
 	private $ids = 1;
 
@@ -75,6 +78,7 @@ class ServerScheduler{
 	 */
 	public function scheduleAsyncTask(AsyncTask $task){
 		$this->asyncPool->submit($task);
+		$this->asyncTaskStorage[spl_object_hash($task)] = $task;
 		++$this->asyncTasks;
 	}
 
@@ -214,16 +218,19 @@ class ServerScheduler{
 		}
 
 		if($this->asyncTasks > 0){ //Garbage collector
-			$this->asyncPool->collect(function (AsyncTask $task){
-				if($task->isFinished() and !$task->isCompleted()){
-					--$this->asyncTasks;
-					$task->onCompletion(Server::getInstance());
-					$task->setCompleted();
-					return true;
-				}
-				return false;
-			});
+			$this->asyncPool->collect([$this, "collectAsyncTask"]);
 		}
+	}
+
+	public function collectAsyncTask(AsyncTask $task){
+		if($task->isFinished() and !$task->isCompleted()){
+			--$this->asyncTasks;
+			$task->onCompletion(Server::getInstance());
+			$task->setCompleted();
+			unset($this->asyncTaskStorage[spl_object_hash($task)]);
+			return true;
+		}
+		return false;
 	}
 
 	private function isReady($currentTicks){

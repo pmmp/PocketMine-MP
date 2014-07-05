@@ -1349,7 +1349,7 @@ class Level implements ChunkManager, Metadatable{
 				}else{
 					$task = new ChunkRequestTask($this, $x, $z);
 					$this->server->getScheduler()->scheduleAsyncTask($task);
-					$this->chunkSendTasks[$index] = $task;
+					$this->chunkSendTasks[$index] = true;
 				}
 			}
 		}
