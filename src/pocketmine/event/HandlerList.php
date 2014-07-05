@@ -125,8 +125,8 @@ class HandlerList{
 				$this->handlers = null;
 			}
 		}elseif($object instanceof RegisteredListener){
-			if(isset($this->handlerSlots[$object->getPriority()][spl_object_hash($listener)])){
-				unset($this->handlerSlots[$object->getPriority()][spl_object_hash($listener)]);
+			if(isset($this->handlerSlots[$object->getPriority()][spl_object_hash($object)])){
+				unset($this->handlerSlots[$object->getPriority()][spl_object_hash($object)]);
 				$this->handlers = null;
 			}
 		}
