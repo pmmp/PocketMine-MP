@@ -32,6 +32,9 @@ use pocketmine\utils\Utils;
 class QueryHandler{
 	private $socket, $server, $lastToken, $token, $longData, $timeout;
 
+	const HANDSHAKE = 9;
+	const STATISTICS = 0;
+
 	public function __construct(){
 		$this->server = Server::getInstance();
 		$this->server->getLogger()->info("Starting GS4 status listener");
@@ -102,39 +105,37 @@ class QueryHandler{
 		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
-	public function handle(QueryPacket $packet){
-		$packet->decode();
-		switch($packet->packetType){
-			case QueryPacket::HANDSHAKE: //Handshake
-				$pk = new QueryPacket;
-				$pk->ip = $packet->ip;
-				$pk->port = $packet->port;
-				$pk->packetType = QueryPacket::HANDSHAKE;
-				$pk->sessionID = $packet->sessionID;
-				$pk->payload = self::getTokenString($this->token, $packet->ip) . "\x00";
-				$pk->encode();
-				$this->server->sendPacket($pk);
+	public function handle($address, $port, $packet){
+		$offset = 2;
+		$packetType = ord($packet{$offset++});
+		$sessionID = Binary::readInt(substr($packet, $offset, 4));
+		$offset += 4;
+		$payload = substr($packet, $offset);
+
+		switch($packetType){
+			case self::HANDSHAKE: //Handshake
+				$reply = chr(self::HANDSHAKE);
+				$reply .= Binary::writeInt($sessionID);
+				$reply .= self::getTokenString($this->token, $address) . "\x00";
+
+				$this->server->sendPacket($address, $port, $reply);
 				break;
-			case QueryPacket::STATISTICS: //Stat
-				$token = Binary::readInt(substr($packet->payload, 0, 4));
-				if($token !== self::getTokenString($this->token, $packet->ip) and $token !== self::getTokenString($this->lastToken, $packet->ip)){
+			case self::STATISTICS: //Stat
+				$token = Binary::readInt(substr($payload, 0, 4));
+				if($token !== self::getTokenString($this->token, $address) and $token !== self::getTokenString($this->lastToken, $ip)){
 					break;
 				}
-				$pk = new QueryPacket;
-				$pk->ip = $packet->ip;
-				$pk->port = $packet->port;
-				$pk->packetType = QueryPacket::STATISTICS;
-				$pk->sessionID = $packet->sessionID;
-				if(strlen($packet->payload) === 8){
+				$reply = chr(self::STATISTICS);
+				$reply .= Binary::writeInt($sessionID);
+				if(strlen($payload) === 8){
 					if($this->timeout < microtime(true)){
 						$this->regenerateInfo();
 					}
-					$pk->payload = $this->longData;
+					$reply .= $this->longData;
 				}else{
-					$pk->payload = $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->getDefaultLevel()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Binary::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
+					$reply .= $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->getDefaultLevel()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Binary::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
-				$pk->encode();
-				$this->server->sendPacket($pk);
+				$this->server->sendPacket($address, $port, $reply);
 				break;
 		}
 	}

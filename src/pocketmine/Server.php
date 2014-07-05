@@ -60,6 +60,7 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\Info;
 use pocketmine\network\query\QueryHandler;
+use pocketmine\network\query\QueryPacket;
 use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
 use pocketmine\network\SourceInterface;
@@ -161,6 +162,8 @@ class Server{
 
 	/** @var SourceInterface[] */
 	private $interfaces = [];
+	/** @var RakLibInterface */
+	private $mainInterface;
 
 	private $serverID;
 
@@ -546,7 +549,35 @@ class Server{
 	 * @param SourceInterface $interface
 	 */
 	public function addInterface(SourceInterface $interface){
-		$this->interfaces[] = $interface;
+		$this->interfaces[spl_object_hash($interface)] = $interface;
+	}
+
+	/**
+	 * @param SourceInterface $interface
+	 */
+	public function removeInterface(SourceInterface $interface){
+		$interface->shutdown();
+		unset($this->interfaces[spl_object_hash($interface)]);
+	}
+
+	/**
+	 * @param string $address
+	 * @param int    $port
+	 * @param string $payload
+	 */
+	public function sendPacket($address, $port, $payload){
+		$this->mainInterface->putRaw($address, $port, $payload);
+	}
+
+	/**
+	 * @param string $address
+	 * @param int    $port
+	 * @param string $payload
+	 */
+	public function handlePacket($address, $port, $payload){
+		if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
+			$this->queryHandler->handle($address, $port, $payload);
+		} //TODO: add raw packet events
 	}
 
 	/**
@@ -1027,7 +1058,7 @@ class Server{
 		$this->levels[$level->getID()] = $level;
 
 		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
-		
+
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		for($Z = 5; $Z <= 11; ++$Z){
@@ -1424,7 +1455,7 @@ class Server{
 		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
 		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
 
-		$this->interfaces[] = new RakLibInterface($this);
+		$this->addInterface($this->mainInterface = new RakLibInterface($this));
 
 		$this->logger->info("This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(false) . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
 		$this->logger->info("PocketMine-MP is distributed under the LGPL License", true, true, 0);
@@ -1676,8 +1707,8 @@ class Server{
 	public function start(){
 
 		if($this->getConfigBoolean("enable-query", true) === true){
-			//$this->queryHandler = new QueryHandler();
-			//TODO: query
+			$this->queryHandler = new QueryHandler();
+
 		}
 
 

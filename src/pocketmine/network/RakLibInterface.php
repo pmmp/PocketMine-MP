@@ -153,6 +153,14 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		}
 	}
 
+	public function handleRaw($address, $port, $payload){
+		$this->server->handlePacket($address, $port, $payload);
+	}
+
+	public function putRaw($address, $port, $payload){
+		$this->interface->sendRaw($address, $port, $payload);
+	}
+
 	public function notifyACK($identifier, $identifierACK){
 		if(isset($this->players[$identifier])){
 			$this->players[$identifier]->handleACK($identifierACK);
