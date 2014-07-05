@@ -215,12 +215,12 @@ class ServerScheduler{
 
 		if($this->asyncTasks > 0){ //Garbage collector
 			$this->asyncPool->collect(function (AsyncTask $task){
-				if($task->isFinished()){
+				if($task->isFinished() and !$task->isCompleted()){
 					--$this->asyncTasks;
 					$task->onCompletion(Server::getInstance());
+					$task->setCompleted();
 					return true;
 				}
-
 				return false;
 			});
 		}

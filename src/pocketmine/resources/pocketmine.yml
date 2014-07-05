@@ -7,7 +7,7 @@ settings:
  advanced-cache: false
  upnp-forwarding: false
  send-usage: true
- async-workers: 3
+ async-workers: 4
 
 debug:
  #If > 1, it will show debug messages in the console
@@ -16,7 +16,7 @@ debug:
  commands: false
 
 chunk-sending:
- per-tick: 1 #may be safe to increase later
+ per-tick: 1
  compression-level: 7
 
 chunk-ticking:

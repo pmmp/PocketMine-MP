@@ -4,6 +4,10 @@ if(!interface_exists("SplAutoloader", false)){
 	require("SplAutoloader.php");
 }
 
+if(class_exists("SplClassLoader", false)){
+	return;
+}
+
 /**
  * SplClassLoader implementation that implements the technical interoperability
  * standards for PHP 5.3 namespaces and class names.

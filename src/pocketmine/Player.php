@@ -538,6 +538,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
+	public function sendChunk($x, $z, $payload){
+		if($this->connected === false){
+			return;
+		}
+
+		$pk = new FullChunkDataPacket;
+		$pk->chunkX = $x;
+		$pk->chunkZ = $z;
+		$pk->data = $payload;
+		$cnt = $this->dataPacket($pk, true);
+		if($cnt === false or $cnt === true){
+			return;
+		}
+		$this->chunkACK[$cnt] = Level::chunkHash($x, $z);
+	}
+
 	/**
 	 * Sends, if available, the next ordered chunk to the client
 	 *
@@ -545,7 +561,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * Changes to this function won't be recorded on the version.
 	 *
 	 */
-
 	public function sendNextChunk(){
 		if($this->connected === false or !isset($this->chunkLoadTask)){
 			return;
@@ -565,7 +580,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$Z = null;
 				Level::getXZ($index, $X, $Z);
 				if(!$this->getLevel()->isChunkPopulated($X, $Z)){
-					$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 30);
+					$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 5);
 					return;
 				}
 
@@ -573,22 +588,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->usedChunks[$index] = [false, 0];
 
 				$this->getLevel()->useChunk($X, $Z, $this);
-				$pk = new FullChunkDataPacket;
-				$pk->chunkX = $X;
-				$pk->chunkZ = $Z;
-				$pk->data = $this->getLevel()->getNetworkChunk($X, $Z, 0xff);
-				$cnt = $this->dataPacket($pk, true);
-				if($cnt === false or $cnt === true){
-					return;
-				}
-				$this->chunkACK[$cnt] = $index;
+				$this->getLevel()->requestChunk($X, $Z, $this);
 			}
 		}
 
-		if(count($this->usedChunks) < 8 and $this->spawned === true){
+		if(count($this->usedChunks) < 16 and $this->spawned === true){
 			$this->blocked = true;
 		}elseif($this->spawned === true){
-			$this->blocked = false;
+			$this->blocked = false; //TODO: reason of block to revert
 		}
 
 		if(count($this->usedChunks) >= 56 and $this->spawned === false){
@@ -599,7 +606,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			if($spawned < 50){
+			if($spawned < 56){
 				return;
 			}
 

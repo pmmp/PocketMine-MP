@@ -76,7 +76,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	public function getSkyLightArray(){
-		return str_repeat("\x00", 2048);
+		return str_repeat("\xff", 2048);
 	}
 
 	public function getLightArray(){

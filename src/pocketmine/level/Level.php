@@ -118,6 +118,10 @@ class Level implements ChunkManager, Metadatable{
 	/** @var ReversePriorityQueue */
 	private $updateQueue;
 
+	/** @var Player[][] */
+	private $chunkSendQueue = [];
+	private $chunkSendTasks = [];
+
 	private $autoSave = true;
 
 	/** @var BlockMetadataStore */
@@ -427,10 +431,11 @@ class Level implements ChunkManager, Metadatable{
 		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
 			$block = $this->getBlock($this->updateQueue->extract()["data"]);
 			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
-
 		}
 
 		$this->tickChunks();
+
+		$this->processChunkRequest();
 
 		if($this->nextSave < microtime(true)){
 			$X = null;
@@ -674,7 +679,7 @@ class Level implements ChunkManager, Metadatable{
 				$block->position($pos);
 				$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
 				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->getName()}:{$index}");
+					Cache::remove("world:{$this->getID()}:{$index}");
 				}
 				if(!isset($this->changedBlocks[$index])){
 					$this->changedBlocks[$index] = [];
@@ -1315,66 +1320,57 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
 	}
 
-	/**
-	 * Gets a full chunk or parts of it for networking usage, allows cache usage
-	 *
-	 * @param int $X
-	 * @param int $Z
-	 * @param int $Yndex bitmap of chunks to be returned
-	 *
-	 * @return bool|mixed|string
-	 */
-	public function getNetworkChunk($X, $Z, $Yndex){
-		if(ADVANCED_CACHE == true and $Yndex === 0xff){
-			$identifier = "world:".($this->getName()).":" . Level::chunkHash($X, $Z);
-			if(($cache = Cache::get($identifier)) !== false){
-				return $cache;
-			}
+	public function requestChunk($x, $z, Player $player){
+		$index = Level::chunkHash($x, $z);
+		if(!isset($this->chunkSendQueue[$index])){
+			$this->chunkSendQueue[$index] = [];
 		}
 
-		$orderedIds = "";
-		$orderedData = "";
-		$orderedSkyLight = "";
-		$orderedLight = "";
-		$flag = chr($Yndex);
+		$this->chunkSendQueue[$index][spl_object_hash($player)] = $player;
+	}
 
-		$chunk = $this->getChunkAt($X, $Z, true);
-		$biomeIds = $chunk->getBiomeIdArray();
-		$biomeColors = implode(array_map("pocketmine\\utils\\Binary::writeInt", $chunk->getBiomeColorArray()));
-
-		/** @var \pocketmine\level\format\ChunkSection[] $sections */
-		$sections = [];
-		foreach($chunk->getSections() as $section){
-			$sections[$section->getY()] = $section;
-		}
-
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				for($Y = 0; $Y < 8; ++$Y){
-					$orderedIds .= $sections[$Y]->getBlockIdColumn($x, $z);
-					$orderedData .= $sections[$Y]->getBlockDataColumn($x, $z);
-					$orderedSkyLight .= $sections[$Y]->getBlockSkyLightColumn($x, $z);
-					$orderedLight .= $sections[$Y]->getBlockLightColumn($x, $z);
+	protected function processChunkRequest(){
+		if(count($this->chunkSendQueue) > 0){
+			$x = null;
+			$z = null;
+			foreach($this->chunkSendQueue as $index => $players){
+				if(isset($this->chunkSendTasks[$index])){
+					continue;
+				}
+				Level::getXZ($index, $x, $z);
+				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:".$this->getID().":" . $index)) !== false){
+					/** @var Player[] $players */
+					foreach($players as $player){
+						if(isset($player->usedChunks[$index])){
+							$player->sendChunk($x, $z, $cache);
+						}
+					}
+					unset($this->chunkSendQueue[$index]);
+				}else{
+					$task = new ChunkRequestTask($this, $x, $z);
+					$this->server->getScheduler()->scheduleAsyncTask($task);
+					$this->chunkSendTasks[$index] = $task;
 				}
 			}
 		}
+	}
 
-		$tiles = "";
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		foreach($chunk->getTiles() as $tile){
-			if($tile instanceof Spawnable){
-				$nbt->setData($tile->getSpawnCompound());
-				$tiles .= $nbt->write();
+	public function chunkRequestCallback($x, $z, $payload){
+		$index = Level::chunkHash($x, $z);
+		if(isset($this->chunkSendTasks[$index])){
+
+			if(ADVANCED_CACHE == true){
+				Cache::add("world:".$this->getID().":" . $index, $payload, 60);
 			}
+			foreach($this->chunkSendQueue[$index] as $player){
+				/** @var Player $player */
+				if(isset($player->usedChunks[$index])){
+					$player->sendChunk($x, $z, $payload);
+				}
+			}
+			unset($this->chunkSendQueue[$index]);
+			unset($this->chunkSendTasks[$index]);
 		}
-
-		$ordered = zlib_encode(Binary::writeLInt($X) . Binary::writeLInt($Z) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $biomeIds . $biomeColors . $tiles, ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
-
-		if(ADVANCED_CACHE == true and $Yndex === 0xff){
-			Cache::add($identifier, $ordered, 60);
-		}
-
-		return $ordered;
 	}
 
 	/**
@@ -1501,7 +1497,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->provider->unloadChunk($x, $z);
-		Cache::remove("world:" . $this->getName() . ":$x:$z");
+		Cache::remove("world:" . $this->getID() . ":$x:$z");
 
 		return true;
 	}
