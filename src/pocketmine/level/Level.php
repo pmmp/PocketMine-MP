@@ -31,6 +31,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\level\LevelSaveEvent;
+use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
@@ -268,9 +269,19 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function unload($force = false){
+
+		$ev = new LevelUnloadEvent($this);
+
 		if($this === $this->server->getDefaultLevel() and $force !== true){
+			$ev->setCancelled(true);
+		}
+
+		$this->server->getPluginManager()->callEvent($ev);
+
+		if($ev->isCancelled()){
 			return false;
 		}
+
 		$this->server->getLogger()->info("Unloading level \"" . $this->getName() . "\"");
 		$this->nextSave = PHP_INT_MAX;
 		$defaultLevel = $this->server->getDefaultLevel();
