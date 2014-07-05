@@ -440,7 +440,7 @@ class Level implements ChunkManager, Metadatable{
 					unset($this->usedChunks[$i]);
 					Level::getXZ($i, $X, $Z);
 					if(!$this->isSpawnChunk($X, $Z)){
-						$this->unloadChunk($X, $Z, $this->getAutoSave());
+						$this->unloadChunkRequest($X, $Z, true);
 					}
 				}
 			}
@@ -1674,7 +1674,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->provider->saveChunk($chunk->getX(), $chunk->getZ());
 				}
 				//If the chunk can't be unloaded, it stays on the queue
-				if($this->unloadChunk($chunk->getX(), $chunk->getZ(), true)){
+				if($this->unloadChunk($chunk->getX(), $chunk->getZ(), $this->getAutoSave())){
 					unset($this->unloadQueue[$index]);
 				}
 			}
