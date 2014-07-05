@@ -30,6 +30,7 @@ use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
@@ -524,6 +525,8 @@ class Level implements ChunkManager, Metadatable{
 		if($this->getAutoSave() === false and $force === false){
 			return false;
 		}
+
+		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
 
 		$this->provider->setTime((int) $this->time);
 		$this->provider->saveChunks();
