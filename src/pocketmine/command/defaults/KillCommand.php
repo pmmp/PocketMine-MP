@@ -22,7 +22,9 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 class KillCommand extends VanillaCommand{
@@ -45,9 +47,14 @@ class KillCommand extends VanillaCommand{
 		if($sender instanceof Player){
 			//TODO: EntityDamageEvent
 
-			//$ev->setLastDamageCause()
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
+
+			if($ev->isCancelled()){
+				return true;
+			}
+
+			$sender->setLastDamageCause($ev);
 			$sender->setHealth(0);
-			//TODO: set update
 			$sender->sendMessage("Ouch. That look like it hurt.");
 		}else{
 			$sender->sendMessage(TextFormat::RED . "You can only perform this command as a player");

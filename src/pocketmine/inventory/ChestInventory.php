@@ -48,7 +48,7 @@ class ChestInventory extends ContainerInventory{
 			$pk->z = $this->getHolder()->getZ();
 			$pk->case1 = 1;
 			$pk->case2 = 2;
-			Server::getInstance()->broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
+			Server::broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
 		}
 	}
 
@@ -60,7 +60,7 @@ class ChestInventory extends ContainerInventory{
 			$pk->z = $this->getHolder()->getZ();
 			$pk->case1 = 1;
 			$pk->case2 = 0;
-			Server::getInstance()->broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
+			Server::broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
 		}
 		parent::onClose($who);
 	}

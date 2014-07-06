@@ -112,7 +112,7 @@ abstract class Door extends Transparent{
 				$pk->z = $this->z;
 				$pk->evid = 1003;
 				$pk->data = 0;
-				Server::getInstance()->broadcastPacket($players, $pk);
+				Server::broadcastPacket($players, $pk);
 
 				return true;
 			}
@@ -131,7 +131,7 @@ abstract class Door extends Transparent{
 			$pk->z = $this->z;
 			$pk->evid = 1003;
 			$pk->data = 0;
-			Server::getInstance()->broadcastPacket($players, $pk);
+			Server::broadcastPacket($players, $pk);
 		}
 
 		return true;

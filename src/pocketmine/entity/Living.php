@@ -22,6 +22,15 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityDeathEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\math\Vector3;
+use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\Server;
+use pocketmine\item\Item;
+
 abstract class Living extends Entity implements Damageable{
 
 	protected $gravity = 0.08;
@@ -29,5 +38,48 @@ abstract class Living extends Entity implements Damageable{
 
 	protected function initEntity(){
 
+	}
+
+	public abstract function getName();
+
+	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+		//TODO: attack tick limit
+		$pk = new EntityEventPacket();
+		$pk->eid = $this->getID();
+		$pk->event = 2; //Ouch!
+		Server::broadcastPacket($this->hasSpawned, $pk);
+		$this->setLastDamageCause($source);
+		$motion = new Vector3(0, 0.25, 0);
+		if($source instanceof EntityDamageByEntityEvent){
+			$e = $source->getDamager();
+			$motion->x = -cos(deg2rad($e->pitch)) * sin(deg2rad($e->yaw)) * 0.5;
+			$motion->z = cos(deg2rad($e->pitch)) * sin(deg2rad($e->yaw)) * 0.5;
+		}
+		$this->setMotion($motion);
+		$this->setHealth($this->getHealth() - $damage);
+
+	}
+
+	public function heal($amount){
+		$this->server->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($this, $amount));
+		if($ev->isCancelled()){
+			return;
+		}
+		$this->setHealth($this->getHealth() + $amount);
+	}
+
+	public function kill(){
+		parent::kill();
+		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
+		foreach($ev->getDrops() as $item){
+			$this->getLevel()->dropItem($this, $item);
+		}
+	}
+
+	/**
+	 * @return Item[]
+	 */
+	public function getDrops(){
+		return [];
 	}
 }

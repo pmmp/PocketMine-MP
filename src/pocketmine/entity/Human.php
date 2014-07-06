@@ -75,6 +75,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		parent::initEntity();
 	}
 
+	public function getName(){
+		return $this->nameTag;
+	}
+
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Inventory = new Enum("Inventory", []);
@@ -202,14 +206,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}*/
 
 		return $d;
-	}
-
-	public function attack($damage, $source = "generic"){
-
-	}
-
-	public function heal($amount, $source = "generic"){
-
 	}
 
 }

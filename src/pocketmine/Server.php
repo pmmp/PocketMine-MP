@@ -1379,11 +1379,17 @@ class Server{
 		$version = new VersionString($this->getPocketMineVersion());
 		$this->logger->info("Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());
 
-		$this->logger->info("Loading properties...");
+		$this->logger->info("Loading pocketmine.yml...");
 		if(!file_exists($this->dataPath . "pocketmine.yml")){
-			@file_put_contents($this->dataPath . "pocketmine.yml", file_get_contents($this->filePath . "src/pocketmine/resources/pocketmine.yml"));
+			$content = file_get_contents($this->filePath . "src/pocketmine/resources/pocketmine.yml");
+			if($version->isDev()){
+				$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
+			}
+			@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 		}
 		$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
+
+		$this->logger->info("Loading server properties...");
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, array(
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
@@ -1555,7 +1561,7 @@ class Server{
 	 * @param Player[]   $players
 	 * @param DataPacket $packet
 	 */
-	public function broadcastPacket(array $players, DataPacket $packet){
+	public static function broadcastPacket(array $players, DataPacket $packet){
 		foreach($players as $player){
 			$player->dataPacket(clone $packet);
 		}

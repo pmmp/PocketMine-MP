@@ -21,6 +21,7 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
@@ -106,11 +107,11 @@ class DroppedItem extends Entity{
 		return true;
 	}
 
-	public function attack($damage, $source = "generic"){
+	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
 
 	}
 
-	public function heal($amount, $source = "generic"){
+	public function heal($amount){
 
 	}
 

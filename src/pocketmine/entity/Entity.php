@@ -25,6 +25,8 @@
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\entity\EntityMotionEvent;
@@ -78,6 +80,8 @@ abstract class Entity extends Position implements Metadatable{
 
 	/** @var Chunk */
 	public $chunk;
+
+	protected $lastDamageCause = null;
 
 	public $lastX;
 	public $lastY;
@@ -242,9 +246,15 @@ abstract class Entity extends Position implements Metadatable{
 		}
 	}
 
-	abstract function attack($damage, $source = "generic");
+	/**
+	 * @param float                 $damage
+	 * @param int|EntityDamageEvent $source
+	 *
+	 * @return mixed
+	 */
+	abstract function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC);
 
-	abstract function heal($amount, $source = "generic");
+	abstract function heal($amount);
 
 	/**
 	 * @return int
@@ -259,14 +269,34 @@ abstract class Entity extends Position implements Metadatable{
 	 * @param int $amount
 	 */
 	public function setHealth($amount){
-		if($amount < 0){
+		if($amount === $this->health){
+			return;
+		}
+
+		if($amount <= 0){
 			$this->health = 0;
-			$this->dead = true;
+			if($this->dead !== true){
+				$this->kill();
+			}
 		}elseif($amount > $this->getMaxHealth()){
 			$this->health = $this->getMaxHealth();
 		}else{
 			$this->health = (int) $amount;
 		}
+	}
+
+	/**
+	 * @param int|EntityDamageEvent $type
+	 */
+	public function setLastDamageCause($type){
+		$this->lastDamageCause = $type;
+	}
+
+	/**
+	 * @return int|EntityDamageEvent|null
+	 */
+	public function getLastDamageCause(){
+		return $this->lastDamageCause;
 	}
 
 	/**
@@ -379,6 +409,8 @@ abstract class Entity extends Position implements Metadatable{
 			$this->close();
 
 			return false;
+		}elseif($this->dead === true){
+			$this->despawnFromAll();
 		}
 
 		$hasUpdate = false;
@@ -447,7 +479,7 @@ abstract class Entity extends Position implements Metadatable{
 					[$this->id, $this->x, $this->y, $this->z, $this->yaw, $this->pitch]
 				];
 			}
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+			Server::broadcastPacket($this->hasSpawned, $pk);
 		}
 
 		if(!($this instanceof Player) and ($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
@@ -459,7 +491,7 @@ abstract class Entity extends Position implements Metadatable{
 			$pk->entities = [
 				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 			];
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+			Server::broadcastPacket($this->hasSpawned, $pk);
 		}
 	}
 
@@ -909,7 +941,14 @@ abstract class Entity extends Position implements Metadatable{
 		$this->motionY = $motion->y;
 		$this->motionZ = $motion->z;
 		if(!$this->justCreated){
-			$this->scheduleUpdate();
+			if($this instanceof Player){
+				$pk = new SetEntityMotionPacket;
+				$pk->entities = [
+					[0, $this->motionX, $this->motionY, $this->motionZ]
+				];
+				$this->dataPacket($pk);
+			}
+			$this->updateMovement();
 		}
 	}
 
@@ -918,6 +957,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function kill(){
+		$this->setHealth(0);
 		$this->dead = true;
 		$this->scheduleUpdate();
 	}
