@@ -779,10 +779,10 @@ abstract class Entity extends Position implements Metadatable{
 			$this->motionZ = 0;
 		}
 
-		//$this->boundingBox->addCoord($dx, $dy, $dz);
-		//$this->x += $dx;
-		//$this->y += $dy;
-		//$this->z += $dz;
+		$this->boundingBox->addCoord($dx, $dy, $dz);
+		$this->x += $dx;
+		$this->y += $dy;
+		$this->z += $dz;
 
 		$cx = $this->x - $ox;
 		$cy = $this->y - $oy;
