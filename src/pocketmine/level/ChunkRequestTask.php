@@ -100,8 +100,8 @@ class ChunkRequestTask extends AsyncTask{
 		$orderedSkyLight = "";
 		$orderedLight = "";
 
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
 				$orderedIds .= $this->getColumn($this->ids, $x, $z);
 				$orderedData .= $this->getHalfColumn($this->meta, $x, $z);
 				$orderedSkyLight .= $this->getHalfColumn($this->skyLight, $x, $z);

@@ -767,12 +767,11 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
 			$lastTime = $player->lastBreak - 0.1; //TODO: replace with true lag
-			if(($player->getGamemode() & 0x01)){
+			if(($player->getGamemode() & 0x01) > 0){
 				$ev->setInstaBreak(true);
 			}elseif(($lastTime + $target->getBreakTime($item)) >= microtime(true)){
-				$ev->setCancelled(true);
+				$ev->setCancelled();
 			}
-			$player->lastBreak = microtime(true);
 
 			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
 				$ev->setCancelled();
@@ -788,6 +787,9 @@ class Level implements ChunkManager, Metadatable{
 			if($ev->isCancelled()){
 				return false;
 			}
+
+			$player->lastBreak = microtime(true);
+
 		}elseif($item instanceof Item and !$target->isBreakable($item)){
 			return false;
 		}

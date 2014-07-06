@@ -1212,6 +1212,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if(($this->gamemode & 0x01) === 0x01){
 					$this->inventory->setHeldItemSlot(0);
 					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
+				}else{
+					$this->inventory->setHeldItemSlot(0);
+					$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 				}
 
 				$pk = new LoginStatusPacket;
@@ -1516,8 +1519,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 					break;
 				}
+
+				$this->inventory->sendContents($this);
 				$target = $this->getLevel()->getBlock($vector);
 				$tile = $this->getLevel()->getTile($vector);
+
 				$pk = new UpdateBlockPacket;
 				$pk->x = $target->x;
 				$pk->y = $target->y;
@@ -1525,7 +1531,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->block = $target->getID();
 				$pk->meta = $target->getDamage();
 				$this->dataPacket($pk);
-				//TODO: priority
+
 				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
 				}
@@ -1538,18 +1544,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				for($i = 0; $i < 4; ++$i){
 					$s = $packet->slots[$i];
 					if($s === 0 or $s === 255){
-						$s = Item::get(Item::AIR, 0, 0);
+						$s = Item::get(Item::AIR, 0, 1);
 					}else{
 						$s = Item::get($s + 256, 0, 1);
 					}
 					$slot = $this->inventory->getArmorItem($i);
 					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){
-						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 0));
+						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 1));
 					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->inventory->first($s)) !== -1){
 						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl)) === false){
 							$this->inventory->sendContents($this);
 						}else{
-							$this->inventory->setItem($sl, Item::get(Item::AIR, 0, 0));
+							$this->inventory->setItem($sl, Item::get(Item::AIR, 0, 1));
 						}
 					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getDamage() !== $s->getDamage()) and ($sl = $this->inventory->first($s)) !== -1){
 						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl)) === false){
@@ -1647,7 +1653,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$target->harm($damage, $this->id);
 						if($slot->isTool() === true and ($this->gamemode & 0x01) === 0){
 							if($slot->useOn($target) and $slot->getDamage() >= $slot->getMaxDurability()){
-								$this->setSlot($this->getCurrentEquipment(), new Item(AIR, 0, 0));
+								$this->setSlot($this->getCurrentEquipment(), new Item(AIR, 0, 1));
 							}
 						}
 					}
@@ -1765,7 +1771,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 				$motion = $this->getDirectionVector()->multiply(10);
 
 				$this->getLevel()->dropItem($this->add(0, 1, 0), $item, $motion);

@@ -750,9 +750,9 @@ abstract class Block extends Position implements Metadatable{
 		if(!isset(self::$list[$this->id])){ //Unknown blocks
 			return [];
 		}else{
-			return array(
+			return [
 				array($this->id, $this->meta, 1),
-			);
+			];
 		}
 	}
 
