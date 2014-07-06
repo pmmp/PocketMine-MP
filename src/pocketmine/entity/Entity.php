@@ -297,10 +297,9 @@ abstract class Entity extends Position implements Metadatable{
 		$diffY = $y - $j;
 		$diffZ = $z - $k;
 
-		$start = microtime(true);
 		$list = $this->getLevel()->getCollisionBlocks($this->boundingBox);
 
-		if(count($list) === 0 and $this->getLevel()->isFullBlock(new Vector3($i, $j, $k))){
+		if(count($list) === 0 and !$this->getLevel()->isFullBlock(new Vector3($i, $j, $k))){
 			return false;
 		}else{
 			$flag = !$this->getLevel()->isFullBlock(new Vector3($i - 1, $j, $k));

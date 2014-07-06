@@ -72,6 +72,7 @@ class DroppedItem extends Entity{
 		}
 
 		$this->motionY -= $this->gravity;
+
 		$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
