@@ -2119,6 +2119,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function kill(){
+		if($this->dead or $this->spawned === false){
+			return;
+		}
 		parent::kill();
 		$message = $this->getName() ." died";
 		$cause = $this->getLastDamageCause();

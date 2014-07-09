@@ -957,6 +957,9 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function kill(){
+		if($this->dead){
+			return;
+		}
 		$this->setHealth(0);
 		$this->dead = true;
 		$this->scheduleUpdate();
