@@ -51,7 +51,7 @@ class PharPluginLoader implements PluginLoader{
 	 * @throws \Exception
 	 */
 	public function loadPlugin($file){
-		if(\Phar::isValidPharFilename($file) and ($description = $this->getPluginDescription($file)) instanceof PluginDescription){
+		if(($description = $this->getPluginDescription($file)) instanceof PluginDescription){
 			MainLogger::getLogger()->info("Loading " . $description->getFullName());
 			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
 			if(file_exists($dataFolder) and !is_dir($dataFolder)){
@@ -84,15 +84,13 @@ class PharPluginLoader implements PluginLoader{
 	 * @return PluginDescription
 	 */
 	public function getPluginDescription($file){
-		if(\Phar::isValidPharFilename($file)){
-			$phar = new \Phar($file);
-			if(isset($phar["plugin.yml"])){
-				$pluginYml = $phar["plugin.yml"];
-				if($pluginYml instanceof \PharFileInfo){
-					return new PluginDescription($pluginYml->getContent());
-				}
-			}
-		}
+        $phar = new \Phar($file);
+        if(isset($phar["plugin.yml"])){
+            $pluginYml = $phar["plugin.yml"];
+            if($pluginYml instanceof \PharFileInfo){
+                return new PluginDescription($pluginYml->getContent());
+            }
+        }
 
 		return null;
 	}
