@@ -27,6 +27,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Server;
 use pocketmine\item\Item;
@@ -37,7 +38,21 @@ abstract class Living extends Entity implements Damageable{
 	protected $drag = 0.02;
 
 	protected function initEntity(){
+		if(isset($this->namedtag->HealF)){
+			$this->namedtag->Health = new Short("Health", (int) $this->namedtag["HealF"]);
+			unset($this->namedtag->HealF);
+		}
 
+		if(!isset($this->namedtag->Health) or !($this->namedtag->Health instanceof Short)){
+			$this->namedtag->Health = new Short("Health", $this->getMaxHealth());
+		}
+
+		$this->setHealth($this->namedtag["Health"]);
+	}
+
+	public function saveNBT(){
+		parent::saveNBT();
+		$this->namedtag->Health = new Short("Health", $this->getHealth());
 	}
 
 	public abstract function getName();
