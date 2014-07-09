@@ -172,7 +172,7 @@ class ServerScheduler{
 			$delay = -1;
 		}
 
-		if($period < -1){
+		if($period <= -1){
 			$period = -1;
 		}elseif($period < 1){
 			$period = 1;
