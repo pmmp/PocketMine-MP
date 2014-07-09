@@ -22,11 +22,10 @@
 
 namespace pocketmine\event\plugin;
 
-use pocketmine\event\Event;
 use pocketmine\plugin\Plugin;
 
 
-class PluginEnableEvent extends Event{
+class PluginEnableEvent extends PluginEvent{
 	public static $handlerList = null;
 
 	/**
