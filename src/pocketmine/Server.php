@@ -1743,15 +1743,15 @@ class Server{
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 
-		if(Utils::getOS() === "win"){ //Workaround less usleep() waste
-			$this->tickProcessorWindows();
-		}else{
+		//if(Utils::getOS() === "win"){ //Workaround less usleep() waste
+		//	$this->tickProcessorWindows();
+		//}else{
 			$this->tickProcessor();
-		}
+		//}
 		$this->forceShutdown();
 	}
 
-	private function tickProcessorWindows(){
+	/*private function tickProcessorWindows(){
 		$lastLoop = 0;
 		while($this->isRunning){
 			foreach($this->interfaces as $interface){
@@ -1763,14 +1763,14 @@ class Server{
 
 			if(($ticks = $this->tick()) !== true){
 				++$lastLoop;
-				if($lastLoop > 128){
+				if($lastLoop > 8){
 					usleep(1000);
 				}
 			}else{
 				$lastLoop = 0;
 			}
 		}
-	}
+	}*/
 
 	public function checkTicks(){
 		if($this->getTicksPerSecond() < 12){
@@ -1884,17 +1884,16 @@ class Server{
 			}
 			$this->generationManager->handlePackets();
 
+			++$lastLoop;
+
 			if(($ticks = $this->tick()) !== true){
-				++$lastLoop;
-				if($lastLoop > 16 and $lastLoop < 128){
-					usleep(200);
-				}elseif($lastLoop < 512){
-					usleep(400);
-				}else{
+				if($lastLoop > 2 and $lastLoop < 16){
 					usleep(1000);
+				}elseif($lastLoop < 128){
+					usleep(2000);
+				}else{
+					usleep(10000);
 				}
-			}else{
-				$lastLoop = 0;
 			}
 		}
 	}

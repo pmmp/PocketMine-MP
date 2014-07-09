@@ -107,7 +107,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function process(){
-		$this->interface->handlePacket();
+		return $this->interface->handlePacket();
 	}
 
 	public function closeSession($identifier, $reason){
