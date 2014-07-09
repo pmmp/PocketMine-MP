@@ -450,17 +450,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->processChunkRequest();
 
 		if($this->nextSave < microtime(true)){
-			$X = null;
-			$Z = null;
-			foreach($this->usedChunks as $i => $c){
-				if(count($c) === 0){
-					unset($this->usedChunks[$i]);
-					Level::getXZ($i, $X, $Z);
-					if(!$this->isSpawnChunk($X, $Z)){
-						$this->unloadChunkRequest($X, $Z, true);
-					}
-				}
-			}
 			$this->save(false);
 		}
 	}
@@ -1462,7 +1451,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkInUse($x, $z){
-		return isset($this->usedChunks[static::chunkHash($x, $z)]);
+		return isset($this->usedChunks[static::chunkHash($x, $z)]) and count($this->usedChunks[static::chunkHash($x, $z)]) > 0;
 	}
 
 	/**
@@ -1679,6 +1668,18 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function doChunkGarbageCollection(){
+		$X = null;
+		$Z = null;
+		foreach($this->usedChunks as $i => $c){
+			if(count($c) === 0){
+				unset($this->usedChunks[$i]);
+				Level::getXZ($i, $X, $Z);
+				if(!$this->isSpawnChunk($X, $Z)){
+					$this->unloadChunkRequest($X, $Z, true);
+				}
+			}
+		}
+
 		if(count($this->unloadQueue) > 0){
 			foreach($this->unloadQueue as $index => $chunk){
 
