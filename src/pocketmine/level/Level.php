@@ -1670,14 +1670,6 @@ class Level implements ChunkManager, Metadatable{
 	public function doChunkGarbageCollection(){
 		$X = null;
 		$Z = null;
-		foreach($this->usedChunks as $i => $c){
-			if(count($c) === 0){
-				Level::getXZ($i, $X, $Z);
-				if(!$this->isSpawnChunk($X, $Z)){
-					$this->unloadChunkRequest($X, $Z, true);
-				}
-			}
-		}
 
 		if(count($this->unloadQueue) > 0){
 			foreach($this->unloadQueue as $index => $time){
@@ -1689,6 +1681,15 @@ class Level implements ChunkManager, Metadatable{
 				//If the chunk can't be unloaded, it stays on the queue
 				if($this->unloadChunk($X, $Z, true)){
 					unset($this->unloadQueue[$index]);
+				}
+			}
+		}
+
+		foreach($this->usedChunks as $i => $c){
+			if(count($c) === 0){
+				Level::getXZ($i, $X, $Z);
+				if(!$this->isSpawnChunk($X, $Z)){
+					$this->unloadChunkRequest($X, $Z, true);
 				}
 			}
 		}
