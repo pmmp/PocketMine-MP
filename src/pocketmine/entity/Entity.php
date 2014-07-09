@@ -436,7 +436,7 @@ abstract class Entity extends Position implements Metadatable{
 				}
 			}else{
 				if(($this->fireTicks % 20) === 0){
-					$this->attack(1, "onFire");
+					$this->attack(1, EntityDamageEvent::CAUSE_FIRE_TICK);
 				}
 				--$this->fireTicks;
 			}
@@ -444,7 +444,7 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		if($this->handleLavaMovement()){
-			$this->attack(4, "lava");
+			$this->attack(4, EntityDamageEvent::CAUSE_LAVA);
 			$this->setOnFire(15);
 			$hasUpdate = true;
 			$this->fallDistance *= 0.5;
