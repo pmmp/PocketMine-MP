@@ -624,7 +624,7 @@ class Level implements ChunkManager, Metadatable{
 
 		//TODO: fix this
 		foreach($this->getCollidingEntities($bb->expand(0.25, 0.25, 0.25), $entity) as $ent){
-			$collides[] = $ent->boundingBox;
+			$collides[] = clone $ent->boundingBox;
 		}
 
 		return $collides;
@@ -639,9 +639,11 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block
 	 */
 	public function getBlock(Vector3 $pos){
-		$blockId = null;
-		$meta = null;
-		$this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
+		$blockId = 0;
+		$meta = 0;
+		if($pos->y >= 0 and $pos->y < 128){
+			$this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
+		}
 
 		return Block::get($blockId, $meta, Position::fromObject(clone $pos, $this));
 	}
@@ -658,6 +660,10 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function setBlock(Vector3 $pos, Block $block, $direct = false, $update = true){
+		if($pos->y < 0 or $pos->y >= 128){
+			return false;
+		}
+
 		if($this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getID(), $block->getDamage())){
 			if(!($pos instanceof Position)){
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);

@@ -1298,6 +1298,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}else{*/
 
+				$dy = $newPos->y - $this->y;
+
+				if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
+					$isColliding = true;
+				}else{
+					$isColliding = false;
+				}
+
+				$this->onGround = ($dy <= 0 and $isColliding);
+				$this->updateFallState($dy, $this->onGround);
+
 				if(!$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch)){
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
@@ -1309,7 +1320,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->yaw = $this->yaw;
 					$this->directDataPacket($pk);
 				}
-				//}
 
 				break;
 			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:

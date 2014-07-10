@@ -153,7 +153,7 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
-		return $this->sections[$y >> 4]->getBlock($x, $y & 0x0f, $z, $blockId, $meta);
+		$this->sections[$y >> 4]->getBlock($x, $y & 0x0f, $z, $blockId, $meta);
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){

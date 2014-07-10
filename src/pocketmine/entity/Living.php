@@ -64,12 +64,12 @@ abstract class Living extends Entity implements Damageable{
 		$pk->event = 2; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
 		$this->setLastDamageCause($source);
-		$motion = new Vector3(0, 0.25, 0);
+		$motion = new Vector3(0, 0, 0);
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			$deltaX = $this->x - $e->x;
 			$deltaZ = $this->z - $e->z;
-			$yaw = atan2($deltaX,  $deltaZ);
+			$yaw = atan2($deltaX, $deltaZ);
 			$motion->x = sin($yaw) * 0.5;
 			$motion->z = cos($yaw) * 0.5;
 		}
