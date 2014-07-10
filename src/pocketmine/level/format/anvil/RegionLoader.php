@@ -81,7 +81,9 @@ class RegionLoader{
 	public function readChunk($x, $z, $generate = true){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
-			return false;
+			//Regenerate chunk due to corruption
+			$this->locationTable[$index][0] = 0;
+			$this->locationTable[$index][1] = 1;
 		}
 
 		if(!$this->isChunkGenerated($index)){
