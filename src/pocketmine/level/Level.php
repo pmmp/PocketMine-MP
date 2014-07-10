@@ -350,6 +350,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function freeChunk($X, $Z, Player $player){
 		unset($this->usedChunks[Level::chunkHash($X, $Z)][$player->getID()]);
+		$this->unloadChunkRequest($X, $Z, true);
 	}
 
 	/**
@@ -1697,10 +1698,11 @@ class Level implements ChunkManager, Metadatable{
 			if(count($c) === 0){
 				Level::getXZ($i, $X, $Z);
 				if(!$this->isSpawnChunk($X, $Z)){
-					$this->unloadChunkRequest($X, $Z, true);
+					$this->unloadChunk($X, $Z, true);
 				}
 			}
 		}
+
 	}
 
 
