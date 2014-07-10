@@ -42,14 +42,16 @@ class ListCommand extends VanillaCommand{
 		}
 
 		$online = "";
+		$onlineCount = 0;
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			if($player->isOnline() and (!($sender instanceof Player) or $sender->canSee($player))){
 				$online .= $player->getDisplayName() . ", ";
+				++$onlineCount;
 			}
 		}
 
-		$sender->sendMessage("There are " . count($sender->getServer()->getOnlinePlayers()) . "/" . $sender->getServer()->getMaxPlayers() . " players online:\n" . substr($online, 0, -2));
+		$sender->sendMessage("There are " . $onlineCount . "/" . $sender->getServer()->getMaxPlayers() . " players online:\n" . substr($online, 0, -2));
 
 		return true;
 	}
