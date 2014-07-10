@@ -2150,17 +2150,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			case EntityDamageEvent::CAUSE_SUICIDE:
 
 				break;
+			case EntityDamageEvent::CAUSE_VOID:
+				$message = $this->getName() ." fell out of the world";
+				break;
+			case EntityDamageEvent::CAUSE_FALL:
+				if($ev instanceof EntityDamageEvent){
+					if($ev->getFinalDamage() > 2){
+						$message = $this->getName() ." fell from a high place";
+						break;
+					}
+				}
+				$message = $this->getName() ." hit the ground too hard";
+				break;
+
 			case EntityDamageEvent::CAUSE_CONTACT:
 			case EntityDamageEvent::CAUSE_PROJECTILE:
 			case EntityDamageEvent::CAUSE_SUFFOCATION:
-			case EntityDamageEvent::CAUSE_FALL:
 			case EntityDamageEvent::CAUSE_FIRE:
 			case EntityDamageEvent::CAUSE_FIRE_TICK:
 			case EntityDamageEvent::CAUSE_LAVA:
 			case EntityDamageEvent::CAUSE_DROWNING:
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
-			case EntityDamageEvent::CAUSE_VOID:
 			case EntityDamageEvent::CAUSE_MAGIC:
 			case EntityDamageEvent::CAUSE_CUSTOM:
 

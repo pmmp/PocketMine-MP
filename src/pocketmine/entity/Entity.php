@@ -581,8 +581,15 @@ abstract class Entity extends Position implements Metadatable{
 		return $this->boundingBox;
 	}
 
-	public function fall($fallDistance){ //TODO
-
+	public function fall($fallDistance){
+		$damage = floor($fallDistance - 3);
+		if($damage > 0){
+			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage));
+			if($ev->isCancelled()){
+				return;
+			}
+			$this->attack($ev->getFinalDamage(), $ev);
+		}
 	}
 
 	public function handleWaterMovement(){ //TODO
