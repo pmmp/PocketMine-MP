@@ -122,7 +122,7 @@ class QueryHandler{
 				break;
 			case self::STATISTICS: //Stat
 				$token = Binary::readInt(substr($payload, 0, 4));
-				if($token !== self::getTokenString($this->token, $address) and $token !== self::getTokenString($this->lastToken, $ip)){
+				if($token !== self::getTokenString($this->token, $address) and $token !== self::getTokenString($this->lastToken, $address)){
 					break;
 				}
 				$reply = chr(self::STATISTICS);
