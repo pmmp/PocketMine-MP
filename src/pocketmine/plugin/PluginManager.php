@@ -666,9 +666,15 @@ class PluginManager{
 						$ignoreCancelled = true;
 					}
 				}
+
 				$parameters = $method->getParameters();
 				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), "pocketmine\\event\\Event")){
-					$this->registerEvent($parameters[0]->getClass()->getName(), $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
+					$class = $parameters[0]->getClass()->getName();
+					$reflection = new \ReflectionClass($class);
+					if(preg_match("/^[\t ]*\\* @deprecated[\t ]{1,}$/m", (string) $reflection->getDocComment(), $matches) > 0 and $this->server->getProperty("settings.deprecated-verbose", true)){
+						$this->server->getLogger()->warning('"'.$plugin->getName().'" has registered a listener for '.$class.' on method "'.get_class($listener).'::'.$method.', but the event is Deprecated.');
+					}
+					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
 			}
 		}
@@ -688,6 +694,7 @@ class PluginManager{
 		if(!is_subclass_of($event, "pocketmine\\event\\Event")){
 			throw new \Exception($event . " is not a valid Event");
 		}
+
 		if(!$plugin->isEnabled()){
 			throw new \Exception("Plugin attempted to register " . $event . " while not enabled");
 		}
