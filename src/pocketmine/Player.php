@@ -616,8 +616,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				return;
 			}
 
-			//TODO
-			//$this->heal($this->data->get("health"), "spawn", true);
 			$this->spawned = true;
 
 			$this->sendSettings();
@@ -1231,6 +1229,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 				}
 
+				$this->dead = false;
 				$pk = new StartGamePacket;
 				$pk->seed = $this->getLevel()->getSeed();
 				$pk->x = $this->x;
@@ -1257,6 +1256,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk = new SetHealthPacket();
 				$pk->health = $this->getHealth();
 				$this->dataPacket($pk);
+				if($this->getHealth() <= 0){
+					$this->dead = true;
+				}
 
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->getLevel()->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 
@@ -1703,9 +1705,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				Server::broadcastPacket($this->getViewers(), $pk);
 				break;
 			case ProtocolInfo::RESPAWN_PACKET:
-				if($this->spawned === false or $this->dead !== true){
+				if($this->spawned === false or $this->dead === false){
 					break;
 				}
+
 				$this->craftingType = 0;
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
@@ -1713,6 +1716,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->teleport($ev->getRespawnPosition());
 				//$this->entity->fire = 0;
 				//$this->entity->air = 300;
+
 				$this->setHealth(20);
 				$this->dead = false;
 				//$this->entity->updateMetadata();
@@ -2102,8 +2106,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->namedtag["playerGameType"] = $this->gamemode;
 		$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
 
-		//$this->data->set("health", $this->getHealth());
-
 		if($this->username != "" and $this->isOnline() and $this->namedtag instanceof Compound){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
 		}
@@ -2119,7 +2121,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function kill(){
-		if($this->dead or $this->spawned === false){
+		if($this->dead === true or $this->spawned === false){
 			return;
 		}
 		parent::kill();

@@ -1389,10 +1389,12 @@ class Level implements ChunkManager, Metadatable{
 		if($entity->getLevel() !== $this){
 			throw new \RuntimeException("Invalid Entity level");
 		}
-		$entity->kill();
+
 		if($entity instanceof Player){
 			unset($this->players[$entity->getID()]);
 			//$this->everyoneSleeping();
+		}else{
+			$entity->kill();
 		}
 
 		if($this->isChunkLoaded($entity->chunkX, $entity->chunkZ)){

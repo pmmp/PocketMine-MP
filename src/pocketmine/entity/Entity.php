@@ -425,7 +425,10 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		if($this->y < -64){
-			$this->kill();
+			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10));
+			if(!$ev->isCancelled()){
+				$this->attack($ev->getFinalDamage(), $ev);
+			}
 		}
 
 		if($this->fireTicks > 0){
@@ -960,8 +963,8 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->dead){
 			return;
 		}
-		$this->setHealth(0);
 		$this->dead = true;
+		$this->setHealth(0);
 		$this->scheduleUpdate();
 	}
 
