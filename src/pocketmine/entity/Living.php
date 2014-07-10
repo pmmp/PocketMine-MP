@@ -67,8 +67,11 @@ abstract class Living extends Entity implements Damageable{
 		$motion = new Vector3(0, 0.25, 0);
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
-			$motion->x = -cos(deg2rad($e->pitch)) * sin(deg2rad($e->yaw)) * 0.5;
-			$motion->z = cos(deg2rad($e->pitch)) * sin(deg2rad($e->yaw)) * 0.5;
+			$deltaX = $this->x - $e->x;
+			$deltaZ = $this->z - $e->z;
+			$yaw = atan2($deltaX,  $deltaZ);
+			$motion->x = sin($yaw) * 0.5;
+			$motion->z = cos($yaw) * 0.5;
 		}
 		$this->setMotion($motion);
 		$this->setHealth($this->getHealth() - $damage);
