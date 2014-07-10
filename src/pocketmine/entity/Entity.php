@@ -424,7 +424,7 @@ abstract class Entity extends Position implements Metadatable{
 			$this->inWater = false;
 		}
 
-		if($this->y < -64){
+		if($this->y < 0 and $this->dead !== true){
 			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10));
 			if(!$ev->isCancelled()){
 				$this->attack($ev->getFinalDamage(), $ev);
@@ -968,7 +968,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->scheduleUpdate();
 	}
 
-	public function teleport(Vector3 $pos, $yaw = false, $pitch = false){
+	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		$from = Position::fromObject($this, $this->getLevel());
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->getLevel());
 		$this->server->getPluginManager()->callEvent($ev = new EntityTeleportEvent($this, $from, $to));
@@ -978,25 +978,7 @@ abstract class Entity extends Position implements Metadatable{
 		$pos = $ev->getTo();
 
 		$this->setMotion(new Vector3(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw === false ? $this->yaw : $yaw, $pitch === false ? $this->pitch : $pitch, true) !== false){
-			if($this instanceof Player){
-				$this->airTicks = 300;
-				$this->fallDistance = 0;
-				$this->orderChunks();
-				$this->chunkLoadTask->setNextRun(0);
-				$this->forceMovement = $pos;
-
-				$pk = new MovePlayerPacket;
-				$pk->eid = 0;
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$pk->bodyYaw = $this->yaw;
-				$pk->pitch = $this->pitch;
-				$pk->yaw = $this->yaw;
-				$this->dataPacket($pk);
-			}
-
+		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch, true) !== false){
 			return true;
 		}
 

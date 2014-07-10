@@ -2182,11 +2182,34 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+		if($this->dead === true){
+			return;
+		}
 		$pk = new EntityEventPacket();
 		$pk->eid = 0;
 		$pk->event = 2;
 		$this->dataPacket($pk);
 		parent::attack($damage, $source);
+	}
+
+	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+		if(parent::teleport($pos, $yaw, $pitch)){
+			$this->airTicks = 300;
+			$this->fallDistance = 0;
+			$this->orderChunks();
+			$this->chunkLoadTask->setNextRun(0);
+			$this->forceMovement = $pos;
+
+			$pk = new MovePlayerPacket;
+			$pk->eid = 0;
+			$pk->x = $this->x;
+			$pk->y = $this->y;
+			$pk->z = $this->z;
+			$pk->bodyYaw = $this->yaw;
+			$pk->pitch = $this->pitch;
+			$pk->yaw = $this->yaw;
+			$this->dataPacket($pk);
+		}
 	}
 
 
