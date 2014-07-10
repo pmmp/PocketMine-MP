@@ -73,6 +73,7 @@ use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
+use pocketmine\scheduler\CallbackTask;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use raklib\protocol\EncapsulatedPacket;
@@ -96,6 +97,8 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	/** @var ServerHandler */
 	private $interface;
 
+	private $tickTask;
+
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->identifers = new \SplObjectStorage();
@@ -103,7 +106,11 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$server = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
 		$this->interface = new ServerHandler($server, $this);
 		$this->setName($this->server->getMotd());
+		$this->tickTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "doTick"]), 1);
+	}
 
+	public function doTick(){
+		$this->interface->sendTick();
 	}
 
 	public function process(){
@@ -130,10 +137,12 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function shutdown(){
+		$this->tickTask->cancel();
 		$this->interface->shutdown();
 	}
 
 	public function emergencyShutdown(){
+		$this->tickTask->cancel();
 		$this->interface->emergencyShutdown();
 	}
 
