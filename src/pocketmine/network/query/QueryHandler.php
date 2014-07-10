@@ -60,7 +60,7 @@ class QueryHandler{
 		$str = "";
 		$plist = "PocketMine-MP " . $this->server->getPocketMineVersion();
 		$pl = $this->server->getPluginManager()->getPlugins();
-		if(count($pl) > 0){
+		if(count($pl) > 0 and $this->server->getProperty("settings.query-plugins", true) === true){
 			$plist .= ":";
 			foreach($pl as $p){
 				$d = $p->getDescription();
