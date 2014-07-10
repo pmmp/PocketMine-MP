@@ -689,11 +689,11 @@ class Server{
 					if(isset($nbt->Inventory[$itemSlot + 9])){
 						$item = $nbt->Inventory[$itemSlot + 9];
 						$nbt->Inventory[$slot] = new Compound(false, array(
-							new Short("id", $item->id),
-							new Short("Damage", $item->Damage),
-							new Byte("Count", $item->Count),
+							new Short("id", $item["id"]),
+							new Short("Damage", $item["Damage"]),
+							new Byte("Count", $item["Count"]),
 							new Byte("Slot", $slot),
-							new Byte("TrueSlot", $item->TrueSlot)
+							new Byte("TrueSlot", $item["TrueSlot"])
 						));
 					}
 				}
