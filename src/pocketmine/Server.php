@@ -633,11 +633,11 @@ class Server{
 					new Double(2, $spawn->z)
 				)),
 				new String("Level", $this->getDefaultLevel()->getName()),
-				new String("SpawnLevel", $this->getDefaultLevel()->getName()),
-				new Int("SpawnX", (int) $spawn->x),
-				new Int("SpawnY", (int) $spawn->y),
-				new Int("SpawnZ", (int) $spawn->z),
-				new Byte("SpawnForced", 1), //TODO
+				//new String("SpawnLevel", $this->getDefaultLevel()->getName()),
+				//new Int("SpawnX", (int) $spawn->x),
+				//new Int("SpawnY", (int) $spawn->y),
+				//new Int("SpawnZ", (int) $spawn->z),
+				//new Byte("SpawnForced", 1), //TODO
 				new Enum("Inventory", []),
 				new Compound("Achievements", []),
 				new Int("playerGameType", $this->getGamemode()),

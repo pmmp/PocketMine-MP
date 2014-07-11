@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -513,7 +513,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @return Position
 	 */
 	public function getSpawn(){
-		return $this->spawnPosition;
+		if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
+			return $this->spawnPosition;
+		}else{
+			$level = $this->server->getDefaultLevel();
+			return $level->getSpawn();
+		}
 	}
 
 	/**
@@ -945,14 +950,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->namedtag->playerGameType = new Int("playerGameType", $this->gamemode);
 
+		$spawnPosition = $this->getSpawn();
+
 		$pk = new StartGamePacket;
 		$pk->seed = $this->getLevel()->getSeed();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->spawnX = (int) $this->spawnPosition->x;
-		$pk->spawnY = (int) $this->spawnPosition->y;
-		$pk->spawnZ = (int) $this->spawnPosition->z;
+		$pk->spawnX = (int) $spawnPosition->x;
+		$pk->spawnY = (int) $spawnPosition->y;
+		$pk->spawnZ = (int) $spawnPosition->z;
 		$pk->generator = 1; //0 old, 1 infinite, 2 flat
 		$pk->gamemode = $this->gamemode & 0x01;
 		$pk->eid = 0; //Always use EntityID as zero for the actual player
@@ -1226,9 +1233,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->status = 0;
 				$this->dataPacket($pk);
 
-				if(($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
+				if(isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
 					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 				}
+
+				$spawnPosition = $this->getSpawn();
 
 				$this->dead = false;
 				$pk = new StartGamePacket;
@@ -1236,9 +1245,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
-				$pk->spawnX = (int) $this->spawnPosition->x;
-				$pk->spawnY = (int) $this->spawnPosition->y;
-				$pk->spawnZ = (int) $this->spawnPosition->z;
+				$pk->spawnX = (int) $spawnPosition->x;
+				$pk->spawnY = (int) $spawnPosition->y;
+				$pk->spawnZ = (int) $spawnPosition->z;
 				$pk->generator = 1; //0 old, 1 infinite, 2 flat
 				$pk->gamemode = $this->gamemode & 0x01;
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
@@ -1249,9 +1258,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->dataPacket($pk);
 
 				$pk = new SetSpawnPositionPacket;
-				$pk->x = (int) $this->spawnPosition->x;
-				$pk->y = (int) $this->spawnPosition->y;
-				$pk->z = (int) $this->spawnPosition->z;
+				$pk->x = (int) $spawnPosition->x;
+				$pk->y = (int) $spawnPosition->y;
+				$pk->z = (int) $spawnPosition->z;
 				$this->dataPacket($pk);
 
 				$pk = new SetHealthPacket();
@@ -2105,10 +2114,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function save(){
 		parent::saveNBT();
 		$this->namedtag["Level"] = $this->getLevel()->getName();
-		$this->namedtag["SpawnLevel"] = $this->getLevel()->getName();
-		$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
-		$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
-		$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
+		if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
+			$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getName();
+			$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
+			$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
+			$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
+		}
 
 		foreach($this->achievements as $achievement => $status){
 			$this->namedtag->Achievements[$achievement] = new Byte($achievement, $status === true ? 1 : 0);
