@@ -68,8 +68,8 @@ abstract class DataPacket extends \stdClass{
 		$this->buffer .= $str;
 	}
 
-	protected function getLong($unsigned = false){
-		return Binary::readLong($this->get(8), $unsigned);
+	protected function getLong($signed = true){
+		return Binary::readLong($this->get(8), $signed);
 	}
 
 	protected function putLong($v){
@@ -84,8 +84,8 @@ abstract class DataPacket extends \stdClass{
 		$this->buffer .= Binary::writeInt($v);
 	}
 
-	protected function getShort($unsigned = false){
-		return Binary::readShort($this->get(2), $unsigned);
+	protected function getShort($signed = true){
+		return Binary::readShort($this->get(2), $signed);
 	}
 
 	protected function putShort($v){
@@ -159,7 +159,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getString(){
-		return $this->get($this->getShort(true));
+		return $this->get($this->getShort(false));
 	}
 
 	protected function putString($v){
