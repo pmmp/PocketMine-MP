@@ -114,7 +114,7 @@ class ChunkRequestTask extends AsyncTask{
 		$this->setResult($ordered);
 	}
 
-	public function getColumn($data, $x, $z){
+	public function getColumn(&$data, $x, $z){
 		$i = ($z << 4) + $x;
 		$column = "";
 		for($y = 0; $y < 128; ++$y){
@@ -123,7 +123,7 @@ class ChunkRequestTask extends AsyncTask{
 		return $column;
 	}
 
-	public function getHalfColumn($data, $x, $z){
+	public function getHalfColumn(&$data, $x, $z){
 		$i = ($z << 3) + ($x >> 1);
 		$column = "";
 		if(($x & 1) === 0){

@@ -99,6 +99,9 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 	private $tickTask;
 
+	private $upload = 0;
+	private $download = 0;
+
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->identifers = new \SplObjectStorage();
@@ -181,7 +184,19 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function handleOption($name, $value){
-		//TODO
+		if($name === "bandwidth"){
+			$v = unserialize($value);
+			$this->upload = $v["up"];
+			$this->download = $v["down"];
+		}
+	}
+
+	public function getUploadUsage(){
+		return $this->upload;
+	}
+
+	public function getDownloadUsage(){
+		return $this->download;
 	}
 
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){

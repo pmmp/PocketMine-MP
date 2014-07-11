@@ -502,6 +502,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->chunkX = $x;
 			$pk->chunkZ = $z;
 			$this->dataPacket($pk);
+			$this->getLevel()->freeChunk($x, $z, $this);
 			unset($this->usedChunks[$index]);
 		}
 		unset($this->loadQueue[$index]);

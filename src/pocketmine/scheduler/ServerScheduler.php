@@ -29,7 +29,7 @@ use pocketmine\Server;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
-	public static $WORKERS = 3;
+	public static $WORKERS = 4;
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */

@@ -1980,7 +1980,7 @@ class Server{
 
 	public function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U -1 D -1 kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
+			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U ". round($this->mainInterface->getUploadUsage() / 1024, 2) ." D ". round($this->mainInterface->getDownloadUsage() / 1024, 2) ." kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}
 
