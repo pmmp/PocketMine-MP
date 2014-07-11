@@ -58,9 +58,23 @@ abstract class Living extends Entity implements Damageable{
 	public abstract function getName();
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		if($this instanceof Player and ($this->getGamemode() & 0x01) === 1 and $source != EntityDamageEvent::CAUSE_MAGIC and $source != EntityDamageEvent::CAUSE_SUICIDE and $source != EntityDamageEvent::CAUSE_VOID) {
-			return;
+		
+		if($this instanceof Player and ($this->getGamemode() & 0x01) === 1){
+			if($source instanceof EntityDamageEvent){
+				$cause = $source->getCause();
+			}else{
+				$cause = $source;
+			}
+			
+			if(
+				$cause !== EntityDamageEvent::CAUSE_MAGIC
+				and $cause !== EntityDamageEvent::CAUSE_SUICIDE
+				and $cause !== EntityDamageEvent::CAUSE_VOID
+			){
+				return;
+			}
 		}
+		
 		//TODO: attack tick limit
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getID();
