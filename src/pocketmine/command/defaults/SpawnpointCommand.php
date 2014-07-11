@@ -66,9 +66,9 @@ class SpawnpointCommand extends VanillaCommand{
 
 		if(count($args) === 4){
 			if($level !== null){
-				$x = (int) $this->getRelativeDouble($sender->getX(), $sender, $args[1]);
-				$y = (int) $this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, 128);
-				$z = (int) $this->getRelativeDouble($sender->getZ(), $sender, $args[3]);
+				$x = (int) $this->getRelativeDouble($sender->x, $sender, $args[1]);
+				$y = (int) $this->getRelativeDouble($sender->y, $sender, $args[2], 0, 128);
+				$z = (int) $this->getRelativeDouble($sender->z, $sender, $args[3]);
 				$target->setSpawn(new Position($x, $y, $z, $level));
 				Command::broadcastCommandMessage($sender, "Set " . $target->getName() . "'s spawnpoint to " . $x . ", " . $y . ", " . $z);
 
@@ -76,7 +76,7 @@ class SpawnpointCommand extends VanillaCommand{
 			}
 		}elseif(count($args) <= 1){
 			if($sender instanceof Player){
-				$pos = new Position((int) $sender->getX(), (int) $sender->getY(), (int) $sender->getZ(), $sender->getLevel());
+				$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 				$target->setSpawn($pos);
 				Command::broadcastCommandMessage($sender, "Set " . $target->getName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
 
