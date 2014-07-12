@@ -36,6 +36,7 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
@@ -1476,6 +1477,7 @@ class Server{
 		$this->craftingManager = new CraftingManager();
 
 		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
+		Timings::init();
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
@@ -1599,10 +1601,15 @@ class Server{
 	}
 
 	public function checkConsole(){
+		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
 			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
+			if($ev->isCancelled()){
+				return;
+			}
 			$this->dispatchCommand($this->consoleSender, $ev->getCommand());
 		}
+		Timings::$serverCommandTimer->stopTiming();
 	}
 
 	/**
@@ -1623,7 +1630,6 @@ class Server{
 		}else{
 			$sender->sendMessage("Unknown command. Type \"help\" for help.");
 		}
-
 		return false;
 	}
 
@@ -1935,13 +1941,15 @@ class Server{
 
 	public function doAutoSave(){
 
-		/*foreach($this->getOnlinePlayers() as $player){
+		Timings::$worldSaveTimer->startTiming();
+		foreach($this->getOnlinePlayers() as $player){
 			$player->save();
-		}*/
+		}
 
 		foreach($this->getLevels() as $level){
-			$level->save();
+			$level->save(false);
 		}
+		Timings::$worldSaveTimer->stopTiming();
 	}
 
 	public function doLevelGC(){
@@ -1999,11 +2007,15 @@ class Server{
 				return false;
 			}
 
+			Timings::$serverTickTimer->startTiming();
+
 			$this->inTick = true; //Fix race conditions
 			++$this->tickCounter;
 
 			$this->checkConsole();
+			Timings::$schedulerTimer->startTiming();
 			$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+			Timings::$schedulerTimer->stopTiming();
 			$this->checkTickUpdates($this->tickCounter);
 
 			if(($this->tickCounter & 0b1111) === 0){
@@ -2019,6 +2031,8 @@ class Server{
 			$this->tickTime = $time;
 			$this->nextTick = 0.05 * (0.05 / max(0.05, $this->tickMeasure)) + $time;
 			$this->inTick = false;
+
+			Timings::$serverTickTimer->stopTiming();
 
 			return true;
 		}

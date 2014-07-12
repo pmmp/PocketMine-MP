@@ -33,6 +33,7 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
+use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
@@ -157,6 +158,9 @@ class Level implements ChunkManager, Metadatable{
 		Block::BEETROOT_BLOCK,
 	];
 
+	/** @var LevelTimings */
+	public $timings;
+
 	/**
 	 * Returns the chunk unique hash/key
 	 *
@@ -208,6 +212,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 128);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
+		$this->timings = new LevelTimings($this);
 	}
 
 	/**
@@ -386,6 +391,8 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function doTick($currentTick){
 
+		$this->timings->doTick->startTiming();
+
 		if(($currentTick % 200) === 0){
 			$this->checkTime();
 		}
@@ -450,9 +457,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->processChunkRequest();
 
-		if($this->nextSave < microtime(true)){
-			$this->save(false);
-		}
+		$this->timings->doTick->stopTiming();
 	}
 
 	private function tickChunks(){
@@ -1677,6 +1682,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function doChunkGarbageCollection(){
+		$this->timings->doChunkGC->startTiming();
+
 		$X = null;
 		$Z = null;
 
@@ -1703,6 +1710,8 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+
+		$this->timings->doChunkGC->stopTiming();
 	}
 
 

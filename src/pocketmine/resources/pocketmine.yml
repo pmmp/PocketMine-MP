@@ -4,7 +4,6 @@
 
 settings:
  shutdown-message: "Server closed"
- plugin-profiling: false
  query-plugins: true
  deprecated-verbose: true
  enable-profiling: false
