@@ -178,7 +178,7 @@ class ServerScheduler{
 			$period = 1;
 		}
 
-		return $this->handle(new TaskHandler($task, $this->nextId(), $delay, $period));
+		return $this->handle(new TaskHandler(get_class($task), $task, $this->nextId(), $delay, $period));
 	}
 
 	private function handle(TaskHandler $handler){
@@ -201,12 +201,15 @@ class ServerScheduler{
 	public function mainThreadHeartbeat($currentTick){
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
+			/** @var TaskHandler $task */
 			$task = $this->queue->extract();
 			if($task->isCancelled()){
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
 			}else{
+				$task->timings->startTiming();
 				$task->run($this->currentTick);
+				$task->timings->stopTiming();
 			}
 			if($task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());

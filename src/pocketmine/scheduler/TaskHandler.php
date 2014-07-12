@@ -21,6 +21,8 @@
 
 namespace pocketmine\scheduler;
 
+use pocketmine\event\Timings;
+
 class TaskHandler{
 
 	/** @var Task */
@@ -41,17 +43,25 @@ class TaskHandler{
 	/** @var bool */
 	protected $cancelled = false;
 
+	/** @var \pocketmine\event\TimingsHandler */
+	public $timings;
+
+	public $timingName = null;
+
 	/**
-	 * @param Task $task
-	 * @param int  $taskId
-	 * @param int  $delay
-	 * @param int  $period
+	 * @param string $timingName
+	 * @param Task   $task
+	 * @param int    $taskId
+	 * @param int    $delay
+	 * @param int    $period
 	 */
-	public function __construct(Task $task, $taskId, $delay = -1, $period = -1){
+	public function __construct($timingName, Task $task, $taskId, $delay = -1, $period = -1){
 		$this->task = $task;
 		$this->taskId = $taskId;
 		$this->delay = $delay;
 		$this->period = $period;
+		$this->timingName = $timingName === null ? "Unknown" : $timingName;
+		$this->timings = Timings::getPluginTaskTimings($this, $period);
 	}
 
 	/**
@@ -127,6 +137,7 @@ class TaskHandler{
 	public function remove(){
 		$this->cancelled = true;
 		$this->task->setHandler(null);
+		$this->timings->remove();
 	}
 
 	/**
@@ -134,5 +145,15 @@ class TaskHandler{
 	 */
 	public function run($currentTick){
 		$this->task->onRun($currentTick);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTaskName(){
+		if($this->timingName !== null){
+			return $this->timingName;
+		}
+		return get_class($this->task);
 	}
 }

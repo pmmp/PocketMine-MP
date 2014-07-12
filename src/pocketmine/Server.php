@@ -36,6 +36,8 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\event\Timings;
+use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
@@ -71,6 +73,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
+use pocketmine\scheduler\PHPGarbageCollectionTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Tile;
@@ -1354,7 +1357,7 @@ class Server{
 		$this->filePath = $filePath;
 		$this->dataPath = $dataPath;
 		$this->pluginPath = $pluginPath;
-		@mkdir($this->dataPath . "worlds/", 0777);
+		@mkdir($this->dataPath . "worlds/", 0777, true);
 		@mkdir($this->dataPath . "players/", 0777);
 		@mkdir($this->pluginPath, 0777);
 
@@ -1474,8 +1477,11 @@ class Server{
 		Item::init();
 		$this->craftingManager = new CraftingManager();
 
+		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
+		Timings::init();
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
+		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -1516,8 +1522,10 @@ class Server{
 		}
 
 		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doLevelGC")), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doLevelGC"]), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
 		}
+
+		$this->scheduler->scheduleRepeatingTask(new PHPGarbageCollectionTask(), 100);
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
@@ -1596,10 +1604,15 @@ class Server{
 	}
 
 	public function checkConsole(){
+		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
 			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
+			if($ev->isCancelled()){
+				return;
+			}
 			$this->dispatchCommand($this->consoleSender, $ev->getCommand());
 		}
+		Timings::$serverCommandTimer->stopTiming();
 	}
 
 	/**
@@ -1620,7 +1633,6 @@ class Server{
 		}else{
 			$sender->sendMessage("Unknown command. Type \"help\" for help.");
 		}
-
 		return false;
 	}
 
@@ -1664,6 +1676,7 @@ class Server{
 		$this->pluginManager->loadPlugins($this->pluginPath);
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+		TimingsHandler::reload();
 	}
 
 	/**
@@ -1743,34 +1756,9 @@ class Server{
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 
-		//if(Utils::getOS() === "win"){ //Workaround less usleep() waste
-		//	$this->tickProcessorWindows();
-		//}else{
-			$this->tickProcessor();
-		//}
+		$this->tickProcessor();
 		$this->forceShutdown();
 	}
-
-	/*private function tickProcessorWindows(){
-		$lastLoop = 0;
-		while($this->isRunning){
-			foreach($this->interfaces as $interface){
-				if($interface->process()){
-					$lastLoop = 0;
-				}
-			}
-			$this->generationManager->handlePackets();
-
-			if(($ticks = $this->tick()) !== true){
-				++$lastLoop;
-				if($lastLoop > 8){
-					usleep(1000);
-				}
-			}else{
-				$lastLoop = 0;
-			}
-		}
-	}*/
 
 	public function checkTicks(){
 		if($this->getTicksPerSecond() < 12){
@@ -1875,13 +1863,17 @@ class Server{
 
 	private function tickProcessor(){
 		$lastLoop = 0;
+		$connectionTimer = Timings::$connectionTimer;
 		while($this->isRunning){
 
+			$connectionTimer->startTiming();
 			foreach($this->interfaces as $interface){
 				if($interface->process()){
 					$lastLoop = 0;
 				}
 			}
+			$connectionTimer->stopTiming();
+
 			$this->generationManager->handlePackets();
 
 			++$lastLoop;
@@ -1903,22 +1895,29 @@ class Server{
 	}
 
 	private function checkTickUpdates($currentTick){
+
+		//TODO: move this to each Level
+
 		//Update entities that need update
 		if(count(Entity::$needUpdate) > 0){
+			Timings::$tickEntityTimer->startTiming();
 			foreach(Entity::$needUpdate as $id => $entity){
 				if($entity->onUpdate() === false){
 					unset(Entity::$needUpdate[$id]);
 				}
 			}
+			Timings::$tickEntityTimer->stopTiming();
 		}
 
 		//Update tiles that need update
 		if(count(Tile::$needUpdate) > 0){
+			Timings::$tickTileEntityTimer->startTiming();
 			foreach(Tile::$needUpdate as $id => $tile){
 				if($tile->onUpdate() === false){
 					unset(Tile::$needUpdate[$id]);
 				}
 			}
+			Timings::$tickTileEntityTimer->stopTiming();
 		}
 
 		//TODO: Add level blocks
@@ -1931,13 +1930,15 @@ class Server{
 
 	public function doAutoSave(){
 
-		/*foreach($this->getOnlinePlayers() as $player){
+		Timings::$worldSaveTimer->startTiming();
+		foreach($this->getOnlinePlayers() as $player){
 			$player->save();
-		}*/
+		}
 
 		foreach($this->getLevels() as $level){
-			$level->save();
+			$level->save(false);
 		}
+		Timings::$worldSaveTimer->stopTiming();
 	}
 
 	public function doLevelGC(){
@@ -1995,11 +1996,15 @@ class Server{
 				return false;
 			}
 
+			Timings::$serverTickTimer->startTiming();
+
 			$this->inTick = true; //Fix race conditions
 			++$this->tickCounter;
 
 			$this->checkConsole();
+			Timings::$schedulerTimer->startTiming();
 			$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+			Timings::$schedulerTimer->stopTiming();
 			$this->checkTickUpdates($this->tickCounter);
 
 			if(($this->tickCounter & 0b1111) === 0){
@@ -2009,10 +2014,14 @@ class Server{
 				}
 			}
 
+			TimingsHandler::tick();
+
 			$this->tickMeasure = (($time = microtime(true)) - $this->tickTime);
 			$this->tickTime = $time;
 			$this->nextTick = 0.05 * (0.05 / max(0.05, $this->tickMeasure)) + $time;
 			$this->inTick = false;
+
+			Timings::$serverTickTimer->stopTiming();
 
 			return true;
 		}

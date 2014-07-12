@@ -14,29 +14,17 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link http://www.pocketmine.net/
+
  *
  *
 */
 
-namespace pocketmine\plugin;
+namespace pocketmine\scheduler;
 
-use pocketmine\event\Event;
-use pocketmine\event\Listener;
+class PHPGarbageCollectionTask extends Task{
 
-class MethodEventExecutor implements EventExecutor{
-
-	private $method;
-
-	public function __construct($method){
-		$this->method = $method;
+	public function onRun($currentTicks){
+		gc_collect_cycles();
 	}
 
-	public function execute(Listener $listener, Event $event){
-		call_user_func(array($listener, $this->method), $event);
-	}
-
-	public function getMethod(){
-		return $this->method;
-	}
 }

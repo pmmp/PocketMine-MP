@@ -33,6 +33,7 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
+use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
@@ -157,6 +158,9 @@ class Level implements ChunkManager, Metadatable{
 		Block::BEETROOT_BLOCK,
 	];
 
+	/** @var LevelTimings */
+	public $timings;
+
 	/**
 	 * Returns the chunk unique hash/key
 	 *
@@ -208,6 +212,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 128);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
+		$this->timings = new LevelTimings($this);
 	}
 
 	/**
@@ -336,7 +341,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function freeAllChunks(Player $player){
 		foreach($this->usedChunks as $i => $c){
-			unset($this->usedChunks[$i][spl_object_hash($player)]);
+			unset($this->usedChunks[$i][$player->getID()]);
 		}
 	}
 
@@ -349,7 +354,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Player $player
 	 */
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[Level::chunkHash($X, $Z)][$player->getID()]);
+		unset($this->usedChunks[$index = Level::chunkHash($X, $Z)][$player->getID()]);
 		$this->unloadChunkRequest($X, $Z, true);
 	}
 
@@ -385,6 +390,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function doTick($currentTick){
+
+		$this->timings->doTick->startTiming();
 
 		if(($currentTick % 200) === 0){
 			$this->checkTime();
@@ -440,19 +447,21 @@ class Level implements ChunkManager, Metadatable{
 		$X = null;
 		$Z = null;
 
-		//Do chunk updates
+		//Do block updates
+		$this->timings->doTickPending->startTiming();
 		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
 			$block = $this->getBlock($this->updateQueue->extract()["data"]);
 			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
 		}
+		$this->timings->doTickPending->stopTiming();
 
+		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
+		$this->timings->doTickTiles->stopTiming();
 
 		$this->processChunkRequest();
 
-		if($this->nextSave < microtime(true)){
-			$this->save(false);
-		}
+		$this->timings->doTick->stopTiming();
 	}
 
 	private function tickChunks(){
@@ -1481,7 +1490,9 @@ class Level implements ChunkManager, Metadatable{
 		if($chunk instanceof Chunk){
 			return true;
 		}else{
+			$this->timings->syncChunkLoadTimer->startTiming();
 			$this->provider->loadChunk($x, $z);
+			$this->timings->syncChunkLoadTimer->stopTiming();
 
 			return $this->provider->getChunk($x, $z) instanceof Chunk;
 		}
@@ -1509,9 +1520,13 @@ class Level implements ChunkManager, Metadatable{
 		if($safe === true and $this->isChunkInUse($x, $z)){
 			return false;
 		}
+		$this->timings->doChunkUnload->startTiming();
 
 		$this->provider->unloadChunk($x, $z, $safe);
+		unset($this->usedChunks[Level::chunkHash($x, $z)]);
 		Cache::remove("world:" . $this->getID() . ":$x:$z");
+
+		$this->timings->doChunkUnload->stopTiming();
 
 		return true;
 	}
@@ -1668,7 +1683,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function regenerateChunk($x, $z){
-		$this->unloadChunk($x, $z);
+		$this->unloadChunk($x, $z, false);
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
@@ -1677,6 +1692,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function doChunkGarbageCollection(){
+		$this->timings->doChunkGC->startTiming();
+
 		$X = null;
 		$Z = null;
 
@@ -1698,11 +1715,17 @@ class Level implements ChunkManager, Metadatable{
 			if(count($c) === 0){
 				Level::getXZ($i, $X, $Z);
 				if(!$this->isSpawnChunk($X, $Z)){
+					if($this->getAutoSave()){
+						$this->provider->saveChunk($X, $Z);
+					}
+
 					$this->unloadChunk($X, $Z, true);
 				}
 			}
 		}
 
+
+		$this->timings->doChunkGC->stopTiming();
 	}
 
 

@@ -26,6 +26,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\Timings;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
@@ -112,6 +113,12 @@ abstract class Living extends Entity implements Damageable{
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
+	}
+
+	public function entityBaseTick(){
+		Timings::$timerEntityBaseTick->startTiming();
+		parent::entityBaseTick();
+		Timings::$timerEntityBaseTick->stopTiming();
 	}
 
 	/**

@@ -4,9 +4,9 @@
 
 settings:
  shutdown-message: "Server closed"
- plugin-profiling: false
  query-plugins: true
  deprecated-verbose: true
+ enable-profiling: false
  advanced-cache: false
  upnp-forwarding: false
  send-usage: true

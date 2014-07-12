@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -669,6 +670,8 @@ abstract class Entity extends Position implements Metadatable{
 			return;
 		}
 
+		Timings::$entityMoveTimer->startTiming();
+
 		$ox = $this->x;
 		$oy = $this->y;
 		$oz = $this->z;
@@ -832,6 +835,7 @@ abstract class Entity extends Position implements Metadatable{
 
 		//TODO: vehicle collision events (first we need to spawn them!)
 
+		Timings::$entityMoveTimer->stopTiming();
 
 	}
 
