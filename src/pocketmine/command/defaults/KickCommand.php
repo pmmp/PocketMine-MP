@@ -53,7 +53,7 @@ class KickCommand extends VanillaCommand{
 
 		if(($player = $sender->getServer()->getPlayer($name)) instanceof Player){
 			$player->kick($reason);
-			Command::broadcastCommandMessage($sender, "Kicked player " . $player->getName() . ". With reason: " . $reason);
+			Command::broadcastCommandMessage($sender, "Kicked " . $player->getName() . " from the game: '{$reason}'");
 		}else{
 			$sender->sendMessage($name . " not found.");
 		}
