@@ -36,6 +36,7 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\server\ServerCommandEvent;
+use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
@@ -1354,7 +1355,7 @@ class Server{
 		$this->filePath = $filePath;
 		$this->dataPath = $dataPath;
 		$this->pluginPath = $pluginPath;
-		@mkdir($this->dataPath . "worlds/", 0777);
+		@mkdir($this->dataPath . "worlds/", 0777, true);
 		@mkdir($this->dataPath . "players/", 0777);
 		@mkdir($this->pluginPath, 0777);
 
@@ -1474,8 +1475,10 @@ class Server{
 		Item::init();
 		$this->craftingManager = new CraftingManager();
 
+		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
+		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -1664,6 +1667,7 @@ class Server{
 		$this->pluginManager->loadPlugins($this->pluginPath);
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+		TimingsHandler::reload();
 	}
 
 	/**
@@ -2008,6 +2012,8 @@ class Server{
 					$this->queryHandler->regenerateInfo();
 				}
 			}
+
+			TimingsHandler::tick();
 
 			$this->tickMeasure = (($time = microtime(true)) - $this->tickTime);
 			$this->tickTime = $time;
