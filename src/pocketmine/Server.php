@@ -1479,6 +1479,7 @@ class Server{
 
 		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
 		Timings::init();
+
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));

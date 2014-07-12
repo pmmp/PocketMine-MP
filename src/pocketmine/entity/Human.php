@@ -21,6 +21,7 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item;
@@ -83,53 +84,55 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		parent::saveNBT();
 		$this->namedtag->Inventory = new Enum("Inventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
-		for($slot = 0; $slot < 9; ++$slot){
-			$hotbarSlot = $this->inventory->getHotbarSlotIndex($slot);
-			if($hotbarSlot !== -1){
-				$item = $this->inventory->getItem($hotbarSlot);
-				if($item->getID() !== 0 and $item->getCount() > 0){
-					$this->namedtag->Inventory[$slot] = new Compound(false, array(
-						new Byte("Count", $item->getCount()),
-						new Short("Damage", $item->getDamage()),
-						new Byte("Slot", $slot),
-						new Byte("TrueSlot", $hotbarSlot),
-						new Short("id", $item->getID()),
-					));
-					continue;
+		if($this->inventory instanceof PlayerInventory){
+			for($slot = 0; $slot < 9; ++$slot){
+				$hotbarSlot = $this->inventory->getHotbarSlotIndex($slot);
+				if($hotbarSlot !== -1){
+					$item = $this->inventory->getItem($hotbarSlot);
+					if($item->getID() !== 0 and $item->getCount() > 0){
+						$this->namedtag->Inventory[$slot] = new Compound(false, array(
+							new Byte("Count", $item->getCount()),
+							new Short("Damage", $item->getDamage()),
+							new Byte("Slot", $slot),
+							new Byte("TrueSlot", $hotbarSlot),
+							new Short("id", $item->getID()),
+						));
+						continue;
+					}
 				}
+				$this->namedtag->Inventory[$slot] = new Compound(false, array(
+					new Byte("Count", 0),
+					new Short("Damage", 0),
+					new Byte("Slot", $slot),
+					new Byte("TrueSlot", -1),
+					new Short("id", 0),
+				));
 			}
-			$this->namedtag->Inventory[$slot] = new Compound(false, array(
-				new Byte("Count", 0),
-				new Short("Damage", 0),
-				new Byte("Slot", $slot),
-				new Byte("TrueSlot", -1),
-				new Short("id", 0),
-			));
-		}
 
-		//Normal inventory
-		$slotCount = Player::SURVIVAL_SLOTS + 9;
-		//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
-		for($slot = 9; $slot < $slotCount; ++$slot){
-			$item = $this->inventory->getItem($slot - 9);
-			$this->namedtag->Inventory[$slot] = new Compound(false, array(
-				new Byte("Count", $item->getCount()),
-				new Short("Damage", $item->getDamage()),
-				new Byte("Slot", $slot),
-				new Short("id", $item->getID()),
-			));
-		}
-
-		//Armor
-		for($slot = 100; $slot < 104; ++$slot){
-			$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
-			if($item instanceof Item and $item->getID() !== Item::AIR){
+			//Normal inventory
+			$slotCount = Player::SURVIVAL_SLOTS + 9;
+			//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
+			for($slot = 9; $slot < $slotCount; ++$slot){
+				$item = $this->inventory->getItem($slot - 9);
 				$this->namedtag->Inventory[$slot] = new Compound(false, array(
 					new Byte("Count", $item->getCount()),
 					new Short("Damage", $item->getDamage()),
 					new Byte("Slot", $slot),
 					new Short("id", $item->getID()),
 				));
+			}
+
+			//Armor
+			for($slot = 100; $slot < 104; ++$slot){
+				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
+				if($item instanceof Item and $item->getID() !== Item::AIR){
+					$this->namedtag->Inventory[$slot] = new Compound(false, array(
+						new Byte("Count", $item->getCount()),
+						new Short("Damage", $item->getDamage()),
+						new Byte("Slot", $slot),
+						new Short("id", $item->getID()),
+					));
+				}
 			}
 		}
 	}
