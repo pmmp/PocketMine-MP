@@ -117,7 +117,10 @@ class Anvil extends BaseLevelProvider{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ);
+
+		$this->level->timings->syncChunkLoadDataTimer->startTiming();
 		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32, $create); //generate empty chunk if not loaded
+		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk instanceof Chunk){
 			$this->chunks[$index] = $chunk;

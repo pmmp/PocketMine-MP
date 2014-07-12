@@ -447,13 +447,17 @@ class Level implements ChunkManager, Metadatable{
 		$X = null;
 		$Z = null;
 
-		//Do chunk updates
+		//Do block updates
+		$this->timings->doTickPending->startTiming();
 		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
 			$block = $this->getBlock($this->updateQueue->extract()["data"]);
 			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
 		}
+		$this->timings->doTickPending->stopTiming();
 
+		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
+		$this->timings->doTickTiles->stopTiming();
 
 		$this->processChunkRequest();
 
@@ -1486,7 +1490,9 @@ class Level implements ChunkManager, Metadatable{
 		if($chunk instanceof Chunk){
 			return true;
 		}else{
+			$this->timings->syncChunkLoadTimer->startTiming();
 			$this->provider->loadChunk($x, $z);
+			$this->timings->syncChunkLoadTimer->stopTiming();
 
 			return $this->provider->getChunk($x, $z) instanceof Chunk;
 		}
@@ -1514,9 +1520,12 @@ class Level implements ChunkManager, Metadatable{
 		if($safe === true and $this->isChunkInUse($x, $z)){
 			return false;
 		}
+		$this->timings->doChunkUnload->startTiming();
 
 		$this->provider->unloadChunk($x, $z, $safe);
 		Cache::remove("world:" . $this->getID() . ":$x:$z");
+
+		$this->timings->doChunkUnload->stopTiming();
 
 		return true;
 	}

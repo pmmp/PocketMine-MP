@@ -1753,34 +1753,9 @@ class Server{
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 
-		//if(Utils::getOS() === "win"){ //Workaround less usleep() waste
-		//	$this->tickProcessorWindows();
-		//}else{
-			$this->tickProcessor();
-		//}
+		$this->tickProcessor();
 		$this->forceShutdown();
 	}
-
-	/*private function tickProcessorWindows(){
-		$lastLoop = 0;
-		while($this->isRunning){
-			foreach($this->interfaces as $interface){
-				if($interface->process()){
-					$lastLoop = 0;
-				}
-			}
-			$this->generationManager->handlePackets();
-
-			if(($ticks = $this->tick()) !== true){
-				++$lastLoop;
-				if($lastLoop > 8){
-					usleep(1000);
-				}
-			}else{
-				$lastLoop = 0;
-			}
-		}
-	}*/
 
 	public function checkTicks(){
 		if($this->getTicksPerSecond() < 12){
@@ -1885,13 +1860,17 @@ class Server{
 
 	private function tickProcessor(){
 		$lastLoop = 0;
+		$connectionTimer = Timings::$connectionTimer;
 		while($this->isRunning){
 
+			$connectionTimer->startTiming();
 			foreach($this->interfaces as $interface){
 				if($interface->process()){
 					$lastLoop = 0;
 				}
 			}
+			$connectionTimer->stopTiming();
+
 			$this->generationManager->handlePackets();
 
 			++$lastLoop;
@@ -1913,22 +1892,29 @@ class Server{
 	}
 
 	private function checkTickUpdates($currentTick){
+
+		//TODO: move this to each Level
+
 		//Update entities that need update
 		if(count(Entity::$needUpdate) > 0){
+			Timings::$tickEntityTimer->startTiming();
 			foreach(Entity::$needUpdate as $id => $entity){
 				if($entity->onUpdate() === false){
 					unset(Entity::$needUpdate[$id]);
 				}
 			}
+			Timings::$tickEntityTimer->stopTiming();
 		}
 
 		//Update tiles that need update
 		if(count(Tile::$needUpdate) > 0){
+			Timings::$tickTileEntityTimer->startTiming();
 			foreach(Tile::$needUpdate as $id => $tile){
 				if($tile->onUpdate() === false){
 					unset(Tile::$needUpdate[$id]);
 				}
 			}
+			Timings::$tickTileEntityTimer->stopTiming();
 		}
 
 		//TODO: Add level blocks
