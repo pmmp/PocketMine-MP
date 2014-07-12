@@ -341,7 +341,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function freeAllChunks(Player $player){
 		foreach($this->usedChunks as $i => $c){
-			unset($this->usedChunks[$i][spl_object_hash($player)]);
+			unset($this->usedChunks[$i][$player->getID()]);
 		}
 	}
 
@@ -354,7 +354,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Player $player
 	 */
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[Level::chunkHash($X, $Z)][$player->getID()]);
+		unset($this->usedChunks[$index = Level::chunkHash($X, $Z)][$player->getID()]);
 		$this->unloadChunkRequest($X, $Z, true);
 	}
 
@@ -1523,6 +1523,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doChunkUnload->startTiming();
 
 		$this->provider->unloadChunk($x, $z, $safe);
+		unset($this->usedChunks[Level::chunkHash($x, $z)]);
 		Cache::remove("world:" . $this->getID() . ":$x:$z");
 
 		$this->timings->doChunkUnload->stopTiming();
@@ -1682,7 +1683,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function regenerateChunk($x, $z){
-		$this->unloadChunk($x, $z);
+		$this->unloadChunk($x, $z, false);
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
@@ -1714,6 +1715,10 @@ class Level implements ChunkManager, Metadatable{
 			if(count($c) === 0){
 				Level::getXZ($i, $X, $Z);
 				if(!$this->isSpawnChunk($X, $Z)){
+					if($this->getAutoSave()){
+						$this->provider->saveChunk($X, $Z);
+					}
+
 					$this->unloadChunk($X, $Z, true);
 				}
 			}

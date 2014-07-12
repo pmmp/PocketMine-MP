@@ -130,8 +130,8 @@ class Anvil extends BaseLevelProvider{
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
+		$chunk = $this->getChunk($x, $z, false);
 		if($safe === true and $this->isChunkLoaded($x, $z)){
-			$chunk = $this->getChunk($x, $z);
 			foreach($chunk->getEntities() as $entity){
 				if($entity instanceof Player){
 					return false;
@@ -139,7 +139,17 @@ class Anvil extends BaseLevelProvider{
 			}
 		}
 
-		unset($this->chunks[Level::chunkHash($x, $z)]);
+		foreach($chunk->getEntities() as $entity){
+			$entity->close();
+		}
+
+		foreach($chunk->getTiles() as $tile){
+			$tile->close();
+		}
+
+		$this->chunks[$index = Level::chunkHash($x, $z)] = null;
+
+		unset($this->chunks[$index]);
 
 		return true;
 	}
