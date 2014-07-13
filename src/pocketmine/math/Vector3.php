@@ -80,6 +80,11 @@ class Vector3{
 		return $this->z;
 	}
 
+	/**
+	 * @param Vector3|int $x
+	 * @param int $y
+	 * @param int $z
+	 */
 	public function add($x, $y = 0, $z = 0){
 		if($x instanceof Vector3){
 			return $this->add($x->x, $x->y, $x->z);
@@ -88,6 +93,12 @@ class Vector3{
 		}
 	}
 
+	/**
+	 * @param Vector3|int $x
+	 * @param int $y
+	 * @param int $z
+	 * @return Vector3
+	 */
 	public function subtract($x = 0, $y = 0, $z = 0){
 		if($x instanceof Vector3){
 			return $this->add(-$x->x, -$x->y, -$x->z);
