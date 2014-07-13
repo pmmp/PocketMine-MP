@@ -2222,6 +2222,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->dead === true){
 			return;
 		}
+		if(($this->getGamemode() & 0x01) === 1){
+			if($source instanceof EntityDamageEvent){
+				$cause = $source->getCause();
+			}else{
+				$cause = $source;
+			}
+
+			if(
+				$cause !== EntityDamageEvent::CAUSE_MAGIC
+				and $cause !== EntityDamageEvent::CAUSE_SUICIDE
+				and $cause !== EntityDamageEvent::CAUSE_VOID
+			){
+				return;
+			}
+		}
+
 		$pk = new EntityEventPacket();
 		$pk->eid = 0;
 		$pk->event = 2;
