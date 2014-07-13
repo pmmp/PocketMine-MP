@@ -5,7 +5,7 @@
 Before contributing to PocketMine-MP, please read this. Also, take a look if your contribution fits the PocketMine-MP goals below.
 
 
-## I've a question
+## I have a question
 * For questions, please refer to the _#pocketmine_ or _#mcpedevs_ IRC channel on Freenode. There is a [WebIRC](http://webchat.freenode.net?channels=pocketmine,mcpedevs&uio=d4) if you want.
 * You can ask directly to _[@PocketMine](https://twitter.com/PocketMine)_ in Twitter, but don't expect an inmediate reply.
 

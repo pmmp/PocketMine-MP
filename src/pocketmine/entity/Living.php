@@ -26,6 +26,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\Timings;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
@@ -58,6 +59,23 @@ abstract class Living extends Entity implements Damageable{
 	public abstract function getName();
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+		
+		if($this instanceof Player and ($this->getGamemode() & 0x01) === 1){
+			if($source instanceof EntityDamageEvent){
+				$cause = $source->getCause();
+			}else{
+				$cause = $source;
+			}
+			
+			if(
+				$cause !== EntityDamageEvent::CAUSE_MAGIC
+				and $cause !== EntityDamageEvent::CAUSE_SUICIDE
+				and $cause !== EntityDamageEvent::CAUSE_VOID
+			){
+				return;
+			}
+		}
+		
 		//TODO: attack tick limit
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getID();
@@ -95,6 +113,12 @@ abstract class Living extends Entity implements Damageable{
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
+	}
+
+	public function entityBaseTick(){
+		Timings::$timerEntityBaseTick->startTiming();
+		parent::entityBaseTick();
+		Timings::$timerEntityBaseTick->stopTiming();
 	}
 
 	/**

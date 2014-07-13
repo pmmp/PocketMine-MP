@@ -25,6 +25,7 @@
  */
 namespace pocketmine\tile;
 
+use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
@@ -57,6 +58,9 @@ abstract class Tile extends Position{
 	protected $lastUpdate;
 	protected $server;
 
+	/** @var \pocketmine\event\TimingsHandler */
+	public $tickTimer;
+
 	public function __construct(Chunk $chunk, Compound $nbt){
 		$this->server = $chunk->getLevel()->getLevel()->getServer();
 		$this->chunk = $chunk;
@@ -72,6 +76,7 @@ abstract class Tile extends Position{
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
+		$this->tickTimer = Timings::getTileEntityTimings($this);
 	}
 
 	public function getID(){

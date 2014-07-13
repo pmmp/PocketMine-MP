@@ -116,13 +116,14 @@ class RegionLoader{
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			trigger_error("Invalid compression type", E_USER_WARNING);
-
 			return false;
 		}
 
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->readCompressed(fread($this->filePointer, $length - 1), $compression);
 		$chunk = $nbt->getData();
+
+
 		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
 			return false;
 		}

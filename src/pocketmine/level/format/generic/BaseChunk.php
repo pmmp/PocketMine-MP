@@ -98,6 +98,7 @@ abstract class BaseChunk implements Chunk{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
 		}
 
+		$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
 		foreach($entities as $nbt){
 			if($nbt instanceof Compound){
 				if(!isset($nbt->id)){
@@ -115,8 +116,9 @@ abstract class BaseChunk implements Chunk{
 				}
 			}
 		}
+		$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
 
-
+		$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 		foreach($tiles as $nbt){
 			if($nbt instanceof Compound){
 				if(!isset($nbt->id)){
@@ -135,6 +137,7 @@ abstract class BaseChunk implements Chunk{
 				}
 			}
 		}
+		$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 	}
 
 	public function getX(){
