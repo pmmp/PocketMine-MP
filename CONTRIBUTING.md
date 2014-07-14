@@ -71,3 +71,53 @@ class ExampleClass{
 
 }
 ```
+## Bug Tracking
+
+### Labels
+To provide a concise bug tracking environment, prevent the issue tracker from over flowing and to keep support requests out of the bug tracker, PocketMine-MP uses a label scheme a bit different from the default GitHub Issues labels.
+
+PocketMine-MP uses GitHub Issues Labels. There are a total of ten(10) labels.
+
+#### Categories
+Category labels are prefixed by `C:`. Multiple category labels may be applied to a single issue(but try to keep this to a minimum and do not overuse category labels).
+ - C: Core - This label is applied when the bug results in a fatal crash, or is related to neither Gameplay nor Plugin API.
+ - C: Gameplay - This label is applied when the bug effects the gameplay.
+ - C: API - This label is applied when the bug effects the Plugin API.
+
+#### Pull Requests
+Pull Requests are prefixed by `PR:`. Only one label may be applied for a Pull Request.
+ - PR: Bug Fix - This label is applied when the Pull Request fixes a bug. 
+ - PR: RFC (Request For Comments) - This label is applied when the Pull Request suggests an improvement.
+
+#### Status
+Status labels show the status of the issue. Multiple status labels may be applied.
+ - Reproduced - This label is applied when the bug has been reproduced, or multiple people are reporting the same issue and symptoms in which case it is automatically assumed that the bug has been reproduced in different environments.
+ - Debugged - This label is applied when the cause of the bug has been found.
+ - Priority - This label is applied when the bug is easy to fix, or if the scale of the bug is global.
+
+#### Miscellaneous
+Miscellaneous labels are labels that show status not related to debugging that bug. The To-Do label and the Mojang label may not be applied to a single issue at the same time.
+ - To-Do - This label is applied when the issue is not a bug, but a feature request or a list of features to be implemented that count towards a milestone.
+ - Mojang - This label is applied when the issue is suspected of being caused by the Minecraft: Pocket Edition client, but has not been confirmed.
+
+### Closing Issues
+To keep the bug tracker clear of non-related issues and to prevent it from overflowing, issues must be closed as soon as possible.
+
+ - **Support requests are not bugs.** Issues such as "How do I do this" are not bugs and are closed as soon as a collaborator spots it. They are referred to our Forum to seek assistance.
+ - ** No generic titles** such as "Question", "Help", "Crash Report" etc. If an issue has a generic title they will either be closed on the spot, or a collaborator will edit it to describe the actual symptom.
+ - Similarly, no generic issue reports. It is the issue submitter's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**. If you do not provide us with a summary or instructions on how to reproduce the issue, it is a support request until the actual bug has been found and therefore the issue is closed.
+
+### Milestones
+PocketMine-MP uses GitHub Milestones to set a goal for a new release. A milestone is set on the following occasions.
+
+ - A new Beta release
+ - A new Stable release
+
+A milestone must use the following format:
+```
+Alpha <version_number> <release_title> <release_version>
+```
+For example:
+```
+Alpha 1.4 Beta 2
+```
