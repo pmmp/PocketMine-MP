@@ -1643,7 +1643,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					];
 
 					$damage = [
-						EntityDamageByEntityEvent::MODIFIER_BASE => isset($damageTable[$item->getID()]) ? $damageTable[$item->getID()] : 1,
+						EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getID()]) ? $damageTable[$item->getID()] : 1,
 					];
 
 					if($this->distance($target) > 8){
