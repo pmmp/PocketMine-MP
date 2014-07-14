@@ -73,7 +73,9 @@ class ExampleClass{
 ### Labels
 To provide a concise bug tracking environment, prevent the issue tracker from over flowing and to keep support requests out of the bug tracker, PocketMine-MP uses a label scheme a bit different from the default GitHub Issues labels.
 
-PocketMine-MP uses GitHub Issues Labels. There are a total of ten(10) labels.
+PocketMine-MP uses GitHub Issues Labels. There are a total of 12 labels.
+
+Note: For future reference, labels must not be longer than 15 letters.
 
 #### Categories
 Category labels are prefixed by `C:`. Multiple category labels may be applied to a single issue(but try to keep this to a minimum and do not overuse category labels).
@@ -84,18 +86,20 @@ Category labels are prefixed by `C:`. Multiple category labels may be applied to
 #### Pull Requests
 Pull Requests are prefixed by `PR:`. Only one label may be applied for a Pull Request.
  - PR: Bug Fix - This label is applied when the Pull Request fixes a bug. 
- - PR: RFC (Request For Comments) - This label is applied when the Pull Request suggests an improvement.
+ - PR: Contribution - This label is applied when the Pull Request contributes code to PocketMine-MP such as a new feature or an improvement.
 
 #### Status
 Status labels show the status of the issue. Multiple status labels may be applied.
  - Reproduced - This label is applied when the bug has been reproduced, or multiple people are reporting the same issue and symptoms in which case it is automatically assumed that the bug has been reproduced in different environments.
  - Debugged - This label is applied when the cause of the bug has been found.
  - Priority - This label is applied when the bug is easy to fix, or if the scale of the bug is global.
+ - Won't Fix - This label is applied if the bug has been decided not be fixed for some reason. e.g. when the bug benefits gameplay. *This label may only be applied to a closed issue.*
 
 #### Miscellaneous
 Miscellaneous labels are labels that show status not related to debugging that bug. The To-Do label and the Mojang label may not be applied to a single issue at the same time.
  - To-Do - This label is applied when the issue is not a bug, but a feature request or a list of features to be implemented that count towards a milestone.
  - Mojang - This label is applied when the issue is suspected of being caused by the Minecraft: Pocket Edition client, but has not been confirmed.
+ - Invalid - This label is applied when the issue is reporting a false bug that works as intended, a support request, etc. *This label may only be applied to a closed issue.*
 
 ### Closing Issues
 To keep the bug tracker clear of non-related issues and to prevent it from overflowing, **issues must be closed as soon as possible** (This may sound unethical, but it is MUCH better than having the BUG TRACKER filled with SUPPORT REQUESTS and "I NEED HELP").
