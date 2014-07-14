@@ -1006,6 +1006,8 @@ abstract class Entity extends Position implements Metadatable{
 
 		$this->setMotion(new Vector3(0, 0, 0));
 		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch, true) !== false){
+			$this->fallDistance = 0;
+			$this->onGround = true;
 			return true;
 		}
 

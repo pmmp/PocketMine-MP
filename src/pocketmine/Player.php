@@ -2212,9 +2212,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function setHealth($amount){
 		parent::setHealth($amount);
-		$pk = new SetHealthPacket();
-		$pk->health = $this->getHealth();
-		$this->dataPacket($pk);
+		if($this->spawned === true){
+			$pk = new SetHealthPacket();
+			$pk->health = $this->getHealth();
+			$this->dataPacket($pk);
+		}
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
