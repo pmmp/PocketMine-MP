@@ -13,6 +13,7 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 ## Creating an Issue
  - First, use the [Issue Search](https://github.com/PocketMine/PocketMine-MP/search?ref=cmdform&type=Issues) to check if anyone has reported it.
  - If your issue is related to a plugin, you must contact their original author instead of reporting it here.
+ - If your issue is related to a PocketMine official plugin, or our Android application, you must create an issue on that specific repository.
  - **Support requests are not bugs.** Issues such as "How do I do this" are not bugs and are closed as soon as a collaborator spots it. They are referred to our Forum to seek assistance.
  - ** No generic titles** such as "Question", "Help", "Crash Report" etc. If an issue has a generic title they will either be closed on the spot, or a collaborator will edit it to describe the actual symptom.
  - Similarly, no generic issue reports. It is the issue submitter's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**. If you do not provide us with a summary or instructions on how to reproduce the issue, it is a support request until the actual bug has been found and therefore the issue is closed.
