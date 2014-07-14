@@ -625,10 +625,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->spawned = true;
 
-			$this->sendSettings();
-			$this->inventory->sendContents($this);
-			$this->inventory->sendArmorContents($this);
-
 			$this->blocked = false;
 
 			$pk = new SetTimePacket;
@@ -642,6 +638,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 			$this->teleport($ev->getRespawnPosition());
+
+			$this->sendSettings();
+			$this->inventory->sendContents($this);
+			$this->inventory->sendArmorContents($this);
 
 			$this->spawnToAll();
 
