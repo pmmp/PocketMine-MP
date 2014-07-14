@@ -499,10 +499,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$entity->despawnFrom($this);
 				}
 			}
-			$pk = new UnloadChunkPacket();
+			/*$pk = new UnloadChunkPacket();
 			$pk->chunkX = $x;
 			$pk->chunkZ = $z;
-			$this->dataPacket($pk);
+			$this->dataPacket($pk);*/
 			$this->getLevel()->freeChunk($x, $z, $this);
 			unset($this->usedChunks[$index]);
 
@@ -584,7 +584,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 30);
 		}else{
 			$count = 0;
-			$limit = (int) $this->server->getProperty("chunk-sending.per-tick", 1);
+			$limit = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 			foreach($this->loadQueue as $index => $distance){
 				if($count >= $limit){
 					break;
@@ -594,8 +594,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$Z = null;
 				Level::getXZ($index, $X, $Z);
 				if(!$this->getLevel()->isChunkPopulated($X, $Z)){
-					$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 5);
-					return;
+					continue;
 				}
 
 				unset($this->loadQueue[$index]);
@@ -713,10 +712,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$entity->despawnFrom($this);
 				}
 			}
-			$pk = new UnloadChunkPacket();
+			/*$pk = new UnloadChunkPacket();
 			$pk->chunkX = $X;
 			$pk->chunkZ = $Z;
-			$this->dataPacket($pk);
+			$this->dataPacket($pk);*/
 			unset($this->usedChunks[$index]);
 		}
 	}

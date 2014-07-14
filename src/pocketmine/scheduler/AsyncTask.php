@@ -29,22 +29,18 @@ use pocketmine\Server;
  */
 abstract class AsyncTask extends \Threaded{
 
-	private $complete = null;
-	private $finished = null;
-	private $result = null;
+	public $complete = null;
+	public $finished = null;
+	public $result = null;
 
 	public function run(){
-		$this->lock();
 		$this->finished = false;
 		$this->complete = false;
 		$this->result = null;
-		$this->unlock();
 
 		$this->onRun();
 
-		$this->lock();
 		$this->finished = true;
-		$this->unlock();
 
 	}
 
@@ -52,7 +48,6 @@ abstract class AsyncTask extends \Threaded{
 	 * @return bool
 	 */
 	public function isFinished(){
-
 		return $this->finished === true;
 	}
 
@@ -86,6 +81,14 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	public function setResult($result){
 		$this->result = @serialize($result);
+	}
+
+	public function setTaskId($taskId){
+		$this->taskId = $taskId;
+	}
+
+	public function getTaskId(){
+		return $this->taskId;
 	}
 
 	/**
