@@ -98,7 +98,7 @@ class GenerationRequestManager{
 
 	protected function receiveChunk($levelID, SimpleChunk $chunk){
 		if(($level = $this->server->getLevel($levelID)) instanceof Level){
-			$level->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
+			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);
 		}else{
 			$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($levelID);
 			@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);

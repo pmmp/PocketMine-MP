@@ -129,6 +129,8 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkSendQueue = [];
 	private $chunkSendTasks = [];
 
+	private $chunkGenerationQueue = [];
+
 	private $autoSave = true;
 
 	/** @var BlockMetadataStore */
@@ -1273,6 +1275,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	public function generateChunkCallback($x, $z, SimpleChunk $chunk){
+		unset($this->chunkGenerationQueue["$x:$z"]);
+		$this->setChunk($x, $z, $chunk);
+	}
+
 	public function setChunk($x, $z, SimpleChunk $chunk){
 		$index = Level::chunkHash($x, $z);
 		foreach($this->getUsingChunk($x, $z) as $player){
@@ -1693,7 +1700,10 @@ class Level implements ChunkManager, Metadatable{
 
 
 	public function generateChunk($x, $z){
-		$this->server->getGenerationManager()->requestChunk($this, $x, $z);
+		if(!isset($this->chunkGenerationQueue["$x:$z"])){
+			$this->chunkGenerationQueue["$x:$z"] = true;
+			$this->server->getGenerationManager()->requestChunk($this, $x, $z);
+		}
 	}
 
 	public function regenerateChunk($x, $z){

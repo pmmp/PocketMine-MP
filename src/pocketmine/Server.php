@@ -1064,8 +1064,10 @@ class Server{
 
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
-		for($Z = 5; $Z <= 11; ++$Z){
-			for($X = 5; $X <= 11; ++$X){
+		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
+
+		for($Z = 0; $Z <= 16; ++$Z){
+			for($X = 0; $X <= 16; ++$X){
 				$level->generateChunk($X, $Z);
 			}
 		}
