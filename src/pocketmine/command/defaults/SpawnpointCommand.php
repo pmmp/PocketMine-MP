@@ -77,7 +77,7 @@ class SpawnpointCommand extends VanillaCommand{
 			if($sender instanceof Player){
 				$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 				$target->setSpawn($pos);
-				Command::broadcastCommandMessage($sender, "Set " . $target->getName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
+				Command::broadcastCommandMessage($sender, "Set " . $target->getDisplayName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
 
 				return true;
 			}else{

@@ -86,7 +86,7 @@ class TeleportCommand extends VanillaCommand{
 		if(count($args) < 3){
 			$pos = new Position($target->x, $target->y, $target->z, $target->getLevel());
 			$origin->teleport($pos);
-			Command::broadcastCommandMessage($sender, "Teleported " . $origin->getName() . " to " . $target->getName());
+			Command::broadcastCommandMessage($sender, "Teleported " . $origin->getDisplayName() . " to " . $target->getDisplayName());
 
 			return true;
 		}elseif($target->getLevel() !== null){
@@ -95,7 +95,7 @@ class TeleportCommand extends VanillaCommand{
 			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
 			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos]);
 			$target->teleport(new Vector3($x, $y, $z));
-			Command::broadcastCommandMessage($sender, "Teleported " . $target->getName() . " to " . round($x, 2) . ", " . round($y, 2) . ", " . round($z, 2));
+			Command::broadcastCommandMessage($sender, "Teleported " . $target->getDisplayName() . " to " . round($x, 2) . ", " . round($y, 2) . ", " . round($z, 2));
 
 			return true;
 		}
