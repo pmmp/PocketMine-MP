@@ -708,7 +708,7 @@ class PluginManager{
 			throw new \Exception("Plugin attempted to register " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: ".$plugin->getDescription()->getName()." Event: ".get_class($listener)."::".($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???")."(".(new \ReflectionClass($event))->getShortName().")", self::$pluginParentTimer);
+		$timings = new TimingsHandler("Plugin: ".$plugin->getDescription()->getFullName()." Event: ".get_class($listener)."::".($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???")."(".(new \ReflectionClass($event))->getShortName().")", self::$pluginParentTimer);
 
 		$this->getEventListeners($event)->register(new RegisteredListener($listener, $executor, $priority, $plugin, $ignoreCancelled, $timings));
 	}

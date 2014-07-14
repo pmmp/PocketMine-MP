@@ -414,6 +414,8 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function entityBaseTick(){
 		//TODO: check vehicles
+
+
 		if($this->dead === true and !($this instanceof Player)){
 			$this->close();
 

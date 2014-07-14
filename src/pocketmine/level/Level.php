@@ -252,7 +252,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function close(){
-		if($this->autoSave){
+		if($this->getAutoSave()){
 			$this->provider->saveChunks();
 		}
 		$this->provider->close();
@@ -1720,6 +1720,13 @@ class Level implements ChunkManager, Metadatable{
 
 		$X = null;
 		$Z = null;
+
+		foreach($this->chunks as $index => $chunk){
+			if(!isset($this->usedChunks[$index])){
+				Level::getXZ($index, $X, $Z);
+				$this->unloadChunkRequest($X, $Z, true);
+			}
+		}
 
 		if(count($this->unloadQueue) > 0){
 			foreach($this->unloadQueue as $index => $time){
