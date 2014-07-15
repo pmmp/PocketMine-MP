@@ -898,6 +898,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 
+
 		if($player instanceof Player){
 			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){

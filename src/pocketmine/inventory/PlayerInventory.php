@@ -83,7 +83,7 @@ class PlayerInventory extends BaseInventory{
 		if($item instanceof Item){
 			return $item;
 		}else{
-			return Item::get(Item::AIR);
+			return Item::get(Item::AIR, 0, 0);
 		}
 	}
 

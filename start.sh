@@ -48,9 +48,9 @@ LOOPS=0
 set +e
 while [ "$LOOPS" -eq 0 ] || [ "$DO_LOOP" == "yes" ]; do
 	if [ "$DO_LOOP" == "yes" ]; then
-		"$PHP_BINARY" "$POCKETMINE_FILE" "$@"
+		"$PHP_BINARY" "$POCKETMINE_FILE" $@
 	else
-		exec "$PHP_BINARY" "$POCKETMINE_FILE" "$@"
+		exec "$PHP_BINARY" "$POCKETMINE_FILE" $@
 	fi
 	((LOOPS++))
 done

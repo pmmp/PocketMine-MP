@@ -1411,11 +1411,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($blockVector->distance($this) > 10){
 
 					}elseif(($this->gamemode & 0x01) === 1){
-						$item = $this->inventory->getItemInHand();;
+						$item = $this->inventory->getItemInHand();
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or ($this->inventory->getItemInHand()->isTool() === false and $this->inventory->getItemInHand()->getDamage() !== $packet->meta)){
+					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = clone $this->inventory->getItemInHand();
