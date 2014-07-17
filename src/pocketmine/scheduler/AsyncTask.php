@@ -29,9 +29,9 @@ use pocketmine\Server;
  */
 abstract class AsyncTask extends \Threaded{
 
-	public $complete = null;
-	public $finished = null;
-	public $result = null;
+	protected $complete = null;
+	protected $finished = null;
+	protected $result = null;
 
 	public function run(){
 		$this->finished = false;
