@@ -24,7 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Stone extends Solid{
-	const STONE = 0;
+	const NORMAL = 0;
 	const GRANITE = 1;
 	const POLISHED_GRANITE = 2;
 	const DIORITE = 3;
@@ -35,7 +35,7 @@ class Stone extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::STONE, $meta, "Stone");
 		$names = [
-			self::STONE => "Stone",
+			self::NORMAL => "Stone",
 			self::GRANITE => "Granite",
 			self::POLISHED_GRANITE => "Polished Granite",
 			self::DIORITE => "Diorite",
