@@ -85,6 +85,12 @@ namespace pocketmine {
 		@define("pocketmine\\PATH", \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
+	if(!extension_loaded("pthreads")){
+		echo "[CRITICAL] Unable to find the pthreads extension." . PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage.". PHP_EOL;
+		exit(1);
+	}
+
 	if(!class_exists("SplClassLoader", false)){
 		require_once(\pocketmine\PATH . "src/spl/SplClassLoader.php");
 	}
@@ -235,18 +241,13 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("pthreads")){
-		$logger->critical("Unable to find the pthreads extension.");
+	$pthreads_version = phpversion("pthreads");
+	if(substr_count($pthreads_version, ".") < 2){
+		$pthreads_version = "0.$pthreads_version";
+	}
+	if(version_compare($pthreads_version, "2.0.4") < 0){
+		$logger->critical("pthreads >= 2.0.4 is required, while you have $pthreads_version.");
 		++$errors;
-	}else{
-		$pthreads_version = phpversion("pthreads");
-		if(substr_count($pthreads_version, ".") < 2){
-			$pthreads_version = "0.$pthreads_version";
-		}
-		if(version_compare($pthreads_version, "2.0.4") < 0){
-			$logger->critical("pthreads >= 2.0.4 is required, while you have $pthreads_version.");
-			++$errors;
-		}
 	}
 
 	if(!extension_loaded("uopz")){
