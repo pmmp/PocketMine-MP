@@ -104,7 +104,7 @@ class CrashDump{
 		global $arguments;
 		$this->data["parameters"] = (array) $arguments;
 		$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
-		$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#", "rcon.password=******", $this->data["server.properties"]);
+		$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
 		$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
 		$extensions = [];
 		foreach(get_loaded_extensions() as $ext){
