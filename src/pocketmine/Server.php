@@ -1759,7 +1759,6 @@ class Server{
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 
-		crash();
 		$this->tickProcessor();
 		$this->forceShutdown();
 	}
