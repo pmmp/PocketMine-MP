@@ -84,6 +84,7 @@ class Vector3{
 	 * @param Vector3|int $x
 	 * @param int $y
 	 * @param int $z
+	 * @return Vector3
 	 */
 	public function add($x, $y = 0, $z = 0){
 		if($x instanceof Vector3){
