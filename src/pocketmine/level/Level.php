@@ -813,7 +813,7 @@ class Level implements ChunkManager, Metadatable{
 			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 			if($above instanceof Block) {
 				if($above->getID() === Item::Fire) {
-					$level->setBlock($above, new Air(), true, false, true);
+					$level->setBlock($above, new Air(), true, false);
 				}
 			}
 		}
@@ -886,7 +886,7 @@ class Level implements ChunkManager, Metadatable{
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
-			$this->setBlock($block, new Air(), true, false, true);
+			$this->setBlock($block, new Air(), true, false);
 
 			return false;
 		}else{
