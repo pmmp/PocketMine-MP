@@ -25,7 +25,6 @@
 namespace pocketmine\level;
 
 use pocketmine\block\Air;
-use pocketmine\block\Fire;
 use pocketmine\block\Block;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
@@ -813,8 +812,8 @@ class Level implements ChunkManager, Metadatable{
 		if($level instanceof Level) {
 			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 			if($above instanceof Block) {
-				if($above->getID() === new Fire()) {
-					$level->setBlock($above, new Air(), true, false, true);
+				if($above->getID() === Item::Fire) {
+					$level->setBlock($above, new Air(), true, false);
 				}
 			}
 		}
@@ -887,7 +886,7 @@ class Level implements ChunkManager, Metadatable{
 			$hand = $item->getBlock();
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
-			$this->setBlock($block, new Air(), true, false, true);
+			$this->setBlock($block, new Air(), true, false);
 
 			return false;
 		}else{
