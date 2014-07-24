@@ -775,7 +775,11 @@ class Level implements ChunkManager, Metadatable{
 	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null){
 		$target = $this->getBlock($vector);
 		//TODO: Adventure mode checks
-
+		
+		if($item == null){
+			$item = new Item(AIR);
+		}
+		
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
