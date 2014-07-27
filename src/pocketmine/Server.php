@@ -1784,8 +1784,24 @@ class Server{
 			return;
 		}
 		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
-		$this->logger->emergency("An unrecoverable has occurred and the server has crashed. Creating an error dump");
+		$this->logger->emergency("An unrecoverable has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
+
+		if($this->getProperty("settings.send-crash", true) !== false){
+			$reply = Utils::postURL("http://crash.pocketmine.net/submit/api", [
+				"report" => "yes",
+				"name" => "PocketMine-MP ".$this->getPocketMineVersion(),
+				"email" => "crash@pocketmine.net",
+				"reportPaste" => base64_encode($dump->getEncodedData())
+			]);
+
+			if(($data = json_decode($reply)) !== false and isset($data->crashId)){
+				$reportId = $data->crashId;
+				$reportUrl = $data->crashUrl;
+				$this->logger->emergency("The crash dump has ben automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
+			}
+		}
+
 		$this->logger->emergency("Please submit the \"".$dump->getPath()."\" file to the Bug Reporting page. Give as much info as you can.");
 
 		//$this->checkMemory();
