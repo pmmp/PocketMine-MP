@@ -173,24 +173,34 @@ namespace pocketmine {
 	}
 
 	function getTrace($start = 1){
-		$e = new \Exception();
-		$trace = $e->getTrace();
+		if(function_exists("xdebug_get_function_stack")){
+			$trace = array_reverse(xdebug_get_function_stack());
+		}else{
+			$e = new \Exception();
+			$trace = $e->getTrace();
+		}
 		$messages = [];
 		$j = 0;
 		for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
 			$params = "";
-			if(isset($trace[$i]["args"])){
-				foreach($trace[$i]["args"] as $name => $value){
+			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+				if(isset($trace[$i]["args"])){
+					$args = $trace[$i]["args"];
+				}else{
+					$args = $trace[$i]["params"];
+				}
+				foreach($args as $name => $value){
 					$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . @strval($value)) . ", ";
 				}
 			}
-			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
 		}
 
 		return $messages;
 	}
 
 	function error_handler($errno, $errstr, $errfile, $errline){
+		global $lastError;
 		if(error_reporting() === 0){ //@ error-control
 			return false;
 		}
@@ -213,12 +223,24 @@ namespace pocketmine {
 		);
 		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? LogLevel::ERROR : LogLevel::NOTICE;
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+		if(($pos = strrpos($errstr, "\n")) !== false){
+			$errstr = substr($errstr, 0, $pos);
+		}
 		$logger = MainLogger::getLogger();
+		$oldFile = $errfile;
 		$errfile = str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $errfile);
 		$logger->log($type, "An $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
-		foreach(getTrace() as $i => $line){
+		foreach(($trace = getTrace(3)) as $i => $line){
 			$logger->debug($line);
 		}
+		$lastError = [
+			"type" => $type,
+			"message" => $errstr,
+			"fullFile" => $oldFile,
+			"file" => $errfile,
+			"line" => $errline,
+			"trace" => $trace
+		];
 
 		return true;
 	}

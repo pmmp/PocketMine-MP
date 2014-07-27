@@ -1780,6 +1780,7 @@ class Server{
 	}
 
 	public function crashDump(){
+
 		if($this->isRunning === false){
 			return;
 		}

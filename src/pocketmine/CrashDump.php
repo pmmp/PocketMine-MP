@@ -119,29 +119,40 @@ class CrashDump{
 	}
 
 	private function baseCrash(){
-		$error = (array) error_get_last();
-		$errorConversion = array(
-			E_ERROR => "E_ERROR",
-			E_WARNING => "E_WARNING",
-			E_PARSE => "E_PARSE",
-			E_NOTICE => "E_NOTICE",
-			E_CORE_ERROR => "E_CORE_ERROR",
-			E_CORE_WARNING => "E_CORE_WARNING",
-			E_COMPILE_ERROR => "E_COMPILE_ERROR",
-			E_COMPILE_WARNING => "E_COMPILE_WARNING",
-			E_USER_ERROR => "E_USER_ERROR",
-			E_USER_WARNING => "E_USER_WARNING",
-			E_USER_NOTICE => "E_USER_NOTICE",
-			E_STRICT => "E_STRICT",
-			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-			E_DEPRECATED => "E_DEPRECATED",
-			E_USER_DEPRECATED => "E_USER_DEPRECATED",
-		);
-		$fullFile = $error["file"];
-		$error["file"] = str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $error["file"]);
-		$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
+		global $lastError;
+		if(isset($lastError)){
+			$error = $lastError;
+		}else{
+			$error = (array) error_get_last();
+			$error["trace"] = getTrace(4);
+			$errorConversion = array(
+				E_ERROR => "E_ERROR",
+				E_WARNING => "E_WARNING",
+				E_PARSE => "E_PARSE",
+				E_NOTICE => "E_NOTICE",
+				E_CORE_ERROR => "E_CORE_ERROR",
+				E_CORE_WARNING => "E_CORE_WARNING",
+				E_COMPILE_ERROR => "E_COMPILE_ERROR",
+				E_COMPILE_WARNING => "E_COMPILE_WARNING",
+				E_USER_ERROR => "E_USER_ERROR",
+				E_USER_WARNING => "E_USER_WARNING",
+				E_USER_NOTICE => "E_USER_NOTICE",
+				E_STRICT => "E_STRICT",
+				E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+				E_DEPRECATED => "E_DEPRECATED",
+				E_USER_DEPRECATED => "E_USER_DEPRECATED",
+			);
+			$error["fullFile"] = $error["file"];
+			$error["file"] = str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $error["file"]);
+			$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
+			if(($pos = strrpos($error["message"], "\n")) !== false){
+				$error["message"] = substr($error["message"], 0, $pos);
+			}
+		}
 
 		$this->data["error"] = $error;
+		unset($this->data["error"]["fullFile"]);
+		unset($this->data["error"]["trace"]);
 		$this->addLine("Error: ". $error["message"]);
 		$this->addLine("File: ". $error["file"]);
 		$this->addLine("Line: ". $error["line"]);
@@ -158,14 +169,14 @@ class CrashDump{
 		$this->addLine();
 		$this->addLine("Code:");
 		$this->data["code"] = [];
-		$file = @file($fullFile, FILE_IGNORE_NEW_LINES);
+		$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 		for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10; ++$l){
 			$this->addLine("[" . ($l + 1) . "] " . @$file[$l]);
 			$this->data["code"][$l + 1] = @$file[$l];
 		}
 		$this->addLine();
 		$this->addLine("Backtrace:");
-		foreach(($this->data["trace"] = getTrace(3)) as $line){
+		foreach(($this->data["trace"] = $error["trace"]) as $line){
 			$this->addLine($line);
 		}
 		$this->addLine();
