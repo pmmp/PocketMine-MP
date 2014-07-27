@@ -184,7 +184,7 @@ namespace pocketmine {
 					$params .= (is_object($value) ? get_class($value) . " " . (method_exists($value, "__toString") ? $value->__toString() : "object") : gettype($value) . " " . @strval($value)) . ", ";
 				}
 			}
-			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? $trace[$i]["file"] : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . $trace[$i]["type"] : "") . $trace[$i]["function"] . "(" . substr($params, 0, -2) . ")";
 		}
 
 		return $messages;
@@ -214,7 +214,8 @@ namespace pocketmine {
 		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? LogLevel::ERROR : LogLevel::NOTICE;
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
 		$logger = MainLogger::getLogger();
-		$logger->log($type, "A $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
+		$errfile = str_replace(["\\", ".php", str_replace("\\", "/", \pocketmine\PATH)], ["/", "", ""], $errfile);
+		$logger->log($type, "An $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
 		foreach(getTrace() as $i => $line){
 			$logger->debug($line);
 		}

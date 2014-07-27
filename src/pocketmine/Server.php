@@ -1747,7 +1747,7 @@ class Server{
 
 		$this->tickCounter = 0;
 
-		//register_shutdown_function(array($this, "dumpError"));
+		register_shutdown_function(array($this, "crashDump"));
 		register_shutdown_function(array($this, "forceShutdown"));
 		if(function_exists("pcntl_signal")){
 			pcntl_signal(SIGTERM, array($this, "shutdown"));
@@ -1779,89 +1779,34 @@ class Server{
 		}
 	}
 
-	public function dumpError(){
-		//TODO
-		if($this->stop === true){
+	public function crashDump(){
+		if($this->isRunning === false){
 			return;
 		}
 		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
-		$this->logger->emergency("An unrecoverable has occurred and the server has crashed. Creating an error dump");
-		$dump = "```\r\n# PocketMine-MP Error Dump " . date("D M j H:i:s T Y") . "\r\n";
-		$er = error_get_last();
-		$errorConversion = array(
-			E_ERROR => "E_ERROR",
-			E_WARNING => "E_WARNING",
-			E_PARSE => "E_PARSE",
-			E_NOTICE => "E_NOTICE",
-			E_CORE_ERROR => "E_CORE_ERROR",
-			E_CORE_WARNING => "E_CORE_WARNING",
-			E_COMPILE_ERROR => "E_COMPILE_ERROR",
-			E_COMPILE_WARNING => "E_COMPILE_WARNING",
-			E_USER_ERROR => "E_USER_ERROR",
-			E_USER_WARNING => "E_USER_WARNING",
-			E_USER_NOTICE => "E_USER_NOTICE",
-			E_STRICT => "E_STRICT",
-			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-			E_DEPRECATED => "E_DEPRECATED",
-			E_USER_DEPRECATED => "E_USER_DEPRECATED",
-		);
-		$er["type"] = isset($errorConversion[$er["type"]]) ? $errorConversion[$er["type"]] : $er["type"];
-		$dump .= "Error: " . var_export($er, true) . "\r\n\r\n";
-		if(stripos($er["file"], "plugin") !== false){
-			$dump .= "THIS ERROR WAS CAUSED BY A PLUGIN. REPORT IT TO THE PLUGIN DEVELOPER.\r\n";
-		}
+		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
+		$dump = new CrashDump($this);
 
-		$dump .= "Code: \r\n";
-		$file = @file($er["file"], FILE_IGNORE_NEW_LINES);
-		for($l = max(0, $er["line"] - 10); $l < $er["line"] + 10; ++$l){
-			$dump .= "[" . ($l + 1) . "] " . @$file[$l] . "\r\n";
-		}
-		$dump .= "\r\n\r\n";
-		$dump .= "Backtrace: \r\n";
-		foreach(getTrace() as $line){
-			$dump .= "$line\r\n";
-		}
-		$dump .= "\r\n\r\n";
-		$version = new VersionString();
-		$dump .= "PocketMine-MP version: " . $version->get(false). " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]\r\n";
-		$dump .= "Git commit: " . GIT_COMMIT . "\r\n";
-		$dump .= "uname -a: " . php_uname("a") . "\r\n";
-		$dump .= "PHP Version: " . phpversion() . "\r\n";
-		$dump .= "Zend version: " . zend_version() . "\r\n";
-		$dump .= "OS : " . PHP_OS . ", " . Utils::getOS() . "\r\n";
-		$dump .= "Debug Info: " . var_export($this->debugInfo(false), true) . "\r\n\r\n\r\n";
-		global $arguments;
-		$dump .= "Parameters: " . var_export($arguments, true) . "\r\n\r\n\r\n";
-		$p = $this->api->getProperties();
-		if($p["rcon.password"] != ""){
-			$p["rcon.password"] = "******";
-		}
-		$dump .= "server.properties: " . var_export($p, true) . "\r\n\r\n\r\n";
-		if(class_exists("pocketmine\\plugin\\PluginManager", false)){
-			$dump .= "Loaded plugins:\r\n";
-			foreach($this->getPluginManager()->getPlugins() as $p){
-				$d = $p->getDescription();
-				$dump .= $d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . "\r\n";
+		if($this->getProperty("settings.send-crash", true) !== false){
+			$reply = Utils::postURL("http://crash.pocketmine.net/submit/api", [
+				"report" => "yes",
+				"name" => "PocketMine-MP ".$this->getPocketMineVersion(),
+				"email" => "crash@pocketmine.net",
+				"reportPaste" => base64_encode($dump->getEncodedData())
+			]);
+
+			if(($data = json_decode($reply)) !== false and isset($data->crashId)){
+				$reportId = $data->crashId;
+				$reportUrl = $data->crashUrl;
+				$this->logger->emergency("The crash dump has ben automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
 			}
-			$dump .= "\r\n\r\n";
 		}
 
-		$extensions = [];
-		foreach(get_loaded_extensions() as $ext){
-			$extensions[$ext] = phpversion($ext);
-		}
+		$this->logger->emergency("Please submit the \"".$dump->getPath()."\" file to the Bug Reporting page. Give as much info as you can.");
 
-		$dump .= "Loaded Modules: " . var_export($extensions, true) . "\r\n";
-		$this->checkMemory();
-		$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
-		ob_start();
-		phpinfo();
-		$dump .= "\r\nphpinfo(): \r\n" . chunk_split(base64_encode(gzdeflate(ob_get_contents(), 9))) . "\r\n";
-		ob_end_clean();
-		$dump .= "\r\n```";
-		$name = "Error_Dump_" . date("D_M_j-H.i.s-T_Y");
-		//log($dump, $name, true, 0, true);
-		$this->logger->emergency("Please submit the \"{$name}.log\" file to the Bug Reporting page. Give as much info as you can.", true, true, 0);
+		//$this->checkMemory();
+		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
+
 	}
 
 	private function tickProcessor(){
