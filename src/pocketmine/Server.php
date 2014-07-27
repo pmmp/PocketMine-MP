@@ -1784,7 +1784,7 @@ class Server{
 			return;
 		}
 		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
-		$this->logger->emergency("An unrecoverable has occurred and the server has crashed. Creating a crash dump");
+		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
 
 		if($this->getProperty("settings.send-crash", true) !== false){
