@@ -41,6 +41,7 @@ class CrashDump{
 		$this->server = $server;
 		$this->path = $this->server->getDataPath() . "CrashDump_" . date("D_M_j-H.i.s-T_Y", $this->time) . ".log";
 		$this->fp = fopen($this->path, "wb");
+		$this->data["time"] = $this->time;
 		$this->addLine("PocketMine-MP Crash Dump " . date("D M j H:i:s T Y", $this->time));
 		$this->addLine();
 		$this->baseCrash();
@@ -146,6 +147,15 @@ class CrashDump{
 		$this->addLine("Line: ". $error["line"]);
 		$this->addLine("Type: ". $error["type"]);
 
+		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "src/raklib/") === false and file_exists($fullFile)){
+			$this->addLine();
+			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
+			$this->data["plugin"] = true;
+		}else{
+			$this->data["plugin"] = false;
+		}
+
+		$this->addLine();
 		$this->addLine("Code:");
 		$this->data["code"] = [];
 		$file = @file($fullFile, FILE_IGNORE_NEW_LINES);
