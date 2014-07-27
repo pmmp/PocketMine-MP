@@ -143,9 +143,9 @@ class CrashDump{
 				E_USER_DEPRECATED => "E_USER_DEPRECATED",
 			);
 			$error["fullFile"] = $error["file"];
-			$error["file"] = str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH)], ["/", "", "", ""], $error["file"]);
+			$error["file"] = str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $error["file"]);
 			$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
-			if(($pos = strrpos($error["message"], "\n")) !== false){
+			if(($pos = strpos($error["message"], "\n")) !== false){
 				$error["message"] = substr($error["message"], 0, $pos);
 			}
 		}
