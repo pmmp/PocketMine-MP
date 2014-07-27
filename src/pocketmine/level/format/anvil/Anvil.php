@@ -223,6 +223,16 @@ class Anvil extends BaseLevelProvider{
 		}
 	}
 
+	public function createChunkSection($Y){
+		return new ChunkSection(new Compound(null, [
+			"Y" => new Byte("Y", $Y),
+			"Blocks" => new ByteArray("Blocks", str_repeat("\xff", 4096)),
+			"Data" => new ByteArray("Data", str_repeat("\xff", 2048)),
+			"SkyLight" => new ByteArray("SkyLight", str_repeat("\xff", 2048)), //TODO
+			"BlockLight" => new ByteArray("BlockLight", str_repeat("\x00", 2048)) //TODO
+		]));
+	}
+
 	public function isChunkGenerated($chunkX, $chunkZ){
 		if(($region = $this->getRegion($chunkX >> 5, $chunkZ >> 5)) instanceof RegionLoader){
 			return $region->chunkExists($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);

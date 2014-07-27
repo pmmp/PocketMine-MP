@@ -80,6 +80,13 @@ interface LevelProvider{
 	 */
 	public function getChunk($X, $Z, $create = false);
 
+	/**
+	 * @param $Y 0-7
+	 *
+	 * @return ChunkSection
+	 */
+	public function createChunkSection($Y);
+
 	public function saveChunks();
 
 	/**

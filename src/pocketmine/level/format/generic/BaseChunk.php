@@ -160,7 +160,12 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
-		return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
+		try{
+			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
+		}catch(\Exception $e){
+			$this->setSection($Y = $y >> 4, $this->getLevel()->createChunkSection($Y));
+			return $this->setBlock($x, $y, $z, $blockId, $meta);
+		}
 	}
 
 	public function getBlockId($x, $y, $z){
@@ -168,7 +173,12 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setBlockId($x, $y, $z, $id){
-		$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
+		try{
+			$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
+		}catch(\Exception $e){
+			$this->setSection($Y = $y >> 4, $this->getLevel()->createChunkSection($Y));
+			$this->setBlockId($x, $y, $z, $id);
+		}
 	}
 
 	public function getBlockData($x, $y, $z){
@@ -176,7 +186,12 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setBlockData($x, $y, $z, $data){
-		$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
+		try{
+			$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
+		}catch(\Exception $e){
+			$this->setSection($Y = $y >> 4, $this->getLevel()->createChunkSection($Y));
+			$this->setBlockData($x, $y, $z, $data);
+		}
 	}
 
 	public function getBlockSkyLight($x, $y, $z){
@@ -184,7 +199,12 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setBlockSkyLight($x, $y, $z, $data){
-		$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
+		try{
+			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
+		}catch(\Exception $e){
+			$this->setSection($Y = $y >> 4, $this->getLevel()->createChunkSection($Y));
+			$this->setBlockSkyLight($x, $y, $z, $data);
+		}
 	}
 
 	public function getBlockLight($x, $y, $z){
@@ -192,7 +212,12 @@ abstract class BaseChunk implements Chunk{
 	}
 
 	public function setBlockLight($x, $y, $z, $data){
-		$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
+		try{
+			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
+		}catch(\Exception $e){
+			$this->setSection($Y = $y >> 4, $this->getLevel()->createChunkSection($Y));
+			$this->setBlockLight($x, $y, $z, $data);
+		}
 	}
 
 	public function getBiomeId($x, $z){
