@@ -142,13 +142,13 @@ namespace pocketmine {
 	}
 
 	gc_disable();
-	error_reporting(E_ALL | E_STRICT);
+	error_reporting(-1);
 	ini_set("allow_url_fopen", 1);
 	ini_set("display_errors", 1);
 	ini_set("display_startup_errors", 1);
 	ini_set("default_charset", "utf-8");
 
-	ini_set("memory_limit", "128M"); //Default
+	ini_set("memory_limit", "256M"); //Default
 	define("pocketmine\\START_TIME", microtime(true));
 
 	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard"));

@@ -131,34 +131,35 @@ class CrashDump{
 
 	private function baseCrash(){
 		global $lastError;
+
+		$error = (array) error_get_last();
+		$error["trace"] = getTrace(4);
+		$errorConversion = array(
+			E_ERROR => "E_ERROR",
+			E_WARNING => "E_WARNING",
+			E_PARSE => "E_PARSE",
+			E_NOTICE => "E_NOTICE",
+			E_CORE_ERROR => "E_CORE_ERROR",
+			E_CORE_WARNING => "E_CORE_WARNING",
+			E_COMPILE_ERROR => "E_COMPILE_ERROR",
+			E_COMPILE_WARNING => "E_COMPILE_WARNING",
+			E_USER_ERROR => "E_USER_ERROR",
+			E_USER_WARNING => "E_USER_WARNING",
+			E_USER_NOTICE => "E_USER_NOTICE",
+			E_STRICT => "E_STRICT",
+			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+			E_DEPRECATED => "E_DEPRECATED",
+			E_USER_DEPRECATED => "E_USER_DEPRECATED",
+		);
+		$error["fullFile"] = $error["file"];
+		$error["file"] = cleanPath($error["file"]);
+		$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
+		if(($pos = strpos($error["message"], "\n")) !== false){
+			$error["message"] = substr($error["message"], 0, $pos);
+		}
+
 		if(isset($lastError)){
-			$error = $lastError;
-		}else{
-			$error = (array) error_get_last();
-			$error["trace"] = getTrace(4);
-			$errorConversion = array(
-				E_ERROR => "E_ERROR",
-				E_WARNING => "E_WARNING",
-				E_PARSE => "E_PARSE",
-				E_NOTICE => "E_NOTICE",
-				E_CORE_ERROR => "E_CORE_ERROR",
-				E_CORE_WARNING => "E_CORE_WARNING",
-				E_COMPILE_ERROR => "E_COMPILE_ERROR",
-				E_COMPILE_WARNING => "E_COMPILE_WARNING",
-				E_USER_ERROR => "E_USER_ERROR",
-				E_USER_WARNING => "E_USER_WARNING",
-				E_USER_NOTICE => "E_USER_NOTICE",
-				E_STRICT => "E_STRICT",
-				E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-				E_DEPRECATED => "E_DEPRECATED",
-				E_USER_DEPRECATED => "E_USER_DEPRECATED",
-			);
-			$error["fullFile"] = $error["file"];
-			$error["file"] = cleanPath($error["file"]);
-			$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
-			if(($pos = strpos($error["message"], "\n")) !== false){
-				$error["message"] = substr($error["message"], 0, $pos);
-			}
+			$this->data["lastError"] = $lastError;
 		}
 
 		$this->data["error"] = $error;
