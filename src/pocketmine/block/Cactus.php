@@ -39,7 +39,7 @@ class Cactus extends Transparent{
 			$down = $this->getSide(0);
 			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){ //Replace with common break method
 				$this->getLevel()->setBlock($this, new Air(), false);
-				Server::getInstance()->api->entity->drop($this, Item::get($this->id));
+				$this->getLevel()->dropItem($this, Item::get($this->id));
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
