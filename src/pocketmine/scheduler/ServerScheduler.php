@@ -166,8 +166,12 @@ class ServerScheduler{
 	 * @throws \Exception
 	 */
 	private function addTask(Task $task, $delay, $period){
-		if($task instanceof PluginTask and !$task->getOwner()->isEnabled()){
-			throw new \Exception("Plugin attempted to register a task while disabled");
+		if($task instanceof PluginTask){
+			if(!($task->getOwner() instanceof Plugin)){
+				throw new \Exception("Invalid owner of PluginTask ".get_class($task));
+			}elseif(!$task->getOwner()->isEnabled()){
+				throw new \Exception("Plugin '".$task->getOwner()->getName()."' attempted to register a task while disabled");
+			}
 		}
 
 		if($delay <= 0){
