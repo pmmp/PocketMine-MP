@@ -186,7 +186,7 @@ class CrashDump{
 		$version = new VersionString();
 		$this->data["general"] = [];
 		$this->data["general"]["version"] = $version->get(false);
-		$this->data["general"]["build"] = $version->getNumber();
+		$this->data["general"]["build"] = $version->getBuild();
 		$this->data["general"]["protocol"] = Info::CURRENT_PROTOCOL;
 		$this->data["general"]["api"] = \pocketmine\API_VERSION;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
