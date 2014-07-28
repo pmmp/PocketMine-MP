@@ -210,6 +210,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->folderName = $name;
 		$this->updateQueue = new ReversePriorityQueue();
+		$this->updateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 		$this->startTime = $this->time = (int) $this->provider->getTime();
 		$this->nextSave = $this->startCheck = microtime(true);
 		$this->nextSave = microtime(true) + 90;
