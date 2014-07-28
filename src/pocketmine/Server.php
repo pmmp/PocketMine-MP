@@ -69,6 +69,7 @@ use pocketmine\network\SourceInterface;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
@@ -1792,7 +1793,17 @@ class Server{
 		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
 
+		$this->logger->emergency("Please submit the \"".$dump->getPath()."\" file to the Bug Reporting page. Give as much info as you can.");
+
+
 		if($this->getProperty("auto-report.enabled", true) !== false){
+			$plugin = $dump->getData()["plugin"];
+			if(is_string($plugin)){
+				$p = $this->pluginManager->getPlugin($plugin);
+				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
+					return;
+				}
+			}
 			$reply = Utils::postURL("http://".$this->getProperty("auto-report.host", "crash.pocketmine.net")."/submit/api", [
 				"report" => "yes",
 				"name" => "PocketMine-MP ".$this->getPocketMineVersion(),
@@ -1806,8 +1817,6 @@ class Server{
 				$this->logger->emergency("The crash dump has ben automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
 			}
 		}
-
-		$this->logger->emergency("Please submit the \"".$dump->getPath()."\" file to the Bug Reporting page. Give as much info as you can.");
 
 		//$this->checkMemory();
 		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
