@@ -25,6 +25,7 @@ use pocketmine\network\protocol\Info;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
+use raklib\RakLib;
 
 class CrashDump{
 
@@ -216,6 +217,7 @@ class CrashDump{
 		$this->data["general"]["protocol"] = Info::CURRENT_PROTOCOL;
 		$this->data["general"]["api"] = \pocketmine\API_VERSION;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
+		$this->data["general"]["raklib"] = RakLib::VERSION;
 		$this->data["general"]["uname"] = php_uname("a");
 		$this->data["general"]["php"] = phpversion();
 		$this->data["general"]["zend"] = zend_version();
