@@ -143,7 +143,7 @@ class CrashDump{
 				E_USER_DEPRECATED => "E_USER_DEPRECATED",
 			);
 			$error["fullFile"] = $error["file"];
-			$error["file"] = str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $error["file"]);
+			$error["file"] = cleanPath($error["file"]);
 			$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
 			if(($pos = strpos($error["message"], "\n")) !== false){
 				$error["message"] = substr($error["message"], 0, $pos);
@@ -162,6 +162,18 @@ class CrashDump{
 			$this->addLine();
 			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
 			$this->data["plugin"] = true;
+			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
+				$reflection = new \ReflectionClass("pocketmine\\plugin\\PluginBase");
+				$file = $reflection->getProperty("file");
+				$file->setAccessible(true);
+				$filePath = \pocketmine\cleanPath($file->getValue($plugin));
+				var_dump($filePath, $error["file"]);
+				if(strpos($error["file"], $filePath) === 0){
+					$this->data["plugin"] = $plugin->getName();
+					$this->addLine("BAD PLUGIN: ".$plugin->getDescription()->getFullName());
+					break;
+				}
+			}
 		}else{
 			$this->data["plugin"] = false;
 		}

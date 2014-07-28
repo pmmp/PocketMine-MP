@@ -1486,6 +1486,10 @@ class Server{
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
+
+		register_shutdown_function(array($this, "crashDump"));
+		register_shutdown_function(array($this, "forceShutdown"));
+
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
 		$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "www.pocketmine.net"));
@@ -1709,7 +1713,10 @@ class Server{
 		foreach($this->getLevels() as $level){
 			$this->unloadLevel($level, true);
 		}
-		$this->generationManager->shutdown();
+
+		if($this->generationManager instanceof GenerationRequestManager){
+			$this->generationManager->shutdown();
+		}
 
 		HandlerList::unregisterAll();
 		$this->scheduler->cancelAllTasks();
@@ -1747,8 +1754,6 @@ class Server{
 
 		$this->tickCounter = 0;
 
-		register_shutdown_function(array($this, "crashDump"));
-		register_shutdown_function(array($this, "forceShutdown"));
 		if(function_exists("pcntl_signal")){
 			pcntl_signal(SIGTERM, array($this, "shutdown"));
 			pcntl_signal(SIGINT, array($this, "shutdown"));
@@ -1780,7 +1785,6 @@ class Server{
 	}
 
 	public function crashDump(){
-
 		if($this->isRunning === false){
 			return;
 		}
