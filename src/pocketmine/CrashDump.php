@@ -162,12 +162,12 @@ class CrashDump{
 			$this->addLine();
 			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
 			$this->data["plugin"] = true;
+			
+			$reflection = new \ReflectionClass("pocketmine\\plugin\\PluginBase");
+			$file = $reflection->getProperty("file");
+			$file->setAccessible(true);
 			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-				$reflection = new \ReflectionClass("pocketmine\\plugin\\PluginBase");
-				$file = $reflection->getProperty("file");
-				$file->setAccessible(true);
 				$filePath = \pocketmine\cleanPath($file->getValue($plugin));
-				var_dump($filePath, $error["file"]);
 				if(strpos($error["file"], $filePath) === 0){
 					$this->data["plugin"] = $plugin->getName();
 					$this->addLine("BAD PLUGIN: ".$plugin->getDescription()->getFullName());
