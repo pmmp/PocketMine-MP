@@ -1360,7 +1360,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						Block::$creative[$packet->slot][1],
 						1
 					);
-					$this->inventory->setHeldItemSlot(0);
 					$this->inventory->setItemInHand($item);
 				}else{
 					$this->inventory->setHeldItemSlot($packet->slot);
@@ -1891,6 +1890,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($packet->slot > $this->inventory->getSize()){
 						break;
 					}
+					$this->inventory->setHeldItemSlot($packet->slot);
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 				}elseif(isset($this->windowIndex[$packet->windowid])){
 					$this->craftingType = 0;
