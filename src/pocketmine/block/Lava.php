@@ -35,7 +35,7 @@ class Lava extends Liquid{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->getLevel()->setBlock($this, $this, true, false, true);
-		Server::getInstance()->api->block->scheduleBlockUpdate(clone $this, 40, Level::BLOCK_UPDATE_NORMAL);
+		$this->getLevel()->scheduleUpdate(clone $this, 40);
 
 		return $ret;
 	}
@@ -85,7 +85,7 @@ class Lava extends Liquid{
 	}
 
 	public function onUpdate($type){
-		//return false;
+		return false;
 		$newId = $this->id;
 		$level = $this->meta & 0x07;
 		if($type !== Level::BLOCK_UPDATE_NORMAL){
