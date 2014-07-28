@@ -147,6 +147,10 @@ abstract class Entity extends Position implements Metadatable{
 
 
 	public function __construct(Chunk $chunk, Compound $nbt){
+		if($chunk->getLevel() === null){
+			throw new \Exception("Invalid garbage Chunk given to Entity");
+		}
+
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
 		$this->namedtag = $nbt;
