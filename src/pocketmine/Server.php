@@ -1792,8 +1792,8 @@ class Server{
 		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
 
-		if($this->getProperty("settings.send-crash", true) !== false){
-			$reply = Utils::postURL("http://crash.pocketmine.net/submit/api", [
+		if($this->getProperty("auto-report.enabled", true) !== false){
+			$reply = Utils::postURL("http://".$this->getProperty("auto-report.host", "crash.pocketmine.net")."/submit/api", [
 				"report" => "yes",
 				"name" => "PocketMine-MP ".$this->getPocketMineVersion(),
 				"email" => "crash@pocketmine.net",

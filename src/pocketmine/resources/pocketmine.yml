@@ -10,7 +10,6 @@ settings:
  advanced-cache: false
  upnp-forwarding: false
  send-usage: true
- send-crash: true
  async-workers: 4
 
 debug:
@@ -43,6 +42,13 @@ spawn-limits:
   animals: 15
   water-animals: 5
   ambient: 15
+
+auto-report: #Send crash reports for processing
+ enabled: true
+ send-code: true
+ send-settings: true
+ send-phpinfo: true
+ host: crash.pocketmine.net
 
 auto-updater:
  enabled: true
