@@ -32,6 +32,13 @@ interface LevelProvider{
 	 */
 	public function __construct(Level $level, $path);
 
+	/**
+	 * Returns the full provider name, like "anvil" or "mcregion", will be used to find the correct format.
+	 *
+	 * @return string
+	 */
+	public static function getProviderName();
+
 	/** @return string */
 	public function getPath();
 

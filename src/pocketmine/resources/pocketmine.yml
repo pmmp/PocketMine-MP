@@ -18,6 +18,10 @@ debug:
  #Enables /status
  commands: false
 
+level-settings:
+ default-format: mcregion #The default format that levels will use when created
+ convert-format: false #If true, converts from a format that is not the default to the default format on load
+
 chunk-sending:
  per-tick: 4
  compression-level: 9

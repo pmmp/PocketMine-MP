@@ -41,6 +41,9 @@ class McRegion extends BaseLevelProvider{
 	/** @var Chunk[] */
 	protected $chunks = [];
 
+	public static function getProviderName(){
+		return "mcregion";
+	}
 
 	public static function isValid($path){
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));

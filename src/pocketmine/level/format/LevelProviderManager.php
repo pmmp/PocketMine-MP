@@ -36,7 +36,7 @@ abstract class LevelProviderManager{
 		if(!is_subclass_of($class, "pocketmine\\level\\format\\LevelProvider")){
 			throw new \Exception("Class is not a subclass of LevelProvider");
 		}
-		self::$providers[strtolower($class)] = $class;
+		self::$providers[strtolower($class::getProviderName())] = $class;
 	}
 
 	/**
@@ -55,5 +55,10 @@ abstract class LevelProviderManager{
 		}
 
 		return null;
+	}
+
+	public static function getProviderByName($name){
+		$name = trim(strtolower($name));
+		return isset(self::$providers[$name]) ? self::$providers[$name] : null;
 	}
 }
