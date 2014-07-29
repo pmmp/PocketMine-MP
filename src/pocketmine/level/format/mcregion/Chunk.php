@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\level\format\anvil;
+namespace pocketmine\level\format\mcregion;
 
 use pocketmine\level\format\generic\BaseChunk;
 use pocketmine\level\format\generic\EmptyChunkSection;
@@ -73,20 +73,35 @@ class Chunk extends BaseChunk{
 		}
 
 		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
-			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
+			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
 		}
 
+		/** @var ChunkSection[] $sections */
 		$sections = [];
-		foreach($this->nbt->Sections as $section){
-			if($section instanceof Compound){
-				$y = (int) $section["Y"];
-				if($y < 8){
-					$sections[$y] = new ChunkSection($section);
-				}
-			}
+
+		$blockLight = $skyLight = $datas = $blocks = [$fill = array_fill(0, 256, ""), $fill, $fill, $fill, $fill, $fill, $fill, $fill];
+
+		$offset = 0;
+		for($i = 0; $i < 256; ++$i){
+			list($blocks[0][$i], $blocks[1][$i], $blocks[2][$i], $blocks[3][$i], $blocks[4][$i], $blocks[5][$i], $blocks[6][$i], $blocks[7][$i]) = str_split(substr($this->nbt->Blocks, $offset << 1, 128), 16);
+			list($datas[0][$i], $datas[1][$i], $datas[2][$i], $datas[3][$i], $datas[4][$i], $datas[5][$i], $datas[6][$i], $datas[7][$i]) = str_split(substr($this->nbt->Data, $offset, 64), 8);
+			list($skyLight[0][$i], $skyLight[1][$i], $skyLight[2][$i], $skyLight[3][$i], $skyLight[4][$i], $skyLight[5][$i], $skyLight[6][$i], $skyLight[7][$i]) = str_split(substr($this->nbt->SkyLight, $offset, 64), 8);
+			list($blockLight[0][$i], $blockLight[1][$i], $blockLight[2][$i], $blockLight[3][$i], $blockLight[4][$i], $blockLight[5][$i], $blockLight[6][$i], $blockLight[7][$i]) = str_split(substr($this->nbt->BlockLight, $offset, 64), 8);
+			$offset += 64;
 		}
+
+		for($Y = 0; $Y < 8; ++$Y){
+			$sections[$Y] = new ChunkSection(
+				$Y,
+				implode($blocks[$Y]),
+				implode($datas[$Y]),
+				implode($skyLight[$Y]),
+				implode($blockLight[$Y])
+			);
+		}
+
 		for($y = 0; $y < 8; ++$y){
-			if(!isset($sections[$y])){
+			if(substr_count($sections[$y]->getIdArray(), "\x00") === 4096){
 				$sections[$y] = new EmptyChunkSection($y);
 			}
 		}

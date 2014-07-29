@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\level\format\anvil;
+namespace pocketmine\level\format\mcregion;
 
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
@@ -52,7 +52,7 @@ class RegionLoader{
 		$this->x = $regionX;
 		$this->z = $regionZ;
 		$this->levelProvider = $level;
-		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mca";
+		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mcr";
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
 		flock($this->filePointer, LOCK_EX);
@@ -145,10 +145,14 @@ class RegionLoader{
 		$nbt->V = new Byte("V", self::VERSION);
 		$nbt->InhabitedTime = new Long("InhabitedTime", 0);
 		$nbt->Biomes = new ByteArray("Biomes", str_repeat(Binary::writeByte(-1), 256));
-		$nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
 		$nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
-		$nbt->Sections = new Enum("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
+		$nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
+
+		$nbt->Blocks = new ByteArray("Blocks", str_repeat("\x00", 32768));
+		$nbt->Blocks = new ByteArray("Data", $half = str_repeat("\x00", 16384));
+		$nbt->SkyLight = new ByteArray("SkyLight", $half);
+		$nbt->BlockLight = new ByteArray("BlockLight", $half);
+
 		$nbt->Entities = new Enum("Entities", []);
 		$nbt->Entities->setTagType(NBT::TAG_Compound);
 		$nbt->TileEntities = new Enum("TileEntities", []);
@@ -183,6 +187,7 @@ class RegionLoader{
 	}
 
 	public function writeChunk(Chunk $chunk){
+		//TODO
 		$nbt = $chunk->getNBT();
 		$nbt->Sections = new Enum("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
