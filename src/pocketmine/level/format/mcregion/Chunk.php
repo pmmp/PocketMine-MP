@@ -61,13 +61,6 @@ class Chunk extends BaseChunk{
 			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		}
 
-		if(isset($this->nbt->Sections) and $this->nbt->Sections instanceof Enum){
-			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
-		}else{
-			$this->nbt->Sections = new Enum("Sections", []);
-			$this->nbt->Sections->setTagType(NBT::TAG_Compound);
-		}
-
 		if(!isset($this->nbt->Biomes) or !($this->nbt->Biomes instanceof ByteArray)){
 			$this->nbt->Biomes = new ByteArray("Biomes", str_repeat("\x01", 256));
 		}
@@ -83,10 +76,10 @@ class Chunk extends BaseChunk{
 
 		$offset = 0;
 		for($i = 0; $i < 256; ++$i){
-			list($blocks[0][$i], $blocks[1][$i], $blocks[2][$i], $blocks[3][$i], $blocks[4][$i], $blocks[5][$i], $blocks[6][$i], $blocks[7][$i]) = str_split(substr($this->nbt->Blocks, $offset << 1, 128), 16);
-			list($datas[0][$i], $datas[1][$i], $datas[2][$i], $datas[3][$i], $datas[4][$i], $datas[5][$i], $datas[6][$i], $datas[7][$i]) = str_split(substr($this->nbt->Data, $offset, 64), 8);
-			list($skyLight[0][$i], $skyLight[1][$i], $skyLight[2][$i], $skyLight[3][$i], $skyLight[4][$i], $skyLight[5][$i], $skyLight[6][$i], $skyLight[7][$i]) = str_split(substr($this->nbt->SkyLight, $offset, 64), 8);
-			list($blockLight[0][$i], $blockLight[1][$i], $blockLight[2][$i], $blockLight[3][$i], $blockLight[4][$i], $blockLight[5][$i], $blockLight[6][$i], $blockLight[7][$i]) = str_split(substr($this->nbt->BlockLight, $offset, 64), 8);
+			list($blocks[0][$i], $blocks[1][$i], $blocks[2][$i], $blocks[3][$i], $blocks[4][$i], $blocks[5][$i], $blocks[6][$i], $blocks[7][$i]) = str_split(substr($this->nbt["Blocks"], $offset << 1, 128), 16);
+			list($datas[0][$i], $datas[1][$i], $datas[2][$i], $datas[3][$i], $datas[4][$i], $datas[5][$i], $datas[6][$i], $datas[7][$i]) = str_split(substr($this->nbt["Data"], $offset, 64), 8);
+			list($skyLight[0][$i], $skyLight[1][$i], $skyLight[2][$i], $skyLight[3][$i], $skyLight[4][$i], $skyLight[5][$i], $skyLight[6][$i], $skyLight[7][$i]) = str_split(substr($this->nbt["SkyLight"], $offset, 64), 8);
+			list($blockLight[0][$i], $blockLight[1][$i], $blockLight[2][$i], $blockLight[3][$i], $blockLight[4][$i], $blockLight[5][$i], $blockLight[6][$i], $blockLight[7][$i]) = str_split(substr($this->nbt["BlockLight"], $offset, 64), 8);
 			$offset += 64;
 		}
 

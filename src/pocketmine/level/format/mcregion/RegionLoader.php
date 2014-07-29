@@ -149,7 +149,7 @@ class RegionLoader{
 		$nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
 
 		$nbt->Blocks = new ByteArray("Blocks", str_repeat("\x00", 32768));
-		$nbt->Blocks = new ByteArray("Data", $half = str_repeat("\x00", 16384));
+		$nbt->Data = new ByteArray("Data", $half = str_repeat("\x00", 16384));
 		$nbt->SkyLight = new ByteArray("SkyLight", $half);
 		$nbt->BlockLight = new ByteArray("BlockLight", $half);
 
