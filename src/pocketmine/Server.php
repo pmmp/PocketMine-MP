@@ -749,7 +749,7 @@ class Server{
 		$name = strtolower($name);
 		$delta = PHP_INT_MAX;
 		foreach($this->getOnlinePlayers() as $player){
-			if(stripos($player->getName(), $name) !== false){
+			if(stripos($player->getName(), $name) === 0){
 				$curDelta = strlen($player->getName()) - strlen($name);
 				if($curDelta < $delta){
 					$found = $player;
