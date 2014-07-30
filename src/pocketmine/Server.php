@@ -749,7 +749,7 @@ class Server{
 		$name = strtolower($name);
 		$delta = PHP_INT_MAX;
 		foreach($this->getOnlinePlayers() as $player){
-			if(stripos($player->getName(), $name) !== false){
+			if(stripos($player->getName(), $name) === 0){
 				$curDelta = strlen($player->getName()) - strlen($name);
 				if($curDelta < $delta){
 					$found = $player;
@@ -1814,7 +1814,7 @@ class Server{
 			if(($data = json_decode($reply)) !== false and isset($data->crashId)){
 				$reportId = $data->crashId;
 				$reportUrl = $data->crashUrl;
-				$this->logger->emergency("The crash dump has ben automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
+				$this->logger->emergency("The crash dump has been automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
 			}
 		}
 
