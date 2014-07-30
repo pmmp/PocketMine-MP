@@ -68,7 +68,7 @@ class Chunk extends BaseFullChunk{
 			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt["Blocks"], $this->nbt["Data"], $this->nbt["SkyLight"], $this->nbt["BLockLight"], $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt["Blocks"], $this->nbt["Data"], $this->nbt["SkyLight"], $this->nbt["BlockLight"], $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
 	}
 
 	public function getBlockId($x, $y, $z){
