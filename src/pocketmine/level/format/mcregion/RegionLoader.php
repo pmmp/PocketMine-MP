@@ -305,7 +305,7 @@ class RegionLoader{
 		return $shift;
 	}
 
-	private function loadLocationTable(){
+	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
 		$this->lastSector = 1;
 		$table = fread($this->filePointer, 4 * 1024 * 2);
@@ -331,14 +331,14 @@ class RegionLoader{
 		fwrite($this->filePointer, $table, 4096 * 2);
 	}
 
-	private function writeLocationIndex($index){
+	protected function writeLocationIndex($index){
 		fseek($this->filePointer, $index << 2);
 		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
 		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index][2]), 4);
 	}
 
-	private function createBlank(){
+	protected function createBlank(){
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 0);
 		$this->lastSector = 1;

@@ -22,6 +22,7 @@
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\generic\BaseLevelProvider;
+use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\format\SimpleChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
@@ -34,7 +35,7 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
 use pocketmine\Player;
 
-class Anvil extends BaseLevelProvider{
+class Anvil extends McRegion{
 
 	/** @var RegionLoader[] */
 	protected $regions = [];
@@ -69,68 +70,6 @@ class Anvil extends BaseLevelProvider{
 		return $isValid;
 	}
 
-	public static function generate($path, $name, $seed, $generator, array $options = []){
-		@mkdir($path, 0777, true);
-		@mkdir($path . "/region", 0777);
-		//TODO, add extra details
-		$levelData = new Compound("Data", [
-			"hardcore" => new Byte("hardcore", 0),
-			"initialized" => new Byte("initialized", 1),
-			"GameType" => new Int("GameType", 0),
-			"generatorVersion" => new Int("generatorVersion", 1), //2 in MCPE
-			"SpawnX" => new Int("SpawnX", 128),
-			"SpawnY" => new Int("SpawnY", 70),
-			"SpawnZ" => new Int("SpawnZ", 128),
-			"version" => new Int("version", 19133),
-			"DayTime" => new Int("DayTime", 0),
-			"LastPlayed" => new Long("LastPlayed", microtime(true) * 1000),
-			"RandomSeed" => new Long("RandomSeed", $seed),
-			"SizeOnDisk" => new Long("SizeOnDisk", 0),
-			"Time" => new Long("Time", 0),
-			"generatorName" => new String("generatorName", Generator::getGeneratorName($generator)),
-			"generatorOptions" => new String("generatorOptions", isset($options["preset"]) ? $options["preset"] : ""),
-			"LevelName" => new String("LevelName", $name),
-			"GameRules" => new Compound("GameRules", [])
-		]);
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData(new Compound(null, [
-			"Data" => $levelData
-		]));
-		$buffer = $nbt->writeCompressed();
-		@file_put_contents($path . "level.dat", $buffer);
-	}
-
-	public static function getRegionIndex($chunkX, $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
-	}
-
-	public function unloadChunks(){
-		$this->chunks = [];
-	}
-
-	public function getGenerator(){
-		return $this->levelData["generatorName"];
-	}
-
-	public function getGeneratorOptions(){
-		return ["preset" => $this->levelData["generatorOptions"]];
-	}
-
-	public function getLoadedChunks(){
-		return $this->chunks;
-	}
-
-	public function isChunkLoaded($x, $z){
-		return isset($this->chunks[Level::chunkHash($x, $z)]);
-	}
-
-	public function saveChunks(){
-		foreach($this->chunks as $chunk){
-			$this->saveChunk($chunk->getX(), $chunk->getZ());
-		}
-	}
-
 	public function loadChunk($chunkX, $chunkZ, $create = false){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunks[$index])){
@@ -151,54 +90,6 @@ class Anvil extends BaseLevelProvider{
 		}
 	}
 
-	public function unloadChunk($x, $z, $safe = true){
-		$chunk = $this->getChunk($x, $z, false);
-		if($chunk instanceof Chunk){
-			if($safe === true and $this->isChunkLoaded($x, $z)){
-				foreach($chunk->getEntities() as $entity){
-					if($entity instanceof Player){
-						return false;
-					}
-				}
-			}
-
-			foreach($chunk->getEntities() as $entity){
-				$entity->close();
-			}
-
-			foreach($chunk->getTiles() as $tile){
-				$tile->close();
-			}
-
-			$this->chunks[$index = Level::chunkHash($x, $z)] = null;
-
-			unset($this->chunks[$index]);
-		}
-		return true;
-	}
-
-	public function saveChunk($x, $z){
-		if($this->isChunkLoaded($x, $z)){
-			$this->getRegion($x >> 5, $z >> 5)->writeChunk($this->getChunk($x, $z));
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * @param $x
-	 * @param $z
-	 *
-	 * @return RegionLoader
-	 */
-	protected function getRegion($x, $z){
-		$index = $x . ":" . $z;
-
-		return isset($this->regions[$index]) ? $this->regions[$index] : null;
-	}
-
 	/**
 	 * @param int  $chunkX
 	 * @param int  $chunkZ
@@ -207,13 +98,7 @@ class Anvil extends BaseLevelProvider{
 	 * @return Chunk
 	 */
 	public function getChunk($chunkX, $chunkZ, $create = false){
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return $this->chunks[$index];
-		}else{
-			$this->loadChunk($chunkX, $chunkZ, $create);
-			return isset($this->chunks[$index]) ? $this->chunks[$index] : null;
-		}
+		return parent::getChunk($chunkX, $chunkZ, $create);
 	}
 
 	public function setChunk($chunkX, $chunkZ, SimpleChunk $chunk){
@@ -249,9 +134,9 @@ class Anvil extends BaseLevelProvider{
 		return new ChunkSection(new Compound(null, [
 			"Y" => new Byte("Y", $Y),
 			"Blocks" => new ByteArray("Blocks", str_repeat("\xff", 4096)),
-			"Data" => new ByteArray("Data", str_repeat("\xff", 2048)),
-			"SkyLight" => new ByteArray("SkyLight", str_repeat("\xff", 2048)), //TODO
-			"BlockLight" => new ByteArray("BlockLight", str_repeat("\x00", 2048)) //TODO
+			"Data" => new ByteArray("Data", $half = str_repeat("\xff", 2048)),
+			"SkyLight" => new ByteArray("SkyLight", $half),
+			"BlockLight" => new ByteArray("BlockLight", $half)
 		]));
 	}
 
@@ -263,15 +148,6 @@ class Anvil extends BaseLevelProvider{
 		return false;
 	}
 
-	public function isChunkPopulated($chunkX, $chunkZ){
-		$chunk = $this->getChunk($chunkX, $chunkZ);
-		if($chunk instanceof Chunk){
-			return $chunk->isPopulated();
-		}else{
-			return false;
-		}
-	}
-
 	protected function loadRegion($x, $z){
 		$index = $x . ":" . $z;
 		if(isset($this->regions[$index])){
@@ -281,13 +157,5 @@ class Anvil extends BaseLevelProvider{
 		$this->regions[$index] = new RegionLoader($this, $x, $z);
 
 		return true;
-	}
-
-	public function close(){
-		$this->unloadChunks();
-		foreach($this->regions as $index => $region){
-			$region->close();
-			unset($this->regions[$index]);
-		}
 	}
 }
