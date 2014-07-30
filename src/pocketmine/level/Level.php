@@ -1414,6 +1414,11 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function getNetworkChunk($x, $z){
+		$index = Level::chunkHash($x, $z);
+		if(ADVANCED_CACHE == true and ($cache = Cache::get("world:".$this->getID().":" . $index)) !== false){
+			return $cache;
+		}
+
 		$chunk = $this->getChunkAt($x, $z, true);
 		$tiles = "";
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
@@ -1429,7 +1434,12 @@ class Level implements ChunkManager, Metadatable{
 			$biomeColors .= Binary::writeInt($color);
 		}
 
-		return zlib_encode(Binary::writeLInt($x) . Binary::writeLInt($z) . $chunk->getBlockIdArray() . $chunk->getBlockDataArray() . $chunk->getBlockSkyLightArray() . $chunk->getBlockLightArray() . $chunk->getBiomeIdArray() . $biomeColors . $tiles, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
+		$encoded = zlib_encode(Binary::writeLInt($x) . Binary::writeLInt($z) . $chunk->getBlockIdArray() . $chunk->getBlockDataArray() . $chunk->getBlockSkyLightArray() . $chunk->getBlockLightArray() . $chunk->getBiomeIdArray() . $biomeColors . $tiles, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
+		if(ADVANCED_CACHE == true){
+			Cache::add("world:".$this->getID().":" . $index, $encoded);
+		}
+
+		return $encoded;
 	}
 
 	protected function processChunkRequest(){
