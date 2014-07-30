@@ -1803,7 +1803,10 @@ class Server{
 				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
 					return;
 				}
+			}elseif(\Phar::running(true) == ""){
+				return;
 			}
+
 			$reply = Utils::postURL("http://".$this->getProperty("auto-report.host", "crash.pocketmine.net")."/submit/api", [
 				"report" => "yes",
 				"name" => "PocketMine-MP ".$this->getPocketMineVersion(),
