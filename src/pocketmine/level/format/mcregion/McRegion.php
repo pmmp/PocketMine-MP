@@ -45,6 +45,14 @@ class McRegion extends BaseLevelProvider{
 		return "mcregion";
 	}
 
+	public static function getProviderOrder(){
+		return self::ORDER_ZXY;
+	}
+
+	public static function usesChunkSection(){
+		return false;
+	}
+
 	public static function isValid($path){
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
 

@@ -57,6 +57,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -601,7 +602,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->usedChunks[$index] = [false, 0];
 
 				$this->getLevel()->useChunk($X, $Z, $this);
-				$this->getLevel()->requestChunk($X, $Z, $this);
+				$this->getLevel()->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 			}
 		}
 

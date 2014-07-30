@@ -187,32 +187,12 @@ class RegionLoader{
 	}
 
 	public function writeChunk(Chunk $chunk){
-		//TODO
 		$nbt = $chunk->getNBT();
-		$nbt->Sections = new Enum("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
 
-		$blocks = "";
-		$data = "";
-		$skyLight = "";
-		$blockLight = "";
-		$sections = $chunk->getSections();
-
-		for($i = 0; $i < 256; ++$i){
-			$x = $i & 0x0F;
-			$z = $i >> 4;
-			for($s = 0; $s < 0; ++$s){
-				$blocks .= $sections[$s]->getBlockIdColumn($x, $z);
-				$data .= $sections[$s]->getBlockDataColumn($x, $z);
-				$skyLight .= $sections[$s]->getBlockSkyLightColumn($x, $z);
-				$blockLight .= $sections[$s]->getBlockLightColumn($x, $z);
-			}
-		}
-
-		$nbt->Blocks = new ByteArray("Blocks", $blocks);
-		$nbt->Data = new ByteArray("Data", $data);
-		$nbt->SkyLight = new ByteArray("SkyLight", $skyLight);
-		$nbt->BlockLight = new ByteArray("BlockLight", $blockLight);
+		$nbt->Blocks = new ByteArray("Blocks", $chunk->getBlockIdArray());
+		$nbt->Data = new ByteArray("Data", $chunk->getBlockDataArray());
+		$nbt->SkyLight = new ByteArray("SkyLight", $chunk->getBlockSkyLightArray());
+		$nbt->BlockLight = new ByteArray("BlockLight", $chunk->getBlockLightArray());
 
 		$nbt->Biomes = new ByteArray("Biomes", $chunk->getBiomeIdArray());
 		$nbt->BiomeColors = new IntArray("BiomeColors", $chunk->getBiomeColorArray());

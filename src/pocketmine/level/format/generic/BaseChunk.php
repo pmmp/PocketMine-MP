@@ -24,6 +24,7 @@ namespace pocketmine\level\format\generic;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\ChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
@@ -34,7 +35,7 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 
-abstract class BaseChunk implements Chunk{
+abstract class BaseChunk extends BaseFullChunk implements Chunk{
 
 	/** @var ChunkSection[] */
 	protected $sections = [];
@@ -140,21 +141,6 @@ abstract class BaseChunk implements Chunk{
 		$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 	}
 
-	public function getX(){
-		return $this->x;
-	}
-
-	public function getZ(){
-		return $this->z;
-	}
-
-	/**
-	 * @return LevelProvider
-	 */
-	public function getLevel(){
-		return $this->level->valid() ? $this->level->get() : null;
-	}
-
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
 		$this->sections[$y >> 4]->getBlock($x, $y & 0x0f, $z, $blockId, $meta);
 	}
@@ -220,36 +206,36 @@ abstract class BaseChunk implements Chunk{
 		}
 	}
 
-	public function getBiomeId($x, $z){
-		return ord($this->biomeIds{($z << 4) + $x});
-	}
-
-	public function setBiomeId($x, $z, $biomeId){
-		$this->biomeIds{($z << 4) + $x} = chr($biomeId);
-	}
-
-	public function getBiomeColor($x, $z){
-		$color = $this->biomeColors[($z << 4) + $x] & 0xFFFFFF;
-		return [$color >> 16, ($color >> 8) & 0xFF, $color & 0xFF];
-	}
-
-	public function setBiomeColor($x, $z, $R, $G, $B){
-		$this->biomeColors[($z << 4) + $x] = 0 | (($R & 0xFF) << 16) | (($G & 0xFF) << 8) | ($B & 0xFF);
-	}
-
-	public function getHighestBlockAt($x, $z){
-		for($Y = self::SECTION_COUNT - 1; $Y >= 0; --$Y){
-			if(!$this->isSectionEmpty($Y)){
-				$column = $this->sections[$Y]->getBlockIdColumn($x, $z);
-				for($y = 15; $y >= 0; --$y){
-					if($column{$y} !== "\x00"){
-						return $y + ($Y << 4);
-					}
-				}
-			}
+	public function getBlockIdColumn($x, $z){
+		$column = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$column .= $this->sections[$y]->getBlockIdColumn($x, $z);
 		}
+		return $column;
+	}
 
-		return 0;
+	public function getBlockDataColumn($x, $z){
+		$column = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$column .= $this->sections[$y]->getBlockDataColumn($x, $z);
+		}
+		return $column;
+	}
+
+	public function getBlockSkyLightColumn($x, $z){
+		$column = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$column .= $this->sections[$y]->getBlockSkyLightColumn($x, $z);
+		}
+		return $column;
+	}
+
+	public function getBlockLightColumn($x, $z){
+		$column = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$column .= $this->sections[$y]->getBlockLightColumn($x, $z);
+		}
+		return $column;
 	}
 
 	public function isSectionEmpty($fY){
@@ -268,54 +254,40 @@ abstract class BaseChunk implements Chunk{
 		}
 	}
 
-	public function addEntity(Entity $entity){
-		$this->entities[$entity->getID()] = $entity;
-	}
-
-	public function removeEntity(Entity $entity){
-		unset($this->entities[$entity->getID()]);
-	}
-
-	public function addTile(Tile $tile){
-		$this->tiles[$tile->getID()] = $tile;
-	}
-
-	public function removeTile(Tile $tile){
-		unset($this->tiles[$tile->getID()]);
-	}
-
-	public function getEntities(){
-		return $this->entities;
-	}
-
-	public function getTiles(){
-		return $this->tiles;
-	}
-
-	public function isLoaded(){
-		return $this->getLevel() === null ? false : $this->getLevel()->isChunkLoaded($this->getX(), $this->getZ());
-	}
-
 	public function load($generate = true){
 		return $this->getLevel() === null ? false : $this->getLevel()->getChunk($this->getX(), $this->getZ(), true) instanceof Chunk;
 	}
 
-	public function unload($save = true, $safe = true){
-		$level = $this->getLevel();
-		if($level === null){
-			return true;
+	public function getBlockIdArray(){
+		$blocks = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$blocks .= $this->sections[$y]->getIdArray();
 		}
-		if($save === true){
-			$level->saveChunk($this->getX(), $this->getZ());
+		return $blocks;
+	}
+
+	public function getBlockDataArray(){
+		$data = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$data .= $this->sections[$y]->getDataArray();
 		}
-		if($this->getLevel()->unloadChunk($this->getX(), $this->getZ(), $safe)){
-			foreach($this->getEntities() as $entity){
-				$entity->close();
-			}
-			foreach($this->getTiles() as $tile){
-				$tile->close();
-			}
+		return $data;
+	}
+
+	public function getBlockSkyLightArray(){
+		$skyLight = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$skyLight .= $this->sections[$y]->getSkyLightArray();
 		}
+		return $skyLight;
+	}
+
+	public function getBlockLightArray(){
+		$blockLight = "";
+		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
+			$blockLight .= $this->sections[$y]->getLightArray();
+		}
+		return $blockLight;
 	}
 
 	/**
@@ -323,14 +295,6 @@ abstract class BaseChunk implements Chunk{
 	 */
 	public function getSections(){
 		return $this->sections;
-	}
-
-	public function getBiomeIdArray(){
-		return $this->biomeIds;
-	}
-
-	public function getBiomeColorArray(){
-		return $this->biomeColors;
 	}
 
 }

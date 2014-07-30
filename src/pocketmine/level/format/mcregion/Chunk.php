@@ -21,8 +21,7 @@
 
 namespace pocketmine\level\format\mcregion;
 
-use pocketmine\level\format\generic\BaseChunk;
-use pocketmine\level\format\generic\EmptyChunkSection;
+use pocketmine\level\format\generic\BaseFullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
@@ -32,7 +31,7 @@ use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\utils\Binary;
 
-class Chunk extends BaseChunk{
+class Chunk extends BaseFullChunk{
 
 	/** @var Compound */
 	protected $nbt;
@@ -69,37 +68,131 @@ class Chunk extends BaseChunk{
 			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
 		}
 
-		/** @var ChunkSection[] $sections */
-		$sections = [];
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt["Blocks"], $this->nbt["Data"], $this->nbt["SkyLight"], $this->nbt["BLockLight"], $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+	}
 
-		$blockLight = $skyLight = $datas = $blocks = [$fill = array_fill(0, 256, ""), $fill, $fill, $fill, $fill, $fill, $fill, $fill];
+	public function getBlockId($x, $y, $z){
+		return ord($this->blocks{($z << 11) + ($x << 7) + $y});
+	}
 
-		$offset = 0;
-		for($i = 0; $i < 256; ++$i){
-			list($blocks[0][$i], $blocks[1][$i], $blocks[2][$i], $blocks[3][$i], $blocks[4][$i], $blocks[5][$i], $blocks[6][$i], $blocks[7][$i]) = str_split(substr($this->nbt["Blocks"], $offset << 1, 128), 16);
-			list($datas[0][$i], $datas[1][$i], $datas[2][$i], $datas[3][$i], $datas[4][$i], $datas[5][$i], $datas[6][$i], $datas[7][$i]) = str_split(substr($this->nbt["Data"], $offset, 64), 8);
-			list($skyLight[0][$i], $skyLight[1][$i], $skyLight[2][$i], $skyLight[3][$i], $skyLight[4][$i], $skyLight[5][$i], $skyLight[6][$i], $skyLight[7][$i]) = str_split(substr($this->nbt["SkyLight"], $offset, 64), 8);
-			list($blockLight[0][$i], $blockLight[1][$i], $blockLight[2][$i], $blockLight[3][$i], $blockLight[4][$i], $blockLight[5][$i], $blockLight[6][$i], $blockLight[7][$i]) = str_split(substr($this->nbt["BlockLight"], $offset, 64), 8);
-			$offset += 64;
+	public function setBlockId($x, $y, $z, $id){
+		$this->blocks{($z << 11) + ($x << 7) + $y} = chr($id);
+	}
+
+	public function getBlockData($x, $y, $z){
+		$m = ord($this->data{($z << 10) + ($x << 6) + ($y >> 1)});
+		if(($y & 1) === 0){
+			return $m >> 4;
+		}else{
+			return $m & 0x0F;
 		}
+	}
 
-		for($Y = 0; $Y < 8; ++$Y){
-			$sections[$Y] = new ChunkSection(
-				$Y,
-				implode($blocks[$Y]),
-				implode($datas[$Y]),
-				implode($skyLight[$Y]),
-				implode($blockLight[$Y])
-			);
+	public function setBlockData($x, $y, $z, $data){
+		$i = ($z << 10) + ($x << 6) + ($y >> 1);
+		$old_m = ord($this->data{$i});
+		if(($y & 1) === 0){
+			$this->data{$i} = chr((($data & 0x0f) << 4) | ($old_m & 0x0f));
+		}else{
+			$this->data{$i} = chr(($old_m & 0xf0) | ($data & 0x0f));
 		}
+	}
 
-		for($y = 0; $y < 8; ++$y){
-			if(substr_count($sections[$y]->getIdArray(), "\x00") === 4096){
-				$sections[$y] = new EmptyChunkSection($y);
+	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
+		$i = ($z << 11) + ($x << 7) + $y;
+		$blockId = ord($this->blocks{$i});
+		$m = ord($this->data{$i >> 1});
+		if(($y & 1) === 0){
+			$meta = $m >> 4;
+		}else{
+			$meta = $m & 0x0F;
+		}
+	}
+
+	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
+		$i = ($z << 11) + ($x << 7) + $y;
+
+		$changed = false;
+
+		if($blockId !== null){
+			$blockId = chr($blockId);
+			if($this->blocks{$i} !== $blockId){
+				$this->blocks{$i} = $blockId;
+				$changed = true;
 			}
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		if($meta !== null){
+			$i >>= 1;
+			$old_m = ord($this->data{$i});
+			if(($y & 1) === 0){
+				$this->data{$i} = chr((($meta & 0x0f) << 4) | ($old_m & 0x0f));
+				if((($old_m & 0xf0) >> 4) !== $meta){
+					$changed = true;
+				}
+			}else{
+				$this->data{$i} = chr(($old_m & 0xf0) | ($meta & 0x0f));
+				if(($old_m & 0x0f) !== $meta){
+					$changed = true;
+				}
+			}
+		}
+
+		return $changed;
+	}
+
+	public function getBlockSkyLight($x, $y, $z){
+		$sl = ord($this->skyLight{($z << 10) + ($x << 6) + ($y >> 1)});
+		if(($y & 1) === 0){
+			return $sl >> 4;
+		}else{
+			return $sl & 0x0F;
+		}
+	}
+
+	public function setBlockSkyLight($x, $y, $z, $level){
+		$i = ($z << 10) + ($x << 6) + ($y >> 1);
+		$old_sl = ord($this->skyLight{$i});
+		if(($y & 1) === 0){
+			$this->skyLight{$i} = chr((($level & 0x0f) << 4) | ($old_sl & 0x0f));
+		}else{
+			$this->skyLight{$i} = chr(($old_sl & 0xf0) | ($level & 0x0f));
+		}
+	}
+
+	public function getBlockLight($x, $y, $z){
+		$l = ord($this->blockLight{($z << 10) + ($x << 6) + ($y >> 1)});
+		if(($y & 1) === 0){
+			return $l >> 4;
+		}else{
+			return $l & 0x0F;
+		}
+	}
+
+	public function setBlockLight($x, $y, $z, $level){
+		$i = ($z << 10) + ($x << 6) + ($y >> 1);
+		$old_l = ord($this->blockLight{$i});
+		if(($y & 1) === 0){
+			$this->blockLight{$i} = chr((($level & 0x0f) << 4) | ($old_l & 0x0f));
+		}else{
+			$this->blockLight{$i} = chr(($old_l & 0xf0) | ($level & 0x0f));
+		}
+	}
+
+	public function getBlockIdColumn($x, $z){
+		return substr($this->blocks, ($z << 11) + ($x << 7), 128);
+	}
+
+	public function getBlockDataColumn($x, $z){
+		return substr($this->data, ($z << 10) + ($x << 6), 64);
+	}
+
+	public function getBlockSkyLightColumn($x, $z){
+		return substr($this->skyLight, ($z << 10) + ($x << 6), 64);
+	}
+
+	public function getBlockLightColumn($x, $z){
+		return substr($this->blockLight, ($z << 10) + ($x << 6), 64);
 	}
 
 	/**
@@ -117,34 +210,12 @@ class Chunk extends BaseChunk{
 	}
 
 	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false){
-		$blockId = "";
-		$blockData = "";
-		$blockSkyLight = "";
-		$blockLight = "";
 		$emptySections = [false, false, false, false, false, false, false, false];
-
-		$emptyBlocks = str_repeat("\x00", 4096);
-		$emptyHalf = str_repeat("\x00", 2048);
-
-		foreach($this->sections as $i => $section){
-			if($section instanceof EmptyChunkSection){
-				$blockId .= $emptyBlocks;
-				$blockData .= $emptyHalf;
-				$blockSkyLight .= $emptyHalf;
-				$blockLight .= $emptyHalf;
-				$emptySections[$i] = true;
-			}else{
-				$blockId .= $section->getIdArray();
-				$blockData .= $section->getDataArray();
-				$blockSkyLight .= $section->getSkyLightArray();
-				$blockLight .= $section->getLightArray();
-			}
-		}
 
 		//TODO: maxBlockY, biomeMap, biomeTemp
 
 		//TODO: time
-		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0 /*$this->getLevel()->getTime()*/, $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
+		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0 /*$this->getLevel()->getTime()*/, $this->getBlockIdArray(), $this->getBlockDataArray(), $this->getBlockSkyLightArray(), $this->getBlockLightArray(), $emptySections, null, null, null, null);
 	}
 
 	/**

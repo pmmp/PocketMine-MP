@@ -46,6 +46,14 @@ class Anvil extends BaseLevelProvider{
 		return "anvil";
 	}
 
+	public static function getProviderOrder(){
+		return self::ORDER_YZX;
+	}
+
+	public static function usesChunkSection(){
+		return true;
+	}
+
 	public static function isValid($path){
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
 
