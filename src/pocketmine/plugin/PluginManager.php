@@ -192,57 +192,61 @@ class PluginManager{
 						continue;
 					}
 					$file = $directory . $file;
-					$description = $loader->getPluginDescription($file);
-					if($description instanceof PluginDescription){
-						$name = $description->getName();
-						if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-							$this->server->getLogger()->error("Could not load plugin '" . $name . "': restricted name");
-							continue;
-						}elseif(strpos($name, " ") !== false){
-							$this->server->getLogger()->warning("Plugin '" . $name . "' uses spaces in its name, this is discouraged");
-						}
-
-						if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-							$this->server->getLogger()->error("Could not load duplicate plugin '" . $name . "': plugin exists");
-							continue;
-						}
-
-						$compatible = false;
-						//Check multiple dependencies
-						foreach($description->getCompatibleApis() as $version){
-							//Format: majorVersion.minorVersion.patch
-							$version = array_map("intval", explode(".", $version));
-							$apiVersion = array_map("intval", explode(".", $this->server->getApiVersion()));
-							//Completely different API version
-							if($version[0] !== $apiVersion[0]){
+					try{
+						$description = $loader->getPluginDescription($file);
+						if($description instanceof PluginDescription){
+							$name = $description->getName();
+							if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+								$this->server->getLogger()->error("Could not load plugin '" . $name . "': restricted name");
 								continue;
+							}elseif(strpos($name, " ") !== false){
+								$this->server->getLogger()->warning("Plugin '" . $name . "' uses spaces in its name, this is discouraged");
 							}
-							//If the plugin requires new API features, being backwards compatible
-							if($version[1] > $apiVersion[1]){
+
+							if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
+								$this->server->getLogger()->error("Could not load duplicate plugin '" . $name . "': plugin exists");
 								continue;
 							}
 
-							$compatible = true;
-							break;
-						}
+							$compatible = false;
+							//Check multiple dependencies
+							foreach($description->getCompatibleApis() as $version){
+								//Format: majorVersion.minorVersion.patch
+								$version = array_map("intval", explode(".", $version));
+								$apiVersion = array_map("intval", explode(".", $this->server->getApiVersion()));
+								//Completely different API version
+								if($version[0] !== $apiVersion[0]){
+									continue;
+								}
+								//If the plugin requires new API features, being backwards compatible
+								if($version[1] > $apiVersion[1]){
+									continue;
+								}
 
-						if($compatible === false){
-							$this->server->getLogger()->error("Could not load plugin '" . $name . "': API version not compatible");
-							continue;
-						}
+								$compatible = true;
+								break;
+							}
 
-						$plugins[$name] = $file;
+							if($compatible === false){
+								$this->server->getLogger()->error("Could not load plugin '" . $name . "': API version not compatible");
+								continue;
+							}
 
-						$softDependencies[$name] = (array) $description->getSoftDepend();
-						$dependencies[$name] = (array) $description->getDepend();
+							$plugins[$name] = $file;
 
-						foreach($description->getLoadBefore() as $before){
-							if(isset($softDependencies[$before])){
-								$softDependencies[$before][] = $name;
-							}else{
-								$softDependencies[$before] = array($name);
+							$softDependencies[$name] = (array) $description->getSoftDepend();
+							$dependencies[$name] = (array) $description->getDepend();
+
+							foreach($description->getLoadBefore() as $before){
+								if(isset($softDependencies[$before])){
+									$softDependencies[$before][] = $name;
+								}else{
+									$softDependencies[$before] = array($name);
+								}
 							}
 						}
+					}catch(\Exception $e){
+						$this->server->getLogger()->error("Could not load '". $file ."' in folder '".$directory."': ".$e->getMessage());
 					}
 				}
 			}
