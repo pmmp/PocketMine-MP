@@ -1611,17 +1611,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->craftingType = 0;
 
 				$target = $this->getLevel()->getEntity($packet->target);
-				
+
+				$cancelled = false;
+
 				if(
 					$target instanceof Player and
 					$this->server->getConfigBoolean("pvp", true) === false
-				
+
 				){
 					$cancelled = true;
 				}
 
 				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->blocked === false and $this->dead !== true and $target->dead !== true){
-					$cancelled = false;
 					$item = $this->inventory->getItemInHand();
 					$damageTable = [
 						Item::WOODEN_SWORD => 4,
