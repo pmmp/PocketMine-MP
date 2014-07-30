@@ -59,7 +59,6 @@ class Generic extends Block{
 					"z" => $this->z + 0.5,
 					"Tile" => $this->id,
 				);
-				$server = Server::getInstance();
 				/*$this->getLevel()->setBlock($this, new Air(), false, false, true);
 				//TODO
 				//$e = $server->api->entity->add($this->getLevel(), ENTITY_FALLING, FALLING_SAND, $data);

@@ -1614,7 +1614,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				
 				if(
 					$target instanceof Player and
-					$this->server->getConfigBoolean("pvp",true) === false
+					$this->server->getConfigBoolean("pvp", true) === false
 				
 				){
 					$cancelled = true;
