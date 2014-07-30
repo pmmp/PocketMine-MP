@@ -37,6 +37,7 @@ use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\format\SimpleChunk;
@@ -1309,6 +1310,12 @@ class Level implements ChunkManager, Metadatable{
 			}
 			$blockIds = [];
 			$data = [];
+
+			if(!$this->useSections){
+				//TODO
+				return new SimpleChunk($x, $z, 0);
+			}
+
 			for($Y = 0; $Y < 8; ++$Y){
 				$section = $chunk->getSection($Y);
 				$blockIds[$Y] = $section->getIdArray();
@@ -1573,13 +1580,13 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function loadChunk($x, $z, $generate = true){
 		if($generate === true){
-			return $this->getChunkAt($x, $z, true) instanceof Chunk;
+			return $this->getChunkAt($x, $z, true) instanceof FullChunk;
 		}
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
 		$chunk = $this->provider->getChunk($x, $z, false);
-		if($chunk instanceof Chunk){
+		if($chunk instanceof FullChunk){
 			$this->chunks[Level::chunkHash($x, $z)] = $chunk;
 			return true;
 		}else{
@@ -1587,7 +1594,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->loadChunk($x, $z);
 			$this->timings->syncChunkLoadTimer->stopTiming();
 
-			if(($chunk = $this->provider->getChunk($x, $z)) instanceof Chunk){
+			if(($chunk = $this->provider->getChunk($x, $z)) instanceof FullChunk){
 				$this->chunks[Level::chunkHash($x, $z)] = $chunk;
 				return true;
 			}
