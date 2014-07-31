@@ -129,8 +129,11 @@ class GenerationRequestManager{
 				/** @var FullChunk $class */
 				$class = substr($packet, $offset, $len);
 				$offset += $len;
-				$chunk = $class::fromBinary(substr($packet, $offset));
-				$this->receiveChunk($levelID, $chunk);
+				$level = $this->server->getLevel($levelID);
+				if($level instanceof Level){
+					$chunk = $class::fromBinary(substr($packet, $offset), $level->getProvider());
+					$this->receiveChunk($levelID, $chunk);
+				}
 			}
 		}
 	}
