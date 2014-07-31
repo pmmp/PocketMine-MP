@@ -74,7 +74,7 @@ namespace pocketmine {
 	use raklib\RakLib;
 
 	const VERSION = "Alpha_1.4dev";
-	const API_VERSION = "1.1.0";
+	const API_VERSION = "1.2.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
 	const MINECRAFT_VERSION = "v0.9.5 alpha";
 	const PHP_VERSION = "5.5";
@@ -141,7 +141,7 @@ namespace pocketmine {
 		}
 	}
 
-	gc_disable();
+	gc_enable();
 	error_reporting(-1);
 	ini_set("allow_url_fopen", 1);
 	ini_set("display_errors", 1);

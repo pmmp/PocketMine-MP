@@ -35,6 +35,7 @@ use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
@@ -146,7 +147,7 @@ abstract class Entity extends Position implements Metadatable{
 	public $closed = false;
 
 
-	public function __construct(Chunk $chunk, Compound $nbt){
+	public function __construct(FullChunk $chunk, Compound $nbt){
 		if($chunk->getLevel() === null){
 			throw new \Exception("Invalid garbage Chunk given to Entity");
 		}
@@ -932,7 +933,7 @@ abstract class Entity extends Position implements Metadatable{
 
 
 		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) and $this->chunk->getZ() !== ($this->z >> 4))){
-			if($this->chunk instanceof Chunk){
+			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}
 			$this->getLevel()->loadChunk($this->x >> 4, $this->z >> 4);
@@ -1040,7 +1041,7 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Entity::$needUpdate[$this->id]);
-			if($this->chunk instanceof Chunk){
+			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}
 			$this->getLevel()->removeEntity($this);

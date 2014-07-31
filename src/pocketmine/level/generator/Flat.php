@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\generator;
 
+use pocketmine\level\format\FullChunk;
 use pocketmine\block\CoalOre;
 use pocketmine\block\DiamondOre;
 use pocketmine\block\Dirt;
@@ -30,7 +31,6 @@ use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
-use pocketmine\level\format\SimpleChunk;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3 as Vector3;
@@ -39,7 +39,7 @@ use pocketmine\utils\Random;
 class Flat extends Generator{
 	/** @var  GenerationChunkManager */
 	private $level;
-	/** @var SimpleChunk */
+	/** @var FullChunk */
 	private $chunk;
 	/** @var Random */
 	private $random;
@@ -59,11 +59,7 @@ class Flat extends Generator{
 		$this->preset = "2;7,2x3,2;1;";
 		//$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		$this->options = $options;
-		if(isset($options["preset"]) and $options["preset"] != ""){
-			$this->parsePreset($options["preset"]);
-		}else{
-			$this->parsePreset($this->preset);
-		}
+
 		if(isset($this->options["decoration"])){
 			$ores = new Ore();
 			$ores->setOreTypes(array(
@@ -110,7 +106,8 @@ class Flat extends Generator{
 		}
 
 
-		$this->chunk = new SimpleChunk(null, null, SimpleChunk::FLAG_GENERATED);
+		$this->chunk = $this->level->getChunk(0, 0);
+		$this->chunk->setGenerated();
 
 		for($Z = 0; $Z < 16; ++$Z){
 			for($X = 0; $X < 16; ++$X){
@@ -124,6 +121,7 @@ class Flat extends Generator{
 				}
 			}
 		}
+
 
 		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
 		foreach($matches[2] as $i => $option){
@@ -145,6 +143,13 @@ class Flat extends Generator{
 	public function init(GenerationChunkManager $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
+
+		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
+			$this->parsePreset($this->options["preset"]);
+		}else{
+			$this->parsePreset($this->preset);
+		}
+
 	}
 
 	public function generateChunk($chunkX, $chunkZ){

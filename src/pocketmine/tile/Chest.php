@@ -26,6 +26,7 @@ use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
@@ -42,7 +43,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	/** @var DoubleChestInventory */
 	protected $doubleInventory = null;
 
-	public function __construct(Chunk $chunk, Compound $nbt){
+	public function __construct(FullChunk $chunk, Compound $nbt){
 		$nbt["id"] = Tile::CHEST;
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new ChestInventory($this);

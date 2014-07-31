@@ -1052,7 +1052,9 @@ class Server{
 			}
 		}
 
-		$provider = "pocketmine\\level\\format\\anvil\\Anvil";
+		if(($provider = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "mcregion"))) === null){
+			$provider = "pocketmine\\level\\format\\mcregion\\McRegion";
+		}
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		/** @var \pocketmine\level\format\LevelProvider $provider */
@@ -1500,6 +1502,7 @@ class Server{
 		$this->generationManager = new GenerationRequestManager($this);
 
 		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\anvil\\Anvil");
+		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\mcregion\\McRegion");
 
 
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
@@ -1830,7 +1833,6 @@ class Server{
 		$lastLoop = 0;
 		$connectionTimer = Timings::$connectionTimer;
 		while($this->isRunning){
-
 			$connectionTimer->startTiming();
 			foreach($this->interfaces as $interface){
 				if($interface->process()){

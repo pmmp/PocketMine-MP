@@ -57,6 +57,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -519,7 +520,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return $this->spawnPosition;
 		}else{
 			$level = $this->server->getDefaultLevel();
-			return $level->getSpawn();
+			return $level->getSafeSpawn();
 		}
 	}
 
@@ -601,7 +602,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->usedChunks[$index] = [false, 0];
 
 				$this->getLevel()->useChunk($X, $Z, $this);
-				$this->getLevel()->requestChunk($X, $Z, $this);
+				$this->getLevel()->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 			}
 		}
 
@@ -1740,7 +1741,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->craftingType = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
 				$this->teleport($ev->getRespawnPosition());
 				//$this->entity->fire = 0;

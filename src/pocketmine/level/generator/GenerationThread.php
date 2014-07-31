@@ -87,6 +87,7 @@ class GenerationThread extends \Thread{
 	}
 
 	public function run(){
+		error_reporting(-1);
 		//Load removed dependencies, can't use require_once()
 		foreach($this->loadPaths as $name => $path){
 			if(!class_exists($name, false) and !class_exists($name, false)){

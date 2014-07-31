@@ -19,8 +19,9 @@
  *
 */
 
-namespace pocketmine\level;
+namespace pocketmine\level\format\anvil;
 
+use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -43,11 +44,14 @@ class ChunkRequestTask extends AsyncTask{
 
 	protected $tiles;
 
-	public function __construct(Level $level, $chunkX, $chunkZ){
-		$this->levelId = $level->getID();
+	public function __construct(Anvil $level, $levelId, $chunkX, $chunkZ){
+		$this->levelId = $levelId;
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$chunk = $level->getChunkAt($chunkX, $chunkZ, true);
+		$chunk = $level->getChunk($chunkX, $chunkZ, false);
+		if(!($chunk instanceof Chunk)){
+			throw new \Exception("Invalid Chunk sent");
+		}
 		$this->biomeIds = $chunk->getBiomeIdArray();
 		$this->biomeColors = $chunk->getBiomeColorArray();
 

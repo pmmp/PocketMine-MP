@@ -22,13 +22,14 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
 
 class Sign extends Spawnable{
 
-	public function __construct(Chunk $chunk, Compound $nbt){
+	public function __construct(FullChunk $chunk, Compound $nbt){
 		$nbt["id"] = Tile::SIGN;
 		if(!isset($nbt->Text1)){
 			$nbt->Text1 = new String("Text1", "");

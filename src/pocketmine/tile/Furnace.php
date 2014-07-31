@@ -27,6 +27,7 @@ use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -37,7 +38,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	/** @var FurnaceInventory */
 	protected $inventory;
 
-	public function __construct(Chunk $chunk, Compound $nbt){
+	public function __construct(FullChunk $chunk, Compound $nbt){
 		$nbt["id"] = Tile::FURNACE;
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new FurnaceInventory($this);
