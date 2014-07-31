@@ -67,24 +67,16 @@ class Anvil extends McRegion{
 		return new ChunkRequestTask($this, $this->getLevel()->getID(), $x, $z);
 	}
 
-	public function loadChunk($chunkX, $chunkZ, $create = false){
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunks[$index])){
-			return true;
-		}
-		$regionX = $regionZ = null;
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ);
+	/**
+	 * @param $x
+	 * @param $z
+	 *
+	 * @return RegionLoader
+	 */
+	protected function getRegion($x, $z){
+		$index = $x . ":" . $z;
 
-		$this->level->timings->syncChunkLoadDataTimer->startTiming();
-		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32, $create); //generate empty chunk if not loaded
-		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
-
-		if($chunk instanceof Chunk){
-			$this->chunks[$index] = $chunk;
-		}else{
-			return false;
-		}
+		return isset($this->regions[$index]) ? $this->regions[$index] : null;
 	}
 
 	/**
@@ -112,10 +104,9 @@ class Anvil extends McRegion{
 			$region->removeChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);
 			$this->loadChunk($chunkX, $chunkZ);
 		}else{
-			$newChunk = clone $chunk;
-			$newChunk->setX($chunkX);
-			$newChunk->setZ($chunkZ);
-			$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $newChunk;
+			$chunk->setX($chunkX);
+			$chunk->setZ($chunkZ);
+			$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 			//$this->saveChunk($chunkX, $chunkZ);
 		}
 	}

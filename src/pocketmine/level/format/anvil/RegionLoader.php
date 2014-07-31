@@ -22,7 +22,6 @@
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\LevelProvider;
-use pocketmine\level\format\mcregion\Chunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
@@ -31,7 +30,6 @@ use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
-use pocketmine\Player;
 use pocketmine\utils\Binary;
 
 class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
@@ -128,10 +126,6 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		$writer->setData(new Compound("", array("Level" => $nbt)));
 		$chunkData= $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 		$this->saveChunk($x, $z, $chunkData);
-	}
-
-	public function writeChunk(Chunk $chunk){
-		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunk->toBinary());
 	}
 
 }

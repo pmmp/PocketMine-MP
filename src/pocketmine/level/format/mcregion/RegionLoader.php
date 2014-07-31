@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\format\mcregion;
 
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
@@ -180,7 +181,7 @@ class RegionLoader{
 		$this->locationTable[$index][1] = 0;
 	}
 
-	public function writeChunk(Chunk $chunk){
+	public function writeChunk(FullChunk $chunk){
 		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunk->toBinary());
 	}
 

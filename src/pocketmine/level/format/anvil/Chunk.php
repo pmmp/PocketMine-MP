@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
@@ -93,6 +94,8 @@ class Chunk extends BaseChunk{
 		}
 
 		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $sections, $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+
+		unset($this->nbt->Sections);
 	}
 
 	/**
@@ -150,6 +153,9 @@ class Chunk extends BaseChunk{
 
 	public function toBinary(){
 		$nbt = $this->getNBT();
+
+		$nbt->xPos = new Int("xPos", $this->x);
+		$nbt->zPos = new Int("zPos", $this->z);
 
 		$nbt->Sections = new Enum("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);

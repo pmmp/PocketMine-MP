@@ -28,6 +28,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
@@ -70,6 +71,10 @@ class Chunk extends BaseFullChunk{
 		}
 
 		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt["Blocks"], $this->nbt["Data"], $this->nbt["SkyLight"], $this->nbt["BlockLight"], $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		unset($this->nbt->Blocks);
+		unset($this->nbt->Data);
+		unset($this->nbt->SkyLight);
+		unset($this->nbt->BlockLight);
 	}
 
 	public function getBlockId($x, $y, $z){
@@ -244,6 +249,9 @@ class Chunk extends BaseFullChunk{
 
 	public function toBinary(){
 		$nbt = $this->getNBT();
+
+		$nbt->xPos = new Int("xPos", $this->x);
+		$nbt->zPos = new Int("zPos", $this->z);
 
 		$nbt->Blocks = new ByteArray("Blocks", $this->getBlockIdArray());
 		$nbt->Data = new ByteArray("Data", $this->getBlockDataArray());

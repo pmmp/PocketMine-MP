@@ -520,7 +520,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return $this->spawnPosition;
 		}else{
 			$level = $this->server->getDefaultLevel();
-			return $level->getSpawn();
+			return $level->getSafeSpawn();
 		}
 	}
 
@@ -1740,7 +1740,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->craftingType = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->spawnPosition));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
 				$this->teleport($ev->getRespawnPosition());
 				//$this->entity->fire = 0;

@@ -1635,9 +1635,10 @@ class Level implements ChunkManager, Metadatable{
 	 * Sets the spawnpoint
 	 *
 	 * @param Vector3 $pos
+	 * @deprecated
 	 */
 	public function setSpawn(Vector3 $pos){
-		$this->provider->setSpawn($pos);
+		$this->setSpawnLocation($pos);
 	}
 
 	/**

@@ -142,12 +142,11 @@ class McRegion extends BaseLevelProvider{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ);
-
 		$this->level->timings->syncChunkLoadDataTimer->startTiming();
 		$chunk = $this->getRegion($regionX, $regionZ)->readChunk($chunkX - $regionX * 32, $chunkZ - $regionZ * 32, $create); //generate empty chunk if not loaded
 		$this->level->timings->syncChunkLoadDataTimer->stopTiming();
 
-		if($chunk instanceof Chunk){
+		if($chunk instanceof FullChunk){
 			$this->chunks[$index] = $chunk;
 		}else{
 			return false;
@@ -156,7 +155,7 @@ class McRegion extends BaseLevelProvider{
 
 	public function unloadChunk($x, $z, $safe = true){
 		$chunk = $this->getChunk($x, $z, false);
-		if($chunk instanceof Chunk){
+		if($chunk instanceof FullChunk){
 			if($safe === true and $this->isChunkLoaded($x, $z)){
 				foreach($chunk->getEntities() as $entity){
 					if($entity instanceof Player){
@@ -233,10 +232,9 @@ class McRegion extends BaseLevelProvider{
 			$region->removeChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);
 			$this->loadChunk($chunkX, $chunkZ);
 		}else{
-			$newChunk = clone $chunk;
-			$newChunk->setX($chunkX);
-			$newChunk->setZ($chunkZ);
-			$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $newChunk;
+			$chunk->setX($chunkX);
+			$chunk->setZ($chunkZ);
+			$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 			//$this->saveChunk($chunkX, $chunkZ);
 		}
 	}
@@ -255,7 +253,7 @@ class McRegion extends BaseLevelProvider{
 
 	public function isChunkPopulated($chunkX, $chunkZ){
 		$chunk = $this->getChunk($chunkX, $chunkZ);
-		if($chunk instanceof Chunk){
+		if($chunk instanceof FullChunk){
 			return $chunk->isPopulated();
 		}else{
 			return false;

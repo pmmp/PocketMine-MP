@@ -85,6 +85,7 @@ class GenerationChunkManager implements ChunkManager{
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
 		$this->unloadQueue->detach($chunk);
+		$this->changes[$index] = $chunk;
 		return $chunk;
 	}
 
@@ -112,6 +113,9 @@ class GenerationChunkManager implements ChunkManager{
 		}
 
 		foreach($this->chunks as $chunk){
+			if(isset($this->changes[$index = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
+				continue;
+			}
 			$this->unloadQueue->attach($chunk);
 		}
 	}
@@ -150,13 +154,11 @@ class GenerationChunkManager implements ChunkManager{
 	public function setChunkGenerated($chunkX, $chunkZ){
 		$chunk = $this->getChunk($chunkX, $chunkZ);
 		$chunk->setGenerated(true);
-		$this->changes[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
 	public function setChunkPopulated($chunkX, $chunkZ){
 		$chunk = $this->getChunk($chunkX, $chunkZ);
 		$chunk->setPopulated(true);
-		$this->changes[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
 	protected function requestChunk($chunkX, $chunkZ){
