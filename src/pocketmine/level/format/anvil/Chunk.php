@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\IntArray;
+use pocketmine\Player;
 use pocketmine\utils\Binary;
 
 class Chunk extends BaseChunk{
@@ -37,7 +38,7 @@ class Chunk extends BaseChunk{
 	/** @var Compound */
 	protected $nbt;
 
-	public function __construct(LevelProvider $level, Compound $nbt){
+	public function __construct($level, Compound $nbt){
 		$this->nbt = $nbt;
 
 		if(isset($this->nbt->Entities) and $this->nbt->Entities instanceof Enum){
@@ -108,35 +109,18 @@ class Chunk extends BaseChunk{
 		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", $value);
 	}
 
-	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false){
-		$blockId = "";
-		$blockData = "";
-		$blockSkyLight = "";
-		$blockLight = "";
-		$emptySections = [false, false, false, false, false, false, false, false];
+	/**
+	 * @return bool
+	 */
+	public function isGenerated(){
+		return $this->nbt["TerrainPopulated"] > 0 or (isset($this->nbt->TerrainGenerated) and $this->nbt["TerrainGenerated"] > 0);
+	}
 
-		$emptyBlocks = str_repeat("\x00", 4096);
-		$emptyHalf = str_repeat("\x00", 2048);
-
-		foreach($this->sections as $i => $section){
-			if($section instanceof EmptyChunkSection){
-				$blockId .= $emptyBlocks;
-				$blockData .= $emptyHalf;
-				$blockSkyLight .= $emptyHalf;
-				$blockLight .= $emptyHalf;
-				$emptySections[$i] = true;
-			}else{
-				$blockId .= $section->getIdArray();
-				$blockData .= $section->getDataArray();
-				$blockSkyLight .= $section->getSkyLightArray();
-				$blockLight .= $section->getLightArray();
-			}
-		}
-
-		//TODO: maxBlockY, biomeMap, biomeTemp
-
-		//TODO: time
-		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0 /*$this->getLevel()->getTime()*/, $blockId, $blockData, $blockSkyLight, $blockLight, $emptySections, null, null, null, null);
+	/**
+	 * @param int $value
+	 */
+	public function setGenerated($value = 1){
+		$this->nbt->TerrainGenerated = new Byte("TerrainGenerated", $value);
 	}
 
 	/**
@@ -144,5 +128,70 @@ class Chunk extends BaseChunk{
 	 */
 	public function getNBT(){
 		return $this->nbt;
+	}
+
+	/**
+	 * @param string        $data
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function fromBinary($data, LevelProvider $provider = null){
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
+		$chunk = $nbt->getData();
+
+		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
+			return null;
+		}
+
+		return new Chunk($provider instanceof LevelProvider ? $provider : "pocketmine\\level\\format\\anvil\\Anvil", $chunk->Level);
+	}
+
+	public function toBinary(){
+		$nbt = $this->getNBT();
+
+		$nbt->Sections = new Enum("Sections", []);
+		$nbt->Sections->setTagType(NBT::TAG_Compound);
+		foreach($this->getSections() as $section){
+			$nbt->Sections[$section->getY()] = new Compound(null, [
+				"Y" => new Byte("Y", $section->getY()),
+				"Blocks" => new ByteArray("Blocks", $section->getIdArray()),
+				"Data" => new ByteArray("Data", $section->getDataArray()),
+				"BlockLight" => new ByteArray("BlockLight", $section->getLightArray()),
+				"SkyLight" => new ByteArray("SkyLight", $section->getSkyLightArray())
+			]);
+		}
+
+		$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
+		$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
+
+		$entities = [];
+
+		foreach($this->getEntities() as $entity){
+			if(!($entity instanceof Player) and $entity->closed !== true){
+				$entity->saveNBT();
+				$entities[] = $entity->namedtag;
+			}
+		}
+
+		$nbt->Entities = new Enum("Entities", $entities);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+
+
+		$tiles = [];
+		foreach($this->getTiles() as $tile){
+			if($tile->closed !== true){
+				$tile->saveNBT();
+				$tiles[] = $tile->namedtag;
+			}
+		}
+
+		$nbt->Entities = new Enum("TileEntities", $tiles);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$writer = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setName("Level");
+		$writer->setData(new Compound("", array("Level" => $nbt)));
+		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 }

@@ -22,6 +22,7 @@
 namespace pocketmine\level\format\anvil;
 
 use pocketmine\level\format\LevelProvider;
+use pocketmine\level\format\mcregion\Chunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
@@ -97,16 +98,9 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 			return false;
 		}
 
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->readCompressed(fread($this->filePointer, $length - 1), $compression);
-		$chunk = $nbt->getData();
+		$chunk = Chunk::fromBinary(fread($this->filePointer, $length - 1), $this->levelProvider);
 
-
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
-			return false;
-		}
-
-		return new Chunk($this->levelProvider, $chunk->Level);
+		return $chunk instanceof Chunk ? $chunk : false;
 	}
 
 	public function generateChunk($x, $z){
@@ -129,51 +123,15 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		$nbt->TileTicks = new Enum("TileTicks", []);
 		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
-		$this->saveChunk($x, $z, $nbt);
+		$writer = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setName("Level");
+		$writer->setData(new Compound("", array("Level" => $nbt)));
+		$chunkData= $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		$this->saveChunk($x, $z, $chunkData);
 	}
 
 	public function writeChunk(Chunk $chunk){
-		$nbt = $chunk->getNBT();
-		$nbt->Sections = new Enum("Sections", []);
-		$nbt->Sections->setTagType(NBT::TAG_Compound);
-		foreach($chunk->getSections() as $section){
-			$nbt->Sections[$section->getY()] = new Compound(null, [
-				"Y" => new Byte("Y", $section->getY()),
-				"Blocks" => new ByteArray("Blocks", $section->getIdArray()),
-				"Data" => new ByteArray("Data", $section->getDataArray()),
-				"BlockLight" => new ByteArray("BlockLight", $section->getLightArray()),
-				"SkyLight" => new ByteArray("SkyLight", $section->getSkyLightArray())
-			]);
-		}
-
-		$nbt->Biomes = new ByteArray("Biomes", $chunk->getBiomeIdArray());
-		$nbt->BiomeColors = new IntArray("BiomeColors", $chunk->getBiomeColorArray());
-
-		$entities = [];
-
-		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and $entity->closed !== true){
-				$entity->saveNBT();
-				$entities[] = $entity->namedtag;
-			}
-		}
-
-		$nbt->Entities = new Enum("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-
-
-		$tiles = [];
-		foreach($chunk->getTiles() as $tile){
-			if($tile->closed !== true){
-				$tile->saveNBT();
-				$tiles[] = $tile->namedtag;
-			}
-		}
-
-		$nbt->Entities = new Enum("TileEntities", $tiles);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-
-		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $nbt);
+		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunk->toBinary());
 	}
 
 }

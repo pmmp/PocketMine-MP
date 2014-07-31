@@ -76,8 +76,8 @@ abstract class BaseFullChunk implements FullChunk{
 	 *
 	 * @throws \Exception
 	 */
-	protected function __construct(LevelProvider $level, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
-		$this->level = new \WeakRef($level);
+	protected function __construct($level, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
+		$this->level = $level instanceof LevelProvider ? new \WeakRef($level) : $level;
 		$this->x = (int) $x;
 		$this->z = (int) $z;
 
@@ -98,46 +98,48 @@ abstract class BaseFullChunk implements FullChunk{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
 		}
 
-		$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
-		foreach($entities as $nbt){
-			if($nbt instanceof Compound){
-				if(!isset($nbt->id)){
-					continue;
-				}
+		if($this->getLevel() instanceof LevelProvider){
+			$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
+			foreach($entities as $nbt){
+				if($nbt instanceof Compound){
+					if(!isset($nbt->id)){
+						continue;
+					}
 
-				if($nbt->id instanceof String){ //New format
+					if($nbt->id instanceof String){ //New format
+						switch($nbt["id"]){
+							case "Item":
+								(new DroppedItem($this, $nbt))->spawnToAll();
+								break;
+						}
+					}else{ //Old format
+
+					}
+				}
+			}
+			$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
+
+			$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			foreach($tiles as $nbt){
+				if($nbt instanceof Compound){
+					if(!isset($nbt->id)){
+						continue;
+					}
 					switch($nbt["id"]){
-						case "Item":
-							(new DroppedItem($this, $nbt))->spawnToAll();
+						case Tile::CHEST:
+							new Chest($this, $nbt);
+							break;
+						case Tile::FURNACE:
+							new Furnace($this, $nbt);
+							break;
+						case Tile::SIGN:
+							new Sign($this, $nbt);
 							break;
 					}
-				}else{ //Old format
-
 				}
 			}
+			$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 		}
-		$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
-
-		$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-		foreach($tiles as $nbt){
-			if($nbt instanceof Compound){
-				if(!isset($nbt->id)){
-					continue;
-				}
-				switch($nbt["id"]){
-					case Tile::CHEST:
-						new Chest($this, $nbt);
-						break;
-					case Tile::FURNACE:
-						new Furnace($this, $nbt);
-						break;
-					case Tile::SIGN:
-						new Sign($this, $nbt);
-						break;
-				}
-			}
-		}
-		$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 	}
 
 	public function getX(){
@@ -148,11 +150,19 @@ abstract class BaseFullChunk implements FullChunk{
 		return $this->z;
 	}
 
+	public function setX($x){
+		$this->x = $x;
+	}
+
+	public function setZ($z){
+		$this->z = $z;
+	}
+
 	/**
 	 * @return LevelProvider
 	 */
 	public function getLevel(){
-		return $this->level->valid() ? $this->level->get() : null;
+		return $this->level instanceof \WeakRef ? ($this->level->valid() ? $this->level->get() : null) : $this->level;
 	}
 
 	public function getBiomeId($x, $z){

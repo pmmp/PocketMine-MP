@@ -115,7 +115,7 @@ interface LevelProvider{
 	 *
 	 * @return ChunkSection
 	 */
-	public function createChunkSection($Y);
+	public static function createChunkSection($Y);
 
 	public function saveChunks();
 
@@ -170,13 +170,13 @@ interface LevelProvider{
 	public function isChunkLoaded($X, $Z);
 
 	/**
-	 * @param int         $chunkX
-	 * @param int         $chunkZ
-	 * @param SimpleChunk $chunk
+	 * @param int       $chunkX
+	 * @param int       $chunkZ
+	 * @param FullChunk $chunk
 	 *
 	 * @return mixed
 	 */
-	public function setChunk($chunkX, $chunkZ, SimpleChunk $chunk);
+	public function setChunk($chunkX, $chunkZ, FullChunk $chunk);
 
 	/**
 	 * @return string

@@ -119,16 +119,9 @@ class RegionLoader{
 			return false;
 		}
 
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->readCompressed(fread($this->filePointer, $length - 1), $compression);
-		$chunk = $nbt->getData();
+		$chunk = Chunk::fromBinary(fread($this->filePointer, $length - 1), $this->levelProvider);
 
-
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
-			return false;
-		}
-
-		return new Chunk($this->levelProvider, $chunk->Level);
+		return $chunk instanceof Chunk ? $chunk : false;
 	}
 
 	public function chunkExists($x, $z){
@@ -159,14 +152,15 @@ class RegionLoader{
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		$nbt->TileTicks = new Enum("TileTicks", []);
 		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
-		$this->saveChunk($x, $z, $nbt);
-	}
-
-	protected function saveChunk($x, $z, Compound $nbt){
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", array("Level" => $nbt)));
 		$chunkData = $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
+
+		$this->saveChunk($x, $z, $chunkData);
+	}
+
+	protected function saveChunk($x, $z, $chunkData){
 		$length = strlen($chunkData) + 1;
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
@@ -187,41 +181,7 @@ class RegionLoader{
 	}
 
 	public function writeChunk(Chunk $chunk){
-		$nbt = $chunk->getNBT();
-
-		$nbt->Blocks = new ByteArray("Blocks", $chunk->getBlockIdArray());
-		$nbt->Data = new ByteArray("Data", $chunk->getBlockDataArray());
-		$nbt->SkyLight = new ByteArray("SkyLight", $chunk->getBlockSkyLightArray());
-		$nbt->BlockLight = new ByteArray("BlockLight", $chunk->getBlockLightArray());
-
-		$nbt->Biomes = new ByteArray("Biomes", $chunk->getBiomeIdArray());
-		$nbt->BiomeColors = new IntArray("BiomeColors", $chunk->getBiomeColorArray());
-
-		$entities = [];
-
-		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and $entity->closed !== true){
-				$entity->saveNBT();
-				$entities[] = $entity->namedtag;
-			}
-		}
-
-		$nbt->Entities = new Enum("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-
-
-		$tiles = [];
-		foreach($chunk->getTiles() as $tile){
-			if($tile->closed !== true){
-				$tile->saveNBT();
-				$tiles[] = $tile->namedtag;
-			}
-		}
-
-		$nbt->Entities = new Enum("TileEntities", $tiles);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
-
-		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $nbt);
+		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunk->toBinary());
 	}
 
 	protected static function getChunkOffset($x, $z){

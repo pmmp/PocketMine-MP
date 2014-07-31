@@ -141,7 +141,7 @@ namespace pocketmine {
 		}
 	}
 
-	gc_disable();
+	gc_enable();
 	error_reporting(-1);
 	ini_set("allow_url_fopen", 1);
 	ini_set("display_errors", 1);

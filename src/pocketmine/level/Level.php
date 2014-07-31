@@ -40,7 +40,6 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
-use pocketmine\level\format\SimpleChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
@@ -1292,51 +1291,17 @@ class Level implements ChunkManager, Metadatable{
 		return isset($this->chunks[$index = "$x:$z"]) ? $this->chunks[$index] : $this->chunks[$index] = $this->provider->getChunk($x, $z, $create);
 	}
 
-	/**
-	 * @param int  $x
-	 * @param int  $z
-	 * @param bool $create
-	 *
-	 * @return SimpleChunk
-	 */
-	public function getChunk($x, $z, $create = false){
-		$chunk = $this->getChunkAt($x, $z, $create);
-		if($chunk === null){
-			return new SimpleChunk($x, $z, 0);
-		}else{
-			$flags = SimpleChunk::FLAG_GENERATED;
-			if($this->isChunkPopulated($x, $z)){
-				$flags |= SimpleChunk::FLAG_POPULATED;
-			}
-			$blockIds = [];
-			$data = [];
-
-			if(!$this->useSections){
-				//TODO
-				return new SimpleChunk($x, $z, 0);
-			}
-
-			for($Y = 0; $Y < 8; ++$Y){
-				$section = $chunk->getSection($Y);
-				$blockIds[$Y] = $section->getIdArray();
-				$data[$Y] = $section->getDataArray();
-			}
-
-			return new SimpleChunk($x, $z, $flags, $blockIds, $data);
-		}
-	}
-
-	public function generateChunkCallback($x, $z, SimpleChunk $chunk){
+	public function generateChunkCallback($x, $z, FullChunk $chunk){
 		unset($this->chunkGenerationQueue["$x:$z"]);
 		$this->setChunk($x, $z, $chunk);
 	}
 
-	public function setChunk($x, $z, SimpleChunk $chunk){
+	public function setChunk($x, $z, FullChunk $chunk){
 		$index = Level::chunkHash($x, $z);
 		foreach($this->getUsingChunk($x, $z) as $player){
 			$player->unloadChunk($x, $z);
 		}
-		unset($this->chunks[Level::chunkHash($x, $z)]);
+		unset($this->chunks[$index]);
 		$this->provider->setChunk($x, $z, $chunk);
 		$this->loadChunk($x, $z);
 	}

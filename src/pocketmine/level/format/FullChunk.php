@@ -36,6 +36,10 @@ interface FullChunk{
 	 */
 	public function getZ();
 
+	public function setX($x);
+
+	public function setZ($z);
+
 	/**
 	 * @return \pocketmine\level\format\LevelProvider
 	 */
@@ -179,16 +183,13 @@ interface FullChunk{
 	 */
 	public function setBiomeColor($x, $z, $R, $G, $B);
 
-	/**
-	 * Thread-safe read-only chunk
-	 *
-	 * @param bool $includeMaxBlockY
-	 * @param bool $includeBiome
-	 * @param bool $includeBiomeTemp
-	 *
-	 * @return ChunkSnapshot
-	 */
-	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false);
+	public function isPopulated();
+
+	public function setPopulated($value = 1);
+
+	public function isGenerated();
+
+	public function setGenerated($value = 1);
 
 	/**
 	 * @param Entity $entity
@@ -259,5 +260,15 @@ interface FullChunk{
 	public function getBlockSkyLightArray();
 
 	public function getBlockLightArray();
+
+	public function toBinary();
+
+	/**
+	 * @param string        $data
+	 * @param LevelProvider $provider
+	 *
+	 * @return FullChunk
+	 */
+	public static function fromBinary($data, LevelProvider $provider = null);
 
 }

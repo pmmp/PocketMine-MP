@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\IntArray;
+use pocketmine\Player;
 use pocketmine\utils\Binary;
 
 class Chunk extends BaseFullChunk{
@@ -36,7 +37,7 @@ class Chunk extends BaseFullChunk{
 	/** @var Compound */
 	protected $nbt;
 
-	public function __construct(LevelProvider $level, Compound $nbt){
+	public function __construct($level, Compound $nbt){
 		$this->nbt = $nbt;
 
 		if(isset($this->nbt->Entities) and $this->nbt->Entities instanceof Enum){
@@ -209,13 +210,76 @@ class Chunk extends BaseFullChunk{
 		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", $value);
 	}
 
-	public function getChunkSnapshot($includeMaxBlockY = true, $includeBiome = false, $includeBiomeTemp = false){
-		$emptySections = [false, false, false, false, false, false, false, false];
+	/**
+	 * @return bool
+	 */
+	public function isGenerated(){
+		return $this->nbt["TerrainPopulated"] > 0 or (isset($this->nbt->TerrainGenerated) and $this->nbt["TerrainGenerated"] > 0);
+	}
 
-		//TODO: maxBlockY, biomeMap, biomeTemp
+	/**
+	 * @param int $value
+	 */
+	public function setGenerated($value = 1){
+		$this->nbt->TerrainGenerated = new Byte("TerrainGenerated", $value);
+	}
 
-		//TODO: time
-		return new ChunkSnapshot($this->getX(), $this->getZ(), $this->getLevel()->getName(), 0 /*$this->getLevel()->getTime()*/, $this->getBlockIdArray(), $this->getBlockDataArray(), $this->getBlockSkyLightArray(), $this->getBlockLightArray(), $emptySections, null, null, null, null);
+	/**
+	 * @param string        $data
+	 * @param LevelProvider $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function fromBinary($data, LevelProvider $provider = null){
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
+		$chunk = $nbt->getData();
+
+		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
+			return null;
+		}
+
+		return new Chunk($provider instanceof LevelProvider ? $provider : "pocketmine\\level\\format\\mcregion\\McRegion", $chunk->Level);
+	}
+
+	public function toBinary(){
+		$nbt = $this->getNBT();
+
+		$nbt->Blocks = new ByteArray("Blocks", $this->getBlockIdArray());
+		$nbt->Data = new ByteArray("Data", $this->getBlockDataArray());
+		$nbt->SkyLight = new ByteArray("SkyLight", $this->getBlockSkyLightArray());
+		$nbt->BlockLight = new ByteArray("BlockLight", $this->getBlockLightArray());
+
+		$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
+		$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
+
+		$entities = [];
+
+		foreach($this->getEntities() as $entity){
+			if(!($entity instanceof Player) and $entity->closed !== true){
+				$entity->saveNBT();
+				$entities[] = $entity->namedtag;
+			}
+		}
+
+		$nbt->Entities = new Enum("Entities", $entities);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+
+
+		$tiles = [];
+		foreach($this->getTiles() as $tile){
+			if($tile->closed !== true){
+				$tile->saveNBT();
+				$tiles[] = $tile->namedtag;
+			}
+		}
+
+		$nbt->Entities = new Enum("TileEntities", $tiles);
+		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$writer = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setName("Level");
+		$writer->setData(new Compound("", array("Level" => $nbt)));
+		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 
 	/**

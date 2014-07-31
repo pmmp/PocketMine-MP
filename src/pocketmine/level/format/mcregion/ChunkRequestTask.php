@@ -51,7 +51,10 @@ class ChunkRequestTask extends AsyncTask{
 		$this->levelId = $levelId;
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$chunk = $level->getChunk($chunkX, $chunkZ, true);
+		$chunk = $level->getChunk($chunkX, $chunkZ, false);
+		if(!($chunk instanceof Chunk)){
+			throw new \Exception("Invalid Chunk sent");
+		}
 		$this->blocks = $chunk->getBlockIdArray();
 		$this->data = $chunk->getBlockDataArray();
 		$this->skyLight = $chunk->getBlockSkyLightArray();

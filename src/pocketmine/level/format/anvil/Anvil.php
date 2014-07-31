@@ -21,19 +21,12 @@
 
 namespace pocketmine\level\format\anvil;
 
-use pocketmine\level\format\generic\BaseLevelProvider;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\mcregion\McRegion;
-use pocketmine\level\format\SimpleChunk;
-use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\Long;
-use pocketmine\nbt\tag\String;
-use pocketmine\Player;
 
 class Anvil extends McRegion{
 
@@ -105,8 +98,12 @@ class Anvil extends McRegion{
 		return parent::getChunk($chunkX, $chunkZ, $create);
 	}
 
-	public function setChunk($chunkX, $chunkZ, SimpleChunk $chunk){
-		if($chunk->isGenerated() === false){
+	public function setChunk($chunkX, $chunkZ, FullChunk $chunk){
+		if(!($chunk instanceof Chunk)){
+			throw new \Exception("Invalid Chunk class");
+		}
+
+		if($chunk->isPopulated() === false){
 			$this->unloadChunk($chunkX, $chunkZ, false);
 			$regionX = $regionZ = null;
 			self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
@@ -115,26 +112,15 @@ class Anvil extends McRegion{
 			$region->removeChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);
 			$this->loadChunk($chunkX, $chunkZ);
 		}else{
-			$newChunk = $this->getChunk($chunkX, $chunkZ, true);
-			for($y = 0; $y < 8; ++$y){
-				$section = new ChunkSection(new Compound(null, [
-					"Y" => new Byte("Y", $y),
-					"Blocks" => new ByteArray("Blocks", $chunk->getSectionIds($y)),
-					"Data" => new ByteArray("Data", $chunk->getSectionData($y)),
-					"SkyLight" => new ByteArray("SkyLight", str_repeat("\xff", 2048)), //TODO
-					"BlockLight" => new ByteArray("BlockLight", str_repeat("\x00", 2048)) //TODO
-				]));
-				$newChunk->setSection($y, $section);
-			}
-			if($chunk->isPopulated()){
-				$newChunk->setPopulated(1);
-			}
+			$newChunk = clone $chunk;
+			$newChunk->setX($chunkX);
+			$newChunk->setZ($chunkZ);
 			$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $newChunk;
-			$this->saveChunk($chunkX, $chunkZ);
+			//$this->saveChunk($chunkX, $chunkZ);
 		}
 	}
 
-	public function createChunkSection($Y){
+	public static function createChunkSection($Y){
 		return new ChunkSection(new Compound(null, [
 			"Y" => new Byte("Y", $Y),
 			"Blocks" => new ByteArray("Blocks", str_repeat("\xff", 4096)),
@@ -146,7 +132,7 @@ class Anvil extends McRegion{
 
 	public function isChunkGenerated($chunkX, $chunkZ){
 		if(($region = $this->getRegion($chunkX >> 5, $chunkZ >> 5)) instanceof RegionLoader){
-			return $region->chunkExists($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);
+			return $region->chunkExists($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32) and $this->getChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32, true)->isGenerated();
 		}
 
 		return false;
