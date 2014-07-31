@@ -70,6 +70,10 @@ class Anvil extends McRegion{
 		return $isValid;
 	}
 
+	public function requestChunkTask($x, $z){
+		return new ChunkRequestTask($this, $this->getLevel()->getID(), $x, $z);
+	}
+
 	public function loadChunk($chunkX, $chunkZ, $create = false){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunks[$index])){

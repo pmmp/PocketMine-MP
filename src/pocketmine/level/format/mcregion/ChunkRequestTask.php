@@ -19,8 +19,9 @@
  *
 */
 
-namespace pocketmine\level;
+namespace pocketmine\level\format\mcregion;
 
+use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
@@ -34,8 +35,11 @@ class ChunkRequestTask extends AsyncTask{
 	protected $chunkZ;
 	protected $compressionLevel;
 
-	/** @var \pocketmine\level\format\ChunkSection[] */
-	protected $sections;
+	protected $blocks;
+	protected $data;
+	protected $skyLight;
+	protected $blockLight;
+
 	/** @var string[256] */
 	protected $biomeIds;
 	/** @var int[] */
@@ -43,15 +47,17 @@ class ChunkRequestTask extends AsyncTask{
 
 	protected $tiles;
 
-	public function __construct(Level $level, $chunkX, $chunkZ){
-		$this->levelId = $level->getID();
+	public function __construct(McRegion $level, $levelId, $chunkX, $chunkZ){
+		$this->levelId = $levelId;
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$chunk = $level->getChunkAt($chunkX, $chunkZ, true);
+		$chunk = $level->getChunk($chunkX, $chunkZ, true);
+		$this->blocks = $chunk->getBlockIdArray();
+		$this->data = $chunk->getBlockDataArray();
+		$this->skyLight = $chunk->getBlockSkyLightArray();
+		$this->blockLight = $chunk->getBlockLightArray();
 		$this->biomeIds = $chunk->getBiomeIdArray();
 		$this->biomeColors = $chunk->getBiomeColorArray();
-
-		$this->sections = $chunk->getSections();
 
 		$tiles = "";
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
@@ -69,38 +75,13 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onRun(){
-		$orderedIds = "";
-		$orderedData = "";
-		$orderedSkyLight = "";
-		$orderedLight = "";
-
-		$ids = "";
-		$meta = "";
-		$blockLight = "";
-		$skyLight = "";
 		$biomeColors = "";
-
-		foreach($this->sections as $section){
-			$ids .= $section->getIdArray();
-			$meta .= $section->getDataArray();
-			$blockLight .= $section->getLightArray();
-			$skyLight .= $section->getSkyLightArray();
-		}
-
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$orderedIds .= $this->getColumn($ids, $x, $z);
-				$orderedData .= $this->getHalfColumn($meta, $x, $z);
-				$orderedSkyLight .= $this->getHalfColumn($skyLight, $x, $z);
-				$orderedLight .= $this->getHalfColumn($blockLight, $x, $z);
-			}
-		}
 
 		foreach($this->biomeColors as $color){
 			$biomeColors .= Binary::writeInt($color);
 		}
 
-		$ordered = zlib_encode(Binary::writeLInt($this->chunkX) . Binary::writeLInt($this->chunkZ) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $this->biomeIds . $biomeColors . $this->tiles, ZLIB_ENCODING_DEFLATE, $this->compressionLevel);
+		$ordered = zlib_encode(Binary::writeLInt($this->chunkX) . Binary::writeLInt($this->chunkZ) . $this->blocks . $this->data . $this->skyLight . $this->blockLight . $this->biomeIds . $biomeColors . $this->tiles, ZLIB_ENCODING_DEFLATE, $this->compressionLevel);
 
 		$this->setResult($ordered);
 	}

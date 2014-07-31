@@ -52,6 +52,16 @@ interface LevelProvider{
 	 */
 	public static function usesChunkSection();
 
+	/**
+	 * Requests a MC: PE network chunk to be sent
+	 *
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return \pocketmine\scheduler\AsyncTask
+	 */
+	public function requestChunkTask($x, $z);
+
 	/** @return string */
 	public function getPath();
 

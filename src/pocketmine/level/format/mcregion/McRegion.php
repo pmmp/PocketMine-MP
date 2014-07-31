@@ -104,6 +104,10 @@ class McRegion extends BaseLevelProvider{
 		$z = $chunkZ >> 5;
 	}
 
+	public function requestChunkTask($x, $z){
+		return new ChunkRequestTask($this, $this->getLevel()->getID(), $x, $z);
+	}
+
 	public function unloadChunks(){
 		$this->chunks = [];
 	}

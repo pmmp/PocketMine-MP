@@ -1408,45 +1408,12 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function requestChunk($x, $z, Player $player, $order = LevelProvider::ORDER_ZXY){
-		if($this->blockOrder === $order){
-			$player->sendChunk($x, $z, $this->getNetworkChunk($x, $z));
-		}else{
-			$index = Level::chunkHash($x, $z);
-			if(!isset($this->chunkSendQueue[$index])){
-				$this->chunkSendQueue[$index] = [];
-			}
-
-			$this->chunkSendQueue[$index][spl_object_hash($player)] = $player;
-		}
-	}
-
-	protected function getNetworkChunk($x, $z){
 		$index = Level::chunkHash($x, $z);
-		if(ADVANCED_CACHE == true and ($cache = Cache::get("world:".$this->getID().":" . $index)) !== false){
-			return $cache;
+		if(!isset($this->chunkSendQueue[$index])){
+			$this->chunkSendQueue[$index] = [];
 		}
 
-		$chunk = $this->getChunkAt($x, $z, true);
-		$tiles = "";
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		foreach($chunk->getTiles() as $tile){
-			if($tile instanceof Spawnable){
-				$nbt->setData($tile->getSpawnCompound());
-				$tiles .= $nbt->write();
-			}
-		}
-
-		$biomeColors = "";
-		foreach($chunk->getBiomeColorArray() as $color){
-			$biomeColors .= Binary::writeInt($color);
-		}
-
-		$encoded = zlib_encode(Binary::writeLInt($x) . Binary::writeLInt($z) . $chunk->getBlockIdArray() . $chunk->getBlockDataArray() . $chunk->getBlockSkyLightArray() . $chunk->getBlockLightArray() . $chunk->getBiomeIdArray() . $biomeColors . $tiles, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
-		if(ADVANCED_CACHE == true){
-			Cache::add("world:".$this->getID().":" . $index, $encoded);
-		}
-
-		return $encoded;
+		$this->chunkSendQueue[$index][spl_object_hash($player)] = $player;
 	}
 
 	protected function processChunkRequest(){
@@ -1467,7 +1434,7 @@ class Level implements ChunkManager, Metadatable{
 					}
 					unset($this->chunkSendQueue[$index]);
 				}else{
-					$task = new ChunkRequestTask($this, $x, $z);
+					$task = $this->provider->requestChunkTask($x, $z);
 					$this->server->getScheduler()->scheduleAsyncTask($task);
 					$this->chunkSendTasks[$index] = true;
 				}
