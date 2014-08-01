@@ -1053,7 +1053,7 @@ class Server{
 		}
 
 		if(($provider = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "mcregion"))) === null){
-			$provider = "pocketmine\\level\\format\\mcregion\\McRegion";
+			$provider = LevelProviderManager::getProviderByName("mcregion");
 		}
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
@@ -1450,7 +1450,7 @@ class Server{
 			$this->setConfigInt("difficulty", 3);
 		}
 
-		define("pocketmine\\DEBUG", $this->getProperty("debug.level", 1));
+		define("pocketmine\\DEBUG", (int) $this->getProperty("debug.level", 1));
 		if($this->logger instanceof MainLogger){
 			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 		}
@@ -1490,8 +1490,9 @@ class Server{
 		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
 		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
 
-		register_shutdown_function(array($this, "crashDump"));
-		register_shutdown_function(array($this, "forceShutdown"));
+		set_exception_handler([$this, "exceptionHandler"]);
+		register_shutdown_function([$this, "crashDump"]);
+		register_shutdown_function([$this, "forceShutdown"]);
 
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -1803,6 +1804,20 @@ class Server{
 		if($i < 0 or $this->memoryStats[$i] !== $data){
 			$this->memoryStats[] = $data;
 		}
+	}
+
+	public function exceptionHandler(\Exception $e){
+		if($e === null){
+			return;
+		}
+
+		error_handler(E_ERROR, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTrace());
+		global $lastExceptionError, $lastError;
+		$lastExceptionError = $lastError;
+		$this->crashDump();
+		$this->forceShutdown();
+		kill(getmypid());
+		exit(1);
 	}
 
 	public function crashDump(){

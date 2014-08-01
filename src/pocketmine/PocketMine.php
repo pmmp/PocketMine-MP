@@ -172,13 +172,16 @@ namespace pocketmine {
 		}
 	}
 
-	function getTrace($start = 1){
-		if(function_exists("xdebug_get_function_stack")){
-			$trace = array_reverse(xdebug_get_function_stack());
-		}else{
-			$e = new \Exception();
-			$trace = $e->getTrace();
+	function getTrace($start = 1, $trace = null){
+		if($trace === null){
+			if(function_exists("xdebug_get_function_stack")){
+				$trace = array_reverse(xdebug_get_function_stack());
+			}else{
+				$e = new \Exception();
+				$trace = $e->getTrace();
+			}
 		}
+
 		$messages = [];
 		$j = 0;
 		for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
@@ -203,7 +206,7 @@ namespace pocketmine {
 		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
 	}
 
-	function error_handler($errno, $errstr, $errfile, $errline){
+	function error_handler($errno, $errstr, $errfile, $errline, $trace = null){
 		global $lastError;
 		if(error_reporting() === 0){ //@ error-control
 			return false;
@@ -234,7 +237,8 @@ namespace pocketmine {
 		$oldFile = $errfile;
 		$errfile = cleanPath($errfile);
 		$logger->log($type, "An $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
-		foreach(($trace = getTrace(3)) as $i => $line){
+
+		foreach(($trace = getTrace($trace === null ? 3 : 0, $trace)) as $i => $line){
 			$logger->debug($line);
 		}
 		$lastError = [
