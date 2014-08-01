@@ -152,7 +152,7 @@ class Chunk extends BaseChunk{
 	}
 
 	public function toBinary(){
-		$nbt = $this->getNBT();
+		$nbt = clone $this->getNBT();
 
 		$nbt->xPos = new Int("xPos", $this->x);
 		$nbt->zPos = new Int("zPos", $this->z);
