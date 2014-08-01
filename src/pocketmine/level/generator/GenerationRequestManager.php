@@ -22,6 +22,7 @@
 namespace pocketmine\level\generator;
 
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\mcregion\Chunk;
 use pocketmine\level\Level;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
@@ -89,7 +90,12 @@ class GenerationRequestManager{
 
 	protected function handleRequest($levelID, $chunkX, $chunkZ){
 		if(($level = $this->server->getLevel($levelID)) instanceof Level){
-			$this->sendChunk($levelID, $level->getChunkAt($chunkX, $chunkZ, true));
+			$chunk = $level->getChunkAt($chunkX, $chunkZ, true);
+			if($chunk instanceof FullChunk){
+				$this->sendChunk($levelID, $chunk);
+			}else{
+				throw new \Exception("Invalid Chunk given");
+			}
 		}else{
 			$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($levelID);
 			@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
