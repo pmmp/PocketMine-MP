@@ -70,6 +70,16 @@ class Chunk extends BaseFullChunk{
 			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
 		}
 
+		if(!isset($this->nbt->Blocks)){
+			$this->nbt->Blocks = new ByteArray("Blocks", str_repeat("\x00", 32768));
+		}
+
+		if(!isset($this->nbt->Data)){
+			$this->nbt->Data = new ByteArray("Data", $half = str_repeat("\x00", 16384));
+			$this->nbt->SkyLight = new ByteArray("SkyLight", $half);
+			$this->nbt->BlockLight = new ByteArray("BlockLight", $half);
+		}
+
 		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt["Blocks"], $this->nbt["Data"], $this->nbt["SkyLight"], $this->nbt["BlockLight"], $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
 		unset($this->nbt->Blocks);
 		unset($this->nbt->Data);
@@ -253,13 +263,15 @@ class Chunk extends BaseFullChunk{
 		$nbt->xPos = new Int("xPos", $this->x);
 		$nbt->zPos = new Int("zPos", $this->z);
 
-		$nbt->Blocks = new ByteArray("Blocks", $this->getBlockIdArray());
-		$nbt->Data = new ByteArray("Data", $this->getBlockDataArray());
-		$nbt->SkyLight = new ByteArray("SkyLight", $this->getBlockSkyLightArray());
-		$nbt->BlockLight = new ByteArray("BlockLight", $this->getBlockLightArray());
+		if($this->isGenerated()){
+			$nbt->Blocks = new ByteArray("Blocks", $this->getBlockIdArray());
+			$nbt->Data = new ByteArray("Data", $this->getBlockDataArray());
+			$nbt->SkyLight = new ByteArray("SkyLight", $this->getBlockSkyLightArray());
+			$nbt->BlockLight = new ByteArray("BlockLight", $this->getBlockLightArray());
 
-		$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
-		$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
+			$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
+			$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
+		}
 
 		$entities = [];
 

@@ -160,6 +160,9 @@ class Chunk extends BaseChunk{
 		$nbt->Sections = new Enum("Sections", []);
 		$nbt->Sections->setTagType(NBT::TAG_Compound);
 		foreach($this->getSections() as $section){
+			if($section instanceof EmptyChunkSection){
+				continue;
+			}
 			$nbt->Sections[$section->getY()] = new Compound(null, [
 				"Y" => new Byte("Y", $section->getY()),
 				"Blocks" => new ByteArray("Blocks", $section->getIdArray()),
