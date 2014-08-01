@@ -472,9 +472,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$this->timings->doTickPending->stopTiming();
 
+		/*
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
+		*/
 
 		$this->processChunkRequest();
 
