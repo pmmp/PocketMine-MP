@@ -78,6 +78,13 @@ auto-updater:
  host: www.pocketmine.net
 
 aliases:
- #Examples
+ #Examples:
  #showtheversion: version
  #savestop: [save-all, stop]
+
+worlds:
+ #These settings will override the generator set in server.properties and allows loading multiple levels
+ #Example:
+ #world:
+ # seed: 404
+ # generator: FLAT:2;7,59x1,3x3,2;1;decoration(treecount=80 grasscount=45)

@@ -1034,7 +1034,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function generateLevel($name, $seed = null, $generator = null, array $options = []){
+	public function generateLevel($name, $seed = null, $generator = null, $options = []){
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
@@ -1508,6 +1508,23 @@ class Server{
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
+
+		foreach($this->getProperty("worlds", []) as $name => $worldSetting){
+			if($this->loadLevel($name) === false){
+				$seed = $this->getProperty("worlds.$name.seed", time());
+				$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
+				$generator = Generator::getGenerator(array_shift($options));
+				if(count($options) > 0){
+					$options = [
+						"preset" => implode(":", $options),
+					];
+				}else{
+					$options = [];
+				}
+
+				$this->generateLevel($name, $seed, $generator, $options);
+			}
+		}
 
 		if($this->getDefaultLevel() === null){
 			$default = $this->getConfigString("level-name", "world");
