@@ -4,12 +4,17 @@
 
 settings:
  shutdown-message: "Server closed"
+ #Allow listing plugins via Query
  query-plugins: true
+ #Show a console message when a plugin uses deprecated API methods
  deprecated-verbose: true
+ #Enable plugin and core profiling by default
  enable-profiling: false
  advanced-cache: false
  upnp-forwarding: false
+ #Sends anonymous statistics to create usage reports
  send-usage: true
+ #Number of AsyncTask workers
  async-workers: 4
 
 debug:
@@ -19,15 +24,21 @@ debug:
  commands: false
 
 level-settings:
- default-format: mcregion #The default format that levels will use when created
- convert-format: false #If true, converts from a format that is not the default to the default format on load
+ #The default format that levels will use when created
+ default-format: mcregion
+ #If true, converts from a format that is not the default to the default format on load
+ convert-format: false
 
 chunk-sending:
+ #Amount of chunks sent to players per tick
  per-tick: 4
- compression-level: 9
+ #Compression level used when sending chunks. Higher = more CPU, less bandwidth usage
+ compression-level: 7
 
 chunk-ticking:
+ #Max amount of chunks processed each tick
  per-tick: 80
+ #Radius of chunks around a player to tick
  tick-radius: 2
  light-updates: false
  clear-tick-list: false
@@ -47,7 +58,8 @@ spawn-limits:
   water-animals: 5
   ambient: 15
 
-auto-report: #Send crash reports for processing
+auto-report:
+ #Send crash reports for processing
  enabled: true
  send-code: true
  send-settings: true
