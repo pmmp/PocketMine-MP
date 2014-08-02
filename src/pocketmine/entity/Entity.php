@@ -1072,4 +1072,8 @@ abstract class Entity extends Position implements Metadatable{
 		$this->server->getEntityMetadata()->removeMetadata($this, $metadataKey, $plugin);
 	}
 
+	public function __toString(){
+		return (new \ReflectionClass($this))->getShortName() . "(".$this->getID().")";
+	}
+
 }
