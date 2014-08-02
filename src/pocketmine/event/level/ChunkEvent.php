@@ -19,12 +19,29 @@
  *
  */
 
-namespace pocketmine\event\level;
-use pocketmine\event\Cancellable;
-
 /**
- * Called when a Level is unloaded
+ * Level related events
  */
-class LevelUnloadEvent extends LevelEvent implements Cancellable{
-	public static $handlerList = null;
+namespace pocketmine\event\level;
+
+use pocketmine\level\format\FullChunk;
+
+abstract class ChunkEvent extends LevelEvent{
+	/** @var FullChunk */
+	private $chunk;
+
+	/**
+	 * @param FullChunk $chunk
+	 */
+	public function __construct(FullChunk $chunk){
+		parent::__construct($chunk->getLevel()->getLevel());
+		$this->chunk = $chunk;
+	}
+
+	/**
+	 * @return FullChunk
+	 */
+	public function getChunk(){
+		return $this->chunk;
+	}
 }

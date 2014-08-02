@@ -20,11 +20,10 @@
  */
 
 namespace pocketmine\event\level;
-use pocketmine\event\Cancellable;
 
 /**
- * Called when a Level is unloaded
+ * Called when a Chunk is populated (after receiving it on the main thread)
  */
-class LevelUnloadEvent extends LevelEvent implements Cancellable{
+class ChunkPopulateEvent extends ChunkEvent{
 	public static $handlerList = null;
 }

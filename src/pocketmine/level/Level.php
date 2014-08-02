@@ -30,6 +30,9 @@ use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\level\ChunkLoadEvent;
+use pocketmine\event\level\ChunkPopulateEvent;
+use pocketmine\event\level\ChunkUnloadEvent;
 use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
@@ -1294,8 +1297,13 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
+		$oldChunk = $this->getChunkAt($x, $z);
 		unset($this->chunkGenerationQueue["$x:$z"]);
 		$this->setChunk($x, $z, $chunk);
+
+		if(!($oldChunk instanceof FullChunk) or ($oldChunk->isPopulated() === false and $chunk->isPopulated())){
+			$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($this->getChunkAt($x, $z)));
+		}
 	}
 
 	public function setChunk($x, $z, FullChunk $chunk){
@@ -1513,27 +1521,29 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function loadChunk($x, $z, $generate = true){
-		if($generate === true){
-			return $this->getChunkAt($x, $z, true) instanceof FullChunk;
+		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
+			return true;
 		}
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
-		$chunk = $this->provider->getChunk($x, $z, false);
+		$chunk = $this->provider->getChunk($x, $z, $generate);
 		if($chunk instanceof FullChunk){
-			$this->chunks[Level::chunkHash($x, $z)] = $chunk;
-			return true;
+			$this->chunks[$index] = $chunk;
 		}else{
 			$this->timings->syncChunkLoadTimer->startTiming();
-			$this->provider->loadChunk($x, $z);
+			$this->provider->loadChunk($x, $z, $generate);
 			$this->timings->syncChunkLoadTimer->stopTiming();
 
 			if(($chunk = $this->provider->getChunk($x, $z)) instanceof FullChunk){
-				$this->chunks[Level::chunkHash($x, $z)] = $chunk;
-				return true;
+				$this->chunks[$index] = $chunk;
+			}else{
+				return false;
 			}
-			return false;
 		}
+
+		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
+		return true;
 	}
 
 	protected function queueUnloadChunk($x, $z){
@@ -1558,6 +1568,12 @@ class Level implements ChunkManager, Metadatable{
 		if($safe === true and $this->isChunkInUse($x, $z)){
 			return false;
 		}
+
+		$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($this->getChunkAt($x, $z)));
+		if($ev->isCancelled()){
+			return false;
+		}
+
 		$this->timings->doChunkUnload->startTiming();
 
 		unset($this->chunks[$index = Level::chunkHash($x, $z)]);
