@@ -148,7 +148,7 @@ abstract class Entity extends Position implements Metadatable{
 
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		if($chunk->getLevel() === null){
+		if($chunk->getProvider() === null){
 			throw new \Exception("Invalid garbage Chunk given to Entity");
 		}
 
@@ -156,21 +156,23 @@ abstract class Entity extends Position implements Metadatable{
 		$this->justCreated = true;
 		$this->namedtag = $nbt;
 		$this->chunk = $chunk;
-		$this->setLevel($chunk->getLevel()->getLevel(), true); //Create a hard reference
-		$this->server = $chunk->getLevel()->getLevel()->getServer();
+		$this->setLevel($chunk->getProvider()->getLevel(), true); //Create a hard reference
+		$this->server = $chunk->getProvider()->getLevel()->getServer();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$this->setPositionAndRotation(new Vector3(
+		$this->setPositionAndRotation(
+			new Vector3(
 				$this->namedtag["Pos"][0],
 				$this->namedtag["Pos"][1],
-				$this->namedtag["Pos"][2]),
+				$this->namedtag["Pos"][2]
+			),
 			$this->namedtag->Rotation[0],
 			$this->namedtag->Rotation[1]
 		);
 		$this->setMotion(new Vector3(
-				$this->namedtag["Motion"][0],
-				$this->namedtag["Motion"][1],
-				$this->namedtag["Motion"][2])
+			$this->namedtag["Motion"][0],
+			$this->namedtag["Motion"][1],
+			$this->namedtag["Motion"][2])
 		);
 
 		if(!isset($this->namedtag->FallDistance)){
@@ -235,6 +237,9 @@ abstract class Entity extends Position implements Metadatable{
 
 	protected abstract function initEntity();
 
+	/**
+	 * @return Player[]
+	 */
 	public function getViewers(){
 		return $this->hasSpawned;
 	}

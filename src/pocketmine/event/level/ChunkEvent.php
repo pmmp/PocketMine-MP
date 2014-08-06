@@ -34,7 +34,7 @@ abstract class ChunkEvent extends LevelEvent{
 	 * @param FullChunk $chunk
 	 */
 	public function __construct(FullChunk $chunk){
-		parent::__construct($chunk->getLevel()->getLevel());
+		parent::__construct($chunk->getProvider()->getLevel());
 		$this->chunk = $chunk;
 	}
 

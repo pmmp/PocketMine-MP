@@ -64,13 +64,13 @@ abstract class Tile extends Position{
 	public $tickTimer;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		if($chunk->getLevel() === null){
+		if($chunk->getProvider() === null){
 			throw new \Exception("Invalid garbage Chunk given to Tile");
 		}
 
-		$this->server = $chunk->getLevel()->getLevel()->getServer();
+		$this->server = $chunk->getProvider()->getLevel()->getServer();
 		$this->chunk = $chunk;
-		$this->setLevel($chunk->getLevel()->getLevel(), true); //Strong reference
+		$this->setLevel($chunk->getProvider()->getLevel(), true); //Strong reference
 		$this->namedtag = $nbt;
 		$this->closed = false;
 		$this->name = "";
