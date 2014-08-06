@@ -46,7 +46,7 @@ class Position extends Vector3{
 	}
 
 	public static function fromObject(Vector3 $pos, Level $level, $strong = false){
-		return new Position($pos->x, $pos->y, $pos->z, $level);
+		return new Position($pos->x, $pos->y, $pos->z, $level, $strong);
 	}
 
 	/**
