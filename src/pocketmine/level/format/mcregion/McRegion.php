@@ -223,6 +223,8 @@ class McRegion extends BaseLevelProvider{
 			throw new \Exception("Invalid Chunk class");
 		}
 
+		$chunk->setProvider($this);
+
 		if($chunk->isPopulated() === false){
 			$this->unloadChunk($chunkX, $chunkZ, false);
 			$regionX = $regionZ = null;

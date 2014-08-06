@@ -41,9 +41,14 @@ interface FullChunk{
 	public function setZ($z);
 
 	/**
-	 * @return \pocketmine\level\format\LevelProvider
+	 * @return LevelProvider
 	 */
-	public function getLevel();
+	public function getProvider();
+
+	/**
+	 * @param LevelProvider $provider
+	 */
+	public function setProvider(LevelProvider $provider);
 
 
 	/**

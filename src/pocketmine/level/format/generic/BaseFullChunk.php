@@ -55,14 +55,14 @@ abstract class BaseFullChunk implements FullChunk{
 
 	protected $blockLight;
 
-	/** @var \WeakRef<LevelProvider> */
-	protected $level;
+	/** @var LevelProvider */
+	protected $provider;
 
 	protected $x;
 	protected $z;
 
 	/**
-	 * @param LevelProvider  $level
+	 * @param LevelProvider  $provider
 	 * @param int            $x
 	 * @param int            $z
 	 * @param string         $blocks
@@ -76,8 +76,8 @@ abstract class BaseFullChunk implements FullChunk{
 	 *
 	 * @throws \Exception
 	 */
-	protected function __construct($level, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
-		$this->level = $level instanceof LevelProvider ? new \WeakRef($level) : $level;
+	protected function __construct($provider, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
+		$this->provider = $provider;
 		$this->x = (int) $x;
 		$this->z = (int) $z;
 
@@ -98,8 +98,8 @@ abstract class BaseFullChunk implements FullChunk{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
 		}
 
-		if($this->getLevel() instanceof LevelProvider){
-			$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
+		if($this->getProvider() instanceof LevelProvider){
+			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($entities as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
@@ -117,9 +117,9 @@ abstract class BaseFullChunk implements FullChunk{
 					}
 				}
 			}
-			$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
+			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
 
-			$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($tiles as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
@@ -138,7 +138,7 @@ abstract class BaseFullChunk implements FullChunk{
 					}
 				}
 			}
-			$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 		}
 	}
 
@@ -160,9 +160,22 @@ abstract class BaseFullChunk implements FullChunk{
 
 	/**
 	 * @return LevelProvider
+	 *
+	 * @deprecated
 	 */
 	public function getLevel(){
-		return $this->level instanceof \WeakRef ? ($this->level->valid() ? $this->level->get() : null) : $this->level;
+		return $this->getProvider();
+	}
+
+	/**
+	 * @return LevelProvider
+	 */
+	public function getProvider(){
+		return $this->provider;
+	}
+
+	public function setProvider(LevelProvider $provider){
+		$this->provider = $provider;
 	}
 
 	public function getBiomeId($x, $z){
@@ -218,22 +231,22 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function isLoaded(){
-		return $this->getLevel() === null ? false : $this->getLevel()->isChunkLoaded($this->getX(), $this->getZ());
+		return $this->getProvider() === null ? false : $this->getProvider()->isChunkLoaded($this->getX(), $this->getZ());
 	}
 
 	public function load($generate = true){
-		return $this->getLevel() === null ? false : $this->getLevel()->getChunk($this->getX(), $this->getZ(), true) instanceof FullChunk;
+		return $this->getProvider() === null ? false : $this->getProvider()->getChunk($this->getX(), $this->getZ(), true) instanceof FullChunk;
 	}
 
 	public function unload($save = true, $safe = true){
-		$level = $this->getLevel();
+		$level = $this->getProvider();
 		if($level === null){
 			return true;
 		}
 		if($save === true){
 			$level->saveChunk($this->getX(), $this->getZ());
 		}
-		if($this->getLevel()->unloadChunk($this->getX(), $this->getZ(), $safe)){
+		if($this->getProvider()->unloadChunk($this->getX(), $this->getZ(), $safe)){
 			foreach($this->getEntities() as $entity){
 				$entity->close();
 			}

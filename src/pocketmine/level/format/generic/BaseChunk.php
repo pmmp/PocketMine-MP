@@ -59,7 +59,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	protected $z;
 
 	/**
-	 * @param LevelProvider  $level
+	 * @param LevelProvider  $provider
 	 * @param int            $x
 	 * @param int            $z
 	 * @param ChunkSection[] $sections
@@ -70,8 +70,8 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	 *
 	 * @throws \Exception
 	 */
-	protected function __construct($level, $x, $z, array $sections, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
-		$this->level = $level instanceof LevelProvider ? new \WeakRef($level) : $level;
+	protected function __construct($provider, $x, $z, array $sections, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
+		$this->provider = $provider;
 		$this->x = (int) $x;
 		$this->z = (int) $z;
 		foreach($sections as $Y => $section){
@@ -99,8 +99,8 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
 		}
 
-		if($this->getLevel() instanceof LevelProvider){
-			$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
+		if($this->provider instanceof LevelProvider){
+			$this->provider->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($entities as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
@@ -118,9 +118,9 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 					}
 				}
 			}
-			$this->getLevel()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
+			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
 
-			$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($tiles as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
@@ -139,7 +139,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 					}
 				}
 			}
-			$this->getLevel()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 		}
 	}
 
@@ -151,7 +151,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
 		}catch(\Exception $e){
-			$level = $this->getLevel();
+			$level = $this->getProvider();
 			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
 			return $this->setBlock($x, $y, $z, $blockId, $meta);
 		}
@@ -165,7 +165,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
 		}catch(\Exception $e){
-			$level = $this->getLevel();
+			$level = $this->getProvider();
 			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockId($x, $y, $z, $id);
 		}
@@ -179,7 +179,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
 		}catch(\Exception $e){
-			$level = $this->getLevel();
+			$level = $this->getProvider();
 			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockData($x, $y, $z, $data);
 		}
@@ -193,7 +193,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 		}catch(\Exception $e){
-			$level = $this->getLevel();
+			$level = $this->getProvider();
 			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockSkyLight($x, $y, $z, $data);
 		}
@@ -207,7 +207,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 		}catch(\Exception $e){
-			$level = $this->getLevel();
+			$level = $this->getProvider();
 			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockLight($x, $y, $z, $data);
 		}
@@ -262,7 +262,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	}
 
 	public function load($generate = true){
-		return $this->getLevel() === null ? false : $this->getLevel()->getChunk($this->getX(), $this->getZ(), true) instanceof Chunk;
+		return $this->getProvider() === null ? false : $this->getProvider()->getChunk($this->getX(), $this->getZ(), true) instanceof Chunk;
 	}
 
 	public function getBlockIdArray(){
