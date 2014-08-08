@@ -118,13 +118,13 @@ namespace pocketmine {
 			$time -= $time % 60;
 			//TODO: Parse different time & date formats by region. ¬¬ world
 			//Example: USA
-			exec("time.exe /T", $hour);
+			@exec("time.exe /T", $hour);
 			$i = array_map("intval", explode(":", trim($hour[0])));
-			exec("date.exe /T", $date);
+			@exec("date.exe /T", $date);
 			$j = array_map("intval", explode(substr($date[0], 2, 1), trim($date[0])));
 			$offset = round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
 		}else{
-			exec("date +%s", $t);
+			@exec("date +%s", $t);
 			$offset = round((intval(trim($t[0])) - time()) / 60) * 60;
 		}
 
