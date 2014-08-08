@@ -24,10 +24,9 @@ namespace pocketmine\scheduler;
 use pocketmine\Worker;
 
 class AsyncWorker extends Worker{
-	public $path;
 
 	public function run(){
-		require($this->path . "src/spl/SplClassLoader.php");
+		require(\pocketmine\PATH . "src/spl/SplClassLoader.php");
 		$autoloader = new \SplClassLoader();
 		$autoloader->add("pocketmine", array(
 			$this->path . "src"
