@@ -85,11 +85,15 @@ class RCON{
 			}elseif($this->workers[$n]->isWaiting()){
 				if($this->workers[$n]->response !== ""){
 					MainLogger::getLogger()->info($this->workers[$n]->response);
-					$this->workers[$n]->notify();
+					$this->workers[$n]->synchronized(function($thread){
+						$thread->notify();
+					}, $this->workers[$n]);
 				}else{
 					Server::getInstance()->dispatchCommand($response = new RemoteConsoleCommandSender(), $this->workers[$n]->cmd);
 					$this->workers[$n]->response = TextFormat::clean($response->getMessage());
-					$this->workers[$n]->notify();
+					$this->workers[$n]->synchronized(function($thread){
+						$thread->notify();
+					}, $this->workers[$n]);
 				}
 			}
 		}
