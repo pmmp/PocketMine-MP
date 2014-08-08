@@ -19,19 +19,15 @@
  *
 */
 
-namespace pocketmine\scheduler;
+namespace pocketmine;
 
-use pocketmine\Worker;
+/**
+ * This class must be extended by all custom threading classes
+ */
+abstract class Thread extends \Thread{
 
-class AsyncWorker extends Worker{
-	public $path;
-
-	public function run(){
-		require($this->path . "src/spl/SplClassLoader.php");
-		$autoloader = new \SplClassLoader();
-		$autoloader->add("pocketmine", array(
-			$this->path . "src"
-		));
-		$autoloader->register(true);
+	public final function start($options = PTHREADS_INHERIT_ALL){
+		ThreadManager::getInstance()->add($this);
+		return parent::start($options & ~PTHREADS_INHERIT_CLASSES);
 	}
 }

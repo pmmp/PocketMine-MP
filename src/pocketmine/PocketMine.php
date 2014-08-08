@@ -345,12 +345,24 @@ namespace pocketmine {
 		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
 	}
 
+	ThreadManager::init();
 	$server = new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 	$server->start();
+
+	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
+		if($thread->isRunning()){
+			$logger->debug("Stopping ".(new \ReflectionClass($thread))->getShortName()." thread");
+			if($thread instanceof Thread){
+				$thread->kill();
+				$thread->detach();
+			}elseif($thread instanceof Worker){
+				$thread->shutdown();
+				$thread->join();
+			}
+		}
+	}
+
 	$logger->shutdown();
 	$logger->join();
-
-	kill(getmypid());
-	exit(0);
 
 }

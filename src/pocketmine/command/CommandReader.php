@@ -21,7 +21,9 @@
 
 namespace pocketmine\command;
 
-class CommandReader extends \Thread{
+use pocketmine\Thread;
+
+class CommandReader extends Thread{
 
 	private $stream;
 	/** @var resource */
@@ -36,7 +38,7 @@ class CommandReader extends \Thread{
 	 */
 	public function __construct($stream = "php://stdin"){
 		$this->stream = $stream;
-		$this->start(PTHREADS_INHERIT_ALL & ~PTHREADS_INHERIT_CLASSES);
+		$this->start();
 	}
 
 	private function readLine(){
