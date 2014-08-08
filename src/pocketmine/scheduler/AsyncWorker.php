@@ -29,7 +29,7 @@ class AsyncWorker extends Worker{
 		require(\pocketmine\PATH . "src/spl/SplClassLoader.php");
 		$autoloader = new \SplClassLoader();
 		$autoloader->add("pocketmine", array(
-			$this->path . "src"
+			\pocketmine\PATH . "src"
 		));
 		$autoloader->register(true);
 	}
