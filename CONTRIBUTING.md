@@ -43,7 +43,7 @@ It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accept
 ```php
 <?php 
 
-namespace pocketmine\Example;
+namespace pocketmine\example;
 
 class ExampleClass{
 	const EXAMPLE_CLASS_CONSTANT = 1;
