@@ -491,7 +491,7 @@ abstract class Entity extends Position implements Metadatable{
 				$pk = new MovePlayerPacket;
 				$pk->eid = $this->id;
 				$pk->x = $this->x;
-				$pk->y = $this->y;
+				$pk->y = $this->y + $this->height; //teleport from head
 				$pk->z = $this->z;
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;

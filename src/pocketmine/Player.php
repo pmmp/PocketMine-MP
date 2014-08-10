@@ -105,7 +105,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	const SPECTATOR = 3;
 	const VIEW = Player::SPECTATOR;
 
-	const MAX_QUEUE = 2048;
 	const SURVIVAL_SLOTS = 36;
 	const CREATIVE_SLOTS = 112;
 
@@ -1325,7 +1324,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
 					$pk->x = $this->x;
-					$pk->y = $this->y;
+					$pk->y = $this->y + $this->height; //teleport from head
 					$pk->z = $this->z;
 					$pk->bodyYaw = $this->yaw;
 					$pk->pitch = $this->pitch;
@@ -2267,7 +2266,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket;
 			$pk->eid = 0;
 			$pk->x = $this->x;
-			$pk->y = $this->y;
+			$pk->y = $this->y + $this->height; //teleport from head
 			$pk->z = $this->z;
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;
