@@ -22,7 +22,7 @@
 /**
  * PMF (PocketMine Format) handling
  */
-namespace pocketmine\level\format\pmf;
+namespace pocketmine\level\conversor\pmf;
 
 
 use pocketmine\utils\MainLogger;
