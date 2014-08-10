@@ -130,7 +130,7 @@ class AutoUpdater{
 		$currentVersion = new VersionString($this->server->getPocketMineVersion());
 		$newVersion = new VersionString($this->updateInfo["version"]);
 
-		if($currentVersion->compare($newVersion) > 0){
+		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->get() !== $newVersion->get() or $currentVersion->getBuild() > 0)){
 			$this->hasUpdate = true;
 		}else{
 			$this->hasUpdate = false;
