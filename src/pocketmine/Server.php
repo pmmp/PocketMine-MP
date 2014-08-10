@@ -1430,7 +1430,7 @@ class Server{
 		$this->scheduler = new ServerScheduler();
 
 		if($this->getConfigBoolean("enable-rcon", false) === true){
-			$this->rcon = new RCON($this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
+			$this->rcon = new RCON($this, $this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
 		}
 
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);

@@ -33,20 +33,21 @@ use pocketmine\utils\TextFormat;
 
 
 class RCON{
+	/** @var Server */
+	private $server;
 	private $socket;
 	private $password;
 	/** @var RCONInstance[] */
 	private $workers;
-	private $threads;
 	private $clientsPerThread;
-	private $rconSender;
 
-	public function __construct($password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
+	public function __construct(Server $server, $password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
+		$this->server = $server;
 		$this->workers = [];
 		$this->password = (string) $password;
-		MainLogger::getLogger()->info("Starting remote control listener");
+		$this->server->getLogger()->info("Starting remote control listener");
 		if($this->password === ""){
-			MainLogger::getLogger()->critical("RCON can't be started: Empty password");
+			$this->server->getLogger()->critical("RCON can't be started: Empty password");
 
 			return;
 		}
@@ -54,7 +55,7 @@ class RCON{
 		$this->clientsPerThread = (int) max(1, $clientsPerThread);
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 		if($this->socket === false or !socket_bind($this->socket, $interface, (int) $port) or !socket_listen($this->socket)){
-			MainLogger::getLogger()->critical("RCON can't be started: " . socket_strerror(socket_last_error()));
+			$this->server->getLogger()->critical("RCON can't be started: " . socket_strerror(socket_last_error()));
 
 			return;
 		}
@@ -64,8 +65,8 @@ class RCON{
 			$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 		}
 		@socket_getsockname($this->socket, $addr, $port);
-		MainLogger::getLogger()->info("RCON running on $addr:$port");
-		Server::getInstance()->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "check")), 3);
+		$this->server->getLogger()->info("RCON running on $addr:$port");
+		$this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "check")), 3);
 	}
 
 	public function stop(){
@@ -84,14 +85,14 @@ class RCON{
 				$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 			}elseif($this->workers[$n]->isWaiting()){
 				if($this->workers[$n]->response !== ""){
-					MainLogger::getLogger()->info($this->workers[$n]->response);
-					$this->workers[$n]->synchronized(function($thread){
+					$this->server->getLogger()->info($this->workers[$n]->response);
+					$this->workers[$n]->synchronized(function(RCONInstance $thread){
 						$thread->notify();
 					}, $this->workers[$n]);
 				}else{
-					Server::getInstance()->dispatchCommand($response = new RemoteConsoleCommandSender(), $this->workers[$n]->cmd);
+					$this->server->dispatchCommand($response = new RemoteConsoleCommandSender(), $this->workers[$n]->cmd);
 					$this->workers[$n]->response = TextFormat::clean($response->getMessage());
-					$this->workers[$n]->synchronized(function($thread){
+					$this->workers[$n]->synchronized(function(RCONInstance $thread){
 						$thread->notify();
 					}, $this->workers[$n]);
 				}
