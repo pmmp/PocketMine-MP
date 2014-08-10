@@ -79,7 +79,7 @@ class RegionLoader{
 		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
 	}
 
-	public function readChunk($x, $z, $generate = true){
+	public function readChunk($x, $z, $generate = true, $forward = false){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
 			//Regenerate chunk due to corruption
@@ -121,8 +121,15 @@ class RegionLoader{
 		}
 
 		$chunk = Chunk::fromBinary(fread($this->filePointer, $length - 1), $this->levelProvider);
-
-		return $chunk instanceof Chunk ? $chunk : false;
+		if($chunk instanceof Chunk){
+			return $chunk;
+		}elseif($forward === false){
+			trigger_error("Corrupted chunk detected", E_USER_WARNING);
+			$this->generateChunk($x, $z);
+			return $this->readChunk($x, $z, $generate, true);
+		}else{
+			return null;
+		}
 	}
 
 	public function chunkExists($x, $z){
