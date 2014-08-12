@@ -45,9 +45,9 @@ class AddMobPacket extends DataPacket{
 		$this->reset();
 		$this->putInt($this->eid);
 		$this->putInt($this->type);
-		$this->putFloat($this->x);
-		$this->putFloat($this->y);
-		$this->putFloat($this->z);
+		$this->putInt($this->x);
+		$this->putInt($this->y);
+		$this->putInt($this->z);
 		$this->putByte(floor($this->yaw * (256 / 360)));
 		$this->putByte(floor($this->pitch * (256 / 360)));
 		$this->put(Binary::writeMetadata($this->metadata));
