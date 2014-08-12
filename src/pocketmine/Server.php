@@ -277,7 +277,7 @@ class Server{
 	 * @return int
 	 */
 	public function getViewDistance(){
-		return min(11, max($this->getConfigInt("view-distance", 7), 4));
+		return max(56, $this->getProperty("chunk-sending.max-chunks"));
 	}
 
 	/**
@@ -1052,8 +1052,8 @@ class Server{
 			}
 		}
 
-		if(($provider = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "mcregion"))) === null){
-			$provider = LevelProviderManager::getProviderByName("mcregion");
+		if(($provider = LevelProviderManager::getProviderByName($providerName = $this->getProperty("level-settings.default-format", "mcregion"))) === null){
+			$provider = LevelProviderManager::getProviderByName($providerName = "mcregion");
 		}
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
@@ -1405,7 +1405,6 @@ class Server{
 			"white-list" => false,
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
-			"view-distance" => 8,
 			"max-players" => 20,
 			"allow-flight" => false,
 			"spawn-animals" => true,

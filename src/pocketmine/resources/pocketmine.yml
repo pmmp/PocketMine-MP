@@ -34,6 +34,9 @@ chunk-sending:
  per-tick: 4
  #Compression level used when sending chunks. Higher = more CPU, less bandwidth usage
  compression-level: 7
+ #Amount of chunks loaded around a player by the server, min. 56 as MC: PE 0.9.5
+ #Increasing this more than 96 (as of MC: PE 0.9.5) can cause issues with the client ignoring chunks
+ max-chunks: 96
 
 chunk-ticking:
  #Max amount of chunks processed each tick

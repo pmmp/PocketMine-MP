@@ -668,18 +668,24 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
+		$radiusSquared = $this->viewDistance / M_PI;
+		$radius = ceil(sqrt($radiusSquared));
+
 		$newOrder = [];
 		$lastChunk = $this->usedChunks;
 		$centerX = $this->x >> 4;
 		$centerZ = $this->z >> 4;
-		$startX = $centerX - $this->viewDistance;
-		$startZ = $centerZ - $this->viewDistance;
-		$finalX = $centerX + $this->viewDistance;
-		$finalZ = $centerZ + $this->viewDistance;
+		$startX = $centerX - $radius;
+		$startZ = $centerZ - $radius;
+		$finalX = $centerX + $radius;
+		$finalZ = $centerZ + $radius;
 		$generateQueue = new ReversePriorityQueue();
 		for($X = $startX; $X <= $finalX; ++$X){
 			for($Z = $startZ; $Z <= $finalZ; ++$Z){
-				$distance = abs($X - $centerX) + abs($Z - $centerZ);
+				$distance = ($X * $X) + ($Z * $Z);
+				if($distance > $radiusSquared){
+					continue;
+				}
 				$index = Level::chunkHash($X, $Z);
 				if(!isset($this->usedChunks[$index])){
 					if($this->getLevel()->isChunkPopulated($X, $Z)){
@@ -693,7 +699,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		asort($newOrder);
-		$this->loadQueue = $newOrder;
+		if(count($newOrder) > $this->viewDistance){
+			$count = 0;
+			$this->loadQueue = [];
+			foreach($newOrder as $k => $distance){
+				$this->loadQueue[$k] = $distance;
+				if(++$count > $this->viewDistance){
+					break;
+				}
+			}
+		}else{
+			$this->loadQueue = $newOrder;
+		}
 
 		$i = 0;
 		while(count($this->loadQueue) < 3 and $generateQueue->count() > 0 and $i < 16){
