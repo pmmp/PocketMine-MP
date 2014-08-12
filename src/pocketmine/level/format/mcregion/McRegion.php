@@ -32,6 +32,8 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
 use pocketmine\Player;
+use pocketmine\tile\Spawnable;
+use pocketmine\utils\Binary;
 
 class McRegion extends BaseLevelProvider{
 
@@ -105,7 +107,40 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function requestChunkTask($x, $z){
-		return new ChunkRequestTask($this, $this->getLevel()->getID(), $x, $z);
+		$chunk = $this->getChunk($x, $z, false);
+		if(!($chunk instanceof Chunk)){
+			throw new \Exception("Invalid Chunk sent");
+		}
+
+		$tiles = "";
+		$nbt = new NBT(NBT::LITTLE_ENDIAN);
+		foreach($chunk->getTiles() as $tile){
+			if($tile instanceof Spawnable){
+				$nbt->setData($tile->getSpawnCompound());
+				$tiles .= $nbt->write();
+			}
+		}
+
+		$biomeColors = "";
+
+		foreach($chunk->getBiomeColorArray() as $color){
+			$biomeColors .= Binary::writeInt($color);
+		}
+
+		$ordered = zlib_encode(
+			Binary::writeLInt($x) . Binary::writeLInt($z) .
+			$chunk->getBlockIdArray() .
+			$chunk->getBlockDataArray() .
+			$chunk->getBlockSkyLightArray() .
+			$chunk->getBlockLightArray() .
+			$chunk->getBiomeIdArray() .
+			$biomeColors .
+			$tiles
+		, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
+
+		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
+
+		return null;
 	}
 
 	public function unloadChunks(){

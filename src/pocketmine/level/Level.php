@@ -63,6 +63,7 @@ use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
+use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
@@ -1411,9 +1412,11 @@ class Level implements ChunkManager, Metadatable{
 					}
 					unset($this->chunkSendQueue[$index]);
 				}else{
-					$task = $this->provider->requestChunkTask($x, $z);
-					$this->server->getScheduler()->scheduleAsyncTask($task);
 					$this->chunkSendTasks[$index] = true;
+					$task = $this->provider->requestChunkTask($x, $z);
+					if($task instanceof AsyncTask){
+						$this->server->getScheduler()->scheduleAsyncTask($task);
+					}
 				}
 			}
 		}
