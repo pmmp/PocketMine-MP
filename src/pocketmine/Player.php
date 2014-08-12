@@ -1291,7 +1291,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
+				$newPos = new Vector3($packet->x, $packet->y - 1.8, $packet->z);
 				/*if($this->forceMovement instanceof Vector3){
 					if($this->forceMovement->distance($newPos) <= 0.7){
 						$this->forceMovement = false;
