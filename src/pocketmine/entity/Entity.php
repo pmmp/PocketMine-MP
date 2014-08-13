@@ -1042,6 +1042,7 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function close(){
 		if($this->closed === false){
+			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
 			unset(Entity::$needUpdate[$this->id]);
 			if($this->chunk instanceof FullChunk){
@@ -1049,7 +1050,6 @@ abstract class Entity extends Position implements Metadatable{
 			}
 			$this->getLevel()->removeEntity($this);
 			$this->despawnFromAll();
-			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 		}
 	}
 
