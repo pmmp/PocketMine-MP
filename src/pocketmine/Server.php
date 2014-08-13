@@ -914,7 +914,7 @@ class Server{
 		$provider = LevelProviderManager::getProvider($path);
 
 		if($provider === null){
-			$this->logger->error("Could not load level \"" . $name . "\"");
+			$this->logger->error("Could not load level \"" . $name . "\": Unknown provider");
 
 			return false;
 		}
@@ -923,7 +923,13 @@ class Server{
 		//	@rename($path . "tileEntities.yml", $path . "tiles.yml");
 		//}
 
-		$level = new Level($this, $name, $path, $provider);
+		try{
+			$level = new Level($this, $name, $path, $provider);
+		}catch(\Exception $e){
+			$this->logger->error("Could not load level \"" . $name . "\": ". $e->getMessage());
+			return false;
+		}
+
 		$this->levels[$level->getID()] = $level;
 
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
