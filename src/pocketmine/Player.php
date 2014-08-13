@@ -81,7 +81,6 @@ use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
-use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -499,10 +498,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$entity->despawnFrom($this);
 				}
 			}
-			/*$pk = new UnloadChunkPacket();
-			$pk->chunkX = $x;
-			$pk->chunkZ = $z;
-			$this->dataPacket($pk);*/
+
 			$this->getLevel()->freeChunk($x, $z, $this);
 			unset($this->usedChunks[$index]);
 
@@ -2092,7 +2088,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk = new MessagePacket;
 				$pk->source = ""; //Do not use this ;)
 				$pk->message = $this->removeFormat === false ? $m : TextFormat::clean($m);
-				$this->dataPacket($pk);
+				$this->directDataPacket($pk);
 			}
 		}
 	}
@@ -2286,7 +2282,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$pk->yaw = $this->yaw;
-			$this->dataPacket($pk);
+			$this->directDataPacket($pk);
 		}
 	}
 

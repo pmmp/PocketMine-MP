@@ -53,7 +53,6 @@ use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
-use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -503,7 +502,10 @@ abstract class Entity extends Position implements Metadatable{
 					[$this->id, $this->x, $this->y, $this->z, $this->yaw, $this->pitch]
 				];
 			}
-			Server::broadcastPacket($this->hasSpawned, $pk);
+
+			foreach($this->hasSpawned as $player){
+				$player->directDataPacket($pk);
+			}
 		}
 
 		if(($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
@@ -658,10 +660,6 @@ abstract class Entity extends Position implements Metadatable{
 						$entity->despawnFrom($this);
 					}
 
-					/*$pk = new UnloadChunkPacket();
-					$pk->chunkX = $X;
-					$pk->chunkZ = $Z;
-					$this->dataPacket($pk);*/
 				}
 				$this->getLevel()->freeAllChunks($this);
 			}
