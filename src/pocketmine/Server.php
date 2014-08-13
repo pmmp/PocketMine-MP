@@ -1069,10 +1069,35 @@ class Server{
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
-		for($Z = 0; $Z <= 16; ++$Z){
-			for($X = 0; $X <= 16; ++$X){
-				$level->generateChunk($X, $Z);
+
+		$radiusSquared = ($this->getViewDistance() + 1) / M_PI;
+		$radius = ceil(sqrt($radiusSquared));
+
+		$centerX = $level->getSpawn()->getX() >> 4;
+		$centerZ = $level->getSpawn()->getZ() >> 4;
+
+		$order = [];
+
+		for($X = -$radius; $X <= $radius; ++$X){
+			for($Z = -$radius; $Z <= $radius; ++$Z){
+				$distance = ($X * $X) + ($Z * $Z);
+				if($distance > $radiusSquared){
+					continue;
+				}
+				$chunkX = $X + $centerX;
+				$chunkZ = $Z + $centerZ;
+				$index = Level::chunkHash($chunkX, $chunkZ);
+				$order[$index] = $distance;
 			}
+		}
+
+		asort($order);
+
+		$chunkX = $chunkZ = null;
+
+		foreach($order as $index => $distance){
+			Level::getXZ($index, $chunkX, $chunkZ);
+			$level->generateChunk($chunkX, $chunkZ);
 		}
 
 		return true;
