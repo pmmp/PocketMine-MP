@@ -1294,7 +1294,13 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Chunk
 	 */
 	public function getChunkAt($x, $z, $create = false){
-		return isset($this->chunks[$index = "$x:$z"]) ? $this->chunks[$index] : $this->chunks[$index] = $this->provider->getChunk($x, $z, $create);
+		if(isset($this->chunks[$index = "$x:$z"])){
+			return $this->chunks[$index];
+		}elseif(($chunk = $this->provider->getChunk($x, $z, $create)) instanceof FullChunk){
+			$this->chunks[$index] = $chunk;
+			return $chunk;
+		}
+		return null;
 	}
 
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
