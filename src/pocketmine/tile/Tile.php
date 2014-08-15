@@ -113,6 +113,7 @@ abstract class Tile extends Position{
 			unset(Tile::$needUpdate[$this->id]);
 			$this->getLevel()->removeTile($this);
 			$this->chunk->removeTile($this);
+			$this->level->release();
 		}
 	}
 
