@@ -704,7 +704,7 @@ class PluginManager{
 	 * @throws \Exception
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
-		if(!is_subclass_of($event, "pocketmine\\event\\Event")){
+		if(!is_subclass_of($event, "pocketmine\\event\\Event") or (new \ReflectionClass($event))->isAbstract()){
 			throw new \Exception($event . " is not a valid Event");
 		}
 
