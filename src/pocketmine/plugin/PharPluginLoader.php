@@ -52,7 +52,7 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function loadPlugin($file){
 		if(($description = $this->getPluginDescription($file)) instanceof PluginDescription){
-			MainLogger::getLogger()->info("Loading " . $description->getFullName());
+			$this->server->getLogger()->info("Loading " . $description->getFullName());
 			$dataFolder = dirname($file) . DIRECTORY_SEPARATOR . $description->getName();
 			if(file_exists($dataFolder) and !is_dir($dataFolder)){
 				throw new \Exception("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
@@ -120,11 +120,11 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and !$plugin->isEnabled()){
-			MainLogger::getLogger()->info("Enabling " . $plugin->getDescription()->getFullName());
+			$this->server->getLogger()->info("Enabling " . $plugin->getDescription()->getFullName());
 
 			$plugin->setEnabled(true);
 
-			Server::getInstance()->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
+			$this->server->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
 		}
 	}
 
@@ -133,9 +133,9 @@ class PharPluginLoader implements PluginLoader{
 	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin instanceof PluginBase and $plugin->isEnabled()){
-			MainLogger::getLogger()->info("Disabling " . $plugin->getDescription()->getFullName());
+			$this->server->getLogger()->info("Disabling " . $plugin->getDescription()->getFullName());
 
-			Server::getInstance()->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
+			$this->server->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
 
 			$plugin->setEnabled(false);
 		}

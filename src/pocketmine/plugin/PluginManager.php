@@ -136,12 +136,13 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string $path
+	 * @param string         $path
+	 * @param PluginLoader[] $loaders
 	 *
 	 * @return Plugin
 	 */
-	public function loadPlugin($path){
-		foreach($this->fileAssociations as $loader){
+	public function loadPlugin($path, $loaders = null){
+		foreach(($loaders === null ? $this->fileAssociations : $loaders) as $loader){
 			if(preg_match($loader->getPluginFilters(), basename($path)) > 0){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
@@ -285,7 +286,7 @@ class PluginManager{
 					if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 						unset($plugins[$name]);
 						$missingDependency = false;
-						if($plugin = $this->loadPlugin($file) and $plugin instanceof Plugin){
+						if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
 							$loadedPlugins[$name] = $plugin;
 						}else{
 							$this->server->getLogger()->critical("Could not load plugin '" . $name . "'");
@@ -299,7 +300,7 @@ class PluginManager{
 							unset($softDependencies[$name]);
 							unset($plugins[$name]);
 							$missingDependency = false;
-							if($plugin = $this->loadPlugin($file) and $plugin instanceof Plugin){
+							if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
 								$loadedPlugins[$name] = $plugin;
 							}else{
 								$this->server->getLogger()->critical("Could not load plugin '" . $name . "'");
