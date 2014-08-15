@@ -1048,7 +1048,9 @@ abstract class Entity extends Position implements Metadatable{
 			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}
-			$this->getLevel()->removeEntity($this);
+			if(($level = $this->getLevel()) instanceof Level){
+				$level->removeEntity($this);
+			}
 			$this->despawnFromAll();
 			$this->level->release();
 		}

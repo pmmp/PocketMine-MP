@@ -29,6 +29,7 @@ use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
 
@@ -111,8 +112,12 @@ abstract class Tile extends Position{
 		if($this->closed === false){
 			$this->closed = true;
 			unset(Tile::$needUpdate[$this->id]);
-			$this->getLevel()->removeTile($this);
-			$this->chunk->removeTile($this);
+			if($this->chunk instanceof FullChunk){
+				$this->chunk->removeTile($this);
+			}
+			if(($level = $this->getLevel()) instanceof Level){
+				$level->removeTile($this);
+			}
 			$this->level->release();
 		}
 	}
