@@ -64,7 +64,7 @@ abstract class Tile extends Position{
 	public $tickTimer;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		if($chunk->getProvider() === null){
+		if($chunk === null or $chunk->getProvider() === null){
 			throw new \Exception("Invalid garbage Chunk given to Tile");
 		}
 
