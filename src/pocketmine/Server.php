@@ -1870,6 +1870,8 @@ class Server{
 				}
 			}elseif(\Phar::running(true) == ""){
 				return;
+			}elseif($dump->getData()["type"] === "E_PARSE" or $dump->getData()["type"] === "E_COMPILE_ERROR"){
+				return;
 			}
 
 			$reply = Utils::postURL("http://".$this->getProperty("auto-report.host", "crash.pocketmine.net")."/submit/api", [
