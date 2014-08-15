@@ -76,7 +76,7 @@ class QueryHandler{
 			"version" => $this->server->getVersion(),
 			"server_engine" => $this->server->getName() . " " . $this->server->getPocketMineVersion(),
 			"plugins" => $plist,
-			"map" => $this->server->getDefaultLevel()->getName(),
+			"map" => $this->server->getDefaultLevel() === null ? "unknown" : $this->server->getDefaultLevel()->getName(),
 			"numplayers" => count($this->server->getOnlinePlayers()),
 			"maxplayers" => $this->server->getMaxPlayers(),
 			"whitelist" => $this->server->hasWhitelist() === true ? "on" : "off",
@@ -133,7 +133,7 @@ class QueryHandler{
 					}
 					$reply .= $this->longData;
 				}else{
-					$reply .= $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . $this->server->getDefaultLevel()->getName() . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Binary::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
+					$reply .= $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . ($this->server->getDefaultLevel() === null ? "unknown" : $this->server->getDefaultLevel()->getName()) . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Binary::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
 				}
 				$this->server->sendPacket($address, $port, $reply);
 				break;
