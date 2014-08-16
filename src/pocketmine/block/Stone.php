@@ -48,7 +48,6 @@ class Stone extends Solid{
 	}
 
 	public function getBreakTime(Item $item){
-
 		switch($item->isPickaxe()){
 			case 5:
 				return 0.4;
