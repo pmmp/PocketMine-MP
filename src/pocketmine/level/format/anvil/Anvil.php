@@ -116,10 +116,10 @@ class Anvil extends McRegion{
 	public static function createChunkSection($Y){
 		return new ChunkSection(new Compound(null, [
 			"Y" => new Byte("Y", $Y),
-			"Blocks" => new ByteArray("Blocks", str_repeat("\xff", 4096)),
-			"Data" => new ByteArray("Data", $half = str_repeat("\xff", 2048)),
-			"SkyLight" => new ByteArray("SkyLight", $half),
-			"BlockLight" => new ByteArray("BlockLight", $half)
+			"Blocks" => new ByteArray("Blocks", str_repeat("\x00", 4096)),
+			"Data" => new ByteArray("Data", str_repeat("\x00", 2048)),
+			"SkyLight" => new ByteArray("SkyLight", str_repeat("\xff", 2048)),
+			"BlockLight" => new ByteArray("BlockLight", str_repeat("\x00", 2048))
 		]));
 	}
 
