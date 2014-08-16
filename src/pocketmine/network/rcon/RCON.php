@@ -26,6 +26,7 @@
 namespace pocketmine\network\rcon;
 
 use pocketmine\command\RemoteConsoleCommandSender;
+use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
@@ -90,7 +91,16 @@ class RCON{
 						$thread->notify();
 					}, $this->workers[$n]);
 				}else{
-					$this->server->dispatchCommand($response = new RemoteConsoleCommandSender(), $this->workers[$n]->cmd);
+
+					$response = new RemoteConsoleCommandSender();
+					$command = $this->workers[$n]->cmd;
+
+					$this->server->getPluginManager()->callEvent($ev = new RemoteServerCommandEvent($response, $command));
+
+					if(!$ev->isCancelled()){
+						$this->server->dispatchCommand($ev->getSender(), $ev->getCommand());
+					}
+
 					$this->workers[$n]->response = TextFormat::clean($response->getMessage());
 					$this->workers[$n]->synchronized(function(RCONInstance $thread){
 						$thread->notify();

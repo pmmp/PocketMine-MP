@@ -1661,10 +1661,9 @@ class Server{
 		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
 			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
-			if($ev->isCancelled()){
-				return;
+			if(!$ev->isCancelled()){
+				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
 			}
-			$this->dispatchCommand($this->consoleSender, $ev->getCommand());
 		}
 		Timings::$serverCommandTimer->stopTiming();
 	}
