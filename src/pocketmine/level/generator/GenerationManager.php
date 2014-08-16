@@ -101,8 +101,8 @@ class GenerationManager{
 
 	protected $generatedQueue = [];
 
-	/** @var \SplQueue */
-	protected $requestQueue;
+	/** @var array */
+	protected $requestQueue = [];
 
 	/** @var array */
 	protected $needsChunk = [];
@@ -118,15 +118,18 @@ class GenerationManager{
 		$this->socket = $socket;
 		$this->logger = $logger;
 		$this->loader = $loader;
-		$this->requestQueue = new \SplQueue();
+		$chunkX = $chunkZ = null;
 
 		while($this->shutdown !== true){
-			if($this->requestQueue->count() > 0){
-				$r = $this->requestQueue->dequeue();
-				$levelID = $r[0];
-				$chunkX = $r[1];
-				$chunkZ = $r[2];
-				$this->generateChunk($levelID, $chunkX, $chunkZ);
+			if(count($this->requestQueue) > 0){
+				foreach($this->requestQueue as $levelID => $chunks){
+					if(count($chunks) === 0){
+						unset($this->requestQueue[$levelID]);
+					}
+					Level::getXZ($key = key($chunks), $chunkX, $chunkZ);
+					unset($this->requestQueue[$levelID][$key]);
+					$this->generateChunk($levelID, $chunkX, $chunkZ);
+				}
 			}else{
 				$this->readPacket();
 			}
@@ -171,7 +174,15 @@ class GenerationManager{
 	}
 
 	protected function enqueueChunk($levelID, $chunkX, $chunkZ){
-		$this->requestQueue->enqueue([$levelID, $chunkX, $chunkZ]);
+		if(!isset($this->requestQueue[$levelID])){
+			$this->requestQueue[$levelID] = [];
+		}
+		if(!isset($this->requestQueue[$levelID][$index = "$chunkX:$chunkZ"])){
+			$this->requestQueue[$levelID][$index] = 1;
+		}else{
+			$this->requestQueue[$levelID][$index]++;
+			arsort($this->requestQueue[$levelID]);
+		}
 	}
 
 	protected function receiveChunk($levelID, FullChunk $chunk){
