@@ -27,6 +27,7 @@ use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
@@ -2016,18 +2017,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$this->craftingType = 0;
 
-				$t = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
+				$t = $this->getLevel()->getTile($v = new Vector3($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){
-					if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->username){
+					$nbt = new NBT(NBT::LITTLE_ENDIAN);
+					$nbt->read($packet->namedtag);
+					$nbt = $nbt->getData();
+					if($nbt["id"] !== Tile::SIGN){
 						$t->spawnTo($this);
 					}else{
-						$nbt = new NBT(NBT::LITTLE_ENDIAN);
-						$nbt->read($packet->namedtag);
-						$nbt = $nbt->getData();
-						if($nbt["id"] !== Tile::SIGN){
-							$t->spawnTo($this);
+						$ev = new SignChangeEvent($this->getLevel()->getBlock($v), $this, [
+							$nbt["Text1"], $nbt["Text2"], $nbt["Text3"], $nbt["Text4"]
+						]);
+
+						if(!isset($t->namedtag->Creator) or $t->namedtag["Creator"] !== $this->username){
+							$ev->setCancelled(true);
+						}
+
+						$this->server->getPluginManager()->callEvent($ev);
+
+						if(!$ev->isCancelled()){
+							$t->setText($ev->getLine(0), $ev->getLine(1), $ev->getLine(2), $ev->getLine(3));
 						}else{
-							$t->setText($nbt["Text1"], $nbt["Text2"], $nbt["Text3"], $nbt["Text4"]);
+							$t->spawnTo($this);
 						}
 					}
 				}
