@@ -104,7 +104,8 @@ class GenerationManager{
 	/** @var \SplQueue */
 	protected $requestQueue;
 
-	protected $needsChunk = null;
+	/** @var array */
+	protected $needsChunk = [];
 
 	protected $shutdown = false;
 
@@ -174,9 +175,9 @@ class GenerationManager{
 	}
 
 	protected function receiveChunk($levelID, FullChunk $chunk){
-		if($this->needsChunk !== null and $this->needsChunk[0] === $levelID){
-			if($this->needsChunk[1] === $chunk->getX() and $this->needsChunk[2] === $chunk->getZ()){
-				$this->needsChunk = $chunk;
+		if($this->needsChunk[$levelID] !== null){
+			if($this->needsChunk[$levelID][0] === $chunk->getX() and $this->needsChunk[$levelID][1] === $chunk->getZ()){
+				$this->needsChunk[$levelID] = $chunk;
 			}
 		}
 		//TODO: set new received chunks
@@ -190,15 +191,16 @@ class GenerationManager{
 	 * @return FullChunk
 	 */
 	public function requestChunk($levelID, $chunkX, $chunkZ){
-		$this->needsChunk = [$levelID, $chunkX, $chunkZ];
+		$this->needsChunk[$levelID] = [$chunkX, $chunkZ];
 		$binary = chr(self::PACKET_REQUEST_CHUNK) . Binary::writeInt($levelID) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
 		@socket_write($this->socket, Binary::writeInt(strlen($binary)) . $binary);
+
 		do{
 			$this->readPacket();
-		}while($this->shutdown !== true and !($this->needsChunk instanceof FullChunk));
+		}while($this->shutdown !== true and !($this->needsChunk[$levelID] instanceof FullChunk));
 
-		$chunk = $this->needsChunk;
-		$this->needsChunk = null;
+		$chunk = $this->needsChunk[$levelID];
+		$this->needsChunk[$levelID] = null;
 		if($chunk instanceof FullChunk){
 			return $chunk;
 		}else{
@@ -229,6 +231,7 @@ class GenerationManager{
 		}
 
 		$packet = $this->socketRead($len);
+
 		$pid = ord($packet{0});
 		$offset = 1;
 		if($pid === self::PACKET_REQUEST_CHUNK){
