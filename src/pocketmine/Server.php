@@ -803,9 +803,7 @@ class Server{
 	 * @param Player $player
 	 */
 	public function removePlayer(Player $player){
-		if($player->isOnline() === false){
-			unset($this->players[$player->getAddress() . ":" . $player->getPort()]);
-		}
+		unset($this->players[$player->getAddress() . ":" . $player->getPort()]);
 	}
 
 	/**
