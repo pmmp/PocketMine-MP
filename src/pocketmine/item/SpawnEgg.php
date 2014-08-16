@@ -55,7 +55,6 @@ class SpawnEgg extends Item{
 					new Double("", $block->getY()),
 					new Double("", $block->getZ())
 				]),
-			//TODO: add random motion with physics
 			"Motion" => new Enum("Motion", [
 					new Double("", 0),
 					new Double("", 0),

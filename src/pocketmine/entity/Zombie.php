@@ -40,26 +40,25 @@ class Zombie extends Monster{
 	}
 
 	public function spawnTo(Player $player){
-		if($player !== $this and !isset($this->hasSpawned[$player->getID()])){
-			$this->hasSpawned[$player->getID()] = $player;
 
-			$pk = new AddMobPacket();
-			$pk->eid = $this->getID();
-			$pk->type = Zombie::NETWORK_ID;
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->yaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->metadata = $this->getData();
-			$player->dataPacket($pk);
+		$pk = new AddMobPacket();
+		$pk->eid = $this->getID();
+		$pk->type = Zombie::NETWORK_ID;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->metadata = $this->getData();
+		$player->dataPacket($pk);
 
-			$pk = new SetEntityMotionPacket();
-			$pk->entities = [
-				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-			];
-			$player->dataPacket($pk);
-		}
+		$pk = new SetEntityMotionPacket();
+		$pk->entities = [
+			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
+		];
+		$player->dataPacket($pk);
+
+		parent::spawnTo($player);
 	}
 
 	public function getData(){ //TODO
