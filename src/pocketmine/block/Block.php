@@ -24,6 +24,7 @@
  */
 namespace pocketmine\block;
 
+use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -449,7 +450,7 @@ abstract class Block extends Position implements Metadatable{
 		[Item::CLOCK, 0],
 		[Item::COMPASS, 0],
 		[Item::MINECART, 0],
-		//TODO: Villager
+		[Item::SPAWN_EGG, Villager::NETWORK_ID],
 		//[Item::SPAWN_EGG, 10], //Chicken
 		//[Item::SPAWN_EGG, 11], //Cow
 		//[Item::SPAWN_EGG, 12], //Pig

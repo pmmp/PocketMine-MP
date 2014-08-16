@@ -144,6 +144,9 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function unloadChunks(){
+		foreach($this->chunks as $chunk){
+			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+		}
 		$this->chunks = [];
 	}
 

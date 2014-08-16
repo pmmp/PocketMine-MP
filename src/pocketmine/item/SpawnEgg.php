@@ -23,6 +23,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
@@ -51,7 +52,7 @@ class SpawnEgg extends Item{
 		$nbt = new Compound("", [
 			"Pos" => new Enum("Pos", [
 					new Double("", $block->getX()),
-					new Double("", $block->getY() + 1),
+					new Double("", $block->getY()),
 					new Double("", $block->getZ())
 				]),
 			//TODO: add random motion with physics
@@ -67,6 +68,10 @@ class SpawnEgg extends Item{
 		]);
 
 		switch($this->meta){
+			case Villager::NETWORK_ID:
+				$nbt->Health = new Short("Health", 20);
+				$entity = new Villager($chunk, $nbt);
+				break;
 			case Zombie::NETWORK_ID:
 				$nbt->Health = new Short("Health", 20);
 				$entity = new Zombie($chunk, $nbt);
