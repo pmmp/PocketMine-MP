@@ -1994,7 +1994,7 @@ class Server{
 			"os" => Utils::getOS(),
 			"memory_total" => $this->getConfigString("memory-limit"),
 			"memory_usage" => memory_get_usage(),
-			"php_version" => \pocketmine\PHP_VERSION,
+			"php_version" => PHP_VERSION,
 			"version" => $version->get(false),
 			"build" => $version->getBuild(),
 			"mc_version" => \pocketmine\MINECRAFT_VERSION,
