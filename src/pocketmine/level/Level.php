@@ -917,6 +917,13 @@ class Level implements ChunkManager, Metadatable{
 					return true;
 				}
 			}
+
+			if($item->isActivable and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
+				if($item->getCount() <= 0){
+					$item = Item::get(Item::AIR, 0, 0);
+					return true;
+				}
+			}
 		}elseif($target->isActivable === true and $target->onActivate($item, $player) === true){
 			return true;
 		}
@@ -926,7 +933,6 @@ class Level implements ChunkManager, Metadatable{
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
 			$this->setBlock($block, new Air(), true, false, true);
-
 			return false;
 		}else{
 			return false;

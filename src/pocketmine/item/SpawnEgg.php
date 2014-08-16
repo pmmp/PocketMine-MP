@@ -22,8 +22,15 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\Entity;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Zombie;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Short;
 use pocketmine\Player;
 
 class SpawnEgg extends Item{
@@ -34,7 +41,37 @@ class SpawnEgg extends Item{
 	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+		$entity = null;
+		$chunk = $level->getChunkAt($block->getX() >> 4, $block->getZ() >> 4);
+
+		if(!($chunk instanceof FullChunk)){
+			return false;
+		}
+
+		$nbt = new Compound("", [
+			"Pos" => new Enum("Pos", [
+					new Double("", $block->getX()),
+					new Double("", $block->getY() + 1),
+					new Double("", $block->getZ())
+				]),
+			//TODO: add random motion with physics
+			"Motion" => new Enum("Motion", [
+					new Double("", 0),
+					new Double("", 0),
+					new Double("", 0)
+				]),
+			"Rotation" => new Enum("Rotation", [
+					new Float("", lcg_value() * 360),
+					new Float("", 0)
+				]),
+		]);
+
 		switch($this->meta){
+			case Zombie::NETWORK_ID:
+				$nbt->Health = new Short("Health", 20);
+				$entity = new Zombie($chunk, $nbt);
+				break;
+			/*
 			//TODO: use entity constants
 			case 10:
 			case 11:
@@ -51,7 +88,15 @@ class SpawnEgg extends Item{
 					--$this->count;
 				}
 
-				return true;
+				return true;*/
+		}
+
+		if($entity instanceof Entity){
+			if(($player->gamemode & 0x01) === 0){
+				--$this->count;
+			}
+			$entity->spawnToAll();
+			return true;
 		}
 		return false;
 	}

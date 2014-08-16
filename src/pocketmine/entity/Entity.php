@@ -59,6 +59,9 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 
 abstract class Entity extends Position implements Metadatable{
+
+	const NETWORK_ID = -1;
+
 	public static $entityCount = 1;
 
 	/**
