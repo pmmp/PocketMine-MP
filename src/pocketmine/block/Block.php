@@ -99,7 +99,7 @@ abstract class Block extends Position implements Metadatable{
 	const OBSIDIAN = 49;
 	const TORCH = 50;
 	const FIRE = 51;
-
+	const MONSTER_SPAWNER = 52;
 	const WOOD_STAIRS = 53;
 	const WOODEN_STAIRS = 53;
 	const OAK_WOOD_STAIRS = 53;
@@ -168,11 +168,15 @@ abstract class Block extends Position implements Metadatable{
 	const FENCE_GATE = 107;
 	const BRICK_STAIRS = 108;
 	const STONE_BRICK_STAIRS = 109;
+	const MYCELIUM = 110;
 
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
 
 	const NETHER_BRICKS_STAIRS = 114;
+
+	const END_PORTAL = 120;
+	const END_STONE = 121;
 
 	const SANDSTONE_STAIRS = 128;
 	const EMERALD_ORE = 129;
@@ -220,6 +224,7 @@ abstract class Block extends Position implements Metadatable{
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 
+	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
 	const STONECUTTER = 245;
 	const GLOWING_OBSIDIAN = 246;
@@ -249,9 +254,9 @@ abstract class Block extends Position implements Metadatable{
 		[Item::STONE, 5],
 		[Item::STONE, 6],
 		[Item::DIRT, 0],
-		//TODO: PODZOL
+		[Item::PODZOL, 0],
 		[Item::GRASS, 0],
-		//TODO: MYCELIUM
+		[Item::MYCELIUM, 0],
 		[Item::CLAY_BLOCK, 0],
 		[Item::HARDENED_CLAY, 0],
 		[Item::STAINED_CLAY, 0],
@@ -322,7 +327,7 @@ abstract class Block extends Position implements Metadatable{
 		[Item::OBSIDIAN, 0],
 		[Item::ICE, 0],
 		[Item::SNOW_BLOCK, 0],
-		//TODO: ENDSTONE
+		[Item::END_STONE, 0],
 
 		//Decoration
 		[Item::COBBLESTONE_WALL, 0],
@@ -355,6 +360,7 @@ abstract class Block extends Position implements Metadatable{
 		[Item::CHEST, 0],
 		[Item::FURNACE, 0],
 		//TODO: End Portal
+		[Item::END_PORTAL, 0],
 		[Item::DANDELION, 0],
 		[Item::POPPY, 0],
 		//TODO: blue orchid
@@ -400,7 +406,7 @@ abstract class Block extends Position implements Metadatable{
 		[Item::LEAVES2, 1],
 		[Item::CAKE, 0],
 		[Item::SIGN, 0],
-		//TODO: Monster Spawner
+		[Item::MONSTER_SPAWNER, 0],
 		[Item::WOOL, 0],
 		[Item::WOOL, 7],
 		[Item::WOOL, 6],
@@ -565,7 +571,7 @@ abstract class Block extends Position implements Metadatable{
 				self::OBSIDIAN => new Obsidian(),
 				self::TORCH => new Torch(),
 				self::FIRE => new Fire(),
-
+				self::MONSTER_SPAWNER => new MonsterSpawner(),
 				self::WOOD_STAIRS => new WoodStairs(),
 				self::CHEST => new Chest(),
 
@@ -617,10 +623,13 @@ abstract class Block extends Position implements Metadatable{
 				self::BRICK_STAIRS => new BrickStairs(),
 				self::STONE_BRICK_STAIRS => new StoneBrickStairs(),
 
+				self::MYCELIUM => new Mycelium(),
 				self::NETHER_BRICKS => new NetherBrick(),
 
 				self::NETHER_BRICKS_STAIRS => new NetherBrickStairs(),
 
+				self::END_PORTAL => new EndPortal(),
+				self::END_STONE => new EndStone(),
 				self::SANDSTONE_STAIRS => new SandstoneStairs(),
 				self::EMERALD_ORE => new EmeraldOre(),
 
@@ -649,6 +658,7 @@ abstract class Block extends Position implements Metadatable{
 				self::HARDENED_CLAY => new HardenedClay(),
 				self::COAL_BLOCK => new Coal(),
 
+				self::PODZOL => new Podzol(),
 				self::BEETROOT_BLOCK => new Beetroot(),
 				self::STONECUTTER => new Stonecutter(),
 				self::GLOWING_OBSIDIAN => new GlowingObsidian(),
