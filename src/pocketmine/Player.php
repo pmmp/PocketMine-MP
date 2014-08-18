@@ -1364,23 +1364,42 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if(($this->gamemode & 0x01) === 1){ //Creative mode match
 					$item = Item::get($packet->item, $packet->meta, 1);
-					$packet->slot = $this->getCreativeBlock($item);
+					$slot = $this->getCreativeBlock($item);
 				}else{
 					$item = $this->inventory->getItem($packet->slot);
+					$slot = $packet->slot;
 				}
-
-				if(!isset($item) or $packet->slot === -1 or $item->getID() !== $packet->item or $item->getDamage() !== $packet->meta){
+				
+				if($packet->slot === -1){ //Air
+					if(($this->gamemode & 0x01) === Player::CREATIVE){
+						$found = false;
+						for($i = 0; $i < $this->inventory->getHotbarSize(); ++$i){
+							if($this->inventory->getHotbarSlotIndex($i) === -1){
+								$this->inventory->setHeldItemIndex($i);
+								$found = true;
+								break;
+							}
+						}
+						
+						if(!$found){ //couldn't find a empty slot (error)
+							$this->inventory->sendContents($this);
+							break;
+						}
+					}else{
+						$this->inventory->setHeldItemSlot($packet->slot); //set Air
+					}
+				}elseif(!isset($item) or $slot === -1 or $item->getID() !== $packet->item or $item->getDamage() !== $packet->meta){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
 				}elseif(($this->gamemode & 0x01) === Player::CREATIVE){
 					$item = Item::get(
-						Block::$creative[$packet->slot][0],
-						Block::$creative[$packet->slot][1],
+						Block::$creative[$slot][0],
+						Block::$creative[$slot][1],
 						1
 					);
-					$this->inventory->setItemInHand($item);
+					$this->inventory->setHeldItemIndex($packet->slot);
 				}else{
-					$this->inventory->setHeldItemSlot($packet->slot);
+					$this->inventory->setHeldItemSlot($slot);
 				}
 
 				$this->inventory->sendHeldItem($this->hasSpawned);
@@ -1873,7 +1892,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($packet->slot > $this->inventory->getSize()){
 						break;
 					}
-					$this->inventory->setHeldItemSlot($packet->slot);
+					if(($this->gamemode & 0x01) === Player::CREATIVE){
+						if($this->getCreativeBlock($packet->item) !== -1){
+							$this->inventory->setItem($packet->slot,$packet->item);
+							$this->inventory->setHotbarSlotIndex($packet->slot,$packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
+						}
+					}
+					else{
+						$this->inventory->setHeldItemSlot($packet->slot);						
+					}
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 				}elseif(isset($this->windowIndex[$packet->windowid])){
 					$this->craftingType = 0;
