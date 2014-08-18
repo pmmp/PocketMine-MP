@@ -1572,6 +1572,12 @@ class Server{
 
 		$this->properties->save();
 
+		if(!($this->getDefaultLevel() instanceof Level)){
+			$this->getLogger()->emergency("No default level has been loaded");
+			$this->forceShutdown();
+			return;
+		}
+
 		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
 		if($this->getConfigBoolean("auto-save", true) === true and $this->getProperty("ticks-per.autosave", 6000) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
@@ -1583,6 +1589,7 @@ class Server{
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
+		$this->start();
 	}
 
 	/**

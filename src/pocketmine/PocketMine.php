@@ -347,7 +347,6 @@ namespace pocketmine {
 
 	ThreadManager::init();
 	$server = new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
-	$server->start();
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		if($thread->isRunning()){
