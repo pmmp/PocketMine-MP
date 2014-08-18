@@ -195,7 +195,7 @@ class CraftingManager{
 		];
 		for($i = 1; $i < 2; ++$i){
 			foreach($types[$i] as $j => $type){
-				$this->registerRecipe((new BigShapelessRecipe(Item::get($type, 0, 1)))->addIngredient(Item::get($types[0][$j], 0, $cost[$i - 1]))->addIngredient(Item::get(Item::STICK, 0, 1)));
+				$this->registerRecipe((new BigShapelessRecipe(Item::get($type, 0, 1)))->addIngredient(Item::get($types[0][$j], null, $cost[$i - 1]))->addIngredient(Item::get(Item::STICK, 0, 1)));
 			}
 		}
 
@@ -214,7 +214,7 @@ class CraftingManager{
 		];
 		for($i = 1; $i < 5; ++$i){
 			foreach($types[$i] as $j => $type){
-				$this->registerRecipe((new BigShapelessRecipe(Item::get($type, 0, 1)))->addIngredient(Item::get($types[0][$j], 0, $cost[$i - 1]))->addIngredient(Item::get(Item::STICK, 0, 2)));
+				$this->registerRecipe((new BigShapelessRecipe(Item::get($type, 0, 1)))->addIngredient(Item::get($types[0][$j], null, $cost[$i - 1]))->addIngredient(Item::get(Item::STICK, 0, 2)));
 			}
 		}
 
