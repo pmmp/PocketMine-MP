@@ -33,9 +33,6 @@ class GenerationChunkManager implements ChunkManager{
 	/** @var FullChunk[] */
 	protected $chunks = [];
 
-	/** @var \SplObjectStorage<FullChunk> */
-	protected $unloadQueue;
-
 	/** @var Generator */
 	protected $generator;
 
@@ -54,8 +51,6 @@ class GenerationChunkManager implements ChunkManager{
 		$this->levelID = $levelID;
 		$this->seed = $seed;
 		$this->manager = $manager;
-
-		$this->unloadQueue = new \SplObjectStorage();
 
 		$this->generator = new $class($options);
 		$this->generator->init($this, new Random($seed));
@@ -84,7 +79,6 @@ class GenerationChunkManager implements ChunkManager{
 	public function getChunk($chunkX, $chunkZ){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
-		$this->unloadQueue->detach($chunk);
 		$this->changes[$index] = $chunk;
 		return $chunk;
 	}
@@ -100,24 +94,19 @@ class GenerationChunkManager implements ChunkManager{
 		$this->changes = [];
 	}
 
+	public function cleanChangedChunk($index){
+		unset($this->changes[$index]);
+	}
+
 	public function doGarbageCollection(){
-		if($this->unloadQueue->count() > 0){
-			/** @var FullChunk $chunk */
-			foreach($this->unloadQueue as $chunk){
-				if(isset($this->changes[$index = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
-					continue;
-				}
+		foreach($this->chunks as $index => $chunk){
+			if(!isset($this->changes[$index]) or $chunk->isPopulated()){
 				unset($this->chunks[$index]);
-				$this->unloadQueue->detach($chunk);
+				unset($this->changes[$index]);
 			}
 		}
 
-		foreach($this->chunks as $chunk){
-			if(isset($this->changes[$index = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
-				continue;
-			}
-			$this->unloadQueue->attach($chunk);
-		}
+		gc_collect_cycles();
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -164,7 +153,7 @@ class GenerationChunkManager implements ChunkManager{
 	protected function requestChunk($chunkX, $chunkZ){
 		$chunk = $this->manager->requestChunk($this->levelID, $chunkX, $chunkZ);
 		$this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] = $chunk;
-		return $this->chunks[$index];
+		return $chunk;
 	}
 
 	/**

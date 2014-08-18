@@ -148,18 +148,17 @@ class GenerationManager{
 			$this->levels[$levelID]->populateChunk($chunkX, $chunkZ); //Request population directly
 			if(isset($this->levels[$levelID])){
 				$this->generatedQueue[$levelID][$index] = true;
-				if(count($this->generatedQueue[$levelID]) > 2){
-					foreach($this->levels[$levelID]->getChangedChunks() as $chunk){
-						if($chunk->isPopulated()){
-							$this->sendChunk($levelID, $chunk);
-						}
+				foreach($this->levels[$levelID]->getChangedChunks() as $index => $chunk){
+					if($chunk->isPopulated()){
+						$this->sendChunk($levelID, $chunk);
+						$this->levels[$levelID]->cleanChangedChunk($index);
 					}
-					$this->levels[$levelID]->cleanChangedChunks();
 				}
 
-				if(count($this->generatedQueue[$levelID]) > 8){
+				if(count($this->generatedQueue[$levelID]) > 4){
 					$this->levels[$levelID]->doGarbageCollection();
 					$this->generatedQueue[$levelID] = [];
+					$this->levels[$levelID]->cleanChangedChunks();
 				}
 			}
 		}
