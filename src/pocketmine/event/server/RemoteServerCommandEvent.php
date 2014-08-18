@@ -19,26 +19,22 @@
  *
  */
 
+namespace pocketmine\event\server;
+
+use pocketmine\command\CommandSender;
+
 /**
- * Block related events
+ * This event is called when a command is received over RCON.
  */
-namespace pocketmine\event\block;
-
-use pocketmine\block\Block;
-use pocketmine\event\Event;
-
-abstract class BlockEvent extends Event{
-	/** @var \pocketmine\block\Block */
-	protected $block;
+class RemoteServerCommandEvent extends ServerCommandEvent{
+	public static $handlerList = null;
 
 	/**
-	 * @param Block $block
+	 * @param CommandSender $sender
+	 * @param string        $command
 	 */
-	protected function __construct(Block $block){
-		$this->block = $block;
+	public function __construct(CommandSender $sender, $command){
+		parent::__construct($sender, $command);
 	}
 
-	public function getBlock(){
-		return $this->block;
-	}
 }
