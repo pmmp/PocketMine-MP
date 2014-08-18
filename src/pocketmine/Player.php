@@ -2178,6 +2178,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 		parent::kill();
+
+		if($this->inventory !== null){
+			$this->inventory->clearAll();
+		}
+
 		$message = $this->getName() ." died";
 		$cause = $this->getLastDamageCause();
 		$ev = null;

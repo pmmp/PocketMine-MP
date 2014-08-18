@@ -259,6 +259,13 @@ class PlayerInventory extends BaseInventory{
 		return $armor;
 	}
 
+	public function clearAll(){
+		$limit = $this->getSize() + 4;
+		for($index = 0; $index < $limit; ++$index){
+			$this->clear($index);
+		}
+	}
+
 	/**
 	 * @param Player|Player[] $target
 	 */

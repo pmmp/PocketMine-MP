@@ -80,6 +80,20 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->nameTag;
 	}
 
+	public function getDrops(){
+		$drops = [];
+		if($this->inventory instanceof PlayerInventory){
+			foreach($this->inventory->getContents() as $item){
+				$drops[] = $item;
+			}
+
+			foreach($this->inventory->getArmorContents() as $item){
+				$drops[] = $item;
+			}
+		}
+		return $drops;
+	}
+
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Inventory = new Enum("Inventory", []);
