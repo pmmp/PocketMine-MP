@@ -285,7 +285,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 		unset($this->hiddenPlayers[$player->getName()]);
-		$player->spawnTo($this);
+		if($player->isOnline()){
+            		$player->spawnTo($this);
+        	}
 	}
 
 	/**
