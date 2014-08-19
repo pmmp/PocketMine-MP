@@ -155,7 +155,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function openSession($identifier, $address, $port, $clientID){
-		$player = new Player($this, $clientID, $address, $port);
+		$player = new Player($this, null, $address, $port);
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
 		$this->identifers->attach($player, $identifier);

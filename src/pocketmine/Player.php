@@ -140,7 +140,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $lastMovement = 0;
 	protected $forceMovement = false;
 	protected $connected = true;
-	protected $clientID;
 	protected $ip;
 	protected $removeFormat = true;
 	protected $port;
@@ -382,7 +381,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	/**
 	 * @param SourceInterface $interface
-	 * @param integer         $clientID
+	 * @param null            $clientID
 	 * @param string          $ip
 	 * @param integer         $port
 	 */
@@ -393,7 +392,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->namedtag = new Compound();
 		$this->server = Server::getInstance();
 		$this->lastBreak = microtime(true);
-		$this->clientID = $clientID;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
@@ -401,8 +399,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
-
-		$this->server->getLogger()->debug("New Session started with " . $ip . ":" . $port . ", Client ID " . $this->clientID);
 	}
 
 	/**
@@ -2042,7 +2038,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			default:
-				$this->server->getLogger()->debug("Unhandled " . $packet->pid() . " data packet for " . $this->username . " (" . $this->clientID . "): " . print_r($packet, true));
 				break;
 		}
 	}
