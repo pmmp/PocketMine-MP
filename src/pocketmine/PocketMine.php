@@ -355,7 +355,8 @@ namespace pocketmine {
 				$thread->detach();
 			}elseif($thread instanceof Worker){
 				$thread->shutdown();
-				$thread->join();
+				$thread->kill();
+				$thread->detach();
 			}
 		}
 	}
