@@ -148,6 +148,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $displayName;
 	protected $startAction = false;
 	protected $sleeping = false;
+	protected $clientID = null;
 
 	public $usedChunks = [];
 	protected $loadQueue = [];
@@ -394,6 +395,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->lastBreak = microtime(true);
 		$this->ip = $ip;
 		$this->port = $port;
+		$this->clientID = $clientID;
 		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
 		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->getGamemode();
