@@ -152,7 +152,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
 		}catch(\Exception $e){
 			$level = $this->getProvider();
-			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
+			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			return $this->setBlock($x, $y, $z, $blockId, $meta);
 		}
 	}
@@ -166,7 +166,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
 		}catch(\Exception $e){
 			$level = $this->getProvider();
-			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
+			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockId($x, $y, $z, $id);
 		}
 	}
@@ -180,7 +180,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
 		}catch(\Exception $e){
 			$level = $this->getProvider();
-			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
+			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockData($x, $y, $z, $data);
 		}
 	}
@@ -194,7 +194,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 		}catch(\Exception $e){
 			$level = $this->getProvider();
-			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
+			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockSkyLight($x, $y, $z, $data);
 		}
 	}
@@ -208,7 +208,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 		}catch(\Exception $e){
 			$level = $this->getProvider();
-			$this->setSection($Y = $y >> 4, $level::createChunkSection($Y));
+			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockLight($x, $y, $z, $data);
 		}
 	}
@@ -259,6 +259,10 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		}else{
 			$this->sections[(int) $fY] = $section;
 		}
+	}
+
+	private function setInternalSection($fY, ChunkSection $section){
+		$this->sections[(int) $fY] = $section;
 	}
 
 	public function load($generate = true){
