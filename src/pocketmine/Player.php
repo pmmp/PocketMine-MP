@@ -811,7 +811,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->updateMetadata();
 		}*/
 		$this->setSpawn($pos);
-		$this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "checkSleep")), 60);
+		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "checkSleep")), 60);
+
 
 		return true;
 	}
@@ -2106,6 +2107,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param string $reason  Reason showed in console
 	 */
 	public function close($message = "", $reason = "generic reason"){
+
+		foreach($this->tasks as $task){
+			$task->cancel();
+		}
+		$this->tasks = [];
+
 		if($this->connected === true){
 			parent::close();
 			if($this->username != ""){
@@ -2120,10 +2127,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->removePlayer($this);
 			$this->getLevel()->freeAllChunks($this);
 			$this->loggedIn = false;
-			foreach($this->tasks as $task){
-				$task->cancel();
-			}
-			$this->tasks = [];
 
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
