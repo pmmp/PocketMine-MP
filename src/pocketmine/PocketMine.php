@@ -347,21 +347,33 @@ namespace pocketmine {
 	ThreadManager::init();
 	$server = new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 
+	$logger->info("Stopping other threads");
+
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		if($thread->isRunning()){
 			$logger->debug("Stopping ".(new \ReflectionClass($thread))->getShortName()." thread");
 			if($thread instanceof Thread){
 				$thread->kill();
-				$thread->detach();
+
+				if($thread->isRunning() or !$thread->join()){
+					$thread->detach();
+				}
 			}elseif($thread instanceof Worker){
-				$thread->shutdown();
 				$thread->kill();
-				$thread->detach();
+				sleep(1);
+				if($thread->isRunning() or !$thread->join()){
+					$thread->detach();
+				}
 			}
+		}elseif(!$thread->isJoined()){
+			$logger->debug("Joining ".(new \ReflectionClass($thread))->getShortName()." thread");
+			$thread->join();
 		}
 	}
 
 	$logger->shutdown();
 	$logger->join();
+
+	exit(0);
 
 }
