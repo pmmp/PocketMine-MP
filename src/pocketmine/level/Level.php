@@ -41,6 +41,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\format\generic\BaseLevelProvider;
 use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\generator\Generator;
@@ -582,7 +583,10 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
 
 		$this->provider->setTime((int) $this->time);
-		$this->provider->saveChunks();
+		$this->provider->saveChunks(); //TODO: only save changed chunks
+		if($this->provider instanceof BaseLevelProvider){
+			$this->provider->saveLevelData();
+		}
 		$this->nextSave = microtime(true) + 45;
 
 		return true;
