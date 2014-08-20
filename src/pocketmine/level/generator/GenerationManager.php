@@ -125,10 +125,11 @@ class GenerationManager{
 				foreach($this->requestQueue as $levelID => $chunks){
 					if(count($chunks) === 0){
 						unset($this->requestQueue[$levelID]);
+					}else{
+						Level::getXZ($key = key($chunks), $chunkX, $chunkZ);
+						unset($this->requestQueue[$levelID][$key]);
+						$this->generateChunk($levelID, $chunkX, $chunkZ);
 					}
-					Level::getXZ($key = key($chunks), $chunkX, $chunkZ);
-					unset($this->requestQueue[$levelID][$key]);
-					$this->generateChunk($levelID, $chunkX, $chunkZ);
 				}
 			}else{
 				$this->readPacket();
