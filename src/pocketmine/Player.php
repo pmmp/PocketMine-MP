@@ -973,7 +973,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk = new StartGamePacket;
 		$pk->seed = $this->getLevel()->getSeed();
 		$pk->x = $this->x;
-		$pk->y = $this->y;
+		$pk->y = $this->y + 1.62;
 		$pk->z = $this->z;
 		$pk->spawnX = (int) $spawnPosition->x;
 		$pk->spawnY = (int) $spawnPosition->y;
