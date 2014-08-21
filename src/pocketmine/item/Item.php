@@ -95,7 +95,7 @@ class Item{
 	const OBSIDIAN = 49;
 	const TORCH = 50;
 	const FIRE = 51;
-
+	const MONSTER_SPAWNER = 52;
 	const WOOD_STAIRS = 53;
 	const WOODEN_STAIRS = 53;
 	const OAK_WOOD_STAIRS = 53;
@@ -164,11 +164,15 @@ class Item{
 	const FENCE_GATE = 107;
 	const BRICK_STAIRS = 108;
 	const STONE_BRICK_STAIRS = 109;
+	const MYCELIUM = 110;
 
 	const NETHER_BRICKS = 112;
 	const NETHER_BRICK_BLOCK = 112;
 
 	const NETHER_BRICKS_STAIRS = 114;
+
+	const END_PORTAL = 120;
+	const END_STONE = 121;
 
 	const SANDSTONE_STAIRS = 128;
 	const EMERALD_ORE = 129;
@@ -216,6 +220,7 @@ class Item{
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 
+	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
 	const STONECUTTER = 245;
 	const GLOWING_OBSIDIAN = 246;
