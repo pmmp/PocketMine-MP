@@ -21,7 +21,6 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item;
@@ -30,10 +29,10 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
-use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
@@ -91,6 +90,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$drops[] = $item;
 			}
 		}
+
 		return $drops;
 	}
 

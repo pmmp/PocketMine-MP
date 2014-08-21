@@ -53,6 +53,7 @@ class GamemodeCommand extends VanillaCommand{
 
 		if($gameMode === -1){
 			$sender->sendMessage("Unknown game mode");
+
 			return true;
 		}
 

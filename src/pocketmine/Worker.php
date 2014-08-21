@@ -28,6 +28,7 @@ abstract class Worker extends \Worker{
 
 	public final function start($options = PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
+
 		return parent::start($options & ~PTHREADS_INHERIT_CLASSES);
 	}
 }

@@ -24,7 +24,6 @@ namespace pocketmine\level\format\generic;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\ChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
@@ -153,6 +152,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		}catch(\Exception $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
+
 			return $this->setBlock($x, $y, $z, $blockId, $meta);
 		}
 	}
@@ -218,6 +218,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockIdColumn($x, $z);
 		}
+
 		return $column;
 	}
 
@@ -226,6 +227,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockDataColumn($x, $z);
 		}
+
 		return $column;
 	}
 
@@ -234,6 +236,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockSkyLightColumn($x, $z);
 		}
+
 		return $column;
 	}
 
@@ -242,6 +245,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$column .= $this->sections[$y]->getBlockLightColumn($x, $z);
 		}
+
 		return $column;
 	}
 
@@ -274,6 +278,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$blocks .= $this->sections[$y]->getIdArray();
 		}
+
 		return $blocks;
 	}
 
@@ -282,6 +287,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$data .= $this->sections[$y]->getDataArray();
 		}
+
 		return $data;
 	}
 
@@ -290,6 +296,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$skyLight .= $this->sections[$y]->getSkyLightArray();
 		}
+
 		return $skyLight;
 	}
 
@@ -298,6 +305,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		for($y = 0; $y < Chunk::SECTION_COUNT; ++$y){
 			$blockLight .= $this->sections[$y]->getLightArray();
 		}
+
 		return $blockLight;
 	}
 

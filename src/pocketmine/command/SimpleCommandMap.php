@@ -216,7 +216,7 @@ class SimpleCommandMap implements CommandMap{
 
 		foreach($values as $alias => $commandStrings){
 			if(strpos($alias, ":") !== false or strpos($alias, " ") !== false){
-				$this->server->getLogger()->warning("Could not register alias ". $alias ." because it contains illegal characters");
+				$this->server->getLogger()->warning("Could not register alias " . $alias . " because it contains illegal characters");
 				continue;
 			}
 
@@ -238,7 +238,7 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			if(strlen($bad) > 0){
-				$this->server->getLogger()->warning("Could not register alias ". $alias ." because it contains commands that do not exist: ". $bad);
+				$this->server->getLogger()->warning("Could not register alias " . $alias . " because it contains commands that do not exist: " . $bad);
 				continue;
 			}
 

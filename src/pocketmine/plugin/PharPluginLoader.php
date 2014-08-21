@@ -24,7 +24,6 @@ namespace pocketmine\plugin;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 
 /**
  * Handles different types of plugins
@@ -84,13 +83,13 @@ class PharPluginLoader implements PluginLoader{
 	 * @return PluginDescription
 	 */
 	public function getPluginDescription($file){
-        $phar = new \Phar($file);
-        if(isset($phar["plugin.yml"])){
-            $pluginYml = $phar["plugin.yml"];
-            if($pluginYml instanceof \PharFileInfo){
-                return new PluginDescription($pluginYml->getContent());
-            }
-        }
+		$phar = new \Phar($file);
+		if(isset($phar["plugin.yml"])){
+			$pluginYml = $phar["plugin.yml"];
+			if($pluginYml instanceof \PharFileInfo){
+				return new PluginDescription($pluginYml->getContent());
+			}
+		}
 
 		return null;
 	}

@@ -157,8 +157,8 @@ interface FullChunk{
 	public function getBiomeId($x, $z);
 
 	/**
-	 * @param int $x 0-15
-	 * @param int $z 0-15
+	 * @param int $x       0-15
+	 * @param int $z       0-15
 	 * @param int $biomeId 0-255
 	 */
 	public function setBiomeId($x, $z, $biomeId);

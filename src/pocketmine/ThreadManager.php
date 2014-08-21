@@ -63,6 +63,7 @@ class ThreadManager extends \Threaded{
 		foreach($this as $key => $thread){
 			$array[$key] = $thread;
 		}
+
 		return $array;
 	}
 }

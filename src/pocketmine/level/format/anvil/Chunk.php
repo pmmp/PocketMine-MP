@@ -193,6 +193,7 @@ class Chunk extends BaseChunk{
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", array("Level" => $nbt)));
+
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 }

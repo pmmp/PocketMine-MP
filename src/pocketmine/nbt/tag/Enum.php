@@ -42,6 +42,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 				$value[$k] = $v;
 			}
 		}
+
 		return $value;
 	}
 
@@ -84,6 +85,8 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 				}
 			}
 		}
+
+		return $i;
 	}
 
 	public function getType(){

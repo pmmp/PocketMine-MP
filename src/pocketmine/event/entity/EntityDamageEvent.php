@@ -119,7 +119,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 */
 	public function setDamage($damage, $type = self::MODIFIER_BASE){
 		if(!isset($this->modifiers[$type])){
-			throw new \UnexpectedValueException($type ." is not applicable to ".$this->getEntity());
+			throw new \UnexpectedValueException($type . " is not applicable to " . $this->getEntity());
 		}
 		$this->modifiers[$type] = $damage;
 	}
@@ -141,6 +141,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		foreach($this->modifiers as $type => $d){
 			$damage += $d;
 		}
+
 		return $damage;
 	}
 

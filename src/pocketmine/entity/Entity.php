@@ -26,7 +26,6 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\entity\EntityMotionEvent;
@@ -48,12 +47,12 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
+use pocketmine\Network;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
-use pocketmine\Network;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -172,9 +171,9 @@ abstract class Entity extends Position implements Metadatable{
 			$this->namedtag->Rotation[1]
 		);
 		$this->setMotion(new Vector3(
-			$this->namedtag["Motion"][0],
-			$this->namedtag["Motion"][1],
-			$this->namedtag["Motion"][2])
+				$this->namedtag["Motion"][0],
+				$this->namedtag["Motion"][1],
+				$this->namedtag["Motion"][2])
 		);
 
 		if(!isset($this->namedtag->FallDistance)){
@@ -1019,6 +1018,7 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch, true) !== false){
 			$this->fallDistance = 0;
 			$this->onGround = true;
+
 			return true;
 		}
 
@@ -1082,7 +1082,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function __toString(){
-		return (new \ReflectionClass($this))->getShortName() . "(".$this->getID().")";
+		return (new \ReflectionClass($this))->getShortName() . "(" . $this->getID() . ")";
 	}
 
 }

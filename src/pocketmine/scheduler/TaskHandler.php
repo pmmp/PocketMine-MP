@@ -154,6 +154,7 @@ class TaskHandler{
 		if($this->timingName !== null){
 			return $this->timingName;
 		}
+
 		return get_class($this->task);
 	}
 }

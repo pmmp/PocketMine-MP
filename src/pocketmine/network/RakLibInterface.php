@@ -120,8 +120,10 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$work = false;
 		if($this->interface->handlePacket()){
 			$work = true;
-			while($this->interface->handlePacket()){}
+			while($this->interface->handlePacket()){
+			}
 		}
+
 		return $work;
 	}
 

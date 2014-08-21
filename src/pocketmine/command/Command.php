@@ -80,7 +80,7 @@ abstract class Command{
 		$this->usageMessage = $usageMessage === null ? "/" . $name : $usageMessage;
 		$this->aliases = $aliases;
 		$this->activeAliases = (array) $aliases;
-		$this->timings = new TimingsHandler("** Command: ". $name);
+		$this->timings = new TimingsHandler("** Command: " . $name);
 	}
 
 	/**
@@ -161,8 +161,9 @@ abstract class Command{
 	public function setLabel($name){
 		$this->nextLabel = $name;
 		if(!$this->isRegistered()){
-			$this->timings = new TimingsHandler("** Command: ". $name);
+			$this->timings = new TimingsHandler("** Command: " . $name);
 			$this->label = $name;
+
 			return true;
 		}
 

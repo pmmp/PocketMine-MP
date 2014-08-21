@@ -39,12 +39,14 @@ class TimeCommand extends VanillaCommand{
 	public function execute(CommandSender $sender, $currentAlias, array $args){
 		if(count($args) < 2){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return false;
 		}
 
 		if($args[0] === "set"){
 			if(!$sender->hasPermission("pocketmine.command.time.set")){
 				$sender->sendMessage(TextFormat::RED . "You don't have permission to set the time");
+
 				return true;
 			}
 
@@ -65,6 +67,7 @@ class TimeCommand extends VanillaCommand{
 		}elseif($args[0] === "add"){
 			if(!$sender->hasPermission("pocketmine.command.time.add")){
 				$sender->sendMessage(TextFormat::RED . "You don't have permission to add the time");
+
 				return true;
 			}
 

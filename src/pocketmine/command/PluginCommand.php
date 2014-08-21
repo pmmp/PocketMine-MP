@@ -61,17 +61,17 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 
 		return $success;
 	}
-	
+
 	public function getExecutor(){
 		return $this->executor;
-    	}
-	
+	}
+
 	/**
 	 * @param CommandExecutor $executor
 	 */
 	public function setExecutor(CommandExecutor $executor){
 		$this->executor = ($executor != null) ? $executor : $this->owningPlugin;
-	}	
+	}
 
 	/**
 	 * @return Plugin

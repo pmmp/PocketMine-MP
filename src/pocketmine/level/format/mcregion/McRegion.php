@@ -67,6 +67,7 @@ class McRegion extends BaseLevelProvider{
 				}
 			}
 		}
+
 		return $isValid;
 	}
 
@@ -136,7 +137,7 @@ class McRegion extends BaseLevelProvider{
 			$chunk->getBiomeIdArray() .
 			$biomeColors .
 			$tiles
-		, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
+			, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 
@@ -214,6 +215,7 @@ class McRegion extends BaseLevelProvider{
 
 			unset($this->chunks[$index]);
 		}
+
 		return true;
 	}
 
@@ -252,6 +254,7 @@ class McRegion extends BaseLevelProvider{
 			return $this->chunks[$index];
 		}else{
 			$this->loadChunk($chunkX, $chunkZ, $create);
+
 			return isset($this->chunks[$index]) ? $this->chunks[$index] : null;
 		}
 	}

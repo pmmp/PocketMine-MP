@@ -27,11 +27,11 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Server;
-use pocketmine\item\Item;
 
 abstract class Living extends Entity implements Damageable{
 

@@ -67,7 +67,7 @@ class TimingsHandler{
 
 			$avg = $time / $count;
 
-			fwrite($fp, "    " . $timings->name ." Time: ". round($time * 1000000000) ." Count: ". $count ." Avg: ". round($avg * 1000000000) ." Violations: ". $timings->violations . PHP_EOL);
+			fwrite($fp, "    " . $timings->name . " Time: " . round($time * 1000000000) . " Count: " . $count . " Avg: " . round($avg * 1000000000) . " Violations: " . $timings->violations . PHP_EOL);
 		}
 
 		fwrite($fp, "# Version " . Server::getInstance()->getVersion() . PHP_EOL);
@@ -84,8 +84,8 @@ class TimingsHandler{
 			}
 		}
 
-		fwrite($fp, "# Entities ". $entities . PHP_EOL);
-		fwrite($fp, "# LivingEntities ". $livingEntities . PHP_EOL);
+		fwrite($fp, "# Entities " . $entities . PHP_EOL);
+		fwrite($fp, "# LivingEntities " . $livingEntities . PHP_EOL);
 	}
 
 	public static function reload(){

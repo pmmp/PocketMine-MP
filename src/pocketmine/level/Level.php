@@ -51,7 +51,6 @@ use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
@@ -67,12 +66,10 @@ use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Sign;
-use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
-use raklib\Binary;
 
 
 class Level implements ChunkManager, Metadatable{
@@ -493,7 +490,7 @@ class Level implements ChunkManager, Metadatable{
 			return;
 		}
 
-		$chunksPerPlayer = min(200, max(1, (int) ( ( ( $this->chunksPerTick - count($this->players)) / count($this->players)) + 0.5)));
+		$chunksPerPlayer = min(200, max(1, (int) ((($this->chunksPerTick - count($this->players)) / count($this->players)) + 0.5)));
 		$randRange = 3 + $chunksPerPlayer / 30;
 		$randRange = $randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange;
 
@@ -814,11 +811,11 @@ class Level implements ChunkManager, Metadatable{
 	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null){
 		$target = $this->getBlock($vector);
 		//TODO: Adventure mode checks
-		
+
 		if($item === null){
 			$item = Item::get(Item::AIR, 0, 0);
 		}
-		
+
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
@@ -849,9 +846,9 @@ class Level implements ChunkManager, Metadatable{
 		}elseif($item instanceof Item and !$target->isBreakable($item)){
 			return false;
 		}
-		
+
 		$level = $target->getLevel();
-		
+
 		if($level instanceof Level){
 			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 			if($above instanceof Block){
@@ -925,6 +922,7 @@ class Level implements ChunkManager, Metadatable{
 			if($item->isActivable and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
 				if($item->getCount() <= 0){
 					$item = Item::get(Item::AIR, 0, 0);
+
 					return true;
 				}
 			}
@@ -937,6 +935,7 @@ class Level implements ChunkManager, Metadatable{
 			$hand->position($block);
 		}elseif($block->getID() === Item::FIRE){
 			$this->setBlock($block, new Air(), true, false, true);
+
 			return false;
 		}else{
 			return false;
@@ -955,7 +954,6 @@ class Level implements ChunkManager, Metadatable{
 		if($hand->isSolid === true and count($this->getCollidingEntities($hand->getBoundingBox())) > 0){
 			return false; //Entity in block
 		}
-
 
 
 		if($player instanceof Player){
@@ -1308,8 +1306,10 @@ class Level implements ChunkManager, Metadatable{
 			return $this->chunks[$index];
 		}elseif(($chunk = $this->provider->getChunk($x, $z, $create)) instanceof FullChunk){
 			$this->chunks[$index] = $chunk;
+
 			return $chunk;
 		}
+
 		return null;
 	}
 
@@ -1419,7 +1419,7 @@ class Level implements ChunkManager, Metadatable{
 					continue;
 				}
 				Level::getXZ($index, $x, $z);
-				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:".$this->getID().":" . $index)) !== false){
+				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:" . $this->getID() . ":" . $index)) !== false){
 					/** @var Player[] $players */
 					foreach($players as $player){
 						if(isset($player->usedChunks[$index])){
@@ -1443,7 +1443,7 @@ class Level implements ChunkManager, Metadatable{
 		if(isset($this->chunkSendTasks[$index])){
 
 			if(ADVANCED_CACHE == true){
-				Cache::add("world:".$this->getID().":" . $index, $payload, 60);
+				Cache::add("world:" . $this->getID() . ":" . $index, $payload, 60);
 			}
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
@@ -1564,6 +1564,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
+
 		return true;
 	}
 
@@ -1678,6 +1679,7 @@ class Level implements ChunkManager, Metadatable{
 	 * Sets the spawnpoint
 	 *
 	 * @param Vector3 $pos
+	 *
 	 * @deprecated
 	 */
 	public function setSpawn(Vector3 $pos){

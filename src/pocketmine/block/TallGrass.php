@@ -53,6 +53,7 @@ class TallGrass extends Flowable{
 		if(mt_rand(0, 15) === 0){
 			return [Item::WHEAT_SEEDS, 0, 1];
 		}
+
 		return [];
 	}
 

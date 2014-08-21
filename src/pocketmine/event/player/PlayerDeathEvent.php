@@ -21,9 +21,9 @@
 
 namespace pocketmine\event\player;
 
+use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use pocketmine\event\entity\EntityDeathEvent;
 
 class PlayerDeathEvent extends EntityDeathEvent{
 	public static $handlerList = null;

@@ -247,7 +247,7 @@ class PluginManager{
 							}
 						}
 					}catch(\Exception $e){
-						$this->server->getLogger()->error("Could not load '". $file ."' in folder '".$directory."': ".$e->getMessage());
+						$this->server->getLogger()->error("Could not load '" . $file . "' in folder '" . $directory . "': " . $e->getMessage());
 					}
 				}
 			}
@@ -319,9 +319,11 @@ class PluginManager{
 			}
 
 			TimingsCommand::$timingStart = microtime(true);
+
 			return $loadedPlugins;
 		}else{
 			TimingsCommand::$timingStart = microtime(true);
+
 			return [];
 		}
 	}
@@ -686,7 +688,7 @@ class PluginManager{
 					$class = $parameters[0]->getClass()->getName();
 					$reflection = new \ReflectionClass($class);
 					if(preg_match("/^[\t ]*\\* @deprecated[\t ]{1,}$/m", (string) $reflection->getDocComment(), $matches) > 0 and $this->server->getProperty("settings.deprecated-verbose", true)){
-						$this->server->getLogger()->warning('"'.$plugin->getName().'" has registered a listener for '.$class.' on method "'.get_class($listener).'::'.$method.', but the event is Deprecated.');
+						$this->server->getLogger()->warning('"' . $plugin->getName() . '" has registered a listener for ' . $class . ' on method "' . get_class($listener) . '::' . $method . ', but the event is Deprecated.');
 					}
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 				}
@@ -713,7 +715,7 @@ class PluginManager{
 			throw new \Exception("Plugin attempted to register " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: ".$plugin->getDescription()->getFullName()." Event: ".get_class($listener)."::".($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???")."(".(new \ReflectionClass($event))->getShortName().")", self::$pluginParentTimer);
+		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . get_class($listener) . "::" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???") . "(" . (new \ReflectionClass($event))->getShortName() . ")", self::$pluginParentTimer);
 
 		$this->getEventListeners($event)->register(new RegisteredListener($listener, $executor, $priority, $plugin, $ignoreCancelled, $timings));
 	}

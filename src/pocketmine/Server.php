@@ -60,7 +60,6 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\Info;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryPacket;
 use pocketmine\network\RakLibInterface;
@@ -879,6 +878,7 @@ class Server{
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level->unload($forceUnload) === true and $this->isLevelLoaded($level->getFolderName())){
 			unset($this->levels[$level->getID()]);
+
 			return true;
 		}
 
@@ -923,7 +923,8 @@ class Server{
 		try{
 			$level = new Level($this, $name, $path, $provider);
 		}catch(\Exception $e){
-			$this->logger->error("Could not load level \"" . $name . "\": ". $e->getMessage());
+			$this->logger->error("Could not load level \"" . $name . "\": " . $e->getMessage());
+
 			return false;
 		}
 
@@ -1575,6 +1576,7 @@ class Server{
 		if(!($this->getDefaultLevel() instanceof Level)){
 			$this->getLogger()->emergency("No default level has been loaded");
 			$this->forceShutdown();
+
 			return;
 		}
 
@@ -1621,8 +1623,9 @@ class Server{
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
+
 		return count($recipients);
-  	}
+	}
 
 	/**
 	 * Broadcasts a Minecraft packet to a list of players
@@ -1693,6 +1696,7 @@ class Server{
 		}else{
 			$sender->sendMessage("Unknown command. Type \"help\" for help.");
 		}
+
 		return false;
 	}
 
@@ -1862,7 +1866,7 @@ class Server{
 		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
 
-		$this->logger->emergency("Please submit the \"".$dump->getPath()."\" file to the Bug Reporting page. Give as much info as you can.");
+		$this->logger->emergency("Please submit the \"" . $dump->getPath() . "\" file to the Bug Reporting page. Give as much info as you can.");
 
 
 		if($this->getProperty("auto-report.enabled", true) !== false){
@@ -1878,9 +1882,9 @@ class Server{
 				return;
 			}
 
-			$reply = Utils::postURL("http://".$this->getProperty("auto-report.host", "crash.pocketmine.net")."/submit/api", [
+			$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
 				"report" => "yes",
-				"name" => "PocketMine-MP ".$this->getPocketMineVersion(),
+				"name" => "PocketMine-MP " . $this->getPocketMineVersion(),
 				"email" => "crash@pocketmine.net",
 				"reportPaste" => base64_encode($dump->getEncodedData())
 			]);
@@ -2016,7 +2020,7 @@ class Server{
 
 	private function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U ". round($this->mainInterface->getUploadUsage() / 1024, 2) ." D ". round($this->mainInterface->getDownloadUsage() / 1024, 2) ." kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
+			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}
 

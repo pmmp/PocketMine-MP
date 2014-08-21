@@ -21,9 +21,6 @@
 
 namespace pocketmine\level\format;
 
-use pocketmine\entity\Entity;
-use pocketmine\tile\Tile;
-
 interface Chunk extends FullChunk{
 	const SECTION_COUNT = 8;
 

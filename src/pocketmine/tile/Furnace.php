@@ -26,7 +26,6 @@ use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
-use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
@@ -47,7 +46,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			$this->namedtag->Items = new Enum("Inventory", []);
 			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
 		}
-		
+
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
@@ -60,7 +59,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		}
 		if(!isset($this->namedtag->MaxTime)){
 			$this->namedtag->MaxTime = new Short("BurnTime", $this->namedtag["BurnTime"]);
-			$this->namedtag->BurnTicks =  new Short("BurnTicks", 0);
+			$this->namedtag->BurnTicks = new Short("BurnTicks", 0);
 		}
 		if($this->namedtag["BurnTime"] > 0){
 			$this->scheduleUpdate();

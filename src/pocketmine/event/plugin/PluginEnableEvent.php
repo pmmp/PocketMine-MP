@@ -32,6 +32,6 @@ class PluginEnableEvent extends PluginEvent{
 	 * @param Plugin $plugin
 	 */
 	public function __construct(Plugin $plugin){
-		$this->plugin = $plugin;
+		parent::__construct($plugin);
 	}
 }

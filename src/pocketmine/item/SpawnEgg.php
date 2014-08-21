@@ -100,8 +100,10 @@ class SpawnEgg extends Item{
 				--$this->count;
 			}
 			$entity->spawnToAll();
+
 			return true;
 		}
+
 		return false;
 	}
 }

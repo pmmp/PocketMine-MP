@@ -97,7 +97,7 @@ class CrashDump{
 					"load" => $d->getOrder() === PluginLoadOrder::POSTWORLD ? "POSTWORLD" : "STARTUP",
 					"website" => $d->getWebsite()
 				];
-				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors())." for API(s) ". implode(", ", $d->getCompatibleApis()));
+				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));
 			}
 		}
 	}
@@ -169,10 +169,10 @@ class CrashDump{
 		$this->data["error"] = $error;
 		unset($this->data["error"]["fullFile"]);
 		unset($this->data["error"]["trace"]);
-		$this->addLine("Error: ". $error["message"]);
-		$this->addLine("File: ". $error["file"]);
-		$this->addLine("Line: ". $error["line"]);
-		$this->addLine("Type: ". $error["type"]);
+		$this->addLine("Error: " . $error["message"]);
+		$this->addLine("File: " . $error["file"]);
+		$this->addLine("Line: " . $error["line"]);
+		$this->addLine("Type: " . $error["type"]);
 
 		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "src/raklib/") === false and file_exists($error["fullFile"])){
 			$this->addLine();
@@ -186,7 +186,7 @@ class CrashDump{
 				$filePath = \pocketmine\cleanPath($file->getValue($plugin));
 				if(strpos($error["file"], $filePath) === 0){
 					$this->data["plugin"] = $plugin->getName();
-					$this->addLine("BAD PLUGIN: ".$plugin->getDescription()->getFullName());
+					$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
 					break;
 				}
 			}
@@ -228,7 +228,7 @@ class CrashDump{
 		$this->data["general"]["zend"] = zend_version();
 		$this->data["general"]["php_os"] = PHP_OS;
 		$this->data["general"]["os"] = Utils::getOS();
-		$this->addLine("PocketMine-MP version: " . $version->get(false). " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
+		$this->addLine("PocketMine-MP version: " . $version->get(false) . " #" . $version->getNumber() . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
 		$this->addLine("Git commit: " . GIT_COMMIT);
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());

@@ -68,7 +68,6 @@ namespace pocketmine {
 	use LogLevel;
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
-	use pocketmine\utils\TextFormat;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 	use raklib\RakLib;
@@ -86,7 +85,7 @@ namespace pocketmine {
 
 	if(!extension_loaded("pthreads")){
 		echo "[CRITICAL] Unable to find the pthreads extension." . PHP_EOL;
-		echo "[CRITICAL] Please use the installer provided on the homepage.". PHP_EOL;
+		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
 
@@ -351,7 +350,7 @@ namespace pocketmine {
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
 		if($thread->isRunning()){
-			$logger->debug("Stopping ".(new \ReflectionClass($thread))->getShortName()." thread");
+			$logger->debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
 			if($thread instanceof Thread){
 				$thread->kill();
 
@@ -366,7 +365,7 @@ namespace pocketmine {
 				}
 			}
 		}elseif(!$thread->isJoined()){
-			$logger->debug("Joining ".(new \ReflectionClass($thread))->getShortName()." thread");
+			$logger->debug("Joining " . (new \ReflectionClass($thread))->getShortName() . " thread");
 			$thread->join();
 		}
 	}

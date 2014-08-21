@@ -53,6 +53,7 @@ abstract class Event{
 		if(!($this instanceof Cancellable)){
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
+
 		return $this->isCancelled === true;
 	}
 

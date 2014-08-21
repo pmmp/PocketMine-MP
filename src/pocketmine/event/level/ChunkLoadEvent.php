@@ -20,6 +20,7 @@
  */
 
 namespace pocketmine\event\level;
+
 use pocketmine\level\format\FullChunk;
 
 /**

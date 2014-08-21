@@ -22,7 +22,6 @@
 namespace pocketmine\event;
 
 
-
 use pocketmine\entity\Entity;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\PluginTask;
@@ -136,10 +135,10 @@ abstract class Timings{
 
 		$taskname = $task->getTaskName();
 
-		$name = "Task: ". $plugin." Runnable: ". $taskname;
+		$name = "Task: " . $plugin . " Runnable: " . $taskname;
 
 		if($period > 0){
-			$name .= "(interval:".$period.")";
+			$name .= "(interval:" . $period . ")";
 		}else{
 			$name .= "(Single)";
 		}
@@ -159,7 +158,7 @@ abstract class Timings{
 	public static function getEntityTimings(Entity $entity){
 		$entityType = (new \ReflectionClass($entity))->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
-			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - ". $entityType, self::$activatedEntityTimer);
+			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - " . $entityType, self::$activatedEntityTimer);
 		}
 
 		return self::$entityTypeTimingMap[$entityType];
@@ -173,7 +172,7 @@ abstract class Timings{
 	public static function getTileEntityTimings(Tile $tile){
 		$tileType = (new \ReflectionClass($tile))->getShortName();
 		if(!isset(self::$tileEntityTypeTimingMap[$tileType])){
-			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler("** tickTileEntity - ". $tileType, self::$tickTileEntityTimer);
+			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler("** tickTileEntity - " . $tileType, self::$tickTileEntityTimer);
 		}
 
 		return self::$tileEntityTypeTimingMap[$tileType];

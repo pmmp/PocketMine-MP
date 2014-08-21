@@ -21,12 +21,8 @@
 
 namespace pocketmine\event\entity;
 
-use pocketmine\block\Block;
-use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
-use pocketmine\level\Position;
 
 class EntityDeathEvent extends EntityEvent{
 	public static $handlerList = null;
@@ -37,7 +33,7 @@ class EntityDeathEvent extends EntityEvent{
 
 	/**
 	 * @param Living $entity
-	 * @param Item[]  $drops
+	 * @param Item[] $drops
 	 */
 	public function __construct(Living $entity, array $drops = []){
 		$this->entity = $entity;

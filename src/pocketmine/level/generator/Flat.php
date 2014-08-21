@@ -21,7 +21,6 @@
 
 namespace pocketmine\level\generator;
 
-use pocketmine\level\format\FullChunk;
 use pocketmine\block\CoalOre;
 use pocketmine\block\DiamondOre;
 use pocketmine\block\Dirt;
@@ -31,6 +30,7 @@ use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3 as Vector3;

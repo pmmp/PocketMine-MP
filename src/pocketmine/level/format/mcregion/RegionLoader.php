@@ -31,7 +31,6 @@ use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
-use pocketmine\Player;
 use pocketmine\utils\Binary;
 
 class RegionLoader{
@@ -117,6 +116,7 @@ class RegionLoader{
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			trigger_error("Invalid compression type", E_USER_WARNING);
+
 			return false;
 		}
 
@@ -126,6 +126,7 @@ class RegionLoader{
 		}elseif($forward === false){
 			trigger_error("Corrupted chunk detected", E_USER_WARNING);
 			$this->generateChunk($x, $z);
+
 			return $this->readChunk($x, $z, $generate, true);
 		}else{
 			return null;

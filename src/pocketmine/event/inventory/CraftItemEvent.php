@@ -36,6 +36,7 @@ class CraftItemEvent extends Event implements Cancellable{
 
 	/**
 	 * @param CraftingTransactionGroup $ts
+	 * @param Recipe                   $recipe
 	 */
 	public function __construct(CraftingTransactionGroup $ts, Recipe $recipe){
 		$this->ts = $ts;

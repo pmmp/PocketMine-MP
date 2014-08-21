@@ -88,6 +88,8 @@ class SimpleTransactionGroup implements TransactionGroup{
 	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
+	 *
+	 * @return bool
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems){
 		foreach($this->transactions as $key => $ts){
@@ -120,6 +122,8 @@ class SimpleTransactionGroup implements TransactionGroup{
 				}
 			}
 		}
+
+		return true;
 	}
 
 	public function canExecute(){

@@ -238,6 +238,7 @@ class GenerationManager{
 		if(($len = Binary::readInt($len)) <= 0){
 			$this->shutdown = true;
 			$this->getLogger()->critical("Generation Thread found a stream error, shutting down");
+
 			return;
 		}
 

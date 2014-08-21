@@ -93,6 +93,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			trigger_error("Invalid compression type", E_USER_WARNING);
+
 			return false;
 		}
 
@@ -102,6 +103,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		}elseif($forward === false){
 			trigger_error("Corrupted chunk detected", E_USER_WARNING);
 			$this->generateChunk($x, $z);
+
 			return $this->readChunk($x, $z, $generate, true);
 		}else{
 			return null;
@@ -131,7 +133,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", array("Level" => $nbt)));
-		$chunkData= $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		$chunkData = $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 		$this->saveChunk($x, $z, $chunkData);
 	}
 

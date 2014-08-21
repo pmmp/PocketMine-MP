@@ -22,12 +22,8 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\event\HandlerList;
 use pocketmine\event\TimingsHandler;
-use pocketmine\Player;
-use pocketmine\plugin\TimedRegisteredListener;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
 
 class TimingsCommand extends VanillaCommand{
 
@@ -49,6 +45,7 @@ class TimingsCommand extends VanillaCommand{
 
 		if(count($args) !== 1){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
 			return true;
 		}
 
@@ -58,6 +55,7 @@ class TimingsCommand extends VanillaCommand{
 			$sender->getServer()->getPluginManager()->setUseTimings(true);
 			TimingsHandler::reload();
 			$sender->sendMessage("Enabled Timings & Reset");
+
 			return true;
 		}elseif($mode === "off"){
 			$sender->getServer()->getPluginManager()->setUseTimings(false);
@@ -66,6 +64,7 @@ class TimingsCommand extends VanillaCommand{
 
 		if(!$sender->getServer()->getPluginManager()->useTimings()){
 			$sender->sendMessage("Please enable timings by typing /timings on");
+
 			return true;
 		}
 
@@ -74,13 +73,6 @@ class TimingsCommand extends VanillaCommand{
 		if($mode === "reset"){
 			TimingsHandler::reload();
 			$sender->sendMessage("Timings reset");
-			/*foreach(HandlerList::getHandlerLists() as $handlerList){
-				foreach($handlerList->getRegisteredListeners() as $listener){
-					if($listener instanceof TimedRegisteredListener){
-						$listener->reset();
-					}
-				}
-			}*/
 		}elseif($mode === "merged" or $mode === "report" or $paste){
 
 			$sampleTime = microtime(true) - self::$timingStart;
@@ -96,7 +88,7 @@ class TimingsCommand extends VanillaCommand{
 
 			TimingsHandler::printTimings($fileTimings);
 
-			fwrite($fileTimings, "Sample time ". round($sampleTime * 1000000000) ." (". $sampleTime ."s)" . PHP_EOL);
+			fwrite($fileTimings, "Sample time " . round($sampleTime * 1000000000) . " (" . $sampleTime . "s)" . PHP_EOL);
 
 			if($paste){
 				fseek($fileTimings, 0);
@@ -119,20 +111,21 @@ class TimingsCommand extends VanillaCommand{
 				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_SLASHES));
 				curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-				curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "User-Agent: PocketMine-MP ".$sender->getServer()->getPocketMineVersion()]);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "User-Agent: PocketMine-MP " . $sender->getServer()->getPocketMineVersion()]);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				$ret = curl_exec($ch);
 				$data = json_decode($ret);
 				curl_close($ch);
 				if($data === false or $data === null or !isset($data->html_url)){
 					$sender->sendMessage("An error happened while pasting the report");
+
 					return true;
 				}
 				$timings = $data->html_url;
 			}
 
 			fclose($fileTimings);
-			$sender->sendMessage("Timings written to ". $timings);
+			$sender->sendMessage("Timings written to " . $timings);
 			$sender->sendMessage("Paste contents of file into form at http://aikar.co/timings.php to read results.");
 		}
 

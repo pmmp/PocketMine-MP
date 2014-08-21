@@ -59,6 +59,7 @@ abstract class LevelProviderManager{
 
 	public static function getProviderByName($name){
 		$name = trim(strtolower($name));
+
 		return isset(self::$providers[$name]) ? self::$providers[$name] : null;
 	}
 }

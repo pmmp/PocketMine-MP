@@ -46,8 +46,6 @@ class Arrow extends Projectile{
 		}
 
 
-
-
 	}
 
 	public function onUpdate(){

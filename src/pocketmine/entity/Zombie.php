@@ -95,6 +95,7 @@ class Zombie extends Monster{
 				}
 			}
 		}
+
 		return $drops;
 	}
 }

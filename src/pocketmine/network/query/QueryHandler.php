@@ -30,7 +30,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class QueryHandler{
-	private $socket, $server, $lastToken, $token, $longData, $timeout;
+	private $server, $lastToken, $token, $longData, $timeout;
 
 	const HANDSHAKE = 9;
 	const STATISTICS = 0;

@@ -89,6 +89,7 @@ LICENSE;
 		if(strtolower($this->getInput("n")) != "y"){
 			echo "[!] " . $this->lang->you_have_to_accept_the_license . "\n";
 			sleep(5);
+
 			return false;
 		}
 

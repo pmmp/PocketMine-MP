@@ -47,7 +47,6 @@ class RegisteredListener{
 	private $timings;
 
 
-
 	/**
 	 * @param Listener       $listener
 	 * @param EventExecutor  $executor

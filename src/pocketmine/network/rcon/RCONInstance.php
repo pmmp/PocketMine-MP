@@ -133,7 +133,7 @@ class RCONInstance extends \Thread{
 								if($payload === $this->password){
 									@socket_getpeername($client, $addr, $port);
 									$this->response = "[INFO] Successful Rcon connection from: /$addr:$port";
-									$this->synchronized(function(){
+									$this->synchronized(function (){
 										$this->wait();
 									});
 									$this->response = "";
@@ -152,7 +152,7 @@ class RCONInstance extends \Thread{
 								}
 								if(strlen($payload) > 0){
 									$this->cmd = ltrim($payload);
-									$this->synchronized(function(){
+									$this->synchronized(function (){
 										$this->wait();
 									});
 									$this->writePacket($client, $requestID, 0, str_replace("\n", "\r\n", trim($this->response)));

@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\scheduler;
+
 use pocketmine\Server;
 
 /**

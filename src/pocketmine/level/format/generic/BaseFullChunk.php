@@ -62,17 +62,17 @@ abstract class BaseFullChunk implements FullChunk{
 	protected $z;
 
 	/**
-	 * @param LevelProvider  $provider
-	 * @param int            $x
-	 * @param int            $z
-	 * @param string         $blocks
-	 * @param string         $data
-	 * @param string         $skyLight
-	 * @param string         $blockLight
-	 * @param string         $biomeIds
-	 * @param int[]          $biomeColors
-	 * @param Compound[]     $entities
-	 * @param Compound[]     $tiles
+	 * @param LevelProvider $provider
+	 * @param int           $x
+	 * @param int           $z
+	 * @param string        $blocks
+	 * @param string        $data
+	 * @param string        $skyLight
+	 * @param string        $blockLight
+	 * @param string        $biomeIds
+	 * @param int[]         $biomeColors
+	 * @param Compound[]    $entities
+	 * @param Compound[]    $tiles
 	 *
 	 * @throws \Exception
 	 */
@@ -188,6 +188,7 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function getBiomeColor($x, $z){
 		$color = $this->biomeColors[($z << 4) + $x] & 0xFFFFFF;
+
 		return [$color >> 16, ($color >> 8) & 0xFF, $color & 0xFF];
 	}
 

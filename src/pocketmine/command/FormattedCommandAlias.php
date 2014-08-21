@@ -50,6 +50,7 @@ class FormattedCommandAlias extends Command{
 				}else{
 					$sender->sendMessage(TextFormat::RED . "An internal error occurred while attempting to perform this command");
 				}
+
 				return false;
 			}
 		}

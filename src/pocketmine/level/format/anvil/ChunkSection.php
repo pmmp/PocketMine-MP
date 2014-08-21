@@ -157,6 +157,7 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 		for($y = 0; $y < 16; ++$y){
 			$column .= $this->blocks{($y << 8) + $i};
 		}
+
 		return $column;
 	}
 

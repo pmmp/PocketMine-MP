@@ -23,7 +23,6 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
-use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
@@ -72,7 +71,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * @param int $index 0-3
+	 * @param int    $index 0-3
 	 * @param string $line
 	 */
 	public function setLine($index, $line){

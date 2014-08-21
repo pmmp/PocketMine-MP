@@ -80,6 +80,7 @@ class GenerationChunkManager implements ChunkManager{
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
 		$this->changes[$index] = $chunk;
+
 		return $chunk;
 	}
 
@@ -153,12 +154,13 @@ class GenerationChunkManager implements ChunkManager{
 	protected function requestChunk($chunkX, $chunkZ){
 		$chunk = $this->manager->requestChunk($this->levelID, $chunkX, $chunkZ);
 		$this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] = $chunk;
+
 		return $chunk;
 	}
 
 	/**
-	 * @param int         $chunkX
-	 * @param int         $chunkZ
+	 * @param int       $chunkX
+	 * @param int       $chunkZ
 	 * @param FullChunk $chunk
 	 */
 	public function setChunk($chunkX, $chunkZ, FullChunk $chunk){

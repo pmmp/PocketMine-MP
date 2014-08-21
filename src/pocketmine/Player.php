@@ -164,7 +164,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $inAction = false;
 
 
-
 	private $needACK = [];
 
 	/**
@@ -287,8 +286,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 		unset($this->hiddenPlayers[$player->getName()]);
 		if($player->isOnline()){
-            		$player->spawnTo($this);
-        	}
+			$player->spawnTo($this);
+		}
 	}
 
 	/**
@@ -520,6 +519,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return $this->spawnPosition;
 		}else{
 			$level = $this->server->getDefaultLevel();
+
 			return $level->getSafeSpawn();
 		}
 	}
@@ -1368,7 +1368,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$item = $this->inventory->getItem($packet->slot);
 					$slot = $packet->slot;
 				}
-				
+
 				if($packet->slot === -1){ //Air
 					if(($this->gamemode & 0x01) === Player::CREATIVE){
 						$found = false;
@@ -1379,7 +1379,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								break;
 							}
 						}
-						
+
 						if(!$found){ //couldn't find a empty slot (error)
 							$this->inventory->sendContents($this);
 							break;
@@ -1498,27 +1498,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				switch($packet->action){
 					case 5: //Shot arrow
 						//if($this->entity->inAction === true){
-							if($this->inventory->getItemInHand()->getID() === Item::BOW){
-								$f = 1 * 2 * 1.5;
-								$nbt = new Compound("", [
-									"Pos" => new Enum("Pos", [
-											new Double("", $this->x),
-											new Double("", $this->y + 1.62),
-											new Double("", $this->z)
-										]),
-									"Motion" => new Enum("Motion", [
-											new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI) * $f),
-											new Double("", -sin($this->pitch / 180 * M_PI) * $f),
-											new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI) * $f)
-										]),
-									"Rotation" => new Enum("Rotation", [
-											new Float("", $this->yaw),
-											new Float("", $this->pitch)
-										]),
-								]);
-								$arrow = new Arrow($this->chunk, $nbt);
-								$arrow->spawnToAll();
-							}
+						if($this->inventory->getItemInHand()->getID() === Item::BOW){
+							$f = 1 * 2 * 1.5;
+							$nbt = new Compound("", [
+								"Pos" => new Enum("Pos", [
+										new Double("", $this->x),
+										new Double("", $this->y + 1.62),
+										new Double("", $this->z)
+									]),
+								"Motion" => new Enum("Motion", [
+										new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI) * $f),
+										new Double("", -sin($this->pitch / 180 * M_PI) * $f),
+										new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI) * $f)
+									]),
+								"Rotation" => new Enum("Rotation", [
+										new Float("", $this->yaw),
+										new Float("", $this->pitch)
+									]),
+							]);
+							$arrow = new Arrow($this->chunk, $nbt);
+							$arrow->spawnToAll();
+						}
 						//}
 						$this->startAction = false;
 						//$this->entity->inAction = false;
@@ -1711,7 +1711,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					if($item->isTool() and ($this->gamemode & 0x01) === 0){
 						if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
-							$this->inventory->setItemInHand(Item::get(Item::AIR, 0 ,1));
+							$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 						}
 					}
 				}
@@ -1893,12 +1893,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 					if(($this->gamemode & 0x01) === Player::CREATIVE){
 						if($this->getCreativeBlock($packet->item) !== -1){
-							$this->inventory->setItem($packet->slot,$packet->item);
-							$this->inventory->setHotbarSlotIndex($packet->slot,$packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
+							$this->inventory->setItem($packet->slot, $packet->item);
+							$this->inventory->setHotbarSlotIndex($packet->slot, $packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
 						}
-					}
-					else{
-						$this->inventory->setHeldItemSlot($packet->slot);						
+					}else{
+						$this->inventory->setHeldItemSlot($packet->slot);
 					}
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 				}elseif(isset($this->windowIndex[$packet->windowid])){
@@ -2054,7 +2053,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function kick($reason = ""){
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, TextFormat::YELLOW . $this->username . " has left the game"));
 		if(!$ev->isCancelled()){
-			$message = "Kicked by admin.". ($reason !== "" ? " Reason: ". $reason : "");
+			$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
 			$this->sendMessage($message);
 			$this->close($ev->getQuitMessage(), $message);
 
@@ -2183,7 +2182,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->inventory->clearAll();
 		}
 
-		$message = $this->getName() ." died";
+		$message = $this->getName() . " died";
 		$cause = $this->getLastDamageCause();
 		$ev = null;
 		if($cause instanceof EntityDamageEvent){
@@ -2196,29 +2195,29 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($ev instanceof EntityDamageByEntityEvent){
 					$e = $ev->getDamager();
 					if($e instanceof Player){
-						$message = $this->getName() ." was killed by ".$e->getName();
+						$message = $this->getName() . " was killed by " . $e->getName();
 						break;
 					}elseif($e instanceof Living){
-						$message = $this->getName() ." was slain by ".$e->getName();
+						$message = $this->getName() . " was slain by " . $e->getName();
 						break;
 					}
 				}
-				$message = $this->getName() ." was killed";
+				$message = $this->getName() . " was killed";
 				break;
 			case EntityDamageEvent::CAUSE_SUICIDE:
 
 				break;
 			case EntityDamageEvent::CAUSE_VOID:
-				$message = $this->getName() ." fell out of the world";
+				$message = $this->getName() . " fell out of the world";
 				break;
 			case EntityDamageEvent::CAUSE_FALL:
 				if($ev instanceof EntityDamageEvent){
 					if($ev->getFinalDamage() > 2){
-						$message = $this->getName() ." fell from a high place";
+						$message = $this->getName() . " fell from a high place";
 						break;
 					}
 				}
-				$message = $this->getName() ." hit the ground too hard";
+				$message = $this->getName() . " hit the ground too hard";
 				break;
 
 			case EntityDamageEvent::CAUSE_CONTACT:

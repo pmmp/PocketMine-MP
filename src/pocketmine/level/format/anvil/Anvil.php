@@ -60,6 +60,7 @@ class Anvil extends McRegion{
 				}
 			}
 		}
+
 		return $isValid;
 	}
 
