@@ -63,7 +63,7 @@ class WhitelistCommand extends VanillaCommand{
 					return true;
 				case "list":
 					$result = "";
-					foreach($sender->getServer()->getWhitelisted() as $player){
+					foreach($sender->getServer()->getWhitelisted()->getAll(true) as $player){
 						$result .= $player . ", ";
 					}
 					$sender->sendMessage("White-listed players: " . substr($result, 0, -2));
