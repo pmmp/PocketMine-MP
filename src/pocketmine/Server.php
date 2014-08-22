@@ -1646,7 +1646,7 @@ class Server{
 	public function enablePlugins($type){
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
-				$this->loadPlugin($plugin);
+				$this->enablePlugin($plugin);
 			}
 		}
 
@@ -1659,8 +1659,17 @@ class Server{
 	/**
 	 * @param Plugin $plugin
 	 */
-	public function loadPlugin(Plugin $plugin){
+	public function enablePlugin(Plugin $plugin){
 		$this->pluginManager->enablePlugin($plugin);
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 *
+	 * @deprecated
+	 */
+	public function loadPlugin(Plugin $plugin){
+		$this->enablePlugin($plugin);
 	}
 
 	public function disablePlugins(){
