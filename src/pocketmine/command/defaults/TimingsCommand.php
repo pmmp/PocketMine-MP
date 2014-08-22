@@ -94,7 +94,7 @@ class TimingsCommand extends VanillaCommand{
 				fseek($fileTimings, 0);
 				$data = [
 					"public" => false,
-					"description" => "PocketMine-MP Timings",
+					"description" => $this->getName() . " Timings",
 					"files" => [
 						"timings.txt" => [
 							"content" => stream_get_contents($fileTimings)
@@ -111,7 +111,7 @@ class TimingsCommand extends VanillaCommand{
 				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_SLASHES));
 				curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-				curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "User-Agent: PocketMine-MP " . $sender->getServer()->getPocketMineVersion()]);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "User-Agent: " . $this->getName() . " " . $sender->getServer()->getPocketMineVersion()]);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				$ret = curl_exec($ch);
 				$data = json_decode($ret);

@@ -71,7 +71,7 @@ class TimingsHandler{
 		}
 
 		fwrite($fp, "# Version " . Server::getInstance()->getVersion() . PHP_EOL);
-		fwrite($fp, "# PocketMine-MP " . Server::getInstance()->getPocketMineVersion() . PHP_EOL);
+		fwrite($fp, "# ". Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . PHP_EOL);
 
 		$entities = 0;
 		$livingEntities = 0;

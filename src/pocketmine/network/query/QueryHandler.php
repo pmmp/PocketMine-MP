@@ -58,7 +58,7 @@ class QueryHandler{
 
 	public function regenerateInfo(){
 		$str = "";
-		$plist = "PocketMine-MP " . $this->server->getPocketMineVersion();
+		$plist = $this->server->getName() . " " . $this->server->getPocketMineVersion();
 		$pl = $this->server->getPluginManager()->getPlugins();
 		if(count($pl) > 0 and $this->server->getProperty("settings.query-plugins", true) === true){
 			$plist .= ":";

@@ -1467,7 +1467,7 @@ class Server{
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				$this->logger->warning("PocketMine-MP may not work right with less than 128MB of RAM", true, true, 0);
+				$this->logger->warning($this->getName() . " may not work right with less than 128MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -1490,7 +1490,7 @@ class Server{
 		Level::$COMPRESSION_LEVEL = $this->getProperty("chunk-sending.compression-level", 7);
 
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and function_exists("cli_set_process_title")){
-			@cli_set_process_title("PocketMine-MP " . $this->getPocketMineVersion());
+			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 		}
 
 		$this->logger->info("Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
@@ -1499,8 +1499,8 @@ class Server{
 
 		$this->addInterface($this->mainInterface = new RakLibInterface($this));
 
-		$this->logger->info("This server is running PocketMine-MP version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(false) . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
-		$this->logger->info("PocketMine-MP is distributed under the LGPL License", true, true, 0);
+		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(false) . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
+		$this->logger->info($this->getName() . " is distributed under the LGPL License", true, true, 0);
 
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
@@ -1728,7 +1728,7 @@ class Server{
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 256){
-				$this->logger->warning("PocketMine-MP may not work right with less than 256MB of RAM", true, true, 0);
+				$this->logger->warning($this->getName() . " may not work right with less than 256MB of RAM", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
@@ -1893,7 +1893,7 @@ class Server{
 
 			$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
 				"report" => "yes",
-				"name" => "PocketMine-MP " . $this->getPocketMineVersion(),
+				"name" => $this->getName() . " " . $this->getPocketMineVersion(),
 				"email" => "crash@pocketmine.net",
 				"reportPaste" => base64_encode($dump->getEncodedData())
 			]);
@@ -2029,7 +2029,7 @@ class Server{
 
 	private function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;PocketMine-MP " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
+			echo "\x1b]0;". $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
 		}
 	}
 
