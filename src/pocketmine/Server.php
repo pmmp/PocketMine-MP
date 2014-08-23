@@ -1463,7 +1463,7 @@ class Server{
 
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
-		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "128M")))) !== false){
+		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
 			$value = array("M" => 1, "G" => 1024);
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
@@ -1471,7 +1471,7 @@ class Server{
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
-			$this->setConfigString("memory-limit", "128M");
+			$this->setConfigString("memory-limit", "256M");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1732,7 +1732,7 @@ class Server{
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
-			$this->setConfigString("memory-limit", "128M");
+			$this->setConfigString("memory-limit", "256M");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
