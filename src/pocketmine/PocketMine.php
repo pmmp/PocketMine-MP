@@ -149,7 +149,7 @@ namespace pocketmine {
 	ini_set("memory_limit", "256M"); //Default
 	define("pocketmine\\START_TIME", microtime(true));
 
-	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard"));
+	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard", "enable-profiler"));
 
 	define("pocketmine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
@@ -157,6 +157,15 @@ namespace pocketmine {
 	define("pocketmine\\ANSI", ((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])));
 
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
+
+	if(isset($opts["enable-profiler"])){
+		if(function_exists("profiler_enable")){
+			\profiler_enable();
+			$logger->notice("Execution is being profiled");
+		}else{
+			$logger->notice("No profiler found. Please install https://github.com/krakjoe/profiler");
+		}
+	}
 
 	function kill($pid){
 		switch(Utils::getOS()){
