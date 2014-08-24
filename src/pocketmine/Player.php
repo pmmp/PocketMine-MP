@@ -687,7 +687,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$chunkZ = $Z + $centerZ;
 				$index = Level::chunkHash($chunkX, $chunkZ);
 				if(!isset($this->usedChunks[$index])){
-					if($this->getLevel()->isChunkPopulated($chunkX, $chunkZ)){
+					if($this->level->isChunkPopulated($chunkX, $chunkZ)){
 						$newOrder[$index] = $distance;
 					}else{
 						$generateQueue->insert([$chunkX, $chunkZ], $distance);

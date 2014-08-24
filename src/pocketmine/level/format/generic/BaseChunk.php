@@ -51,7 +51,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	/** @var int[256] */
 	protected $biomeColors;
 
-	/** @var \WeakRef<LevelProvider> */
+	/** @var LevelProvider */
 	protected $level;
 
 	protected $x;

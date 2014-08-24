@@ -449,7 +449,7 @@ class Item{
 				self::BOW => new Bow(),
 			);
 			foreach(Block::$list as $id => $class){
-				self::$list[$id] = new ItemBlock($class);
+				self::$list[$id] = new ItemBlock(new $class);
 			}
 
 		}

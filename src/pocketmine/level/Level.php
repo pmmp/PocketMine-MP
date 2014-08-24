@@ -676,7 +676,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		//TODO: fix this
 		foreach($this->getCollidingEntities($bb->expand(0.25, 0.25, 0.25), $entity) as $ent){
 			$collides[] = clone $ent->boundingBox;
 		}
@@ -1368,7 +1367,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkGenerated($x, $z){
-		return $this->provider->isChunkGenerated($x, $z);
+		$chunk = $this->getChunkAt($x, $z);
+		return $chunk instanceof FullChunk ? $chunk->isGenerated() : false;
 	}
 
 	/**
@@ -1378,7 +1378,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkPopulated($x, $z){
-		return $this->provider->isChunkPopulated($x, $z);
+		$chunk = $this->getChunkAt($x, $z);
+		return $chunk instanceof FullChunk ? $chunk->isPopulated() : false;
 	}
 
 	/**

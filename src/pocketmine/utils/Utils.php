@@ -228,9 +228,7 @@ class Utils{
 				PHP_SAPI,
 				(string) PHP_INT_MAX . "." . PHP_INT_SIZE,
 				serialize($_SERVER),
-				serialize(get_defined_constants()),
 				get_current_user(),
-				serialize(ini_get_all()),
 				(string) memory_get_usage() . "." . memory_get_peak_usage(),
 				php_uname(),
 				phpversion(),
@@ -266,7 +264,7 @@ class Utils{
 				$strongEntropyValues = array(
 					is_array($startEntropy) ? hash("sha512", $startEntropy[($rounds + $drop) % count($startEntropy)], true) : hash("sha512", $startEntropy, true), //Get a random index of the startEntropy, or just read it
 					file_exists("/dev/urandom") ? fread(fopen("/dev/urandom", "rb"), 64) : str_repeat("\x00", 64),
-					(function_exists("openssl_random_pseudo_bytes") and version_compare(PHP_VERSION, "5.3.4", ">=")) ? openssl_random_pseudo_bytes(64) : str_repeat("\x00", 64),
+					function_exists("openssl_random_pseudo_bytes") ? openssl_random_pseudo_bytes(64) : str_repeat("\x00", 64),
 					function_exists("mcrypt_create_iv") ? mcrypt_create_iv(64, MCRYPT_DEV_URANDOM) : str_repeat("\x00", 64),
 					$value,
 				);

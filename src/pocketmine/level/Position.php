@@ -25,7 +25,7 @@ use pocketmine\math\Vector3 as Vector3;
 
 class Position extends Vector3{
 
-	/** @var \WeakRef<Level> */
+	/** @var Level */
 	public $level = null;
 
 	/**
@@ -35,32 +35,26 @@ class Position extends Vector3{
 	 * @param Level $level
 	 * @param bool  $strong
 	 */
-	public function __construct($x = 0, $y = 0, $z = 0, Level $level, $strong = false){
+	public function __construct($x = 0, $y = 0, $z = 0, Level $level = null, $strong = false){
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
-		$this->level = new \WeakRef($level);
-		if($strong === true){
-			$this->level->acquire();
-		}
+		$this->level = $level;
 	}
 
-	public static function fromObject(Vector3 $pos, Level $level, $strong = false){
-		return new Position($pos->x, $pos->y, $pos->z, $level, $strong);
+	public static function fromObject(Vector3 $pos, Level $level = null, $strong = false){
+		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
 
 	/**
 	 * @return Level
 	 */
 	public function getLevel(){
-		return $this->level->get();
+		return $this->level;
 	}
 
 	public function setLevel(Level $level, $strong = false){
-		$this->level = new \WeakRef($level);
-		if($strong === true){
-			$this->level->acquire();
-		}
+		$this->level = $level;
 	}
 
 	/**
@@ -69,27 +63,31 @@ class Position extends Vector3{
 	 * @return bool
 	 */
 	public function isValid(){
-		return isset($this->level) and $this->level->valid();
+		return isset($this->level) and $this->level instanceof Level;
 	}
 
 	/**
 	 * Marks the level reference as strong so it won't be collected
 	 * by the garbage collector.
 	 *
+	 * @deprecated
+	 *
 	 * @return bool
 	 */
 	public function setStrong(){
-		return $this->level->acquire();
+		return false;
 	}
 
 	/**
 	 * Marks the level reference as weak so it won't have effect against
 	 * the garbage collector decision.
 	 *
+	 * @deprecated
+	 *
 	 * @return bool
 	 */
 	public function setWeak(){
-		return $this->level->release();
+		return false;
 	}
 
 	/**
@@ -107,7 +105,7 @@ class Position extends Vector3{
 			throw new \RuntimeException("Undefined Level reference");
 		}
 
-		return Position::fromObject(parent::getSide($side, $step), $this->getLevel());
+		return Position::fromObject(parent::getSide($side, $step), $this->level);
 	}
 
 	/**
