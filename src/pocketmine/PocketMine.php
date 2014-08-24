@@ -264,8 +264,8 @@ namespace pocketmine {
 
 	$errors = 0;
 
-	if(version_compare("5.4.0", PHP_VERSION) > 0){
-		$logger->critical("Use PHP >= 5.4.0");
+	if(version_compare("5.5.0", PHP_VERSION) > 0){
+		$logger->critical("Use PHP >= 5.5.0");
 		++$errors;
 	}
 
