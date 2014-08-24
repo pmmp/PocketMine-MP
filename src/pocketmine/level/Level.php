@@ -666,6 +666,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$collides = [];
 
+		//TODO: optimize this loop, check collision cube boundaries
 		for($z = $minZ; $z < $maxZ; ++$z){
 			for($x = $minX; $x < $maxX; ++$x){
 				if($this->isChunkLoaded($x >> 4, $z >> 4)){

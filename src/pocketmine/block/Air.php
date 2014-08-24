@@ -47,4 +47,8 @@ class Air extends Transparent{
 		return new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 	}
 
+	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){
+
+	}
+
 }

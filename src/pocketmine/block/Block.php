@@ -825,9 +825,9 @@ abstract class Block extends Position implements Metadatable{
 	 * @param AxisAlignedBB $bb
 	 * @param Block[]       $list
 	 */
-	public function collidesWithBB(AxisAlignedBB $bb, &$list = array()){
+	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){
 		$bb2 = $this->getBoundingBox();
-		if($bb2->intersectsWith($bb)){
+		if($bb2 !== null and $bb2->intersectsWith($bb)){
 			$list[] = $bb2;
 		}
 	}
