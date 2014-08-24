@@ -4,5 +4,5 @@
 	branch = master
 [submodule "src/raklib"]
 	path = src/raklib
-	url = https://github.com/PocketMine/RakLib.git
+	url = git@github.com:PocketMine/RakLib.git
 	branch = master

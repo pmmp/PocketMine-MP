@@ -190,6 +190,10 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->interface->sendOption("name", "MCCPP;Demo;$name");
 	}
 
+	public function setPortCheck($name){
+		$this->interface->sendOption("portChecking", (bool) $name);
+	}
+
 	public function handleOption($name, $value){
 		if($name === "bandwidth"){
 			$v = unserialize($value);
