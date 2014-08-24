@@ -62,7 +62,7 @@ class NBT{
 
 	private $buffer;
 	private $offset;
-	private $endianness;
+	public $endianness;
 	private $data;
 
 	public function get($len){
@@ -73,7 +73,7 @@ class NBT{
 		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
-		if($len > 1024){
+		if($len > 16){
 			return substr($this->buffer, ($this->offset += $len) - $len, $len);
 		}
 		$buffer = "";

@@ -22,6 +22,7 @@
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\utils\Binary;
 
 class IntArray extends NamedTag{
 
@@ -32,15 +33,36 @@ class IntArray extends NamedTag{
 	public function read(NBT $nbt){
 		$this->value = [];
 		$size = $nbt->getInt();
-		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
-			$this->value[] = $nbt->getInt();
+		$ints = $nbt->get($size * 4);
+		$offset = 0;
+		if($nbt->endianness === NBT::LITTLE_ENDIAN){
+			for($i = 0; $i < $size and isset($ints{$offset}); ++$i){
+				$this->value[$i] = Binary::readLInt(substr($ints, $offset, 4));
+				$offset += 4;
+			}
+		}else{
+			for($i = 0; $i < $size and isset($ints{$offset}); ++$i){
+				$this->value[$i] = Binary::readInt(substr($ints, $offset, 4));
+				$offset += 4;
+			}
 		}
+
 	}
 
 	public function write(NBT $nbt){
 		$nbt->putInt(count($this->value));
-		foreach($this->value as $v){
-			$nbt->putInt($v);
+
+		$ints = "";
+		if($nbt->endianness === NBT::LITTLE_ENDIAN){
+			foreach($this->value as $v){
+				$ints .= Binary::writeLInt($v);
+			}
+		}else{
+			foreach($this->value as $v){
+				$ints .= Binary::writeInt($v);
+			}
 		}
+
+		$nbt->put($ints);
 	}
 }
