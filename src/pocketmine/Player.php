@@ -2125,6 +2125,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->interface->close($this, $reason);
 			$this->server->removePlayer($this);
 			$this->getLevel()->freeAllChunks($this);
+
+
+			parent::close();
+			
 			$this->loggedIn = false;
 
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
@@ -2138,8 +2142,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->usedChunks = [];
 			$this->loadQueue = [];
 			unset($this->buffer);
-
-			parent::close();
 		}
 	}
 
