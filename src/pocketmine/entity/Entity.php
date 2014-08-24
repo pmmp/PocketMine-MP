@@ -870,7 +870,7 @@ abstract class Entity extends Position implements Metadatable{
 	 *
 	 * @return Block[]
 	 */
-	protected function checkBlockCollision(&$list = array()){
+	protected function checkBlockCollision(&$list = []){
 		$minX = floor($this->boundingBox->minX + 0.001);
 		$minY = floor($this->boundingBox->minY + 0.001);
 		$minZ = floor($this->boundingBox->minZ + 0.001);
@@ -1055,7 +1055,7 @@ abstract class Entity extends Position implements Metadatable{
 				$level->removeEntity($this);
 			}
 			$this->despawnFromAll();
-			unset($this->level);
+			$this->level = null;
 		}
 	}
 
