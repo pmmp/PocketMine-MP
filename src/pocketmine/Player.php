@@ -728,10 +728,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$entity->despawnFrom($this);
 				}
 			}
-			/*$pk = new UnloadChunkPacket();
-			$pk->chunkX = $X;
-			$pk->chunkZ = $Z;
-			$this->dataPacket($pk);*/
+
 			unset($this->usedChunks[$index]);
 		}
 	}

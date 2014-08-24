@@ -698,7 +698,16 @@ class Level implements ChunkManager, Metadatable{
 			$this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
 		}
 
-		return Block::get($blockId, $meta, Position::fromObject(clone $pos, $this));
+		if($blockId === 0){
+			$air = new Air();
+			$air->x = $pos->x;
+			$air->y = $pos->y;
+			$air->z = $pos->z;
+			$air->level = $this;
+			return $air;
+		}
+
+		return Block::get($blockId, $meta, Position::fromObject($pos, $this));
 	}
 
 	/**
