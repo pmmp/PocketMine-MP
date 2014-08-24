@@ -960,7 +960,7 @@ class Level implements ChunkManager, Metadatable{
 			//$face = -1;
 		}
 
-		if($hand->isSolid === true and count($this->getCollidingEntities($hand->getBoundingBox())) > 0){
+		if($hand->isSolid === true and $hand->getBoundingBox() !== null and count($this->getCollidingEntities($hand->getBoundingBox())) > 0){
 			return false; //Entity in block
 		}
 

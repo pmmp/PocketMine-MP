@@ -31,6 +31,11 @@ class Dandelion extends Flowable{
 		$this->hardness = 0;
 	}
 
+	public function getBoundingBox(){
+		return null;
+	}
+
+
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === 2 or $down->getID() === 3 or $down->getID() === 60){

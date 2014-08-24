@@ -27,6 +27,11 @@ class WallSign extends SignPost{
 		Transparent::__construct(self::WALL_SIGN, $meta, "Wall Sign");
 	}
 
+	public function getBoundingBox(){
+		return null;
+	}
+
+
 	public function onUpdate($type){
 		return false;
 	}

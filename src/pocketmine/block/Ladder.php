@@ -33,6 +33,11 @@ class Ladder extends Transparent{
 		$this->hardness = 2;
 	}
 
+	public function getBoundingBox(){
+		return null;
+	}
+
+
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target->isTransparent === false){
 			$faces = array(

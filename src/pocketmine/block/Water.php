@@ -33,6 +33,11 @@ class Water extends Liquid{
 		$this->hardness = 500;
 	}
 
+	public function getBoundingBox(){
+		return null;
+	}
+
+
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->getLevel()->setBlock($this, $this, true, false, true);
 		$this->getLevel()->scheduleUpdate(clone $this, 10);

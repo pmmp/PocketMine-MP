@@ -33,6 +33,11 @@ class Fire extends Flowable{
 		$this->hardness = 0;
 	}
 
+	public function getBoundingBox(){
+		return null;
+	}
+
+
 	public function getDrops(Item $item){
 		return [];
 	}
