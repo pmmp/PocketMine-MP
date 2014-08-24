@@ -68,6 +68,10 @@ class DroppedItem extends Entity{
 	public function onUpdate(){
 		$this->entityBaseTick();
 
+		if($this->closed !== false){
+			return false;
+		}
+
 		if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
 			--$this->pickupDelay;
 		}
