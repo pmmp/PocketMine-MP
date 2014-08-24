@@ -50,7 +50,7 @@ class Arrow extends Projectile{
 
 	public function onUpdate(){
 		$this->entityBaseTick();
-		
+
 		if($this->closed !== false){
 			return false;
 		}

@@ -84,6 +84,13 @@ class Level implements ChunkManager, Metadatable{
 	const BLOCK_UPDATE_WEAK = 4;
 	const BLOCK_UPDATE_TOUCH = 5;
 
+	const TIME_DAY = 0;
+	const TIME_SUNSET = 12000;
+	const TIME_NIGHT = 14000;
+	const TIME_SUNRISE = 23000;
+
+	const TIME_FULL = 24000;
+
 	/** @var Tile[] */
 	protected $tiles = [];
 
@@ -112,8 +119,6 @@ class Level implements ChunkManager, Metadatable{
 
 	protected $time;
 	public $stopTime;
-	private $startCheck;
-	private $startTime;
 
 	private $folderName;
 
@@ -160,7 +165,7 @@ class Level implements ChunkManager, Metadatable{
 		Block::PUMPKIN_STEM => true,
 		Block::MELON_STEM => true,
 		//Block::VINE => true,
-		//Block::MYCELIUM => true,
+		Block::MYCELIUM => true,
 		//Block::COCOA_BLOCK => true,
 		Block::CARROT_BLOCK => true,
 		Block::POTATO_BLOCK => true,
@@ -222,8 +227,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->folderName = $name;
 		$this->updateQueue = new ReversePriorityQueue();
 		$this->updateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
-		$this->startTime = $this->time = (int) $this->provider->getTime();
-		$this->nextSave = $this->startCheck = microtime(true);
+		$this->time = (int) $this->provider->getTime();
 		$this->nextSave = microtime(true) + 90;
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 3)));
@@ -382,22 +386,24 @@ class Level implements ChunkManager, Metadatable{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function checkTime(){
-		$now = microtime(true);
 		if($this->stopTime == true){
 			return;
 		}else{
-			$time = $this->startTime + ($now - $this->startCheck) * 20;
+			$this->time += 2.5;
 		}
+	}
 
-		$this->time = $time;
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Changes to this function won't be recorded on the version.
+	 */
+	public function sendTime(){
 		$pk = new SetTimePacket;
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
 		foreach($this->players as $player){
-			$player->dataPacket($pk);
+			$player->directDataPacket($pk);
 		}
-
-		return;
 	}
 
 	/**
@@ -412,8 +418,10 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->doTick->startTiming();
 
+		$this->checkTime();
+
 		if(($currentTick % 200) === 0){
-			$this->checkTime();
+			$this->sendTime();
 		}
 
 		if(count($this->changedCount) > 0){
@@ -1730,9 +1738,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $time
 	 */
 	public function setTime($time){
-		$this->startTime = $this->time = (int) $time;
-		$this->startCheck = microtime(true);
-		$this->checkTime();
+		$this->time = (int) $time;
+		$this->sendTime();
 	}
 
 	/**
@@ -1740,8 +1747,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function stopTime(){
 		$this->stopTime = true;
-		$this->startCheck = 0;
-		$this->checkTime();
+		$this->sendTime();
 	}
 
 	/**
@@ -1749,8 +1755,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function startTime(){
 		$this->stopTime = false;
-		$this->startCheck = microtime(true);
-		$this->checkTime();
+		$this->sendTime();
 	}
 
 	/**

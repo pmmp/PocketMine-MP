@@ -51,6 +51,7 @@ use pocketmine\Network;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
+use pocketmine\network\protocol\SetEntityDataPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\Player;
@@ -251,6 +252,30 @@ abstract class Entity extends Position implements Metadatable{
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getID()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getID()] = $player;
+		}
+	}
+
+	/**
+	 * @param Player[]|Player $player
+	 */
+	public function sendMetadata($player){
+		if($player instanceof Player){
+			$player = [$player];
+		}
+
+		$pk = new SetEntityDataPacket();
+		$pk->eid = $this->id;
+		$pk->metadata = $this->getData();
+		foreach($player as $p){
+			if($p === $this){
+				/** @var Player $p */
+				$pk = new SetEntityDataPacket();
+				$pk->eid = 0;
+				$pk->metadata = $this->getData();
+				$p->dataPacket($pk);
+			}else{
+				$p->dataPacket($pk);
+			}
 		}
 	}
 
