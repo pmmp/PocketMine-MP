@@ -147,6 +147,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $iusername;
 	protected $displayName;
 	protected $startAction = false;
+	/** @var Vector3|bool */
 	protected $sleeping = false;
 	protected $clientID = null;
 
@@ -802,9 +803,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 		$this->sleeping = $pos;
 		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->getLevel()));
-		/*if($this->entity instanceof Entity){
-			$this->updateMetadata();
-		}*/
+
+		$this->sendMetadata($this->getViewers());
+		$this->sendMetadata($this);
+
 		$this->setSpawn($pos);
 		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "checkSleep")), 60);
 
@@ -833,9 +835,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function stopSleep(){
 		$this->sleeping = false;
-		//if($this->entity instanceof Entity){
-		//$this->entity->updateMetadata();
-		//}
+
+		$this->sendMetadata($this->getViewers());
+		$this->sendMetadata($this);
 	}
 
 	/**
@@ -845,17 +847,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function checkSleep(){
 		if($this->sleeping !== false){
 			//TODO: Move to Level
-			/*if($this->server->api->time->getPhase($this->getLevel()) === "night"){
+
+			$time = $this->getLevel()->getTime() % Level::TIME_FULL;
+
+			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);{
 				foreach($this->getLevel()->getPlayers() as $p){
 					if($p->sleeping === false){
 						return;
 					}
 				}
-				$this->server->api->time->set("day", $this->getLevel());
+
+				$this->getLevel()->setTime($this->getLevel()->getTime() + Level::TIME_FULL - $time);
+
 				foreach($this->getLevel()->getPlayers() as $p){
 					$p->stopSleep();
 				}
-			}*/
+			}
 		}
 
 		return;
@@ -1402,7 +1409,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->inAction === true){
 					$this->inAction = false;
-					//$this->entity->updateMetadata();
+					$this->sendMetadata($this->getViewers());
 				}
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
@@ -1437,7 +1444,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
 					if($this->inAction === true){
 						$this->inAction = false;
-						//$this->entity->updateMetadata();
+						$this->sendMetadata($this->getViewers());
 					}
 
 					if($blockVector->distance($this) > 10){
@@ -1481,7 +1488,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					//TODO: add event
 					$this->inAction = true;
 					$this->startAction = microtime(true);
-					//$this->updateMetadata();
+					$this->sendMetadata($this->getViewers());
 				}
 				break;
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
@@ -1518,8 +1525,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 						//}
 						$this->startAction = false;
-						//$this->entity->inAction = false;
-						//$this->entity->updateMetadata();
+						$this->inAction = false;
+						$this->sendMetadata($this->getViewers());
 						break;
 					case 6: //get out of the bed
 						$this->stopSleep();
@@ -1597,7 +1604,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->inAction === true){
 					$this->inAction = false;
-					//$this->entity->updateMetadata();
+					$this->sendMetadata($this->getViewers());
 				}
 				break;
 			case ProtocolInfo::INTERACT_PACKET:
@@ -1745,7 +1752,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->setHealth(20);
 				$this->dead = false;
-				//$this->entity->updateMetadata();
+				$this->sendMetadata($this->getViewers());
 
 				$this->sendSettings();
 				$this->inventory->sendContents($this);
@@ -1765,7 +1772,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->inAction === true){
 					$this->inAction = false;
-					//$this->updateMetadata();
+					$this->sendMetadata($this->getViewers());
 				}
 				switch($packet->event){
 					case 9: //Eating
@@ -1835,7 +1842,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->inAction === true){
 					$this->inAction = false;
-					//$this->updateMetadata();
+					$this->sendMetadata($this->getViewers());
 				}
 				break;
 			case ProtocolInfo::MESSAGE_PACKET:
@@ -2274,6 +2281,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk->event = 2;
 		$this->dataPacket($pk);
 		parent::attack($damage, $source);
+	}
+
+	public function getData(){ //TODO
+		$flags = 0;
+		$flags |= $this->fireTicks > 0 ? 1 : 0;
+		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
+		$flags |= ($this->inAction === true ? 0b10000:0);
+		$d = array(
+			0 => array("type" => 0, "value" => $flags),
+			1 => array("type" => 1, "value" => $this->airTicks),
+			16 => array("type" => 0, "value" => 0),
+			17 => array("type" => 6, "value" => array(0, 0, 0)),
+		);
+
+
+		if($this->sleeping !== false){
+			$d[16]["value"] = 2;
+			$d[17]["value"] = array($this->sleeping->x, $this->sleeping->y, $this->sleeping->z);
+		}
+
+
+		return $d;
 	}
 
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
