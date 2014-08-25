@@ -93,7 +93,7 @@ class GenerationManager{
 	protected $socket;
 	/** @var \Logger */
 	protected $logger;
-	/** @var \SplAutoLoader */
+	/** @var \ClassLoader */
 	protected $loader;
 
 	/** @var GenerationChunkManager[] */
@@ -110,11 +110,11 @@ class GenerationManager{
 	protected $shutdown = false;
 
 	/**
-	 * @param resource       $socket
-	 * @param \Logger        $logger
-	 * @param \SplAutoloader $loader
+	 * @param resource     $socket
+	 * @param \Logger      $logger
+	 * @param \ClassLoader $loader
 	 */
-	public function __construct($socket, \Logger $logger, \SplAutoloader $loader){
+	public function __construct($socket, \Logger $logger, \ClassLoader $loader){
 		$this->socket = $socket;
 		$this->logger = $logger;
 		$this->loader = $loader;
@@ -282,7 +282,7 @@ class GenerationManager{
 			$namespace = substr($packet, $offset, $len);
 			$offset += $len;
 			$path = substr($packet, $offset);
-			$this->loader->add($namespace, [$path]);
+			$this->loader->addPath($path);
 		}elseif($pid === self::PACKET_SHUTDOWN){
 			foreach($this->levels as $level){
 				$level->shutdown();

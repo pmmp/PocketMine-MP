@@ -26,11 +26,9 @@ use pocketmine\Worker;
 class AsyncWorker extends Worker{
 
 	public function run(){
-		require(\pocketmine\PATH . "src/spl/SplClassLoader.php");
-		$autoloader = new \SplClassLoader();
-		$autoloader->add("pocketmine", array(
-			\pocketmine\PATH . "src"
-		));
+		require(\pocketmine\PATH . "src/spl/ClassLoader.php");
+		$autoloader = new \BaseClassLoader();
+		$autoloader->addPath(\pocketmine\PATH . "src");
 		$autoloader->register(true);
 	}
 }

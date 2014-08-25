@@ -455,7 +455,7 @@ class Server{
 	}
 
 	/**
-	 * @return \SplClassLoader
+	 * @return \ClassLoader
 	 */
 	public function getLoader(){
 		return $this->autoloader;
@@ -1377,13 +1377,13 @@ class Server{
 	}
 
 	/**
-	 * @param \SplClassLoader $autoloader
+	 * @param \ClassLoader $autoloader
 	 * @param \ThreadedLogger $logger
 	 * @param string          $filePath
 	 * @param string          $dataPath
 	 * @param string          $pluginPath
 	 */
-	public function __construct(\SplClassLoader $autoloader, \ThreadedLogger $logger, $filePath, $dataPath, $pluginPath){
+	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, $filePath, $dataPath, $pluginPath){
 		self::$instance = $this;
 
 		$this->autoloader = $autoloader;

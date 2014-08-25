@@ -50,7 +50,7 @@ class GenerationThread extends Thread{
 		return $this->logger;
 	}
 
-	public function __construct(\ThreadedLogger $logger, \SplAutoloader $loader){
+	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader){
 		$this->loader = $loader;
 		$this->logger = $logger;
 		$loadPaths = [];

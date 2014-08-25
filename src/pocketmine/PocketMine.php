@@ -89,16 +89,14 @@ namespace pocketmine {
 		exit(1);
 	}
 
-	if(!class_exists("SplClassLoader", false)){
-		require_once(\pocketmine\PATH . "src/spl/SplClassLoader.php");
+	if(!class_exists("ClassLoader", false)){
+		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
+		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
+		require_once(\pocketmine\PATH . "src/pocketmine/CompatibleClassLoader.php");
 	}
 
-	$autoloader = new \SplClassLoader();
-	$autoloader->setMode(\SplAutoloader::MODE_DEBUG);
-	$autoloader->add("pocketmine", [
-		\pocketmine\PATH . "src"
-	]);
-
+	$autoloader = new CompatibleClassLoader();
+	$autoloader->addPath(\pocketmine\PATH . "src");
 	$autoloader->register(true);
 	if(!class_exists("raklib\\RakLib", false)){
 		require(\pocketmine\PATH . "src/raklib/raklib/RakLib.php");
