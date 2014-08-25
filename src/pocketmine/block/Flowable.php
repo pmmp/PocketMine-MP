@@ -23,10 +23,9 @@ namespace pocketmine\block;
 
 
 class Flowable extends Transparent{
-	public function __construct($id, $meta = 0, $name = "Unknown"){
-		parent::__construct($id, $meta, $name);
-		$this->isFlowable = true;
-		$this->isFullBlock = false;
-		$this->isSolid = false;
-	}
+
+	public $isFlowable = true;
+	public $isFullBlock = false;
+	public $isSolid = false;
+
 }

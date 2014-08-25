@@ -506,9 +506,9 @@ abstract class Block extends Position implements Metadatable{
 	public static $list = [];
 	protected $id;
 	protected $meta;
-	protected $name;
-	protected $breakTime;
-	protected $hardness;
+	protected $name = "Unknown";
+	protected $breakTime = 0.20;
+	protected $hardness = 10;
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;
@@ -698,8 +698,6 @@ abstract class Block extends Position implements Metadatable{
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 		$this->name = $name;
-		$this->breakTime = 0.20;
-		$this->hardness = 10;
 	}
 
 	/**

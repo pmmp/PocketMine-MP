@@ -22,16 +22,13 @@
 namespace pocketmine\block;
 
 
-class Transparent extends Generic{
 
-	public function __construct($id, $meta = 0, $name = "Unknown"){
-		parent::__construct($id, $meta, $name);
-		$this->isActivable = false;
-		$this->breakable = true;
-		$this->isFlowable = false;
-		$this->isTransparent = true;
-		$this->isReplaceable = false;
-		$this->isPlaceable = true;
-		$this->isSolid = true;
-	}
+class Transparent extends Generic{
+	public $isActivable = false;
+	public $breakable = true;
+	public $isFlowable = false;
+	public $isTransparent = true;
+	public $isReplaceable = false;
+	public $isPlaceable = true;
+	public $isSolid = true;
 }

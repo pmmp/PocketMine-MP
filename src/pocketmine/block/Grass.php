@@ -29,10 +29,15 @@ use pocketmine\Player;
 use pocketmine\utils\Random;
 
 class Grass extends Solid{
+
+	public $isActivable = true;
+	protected $hardness = 3;
+	protected $id = self::GRASS;
+	protected $meta = 0;
+	protected $name = "Grass";
+
 	public function __construct(){
-		parent::__construct(self::GRASS, 0, "Grass");
-		$this->isActivable = true;
-		$this->hardness = 3;
+
 	}
 
 	public function getDrops(Item $item){

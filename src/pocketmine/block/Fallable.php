@@ -26,10 +26,7 @@ use pocketmine\Player;
 
 class Fallable extends Solid{
 
-	public function __construct($id, $meta = 0, $name = "Unknown"){
-		parent::__construct($id, $meta, $name);
-		$this->hasPhysics = true;
-	}
+	public $hasPhysics = true;
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->getLevel()->setBlock($this, $this, true, false, true);
