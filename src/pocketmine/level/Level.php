@@ -809,7 +809,7 @@ class Level implements ChunkManager, Metadatable{
 						"Damage" => new Short("Damage", $item->getDamage()),
 						"Count" => new Byte("Count", $item->getCount())
 					]),
-				"PickupDelay" => new Short("PickupDelay", 25)
+				"PickupDelay" => new Short("PickupDelay", 50)
 			]));
 
 			$itemEntity->spawnToAll();
