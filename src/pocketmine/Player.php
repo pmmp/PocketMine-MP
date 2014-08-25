@@ -1332,7 +1332,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$dy = $newPos->y - $this->y;
 
-				if(($this->onGround and $dy > 0) or (!$this->onGround and $dy <= 0)){
+				if(($this->onGround and $dy != 0) or (!$this->onGround and $dy <= 0)){
 					if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
 						$isColliding = true;
 					}else{
