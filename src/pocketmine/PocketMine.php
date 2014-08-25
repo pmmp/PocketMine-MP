@@ -97,6 +97,7 @@ namespace pocketmine {
 
 	$autoloader = new CompatibleClassLoader();
 	$autoloader->addPath(\pocketmine\PATH . "src");
+	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(true);
 	if(!class_exists("raklib\\RakLib", false)){
 		require(\pocketmine\PATH . "src/raklib/raklib/RakLib.php");
