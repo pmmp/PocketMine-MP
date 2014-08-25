@@ -33,36 +33,13 @@ class IntArray extends NamedTag{
 	public function read(NBT $nbt){
 		$this->value = [];
 		$size = $nbt->getInt();
-		$ints = $nbt->get($size * 4);
-		$offset = 0;
-		if($nbt->endianness === NBT::LITTLE_ENDIAN){
-			for($i = 0; $i < $size and isset($ints{$offset}); ++$i){
-				$this->value[$i] = Binary::readLInt(substr($ints, $offset, 4));
-				$offset += 4;
-			}
-		}else{
-			for($i = 0; $i < $size and isset($ints{$offset}); ++$i){
-				$this->value[$i] = Binary::readInt(substr($ints, $offset, 4));
-				$offset += 4;
-			}
-		}
-
+		$this->value = unpack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", $nbt->get($size * 4));
 	}
 
 	public function write(NBT $nbt){
 		$nbt->putInt(count($this->value));
-
-		$ints = "";
-		if($nbt->endianness === NBT::LITTLE_ENDIAN){
-			foreach($this->value as $v){
-				$ints .= Binary::writeLInt($v);
-			}
-		}else{
-			foreach($this->value as $v){
-				$ints .= Binary::writeInt($v);
-			}
-		}
-
-		$nbt->put($ints);
+		$ints = $this->value;
+		array_unshift($ints, $nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*");
+		$nbt->put(call_user_func_array("pack", $ints));
 	}
 }
