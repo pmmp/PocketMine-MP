@@ -1332,13 +1332,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$dy = $newPos->y - $this->y;
 
-				if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
-					$isColliding = true;
-				}else{
-					$isColliding = false;
+				if(($this->onGround and $dy > 0) or (!$this->onGround and $dy <= 0)){
+					if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
+						$isColliding = true;
+					}else{
+						$isColliding = false;
+					}
+
+					$this->onGround = ($dy <= 0 and $isColliding);
 				}
 
-				$this->onGround = ($dy <= 0 and $isColliding);
 				$this->updateFallState($dy, $this->onGround);
 
 				if(!$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch)){
@@ -1350,6 +1353,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->bodyYaw = $this->yaw;
 					$pk->pitch = $this->pitch;
 					$pk->yaw = $this->yaw;
+					$pk->teleport = true;
 					$this->directDataPacket($pk);
 				}
 
