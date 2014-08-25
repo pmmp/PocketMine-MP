@@ -2323,6 +2323,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$pk->yaw = $this->yaw;
+			$pk->teleport = true;
 			$this->directDataPacket($pk);
 		}
 	}
