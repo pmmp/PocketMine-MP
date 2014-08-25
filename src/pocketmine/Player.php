@@ -2128,7 +2128,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 			parent::close();
-			
+
 			$this->loggedIn = false;
 
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
