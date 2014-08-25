@@ -1636,6 +1636,10 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->doChunkUnload->startTiming();
 
+		if($this->getAutoSave()){
+			$this->provider->saveChunk($x, $z);
+		}
+
 		unset($this->chunks[$index = Level::chunkHash($x, $z)]);
 		$this->provider->unloadChunk($x, $z, $safe);
 		unset($this->usedChunks[$index]);
