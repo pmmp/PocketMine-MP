@@ -32,6 +32,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\network\protocol\ContainerSetDataPacket;
 
 class Furnace extends Tile implements InventoryHolder, Container{
 	/** @var FurnaceInventory */
@@ -216,6 +217,24 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			$this->namedtag->BurnTime = new Short("BurnTime", 0);
 			$this->namedtag->CookTime = new Short("CookTime", 0);
 			$this->namedtag->BurnTicks = new Short("BurnTicks", 0);
+		}
+
+		foreach($this->getInventory()->getViewers() as $player){
+			$windowId = $player->getWindowId($this->getInventory());
+			if($windowId > 0){
+				$pk = new ContainerSetDataPacket;
+				$pk->windowid = $windowId;
+				$pk->property = 0; //Smelting
+				$pk->value = floor($this->namedtag["CookTime"]);
+				$player->dataPacket($pk);
+
+				$pk = new ContainerSetDataPacket;
+				$pk->windowid = $windowId;
+				$pk->property = 1; //Fire icon
+				$pk->value = $this->namedtag["BurnTicks"];
+				$player->dataPacket($pk);
+			}
+
 		}
 
 		$this->lastUpdate = microtime(true);
