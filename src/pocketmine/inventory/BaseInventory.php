@@ -330,6 +330,11 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
+	/**
+	 * @param Player $source
+	 *
+	 * @return Player[]
+	 */
 	public function getViewers($source = null){
 		$viewers = [];
 		foreach($this->viewers as $viewer){
