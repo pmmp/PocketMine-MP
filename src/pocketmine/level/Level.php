@@ -38,6 +38,7 @@ use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
@@ -65,6 +66,7 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
+use pocketmine\tile\Chest;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
@@ -876,6 +878,16 @@ class Level implements ChunkManager, Metadatable{
 		$target->onBreak($item);
 		$tile = $this->getTile($target);
 		if($tile instanceof Tile){
+			if($tile instanceof InventoryHolder){
+				if($tile instanceof Chest){
+					$tile->unpair();
+				}
+
+				foreach($tile->getInventory()->getContents() as $item){
+					$this->dropItem($target, $item);
+				}
+			}
+			
 			$tile->close();
 		}
 
