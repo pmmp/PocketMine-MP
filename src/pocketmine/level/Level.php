@@ -874,6 +874,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 		$target->onBreak($item);
+		$tile = $this->getTile($target);
+		if($tile instanceof Tile){
+			$tile->close();
+		}
+
 		if($item instanceof Item){
 			$item->useOn($target);
 			if($item->isTool() and $item->getDamage() >= $item->getMaxDurability()){
