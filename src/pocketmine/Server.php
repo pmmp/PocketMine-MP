@@ -1822,9 +1822,10 @@ class Server{
 		$this->tickCounter = 0;
 
 		if(function_exists("pcntl_signal")){
-			pcntl_signal(SIGTERM, array($this, "shutdown"));
-			pcntl_signal(SIGINT, array($this, "shutdown"));
-			pcntl_signal(SIGHUP, array($this, "shutdown"));
+			pcntl_signal(SIGTERM, [$this, "handleSignal"]);
+			pcntl_signal(SIGINT, [$this, "handleSignal"]);
+			pcntl_signal(SIGHUP, [$this, "handleSignal"]);
+			$this->getScheduler()->scheduleRepeatingTask(new CallbackTask("pcntl_signal_dispatch"), 5);
 		}
 
 		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
@@ -1835,6 +1836,12 @@ class Server{
 		$this->forceShutdown();
 
 		gc_collect_cycles();
+	}
+
+	public function handleSignal($signo){
+		if($signo === SIGTERM or $signo === SIGINT or $signo === SIGHUP){
+			$this->shutdown();
+		}
 	}
 
 	public function checkTicks(){
