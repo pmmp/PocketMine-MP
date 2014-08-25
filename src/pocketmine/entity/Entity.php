@@ -939,15 +939,7 @@ abstract class Entity extends Position implements Metadatable{
 
 		if(!$this->justCreated and $force !== true){
 			$ev = new EntityMoveEvent($this, $pos);
-			if($this instanceof Player){
-				for($side = 2; $side <= 5; ++$side){
-					$vector = $pos->getSide($side, 2);
-					if(!isset($this->usedChunks[Level::chunkHash($vector->x >> 4, $vector->z >> 4)])){
-						$ev->setCancelled(true);
-						break;
-					}
-				}
-			}
+
 			$this->server->getPluginManager()->callEvent($ev);
 			if($ev->isCancelled()){
 				return false;
