@@ -887,7 +887,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->dropItem($target, $item);
 				}
 			}
-			
+
 			$tile->close();
 		}
 

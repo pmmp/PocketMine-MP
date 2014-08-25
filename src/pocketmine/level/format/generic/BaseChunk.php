@@ -152,8 +152,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		}catch(\Exception $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
-
-			return $this->setBlock($x, $y, $z, $blockId, $meta);
+			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
 		}
 	}
 
