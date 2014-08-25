@@ -321,7 +321,7 @@ class CraftingManager{
 	public function matchFurnaceRecipe(Item $input){
 		if(isset($this->furnaceRecipes[$input->getID() . ":" . $input->getDamage()])){
 			return $this->furnaceRecipes[$input->getID() . ":" . $input->getDamage()];
-		}elseif($this->furnaceRecipes[$input->getID() . ":?"]){
+		}elseif(isset($this->furnaceRecipes[$input->getID() . ":?"])){
 			return $this->furnaceRecipes[$input->getID() . ":?"];
 		}
 
