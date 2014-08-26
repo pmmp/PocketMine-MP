@@ -2163,6 +2163,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * Handles player data saving
 	 */
 	public function save(){
+		if($this->closed){
+			throw new \Exception("Tried to save closed player");
+		}
+
 		parent::saveNBT();
 		$this->namedtag["Level"] = $this->getLevel()->getName();
 		if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
