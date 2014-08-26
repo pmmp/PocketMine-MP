@@ -1943,7 +1943,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$inv = $ts->getInventory();
 						if($inv instanceof FurnaceInventory){
 							if($ts->getSlot() === 2){
-								switch($inv->getResult()){
+								switch($inv->getResult()->getID()){
 									case Item::IRON_INGOT:
 										$this->awardAchievement("acquireIron");
 										break;
