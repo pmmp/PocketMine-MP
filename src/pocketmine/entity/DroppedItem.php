@@ -112,7 +112,8 @@ class DroppedItem extends Entity{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
+		$this->setLastDamageCause($source);
+		$this->setHealth($this->getHealth() - $damage);
 	}
 
 	public function heal($amount){
