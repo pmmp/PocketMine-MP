@@ -122,11 +122,9 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$biomeColors = "";
-
-		foreach($chunk->getBiomeColorArray() as $color){
-			$biomeColors .= Binary::writeInt($color);
-		}
+		$biomeColors = $chunk->getBiomeColorArray();
+		array_unshift($biomeColors, "N*");
+		$biomeColors = call_user_func_array("pack", $biomeColors);
 
 		$ordered = zlib_encode(
 			Binary::writeLInt($x) . Binary::writeLInt($z) .
