@@ -25,7 +25,25 @@
 namespace pocketmine\level;
 
 use pocketmine\block\Air;
+use pocketmine\block\Beetroot;
 use pocketmine\block\Block;
+use pocketmine\block\BrownMushroom;
+use pocketmine\block\Cactus;
+use pocketmine\block\Carrot;
+use pocketmine\block\Farmland;
+use pocketmine\block\Grass;
+use pocketmine\block\Ice;
+use pocketmine\block\Leaves;
+use pocketmine\block\Leaves2;
+use pocketmine\block\MelonStem;
+use pocketmine\block\Mycelium;
+use pocketmine\block\Potato;
+use pocketmine\block\PumpkinStem;
+use pocketmine\block\RedMushroom;
+use pocketmine\block\Sapling;
+use pocketmine\block\SnowLayer;
+use pocketmine\block\Sugarcane;
+use pocketmine\block\Wheat;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -153,27 +171,27 @@ class Level implements ChunkManager, Metadatable{
 	protected $chunksPerTick;
 	protected $clearChunksOnTick;
 	protected $randomTickBlocks = [
-		Block::GRASS => true,
-		Block::SAPLING => true,
-		Block::LEAVES => true,
-		Block::WHEAT_BLOCK => true,
-		Block::FARMLAND => true,
-		Block::SNOW_LAYER => true,
-		Block::ICE => true,
-		Block::CACTUS => true,
-		Block::SUGARCANE_BLOCK => true,
-		Block::RED_MUSHROOM => true,
-		Block::BROWN_MUSHROOM => true,
-		Block::PUMPKIN_STEM => true,
-		Block::MELON_STEM => true,
+		Block::GRASS => Grass::class,
+		Block::SAPLING => Sapling::class,
+		Block::LEAVES => Leaves::class,
+		Block::WHEAT_BLOCK => Wheat::class,
+		Block::FARMLAND => Farmland::class,
+		Block::SNOW_LAYER => SnowLayer::class,
+		Block::ICE => Ice::class,
+		Block::CACTUS => Cactus::class,
+		Block::SUGARCANE_BLOCK => Sugarcane::class,
+		Block::RED_MUSHROOM => RedMushroom::class,
+		Block::BROWN_MUSHROOM => BrownMushroom::class,
+		Block::PUMPKIN_STEM => PumpkinStem::class,
+		Block::MELON_STEM => MelonStem::class,
 		//Block::VINE => true,
-		Block::MYCELIUM => true,
+		Block::MYCELIUM => Mycelium::class,
 		//Block::COCOA_BLOCK => true,
-		Block::CARROT_BLOCK => true,
-		Block::POTATO_BLOCK => true,
-		Block::LEAVES2,
+		Block::CARROT_BLOCK => Carrot::class,
+		Block::POTATO_BLOCK => Potato::class,
+		Block::LEAVES2 => Leaves2::class,
 
-		Block::BEETROOT_BLOCK,
+		Block::BEETROOT_BLOCK => Beetroot::class,
 	];
 
 	/** @var LevelTimings */
@@ -482,11 +500,9 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$this->timings->doTickPending->stopTiming();
 
-		/*
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
-		*/
 
 		$this->processChunkRequest();
 
@@ -506,13 +522,13 @@ class Level implements ChunkManager, Metadatable{
 			$x = $player->x >> 4;
 			$z = $player->x >> 4;
 
-			$index = Level::chunkHash($x, $z);
+			$index = "$x:$z";
 			$existingPlayers = max(0, isset($this->chunkTickList[$index]) ? $this->chunkTickList[$index] : 0);
 			$this->chunkTickList[$index] = $existingPlayers + 1;
 			for($chunk = 0; $chunk < $chunksPerPlayer; ++$chunk){
 				$dx = mt_rand(-$randRange, $randRange);
 				$dz = mt_rand(-$randRange, $randRange);
-				$hash = Level::chunkHash($dx + $x, $dz + $z);
+				$hash = ($dx + $x) .":". ($dz + $z);
 				if(!isset($this->chunkTickList[$hash]) and $this->isChunkLoaded($dx + $x, $dz + $z)){
 					$this->chunkTickList[$hash] = -1;
 				}
@@ -544,7 +560,13 @@ class Level implements ChunkManager, Metadatable{
 							$k %= 1073741827;
 							$blockId = $section->getBlockId($x, $y, $z);
 							if(isset($this->randomTickBlocks[$blockId])){
-								$block = Block::get($blockId, $section->getBlockData($x, $y, $z), new Position($chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z, $this));
+								$class = $this->randomTickBlocks[$blockId];
+								/** @var Block $block */
+								$block = new $class($section->getBlockData($x, $y, $z));
+								$block->x = $chunkX * 16 + $x;
+								$block->y = ($Y << 4) + $y;
+								$block->z = $chunkZ * 16 + $z;
+								$block->level = $this;
 								$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
 							}
 						}
@@ -561,7 +583,13 @@ class Level implements ChunkManager, Metadatable{
 						$k %= 1073741827;
 						$blockId = $chunk->getBlockId($x, $y + ($Y << 4), $z);
 						if(isset($this->randomTickBlocks[$blockId])){
-							$block = Block::get($blockId, $chunk->getBlockData($x, $y + ($Y << 4), $z), new Position($chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z, $this));
+							$class = $this->randomTickBlocks[$blockId];
+							/** @var Block $block */
+							$block = new $class($chunk->getBlockData($x, $y + ($Y << 4), $z));
+							$block->x = $chunkX * 16 + $x;
+							$block->y = ($Y << 4) + $y;
+							$block->z = $chunkZ * 16 + $z;
+							$block->level = $this;
 							$block->onUpdate(self::BLOCK_UPDATE_RANDOM);
 						}
 					}
@@ -731,7 +759,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function setBlock(Vector3 $pos, Block $block, $direct = false, $update = true){
-		if($pos->y < 0 or $pos->y >= 128){
+		if($pos->y < 0 or $pos->y >= 128 or !($block instanceof Block)){
 			return false;
 		}
 
