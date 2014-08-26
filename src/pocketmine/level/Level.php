@@ -211,6 +211,8 @@ class Level implements ChunkManager, Metadatable{
 
 	public static function getXZ($hash, &$x, &$z){
 		list($x, $z) = explode(":", $hash);
+		$x = (int) $x;
+		$z = (int) $z;
 	}
 
 	/**

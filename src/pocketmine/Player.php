@@ -59,6 +59,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -1344,7 +1345,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->updateFallState($dy, $this->onGround);
 
-				if(!$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch)){
+				$revert = false;
+
+				if($this->chunk === null or !$this->chunk->isGenerated()){
+					$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
+					if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
+						$revert = true;
+					}
+				}
+
+				if($revert or !$this->setPositionAndRotation($newPos, $packet->yaw, $packet->pitch)){
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
 					$pk->x = $this->x;
