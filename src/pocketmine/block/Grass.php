@@ -25,7 +25,6 @@ use pocketmine\item\Item;
 use pocketmine\level\generator\object\TallGrass;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 

@@ -21,8 +21,6 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-
 class Podzol extends Solid{
 	public function __construct(){
 		parent::__construct(self::PODZOL, 0, "Podzol");	

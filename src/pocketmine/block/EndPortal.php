@@ -21,8 +21,6 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-
 class EndPortal extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::END_PORTAL, $meta, "End Portal");

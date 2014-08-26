@@ -22,7 +22,6 @@
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
-use pocketmine\utils\Binary;
 
 class IntArray extends NamedTag{
 
