@@ -27,6 +27,7 @@ class AsyncWorker extends Worker{
 
 	public function run(){
 		require(\pocketmine\PATH . "src/spl/ClassLoader.php");
+		require(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 		$autoloader = new \BaseClassLoader();
 		$autoloader->addPath(\pocketmine\PATH . "src");
 		$autoloader->register(true);
