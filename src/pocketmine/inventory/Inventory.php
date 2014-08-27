@@ -73,7 +73,7 @@ interface Inventory{
 	 *
 	 * @return Item[]
 	 */
-	public function addItem();
+	public function addItem(...$slots);
 
 	/**
 	 * Checks if a given Item can be added to the inventory
@@ -92,7 +92,7 @@ interface Inventory{
 	 *
 	 * @return Item[]
 	 */
-	public function removeItem();
+	public function removeItem(...$slots);
 
 	/**
 	 * @return Item[]
