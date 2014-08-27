@@ -251,7 +251,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->nextSave = microtime(true) + 90;
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 3)));
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 128);
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 80);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
 		$this->timings = new LevelTimings($this);

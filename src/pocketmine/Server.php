@@ -1984,10 +1984,13 @@ class Server{
 	}
 
 	public function doAutoSave(){
-
 		Timings::$worldSaveTimer->startTiming();
-		foreach($this->getOnlinePlayers() as $player){
-			$player->save();
+		foreach($this->getOnlinePlayers() as $index => $player){
+			if($player->isOnline()){
+				$player->save();
+			}elseif(!$player->isConnected()){
+				unset($this->players[$index]);
+			}
 		}
 
 		foreach($this->getLevels() as $level){
