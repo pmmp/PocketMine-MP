@@ -20,9 +20,9 @@
 */
 
 namespace {
-	function safe_var_dump(...$params){
+	function safe_var_dump(){
 		static $cnt = 0;
-		foreach($params as $var){
+		foreach(func_get_args() as $var){
 			switch(true){
 				case is_array($var):
 					echo str_repeat("  ", $cnt) . "array(" . count($var) . ") {" . PHP_EOL;
