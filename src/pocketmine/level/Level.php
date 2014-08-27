@@ -733,8 +733,8 @@ class Level implements ChunkManager, Metadatable{
 	public function getBlock(Vector3 $pos){
 		$blockId = 0;
 		$meta = 0;
-		if($pos->y >= 0 and $pos->y < 128){
-			$this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
+		if($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunkAt($pos->x >> 4, $pos->z >> 4, true)) !== null){
+			$chunk->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
 		}
 
 		if($blockId === 0){

@@ -105,7 +105,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 					if(!isset($nbt->id)){
 						continue;
 					}
-					
+
 					//TODO: add all entities
 					if($nbt->id instanceof String){ //New format
 						switch($nbt["id"]){
