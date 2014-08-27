@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -34,6 +35,10 @@ class Zombie extends Monster{
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 1.8;
+
+	protected function initEntity(){
+		$this->namedtag->id = new String("id", "Zombie");
+	}
 
 	public function getName(){
 		return "Zombie";

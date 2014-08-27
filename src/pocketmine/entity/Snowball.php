@@ -22,6 +22,10 @@
 namespace pocketmine\entity;
 
 
-class Snowball extends Projectile{
+use pocketmine\nbt\tag\String;
 
+class Snowball extends Projectile{
+	protected function initEntity(){
+		$this->namedtag->id = new String("id", "Snowball");
+	}
 }

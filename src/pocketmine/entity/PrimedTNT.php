@@ -22,6 +22,10 @@
 namespace pocketmine\entity;
 
 
-class EnderPearl extends Projectile{
+use pocketmine\nbt\tag\String;
 
+class PrimedTNT extends Entity implements Explosive{
+	protected function initEntity(){
+		$this->namedtag->id = new String("id", "PrimedTNT");
+	}
 }

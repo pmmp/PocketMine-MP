@@ -22,6 +22,10 @@
 namespace pocketmine\entity;
 
 
-class Silverfish extends Monster{
+use pocketmine\nbt\tag\String;
 
+class Silverfish extends Monster{
+	protected function initEntity(){
+		$this->namedtag->id = new String("id", "Silverfish");
+	}
 }

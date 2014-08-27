@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -47,6 +48,7 @@ class Villager extends Creature implements NPC, Ageable{
 
 	protected function initEntity(){
 		parent::initEntity();
+		$this->namedtag->id = new String("id", "Villager");
 		if(!isset($this->namedtag->Profession)){
 			$this->setProfession(self::PROFESSION_GENERIC);
 		}

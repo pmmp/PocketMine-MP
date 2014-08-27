@@ -22,6 +22,10 @@
 namespace pocketmine\entity;
 
 
-class FallingBlock extends Entity{
+use pocketmine\nbt\tag\String;
 
+class FallingSand extends Entity{
+	protected function initEntity(){
+		$this->namedtag->id = new String("id", "FallingSand");
+	}
 }

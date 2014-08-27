@@ -106,6 +106,7 @@ abstract class BaseFullChunk implements FullChunk{
 						continue;
 					}
 
+					//TODO: add all entities
 					if($nbt->id instanceof String){ //New format
 						switch($nbt["id"]){
 							case "Item":

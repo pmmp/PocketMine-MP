@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -39,13 +40,12 @@ class Arrow extends Projectile{
 	protected $drag = 0.01;
 
 	protected function initEntity(){
+		$this->namedtag->id = new String("id", "Arrow");
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
 		if(isset($this->namedtag->Age)){
 			$this->age = $this->namedtag["Age"];
 		}
-
-
 	}
 
 	public function onUpdate(){

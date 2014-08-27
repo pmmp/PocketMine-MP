@@ -22,6 +22,10 @@
 namespace pocketmine\entity;
 
 
-class Pig extends Animal implements Rideable{
+use pocketmine\nbt\tag\String;
 
+class Pig extends Animal implements Rideable{
+	protected function initEntity(){
+		$this->namedtag->id = new String("id", "Pig");
+	}
 }
