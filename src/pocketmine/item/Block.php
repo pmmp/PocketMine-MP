@@ -37,6 +37,10 @@ class Block extends Item{
 		$this->block->setDamage($this->meta);
 	}
 
+	public function __clone(){
+		$this->block = clone $this->block;
+	}
+
 	public function getBlock(){
 		return $this->block;
 	}
