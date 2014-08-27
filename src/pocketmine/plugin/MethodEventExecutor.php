@@ -33,7 +33,7 @@ class MethodEventExecutor implements EventExecutor{
 	}
 
 	public function execute(Listener $listener, Event $event){
-		call_user_func(array($listener, $this->method), $event);
+		$listener->{$this->getMethod()}($event);
 	}
 
 	public function getMethod(){

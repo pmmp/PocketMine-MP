@@ -100,9 +100,7 @@ class ChunkRequestTask extends AsyncTask{
 			}
 		}
 
-		$biomeColors = $this->biomeColors;
-		array_unshift($biomeColors, "N*");
-		$biomeColors = call_user_func_array("pack", $biomeColors);
+		$biomeColors = pack("N*", ...$this->biomeColors);
 
 		$ordered = zlib_encode(Binary::writeLInt($this->chunkX) . Binary::writeLInt($this->chunkZ) . $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $this->biomeIds . $biomeColors . $this->tiles, ZLIB_ENCODING_DEFLATE, $this->compressionLevel);
 
