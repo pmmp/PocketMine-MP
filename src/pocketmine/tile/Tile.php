@@ -70,7 +70,7 @@ abstract class Tile extends Position{
 
 		$this->server = $chunk->getProvider()->getLevel()->getServer();
 		$this->chunk = $chunk;
-		$this->setLevel($chunk->getProvider()->getLevel(), true); //Strong reference
+		$this->setLevel($chunk->getProvider()->getLevel());
 		$this->namedtag = $nbt;
 		$this->closed = false;
 		$this->name = "";

@@ -1595,7 +1595,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkInUse($x, $z){
-		return isset($this->usedChunks[static::chunkHash($x, $z)]) and count($this->usedChunks[static::chunkHash($x, $z)]) > 0;
+		return isset($this->usedChunks[Level::chunkHash($x, $z)]) and count($this->usedChunks[Level::chunkHash($x, $z)]) > 0;
 	}
 
 	/**
