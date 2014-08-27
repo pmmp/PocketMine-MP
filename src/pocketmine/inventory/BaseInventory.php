@@ -225,9 +225,8 @@ abstract class BaseInventory implements Inventory{
 		return false;
 	}
 
-	public function addItem(){
+	public function addItem(...$slots){
 		/** @var Item[] $slots */
-		$slots = func_get_args();
 		foreach($slots as $i => $slot){
 			$slots[$i] = clone $slot;
 		}
@@ -264,9 +263,8 @@ abstract class BaseInventory implements Inventory{
 		return $slots;
 	}
 
-	public function removeItem(){
+	public function removeItem(...$slots){
 		/** @var Item[] $slots */
-		$slots = func_get_args();
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
 			if($item->getID() === Item::AIR){
