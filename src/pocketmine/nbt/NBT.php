@@ -39,6 +39,7 @@ use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
 
 /**
  * Named Binary Tag encoder/decoder
@@ -245,6 +246,59 @@ class NBT{
 	public function putString($v){
 		$this->putShort(strlen($v));
 		$this->buffer .= $v;
+	}
+
+	public function getArray(){
+		$data = [];
+		$this->toArray($data, $this->data);
+	}
+
+	private function toArray(array &$data, Tag $tag){
+		/** @var Compound[]|Enum[]|IntArray[] $tag */
+		foreach($tag as $key => $value){
+			if($value instanceof Compound or $value instanceof Enum or $value instanceof IntArray){
+				$data[$key] = [];
+				$this->toArray($data[$key], $value);
+			}else{
+				$data[$key] = $value->getValue();
+			}
+		}
+	}
+
+	private function fromArray(Tag $tag, array $data){
+		foreach($data as $key => $value){
+			if(is_array($value)){
+				$isNumeric = true;
+				$isIntArray = true;
+				foreach($value as $k => $v){
+					if(!is_numeric($k)){
+						$isNumeric = false;
+						break;
+					}elseif(!is_int($v)){
+						$isIntArray = false;
+					}
+				}
+				$tag{$key} = $isNumeric ? ($isIntArray ? new IntArray($key, []) : new Enum($key, [])) : new Compound($key, []);
+				$this->fromArray($tag->{$key}, $value);
+			}elseif(is_int($value)){
+				$tag{$key} = new Int($key, $value);
+			}elseif(is_float($value)){
+				$tag{$key} = new Float($key, $value);
+			}elseif(is_string($value)){
+				if(Utils::printable($value) !== $value){
+					$tag{$key} = new ByteArray($key, $value);
+				}else{
+					$tag{$key} = new String($key, $value);
+				}
+			}elseif(is_bool($value)){
+				$tag{$key} = new Byte($key, $value ? 1 : 0);
+			}
+		}
+	}
+
+	public function setArray(array $data){
+		$this->data = new Compound(null, []);
+		$this->fromArray($this->data, $data);
 	}
 
 	public function getData(){
