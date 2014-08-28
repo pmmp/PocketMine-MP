@@ -31,13 +31,9 @@ class LitPumpkin extends Solid{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$faces = array(
-			0 => 4,
-			1 => 2,
-			2 => 5,
-			3 => 3,
-		);
-		$this->meta = $faces[$player->getDirection()];
+		if($player instanceof Player){
+			$this->meta = (int) $player->getDirection();
+		}
 		$this->getLevel()->setBlock($block, $this, true, false, true);
 
 		return true;
