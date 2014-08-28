@@ -33,7 +33,7 @@ class Cache{
 	 * @param float|int $minTTL The data will remain cached for at least $minTTL seconds
 	 */
 	public static function add($identifier, $blob, $minTTL = 30){
-		self::$cached[$identifier] = array($blob, microtime(true) + $minTTL, $minTTL);
+		self::$cached[$identifier] = [$blob, microtime(true) + $minTTL, $minTTL];
 	}
 
 	/**

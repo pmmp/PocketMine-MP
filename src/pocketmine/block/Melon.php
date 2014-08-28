@@ -30,8 +30,8 @@ class Melon extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array(Item::MELON_SLICE, 0, mt_rand(3, 7)),
-		);
+		return [
+			[Item::MELON_SLICE, 0, mt_rand(3, 7)],
+		];
 	}
 }

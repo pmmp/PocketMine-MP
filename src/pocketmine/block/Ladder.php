@@ -40,12 +40,12 @@ class Ladder extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target->isTransparent === false){
-			$faces = array(
+			$faces = [
 				2 => 2,
 				3 => 3,
 				4 => 4,
 				5 => 5,
-			);
+			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
 				$this->getLevel()->setBlock($block, $this, true, false, true);
@@ -70,8 +70,8 @@ class Ladder extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

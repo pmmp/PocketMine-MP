@@ -80,12 +80,12 @@ class Villager extends Creature implements NPC, Ageable{
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
 		//$flags |= ($this->inAction === true ? 0b10000:0);
-		$d = array(
-			0 => array("type" => 0, "value" => $flags),
-			1 => array("type" => 1, "value" => $this->airTicks),
-			16 => array("type" => 0, "value" => 0),
-			17 => array("type" => 6, "value" => array(0, 0, 0)),
-		);
+		$d = [
+			0 => ["type" => 0, "value" => $flags],
+			1 => ["type" => 1, "value" => $this->airTicks],
+			16 => ["type" => 0, "value" => 0],
+			17 => ["type" => 6, "value" => [0, 0, 0]],
+		];
 
 		return $d;
 	}

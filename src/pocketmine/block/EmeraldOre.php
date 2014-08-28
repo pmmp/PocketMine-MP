@@ -42,9 +42,9 @@ class EmeraldOre extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 4){
-			return array(
-				array(Item::EMERALD, 0, 1),
-			);
+			return [
+				[Item::EMERALD, 0, 1],
+			];
 		}else{
 			return [];
 		}

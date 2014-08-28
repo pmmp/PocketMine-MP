@@ -49,9 +49,9 @@ class MossStone extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array(Item::MOSS_STONE, $this->meta, 1),
-			);
+			return [
+				[Item::MOSS_STONE, $this->meta, 1],
+			];
 		}else{
 			return [];
 		}

@@ -217,7 +217,7 @@ class Utils{
 		$drop = 0;
 		while(!isset($output{$length - 1})){
 			//some entropy, but works ^^
-			$weakEntropy = array(
+			$weakEntropy = [
 				is_array($startEntropy) ? implode($startEntropy) : $startEntropy,
 				serialize(@stat(__FILE__)),
 				__DIR__,
@@ -249,7 +249,7 @@ class Utils{
 				(string) disk_total_space("."),
 				uniqid(microtime(), true),
 				file_exists("/proc/cpuinfo") ? file_get_contents("/proc/cpuinfo") : microtime(),
-			);
+			];
 
 			shuffle($weakEntropy);
 			$value = hash("sha512", implode($weakEntropy), true);
@@ -261,13 +261,13 @@ class Utils{
 			unset($weakEntropy);
 
 			if($secure === true){
-				$strongEntropyValues = array(
+				$strongEntropyValues = [
 					is_array($startEntropy) ? hash("sha512", $startEntropy[($rounds + $drop) % count($startEntropy)], true) : hash("sha512", $startEntropy, true), //Get a random index of the startEntropy, or just read it
 					file_exists("/dev/urandom") ? fread(fopen("/dev/urandom", "rb"), 64) : str_repeat("\x00", 64),
 					function_exists("openssl_random_pseudo_bytes") ? openssl_random_pseudo_bytes(64) : str_repeat("\x00", 64),
 					function_exists("mcrypt_create_iv") ? mcrypt_create_iv(64, MCRYPT_DEV_URANDOM) : str_repeat("\x00", 64),
 					$value,
-				);
+				];
 				$strongEntropy = array_pop($strongEntropyValues);
 				foreach($strongEntropyValues as $value){
 					$strongEntropy = $strongEntropy ^ $value;
@@ -330,7 +330,7 @@ class Utils{
 		}
 
 		$ch = curl_init($page);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"]);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -368,7 +368,7 @@ class Utils{
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 PocketMine-MP"]);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
 		$ret = curl_exec($ch);

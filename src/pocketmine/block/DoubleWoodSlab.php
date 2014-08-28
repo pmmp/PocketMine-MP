@@ -26,14 +26,14 @@ use pocketmine\item\Item;
 class DoubleWoodSlab extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::DOUBLE_WOOD_SLAB, $meta, "Double Wooden Slab");
-		$names = array(
+		$names = [
 			0 => "Oak",
 			1 => "Spruce",
 			2 => "Birch",
 			3 => "Jungle",
 			4 => "Acacia",
 			5 => "Dark Oak",
-		);
+		];
 		$this->name = "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
 		$this->hardness = 15;
 	}
@@ -56,9 +56,9 @@ class DoubleWoodSlab extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array(Item::WOOD_SLAB, $this->meta & 0x07, 2),
-		);
+		return [
+			[Item::WOOD_SLAB, $this->meta & 0x07, 2],
+		];
 	}
 
 }

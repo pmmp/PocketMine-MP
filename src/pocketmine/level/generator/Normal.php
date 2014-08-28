@@ -77,7 +77,7 @@ class Normal extends Generator{
 
 
 		$ores = new Ore();
-		$ores->setOreTypes(array(
+		$ores->setOreTypes([
 			new OreType(new CoalOre(), 20, 16, 0, 128),
 			new OreType(New IronOre(), 20, 8, 0, 64),
 			new OreType(new RedstoneOre(), 8, 7, 0, 16),
@@ -86,7 +86,7 @@ class Normal extends Generator{
 			new OreType(new DiamondOre(), 1, 7, 0, 16),
 			new OreType(new Dirt(), 20, 32, 0, 128),
 			new OreType(new Gravel(), 10, 16, 0, 128),
-		));
+		]);
 		$this->populators[] = $ores;
 
 		$trees = new Tree();

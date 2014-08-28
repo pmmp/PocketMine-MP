@@ -1038,16 +1038,16 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
-			$tile = new Sign($this->getChunkAt($block->x >> 4, $block->z >> 4), new Compound(false, array(
-				new String("id", Tile::SIGN),
-				new Int("x", $block->x),
-				new Int("y", $block->y),
-				new Int("z", $block->z),
-				new String("Text1", ""),
-				new String("Text2", ""),
-				new String("Text3", ""),
-				new String("Text4", "")
-			)));
+			$tile = new Sign($this->getChunkAt($block->x >> 4, $block->z >> 4), new Compound(false, [
+				"id" => new String("id", Tile::SIGN),
+				"x" => new Int("x", $block->x),
+				"y" => new Int("y", $block->y),
+				"z" => new Int("z", $block->z),
+				"Text1" => new String("Text1", ""),
+				"Text2" => new String("Text2", ""),
+				"Text3" => new String("Text3", ""),
+				"Text4" => new String("Text4", "")
+			]));
 			if($player instanceof Player){
 				$tile->namedtag->Creator = new String("Creator", $player->getName());
 			}

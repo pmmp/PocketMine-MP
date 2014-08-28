@@ -44,9 +44,9 @@ class Lapis extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 3){
-			return array(
-				array(Item::LAPIS_BLOCK, 0, 1),
-			);
+			return [
+				[Item::LAPIS_BLOCK, 0, 1],
+			];
 		}else{
 			return [];
 		}

@@ -57,16 +57,16 @@ class Sign extends Spawnable{
 	}
 
 	public function getText(){
-		return array(
+		return [
 			$this->namedtag["Text1"],
 			$this->namedtag["Text2"],
 			$this->namedtag["Text3"],
 			$this->namedtag["Text4"]
-		);
+		];
 	}
 
 	public function getSpawnCompound(){
-		return new Compound("", array(
+		return new Compound("", [
 			new String("Text1", $this->namedtag["Text1"]),
 			new String("Text2", $this->namedtag["Text2"]),
 			new String("Text3", $this->namedtag["Text3"]),
@@ -75,7 +75,7 @@ class Sign extends Spawnable{
 			new Int("x", (int) $this->x),
 			new Int("y", (int) $this->y),
 			new Int("z", (int) $this->z)
-		));
+		]);
 	}
 
 }

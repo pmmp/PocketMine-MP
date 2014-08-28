@@ -809,7 +809,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->sendMetadata($this);
 
 		$this->setSpawn($pos);
-		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask(array($this, "checkSleep")), 60);
+		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask([$this, "checkSleep"]), 60);
 
 
 		return true;
@@ -1135,7 +1135,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->displayName = $this->username;
 				$this->nameTag = $this->username;
 				$this->iusername = strtolower($this->username);
-				$this->loginData = array("clientId" => $packet->clientId, "loginData" => $packet->loginData);
+				$this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
 
 				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers()){
 					if($this->kick("server full") === true){
@@ -1297,9 +1297,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 				$this->orderChunks();
-				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "orderChunks")), 10, 40);
+				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedRepeatingTask(new CallbackTask([$this, "orderChunks"]), 10, 40);
 				$this->sendNextChunk();
-				$this->tasks[] = $this->chunkLoadTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "sendNextChunk")), 1);
+				$this->tasks[] = $this->chunkLoadTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "sendNextChunk"]), 1);
 
 				break;
 			case ProtocolInfo::ROTATE_HEAD_PACKET:
@@ -1790,7 +1790,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				switch($packet->event){
 					case 9: //Eating
-						$items = array(
+						$items = [
 							Item::APPLE => 4,
 							Item::MUSHROOM_STEW => 10,
 							Item::BEETROOT_SOUP => 10,
@@ -1810,7 +1810,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							//Item::COOKIE => 2,
 							//Item::COOKED_FISH => 5,
 							//Item::RAW_FISH => 2,
-						);
+						];
 						$slot = $this->inventory->getItemInHand();
 						if($this->getHealth() < 20 and isset($items[$slot->getID()])){
 							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
@@ -2309,17 +2309,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
 		$flags |= ($this->inAction === true ? 0b10000:0);
-		$d = array(
-			0 => array("type" => 0, "value" => $flags),
-			1 => array("type" => 1, "value" => $this->airTicks),
-			16 => array("type" => 0, "value" => 0),
-			17 => array("type" => 6, "value" => array(0, 0, 0)),
-		);
+		$d = [
+			0 => ["type" => 0, "value" => $flags],
+			1 => ["type" => 1, "value" => $this->airTicks],
+			16 => ["type" => 0, "value" => 0],
+			17 => ["type" => 6, "value" => [0, 0, 0]],
+		];
 
 
 		if($this->sleeping !== false){
 			$d[16]["value"] = 2;
-			$d[17]["value"] = array($this->sleeping->x, $this->sleeping->y, $this->sleeping->z);
+			$d[17]["value"] = [$this->sleeping->x, $this->sleeping->y, $this->sleeping->z];
 		}
 
 

@@ -99,8 +99,8 @@ class MelonStem extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array(Item::MELON_SEEDS, 0, mt_rand(0, 2)),
-		);
+		return [
+			[Item::MELON_SEEDS, 0, mt_rand(0, 2)],
+		];
 	}
 }

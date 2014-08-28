@@ -392,7 +392,7 @@ class Item{
 
 	public static function init(){
 		if(count(self::$list) === 0){
-			self::$list = array(
+			self::$list = [
 				self::SUGARCANE => Sugarcane::class,
 				self::WHEAT_SEEDS => WheatSeeds::class,
 				self::PUMPKIN_SEEDS => PumpkinSeeds::class,
@@ -447,7 +447,7 @@ class Item{
 				self::FLINT_STEEL => FlintSteel::class,
 				self::SHEARS => Shears::class,
 				self::BOW => Bow::class,
-			);
+			];
 			foreach(Block::$list as $id => $class){
 				self::$list[$id] = $class;
 			}

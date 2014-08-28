@@ -29,7 +29,7 @@ class SmallTree extends Tree{
 	public $type = 0;
 	private $trunkHeight = 5;
 	private static $leavesHeight = 4; // All trees appear to be 4 tall
-	private static $leafRadii = array(1, 1.41, 2.83, 2.24);
+	private static $leafRadii = [1, 1.41, 2.83, 2.24];
 
 	private $addLeavesVines = false;
 	private $addLogVines = false;

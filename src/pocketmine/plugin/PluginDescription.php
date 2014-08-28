@@ -63,7 +63,7 @@ class PluginDescription{
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = $plugin["version"];
 		$this->main = $plugin["main"];
-		$this->api = !is_array($plugin["api"]) ? array($plugin["api"]) : $plugin["api"];
+		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
 		if(stripos($this->main, "pocketmine\\") === 0){
 			trigger_error("Invalid PluginDescription main, cannot start within the PocketMine namespace", E_USER_ERROR);
 

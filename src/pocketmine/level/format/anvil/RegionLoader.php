@@ -132,7 +132,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		$nbt->TileTicks->setTagType(NBT::TAG_Compound);
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
-		$writer->setData(new Compound("", array("Level" => $nbt)));
+		$writer->setData(new Compound("", ["Level" => $nbt]));
 		$chunkData = $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 		$this->saveChunk($x, $z, $chunkData);
 	}

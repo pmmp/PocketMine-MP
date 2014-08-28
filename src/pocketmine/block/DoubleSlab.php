@@ -26,7 +26,7 @@ use pocketmine\item\Item;
 class DoubleSlab extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::DOUBLE_SLAB, $meta, "Double Slab");
-		$names = array(
+		$names = [
 			0 => "Stone",
 			1 => "Sandstone",
 			2 => "Wooden",
@@ -34,7 +34,7 @@ class DoubleSlab extends Solid{
 			4 => "Brick",
 			5 => "Stone Brick",
 			6 => "Quartz",
-		);
+		];
 		$this->name = "Double " . $names[$this->meta & 0x07] . " Slab";
 		$this->hardness = 30;
 	}
@@ -58,9 +58,9 @@ class DoubleSlab extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array(Item::SLAB, $this->meta & 0x07, 2),
-			);
+			return [
+				[Item::SLAB, $this->meta & 0x07, 2],
+			];
 		}else{
 			return [];
 		}

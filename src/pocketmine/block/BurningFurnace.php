@@ -39,21 +39,21 @@ class BurningFurnace extends Solid{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$faces = array(
+		$faces = [
 			0 => 4,
 			1 => 2,
 			2 => 5,
 			3 => 3,
-		);
+		];
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 		$this->getLevel()->setBlock($block, $this, true, false, true);
-		$nbt = new Compound(false, array(
+		$nbt = new Compound(false, [
 			new Enum("Items", []),
 			new String("id", Tile::FURNACE),
 			new Int("x", $this->x),
 			new Int("y", $this->y),
 			new Int("z", $this->z)
-		));
+		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
 		new Furnace($this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4), $nbt);
 
@@ -73,13 +73,13 @@ class BurningFurnace extends Solid{
 			if($t instanceof Furnace){
 				$furnace = $t;
 			}else{
-				$nbt = new Compound(false, array(
+				$nbt = new Compound(false, [
 					new Enum("Items", []),
 					new String("id", Tile::FURNACE),
 					new Int("x", $this->x),
 					new Int("y", $this->y),
 					new Int("z", $this->z)
-				));
+				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$furnace = new Furnace($this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4), $nbt);
 			}
@@ -114,14 +114,14 @@ class BurningFurnace extends Solid{
 	public function getDrops(Item $item){
 		$drops = [];
 		if($item->isPickaxe() >= 1){
-			$drops[] = array(Item::FURNACE, 0, 1);
+			$drops[] = [Item::FURNACE, 0, 1];
 		}
 		$t = $this->getLevel()->getTile($this);
 		if($t instanceof Furnace){
 			for($s = 0; $s < $t->getInventory()->getSize(); ++$s){
 				$slot = $t->getInventory()->getItem($s);
 				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
-					$drops[] = array($slot->getID(), $slot->getDamage(), $slot->getCount());
+					$drops[] = [$slot->getID(), $slot->getDamage(), $slot->getCount()];
 				}
 			}
 		}

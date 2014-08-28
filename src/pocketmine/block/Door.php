@@ -57,12 +57,12 @@ abstract class Door extends Transparent{
 				return false;
 			}
 			$direction = $player instanceof Player ? $player->getDirection() : 0;
-			$face = array(
+			$face = [
 				0 => 3,
 				1 => 4,
 				2 => 2,
 				3 => 5,
-			);
+			];
 			$next = $this->getSide($face[(($direction + 2) % 4)]);
 			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;

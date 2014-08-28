@@ -28,11 +28,11 @@ class TallGrass extends Flowable{
 	public function __construct($meta = 1){
 		parent::__construct(self::TALL_GRASS, $meta, "Tall Grass");
 		$this->isReplaceable = true;
-		$names = array(
+		$names = [
 			0 => "Dead Shrub",
 			1 => "Tall Grass",
 			2 => "Fern",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 0;
 	}

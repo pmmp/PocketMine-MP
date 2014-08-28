@@ -66,7 +66,7 @@ class RCON{
 		}
 		@socket_getsockname($this->socket, $addr, $port);
 		$this->server->getLogger()->info("RCON running on $addr:$port");
-		$this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask(array($this, "check")), 3);
+		$this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "check"]), 3);
 	}
 
 	public function stop(){

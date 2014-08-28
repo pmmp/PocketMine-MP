@@ -47,8 +47,8 @@ class WoodStairs extends Stair{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

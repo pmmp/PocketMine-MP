@@ -230,7 +230,7 @@ abstract class Block extends Position implements Metadatable{
 	const GLOWING_OBSIDIAN = 246;
 	const NETHER_REACTOR = 247;
 
-	public static $creative = array(
+	public static $creative = [
 		//Building
 		[Item::COBBLESTONE, 0],
 		[Item::STONE_BRICKS, 0],
@@ -500,7 +500,7 @@ abstract class Block extends Position implements Metadatable{
 		[Item::DYE, 9],
 		[Item::DYE, 8],
 
-	);
+	];
 
 	/** @var Block[] */
 	public static $list = [];
@@ -526,7 +526,7 @@ abstract class Block extends Position implements Metadatable{
 
 	public static function init(){
 		if(count(self::$list) === 0){
-			self::$list = array(
+			self::$list = [
 				self::AIR => Air::class,
 				self::STONE => Stone::class,
 				self::GRASS => Grass::class,
@@ -663,7 +663,7 @@ abstract class Block extends Position implements Metadatable{
 				self::STONECUTTER => Stonecutter::class,
 				self::GLOWING_OBSIDIAN => GlowingObsidian::class,
 				self::NETHER_REACTOR => NetherReactor::class,
-			);
+			];
 		}
 	}
 
@@ -759,7 +759,7 @@ abstract class Block extends Position implements Metadatable{
 			return [];
 		}else{
 			return [
-				array($this->id, $this->meta, 1),
+				[$this->id, $this->meta, 1],
 			];
 		}
 	}

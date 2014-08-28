@@ -343,7 +343,7 @@ class CraftingManager{
 		$this->recipes[spl_object_hash($recipe)] = $recipe;
 		$hash = "";
 		$ingredients = $recipe->getIngredientList();
-		usort($ingredients, array($this, "sort"));
+		usort($ingredients, [$this, "sort"]);
 		foreach($ingredients as $item){
 			$hash .= $item->getID() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 		}
@@ -376,7 +376,7 @@ class CraftingManager{
 		}
 		$hash = "";
 		$input = $ts->getRecipe();
-		usort($input, array($this, "sort"));
+		usort($input, [$this, "sort"]);
 		$inputCount = 0;
 		foreach($input as $item){
 			$inputCount += $item->getCount();

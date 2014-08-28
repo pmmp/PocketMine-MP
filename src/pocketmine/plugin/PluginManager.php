@@ -242,7 +242,7 @@ class PluginManager{
 								if(isset($softDependencies[$before])){
 									$softDependencies[$before][] = $name;
 								}else{
-									$softDependencies[$before] = array($name);
+									$softDependencies[$before] = [$name];
 								}
 							}
 						}

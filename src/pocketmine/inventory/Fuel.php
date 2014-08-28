@@ -25,7 +25,7 @@ use pocketmine\item\Item;
 
 //TODO: remove this
 abstract class Fuel{
-	public static $duration = array(
+	public static $duration = [
 		Item::COAL => 80,
 		Item::COAL_BLOCK => 800,
 		Item::TRUNK => 15,
@@ -49,6 +49,6 @@ abstract class Fuel{
 		Item::CHEST => 15,
 		Item::BUCKET => 1000,
 
-	);
+	];
 
 }

@@ -45,9 +45,9 @@ class LapisOre extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 3){
-			return array(
-				array(Item::DYE, 4, mt_rand(4, 8)),
-			);
+			return [
+				[Item::DYE, 4, mt_rand(4, 8)],
+			];
 		}else{
 			return [];
 		}

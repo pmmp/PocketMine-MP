@@ -29,10 +29,10 @@ class Leaves2 extends Leaves{
 
 	public function __construct($meta = 0){
 		Transparent::__construct(self::LEAVES, $meta, "Leaves");
-		$names = array(
+		$names = [
 			self::ACACIA => "Acacia Leaves",
 			self::DARK_OAK => "Dark Oak Leaves",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 1;
 	}
@@ -137,10 +137,10 @@ class Leaves2 extends Leaves{
 	public function getDrops(Item $item){
 		$drops = [];
 		if($item->isShears()){
-			$drops[] = array(Item::LEAVES2, $this->meta & 0x03, 1);
+			$drops[] = [Item::LEAVES2, $this->meta & 0x03, 1];
 		}else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = array(Item::SAPLING, $this->meta & 0x03, 1);
+				$drops[] = [Item::SAPLING, $this->meta & 0x03, 1];
 			}
 		}
 

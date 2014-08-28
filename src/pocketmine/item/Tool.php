@@ -60,7 +60,7 @@ abstract class Tool extends Item{
 	 */
 	public function getMaxDurability(){
 
-		$levels = array(
+		$levels = [
 			2 => 33,
 			1 => 60,
 			3 => 132,
@@ -69,7 +69,7 @@ abstract class Tool extends Item{
 			self::FLINT_STEEL => 65,
 			self::SHEARS => 239,
 			self::BOW => 385,
-		);
+		];
 
 		if(($type = $this->isPickaxe()) === false){
 			if(($type = $this->isAxe()) === false){

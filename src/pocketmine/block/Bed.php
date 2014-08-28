@@ -86,12 +86,12 @@ class Bed extends Transparent{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->isTransparent === false){
-			$faces = array(
+			$faces = [
 				0 => 3,
 				1 => 4,
 				2 => 2,
 				3 => 5,
-			);
+			];
 			$d = $player instanceof Player ? $player->getDirection() : 0;
 			$next = $this->getSide($faces[(($d + 3) % 4)]);
 			$downNext = $this->getSide(0);
@@ -140,9 +140,9 @@ class Bed extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array(Item::BED, 0, 1),
-		);
+		return [
+			[Item::BED, 0, 1],
+		];
 	}
 
 }

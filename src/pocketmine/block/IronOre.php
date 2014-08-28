@@ -44,9 +44,9 @@ class IronOre extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 3){
-			return array(
-				array(Item::IRON_ORE, 0, 1),
-			);
+			return [
+				[Item::IRON_ORE, 0, 1],
+			];
 		}else{
 			return [];
 		}

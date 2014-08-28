@@ -26,14 +26,14 @@ namespace pocketmine\utils;
  * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString{
-	public static $stageOrder = array(
+	public static $stageOrder = [
 		"alpha" => 0,
 		"a" => 0,
 		"beta" => 1,
 		"b" => 1,
 		"final" => 2,
 		"f" => 2,
-	);
+	];
 	private $stage;
 	private $major;
 	private $build;

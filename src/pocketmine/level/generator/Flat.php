@@ -62,7 +62,7 @@ class Flat extends Generator{
 
 		if(isset($this->options["decoration"])){
 			$ores = new Ore();
-			$ores->setOreTypes(array(
+			$ores->setOreTypes([
 				new object\OreType(new CoalOre(), 20, 16, 0, 128),
 				new object\OreType(New IronOre(), 20, 8, 0, 64),
 				new object\OreType(new RedstoneOre(), 8, 7, 0, 16),
@@ -71,7 +71,7 @@ class Flat extends Generator{
 				new object\OreType(new DiamondOre(), 1, 7, 0, 16),
 				new object\OreType(new Dirt(), 20, 32, 0, 128),
 				new object\OreType(new Gravel(), 10, 16, 0, 128),
-			));
+			]);
 			$this->populators[] = $ores;
 		}
 

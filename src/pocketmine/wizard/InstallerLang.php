@@ -23,7 +23,7 @@ namespace pocketmine\wizard;
 
 
 class InstallerLang{
-	public static $languages = array(
+	public static $languages = [
 		"en" => "English",
 		"es" => "Español",
 		"zh" => "中文",
@@ -43,7 +43,7 @@ class InstallerLang{
 		"fi" => "Suomi",
 		"tr" => "Türkçe",
 		//"et" => "Eesti",
-	);
+	];
 	private $texts = [];
 	private $lang;
 	private $langfile;
@@ -84,14 +84,14 @@ class InstallerLang{
 
 	public function loadLang($langfile, $lang = "en"){
 		$this->texts[$lang] = [];
-		$texts = explode("\n", str_replace(array("\r", "\\/\\/"), array("", "//"), file_get_contents($langfile)));
+		$texts = explode("\n", str_replace(["\r", "\\/\\/"], ["", "//"], file_get_contents($langfile)));
 		foreach($texts as $line){
 			$line = trim($line);
 			if($line === ""){
 				continue;
 			}
 			$line = explode("=", $line);
-			$this->texts[$lang][trim(array_shift($line))] = trim(str_replace(array("\\n", "\\N",), "\n", implode("=", $line)));
+			$this->texts[$lang][trim(array_shift($line))] = trim(str_replace(["\\n", "\\N",], "\n", implode("=", $line)));
 		}
 	}
 

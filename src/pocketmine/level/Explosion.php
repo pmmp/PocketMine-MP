@@ -31,13 +31,13 @@ use pocketmine\network\protocol\ExplodePacket;
 use pocketmine\Server;
 
 class Explosion{
-	public static $specialDrops = array(
+	public static $specialDrops = [
 		Item::GRASS => Item::DIRT,
 		Item::STONE => Item::COBBLESTONE,
 		Item::COAL_ORE => Item::COAL,
 		Item::DIAMOND_ORE => Item::DIAMOND,
 		Item::REDSTONE_ORE => Item::REDSTONE,
-	);
+	];
 	private $rays = 16; //Rays
 	public $level;
 	public $source;
@@ -119,13 +119,13 @@ class Explosion{
 
 		foreach($this->affectedBlocks as $block){
 			if($block instanceof TNT){
-				$data = array(
+				$data = [
 					"x" => $block->x + 0.5,
 					"y" => $block->y + 0.5,
 					"z" => $block->z + 0.5,
 					"power" => 4,
 					"fuse" => mt_rand(10, 30), //0.5 to 1.5 seconds
-				);
+				];
 				//TODO
 				//$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
 				//$e->spawnToAll();

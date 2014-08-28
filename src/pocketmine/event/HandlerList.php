@@ -69,14 +69,14 @@ class HandlerList{
 	}
 
 	public function __construct(){
-		$this->handlerSlots = array(
+		$this->handlerSlots = [
 			EventPriority::LOWEST => [],
 			EventPriority::LOW => [],
 			EventPriority::NORMAL => [],
 			EventPriority::HIGH => [],
 			EventPriority::HIGHEST => [],
 			EventPriority::MONITOR => []
-		);
+		];
 		self::$allLists[] = $this;
 	}
 

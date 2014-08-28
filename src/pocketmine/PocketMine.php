@@ -148,7 +148,7 @@ namespace pocketmine {
 	ini_set("memory_limit", "256M"); //Default
 	define("pocketmine\\START_TIME", microtime(true));
 
-	$opts = getopt("", array("enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard", "enable-profiler"));
+	$opts = getopt("", ["enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard", "enable-profiler"]);
 
 	define("pocketmine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
@@ -217,7 +217,7 @@ namespace pocketmine {
 		if(error_reporting() === 0){ //@ error-control
 			return false;
 		}
-		$errorConversion = array(
+		$errorConversion = [
 			E_ERROR => "E_ERROR",
 			E_WARNING => "E_WARNING",
 			E_PARSE => "E_PARSE",
@@ -233,7 +233,7 @@ namespace pocketmine {
 			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
-		);
+		];
 		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? LogLevel::ERROR : LogLevel::NOTICE;
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
 		if(($pos = strpos($errstr, "\n")) !== false){

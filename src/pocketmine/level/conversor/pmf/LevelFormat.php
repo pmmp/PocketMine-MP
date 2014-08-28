@@ -188,10 +188,10 @@ class LevelFormat extends PMF{
 
 	private function upgrade_From1_To2(){
 		MainLogger::getLogger()->notice("Old PMF Level format version #1 detected, upgrading to version #2");
-		$nbt = new Compound("", array(
+		$nbt = new Compound("", [
 			new Enum("Entities", []),
 			new Enum("TileEntities", [])
-		));
+		]);
 		$nbt->Entities->setTagType(NBT::TAG_Compound);
 		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		$nbtCodec = new NBT(NBT::BIG_ENDIAN);
@@ -217,7 +217,7 @@ class LevelFormat extends PMF{
 		$Z = $index >> 16;
 		$X = ($index & 0x8000) === 0x8000 ? -($index & 0x7fff) : $index & 0x7fff;
 
-		return array($X, $Z);
+		return [$X, $Z];
 	}
 
 	private function getChunkPath($X, $Z){
@@ -290,10 +290,10 @@ class LevelFormat extends PMF{
 		$chunk = zlib_decode($chunk);
 		$offset = 0;
 
-		$this->chunkInfo[$index] = array(
+		$this->chunkInfo[$index] = [
 			0 => ord($chunk{0}),
 			1 => Binary::readInt(substr($chunk, 1, 4)),
-		);
+		];
 		$offset += 5;
 		$len = Binary::readInt(substr($chunk, $offset, 4));
 		$offset += 4;
@@ -302,7 +302,7 @@ class LevelFormat extends PMF{
 		$this->chunkInfo[$index][2] = $nbt->getData();
 		$offset += $len;
 		$this->chunks[$index] = [];
-		$this->chunkChange[$index] = array(-1 => false);
+		$this->chunkChange[$index] = [-1 => false];
 		$this->chunkInfo[$index][3] = substr($chunk, $offset, 256); //Biome data
 		$offset += 256;
 		for($Y = 0; $Y < 8; ++$Y){
@@ -399,7 +399,7 @@ class LevelFormat extends PMF{
 	public function initCleanChunk($X, $Z){
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index])){
-			$this->chunks[$index] = array(
+			$this->chunks[$index] = [
 				0 => false,
 				1 => false,
 				2 => false,
@@ -408,8 +408,8 @@ class LevelFormat extends PMF{
 				5 => false,
 				6 => false,
 				7 => false,
-			);
-			$this->chunkChange[$index] = array(
+			];
+			$this->chunkChange[$index] = [
 				-1 => true,
 				0 => 8192,
 				1 => 8192,
@@ -419,19 +419,19 @@ class LevelFormat extends PMF{
 				5 => 8192,
 				6 => 8192,
 				7 => 8192,
-			);
-			$nbt = new Compound("", array(
+			];
+			$nbt = new Compound("", [
 				new Enum("Entities", []),
 				new Enum("TileEntities", [])
-			));
+			]);
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-			$this->chunkInfo[$index] = array(
+			$this->chunkInfo[$index] = [
 				0 => 0,
 				1 => 0,
 				2 => $nbt,
 				3 => str_repeat("\x00", 256),
-			);
+			];
 		}
 	}
 
@@ -593,13 +593,13 @@ class LevelFormat extends PMF{
 		$Z = $z >> 4;
 		$Y = $y >> 4;
 		if($y < 0 or $y > 127){
-			return array(0, 0);
+			return [0, 0];
 		}
 		$index = self::getIndex($X, $Z);
 		if(!isset($this->chunks[$index]) and $this->loadChunk($X, $Z) === false){
-			return array(0, 0);
+			return [0, 0];
 		}elseif($this->chunks[$index][$Y] === false){
-			return array(0, 0);
+			return [0, 0];
 		}
 		$aX = $x - ($X << 4);
 		$aZ = $z - ($Z << 4);
@@ -612,7 +612,7 @@ class LevelFormat extends PMF{
 			$m = $m >> 4;
 		}
 
-		return array($b, $m);
+		return [$b, $m];
 	}
 
 	public function setBlock($x, $y, $z, $block, $meta = 0){

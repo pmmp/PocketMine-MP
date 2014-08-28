@@ -113,12 +113,12 @@ class PocketChunkParser{
 		$offset = $this->getOffset($X, $Z);
 		$len = Binary::readLInt(substr($this->raw, $offset, 4));
 		$offset += 4;
-		$chunk = array(
+		$chunk = [
 			0 => [], //Block
 			1 => [], //Data
 			2 => [], //SkyLight
 			3 => [], //BlockLight
-		);
+		];
 		foreach($chunk as $section => &$data){
 			$l = $section === 0 ? 128 : 64;
 			for($i = 0; $i < 256; ++$i){
@@ -198,7 +198,7 @@ class PocketChunkParser{
 			$meta = $meta >> 4;
 		}
 
-		return array($block, $meta);
+		return [$block, $meta];
 	}
 
 	public function getChunkColumn($X, $Z, $x, $z, $type = 0){

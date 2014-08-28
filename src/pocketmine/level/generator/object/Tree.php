@@ -26,14 +26,14 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class Tree{
-	public $overridable = array(
+	public $overridable = [
 		0 => true,
 		2 => true,
 		3 => true,
 		6 => true,
 		17 => true,
 		18 => true,
-	);
+	];
 
 	public static function growTree(ChunkManager $level, $x, $y, $z, Random $random, $type = 0){
 		switch($type & 0x03){

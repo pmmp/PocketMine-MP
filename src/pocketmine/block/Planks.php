@@ -32,14 +32,14 @@ class Planks extends Solid{
 
 	public function __construct($meta = 0){
 		parent::__construct(self::PLANKS, $meta, "Wood Planks");
-		$names = array(
+		$names = [
 			self::OAK => "Oak Wood Planks",
 			self::SPRUCE => "Spruce Wood Planks",
 			self::BIRCH => "Birch Wood Planks",
 			self::JUNGLE => "Jungle Wood Planks",
 			self::ACACIA => "Acacia Wood Planks",
 			self::DARK_OAK => "Jungle Wood Planks",
-		);
+		];
 		$this->name = $names[$this->meta & 0x07];
 		$this->hardness = 15;
 	}

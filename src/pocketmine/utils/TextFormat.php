@@ -69,7 +69,7 @@ class TextFormat{
 	 * @return mixed
 	 */
 	public static function clean($string){
-		return preg_replace(array("/§[0123456789abcdefklmnor]/", "/\\x1b*/"), "", $string);
+		return preg_replace(["/§[0123456789abcdefklmnor]/", "/\\x1b*/"], "", $string);
 	}
 
 	/**

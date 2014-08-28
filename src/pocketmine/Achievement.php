@@ -30,78 +30,78 @@ abstract class Achievement{
 	/**
 	 * @var array[]
 	 */
-	public static $list = array(
+	public static $list = [
 		/*"openInventory" => array(
 			"name" => "Taking Inventory",
 			"requires" => [],
 		),*/
-		"mineWood" => array(
+		"mineWood" => [
 			"name" => "Getting Wood",
-			"requires" => array( //"openInventory",
-			),
-		),
-		"buildWorkBench" => array(
+			"requires" => [ //"openInventory",
+			],
+		],
+		"buildWorkBench" => [
 			"name" => "Benchmarking",
-			"requires" => array(
+			"requires" => [
 				"mineWood",
-			),
-		),
-		"buildPickaxe" => array(
+			],
+		],
+		"buildPickaxe" => [
 			"name" => "Time to Mine!",
-			"requires" => array(
+			"requires" => [
 				"buildWorkBench",
-			),
-		),
-		"buildFurnace" => array(
+			],
+		],
+		"buildFurnace" => [
 			"name" => "Hot Topic",
-			"requires" => array(
+			"requires" => [
 				"buildPickaxe",
-			),
-		),
-		"acquireIron" => array(
+			],
+		],
+		"acquireIron" => [
 			"name" => "Acquire hardware",
-			"requires" => array(
+			"requires" => [
 				"buildFurnace",
-			),
-		),
-		"buildHoe" => array(
+			],
+		],
+		"buildHoe" => [
 			"name" => "Time to Farm!",
-			"requires" => array(
+			"requires" => [
 				"buildWorkBench",
-			),
-		),
-		"makeBread" => array(
+			],
+		],
+		"makeBread" => [
 			"name" => "Bake Bread",
-			"requires" => array(
+			"requires" => [
 				"buildHoe",
-			),
-		),
-		"bakeCake" => array(
+			],
+		],
+		"bakeCake" => [
 			"name" => "The Lie",
-			"requires" => array(
+			"requires" => [
 				"buildHoe",
-			),
-		),
-		"buildBetterPickaxe" => array(
+			],
+		],
+		"buildBetterPickaxe" => [
 			"name" => "Getting an Upgrade",
-			"requires" => array(
+			"requires" => [
 				"buildPickaxe",
-			),
-		),
-		"buildSword" => array(
+			],
+		],
+		"buildSword" => [
 			"name" => "Time to Strike!",
-			"requires" => array(
+			"requires" => [
 				"buildWorkBench",
-			),
-		),
-		"diamonds" => array(
+			],
+		],
+		"diamonds" => [
 			"name" => "DIAMONDS!",
-			"requires" => array(
+			"requires" => [
 				"acquireIron",
-			),
-		),
+			],
+		],
 
-	);
+	];
 
 
 	public static function broadcast(Player $player, $achievementId){
@@ -120,10 +120,10 @@ abstract class Achievement{
 
 	public static function add($achievementId, $achievementName, array $requires = []){
 		if(!isset(Achievement::$list[$achievementId])){
-			Achievement::$list[$achievementId] = array(
+			Achievement::$list[$achievementId] = [
 				"name" => $achievementName,
 				"requires" => $requires,
-			);
+			];
 
 			return true;
 		}

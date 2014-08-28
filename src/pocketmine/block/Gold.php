@@ -42,9 +42,9 @@ class Gold extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 4){
-			return array(
-				array(Item::GOLD_BLOCK, 0, 1),
-			);
+			return [
+				[Item::GOLD_BLOCK, 0, 1],
+			];
 		}else{
 			return [];
 		}

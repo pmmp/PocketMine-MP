@@ -104,23 +104,23 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if($hotbarSlot !== -1){
 					$item = $this->inventory->getItem($hotbarSlot);
 					if($item->getID() !== 0 and $item->getCount() > 0){
-						$this->namedtag->Inventory[$slot] = new Compound(false, array(
+						$this->namedtag->Inventory[$slot] = new Compound(false, [
 							new Byte("Count", $item->getCount()),
 							new Short("Damage", $item->getDamage()),
 							new Byte("Slot", $slot),
 							new Byte("TrueSlot", $hotbarSlot),
 							new Short("id", $item->getID()),
-						));
+						]);
 						continue;
 					}
 				}
-				$this->namedtag->Inventory[$slot] = new Compound(false, array(
+				$this->namedtag->Inventory[$slot] = new Compound(false, [
 					new Byte("Count", 0),
 					new Short("Damage", 0),
 					new Byte("Slot", $slot),
 					new Byte("TrueSlot", -1),
 					new Short("id", 0),
-				));
+				]);
 			}
 
 			//Normal inventory
@@ -128,24 +128,24 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			//$slotCount = (($this instanceof Player and ($this->gamemode & 0x01) === 1) ? Player::CREATIVE_SLOTS : Player::SURVIVAL_SLOTS) + 9;
 			for($slot = 9; $slot < $slotCount; ++$slot){
 				$item = $this->inventory->getItem($slot - 9);
-				$this->namedtag->Inventory[$slot] = new Compound(false, array(
+				$this->namedtag->Inventory[$slot] = new Compound(false, [
 					new Byte("Count", $item->getCount()),
 					new Short("Damage", $item->getDamage()),
 					new Byte("Slot", $slot),
 					new Short("id", $item->getID()),
-				));
+				]);
 			}
 
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
 				if($item instanceof Item and $item->getID() !== Item::AIR){
-					$this->namedtag->Inventory[$slot] = new Compound(false, array(
+					$this->namedtag->Inventory[$slot] = new Compound(false, [
 						new Byte("Count", $item->getCount()),
 						new Short("Damage", $item->getDamage()),
 						new Byte("Slot", $slot),
 						new Short("id", $item->getID()),
-					));
+					]);
 				}
 			}
 		}
@@ -200,12 +200,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
 		//$flags |= ($this->inAction === true ? 0b10000:0);
-		$d = array(
-			0 => array("type" => 0, "value" => $flags),
-			1 => array("type" => 1, "value" => $this->airTicks),
-			16 => array("type" => 0, "value" => 0),
-			17 => array("type" => 6, "value" => array(0, 0, 0)),
-		);
+		$d = [
+			0 => ["type" => 0, "value" => $flags],
+			1 => ["type" => 1, "value" => $this->airTicks],
+			16 => ["type" => 0, "value" => 0],
+			17 => ["type" => 6, "value" => [0, 0, 0]],
+		];
 
 		/*if($this->class === ENTITY_MOB and $this->type === MOB_SHEEP){
 			if(!isset($this->data["Sheared"])){

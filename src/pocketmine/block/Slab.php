@@ -27,7 +27,7 @@ use pocketmine\Player;
 class Slab extends Transparent{
 	public function __construct($meta = 0){
 		parent::__construct(self::SLAB, $meta, "Slab");
-		$names = array(
+		$names = [
 			0 => "Stone",
 			1 => "Sandstone",
 			2 => "Wooden",
@@ -36,7 +36,7 @@ class Slab extends Transparent{
 			5 => "Stone Brick",
 			6 => "Quartz",
 			7 => "",
-		);
+		];
 		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
 		if(($this->meta & 0x08) === 0x08){
 			$this->isFullBlock = true;
@@ -116,9 +116,9 @@ class Slab extends Transparent{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array($this->id, $this->meta & 0x07, 1),
-			);
+			return [
+				[$this->id, $this->meta & 0x07, 1],
+			];
 		}else{
 			return [];
 		}

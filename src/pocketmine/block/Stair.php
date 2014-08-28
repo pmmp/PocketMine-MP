@@ -37,12 +37,12 @@ class Stair extends Transparent{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$faces = array(
+		$faces = [
 			0 => 0,
 			1 => 2,
 			2 => 1,
 			3 => 3,
-		);
+		];
 		$this->meta = $faces[$player->getDirection()] & 0x03;
 		if(($fy > 0.5 and $face !== 1) or $face === 0){
 			$this->meta |= 0x04; //Upside-down stairs
@@ -54,9 +54,9 @@ class Stair extends Transparent{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array($this->id, 0, 1),
-			);
+			return [
+				[$this->id, 0, 1],
+			];
 		}else{
 			return [];
 		}

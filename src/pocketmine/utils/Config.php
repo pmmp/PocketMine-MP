@@ -47,7 +47,7 @@ class Config{
 	/** @var integer */
 	private $type = Config::DETECT;
 
-	public static $formats = array(
+	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
 		"conf" => Config::CNF,
@@ -63,7 +63,7 @@ class Config{
 		"txt" => Config::ENUM,
 		"list" => Config::ENUM,
 		"enum" => Config::ENUM,
-	);
+	];
 
 	/**
 	 * @param string $file     Path of the file to be loaded

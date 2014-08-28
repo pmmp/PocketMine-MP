@@ -38,12 +38,12 @@ class Trapdoor extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if(($target->isTransparent === false or $target->getID() === self::SLAB) and $face !== 0 and $face !== 1){
-			$faces = array(
+			$faces = [
 				2 => 0,
 				3 => 1,
 				4 => 2,
 				5 => 3,
-			);
+			];
 			$this->meta = $faces[$face] & 0x03;
 			if($fy > 0.5){
 				$this->meta |= 0x08;
@@ -57,9 +57,9 @@ class Trapdoor extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 
 	public function onActivate(Item $item, Player $player = null){

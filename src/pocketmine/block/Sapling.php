@@ -37,14 +37,14 @@ class Sapling extends Flowable{
 	public function __construct($meta = Sapling::OAK){
 		parent::__construct(self::SAPLING, $meta, "Sapling");
 		$this->isActivable = true;
-		$names = array(
+		$names = [
 			0 => "Oak Sapling",
 			1 => "Spruce Sapling",
 			2 => "Birch Sapling",
 			3 => "Jungle Sapling",
 			4 => "Acacia Sapling",
 			5 => "Dark Oak Sapling",
-		);
+		];
 		$this->name = $names[$this->meta & 0x07];
 		$this->hardness = 0;
 	}
@@ -107,8 +107,8 @@ class Sapling extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array($this->id, $this->meta & 0x07, 1),
-		);
+		return [
+			[$this->id, $this->meta & 0x07, 1],
+		];
 	}
 }

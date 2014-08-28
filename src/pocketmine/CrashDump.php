@@ -137,7 +137,7 @@ class CrashDump{
 		}else{
 			$error = (array) error_get_last();
 			$error["trace"] = getTrace(4);
-			$errorConversion = array(
+			$errorConversion = [
 				E_ERROR => "E_ERROR",
 				E_WARNING => "E_WARNING",
 				E_PARSE => "E_PARSE",
@@ -153,7 +153,7 @@ class CrashDump{
 				E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
 				E_DEPRECATED => "E_DEPRECATED",
 				E_USER_DEPRECATED => "E_USER_DEPRECATED",
-			);
+			];
 			$error["fullFile"] = $error["file"];
 			$error["file"] = cleanPath($error["file"]);
 			$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];

@@ -39,7 +39,7 @@ class Torch extends Flowable{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$side = $this->getDamage();
-			$faces = array(
+			$faces = [
 				1 => 4,
 				2 => 5,
 				3 => 2,
@@ -47,7 +47,7 @@ class Torch extends Flowable{
 				5 => 0,
 				6 => 0,
 				0 => 0,
-			);
+			];
 
 			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === self::FENCE)){ //Replace with common break method
 				//TODO
@@ -63,13 +63,13 @@ class Torch extends Flowable{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target->isTransparent === false and $face !== 0){
-			$faces = array(
+			$faces = [
 				1 => 5,
 				2 => 4,
 				3 => 3,
 				4 => 2,
 				5 => 1,
-			);
+			];
 			$this->meta = $faces[$face];
 			$this->getLevel()->setBlock($block, $this, true, false, true);
 
@@ -85,8 +85,8 @@ class Torch extends Flowable{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array($this->id, 0, 1),
-		);
+		return [
+			[$this->id, 0, 1],
+		];
 	}
 }

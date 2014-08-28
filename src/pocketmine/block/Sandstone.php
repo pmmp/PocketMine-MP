@@ -26,11 +26,11 @@ use pocketmine\item\Item;
 class Sandstone extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::SANDSTONE, $meta, "Sandstone");
-		$names = array(
+		$names = [
 			0 => "Sandstone",
 			1 => "Chiseled Sandstone",
 			2 => "Smooth Sandstone",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 4;
 	}
@@ -55,9 +55,9 @@ class Sandstone extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array(Item::SANDSTONE, $this->meta & 0x03, 1),
-			);
+			return [
+				[Item::SANDSTONE, $this->meta & 0x03, 1],
+			];
 		}else{
 			return [];
 		}

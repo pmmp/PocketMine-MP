@@ -26,12 +26,12 @@ use pocketmine\item\Item;
 class Quartz extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::QUARTZ_BLOCK, $meta, "Quartz Block");
-		$names = array(
+		$names = [
 			0 => "Quartz Block",
 			1 => "Chiseled Quartz Block",
 			2 => "Quartz Pillar",
 			3 => "Quartz Pillar",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 	}
 
@@ -55,9 +55,9 @@ class Quartz extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array(Item::QUARTZ_BLOCK, $this->meta & 0x03, 1),
-			);
+			return [
+				[Item::QUARTZ_BLOCK, $this->meta & 0x03, 1],
+			];
 		}else{
 			return [];
 		}

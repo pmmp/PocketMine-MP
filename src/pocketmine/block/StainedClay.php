@@ -26,7 +26,7 @@ use pocketmine\item\Item;
 class StainedClay extends Solid{
 	public function __construct($meta = 0){
 		parent::__construct(self::STAINED_CLAY, $meta, "Stained Clay");
-		$names = array(
+		$names = [
 			0 => "White Stained Clay",
 			1 => "Orange Stained Clay",
 			2 => "Magenta Stained Clay",
@@ -43,7 +43,7 @@ class StainedClay extends Solid{
 			13 => "Green Stained Clay",
 			14 => "Red Stained Clay",
 			15 => "Black Stained Clay",
-		);
+		];
 		$this->name = $names[$this->meta];
 		$this->hardness = 30;
 	}

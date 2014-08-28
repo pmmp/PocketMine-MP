@@ -115,12 +115,12 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	public function setItem($index, Item $item){
 		$i = $this->getSlotIndex($index);
 
-		$d = new Compound(false, array(
+		$d = new Compound(false, [
 			new Byte("Count", $item->getCount()),
 			new Byte("Slot", $index),
 			new Short("id", $item->getID()),
 			new Short("Damage", $item->getDamage()),
-		));
+		]);
 
 		if($item->getID() === Item::AIR or $item->getCount() <= 0){
 			if($i >= 0){
@@ -226,21 +226,21 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 
 	public function getSpawnCompound(){
 		if($this->isPaired()){
-			return new Compound("", array(
+			return new Compound("", [
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
 				new Int("z", (int) $this->z),
 				new Int("pairx", (int) $this->namedtag->pairx),
 				new Int("pairz", (int) $this->namedtag->pairz)
-			));
+			]);
 		}else{
-			return new Compound("", array(
+			return new Compound("", [
 				new String("id", Tile::CHEST),
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
 				new Int("z", (int) $this->z)
-			));
+			]);
 		}
 	}
 }

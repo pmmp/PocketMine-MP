@@ -163,7 +163,7 @@ class Binary{
 
 			}
 			if($types === true){
-				$m[$bottom] = array("value" => $r, "type" => $type);
+				$m[$bottom] = ["value" => $r, "type" => $type];
 			}else{
 				$m[$bottom] = $r;
 			}

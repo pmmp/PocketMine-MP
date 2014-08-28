@@ -64,11 +64,11 @@ class QueryHandler{
 			$plist .= ":";
 			foreach($pl as $p){
 				$d = $p->getDescription();
-				$plist .= " " . str_replace(array(";", ":", " "), array("", "", "_"), $d->getName()) . " " . str_replace(array(";", ":", " "), array("", "", "_"), $d->getVersion()) . ";";
+				$plist .= " " . str_replace([";", ":", " "], ["", "", "_"], $d->getName()) . " " . str_replace([";", ":", " "], ["", "", "_"], $d->getVersion()) . ";";
 			}
 			$plist = substr($plist, 0, -1);
 		}
-		$KVdata = array(
+		$KVdata = [
 			"splitnum" => chr(128),
 			"hostname" => $this->server->getServerName(),
 			"gametype" => ($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP",
@@ -81,7 +81,7 @@ class QueryHandler{
 			"maxplayers" => $this->server->getMaxPlayers(),
 			"whitelist" => $this->server->hasWhitelist() === true ? "on" : "off",
 			"hostport" => $this->server->getPort()
-		);
+		];
 		foreach($KVdata as $key => $value){
 			$str .= $key . "\x00" . $value . "\x00";
 		}

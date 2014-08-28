@@ -989,7 +989,7 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function setMotion(Vector3 $motion){
 		if(!$this->justCreated){
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
+			$this->server->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1007,6 +1007,8 @@ abstract class Entity extends Position implements Metadatable{
 			}
 			$this->updateMovement();
 		}
+
+		return true;
 	}
 
 	public function isOnGround(){

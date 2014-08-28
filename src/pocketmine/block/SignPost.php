@@ -40,12 +40,12 @@ class SignPost extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face !== 0){
-			$faces = array(
+			$faces = [
 				2 => 2,
 				3 => 3,
 				4 => 4,
 				5 => 5,
-			);
+			];
 			if(!isset($faces[$face])){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
 				$this->getLevel()->setBlock($block, Block::get(Item::SIGN_POST, $this->meta), true, false, true);
@@ -83,8 +83,8 @@ class SignPost extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		return array(
-			array(Item::SIGN, 0, 1),
-		);
+		return [
+			[Item::SIGN, 0, 1],
+		];
 	}
 }

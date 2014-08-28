@@ -49,9 +49,9 @@ class Netherrack extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 1){
-			return array(
-				array(Item::NETHERRACK, 0, 1),
-			);
+			return [
+				[Item::NETHERRACK, 0, 1],
+			];
 		}else{
 			return [];
 		}

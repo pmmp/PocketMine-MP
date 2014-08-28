@@ -36,13 +36,13 @@ class TNT extends Solid{
 			if(($player->gamemode & 0x01) === 0){
 				$item->useOn($this);
 			}
-			$data = array(
+			$data = [
 				"x" => $this->x + 0.5,
 				"y" => $this->y + 0.5,
 				"z" => $this->z + 0.5,
 				"power" => 4,
 				"fuse" => 20 * 4, //4 seconds
-			);
+			];
 			$this->getLevel()->setBlock($this, new Air(), false, false, true);
 			//TODO
 			//$e = Server::getInstance()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);

@@ -42,9 +42,9 @@ class DiamondOre extends Solid{
 
 	public function getDrops(Item $item){
 		if($item->isPickaxe() >= 4){
-			return array(
-				array(Item::DIAMOND, 0, 1),
-			);
+			return [
+				[Item::DIAMOND, 0, 1],
+			];
 		}else{
 			return [];
 		}

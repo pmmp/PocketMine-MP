@@ -626,14 +626,14 @@ class Server{
 		$path = $this->getDataPath() . "players/";
 		if(!file_exists($path . "$name.dat")){
 			$spawn = $this->getDefaultLevel()->getSafeSpawn();
-			$nbt = new Compound(false, array(
+			$nbt = new Compound(false, [
 				new Long("firstPlayed", floor(microtime(true) * 1000)),
 				new Long("lastPlayed", floor(microtime(true) * 1000)),
-				new Enum("Pos", array(
+				new Enum("Pos", [
 					new Double(0, $spawn->x),
 					new Double(1, $spawn->y),
 					new Double(2, $spawn->z)
-				)),
+				]),
 				new String("Level", $this->getDefaultLevel()->getName()),
 				//new String("SpawnLevel", $this->getDefaultLevel()->getName()),
 				//new Int("SpawnX", (int) $spawn->x),
@@ -643,22 +643,22 @@ class Server{
 				new Enum("Inventory", []),
 				new Compound("Achievements", []),
 				new Int("playerGameType", $this->getGamemode()),
-				new Enum("Motion", array(
+				new Enum("Motion", [
 					new Double(0, 0.0),
 					new Double(1, 0.0),
 					new Double(2, 0.0)
-				)),
-				new Enum("Rotation", array(
+				]),
+				new Enum("Rotation", [
 					new Float(0, 0.0),
 					new Float(1, 0.0)
-				)),
+				]),
 				new Float("FallDistance", 0.0),
 				new Short("Fire", 0),
 				new Short("Air", 0),
 				new Byte("OnGround", 1),
 				new Byte("Invulnerable", 0),
 				new String("NameTag", $name),
-			));
+			]);
 			$nbt->Pos->setTagType(NBT::TAG_Double);
 			$nbt->Inventory->setTagType(NBT::TAG_Compound);
 			$nbt->Motion->setTagType(NBT::TAG_Double);
@@ -678,35 +678,35 @@ class Server{
 				$this->logger->notice("Old Player data found for \"" . $name . "\", upgrading profile");
 				foreach($data->get("inventory") as $slot => $item){
 					if(count($item) === 3){
-						$nbt->Inventory[$slot + 9] = new Compound(false, array(
+						$nbt->Inventory[$slot + 9] = new Compound(false, [
 							new Short("id", $item[0]),
 							new Short("Damage", $item[1]),
 							new Byte("Count", $item[2]),
 							new Byte("Slot", $slot + 9),
 							new Byte("TrueSlot", $slot + 9)
-						));
+						]);
 					}
 				}
 				foreach($data->get("hotbar") as $slot => $itemSlot){
 					if(isset($nbt->Inventory[$itemSlot + 9])){
 						$item = $nbt->Inventory[$itemSlot + 9];
-						$nbt->Inventory[$slot] = new Compound(false, array(
+						$nbt->Inventory[$slot] = new Compound(false, [
 							new Short("id", $item["id"]),
 							new Short("Damage", $item["Damage"]),
 							new Byte("Count", $item["Count"]),
 							new Byte("Slot", $slot),
 							new Byte("TrueSlot", $item["TrueSlot"])
-						));
+						]);
 					}
 				}
 				foreach($data->get("armor") as $slot => $item){
 					if(count($item) === 2){
-						$nbt->Inventory[$slot + 100] = new Compound(false, array(
+						$nbt->Inventory[$slot + 100] = new Compound(false, [
 							new Short("id", $item[0]),
 							new Short("Damage", $item[1]),
 							new Byte("Count", 1),
 							new Byte("Slot", $slot + 100)
-						));
+						]);
 					}
 				}
 				foreach($data->get("achievements") as $achievement => $status){
@@ -788,7 +788,7 @@ class Server{
 		$matchedPlayers = [];
 		foreach($this->getOnlinePlayers() as $player){
 			if(strtolower($player->getName()) === $partialName){
-				$matchedPlayers = array($player);
+				$matchedPlayers = [$player];
 				break;
 			}elseif(stripos($player->getName(), $partialName) !== false){
 				$matchedPlayers[] = $player;
@@ -1142,7 +1142,7 @@ class Server{
 	 * @return string
 	 */
 	public function getConfigString($variable, $defaultValue = ""){
-		$v = getopt("", array("$variable::"));
+		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
 			return (string) $v[$variable];
 		}
@@ -1192,7 +1192,7 @@ class Server{
 	 * @return int
 	 */
 	public function getConfigInt($variable, $defaultValue = 0){
-		$v = getopt("", array("$variable::"));
+		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
 			return (int) $v[$variable];
 		}
@@ -1215,7 +1215,7 @@ class Server{
 	 * @return boolean
 	 */
 	public function getConfigBoolean($variable, $defaultValue = false){
-		$v = getopt("", array("$variable::"));
+		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
 			$value = $v[$variable];
 		}else{
@@ -1427,7 +1427,7 @@ class Server{
 		$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
 
 		$this->logger->info("Loading server properties...");
-		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, array(
+		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
 			"memory-limit" => "256M",
@@ -1451,7 +1451,7 @@ class Server{
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
-		));
+		]);
 
 		ServerScheduler::$WORKERS = $this->getProperty("settings.async-workers", ServerScheduler::$WORKERS);
 
@@ -1464,7 +1464,7 @@ class Server{
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
 		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
-			$value = array("M" => 1, "G" => 1024);
+			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
 				$this->logger->warning($this->getName() . " may not work right with less than 128MB of RAM", true, true, 0);
@@ -1582,7 +1582,7 @@ class Server{
 
 		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
 		if($this->getConfigBoolean("auto-save", true) === true and $this->getProperty("ticks-per.autosave", 6000) > 0){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "doAutoSave")), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
 
 		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
@@ -1725,7 +1725,7 @@ class Server{
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
 		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
-			$value = array("M" => 1, "G" => 1024);
+			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 256){
 				$this->logger->warning($this->getName() . " may not work right with less than 256MB of RAM", true, true, 0);
@@ -1809,7 +1809,7 @@ class Server{
 
 
 		if($this->getProperty("settings.send-usage", true) !== false){
-			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask(array($this, "sendUsage")), 6000, 6000);
+			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "sendUsage"]), 6000, 6000);
 			$this->sendUsage();
 		}
 
@@ -2014,11 +2014,11 @@ class Server{
 		$plist = "";
 		foreach($this->getPluginManager()->getPlugins() as $p){
 			$d = $p->getDescription();
-			$plist .= str_replace(array(";", ":"), "", $d->getName()) . ":" . str_replace(array(";", ":"), "", $d->getVersion()) . ";";
+			$plist .= str_replace([";", ":"], "", $d->getName()) . ":" . str_replace([";", ":"], "", $d->getVersion()) . ";";
 		}
 
 		$version = new VersionString();
-		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", array(
+		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", [
 			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . ":" . $this->getPort()), 0, 8)),
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
@@ -2032,7 +2032,7 @@ class Server{
 			"online" => count($this->players),
 			"max" => $this->getMaxPlayers(),
 			"plugins" => $plist,
-		));
+		]);
 
 		$this->scheduler->scheduleAsyncTask($this->lastSendUsage);
 	}

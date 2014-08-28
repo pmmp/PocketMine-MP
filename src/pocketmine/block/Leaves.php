@@ -35,12 +35,12 @@ class Leaves extends Transparent{
 
 	public function __construct($meta = 0){
 		parent::__construct(self::LEAVES, $meta, "Leaves");
-		$names = array(
+		$names = [
 			self::OAK => "Oak Leaves",
 			self::SPRUCE => "Spruce Leaves",
 			self::BIRCH => "Birch Leaves",
 			self::JUNGLE => "Jungle Leaves",
-		);
+		];
 		$this->name = $names[$this->meta & 0x03];
 		$this->hardness = 1;
 	}
@@ -148,13 +148,13 @@ class Leaves extends Transparent{
 	public function getDrops(Item $item){
 		$drops = [];
 		if($item->isShears()){
-			$drops[] = array(Item::LEAVES, $this->meta & 0x03, 1);
+			$drops[] = [Item::LEAVES, $this->meta & 0x03, 1];
 		}else{
 			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = array(Item::SAPLING, $this->meta & 0x03, 1);
+				$drops[] = [Item::SAPLING, $this->meta & 0x03, 1];
 			}
 			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = array(Item::APPLE, 0, 1);
+				$drops[] = [Item::APPLE, 0, 1];
 			}
 		}
 

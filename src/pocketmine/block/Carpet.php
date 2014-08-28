@@ -28,7 +28,7 @@ use pocketmine\Player;
 class Carpet extends Flowable{
 	public function __construct($meta = 0){
 		parent::__construct(self::CARPET, $meta, "Carpet");
-		$names = array(
+		$names = [
 			0 => "White Carpet",
 			1 => "Orange Carpet",
 			2 => "Magenta Carpet",
@@ -45,7 +45,7 @@ class Carpet extends Flowable{
 			13 => "Green Carpet",
 			14 => "Red Carpet",
 			15 => "Black Carpet",
-		);
+		];
 		$this->name = $names[$this->meta];
 		$this->hardness = 0;
 		$this->isFullBlock = false;

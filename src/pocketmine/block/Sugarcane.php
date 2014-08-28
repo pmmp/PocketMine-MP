@@ -38,9 +38,9 @@ class Sugarcane extends Flowable{
 
 
 	public function getDrops(Item $item){
-		return array(
-			array(Item::SUGARCANE, 0, 1),
-		);
+		return [
+			[Item::SUGARCANE, 0, 1],
+		];
 	}
 
 	public function onActivate(Item $item, Player $player = null){

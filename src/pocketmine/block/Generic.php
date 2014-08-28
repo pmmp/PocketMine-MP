@@ -43,12 +43,12 @@ class Generic extends Block{
 		if($this->hasPhysics === true and $type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() === self::AIR or ($down instanceof Liquid)){
-				$data = array(
+				$data = [
 					"x" => $this->x + 0.5,
 					"y" => $this->y + 0.5,
 					"z" => $this->z + 0.5,
 					"Tile" => $this->id,
-				);
+				];
 				/*$this->getLevel()->setBlock($this, new Air(), false, false, true);
 				//TODO
 				//$e = $server->api->entity->add($this->getLevel(), ENTITY_FALLING, FALLING_SAND, $data);
