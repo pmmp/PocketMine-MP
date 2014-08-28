@@ -2011,6 +2011,7 @@ class Server{
 				return;
 			}
 		}
+		echo "Sending usage\n";
 		$plist = "";
 		foreach($this->getPluginManager()->getPlugins() as $p){
 			$d = $p->getDescription();

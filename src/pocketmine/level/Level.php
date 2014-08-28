@@ -666,10 +666,8 @@ class Level implements ChunkManager, Metadatable{
 
 		for($z = $minZ; $z < $maxZ; ++$z){
 			for($x = $minX; $x < $maxX; ++$x){
-				if($this->isChunkLoaded($x >> 4, $z >> 4)){
-					for($y = $minY - 1; $y < $maxY; ++$y){
-						$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
-					}
+				for($y = $minY - 1; $y < $maxY; ++$y){
+					$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
 				}
 			}
 		}
@@ -707,15 +705,13 @@ class Level implements ChunkManager, Metadatable{
 		//TODO: optimize this loop, check collision cube boundaries
 		for($z = $minZ; $z < $maxZ; ++$z){
 			for($x = $minX; $x < $maxX; ++$x){
-				if($this->isChunkLoaded($x >> 4, $z >> 4)){
-					for($y = $minY - 1; $y < $maxY; ++$y){
-						$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
-					}
+				for($y = $minY - 1; $y < $maxY; ++$y){
+					$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
 				}
 			}
 		}
 
-		foreach($this->getCollidingEntities($bb->expand(0.25, 0.25, 0.25), $entity) as $ent){
+		foreach($this->getCollidingEntities($bb->grow(0.25, 0.25, 0.25), $entity) as $ent){
 			$collides[] = clone $ent->boundingBox;
 		}
 
@@ -1096,11 +1092,9 @@ class Level implements ChunkManager, Metadatable{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
-				if($this->isChunkLoaded($x, $z)){
-					foreach($this->getChunkEntities($x, $z) as $ent){
-						if($ent !== $entity and ($entity === null or ($ent->canCollideWith($entity) and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
-							$nearby[] = $ent;
-						}
+				foreach($this->getChunkEntities($x, $z) as $ent){
+					if($ent !== $entity and ($entity === null or ($ent->canCollideWith($entity) and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
+						$nearby[] = $ent;
 					}
 				}
 			}
@@ -1199,7 +1193,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Entity[]
 	 */
 	public function getChunkEntities($X, $Z){
-		return $this->getChunkAt($X, $Z, true)->getEntities();
+		return ($chunk = $this->getChunkAt($X, $Z)) instanceof FullChunk ? $chunk->getEntities() : [];
 	}
 
 	/**
@@ -1211,7 +1205,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Tile[]
 	 */
 	public function getChunkTiles($X, $Z){
-		return $this->getChunkAt($X, $Z, true)->getTiles();
+		return ($chunk = $this->getChunkAt($X, $Z)) instanceof FullChunk ? $chunk->getTiles() : [];
 	}
 
 	/**

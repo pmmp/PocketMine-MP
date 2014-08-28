@@ -158,7 +158,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->justCreated = true;
 		$this->namedtag = $nbt;
 		$this->chunk = $chunk;
-		$this->setLevel($chunk->getProvider()->getLevel()); //Create a hard reference
+		$this->setLevel($chunk->getProvider()->getLevel());
 		$this->server = $chunk->getProvider()->getLevel()->getServer();
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -1013,8 +1013,6 @@ abstract class Entity extends Position implements Metadatable{
 
 			$this->chunk->addEntity($this);
 		}
-
-		$this->scheduleUpdate();
 
 		return true;
 	}

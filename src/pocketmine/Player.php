@@ -1065,7 +1065,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 		$hasUpdate = $this->entityBaseTick();
-		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->expand(1, 1, 1), $this) as $entity){
+		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
 			if($entity instanceof DroppedItem){
 				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
@@ -1314,43 +1314,33 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
-				/*if($this->forceMovement instanceof Vector3){
-					if($this->forceMovement->distance($newPos) <= 0.7){
-						$this->forceMovement = false;
-					}else{
-						$this->setPosition($this->forceMovement);
-					}
-				}*/
-				/*$speed = $this->entity->getSpeedMeasure();
-				if($this->blocked === true or ($this->server->api->getProperty("allow-flight") !== true and (($speed > 9 and ($this->gamemode & 0x01) === 0x00) or $speed > 20 or $this->entity->distance($newPos) > 7)) or $this->server->api->handle("player.move", $this->entity) === false){
-					if($this->lastCorrect instanceof Vector3){
-						$this->teleport($this->lastCorrect, $this->entity->yaw, $this->entity->pitch, false);
-					}
-					if($this->blocked !== true){
-						$this->server->getLogger()->warning($this->username." moved too quickly!");
-					}
-				}else{*/
-
-				$dy = $newPos->y - $this->y;
-
-				if(($this->onGround and $dy != 0) or (!$this->onGround and $dy <= 0)){
-					if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
-						$isColliding = true;
-					}else{
-						$isColliding = false;
-					}
-
-					$this->onGround = ($dy <= 0 and $isColliding);
-				}
-
-				$this->updateFallState($dy, $this->onGround);
 
 				$revert = false;
 
-				if($this->chunk === null or !$this->chunk->isGenerated()){
-					$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
-					if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
-						$revert = true;
+				if($newPos->distance($this) > 100){
+					$this->server->getLogger()->warning($this->username." moved too quickly!");
+					$revert = true;
+				}else{
+					$dy = $newPos->y - $this->y;
+
+					if(($this->onGround and $dy != 0) or (!$this->onGround and $dy <= 0)){
+						if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
+							$isColliding = true;
+						}else{
+							$isColliding = false;
+						}
+
+						$this->onGround = ($dy <= 0 and $isColliding);
+					}
+
+					$this->updateFallState($dy, $this->onGround);
+
+
+					if($this->chunk === null or !$this->chunk->isGenerated()){
+						$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
+						if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
+							$revert = true;
+						}
 					}
 				}
 
