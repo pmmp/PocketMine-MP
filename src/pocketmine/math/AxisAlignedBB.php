@@ -75,7 +75,7 @@ class AxisAlignedBB{
 		return $this;
 	}
 
-	public function expand($x, $y, $z){
+	public function grow($x, $y, $z){
 		$vec = clone $this;
 		$vec->minX -= $x;
 		$vec->minY -= $y;
@@ -87,19 +87,29 @@ class AxisAlignedBB{
 		return $vec;
 	}
 
-	public function offset($x, $y, $z){
-		$vec = clone $this;
-		$vec->minX += $x;
-		$vec->minY += $y;
-		$vec->minZ += $z;
-		$vec->maxX += $x;
-		$vec->maxY += $y;
-		$vec->maxZ += $z;
+	public function expand($x, $y, $z){
+		$this->minX -= $x;
+		$this->minY -= $y;
+		$this->minZ -= $z;
+		$this->maxX += $x;
+		$this->maxY += $y;
+		$this->maxZ += $z;
 
-		return $vec;
+		return $this;
 	}
 
-	public function contract($x, $y, $z){
+	public function offset($x, $y, $z){
+		$this->minX += $x;
+		$this->minY += $y;
+		$this->minZ += $z;
+		$this->maxX += $x;
+		$this->maxY += $y;
+		$this->maxZ += $z;
+
+		return $this;
+	}
+
+	public function shrink($x, $y, $z){
 		$vec = clone $this;
 		$vec->minX += $x;
 		$vec->minY += $y;
@@ -109,6 +119,17 @@ class AxisAlignedBB{
 		$vec->maxZ -= $z;
 
 		return $vec;
+	}
+
+	public function contract($x, $y, $z){
+		$this->minX += $x;
+		$this->minY += $y;
+		$this->minZ += $z;
+		$this->maxX -= $x;
+		$this->maxY -= $y;
+		$this->maxZ -= $z;
+
+		return $this;
 	}
 
 	public function setBB(AxisAlignedBB $bb){
@@ -123,7 +144,15 @@ class AxisAlignedBB{
 	}
 
 	public function getOffsetBoundingBox($x, $y, $z){
-		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
+		$vec = clone $this;
+		$vec->minX += $x;
+		$vec->minY += $y;
+		$vec->minZ += $z;
+		$vec->maxX += $x;
+		$vec->maxY += $y;
+		$vec->maxZ += $z;
+
+		return $vec;
 	}
 
 	public function calculateXOffset(AxisAlignedBB $bb, $x){

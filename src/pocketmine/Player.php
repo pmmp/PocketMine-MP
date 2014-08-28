@@ -1517,7 +1517,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					case 5: //Shot arrow
 						//if($this->entity->inAction === true){
 						if($this->inventory->getItemInHand()->getID() === Item::BOW){
-							$f = 1 * 2 * 1.5;
+							$f = 1.5;
 							$nbt = new Compound("", [
 								"Pos" => new Enum("Pos", [
 										new Double("", $this->x),

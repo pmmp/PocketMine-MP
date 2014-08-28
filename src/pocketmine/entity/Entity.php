@@ -169,13 +169,10 @@ abstract class Entity extends Position implements Metadatable{
 				$this->namedtag["Pos"][2]
 			),
 			$this->namedtag->Rotation[0],
-			$this->namedtag->Rotation[1]
+			$this->namedtag->Rotation[1],
+			true
 		);
-		$this->setMotion(new Vector3(
-				$this->namedtag["Motion"][0],
-				$this->namedtag["Motion"][1],
-				$this->namedtag["Motion"][2])
-		);
+		$this->setMotion(new Vector3($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
 
 		if(!isset($this->namedtag->FallDistance)){
 			$this->namedtag->FallDistance = new Float("FallDistance", 0);
@@ -206,8 +203,9 @@ abstract class Entity extends Position implements Metadatable{
 		$this->getLevel()->addEntity($this);
 		$this->initEntity();
 		$this->lastUpdate = $this->spawnTime = microtime(true);
-		$this->justCreated = false;
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
+		$this->onUpdate();
+		$this->justCreated = false;
 		$this->scheduleUpdate();
 
 	}
@@ -360,7 +358,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function canCollideWith(Entity $entity){
-		return true;
+		return !$this->justCreated;
 	}
 
 	protected function checkObstruction($x, $y, $z){
@@ -715,91 +713,66 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function move($dx, $dy, $dz){
-		//$collision = [];
-		//$this->checkBlockCollision($collision);
-		if($dx == 0 and $dz == 0 and $dy == 0){
-			return;
-		}
+		if($this->inBlock){
+			$this->boundingBox->offset($dx, $dy, $dz);
+			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+			$this->y = $this->boundingBox->minY + $this->height;
+			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+		}else{
+			//$collision = [];
+			//$this->checkBlockCollision($collision);
+			if($dx == 0 and $dz == 0 and $dy == 0){
+				return;
+			}
 
-		Timings::$entityMoveTimer->startTiming();
+			Timings::$entityMoveTimer->startTiming();
 
-		$ox = $this->x;
-		$oy = $this->y;
-		$oz = $this->z;
+			$ox = $this->x;
+			$oy = $this->y;
+			$oz = $this->z;
 
-		if($this->isColliding){ //With an entity
-			$this->isColliding = false;
-			$dx *= 0.25;
-			$dy *= 0.05;
-			$dz *= 0.25;
-			$this->motionX = 0;
-			$this->motionY = 0;
-			$this->motionZ = 0;
-		}
+			if($this->isColliding){ //With an entity
+				$this->isColliding = false;
+				$dx *= 0.25;
+				$dy *= 0.05;
+				$dz *= 0.25;
+				$this->motionX = 0;
+				$this->motionY = 0;
+				$this->motionZ = 0;
+			}
 
-		$movX = $dx;
-		$movY = $dy;
-		$movZ = $dz;
+			$movX = $dx;
+			$movY = $dy;
+			$movZ = $dz;
 
-		/*$sneakFlag = $this->onGround and $this instanceof Player;
+			$axisalignedbb = clone $this->boundingBox;
 
-		if($sneakFlag){
-			for($mov = 0.05; $dx != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){
-				if($dx < $mov and $dx >= -$mov){
-					$dx = 0;
-				}elseif($dx > 0){
-					$dx -= $mov;
-				}else{
-					$dx += $mov;
+			/*$sneakFlag = $this->onGround and $this instanceof Player;
+
+			if($sneakFlag){
+				for($mov = 0.05; $dx != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){
+					if($dx < $mov and $dx >= -$mov){
+						$dx = 0;
+					}elseif($dx > 0){
+						$dx -= $mov;
+					}else{
+						$dx += $mov;
+					}
 				}
-			}
 
-			for(; $dz != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz){
-				if($dz < $mov and $dz >= -$mov){
-					$dz = 0;
-				}elseif($dz > 0){
-					$dz -= $mov;
-				}else{
-					$dz += $mov;
+				for(; $dz != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz){
+					if($dz < $mov and $dz >= -$mov){
+						$dz = 0;
+					}elseif($dz > 0){
+						$dz -= $mov;
+					}else{
+						$dz += $mov;
+					}
 				}
-			}
 
-			//TODO: big messy loop
-		}*/
+				//TODO: big messy loop
+			}*/
 
-		if(count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, $dy, 0))) > 0){
-			$dy = 0;
-			$dx = 0;
-			$dz = 0;
-		}
-
-		$fallingFlag = $this->onGround or ($dy != $movY and $movY < 0);
-
-		if($dx != 0){
-			if(count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, 0, 0))) > 0){
-				$dy = 0;
-				$dx = 0;
-				$dz = 0;
-			}
-		}
-
-		if($dz != 0){
-			if(count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, 0, $dz))) > 0){
-				$dy = 0;
-				$dx = 0;
-				$dz = 0;
-			}
-		}
-
-		if($movX != $dx or $movZ != $dz or $fallingFlag){
-
-			$cx = $dx;
-			$cy = $dy;
-			$cz = $dz;
-			$dx = $movX;
-			$dy = 0;
-			$dz = $movZ;
-			$oldBB = clone $this->boundingBox;
 			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ));
 
 
@@ -807,7 +780,7 @@ abstract class Entity extends Position implements Metadatable{
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 			}
 
-			$this->boundingBox->addCoord(0, $dy, 0);
+			$this->boundingBox->offset(0, $dy, 0);
 
 			if($movY != $dy){
 				$dx = 0;
@@ -815,11 +788,13 @@ abstract class Entity extends Position implements Metadatable{
 				$dz = 0;
 			}
 
+			$fallingFlag = $this->onGround or ($dy != $movY and $movY < 0);
+
 			foreach($list as $bb){
 				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
 			}
 
-			$this->boundingBox->addCoord($dx, 0, 0);
+			$this->boundingBox->offset($dx, 0, 0);
 
 			if($movX != $dx){
 				$dx = 0;
@@ -831,7 +806,7 @@ abstract class Entity extends Position implements Metadatable{
 				$dz = $bb->calculateZOffset($this->boundingBox, $dz);
 			}
 
-			$this->boundingBox->addCoord(0, 0, $dz);
+			$this->boundingBox->offset(0, 0, $dz);
 
 			if($movZ != $dz){
 				$dx = 0;
@@ -845,49 +820,110 @@ abstract class Entity extends Position implements Metadatable{
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 				}
 
-				$this->boundingBox->addCoord(0, $dy, 0);
+				$this->boundingBox->offset(0, $dy, 0);
 			}
 
-			if($cx * $cx + $cz * $cz > $dx * $dx + $dz * $dz){
-				$dx = $cx;
-				$dy = $cy;
-				$dz = $cz;
-				$this->boundingBox->setBB($oldBB);
+
+			if($this->gravity > 0 and $fallingFlag and $this->onGround and ($movX != $dx or $movZ != $dz)){
+				$cx = $dx;
+				$cy = $dy;
+				$cz = $dz;
+				$dx = $movX;
+				$dy = $this->gravity;
+				$dz = $movZ;
+
+				$axisalignedbb1 = clone $this->boundingBox;
+
+				$this->boundingBox->setBB($axisalignedbb);
+
+				$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ));
+
+				foreach($list as $bb){
+					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+				}
+
+				if($movY != $dy){
+					$dx = 0;
+					$dy = 0;
+					$dz = 0;
+				}
+
+				foreach($list as $bb){
+					$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+				}
+
+				$this->boundingBox->offset($dx, 0, 0);
+				if($movX != $dx){
+					$dx = 0;
+					$dy = 0;
+					$dz = 0;
+				}
+
+				foreach($list as $bb){
+					$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+				}
+
+				$this->boundingBox->offset(0, 0, $dz);
+				if($movZ != $dz){
+					$dx = 0;
+					$dy = 0;
+					$dz = 0;
+				}
+
+				if($movY != $dy){
+					$dx = 0;
+					$dy = 0;
+					$dz = 0;
+				}else{
+					$dy = -$this->gravity;
+					foreach($list as $bb){
+						$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+					}
+					$this->boundingBox->offset(0, $dy, 0);
+				}
+
+				if($cx * $cx + $cz * $cz > $dx * $dx + $dz * $dz){
+					$dx = $cx;
+					$dy = $cy;
+					$dz = $cz;
+					$this->boundingBox->setBB($axisalignedbb1);
+				}
+
+
 			}
+
+			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+			$this->y = $this->boundingBox->minY + $this->height;
+			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+
+			$this->onGround = $movY != $dy and $movY < 0;
+			$this->updateFallState($dy, $this->onGround);
+
+			if($movX != $dx){
+				$this->motionX = 0;
+			}
+
+			if($movY != $dy){
+				$this->motionY = 0;
+			}
+
+			if($movZ != $dz){
+				$this->motionZ = 0;
+			}
+
+			$this->boundingBox->offset($dx, $dy, $dz);
+			$this->x += $dx;
+			$this->y += $dy;
+			$this->z += $dz;
+
+			$cx = $this->x - $ox;
+			$cy = $this->y - $oy;
+			$cz = $this->z - $oz;
+
+			//TODO: vehicle collision events (first we need to spawn them!)
+
+			Timings::$entityMoveTimer->stopTiming();
 		}
-
-		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->y = $this->boundingBox->minY + $this->height;
-		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-
-		$this->onGround = $movY != $dy and $movY < 0;
-		$this->updateFallState($dy, $this->onGround);
-
-		if($movX != $dx){
-			$this->motionX = 0;
-		}
-
-		if($movY != $dy){
-			$this->motionY = 0;
-		}
-
-		if($movZ != $dz){
-			$this->motionZ = 0;
-		}
-
-		$this->boundingBox->addCoord($dx, $dy, $dz);
-		$this->x += $dx;
-		$this->y += $dy;
-		$this->z += $dz;
-
-		$cx = $this->x - $ox;
-		$cy = $this->y - $oy;
-		$cz = $this->z - $oz;
-
-		//TODO: vehicle collision events (first we need to spawn them!)
-
-		Timings::$entityMoveTimer->stopTiming();
-
 	}
 
 	/**
