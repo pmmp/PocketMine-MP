@@ -27,7 +27,7 @@ use pocketmine\Thread;
 class GenerationThread extends Thread{
 
 	protected $loadPaths;
-	/** @var \SplAutoloader */
+	/** @var \ClassLoader */
 	protected $loader;
 	/** @var \ThreadedLogger */
 	protected $logger;

@@ -29,7 +29,7 @@ use pocketmine\block\Gravel;
 use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
-use pocketmine\item\Block;
+use pocketmine\block\Block;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;

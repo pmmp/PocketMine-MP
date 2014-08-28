@@ -21,7 +21,7 @@
 
 namespace pocketmine\level\generator\object;
 
-use pocketmine\item\Block;
+use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 

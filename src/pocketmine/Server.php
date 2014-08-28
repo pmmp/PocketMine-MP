@@ -61,7 +61,6 @@ use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\query\QueryHandler;
-use pocketmine\network\query\QueryPacket;
 use pocketmine\network\RakLibInterface;
 use pocketmine\network\rcon\RCON;
 use pocketmine\network\SourceInterface;
