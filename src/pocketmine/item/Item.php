@@ -27,7 +27,6 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\inventory\Fuel;
-use pocketmine\item\Block as ItemBlock;
 use pocketmine\level\Level;
 use pocketmine\Player;
 

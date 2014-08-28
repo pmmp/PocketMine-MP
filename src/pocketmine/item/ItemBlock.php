@@ -21,13 +21,13 @@
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block as BlockBlock;
+use pocketmine\block\Block;
 
 /**
  * Class used for Items that can be Blocks
  */
-class Block extends Item{
-	public function __construct(BlockBlock $block, $meta = 0, $count = 1){
+class ItemBlock extends Item{
+	public function __construct(Block $block, $meta = 0, $count = 1){
 		$this->block = clone $block;
 		parent::__construct($block->getID(), $block->getDamage(), $count, $block->getName());
 	}
