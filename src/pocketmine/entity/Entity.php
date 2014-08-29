@@ -716,7 +716,7 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->inBlock){
 			$this->boundingBox->offset($dx, $dy, $dz);
 			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-			$this->y = $this->boundingBox->minY + $this->height;
+			$this->y = $this->boundingBox->minY/* + $this->height*/;
 			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 		}else{
 			//$collision = [];
@@ -731,7 +731,7 @@ abstract class Entity extends Position implements Metadatable{
 			$oy = $this->y;
 			$oz = $this->z;
 
-			if($this->isColliding){ //With an entity
+			if($this->isColliding){ //With cobweb?
 				$this->isColliding = false;
 				$dx *= 0.25;
 				$dy *= 0.05;
@@ -892,9 +892,15 @@ abstract class Entity extends Position implements Metadatable{
 
 			}
 
-			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-			$this->y = $this->boundingBox->minY + $this->height;
-			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+			$pos = new Vector3(
+				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+				$this->boundingBox->minY/* + $this->height*/,
+				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
+			);
+
+			if(!$this->setPosition($pos)){
+				$this->boundingBox->setBB($axisalignedbb);
+			}
 
 			$this->onGround = $movY != $dy and $movY < 0;
 			$this->updateFallState($dy, $this->onGround);
@@ -910,15 +916,6 @@ abstract class Entity extends Position implements Metadatable{
 			if($movZ != $dz){
 				$this->motionZ = 0;
 			}
-
-			$this->boundingBox->offset($dx, $dy, $dz);
-			$this->x += $dx;
-			$this->y += $dy;
-			$this->z += $dz;
-
-			$cx = $this->x - $ox;
-			$cy = $this->y - $oy;
-			$cz = $this->z - $oz;
 
 			//TODO: vehicle collision events (first we need to spawn them!)
 
