@@ -180,7 +180,7 @@ class CraftingManager{
 			[Item::LEATHER_PANTS, Item::CHAIN_LEGGINGS, Item::IRON_LEGGINGS, Item::DIAMOND_LEGGINGS, Item::GOLD_LEGGINGS],
 			[Item::LEATHER_BOOTS, Item::CHAIN_BOOTS, Item::IRON_BOOTS, Item::DIAMOND_BOOTS, Item::GOLD_BOOTS],
 		];
-		for($i = 1; $i < 2; ++$i){
+		for($i = 1; $i < 5; ++$i){
 			foreach($types[$i] as $j => $type){
 				$this->registerRecipe((new BigShapelessRecipe(Item::get($type, 0, 1)))->addIngredient(Item::get($types[0][$j], 0, $cost[$i - 1])));
 			}
