@@ -354,7 +354,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $X
 	 * @param int $Z
 	 *
-	 * @return Player[][]
+	 * @return Player[]
 	 */
 	public function getUsingChunk($X, $Z){
 		$index = Level::chunkHash($X, $Z);
@@ -632,7 +632,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int     $type
 	 */
 	public function updateAround(Vector3 $pos, $type = self::BLOCK_UPDATE_NORMAL){
-		$block = $this->getBlock($pos);
+		if($pos instanceof Block){
+			$block = $pos;
+		}else{
+			$block = $this->getBlock($pos);
+		}
+
 		$block->getSide(0)->onUpdate($type);
 		$block->getSide(1)->onUpdate($type);
 		$block->getSide(2)->onUpdate($type);
@@ -776,7 +781,8 @@ class Level implements ChunkManager, Metadatable{
 				$pk->meta = $block->getDamage();
 
 				foreach($this->getUsingChunk($pos->x >> 4, $pos->z >> 4) as $player){
-					$player->dataPacket($pk);
+					/** @var Player $player */
+					$player->directDataPacket($pk);
 				}
 			}else{
 				if(!($pos instanceof Position)){

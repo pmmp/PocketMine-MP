@@ -824,7 +824,7 @@ abstract class Entity extends Position implements Metadatable{
 			}
 
 
-			if($this->gravity > 0 and $fallingFlag and $this->onGround and ($movX != $dx or $movZ != $dz)){
+			if($this->gravity > 0 and $fallingFlag /*and $sneak*/ and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
