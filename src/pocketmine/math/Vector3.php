@@ -200,6 +200,87 @@ class Vector3{
 		);
 	}
 
+	/**
+	 * Returns a new vector with x value equal to the second parameter, along the line between this vector and the
+	 * passed in vector, or null if not possible.
+	 *
+	 * @param Vector3 $v
+	 * @param float   $x
+	 *
+	 * @return Vector3
+	 */
+	public function getIntermediateWithXValue(Vector3 $v, $x){
+		$xDiff = $v->x - $this->x;
+		$yDiff = $v->y - $this->y;
+		$zDiff = $v->z - $this->z;
+
+		if(($xDiff ** 2) < 1){
+			return null;
+		}
+
+		$f = ($x - $this->x) / $xDiff;
+
+		if($f < 0 or $f > 1){
+			return null;
+		}else{
+			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
+		}
+	}
+
+	/**
+	 * Returns a new vector with y value equal to the second parameter, along the line between this vector and the
+	 * passed in vector, or null if not possible.
+	 *
+	 * @param Vector3 $v
+	 * @param float   $y
+	 *
+	 * @return Vector3
+	 */
+	public function getIntermediateWithYValue(Vector3 $v, $y){
+		$xDiff = $v->x - $this->x;
+		$yDiff = $v->y - $this->y;
+		$zDiff = $v->z - $this->z;
+
+		if(($yDiff ** 2) < 1){
+			return null;
+		}
+
+		$f = ($y - $this->y) / $yDiff;
+
+		if($f < 0 or $f > 1){
+			return null;
+		}else{
+			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
+		}
+	}
+
+	/**
+	 * Returns a new vector with z value equal to the second parameter, along the line between this vector and the
+	 * passed in vector, or null if not possible.
+	 *
+	 * @param Vector3 $v
+	 * @param float   $z
+	 *
+	 * @return Vector3
+	 */
+	public function getIntermediateWithZValue(Vector3 $v, $z){
+		$xDiff = $v->x - $this->x;
+		$yDiff = $v->y - $this->y;
+		$zDiff = $v->z - $this->z;
+
+		if(($zDiff ** 2) < 1){
+			return null;
+		}
+
+		$f = ($z - $this->z) / $zDiff;
+
+		if($f < 0 or $f > 1){
+			return null;
+		}else{
+			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
+		}
+	}
+
 	public function __toString(){
 		return "Vector3(x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}

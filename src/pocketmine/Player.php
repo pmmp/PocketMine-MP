@@ -1545,7 +1545,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 										new Float("", $this->pitch)
 									]),
 							]);
-							$arrow = new Arrow($this->chunk, $nbt);
+							$arrow = new Arrow($this->chunk, $nbt, $this);
 							$arrow->spawnToAll();
 						}
 						//}

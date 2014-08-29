@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\math;
+use pocketmine\level\MovingObjectPosition;
 
 /**
  * WARNING: This class is available on the PocketMine-MP Zephir project.
@@ -54,25 +55,27 @@ class AxisAlignedBB{
 	}
 
 	public function addCoord($x, $y, $z){
+		$vec = clone $this;
+		
 		if($x < 0){
-			$this->minX += $x;
+			$vec->minX += $x;
 		}elseif($x > 0){
-			$this->maxX += $x;
+			$vec->maxX += $x;
 		}
 
 		if($y < 0){
-			$this->minY += $y;
+			$vec->minY += $y;
 		}elseif($y > 0){
-			$this->maxY += $y;
+			$vec->maxY += $y;
 		}
 
 		if($z < 0){
-			$this->minZ += $z;
+			$vec->minZ += $z;
 		}elseif($z > 0){
-			$this->maxZ += $z;
+			$vec->maxZ += $z;
 		}
 
-		return $this;
+		return $vec;
 	}
 
 	public function grow($x, $y, $z){
@@ -261,9 +264,81 @@ class AxisAlignedBB{
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
 
-	/*
-	public function calculateIntercept(...){
-	
+
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
+		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
+		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
+		$v3 = $pos1->getIntermediateWithYValue($pos2, $this->minY);
+		$v4 = $pos1->getIntermediateWithYValue($pos2, $this->maxY);
+		$v5 = $pos1->getIntermediateWithZValue($pos2, $this->minZ);
+		$v6 = $pos1->getIntermediateWithZValue($pos2, $this->maxZ);
+
+		if($v1 !== null and !$this->isVectorInYZ($v1)){
+			$v1 = null;
+		}
+
+		if($v2 !== null and !$this->isVectorInYZ($v2)){
+			$v2 = null;
+		}
+
+		if($v3 !== null and !$this->isVectorInXZ($v3)){
+			$v3 = null;
+		}
+
+		if($v4 !== null and !$this->isVectorInXZ($v4)){
+			$v4 = null;
+		}
+
+		if($v5 !== null and !$this->isVectorInXY($v5)){
+			$v5 = null;
+		}
+
+		if($v6 !== null and !$this->isVectorInXY($v6)){
+			$v6 = null;
+		}
+
+		$vector = $v1;
+
+		if($v2 !== null and ($vector === null or $pos1->distanceSquared($v2) < $pos1->distanceSquared($vector))){
+			$vector = $v2;
+		}
+
+		if($v3 !== null and ($vector === null or $pos1->distanceSquared($v3) < $pos1->distanceSquared($vector))){
+			$vector = $v3;
+		}
+
+		if($v4 !== null and ($vector === null or $pos1->distanceSquared($v4) < $pos1->distanceSquared($vector))){
+			$vector = $v4;
+		}
+
+		if($v5 !== null and ($vector === null or $pos1->distanceSquared($v5) < $pos1->distanceSquared($vector))){
+			$vector = $v5;
+		}
+
+		if($v6 !== null and ($vector === null or $pos1->distanceSquared($v6) < $pos1->distanceSquared($vector))){
+			$vector = $v6;
+		}
+
+		if($vector === null){
+			return null;
+		}
+
+		$f = -1;
+
+		if($vector === $v1){
+			$f = 4;
+		}elseif($vector === $v2){
+			$f = 5;
+		}elseif($vector === $v3){
+			$f = 0;
+		}elseif($vector === $v4){
+			$f = 1;
+		}elseif($vector === $v5){
+			$f = 2;
+		}elseif($vector === $v6){
+			$f = 3;
+		}
+
+		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
 	}
-	*/
 }

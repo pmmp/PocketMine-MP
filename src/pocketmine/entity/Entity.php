@@ -358,7 +358,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function canCollideWith(Entity $entity){
-		return !$this->justCreated;
+		return !$this->justCreated and $entity !== $this;
 	}
 
 	protected function checkObstruction($x, $y, $z){

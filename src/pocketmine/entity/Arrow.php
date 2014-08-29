@@ -22,8 +22,12 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\level\format\FullChunk;
+use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
@@ -36,8 +40,19 @@ class Arrow extends Projectile{
 	public $width = 0.5;
 	public $length = 0.5;
 	public $height = 0.5;
+
+	/** @var Entity */
+	public $shootingEntity = null;
+
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
+
+	private $damage = 6;
+
+	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
+		$this->shootingEntity = $shootingEntity;
+		parent::__construct($chunk, $nbt);
+	}
 
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "Arrow");
@@ -46,6 +61,7 @@ class Arrow extends Projectile{
 		if(isset($this->namedtag->Age)){
 			$this->age = $this->namedtag["Age"];
 		}
+
 	}
 
 	public function onUpdate(){
@@ -55,9 +71,64 @@ class Arrow extends Projectile{
 			return false;
 		}
 
+		$movingObjectPosition = null;
+
 		$this->motionY -= $this->gravity;
 
 		$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+
+		$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
+
+		$list = $this->getLevel()->getCollidingEntities($this->boundingBox->addCoord($this->motionX, $this->motionY, $this->motionZ)->expand(1, 1, 1), $this);
+
+		$nearDistance = PHP_INT_MAX;
+		$nearEntity = null;
+
+
+		foreach($list as $entity){
+			if(!$entity->canCollideWith($this) or ($entity === $this->shootingEntity and $this->ticksLived < 5)){
+				continue;
+			}
+
+			$axisalignedbb = $entity->boundingBox->grow(0.3, 0.3, 0.3);
+			$ob = $axisalignedbb->calculateIntercept($this, $moveVector);
+
+			if($ob === null){
+				continue;
+			}
+
+			$distance = $this->distance($ob->hitVector);
+
+			if($distance < $nearDistance){
+				$nearDistance = $distance;
+				$nearEntity = $entity;
+			}
+		}
+
+		if($nearEntity !== null){
+			$movingObjectPosition = MovingObjectPosition::fromEntity($nearEntity);
+		}
+
+		if($movingObjectPosition !== null){
+			if($movingObjectPosition->entityHit !== null){
+				$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
+				$damage = ceil($motion * $this->damage);
+
+
+				$ev = new EntityDamageByEntityEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+
+				$this->server->getPluginManager()->callEvent($ev);
+
+				if(!$ev->isCancelled()){
+					$movingObjectPosition->entityHit->attack($damage, $ev);
+					if($this->fireTicks > 0){
+						$movingObjectPosition->entityHit->setOnFire(5);
+					}
+					$this->kill();
+				}
+			}
+		}
+
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 		$friction = 1 - $this->drag;
@@ -79,6 +150,12 @@ class Arrow extends Projectile{
 		}
 		if(abs($this->motionZ) < 0.01){
 			$this->motionZ = 0;
+		}
+
+		if($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){
+			$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
+			$this->yaw = (atan2($this->motionX, $this->motionZ) * 180 / M_PI);
+			$this->pitch = (atan2($this->motionY, $f) * 180 / M_PI);
 		}
 
 		if($this->age > 1200){

@@ -723,7 +723,6 @@ class Level implements ChunkManager, Metadatable{
 		return $collides;
 	}
 
-
 	/**
 	 * Gets the Block object on the Vector3 location
 	 *
