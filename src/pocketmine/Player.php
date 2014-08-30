@@ -31,6 +31,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityShootBowEventEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
@@ -1532,6 +1533,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					case 5: //Shot arrow
 						//if($this->entity->inAction === true){
 						if($this->inventory->getItemInHand()->getID() === Item::BOW){
+							if(($this->gamemode & 0x01) === 0){
+								if(!$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
+									$this->inventory->sendContents($this);
+									return;
+								}
+							}
+
 							$f = 1.5;
 							$nbt = new Compound("", [
 								"Pos" => new Enum("Pos", [
@@ -1550,7 +1558,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 									]),
 							]);
 							$arrow = new Arrow($this->chunk, $nbt, $this);
-							$arrow->spawnToAll();
+
+							$ev = new EntityShootBowEventEvent($this, $this->inventory->getItemInHand(), $arrow, $f);
+
+							$this->server->getPluginManager()->callEvent($ev);
+
+							if($ev->isCancelled()){
+								$arrow->kill();
+							}else{
+								if(($this->gamemode & 0x01) === 0){
+									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
+								}
+								$arrow->spawnToAll();
+							}
 						}
 						//}
 						$this->startAction = false;
