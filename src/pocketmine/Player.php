@@ -1569,8 +1569,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							}else{
 								if(($this->gamemode & 0x01) === 0){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
-									$bow->setCount($bow->getCount() - 1);
-									if($bow->getCount() <= 0){
+									$bow->setDamage($bow->getDamage() + 1);
+									if($bow->getDamage() >= 385){
 										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
 									}
 								}
