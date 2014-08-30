@@ -2251,8 +2251,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$message = $this->getName() . " was killed";
 				break;
+			case EntityDamageEvent::CAUSE_PROJECTILE:
+				if($ev instanceof EntityDamageByEntityEvent){
+					$e = $ev->getDamager();
+					if($e instanceof Living){
+						$message = $this->getName() . " was shot by " . $e->getName();
+						break;
+					}
+				}
+				$message = $this->getName() . " was shot by arrow";
+				break;
 			case EntityDamageEvent::CAUSE_SUICIDE:
-
+				$message = $this->getName() . " died";
 				break;
 			case EntityDamageEvent::CAUSE_VOID:
 				$message = $this->getName() . " fell out of the world";
@@ -2268,7 +2278,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				break;
 
 			case EntityDamageEvent::CAUSE_CONTACT:
-			case EntityDamageEvent::CAUSE_PROJECTILE:
 			case EntityDamageEvent::CAUSE_SUFFOCATION:
 			case EntityDamageEvent::CAUSE_FIRE:
 			case EntityDamageEvent::CAUSE_FIRE_TICK:
@@ -2285,7 +2294,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), $message));
 
-		$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
+		if($ev->getDeathMessage() != ""){
+			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
+		}
 
 	}
 
