@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Carpet extends Flowable{
@@ -50,6 +51,17 @@ class Carpet extends Flowable{
 		$this->hardness = 0;
 		$this->isFullBlock = false;
 		$this->isSolid = true;
+	}
+
+	public function getBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y,
+			$this->z,
+			$this->x + 1,
+			$this->y + 0.0625,
+			$this->z + 1
+		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
