@@ -152,6 +152,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $sleeping = false;
 	protected $clientID = null;
 
+	protected $stepHeight = 0.5;
+
 	public $usedChunks = [];
 	protected $loadQueue = [];
 	protected $chunkACK = [];
@@ -1347,7 +1349,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
 					$pk->x = $this->x;
-					$pk->y = $this->y + $this->height; //teleport from head
+					$pk->y = $this->y + 1.62;
 					$pk->z = $this->z;
 					$pk->bodyYaw = $this->yaw;
 					$pk->pitch = $this->pitch;
@@ -1360,15 +1362,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$dz = $newPos->z - $this->z;
 
 					$this->setRotation($packet->yaw % 360, $packet->pitch % 360);
-					$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
-					$this->move($dx + $this->motionX, $dy + $this->motionY, $dz + $this->motionZ);
-					$this->motionX = $this->motionY = $this->motionZ = 0;
+					//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+					$this->move($dx, $dy, $dz);
 
-					if($this->x != $packet->x or $this->y != $packet->y or $this->z != $packet->z){
+					if($this->x != $newPos->x or $this->y != $newPos->y or $this->z != $newPos->z){
 						$pk = new MovePlayerPacket();
 						$pk->eid = 0;
 						$pk->x = $this->x;
-						$pk->y = $this->y + $this->height; //teleport from head
+						$pk->y = $this->y + 1.62;
 						$pk->z = $this->z;
 						$pk->bodyYaw = $this->yaw;
 						$pk->pitch = $this->pitch;

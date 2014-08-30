@@ -122,6 +122,10 @@ abstract class Entity extends Position implements Metadatable{
 	private $health = 20;
 	private $maxHealth = 20;
 
+	protected $ySize = 0;
+	protected $stepHeight = 0;
+	public $keepMovement = true;
+
 	public $fallDistance;
 	public $ticksLived;
 	public $lastUpdate;
@@ -713,23 +717,22 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function move($dx, $dy, $dz){
-		if($this->inBlock){
-			$this->boundingBox->offset($dx, $dy, $dz);
-			$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-			$this->y = $this->boundingBox->minY/* + $this->height*/;
-			$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-		}else{
-			//$collision = [];
-			//$this->checkBlockCollision($collision);
-			if($dx == 0 and $dz == 0 and $dy == 0){
-				return;
-			}
+		//$collision = [];
+		//$this->checkBlockCollision($collision);
+		if($dx == 0 and $dz == 0 and $dy == 0){
+			return;
+		}
+
+		//if($this->inBlock){ //TODO: noclip
+		//	$this->boundingBox->offset($dx, $dy, $dz);
+		//	$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		//	$this->y = $this->boundingBox->minY/* + $this->height*/;
+		//	$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+		//}else{
 
 			Timings::$entityMoveTimer->startTiming();
 
-			$ox = $this->x;
-			$oy = $this->y;
-			$oz = $this->z;
+			$this->ySize *= 0.4;
 
 			if($this->isColliding){ //With cobweb?
 				$this->isColliding = false;
@@ -773,7 +776,7 @@ abstract class Entity extends Position implements Metadatable{
 				//TODO: big messy loop
 			}*/
 
-			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ));
+			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz));
 
 
 			foreach($list as $bb){
@@ -782,13 +785,13 @@ abstract class Entity extends Position implements Metadatable{
 
 			$this->boundingBox->offset(0, $dy, 0);
 
-			if($movY != $dy){
+			if(!$this->keepMovement and $movY != $dy){
 				$dx = 0;
 				$dy = 0;
 				$dz = 0;
 			}
 
-			$fallingFlag = $this->onGround or ($dy != $movY and $movY < 0);
+			$fallingFlag = ($this->onGround or $dy != $movY and $movY < 0);
 
 			foreach($list as $bb){
 				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
@@ -796,7 +799,7 @@ abstract class Entity extends Position implements Metadatable{
 
 			$this->boundingBox->offset($dx, 0, 0);
 
-			if($movX != $dx){
+			if(!$this->keepMovement and $movX != $dx){
 				$dx = 0;
 				$dy = 0;
 				$dz = 0;
@@ -808,28 +811,19 @@ abstract class Entity extends Position implements Metadatable{
 
 			$this->boundingBox->offset(0, 0, $dz);
 
-			if($movZ != $dz){
+			if(!$this->keepMovement and $movZ != $dz){
 				$dx = 0;
 				$dy = 0;
 				$dz = 0;
 			}
 
-			if($movY != $dy){
-				$dy = 0;
-				foreach($list as $bb){
-					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
-				}
 
-				$this->boundingBox->offset(0, $dy, 0);
-			}
-
-
-			if($this->gravity > 0 and $fallingFlag /*and $sneak*/ and ($movX != $dx or $movZ != $dz)){
+			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
 				$dx = $movX;
-				$dy = $this->gravity;
+				$dy = $this->stepHeight;
 				$dz = $movZ;
 
 				$axisalignedbb1 = clone $this->boundingBox;
@@ -842,7 +836,8 @@ abstract class Entity extends Position implements Metadatable{
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 				}
 
-				if($movY != $dy){
+				$this->boundingBox->offset(0, $dy, 0);
+				if(!$this->keepMovement and $movY != $dy){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
@@ -853,7 +848,7 @@ abstract class Entity extends Position implements Metadatable{
 				}
 
 				$this->boundingBox->offset($dx, 0, 0);
-				if($movX != $dx){
+				if(!$this->keepMovement and $movX != $dx){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
@@ -864,25 +859,25 @@ abstract class Entity extends Position implements Metadatable{
 				}
 
 				$this->boundingBox->offset(0, 0, $dz);
-				if($movZ != $dz){
+				if(!$this->keepMovement and $movZ != $dz){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
 				}
 
-				if($movY != $dy){
+				if(!$this->keepMovement and $movY != $dy){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
 				}else{
-					$dy = -$this->gravity;
+					$dy = -$this->stepHeight;
 					foreach($list as $bb){
 						$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 					}
 					$this->boundingBox->offset(0, $dy, 0);
 				}
 
-				if($cx * $cx + $cz * $cz > $dx * $dx + $dz * $dz){
+				if(($cx * $cx + $cz * $cz) >= ($dx * $dx + $dz * $dz)){
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
@@ -894,33 +889,33 @@ abstract class Entity extends Position implements Metadatable{
 
 			$pos = new Vector3(
 				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-				$this->boundingBox->minY/* + $this->height*/,
+				$this->boundingBox->minY - $this->ySize/* + $this->height*/,
 				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 			);
 
 			if(!$this->setPosition($pos)){
 				$this->boundingBox->setBB($axisalignedbb);
-			}
+			}else{
+				$this->onGround = ($movY != $dy and $movY < 0);
+				$this->updateFallState($dy, $this->onGround);
 
-			$this->onGround = $movY != $dy and $movY < 0;
-			$this->updateFallState($dy, $this->onGround);
+				if($movX != $dx){
+					$this->motionX = 0;
+				}
 
-			if($movX != $dx){
-				$this->motionX = 0;
-			}
+				if($movY != $dy){
+					$this->motionY = 0;
+				}
 
-			if($movY != $dy){
-				$this->motionY = 0;
-			}
-
-			if($movZ != $dz){
-				$this->motionZ = 0;
+				if($movZ != $dz){
+					$this->motionZ = 0;
+				}
 			}
 
 			//TODO: vehicle collision events (first we need to spawn them!)
 
 			Timings::$entityMoveTimer->stopTiming();
-		}
+		//}
 	}
 
 	/**
@@ -984,7 +979,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->z = $pos->z;
 
 		$radius = $this->width / 2;
-		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+		$this->boundingBox->setBounds($pos->x - $radius, $pos->y + $this->ySize, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height + $this->ySize, $pos->z + $radius);
 
 
 		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) and $this->chunk->getZ() !== ($this->z >> 4))){
@@ -1062,6 +1057,7 @@ abstract class Entity extends Position implements Metadatable{
 		if($ev->isCancelled()){
 			return false;
 		}
+		$this->ySize = 0;
 		$pos = $ev->getTo();
 
 		$this->setMotion(new Vector3(0, 0, 0));
