@@ -1320,7 +1320,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$revert = false;
 
 				if($newPos->distance($this) > 100){
-					$this->server->getLogger()->warning($this->username." moved too quickly!");
+					$this->server->getLogger()->warning($this->getName()." moved too quickly!");
 					$revert = true;
 				}else{
 
@@ -1345,6 +1345,30 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 
+				if(!$revert){
+					$dx = $newPos->x - $this->x;
+					$dy = $newPos->y - $this->y;
+					$dz = $newPos->z - $this->z;
+
+					$this->setRotation($packet->yaw % 360, $packet->pitch % 360);
+					//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+					$this->move($dx, $dy, $dz);
+
+					$diffX = $this->x - $newPos->x;
+					$diffZ = $this->z - $newPos->z;
+					$diffY = $this->y - $newPos->y;
+					if($diffY > -0.5 or $diffY < 0.5){
+						$diffY = 0;
+					}
+
+					$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
+
+					if($diff > 0.0625 and !$this->isSleeping() and ($this->gamemode & 0x01) === 0){
+						$revert = true;
+						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
+					}
+				}
+
 				if($revert){
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
@@ -1356,27 +1380,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->yaw = $this->yaw;
 					$pk->teleport = true;
 					$this->directDataPacket($pk);
-				}else{
-					$dx = $newPos->x - $this->x;
-					$dy = $newPos->y - $this->y;
-					$dz = $newPos->z - $this->z;
-
-					$this->setRotation($packet->yaw % 360, $packet->pitch % 360);
-					//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
-					$this->move($dx, $dy, $dz);
-
-					if($this->x != $newPos->x or $this->y != $newPos->y or $this->z != $newPos->z){
-						$pk = new MovePlayerPacket();
-						$pk->eid = 0;
-						$pk->x = $this->x;
-						$pk->y = $this->y + 1.62;
-						$pk->z = $this->z;
-						$pk->bodyYaw = $this->yaw;
-						$pk->pitch = $this->pitch;
-						$pk->yaw = $this->yaw;
-						$pk->teleport = true;
-						$this->directDataPacket($pk);
-					}
 				}
 
 				break;

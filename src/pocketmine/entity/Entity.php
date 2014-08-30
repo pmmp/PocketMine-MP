@@ -877,7 +877,7 @@ abstract class Entity extends Position implements Metadatable{
 					$this->boundingBox->offset(0, $dy, 0);
 				}
 
-				if(($cx * $cx + $cz * $cz) >= ($dx * $dx + $dz * $dz)){
+				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
