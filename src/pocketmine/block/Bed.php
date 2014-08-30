@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\network\protocol\ChatPacket;
 use pocketmine\Player;
 
@@ -32,6 +33,17 @@ class Bed extends Transparent{
 		$this->isActivable = true;
 		$this->isFullBlock = false;
 		$this->hardness = 1;
+	}
+
+	public function getBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y,
+			$this->z,
+			$this->x + 1,
+			$this->y + 0.5625,
+			$this->z + 1
+		);
 	}
 
 	public function onActivate(Item $item, Player $player = null){
