@@ -791,7 +791,7 @@ abstract class Entity extends Position implements Metadatable{
 				$dz = 0;
 			}
 
-			$fallingFlag = ($this->onGround or $dy != $movY and $movY < 0);
+			$fallingFlag = ($this->onGround or ($dy != $movY and $movY < 0));
 
 			foreach($list as $bb){
 				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
@@ -883,7 +883,6 @@ abstract class Entity extends Position implements Metadatable{
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
 				}
-
 
 			}
 
