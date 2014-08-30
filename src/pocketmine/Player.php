@@ -1656,6 +1656,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->blocked === false and $this->dead !== true and $target->dead !== true){
+					if($target instanceof DroppedItem or $target instanceof Arrow){
+						$this->kick("Attempting to attack an invalid entity");
+						$this->server->getLogger()->warning("Player ". $this->getName() ." tried to attack an invalid entity");
+						return;
+					}
+
 					$item = $this->inventory->getItemInHand();
 					$damageTable = [
 						Item::WOODEN_SWORD => 4,

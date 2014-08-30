@@ -58,6 +58,11 @@ abstract class Living extends Entity implements Damageable{
 
 	public abstract function getName();
 
+	public function hasLineOfSight(Entity $entity){
+		//TODO: head height
+		return $this->getLevel()->rayTraceBlocks(new Vector3($this->x, $this->y + $this->height, $this->z), new Vector3($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+	}
+
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
 		//TODO: attack tick limit
 		$pk = new EntityEventPacket();
