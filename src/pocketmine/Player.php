@@ -1533,6 +1533,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					case 5: //Shot arrow
 						//if($this->entity->inAction === true){
 						if($this->inventory->getItemInHand()->getID() === Item::BOW){
+							$bow = $this->inventory->getItemInHand();
 							if(($this->gamemode & 0x01) === 0){
 								if(!$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
 									$this->inventory->sendContents($this);
@@ -1559,7 +1560,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							]);
 							$arrow = new Arrow($this->chunk, $nbt, $this);
 
-							$ev = new EntityShootBowEventEvent($this, $this->inventory->getItemInHand(), $arrow, $f);
+							$ev = new EntityShootBowEventEvent($this, $bow, $arrow, $f);
 
 							$this->server->getPluginManager()->callEvent($ev);
 
@@ -1568,6 +1569,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							}else{
 								if(($this->gamemode & 0x01) === 0){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
+									$bow->setCount($bow->getCount() - 1);
+									if($bow->getCount() <= 0){
+										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+									}
 								}
 								$arrow->spawnToAll();
 							}
