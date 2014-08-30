@@ -31,7 +31,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityShootBowEventEvent;
+use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
@@ -1560,7 +1560,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							]);
 							$arrow = new Arrow($this->chunk, $nbt, $this);
 
-							$ev = new EntityShootBowEventEvent($this, $bow, $arrow, $f);
+							$ev = new EntityShootBowEvent($this, $bow, $arrow, $f);
 
 							$this->server->getPluginManager()->callEvent($ev);
 
