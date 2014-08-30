@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
@@ -39,6 +40,17 @@ class Chest extends Transparent{
 		parent::__construct(self::CHEST, $meta, "Chest");
 		$this->isActivable = true;
 		$this->hardness = 15;
+	}
+
+	public function getBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x + 0.0625,
+			$this->y,
+			$this->z + 0.0625,
+			$this->x + 0.9375,
+			$this->y + 0.875,
+			$this->z + 0.9375
+		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
