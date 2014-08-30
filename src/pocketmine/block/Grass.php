@@ -22,7 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\generator\object\TallGrass;
+use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\Player;
@@ -65,7 +65,7 @@ class Grass extends Solid{
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){
 			$item->count--;
-			TallGrass::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
+			TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
 
 			return true;
 		}elseif($item->isHoe()){
