@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Cake extends Transparent{
@@ -32,6 +33,19 @@ class Cake extends Transparent{
 		$this->isActivable = true;
 		$this->meta = $meta & 0x07;
 		$this->hardness = 2.5;
+	}
+
+	public function getBoundingBox(){
+		$f = (1 + $this->getDamage() * 2) / 16;
+
+		return new AxisAlignedBB(
+			$this->x + $f,
+			$this->y,
+			$this->z + 0.0625,
+			$this->x + 1 - 0.0625,
+			$this->y + 0.5,
+			$this->z + 1 - 0.0625
+		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
