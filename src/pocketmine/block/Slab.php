@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Slab extends Transparent{
@@ -44,6 +45,17 @@ class Slab extends Transparent{
 			$this->isFullBlock = false;
 		}
 		$this->hardness = 30;
+	}
+
+	public function getBoundingBox(){
+		return new AxisAlignedBB(
+			$this->x,
+			$this->y + (($this->meta & 0x08) === 0x08 ? 0.5 : 0),
+			$this->z,
+			$this->x + 1,
+			$this->y + (($this->meta & 0x08) === 0x08 ? 1 : 0.5),
+			$this->z + 1
+		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
