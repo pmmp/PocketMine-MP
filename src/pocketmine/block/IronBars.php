@@ -22,11 +22,9 @@
 namespace pocketmine\block;
 
 
-class IronBars extends Transparent{
+class IronBars extends Thin{
 	public function __construct(){
 		parent::__construct(self::IRON_BARS, 0, "Iron Bars");
-		$this->isFullBlock = false;
-		$this->isSolid = false;
 	}
 
 }
