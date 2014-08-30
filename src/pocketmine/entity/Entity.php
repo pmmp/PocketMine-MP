@@ -208,8 +208,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->initEntity();
 		$this->lastUpdate = $this->spawnTime = microtime(true);
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
-		$this->onUpdate();
-		$this->justCreated = false;
+
 		$this->scheduleUpdate();
 
 	}
@@ -453,6 +452,7 @@ abstract class Entity extends Position implements Metadatable{
 	public function entityBaseTick(){
 		//TODO: check vehicles
 
+		$this->justCreated = false;
 
 		if($this->dead === true and !($this instanceof Player)){
 			$this->close();
