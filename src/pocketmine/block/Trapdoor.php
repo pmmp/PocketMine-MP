@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Trapdoor extends Transparent{
@@ -34,6 +35,76 @@ class Trapdoor extends Transparent{
 			$this->isFullBlock = true;
 		}
 		$this->hardness = 15;
+	}
+
+	public function getBoundingBox(){
+		$damage = $this->getDamage();
+
+		$f = 0.1875;
+
+		$bb = null;
+
+		if(($damage & 0x08) > 0){
+			$bb = new AxisAlignedBB(
+				$this->x,
+				$this->y + 1 - $f,
+				$this->z,
+				$this->x + 1,
+				$this->y + 1,
+				$this->z + 1
+			);
+		}else{
+			$bb = new AxisAlignedBB(
+				$this->x,
+				$this->y,
+				$this->z,
+				$this->x + 1,
+				$this->y + $f,
+				$this->z + 1
+			);
+		}
+
+		if(($damage & 0x04) > 0){
+			if(($damage & 0x03) === 0){
+				$bb = new AxisAlignedBB(
+					$this->x,
+					$this->y,
+					$this->z + 1 - $f,
+					$this->x + 1,
+					$this->y + 1,
+					$this->z + 1
+				);
+			}elseif(($damage & 0x03) === 1){
+				$bb = new AxisAlignedBB(
+					$this->x,
+					$this->y,
+					$this->z,
+					$this->x + 1,
+					$this->y + 1,
+					$this->z + $f
+				);
+			}if(($damage & 0x03) === 2){
+				$bb = new AxisAlignedBB(
+					$this->x + 1 - $f,
+					$this->y,
+					$this->z,
+					$this->x + 1,
+					$this->y + 1,
+					$this->z + 1
+				);
+			}if(($damage & 0x03) === 3){
+				$bb = new AxisAlignedBB(
+					$this->x,
+					$this->y,
+					$this->z,
+					$this->x + $f,
+					$this->y + 1,
+					$this->z + 1
+				);
+			}
+		}
+
+		return $bb;
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
