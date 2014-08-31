@@ -56,6 +56,7 @@ use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\Timings;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
@@ -501,6 +502,32 @@ class Level implements ChunkManager, Metadatable{
 			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
 		}
 		$this->timings->doTickPending->stopTiming();
+
+		$this->timings->entityTick->startTiming();
+		//Update entities that need update
+		if(count(Entity::$needUpdate) > 0){
+			//Timings::$tickEntityTimer->startTiming();
+			foreach($this->entities as $id => $entity){
+				if($entity->onUpdate() === false){
+					//unset(Entity::$needUpdate[$id]);
+				}
+			}
+			//Timings::$tickEntityTimer->stopTiming();
+		}
+		$this->timings->entityTick->stopTiming();
+
+		$this->timings->tileEntityTick->startTiming();
+		//Update tiles that need update
+		if(count(Tile::$needUpdate) > 0){
+			//Timings::$tickTileEntityTimer->startTiming();
+			foreach($this->tiles as $id => $tile){
+				if($tile->onUpdate() === false){
+					//unset(Tile::$needUpdate[$id]);
+				}
+			}
+			//Timings::$tickTileEntityTimer->stopTiming();
+		}
+		$this->timings->tileEntityTick->stopTiming();
 
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();

@@ -100,6 +100,7 @@ abstract class Tile extends Position{
 	}
 
 	public final function scheduleUpdate(){
+		//TODO!
 		Tile::$needUpdate[$this->id] = $this;
 	}
 

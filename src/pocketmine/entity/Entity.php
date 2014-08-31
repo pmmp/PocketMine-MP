@@ -584,6 +584,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public final function scheduleUpdate(){
+		//TODO!
 		Entity::$needUpdate[$this->id] = $this;
 	}
 

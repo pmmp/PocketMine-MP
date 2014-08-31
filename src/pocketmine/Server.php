@@ -1950,32 +1950,6 @@ class Server{
 
 	private function checkTickUpdates($currentTick){
 
-		//TODO: move this to each Level
-
-		//Update entities that need update
-		if(count(Entity::$needUpdate) > 0){
-			Timings::$tickEntityTimer->startTiming();
-			foreach(Entity::$needUpdate as $id => $entity){
-				if($entity->onUpdate() === false){
-					unset(Entity::$needUpdate[$id]);
-				}
-			}
-			Timings::$tickEntityTimer->stopTiming();
-		}
-
-		//Update tiles that need update
-		if(count(Tile::$needUpdate) > 0){
-			Timings::$tickTileEntityTimer->startTiming();
-			foreach(Tile::$needUpdate as $id => $tile){
-				if($tile->onUpdate() === false){
-					unset(Tile::$needUpdate[$id]);
-				}
-			}
-			Timings::$tickTileEntityTimer->stopTiming();
-		}
-
-		//TODO: Add level blocks
-
 		//Do level ticks
 		foreach($this->getLevels() as $level){
 			$level->doTick($currentTick);
