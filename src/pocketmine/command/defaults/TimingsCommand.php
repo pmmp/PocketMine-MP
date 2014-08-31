@@ -94,7 +94,7 @@ class TimingsCommand extends VanillaCommand{
 				fseek($fileTimings, 0);
 				$data = [
 					"public" => false,
-					"description" => $this->getName() . " Timings",
+					"description" => $sender->getServer()->getName() . " Timings",
 					"files" => [
 						"timings.txt" => [
 							"content" => stream_get_contents($fileTimings)
