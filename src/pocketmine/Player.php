@@ -1040,7 +1040,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		0x80000000 ?
 		*/
 		$flags = 0;
-		if(($this->gamemode & 0x02) === 0x02){
+		if($this->isAdventure()){
 			$flags |= 0x01; //Do not allow placing/breaking blocks, adventure mode
 		}
 
@@ -1051,6 +1051,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk = new AdventureSettingsPacket;
 		$pk->flags = $flags;
 		$this->dataPacket($pk);
+	}
+
+	public function isSurvival(){
+		return ($this->gamemode & 0x01) === 0;
 	}
 
 	public function isCreative(){
@@ -1090,7 +1094,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$item = $entity->getItem();
 
 					if($item instanceof Item){
-						if(($this->gamemode & 0x01) === 0 and !$this->inventory->canAddItem($item)){
+						if($this->isSurvival() and !$this->inventory->canAddItem($item)){
 							continue;
 						}
 
@@ -1263,7 +1267,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					return;
 				}
 
-				if(($this->gamemode & 0x01) === 0x01){
+				if($this->isCreative()){
 					$this->inventory->setHeldItemSlot(0);
 					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
 				}else{
@@ -1380,7 +1384,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
 
-					if($diff > 0.0625 and !$this->isSleeping() and ($this->gamemode & 0x01) === 0){
+					if($diff > 0.0625 and !$this->isSleeping() and $this->isSurvival()){
 						$revert = true;
 						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
 					}
@@ -1411,7 +1415,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$packet->slot -= 9; //Get real block slot
 				}
 
-				if(($this->gamemode & 0x01) === 1){ //Creative mode match
+				if($this->isCreative()){ //Creative mode match
 					$item = Item::get($packet->item, $packet->meta, 1);
 					$slot = $this->getCreativeBlock($item);
 				}else{
@@ -1420,7 +1424,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if($packet->slot === -1){ //Air
-					if(($this->gamemode & 0x01) === Player::CREATIVE){
+					if($this->isCreative()){
 						$found = false;
 						for($i = 0; $i < $this->inventory->getHotbarSize(); ++$i){
 							if($this->inventory->getHotbarSlotIndex($i) === -1){
@@ -1440,7 +1444,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}elseif(!isset($item) or $slot === -1 or $item->getID() !== $packet->item or $item->getDamage() !== $packet->meta){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
-				}elseif(($this->gamemode & 0x01) === Player::CREATIVE){
+				}elseif($this->isCreative()){
 					$item = Item::get(
 						Block::$creative[$slot][0],
 						Block::$creative[$slot][1],
@@ -1495,7 +1499,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					if($blockVector->distance($this) > 10){
 
-					}elseif(($this->gamemode & 0x01) === 1){
+					}elseif($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
@@ -1550,7 +1554,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						//if($this->entity->inAction === true){
 						if($this->inventory->getItemInHand()->getID() === Item::BOW){
 							$bow = $this->inventory->getItemInHand();
-							if(($this->gamemode & 0x01) === 0){
+							if($this->isSurvival()){
 								if(!$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
 									$this->inventory->sendContents($this);
 									return;
@@ -1583,7 +1587,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							if($ev->isCancelled()){
 								$arrow->kill();
 							}else{
-								if(($this->gamemode & 0x01) === 0){
+								if($this->isSurvival()){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
 									$bow->setDamage($bow->getDamage() + 1);
 									if($bow->getDamage() >= 385){
@@ -1612,14 +1616,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$vector = new Vector3($packet->x, $packet->y, $packet->z);
 
 
-				if(($this->gamemode & 0x01) === 1){
+				if($this->isCreative()){
 					$item = $this->inventory->getItemInHand();
 				}else{
 					$item = clone $this->inventory->getItemInHand();
 				}
 
 				if($this->getLevel()->useBreakOn($vector, $item, $this) === true){
-					if(($this->gamemode & 0x01) === 0){
+					if($this->isSurvival()){
 						$this->inventory->setItemInHand($item);
 						$this->inventory->sendHeldItem($this->hasSpawned);
 					}
@@ -1781,7 +1785,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 					$this->server->getPluginManager()->callEvent($ev);
 					if($ev->isCancelled()){
-						if($item->isTool() and ($this->gamemode & 0x01) === 0){
+						if($item->isTool() and $this->isSurvival()){
 							$this->inventory->sendContents($this);
 						}
 						break;
@@ -1789,7 +1793,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					$target->attack($ev->getFinalDamage(), $ev);
 
-					if($item->isTool() and ($this->gamemode & 0x01) === 0){
+					if($item->isTool() and $this->isSurvival()){
 						if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
 							$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 						}
@@ -1971,7 +1975,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($packet->slot > $this->inventory->getSize()){
 						break;
 					}
-					if(($this->gamemode & 0x01) === Player::CREATIVE){
+					if($this->isCreative()){
 						if($this->getCreativeBlock($packet->item) !== -1){
 							$this->inventory->setItem($packet->slot, $packet->item);
 							$this->inventory->setHotbarSlotIndex($packet->slot, $packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
