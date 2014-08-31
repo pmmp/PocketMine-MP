@@ -1053,6 +1053,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->dataPacket($pk);
 	}
 
+	public function isCreative(){
+		return ($this->gamemode & 0x01) > 0;
+	}
+
+	public function isAdventure(){
+		return ($this->gamemode & 0x02) > 0;
+	}
+
+	public function getDrops(){
+		if(!$this->isCreative()){
+			return parent::getDrops();
+		}
+
+		return [];
+	}
+
 	protected function getCreativeBlock(Item $item){
 		foreach(Block::$creative as $i => $d){
 			if($d[0] === $item->getID() and $d[1] === $item->getDamage()){
