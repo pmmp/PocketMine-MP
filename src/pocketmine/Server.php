@@ -2072,14 +2072,14 @@ class Server{
 				}
 			}
 
-			TimingsHandler::tick();
-
 			$this->tickMeasure = (($time = microtime(true)) - $this->tickTime);
 			$this->tickTime = $time;
 			$this->nextTick = 0.05 * (0.05 / max(0.05, $this->tickMeasure)) + $time;
 			$this->inTick = false;
 
 			Timings::$serverTickTimer->stopTiming();
+
+			TimingsHandler::tick();
 
 			return true;
 		}
