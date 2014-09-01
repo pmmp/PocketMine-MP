@@ -635,7 +635,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunkTickList = [];
 		}
 	}
-	
+
 	public function __debugInfo(){
 		return get_class($this);
 	}
