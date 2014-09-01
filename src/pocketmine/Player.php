@@ -1344,20 +1344,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->server->getLogger()->warning($this->getName()." moved too quickly!");
 					$revert = true;
 				}else{
-
-					/*if(($this->onGround and $dy != 0) or (!$this->onGround and $dy <= 0)){
-						if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $dy - 0.1, 0))) > 0){
-							$isColliding = true;
-						}else{
-							$isColliding = false;
-						}
-
-						$this->onGround = ($dy <= 0 and $isColliding);
-					}
-
-					$this->updateFallState($dy, $this->onGround);*/
-
-
 					if($this->chunk === null or !$this->chunk->isGenerated()){
 						$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
 						if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){

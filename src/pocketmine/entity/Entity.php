@@ -1114,7 +1114,6 @@ abstract class Entity extends Position implements Metadatable{
 				$level->removeEntity($this);
 			}
 			$this->despawnFromAll();
-			$this->level = null;
 		}
 	}
 

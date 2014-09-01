@@ -118,7 +118,6 @@ abstract class Tile extends Position{
 			if(($level = $this->getLevel()) instanceof Level){
 				$level->removeTile($this);
 			}
-			$this->level = null;
 		}
 	}
 
