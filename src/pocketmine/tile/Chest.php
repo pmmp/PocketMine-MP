@@ -58,6 +58,19 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		$this->checkPairing();
 	}
 
+	public function close(){
+		if($this->closed === false){
+			foreach($this->getInventory()->getViewers() as $player){
+				$this->getInventory()->close($player);
+			}
+
+			foreach($this->getRealInventory()->getViewers() as $player){
+				$this->getRealInventory()->close($player);
+			}
+			parent::close();
+		}
+	}
+
 	public function saveNBT(){
 		$this->namedtag->Items = new Enum("Items", []);
 		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
