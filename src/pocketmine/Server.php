@@ -1920,6 +1920,7 @@ class Server{
 		$lastLoop = 0;
 		$connectionTimer = Timings::$connectionTimer;
 		while($this->isRunning){
+			//TODO: move this to tick
 			$connectionTimer->startTiming();
 			foreach($this->interfaces as $interface){
 				if($interface->process()){
