@@ -1916,6 +1916,10 @@ class Server{
 
 	}
 
+	public function __debugInfo(){
+		return get_class($this);
+	}
+
 	private function tickProcessor(){
 		$lastLoop = 0;
 		$connectionTimer = Timings::$connectionTimer;
