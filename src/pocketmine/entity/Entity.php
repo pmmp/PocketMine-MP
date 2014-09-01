@@ -896,7 +896,20 @@ abstract class Entity extends Position implements Metadatable{
 			if(!$this->setPosition($pos)){
 				$this->boundingBox->setBB($axisalignedbb);
 			}else{
-				$this->onGround = ($movY != $dy and $movY < 0);
+
+				if($this instanceof Player){
+					if(($this->onGround and $movY != 0) or (!$this->onGround and $movY <= 0)){
+						if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $movY - 0.1, 0))) > 0){
+							$isColliding = true;
+						}else{
+							$isColliding = false;
+						}
+
+						$this->onGround = ($movY <= 0 and $isColliding);
+					}
+				}else{
+					$this->onGround = ($movY != $dy and $movY < 0);
+				}
 				$this->updateFallState($dy, $this->onGround);
 
 				if($movX != $dx){
