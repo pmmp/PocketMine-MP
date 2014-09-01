@@ -65,11 +65,6 @@ abstract class Entity extends Position implements Metadatable{
 	public static $entityCount = 1;
 
 	/**
-	 * @var Entity[]
-	 */
-	public static $needUpdate = [];
-
-	/**
 	 * @var Player[]
 	 */
 	protected $hasSpawned = [];
@@ -584,8 +579,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public final function scheduleUpdate(){
-		//TODO!
-		Entity::$needUpdate[$this->id] = $this;
+		$this->level->updateEntities[$this->id] = $this;
 	}
 
 	public function setOnFire($seconds){
@@ -1106,7 +1100,7 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->closed === false){
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
-			unset(Entity::$needUpdate[$this->id]);
+			unset($this->level->updateEntities[$this->id]);
 			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}

@@ -121,6 +121,11 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Entity[] */
 	protected $entities = [];
 
+	/** @var Entity[] */
+	public $updateEntities = [];
+	/** @var Tile[] */
+	public $updateTiles = [];
+
 	/** @var Server */
 	protected $server;
 
@@ -505,11 +510,11 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		if(count(Entity::$needUpdate) > 0){
+		if(count($this->updateEntities) > 0){
 			//Timings::$tickEntityTimer->startTiming();
-			foreach($this->entities as $id => $entity){
-				if($entity->onUpdate() === false){
-					//unset(Entity::$needUpdate[$id]);
+			foreach($this->updateEntities as $id => $entity){
+				if($entity->onUpdate() !== true){
+					unset($this->updateEntities[$id]);
 				}
 			}
 			//Timings::$tickEntityTimer->stopTiming();
@@ -518,11 +523,11 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->tileEntityTick->startTiming();
 		//Update tiles that need update
-		if(count(Tile::$needUpdate) > 0){
+		if(count($this->updateTiles) > 0){
 			//Timings::$tickTileEntityTimer->startTiming();
-			foreach($this->tiles as $id => $tile){
-				if($tile->onUpdate() === false){
-					//unset(Tile::$needUpdate[$id]);
+			foreach($this->updateTiles as $id => $tile){
+				if($tile->onUpdate() !== true){
+					unset($this->updateTiles[$id]);
 				}
 			}
 			//Timings::$tickTileEntityTimer->stopTiming();

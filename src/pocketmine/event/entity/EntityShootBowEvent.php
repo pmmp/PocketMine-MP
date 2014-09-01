@@ -24,13 +24,12 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Projectile;
 use pocketmine\event\Cancellable;
-use pocketmine\item\Bow;
 use pocketmine\item\Item;
 
 class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/** @var Bow */
+	/** @var Item */
 	private $bow;
 	/** @var Projectile */
 	private $projectile;
@@ -39,11 +38,11 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @param Living     $shooter
-	 * @param Bow        $bow
+	 * @param Item        $bow
 	 * @param Projectile $projectile
 	 * @param float      $force
 	 */
-	public function __construct(Living $shooter, Bow $bow, Projectile $projectile, $force){
+	public function __construct(Living $shooter, Item $bow, Projectile $projectile, $force){
 		$this->entity = $shooter;
 		$this->bow = $bow;
 		$this->projectile = $projectile;
@@ -58,7 +57,7 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * @return Bow
+	 * @return Item
 	 */
 	public function getBow(){
 		return $this->bow;

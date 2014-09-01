@@ -107,8 +107,7 @@ class DroppedItem extends Entity{
 		}
 		$this->updateMovement();
 
-		//TODO: handle scheduled updates
-		return true;
+		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){

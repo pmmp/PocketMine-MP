@@ -41,11 +41,6 @@ abstract class Tile extends Position{
 
 	public static $tileCount = 1;
 
-	/**
-	 * @var Tile[]
-	 */
-	public static $needUpdate = [];
-
 	/** @var Chunk */
 	public $chunk;
 	public $name;
@@ -100,8 +95,7 @@ abstract class Tile extends Position{
 	}
 
 	public final function scheduleUpdate(){
-		//TODO!
-		Tile::$needUpdate[$this->id] = $this;
+		$this->level->updateTiles[$this->id] = $this;
 	}
 
 	public function __destruct(){
@@ -111,7 +105,7 @@ abstract class Tile extends Position{
 	public function close(){
 		if($this->closed === false){
 			$this->closed = true;
-			unset(Tile::$needUpdate[$this->id]);
+			unset($this->level->updateTiles[$this->id]);
 			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeTile($this);
 			}
