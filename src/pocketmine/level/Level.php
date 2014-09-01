@@ -924,7 +924,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $motion
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null){
-		$motion = $motion === null ? new Vector3(0, 0, 0) : $motion;
+		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
 		if($item->getID() !== Item::AIR and $item->getCount() > 0){
 			$itemEntity = new DroppedItem($this->getChunkAt($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
@@ -934,9 +934,9 @@ class Level implements ChunkManager, Metadatable{
 					]),
 				//TODO: add random motion with physics
 				"Motion" => new Enum("Motion", [
-						new Double("", $motion->x + (lcg_value() * 0.2 - 0.1)),
-						new Double("", $motion->y + 0.2),
-						new Double("", $motion->z + (lcg_value() * 0.2 - 0.1))
+						new Double("", $motion->x),
+						new Double("", $motion->y),
+						new Double("", $motion->z)
 					]),
 				"Rotation" => new Enum("Rotation", [
 						new Float("", lcg_value() * 360),
