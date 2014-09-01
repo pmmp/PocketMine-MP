@@ -84,7 +84,6 @@ class Arrow extends Projectile{
 		$nearDistance = PHP_INT_MAX;
 		$nearEntity = null;
 
-
 		foreach($list as $entity){
 			if(!$entity->canCollideWith($this) or ($entity === $this->shootingEntity and $this->ticksLived < 5)){
 				continue;

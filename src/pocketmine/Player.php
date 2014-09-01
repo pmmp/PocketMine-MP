@@ -1576,6 +1576,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								if($this->isSurvival()){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
 									$bow->setDamage($bow->getDamage() + 1);
+									$this->inventory->setItemInHand($bow);
 									if($bow->getDamage() >= 385){
 										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
 									}
