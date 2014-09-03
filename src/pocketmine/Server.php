@@ -1898,7 +1898,8 @@ class Server{
 				}
 			}elseif(\Phar::running(true) == ""){
 				return;
-			}elseif($dump->getData()["type"] === "E_PARSE" or $dump->getData()["type"] === "E_COMPILE_ERROR"){
+			}
+			if($dump->getData()["type"] === "E_PARSE" or $dump->getData()["type"] === "E_COMPILE_ERROR"){
 				return;
 			}
 
