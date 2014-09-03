@@ -801,7 +801,12 @@ class Server{
 	 * @param Player $player
 	 */
 	public function removePlayer(Player $player){
-		unset($this->players[$player->getAddress() . ":" . $player->getPort()]);
+		foreach($this->players as $identifier => $p){
+			if($player === $p){
+				unset($this->players[$identifier]);
+				break;
+			}
+		}
 	}
 
 	/**

@@ -119,7 +119,7 @@ class ServerScheduler{
 	 * @param int $taskId
 	 */
 	public function cancelTask($taskId){
-		if(isset($this->tasks[$taskId])){
+		if($taskId !== null and isset($this->tasks[$taskId])){
 			$this->tasks[$taskId]->cancel();
 			unset($this->tasks[$taskId]);
 		}
