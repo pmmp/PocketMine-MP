@@ -141,13 +141,8 @@ class Arrow extends Projectile{
 		$this->motionZ *= $friction;
 
 		if($this->onGround){
-			$this->motionY *= -0.5;
-		}
-
-		if(abs($this->motionX) < 0.01){
 			$this->motionX = 0;
-		}
-		if(abs($this->motionZ) < 0.01){
+			$this->motionY = 0;
 			$this->motionZ = 0;
 		}
 
@@ -188,7 +183,7 @@ class Arrow extends Projectile{
 	}
 
 	public function canCollideWith(Entity $entity){
-		return $entity instanceof Living;
+		return $entity instanceof Living and !$this->onGround;
 	}
 
 	public function spawnTo(Player $player){

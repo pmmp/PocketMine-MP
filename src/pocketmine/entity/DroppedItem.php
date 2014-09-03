@@ -95,13 +95,6 @@ class DroppedItem extends Entity{
 			$this->motionY *= -0.5;
 		}
 
-		if(abs($this->motionX) < 0.01){
-			$this->motionX = 0;
-		}
-		if(abs($this->motionZ) < 0.01){
-			$this->motionZ = 0;
-		}
-
 		if($this->age > 6000){
 			$this->kill();
 		}
