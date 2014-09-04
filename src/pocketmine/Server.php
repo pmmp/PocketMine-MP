@@ -127,7 +127,7 @@ class Server{
 	 */
 	private $tickCounter;
 	private $nextTick = 0;
-	private $tickMeasure = 20;
+	private $tickAverage = [20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20];
 	private $tickTime = 0;
 	private $inTick = false;
 
@@ -536,7 +536,7 @@ class Server{
 	 * @return float
 	 */
 	public function getTicksPerSecond(){
-		return round((0.05 / $this->tickMeasure) * 20, 2);
+		return round(array_sum($this->tickAverage) / count($this->tickAverage), 2);
 	}
 
 	/**
@@ -2061,10 +2061,17 @@ class Server{
 
 			TimingsHandler::tick();
 
-			$time = microtime(true);
-			$this->tickMeasure = ($tickTime - $this->tickTime);
-			$this->tickTime = $time;
-			$this->nextTick = $tickTime + 0.05;
+			$updateTime = $tickTime - $this->tickTime;
+
+			array_shift($this->tickAverage);
+			$this->tickAverage[] = 1 / $updateTime;
+
+			$this->tickTime = $tickTime;
+
+			if(($this->nextTick - $tickTime) < -1){
+				$this->nextTick = $tickTime;
+			}
+			$this->nextTick += 0.05;
 			$this->inTick = false;
 
 			return true;
