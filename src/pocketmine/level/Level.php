@@ -141,8 +141,6 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Chunk[] */
 	protected $unloadQueue;
 
-	protected $nextSave;
-
 	protected $time;
 	public $stopTime;
 
@@ -254,7 +252,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->updateQueue = new ReversePriorityQueue();
 		$this->updateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 		$this->time = (int) $this->provider->getTime();
-		$this->nextSave = microtime(true) + 90;
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 3)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 80);
@@ -296,7 +293,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function close(){
 		if($this->getAutoSave()){
-			$this->provider->saveChunks();
+			$this->save();
 		}
 		$this->provider->close();
 	}
@@ -337,7 +334,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->server->getLogger()->info("Unloading level \"" . $this->getName() . "\"");
-		$this->nextSave = PHP_INT_MAX;
 		$defaultLevel = $this->server->getDefaultLevel();
 		foreach($this->getPlayers() as $player){
 			if($this === $defaultLevel or $defaultLevel === null){
@@ -658,7 +654,6 @@ class Level implements ChunkManager, Metadatable{
 		if($this->provider instanceof BaseLevelProvider){
 			$this->provider->saveLevelData();
 		}
-		$this->nextSave = microtime(true) + 45;
 
 		return true;
 	}
