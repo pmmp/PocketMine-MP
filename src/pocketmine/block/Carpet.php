@@ -67,7 +67,7 @@ class Carpet extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() !== self::AIR){
-			$this->getLevel()->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
 		}
@@ -79,7 +79,7 @@ class Carpet extends Flowable{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->getID() === self::AIR){ //TODO: Replace with common break method
 				$this->getLevel()->dropItem($this, Item::get($this->id, $this->meta, 1));
-				$this->getLevel()->setBlock($this, new Air(), true, false, true);
+				$this->getLevel()->setBlock($this, new Air(), true);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

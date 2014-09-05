@@ -46,7 +46,7 @@ class BurningFurnace extends Solid{
 			3 => 3,
 		];
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
-		$this->getLevel()->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new Compound(false, [
 			new Enum("Items", []),
 			new String("id", Tile::FURNACE),

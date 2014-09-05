@@ -119,7 +119,7 @@ class Trapdoor extends Transparent{
 			if($fy > 0.5){
 				$this->meta |= 0x08;
 			}
-			$this->getLevel()->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
 		}
@@ -135,7 +135,7 @@ class Trapdoor extends Transparent{
 
 	public function onActivate(Item $item, Player $player = null){
 		$this->meta ^= 0x04;
-		$this->getLevel()->setBlock($this, $this, true, false, true);
+		$this->getLevel()->setBlock($this, $this, true);
 
 		return true;
 	}

@@ -216,10 +216,10 @@ abstract class Door extends Transparent{
 			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
-			$this->getLevel()->setBlock($blockUp, Block::get($this->id, $metaUp), true, false, true); //Top
+			$this->getLevel()->setBlock($blockUp, Block::get($this->id, $metaUp), true); //Top
 
 			$this->meta = $player->getDirection() & 0x03;
-			$this->getLevel()->setBlock($block, $this, true, false, true); //Bottom
+			$this->getLevel()->setBlock($block, $this, true, true); //Bottom
 			return true;
 		}
 
@@ -230,15 +230,15 @@ abstract class Door extends Transparent{
 		if(($this->meta & 0x08) === 0x08){
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
-				$this->getLevel()->setBlock($down, new Air(), true, false, true);
+				$this->getLevel()->setBlock($down, new Air(), true);
 			}
 		}else{
 			$up = $this->getSide(1);
 			if($up->getID() === $this->id){
-				$this->getLevel()->setBlock($up, new Air(), true, false, true);
+				$this->getLevel()->setBlock($up, new Air(), true);
 			}
 		}
-		$this->getLevel()->setBlock($this, new Air(), true, false, true);
+		$this->getLevel()->setBlock($this, new Air(), true);
 
 		return true;
 	}
@@ -248,7 +248,7 @@ abstract class Door extends Transparent{
 			$down = $this->getSide(0);
 			if($down->getID() === $this->id){
 				$meta = $down->getDamage() ^ 0x04;
-				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true, false, true);
+				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true);
 				$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 				if($player instanceof Player){
 					unset($players[$player->getID()]);
@@ -267,7 +267,7 @@ abstract class Door extends Transparent{
 			return false;
 		}else{
 			$this->meta ^= 0x04;
-			$this->getLevel()->setBlock($this, $this, true, false, true);
+			$this->getLevel()->setBlock($this, $this, true);
 			$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 			if($player instanceof Player){
 				unset($players[$player->getID()]);

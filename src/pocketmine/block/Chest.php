@@ -80,7 +80,7 @@ class Chest extends Transparent{
 			}
 		}
 
-		$this->getLevel()->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new Compound(false, [
 			new Enum("Items", []),
 			new String("id", Tile::CHEST),

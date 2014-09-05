@@ -70,7 +70,7 @@ class Stair extends Transparent{
 		if(($fy > 0.5 and $face !== 1) or $face === 0){
 			$this->meta |= 0x04; //Upside-down stairs
 		}
-		$this->getLevel()->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, true);
 
 		return true;
 	}

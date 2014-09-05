@@ -48,12 +48,12 @@ class SignPost extends Transparent{
 			];
 			if(!isset($faces[$face])){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
-				$this->getLevel()->setBlock($block, Block::get(Item::SIGN_POST, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::SIGN_POST, $this->meta), true);
 
 				return true;
 			}else{
 				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($block, Block::get(Item::WALL_SIGN, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::WALL_SIGN, $this->meta), true);
 
 				return true;
 			}

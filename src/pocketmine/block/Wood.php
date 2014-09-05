@@ -55,7 +55,7 @@ class Wood extends Solid{
 		];
 
 		$this->meta = ($this->meta & 0x03) | $faces[$face];
-		$this->getLevel()->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, true);
 
 		return true;
 	}

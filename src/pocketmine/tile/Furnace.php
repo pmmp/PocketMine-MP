@@ -190,7 +190,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			$this->inventory->setFuel($fuel);
 			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getDamage()), true, false, true);
+				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getDamage()), true);
 			}
 		}
 		if($this->namedtag["BurnTime"] > 0){
@@ -221,7 +221,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		}else{
 			$current = $this->getLevel()->getBlock($this);
 			if($current->getID() === Item::BURNING_FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $current->getDamage()), true, false);
+				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $current->getDamage()), true);
 			}
 			$this->namedtag->BurnTime = new Short("BurnTime", 0);
 			$this->namedtag->CookTime = new Short("CookTime", 0);

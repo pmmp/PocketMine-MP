@@ -39,7 +39,7 @@ class FlintSteel extends Tool{
 		}
 
 		if($block->getID() === self::AIR and ($target instanceof Solid)){
-			$level->setBlock($block, new Fire(), true, false, true);
+			$level->setBlock($block, new Fire(), true);
 
 			return true;
 		}

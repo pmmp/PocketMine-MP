@@ -62,11 +62,11 @@ class Slab extends Transparent{
 		$this->meta &= 0x07;
 		if($face === 0){
 			if($target->getID() === self::SLAB and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}elseif($block->getID() === self::SLAB and ($block->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}else{
@@ -74,11 +74,11 @@ class Slab extends Transparent{
 			}
 		}elseif($face === 1){
 			if($target->getID() === self::SLAB and ($target->getDamage() & 0x08) === 0 and ($target->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}elseif($block->getID() === self::SLAB and ($block->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
+				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}
@@ -86,7 +86,7 @@ class Slab extends Transparent{
 		}elseif(!($player instanceof Player)){
 			if($block->getID() === self::SLAB){
 				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
-					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true, false, true);
+					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 					return true;
 				}
@@ -103,7 +103,7 @@ class Slab extends Transparent{
 		if($block->getID() === self::SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}
-		$this->getLevel()->setBlock($block, $this, true, false, true);
+		$this->getLevel()->setBlock($block, $this, true, true);
 
 		return true;
 	}

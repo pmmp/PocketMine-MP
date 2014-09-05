@@ -142,7 +142,7 @@ class Leaves extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->meta |= 0x04;
-		$this->getLevel()->setBlock($this, $this, true, false, true);
+		$this->getLevel()->setBlock($this, $this, true);
 	}
 
 	public function getDrops(Item $item){

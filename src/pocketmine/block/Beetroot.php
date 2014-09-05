@@ -39,7 +39,7 @@ class Beetroot extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::FARMLAND){
-			$this->getLevel()->setBlock($block, $this, true, false, true);
+			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
 		}
@@ -50,7 +50,7 @@ class Beetroot extends Flowable{
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			$this->meta = 0x07;
-			$this->getLevel()->setBlock($this, $this, true, false, true);
+			$this->getLevel()->setBlock($this, $this, true, true);
 			$item->count--;
 
 			return true;
@@ -63,7 +63,7 @@ class Beetroot extends Flowable{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent === true){ //TODO: Replace with common break method
 				$this->getLevel()->dropItem($this, Item::get(Item::BEETROOT_SEEDS, 0, 1));
-				$this->getLevel()->setBlock($this, new Air(), false, false, true);
+				$this->getLevel()->setBlock($this, new Air(), false);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
@@ -71,7 +71,7 @@ class Beetroot extends Flowable{
 			if(mt_rand(0, 2) == 1){
 				if($this->meta < 0x07){
 					++$this->meta;
-					$this->getLevel()->setBlock($this, $this, true, false, true);
+					$this->getLevel()->setBlock($this, $this, true);
 
 					return Level::BLOCK_UPDATE_RANDOM;
 				}

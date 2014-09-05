@@ -49,12 +49,12 @@ class Sugarcane extends Flowable{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 					if($b->getID() === self::AIR){
-						$this->getLevel()->setBlock($b, new Sugarcane(), true, false, true);
+						$this->getLevel()->setBlock($b, new Sugarcane(), true);
 						break;
 					}
 				}
 				$this->meta = 0;
-				$this->getLevel()->setBlock($this, $this, true, false, true);
+				$this->getLevel()->setBlock($this, $this, true);
 			}
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
@@ -82,15 +82,15 @@ class Sugarcane extends Flowable{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
-							$this->getLevel()->setBlock($b, new Sugarcane(), true, false, true);
+							$this->getLevel()->setBlock($b, new Sugarcane(), true);
 							break;
 						}
 					}
 					$this->meta = 0;
-					$this->getLevel()->setBlock($this, $this, true, false, true);
+					$this->getLevel()->setBlock($this, $this, true);
 				}else{
 					++$this->meta;
-					$this->getLevel()->setBlock($this, $this, true, false, true);
+					$this->getLevel()->setBlock($this, $this, true);
 				}
 
 				return Level::BLOCK_UPDATE_RANDOM;
@@ -103,7 +103,7 @@ class Sugarcane extends Flowable{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getID() === self::SUGARCANE_BLOCK){
-			$this->getLevel()->setBlock($block, new Sugarcane(), true, false, true);
+			$this->getLevel()->setBlock($block, new Sugarcane(), true);
 
 			return true;
 		}elseif($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::SAND){
@@ -112,7 +112,7 @@ class Sugarcane extends Flowable{
 			$block2 = $down->getSide(4);
 			$block3 = $down->getSide(5);
 			if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
-				$this->getLevel()->setBlock($block, new Sugarcane(), true, false, true);
+				$this->getLevel()->setBlock($block, new Sugarcane(), true);
 
 				return true;
 			}
