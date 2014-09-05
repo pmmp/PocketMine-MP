@@ -52,7 +52,17 @@ class Cactus extends Transparent{
 				$this->getLevel()->setBlock($this, new Air(), false);
 				$this->getLevel()->dropItem($this, Item::get($this->id));
 
-				return Level::BLOCK_UPDATE_NORMAL;
+				return;
+			}else{
+				for($side = 2; $side <= 5; ++$side){
+					$b = $this->getSide($side);
+					if(!$b->isFlowable){
+						$this->getLevel()->setBlock($this, new Air(), false);
+						$this->getLevel()->dropItem($this, Item::get($this->id));
+
+						return;
+					}
+				}
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if($this->getSide(0)->getID() !== self::CACTUS){
@@ -60,18 +70,18 @@ class Cactus extends Transparent{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
-							$this->getLevel()->setBlock($b, new Cactus(), true, true);
+							$this->getLevel()->setBlock($b, new Cactus(), true);
 							break;
 						}
 					}
 					$this->meta = 0;
-					$this->getLevel()->setBlock($this, $this, false);
+					$this->getLevel()->setBlock($this, $this);
 				}else{
 					++$this->meta;
-					$this->getLevel()->setBlock($this, $this, false);
+					$this->getLevel()->setBlock($this, $this);
 				}
 
-				return Level::BLOCK_UPDATE_RANDOM;
+				return;
 			}
 		}
 
