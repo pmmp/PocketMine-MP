@@ -2222,23 +2222,25 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		parent::saveNBT();
-		$this->namedtag["Level"] = $this->getLevel()->getName();
-		if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
-			$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getName();
-			$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
-			$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
-			$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
-		}
+		if($this->getLevel() instanceof Level){
+			$this->namedtag["Level"] = $this->getLevel()->getName();
+			if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
+				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getName();
+				$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
+				$this->namedtag["SpawnY"] = (int) $this->spawnPosition->y;
+				$this->namedtag["SpawnZ"] = (int) $this->spawnPosition->z;
+			}
 
-		foreach($this->achievements as $achievement => $status){
-			$this->namedtag->Achievements[$achievement] = new Byte($achievement, $status === true ? 1 : 0);
-		}
+			foreach($this->achievements as $achievement => $status){
+				$this->namedtag->Achievements[$achievement] = new Byte($achievement, $status === true ? 1 : 0);
+			}
 
-		$this->namedtag["playerGameType"] = $this->gamemode;
-		$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
+			$this->namedtag["playerGameType"] = $this->gamemode;
+			$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
 
-		if($this->username != "" and $this->isOnline() and $this->namedtag instanceof Compound){
-			$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
+			if($this->username != "" and $this->isOnline() and $this->namedtag instanceof Compound){
+				$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
+			}
 		}
 	}
 
