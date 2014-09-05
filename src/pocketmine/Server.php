@@ -2061,7 +2061,7 @@ class Server{
 
 			TimingsHandler::tick();
 
-			$updateTime = $tickTime - $this->tickTime;
+			$updateTime = max(0.01, $tickTime - $this->tickTime);
 
 			array_shift($this->tickAverage);
 			$this->tickAverage[] = 1 / $updateTime;
