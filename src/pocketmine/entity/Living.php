@@ -38,6 +38,8 @@ abstract class Living extends Entity implements Damageable{
 	protected $gravity = 0.08;
 	protected $drag = 0.02;
 
+	protected $attackTime = 0;
+
 	protected function initEntity(){
 		if(isset($this->namedtag->HealF)){
 			$this->namedtag->Health = new Short("Health", (int) $this->namedtag["HealF"]);
@@ -64,7 +66,13 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		//TODO: attack tick limit
+		if($this->attackTime > 0){
+			$lastCause = $this->getLastDamageCause();
+			if($lastCause instanceof EntityDamageEvent and $lastCause->getDamage() >= $damage){
+				return;
+			}
+		}
+
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getID();
 		$pk->event = 2; //Ouch!
@@ -82,6 +90,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->setMotion($motion);
 		$this->setHealth($this->getHealth() - $damage);
 
+		$this->attackTime = 10; //0.5 seconds cooldown
 	}
 
 	public function heal($amount){
@@ -106,6 +115,11 @@ abstract class Living extends Entity implements Damageable{
 	public function entityBaseTick(){
 		Timings::$timerEntityBaseTick->startTiming();
 		parent::entityBaseTick();
+
+		if($this->attackTime > 0){
+			--$this->attackTime;
+		}
+
 		Timings::$timerEntityBaseTick->stopTiming();
 	}
 
