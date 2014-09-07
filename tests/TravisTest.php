@@ -20,9 +20,9 @@
 */
 
 $server = proc_open("php src/pocketmine/PocketMine.php --no-wizard --disable-readline", [
-	0 => ["pipe", "w"],
+	0 => ["pipe", "r"],
 	1 => ["file", "php://stdout", "w"],
-	2 => ["pipe", "r"]
+	2 => ["pipe", "w"]
 ], $pipes);
 
 fwrite($pipes[0], "version\nmakeserver\nstop\n\n");

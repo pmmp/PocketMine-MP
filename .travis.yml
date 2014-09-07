@@ -14,8 +14,8 @@ before_script:
  - echo | pecl install channel://pecl.php.net/yaml-1.1.1
 
 script:
- - php tests/TravisTest.php --no-wizard
+ - php tests/TravisTest.php
  
 notifications:
  email: false
- webhooks: http://n.tkte.ch/h/214/wsNvmG43-ncxUVRrFPwSM-r0
+ #webhooks: http://n.tkte.ch/h/214/wsNvmG43-ncxUVRrFPwSM-r0
