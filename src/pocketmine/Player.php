@@ -1269,10 +1269,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->isCreative()){
 					$this->inventory->setHeldItemSlot(0);
-					$this->inventory->setItemInHand(Item::get(Item::STONE, 0, 1));
 				}else{
 					$this->inventory->setHeldItemSlot(0);
-					$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
 				}
 
 				$pk = new LoginStatusPacket;
