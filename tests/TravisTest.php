@@ -19,15 +19,16 @@
  *
 */
 
-$server = proc_open("php src/pocketmine/PocketMine.php --no-wizard", [
+$server = proc_open("php src/pocketmine/PocketMine.php --no-wizard --disable-readline", [
 	0 => ["pipe", "w"],
 	1 => ["file", "php://stdout", "w"],
-	2 => ["file", "php://stderr", "w"]
+	2 => ["pipe", "r"]
 ], $pipes);
 
 fwrite($pipes[0], "version\nmakeserver\nstop\n\n");
 
 fclose($pipes[0]);
+fclose($pipes[2]);
 
 echo "\n\nReturn value: ". proc_close($server) ."\n";
 

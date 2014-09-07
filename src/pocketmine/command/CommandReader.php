@@ -71,7 +71,8 @@ class CommandReader extends Thread{
 
 	public function run(){
 		$this->buffer = new \Threaded;
-		if(extension_loaded("readline") and $this->stream === "php://stdin"){
+		$opts = getopt("", ["disable-readline"]);
+		if(extension_loaded("readline") and $this->stream === "php://stdin" and !isset($opts["disable-readline"])){
 			$this->readline = true;
 		}else{
 			$this->readline = false;
