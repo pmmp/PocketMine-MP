@@ -98,11 +98,8 @@ namespace pocketmine {
 	$autoloader = new CompatibleClassLoader();
 	$autoloader->addPath(\pocketmine\PATH . "src");
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
+	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "raklib");
 	$autoloader->register(true);
-	if(!class_exists("raklib\\RakLib", false)){
-		require(\pocketmine\PATH . "src/raklib/raklib/RakLib.php");
-	}
-	RakLib::bootstrap($autoloader);
 
 	//Startup code. Do not look at it, it can harm you. Most of them are hacks to fix date-related bugs, or basic functions used after this
 
