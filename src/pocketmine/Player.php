@@ -1966,7 +1966,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$this->inventory->setHotbarSlotIndex($packet->slot, $packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
 						}
 					}else{
-						$this->inventory->setHeldItemSlot($packet->slot);
+						
 					}
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
 				}elseif(isset($this->windowIndex[$packet->windowid])){
