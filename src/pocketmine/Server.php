@@ -127,8 +127,7 @@ class Server{
 	 */
 	private $tickCounter;
 	private $nextTick = 0;
-	private $tickAverage = [20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20];
-	private $tickTime = 0;
+	private $tickAverage = [20,20,20,20,20,20,20,20,20,20];
 	private $inTick = false;
 
 	/** @var \AttachableThreadedLogger */
@@ -1928,19 +1927,7 @@ class Server{
 
 	private function tickProcessor(){
 		$lastLoop = 0;
-		$connectionTimer = Timings::$connectionTimer;
 		while($this->isRunning){
-			//TODO: move this to tick
-			$connectionTimer->startTiming();
-			foreach($this->interfaces as $interface){
-				if($interface->process()){
-					$lastLoop = 0;
-				}
-			}
-			$connectionTimer->stopTiming();
-
-			$this->generationManager->handlePackets();
-
 			++$lastLoop;
 
 			if(($ticks = $this->tick()) !== true){
@@ -2045,6 +2032,14 @@ class Server{
 			++$this->tickCounter;
 
 			$this->checkConsole();
+
+			//TODO: move this to tick
+			Timings::$connectionTimer->startTiming();
+			foreach($this->interfaces as $interface){
+				$interface->process();
+			}
+			Timings::$connectionTimer->stopTiming();
+
 			Timings::$schedulerTimer->startTiming();
 			$this->scheduler->mainThreadHeartbeat($this->tickCounter);
 			Timings::$schedulerTimer->stopTiming();
@@ -2057,17 +2052,15 @@ class Server{
 				}
 			}
 
+			$this->generationManager->handlePackets();
+
 			Timings::$serverTickTimer->stopTiming();
 
 			TimingsHandler::tick();
 
 			$now = microtime(true);
-			$updateTime = max(0.01, $tickTime - $this->tickTime);
-
 			array_shift($this->tickAverage);
-			$this->tickAverage[] = 1 / $updateTime;
-
-			$this->tickTime = $tickTime;
+			$this->tickAverage[] = min(20, 1 / ($now - $tickTime));
 
 			if(($this->nextTick - $tickTime) < -1){
 				$this->nextTick = $tickTime;

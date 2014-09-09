@@ -934,7 +934,7 @@ class Level implements ChunkManager, Metadatable{
 						new Double("", $source->getY()),
 						new Double("", $source->getZ())
 					]),
-				//TODO: add random motion with physics
+
 				"Motion" => new Enum("Motion", [
 						new Double("", $motion->x),
 						new Double("", $motion->y),
