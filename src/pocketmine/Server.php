@@ -2073,7 +2073,7 @@ class Server{
 
 			$now = microtime(true);
 			array_shift($this->tickAverage);
-			$this->tickAverage[] = min(20, 1 / ($now - $tickTime));
+			$this->tickAverage[] = min(20, 1 / max(0.001, $now - $tickTime));
 			array_shift($this->useAverage);
 			$this->useAverage[] = min(1, ($now - $tickTime) / 0.05);
 
