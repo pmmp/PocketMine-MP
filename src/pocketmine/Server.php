@@ -127,7 +127,8 @@ class Server{
 	 */
 	private $tickCounter;
 	private $nextTick = 0;
-	private $tickAverage = [20,20,20,20,20,20,20,20,20,20];
+	private $tickAverage = [20,20,20,20,20];
+	private $useAverage = [20,20,20,20,20];
 	private $inTick = false;
 
 	/** @var \AttachableThreadedLogger */
@@ -536,6 +537,15 @@ class Server{
 	 */
 	public function getTicksPerSecond(){
 		return round(array_sum($this->tickAverage) / count($this->tickAverage), 2);
+	}
+
+	/**
+	 * Returns the TPS usage/load in %
+	 *
+	 * @return float
+	 */
+	public function getTickUsage(){
+		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
 	}
 
 	/**
@@ -1831,6 +1841,9 @@ class Server{
 			$this->getScheduler()->scheduleRepeatingTask(new CallbackTask("pcntl_signal_dispatch"), 5);
 		}
 
+
+		$this->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "checkTicks"]), 20 * 5);
+
 		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
@@ -2011,7 +2024,7 @@ class Server{
 
 	private function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;". $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . "\x07";
+			echo "\x1b]0;". $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . " | Load ". $this->getTickUsage() . "%\x07";
 		}
 	}
 
@@ -2061,6 +2074,8 @@ class Server{
 			$now = microtime(true);
 			array_shift($this->tickAverage);
 			$this->tickAverage[] = min(20, 1 / ($now - $tickTime));
+			array_shift($this->useAverage);
+			$this->useAverage[] = min(1, ($now - $tickTime) / 0.05);
 
 			if(($this->nextTick - $tickTime) < -1){
 				$this->nextTick = $tickTime;
