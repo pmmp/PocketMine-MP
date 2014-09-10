@@ -102,6 +102,7 @@ class PermissionAttachment{
 	 */
 	public function unsetPermission($name){
 		unset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
+		$this->permissible->recalculatePermissions();
 	}
 
 	/**
