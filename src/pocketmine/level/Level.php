@@ -880,6 +880,10 @@ class Level implements ChunkManager, Metadatable{
 				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 			}
 			$block->position($pos);
+			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
+			if(ADVANCED_CACHE == true){
+				Cache::remove("world:" . $this->getID() . ":" . $index);
+			}
 
 			if($direct === true){
 				$pk = new UpdateBlockPacket;
@@ -898,10 +902,6 @@ class Level implements ChunkManager, Metadatable{
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
 				$block->position($pos);
-				$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
-				if(ADVANCED_CACHE == true){
-					Cache::remove("world:{$this->getID()}:{$index}");
-				}
 				if(!isset($this->changedBlocks[$index])){
 					$this->changedBlocks[$index] = [];
 					$this->changedCount[$index] = 0;
