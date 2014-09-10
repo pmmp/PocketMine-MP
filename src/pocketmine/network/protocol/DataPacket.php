@@ -68,8 +68,8 @@ abstract class DataPacket extends \stdClass{
 		$this->buffer .= $str;
 	}
 
-	protected function getLong($signed = true){
-		return Binary::readLong($this->get(8), $signed);
+	protected function getLong(){
+		return Binary::readLong($this->get(8));
 	}
 
 	protected function putLong($v){
