@@ -913,6 +913,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 				$this->changedBlocks[$index][$Y][] = clone $block;
 			}
+
 			if($update === true){
 				$this->updateAround($pos, self::BLOCK_UPDATE_NORMAL);
 				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);

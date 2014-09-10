@@ -715,7 +715,7 @@ abstract class Entity extends Position implements Metadatable{
 		//$collision = [];
 		//$this->checkBlockCollision($collision);
 		if($dx == 0 and $dz == 0 and $dy == 0){
-			return;
+			return true;
 		}
 
 		//if($this->inBlock){ //TODO: noclip
@@ -887,8 +887,11 @@ abstract class Entity extends Position implements Metadatable{
 				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 			);
 
+			$result = true;
+
 			if(!$this->setPosition($pos)){
 				$this->boundingBox->setBB($axisalignedbb);
+				$result = false;
 			}else{
 
 				if($this instanceof Player){
@@ -922,6 +925,8 @@ abstract class Entity extends Position implements Metadatable{
 			//TODO: vehicle collision events (first we need to spawn them!)
 
 			Timings::$entityMoveTimer->stopTiming();
+
+			return $result;
 		//}
 	}
 
