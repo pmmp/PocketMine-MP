@@ -53,7 +53,9 @@ class GenerationThread extends Thread{
 
 	public function pushMainToThreadPacket($str){
 		$this->internalQueue[] = $str;
-		$this->notify();
+		$this->synchronized(function(){
+			$this->notify();
+		});
 	}
 
 	public function readMainToThreadPacket(){
