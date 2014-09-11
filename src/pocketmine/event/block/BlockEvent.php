@@ -38,6 +38,9 @@ abstract class BlockEvent extends Event{
 		$this->block = $block;
 	}
 
+	/**
+	 * @return Block
+	 */
 	public function getBlock(){
 		return $this->block;
 	}
