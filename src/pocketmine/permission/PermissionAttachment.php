@@ -122,7 +122,12 @@ class PermissionAttachment{
 	 */
 	public function setPermission($name, $value){
 		$name = $name instanceof Permission ? $name->getName() : $name;
-		unset($this->permissions[$name]); //Fixes children getting overwritten
+		if(isset($this->permissions[$name])){
+			if($this->permissions[$name] === $value){
+				return;
+			}
+			unset($this->permissions[$name]); //Fixes children getting overwritten
+		}
 		$this->permissions[$name] = $value;
 		$this->permissible->recalculatePermissions();
 	}
@@ -131,8 +136,11 @@ class PermissionAttachment{
 	 * @param string|Permission $name
 	 */
 	public function unsetPermission($name){
-		unset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
-		$this->permissible->recalculatePermissions();
+		$name = $name instanceof Permission ? $name->getName() : $name;
+		if(isset($this->permissions[$name])){
+			unset($this->permissions[$name]);
+			$this->permissible->recalculatePermissions();
+		}
 	}
 
 	/**
