@@ -89,6 +89,17 @@ class PermissionAttachment{
 	}
 
 	/**
+	 * @param bool[] $permissions
+	 */
+	public function setPermissions(array $permissions){
+		$this->permissions = [];
+		foreach($permissions as $key => $value){
+			$this->permissions[$key] = (bool) $value;
+		}
+		$this->permissible->recalculatePermissions();
+	}
+
+	/**
 	 * @param string|Permission $name
 	 * @param bool              $value
 	 */
