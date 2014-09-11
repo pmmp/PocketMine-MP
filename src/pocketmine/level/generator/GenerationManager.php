@@ -275,7 +275,10 @@ class GenerationManager{
 				$this->shutdown = true;
 			}
 		}elseif(count($this->thread->getInternalQueue()) === 0){
-			$this->thread->wait(50000);
+			$this->thread->synchronized(function(){
+				$this->thread->wait(50000);
+			});
+
 		}
 	}
 
