@@ -122,18 +122,22 @@ class GenerationManager{
 		$chunkX = $chunkZ = null;
 
 		while($this->shutdown !== true){
-			if(count($this->requestQueue) > 0){
-				foreach($this->requestQueue as $levelID => $chunks){
-					if(count($chunks) === 0){
-						unset($this->requestQueue[$levelID]);
-					}else{
-						Level::getXZ($key = key($chunks), $chunkX, $chunkZ);
-						unset($this->requestQueue[$levelID][$key]);
-						$this->generateChunk($levelID, $chunkX, $chunkZ);
+			try{
+				if(count($this->requestQueue) > 0){
+					foreach($this->requestQueue as $levelID => $chunks){
+						if(count($chunks) === 0){
+							unset($this->requestQueue[$levelID]);
+						}else{
+							Level::getXZ($key = key($chunks), $chunkX, $chunkZ);
+							unset($this->requestQueue[$levelID][$key]);
+							$this->generateChunk($levelID, $chunkX, $chunkZ);
+						}
 					}
+				}else{
+					$this->readPacket();
 				}
-			}else{
-				$this->readPacket();
+			}catch(\Exception $e){
+				$this->logger->warning("[Generator Thread] Exception: ".$e->getMessage() . " on file \"".$e->getFile()."\" line ".$e->getLine());
 			}
 		}
 	}

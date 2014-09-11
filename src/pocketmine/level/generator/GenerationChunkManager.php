@@ -44,14 +44,13 @@ class GenerationChunkManager implements ChunkManager{
 	protected $changes = [];
 
 	public function __construct(GenerationManager $manager, $levelID, $seed, $class, array $options){
-		if(!is_subclass_of($class, "pocketmine\\level\\generator\\Generator")){
-			throw new \Exception("Class is not a subclass of Generator");
+		if(!class_exists($class, true) or !is_subclass_of($class, "pocketmine\\level\\generator\\Generator")){
+			throw new \Exception("Class $class does not exists or is not a subclass of Generator");
 		}
 
 		$this->levelID = $levelID;
 		$this->seed = $seed;
 		$this->manager = $manager;
-
 		$this->generator = new $class($options);
 		$this->generator->init($this, new Random($seed));
 	}
@@ -116,9 +115,11 @@ class GenerationChunkManager implements ChunkManager{
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
-		$this->getChunk($chunkX, $chunkZ);
-		$this->generator->generateChunk($chunkX, $chunkZ);
-		$this->setChunkGenerated($chunkX, $chunkZ);
+		try{
+			$this->getChunk($chunkX, $chunkZ);
+			$this->generator->generateChunk($chunkX, $chunkZ);
+			$this->setChunkGenerated($chunkX, $chunkZ);
+		}catch(\Exception $e){}
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

@@ -1061,12 +1061,8 @@ class Server{
 		if($generator !== null and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
 			$generator = new $generator($options);
 		}else{
-			if(strtoupper($this->getLevelType()) == "FLAT"){
-				$generator = Generator::getGenerator("flat");
-				$options["preset"] = $this->getConfigString("generator-settings", "");
-			}else{
-				$generator = Generator::getGenerator("normal");
-			}
+			$options["preset"] = $this->getConfigString("generator-settings", "");
+			$generator = Generator::getGenerator($this->getLevelType());
 		}
 
 		if(($provider = LevelProviderManager::getProviderByName($providerName = $this->getProperty("level-settings.default-format", "mcregion"))) === null){
@@ -2051,6 +2047,8 @@ class Server{
 			foreach($this->interfaces as $interface){
 				$interface->process();
 			}
+
+
 			Timings::$connectionTimer->stopTiming();
 
 			Timings::$schedulerTimer->startTiming();
