@@ -89,8 +89,9 @@ class GenerationManager{
 	 */
 	const PACKET_SHUTDOWN = 0xff;
 
+	/** @var GenerationThread */
+	protected $thread;
 
-	protected $socket;
 	/** @var \Logger */
 	protected $logger;
 	/** @var \ClassLoader */
@@ -110,12 +111,12 @@ class GenerationManager{
 	protected $shutdown = false;
 
 	/**
-	 * @param resource     $socket
-	 * @param \Logger      $logger
-	 * @param \ClassLoader $loader
+	 * @param GenerationThread $thread
+	 * @param \Logger          $logger
+	 * @param \ClassLoader     $loader
 	 */
-	public function __construct($socket, \Logger $logger, \ClassLoader $loader){
-		$this->socket = $socket;
+	public function __construct(GenerationThread $thread, \Logger $logger, \ClassLoader $loader){
+		$this->thread = $thread;
 		$this->logger = $logger;
 		$this->loader = $loader;
 		$chunkX = $chunkZ = null;
@@ -204,7 +205,7 @@ class GenerationManager{
 	public function requestChunk($levelID, $chunkX, $chunkZ){
 		$this->needsChunk[$levelID] = [$chunkX, $chunkZ];
 		$binary = chr(self::PACKET_REQUEST_CHUNK) . Binary::writeInt($levelID) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
-		@socket_write($this->socket, Binary::writeInt(strlen($binary)) . $binary);
+		$this->thread->pushThreadToMainPacket($binary);
 
 		do{
 			$this->readPacket();
@@ -221,76 +222,60 @@ class GenerationManager{
 
 	public function sendChunk($levelID, FullChunk $chunk){
 		$binary = chr(self::PACKET_SEND_CHUNK) . Binary::writeInt($levelID) . chr(strlen($class = get_class($chunk))) . $class . $chunk->toBinary();
-		@socket_write($this->socket, Binary::writeInt(strlen($binary)) . $binary);
-	}
-
-	protected function socketRead($len){
-		$buffer = "";
-		while(strlen($buffer) < $len){
-			$buffer .= @socket_read($this->socket, $len - strlen($buffer));
-		}
-
-		return $buffer;
+		$this->thread->pushThreadToMainPacket($binary);
 	}
 
 	protected function readPacket(){
-		$len = $this->socketRead(4);
-		if(($len = Binary::readInt($len)) <= 0){
-			$this->shutdown = true;
-			$this->getLogger()->critical("Generation Thread found a stream error, shutting down");
+		if(strlen($packet = $this->thread->readMainToThreadPacket()) > 0){
+			$pid = ord($packet{0});
+			$offset = 1;
+			if($pid === self::PACKET_REQUEST_CHUNK){
+				$levelID = Binary::readInt(substr($packet, $offset, 4));
+				$offset += 4;
+				$chunkX = Binary::readInt(substr($packet, $offset, 4));
+				$offset += 4;
+				$chunkZ = Binary::readInt(substr($packet, $offset, 4));
+				$this->enqueueChunk($levelID, $chunkX, $chunkZ);
+			}elseif($pid === self::PACKET_SEND_CHUNK){
+				$levelID = Binary::readInt(substr($packet, $offset, 4));
+				$offset += 4;
+				$len = ord($packet{$offset++});
+				/** @var FullChunk $class */
+				$class = substr($packet, $offset, $len);
+				$offset += $len;
+				$chunk = $class::fromBinary(substr($packet, $offset));
+				$this->receiveChunk($levelID, $chunk);
+			}elseif($pid === self::PACKET_OPEN_LEVEL){
+				$levelID = Binary::readInt(substr($packet, $offset, 4));
+				$offset += 4;
+				$seed = Binary::readInt(substr($packet, $offset, 4));
+				$offset += 4;
+				$len = Binary::readShort(substr($packet, $offset, 2));
+				$offset += 2;
+				$class = substr($packet, $offset, $len);
+				$offset += $len;
+				$options = unserialize(substr($packet, $offset));
+				$this->openLevel($levelID, $seed, $class, $options);
+			}elseif($pid === self::PACKET_CLOSE_LEVEL){
+				$levelID = Binary::readInt(substr($packet, $offset, 4));
+				$this->closeLevel($levelID);
+			}elseif($pid === self::PACKET_ADD_NAMESPACE){
+				$len = Binary::readShort(substr($packet, $offset, 2));
+				$offset += 2;
+				$namespace = substr($packet, $offset, $len);
+				$offset += $len;
+				$path = substr($packet, $offset);
+				$this->loader->addPath($path);
+			}elseif($pid === self::PACKET_SHUTDOWN){
+				foreach($this->levels as $level){
+					$level->shutdown();
+				}
+				$this->levels = [];
 
-			return;
-		}
-
-		$packet = $this->socketRead($len);
-
-		$pid = ord($packet{0});
-		$offset = 1;
-		if($pid === self::PACKET_REQUEST_CHUNK){
-			$levelID = Binary::readInt(substr($packet, $offset, 4));
-			$offset += 4;
-			$chunkX = Binary::readInt(substr($packet, $offset, 4));
-			$offset += 4;
-			$chunkZ = Binary::readInt(substr($packet, $offset, 4));
-			$this->enqueueChunk($levelID, $chunkX, $chunkZ);
-		}elseif($pid === self::PACKET_SEND_CHUNK){
-			$levelID = Binary::readInt(substr($packet, $offset, 4));
-			$offset += 4;
-			$len = ord($packet{$offset++});
-			/** @var FullChunk $class */
-			$class = substr($packet, $offset, $len);
-			$offset += $len;
-			$chunk = $class::fromBinary(substr($packet, $offset));
-			$this->receiveChunk($levelID, $chunk);
-		}elseif($pid === self::PACKET_OPEN_LEVEL){
-			$levelID = Binary::readInt(substr($packet, $offset, 4));
-			$offset += 4;
-			$seed = Binary::readInt(substr($packet, $offset, 4));
-			$offset += 4;
-			$len = Binary::readShort(substr($packet, $offset, 2));
-			$offset += 2;
-			$class = substr($packet, $offset, $len);
-			$offset += $len;
-			$options = unserialize(substr($packet, $offset));
-			$this->openLevel($levelID, $seed, $class, $options);
-		}elseif($pid === self::PACKET_CLOSE_LEVEL){
-			$levelID = Binary::readInt(substr($packet, $offset, 4));
-			$this->closeLevel($levelID);
-		}elseif($pid === self::PACKET_ADD_NAMESPACE){
-			$len = Binary::readShort(substr($packet, $offset, 2));
-			$offset += 2;
-			$namespace = substr($packet, $offset, $len);
-			$offset += $len;
-			$path = substr($packet, $offset);
-			$this->loader->addPath($path);
-		}elseif($pid === self::PACKET_SHUTDOWN){
-			foreach($this->levels as $level){
-				$level->shutdown();
+				$this->shutdown = true;
 			}
-			$this->levels = [];
-
-			$this->shutdown = true;
-			socket_close($this->socket);
+		}elseif(count($this->thread->getInternalQueue()) === 0){
+			$this->thread->wait(50000);
 		}
 	}
 

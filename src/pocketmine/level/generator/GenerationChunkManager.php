@@ -75,10 +75,15 @@ class GenerationChunkManager implements ChunkManager{
 	 * @param $chunkZ
 	 *
 	 * @return FullChunk
+	 *
+	 * @throws \Exception
 	 */
 	public function getChunk($chunkX, $chunkZ){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
+		if($chunk === null){
+			throw new \Exception("null chunk received");
+		}
 		$this->changes[$index] = $chunk;
 
 		return $chunk;
@@ -134,21 +139,36 @@ class GenerationChunkManager implements ChunkManager{
 	}
 
 	public function isChunkGenerated($chunkX, $chunkZ){
-		return $this->getChunk($chunkX, $chunkZ)->isGenerated();
+		try{
+			return $this->getChunk($chunkX, $chunkZ)->isGenerated();
+		}catch(\Exception $e){
+			return false;
+		}
 	}
 
 	public function isChunkPopulated($chunkX, $chunkZ){
-		return $this->getChunk($chunkX, $chunkZ)->isPopulated();
+		try{
+			return $this->getChunk($chunkX, $chunkZ)->isPopulated();
+		}catch(\Exception $e){
+			return false;
+		}
 	}
 
 	public function setChunkGenerated($chunkX, $chunkZ){
 		$chunk = $this->getChunk($chunkX, $chunkZ);
 		$chunk->setGenerated(true);
+		try{
+			$chunk = $this->getChunk($chunkX, $chunkZ);
+			$chunk->setGenerated(true);
+		}catch(\Exception $e){}
 	}
 
 	public function setChunkPopulated($chunkX, $chunkZ){
-		$chunk = $this->getChunk($chunkX, $chunkZ);
-		$chunk->setPopulated(true);
+
+		try{
+			$chunk = $this->getChunk($chunkX, $chunkZ);
+			$chunk->setPopulated(true);
+		}catch(\Exception $e){}
 	}
 
 	protected function requestChunk($chunkX, $chunkZ){
@@ -181,7 +201,11 @@ class GenerationChunkManager implements ChunkManager{
 	 * @return int 0-255
 	 */
 	public function getBlockIdAt($x, $y, $z){
-		return $this->getChunk($x >> 4, $z >> 4)->getBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f);
+		try{
+			return $this->getChunk($x >> 4, $z >> 4)->getBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f);
+		}catch(\Exception $e){
+			return 0;
+		}
 	}
 
 	/**
@@ -193,7 +217,9 @@ class GenerationChunkManager implements ChunkManager{
 	 * @param int $id 0-255
 	 */
 	public function setBlockIdAt($x, $y, $z, $id){
-		$this->getChunk($x >> 4, $z >> 4)->setBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f, $id & 0xff);
+		try{
+			$this->getChunk($x >> 4, $z >> 4)->setBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f, $id & 0xff);
+		}catch(\Exception $e){}
 	}
 
 	/**
@@ -206,7 +232,11 @@ class GenerationChunkManager implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getBlockDataAt($x, $y, $z){
-		return $this->getChunk($x >> 4, $z >> 4)->getBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f);
+		try{
+			return $this->getChunk($x >> 4, $z >> 4)->getBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f);
+		}catch(\Exception $e){
+			return 0;
+		}
 	}
 
 	/**
@@ -218,7 +248,9 @@ class GenerationChunkManager implements ChunkManager{
 	 * @param int $data 0-15
 	 */
 	public function setBlockDataAt($x, $y, $z, $data){
-		$this->getChunk($x >> 4, $z >> 4)->setBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f, $data & 0x0f);
+		try{
+			$this->getChunk($x >> 4, $z >> 4)->setBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f, $data & 0x0f);
+		}catch(\Exception $e){}
 	}
 
 	public function shutdown(){
