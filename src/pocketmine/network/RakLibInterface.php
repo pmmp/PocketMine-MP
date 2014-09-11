@@ -97,8 +97,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	/** @var ServerHandler */
 	private $interface;
 
-	private $tickTask;
-
 	private $upload = 0;
 	private $download = 0;
 
@@ -109,7 +107,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$server = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
 		$this->interface = new ServerHandler($server, $this);
 		$this->setName($this->server->getMotd());
-		$this->tickTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "doTick"]), 1);
 	}
 
 	public function doTick(){
@@ -123,6 +120,8 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			while($this->interface->handlePacket()){
 			}
 		}
+
+		$this->doTick();
 
 		return $work;
 	}
@@ -147,12 +146,10 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function shutdown(){
-		$this->tickTask->cancel();
 		$this->interface->shutdown();
 	}
 
 	public function emergencyShutdown(){
-		$this->tickTask->cancel();
 		$this->interface->emergencyShutdown();
 	}
 

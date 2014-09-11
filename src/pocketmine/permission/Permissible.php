@@ -66,7 +66,6 @@ interface Permissible extends ServerOperator{
 	public function recalculatePermissions();
 
 	/**
-	 * TODO: Check this
 	 * @return Permission[]
 	 */
 	public function getEffectivePermissions();
