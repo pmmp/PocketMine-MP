@@ -93,7 +93,9 @@ class PermissionAttachment{
 	 * @param bool              $value
 	 */
 	public function setPermission($name, $value){
-		$this->permissions[$name instanceof Permission ? $name->getName() : $name] = $value;
+		$name = $name instanceof Permission ? $name->getName() : $name;
+		unset($this->permissions[$name]); //Fixes children getting overwritten
+		$this->permissions[$name] = $value;
 		$this->permissible->recalculatePermissions();
 	}
 

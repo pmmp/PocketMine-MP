@@ -434,6 +434,9 @@ class PluginManager{
 	public function unsubscribeFromPermission($permission, Permissible $permissible){
 		if(isset($this->permSubs[$permission])){
 			unset($this->permSubs[$permission][spl_object_hash($permissible)]);
+			if(count($this->permSubs[$permission]) === 0){
+				unset($this->permSubs[$permission]);
+			}
 		}
 	}
 
