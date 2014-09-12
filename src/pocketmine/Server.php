@@ -129,7 +129,6 @@ class Server{
 	private $nextTick = 0;
 	private $tickAverage = [20,20,20,20,20];
 	private $useAverage = [20,20,20,20,20];
-	private $inTick = false;
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
@@ -1840,7 +1839,7 @@ class Server{
 
 		$this->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "checkTicks"]), 20 * 5);
 
-		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode())); //TODO: string name
+		$this->logger->info("Default game type: " . self::getGamemodeString($this->getGamemode()));
 
 		$this->logger->info("Done (" . round(microtime(true) - \pocketmine\START_TIME, 3) . 's)! For help, type "help" or "?"');
 
@@ -1937,17 +1936,8 @@ class Server{
 	private function tickProcessor(){
 		$lastLoop = 0;
 		while($this->isRunning){
-			++$lastLoop;
-
-			if(($ticks = $this->tick()) !== true){
-				if($lastLoop > 2 and $lastLoop < 16){
-					usleep(1000);
-				}elseif($lastLoop < 128){
-					usleep(2000);
-				}else{
-					usleep(10000);
-				}
-			}
+			$this->tick();
+			usleep((int) max(1, ($this->nextTick - microtime(true)) * 1000000));
 		}
 	}
 
@@ -2028,63 +2018,56 @@ class Server{
 	/**
 	 * Tries to execute a server tick
 	 */
-	public function tick(){
-		if($this->inTick === false){
-			$tickTime = microtime(true);
-			if($tickTime < $this->nextTick){
-				return false;
-			}
-
-			Timings::$serverTickTimer->startTiming();
-
-			$this->inTick = true; //Fix race conditions
-			++$this->tickCounter;
-
-			$this->checkConsole();
-
-			//TODO: move this to tick
-			Timings::$connectionTimer->startTiming();
-			foreach($this->interfaces as $interface){
-				$interface->process();
-			}
-
-
-			Timings::$connectionTimer->stopTiming();
-
-			Timings::$schedulerTimer->startTiming();
-			$this->scheduler->mainThreadHeartbeat($this->tickCounter);
-			Timings::$schedulerTimer->stopTiming();
-			$this->checkTickUpdates($this->tickCounter);
-
-			if(($this->tickCounter & 0b1111) === 0){
-				$this->titleTick();
-				if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
-					$this->queryHandler->regenerateInfo();
-				}
-			}
-
-			$this->generationManager->handlePackets();
-
-			Timings::$serverTickTimer->stopTiming();
-
-			TimingsHandler::tick();
-
-			$now = microtime(true);
-			array_shift($this->tickAverage);
-			$this->tickAverage[] = min(20, 1 / max(0.001, $now - $tickTime));
-			array_shift($this->useAverage);
-			$this->useAverage[] = min(1, ($now - $tickTime) / 0.05);
-
-			if(($this->nextTick - $tickTime) < -1){
-				$this->nextTick = $tickTime;
-			}
-			$this->nextTick += 0.05;
-			$this->inTick = false;
-
-			return true;
+	private function tick(){
+		$tickTime = microtime(true);
+		if($tickTime < $this->nextTick){
+			return false;
 		}
 
-		return false;
+		Timings::$serverTickTimer->startTiming();
+
+		++$this->tickCounter;
+
+		$this->checkConsole();
+
+		Timings::$connectionTimer->startTiming();
+		foreach($this->interfaces as $interface){
+			$interface->process();
+		}
+		Timings::$connectionTimer->stopTiming();
+
+		Timings::$schedulerTimer->startTiming();
+		$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+		Timings::$schedulerTimer->stopTiming();
+
+		$this->checkTickUpdates($this->tickCounter);
+
+		if(($this->tickCounter & 0b1111) === 0){
+			$this->titleTick();
+			if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
+				$this->queryHandler->regenerateInfo();
+			}
+		}
+
+		$this->generationManager->handlePackets();
+
+		Timings::$serverTickTimer->stopTiming();
+
+		TimingsHandler::tick();
+
+		$now = microtime(true);
+		array_shift($this->tickAverage);
+		$this->tickAverage[] = min(20, 1 / max(0.001, $now - $tickTime));
+		array_shift($this->useAverage);
+		$this->useAverage[] = min(1, ($now - $tickTime) / 0.05);
+
+		if(($this->nextTick - $tickTime) < -1){
+			$this->nextTick = $tickTime;
+		}
+		$this->nextTick += 0.05;
+		$this->inTick = false;
+
+		return true;
 	}
 
 }
