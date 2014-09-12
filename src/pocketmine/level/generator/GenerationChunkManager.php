@@ -110,8 +110,6 @@ class GenerationChunkManager implements ChunkManager{
 				unset($this->changes[$index]);
 			}
 		}
-
-		gc_collect_cycles();
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
