@@ -21,6 +21,7 @@
 
 namespace pocketmine\permission;
 
+use pocketmine\event\Timings;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 
@@ -162,6 +163,8 @@ class PermissibleBase implements Permissible{
 	}
 
 	public function recalculatePermissions(){
+		Timings::$permissibleCalculationTimer->startTiming();
+
 		$this->clearPermissions();
 		$defaults = Server::getInstance()->getPluginManager()->getDefaultPermissions($this->isOp());
 		Server::getInstance()->getPluginManager()->subscribeToDefaultPerms($this->isOp(), $this->parent);
@@ -176,6 +179,8 @@ class PermissibleBase implements Permissible{
 		foreach($this->attachments as $attachment){
 			$this->calculateChildPermissions($attachment->getPermissions(), false, $attachment);
 		}
+
+		Timings::$permissibleCalculationTimer->stopTiming();
 	}
 
 	public function clearPermissions(){
