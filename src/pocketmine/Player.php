@@ -140,7 +140,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $isCrafting = false;
 	public $loginData = [];
 	protected $lastMovement = 0;
-	protected $forceMovement = false;
+	/** @var Vector3 */
+	protected $forceMovement = null;
 	protected $connected = true;
 	protected $ip;
 	protected $removeFormat = true;
@@ -1338,7 +1339,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$revert = false;
 
-				if($newPos->distance($this) > 100){
+				if($this->forceMovement instanceof Vector3 and $newPos->distance($this->forceMovement) > 0.1){
+					$revert = true;
+				}elseif($newPos->distance($this) > 100){
 					$this->server->getLogger()->warning($this->getName()." moved too quickly!");
 					$revert = true;
 				}else{
@@ -1396,6 +1399,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->yaw = $this->yaw;
 					$pk->teleport = true;
 					$this->directDataPacket($pk);
+				}else{
+					$this->forceMovement = null;
 				}
 
 				break;
