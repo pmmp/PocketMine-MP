@@ -1510,6 +1510,9 @@ class Server{
 		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(false) . TextFormat::RESET . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
 		$this->logger->info($this->getName() . " is distributed under the LGPL License", true, true, 0);
 
+		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
+		Timings::init();
+
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
 
@@ -1517,9 +1520,6 @@ class Server{
 		Block::init();
 		Item::init();
 		$this->craftingManager = new CraftingManager();
-
-		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
-		Timings::init();
 
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
@@ -1545,6 +1545,13 @@ class Server{
 		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
 		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
+
+		//Temporal workaround, pthreads static property nullification test
+		if(PluginManager::$pluginParentTimer === null){
+			$this->getLogger()->emergency("You are using an invalid pthreads version. Please update your binaries.");
+			kill(getmypid());
+			return;
+		}
 
 		foreach($this->getProperty("worlds", []) as $name => $worldSetting){
 			if($this->loadLevel($name) === false){
