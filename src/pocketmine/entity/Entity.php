@@ -729,6 +729,7 @@ abstract class Entity extends Position implements Metadatable{
 
 			$this->ySize *= 0.4;
 
+			/*
 			if($this->isColliding){ //With cobweb?
 				$this->isColliding = false;
 				$dx *= 0.25;
@@ -738,6 +739,7 @@ abstract class Entity extends Position implements Metadatable{
 				$this->motionY = 0;
 				$this->motionZ = 0;
 			}
+			*/
 
 			$movX = $dx;
 			$movY = $dy;

@@ -1336,6 +1336,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
+				$oldPos = new Vector3($this->x, $this->y, $this->z);
 
 				$revert = false;
 
@@ -1382,7 +1383,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
 
-					if(!$revert and $diff > 0.15 and !$this->isSleeping() and $this->isSurvival()){
+					if(!$revert and $diff > 0.0625 and !$this->isSleeping() and $this->isSurvival()){
 						$revert = true;
 						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
 					}
@@ -1399,6 +1400,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->yaw = $this->yaw;
 					$pk->teleport = true;
 					$this->directDataPacket($pk);
+					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
 				}else{
 					$this->forceMovement = null;
 				}

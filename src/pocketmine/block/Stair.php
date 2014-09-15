@@ -37,6 +37,82 @@ class Stair extends Transparent{
 		$this->hardness = 30;
 	}
 
+	/*
+	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){
+		$damage = $this->getDamage();
+		$j = $damage & 0x03;
+
+		$f = 0;
+		$f1 = 0.5;
+		$f2 = 0.5;
+		$f3 = 1;
+
+		if(($damage & 0x04) > 0){
+			$f = 0.5;
+			$f1 = 1;
+			$f2 = 0;
+			$f3 = 0.5;
+		}
+
+		if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+			$this->x,
+			$this->y + $f,
+			$this->z,
+			$this->x + 1,
+			$this->y + $f1,
+			$this->z + 1
+		))){
+			$list[] = $bb2;
+		}
+
+		if($j === 0){
+			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+				$this->x + 0.5,
+				$this->y + $f2,
+				$this->z,
+				$this->x + 1,
+				$this->y + $f3,
+				$this->z + 1
+			))){
+				$list[] = $bb2;
+			}
+		}elseif($j === 1){
+			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+				$this->x,
+				$this->y + $f2,
+				$this->z,
+				$this->x + 0.5,
+				$this->y + $f3,
+				$this->z + 1
+			))){
+				$list[] = $bb2;
+			}
+		}elseif($j === 2){
+			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+				$this->x,
+				$this->y + $f2,
+				$this->z + 0.5,
+				$this->x + 1,
+				$this->y + $f3,
+				$this->z + 1
+			))){
+				$list[] = $bb2;
+			}
+		}elseif($j === 3){
+			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+				$this->x,
+				$this->y + $f2,
+				$this->z,
+				$this->x + 1,
+				$this->y + $f3,
+				$this->z + 0.5
+			))){
+				$list[] = $bb2;
+			}
+		}
+	}
+	*/
+
 	public function getBoundingBox(){
 		if(($this->getDamage() & 0x04) > 0){
 			return new AxisAlignedBB(
