@@ -216,10 +216,10 @@ abstract class Door extends Transparent{
 			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
-			$this->getLevel()->setBlock($blockUp, Block::get($this->id, $metaUp), true); //Top
 
 			$this->meta = $player->getDirection() & 0x03;
 			$this->getLevel()->setBlock($block, $this, true, true); //Bottom
+			$this->getLevel()->setBlock($blockUp, $b = Block::get($this->id, $metaUp), true); //Top
 			return true;
 		}
 
