@@ -1573,7 +1573,7 @@ class Server{
 		if($this->getDefaultLevel() === null){
 			$default = $this->getConfigString("level-name", "world");
 			if(trim($default) == ""){
-				trigger_error("level-name cannot be null, using default", E_USER_WARNING);
+				$this->getLogger()->warning("level-name cannot be null, using default");
 				$default = "world";
 				$this->setConfigString("level-name", "world");
 			}
