@@ -39,16 +39,12 @@ class FenceGate extends Transparent{
 
 
 	public function getBoundingBox(){
-		if($this->getDamage() !== 2 and $this->getDamage() !== 0){
-			return new AxisAlignedBB(
-				$this->x + 0.375,
-				$this->y,
-				$this->z,
-				$this->x + 0.625,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}else{
+		if(($this->getDamage() & 0x04) > 0){
+			return null;
+		}
+		
+		$i = ($this->getDamage() & 0x03);
+		if($i === 2 and $i === 0){
 			return new AxisAlignedBB(
 				$this->x,
 				$this->y,
@@ -56,6 +52,15 @@ class FenceGate extends Transparent{
 				$this->x + 1,
 				$this->y + 1,
 				$this->z + 0.625
+			);
+		}else{
+			return new AxisAlignedBB(
+				$this->x + 0.375,
+				$this->y,
+				$this->z,
+				$this->x + 0.625,
+				$this->y + 1,
+				$this->z + 1
 			);
 		}
 	}
