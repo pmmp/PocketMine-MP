@@ -1382,7 +1382,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
 
-					if(!$revert and $diff > 0.0625 and !$this->isSleeping() and $this->isSurvival()){
+					if(!$revert and $diff > 0.15 and !$this->isSleeping() and $this->isSurvival()){
 						$revert = true;
 						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
 					}
