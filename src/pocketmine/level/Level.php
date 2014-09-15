@@ -633,7 +633,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function __debugInfo(){
-		return get_class($this);
+		return [];
 	}
 
 	/**
@@ -650,12 +650,20 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
 
 		$this->provider->setTime((int) $this->time);
-		$this->provider->saveChunks(); //TODO: only save changed chunks
+		$this->saveChunks();
 		if($this->provider instanceof BaseLevelProvider){
 			$this->provider->saveLevelData();
 		}
 
 		return true;
+	}
+
+	public function saveChunks(){
+		//TODO: only save changed chunks
+		foreach($this->chunks as $chunk){
+			$this->provider->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
+			$this->provider->saveChunk($chunk->getX(), $chunk->getZ());
+		}
 	}
 
 	/**
@@ -1765,6 +1773,8 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
+		$index = "$x:$z";
+
 		$chunk = $this->getChunkAt($x, $z);
 
 		if($chunk instanceof FullChunk){
@@ -1777,10 +1787,13 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doChunkUnload->startTiming();
 
 		if($this->getAutoSave()){
+			if(isset($this->chunks[$index])){
+				$this->provider->setChunk($x, $z, $this->chunks[$index]);
+			}
 			$this->provider->saveChunk($x, $z);
 		}
 
-		unset($this->chunks[$index = Level::chunkHash($x, $z)]);
+		unset($this->chunks[$index]);
 		$this->provider->unloadChunk($x, $z, $safe);
 		unset($this->usedChunks[$index]);
 		Cache::remove("world:" . $this->getID() . ":$x:$z");
