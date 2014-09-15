@@ -46,7 +46,7 @@ class Random{
 	 * @param int $seed Integer to be used as seed.
 	 */
 	public function setSeed($seed){
-		$this->seed = crc32(Binary::writeInt($seed));
+		$this->seed = crc32(pack("N", $seed));
 	}
 
 	/**
@@ -64,14 +64,14 @@ class Random{
 	 * @return int
 	 */
 	public function nextSignedInt(){
-		$t = crc32(Binary::writeInt($this->seed));
+		$t = crc32(pack("N", $this->seed));
 		$this->seed ^= $t;
 
-		if($t > 2147483647){
-			$t -= 4294967296;
+		if(PHP_INT_SIZE === 8){
+			return $t << 32 >> 32;
+		}else{
+			return $t;
 		}
-
-		return (int) $t;
 	}
 
 	/**
@@ -105,11 +105,11 @@ class Random{
 	 * Returns a random integer between $start and $end
 	 *
 	 * @param int $start default 0
-	 * @param int $end   default PHP_INT_MAX
+	 * @param int $end   default 0x7fffffff
 	 *
 	 * @return int
 	 */
-	public function nextRange($start = 0, $end = PHP_INT_MAX){
+	public function nextRange($start = 0, $end = 0x7fffffff){
 		return $start + ($this->nextInt() % ($end + 1 - $start));
 	}
 

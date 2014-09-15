@@ -32,15 +32,42 @@ class GenerationThread extends Thread{
 	/** @var \ThreadedLogger */
 	protected $logger;
 
-	protected $externalSocket;
-	protected $internalSocket;
+	/** @var \Threaded */
+	protected $externalQueue;
+	/** @var \Threaded */
+	protected $internalQueue;
 
-	public function getExternalSocket(){
-		return $this->externalSocket;
+	/**
+	 * @return \Threaded
+	 */
+	public function getInternalQueue(){
+		return $this->internalQueue;
 	}
 
-	public function getInternalSocket(){
-		return $this->internalSocket;
+	/**
+	 * @return \Threaded
+	 */
+	public function getExternalQueue(){
+		return $this->externalQueue;
+	}
+
+	public function pushMainToThreadPacket($str){
+		$this->internalQueue[] = $str;
+		$this->synchronized(function(){
+			$this->notify();
+		});
+	}
+
+	public function readMainToThreadPacket(){
+		return $this->internalQueue->shift();
+	}
+
+	public function pushThreadToMainPacket($str){
+		$this->externalQueue[] = $str;
+	}
+
+	public function readThreadToMainPacket(){
+		return $this->externalQueue->shift();
 	}
 
 	/**
@@ -57,19 +84,8 @@ class GenerationThread extends Thread{
 		$this->addDependency($loadPaths, new \ReflectionClass($this->loader));
 		$this->loadPaths = array_reverse($loadPaths);
 
-		$sockets = [];
-		if(!socket_create_pair((strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? AF_INET : AF_UNIX), SOCK_STREAM, 0, $sockets)){
-			throw new \Exception("Could not create IPC sockets. Reason: " . socket_strerror(socket_last_error()));
-		}
-
-		$this->internalSocket = $sockets[0];
-		socket_set_block($this->internalSocket); //IMPORTANT!
-		@socket_set_option($this->internalSocket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2);
-		@socket_set_option($this->internalSocket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024 * 2);
-		$this->externalSocket = $sockets[1];
-		socket_set_nonblock($this->externalSocket);
-		@socket_set_option($this->externalSocket, SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 2);
-		@socket_set_option($this->externalSocket, SOL_SOCKET, SO_RCVBUF, 1024 * 1024 * 2);
+		$this->externalQueue = new \Threaded();
+		$this->internalQueue = new \Threaded();
 
 		$this->start();
 	}
@@ -90,14 +106,15 @@ class GenerationThread extends Thread{
 
 	public function run(){
 		error_reporting(-1);
+		gc_enable();
 		//Load removed dependencies, can't use require_once()
 		foreach($this->loadPaths as $name => $path){
-			if(!class_exists($name, false) and !class_exists($name, false)){
+			if(!class_exists($name, false) and !interface_exists($name, false)){
 				require($path);
 			}
 		}
 		$this->loader->register();
 
-		$generationManager = new GenerationManager($this->getInternalSocket(), $this->getLogger(), $this->loader);
+		$generationManager = new GenerationManager($this, $this->getLogger(), $this->loader);
 	}
 }

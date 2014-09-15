@@ -28,7 +28,6 @@ use pocketmine\utils\Binary;
 
 class GenerationRequestManager{
 
-	protected $socket;
 	/** @var Server */
 	protected $server;
 	/** @var GenerationThread */
@@ -40,7 +39,6 @@ class GenerationRequestManager{
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->generationThread = new GenerationThread($server->getLogger(), $server->getLoader());
-		$this->socket = $this->generationThread->getExternalSocket();
 	}
 
 	/**
@@ -52,7 +50,7 @@ class GenerationRequestManager{
 		$buffer = chr(GenerationManager::PACKET_OPEN_LEVEL) . Binary::writeInt($level->getID()) . Binary::writeInt($level->getSeed()) .
 			Binary::writeShort(strlen($generator)) . $generator . serialize($options);
 
-		@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
+		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
 	/**
@@ -60,31 +58,22 @@ class GenerationRequestManager{
 	 */
 	public function closeLevel(Level $level){
 		$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($level->getID());
-		@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
+		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
 	public function addNamespace($namespace, $path){
 		$buffer = chr(GenerationManager::PACKET_ADD_NAMESPACE) . Binary::writeShort(strlen($namespace)) . $namespace . $path;
-		@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
-	}
-
-	protected function socketRead($len){
-		$buffer = "";
-		while(strlen($buffer) < $len){
-			$buffer .= @socket_read($this->socket, $len - strlen($buffer));
-		}
-
-		return $buffer;
+		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
 	protected function sendChunk($levelID, FullChunk $chunk){
-		$binary = chr(GenerationManager::PACKET_SEND_CHUNK) . Binary::writeInt($levelID) . chr(strlen($class = get_class($chunk))) . $class . $chunk->toBinary();
-		@socket_write($this->socket, Binary::writeInt(strlen($binary)) . $binary);
+		$buffer = chr(GenerationManager::PACKET_SEND_CHUNK) . Binary::writeInt($levelID) . chr(strlen($class = get_class($chunk))) . $class . $chunk->toBinary();
+		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
 	public function requestChunk(Level $level, $chunkX, $chunkZ){
 		$buffer = chr(GenerationManager::PACKET_REQUEST_CHUNK) . Binary::writeInt($level->getID()) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
-		@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
+		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
 	protected function handleRequest($levelID, $chunkX, $chunkZ){
@@ -97,7 +86,7 @@ class GenerationRequestManager{
 			}
 		}else{
 			$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($levelID);
-			@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
+			$this->generationThread->pushMainToThreadPacket($buffer);
 		}
 	}
 
@@ -106,17 +95,12 @@ class GenerationRequestManager{
 			$level->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);
 		}else{
 			$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($levelID);
-			@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
+			$this->generationThread->pushMainToThreadPacket($buffer);
 		}
 	}
 
 	public function handlePackets(){
-		if(($len = @socket_read($this->socket, 4)) !== false and $len !== ""){
-			if(strlen($len) < 4){
-				$len .= $this->socketRead(4 - strlen($len));
-			}
-
-			$packet = $this->socketRead(Binary::readInt($len));
+		while(strlen($packet = $this->generationThread->readThreadToMainPacket()) > 0){
 			$pid = ord($packet{0});
 			$offset = 1;
 
@@ -145,7 +129,7 @@ class GenerationRequestManager{
 
 	public function shutdown(){
 		$buffer = chr(GenerationManager::PACKET_SHUTDOWN);
-		@socket_write($this->socket, Binary::writeInt(strlen($buffer)) . $buffer);
+		$this->generationThread->pushMainToThreadPacket($buffer);
 		$this->generationThread->join();
 	}
 

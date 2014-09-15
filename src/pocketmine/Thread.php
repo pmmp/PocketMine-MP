@@ -29,6 +29,6 @@ abstract class Thread extends \Thread{
 	public final function start($options = PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
 
-		return parent::start($options & ~PTHREADS_INHERIT_CLASSES);
+		return parent::start($options);
 	}
 }
