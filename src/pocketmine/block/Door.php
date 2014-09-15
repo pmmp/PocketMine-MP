@@ -35,9 +35,26 @@ abstract class Door extends Transparent{
 		$this->isSolid = false;
 	}
 
+	private function getFullDamage(){
+		$damage = $this->getDamage();
+		$flag = ($damage & 0x08) > 0;
+
+		if($flag){
+			$first = $this->getSide(0)->getDamage();
+			$second = $damage;
+		}else{
+			$first = $damage;
+			$second = $this->getSide(1)->getDamage();
+		}
+
+		$flag1 = ($second & 0x01) > 0;
+
+		return $first & 0x07 | ($flag ? 8 : 0) | ($flag1 ? 0x10 : 0);
+	}
+
 	public function getBoundingBox(){
 		$f = 0.1875;
-		$damage = $this->getDamage();
+		$damage = $this->getFullDamage();
 
 		$bb = new AxisAlignedBB(
 			$this->x,
@@ -50,7 +67,7 @@ abstract class Door extends Transparent{
 
 		$j = $damage & 0x03;
 		$flag = (($damage & 0x04) > 0);
-		$flag1 = (($damage & 0x0f) > 0);
+		$flag1 = (($damage & 0x10) > 0);
 
 		if($j === 0){
 			if($flag){
