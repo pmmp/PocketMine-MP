@@ -25,6 +25,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\Water;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -110,6 +111,9 @@ abstract class Entity extends Position implements Metadatable{
 	protected $age = 0;
 
 	public $height;
+
+	public $eyeHeight = null;
+
 	public $width;
 	public $length;
 
@@ -151,6 +155,10 @@ abstract class Entity extends Position implements Metadatable{
 	public function __construct(FullChunk $chunk, Compound $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
 			throw new \Exception("Invalid garbage Chunk given to Entity");
+		}
+
+		if($this->eyeHeight === null){
+			$this->eyeHeight = $this->height;
 		}
 
 		$this->id = Entity::$entityCount++;
@@ -674,7 +682,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function getEyeHeight(){
-		return 0;
+		return $this->eyeHeight;
 	}
 
 	public function moveFlying(){ //TODO
@@ -724,6 +732,40 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function getPosition(){
 		return new Position($this->x, $this->y, $this->z, $this->getLevel());
+	}
+
+	public function isInsideOfWater(){
+		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
+
+		if($block instanceof Water){
+			$f = ($pos->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
+			return $y < $f;
+		}
+
+		return false;
+	}
+
+	public function isInsideOfSolid(){
+		for($i = 0; $i < 8; ++$i){
+			$x = (($i % 2) - 0.5) * $this->width * 0.8;
+			$y = ((($i >> 1) % 2) - 0.5) * 0.1;
+			$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
+			$block = $this->getLevel()->getBlock((new Vector3($this->x + $x, $this->y + $this->getEyeHeight() + $y, $this->z + $z))->floor());
+
+			if($block->isSolid){
+				return true;
+			}
+		}
+		return false;
+
+		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
+
+		if($block instanceof Water){
+			$f = ($pos->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
+			return $y < $f;
+		}
+
+		return false;
 	}
 
 	public function collision(){

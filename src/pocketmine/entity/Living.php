@@ -116,6 +116,27 @@ abstract class Living extends Entity implements Damageable{
 		Timings::$timerEntityBaseTick->startTiming();
 		parent::entityBaseTick();
 
+		if($this->dead !== true and $this->isInsideOfSolid()){
+			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1));
+			if(!$ev->isCancelled()){
+				$this->attack($ev->getFinalDamage(), $ev);
+			}
+		}
+
+		if($this->dead !== true and $this->isInsideOfWater()){
+			--$this->airTicks;
+			if($this->airTicks <= -20){
+				$this->airTicks = 0;
+
+				$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2));
+				if(!$ev->isCancelled()){
+					$this->attack($ev->getFinalDamage(), $ev);
+				}
+			}
+
+			$this->extinguish();
+		}
+
 		if($this->attackTime > 0){
 			--$this->attackTime;
 		}

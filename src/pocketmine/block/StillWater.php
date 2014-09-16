@@ -21,17 +21,10 @@
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Entity;
-
 class StillWater extends Water{
 	public function __construct($meta = 0){
 		Liquid::__construct(self::STILL_WATER, $meta, "Still Water");
 		$this->hardness = 500;
-	}
-
-	public function onEntityCollide(Entity $entity){
-		$entity->fallDistance = 0;
-		$entity->extinguish();
 	}
 
 }

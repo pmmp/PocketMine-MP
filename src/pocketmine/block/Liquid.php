@@ -28,4 +28,13 @@ class Liquid extends Transparent{
 	public $isReplaceable = true;
 	public $isSolid = false;
 	public $isFullBlock = true;
+
+	public function getFluidHeightPercent(){
+		$d = $this->meta;
+		if($d >= 8){
+			$d = 0;
+		}
+
+		return ($d + 1) / 9;
+	}
 }
