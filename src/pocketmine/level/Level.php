@@ -1099,13 +1099,13 @@ class Level implements ChunkManager, Metadatable{
 				if($target->isActivable === true and $target->onActivate($item, $player) === true){
 					return true;
 				}
-			}
 
-			if($item->isActivable and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
-				if($item->getCount() <= 0){
-					$item = Item::get(Item::AIR, 0, 0);
+				if($item->isActivable and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
+					if($item->getCount() <= 0){
+						$item = Item::get(Item::AIR, 0, 0);
 
-					return true;
+						return true;
+					}
 				}
 			}
 		}elseif($target->isActivable === true and $target->onActivate($item, $player) === true){
