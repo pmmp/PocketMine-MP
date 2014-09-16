@@ -24,6 +24,7 @@
  */
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\item\Item;
@@ -830,6 +831,13 @@ abstract class Block extends Position implements Metadatable{
 		if($bb2 !== null and $bb2->intersectsWith($bb)){
 			$list[] = $bb2;
 		}
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onEntityCollide(Entity $entity){
+
 	}
 
 	/**

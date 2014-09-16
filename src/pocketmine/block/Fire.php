@@ -22,7 +22,10 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\Server;
 
 class Fire extends Flowable{
 	public function __construct($meta = 0){
@@ -37,6 +40,14 @@ class Fire extends Flowable{
 		return null;
 	}
 
+	public function onEntityCollide(Entity $entity){
+		$entity->setOnFire(8);
+		$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_FIRE, 1);
+		Server::getInstance()->getPluginManager()->callEvent($ev);
+		if(!$ev->isCancelled()){
+			$entity->attack($ev->getFinalDamage(), $ev);
+		}
+	}
 
 	public function getDrops(Item $item){
 		return [];

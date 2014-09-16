@@ -460,6 +460,8 @@ abstract class Entity extends Position implements Metadatable{
 		$hasUpdate = false;
 		$this->updateMovement();
 
+		$this->checkBlockCollision();
+
 		if($this->handleWaterMovement()){
 			$this->fallDistance = 0;
 			$this->inWater = true;
@@ -483,7 +485,11 @@ abstract class Entity extends Position implements Metadatable{
 				}
 			}else{
 				if(($this->fireTicks % 20) === 0){
-					$this->attack(1, EntityDamageEvent::CAUSE_FIRE_TICK);
+					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
+					$this->server->getPluginManager()->callEvent($ev);
+					if(!$ev->isCancelled()){
+						$this->attack($ev->getFinalDamage(), $ev);
+					}
 				}
 				--$this->fireTicks;
 			}
@@ -491,8 +497,8 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		if($this->handleLavaMovement()){
-			$this->attack(4, EntityDamageEvent::CAUSE_LAVA);
-			$this->setOnFire(15);
+			//$this->attack(4, EntityDamageEvent::CAUSE_LAVA);
+			//$this->setOnFire(15);
 			$hasUpdate = true;
 			$this->fallDistance *= 0.5;
 		}
@@ -712,8 +718,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function move($dx, $dy, $dz){
-		//$collision = [];
-		//$this->checkBlockCollision($collision);
+
 		if($dx == 0 and $dz == 0 and $dy == 0){
 			return true;
 		}
@@ -932,12 +937,7 @@ abstract class Entity extends Position implements Metadatable{
 		//}
 	}
 
-	/**
-	 * @param Block[] $list
-	 *
-	 * @return Block[]
-	 */
-	protected function checkBlockCollision(&$list = []){
+	protected function checkBlockCollision(){
 		$minX = floor($this->boundingBox->minX + 0.001);
 		$minY = floor($this->boundingBox->minY + 0.001);
 		$minZ = floor($this->boundingBox->minZ + 0.001);
@@ -948,12 +948,13 @@ abstract class Entity extends Position implements Metadatable{
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
-					$this->getLevel()->getBlock(new Vector3($x, $y, $z))->collidesWithBB($this->boundingBox, $list);
+					$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
+					if($block !== null and $block->getID() > 0){
+						$block->onEntityCollide($this);
+					}
 				}
 			}
 		}
-
-		return $list;
 	}
 
 	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch, $force = false){
