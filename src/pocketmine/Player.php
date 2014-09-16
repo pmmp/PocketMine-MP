@@ -1830,8 +1830,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
 				$this->teleport($ev->getRespawnPosition());
-				//$this->entity->fire = 0;
-				//$this->entity->air = 300;
+				$this->fireTicks = 0;
+				$this->airTicks = 300;
 
 				$this->setHealth(20);
 				$this->dead = false;
@@ -2379,11 +2379,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		$pk = new EntityEventPacket();
-		$pk->eid = 0;
-		$pk->event = 2;
-		$this->dataPacket($pk);
+
 		parent::attack($damage, $source);
+
+		if($this->getLastDamageCause() === $source){
+			$pk = new EntityEventPacket();
+			$pk->eid = 0;
+			$pk->event = 2;
+			$this->dataPacket($pk);
+		}
 	}
 
 	public function getData(){ //TODO
