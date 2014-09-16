@@ -2348,6 +2348,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				break;
 
 			case EntityDamageEvent::CAUSE_CONTACT:
+				$message = $this->getName() . " was pricked to death";
+				break;
+
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 			case EntityDamageEvent::CAUSE_MAGIC:

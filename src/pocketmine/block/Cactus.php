@@ -26,6 +26,9 @@ use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\Player;
+use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\Server;
 
 class Cactus extends Transparent{
 	public function __construct($meta = 0){
@@ -43,6 +46,14 @@ class Cactus extends Transparent{
 			$this->y + 1,
 			$this->z + 0.9375
 		);
+	}
+
+	public function onEntityCollide(Entity $entity){
+		$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_CONTACT, 1);
+		Server::getInstance()->getPluginManager()->callEvent($ev);
+		if(!$ev->isCancelled()){
+			$entity->attack($ev->getFinalDamage(), $ev);
+		}
 	}
 
 	public function onUpdate($type){
