@@ -982,7 +982,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk = new StartGamePacket;
 		$pk->seed = $this->getLevel()->getSeed();
 		$pk->x = $this->x;
-		$pk->y = $this->y + 1.62;
+		$pk->y = $this->y + $this->getEyeHeight();
 		$pk->z = $this->z;
 		$pk->spawnX = (int) $spawnPosition->x;
 		$pk->spawnY = (int) $spawnPosition->y;
@@ -1393,7 +1393,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
 					$pk->x = $this->x;
-					$pk->y = $this->y + 1.62;
+					$pk->y = $this->y + $this->getEyeHeight();
 					$pk->z = $this->z;
 					$pk->bodyYaw = $this->yaw;
 					$pk->pitch = $this->pitch;
@@ -1567,7 +1567,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$nbt = new Compound("", [
 								"Pos" => new Enum("Pos", [
 										new Double("", $this->x),
-										new Double("", $this->y + 1.62),
+										new Double("", $this->y + $this->getEyeHeight()),
 										new Double("", $this->z)
 									]),
 								"Motion" => new Enum("Motion", [
@@ -2327,12 +2327,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$message = $this->getName() . " hit the ground too hard";
 				break;
 
-			case EntityDamageEvent::CAUSE_CONTACT:
 			case EntityDamageEvent::CAUSE_SUFFOCATION:
-			case EntityDamageEvent::CAUSE_FIRE:
-			case EntityDamageEvent::CAUSE_FIRE_TICK:
+				$message = $this->getName() . " suffocated in a wall";
+				break;
+
 			case EntityDamageEvent::CAUSE_LAVA:
+				$message = $this->getName() . " tried to swim in lava";
+				break;
+
+			case EntityDamageEvent::CAUSE_FIRE:
+				$message = $this->getName() . " went up in flames";
+				break;
+
+			case EntityDamageEvent::CAUSE_FIRE_TICK:
+				$message = $this->getName() . " burned to death";
+				break;
+
 			case EntityDamageEvent::CAUSE_DROWNING:
+				$message = $this->getName() . " drowned";
+				break;
+
+			case EntityDamageEvent::CAUSE_CONTACT:
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 			case EntityDamageEvent::CAUSE_MAGIC:
@@ -2423,7 +2438,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket;
 			$pk->eid = 0;
 			$pk->x = $this->x;
-			$pk->y = $this->y + 1.62; //teleport from head
+			$pk->y = $this->y + $this->getEyeHeight();
 			$pk->z = $this->z;
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;
