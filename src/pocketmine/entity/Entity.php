@@ -493,6 +493,11 @@ abstract class Entity extends Position implements Metadatable{
 				}
 				--$this->fireTicks;
 			}
+
+			if($this->fireTicks <= 0){
+				$this->extinguish();
+			}
+
 			$hasUpdate = true;
 		}
 
@@ -593,6 +598,11 @@ abstract class Entity extends Position implements Metadatable{
 		if($ticks > $this->fireTicks){
 			$this->fireTicks = $ticks;
 		}
+
+		$this->sendMetadata($this->hasSpawned);
+		if($this instanceof Player){
+			$this->sendMetadata($this);
+		}
 	}
 
 	public function getDirection(){
@@ -615,6 +625,10 @@ abstract class Entity extends Position implements Metadatable{
 
 	public function extinguish(){
 		$this->fireTicks = 0;
+		$this->sendMetadata($this->hasSpawned);
+		if($this instanceof Player){
+			$this->sendMetadata($this);
+		}
 	}
 
 	public function canTriggerWalking(){
