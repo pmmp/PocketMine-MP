@@ -25,6 +25,7 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
+use pocketmine\entity\Entity;
 
 class Ladder extends Transparent{
 	public function __construct($meta = 0){
@@ -32,6 +33,10 @@ class Ladder extends Transparent{
 		$this->isSolid = false;
 		$this->isFullBlock = false;
 		$this->hardness = 2;
+	}
+
+	public function onEntityCollide(Entity $entity){
+		$entity->fallDistance = 0;
 	}
 
 	public function getBoundingBox(){
