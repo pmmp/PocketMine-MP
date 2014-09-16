@@ -994,9 +994,9 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	protected function checkBlockCollision(){
-		$minX = floor($this->boundingBox->minX + 0.001);
-		$minY = floor($this->boundingBox->minY + 0.001);
-		$minZ = floor($this->boundingBox->minZ + 0.001);
+		$minX = floor($this->boundingBox->minX - 0.001);
+		$minY = floor($this->boundingBox->minY - 0.001);
+		$minZ = floor($this->boundingBox->minZ - 0.001);
 		$maxX = floor($this->boundingBox->maxX + 0.001);
 		$maxY = floor($this->boundingBox->maxY + 0.001);
 		$maxZ = floor($this->boundingBox->maxZ + 0.001);

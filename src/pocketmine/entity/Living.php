@@ -135,6 +135,8 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			$this->extinguish();
+		}else{
+			$this->airTicks = 300;
 		}
 
 		if($this->attackTime > 0){
