@@ -329,7 +329,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->server->getPluginManager()->callEvent($ev);
 
-		if($ev->isCancelled()){
+		if(!$force and $ev->isCancelled()){
 			return false;
 		}
 
