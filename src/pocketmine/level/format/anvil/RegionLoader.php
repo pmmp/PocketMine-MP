@@ -45,7 +45,6 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mca";
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
-		flock($this->filePointer, LOCK_EX);
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
 		if(!file_exists($this->filePath)){

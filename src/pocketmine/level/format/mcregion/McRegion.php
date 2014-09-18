@@ -191,7 +191,7 @@ class McRegion extends BaseLevelProvider{
 	public function unloadChunk($x, $z, $safe = true){
 		$chunk = $this->getChunk($x, $z, false);
 		if($chunk instanceof FullChunk){
-			if($safe === true and $this->isChunkLoaded($x, $z)){
+			if($safe === true){
 				foreach($chunk->getEntities() as $entity){
 					if($entity instanceof Player){
 						return false;
