@@ -77,6 +77,13 @@ namespace pocketmine {
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
 	const MINECRAFT_VERSION = "v0.9.5 alpha";
 
+	/*
+	 * Startup code. Do not look at it, it may harm you.
+	 * Most of them are hacks to fix date-related bugs, or basic functions used after this
+	 * This is the only non-class based file on this project.
+	 * Enjoy it as much as I did writing it. I don't want to do it again.
+	 */
+
 	if(\Phar::running(true) !== ""){
 		@define("pocketmine\\PATH", \Phar::running(true) . "/");
 	}else{
@@ -101,7 +108,6 @@ namespace pocketmine {
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "raklib");
 	$autoloader->register(true);
 
-	//Startup code. Do not look at it, it can harm you. Most of them are hacks to fix date-related bugs, or basic functions used after this
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
@@ -125,13 +131,13 @@ namespace pocketmine {
 		$daylight = (int) date("I");
 		$d = timezone_name_from_abbr("", $offset, $daylight);
 		@ini_set("date.timezone", $d);
-		date_default_timezone_set($d);
+		@date_default_timezone_set($d);
 	}else{
 		$d = @date_default_timezone_get();
 		if(strpos($d, "/") === false){
 			$d = timezone_name_from_abbr($d);
 			@ini_set("date.timezone", $d);
-			date_default_timezone_set($d);
+			@date_default_timezone_set($d);
 		}
 	}
 
