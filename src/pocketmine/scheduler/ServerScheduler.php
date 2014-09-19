@@ -56,7 +56,7 @@ class ServerScheduler{
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new \Pool(self::$WORKERS, "pocketmine\\scheduler\\AsyncWorker");
+		$this->asyncPool = new \Pool(self::$WORKERS, AsyncWorker::class);
 	}
 
 	/**
@@ -145,6 +145,8 @@ class ServerScheduler{
 		$this->tasks = [];
 		$this->asyncPool->shutdown();
 		$this->asyncTasks = 0;
+		$this->queue = new ReversePriorityQueue();
+		$this->asyncPool = new \Pool(self::$WORKERS, AsyncWorker::class);
 	}
 
 	/**

@@ -140,7 +140,7 @@ class Chunk extends BaseChunk{
 			return null;
 		}
 
-		return new Chunk($provider instanceof LevelProvider ? $provider : "pocketmine\\level\\format\\anvil\\Anvil", $chunk->Level);
+		return new Chunk($provider instanceof LevelProvider ? $provider : Anvil::class, $chunk->Level);
 	}
 
 	public function toBinary(){

@@ -30,7 +30,7 @@ abstract class Generator{
 	private static $list = [];
 
 	public static function addGenerator($object, $name){
-		if(is_subclass_of($object, "pocketmine\\level\\generator\\Generator") and !isset(Generator::$list[$name = strtolower($name)])){
+		if(is_subclass_of($object, Generator::class) and !isset(Generator::$list[$name = strtolower($name)])){
 			Generator::$list[$name] = $object;
 
 			return true;
@@ -44,7 +44,7 @@ abstract class Generator{
 			return Generator::$list[$name];
 		}
 
-		return "pocketmine\\level\\generator\\Normal";
+		return Normal::class;
 	}
 
 	public static function getGeneratorName($class){

@@ -95,12 +95,12 @@ class PluginDescription{
 		}
 		if(isset($plugin["load"])){
 			$order = strtoupper($plugin["load"]);
-			if(!defined("pocketmine\\plugin\\PluginLoadOrder::" . $order)){
+			if(!defined(PluginLoadOrder::class . T_DOUBLE_COLON . $order)){
 				trigger_error("Invalid PluginDescription load", E_USER_ERROR);
 
 				return;
 			}else{
-				$this->order = constant("pocketmine\\plugin\\PluginLoadOrder::" . $order);
+				$this->order = constant(PluginLoadOrder::class . T_DOUBLE_COLON . $order);
 			}
 		}
 		$this->authors = [];

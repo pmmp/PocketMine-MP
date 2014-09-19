@@ -22,6 +22,7 @@
 namespace pocketmine;
 
 use pocketmine\network\protocol\Info;
+use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
@@ -179,7 +180,7 @@ class CrashDump{
 			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
 			$this->data["plugin"] = true;
 
-			$reflection = new \ReflectionClass("pocketmine\\plugin\\PluginBase");
+			$reflection = new \ReflectionClass(PluginBase::class);
 			$file = $reflection->getProperty("file");
 			$file->setAccessible(true);
 			foreach($this->server->getPluginManager()->getPlugins() as $plugin){

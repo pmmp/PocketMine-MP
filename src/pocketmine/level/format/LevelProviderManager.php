@@ -33,7 +33,7 @@ abstract class LevelProviderManager{
 	 * @throws \Exception
 	 */
 	public static function addProvider(Server $server, $class){
-		if(!is_subclass_of($class, "pocketmine\\level\\format\\LevelProvider")){
+		if(!is_subclass_of($class, LevelProvider::class)){
 			throw new \Exception("Class is not a subclass of LevelProvider");
 		}
 		self::$providers[strtolower($class::getProviderName())] = $class;

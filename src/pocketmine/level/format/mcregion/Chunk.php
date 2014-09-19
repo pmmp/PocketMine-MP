@@ -254,7 +254,7 @@ class Chunk extends BaseFullChunk{
 			return null;
 		}
 
-		return new Chunk($provider instanceof LevelProvider ? $provider : "pocketmine\\level\\format\\mcregion\\McRegion", $chunk->Level);
+		return new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, $chunk->Level);
 	}
 
 	public function toBinary(){

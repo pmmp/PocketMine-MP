@@ -44,7 +44,7 @@ class GenerationChunkManager implements ChunkManager{
 	protected $changes = [];
 
 	public function __construct(GenerationManager $manager, $levelID, $seed, $class, array $options){
-		if(!class_exists($class, true) or !is_subclass_of($class, "pocketmine\\level\\generator\\Generator")){
+		if(!class_exists($class, true) or !is_subclass_of($class, Generator::class)){
 			throw new \Exception("Class $class does not exists or is not a subclass of Generator");
 		}
 

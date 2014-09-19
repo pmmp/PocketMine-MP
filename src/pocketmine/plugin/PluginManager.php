@@ -118,7 +118,7 @@ class PluginManager{
 	 * @return boolean
 	 */
 	public function registerInterface($loaderName){
-		if(is_subclass_of($loaderName, "pocketmine\\plugin\\PluginLoader")){
+		if(is_subclass_of($loaderName, PluginLoader::class)){
 			$loader = new $loaderName($this->server);
 		}else{
 			return false;
@@ -676,8 +676,8 @@ class PluginManager{
 				$ignoreCancelled = false;
 				if(preg_match("/^[\t ]*\\* @priority[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
 					$matches[1] = strtoupper($matches[1]);
-					if(defined("pocketmine\\event\\EventPriority::" . $matches[1])){
-						$priority = constant("pocketmine\\event\\EventPriority::" . $matches[1]);
+					if(defined(EventPriority::class . T_DOUBLE_COLON . $matches[1])){
+						$priority = constant(EventPriority::class . T_DOUBLE_COLON . $matches[1]);
 					}
 				}
 				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
@@ -690,7 +690,7 @@ class PluginManager{
 				}
 
 				$parameters = $method->getParameters();
-				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), "pocketmine\\event\\Event")){
+				if(count($parameters) === 1 and $parameters[0]->getClass() instanceof \ReflectionClass and is_subclass_of($parameters[0]->getClass()->getName(), Event::class)){
 					$class = $parameters[0]->getClass()->getName();
 					$reflection = new \ReflectionClass($class);
 					if(preg_match("/^[\t ]*\\* @deprecated[\t ]{1,}$/m", (string) $reflection->getDocComment(), $matches) > 0 and $this->server->getProperty("settings.deprecated-verbose", true)){
@@ -713,7 +713,7 @@ class PluginManager{
 	 * @throws \Exception
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
-		if(!is_subclass_of($event, "pocketmine\\event\\Event") or (new \ReflectionClass($event))->isAbstract()){
+		if(!is_subclass_of($event, Event::class) or (new \ReflectionClass($event))->isAbstract()){
 			throw new \Exception($event . " is not a valid Event");
 		}
 

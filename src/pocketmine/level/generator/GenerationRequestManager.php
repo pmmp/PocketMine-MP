@@ -130,7 +130,6 @@ class GenerationRequestManager{
 	public function shutdown(){
 		$buffer = chr(GenerationManager::PACKET_SHUTDOWN);
 		$this->generationThread->pushMainToThreadPacket($buffer);
-		$this->generationThread->join();
 	}
 
 

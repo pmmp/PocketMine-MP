@@ -236,7 +236,7 @@ class Level implements ChunkManager, Metadatable{
 
 		/** @var LevelProvider $provider */
 
-		if(is_subclass_of($provider, "pocketmine\\level\\format\\LevelProvider", true)){
+		if(is_subclass_of($provider, LevelProvider::class, true)){
 			$this->provider = new $provider($this, $path);
 		}else{
 			throw new \Exception("Provider is not a subclass of LevelProvider");

@@ -42,9 +42,13 @@ use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
+use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\LevelProviderManager;
+use pocketmine\level\format\mcregion\McRegion;
+use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
@@ -77,6 +81,7 @@ use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Cache;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
@@ -1057,7 +1062,7 @@ class Server{
 
 		$seed = $seed === null ? Binary::readInt(Utils::getRandomBytes(4, false)) : (int) $seed;
 
-		if($generator !== null and class_exists($generator) and is_subclass_of($generator, "pocketmine\\level\\generator\\Generator")){
+		if($generator !== null and class_exists($generator) and is_subclass_of($generator, Generator::class)){
 			$generator = new $generator($options);
 		}else{
 			$options["preset"] = $this->getConfigString("generator-settings", "");
@@ -1524,7 +1529,7 @@ class Server{
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
 		$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 		$this->pluginManager->setUseTimings($this->getProperty("settings.enable-profiling", false));
-		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
+		$this->pluginManager->registerInterface(PharPluginLoader::class);
 
 		set_exception_handler([$this, "exceptionHandler"]);
 		register_shutdown_function([$this, "crashDump"]);
@@ -1538,13 +1543,13 @@ class Server{
 
 		$this->generationManager = new GenerationRequestManager($this);
 
-		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\anvil\\Anvil");
-		LevelProviderManager::addProvider($this, "pocketmine\\level\\format\\mcregion\\McRegion");
+		LevelProviderManager::addProvider($this, Anvil::class);
+		LevelProviderManager::addProvider($this, McRegion::class);
 
 
-		Generator::addGenerator("pocketmine\\level\\generator\\Flat", "flat");
-		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "normal");
-		Generator::addGenerator("pocketmine\\level\\generator\\Normal", "default");
+		Generator::addGenerator(Flat::class, "flat");
+		Generator::addGenerator(Normal::class, "normal");
+		Generator::addGenerator(Normal::class, "default");
 
 		//Temporal workaround, pthreads static property nullification test
 		if(PluginManager::$pluginParentTimer === null){
@@ -1595,7 +1600,7 @@ class Server{
 			return;
 		}
 
-		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask("pocketmine\\utils\\Cache::cleanup"), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
+		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([Cache::class, "cleanup"]), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
 		if($this->getConfigBoolean("auto-save", true) === true and $this->getProperty("ticks-per.autosave", 6000) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
@@ -1760,7 +1765,7 @@ class Server{
 		$this->operators->reload();
 
 
-		$this->pluginManager->registerInterface("pocketmine\\plugin\\PharPluginLoader");
+		$this->pluginManager->registerInterface(PharPluginLoader::class);
 		$this->pluginManager->loadPlugins($this->pluginPath);
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);

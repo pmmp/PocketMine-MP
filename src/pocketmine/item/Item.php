@@ -485,8 +485,8 @@ class Item{
 				$meta = ((int) $b[1]) & 0xFFFF;
 			}
 
-			if(defined("pocketmine\\item\\Item::" . strtoupper($b[0]))){
-				$item = self::get(constant("pocketmine\\item\\Item::" . strtoupper($b[0])), $meta);
+			if(defined(Item::class . T_DOUBLE_COLON . strtoupper($b[0]))){
+				$item = self::get(constant(Item::class . T_DOUBLE_COLON . strtoupper($b[0])), $meta);
 				if($item->getID() === self::AIR and strtoupper($b[0]) !== "AIR"){
 					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 				}
