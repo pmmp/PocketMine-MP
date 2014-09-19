@@ -2011,6 +2011,7 @@ class Server{
 			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . ":" . $this->getPort()), 0, 8)),
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
+			"name" => $this->getName(),
 			"memory_total" => $this->getConfigString("memory-limit"),
 			"memory_usage" => memory_get_usage(),
 			"php_version" => PHP_VERSION,
