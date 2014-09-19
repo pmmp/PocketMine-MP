@@ -2014,7 +2014,7 @@ class Server{
 			"memory_total" => $this->getConfigString("memory-limit"),
 			"memory_usage" => memory_get_usage(),
 			"php_version" => PHP_VERSION,
-			"version" => $version->get(false),
+			"version" => $version->get(true),
 			"build" => $version->getBuild(),
 			"mc_version" => \pocketmine\MINECRAFT_VERSION,
 			"protocol" => network\protocol\Info::CURRENT_PROTOCOL,
