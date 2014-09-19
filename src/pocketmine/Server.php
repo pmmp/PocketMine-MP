@@ -1714,8 +1714,14 @@ class Server{
 	 * @param string        $commandLine
 	 *
 	 * @return bool
+	 *
+	 * @throws \Exception
 	 */
 	public function dispatchCommand(CommandSender $sender, $commandLine){
+		if(!($sender instanceof CommandSender)){
+			throw new \Exception("CommandSender is not valid");
+		}
+
 		if($this->commandMap->dispatch($sender, $commandLine)){
 			return true;
 		}
