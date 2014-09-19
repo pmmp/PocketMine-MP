@@ -228,7 +228,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if($this->spawned === true and $player->getLevel() === $this->getLevel() and $player->canSee($this)){
+		if($this->spawned === true and $this->dead !== true and $player->getLevel() === $this->getLevel() and $player->canSee($this)){
 			parent::spawnTo($player);
 		}
 	}
@@ -237,7 +237,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param Player $player
 	 */
 	public function despawnFrom(Player $player){
-		if($this->spawned === true){
+		if($this->spawned === true and $this->dead !== true){
 			parent::despawnFrom($player);
 		}
 	}
@@ -1085,7 +1085,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function onUpdate(){
-		if($this->spawned === false){
+		if($this->spawned === false or $this->dead === true){
 			return true;
 		}
 		$hasUpdate = $this->entityBaseTick();
@@ -1128,6 +1128,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -1325,20 +1327,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				break;
 			case ProtocolInfo::ROTATE_HEAD_PACKET:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->dead === true){
 					break;
 				}
 				$this->setRotation($packet->yaw, $this->pitch);
 				break;
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
-				if($this->spawned === false){
-					break;
-				}
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
 				$oldPos = new Vector3($this->x, $this->y, $this->z);
 
-				$revert = false;
+				$revert = ($this->dead === true or $this->spawned !== true);
 
 				if($this->forceMovement instanceof Vector3 and $newPos->distance($this->forceMovement) > 0.1){
 					$revert = true;
@@ -1407,7 +1406,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				break;
 			case ProtocolInfo::PLAYER_EQUIPMENT_PACKET:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->dead === true){
 					break;
 				}
 
@@ -1685,7 +1684,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			case ProtocolInfo::INTERACT_PACKET:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->dead === true){
 					break;
 				}
 
@@ -1806,7 +1805,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				break;
 			case ProtocolInfo::ANIMATE_PACKET:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->dead === true){
 					break;
 				}
 
@@ -1929,7 +1928,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			case ProtocolInfo::MESSAGE_PACKET:
-				if($this->spawned === false){
+				if($this->spawned === false or $this->dead === true){
 					break;
 				}
 				$this->craftingType = 0;
