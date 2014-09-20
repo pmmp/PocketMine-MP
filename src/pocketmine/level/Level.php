@@ -969,6 +969,7 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * Tries to break a block using a item, including Player time checks if available
+	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
 	 * @param Vector3 $vector
 	 * @param Item    &$item (if null, can break anything)
