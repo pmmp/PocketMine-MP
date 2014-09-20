@@ -44,6 +44,7 @@ use pocketmine\block\Sapling;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\Wheat;
+use pocketmine\entity\Arrow;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -1133,8 +1134,19 @@ class Level implements ChunkManager, Metadatable{
 			//$face = -1;
 		}
 
-		if($hand->isSolid === true and $hand->getBoundingBox() !== null and count($this->getCollidingEntities($hand->getBoundingBox())) > 0){
-			return false; //Entity in block
+		if($hand->isSolid === true and $hand->getBoundingBox() !== null){
+			$entities = $this->getCollidingEntities($hand->getBoundingBox());
+			$realCount = 0;
+			foreach($entities as $e){
+				if($e instanceof Arrow or $e instanceof DroppedItem){
+					continue;
+				}
+				++$realCount;
+			}
+
+			if($realCount > 0){
+				return false; //Entity in block
+			}
 		}
 
 
