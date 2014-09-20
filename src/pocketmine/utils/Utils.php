@@ -75,7 +75,7 @@ class Utils{
 				$machine .= implode(" ", $matches[1]); //Mac Addresses
 			}
 		}elseif($os === "linux"){
-			@exec("ifconfig /ALL", $mac);
+			@exec("ifconfig", $mac);
 			$mac = implode("\n", $mac);
 			if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
 				foreach($matches[1] as $i => $v){
