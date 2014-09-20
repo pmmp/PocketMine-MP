@@ -2008,7 +2008,7 @@ class Server{
 
 		$version = new VersionString();
 		$this->lastSendUsage = new SendUsageTask("http://stats.pocketmine.net/usage.php", [
-			"serverid" => Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . ":" . $this->getPort()), 0, 8)),
+			"serverid" => $this->serverID,
 			"port" => $this->getPort(),
 			"os" => Utils::getOS(),
 			"name" => $this->getName(),

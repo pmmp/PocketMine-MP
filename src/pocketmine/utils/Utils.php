@@ -59,15 +59,27 @@ class Utils{
 	 */
 	public static function getUniqueID($raw = false, $extra = ""){
 		$machine = php_uname("a");
-		$machine .= file_exists("/proc/cpuinfo") ? file_get_contents("/proc/cpuinfo") : "";
+		$machine .= file_exists("/proc/cpuinfo") ? `cat /proc/cpuinfo | grep "model name"`: "";
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
-		if(Utils::getOS() == "win"){
-			exec("ipconfig /ALL", $mac);
+		$os = Utils::getOS();
+		if($os === "win"){
+			@exec("ipconfig /ALL", $mac);
 			$mac = implode("\n", $mac);
-			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\-]{17})#", $mac, $matches)){
+			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches)){
 				foreach($matches[1] as $i => $v){
 					if($v == "00-00-00-00-00-00"){
+						unset($matches[1][$i]);
+					}
+				}
+				$machine .= implode(" ", $matches[1]); //Mac Addresses
+			}
+		}elseif($os === "linux"){
+			@exec("ifconfig /ALL", $mac);
+			$mac = implode("\n", $mac);
+			if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
+				foreach($matches[1] as $i => $v){
+					if($v == "00:00:00:00:00:00"){
 						unset($matches[1][$i]);
 					}
 				}
