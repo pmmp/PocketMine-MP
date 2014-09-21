@@ -35,7 +35,7 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 * If your comment is a voting comment, specify the reason of your vote or it won't be counted.
 * After voting has been closed, no further votes will be counted.
 * An RFC will be rejected if less than 50% + 1 (simple majority) has voted Yes.
-* If the RFC is approved, Team Members have the final word on it's implementation or rejection.
+* If the RFC is approved, Team Members have the final word on its implementation or rejection.
 * RFCs with complex voting options will specify the vote percentage or other details.
 
 
