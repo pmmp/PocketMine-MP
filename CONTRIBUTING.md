@@ -27,6 +27,17 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 * Use descriptive commit titles
 * __No merge commits are allowed, or multiple features per pull request__
 
+## RFC and voting
+* These are big Pull Request or contributions that changes important behaviour.
+* A vote will be held. All users can vote commenting on the Pull Request
+* Comments MUST use Yes or No to signify the vote, on the FIRST sentence, except they don't want it to be counted.
+* If your comment is a voting comment, specify the reason of your vote or it won't be counted.
+* After voting has been closed, no further votes will be counted.
+* An RFC will be rejected if less than 50% + 1 (simple majority) has voted Yes.
+* If the RFC is approved, Team Members have the final word on it's implementation or rejection.
+* RFCs with complex voting options will specify the vote percentage or other details.
+
+
 **Thanks for contributing to PocketMine-MP!**
 
 ### Code Syntax
