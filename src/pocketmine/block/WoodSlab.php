@@ -91,7 +91,7 @@ class WoodSlab extends Transparent{
 
 				return true;
 			}
-		}elseif(!($player instanceof Player)){ //TODO: collision
+		}else{ //TODO: collision
 			if($block->getID() === self::WOOD_SLAB){
 				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->meta), true);
@@ -105,9 +105,8 @@ class WoodSlab extends Transparent{
 					$this->meta |= 0x08;
 				}
 			}
-		}else{
-			return false;
 		}
+		
 		if($block->getID() === self::WOOD_SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}

@@ -94,7 +94,7 @@ class Slab extends Transparent{
 				return true;
 			}
 			//TODO: check for collision
-		}elseif(!($player instanceof Player)){
+		}else{
 			if($block->getID() === self::SLAB){
 				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
 					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
@@ -108,9 +108,8 @@ class Slab extends Transparent{
 					$this->meta |= 0x08;
 				}
 			}
-		}else{
-			return false;
 		}
+
 		if($block->getID() === self::SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}
