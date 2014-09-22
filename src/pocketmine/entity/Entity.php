@@ -39,6 +39,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Math;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -752,19 +753,12 @@ abstract class Entity extends Position implements Metadatable{
 			$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
 			$block = $this->getLevel()->getBlock((new Vector3($this->x + $x, $this->y + $this->getEyeHeight() + $y, $this->z + $z))->floor());
 
-			if($block->isSolid){
+			$bb = $block->getBoundingBox();
+
+			if($bb !== null and $block->isSolid and $bb->intersectsWith($this->getBoundingBox())){
 				return true;
 			}
 		}
-		return false;
-
-		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
-
-		if($block instanceof Water){
-			$f = ($pos->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
-			return $y < $f;
-		}
-
 		return false;
 	}
 
@@ -994,12 +988,12 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	protected function checkBlockCollision(){
-		$minX = floor($this->boundingBox->minX - 0.001);
-		$minY = floor($this->boundingBox->minY - 0.001);
-		$minZ = floor($this->boundingBox->minZ - 0.001);
-		$maxX = floor($this->boundingBox->maxX + 0.001);
-		$maxY = floor($this->boundingBox->maxY + 0.001);
-		$maxZ = floor($this->boundingBox->maxZ + 0.001);
+		$minX = Math::floorFloat($this->boundingBox->minX - 0.001);
+		$minY = Math::floorFloat($this->boundingBox->minY - 0.001);
+		$minZ = Math::floorFloat($this->boundingBox->minZ - 0.001);
+		$maxX = Math::floorFloat($this->boundingBox->maxX + 0.001);
+		$maxY = Math::floorFloat($this->boundingBox->maxY + 0.001);
+		$maxZ = Math::floorFloat($this->boundingBox->maxZ + 0.001);
 
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){

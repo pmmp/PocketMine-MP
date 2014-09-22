@@ -67,6 +67,7 @@ use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Math;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
@@ -700,12 +701,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block[]
 	 */
 	public function getCollisionBlocks(AxisAlignedBB $bb){
-		$minX = floor($bb->minX);
-		$minY = floor($bb->minY);
-		$minZ = floor($bb->minZ);
-		$maxX = floor($bb->maxX + 1);
-		$maxY = floor($bb->maxY + 1);
-		$maxZ = floor($bb->maxZ + 1);
+		$minX = Math::floorFloat($bb->minX);
+		$minY = Math::floorFloat($bb->minY);
+		$minZ = Math::floorFloat($bb->minZ);
+		$maxX = Math::floorFloat($bb->maxX + 1);
+		$maxY = Math::floorFloat($bb->maxY + 1);
+		$maxZ = Math::floorFloat($bb->maxZ + 1);
 
 		$collides = [];
 
@@ -738,12 +739,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return AxisAlignedBB[]
 	 */
 	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb){
-		$minX = floor($bb->minX);
-		$minY = floor($bb->minY);
-		$minZ = floor($bb->minZ);
-		$maxX = floor($bb->maxX + 1);
-		$maxY = floor($bb->maxY + 1);
-		$maxZ = floor($bb->maxZ + 1);
+		$minX = Math::floorFloat($bb->minX);
+		$minY = Math::floorFloat($bb->minY);
+		$minZ = Math::floorFloat($bb->minZ);
+		$maxX = Math::floorFloat($bb->maxX + 1);
+		$maxY = Math::floorFloat($bb->maxY + 1);
+		$maxZ = Math::floorFloat($bb->maxZ + 1);
 
 		$collides = [];
 

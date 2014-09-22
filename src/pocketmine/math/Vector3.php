@@ -123,7 +123,7 @@ class Vector3{
 	}
 
 	public function floor(){
-		return new Vector3((int) $this->x, (int) $this->y, (int) $this->z);
+		return new Vector3(Math::floorFloat($this->x), Math::floorFloat($this->y), Math::floorFloat($this->z));
 	}
 
 	public function round(){

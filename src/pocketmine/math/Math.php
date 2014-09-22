@@ -27,4 +27,8 @@ namespace pocketmine\math;
 
 abstract class Math{
 
+	public static function floorFloat($n){
+		$i = (int) $n;
+		return $n >= $i ? $i : $i - 1;
+	}
 }

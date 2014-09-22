@@ -69,6 +69,16 @@ class FallingBlock extends Entity{
 			return false;
 		}
 
+		if($this->ticksLived === 1){
+			$block = $this->level->getBlock($this->floor());
+			if($block->getID() != $this->blockId){
+				$this->kill();
+				return true;
+			}
+			$this->level->setBlock($this->floor(), Block::get(0, true));
+
+		}
+
 		$this->motionY -= $this->gravity;
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
@@ -80,16 +90,6 @@ class FallingBlock extends Entity{
 		$this->motionZ *= $friction;
 
 		$pos = $this->floor();
-
-		if($this->ticksLived === 1){
-			$block = $this->level->getBlock($pos);
-			if($block->getID() != $this->blockId){
-				$this->kill();
-				return true;
-			}
-			$this->level->setBlock($pos, Block::get(0, true));
-
-		}
 
 		if($this->onGround){
 			$this->kill();
