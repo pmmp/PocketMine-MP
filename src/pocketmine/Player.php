@@ -296,6 +296,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
+	public function canCollideWith(Entity $entity){
+		return false;
+	}
+
 	/**
 	 * @return bool
 	 */
