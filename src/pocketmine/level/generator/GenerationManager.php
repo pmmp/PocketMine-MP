@@ -100,8 +100,6 @@ class GenerationManager{
 	/** @var GenerationChunkManager[] */
 	protected $levels = [];
 
-	protected $generatedQueue = [];
-
 	/** @var array */
 	protected $requestQueue = [];
 
@@ -145,15 +143,13 @@ class GenerationManager{
 	protected function openLevel($levelID, $seed, $class, array $options){
 		if(!isset($this->levels[$levelID])){
 			$this->levels[$levelID] = new GenerationChunkManager($this, $levelID, $seed, $class, $options);
-			$this->generatedQueue[$levelID] = [];
 		}
 	}
 
 	protected function generateChunk($levelID, $chunkX, $chunkZ){
-		if(isset($this->levels[$levelID]) and !isset($this->generatedQueue[$levelID][$index = Level::chunkHash($chunkX, $chunkZ)])){
+		if(isset($this->levels[$levelID])){
 			$this->levels[$levelID]->populateChunk($chunkX, $chunkZ); //Request population directly
 			if(isset($this->levels[$levelID])){
-				$this->generatedQueue[$levelID][$index] = true;
 				foreach($this->levels[$levelID]->getChangedChunks() as $index => $chunk){
 					if($chunk->isPopulated()){
 						$this->sendChunk($levelID, $chunk);
@@ -161,11 +157,8 @@ class GenerationManager{
 					}
 				}
 
-				if(count($this->generatedQueue[$levelID]) > 4){
-					$this->levels[$levelID]->doGarbageCollection();
-					$this->generatedQueue[$levelID] = [];
-					$this->levels[$levelID]->cleanChangedChunks();
-				}
+				$this->levels[$levelID]->doGarbageCollection();
+				$this->levels[$levelID]->cleanChangedChunks();
 			}
 		}
 	}
@@ -174,7 +167,6 @@ class GenerationManager{
 		if(!isset($this->levels[$levelID])){
 			$this->levels[$levelID]->shutdown();
 			unset($this->levels[$levelID]);
-			unset($this->generatedQueue[$levelID]);
 		}
 	}
 

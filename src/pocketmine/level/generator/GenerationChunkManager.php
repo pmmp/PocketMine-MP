@@ -83,7 +83,6 @@ class GenerationChunkManager implements ChunkManager{
 		if($chunk === null){
 			throw new \Exception("null chunk received");
 		}
-		$this->changes[$index] = $chunk;
 
 		return $chunk;
 	}
@@ -104,12 +103,17 @@ class GenerationChunkManager implements ChunkManager{
 	}
 
 	public function doGarbageCollection(){
+		$count = 0;
+
 		foreach($this->chunks as $index => $chunk){
 			if(!isset($this->changes[$index]) or $chunk->isPopulated()){
 				unset($this->chunks[$index]);
 				unset($this->changes[$index]);
+				++$count;
 			}
 		}
+
+		return $count;
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -154,19 +158,18 @@ class GenerationChunkManager implements ChunkManager{
 	}
 
 	public function setChunkGenerated($chunkX, $chunkZ){
-		$chunk = $this->getChunk($chunkX, $chunkZ);
-		$chunk->setGenerated(true);
 		try{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setGenerated(true);
+			$this->changes["$chunkX:$chunkZ"] = $chunk;
 		}catch(\Exception $e){}
 	}
 
 	public function setChunkPopulated($chunkX, $chunkZ){
-
 		try{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setPopulated(true);
+			$this->changes["$chunkX:$chunkZ"] = $chunk;
 		}catch(\Exception $e){}
 	}
 
