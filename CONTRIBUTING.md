@@ -27,10 +27,10 @@ You must follow these guidelines if you wish to contribute to the PocketMine-MP 
 * Use descriptive commit titles
 * __No merge commits are allowed, or multiple features per pull request__
 
-## RFC and voting
+## RFC and Voting
 * These are big Pull Requests or contributions that change important behavior.
 * RFCs will be tagged with the *PR: RFC* label
-* A vote will be held. All users can vote commenting on the Pull Request
+* A vote will be held once the RFC is ready. All users can vote commenting on the Pull Request
 * Comments MUST use "Yes" or "No" on the FIRST sentence to signify the vote, except when they don't want it to be counted.
 * If your comment is a voting comment, specify the reason of your vote or it won't be counted.
 * After voting has been closed, no further votes will be counted.
@@ -103,6 +103,7 @@ Category labels are prefixed by `C:`. Multiple category labels may be applied to
 Pull Requests are prefixed by `PR:`. Only one label may be applied for a Pull Request.
  - PR: Bug Fix - This label is applied when the Pull Request fixes a bug. 
  - PR: Contribution - This label is applied when the Pull Request contributes code to PocketMine-MP such as a new feature or an improvement.
+ - PR: RFC - Request for Comments
 
 #### Status
 Status labels show the status of the issue. Multiple status labels may be applied.
