@@ -1843,6 +1843,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->setHealth(20);
 				$this->dead = false;
 				$this->sendMetadata($this->getViewers());
+				$this->sendMetadata($this);
 
 				$this->sendSettings();
 				$this->inventory->sendContents($this);
