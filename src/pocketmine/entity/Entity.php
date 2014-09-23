@@ -755,7 +755,7 @@ abstract class Entity extends Position implements Metadatable{
 
 			$bb = $block->getBoundingBox();
 
-			if($bb !== null and $block->isSolid and $bb->intersectsWith($this->getBoundingBox())){
+			if($bb !== null and $block->isSolid and !$block->isTransparent and $bb->intersectsWith($this->getBoundingBox())){
 				return true;
 			}
 		}
