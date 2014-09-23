@@ -1851,9 +1851,9 @@ class Level implements ChunkManager, Metadatable{
 			$spawn = $this->getSpawn();
 		}
 		if($spawn instanceof Vector3){
-			$x = (int) round($spawn->x);
-			$y = (int) round($spawn->y);
-			$z = (int) round($spawn->z);
+			$x = Math::floorFloat($spawn->x);
+			$y = Math::floorFloat($spawn->y);
+			$z = Math::floorFloat($spawn->z);
 			for(; $y > 0; --$y){
 				$v = new Vector3($x, $y, $z);
 				$b = $this->getBlock($v->getSide(0));
@@ -1867,14 +1867,14 @@ class Level implements ChunkManager, Metadatable{
 				$v = new Vector3($x, $y, $z);
 				if($this->getBlock($v->getSide(1)) instanceof Air){
 					if($this->getBlock($v) instanceof Air){
-						return new Position($x, $y, $z, $this);
+						return new Position($spawn->x, $y === Math::floorFloat($spawn->y) ? $spawn->y : $y, $spawn->z, $this);
 					}
 				}else{
 					++$y;
 				}
 			}
 
-			return new Position($x, $y, $z, $this);
+			return new Position($spawn->x, $y, $spawn->z, $this);
 		}
 
 		return false;
