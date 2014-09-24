@@ -62,7 +62,8 @@ abstract class Living extends Entity implements Damageable{
 
 	public function hasLineOfSight(Entity $entity){
 		//TODO: head height
-		return $this->getLevel()->rayTraceBlocks(new Vector3($this->x, $this->y + $this->height, $this->z), new Vector3($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+		return true;
+		//return $this->getLevel()->rayTraceBlocks(new Vector3($this->x, $this->y + $this->height, $this->z), new Vector3($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
@@ -78,19 +79,38 @@ abstract class Living extends Entity implements Damageable{
 		$pk->event = 2; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
 		$this->setLastDamageCause($source);
-		$motion = new Vector3(0, 0, 0);
+
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			$deltaX = $this->x - $e->x;
 			$deltaZ = $this->z - $e->z;
 			$yaw = atan2($deltaX, $deltaZ);
-			$motion->x = sin($yaw) * 0.5;
-			$motion->z = cos($yaw) * 0.5;
+			$this->knockBack($e, $damage, sin($yaw), cos($yaw));
 		}
-		$this->setMotion($motion);
+
 		$this->setHealth($this->getHealth() - $damage);
 
 		$this->attackTime = 10; //0.5 seconds cooldown
+	}
+
+	public function knockBack(Entity $attacker, $damage, $x, $z){
+		$f = sqrt($x ** 2 + $z ** 2);
+		$base = 0.4;
+
+		$motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
+
+		$motion->x /= 2;
+		$motion->y /= 2;
+		$motion->z /= 2;
+		$motion->x += ($x / $f) * $base;
+		$motion->y += $base;
+		$motion->z += ($z / $f) * $base;
+
+		if($motion->y > $base){
+			$motion->y = $base;
+		}
+
+		$this->setMotion($motion);
 	}
 
 	public function heal($amount){
