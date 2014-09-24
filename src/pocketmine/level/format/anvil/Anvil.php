@@ -98,20 +98,12 @@ class Anvil extends McRegion{
 
 		$chunk->setProvider($this);
 
-		if($chunk->isPopulated() === false){
-			$this->unloadChunk($chunkX, $chunkZ, false);
-			$regionX = $regionZ = null;
-			self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-			$this->loadRegion($regionX, $regionZ);
-			$region = $this->getRegion($regionX, $regionZ);
-			$region->removeChunk($chunkX - $region->getX() * 32, $chunkZ - $region->getZ() * 32);
-			$this->loadChunk($chunkX, $chunkZ);
-		}else{
-			$chunk->setX($chunkX);
-			$chunk->setZ($chunkZ);
-			$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
-			//$this->saveChunk($chunkX, $chunkZ);
-		}
+		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
+		$this->loadRegion($regionX, $regionZ);
+
+		$chunk->setX($chunkX);
+		$chunk->setZ($chunkZ);
+		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
 	public static function createChunkSection($Y){

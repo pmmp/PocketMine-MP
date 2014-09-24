@@ -288,10 +288,8 @@ class Chunk extends BaseFullChunk{
 
 		$tiles = [];
 		foreach($this->getTiles() as $tile){
-			if($tile->closed !== true){
-				$tile->saveNBT();
-				$tiles[] = $tile->namedtag;
-			}
+			$tile->saveNBT();
+			$tiles[] = $tile->namedtag;
 		}
 
 		$nbt->Entities = new Enum("TileEntities", $tiles);

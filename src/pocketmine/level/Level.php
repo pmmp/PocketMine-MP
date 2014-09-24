@@ -1519,14 +1519,19 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function setChunk($x, $z, FullChunk $chunk){
+	public function setChunk($x, $z, FullChunk $chunk, $unload = true){
 		$index = Level::chunkHash($x, $z);
-		foreach($this->getUsingChunk($x, $z) as $player){
-			$player->unloadChunk($x, $z);
+		if($unload){
+			foreach($this->getUsingChunk($x, $z) as $player){
+				$player->unloadChunk($x, $z);
+			}
+			unset($this->chunks[$index]);
+			$this->provider->setChunk($x, $z, $chunk);
+			$this->loadChunk($x, $z);
+		}else{
+			$this->provider->setChunk($x, $z, $chunk);
+			$this->chunks[$index] = $chunk;
 		}
-		unset($this->chunks[$index]);
-		$this->provider->setChunk($x, $z, $chunk);
-		$this->loadChunk($x, $z);
 	}
 
 	/**
@@ -1800,10 +1805,8 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->doChunkUnload->startTiming();
 
-		if($this->getAutoSave()){
-			if(isset($this->chunks[$index])){
-				$this->provider->setChunk($x, $z, $this->chunks[$index]);
-			}
+		if($chunk instanceof FullChunk and $this->getAutoSave()){
+			$this->provider->setChunk($x, $z, $chunk);
 			$this->provider->saveChunk($x, $z);
 		}
 
