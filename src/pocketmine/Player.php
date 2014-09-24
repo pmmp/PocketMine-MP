@@ -165,6 +165,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	/** @var Player[] */
 	protected $hiddenPlayers = [];
 
+	/** @var Vector3 */
+	protected $newPosition;
+
 	private $viewDistance;
 	private $spawnPosition;
 	private $inAction = false;
@@ -410,6 +413,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
+		$this->newPosition = new Vector3(0, 0, 0);
 	}
 
 	/**
@@ -1088,10 +1092,80 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return -1;
 	}
 
+	public function processMovement(){
+		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
+			return;
+		}
+		$oldPos = new Vector3($this->x, $this->y, $this->z);
+		if($oldPos->distance($this->newPosition) == 0){
+			return;
+		}
+
+		$revert = false;
+
+		if($this->newPosition->distance($this) > 100){
+			$this->server->getLogger()->warning($this->getName()." moved too quickly!");
+			$revert = true;
+		}else{
+			if($this->chunk === null or !$this->chunk->isGenerated()){
+				$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
+				if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
+					$revert = true;
+				}
+			}
+		}
+
+		if(!$revert){
+			$dx = $this->newPosition->x - $this->x;
+			$dy = $this->newPosition->y - $this->y;
+			$dz = $this->newPosition->z - $this->z;
+
+			//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+			$revert = !$this->move($dx, $dy, $dz);
+
+			$diffX = $this->x - $this->newPosition->x;
+			$diffZ = $this->z - $this->newPosition->z;
+			$diffY = $this->y - $this->newPosition->y;
+			if($diffY > -0.5 or $diffY < 0.5){
+				$diffY = 0;
+			}
+
+			$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
+
+			if(!$revert and !$this->isSleeping() and $this->isSurvival()){
+				if($diff > 0.0625){
+					$revert = true;
+					$this->server->getLogger()->warning($this->getName()." moved wrongly!");
+				}elseif($diff > 0){
+					$revert = !$this->setPosition($this->newPosition);
+				}
+			}
+		}
+
+		if($revert){
+			$pk = new MovePlayerPacket();
+			$pk->eid = 0;
+			$pk->x = $this->x;
+			$pk->y = $this->y + $this->getEyeHeight();
+			$pk->z = $this->z;
+			$pk->bodyYaw = $this->yaw;
+			$pk->pitch = $this->pitch;
+			$pk->yaw = $this->yaw;
+			$pk->teleport = true;
+			$this->directDataPacket($pk);
+			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+		}else{
+			$this->forceMovement = null;
+		}
+	}
+
 	public function onUpdate(){
 		if($this->spawned === false or $this->dead === true){
 			return true;
 		}
+
+		$this->processMovement();
+
 		$hasUpdate = $this->entityBaseTick();
 		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
 			if($entity instanceof DroppedItem){
@@ -1339,29 +1413,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
-				$oldPos = new Vector3($this->x, $this->y, $this->z);
 
 				$revert = ($this->dead === true or $this->spawned !== true);
 
-				if($this->forceMovement instanceof Vector3 and $newPos->distance($this->forceMovement) > 0.1){
-					$revert = true;
-				}elseif($newPos->distance($this) > 100){
-					$this->server->getLogger()->warning($this->getName()." moved too quickly!");
-					$revert = true;
+				if($revert or ($this->forceMovement instanceof Vector3 and $newPos->distance($this->forceMovement) > 0.1)){
+					$pk = new MovePlayerPacket();
+					$pk->eid = 0;
+					$pk->x = $this->x;
+					$pk->y = $this->y + $this->getEyeHeight();
+					$pk->z = $this->z;
+					$pk->bodyYaw = $this->yaw;
+					$pk->pitch = $this->pitch;
+					$pk->yaw = $this->yaw;
+					$pk->teleport = true;
+					$this->directDataPacket($pk);
 				}else{
-					if($this->chunk === null or !$this->chunk->isGenerated()){
-						$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
-						if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
-							$revert = true;
-						}
-					}
-				}
-
-				if(!$revert){
-					$dx = $newPos->x - $this->x;
-					$dy = $newPos->y - $this->y;
-					$dz = $newPos->z - $this->z;
-
 					$packet->yaw %= 360;
 					$packet->pitch %= 360;
 
@@ -1374,41 +1440,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 
 					$this->setRotation($packet->yaw, $packet->pitch);
-					//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
-					$revert = !$this->move($dx, $dy, $dz);
-
-					$diffX = $this->x - $newPos->x;
-					$diffZ = $this->z - $newPos->z;
-					$diffY = $this->y - $newPos->y;
-					if($diffY > -0.5 or $diffY < 0.5){
-						$diffY = 0;
-					}
-
-					$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
-
-					if(!$revert and !$this->isSleeping() and $this->isSurvival()){
-						if($diff > 0.0625){
-							$revert = true;
-							$this->server->getLogger()->warning($this->getName()." moved wrongly!");
-						}elseif($diff > 0){
-							$revert = !$this->setPosition($newPos);
-						}
-					}
-				}
-
-				if($revert){
-					$pk = new MovePlayerPacket();
-					$pk->eid = 0;
-					$pk->x = $this->x;
-					$pk->y = $this->y + $this->getEyeHeight();
-					$pk->z = $this->z;
-					$pk->bodyYaw = $this->yaw;
-					$pk->pitch = $this->pitch;
-					$pk->yaw = $this->yaw;
-					$pk->teleport = true;
-					$this->directDataPacket($pk);
-					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-				}else{
+					$this->newPosition = $newPos;
 					$this->forceMovement = null;
 				}
 
@@ -2445,6 +2477,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->orderChunks();
 			$this->chunkLoadTask->setNextRun(0);
 			$this->forceMovement = $pos;
+			$this->newPosition = $pos;
 
 			$pk = new MovePlayerPacket;
 			$pk->eid = 0;
