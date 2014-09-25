@@ -448,6 +448,8 @@ class Level implements ChunkManager, Metadatable{
 			$this->sendTime();
 		}
 
+		$this->unloadChunks();
+
 		if(count($this->changedCount) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedCount as $index => $mini){
@@ -1989,41 +1991,30 @@ class Level implements ChunkManager, Metadatable{
 		$Z = null;
 
 		foreach($this->chunks as $index => $chunk){
-			if(!isset($this->usedChunks[$index])){
+			if(!isset($this->unloadQueue[$index]) and (!isset($this->usedChunks[$index]) or count($this->usedChunks[$index]) === 0)){
 				Level::getXZ($index, $X, $Z);
-				$this->unloadChunkRequest($X, $Z, true);
+				if(!$this->isSpawnChunk($X, $Z)){
+					$this->unloadChunkRequest($X, $Z, true);
+				}
 			}
 		}
 
+		$this->timings->doChunkGC->stopTiming();
+	}
+
+	protected function unloadChunks(){
 		if(count($this->unloadQueue) > 0){
+			$X = null;
+			$Z = null;
 			foreach($this->unloadQueue as $index => $time){
 				Level::getXZ($index, $X, $Z);
 
-				if($this->getAutoSave()){
-					$this->provider->saveChunk($X, $Z);
-				}
 				//If the chunk can't be unloaded, it stays on the queue
 				if($this->unloadChunk($X, $Z, true)){
 					unset($this->unloadQueue[$index]);
 				}
 			}
 		}
-
-		foreach($this->usedChunks as $i => $c){
-			if(count($c) === 0){
-				Level::getXZ($i, $X, $Z);
-				if(!$this->isSpawnChunk($X, $Z)){
-					if($this->getAutoSave()){
-						$this->provider->saveChunk($X, $Z);
-					}
-
-					$this->unloadChunk($X, $Z, true);
-				}
-			}
-		}
-
-
-		$this->timings->doChunkGC->stopTiming();
 	}
 
 
