@@ -1435,10 +1435,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$packet->yaw += 360;
 					}
 
-					if($packet->pitch < 0){
-						$packet->pitch += 360;
-					}
-
 					$this->setRotation($packet->yaw, $packet->pitch);
 					$this->newPosition = $newPos;
 					$this->forceMovement = null;
