@@ -1108,7 +1108,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
-				$chunk = $this->getLevel()->getChunk($newPos->x >> 4, $newPos->z >> 4);
+				$chunk = $this->getLevel()->getChunk($this->newPosition->x >> 4, $this->newPosition->z >> 4);
 				if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
 					$revert = true;
 				}

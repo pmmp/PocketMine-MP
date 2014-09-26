@@ -179,6 +179,9 @@ class Vector3{
 		return $this->x * $this->x + $this->y * $this->y + $this->z * $this->z;
 	}
 
+	/**
+	 * @return Vector3
+	 */
 	public function normalize(){
 		$len = $this->length();
 		if($len != 0){
