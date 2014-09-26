@@ -45,7 +45,7 @@ class Fallable extends Solid{
 		if($this->hasPhysics === true and $type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() === self::AIR or ($down instanceof Liquid)){
-				$fall = new FallingBlock($this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4), new Compound("", [
+				$fall = new FallingBlock($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [
 						new Double("", $this->x + 0.5),
 						new Double("", $this->y + 0.5),

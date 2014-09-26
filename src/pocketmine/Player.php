@@ -1108,7 +1108,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
-				$chunk = $this->getLevel()->getChunkAt($newPos->x >> 4, $newPos->z >> 4);
+				$chunk = $this->getLevel()->getChunk($newPos->x >> 4, $newPos->z >> 4);
 				if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
 					$revert = true;
 				}
@@ -1338,7 +1338,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
 				$this->server->saveOfflinePlayerData($this->username, $nbt);
-				parent::__construct($this->getLevel()->getChunkAt($nbt["Pos"][0], $nbt["Pos"][2], true), $nbt);
+				parent::__construct($this->getLevel()->getChunk($nbt["Pos"][0], $nbt["Pos"][2], true), $nbt);
 				$this->loggedIn = true;
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));

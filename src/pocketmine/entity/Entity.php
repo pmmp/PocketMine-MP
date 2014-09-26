@@ -1052,7 +1052,7 @@ abstract class Entity extends Position implements Metadatable{
 				$this->chunk->removeEntity($this);
 			}
 			$this->getLevel()->loadChunk($this->x >> 4, $this->z >> 4);
-			$this->chunk = $this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4);
+			$this->chunk = $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4);
 
 			if(!$this->justCreated){
 				$newChunk = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);

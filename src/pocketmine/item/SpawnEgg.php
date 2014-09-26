@@ -43,7 +43,7 @@ class SpawnEgg extends Item{
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$entity = null;
-		$chunk = $level->getChunkAt($block->getX() >> 4, $block->getZ() >> 4);
+		$chunk = $level->getChunk($block->getX() >> 4, $block->getZ() >> 4);
 
 		if(!($chunk instanceof FullChunk)){
 			return false;

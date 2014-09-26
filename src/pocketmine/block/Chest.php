@@ -89,7 +89,7 @@ class Chest extends Transparent{
 			new Int("z", $this->z)
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
-		$tile = new TileChest($this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4), $nbt);
+		$tile = new TileChest($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
 		if($chest instanceof TileChest){
 			$chest->pairWith($tile);
@@ -129,7 +129,7 @@ class Chest extends Transparent{
 					new Int("z", $this->z)
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$chest = new TileChest($this->getLevel()->getChunkAt($this->x >> 4, $this->z >> 4), $nbt);
+				$chest = new TileChest($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 			}
 
 

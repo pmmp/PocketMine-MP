@@ -78,7 +78,7 @@ class GenerationRequestManager{
 
 	protected function handleRequest($levelID, $chunkX, $chunkZ){
 		if(($level = $this->server->getLevel($levelID)) instanceof Level){
-			$chunk = $level->getChunkAt($chunkX, $chunkZ, true);
+			$chunk = $level->getChunk($chunkX, $chunkZ, true);
 			if($chunk instanceof FullChunk){
 				$this->sendChunk($levelID, $chunk);
 			}else{
