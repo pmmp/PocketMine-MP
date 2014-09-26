@@ -35,6 +35,7 @@ use pocketmine\block\Grass;
 use pocketmine\block\Ice;
 use pocketmine\block\Leaves;
 use pocketmine\block\Leaves2;
+use pocketmine\block\Liquid;
 use pocketmine\block\MelonStem;
 use pocketmine\block\Mycelium;
 use pocketmine\block\Potato;
@@ -948,6 +949,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $source
 	 * @param Item    $item
 	 * @param Vector3 $motion
+	 * @param int     $delay
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, $delay = 10){
 		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
@@ -2039,6 +2041,50 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param AxisAlignedBB $boundingBox
+	 * @param int           $blockMaterial
+	 * @param Entity        $entity
+	 *
+	 * @return boolean
+	 */
+	public function handleBlockAcceleration(AxisAlignedBB $boundingBox, $blockMaterial, Entity $entity){
+		$minX = Math::floorFloat($boundingBox->minX);
+		$minY = Math::floorFloat($boundingBox->minY);
+		$minZ = Math::floorFloat($boundingBox->minZ);
+		$maxX = Math::floorFloat($boundingBox->maxX + 1);
+		$maxY = Math::floorFloat($boundingBox->maxY + 1);
+		$maxZ = Math::floorFloat($boundingBox->maxZ + 1);
+
+		$vector = new Vector3(0, 0, 0);
+		$flag = false;
+
+		for($z = $minZ; $z <= $maxZ; ++$z){
+			for($x = $minX; $x <= $maxX; ++$x){
+				for($y = $minY; $y <= $maxY; ++$y){
+					$block = $this->getBlock(new Vector3($x, $y, $z));
+					if($block !== null and $block->getID() === $blockMaterial){
+						$d = $y + 1 - ($block instanceof Liquid ? $block->getFluidHeightPercent() : 1);
+						if($maxY >= $d){
+							$block->addVelocityToEntity($entity, $vector);
+							$flag = true;
+						}
+					}
+				}
+			}
+		}
+
+		if($vector->length() > 0){
+			$vector = $vector->normalize();
+			$d = 0.014;
+			$entity->motionX += $vector->x * $d;
+			$entity->motionY += $vector->y * $d;
+			$entity->motionZ += $vector->z * $d;
+		}
+
+		return $flag;
 	}
 
 

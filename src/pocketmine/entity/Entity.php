@@ -34,6 +34,7 @@ use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Timings;
+use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
@@ -457,8 +458,9 @@ abstract class Entity extends Position implements Metadatable{
 		//TODO: check vehicles
 
 		$this->justCreated = false;
+		$isPlayer = $this instanceof Player;
 
-		if($this->dead === true and !($this instanceof Player)){
+		if($this->dead === true and !$isPlayer){
 			$this->close();
 
 			return false;
@@ -471,7 +473,7 @@ abstract class Entity extends Position implements Metadatable{
 
 		$this->checkBlockCollision();
 
-		if($this->handleWaterMovement()){
+		if(!$isPlayer and $this->handleWaterMovement()){
 			$this->fallDistance = 0;
 			$this->inWater = true;
 			$this->extinguish();
@@ -674,8 +676,8 @@ abstract class Entity extends Position implements Metadatable{
 		}
 	}
 
-	public function handleWaterMovement(){ //TODO
-
+	public function handleWaterMovement(){
+		return $this->getLevel()->handleBlockAcceleration($this->boundingBox->grow(0, -0.4, 0)->shrink(0.001, 0.001, 0.001), Block::WATER, $this);
 	}
 
 	public function handleLavaMovement(){ //TODO

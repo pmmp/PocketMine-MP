@@ -65,7 +65,7 @@ class FallingBlock extends Entity{
 	public function onUpdate(){
 		$this->entityBaseTick();
 
-		if($this->closed !== false){
+		if($this->closed or $this->dead){
 			return false;
 		}
 

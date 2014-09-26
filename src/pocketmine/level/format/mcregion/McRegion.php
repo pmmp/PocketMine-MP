@@ -267,6 +267,13 @@ class McRegion extends BaseLevelProvider{
 
 		$chunk->setX($chunkX);
 		$chunk->setZ($chunkZ);
+
+
+
+		if($this->getChunk($chunkX, $chunkZ, false) !== $chunk){
+			$this->unloadChunk($chunkX, $chunkZ, false);
+		}
+
 		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
