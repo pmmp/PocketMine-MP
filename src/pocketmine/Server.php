@@ -46,6 +46,7 @@ use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\GenerationInstanceManager;
 use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\Normal;
@@ -947,6 +948,8 @@ class Server{
 
 		$this->levels[$level->getID()] = $level;
 
+		$level->initLevel();
+
 		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		/*foreach($entities->getAll() as $entity){
@@ -1079,6 +1082,8 @@ class Server{
 
 		$level = new Level($this, $name, $path, $provider);
 		$this->levels[$level->getID()] = $level;
+
+		$level->initLevel();
 
 		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
 
@@ -1541,7 +1546,13 @@ class Server{
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-		$this->generationManager = new GenerationRequestManager($this);
+		if($this->getProperty("chunk-generation.use-async", true)){
+			$this->getLogger()->info("Started on thread");
+			$this->generationManager = new GenerationRequestManager($this);
+		}else{
+			$this->getLogger()->info("Started on main");
+			$this->generationManager = new GenerationInstanceManager($this);
+		}
 
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
@@ -2068,7 +2079,7 @@ class Server{
 			}
 		}
 
-		$this->generationManager->handlePackets();
+		$this->generationManager->process();
 
 		Timings::$serverTickTimer->stopTiming();
 

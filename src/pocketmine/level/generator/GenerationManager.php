@@ -164,7 +164,7 @@ class GenerationManager{
 	}
 
 	protected function closeLevel($levelID){
-		if(!isset($this->levels[$levelID])){
+		if(isset($this->levels[$levelID])){
 			$this->levels[$levelID]->shutdown();
 			unset($this->levels[$levelID]);
 		}

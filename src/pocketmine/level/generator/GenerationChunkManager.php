@@ -81,7 +81,7 @@ class GenerationChunkManager implements ChunkManager{
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
 		if($chunk === null){
-			throw new \Exception("null chunk received");
+			throw new \Exception("null Chunk received");
 		}
 
 		return $chunk;

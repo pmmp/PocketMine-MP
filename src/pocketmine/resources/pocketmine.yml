@@ -46,6 +46,15 @@ chunk-ticking:
  light-updates: false
  clear-tick-list: false
 
+chunk-generation:
+ #Whether to run the generation on a different thread or on the main thread
+ #Generation will be less glitchy on the main thread, but will lag more
+ #Using this with fast generators is recommended
+ #If enabled, the dedicated generation thread may leak memory
+ use-async: false
+ #Max. amount of chunks to generate per tick, only for use-async: true
+ per-tick: 1
+
 chunk-gc:
  period-in-ticks: 600
 

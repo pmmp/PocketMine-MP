@@ -203,6 +203,8 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelTimings */
 	public $timings;
 
+	protected $generator;
+
 	/**
 	 * Returns the chunk unique hash/key
 	 *
@@ -244,8 +246,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new \Exception("Provider is not a subclass of LevelProvider");
 		}
 		$this->server->getLogger()->info("Preparing level \"" . $this->provider->getName() . "\"");
-		$generator = Generator::getGenerator($this->provider->getGenerator());
-		$this->server->getGenerationManager()->openLevel($this, $generator, $this->provider->getGeneratorOptions());
+		$this->generator = Generator::getGenerator($this->provider->getGenerator());
 
 		$this->blockOrder = $provider::getProviderOrder();
 		$this->useSections = $provider::usesChunkSection();
@@ -260,7 +261,10 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
 		$this->timings = new LevelTimings($this);
+	}
 
+	public function initLevel(){
+		$this->server->getGenerationManager()->openLevel($this, $this->generator, $this->provider->getGeneratorOptions());
 	}
 
 	/**

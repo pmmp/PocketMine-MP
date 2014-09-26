@@ -99,6 +99,10 @@ class GenerationRequestManager{
 		}
 	}
 
+	public function process(){
+		$this->handlePackets();
+	}
+
 	public function handlePackets(){
 		while(strlen($packet = $this->generationThread->readThreadToMainPacket()) > 0){
 			$pid = ord($packet{0});
