@@ -49,8 +49,7 @@ class Bucket extends Item{
 		}elseif($this->meta === Item::WATER){
 			//Support Make Non-Support Water to Support Water
 			if($block->getID() === self::AIR || ($block instanceof Water && ($block->getDamage() & 0x07) != 0x00)){
-				$water = new Water();
-				$level->setBlock($block, $water, true);
+				$water = Block::get(Item::WATER, 0, $block);
 				$water->place(clone $this, $block, $target, $face, $fx, $fy, $fz, $player);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
@@ -59,8 +58,9 @@ class Bucket extends Item{
 				return true;
 			}
 		}elseif($this->meta === Item::LAVA){
+			$lava = Block::get(Item::LAVA, 0, $block);
+			$lava->place(clone $this, $block, $target, $face, $fx, $fy, $fz, $player);
 			if($block->getID() === self::AIR){
-				$level->setBlock($block, new Lava(), true);
 				if(($player->gamemode & 0x01) === 0){
 					$this->meta = 0;
 				}

@@ -82,8 +82,22 @@ class Liquid extends Transparent{
 
 		$decay = $this->getEffectiveFlowDecay($this);
 
-		for($side = 2; $side <= 5; ++$side){
-			$sideBlock = $this->getSide($side);
+		for($j = 0; $j < 4; ++$j){
+
+			$x = $this->x;
+			$y = $this->y;
+			$z = $this->z;
+
+			if($j === 0){
+				--$x;
+			}elseif($j === 1){
+				++$x;
+			}elseif($j === 2){
+				--$z;
+			}elseif($j === 3){
+				++$z;
+			}
+			$sideBlock = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -149,20 +163,22 @@ class Liquid extends Transparent{
 	}
 
 	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL or $type === Level::BLOCK_UPDATE_SCHEDULED){
+		if($type === Level::BLOCK_UPDATE_NORMAL){
+			$this->checkForHarden();
+			$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+		}elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
 			$decay = $this->getFlowDecay($this);
-
-			//TODO: If lava and on hell, set this to two
-			$multiplier = 1;
+			$multiplier = $this instanceof Lava ? 2 : 1;
 
 			$flag = true;
 
 			if($decay > 0){
 				$smallestFlowDecay = -100;
 				$this->adjacentSources = 0;
-				for($side = 2; $side <= 5; ++$side){
-					$smallestFlowDecay = $this->getSmallestFlowDecay($this->getSide($side), $smallestFlowDecay);
-				}
+				$smallestFlowDecay = $this->getSmallestFlowDecay($this->getSide(4), $smallestFlowDecay);
+				$smallestFlowDecay = $this->getSmallestFlowDecay($this->getSide(5), $smallestFlowDecay);
+				$smallestFlowDecay = $this->getSmallestFlowDecay($this->getSide(2), $smallestFlowDecay);
+				$smallestFlowDecay = $this->getSmallestFlowDecay($this->getSide(3), $smallestFlowDecay);
 
 				$k = $smallestFlowDecay + $multiplier;
 
@@ -198,8 +214,10 @@ class Liquid extends Transparent{
 						$this->getLevel()->setBlock($this, Block::get(Item::AIR), true);
 					}else{
 						$this->getLevel()->setBlock($this, Block::get($this->id, $decay), true);
+						$this->getLevel()->scheduleUpdate($this, $this->tickRate());
 					}
 				}elseif($flag){
+					$this->getLevel()->scheduleUpdate($this, $this->tickRate());
 					//$this->updateFlow();
 				}
 			}else{
@@ -208,16 +226,18 @@ class Liquid extends Transparent{
 
 			$bottomBlock = $this->getSide(0);
 
-			if($bottomBlock instanceof Liquid){
+			if($bottomBlock->isFlowable or $bottomBlock instanceof Liquid){
 				if($this instanceof Lava and $bottomBlock instanceof Water){
 					$this->getLevel()->setBlock($bottomBlock, Block::get(Item::STONE), true);
 					return;
 				}
 
 				if($decay >= 8){
-					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay));
+					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay), true);
+					$this->getLevel()->scheduleUpdate($bottomBlock, $this->tickRate());
 				}else{
-					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay | 0x80));
+					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay + 8), true);
+					$this->getLevel()->scheduleUpdate($bottomBlock, $this->tickRate());
 				}
 			}elseif($decay >= 0 and ($decay === 0 or !$bottomBlock->isFlowable)){
 				$flags = $this->getOptimalFlowDirections();
@@ -226,26 +246,31 @@ class Liquid extends Transparent{
 
 				if($decay >= 8){
 					$l = 1;
-				}elseif($l >= 8){
+				}
+
+				if($l >= 8){
+					$this->checkForHarden();
 					return;
 				}
 
 				if($flags[0]){
-					$this->flowIntoBlock($this->getSide(2), $l);
-				}
-
-				if($flags[1]){
-					$this->flowIntoBlock($this->getSide(3), $l);
-				}
-
-				if($flags[2]){
 					$this->flowIntoBlock($this->getSide(4), $l);
 				}
 
-				if($flags[3]){
+				if($flags[1]){
 					$this->flowIntoBlock($this->getSide(5), $l);
 				}
+
+				if($flags[2]){
+					$this->flowIntoBlock($this->getSide(2), $l);
+				}
+
+				if($flags[3]){
+					$this->flowIntoBlock($this->getSide(3), $l);
+				}
 			}
+
+			$this->checkForHarden();
 
 		}
 	}
@@ -256,7 +281,8 @@ class Liquid extends Transparent{
 				$this->getLevel()->useBreakOn($block);
 			}
 
-			$this->getLevel()->setBlock($this, Block::get($this->id, $newFlowDecay), true);
+			$this->getLevel()->setBlock($block, Block::get($this->id, $newFlowDecay), true);
+			$this->getLevel()->scheduleUpdate($block, $this->tickRate());
 		}
 	}
 
@@ -270,7 +296,20 @@ class Liquid extends Transparent{
 				($j === 2 and $previousDirection === 3) or
 				($j === 3 and $previousDirection === 2)
 			){
-				$blockSide = $block->getSide($j + 2);
+				$x = $block->x;
+				$y = $block->y;
+				$z = $block->z;
+
+				if($j === 0){
+					--$x;
+				}elseif($j === 1){
+					++$x;
+				}elseif($j === 2){
+					--$z;
+				}elseif($j === 3){
+					++$z;
+				}
+				$blockSide = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
 				if(!$blockSide->isFlowable or ($blockSide instanceof Liquid and $blockSide->getDamage() === 0)){
 					continue;
@@ -294,17 +333,30 @@ class Liquid extends Transparent{
 	}
 
 	private function getOptimalFlowDirections(){
-		for($side = 2; $side <= 5; ++$side){
-			$this->flowCost[$side - 2] = 1000;
+		for($j = 0; $j < 4; ++$j){
+			$this->flowCost[$j] = 1000;
 
-			$block = $this->getSide($side);
+			$x = $this->x;
+			$y = $this->y;
+			$z = $this->z;
+
+			if($j === 0){
+				--$x;
+			}elseif($j === 1){
+				++$x;
+			}elseif($j === 2){
+				--$z;
+			}elseif($j === 3){
+				++$z;
+			}
+			$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
 			if(!$block->isFlowable or ($block instanceof Liquid and $block->getDamage() === 0)){
 				continue;
 			}elseif($block->getSide(0)->isFlowable){
-				$this->flowCost[$side - 2] = 0;
+				$this->flowCost[$j] = 0;
 			}else{
-				$this->flowCost[$side - 2] = $this->calculateFlowCost($block, 1, $side - 2);
+				$this->flowCost[$j] = $this->calculateFlowCost($block, 1, $j);
 			}
 		}
 
@@ -328,9 +380,9 @@ class Liquid extends Transparent{
 
 		if($blockDecay < 0){
 			return $decay;
-		}elseif($decay === 0){
+		}elseif($blockDecay === 0){
 			++$this->adjacentSources;
-		}elseif($blockDecay >= 0){
+		}elseif($blockDecay >= 8){
 			$blockDecay = 0;
 		}
 
@@ -338,6 +390,19 @@ class Liquid extends Transparent{
 	}
 
 	private function checkForHarden(){
-		//TODO
+		if($this instanceof Lava){
+			$colliding = false;
+			for($side = 0; $side <= 5 and !$colliding; ++$side){
+				$colliding = $this->getSide($side) instanceof Water;
+			}
+
+			if($colliding){
+				if($this->getDamage() === 0){
+					$this->getLevel()->setBlock($this, Block::get(Item::OBSIDIAN), true);
+				}elseif($this->getDamage() <= 4){
+					$this->getLevel()->setBlock($this, Block::get(Item::COBBLESTONE), true);
+				}
+			}
+		}
 	}
 }
