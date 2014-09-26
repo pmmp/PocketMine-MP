@@ -724,6 +724,10 @@ abstract class Block extends Position implements Metadatable{
 		return $this->id;
 	}
 
+	public function addVelocityToEntity(Entity $entity, Vector3 $vector){
+
+	}
+
 	/**
 	 * @return int
 	 */
