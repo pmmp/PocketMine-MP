@@ -157,6 +157,7 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var ReversePriorityQueue */
 	private $updateQueue;
+	private $updateQueueIndex = [];
 
 	/** @var Player[][] */
 	private $chunkSendQueue = [];
@@ -508,6 +509,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickPending->startTiming();
 		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
 			$block = $this->getBlock($this->updateQueue->extract()["data"]);
+			unset($this->updateQueueIndex["{$block->x}:{$block->y}:{$block->z}"]);
 			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
 		}
 		$this->timings->doTickPending->stopTiming();
@@ -698,6 +700,11 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int     $delay
 	 */
 	public function scheduleUpdate(Vector3 $pos, $delay){
+		$index = "{$pos->x}:{$pos->y}:{$pos->z}";
+		if(isset($this->updateQueueIndex[$index]) and $this->updateQueueIndex[$index] <= $delay){
+			return;
+		}
+		$this->updateQueueIndex[$index] = $delay;
 		$this->updateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), (int) $delay + $this->server->getTick());
 	}
 
