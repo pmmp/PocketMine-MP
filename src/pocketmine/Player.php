@@ -64,6 +64,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
@@ -726,7 +727,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$i = 0;
-		while(count($this->loadQueue) < 3 and $generateQueue->count() > 0 and $i < 16){
+		while(count($this->loadQueue) < 8 and $generateQueue->count() > 0 and $i < 32){
 			$d = $generateQueue->extract();
 			$this->getLevel()->generateChunk($d[0], $d[1]);
 			++$i;
@@ -1097,14 +1098,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 		$oldPos = new Vector3($this->x, $this->y, $this->z);
-		if($oldPos->distance($this->newPosition) == 0){
+		if(($distance = $oldPos->distance($this->newPosition)) == 0){
 			return;
 		}
 
 		$revert = false;
 
-		if($this->newPosition->distance($this) > 100){
-			$this->server->getLogger()->warning($this->getName()." moved too quickly!");
+		if($distance > 100){
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
