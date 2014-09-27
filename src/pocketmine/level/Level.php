@@ -1515,7 +1515,7 @@ class Level implements ChunkManager, Metadatable{
 			return $this->chunks[$index];
 		}elseif(($chunk = $this->provider->getChunk($x, $z, $create)) instanceof FullChunk){
 			$this->chunks[$index] = $chunk;
-
+			$chunk->initChunk();
 			return $chunk;
 		}
 

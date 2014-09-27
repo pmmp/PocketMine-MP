@@ -248,6 +248,8 @@ interface FullChunk{
 	 */
 	public function unload($save = true, $safe = true);
 
+	public function initChunk();
+
 	/**
 	 * @return string[]
 	 */

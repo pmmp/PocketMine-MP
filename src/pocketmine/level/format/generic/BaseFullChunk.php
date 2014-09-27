@@ -55,6 +55,10 @@ abstract class BaseFullChunk implements FullChunk{
 
 	protected $blockLight;
 
+	protected $NBTtiles;
+
+	protected $NBTentities;
+
 	/** @var LevelProvider */
 	protected $provider;
 
@@ -98,9 +102,14 @@ abstract class BaseFullChunk implements FullChunk{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
 		}
 
-		if($this->getProvider() instanceof LevelProvider){
+		$this->NBTtiles = $tiles;
+		$this->NBTentities = $entities;
+	}
+
+	public function initChunk(){
+		if($this->getProvider() instanceof LevelProvider and $this->NBTentities !== null){
 			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
-			foreach($entities as $nbt){
+			foreach($this->NBTentities as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
 						continue;
@@ -121,7 +130,7 @@ abstract class BaseFullChunk implements FullChunk{
 			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
 
 			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-			foreach($tiles as $nbt){
+			foreach($this->NBTtiles as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
 						continue;
@@ -140,6 +149,8 @@ abstract class BaseFullChunk implements FullChunk{
 				}
 			}
 			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+			$this->NBTentities = null;
+			$this->NBTtiles = null;
 		}
 	}
 
