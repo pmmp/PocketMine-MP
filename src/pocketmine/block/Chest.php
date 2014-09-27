@@ -104,7 +104,7 @@ class Chest extends Transparent{
 		if($t instanceof TileChest){
 			$t->unpair();
 		}
-		$this->getLevel()->setBlock($this, new Air(), true, true, true);
+		$this->getLevel()->setBlock($this, new Air(), true, true);
 
 		return true;
 	}
@@ -143,19 +143,8 @@ class Chest extends Transparent{
 	}
 
 	public function getDrops(Item $item){
-		$drops = [
+		return [
 			[$this->id, 0, 1],
 		];
-		$t = $this->getLevel()->getTile($this);
-		if($t instanceof TileChest){
-			for($s = 0; $s < $t->getRealInventory()->getSize(); ++$s){
-				$slot = $t->getRealInventory()->getItem($s);
-				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
-					$drops[] = [$slot->getID(), $slot->getDamage(), $slot->getCount()];
-				}
-			}
-		}
-
-		return $drops;
 	}
 }

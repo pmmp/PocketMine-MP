@@ -200,6 +200,9 @@ class McRegion extends BaseLevelProvider{
 			}
 
 			foreach($chunk->getEntities() as $entity){
+				if($entity instanceof Player){
+					continue;
+				}
 				$entity->close();
 			}
 

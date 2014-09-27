@@ -61,7 +61,7 @@ class BurningFurnace extends Solid{
 	}
 
 	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true, true, true);
+		$this->getLevel()->setBlock($this, new Air(), true, true);
 
 		return true;
 	}
@@ -115,15 +115,6 @@ class BurningFurnace extends Solid{
 		$drops = [];
 		if($item->isPickaxe() >= 1){
 			$drops[] = [Item::FURNACE, 0, 1];
-		}
-		$t = $this->getLevel()->getTile($this);
-		if($t instanceof Furnace){
-			for($s = 0; $s < $t->getInventory()->getSize(); ++$s){
-				$slot = $t->getInventory()->getItem($s);
-				if($slot->getID() > Item::AIR and $slot->getCount() > 0){
-					$drops[] = [$slot->getID(), $slot->getDamage(), $slot->getCount()];
-				}
-			}
 		}
 
 		return $drops;
