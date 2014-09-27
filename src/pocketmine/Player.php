@@ -1366,6 +1366,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$spawnPosition = $this->getSpawn();
 
 				$this->dead = false;
+
+				$this->setPosition($spawnPosition, true);
+
 				$pk = new StartGamePacket;
 				$pk->seed = $this->getLevel()->getSeed();
 				$pk->x = $this->x;
