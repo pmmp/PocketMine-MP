@@ -170,7 +170,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $newPosition;
 
 	private $viewDistance;
-	private $spawnPosition;
+	/** @var null|Position */
+	private $spawnPosition = null;
 	private $inAction = false;
 
 
@@ -1358,7 +1359,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->status = 0;
 				$this->dataPacket($pk);
 
-				if(isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
+				if($this->spawnPosition === null and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
 					$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
 				}
 
