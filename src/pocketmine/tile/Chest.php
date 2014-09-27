@@ -55,6 +55,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
+
 		$this->checkPairing();
 	}
 
@@ -169,13 +170,16 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 
 	protected function checkPairing(){
 		if(($pair = $this->getPair()) instanceof Chest){
-			if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
-				$this->doubleInventory = new DoubleChestInventory($pair, $this);
-			}else{
-				$this->doubleInventory = new DoubleChestInventory($this, $pair);
+			if($this->doubleInventory === null){
+				if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
+					$this->doubleInventory = new DoubleChestInventory($pair, $this);
+				}else{
+					$this->doubleInventory = new DoubleChestInventory($this, $pair);
+				}
 			}
 		}else{
 			$this->doubleInventory = null;
+			unset($this->namedtag->pairx, $this->namedtag->pairz);
 		}
 	}
 
@@ -192,7 +196,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	 */
 	public function getPair(){
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTile(new Vector3((int) $this->namedtag->pairx, $this->y, (int) $this->namedtag->pairz));
+			$tile = $this->getLevel()->getTile(new Vector3((int) $this->namedtag["pairx"], $this->y, (int) $this->namedtag["pairz"]));
 			if($tile instanceof Chest){
 				return $tile;
 			}
@@ -206,11 +210,11 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 			return false;
 		}
 
-		$this->namedtag->pairx = $tile->x;
-		$this->namedtag->pairz = $tile->z;
+		$this->namedtag->pairx = new Int("pairx", $tile->x);
+		$this->namedtag->pairz = new Int("pairz", $tile->z);
 
-		$tile->namedtag->pairx = $this->x;
-		$tile->namedtag->pairz = $this->z;
+		$tile->namedtag->pairx = new Int("pairx", $this->x);
+		$tile->namedtag->pairz = new Int("pairz", $this->z);
 
 		$this->spawnToAll();
 		$tile->spawnToAll();
@@ -244,8 +248,8 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 				new Int("x", (int) $this->x),
 				new Int("y", (int) $this->y),
 				new Int("z", (int) $this->z),
-				new Int("pairx", (int) $this->namedtag->pairx),
-				new Int("pairz", (int) $this->namedtag->pairz)
+				new Int("pairx", (int) $this->namedtag["pairx"]),
+				new Int("pairz", (int) $this->namedtag["pairz"])
 			]);
 		}else{
 			return new Compound("", [
