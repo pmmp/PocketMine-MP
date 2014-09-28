@@ -1136,7 +1136,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if(!$revert and !$this->isSleeping() and $this->isSurvival()){
 				if($diff > 0.0625){
 					$revert = true;
-					$this->server->getLogger()->warning($this->getName()." moved wrongly!");
+					//$this->server->getLogger()->warning($this->getName()." moved wrongly!");
 				}elseif($diff > 0){
 					$revert = !$this->setPosition($this->newPosition);
 				}
@@ -2239,7 +2239,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === true){
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
-				if($this->loggedIn === true){
+				if($this->server->getAutoSave() and $this->loggedIn === true){
 					$this->save();
 				}
 			}
@@ -2312,11 +2312,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function kill(){
 		if($this->dead === true or $this->spawned === false){
 			return;
-		}
-		parent::kill();
-
-		if($this->inventory !== null){
-			$this->inventory->clearAll();
 		}
 
 		$message = $this->getName() . " died";
@@ -2400,7 +2395,20 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		}
 
+		if($this->dead){
+			return;
+		}
+
+		Entity::kill();
+
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), $message));
+		foreach($ev->getDrops() as $item){
+			$this->getLevel()->dropItem($this, $item);
+		}
+
+		if($this->inventory !== null){
+			$this->inventory->clearAll();
+		}
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);

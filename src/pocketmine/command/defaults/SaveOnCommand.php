@@ -41,9 +41,7 @@ class SaveOnCommand extends VanillaCommand{
 			return true;
 		}
 
-		foreach($sender->getServer()->getLevels() as $level){
-			$level->setAutoSave(true);
-		}
+		$sender->getServer()->setAutoSave(true);
 
 		Command::broadcastCommandMessage($sender, "Enabled level saving");
 

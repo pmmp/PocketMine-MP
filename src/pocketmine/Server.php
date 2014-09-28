@@ -154,6 +154,9 @@ class Server{
 	/** @var int */
 	private $maxPlayers;
 
+	/** @var bool */
+	private $autoSave;
+
 	/** @var RCON */
 	private $rcon;
 
@@ -294,6 +297,23 @@ class Server{
 	 */
 	public function getServerName(){
 		return $this->getConfigString("server-name", "Unknown server");
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getAutoSave(){
+		return $this->autoSave;
+	}
+
+	/**
+	 * @param bool $value
+	 */
+	public function setAutoSave($value){
+		$this->autoSave = (bool) $value;
+		foreach($this->getLevels() as $level){
+			$level->setAutoSave($this->autoSave);
+		}
 	}
 
 	/**
@@ -1480,6 +1500,7 @@ class Server{
 		}
 
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
+		$this->autoSave = $this->getConfigBoolean("auto-save", true);
 
 		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
 			$value = ["M" => 1, "G" => 1024];
@@ -1612,7 +1633,7 @@ class Server{
 		}
 
 		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([Cache::class, "cleanup"]), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
-		if($this->getConfigBoolean("auto-save", true) === true and $this->getProperty("ticks-per.autosave", 6000) > 0){
+		if($this->getAutoSave() and $this->getProperty("ticks-per.autosave", 6000) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
 
@@ -1983,19 +2004,21 @@ class Server{
 	}
 
 	public function doAutoSave(){
-		Timings::$worldSaveTimer->startTiming();
-		foreach($this->getOnlinePlayers() as $index => $player){
-			if($player->isOnline()){
-				$player->save();
-			}elseif(!$player->isConnected()){
-				unset($this->players[$index]);
+		if($this->getAutoSave()){
+			Timings::$worldSaveTimer->startTiming();
+			foreach($this->getOnlinePlayers() as $index => $player){
+				if($player->isOnline()){
+					$player->save();
+				}elseif(!$player->isConnected()){
+					unset($this->players[$index]);
+				}
 			}
-		}
 
-		foreach($this->getLevels() as $level){
-			$level->save(false);
+			foreach($this->getLevels() as $level){
+				$level->save(false);
+			}
+			Timings::$worldSaveTimer->stopTiming();
 		}
-		Timings::$worldSaveTimer->stopTiming();
 	}
 
 	public function doLevelGC(){
