@@ -1568,10 +1568,8 @@ class Server{
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
 		if($this->getProperty("chunk-generation.use-async", true)){
-			$this->getLogger()->info("Started on thread");
 			$this->generationManager = new GenerationRequestManager($this);
 		}else{
-			$this->getLogger()->info("Started on main");
 			$this->generationManager = new GenerationInstanceManager($this);
 		}
 

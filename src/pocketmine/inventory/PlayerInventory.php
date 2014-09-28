@@ -211,6 +211,7 @@ class PlayerInventory extends BaseInventory{
 			}
 			$item = $ev->getNewItem();
 		}
+
 		if($item->getID() === 0){
 			$this->clear($index, $source);
 		}else{
