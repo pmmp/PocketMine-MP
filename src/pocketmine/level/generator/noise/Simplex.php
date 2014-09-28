@@ -25,11 +25,10 @@ use pocketmine\utils\Random;
 
 /**
  * Generates simplex-based noise.
- * <p>
+ *
  * This is a modified version of the freely published version in the paper by
  * Stefan Gustavson at
- * <a href="http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf">
- * http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf</a>
+ * http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
  */
 class Simplex extends Perlin{
 	protected static $SQRT_3;
