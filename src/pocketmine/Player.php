@@ -1170,7 +1170,30 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$hasUpdate = $this->entityBaseTick();
 		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
-			if($entity instanceof DroppedItem){
+			if($entity instanceof Arrow and $entity->onGround){
+				if($entity->dead !== true){
+					$item = Item::get(Item::ARROW, 0, 1);
+					if($this->isSurvival() and !$this->inventory->canAddItem($item)){
+						continue;
+					}
+
+					$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
+					if($ev->isCancelled()){
+						continue;
+					}
+
+					$pk = new TakeItemEntityPacket;
+					$pk->eid = 0;
+					$pk->target = $entity->getID();
+					$this->dataPacket($pk);
+					$pk = new TakeItemEntityPacket;
+					$pk->eid = $this->getID();
+					$pk->target = $entity->getID();
+					Server::broadcastPacket($entity->getViewers(), $pk);
+					$this->inventory->addItem(clone $item);
+					$entity->kill();
+				}
+			}elseif($entity instanceof DroppedItem){
 				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
 
@@ -1197,7 +1220,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$pk->eid = 0;
 						$pk->target = $entity->getID();
 						$this->dataPacket($pk);
-
 						$pk = new TakeItemEntityPacket;
 						$pk->eid = $this->getID();
 						$pk->target = $entity->getID();
