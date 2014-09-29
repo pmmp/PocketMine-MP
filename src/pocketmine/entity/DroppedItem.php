@@ -98,6 +98,7 @@ class DroppedItem extends Entity{
 		if($this->age > 6000){
 			$this->kill();
 		}
+
 		$this->updateMovement();
 
 		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);

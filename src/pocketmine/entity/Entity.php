@@ -468,7 +468,6 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		$hasUpdate = false;
-		$this->updateMovement();
 
 		$this->checkBlockCollision();
 
@@ -578,6 +577,8 @@ abstract class Entity extends Position implements Metadatable{
 		}
 
 		$hasUpdate = $this->entityBaseTick();
+
+		$this->updateMovement();
 
 		//if($this->isStatic())
 		return true;
