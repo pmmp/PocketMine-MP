@@ -63,10 +63,8 @@ class GenerationLevelManager extends GenerationManager{
 			$this->levels[$levelID]->populateChunk($chunkX, $chunkZ); //Request population directly
 			if(isset($this->levels[$levelID])){
 				foreach($this->levels[$levelID]->getChangedChunks() as $index => $chunk){
-					if($chunk->isPopulated()){
-						$this->sendChunk($levelID, $chunk);
-						$this->levels[$levelID]->cleanChangedChunk($index);
-					}
+					$this->sendChunk($levelID, $chunk);
+					$this->levels[$levelID]->cleanChangedChunk($index);
 				}
 
 				$this->levels[$levelID]->doGarbageCollection();

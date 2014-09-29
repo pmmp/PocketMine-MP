@@ -1541,10 +1541,8 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkGenerationQueue["$x:$z"]);
 		$this->setChunk($x, $z, $chunk);
 		$chunk = $this->getChunk($x, $z);
-		if($chunk instanceof FullChunk){
-			if(!($oldChunk instanceof FullChunk) or ($oldChunk->isPopulated() === false and $chunk->isPopulated())){
-				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
-			}
+		if($chunk instanceof FullChunk and (!($oldChunk instanceof FullChunk) or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
+			$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
 		}
 	}
 
@@ -1554,9 +1552,8 @@ class Level implements ChunkManager, Metadatable{
 			foreach($this->getUsingChunk($x, $z) as $player){
 				$player->unloadChunk($x, $z);
 			}
-			unset($this->chunks[$index]);
 			$this->provider->setChunk($x, $z, $chunk);
-			$this->loadChunk($x, $z);
+			$this->chunks[$index] = $chunk;
 		}else{
 			$this->provider->setChunk($x, $z, $chunk);
 			$this->chunks[$index] = $chunk;
