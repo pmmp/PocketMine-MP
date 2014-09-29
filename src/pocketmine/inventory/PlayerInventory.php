@@ -89,11 +89,12 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * @param Item $item
+	 * @param $source
 	 *
 	 * @return bool
 	 */
-	public function setItemInHand(Item $item){
-		return $this->setItem($this->getHeldItemSlot(), $item);
+	public function setItemInHand(Item $item, $source = null){
+		return $this->setItem($this->getHeldItemSlot(), $item, $source);
 	}
 
 	public function getHeldItemSlot(){

@@ -1572,7 +1572,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$item = clone $this->inventory->getItemInHand();
 						//TODO: Implement adventure mode checks
 						if($this->getLevel()->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
-							$this->inventory->setItemInHand($item);
+							$this->inventory->setItemInHand($item, $this);
 							$this->inventory->sendHeldItem($this->hasSpawned);
 							break;
 						}
@@ -1652,9 +1652,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								if($this->isSurvival()){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
 									$bow->setDamage($bow->getDamage() + 1);
-									$this->inventory->setItemInHand($bow);
+									$this->inventory->setItemInHand($bow, $this);
 									if($bow->getDamage() >= 385){
-										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0));
+										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0), $this);
 									}
 								}
 								$arrow->spawnToAll();
@@ -1687,7 +1687,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->getLevel()->useBreakOn($vector, $item, $this) === true){
 					if($this->isSurvival()){
-						$this->inventory->setItemInHand($item);
+						$this->inventory->setItemInHand($item, $this);
 						$this->inventory->sendHeldItem($this->hasSpawned);
 					}
 					break;
@@ -1862,7 +1862,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					if($item->isTool() and $this->isSurvival()){
 						if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
-							$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+							$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1), $this);
+						}else{
+							$this->inventory->setItemInHand($item, $this);
 						}
 					}
 				}
@@ -1962,7 +1964,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 							$this->heal($items[$slot->getID()]);
 							--$slot->count;
-							$this->inventory->setItemInHand($slot);
+							$this->inventory->setItemInHand($slot, $this);
 							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){
 								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
 							}
@@ -1983,7 +1985,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1));
+				$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 1), $this);
 				$motion = $this->getDirectionVector()->multiply(0.4);
 
 				$this->getLevel()->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
