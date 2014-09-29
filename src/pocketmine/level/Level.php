@@ -2041,51 +2041,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	/**
-	 * @param AxisAlignedBB $boundingBox
-	 * @param int           $blockMaterial
-	 * @param Entity        $entity
-	 *
-	 * @return boolean
-	 */
-	public function handleBlockAcceleration(AxisAlignedBB $boundingBox, $blockMaterial, Entity $entity){
-		$minX = Math::floorFloat($boundingBox->minX);
-		$minY = Math::floorFloat($boundingBox->minY);
-		$minZ = Math::floorFloat($boundingBox->minZ);
-		$maxX = Math::floorFloat($boundingBox->maxX + 1);
-		$maxY = Math::floorFloat($boundingBox->maxY + 1);
-		$maxZ = Math::floorFloat($boundingBox->maxZ + 1);
-
-		$vector = new Vector3(0, 0, 0);
-		$flag = false;
-
-		for($z = $minZ; $z <= $maxZ; ++$z){
-			for($x = $minX; $x <= $maxX; ++$x){
-				for($y = $minY; $y <= $maxY; ++$y){
-					$block = $this->getBlock(new Vector3($x, $y, $z));
-					if($block !== null and $block->getID() === $blockMaterial){
-						$d = $y + 1 - ($block instanceof Liquid ? $block->getFluidHeightPercent() : 1);
-						if($maxY >= $d){
-							$block->addVelocityToEntity($entity, $vector);
-							$flag = true;
-						}
-					}
-				}
-			}
-		}
-
-		if($vector->length() > 0){
-			$vector = $vector->normalize();
-			$d = 0.014;
-			$entity->motionX += $vector->x * $d;
-			$entity->motionY += $vector->y * $d;
-			$entity->motionZ += $vector->z * $d;
-		}
-
-		return $flag;
-	}
-
-
 	public function setMetadata($metadataKey, MetadataValue $metadataValue){
 		$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $metadataValue);
 	}

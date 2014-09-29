@@ -137,7 +137,6 @@ abstract class Entity extends Position implements Metadatable{
 	protected $isStatic = false;
 	protected $isColliding = false;
 
-	protected $inWater;
 	public $noDamageTicks;
 	private $justCreated;
 	protected $fireProof;
@@ -473,14 +472,6 @@ abstract class Entity extends Position implements Metadatable{
 
 		$this->checkBlockCollision();
 
-		if(!$isPlayer and $this->handleWaterMovement()){
-			$this->fallDistance = 0;
-			$this->inWater = true;
-			$this->extinguish();
-		}else{
-			$this->inWater = false;
-		}
-
 		if($this->y < 0 and $this->dead !== true){
 			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10));
 			if(!$ev->isCancelled()){
@@ -510,13 +501,6 @@ abstract class Entity extends Position implements Metadatable{
 			}
 
 			$hasUpdate = true;
-		}
-
-		if($this->handleLavaMovement()){
-			//$this->attack(4, EntityDamageEvent::CAUSE_LAVA);
-			//$this->setOnFire(15);
-			$hasUpdate = true;
-			$this->fallDistance *= 0.5;
 		}
 
 		++$this->age;
@@ -674,10 +658,6 @@ abstract class Entity extends Position implements Metadatable{
 			}
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
-	}
-
-	public function handleWaterMovement(){
-		return $this->getLevel()->handleBlockAcceleration($this->boundingBox->grow(0, -0.4, 0)->shrink(0.001, 0.001, 0.001), Block::WATER, $this);
 	}
 
 	public function handleLavaMovement(){ //TODO
@@ -997,15 +977,28 @@ abstract class Entity extends Position implements Metadatable{
 		$maxY = Math::floorFloat($this->boundingBox->maxY + 0.001);
 		$maxZ = Math::floorFloat($this->boundingBox->maxZ + 0.001);
 
+		$vector = new Vector3(0, 0, 0);
+
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
 					$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 					if($block !== null and $block->getID() > 0){
 						$block->onEntityCollide($this);
+						if(!($this instanceof Player)){
+							$block->addVelocityToEntity($this, $vector);
+						}
 					}
 				}
 			}
+		}
+
+		if($vector->length() > 0){
+			$vector = $vector->normalize();
+			$d = 0.014;
+			$this->motionX += $vector->x * $d;
+			$this->motionY += $vector->y * $d;
+			$this->motionZ += $vector->z * $d;
 		}
 	}
 
