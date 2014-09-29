@@ -695,7 +695,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$generateQueue = new ReversePriorityQueue();
 		for($X = -$radius; $X <= $radius; ++$X){
 			for($Z = -$radius; $Z <= $radius; ++$Z){
-				$distance = ($X * $X) + ($Z * $Z);
+				$distance = $X ** 2 + $Z ** 2;
 				if($distance > $radiusSquared){
 					continue;
 				}

@@ -176,7 +176,7 @@ class Vector3{
 	}
 
 	public function lengthSquared(){
-		return $this->x * $this->x + $this->y * $this->y + $this->z * $this->z;
+		return $this->x ** 2 + $this->y ** 2 + $this->z ** 2;
 	}
 
 	/**

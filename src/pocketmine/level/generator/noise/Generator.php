@@ -42,7 +42,7 @@ abstract class Generator{
 	}
 
 	public static function fade($x){
-		return $x * $x * $x * ($x * ($x * 6 - 15) + 10);
+		return $x ** 3 * ($x * ($x * 6 - 15) + 10);
 	}
 
 	public static function lerp($x, $y, $z){

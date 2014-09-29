@@ -79,7 +79,7 @@ class SmallTree extends Tree{
 				$bRadius = 3;
 				for($xx = -$bRadius; $xx <= $bRadius; ++$xx){
 					for($zz = -$bRadius; $zz <= $bRadius; ++$zz){
-						if(sqrt(($xx * $xx) + ($zz * $zz)) <= $radius){
+						if(sqrt($xx ** 2 + $zz ** 2) <= $radius){
 							$level->setBlockIdAt($x + $xx, $y + $yy, $z + $zz, Block::LEAVES);
 							$level->setBlockDataAt($x + $xx, $y + $yy, $z + $zz, $this->type);
 						}
