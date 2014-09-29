@@ -114,6 +114,7 @@ class DroppedItem extends Entity{
 	}
 
 	public function saveNBT(){
+		parent::saveNBT();
 		$this->namedtag->Item = new Compound("Item", [
 			"id" => new Short("id", $this->item->getID()),
 			"Damage" => new Short("Damage", $this->item->getDamage()),

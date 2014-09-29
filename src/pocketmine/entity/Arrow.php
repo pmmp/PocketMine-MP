@@ -161,8 +161,7 @@ class Arrow extends Projectile{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		$this->setLastDamageCause($source);
-		$this->setHealth($this->getHealth() - $damage);
+
 	}
 
 	public function heal($amount){
@@ -170,6 +169,7 @@ class Arrow extends Projectile{
 	}
 
 	public function saveNBT(){
+		parent::saveNBT();
 		$this->namedtag->Age = new Short("Age", $this->age);
 	}
 

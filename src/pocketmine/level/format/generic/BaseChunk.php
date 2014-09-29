@@ -98,49 +98,8 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			$this->biomeColors = array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a"));
 		}
 
-		if($this->provider instanceof LevelProvider){
-			$this->provider->getLevel()->timings->syncChunkLoadEntitiesTimer->startTiming();
-			foreach($entities as $nbt){
-				if($nbt instanceof Compound){
-					if(!isset($nbt->id)){
-						continue;
-					}
-
-					//TODO: add all entities
-					if($nbt->id instanceof String){ //New format
-						switch($nbt["id"]){
-							case "Item":
-								(new DroppedItem($this, $nbt))->spawnToAll();
-								break;
-						}
-					}else{ //Old format
-
-					}
-				}
-			}
-			$this->getProvider()->getLevel()->timings->syncChunkLoadEntitiesTimer->stopTiming();
-
-			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-			foreach($tiles as $nbt){
-				if($nbt instanceof Compound){
-					if(!isset($nbt->id)){
-						continue;
-					}
-					switch($nbt["id"]){
-						case Tile::CHEST:
-							new Chest($this, $nbt);
-							break;
-						case Tile::FURNACE:
-							new Furnace($this, $nbt);
-							break;
-						case Tile::SIGN:
-							new Sign($this, $nbt);
-							break;
-					}
-				}
-			}
-			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
-		}
+		$this->NBTtiles = $tiles;
+		$this->NBTentities = $entities;
 	}
 
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
