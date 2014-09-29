@@ -1722,21 +1722,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$s = Item::get($s + 256, 0, 1);
 					}
 					$slot = $this->inventory->getArmorItem($i);
-					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){
-						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 1));
+					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){ //Removes a piece of armor
+						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 1), $this);
 						$this->inventory->addItem($slot);
 						$this->inventory->sendArmorContents($this);
 					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->inventory->first($s)) !== -1){
-						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl)) === false){
-							$this->inventory->sendContents($this);
+						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl), $this) === false){
 							$this->inventory->sendArmorContents($this);
 						}else{
 							$this->inventory->setItem($sl, Item::get(Item::AIR, 0, 1), $this);
 							$this->inventory->sendArmorContents($this);
 						}
 					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getDamage() !== $s->getDamage()) and ($sl = $this->inventory->first($s)) !== -1){
-						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl)) === false){
-							$this->inventory->sendContents($this);
+						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl), $this) === false){
 							$this->inventory->sendArmorContents($this);
 						}else{
 							$this->inventory->setItem($sl, $slot, $this);

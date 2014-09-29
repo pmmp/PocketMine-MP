@@ -160,8 +160,8 @@ class PlayerInventory extends BaseInventory{
 		return $this->getItem($this->getSize() + $index);
 	}
 
-	public function setArmorItem($index, Item $item){
-		return $this->setItem($this->getSize() + $index, $item);
+	public function setArmorItem($index, Item $item, $source = null){
+		return $this->setItem($this->getSize() + $index, $item, $source);
 	}
 
 	public function getHelmet(){
