@@ -73,7 +73,6 @@ use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
-use pocketmine\scheduler\CallbackTask;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use raklib\protocol\EncapsulatedPacket;
