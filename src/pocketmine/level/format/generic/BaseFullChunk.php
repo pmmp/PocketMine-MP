@@ -21,8 +21,10 @@
 
 namespace pocketmine\level\format\generic;
 
+use pocketmine\entity\Arrow;
 use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
+use pocketmine\entity\FallingBlock;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
@@ -116,14 +118,19 @@ abstract class BaseFullChunk implements FullChunk{
 					}
 
 					//TODO: add all entities
-					if($nbt->id instanceof String){ //New format
-						switch($nbt["id"]){
-							case "Item":
-								(new DroppedItem($this, $nbt))->spawnToAll();
-								break;
-						}
-					}else{ //Old format
-
+					switch($nbt["id"]){
+						case DroppedItem::NETWORK_ID:
+						case "Item":
+							(new DroppedItem($this, $nbt))->spawnToAll();
+							break;
+						case Arrow::NETWORK_ID:
+						case "Arrow":
+							(new Arrow($this, $nbt))->spawnToAll();
+							break;
+						case FallingBlock::NETWORK_ID:
+						case "FallingSand":
+							(new FallingBlock($this, $nbt))->spawnToAll();
+							break;
 					}
 				}
 			}
