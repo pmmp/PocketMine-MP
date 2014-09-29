@@ -293,9 +293,13 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
+				$pk2 = clone $pk;
+				$pk2->eid = 0;
+				/*
 				$pk2 = new ContainerSetContentPacket;
 				$pk2->windowid = 0x78; //Armor window id constant
 				$pk2->slots = $armor;
+				*/
 				$player->dataPacket($pk2);
 			}else{
 				$player->dataPacket(clone $pk);

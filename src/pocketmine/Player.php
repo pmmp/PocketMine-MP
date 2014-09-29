@@ -1724,7 +1724,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$slot = $this->inventory->getArmorItem($i);
 					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){ //Removes a piece of armor
 						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 1), $this);
-						$this->inventory->addItem($slot);
+						$sl = $this->inventory->firstEmpty();
+						if($sl === -1){
+							$this->inventory->sendContents($this);
+						}else{
+							$this->inventory->setItem($sl, $slot, $this);
+						}
 						$this->inventory->sendArmorContents($this);
 					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->inventory->first($s)) !== -1){
 						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl), $this) === false){
