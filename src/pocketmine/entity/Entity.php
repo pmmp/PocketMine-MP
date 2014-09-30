@@ -198,7 +198,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->airTicks = $this->namedtag["Air"];
 
 		if(!isset($this->namedtag->OnGround)){
-			$this->namedtag->OnGround = new Byte("OnGround", 1);
+			$this->namedtag->OnGround = new Byte("OnGround", 0);
 		}
 		$this->onGround = $this->namedtag["OnGround"] > 0 ? true : false;
 

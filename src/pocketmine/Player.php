@@ -1171,7 +1171,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$hasUpdate = $this->entityBaseTick();
 		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
-			if($entity instanceof Arrow and $entity->onGround){
+			if($entity instanceof Arrow and $entity->onGround and $this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0){
 				if($entity->dead !== true){
 					$item = Item::get(Item::ARROW, 0, 1);
 					if($this->isSurvival() and !$this->inventory->canAddItem($item)){

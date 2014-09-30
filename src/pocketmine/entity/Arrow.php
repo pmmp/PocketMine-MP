@@ -130,16 +130,6 @@ class Arrow extends Projectile{
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-		$friction = 1 - $this->drag;
-
-		if($this->onGround){
-			$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
-		}
-
-		$this->motionX *= $friction;
-		$this->motionY *= 1 - $this->drag;
-		$this->motionZ *= $friction;
-
 		if($this->onGround){
 			$this->motionX = 0;
 			$this->motionY = 0;

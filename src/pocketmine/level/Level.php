@@ -99,7 +99,7 @@ use pocketmine\utils\TextFormat;
 class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
-	public static $COMPRESSION_LEVEL = 7;
+	public static $COMPRESSION_LEVEL = 8;
 
 
 	const BLOCK_UPDATE_NORMAL = 1;
@@ -433,7 +433,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
 		foreach($this->players as $player){
-			$player->directDataPacket($pk);
+			$player->dataPacket($pk);
 		}
 	}
 
@@ -920,7 +920,7 @@ class Level implements ChunkManager, Metadatable{
 
 				foreach($this->getUsingChunk($pos->x >> 4, $pos->z >> 4) as $player){
 					/** @var Player $player */
-					$player->directDataPacket($pk);
+					$player->dataPacket($pk);
 				}
 			}else{
 				if(!($pos instanceof Position)){
