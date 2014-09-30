@@ -57,6 +57,7 @@ use pocketmine\inventory\CraftingTransactionGroup;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
+use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
@@ -1709,50 +1710,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$tile->spawnTo($this);
 				}
 				break;
+			
 			case ProtocolInfo::PLAYER_ARMOR_EQUIPMENT_PACKET:
-				if($this->spawned === false or $this->blocked === true or $this->dead === true){
-					break;
-				}
-
-				for($i = 0; $i < 4; ++$i){
-					$s = $packet->slots[$i];
-					if($s === 0 or $s === 255){
-						$s = Item::get(Item::AIR, 0, 1);
-					}else{
-						$s = Item::get($s + 256, 0, 1);
-					}
-					$slot = $this->inventory->getArmorItem($i);
-					if($slot->getID() !== Item::AIR and $s->getID() === Item::AIR){ //Removes a piece of armor
-						$this->inventory->setArmorItem($i, Item::get(Item::AIR, 0, 1), $this);
-						$sl = $this->inventory->firstEmpty();
-						if($sl === -1){
-							$this->inventory->sendContents($this);
-						}else{
-							$this->inventory->setItem($sl, $slot, $this);
-						}
-						$this->inventory->sendArmorContents($this);
-					}elseif($s->getID() !== Item::AIR and $slot->getID() === Item::AIR and ($sl = $this->inventory->first($s)) !== -1){
-						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl), $this) === false){
-							$this->inventory->sendArmorContents($this);
-						}else{
-							$this->inventory->setItem($sl, Item::get(Item::AIR, 0, 1), $this);
-							$this->inventory->sendArmorContents($this);
-						}
-					}elseif($s->getID() !== Item::AIR and $slot->getID() !== Item::AIR and ($slot->getID() !== $s->getID() or $slot->getDamage() !== $s->getDamage()) and ($sl = $this->inventory->first($s)) !== -1){
-						if($this->inventory->setArmorItem($i, $this->inventory->getItem($sl), $this) === false){
-							$this->inventory->sendArmorContents($this);
-						}else{
-							$this->inventory->setItem($sl, $slot, $this);
-							$this->inventory->sendArmorContents($this);
-						}
-					}
-				}
-
-				if($this->inAction === true){
-					$this->inAction = false;
-					$this->sendMetadata($this->getViewers());
-				}
 				break;
+
 			case ProtocolInfo::INTERACT_PACKET:
 				if($this->spawned === false or $this->dead === true){
 					break;
@@ -2047,7 +2008,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				if($packet->windowid === 0){ //Our inventory
-					if($packet->slot > $this->inventory->getSize()){
+					if($packet->slot >= $this->inventory->getSize()){
 						break;
 					}
 					if($this->isCreative()){
@@ -2055,10 +2016,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$this->inventory->setItem($packet->slot, $packet->item);
 							$this->inventory->setHotbarSlotIndex($packet->slot, $packet->slot); //links $hotbar[$packet->slot] to $slots[$packet->slot]
 						}
-					}else{
-						
 					}
 					$transaction = new BaseTransaction($this->inventory, $packet->slot, $this->inventory->getItem($packet->slot), $packet->item);
+				}elseif($packet->windowid === 0x78){ //Our armor
+					if($packet->slot >= 4){
+						break;
+					}
+
+					$transaction = new BaseTransaction($this->inventory, $packet->slot + $this->inventory->getSize(), $this->inventory->getArmorItem($packet->slot), $packet->item);
 				}elseif(isset($this->windowIndex[$packet->windowid])){
 					$this->craftingType = 0;
 					$inv = $this->windowIndex[$packet->windowid];
@@ -2077,6 +2042,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($this->currentTransaction instanceof SimpleTransactionGroup){
 						foreach($this->currentTransaction->getInventories() as $inventory){
 							$inventory->sendContents($inventory->getViewers());
+							if($inventory instanceof PlayerInventory){
+								$inventory->sendArmorContents($inventory->getViewers());
+							}
 						}
 					}
 					$this->currentTransaction = new SimpleTransactionGroup($this);

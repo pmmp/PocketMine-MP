@@ -143,6 +143,9 @@ class SimpleTransactionGroup implements TransactionGroup{
 		if($ev->isCancelled()){
 			foreach($this->inventories as $inventory){
 				$inventory->sendContents($inventory->getViewers());
+				if($inventory instanceof PlayerInventory){
+					$inventory->sendArmorContents($inventory->getViewers());
+				}
 			}
 
 			return false;
