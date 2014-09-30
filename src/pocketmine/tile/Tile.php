@@ -54,6 +54,7 @@ abstract class Tile extends Position{
 	public $namedtag;
 	protected $lastUpdate;
 	protected $server;
+	protected $timings;
 
 	/** @var \pocketmine\event\TimingsHandler */
 	public $tickTimer;
@@ -62,6 +63,8 @@ abstract class Tile extends Position{
 		if($chunk === null or $chunk->getProvider() === null){
 			throw new \Exception("Invalid garbage Chunk given to Tile");
 		}
+
+		$this->timings = Timings::getTileEntityTimings($this);
 
 		$this->server = $chunk->getProvider()->getLevel()->getServer();
 		$this->chunk = $chunk;

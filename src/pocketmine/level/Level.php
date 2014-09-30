@@ -742,7 +742,11 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isFullBlock(Vector3 $pos){
-		$bb = $this->getBlock($pos)->getBoundingBox();
+		if($pos instanceof Block){
+			$bb = $pos->getBoundingBox();
+		}else{
+			$bb = $this->getBlock($pos)->getBoundingBox();
+		}
 
 		return $bb instanceof AxisAlignedBB and $bb->getAverageEdgeLength() >= 1;
 	}

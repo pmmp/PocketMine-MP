@@ -170,6 +170,8 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			return false;
 		}
 
+		$this->timings->startTiming();
+
 		$ret = false;
 
 		$fuel = $this->inventory->getFuel();
@@ -247,6 +249,8 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		}
 
 		$this->lastUpdate = microtime(true);
+
+		$this->timings->stopTiming();
 
 		return $ret;
 	}

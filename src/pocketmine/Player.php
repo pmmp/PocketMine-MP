@@ -1167,6 +1167,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 
+		$this->timings->startTiming();
+
 		$this->processMovement();
 
 		$hasUpdate = $this->entityBaseTick();
@@ -1231,6 +1233,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 		}
+
+		$this->timings->stopTiming();
 
 		return true;
 	}

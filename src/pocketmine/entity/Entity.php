@@ -152,11 +152,16 @@ abstract class Entity extends Position implements Metadatable{
 
 	public $closed = false;
 
+	/** @var \pocketmine\event\TimingsHandler */
+	protected $timings;
+
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
 			throw new \Exception("Invalid garbage Chunk given to Entity");
 		}
+
+		$this->timings = Timings::getEntityTimings($this);
 
 		if($this->eyeHeight === null){
 			$this->eyeHeight = $this->height;
@@ -533,7 +538,7 @@ abstract class Entity extends Position implements Metadatable{
 			}
 
 			foreach($this->hasSpawned as $player){
-				$player->directDataPacket($pk);
+				$player->dataPacket($pk);
 			}
 		}
 
@@ -575,10 +580,13 @@ abstract class Entity extends Position implements Metadatable{
 		if($this->closed !== false){
 			return false;
 		}
+		$this->timings->startTiming();
 
 		$hasUpdate = $this->entityBaseTick();
 
 		$this->updateMovement();
+
+		$this->timings->stopTiming();
 
 		//if($this->isStatic())
 		return true;

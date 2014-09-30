@@ -63,45 +63,51 @@ class FallingBlock extends Entity{
 	}
 
 	public function onUpdate(){
-		$this->entityBaseTick();
 
-		if($this->closed or $this->dead){
+		if($this->closed){
 			return false;
 		}
 
-		if($this->ticksLived === 1){
-			$block = $this->level->getBlock($this->floor());
-			if($block->getID() != $this->blockId){
+		$this->timings->startTiming();
+
+		$this->entityBaseTick();
+
+		if(!$this->dead){
+			if($this->ticksLived === 1){
+				$block = $this->level->getBlock($this->floor());
+				if($block->getID() != $this->blockId){
+					$this->kill();
+					return true;
+				}
+				$this->level->setBlock($this->floor(), Block::get(0, true));
+
+			}
+
+			$this->motionY -= $this->gravity;
+
+			$this->move($this->motionX, $this->motionY, $this->motionZ);
+
+			$friction = 1 - $this->drag;
+
+			$this->motionX *= $friction;
+			$this->motionY *= 1 - $this->drag;
+			$this->motionZ *= $friction;
+
+			$pos = $this->floor();
+
+			if($this->onGround){
 				$this->kill();
-				return true;
+				$block = $this->level->getBlock($pos);
+				if(!$block->isFullBlock){
+					$this->getLevel()->dropItem($this, Item::get($this->getBlock(), 0, 1));
+				}else{
+					$this->getLevel()->setBlock($pos, Block::get($this->getBlock(), 0), true);
+				}
 			}
-			$this->level->setBlock($this->floor(), Block::get(0, true));
 
+			$this->updateMovement();
 		}
 
-		$this->motionY -= $this->gravity;
-
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-		$friction = 1 - $this->drag;
-
-		$this->motionX *= $friction;
-		$this->motionY *= 1 - $this->drag;
-		$this->motionZ *= $friction;
-
-		$pos = $this->floor();
-
-		if($this->onGround){
-			$this->kill();
-			$block = $this->level->getBlock($pos);
-			if(!$block->isFullBlock){
-				$this->getLevel()->dropItem($this, Item::get($this->getBlock(), 0, 1));
-			}else{
-				$this->getLevel()->setBlock($pos, Block::get($this->getBlock(), 0), true);
-			}
-		}
-
-		$this->updateMovement();
 
 		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}

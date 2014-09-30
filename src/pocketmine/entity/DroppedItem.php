@@ -66,40 +66,47 @@ class DroppedItem extends Entity{
 	}
 
 	public function onUpdate(){
-		$this->entityBaseTick();
-
 		if($this->closed !== false){
 			return false;
 		}
 
-		if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
-			--$this->pickupDelay;
+		$this->timings->startTiming();
+
+		$this->entityBaseTick();
+
+		if(!$this->dead){
+
+			if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
+				--$this->pickupDelay;
+			}
+
+			$this->motionY -= $this->gravity;
+
+			$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+			$this->move($this->motionX, $this->motionY, $this->motionZ);
+
+			$friction = 1 - $this->drag;
+
+			if($this->onGround){
+				$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
+			}
+
+			$this->motionX *= $friction;
+			$this->motionY *= 1 - $this->drag;
+			$this->motionZ *= $friction;
+
+			if($this->onGround){
+				$this->motionY *= -0.5;
+			}
+
+			if($this->age > 6000){
+				$this->kill();
+			}
+
+			$this->updateMovement();
 		}
 
-		$this->motionY -= $this->gravity;
-
-		$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-		$friction = 1 - $this->drag;
-
-		if($this->onGround){
-			$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
-		}
-
-		$this->motionX *= $friction;
-		$this->motionY *= 1 - $this->drag;
-		$this->motionZ *= $friction;
-
-		if($this->onGround){
-			$this->motionY *= -0.5;
-		}
-
-		if($this->age > 6000){
-			$this->kill();
-		}
-
-		$this->updateMovement();
+		$this->timings->stopTiming();
 
 		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}

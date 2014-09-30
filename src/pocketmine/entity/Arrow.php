@@ -65,87 +65,97 @@ class Arrow extends Projectile{
 	}
 
 	public function onUpdate(){
-		$this->entityBaseTick();
-
-		if($this->closed !== false){
+		if($this->closed){
 			return false;
 		}
 
-		$movingObjectPosition = null;
+		$this->timings->startTiming();
 
-		$this->motionY -= $this->gravity;
+		$this->entityBaseTick();
 
-		$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+		if(!$this->dead){
 
-		$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
+			$movingObjectPosition = null;
 
-		$list = $this->getLevel()->getCollidingEntities($this->boundingBox->addCoord($this->motionX, $this->motionY, $this->motionZ)->expand(1, 1, 1), $this);
+			$this->motionY -= $this->gravity;
 
-		$nearDistance = PHP_INT_MAX;
-		$nearEntity = null;
+			$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
-		foreach($list as $entity){
-			if(/*!$entity->canCollideWith($this) or */($entity === $this->shootingEntity and $this->ticksLived < 5)){
-				continue;
-			}
+			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
 
-			$axisalignedbb = $entity->boundingBox->grow(0.3, 0.3, 0.3);
-			$ob = $axisalignedbb->calculateIntercept($this, $moveVector);
+			$list = $this->getLevel()->getCollidingEntities($this->boundingBox->addCoord($this->motionX, $this->motionY, $this->motionZ)->expand(1, 1, 1), $this);
 
-			if($ob === null){
-				continue;
-			}
+			$nearDistance = PHP_INT_MAX;
+			$nearEntity = null;
 
-			$distance = $this->distance($ob->hitVector);
+			foreach($list as $entity){
+				if(/*!$entity->canCollideWith($this) or */
+				($entity === $this->shootingEntity and $this->ticksLived < 5)
+				){
+					continue;
+				}
 
-			if($distance < $nearDistance){
-				$nearDistance = $distance;
-				$nearEntity = $entity;
-			}
-		}
+				$axisalignedbb = $entity->boundingBox->grow(0.3, 0.3, 0.3);
+				$ob = $axisalignedbb->calculateIntercept($this, $moveVector);
 
-		if($nearEntity !== null){
-			$movingObjectPosition = MovingObjectPosition::fromEntity($nearEntity);
-		}
+				if($ob === null){
+					continue;
+				}
 
-		if($movingObjectPosition !== null){
-			if($movingObjectPosition->entityHit !== null){
-				$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
-				$damage = ceil($motion * $this->damage);
+				$distance = $this->distance($ob->hitVector);
 
-
-				$ev = new EntityDamageByEntityEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
-
-				$this->server->getPluginManager()->callEvent($ev);
-
-				if(!$ev->isCancelled()){
-					$movingObjectPosition->entityHit->attack($damage, $ev);
-					if($this->fireTicks > 0){
-						$movingObjectPosition->entityHit->setOnFire(5);
-					}
-					$this->kill();
+				if($distance < $nearDistance){
+					$nearDistance = $distance;
+					$nearEntity = $entity;
 				}
 			}
+
+			if($nearEntity !== null){
+				$movingObjectPosition = MovingObjectPosition::fromEntity($nearEntity);
+			}
+
+			if($movingObjectPosition !== null){
+				if($movingObjectPosition->entityHit !== null){
+					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
+					$damage = ceil($motion * $this->damage);
+
+
+					$ev = new EntityDamageByEntityEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+
+					$this->server->getPluginManager()->callEvent($ev);
+
+					if(!$ev->isCancelled()){
+						$movingObjectPosition->entityHit->attack($damage, $ev);
+						if($this->fireTicks > 0){
+							$movingObjectPosition->entityHit->setOnFire(5);
+						}
+						$this->kill();
+					}
+				}
+			}
+
+			$this->move($this->motionX, $this->motionY, $this->motionZ);
+
+			if($this->onGround){
+				$this->motionX = 0;
+				$this->motionY = 0;
+				$this->motionZ = 0;
+			}
+
+			if($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){
+				$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
+				$this->yaw = (atan2($this->motionX, $this->motionZ) * 180 / M_PI);
+				$this->pitch = (atan2($this->motionY, $f) * 180 / M_PI);
+			}
+
+			if($this->age > 1200){
+				$this->kill();
+			}
+			$this->updateMovement();
+
 		}
 
-		$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-		if($this->onGround){
-			$this->motionX = 0;
-			$this->motionY = 0;
-			$this->motionZ = 0;
-		}
-
-		if($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){
-			$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
-			$this->yaw = (atan2($this->motionX, $this->motionZ) * 180 / M_PI);
-			$this->pitch = (atan2($this->motionY, $f) * 180 / M_PI);
-		}
-
-		if($this->age > 1200){
-			$this->kill();
-		}
-		$this->updateMovement();
+		$this->timings->stopTiming();
 
 		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}
