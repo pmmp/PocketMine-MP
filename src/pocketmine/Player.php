@@ -661,12 +661,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->inventory->sendContents($this);
 			$this->inventory->sendArmorContents($this);
 
-			$this->spawnToAll();
-
 			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
 			if(strlen(trim($ev->getJoinMessage())) > 0){
 				$this->server->broadcastMessage($ev->getJoinMessage());
 			}
+
+			$this->spawnToAll();
 
 			if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
 				$this->server->getUpdater()->showPlayerUpdate($this);
@@ -1171,8 +1171,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->processMovement();
 
-		$hasUpdate = $this->entityBaseTick();
-		foreach($this->getLevel()->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
+		$this->entityBaseTick();
+		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
 			if($entity instanceof Arrow and $entity->onGround and $this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0){
 				if($entity->dead !== true){
 					$item = Item::get(Item::ARROW, 0, 1);
@@ -2417,6 +2417,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
+
+		$this->despawnFromAll();
 
 	}
 

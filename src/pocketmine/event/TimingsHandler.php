@@ -101,7 +101,7 @@ class TimingsHandler{
 		if(PluginManager::$useTimings){
 			foreach(self::$HANDLERS as $timings){
 				if($timings->curTickTotal > 0.05){
-					$timings->violations += ceil($timings->curTickTotal / 0.05);
+					$timings->violations += round($timings->curTickTotal / 0.05);
 				}
 				$timings->curTickTotal = 0;
 				$timings->timingDepth = 0;

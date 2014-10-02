@@ -77,15 +77,15 @@ class GenerationThread extends Thread{
 		return $this->logger;
 	}
 
-	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader){
+	public function __construct(\Threaded $internalThreaded, \Threaded $externalThreaded, \ThreadedLogger $logger, \ClassLoader $loader){
 		$this->loader = $loader;
 		$this->logger = $logger;
 		$loadPaths = [];
 		$this->addDependency($loadPaths, new \ReflectionClass($this->loader));
 		$this->loadPaths = array_reverse($loadPaths);
 
-		$this->externalQueue = new \Threaded();
-		$this->internalQueue = new \Threaded();
+		$this->externalQueue = $internalThreaded;
+		$this->internalQueue = $externalThreaded;
 
 		$this->start();
 	}

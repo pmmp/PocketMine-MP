@@ -29,6 +29,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\String;
+use pocketmine\Player;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
@@ -268,6 +269,9 @@ abstract class BaseFullChunk implements FullChunk{
 		}
 		if($this->getProvider()->unloadChunk($this->getX(), $this->getZ(), $safe)){
 			foreach($this->getEntities() as $entity){
+				if($entity instanceof Player){
+					continue;
+				}
 				$entity->close();
 			}
 			foreach($this->getTiles() as $tile){

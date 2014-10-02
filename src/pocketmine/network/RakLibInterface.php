@@ -88,7 +88,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	private $players = [];
 
 	/** @var \SplObjectStorage */
-	private $identifers;
+	private $identifiers;
 
 	/** @var int[] */
 	private $identifiersACK = [];
@@ -98,12 +98,18 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 	private $upload = 0;
 	private $download = 0;
+	
+	private $internalThreaded;
+	private $externalThreaded;
 
 	public function __construct(Server $server){
 		$this->server = $server;
-		$this->identifers = new \SplObjectStorage();
+		$this->identifiers = new \SplObjectStorage();
+		
+		$this->internalThreaded = new \Threaded();
+		$this->externalThreaded = new \Threaded();
 
-		$server = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
+		$server = new RakLibServer($this->internalThreaded, $this->externalThreaded, $this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
 		$this->interface = new ServerHandler($server, $this);
 		$this->setName($this->server->getMotd());
 	}
@@ -128,7 +134,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	public function closeSession($identifier, $reason){
 		if(isset($this->players[$identifier])){
 			$player = $this->players[$identifier];
-			$this->identifers->detach($player);
+			$this->identifiers->detach($player);
 			unset($this->players[$identifier]);
 			unset($this->identifiersACK[$identifier]);
 			$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $reason);
@@ -136,11 +142,11 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function close(Player $player, $reason = "unknown reason"){
-		if(isset($this->identifers[$player])){
-			unset($this->players[$this->identifers[$player]]);
-			unset($this->identifiersACK[$this->identifers[$player]]);
-			$this->interface->closeSession($this->identifers[$player], $reason);
-			$this->identifers->detach($player);
+		if(isset($this->identifiers[$player])){
+			unset($this->players[$this->identifiers[$player]]);
+			unset($this->identifiersACK[$this->identifiers[$player]]);
+			$this->interface->closeSession($this->identifiers[$player], $reason);
+			$this->identifiers->detach($player);
 		}
 	}
 
@@ -156,7 +162,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$player = new Player($this, null, $address, $port);
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
-		$this->identifers->attach($player, $identifier);
+		$this->identifiers->attach($player, $identifier);
 		$this->server->addPlayer($identifier, $player);
 	}
 
@@ -207,8 +213,8 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
-		if(isset($this->identifers[$player])){
-			$identifier = $this->identifers[$player];
+		if(isset($this->identifiers[$player])){
+			$identifier = $this->identifiers[$player];
 			$packet->encode();
 			$pk = new EncapsulatedPacket();
 			$pk->buffer = $packet->buffer;

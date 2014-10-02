@@ -141,6 +141,7 @@ class Server{
 
 	/** @var CommandReader */
 	private $console = null;
+	private $consoleThreaded;
 
 	/** @var SimpleCommandMap */
 	private $commandMap = null;
@@ -1449,7 +1450,8 @@ class Server{
 		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 		$this->banByIP->load();
 
-		$this->console = new CommandReader();
+		$this->consoleThreaded = new \Threaded();
+		$this->console = new CommandReader($this->consoleThreaded);
 
 		$version = new VersionString($this->getPocketMineVersion());
 		$this->logger->info("Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());

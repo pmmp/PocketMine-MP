@@ -459,6 +459,8 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function entityBaseTick(){
+
+		Timings::$tickEntityTimer->startTiming();
 		//TODO: check vehicles
 
 		$this->justCreated = false;
@@ -466,7 +468,7 @@ abstract class Entity extends Position implements Metadatable{
 
 		if($this->dead === true and !$isPlayer){
 			$this->close();
-
+			Timings::$tickEntityTimer->stopTiming();
 			return false;
 		}elseif($this->dead === true){
 			$this->despawnFromAll();
@@ -509,6 +511,8 @@ abstract class Entity extends Position implements Metadatable{
 
 		++$this->age;
 		++$this->ticksLived;
+
+		Timings::$tickEntityTimer->stopTiming();
 	}
 
 	public function updateMovement(){
@@ -1163,9 +1167,6 @@ abstract class Entity extends Position implements Metadatable{
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
 			unset($this->level->updateEntities[$this->id]);
-			if($this->chunk instanceof FullChunk){
-				$this->chunk->removeEntity($this);
-			}
 			if(($level = $this->getLevel()) instanceof Level){
 				$level->removeEntity($this);
 			}

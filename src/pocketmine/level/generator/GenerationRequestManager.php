@@ -33,12 +33,17 @@ class GenerationRequestManager{
 	/** @var GenerationThread */
 	protected $generationThread;
 
+	private $internalThreaded;
+	private $externalThreaded;
+
 	/**
 	 * @param Server $server
 	 */
 	public function __construct(Server $server){
 		$this->server = $server;
-		$this->generationThread = new GenerationThread($server->getLogger(), $server->getLoader());
+		$this->internalThreaded = new \Threaded();
+		$this->externalThreaded = new \Threaded();
+		$this->generationThread = new GenerationThread($this->internalThreaded, $this->externalThreaded, $server->getLogger(), $server->getLoader());
 	}
 
 	/**

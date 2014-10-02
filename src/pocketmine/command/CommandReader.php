@@ -31,13 +31,15 @@ class CommandReader extends Thread{
 	private $readline;
 
 	/** @var \Threaded */
-	private $buffer;
+	protected $buffer;
 
 	/**
+	 * @param \Threaded $threaded
 	 * @param string $stream
 	 */
-	public function __construct($stream = "php://stdin"){
+	public function __construct(\Threaded $threaded, $stream = "php://stdin"){
 		$this->stream = $stream;
+		$this->buffer = $threaded;
 		$this->start();
 	}
 
@@ -70,7 +72,6 @@ class CommandReader extends Thread{
 	}
 
 	public function run(){
-		$this->buffer = new \Threaded;
 		$opts = getopt("", ["disable-readline"]);
 		if(extension_loaded("readline") and $this->stream === "php://stdin" and !isset($opts["disable-readline"])){
 			$this->readline = true;

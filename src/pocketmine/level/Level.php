@@ -519,13 +519,13 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
 		//if(count($this->updateEntities) > 0){
-			//Timings::$tickEntityTimer->startTiming();
+			Timings::$tickEntityTimer->startTiming();
 			foreach($this->entities as $id => $entity){
-				if($entity->onUpdate() !== true){
-					unset($this->updateEntities[$id]);
+				if(!$entity->closed){
+					$entity->onUpdate();
 				}
 			}
-			//Timings::$tickEntityTimer->stopTiming();
+			Timings::$tickEntityTimer->stopTiming();
 		//}
 		$this->timings->entityTick->stopTiming();
 
@@ -1706,8 +1706,8 @@ class Level implements ChunkManager, Metadatable{
 			$entity->kill();
 		}
 
-		if($this->isChunkLoaded($entity->chunkX, $entity->chunkZ)){
-			$this->getChunk($entity->chunkX, $entity->chunkZ, true)->removeEntity($entity);
+		if(($chunk = $this->getChunk($entity->chunkX, $entity->chunkZ)) instanceof FullChunk){
+			$chunk->removeEntity($entity);
 		}
 
 		unset($this->entities[$entity->getID()]);
