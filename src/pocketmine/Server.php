@@ -1648,11 +1648,17 @@ class Server{
 
 	/**
 	 * @param $message
+	 * @param Player[]|null $recipients
 	 *
 	 * @return int
 	 */
-	public function broadcastMessage($message){
-		return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
+	public function broadcastMessage($message, $recipients = null){
+		if(!is_array($recipients)){
+			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
+		}
+		foreach($recipients as $recipient){
+			$recipient->sendMessage($message);
+		}
 	}
 
 	/**
