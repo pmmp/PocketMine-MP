@@ -214,16 +214,38 @@ namespace pocketmine {
 				}
 				break;
 			case 'linux':
-				exec("date +%s", $buffer);
-				$offset = round((intval(trim($buffer[0])) - time()) / 60) * 60;
+				// Ubuntu / Debian.
+				if(file_exists('/etc/timezone')){
+					$data = file_get_contents('/etc/timezone');
+					if($data){
+						return $data;
+					}
+				}
 
-				$daylight = (integer) date("I");
-				$timezone = timezone_name_from_abbr("", $offset, $daylight);
+				// RHEL / CentOS
+				if(file_exists('/etc/sysconfig/clock')){
+					$data = parse_ini_file('/etc/sysconfig/clock');
+					if(!empty($data['ZONE'])){
+						return $data['ZONE'];
+					}
+				}
 
-				return $timezone;
+				return false;
+				break;
+			case 'mac':
+				if(is_link('/etc/localtime')){
+					$filename = readlink('/etc/localtime');
+					if (strpos($filename, '/usr/share/zoneinfo/') === 0){
+						$timezone = substr($filename, 20);
+						return $timezone;
+					}
+				}
+
+				return false;
 				break;
 			default:
 				return false;
+				break;
 		}
 
 		return false;
