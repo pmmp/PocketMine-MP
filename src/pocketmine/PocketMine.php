@@ -111,36 +111,6 @@ namespace pocketmine {
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
-	if(ini_get("date.timezone") == ""){ //No Timezone set
-		date_default_timezone_set("GMT");
-		if(strpos(" " . strtoupper(php_uname("s")), " WIN") !== false){
-			$time = time();
-			$time -= $time % 60;
-			//TODO: Parse different time & date formats by region. ¬¬ world
-			//Example: USA
-			@exec("time.exe /T", $hour);
-			$i = array_map("intval", explode(":", trim($hour[0])));
-			@exec("date.exe /T", $date);
-			$j = array_map("intval", explode(substr($date[0], 2, 1), trim($date[0])));
-			$offset = @round((mktime($i[0], $i[1], 0, $j[1], $j[0], $j[2]) - $time) / 60) * 60;
-		}else{
-			@exec("date +%s", $t);
-			$offset = @round((intval(trim($t[0])) - time()) / 60) * 60;
-		}
-
-		$daylight = (int) date("I");
-		$d = timezone_name_from_abbr("", $offset, $daylight);
-		@ini_set("date.timezone", $d);
-		@date_default_timezone_set($d);
-	}else{
-		$d = @date_default_timezone_get();
-		if(strpos($d, "/") === false){
-			$d = timezone_name_from_abbr($d);
-			@ini_set("date.timezone", $d);
-			@date_default_timezone_set($d);
-		}
-	}
-
 	gc_enable();
 	error_reporting(-1);
 	ini_set("allow_url_fopen", 1);
@@ -158,7 +128,145 @@ namespace pocketmine {
 
 	define("pocketmine\\ANSI", ((strpos(strtoupper(php_uname("s")), "WIN") === false or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"])));
 
+	//Logger has a dependency on timezone, so we'll set it to UTC until we can get the actual timezone.
+	date_default_timezone_set("UTC");
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
+
+	if(!ini_get("date.timezone")){
+		if($timezone = detect_system_timezone() and date_default_timezone_set($timezone)){
+			//Success! Timezone has already been set and validated in the if statement.
+			//This here is just for redundancy just in case some stupid program wants to read timezone data from the ini.
+			ini_set("date.timezone", $timezone);
+		}else{
+			//If system timezone detection fails or timezone is an invalid value.
+			if($response = Utils::getURL("http://ip-api.com/json")
+				and $ip_geolocation_data = json_decode($response, true)
+				and $ip_geolocation_data['status'] != 'fail'
+				and date_default_timezone_set($ip_geolocation_data['timezone']))
+			{
+				//Again, for redundancy.
+				ini_set("date.timezone", $ip_geolocation_data['timezone']);
+			}else{
+				ini_set("date.timezone", "UTC");
+				date_default_timezone_set("UTC");
+				$logger->warning("Timezone could not be automatically determined. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
+			}
+		}
+	}else{
+		/*
+		 * This is here so that stupid idiots don't come to us complaining and fill up the issue tracker when they put an incorrect timezone abbreviation in php.ini apparently.
+		 */
+		$default_timezone = date_default_timezone_get();
+		if(strpos($default_timezone, "/") === false){
+			$default_timezone = timezone_name_from_abbr($default_timezone);
+			ini_set("date.timezone", $default_timezone);
+			date_default_timezone_set($default_timezone);
+		}
+	}
+
+	function detect_system_timezone(){
+		switch(Utils::getOS()){
+			case 'win':
+				$regex = '/(?:Time Zone:\s*\()(UTC)(\+*\-*\d*\d*\:*\d*\d*)(?:\))/';
+
+				exec("systeminfo", $output);
+
+				$string = implode("\n", $output);
+
+				//Detect the Time Zone string in systeminfo
+				preg_match($regex, $string, $matches);
+
+				$offset = $matches[2];
+
+				if($offset == ""){
+					return "UTC";
+				}
+
+				return parse_offset($offset);
+				break;
+			case 'linux':
+				// Ubuntu / Debian.
+				if(file_exists('/etc/timezone')){
+					$data = file_get_contents('/etc/timezone');
+					if($data){
+						return $data;
+					}
+				}
+
+				// RHEL / CentOS
+				if(file_exists('/etc/sysconfig/clock')){
+					$data = parse_ini_file('/etc/sysconfig/clock');
+					if(!empty($data['ZONE'])){
+						return $data['ZONE'];
+					}
+				}
+
+				//Portable method for incompatible linux distributions.
+
+				$offset = exec('date +%:z');
+
+				if($offset == "+00:00"){
+					return "UTC";
+				}
+
+				return parse_offset($offset);
+				break;
+			case 'mac':
+				if(is_link('/etc/localtime')){
+					$filename = readlink('/etc/localtime');
+					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
+						$timezone = substr($filename, 20);
+						return $timezone;
+					}
+				}
+
+				return false;
+				break;
+			default:
+				return false;
+				break;
+		}
+	}
+
+	/**
+	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
+	 * @return string
+	 */
+	function parse_offset($offset){
+		//Make signed offsets unsigned for date_parse
+		if(strpos($offset, '-') !== false){
+			$negative_offset = true;
+			$offset = str_replace('-', '', $offset);
+		}else{
+			if(strpos($offset, '+') !== false){
+				$negative_offset = false;
+				$offset = str_replace('+', '', $offset);
+			}else{
+				return false;
+			}
+		}
+
+		$parsed = date_parse($offset);
+		$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
+
+		//After date_parse is done, put the sign back
+		if($negative_offset == true){
+			$offset = -abs($offset);
+		}
+
+		//And then, look the offset up.
+		//timezone_name_from_abbr is not used because it returns false on some(most) offsets because it's mapping function is weird.
+		//That's been a bug in PHP since 2008!
+		foreach(timezone_abbreviations_list() as $zones){
+			foreach($zones as $timezone){
+				if($timezone['offset'] == $offset){
+					return $timezone['timezone_id'];
+				}
+			}
+		}
+
+		return false;
+	}
 
 	if(isset($opts["enable-profiler"])){
 		if(function_exists("profiler_enable")){
