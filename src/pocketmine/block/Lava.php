@@ -47,7 +47,6 @@ class Lava extends Liquid{
 		if(!$ev->isCancelled()){
 			$entity->attack($ev->getFinalDamage(), $ev);
 		}
-		$entity->attack(4, EntityDamageEvent::CAUSE_LAVA);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
