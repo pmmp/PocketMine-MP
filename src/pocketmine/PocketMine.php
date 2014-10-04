@@ -164,8 +164,7 @@ namespace pocketmine {
 		}
 	}
 
-	function detect_system_timezone()
-	{
+	function detect_system_timezone(){
 		switch(Utils::getOS()){
 			case 'win':
 				$regex = '/(?:Time Zone:\s*\()(UTC)(\+*\-*\d*\d*\:*\d*\d*)(?:\))/';
@@ -181,37 +180,9 @@ namespace pocketmine {
 
 				if($offset == ""){
 					return "UTC";
-				}else{
-					//Make signed offsets unsigned for date_parse
-					if(strpos($offset, '-') !== false){
-						$negative_offset = true;
-						$offset = str_replace('-', '', $offset);
-					}else if(strpos($offset, '+') !== false){
-						$negative_offset = false;
-						$offset = str_replace('+', '', $offset);
-					}else{
-						return false;
-					}
-
-					$parsed = date_parse($offset);
-					$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
-
-					//After date_parse is done, put the sign back
-					if($negative_offset == true){
-						$offset = -abs($offset);
-					}
-
-					//And then, look the offset up.
-					//timezone_name_from_abbr is not used because it returns false on some(most) offsets because it's mapping function is weird.
-					//That's been a bug in PHP since 2008!
-					foreach(timezone_abbreviations_list() as $zones){
-						foreach($zones as $timezone){
-							if($timezone['offset'] == $offset){
-								return $timezone['timezone_id'];
-							}
-						}
-					}
 				}
+
+				return parse_offset($offset);
 				break;
 			case 'linux':
 				// Ubuntu / Debian.
@@ -236,44 +207,14 @@ namespace pocketmine {
 
 				if($offset == "+00:00"){
 					return "UTC";
-				}else{
-					//Make signed offsets unsigned for date_parse
-					if(strpos($offset, '-') !== false){
-						$negative_offset = true;
-						$offset = str_replace('-', '', $offset);
-					}else if(strpos($offset, '+') !== false){
-						$negative_offset = false;
-						$offset = str_replace('+', '', $offset);
-					}else{
-						return false;
-					}
-
-					$parsed = date_parse($offset);
-					$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
-
-					//After date_parse is done, put the sign back
-					if($negative_offset == true){
-						$offset = -abs($offset);
-					}
-
-					//And then, look the offset up.
-					//timezone_name_from_abbr is not used because it returns false on some(most) offsets because it's mapping function is weird.
-					//That's been a bug in PHP since 2008!
-					foreach(timezone_abbreviations_list() as $zones){
-						foreach($zones as $timezone){
-							if($timezone['offset'] == $offset){
-								return $timezone['timezone_id'];
-							}
-						}
-					}
 				}
 
-				return false;
+				return parse_offset($offset);
 				break;
 			case 'mac':
 				if(is_link('/etc/localtime')){
 					$filename = readlink('/etc/localtime');
-					if (strpos($filename, '/usr/share/zoneinfo/') === 0){
+					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
 						$timezone = substr($filename, 20);
 						return $timezone;
 					}
@@ -284,6 +225,44 @@ namespace pocketmine {
 			default:
 				return false;
 				break;
+		}
+	}
+
+	/**
+	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
+	 * @return string
+	 */
+	function parse_offset($offset){
+		//Make signed offsets unsigned for date_parse
+		if(strpos($offset, '-') !== false){
+			$negative_offset = true;
+			$offset = str_replace('-', '', $offset);
+		}else{
+			if(strpos($offset, '+') !== false){
+				$negative_offset = false;
+				$offset = str_replace('+', '', $offset);
+			}else{
+				return false;
+			}
+		}
+
+		$parsed = date_parse($offset);
+		$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
+
+		//After date_parse is done, put the sign back
+		if($negative_offset == true){
+			$offset = -abs($offset);
+		}
+
+		//And then, look the offset up.
+		//timezone_name_from_abbr is not used because it returns false on some(most) offsets because it's mapping function is weird.
+		//That's been a bug in PHP since 2008!
+		foreach(timezone_abbreviations_list() as $zones){
+			foreach($zones as $timezone){
+				if($timezone['offset'] == $offset){
+					return $timezone['timezone_id'];
+				}
+			}
 		}
 
 		return false;
