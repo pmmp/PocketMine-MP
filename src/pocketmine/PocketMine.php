@@ -133,7 +133,7 @@ namespace pocketmine {
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
 
 	if(!ini_get("date.timezone")){
-		if($timezone = detect_system_timezone() and date_default_timezone_set($timezone)){
+		if(($timezone = trim(detect_system_timezone())) and date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some stupid program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
@@ -203,7 +203,7 @@ namespace pocketmine {
 
 				//Portable method for incompatible linux distributions.
 
-				$offset = exec('date +%:z');
+				$offset = trim(exec('date +%:z'));
 
 				if($offset == "+00:00"){
 					return "UTC";
