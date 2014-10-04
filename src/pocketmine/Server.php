@@ -915,7 +915,7 @@ class Server{
 	 * @return bool
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
-		if($level->unload($forceUnload) === true and $this->isLevelLoaded($level->getFolderName())){
+		if($level->unload($forceUnload) === true){
 			unset($this->levels[$level->getID()]);
 
 			return true;
