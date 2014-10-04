@@ -230,6 +230,44 @@ namespace pocketmine {
 					}
 				}
 
+				//Portable method for incompatible linux distributions.
+
+				$offset = exec('date +%:z');
+
+				if($offset == "+00:00"){
+					return "UTC";
+				}else{
+					//Make signed offsets unsigned for date_parse
+					if(strpos($offset, '-') !== false){
+						$negative_offset = true;
+						$offset = str_replace('-', '', $offset);
+					}else if(strpos($offset, '+') !== false){
+						$negative_offset = false;
+						$offset = str_replace('+', '', $offset);
+					}else{
+						return false;
+					}
+
+					$parsed = date_parse($offset);
+					$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
+
+					//After date_parse is done, put the sign back
+					if($negative_offset == true){
+						$offset = -abs($offset);
+					}
+
+					//And then, look the offset up.
+					//timezone_name_from_abbr is not used because it returns false on some(most) offsets because it's mapping function is weird.
+					//That's been a bug in PHP since 2008!
+					foreach(timezone_abbreviations_list() as $zones){
+						foreach($zones as $timezone){
+							if($timezone['offset'] == $offset){
+								return $timezone['timezone_id'];
+							}
+						}
+					}
+				}
+
 				return false;
 				break;
 			case 'mac':
