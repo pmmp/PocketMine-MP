@@ -612,7 +612,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$Z = null;
 				Level::getXZ($index, $X, $Z);
 				if(!$this->getLevel()->isChunkPopulated($X, $Z)){
-					continue;
+					if($this->spawned === true){
+						continue;
+					}else{
+						break;
+					}
 				}
 
 				unset($this->loadQueue[$index]);
@@ -704,7 +708,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$chunkZ = $Z + $centerZ;
 				$index = Level::chunkHash($chunkX, $chunkZ);
 				if(!isset($this->usedChunks[$index])){
-					if($this->level->isChunkPopulated($chunkX, $chunkZ)){
+					if($this->spawned === false or $this->level->isChunkPopulated($chunkX, $chunkZ)){
 						$newOrder[$index] = $distance;
 					}else{
 						$generateQueue->insert([$chunkX, $chunkZ], $distance);
@@ -729,7 +733,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$i = 0;
-		while(count($this->loadQueue) < 8 and $generateQueue->count() > 0 and $i < 32){
+		while($generateQueue->count() > 0 and $i < 32){
 			$d = $generateQueue->extract();
 			$this->getLevel()->generateChunk($d[0], $d[1]);
 			++$i;
@@ -2240,7 +2244,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 		$this->tasks = [];
 
-		if($this->connected === true){
+		if($this->connected and !$this->closed){
 			$this->connected = false;
 
 			if($this->username != ""){
