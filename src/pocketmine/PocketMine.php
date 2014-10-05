@@ -133,7 +133,7 @@ namespace pocketmine {
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
 
 	if(!ini_get("date.timezone")){
-		if(($timezone = trim(detect_system_timezone())) and date_default_timezone_set($timezone)){
+		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some stupid program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
@@ -171,7 +171,7 @@ namespace pocketmine {
 
 				exec("systeminfo", $output);
 
-				$string = implode("\n", $output);
+				$string = trim(implode("\n", $output));
 
 				//Detect the Time Zone string in systeminfo
 				preg_match($regex, $string, $matches);
@@ -189,7 +189,7 @@ namespace pocketmine {
 				if(file_exists('/etc/timezone')){
 					$data = file_get_contents('/etc/timezone');
 					if($data){
-						return $data;
+						return trim($data);
 					}
 				}
 
@@ -197,7 +197,7 @@ namespace pocketmine {
 				if(file_exists('/etc/sysconfig/clock')){
 					$data = parse_ini_file('/etc/sysconfig/clock');
 					if(!empty($data['ZONE'])){
-						return $data['ZONE'];
+						return trim($data['ZONE']);
 					}
 				}
 
@@ -216,7 +216,7 @@ namespace pocketmine {
 					$filename = readlink('/etc/localtime');
 					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
 						$timezone = substr($filename, 20);
-						return $timezone;
+						return trim($timezone);
 					}
 				}
 
