@@ -89,6 +89,10 @@ auto-updater:
  suggest-channels: true
  host: www.pocketmine.net
 
+movement-check:
+ #Teleport players back if they move into a block
+ calculate-hitboxes: true
+
 aliases:
  #Examples:
  #showtheversion: version
