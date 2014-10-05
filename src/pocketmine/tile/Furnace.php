@@ -32,6 +32,7 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
 class Furnace extends Tile implements InventoryHolder, Container{
@@ -39,7 +40,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	protected $inventory;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		$nbt["id"] = Tile::FURNACE;
+		$nbt->id = new String("id", Tile::FURNACE);
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new FurnaceInventory($this);
 

@@ -267,17 +267,24 @@ abstract class BaseFullChunk implements FullChunk{
 		if($save === true){
 			$level->saveChunk($this->getX(), $this->getZ());
 		}
-		if($this->getProvider()->unloadChunk($this->getX(), $this->getZ(), $safe)){
+		if($safe === true){
 			foreach($this->getEntities() as $entity){
 				if($entity instanceof Player){
-					continue;
+					return false;
 				}
-				$entity->close();
-			}
-			foreach($this->getTiles() as $tile){
-				$tile->close();
 			}
 		}
+
+		foreach($this->getEntities() as $entity){
+			if($entity instanceof Player){
+				continue;
+			}
+			$entity->close();
+		}
+		foreach($this->getTiles() as $tile){
+			$tile->close();
+		}
+		return true;
 	}
 
 	public function getBlockIdArray(){

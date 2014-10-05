@@ -183,6 +183,7 @@ class McRegion extends BaseLevelProvider{
 
 		if($chunk instanceof FullChunk){
 			$this->chunks[$index] = $chunk;
+			return true;
 		}else{
 			return false;
 		}
@@ -190,26 +191,7 @@ class McRegion extends BaseLevelProvider{
 
 	public function unloadChunk($x, $z, $safe = true){
 		$chunk = $this->getChunk($x, $z, false);
-		if($chunk instanceof FullChunk){
-			if($safe === true){
-				foreach($chunk->getEntities() as $entity){
-					if($entity instanceof Player){
-						return false;
-					}
-				}
-			}
-
-			foreach($chunk->getEntities() as $entity){
-				if($entity instanceof Player){
-					continue;
-				}
-				$entity->close();
-			}
-
-			foreach($chunk->getTiles() as $tile){
-				$tile->close();
-			}
-
+		if($chunk instanceof FullChunk and $chunk->unload(false, $safe)){
 			$this->chunks[$index = Level::chunkHash($x, $z)] = null;
 
 			unset($this->chunks[$index]);

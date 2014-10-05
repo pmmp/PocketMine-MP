@@ -31,6 +31,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Int;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
@@ -88,9 +89,9 @@ abstract class Tile extends Position{
 	}
 
 	public function saveNBT(){
-		$this->namedtag["x"] = $this->x;
-		$this->namedtag["y"] = $this->y;
-		$this->namedtag["z"] = $this->z;
+		$this->namedtag->x = new Int("x", $this->x);
+		$this->namedtag->y = new Int("y", $this->y);
+		$this->namedtag->z = new Int("z", $this->z);
 	}
 
 	public function onUpdate(){

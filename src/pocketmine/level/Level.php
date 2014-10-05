@@ -1706,10 +1706,6 @@ class Level implements ChunkManager, Metadatable{
 			$entity->kill();
 		}
 
-		if(($chunk = $this->getChunk($entity->chunkX, $entity->chunkZ)) instanceof FullChunk){
-			$chunk->removeEntity($entity);
-		}
-
 		unset($this->entities[$entity->getID()]);
 	}
 
@@ -1749,9 +1745,7 @@ class Level implements ChunkManager, Metadatable{
 		if($tile->getLevel() !== $this){
 			throw new \RuntimeException("Invalid Tile level");
 		}
-		if($this->isChunkLoaded($tile->chunk->getX(), $tile->chunk->getZ())){
-			$this->getChunk($tile->chunk->getX(), $tile->chunk->getZ(), true)->removeTile($tile);
-		}
+
 		unset($this->tiles[$tile->getID()]);
 	}
 
