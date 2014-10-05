@@ -1104,10 +1104,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
-		if($this->server->getProperty("movement-check.calculate-hitboxes",true) === false){
-			return;
-		}
-
 		$revert = false;
 
 		if($distance > 100){
