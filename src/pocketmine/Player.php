@@ -2241,6 +2241,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->tasks = [];
 
 		if($this->connected === true){
+			$this->connected = false;
+
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->server->getAutoSave() and $this->loggedIn === true){
@@ -2248,7 +2250,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->connected = false;
 			$this->interface->close($this, $reason);
 			$this->getLevel()->freeAllChunks($this);
 

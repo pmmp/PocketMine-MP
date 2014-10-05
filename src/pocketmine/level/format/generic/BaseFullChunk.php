@@ -28,7 +28,6 @@ use pocketmine\entity\FallingBlock;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\String;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Furnace;
