@@ -1962,7 +1962,7 @@ class Server{
 			}elseif(\Phar::running(true) == ""){
 				return;
 			}
-			if($dump->getData()["type"] === "E_PARSE" or $dump->getData()["type"] === "E_COMPILE_ERROR"){
+			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
 				return;
 			}
 
