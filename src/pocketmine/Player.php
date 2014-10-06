@@ -1179,7 +1179,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->entityBaseTick();
 
-		if($this->onGround){
+		if($this->onGround or $this->fallDistance === 0){
 			$this->inAirTicks = 0;
 		}else{
 			if($this->inAirTicks > 100 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
@@ -2260,7 +2260,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($this->connected and !$this->closed){
 			$this->connected = false;
-
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
 				if($this->server->getAutoSave() and $this->loggedIn === true){
@@ -2302,7 +2301,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		parent::saveNBT();
 		if($this->getLevel() instanceof Level){
-			$this->namedtag["Level"] = $this->getLevel()->getName();
+			$this->namedtag->Level = new String("Level", $this->getLevel()->getName());
 			if($this->spawnPosition instanceof Position and $this->spawnPosition->getLevel() instanceof Level){
 				$this->namedtag["SpawnLevel"] = $this->spawnPosition->getLevel()->getName();
 				$this->namedtag["SpawnX"] = (int) $this->spawnPosition->x;
@@ -2317,7 +2316,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->namedtag["playerGameType"] = $this->gamemode;
 			$this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
 
-			if($this->username != "" and $this->isOnline() and $this->namedtag instanceof Compound){
+			if($this->username != "" and $this->namedtag instanceof Compound){
 				$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
 			}
 		}

@@ -1502,7 +1502,7 @@ class Server{
 		}
 
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
-		$this->autoSave = $this->getConfigBoolean("auto-save", true);
+		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
 
 		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
 			$value = ["M" => 1, "G" => 1024];
