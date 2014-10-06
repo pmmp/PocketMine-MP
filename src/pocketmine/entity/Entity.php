@@ -134,6 +134,8 @@ abstract class Entity extends Position implements Metadatable{
 	public $fireTicks;
 	public $airTicks;
 	public $namedtag;
+	public $canCollide = true;
+
 	protected $isStatic = false;
 	protected $isColliding = false;
 
@@ -555,7 +557,9 @@ abstract class Entity extends Position implements Metadatable{
 			$pk->entities = [
 				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 			];
-			Server::broadcastPacket($this->hasSpawned, $pk);
+			foreach($this->hasSpawned as $player){
+				$player->dataPacket($pk);
+			}
 
 			if($this instanceof Player){
 				$this->motionX = 0;

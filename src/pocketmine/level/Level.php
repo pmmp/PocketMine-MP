@@ -728,7 +728,10 @@ class Level implements ChunkManager, Metadatable{
 		for($z = $minZ; $z < $maxZ; ++$z){
 			for($x = $minX; $x < $maxX; ++$x){
 				for($y = $minY - 1; $y < $maxY; ++$y){
-					$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
+					$block = $this->getBlock(new Vector3($x, $y, $z));
+					if(!($block instanceof Air)){
+						$block->collidesWithBB($bb, $collides);
+					}
 				}
 			}
 		}
@@ -767,11 +770,13 @@ class Level implements ChunkManager, Metadatable{
 
 		$collides = [];
 
-		//TODO: optimize this loop, check collision cube boundaries
 		for($z = $minZ; $z < $maxZ; ++$z){
 			for($x = $minX; $x < $maxX; ++$x){
 				for($y = $minY - 1; $y < $maxY; ++$y){
-					$this->getBlock(new Vector3($x, $y, $z))->collidesWithBB($bb, $collides);
+					$block = $this->getBlock(new Vector3($x, $y, $z));
+					if(!($block instanceof Air)){
+						$block->collidesWithBB($bb, $collides);
+					}
 				}
 			}
 		}
@@ -1233,7 +1238,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns the entities near the current one inside the AxisAlignedBB
+	 * Returns the entities colliding the current one inside the AxisAlignedBB
 	 *
 	 * @param AxisAlignedBB $bb
 	 * @param Entity        $entity
@@ -1243,16 +1248,18 @@ class Level implements ChunkManager, Metadatable{
 	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity = null){
 		$nearby = [];
 
-		$minX = ($bb->minX - 2) >> 4;
-		$maxX = ($bb->maxX + 2) >> 4;
-		$minZ = ($bb->minZ - 2) >> 4;
-		$maxZ = ($bb->maxZ + 2) >> 4;
+		if($entity->canCollide){
+			$minX = Math::floorFloat(($bb->minX - 2) / 16);
+			$maxX = Math::floorFloat(($bb->maxX - 2) / 16);
+			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
+			$maxZ = Math::floorFloat(($bb->maxZ - 2) / 16);
 
-		for($x = $minX; $x <= $maxX; ++$x){
-			for($z = $minZ; $z <= $maxZ; ++$z){
-				foreach($this->getChunkEntities($x, $z) as $ent){
-					if($ent !== $entity and ($entity === null or $entity->canCollideWith($ent)) and $ent->boundingBox->intersectsWith($bb)){
-						$nearby[] = $ent;
+			for($x = $minX; $x <= $maxX; ++$x){
+				for($z = $minZ; $z <= $maxZ; ++$z){
+					foreach($this->getChunkEntities($x, $z) as $ent){
+						if($ent !== $entity and ($entity === null or $entity->canCollideWith($ent)) and $ent->boundingBox->intersectsWith($bb)){
+							$nearby[] = $ent;
+						}
 					}
 				}
 			}
@@ -1272,10 +1279,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null){
 		$nearby = [];
 
-		$minX = ($bb->minX - 2) >> 4;
-		$maxX = ($bb->maxX + 2) >> 4;
-		$minZ = ($bb->minZ - 2) >> 4;
-		$maxZ = ($bb->maxZ + 2) >> 4;
+		$minX = Math::floorFloat(($bb->minX - 2) / 16);
+		$maxX = Math::floorFloat(($bb->maxX - 2) / 16);
+		$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
+		$maxZ = Math::floorFloat(($bb->maxZ - 2) / 16);
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){

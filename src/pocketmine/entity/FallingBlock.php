@@ -43,6 +43,8 @@ class FallingBlock extends Entity{
 	protected $drag = 0.02;
 	protected $blockId = 0;
 
+	public $canCollide = false;
+
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "FallingSand");
 		if(isset($this->namedtag->Tile)){

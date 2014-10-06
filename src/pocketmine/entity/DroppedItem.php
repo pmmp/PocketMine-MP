@@ -46,6 +46,8 @@ class DroppedItem extends Entity{
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
+	public $canCollide = false;
+
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "Item");
 		$this->setMaxHealth(5);
@@ -87,7 +89,7 @@ class DroppedItem extends Entity{
 
 			$friction = 1 - $this->drag;
 
-			if($this->onGround){
+			if($this->onGround and ($this->motionX != 0 or $this->motionZ != 0)){
 				$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
 			}
 
