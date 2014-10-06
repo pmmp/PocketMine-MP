@@ -2220,29 +2220,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function sendMessage($message){
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
-			if(preg_match_all('#@([@A-Za-z_]{1,})#', $m, $matches, PREG_OFFSET_CAPTURE) > 0){
-				$offsetshift = 0;
-				foreach($matches[1] as $selector){
-					if($selector[0]{0} === "@"){ //Escape!
-						$m = substr_replace($m, $selector[0], $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
-						--$offsetshift;
-						continue;
-					}
-					switch(strtolower($selector[0])){
-						case "player":
-						case "username":
-							$m = substr_replace($m, $this->username, $selector[1] + $offsetshift - 1, strlen($selector[0]) + 1);
-							$offsetshift += strlen($selector[0]) - strlen($this->username) + 1;
-							break;
-					}
-				}
-			}
-
 			if($m !== ""){
 				$pk = new MessagePacket;
 				$pk->source = ""; //Do not use this ;)
 				$pk->message = $this->removeFormat === false ? $m : TextFormat::clean($m);
-				$this->directDataPacket($pk);
+				$this->dataPacket($pk);
 			}
 		}
 	}
