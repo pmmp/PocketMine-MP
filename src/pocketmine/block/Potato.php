@@ -50,7 +50,10 @@ class Potato extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			$this->meta = 0x07;
+			$this->meta += mt_rand(2, 5);
+			if($this->meta > 7){
+				$this->meta = 7;
+			}
 			$this->getLevel()->setBlock($this, $this, true);
 			if(($player->gamemode & 0x01) === 0){
 				$item->count--;
