@@ -31,7 +31,7 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Byte;
 
-class Fallable extends Solid{
+abstract class Fallable extends Solid{
 
 	public $hasPhysics = true;
 

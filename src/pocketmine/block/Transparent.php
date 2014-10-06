@@ -23,7 +23,7 @@ namespace pocketmine\block;
 
 
 
-class Transparent extends Generic{
+abstract class Transparent extends Generic{
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;

@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
-class Liquid extends Transparent{
+abstract class Liquid extends Transparent{
 	public $isLiquid = true;
 	public $breakable = false;
 	public $isReplaceable = true;

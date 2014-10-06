@@ -24,7 +24,7 @@ namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
 
-class Thin extends Transparent{
+abstract class Thin extends Transparent{
 
 	public $isFullBlock = false;
 	public $isSolid = false;

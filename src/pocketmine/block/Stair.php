@@ -25,7 +25,7 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
-class Stair extends Transparent{
+abstract class Stair extends Transparent{
 
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);

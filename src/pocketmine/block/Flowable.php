@@ -22,7 +22,7 @@
 namespace pocketmine\block;
 
 
-class Flowable extends Transparent{
+abstract class Flowable extends Transparent{
 
 	public $isFlowable = true;
 	public $isFullBlock = false;
