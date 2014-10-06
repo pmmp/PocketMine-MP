@@ -175,6 +175,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $spawnPosition = null;
 	private $inAction = false;
 
+	protected $inAirTicks = 0;
+
 
 	private $needACK = [];
 
@@ -1176,6 +1178,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->processMovement();
 
 		$this->entityBaseTick();
+
+		if($this->onGround){
+			$this->inAirTicks = 0;
+		}else{
+			if($this->inAirTicks > 100 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
+				$this->kick("Flying is not enabled on this server");
+				return false;
+			}else{
+				++$this->inAirTicks;
+			}
+		}
+
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
 			if($entity instanceof Arrow and $entity->onGround and $this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0){
 				if($entity->dead !== true){
