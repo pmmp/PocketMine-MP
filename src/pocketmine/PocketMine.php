@@ -176,6 +176,11 @@ namespace pocketmine {
 				//Detect the Time Zone string in systeminfo
 				preg_match($regex, $string, $matches);
 
+				if(!isset($matches[2]))
+				{
+					return false;
+				}
+
 				$offset = $matches[2];
 
 				if($offset == ""){
