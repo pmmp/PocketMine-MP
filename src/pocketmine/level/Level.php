@@ -1248,7 +1248,7 @@ class Level implements ChunkManager, Metadatable{
 	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity = null){
 		$nearby = [];
 
-		if($entity->canCollide){
+		if($entity === null or $entity->canCollide){
 			$minX = Math::floorFloat(($bb->minX - 2) / 16);
 			$maxX = Math::floorFloat(($bb->maxX - 2) / 16);
 			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
