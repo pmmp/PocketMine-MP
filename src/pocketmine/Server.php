@@ -1584,7 +1584,7 @@ class Server{
 		Generator::addGenerator(Normal::class, "default");
 
 		//Temporal workaround, pthreads static property nullification test
-		if(PluginManager::$pluginParentTimer === null){
+		if(PluginManager::$pluginParentTimer === null or Timings::$serverTickTimer === null){
 			$this->getLogger()->emergency("You are using an invalid pthreads version. Please update your binaries.");
 			kill(getmypid());
 			return;

@@ -687,7 +687,10 @@ abstract class Block extends Position implements Metadatable{
 		}
 
 		if($pos instanceof Position){
-			$block->position($pos);
+			$block->x = $pos->x;
+			$block->y = $pos->y;
+			$block->z = $pos->z;
+			$block->level = $pos->level;
 		}
 
 		return $block;

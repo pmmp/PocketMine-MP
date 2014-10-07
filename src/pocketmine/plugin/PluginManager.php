@@ -641,10 +641,6 @@ class PluginManager{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		$this->fireEvent($event);
-	}
-
-	private function fireEvent(Event $event){
 		$handlers = $event->getHandlers();
 		$listeners = $handlers->getRegisteredListeners();
 

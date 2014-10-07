@@ -97,6 +97,8 @@ class DroppedItem extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
+			$this->updateMovement();
+
 			if($this->onGround){
 				$this->motionY *= -0.5;
 			}
@@ -105,7 +107,6 @@ class DroppedItem extends Entity{
 				$this->kill();
 			}
 
-			$this->updateMovement();
 		}
 
 		$this->timings->stopTiming();

@@ -883,7 +883,7 @@ class Level implements ChunkManager, Metadatable{
 			return $air;
 		}
 
-		return Block::get($blockId, $meta, Position::fromObject($pos, $this));
+		return Block::get($blockId, $meta, new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	/**
@@ -1079,7 +1079,7 @@ class Level implements ChunkManager, Metadatable{
 		if(!($player instanceof Player) or ($player->getGamemode() & 0x01) === 0){
 			foreach($drops as $drop){
 				if($drop[2] > 0){
-					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get($drop[0], $drop[1], $drop[2]));
+					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get(...$drop));
 				}
 			}
 		}

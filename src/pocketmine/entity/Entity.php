@@ -281,10 +281,10 @@ abstract class Entity extends Position implements Metadatable{
 		foreach($player as $p){
 			if($p === $this){
 				/** @var Player $p */
-				$pk = new SetEntityDataPacket();
-				$pk->eid = 0;
-				$pk->metadata = $this->getData();
-				$p->dataPacket($pk);
+				$pk2 = new SetEntityDataPacket();
+				$pk2->eid = 0;
+				$pk2->metadata = $this->getData();
+				$p->dataPacket($pk2);
 			}else{
 				$p->dataPacket($pk);
 			}

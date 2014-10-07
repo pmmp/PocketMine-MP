@@ -21,8 +21,16 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\PrimedTNT;
 use pocketmine\item\Item;
+use pocketmine\level\Explosion;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
 use pocketmine\Player;
+use pocketmine\utils\Random;
 
 class TNT extends Solid{
 	public function __construct(){
@@ -33,9 +41,8 @@ class TNT extends Solid{
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getID() === Item::FLINT_STEEL){
-			if(($player->gamemode & 0x01) === 0){
-				$item->useOn($this);
-			}
+			$item->useOn($this);
+
 			$data = [
 				"x" => $this->x + 0.5,
 				"y" => $this->y + 0.5,
@@ -44,9 +51,27 @@ class TNT extends Solid{
 				"fuse" => 20 * 4, //4 seconds
 			];
 			$this->getLevel()->setBlock($this, new Air(), false, false, true);
-			//TODO
-			//$e = Server::getInstance()->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
-			//$e->spawnToAll();
+
+			$mot = (new Random())->nextSignedFloat() * M_PI * 2;
+			$tnt = new PrimedTNT($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
+				"Pos" => new Enum("Pos", [
+					new Double("", $this->x + 0.5),
+					new Double("", $this->y + 0.5),
+					new Double("", $this->z + 0.5)
+				]),
+				"Motion" => new Enum("Motion", [
+					new Double("", -sin($mot) * 0.02),
+					new Double("", 0.2),
+					new Double("", -cos($mot) * 0.02)
+				]),
+				"Rotation" => new Enum("Rotation", [
+					new Float("", 0),
+					new Float("", 0)
+				]),
+				"Fuse" => new Byte("Fuse", 80)
+			]));
+
+			$tnt->spawnToAll();
 
 			return true;
 		}

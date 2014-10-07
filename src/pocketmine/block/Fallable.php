@@ -51,7 +51,6 @@ abstract class Fallable extends Solid{
 						new Double("", $this->y + 0.5),
 						new Double("", $this->z + 0.5)
 					]),
-					//TODO: add random motion with physics
 					"Motion" => new Enum("Motion", [
 						new Double("", 0),
 						new Double("", 0),

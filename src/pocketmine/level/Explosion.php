@@ -24,20 +24,24 @@ namespace pocketmine\level;
 use pocketmine\block\Block;
 use pocketmine\block\TNT;
 use pocketmine\entity\Entity;
+use pocketmine\entity\PrimedTNT;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Math;
 use pocketmine\math\Vector3 as Vector3;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
 use pocketmine\network\protocol\ExplodePacket;
 use pocketmine\Server;
+use pocketmine\utils\Random;
 
 class Explosion{
-	public static $specialDrops = [
-		Item::GRASS => Item::DIRT,
-		Item::STONE => Item::COBBLESTONE,
-		Item::COAL_ORE => Item::COAL,
-		Item::DIAMOND_ORE => Item::DIAMOND,
-		Item::REDSTONE_ORE => Item::REDSTONE,
-	];
+
 	private $rays = 16; //Rays
 	public $level;
 	public $source;
@@ -47,6 +51,7 @@ class Explosion{
 	 */
 	public $affectedBlocks = [];
 	public $stepLen = 0.3;
+	/** @var Entity|Block|Tile */
 	private $what;
 
 	public function __construct(Position $center, $size, $what = null){
@@ -56,6 +61,9 @@ class Explosion{
 		$this->what = $what;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function explode(){
 		if($this->size < 0.1){
 			return false;
@@ -64,6 +72,7 @@ class Explosion{
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
+				//break 2 gets here
 				for($k = 0; $k < $this->rays; ++$k){
 					if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
 						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
@@ -72,6 +81,9 @@ class Explosion{
 
 						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
 							$vBlock = $pointer->floor();
+							if($vBlock->y < 0 or $vBlock->y > 127){
+								break;
+							}
 							$blockID = $this->level->getBlockIdAt($vBlock->x, $vBlock->y, $vBlock->z);
 
 							if($blockID > 0){
@@ -96,11 +108,10 @@ class Explosion{
 
 		$send = [];
 		$source = $this->source->floor();
-		$radius = 2 * $this->size;
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield));
+			$this->level->getServer()->getPluginManager()->callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield));
 			if($ev->isCancelled()){
 				return false;
 			}else{
@@ -109,33 +120,66 @@ class Explosion{
 			}
 		}
 
-		//TODO
-		/*foreach($server->api->entity->getRadius($this->source, $radius) as $entity){
-			$impact = (1 - $this->source->distance($entity) / $radius) * 0.5; //placeholder, 0.7 should be exposure
-			$damage = (int) (($impact * $impact + $impact) * 8 * $this->size + 1);
-			$entity->harm($damage, "explosion");
-		}*/
+		$explosionSize = $this->size * 2;
+		$minX = Math::floorFloat($this->source->x - $explosionSize - 1);
+		$maxX = Math::floorFloat($this->source->x + $explosionSize + 1);
+		$minY = Math::floorFloat($this->source->y - $explosionSize - 1);
+		$maxY = Math::floorFloat($this->source->y + $explosionSize + 1);
+		$minZ = Math::floorFloat($this->source->z - $explosionSize - 1);
+		$maxZ = Math::floorFloat($this->source->z + $explosionSize + 1);
 
+		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+
+		$list = $this->level->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
+		foreach($list as $entity){
+			$distance = $entity->distance($this->source) / $explosionSize;
+
+			if($distance <= 1){
+				$motion = $entity->subtract($this->source)->normalize();
+
+				$impact = (1 - $distance) * ($exposure = 1);
+
+				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
+
+				$this->level->getServer()->getPluginManager()->callEvent($ev = new EntityDamageEvent($entity, $this->what instanceof Entity ? EntityDamageEvent::CAUSE_ENTITY_EXPLOSION : EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage));
+
+				if(!$ev->isCancelled()){
+					$entity->attack($ev->getFinalDamage(), $ev);
+					$entity->setMotion($motion->multiply($impact));
+				}
+
+			}
+		}
+
+
+		$air = Item::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){
+			$block->setDamage($this->level->getBlockDataAt($block->x, $block->y, $block->z));
+
 			if($block instanceof TNT){
-				$data = [
-					"x" => $block->x + 0.5,
-					"y" => $block->y + 0.5,
-					"z" => $block->z + 0.5,
-					"power" => 4,
-					"fuse" => mt_rand(10, 30), //0.5 to 1.5 seconds
-				];
-				//TODO
-				//$e = $server->api->entity->add($this->level, ENTITY_OBJECT, OBJECT_PRIMEDTNT, $data);
-				//$e->spawnToAll();
+				$mot = (new Random())->nextSignedFloat() * M_PI * 2;
+				$tnt = new PrimedTNT($this->level->getChunk($block->x >> 4, $block->z >> 4), new Compound("", [
+					"Pos" => new Enum("Pos", [
+						new Double("", $block->x + 0.5),
+						new Double("", $block->y + 0.5),
+						new Double("", $block->z + 0.5)
+					]),
+					"Motion" => new Enum("Motion", [
+						new Double("", -sin($mot) * 0.02),
+						new Double("", 0.2),
+						new Double("", -cos($mot) * 0.02)
+					]),
+					"Rotation" => new Enum("Rotation", [
+						new Float("", 0),
+						new Float("", 0)
+					]),
+					"Fuse" => new Byte("Fuse", mt_rand(10, 30))
+				]));
+				$tnt->spawnToAll();
 			}elseif(mt_rand(0, 100) < $yield){
-				if(isset(self::$specialDrops[$block->getID()])){
-					//TODO
-					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), Item::get(self::$specialDrops[$block->getID()], 0));
-				}else{
-					//TODO
-					//$server->api->entity->drop(new Position($block->x + 0.5, $block->y, $block->z + 0.5, $this->level), Item::get($block->getID(), $this->level->level->getBlockDamage($block->x, $block->y, $block->z)));
+				foreach($block->getDrops($air) as $drop){
+					$this->level->dropItem($block, Item::get(...$drop));
 				}
 			}
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
@@ -147,7 +191,9 @@ class Explosion{
 		$pk->z = $this->source->z;
 		$pk->radius = $this->size;
 		$pk->records = $send;
-		Server::broadcastPacket($this->level->getPlayers(), $pk);
+		Server::broadcastPacket($this->level->getUsingChunk($source->x >> 4, $source->z >> 4), $pk);
+
+		return true;
 
 	}
 }

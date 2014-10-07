@@ -22,10 +22,124 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\level\Explosion;
+use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\String;
+use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
+use pocketmine\Player;
 
 class PrimedTNT extends Entity implements Explosive{
+	const NETWORK_ID = 65;
+
+	public $width = 0.98;
+	public $length = 0.98;
+	public $height = 0.98;
+
+	protected $gravity = 0.04;
+	protected $drag = 0.02;
+
+	protected $fuse;
+
+	public $canCollide = false;
+
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "PrimedTNT");
+		if(isset($this->namedtag->Fuse)){
+			$this->fuse = $this->namedtag["Fuse"];
+		}else{
+			$this->fuse = 80;
+		}
+	}
+
+
+	public function canCollideWith(Entity $entity){
+		return false;
+	}
+
+	public function getData(){
+		return [
+			16 => ["type" => 0, "value" => $this->fuse],
+		];
+	}
+
+	public function saveNBT(){
+		parent::saveNBT();
+		$this->namedtag->Fuse = new Byte("Fuse", $this->fuse);
+	}
+
+	public function onUpdate(){
+
+		if($this->closed){
+			return false;
+		}
+
+		$this->timings->startTiming();
+
+		$this->entityBaseTick();
+
+		if(!$this->dead){
+
+			$this->motionY -= $this->gravity;
+
+			$this->move($this->motionX, $this->motionY, $this->motionZ);
+
+			$friction = 1 - $this->drag;
+
+			$this->motionX *= $friction;
+			$this->motionY *= $friction;
+			$this->motionZ *= $friction;
+
+			$this->updateMovement();
+
+			if($this->onGround){
+				$this->motionY *= -0.5;
+				$this->motionX *= 0.7;
+				$this->motionZ *= 0.7;
+			}
+
+			if($this->fuse-- <= 0){
+				$this->kill();
+				$this->explode();
+			}else{
+				$this->sendMetadata($this->getViewers());
+			}
+
+		}
+
+
+		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+	}
+
+	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+
+	}
+
+	public function heal($amount){
+
+	}
+
+	public function explode(){
+		(new Explosion($this, 4, $this))->explode();
+	}
+
+	public function spawnTo(Player $player){
+		$pk = new AddEntityPacket();
+		$pk->type = PrimedTNT::NETWORK_ID;
+		$pk->eid = $this->getID();
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->did = 0;
+		$player->dataPacket($pk);
+
+		$pk = new SetEntityMotionPacket();
+		$pk->entities = [
+			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
+		];
+		$player->dataPacket($pk);
+
+		parent::spawnTo($player);
 	}
 }
