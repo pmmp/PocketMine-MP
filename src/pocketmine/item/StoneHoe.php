@@ -27,4 +27,7 @@ class StoneHoe extends Tool{
 		parent::__construct(self::STONE_HOE, $meta, $count, "Stone Hoe");
 	}
 
+	public function isHoe(){
+		return Tool::TIER_STONE;
+	}
 }

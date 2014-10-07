@@ -27,4 +27,7 @@ class IronPickaxe extends Tool{
 		parent::__construct(self::IRON_PICKAXE, $meta, $count, "Iron Pickaxe");
 	}
 
+	public function isPickaxe(){
+		return Tool::TIER_IRON;
+	}
 }

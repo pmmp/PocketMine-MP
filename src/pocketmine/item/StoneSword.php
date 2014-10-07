@@ -27,4 +27,7 @@ class StoneSword extends Tool{
 		parent::__construct(self::STONE_SWORD, $meta, $count, "Stone Sword");
 	}
 
+	public function isSword(){
+		return Tool::TIER_STONE;
+	}
 }

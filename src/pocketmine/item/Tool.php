@@ -26,6 +26,11 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
 abstract class Tool extends Item{
+	const TIER_WOODEN = 1;
+	const TIER_GOLD = 2;
+	const TIER_STONE = 3;
+	const TIER_IRON = 4;
+	const TIER_DIAMOND = 5;
 
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		parent::__construct($id, $meta, $count, $name);
@@ -87,84 +92,23 @@ abstract class Tool extends Item{
 	}
 
 	public function isPickaxe(){
-		switch($this->id){
-			case self::WOODEN_PICKAXE:
-				return 1;
-			case self::STONE_PICKAXE:
-				return 3;
-			case self::IRON_PICKAXE:
-				return 4;
-			case self::DIAMOND_PICKAXE:
-				return 5;
-			case self::GOLD_PICKAXE:
-				return 2;
-			default:
-				return false;
-		}
+		return false;
 	}
 
-	final public function isAxe(){
-		switch($this->id){
-			case self::IRON_AXE:
-				return 4;
-			case self::WOODEN_AXE:
-				return 1;
-			case self::STONE_AXE:
-				return 3;
-			case self::DIAMOND_AXE:
-				return 5;
-			case self::GOLD_AXE:
-				return 2;
-			default:
-				return false;
-		}
+	public function isAxe(){
+		return false;
 	}
 
-	final public function isSword(){
-		switch($this->id){
-			case self::IRON_SWORD:
-				return 4;
-			case self::WOODEN_SWORD:
-				return 1;
-			case self::STONE_SWORD:
-				return 3;
-			case self::DIAMOND_SWORD:
-				return 5;
-			case self::GOLD_SWORD:
-				return 2;
-			default:
-				return false;
-		}
+	public function isSword(){
+		return false;
 	}
 
-	final public function isShovel(){
-		switch($this->id){
-			case self::IRON_SHOVEL:
-				return 4;
-			case self::WOODEN_SHOVEL:
-				return 1;
-			case self::STONE_SHOVEL:
-				return 3;
-			case self::DIAMOND_SHOVEL:
-				return 5;
-			case self::GOLD_SHOVEL:
-				return 2;
-			default:
-				return false;
-		}
+	public function isShovel(){
+		return false;
 	}
 
 	public function isHoe(){
-		switch($this->id){
-			case self::IRON_HOE:
-			case self::WOODEN_HOE:
-			case self::STONE_HOE:
-			case self::DIAMOND_HOE:
-			case self::GOLD_HOE:
-				return true;
-			default:
-				return false;
-		}
+		return false;
 	}
 
 	public function isShears(){
@@ -172,8 +116,6 @@ abstract class Tool extends Item{
 	}
 
 	public function isTool(){
-		return false;
-
 		return ($this->id === self::FLINT_STEEL or $this->id === self::SHEARS or $this->id === self::BOW or $this->isPickaxe() !== false or $this->isAxe() !== false or $this->isShovel() !== false or $this->isSword() !== false);
 	}
 }

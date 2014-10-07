@@ -27,4 +27,7 @@ class GoldHoe extends Tool{
 		parent::__construct(self::GOLD_HOE, $meta, $count, "Gold Hoe");
 	}
 
+	public function isHoe(){
+		return Tool::TIER_GOLD;
+	}
 }

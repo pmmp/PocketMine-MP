@@ -27,4 +27,7 @@ class WoodenAxe extends Tool{
 		parent::__construct(self::WOODEN_AXE, $meta, $count, "Wooden Axe");
 	}
 
+	public function isAxe(){
+		return Tool::TIER_WOODEN;
+	}
 }

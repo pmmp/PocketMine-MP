@@ -27,4 +27,7 @@ class DiamondPickaxe extends Tool{
 		parent::__construct(self::DIAMOND_PICKAXE, $meta, $count, "Diamond Pickaxe");
 	}
 
+	public function isPickaxe(){
+		return Tool::TIER_DIAMOND;
+	}
 }

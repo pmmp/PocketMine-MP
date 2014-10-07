@@ -27,4 +27,7 @@ class GoldAxe extends Tool{
 		parent::__construct(self::GOLD_AXE, $meta, $count, "Gold Axe");
 	}
 
+	public function isAxe(){
+		return Tool::TIER_GOLD;
+	}
 }

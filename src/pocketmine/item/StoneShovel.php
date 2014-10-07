@@ -27,4 +27,7 @@ class StoneShovel extends Tool{
 		parent::__construct(self::STONE_SHOVEL, $meta, $count, "Stone Shovel");
 	}
 
+	public function isShovel(){
+		return Tool::TIER_STONE;
+	}
 }

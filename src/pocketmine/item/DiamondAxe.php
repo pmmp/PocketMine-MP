@@ -27,4 +27,8 @@ class DiamondAxe extends Tool{
 		parent::__construct(self::DIAMOND_AXE, $meta, $count, "Diamond Axe");
 	}
 
+	public function isAxe(){
+		return Tool::TIER_DIAMOND;
+	}
+
 }

@@ -27,4 +27,7 @@ class IronSword extends Tool{
 		parent::__construct(self::IRON_SWORD, $meta, $count, "Iron Sword");
 	}
 
+	public function isSword(){
+		return Tool::TIER_IRON;
+	}
 }

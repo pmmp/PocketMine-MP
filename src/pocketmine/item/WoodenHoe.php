@@ -27,4 +27,7 @@ class WoodenHoe extends Tool{
 		parent::__construct(self::WOODEN_HOE, $meta, $count, "Wooden Hoe");
 	}
 
+	public function isHoe(){
+		return Tool::TIER_WOODEN;
+	}
 }

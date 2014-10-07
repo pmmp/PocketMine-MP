@@ -27,4 +27,7 @@ class IronAxe extends Tool{
 		parent::__construct(self::IRON_AXE, $meta, $count, "Iron Axe");
 	}
 
+	public function isAxe(){
+		return Tool::TIER_IRON;
+	}
 }

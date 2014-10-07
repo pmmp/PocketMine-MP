@@ -27,4 +27,7 @@ class IronHoe extends Tool{
 		parent::__construct(self::IRON_HOE, $meta, $count, "Iron Hoe");
 	}
 
+	public function isHoe(){
+		return Tool::TIER_IRON;
+	}
 }

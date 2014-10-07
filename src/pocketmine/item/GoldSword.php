@@ -27,4 +27,7 @@ class GoldSword extends Tool{
 		parent::__construct(self::GOLD_SWORD, $meta, $count, "Gold Sword");
 	}
 
+	public function isSword(){
+		return Tool::TIER_GOLD;
+	}
 }

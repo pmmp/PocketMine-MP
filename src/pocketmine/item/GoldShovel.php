@@ -27,4 +27,7 @@ class GoldShovel extends Tool{
 		parent::__construct(self::GOLD_SHOVEL, $meta, $count, "Gold Shovel");
 	}
 
+	public function isShovel(){
+		return Tool::TIER_GOLD;
+	}
 }

@@ -27,4 +27,7 @@ class DiamondSword extends Tool{
 		parent::__construct(self::DIAMOND_SWORD, $meta, $count, "Diamond Sword");
 	}
 
+	public function isSword(){
+		return Tool::TIER_DIAMOND;
+	}
 }

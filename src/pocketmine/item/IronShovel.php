@@ -27,4 +27,7 @@ class IronShovel extends Tool{
 		parent::__construct(self::IRON_SHOVEL, $meta, $count, "Iron Shovel");
 	}
 
+	public function isShovel(){
+		return Tool::TIER_IRON;
+	}
 }
