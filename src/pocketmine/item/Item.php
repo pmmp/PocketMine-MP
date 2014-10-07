@@ -159,7 +159,8 @@ class Item{
 	const MELON_BLOCK = 103;
 	const PUMPKIN_STEM = 104;
 	const MELON_STEM = 105;
-
+	const VINE = 106;
+	const VINES = 106;
 	const FENCE_GATE = 107;
 	const BRICK_STAIRS = 108;
 	const STONE_BRICK_STAIRS = 109;

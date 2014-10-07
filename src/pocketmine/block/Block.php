@@ -167,7 +167,8 @@ abstract class Block extends Position implements Metadatable{
 	const MELON_BLOCK = 103;
 	const PUMPKIN_STEM = 104;
 	const MELON_STEM = 105;
-
+	const VINE = 106;
+	const VINES = 106;
 	const FENCE_GATE = 107;
 	const BRICK_STAIRS = 108;
 	const STONE_BRICK_STAIRS = 109;
@@ -345,7 +346,7 @@ abstract class Block extends Position implements Metadatable{
 		[Item::SNOW_LAYER, 0],
 		[Item::GLASS, 0],
 		[Item::GLOWSTONE_BLOCK, 0],
-		//TODO: Vines
+		[Item::VINES, 0],
 		[Item::NETHER_REACTOR, 0],
 		[Item::LADDER, 0],
 		[Item::SPONGE, 0],
@@ -621,7 +622,7 @@ abstract class Block extends Position implements Metadatable{
 				self::MELON_BLOCK => Melon::class,
 				self::PUMPKIN_STEM => PumpkinStem::class,
 				self::MELON_STEM => MelonStem::class,
-
+				self::VINE => Vine::class,
 				self::FENCE_GATE => FenceGate::class,
 				self::BRICK_STAIRS => BrickStairs::class,
 				self::STONE_BRICK_STAIRS => StoneBrickStairs::class,
