@@ -585,7 +585,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function onUpdate(){
-		if($this->closed !== false){
+		if($this->closed){
 			return false;
 		}
 		$this->timings->startTiming();
@@ -1171,6 +1171,9 @@ abstract class Entity extends Position implements Metadatable{
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
 			unset($this->level->updateEntities[$this->id]);
+			if($this->chunk instanceof FullChunk){
+				$this->chunk->removeEntity($this);
+			}
 			if(($level = $this->getLevel()) instanceof Level){
 				$level->removeEntity($this);
 			}
