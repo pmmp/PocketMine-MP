@@ -290,14 +290,14 @@ class Server{
 	 * @return string
 	 */
 	public function getIp(){
-		return $this->getConfigString("server-ip", "");
+		return $this->getConfigString("server-ip", "0.0.0.0");
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getServerName(){
-		return $this->getConfigString("server-name", "Unknown server");
+		return $this->getConfigString("motd", "Unknown server");
 	}
 
 	/**
