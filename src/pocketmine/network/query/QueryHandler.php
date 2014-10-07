@@ -25,12 +25,13 @@
  */
 namespace pocketmine\network\query;
 
+use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
 class QueryHandler{
-	private $server, $lastToken, $token, $longData, $timeout;
+	private $server, $lastToken, $token, $longData, $shortData, $timeout;
 
 	const HANDSHAKE = 9;
 	const STATISTICS = 0;
@@ -57,43 +58,10 @@ class QueryHandler{
 	}
 
 	public function regenerateInfo(){
-		$str = "";
-		$plist = $this->server->getName() . " " . $this->server->getPocketMineVersion();
-		$pl = $this->server->getPluginManager()->getPlugins();
-		if(count($pl) > 0 and $this->server->getProperty("settings.query-plugins", true) === true){
-			$plist .= ":";
-			foreach($pl as $p){
-				$d = $p->getDescription();
-				$plist .= " " . str_replace([";", ":", " "], ["", "", "_"], $d->getName()) . " " . str_replace([";", ":", " "], ["", "", "_"], $d->getVersion()) . ";";
-			}
-			$plist = substr($plist, 0, -1);
-		}
-		$KVdata = [
-			"splitnum" => chr(128),
-			"hostname" => $this->server->getServerName(),
-			"gametype" => ($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP",
-			"game_id" => "MINECRAFTPE",
-			"version" => $this->server->getVersion(),
-			"server_engine" => $this->server->getName() . " " . $this->server->getPocketMineVersion(),
-			"plugins" => $plist,
-			"map" => $this->server->getDefaultLevel() === null ? "unknown" : $this->server->getDefaultLevel()->getName(),
-			"numplayers" => count($this->server->getOnlinePlayers()),
-			"maxplayers" => $this->server->getMaxPlayers(),
-			"whitelist" => $this->server->hasWhitelist() === true ? "on" : "off",
-			"hostport" => $this->server->getPort()
-		];
-		foreach($KVdata as $key => $value){
-			$str .= $key . "\x00" . $value . "\x00";
-		}
-		$str .= "\x00\x01player_\x00\x00";
-		foreach($this->server->getOnlinePlayers() as $player){
-			if($player->getName() != ""){
-				$str .= $player->getName() . "\x00";
-			}
-		}
-		$str .= "\x00";
-		$this->longData = $str;
-		$this->timeout = microtime(true) + 5;
+		$this->server->getPluginManager()->callEvent($ev = new QueryRegenerateEvent($this->server, 5));
+		$this->longData = $ev->getLongQuery();
+		$this->shortData = $ev->getShortQuery();
+		$this->timeout = microtime(true) + $ev->getTimeout();
 	}
 
 	public function regenerateToken(){
@@ -127,13 +95,15 @@ class QueryHandler{
 				}
 				$reply = chr(self::STATISTICS);
 				$reply .= Binary::writeInt($sessionID);
+
+				if($this->timeout < microtime(true)){
+					$this->regenerateInfo();
+				}
+
 				if(strlen($payload) === 8){
-					if($this->timeout < microtime(true)){
-						$this->regenerateInfo();
-					}
 					$reply .= $this->longData;
 				}else{
-					$reply .= $this->server->getServerName() . "\x00" . (($this->server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP") . "\x00" . ($this->server->getDefaultLevel() === null ? "unknown" : $this->server->getDefaultLevel()->getName()) . "\x00" . count($this->server->getOnlinePlayers()) . "\x00" . $this->server->getMaxPlayers() . "\x00" . Binary::writeLShort($this->server->getPort()) . $this->server->getIp() . "\x00";
+					$reply .= $this->shortData;
 				}
 				$this->server->sendPacket($address, $port, $reply);
 				break;
