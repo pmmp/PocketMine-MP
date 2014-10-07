@@ -564,7 +564,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				Level::getXZ($index, $X, $Z);
 
 				foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
-					if($entity !== $this){
+					if($entity !== $this and !$entity->closed and !$entity->dead){
 						$entity->spawnTo($this);
 					}
 				}
