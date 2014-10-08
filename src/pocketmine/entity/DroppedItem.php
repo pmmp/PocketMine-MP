@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
@@ -105,7 +106,12 @@ class DroppedItem extends Entity{
 			}
 
 			if($this->age > 6000){
-				$this->kill();
+				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
+				if($ev->isCancelled()){
+					$this->age = 0;
+				}else{
+					$this->kill();
+				}
 			}
 
 		}
