@@ -23,6 +23,8 @@ namespace pocketmine\entity;
 
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\String;
@@ -116,12 +118,16 @@ class PrimedTNT extends Entity implements Explosive{
 
 	}
 
-	public function heal($amount){
+	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
 
 	}
 
 	public function explode(){
-		(new Explosion($this, 4, $this))->explode();
+		$this->server->getPluginManager()->callEvent($ev = new ExplosionPrimeEvent($this, 4));
+
+		if(!$ev->isCancelled()){
+			(new Explosion($this, $ev->getForce(), $this))->explode();
+		}
 	}
 
 	public function spawnTo(Player $player){
