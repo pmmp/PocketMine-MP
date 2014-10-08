@@ -1647,7 +1647,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								}
 							}
 
-							$f = 1.5;
+
 							$nbt = new Compound("", [
 								"Pos" => new Enum("Pos", [
 										new Double("", $this->x),
@@ -1655,23 +1655,23 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 										new Double("", $this->z)
 									]),
 								"Motion" => new Enum("Motion", [
-										new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI) * $f),
-										new Double("", -sin($this->pitch / 180 * M_PI) * $f),
-										new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI) * $f)
+										new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
+										new Double("", -sin($this->pitch / 180 * M_PI)),
+										new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
 									]),
 								"Rotation" => new Enum("Rotation", [
 										new Float("", $this->yaw),
 										new Float("", $this->pitch)
 									]),
 							]);
-							$arrow = new Arrow($this->chunk, $nbt, $this);
 
-							$ev = new EntityShootBowEvent($this, $bow, $arrow, $f);
+							$f = 1.5;
+							$ev = new EntityShootBowEvent($this, $bow, new Arrow($this->chunk, $nbt, $this), $f);
 
 							$this->server->getPluginManager()->callEvent($ev);
 
 							if($ev->isCancelled()){
-								$arrow->kill();
+								$ev->getProjectile()->kill();
 							}else{
 								if($this->isSurvival()){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
@@ -1681,7 +1681,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0), $this);
 									}
 								}
-								$arrow->spawnToAll();
+								$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
+								$ev->getProjectile()->spawnToAll();
 							}
 						}
 						//}

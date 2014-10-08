@@ -21,6 +21,7 @@
 
 namespace pocketmine\event\entity;
 
+use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Projectile;
 use pocketmine\event\Cancellable;
@@ -64,10 +65,23 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * @return Projectile
+	 * @return Entity
 	 */
 	public function getProjectile(){
 		return $this->projectile;
+	}
+
+	/**
+	 * @param Entity $projectile
+	 */
+	public function setProjectile(Entity $projectile){
+		if($projectile !== $this->projectile){
+			if(count($this->projectile->getViewers()) === 0){
+				$this->projectile->kill();
+				$this->projectile->close();
+			}
+			$this->projectile = $projectile;
+		}
 	}
 
 	/**
@@ -75,6 +89,13 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	 */
 	public function getForce(){
 		return $this->force;
+	}
+
+	/**
+	 * @param float $force
+	 */
+	public function setForce($force){
+		$this->force = $force;
 	}
 
 
