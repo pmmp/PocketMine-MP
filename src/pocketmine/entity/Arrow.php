@@ -26,6 +26,7 @@ use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
@@ -118,6 +119,9 @@ class Arrow extends Projectile{
 
 			if($movingObjectPosition !== null){
 				if($movingObjectPosition->entityHit !== null){
+
+					$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
+
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
@@ -144,10 +148,12 @@ class Arrow extends Projectile{
 
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-			if($this->onGround){
+			if($this->onGround and ($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0)){
 				$this->motionX = 0;
 				$this->motionY = 0;
 				$this->motionZ = 0;
+
+				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 			}
 
 			if($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){
