@@ -220,7 +220,7 @@ abstract class Liquid extends Transparent{
 						$this->getLevel()->scheduleUpdate($this, $this->tickRate());
 					}
 				}elseif($flag){
-					$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+					//$this->getLevel()->scheduleUpdate($this, $this->tickRate());
 					//$this->updateFlow();
 				}
 			}else{
