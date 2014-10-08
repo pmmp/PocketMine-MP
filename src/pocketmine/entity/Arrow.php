@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\level\format\FullChunk;
@@ -127,7 +128,11 @@ class Arrow extends Projectile{
 					if(!$ev->isCancelled()){
 						$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 						if($this->fireTicks > 0){
-							$movingObjectPosition->entityHit->setOnFire(5);
+							$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
+							$this->server->getPluginManager()->callEvent($ev);
+							if(!$ev->isCancelled()){
+								$movingObjectPosition->entityHit->setOnFire($ev->getDuration());
+							}
 						}
 						$this->kill();
 					}

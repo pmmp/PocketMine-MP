@@ -21,6 +21,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\item\Item;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
@@ -41,11 +42,16 @@ class Fire extends Flowable{
 	}
 
 	public function onEntityCollide(Entity $entity){
-		$entity->setOnFire(8);
 		$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_FIRE, 1);
 		Server::getInstance()->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
 			$entity->attack($ev->getFinalDamage(), $ev);
+		}
+
+		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
+		Server::getInstance()->getPluginManager()->callEvent($ev);
+		if(!$ev->isCancelled()){
+			$entity->setOnFire($ev->getDuration());
 		}
 	}
 
