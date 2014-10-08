@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\event\player\PlayerMotionEvent;
 use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
@@ -1100,9 +1101,11 @@ abstract class Entity extends Position implements Metadatable{
 				return false;
 			}
 		}
+
 		$this->motionX = $motion->x;
 		$this->motionY = $motion->y;
 		$this->motionZ = $motion->z;
+
 		if(!$this->justCreated){
 			if($this instanceof Player){
 				$pk = new SetEntityMotionPacket;

@@ -39,6 +39,8 @@ use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
+use pocketmine\event\player\PlayerBedEnterEvent;
+use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
@@ -825,6 +827,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 		}
+
+		$this->server->getPluginManager()->callEvent($ev = new PlayerBedEnterEvent($this, $this->getLevel()->getBlock($pos)));
+		if($ev->isCancelled()){
+			return false;
+		}
+
 		$this->sleeping = $pos;
 		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->getLevel()));
 
@@ -858,10 +866,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function stopSleep(){
-		$this->sleeping = false;
+		if($this->sleeping instanceof Vector3){
+			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $this->getLevel()->getBlock($pos)));
 
-		$this->sendMetadata($this->getViewers());
-		$this->sendMetadata($this);
+			$this->sleeping = null;
+
+			$this->sendMetadata($this->getViewers());
+			$this->sendMetadata($this);
+		}
+
 	}
 
 	/**
@@ -869,7 +882,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function checkSleep(){
-		if($this->sleeping !== false){
+		if($this->sleeping instanceof Vector3){
 			//TODO: Move to Level
 
 			$time = $this->getLevel()->getTime() % Level::TIME_FULL;
@@ -2492,7 +2505,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		];
 
 
-		if($this->sleeping !== false){
+		if($this->sleeping instanceof Vector3){
 			$d[16]["value"] = 2;
 			$d[17]["value"] = [$this->sleeping->x, $this->sleeping->y, $this->sleeping->z];
 		}
