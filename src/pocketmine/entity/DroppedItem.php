@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
+use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
@@ -67,6 +68,9 @@ class DroppedItem extends Entity{
 			$this->thrower = $this->namedtag["Thrower"];
 		}
 		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
+
+
+		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
 
 	public function onUpdate(){
