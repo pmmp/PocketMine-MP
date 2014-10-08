@@ -21,6 +21,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
@@ -49,7 +50,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onEntityCollide(Entity $entity){
-		$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_CONTACT, 1);
+		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		Server::getInstance()->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
 			$entity->attack($ev->getFinalDamage(), $ev);

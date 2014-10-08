@@ -25,6 +25,8 @@ use pocketmine\block\Block;
 use pocketmine\block\TNT;
 use pocketmine\entity\Entity;
 use pocketmine\entity\PrimedTNT;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
@@ -141,7 +143,15 @@ class Explosion{
 
 				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
-				$this->level->getServer()->getPluginManager()->callEvent($ev = new EntityDamageEvent($entity, $this->what instanceof Entity ? EntityDamageEvent::CAUSE_ENTITY_EXPLOSION : EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage));
+				if($this->what instanceof Entity){
+					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
+				}elseif($this->what instanceof Block){
+					$ev = new EntityDamageByBlockEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
+				}else{
+					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
+				}
+
+				$this->level->getServer()->getPluginManager()->callEvent($ev);
 
 				if(!$ev->isCancelled()){
 					$entity->attack($ev->getFinalDamage(), $ev);

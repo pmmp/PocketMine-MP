@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\event\entity\EntityCombustByBlockEvent;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\item\Item;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
@@ -42,7 +43,7 @@ class Lava extends Liquid{
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
-		$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_LAVA, 4);
+		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
 		Server::getInstance()->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
 			$entity->attack($ev->getFinalDamage(), $ev);

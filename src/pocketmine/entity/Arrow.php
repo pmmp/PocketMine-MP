@@ -127,15 +127,17 @@ class Arrow extends Projectile{
 
 					if(!$ev->isCancelled()){
 						$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
-						if($this->fireTicks > 0){
-							$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
-							$this->server->getPluginManager()->callEvent($ev);
-							if(!$ev->isCancelled()){
-								$movingObjectPosition->entityHit->setOnFire($ev->getDuration());
-							}
-						}
-						$this->kill();
 					}
+
+					if($this->fireTicks > 0){
+						$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
+						$this->server->getPluginManager()->callEvent($ev);
+						if(!$ev->isCancelled()){
+							$movingObjectPosition->entityHit->setOnFire($ev->getDuration());
+						}
+					}
+
+					$this->kill();
 				}
 			}
 
