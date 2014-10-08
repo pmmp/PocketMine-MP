@@ -643,7 +643,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			if($spawned < 56){
+			if($spawned < 48){
 				return;
 			}
 
