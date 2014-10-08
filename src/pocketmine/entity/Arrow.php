@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
@@ -171,7 +172,7 @@ class Arrow extends Projectile{
 
 	}
 
-	public function heal($amount){
+	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
 
 	}
 

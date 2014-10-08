@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\nbt\tag\String;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\block\Block;
@@ -126,7 +127,7 @@ class FallingBlock extends Entity{
 
 	}
 
-	public function heal($amount){
+	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
 
 	}
 

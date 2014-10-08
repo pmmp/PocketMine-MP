@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
@@ -119,7 +120,7 @@ class DroppedItem extends Entity{
 		$this->setHealth($this->getHealth() - $damage);
 	}
 
-	public function heal($amount){
+	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
 
 	}
 
