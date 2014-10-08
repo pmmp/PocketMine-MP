@@ -31,6 +31,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
@@ -1950,7 +1951,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$pk->eid = $this->getID();
 							Server::broadcastPacket($this->getViewers(), $pk);
 
-							$this->heal($items[$slot->getID()]);
+							$amount = $items[$slot->getID()];
+							$this->server->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING));
+							if(!$ev->isCancelled()){
+								$this->heal($ev->getAmount(), $ev);
+							}
+
 							--$slot->count;
 							$this->inventory->setItemInHand($slot, $this);
 							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){

@@ -31,6 +31,7 @@ use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityMoveEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Timings;
@@ -307,11 +308,15 @@ abstract class Entity extends Position implements Metadatable{
 	 * @param float                 $damage
 	 * @param int|EntityDamageEvent $source
 	 *
-	 * @return mixed
 	 */
 	abstract function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC);
 
-	abstract function heal($amount);
+	/**
+	 * @param float                       $amount
+	 * @param int|EntityRegainHealthEvent $source
+	 *
+	 */
+	abstract function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC);
 
 	/**
 	 * @return int

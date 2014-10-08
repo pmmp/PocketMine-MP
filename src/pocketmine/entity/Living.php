@@ -113,11 +113,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->setMotion($motion);
 	}
 
-	public function heal($amount){
-		$this->server->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($this, $amount));
-		if($ev->isCancelled()){
-			return;
-		}
+	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
 		$this->setHealth($this->getHealth() + $amount);
 	}
 
