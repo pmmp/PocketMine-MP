@@ -24,7 +24,6 @@
  */
 namespace pocketmine\entity;
 
-use pocketmine\block\Block;
 use pocketmine\block\Water;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
@@ -35,7 +34,6 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Timings;
-use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
@@ -51,8 +49,8 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
-use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\Network;
+use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;

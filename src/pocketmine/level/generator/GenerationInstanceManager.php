@@ -24,7 +24,6 @@ namespace pocketmine\level\generator;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\Server;
-use pocketmine\utils\Binary;
 
 class GenerationInstanceManager extends GenerationRequestManager{
 

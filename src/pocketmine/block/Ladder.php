@@ -21,11 +21,11 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
-use pocketmine\entity\Entity;
 
 class Ladder extends Transparent{
 	public function __construct($meta = 0){

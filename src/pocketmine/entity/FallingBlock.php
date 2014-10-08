@@ -22,15 +22,15 @@
 namespace pocketmine\entity;
 
 
-use pocketmine\event\entity\EntityRegainHealthEvent;
-use pocketmine\nbt\tag\String;
-use pocketmine\nbt\tag\Byte;
 use pocketmine\block\Block;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
-use pocketmine\event\entity\EntityDamageEvent;
 
 class FallingBlock extends Entity{
 

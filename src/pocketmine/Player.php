@@ -68,7 +68,6 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
-use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;

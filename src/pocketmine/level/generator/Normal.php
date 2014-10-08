@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\generator;
 
+use pocketmine\block\Block;
 use pocketmine\block\CoalOre;
 use pocketmine\block\DiamondOre;
 use pocketmine\block\Dirt;
@@ -29,7 +30,6 @@ use pocketmine\block\Gravel;
 use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
-use pocketmine\block\Block;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;

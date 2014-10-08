@@ -21,10 +21,6 @@
 
 namespace pocketmine\block;
 
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\Server;
-use pocketmine\entity\Entity;
-
 class StillLava extends Lava{
 	public function __construct($meta = 0){
 		parent::__construct(self::STILL_LAVA, $meta, "Still Lava");

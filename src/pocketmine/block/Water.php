@@ -21,12 +21,9 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
-use pocketmine\Player;
-use pocketmine\Server;
 use pocketmine\entity\Entity;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class Water extends Liquid{
 	public function __construct($meta = 0){

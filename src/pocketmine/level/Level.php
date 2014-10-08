@@ -35,7 +35,6 @@ use pocketmine\block\Grass;
 use pocketmine\block\Ice;
 use pocketmine\block\Leaves;
 use pocketmine\block\Leaves2;
-use pocketmine\block\Liquid;
 use pocketmine\block\MelonStem;
 use pocketmine\block\Mycelium;
 use pocketmine\block\Potato;

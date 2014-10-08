@@ -23,7 +23,6 @@ namespace pocketmine\block;
 
 use pocketmine\entity\PrimedTNT;
 use pocketmine\item\Item;
-use pocketmine\level\Explosion;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;

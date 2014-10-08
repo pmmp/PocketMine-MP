@@ -21,15 +21,15 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\Player;
-use pocketmine\level\Level;
 use pocketmine\entity\FallingBlock;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Float;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Compound;
+use pocketmine\nbt\tag\Double;
+use pocketmine\nbt\tag\Enum;
+use pocketmine\nbt\tag\Float;
+use pocketmine\Player;
 
 abstract class Fallable extends Solid{
 

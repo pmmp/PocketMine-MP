@@ -23,7 +23,6 @@ namespace pocketmine\block;
 
 
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
 
 class Fence extends Transparent{
 	public function __construct(){

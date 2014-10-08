@@ -21,12 +21,12 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
-use pocketmine\item\Item;
-use pocketmine\entity\Entity;
-use pocketmine\level\Level;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\Server;
 
 class Fire extends Flowable{

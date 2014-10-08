@@ -21,10 +21,8 @@
 
 namespace pocketmine\event\entity;
 
-use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
-use pocketmine\level\Position;
 
 /**
  * Called when a entity decides to explode

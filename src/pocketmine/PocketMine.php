@@ -70,7 +70,6 @@ namespace pocketmine {
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
-	use raklib\RakLib;
 
 	const VERSION = "Alpha_1.4dev";
 	const API_VERSION = "1.5.0";

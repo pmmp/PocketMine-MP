@@ -21,15 +21,13 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\entity\Entity;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\event\entity\EntityDamageEvent;
 
 class Lava extends Liquid{
 	public function __construct($meta = 0){

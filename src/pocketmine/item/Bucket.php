@@ -23,7 +23,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
 use pocketmine\block\Water;
 use pocketmine\level\Level;

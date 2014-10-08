@@ -21,14 +21,14 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\Player;
-use pocketmine\entity\Entity;
-use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\Server;
 
 class Cactus extends Transparent{

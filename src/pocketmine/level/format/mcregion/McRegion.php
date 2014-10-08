@@ -31,7 +31,6 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
-use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\Binary;
 

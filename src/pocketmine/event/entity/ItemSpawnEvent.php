@@ -21,11 +21,7 @@
 
 namespace pocketmine\event\entity;
 
-use pocketmine\block\Block;
 use pocketmine\entity\DroppedItem;
-use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
-use pocketmine\level\Position;
 
 class ItemSpawnEvent extends EntityEvent{
 	public static $handlerList = null;

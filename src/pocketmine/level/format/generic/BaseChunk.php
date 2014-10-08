@@ -21,16 +21,11 @@
 
 namespace pocketmine\level\format\generic;
 
-use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\String;
-use pocketmine\tile\Chest;
-use pocketmine\tile\Furnace;
-use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 
