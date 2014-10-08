@@ -28,11 +28,13 @@ use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\entity\Projectile;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntityShootBowEvent;
+use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
@@ -1673,6 +1675,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							if($ev->isCancelled()){
 								$ev->getProjectile()->kill();
 							}else{
+								$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
 								if($this->isSurvival()){
 									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
 									$bow->setDamage($bow->getDamage() + 1);
@@ -1681,8 +1684,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 										$this->inventory->setItemInHand(Item::get(Item::AIR, 0, 0), $this);
 									}
 								}
-								$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
-								$ev->getProjectile()->spawnToAll();
+								if($ev->getProjectile() instanceof Projectile){
+									$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+									if($projectileEv->isCancelled()){
+										$ev->getProjectile()->kill();
+									}else{
+										$ev->getProjectile()->spawnToAll();
+									}
+								}else{
+									$ev->getProjectile()->spawnToAll();
+								}
 							}
 						}
 						//}
