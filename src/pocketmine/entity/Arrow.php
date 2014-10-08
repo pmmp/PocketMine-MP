@@ -125,7 +125,7 @@ class Arrow extends Projectile{
 					$this->server->getPluginManager()->callEvent($ev);
 
 					if(!$ev->isCancelled()){
-						$movingObjectPosition->entityHit->attack($damage, $ev);
+						$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 						if($this->fireTicks > 0){
 							$movingObjectPosition->entityHit->setOnFire(5);
 						}
