@@ -23,6 +23,7 @@ namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\event\inventory\FurnaceBurnEvent;
+use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
@@ -204,6 +205,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		$product = $this->inventory->getResult();
 		$smelt = $this->server->getCraftingManager()->matchFurnaceRecipe($raw);
 		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product, true) and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
+
 		if($this->namedtag["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== null and $fuel->getCount() > 0){
 			$this->checkFuel($fuel);
 		}
@@ -216,12 +218,18 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				$this->namedtag->CookTime = new Short("CookTime", $this->namedtag["CookTime"] + 1);
 				if($this->namedtag["CookTime"] >= 200){ //10 seconds
 					$product = Item::get($smelt->getResult()->getID(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
-					$this->inventory->setResult($product);
-					$raw->setCount($raw->getCount() - 1);
-					if($raw->getCount() === 0){
-						$raw = Item::get(Item::AIR, 0, 0);
+
+					$this->server->getPluginManager()->callEvent($ev = new FurnaceSmeltEvent($this, $raw, $product));
+
+					if(!$ev->isCancelled()){
+						$this->inventory->setResult($ev->getResult());
+						$raw->setCount($raw->getCount() - 1);
+						if($raw->getCount() === 0){
+							$raw = Item::get(Item::AIR, 0, 0);
+						}
+						$this->inventory->setSmelting($raw);
 					}
-					$this->inventory->setSmelting($raw);
+
 					$this->namedtag->CookTime = new Short("CookTime", $this->namedtag["CookTime"] - 200);
 				}
 			}elseif($this->namedtag["BurnTime"] <= 0){
