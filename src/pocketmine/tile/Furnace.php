@@ -22,6 +22,7 @@
 namespace pocketmine\tile;
 
 use pocketmine\block\Block;
+use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\InventoryHolder;
@@ -166,6 +167,29 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		return $this->inventory;
 	}
 
+	protected function checkFuel(Item $fuel){
+		$this->server->getPluginManager()->callEvent($ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime()));
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$this->namedtag->MaxTime = new Short("MaxTime", $ev->getBurnTime());
+		$this->namedtag->BurnTime = new Short("BurnTime", $ev->getBurnTime());
+		$this->namedtag->BurnTicks = new Short("BurnTicks", 0);
+		if($this->getBlock()->getID() === Item::FURNACE){
+			$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
+		}
+
+		if($this->namedtag["BurnTime"] > 0 and $ev->isBurning()){
+			$fuel->setCount($fuel->getCount() - 1);
+			if($fuel->getCount() === 0){
+				$fuel = Item::get(Item::AIR, 0, 0);
+			}
+			$this->inventory->setFuel($fuel);
+		}
+	}
+
 	public function onUpdate(){
 		if($this->closed === true){
 			return false;
@@ -181,21 +205,9 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		$smelt = $this->server->getCraftingManager()->matchFurnaceRecipe($raw);
 		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product, true) and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
 		if($this->namedtag["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== null and $fuel->getCount() > 0){
-			$this->lastUpdate = microtime(true);
-			$time = floor($fuel->getFuelTime());
-			$this->namedtag->MaxTime = new Short("MaxTime", $time);
-			$this->namedtag->BurnTime = new Short("BurnTime", $time);
-			$this->namedtag->BurnTicks = new Short("BurnTicks", 0);
-			$fuel->setCount($fuel->getCount() - 1);
-			if($fuel->getCount() === 0){
-				$fuel = Item::get(Item::AIR, 0, 0);
-			}
-			$this->inventory->setFuel($fuel);
-			$current = $this->getLevel()->getBlock($this);
-			if($current->getID() === Item::FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::BURNING_FURNACE, $current->getDamage()), true);
-			}
+			$this->checkFuel($fuel);
 		}
+
 		if($this->namedtag["BurnTime"] > 0){
 			$this->namedtag->BurnTime = new Short("BurnTime", $this->namedtag["BurnTime"] - 1);
 			$this->namedtag->BurnTicks = new Short("BurnTicks", ceil(($this->namedtag["BurnTime"] / $this->namedtag["MaxTime"] * 200)));
@@ -220,10 +232,9 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				$this->namedtag->CookTime = new Short("CookTime", 0);
 			}
 			$ret = true;
-		}else{
-			$current = $this->getLevel()->getBlock($this);
-			if($current->getID() === Item::BURNING_FURNACE){
-				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $current->getDamage()), true);
+		}else{;
+			if($this->getBlock()->getID() === Item::BURNING_FURNACE){
+				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $this->getBlock()->getDamage()), true);
 			}
 			$this->namedtag->BurnTime = new Short("BurnTime", 0);
 			$this->namedtag->CookTime = new Short("CookTime", 0);
