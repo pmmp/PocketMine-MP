@@ -24,7 +24,7 @@ namespace pocketmine\inventory;
 /**
  * Saves all the information regarding default inventory sizes and types
  */
-abstract class SlotType{
+interface SlotType{
 	const RESULT = 0;
 
 	const CRAFTING = 1; //Not used in Minecraft: PE yet

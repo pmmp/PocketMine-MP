@@ -180,9 +180,9 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		$product = $this->inventory->getResult();
 		$smelt = $this->server->getCraftingManager()->matchFurnaceRecipe($raw);
 		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product, true) and $product->getCount() < $product->getMaxStackSize()) or $product->getID() === Item::AIR));
-		if($this->namedtag["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== false and $fuel->getCount() > 0){
+		if($this->namedtag["BurnTime"] <= 0 and $canSmelt and $fuel->getFuelTime() !== null and $fuel->getCount() > 0){
 			$this->lastUpdate = microtime(true);
-			$time = floor($fuel->getFuelTime() * 20);
+			$time = floor($fuel->getFuelTime());
 			$this->namedtag->MaxTime = new Short("MaxTime", $time);
 			$this->namedtag->BurnTime = new Short("BurnTime", $time);
 			$this->namedtag->BurnTicks = new Short("BurnTicks", 0);
@@ -197,12 +197,11 @@ class Furnace extends Tile implements InventoryHolder, Container{
 			}
 		}
 		if($this->namedtag["BurnTime"] > 0){
-			$ticks = (microtime(true) - $this->lastUpdate) * 20;
-			$this->namedtag->BurnTime = new Short("BurnTime", $this->namedtag["BurnTime"] - $ticks);
+			$this->namedtag->BurnTime = new Short("BurnTime", $this->namedtag["BurnTime"] - 1);
 			$this->namedtag->BurnTicks = new Short("BurnTicks", ceil(($this->namedtag["BurnTime"] / $this->namedtag["MaxTime"] * 200)));
 
 			if($smelt instanceof FurnaceRecipe and $canSmelt){
-				$this->namedtag->CookTime = new Short("CookTime", $this->namedtag["CookTime"] + $ticks);
+				$this->namedtag->CookTime = new Short("CookTime", $this->namedtag["CookTime"] + 1);
 				if($this->namedtag["CookTime"] >= 200){ //10 seconds
 					$product = Item::get($smelt->getResult()->getID(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
 					$this->inventory->setResult($product);

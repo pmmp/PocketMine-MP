@@ -556,13 +556,13 @@ class Item{
 
 	final public function getFuelTime(){
 		if(!isset(Fuel::$duration[$this->id])){
-			return false;
+			return null;
 		}
 		if($this->id !== self::BUCKET or $this->meta === 10){
 			return Fuel::$duration[$this->id];
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
