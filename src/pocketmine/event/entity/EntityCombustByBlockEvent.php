@@ -25,7 +25,6 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
 class EntityCombustByBlockEvent extends EntityCombustEvent{
-	public static $handlerList = null;
 
 	protected $combuster;
 
