@@ -29,6 +29,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	public static $handlerList = null;
 
 	private $deathMessage;
+	private $keepInventory = false;
 
 	/**
 	 * @param Player $entity
@@ -53,6 +54,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	public function setDeathMessage($deathMessage){
 		$this->deathMessage = $deathMessage;
+	}
+
+	public function getKeepInventory(){
+		return $this->keepInventory;
+	}
+
+	public function setKeepInventory($keepInventory){
+		$this->keepInventory = (bool) $keepInventory;
 	}
 
 }

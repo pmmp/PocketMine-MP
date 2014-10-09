@@ -2436,12 +2436,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		Entity::kill();
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), $message));
-		foreach($ev->getDrops() as $item){
-			$this->getLevel()->dropItem($this, $item);
-		}
 
-		if($this->inventory !== null){
-			$this->inventory->clearAll();
+		if(!$ev->getKeepInventory()){
+			foreach($ev->getDrops() as $item){
+				$this->getLevel()->dropItem($this, $item);
+			}
+
+			if($this->inventory !== null){
+				$this->inventory->clearAll();
+			}
 		}
 
 		if($ev->getDeathMessage() != ""){
