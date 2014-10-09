@@ -94,6 +94,13 @@ abstract class Tile extends Position{
 		$this->namedtag->z = new Int("z", $this->z);
 	}
 
+	/**
+	 * @return \pocketmine\block\Block
+	 */
+	public function getBlock(){
+		return $this->level->getBlock($this);
+	}
+
 	public function onUpdate(){
 		return false;
 	}
