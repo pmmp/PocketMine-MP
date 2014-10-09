@@ -26,6 +26,14 @@ namespace pocketmine\math;
  * If this class is modified, remember to modify the PHP C extension.
  */
 class Vector3{
+
+	const SIDE_DOWN = 0;
+	const SIDE_UP = 1;
+	const SIDE_NORTH = 2;
+	const SIDE_SOUTH = 3;
+	const SIDE_WEST = 4;
+	const SIDE_EAST = 5;
+
 	public $x;
 	public $y;
 	public $z;
@@ -136,20 +144,39 @@ class Vector3{
 
 	public function getSide($side, $step = 1){
 		switch((int) $side){
-			case 0:
+			case self::SIDE_DOWN:
 				return new Vector3($this->x, $this->y - $step, $this->z);
-			case 1:
+			case self::SIDE_UP:
 				return new Vector3($this->x, $this->y + $step, $this->z);
-			case 2:
+			case self::SIDE_NORTH:
 				return new Vector3($this->x, $this->y, $this->z - $step);
-			case 3:
+			case self::SIDE_SOUTH:
 				return new Vector3($this->x, $this->y, $this->z + $step);
-			case 4:
+			case self::SIDE_WEST:
 				return new Vector3($this->x - $step, $this->y, $this->z);
-			case 5:
+			case self::SIDE_EAST:
 				return new Vector3($this->x + $step, $this->y, $this->z);
 			default:
 				return $this;
+		}
+	}
+
+	public static function getOppositeSide($side){
+		switch((int) $side){
+			case self::SIDE_DOWN:
+				return self::SIDE_UP;
+			case self::SIDE_UP:
+				return self::SIDE_DOWN;
+			case self::SIDE_NORTH:
+				return self::SIDE_SOUTH;
+			case self::SIDE_SOUTH:
+				return self::SIDE_NORTH;
+			case self::SIDE_WEST:
+				return self::SIDE_EAST;
+			case self::SIDE_EAST:
+				return self::SIDE_WEST;
+			default:
+				return -1;
 		}
 	}
 

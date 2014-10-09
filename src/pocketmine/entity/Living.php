@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\block\Block;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
@@ -32,6 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Server;
+use pocketmine\utils\BlockIterator;
 
 abstract class Living extends Entity implements Damageable{
 
@@ -167,5 +169,64 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function getDrops(){
 		return [];
+	}
+
+	/**
+	 * @param int   $maxDistance
+	 * @param int   $maxLength
+	 * @param array $transparent
+	 *
+	 * @return Block[]
+	 */
+	public function getLineOfSight($maxDistance, $maxLength = 0, array $transparent = []){
+		if($maxDistance > 120){
+			$maxDistance = 120;
+		}
+
+		if(count($transparent) === 0){
+			$transparent = null;
+		}
+
+		$blocks = [];
+		$itr = new BlockIterator($this->level, $this->getPosition(), $this->getEyeHeight(), $maxDistance);
+
+		while($itr->valid()){
+			$itr->next();
+			$block = $itr->current();
+			$blocks[] = $block;
+
+			if($maxLength !== 0 and count($blocks) > $maxLength){
+				array_shift($blocks);
+			}
+
+			$id = $block->getID();
+
+			if($transparent === null){
+				if($id !== 0){
+					break;
+				}
+			}else{
+				if(!isset($transparent[$id])){
+					break;
+				}
+			}
+		}
+
+		return $blocks;
+	}
+
+	/**
+	 * @param int   $maxDistance
+	 * @param array $transparent
+	 *
+	 * @return Block
+	 */
+	public function getTargetBlock($maxDistance, array $transparent = []){
+		$block = array_shift($this->getLineOfSight($maxDistance, 1, $transparent));
+		if($block instanceof Block){
+			return $block;
+		}
+
+		return null;
 	}
 }
