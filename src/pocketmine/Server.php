@@ -1114,8 +1114,8 @@ class Server{
 		$radiusSquared = ($this->getViewDistance() + 1) / M_PI;
 		$radius = ceil(sqrt($radiusSquared));
 
-		$centerX = $level->getSpawn()->getX() >> 4;
-		$centerZ = $level->getSpawn()->getZ() >> 4;
+		$centerX = $level->getSpawnLocation()->getX() >> 4;
+		$centerZ = $level->getSpawnLocation()->getZ() >> 4;
 
 		$order = [];
 

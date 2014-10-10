@@ -1378,9 +1378,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if(($level = $this->server->getLevelByName($nbt["Level"])) === null){
 					$this->setLevel($this->server->getDefaultLevel(), true);
 					$nbt["Level"] = $this->getLevel()->getName();
-					$nbt["Pos"][0] = $this->getLevel()->getSpawn()->x;
-					$nbt["Pos"][1] = $this->getLevel()->getSpawn()->y;
-					$nbt["Pos"][2] = $this->getLevel()->getSpawn()->z;
+					$nbt["Pos"][0] = $this->getLevel()->getSpawnLocation()->x;
+					$nbt["Pos"][1] = $this->getLevel()->getSpawnLocation()->y;
+					$nbt["Pos"][2] = $this->getLevel()->getSpawnLocation()->z;
 				}else{
 					$this->setLevel($level, true);
 				}

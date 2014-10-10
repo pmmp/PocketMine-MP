@@ -1025,7 +1025,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
 				$t = new Vector2($target->x, $target->z);
-				$s = new Vector2($this->getSpawn()->x, $this->getSpawn()->z);
+				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if($t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
 					$ev->setCancelled();
 				}
@@ -1115,7 +1115,7 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new PlayerInteractEvent($player, $item, $target, $face);
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
 				$t = new Vector2($target->x, $target->z);
-				$s = new Vector2($this->getSpawn()->x, $this->getSpawn()->z);
+				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if($t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
 					$ev->setCancelled();
 				}
@@ -1180,7 +1180,7 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
 				$t = new Vector2($target->x, $target->z);
-				$s = new Vector2($this->getSpawn()->x, $this->getSpawn()->z);
+				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
 				if($t->distance($s) <= $distance){ //set it to cancelled so plugins can bypass this
 					$ev->setCancelled();
 				}
@@ -1868,10 +1868,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Returns the raw spawnpoint
 	 *
+	 * @deprecated
 	 * @return Position
 	 */
 	public function getSpawn(){
-		return Position::fromObject($this->provider->getSpawn(), $this);
+		return $this->getSpawnLocation();
 	}
 
 	/**
@@ -1881,7 +1882,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getSafeSpawn($spawn = null){
 		if(!($spawn instanceof Vector3)){
-			$spawn = $this->getSpawn();
+			$spawn = $this->getSpawnLocation();
 		}
 		if($spawn instanceof Vector3){
 			$x = Math::floorFloat($spawn->x);
