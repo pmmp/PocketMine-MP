@@ -2240,7 +2240,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 
-		return false;git 
+		return false;
 	}
 
 	/**
@@ -2250,14 +2250,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function sendMessage($message){
 		if($this->removeFormat !== false){
-			$message = TextWrapper::wrap($message);
+			$message = TextWrapper::wrap(TextFormat::clean($message));
 		}
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if($m !== ""){
 				$pk = new MessagePacket;
 				$pk->source = ""; //Do not use this ;)
-				$pk->message = $this->removeFormat === false ? $m : TextFormat::clean($m);
+				$pk->message = $m;
 				$this->dataPacket($pk);
 			}
 		}

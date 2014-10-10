@@ -32,7 +32,7 @@ abstract class TextWrapper{
 		6, 6, 6, 4, 6, 6, 6, 6, 6, 6, 5, 2, 5, 7
 	];
 
-	const CHAT_WINDOW_WIDTH = 320;
+	const CHAT_WINDOW_WIDTH = 240;
 	const CHAT_STRING_LENGTH = 119;
 
 	private static $allowedChars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
@@ -57,7 +57,6 @@ abstract class TextWrapper{
 			$char = $text{$i};
 
 			if($char === "\n"){
-				$result .= "\n";
 				$lineLength = 0;
 				$lineWidth = 0;
 			}elseif(isset(self::$allowedCharsArray[$char])){
@@ -71,10 +70,9 @@ abstract class TextWrapper{
 
 				++$lineLength;
 				$lineWidth += $width;
-				$result .= $char;
-			}else{
-				$result .= "\n";
 			}
+
+			$result .= $char;
 		}
 
 		return $result;
