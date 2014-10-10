@@ -45,6 +45,9 @@ class ServerScheduler{
 
 	protected $asyncTasks = 0;
 
+	/** @var AsyncTask[] */
+	protected $asyncTaskStorage = [];
+
 	/** @var int */
 	private $ids = 1;
 
@@ -77,6 +80,7 @@ class ServerScheduler{
 		$id = $this->nextId();
 		$task->setTaskId($id);
 		$this->asyncPool->submit($task);
+		$this->asyncTaskStorage[$id] = $task;
 		++$this->asyncTasks;
 	}
 
@@ -241,6 +245,12 @@ class ServerScheduler{
 
 		if($this->asyncTasks > 0){ //Garbage collector
 			$this->asyncPool->collect([$this, "collectAsyncTask"]);
+
+			foreach($this->asyncTaskStorage as $asyncTask){
+				if($asyncTask->isFinished() and !$asyncTask->isCompleted()){
+					$this->collectAsyncTask($asyncTask);
+				}
+			}
 		}
 	}
 
@@ -249,6 +259,7 @@ class ServerScheduler{
 			--$this->asyncTasks;
 			$task->onCompletion(Server::getInstance());
 			$task->setCompleted();
+			unset($this->asyncTaskStorage[$task->getTaskId()]);
 
 			return true;
 		}

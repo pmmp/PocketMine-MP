@@ -28,7 +28,7 @@ use pocketmine\Server;
  *
  * WARNING: Do not call PocketMine-MP API methods from other Threads!!
  */
-abstract class AsyncTask extends \Collectable{
+abstract class AsyncTask extends \Threaded{
 
 	protected $complete = null;
 	protected $finished = null;
@@ -43,7 +43,6 @@ abstract class AsyncTask extends \Collectable{
 		$this->onRun();
 
 		$this->finished = true;
-		$this->setGarbage();
 
 	}
 
