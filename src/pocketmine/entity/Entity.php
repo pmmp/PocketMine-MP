@@ -943,7 +943,7 @@ abstract class Entity extends Position implements Metadatable{
 
 			$pos = new Vector3(
 				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-				$this->boundingBox->minY - $this->ySize/* + $this->height*/,
+				$this->boundingBox->minY - $this->ySize,
 				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 			);
 

@@ -188,7 +188,7 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$blocks = [];
-		$itr = new BlockIterator($this->level, $this->getPosition(), $this->getEyeHeight(), $maxDistance);
+		$itr = new BlockIterator($this->level, $this->getPosition(), $this->getDirectionVector(), $this->getEyeHeight(), $maxDistance);
 
 		while($itr->valid()){
 			$itr->next();
