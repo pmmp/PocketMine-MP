@@ -105,6 +105,7 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\TextWrapper;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
@@ -2239,7 +2240,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return true;
 		}
 
-		return false;
+		return false;git 
 	}
 
 	/**
@@ -2248,6 +2249,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param string $message
 	 */
 	public function sendMessage($message){
+		if($this->removeFormat !== false){
+			$message = TextWrapper::wrap($message);
+		}
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if($m !== ""){

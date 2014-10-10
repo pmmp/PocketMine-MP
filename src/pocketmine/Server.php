@@ -84,6 +84,7 @@ use pocketmine\utils\Cache;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 
@@ -1550,6 +1551,7 @@ class Server{
 		InventoryType::init();
 		Block::init();
 		Item::init();
+		TextWrapper::init();
 		$this->craftingManager = new CraftingManager();
 
 		$this->pluginManager = new PluginManager($this, $this->commandMap);
