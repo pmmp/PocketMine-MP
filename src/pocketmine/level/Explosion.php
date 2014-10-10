@@ -64,9 +64,21 @@ class Explosion{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function explode(){
+		if($this->explodeA()){
+			return $this->explodeB();
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function explodeA(){
 		if($this->size < 0.1){
 			return false;
 		}
@@ -108,6 +120,10 @@ class Explosion{
 			}
 		}
 
+		return true;
+	}
+
+	public function explodeB(){
 		$send = [];
 		$source = $this->source->floor();
 		$yield = (1 / $this->size) * 100;
@@ -204,6 +220,5 @@ class Explosion{
 		Server::broadcastPacket($this->level->getUsingChunk($source->x >> 4, $source->z >> 4), $pk);
 
 		return true;
-
 	}
 }

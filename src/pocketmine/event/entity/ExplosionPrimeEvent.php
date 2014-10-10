@@ -31,6 +31,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
 
 	protected $force;
+	private $blockBreaking;
 
 	/**
 	 * @param Entity $entity
@@ -39,6 +40,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	public function __construct(Entity $entity, $force){
 		$this->entity = $entity;
 		$this->force = $force;
+		$this->blockBreaking = true;
 	}
 
 	/**
@@ -50,6 +52,20 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 
 	public function setForce($force){
 		$this->force = (float) $force;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isBlockBreaking(){
+		return $this->blockBreaking;
+	}
+
+	/**
+	 * @param bool $affectsBlocks
+	 */
+	public function setBlockBreaking($affectsBlocks){
+		$this->blockBreaking = (bool) $affectsBlocks;
 	}
 
 }
