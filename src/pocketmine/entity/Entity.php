@@ -33,7 +33,6 @@ use pocketmine\event\entity\EntityMoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
-use pocketmine\event\player\PlayerMotionEvent;
 use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
@@ -166,7 +165,7 @@ abstract class Entity extends Position implements Metadatable{
 		$this->timings = Timings::getEntityTimings($this);
 
 		if($this->eyeHeight === null){
-			$this->eyeHeight = $this->height;
+			$this->eyeHeight = $this->height / 2 + 0.1;
 		}
 
 		$this->id = Entity::$entityCount++;
@@ -534,7 +533,7 @@ abstract class Entity extends Position implements Metadatable{
 				$pk = new MovePlayerPacket;
 				$pk->eid = $this->id;
 				$pk->x = $this->x;
-				$pk->y = $this->y; //teleport from head
+				$pk->y = $this->y;
 				$pk->z = $this->z;
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;
@@ -543,7 +542,7 @@ abstract class Entity extends Position implements Metadatable{
 				//TODO: add to move list
 				$pk = new MoveEntityPacket();
 				$pk->entities = [
-					[$this->id, $this->x, $this->y, $this->z, $this->yaw, $this->pitch]
+					[$this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch]
 				];
 			}
 
