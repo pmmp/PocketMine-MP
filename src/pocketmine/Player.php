@@ -1195,7 +1195,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->entityBaseTick();
 
-		if($this->onGround or $this->fallDistance === 0){
+		if($this->onGround){
 			$this->inAirTicks = 0;
 		}else{
 			if($this->inAirTicks > 100 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
