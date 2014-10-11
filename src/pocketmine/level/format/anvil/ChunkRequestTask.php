@@ -82,7 +82,6 @@ class ChunkRequestTask extends AsyncTask{
 		$meta = "";
 		$blockLight = "";
 		$skyLight = "";
-		$biomeColors = "";
 
 		foreach($this->sections as $section){
 			$ids .= $section->getIdArray();

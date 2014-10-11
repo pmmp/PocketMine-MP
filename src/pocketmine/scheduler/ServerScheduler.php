@@ -43,10 +43,10 @@ class ServerScheduler{
 	/** @var \Pool */
 	protected $asyncPool;
 
-	protected $asyncTasks = 0;
-
 	/** @var AsyncTask[] */
 	protected $asyncTaskStorage = [];
+
+	protected $asyncTasks = 0;
 
 	/** @var int */
 	private $ids = 1;
@@ -69,8 +69,7 @@ class ServerScheduler{
 	}
 
 	/**
-	 * Submits a asynchronous task to the Pool
-	 * If the AsyncTask sets a result, you have to get it so it can be deleted
+	 * Submits an asynchronous task to the Worker Pool
 	 *
 	 * @param AsyncTask $task
 	 *
@@ -80,7 +79,7 @@ class ServerScheduler{
 		$id = $this->nextId();
 		$task->setTaskId($id);
 		$this->asyncPool->submit($task);
-		$this->asyncTaskStorage[$id] = $task;
+		$this->asyncTaskStorage[$task->getTaskId()] = $task;
 		++$this->asyncTasks;
 	}
 
@@ -143,6 +142,7 @@ class ServerScheduler{
 			$task->cancel();
 		}
 		$this->tasks = [];
+		$this->asyncTaskStorage = [];
 		$this->asyncPool->shutdown();
 		$this->asyncTasks = 0;
 		$this->queue = new ReversePriorityQueue();
@@ -246,25 +246,24 @@ class ServerScheduler{
 		if($this->asyncTasks > 0){ //Garbage collector
 			$this->asyncPool->collect([$this, "collectAsyncTask"]);
 
-			foreach($this->asyncTaskStorage as $asyncTask){
-				if($asyncTask->isFinished() and !$asyncTask->isCompleted()){
-					$this->collectAsyncTask($asyncTask);
+			if($this->asyncTasks > 0){
+				//TODO: remove this workaround
+				foreach($this->asyncTaskStorage as $task){
+					$this->collectAsyncTask($task);
 				}
 			}
 		}
 	}
 
 	public function collectAsyncTask(AsyncTask $task){
-		if($task->isFinished() and !$task->isCompleted()){
+		if($task->isFinished() and !$task->isGarbage()){
 			--$this->asyncTasks;
 			$task->onCompletion(Server::getInstance());
-			$task->setCompleted();
+			$task->setGarbage();
 			unset($this->asyncTaskStorage[$task->getTaskId()]);
-
-			return true;
 		}
 
-		return false;
+		return $task->isGarbage();
 	}
 
 	private function isReady($currentTicks){

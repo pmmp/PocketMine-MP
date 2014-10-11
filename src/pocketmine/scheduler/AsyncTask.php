@@ -26,24 +26,20 @@ use pocketmine\Server;
 /**
  * Class used to run async tasks in other threads.
  *
- * WARNING: Do not call PocketMine-MP API methods from other Threads!!
+ * WARNING: Do not call PocketMine-MP API methods, or save objects from/on other Threads!!
  */
-abstract class AsyncTask extends \Threaded{
+abstract class AsyncTask extends \Collectable{
 
-	protected $complete = null;
-	protected $finished = null;
-	protected $result = null;
-	protected $taskId = null;
+	private $finished = null;
+	private $result = null;
+	private $taskId = null;
 
 	public function run(){
 		$this->finished = false;
-		$this->complete = false;
 		$this->result = null;
 
 		$this->onRun();
-
 		$this->finished = true;
-
 	}
 
 	/**
@@ -51,17 +47,6 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	public function isFinished(){
 		return $this->finished === true;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isCompleted(){
-		return $this->complete === true;
-	}
-
-	public function setCompleted(){
-		$this->complete = true;
 	}
 
 	/**

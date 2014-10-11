@@ -58,7 +58,7 @@ interface LevelProvider{
 	 * @param int $x
 	 * @param int $z
 	 *
-	 * @return \pocketmine\scheduler\AsyncTask
+	 * @return \pocketmine\scheduler\AsyncTask|null
 	 */
 	public function requestChunkTask($x, $z);
 
