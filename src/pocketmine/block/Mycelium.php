@@ -21,9 +21,11 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\Server;
 
 class Mycelium extends Solid{
 	public function __construct(){
@@ -47,7 +49,10 @@ class Mycelium extends Solid{
 			if($block === Block::DIRT){
 				$block = Block::get($block, $this->getLevel()->getBlockDataAt($x, $y, $z), new Position($x, $y, $z, $this->getLevel()));
 				if($block->getSide(1) instanceof Transparent){
-					$this->getLevel()->setBlock($block, new Mycelium());
+					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, new Mycelium()));
+					if(!$ev->isCancelled()){
+						$this->getLevel()->setBlock($block, $ev->getNewState());
+					}
 				}
 			}
 		}
