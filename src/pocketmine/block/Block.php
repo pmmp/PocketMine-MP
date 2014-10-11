@@ -513,6 +513,7 @@ abstract class Block extends Position implements Metadatable{
 	protected $name = "Unknown";
 	protected $breakTime = 0.20;
 	protected $hardness = 10;
+	public $hasEntityCollision = false;
 	public $isActivable = false;
 	public $breakable = true;
 	public $isFlowable = false;

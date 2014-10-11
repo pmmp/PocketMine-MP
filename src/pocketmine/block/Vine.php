@@ -29,6 +29,9 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Vine extends Transparent{
+
+	public $hasEntityCollision = true;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::VINE, $meta, "Vines");
 		$this->isSolid = false;

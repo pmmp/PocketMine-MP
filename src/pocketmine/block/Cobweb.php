@@ -25,6 +25,9 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 
 class Cobweb extends Flowable{
+
+	public $hasEntityCollision = true;
+
 	public function __construct(){
 		parent::__construct(self::COBWEB, 0, "Cobweb");
 		$this->isSolid = true;

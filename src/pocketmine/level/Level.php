@@ -756,10 +756,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Entity        $entity
 	 * @param AxisAlignedBB $bb
+	 * @param boolean       $entities
 	 *
 	 * @return AxisAlignedBB[]
 	 */
-	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb){
+	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb, $entities = true){
 		$minX = Math::floorFloat($bb->minX);
 		$minY = Math::floorFloat($bb->minY);
 		$minZ = Math::floorFloat($bb->minZ);
@@ -780,8 +781,10 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		foreach($this->getCollidingEntities($bb->grow(0.25, 0.25, 0.25), $entity) as $ent){
-			$collides[] = clone $ent->boundingBox;
+		if($entities){
+			foreach($this->getCollidingEntities($bb->grow(0.25, 0.25, 0.25), $entity) as $ent){
+				$collides[] = clone $ent->boundingBox;
+			}
 		}
 
 		return $collides;
@@ -1690,6 +1693,8 @@ class Level implements ChunkManager, Metadatable{
 			}
 			unset($this->chunkSendQueue[$index]);
 			unset($this->chunkSendTasks[$index]);
+		}else{
+			var_dump("ARGH");
 		}
 	}
 

@@ -30,6 +30,9 @@ use pocketmine\level\Level;
 use pocketmine\Server;
 
 class Fire extends Flowable{
+
+	public $hasEntityCollision = true;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::FIRE, $meta, "Fire");
 		$this->isReplaceable = true;

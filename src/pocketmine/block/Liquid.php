@@ -28,6 +28,8 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 abstract class Liquid extends Transparent{
+	public $hasEntityCollision = true;
+
 	public $isLiquid = true;
 	public $breakable = false;
 	public $isReplaceable = true;

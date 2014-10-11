@@ -749,11 +749,17 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function isInsideOfSolid(){
+		$blocks = [];
 		for($i = 0; $i < 8; ++$i){
 			$x = (($i % 2) - 0.5) * $this->width * 0.8;
 			$y = ((($i >> 1) % 2) - 0.5) * 0.1;
 			$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
-			$block = $this->getLevel()->getBlock((new Vector3($this->x + $x, $this->y + $this->getEyeHeight() + $y, $this->z + $z))->floor());
+			$v = (new Vector3($this->x + $x, $this->y + $this->getEyeHeight() + $y, $this->z + $z))->floor();
+			$blocks["{$v->x}:{$v->y}:{$v->z}"] = $v;
+		}
+
+		foreach($blocks as $vector){
+			$block = $this->getLevel()->getBlock($vector);
 
 			$bb = $block->getBoundingBox();
 
@@ -830,7 +836,7 @@ abstract class Entity extends Position implements Metadatable{
 				//TODO: big messy loop
 			}*/
 
-			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz));
+			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz), false);
 
 
 			foreach($list as $bb){
@@ -884,7 +890,7 @@ abstract class Entity extends Position implements Metadatable{
 
 				$this->boundingBox->setBB($axisalignedbb);
 
-				$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ));
+				$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ), false);
 
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
@@ -955,7 +961,9 @@ abstract class Entity extends Position implements Metadatable{
 
 				if($this instanceof Player){
 					if(($this->onGround and $movY != 0) or (!$this->onGround and $movY <= 0)){
-						if(count($this->getLevel()->getCollisionBlocks($this->boundingBox->getOffsetBoundingBox(0, $movY - 0.1, 0)->expand(0.01, 0, 0.01))) > 0){
+						$bb = clone $this->boundingBox;
+						$bb->maxY = $bb->minY + 0.5;
+						if(count($this->getLevel()->getCollisionBlocks($bb->expand(0.01, 0.01, 0.01))) > 0){
 							$isColliding = true;
 						}else{
 							$isColliding = false;
@@ -1003,7 +1011,7 @@ abstract class Entity extends Position implements Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
 					$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
-					if($block !== null and $block->getID() > 0){
+					if($block !== null and $block->getID() > 0 and $block->hasEntityCollision){
 						$block->onEntityCollide($this);
 						if(!($this instanceof Player)){
 							$block->addVelocityToEntity($this, $vector);
@@ -1013,7 +1021,7 @@ abstract class Entity extends Position implements Metadatable{
 			}
 		}
 
-		if($vector->length() > 0){
+		if(!($this instanceof Player) and $vector->length() > 0){
 			$vector = $vector->normalize();
 			$d = 0.014;
 			$this->motionX += $vector->x * $d;

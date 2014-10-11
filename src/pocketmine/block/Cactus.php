@@ -32,6 +32,9 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 class Cactus extends Transparent{
+
+	public $hasEntityCollision = true;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::CACTUS, $meta, "Cactus");
 		$this->isFullBlock = false;
