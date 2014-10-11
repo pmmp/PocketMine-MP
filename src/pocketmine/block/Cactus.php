@@ -66,13 +66,11 @@ class Cactus extends Transparent{
 			$down = $this->getSide(0);
 			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){
 				$this->getLevel()->useBreakOn($this);
-				return;
 			}else{
 				for($side = 2; $side <= 5; ++$side){
 					$b = $this->getSide($side);
 					if(!$b->isFlowable){
 						$this->getLevel()->useBreakOn($this);
-						return;
 					}
 				}
 			}
@@ -94,8 +92,6 @@ class Cactus extends Transparent{
 					++$this->meta;
 					$this->getLevel()->setBlock($this, $this);
 				}
-
-				return;
 			}
 		}
 

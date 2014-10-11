@@ -5,7 +5,7 @@ cd "$DIR"
 DO_LOOP="no"
 
 while getopts "p:f:l" OPTION 2> /dev/null; do
-	case $OPTION in
+	case ${OPTION} in
 		p)
 			PHP_BINARY="$OPTARG"
 			;;

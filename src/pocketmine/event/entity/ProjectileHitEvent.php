@@ -22,7 +22,6 @@
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Projectile;
-use pocketmine\event\Cancellable;
 
 class ProjectileHitEvent extends EntityEvent{
 	public static $handlerList = null;

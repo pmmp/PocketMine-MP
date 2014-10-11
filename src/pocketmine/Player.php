@@ -868,7 +868,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function stopSleep(){
 		if($this->sleeping instanceof Vector3){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $this->getLevel()->getBlock($pos)));
+			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $this->getLevel()->getBlock($this->sleeping)));
 
 			$this->sleeping = null;
 

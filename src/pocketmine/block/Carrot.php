@@ -22,8 +22,6 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\Player;
 
 class Carrot extends Crops{
 	public function __construct($meta = 0){

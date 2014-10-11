@@ -1990,7 +1990,6 @@ class Server{
 	}
 
 	private function tickProcessor(){
-		$lastLoop = 0;
 		while($this->isRunning){
 			$this->tick();
 			usleep((int) max(1, ($this->nextTick - microtime(true)) * 1000000));
@@ -2124,7 +2123,6 @@ class Server{
 			$this->nextTick = $tickTime;
 		}
 		$this->nextTick += 0.05;
-		$this->inTick = false;
 
 		return true;
 	}

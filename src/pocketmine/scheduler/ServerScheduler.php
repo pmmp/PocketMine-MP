@@ -247,9 +247,8 @@ class ServerScheduler{
 			$this->asyncPool->collect([$this, "collectAsyncTask"]);
 
 			if($this->asyncTasks > 0){
-				//TODO: remove this workaround
-				foreach($this->asyncTaskStorage as $task){
-					$this->collectAsyncTask($task);
+				foreach($this->asyncTaskStorage as $asyncTask){
+					$this->collectAsyncTask($asyncTask);
 				}
 			}
 		}

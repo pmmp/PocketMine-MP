@@ -54,6 +54,7 @@ abstract class Event{
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
 
+		/** @var Event $this */
 		return $this->isCancelled === true;
 	}
 
@@ -68,6 +69,8 @@ abstract class Event{
 		if(!($this instanceof Cancellable)){
 			throw new \BadMethodCallException("Event is not Cancellable");
 		}
+
+		/** @var Event $this */
 		$this->isCancelled = (bool) $value;
 	}
 

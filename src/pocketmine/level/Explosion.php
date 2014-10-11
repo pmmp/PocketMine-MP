@@ -53,7 +53,7 @@ class Explosion{
 	 */
 	public $affectedBlocks = [];
 	public $stepLen = 0.3;
-	/** @var Entity|Block|Tile */
+	/** @var Entity|Block */
 	private $what;
 
 	public function __construct(Position $center, $size, $what = null){

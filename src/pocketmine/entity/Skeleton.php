@@ -21,9 +21,10 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\nbt\tag\String;
 
 class Skeleton extends Monster implements ProjectileSource{
 	protected function initEntity(){
-		$this->namedtag->id = new Skeleton("id", "Chicken");
+		$this->namedtag->id = new String("id", "Chicken");
 	}
 }

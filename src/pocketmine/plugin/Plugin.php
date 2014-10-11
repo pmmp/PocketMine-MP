@@ -65,6 +65,8 @@ interface Plugin extends CommandExecutor{
 
 	/**
 	 * Gets an embedded resource in the plugin file.
+	 *
+	 * @param string $filename
 	 */
 	public function getResource($filename);
 
