@@ -161,7 +161,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $sleeping = false;
 	protected $clientID = null;
 
-	protected $stepHeight = 0.5;
+	protected $stepHeight = 0.6;
 
 	public $usedChunks = [];
 	protected $loadQueue = [];
@@ -1652,7 +1652,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				switch($packet->action){
 					case 5: //Shot arrow
-						//if($this->entity->inAction === true){
 						if($this->inventory->getItemInHand()->getID() === Item::BOW){
 							$bow = $this->inventory->getItemInHand();
 							if($this->isSurvival()){
@@ -1709,7 +1708,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								}
 							}
 						}
-						//}
+
 						$this->startAction = false;
 						$this->inAction = false;
 						$this->sendMetadata($this->getViewers());
