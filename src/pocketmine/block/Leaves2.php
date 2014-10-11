@@ -21,9 +21,11 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
+use pocketmine\Server;
 
 class Leaves2 extends Leaves{
 
@@ -113,8 +115,11 @@ class Leaves2 extends Leaves{
 				$this->meta &= 0x03;
 				$visited = [];
 				$check = 0;
-				if($this->findLog($this, $visited, 0, $check) === true){
-					$this->getLevel()->setBlock($this, $this, false, false, true);
+
+				Server::getInstance()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+
+				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
+					$this->getLevel()->setBlock($this, $this, false, false);
 				}else{
 					$this->getLevel()->setBlock($this, new Air(), false, false, true);
 					if(mt_rand(1, 20) === 1){ //Saplings
