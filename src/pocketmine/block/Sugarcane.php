@@ -21,10 +21,12 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\Player;
+use pocketmine\Server;
 
 class Sugarcane extends Flowable{
 	public function __construct($meta = 0){
@@ -49,7 +51,10 @@ class Sugarcane extends Flowable{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 					if($b->getID() === self::AIR){
-						$this->getLevel()->setBlock($b, new Sugarcane(), true);
+						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Sugarcane()));
+						if(!$ev->isCancelled()){
+							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
+						}
 						break;
 					}
 				}

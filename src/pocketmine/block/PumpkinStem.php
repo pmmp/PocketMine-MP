@@ -21,47 +21,32 @@
 
 namespace pocketmine\block;
 
+use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
+use pocketmine\Server;
 
-class PumpkinStem extends Flowable{
+class PumpkinStem extends Crops{
 	public function __construct($meta = 0){
 		parent::__construct(self::PUMPKIN_STEM, $meta, "Pumpkin Stem");
-		$this->isActivable = true;
-		$this->hardness = 0;
-	}
-
-	public function getBoundingBox(){
-		return null;
-	}
-
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$down = $this->getSide(0);
-		if($down->getID() === self::FARMLAND){
-			$this->getLevel()->setBlock($block, $this, true, true);
-
-			return true;
-		}
-
-		return false;
 	}
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				//TODO
-				//Server::getInstance()->api->entity->drop($this, Item::get(PUMPKIN_SEEDS, 0, mt_rand(0, 2)));
-				$this->getLevel()->setBlock($this, new Air(), false, false, true);
-
+			if($this->getSide(0)->isTransparent === true){
+				$this->getLevel()->useBreakOn($this);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
 			if(mt_rand(0, 2) == 1){
 				if($this->meta < 0x07){
-					++$this->meta;
-					$this->getLevel()->setBlock($this, $this, true);
+					$block = clone $this;
+					++$block->meta;
+					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+					if(!$ev->isCancelled()){
+						$this->getLevel()->setBlock($this, $ev->getNewState(), true);
+					}
 
 					return Level::BLOCK_UPDATE_RANDOM;
 				}else{
@@ -74,26 +59,15 @@ class PumpkinStem extends Flowable{
 					$side = $this->getSide(mt_rand(2, 5));
 					$d = $side->getSide(0);
 					if($side->getID() === self::AIR and ($d->getID() === self::FARMLAND or $d->getID() === self::GRASS or $d->getID() === self::DIRT)){
-						$this->getLevel()->setBlock($side, new Pumpkin(), true);
+						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, new Pumpkin()));
+						if(!$ev->isCancelled()){
+							$this->getLevel()->setBlock($side, $ev->getNewState(), true);
+						}
 					}
 				}
 			}
 
 			return Level::BLOCK_UPDATE_RANDOM;
-		}
-
-		return false;
-	}
-
-	public function onActivate(Item $item, Player $player = null){
-		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			$this->meta = 0x07;
-			$this->getLevel()->setBlock($this, $this, true);
-			if(($player->gamemode & 0x01) === 0){
-				$item->count--;
-			}
-
-			return true;
 		}
 
 		return false;

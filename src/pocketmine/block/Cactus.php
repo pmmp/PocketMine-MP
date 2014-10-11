@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
@@ -63,18 +64,14 @@ class Cactus extends Transparent{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){ //Replace with common break method
-				$this->getLevel()->setBlock($this, new Air(), false);
-				$this->getLevel()->dropItem($this, Item::get($this->id));
-
+			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){
+				$this->getLevel()->useBreakOn($this);
 				return;
 			}else{
 				for($side = 2; $side <= 5; ++$side){
 					$b = $this->getSide($side);
 					if(!$b->isFlowable){
-						$this->getLevel()->setBlock($this, new Air(), false);
-						$this->getLevel()->dropItem($this, Item::get($this->id));
-
+						$this->getLevel()->useBreakOn($this);
 						return;
 					}
 				}
@@ -85,8 +82,10 @@ class Cactus extends Transparent{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
-							$this->getLevel()->setBlock($b, new Cactus(), true);
-							break;
+							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Cactus()));
+							if(!$ev->isCancelled()){
+								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
+							}
 						}
 					}
 					$this->meta = 0;
