@@ -419,13 +419,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->clientID = $clientID;
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
-		$this->timeout = microtime(true) + 20;
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->newPosition = new Vector3(0, 0, 0);
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 	}
 
 	/**
