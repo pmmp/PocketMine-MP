@@ -477,6 +477,8 @@ abstract class Entity extends Position implements Metadatable{
 			return false;
 		}elseif($this->dead === true){
 			$this->despawnFromAll();
+			Timings::$tickEntityTimer->stopTiming();
+			return false;
 		}
 
 		$hasUpdate = false;
@@ -749,23 +751,12 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function isInsideOfSolid(){
-		$blocks = [];
-		for($i = 0; $i < 8; ++$i){
-			$x = (($i % 2) - 0.5) * $this->width * 0.8;
-			$y = ((($i >> 1) % 2) - 0.5) * 0.1;
-			$z = ((($i >> 2) % 2) - 0.5) * $this->width * 0.8;
-			$v = (new Vector3($this->x + $x, $this->y + $this->getEyeHeight() + $y, $this->z + $z))->floor();
-			$blocks["{$v->x}:{$v->y}:{$v->z}"] = $v;
-		}
+		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
 
-		foreach($blocks as $vector){
-			$block = $this->getLevel()->getBlock($vector);
+		$bb = $block->getBoundingBox();
 
-			$bb = $block->getBoundingBox();
-
-			if($bb !== null and $block->isSolid and !$block->isTransparent and $bb->intersectsWith($this->getBoundingBox())){
-				return true;
-			}
+		if($bb !== null and $block->isSolid and !$block->isTransparent and $bb->intersectsWith($this->getBoundingBox())){
+			return true;
 		}
 		return false;
 	}
@@ -998,20 +989,20 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	protected function checkBlockCollision(){
-		$minX = Math::floorFloat($this->boundingBox->minX - 0.001);
-		$minY = Math::floorFloat($this->boundingBox->minY - 0.001);
-		$minZ = Math::floorFloat($this->boundingBox->minZ - 0.001);
-		$maxX = Math::floorFloat($this->boundingBox->maxX + 0.001);
-		$maxY = Math::floorFloat($this->boundingBox->maxY + 0.001);
-		$maxZ = Math::floorFloat($this->boundingBox->maxZ + 0.001);
+		$minX = Math::floorFloat($this->boundingBox->minX + 0.001);
+		$minY = Math::floorFloat($this->boundingBox->minY + 0.001);
+		$minZ = Math::floorFloat($this->boundingBox->minZ + 0.001);
+		$maxX = Math::floorFloat($this->boundingBox->maxX - 0.001);
+		$maxY = Math::floorFloat($this->boundingBox->maxY - 0.001);
+		$maxZ = Math::floorFloat($this->boundingBox->maxZ - 0.001);
 
 		$vector = new Vector3(0, 0, 0);
 
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
-					$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
-					if($block !== null and $block->getID() > 0 and $block->hasEntityCollision){
+					$block = $this->level->getBlock(new Vector3($x, $y, $z));
+					if($block !== null and $block->hasEntityCollision){
 						$block->onEntityCollide($this);
 						if(!($this instanceof Player)){
 							$block->addVelocityToEntity($this, $vector);

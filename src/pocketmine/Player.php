@@ -175,7 +175,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	/** @var Vector3 */
 	protected $newPosition;
 
-	private $viewDistance;
+	protected $viewDistance;
+	protected $chunksPerTick;
 	/** @var null|Position */
 	private $spawnPosition = null;
 	private $inAction = false;
@@ -424,6 +425,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->newPosition = new Vector3(0, 0, 0);
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 	}
 
 	/**
@@ -608,10 +610,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if(count($this->loadQueue) === 0){
 			$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 30);
 		}else{
-			$count = 0;
-			$limit = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
+			$count = 0;;
 			foreach($this->loadQueue as $index => $distance){
-				if($count >= $limit){
+				if($count >= $this->chunksPerTick){
 					break;
 				}
 				++$count;
@@ -648,7 +649,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			if($spawned < 48){
+			if($spawned < 56){
 				return;
 			}
 

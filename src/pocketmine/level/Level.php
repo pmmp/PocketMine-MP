@@ -128,6 +128,8 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Tile[] */
 	public $updateTiles = [];
 
+	protected $blockCache = [];
+
 	/** @var Server */
 	protected $server;
 
@@ -456,6 +458,52 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->unloadChunks();
 
+		$X = null;
+		$Z = null;
+
+		//Do block updates
+		$this->timings->doTickPending->startTiming();
+		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
+			$block = $this->getBlock($this->updateQueue->extract()["data"]);
+			unset($this->updateQueueIndex["{$block->x}:{$block->y}:{$block->z}"]);
+			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
+		}
+		$this->timings->doTickPending->stopTiming();
+
+		$this->timings->entityTick->startTiming();
+		//Update entities that need update
+		//if(count($this->updateEntities) > 0){
+			Timings::$tickEntityTimer->startTiming();
+			foreach($this->entities as $id => $entity){
+				if(!$entity->closed){
+					$entity->onUpdate();
+				}
+			}
+			Timings::$tickEntityTimer->stopTiming();
+		//}
+		$this->timings->entityTick->stopTiming();
+
+		$this->timings->tileEntityTick->startTiming();
+		//Update tiles that need update
+		if(count($this->updateTiles) > 0){
+			//Timings::$tickTileEntityTimer->startTiming();
+			foreach($this->updateTiles as $id => $tile){
+				if($tile->onUpdate() !== true){
+					unset($this->updateTiles[$id]);
+				}
+			}
+			//Timings::$tickTileEntityTimer->stopTiming();
+		}
+		$this->timings->tileEntityTick->stopTiming();
+
+		$this->timings->doTickTiles->startTiming();
+		$this->tickChunks();
+		$this->timings->doTickTiles->stopTiming();
+
+		if(($currentTick % 20) === 0){
+			$this->blockCache = [];
+		}
+
 		if(count($this->changedCount) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedCount as $index => $mini){
@@ -502,48 +550,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 		}
-
-		$X = null;
-		$Z = null;
-
-		//Do block updates
-		$this->timings->doTickPending->startTiming();
-		while($this->updateQueue->count() > 0 and $this->updateQueue->current()["priority"] <= $currentTick){
-			$block = $this->getBlock($this->updateQueue->extract()["data"]);
-			unset($this->updateQueueIndex["{$block->x}:{$block->y}:{$block->z}"]);
-			$block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
-		}
-		$this->timings->doTickPending->stopTiming();
-
-		$this->timings->entityTick->startTiming();
-		//Update entities that need update
-		//if(count($this->updateEntities) > 0){
-			Timings::$tickEntityTimer->startTiming();
-			foreach($this->entities as $id => $entity){
-				if(!$entity->closed){
-					$entity->onUpdate();
-				}
-			}
-			Timings::$tickEntityTimer->stopTiming();
-		//}
-		$this->timings->entityTick->stopTiming();
-
-		$this->timings->tileEntityTick->startTiming();
-		//Update tiles that need update
-		if(count($this->updateTiles) > 0){
-			//Timings::$tickTileEntityTimer->startTiming();
-			foreach($this->updateTiles as $id => $tile){
-				if($tile->onUpdate() !== true){
-					unset($this->updateTiles[$id]);
-				}
-			}
-			//Timings::$tickTileEntityTimer->stopTiming();
-		}
-		$this->timings->tileEntityTick->stopTiming();
-
-		$this->timings->doTickTiles->startTiming();
-		$this->tickChunks();
-		$this->timings->doTickTiles->stopTiming();
 
 		$this->processChunkRequest();
 
@@ -872,7 +878,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getBlock(Vector3 $pos){
 		$blockId = 0;
 		$meta = 0;
-		if($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, true)) !== null){
+		$index = "{$pos->x}:{$pos->y}:{$pos->z}";
+		if(isset($this->blockCache[$index])){
+			return $this->blockCache[$index];
+		}elseif($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, true)) !== null){
 			$chunk->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
 		}
 
@@ -885,7 +894,7 @@ class Level implements ChunkManager, Metadatable{
 			return $air;
 		}
 
-		return Block::get($blockId, $meta, new Position($pos->x, $pos->y, $pos->z, $this));
+		return $this->blockCache[$index] = Block::get($blockId, $meta, new Position($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	/**
@@ -910,6 +919,8 @@ class Level implements ChunkManager, Metadatable{
 		if($pos->y < 0 or $pos->y >= 128 or !($block instanceof Block)){
 			return false;
 		}
+
+		unset($this->blockCache["{$pos->x}:{$pos->y}:{$pos->z}"]);
 
 		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getID(), $block->getDamage())){
 			if(!($pos instanceof Position)){
