@@ -872,14 +872,15 @@ class Level implements ChunkManager, Metadatable{
 	 * Gets the Block object on the Vector3 location
 	 *
 	 * @param Vector3 $pos
+	 * @param boolean $cached
 	 *
 	 * @return Block
 	 */
-	public function getBlock(Vector3 $pos){
+	public function getBlock(Vector3 $pos, $cached = true){
 		$blockId = 0;
 		$meta = 0;
 		$index = "{$pos->x}:{$pos->y}:{$pos->z}";
-		if(isset($this->blockCache[$index])){
+		if($cached and isset($this->blockCache[$index])){
 			return $this->blockCache[$index];
 		}elseif($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, true)) !== null){
 			$chunk->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
@@ -891,7 +892,7 @@ class Level implements ChunkManager, Metadatable{
 			$air->y = $pos->y;
 			$air->z = $pos->z;
 			$air->level = $this;
-			return $air;
+			return $this->blockCache[$index] = $air;
 		}
 
 		return $this->blockCache[$index] = Block::get($blockId, $meta, new Position($pos->x, $pos->y, $pos->z, $this));

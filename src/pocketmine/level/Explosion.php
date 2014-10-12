@@ -21,6 +21,7 @@
 
 namespace pocketmine\level;
 
+use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\TNT;
 use pocketmine\entity\Entity;
@@ -98,10 +99,9 @@ class Explosion{
 							if($vBlock->y < 0 or $vBlock->y > 127){
 								break;
 							}
-							$blockID = $this->level->getBlockIdAt($vBlock->x, $vBlock->y, $vBlock->z);
+							$block = $this->level->getBlock($vBlock);
 
-							if($blockID > 0){
-								$block = Block::get($blockID, 0);
+							if(!($block instanceof Air)){
 								$block->x = $vBlock->x;
 								$block->y = $vBlock->y;
 								$block->z = $vBlock->z;

@@ -471,12 +471,11 @@ abstract class Entity extends Position implements Metadatable{
 		$this->justCreated = false;
 		$isPlayer = $this instanceof Player;
 
-		if($this->dead === true and !$isPlayer){
-			$this->close();
-			Timings::$tickEntityTimer->stopTiming();
-			return false;
-		}elseif($this->dead === true){
+		if($this->dead === true){
 			$this->despawnFromAll();
+			if(!$isPlayer){
+				$this->close();
+			}
 			Timings::$tickEntityTimer->stopTiming();
 			return false;
 		}
