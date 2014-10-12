@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\block\Block;
+use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
@@ -82,7 +83,7 @@ class FallingBlock extends Entity{
 					$this->kill();
 					return true;
 				}
-				$this->level->setBlock($this->floor(), Block::get(0, true));
+				$this->level->setBlock($this->floor(), Block::get(0), true);
 
 			}
 
@@ -104,7 +105,10 @@ class FallingBlock extends Entity{
 				if(!$block->isFullBlock){
 					$this->getLevel()->dropItem($this, Item::get($this->getBlock(), 0, 1));
 				}else{
-					$this->getLevel()->setBlock($pos, Block::get($this->getBlock(), 0), true);
+					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), 0)));
+					if(!$ev->isCancelled()){
+						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
+					}
 				}
 			}
 
