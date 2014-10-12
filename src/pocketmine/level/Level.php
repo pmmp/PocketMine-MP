@@ -1693,8 +1693,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 			unset($this->chunkSendQueue[$index]);
 			unset($this->chunkSendTasks[$index]);
-		}else{
-			var_dump("ARGH");
 		}
 	}
 
