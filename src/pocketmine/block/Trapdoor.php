@@ -38,6 +38,10 @@ class Trapdoor extends Transparent{
 	}
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		$damage = $this->getDamage();
 
 		$f = 0.1875;
@@ -104,7 +108,7 @@ class Trapdoor extends Transparent{
 			}
 		}
 
-		return $bb;
+		return $this->boundingBox = $bb;
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

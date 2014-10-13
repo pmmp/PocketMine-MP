@@ -37,6 +37,10 @@ class StoneWall extends Transparent{
 	}
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		$flag = $this->canConnect($this->getSide(2));
 		$flag1 = $this->canConnect($this->getSide(3));
 		$flag2 = $this->canConnect($this->getSide(4));
@@ -58,7 +62,7 @@ class StoneWall extends Transparent{
 			$f3 = 0.6875;
 		}
 
-		return new AxisAlignedBB(
+		return $this->boundingBox = new AxisAlignedBB(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

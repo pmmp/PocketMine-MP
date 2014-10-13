@@ -44,10 +44,14 @@ class Ladder extends Transparent{
 	}
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		$f = 0.125;
 
 		if($this->meta === 2){
-			return new AxisAlignedBB(
+			return $this->boundingBox = new AxisAlignedBB(
 				$this->x,
 				$this->y,
 				$this->z + 1 - $f,
@@ -56,7 +60,7 @@ class Ladder extends Transparent{
 				$this->z + 1
 			);
 		}elseif($this->meta === 3){
-			return new AxisAlignedBB(
+			return $this->boundingBox = new AxisAlignedBB(
 				$this->x,
 				$this->y,
 				$this->z,
@@ -65,7 +69,7 @@ class Ladder extends Transparent{
 				$this->z + $f
 			);
 		}elseif($this->meta === 4){
-			return new AxisAlignedBB(
+			return $this->boundingBox = new AxisAlignedBB(
 				$this->x + 1 - $f,
 				$this->y,
 				$this->z,
@@ -74,7 +78,7 @@ class Ladder extends Transparent{
 				$this->z + 1
 			);
 		}elseif($this->meta === 5){
-			return new AxisAlignedBB(
+			return $this->boundingBox = new AxisAlignedBB(
 				$this->x,
 				$this->y,
 				$this->z,

@@ -114,8 +114,12 @@ abstract class Stair extends Transparent{
 	*/
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		if(($this->getDamage() & 0x04) > 0){
-			return new AxisAlignedBB(
+			return $this->boundingBox = new AxisAlignedBB(
 				$this->x,
 				$this->y + 0.5,
 				$this->z,
@@ -124,7 +128,7 @@ abstract class Stair extends Transparent{
 				$this->z + 1
 			);
 		}else{
-			return new AxisAlignedBB(
+			return $this->boundingBox = new AxisAlignedBB(
 				$this->x,
 				$this->y,
 				$this->z,

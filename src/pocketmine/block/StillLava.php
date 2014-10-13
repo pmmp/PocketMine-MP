@@ -27,8 +27,4 @@ class StillLava extends Lava{
 		$this->hardness = 500;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
-
 }

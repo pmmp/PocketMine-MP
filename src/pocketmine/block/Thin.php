@@ -30,6 +30,10 @@ abstract class Thin extends Transparent{
 	public $isSolid = false;
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		$f = 0.4375;
 		$f1 = 0.5625;
 		$f2 = 0.4375;
@@ -62,7 +66,7 @@ abstract class Thin extends Transparent{
 			$f3 = 1;
 		}
 
-		return new AxisAlignedBB(
+		return $this->boundingBox = new AxisAlignedBB(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

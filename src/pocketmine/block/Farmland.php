@@ -31,7 +31,11 @@ class Farmland extends Solid{
 	}
 
 	public function getBoundingBox(){
-		return new AxisAlignedBB(
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
+		return $this->boundingBox = new AxisAlignedBB(
 			$this->x,
 			$this->y,
 			$this->z,

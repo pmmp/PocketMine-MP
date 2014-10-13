@@ -30,10 +30,6 @@ class Water extends Liquid{
 		parent::__construct(self::WATER, $meta, "Water");
 		$this->hardness = 500;
 	}
-
-	public function getBoundingBox(){
-		return null;
-	}
 	
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;

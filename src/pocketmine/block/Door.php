@@ -53,6 +53,10 @@ abstract class Door extends Transparent{
 	}
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		$f = 0.1875;
 		$damage = $this->getFullDamage();
 
@@ -195,7 +199,7 @@ abstract class Door extends Transparent{
 			}
 		}
 
-		return $bb;
+		return $this->boundingBox = $bb;
 	}
 
 	public function onUpdate($type){

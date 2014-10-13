@@ -36,10 +36,6 @@ class Lava extends Liquid{
 		$this->hardness = 0;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
-
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);

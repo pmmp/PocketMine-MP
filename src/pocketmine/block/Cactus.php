@@ -43,7 +43,11 @@ class Cactus extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		return new AxisAlignedBB(
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
+		return $this->boundingBox = new AxisAlignedBB(
 			$this->x + 0.0625,
 			$this->y,
 			$this->z + 0.0625,

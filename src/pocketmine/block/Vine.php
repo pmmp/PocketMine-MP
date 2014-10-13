@@ -44,6 +44,10 @@ class Vine extends Transparent{
 	}
 
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}
+
 		$f1 = 1;
 		$f2 = 1;
 		$f3 = 1;
@@ -92,7 +96,7 @@ class Vine extends Transparent{
 			$f6 = 1;
 		}
 
-		return new AxisAlignedBB(
+		return $this->boundingBox = new AxisAlignedBB(
 			$this->x + $f1,
 			$this->y + $f2,
 			$this->z + $f3,
