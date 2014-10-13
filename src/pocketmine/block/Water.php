@@ -33,7 +33,9 @@ class Water extends Liquid{
 	
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;
-		$entity->extinguish();
+		if($entity->fireTicks > 0){
+			$entity->extinguish();
+		}
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

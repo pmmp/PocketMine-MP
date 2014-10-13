@@ -151,8 +151,6 @@ abstract class Living extends Entity implements Damageable{
 					$this->attack($ev->getFinalDamage(), $ev);
 				}
 			}
-
-			$this->extinguish();
 		}else{
 			$this->airTicks = 300;
 		}
