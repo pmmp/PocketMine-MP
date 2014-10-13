@@ -188,7 +188,7 @@ class Explosion{
 				$tnt = new PrimedTNT($this->level->getChunk($block->x >> 4, $block->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [
 						new Double("", $block->x + 0.5),
-						new Double("", $block->y + 0.5),
+						new Double("", $block->y),
 						new Double("", $block->z + 0.5)
 					]),
 					"Motion" => new Enum("Motion", [

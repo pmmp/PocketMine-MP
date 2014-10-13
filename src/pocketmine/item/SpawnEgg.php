@@ -51,9 +51,9 @@ class SpawnEgg extends Item{
 
 		$nbt = new Compound("", [
 			"Pos" => new Enum("Pos", [
-					new Double("", $block->getX()),
+					new Double("", $block->getX() + 0.5),
 					new Double("", $block->getY()),
-					new Double("", $block->getZ())
+					new Double("", $block->getZ() + 0.5)
 				]),
 			"Motion" => new Enum("Motion", [
 					new Double("", 0),

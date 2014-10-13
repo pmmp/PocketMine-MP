@@ -129,13 +129,7 @@ class Leaves extends Transparent{
 				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
 					$this->getLevel()->setBlock($this, $this, false, false);
 				}else{
-					$this->getLevel()->setBlock($this, new Air(), false, false);
-					if(mt_rand(1, 20) === 1){ //Saplings
-						$this->getLevel()->dropItem($this, Item::get($this->id, $this->meta & 0x03, 1));
-					}
-					if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
-						$this->getLevel()->dropItem($this, Item::get(Item::APPLE, 0, 1));
-					}
+					$this->getLevel()->useBreakOn($this);
 
 					return Level::BLOCK_UPDATE_NORMAL;
 				}

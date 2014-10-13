@@ -49,9 +49,8 @@ class Torch extends Flowable{
 				0 => 0,
 			];
 
-			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === self::FENCE)){ //Replace with common break method
-				$this->getLevel()->setBlock($this, new Air(), true);
-				$this->getLevel()->dropItem($this->add(0.5, 0.5, 0.5), Item::get(Item::TORCH));
+			if($this->getSide($faces[$side])->isTransparent === true and !($side === 0 and $this->getSide(0)->getID() === self::FENCE)){
+				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
