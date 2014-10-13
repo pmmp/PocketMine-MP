@@ -1037,7 +1037,7 @@ abstract class Entity extends Position implements Metadatable{
 	}
 
 	public function setPosition(Vector3 $pos, $force = false){
-		if($pos instanceof Position and $pos->getLevel() instanceof Level and $pos->getLevel() !== $this->getLevel()){
+		if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
 			if($this->switchLevel($pos->getLevel()) === false){
 				return false;
 			}

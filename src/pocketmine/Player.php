@@ -1121,7 +1121,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$revert = true;
 					//$this->server->getLogger()->warning($this->getName()." moved wrongly!");
 				}elseif($diff > 0){
-					$revert = !$this->setPosition($this->newPosition);
+					$this->x = $this->newPosition->x;
+					$this->y = $this->newPosition->y;
+					$this->z = $this->newPosition->z;
+					$radius = $this->width / 2;
+					$this->boundingBox->setBounds($this->x - $radius, $this->y + $this->ySize, $this->z - $radius, $this->x + $radius, $this->y + $this->height + $this->ySize, $this->z + $radius);
 				}
 			}
 		}
