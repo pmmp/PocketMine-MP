@@ -1151,7 +1151,7 @@ abstract class Entity extends Position implements Metadatable{
 		return false;
 	}
 
-	public function getID(){
+	public function getId(){
 		return $this->id;
 	}
 

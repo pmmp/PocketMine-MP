@@ -45,9 +45,7 @@ class KillCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			//TODO: EntityDamageEvent
-
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
+			$sender->getServer()->getPluginManager()->callEvent($ev = new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
 
 			if($ev->isCancelled()){
 				return true;

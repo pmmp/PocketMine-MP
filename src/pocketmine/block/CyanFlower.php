@@ -49,9 +49,8 @@ class CyanFlower extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //TODO: Replace with common break method
-				$this->getLevel()->dropItem($this, Item::get($this->id, 0, 1));
-				$this->getLevel()->setBlock($this, new Air(), false, false, true);
+			if($this->getSide(0)->isTransparent === true){
+				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

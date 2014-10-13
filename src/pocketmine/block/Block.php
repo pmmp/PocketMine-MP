@@ -363,7 +363,6 @@ class Block extends Position implements Metadatable{
 		[Item::STONECUTTER, 0],
 		[Item::CHEST, 0],
 		[Item::FURNACE, 0],
-		//TODO: End Portal
 		[Item::END_PORTAL, 0],
 		[Item::DANDELION, 0],
 		[Item::POPPY, 0],

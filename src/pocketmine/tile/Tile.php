@@ -38,8 +38,6 @@ abstract class Tile extends Position{
 	const CHEST = "Chest";
 	const FURNACE = "Furnace";
 
-	//TODO: pre-close step NBT data saving method
-
 	public static $tileCount = 1;
 
 	/** @var Chunk */

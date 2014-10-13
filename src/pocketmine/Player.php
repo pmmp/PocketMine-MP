@@ -906,46 +906,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return;
 	}
 
-	/*public function eventHandler($data, $event){
-		switch($event){
-			//TODO, obsolete
-			case "tile.update":
-				if($data->getLevel() === $this->getLevel()){
-					if($data instanceof Furnace){
-						foreach($this->windows as $id => $w){
-							if($w === $data){
-								$pk = new ContainerSetDataPacket;
-								$pk->windowid = $id;
-								$pk->property = 0; //Smelting
-								$pk->value = floor($data->namedtag->CookTime);
-								$this->dataPacket($pk);
-
-								$pk = new ContainerSetDataPacket;
-								$pk->windowid = $id;
-								$pk->property = 1; //Fire icon
-								$pk->value = $data->namedtag->BurnTicks;
-								$this->dataPacket($pk);
-							}
-						}
-					}
-				}
-				break;
-			case "entity.metadata":
-				if($data->getID() === $this->id){
-					$eid = 0;
-				}else{
-					$eid = $data->getID();
-				}
-				if($data->getLevel() === $this->getLevel()){
-					$pk = new SetEntityDataPacket;
-					$pk->eid = $eid;
-					$pk->metadata = $data->getDamage();
-					$this->dataPacket($pk);
-				}
-				break;
-		}
-	}*/
-
 	/**
 	 * @param string $achievementId
 	 *
@@ -2152,7 +2112,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 									$this->awardAchievement("makeBread");
 									break;
 								case Item::CAKE:
-									//TODO: detect complex recipes like cake that leave remainings
+									//TODO: detect complex recipes like cake that leave remains
 									$this->awardAchievement("bakeCake");
 									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
 									break;
@@ -2612,55 +2572,3 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 }
-
-
-/*
- * TODO death reasons
-if(is_numeric($data["cause"])){
-	$e = Entity::get($data["cause"]);
-	if($e instanceof Entity){
-		switch($e->class){
-			case ENTITY_PLAYER:
-				$message = " was killed by " . $e->name;
-				break;
-			default:
-				$message = " was killed";
-				break;
-		}
-	}
-}else{
-	switch($data["cause"]){
-		case "cactus":
-			$message = " was pricked to death";
-			break;
-		case "lava":
-			$message = " tried to swim in lava";
-			break;
-		case "fire":
-			$message = " went up in flames";
-			break;
-		case "burning":
-			$message = " burned to death";
-			break;
-		case "suffocation":
-			$message = " suffocated in a wall";
-			break;
-		case "water":
-			$message = " drowned";
-			break;
-		case "void":
-			$message = " fell out of the world";
-			break;
-		case "fall":
-			$message = " hit the ground too hard";
-			break;
-		case "explosion":
-			$message = " blew up";
-			break;
-		default:
-			$message = " died";
-			break;
-	}
-}
-Player::broadcastMessage($data["player"]->getName() . $message);
-*/

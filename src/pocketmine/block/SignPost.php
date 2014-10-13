@@ -64,10 +64,8 @@ class SignPost extends Transparent{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
-				//TODO
-				//Server::getInstance()->api->entity->drop($this, Item::get(SIGN, 0, 1));
-				$this->getLevel()->setBlock($this, new Air(), true, true, true);
+			if($this->getSide(0)->getID() === self::AIR){
+				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

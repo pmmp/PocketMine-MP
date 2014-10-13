@@ -81,9 +81,8 @@ class Carpet extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === self::AIR){ //TODO: Replace with common break method
-				$this->getLevel()->dropItem($this, Item::get($this->id, $this->meta, 1));
-				$this->getLevel()->setBlock($this, new Air(), true);
+			if($this->getSide(0)->getID() === self::AIR){
+				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}

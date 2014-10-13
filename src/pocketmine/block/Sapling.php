@@ -81,10 +81,8 @@ class Sapling extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent === true){ //Replace with common break method
-				//TODO
-				//Server::getInstance()->api->entity->drop($this, Item::get($this->id));
-				$this->getLevel()->setBlock($this, new Air(), false, false, true);
+			if($this->getSide(0)->isTransparent === true){
+				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
