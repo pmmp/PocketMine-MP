@@ -39,7 +39,7 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 
 
-abstract class Block extends Position implements Metadatable{
+class Block extends Position implements Metadatable{
 	const AIR = 0;
 	const STONE = 1;
 	const GRASS = 2;
@@ -684,7 +684,7 @@ abstract class Block extends Position implements Metadatable{
 			$block = self::$list[$id];
 			$block = new $block($meta);
 		}else{
-			$block = new Generic($id, $meta);
+			$block = new Block($id, $meta);
 		}
 
 		if($pos instanceof Position){
@@ -706,6 +706,69 @@ abstract class Block extends Position implements Metadatable{
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
 		$this->name = $name;
+	}
+
+	/**
+	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
+	 *
+	 * @param Item   $item
+	 * @param Block  $block
+	 * @param Block  $target
+	 * @param int    $face
+	 * @param float  $fx
+	 * @param float  $fy
+	 * @param float  $fz
+	 * @param Player $player = null
+	 *
+	 * @return bool
+	 */
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		return $this->getLevel()->setBlock($this, $this, true, true);
+	}
+
+	/**
+	 * Returns if the item can be broken with an specific Item
+	 *
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function isBreakable(Item $item){
+		return $this->breakable;
+	}
+
+	/**
+	 * Do the actions needed so the block is broken with the Item
+	 *
+	 * @param Item $item
+	 *
+	 * @return mixed
+	 */
+	public function onBreak(Item $item){
+		return $this->getLevel()->setBlock($this, new Air(), true, true);
+	}
+
+	/**
+	 * Fires a block update on the Block
+	 *
+	 * @param int $type
+	 *
+	 * @return void
+	 */
+	public function onUpdate($type){
+
+	}
+
+	/**
+	 * Do actions when activated by Item. Returns if it has done anything
+	 *
+	 * @param Item   $item
+	 * @param Player $player
+	 *
+	 * @return bool
+	 */
+	public function onActivate(Item $item, Player $player = null){
+		return $this->isActivable;
 	}
 
 	/**
@@ -810,24 +873,6 @@ abstract class Block extends Position implements Metadatable{
 	final public function __toString(){
 		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
 	}
-
-	/**
-	 * Returns if the item can be broken with an specific Item
-	 *
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	abstract function isBreakable(Item $item);
-
-	/**
-	 * Do the actions needed so the block is broken with the Item
-	 *
-	 * @param Item $item
-	 *
-	 * @return mixed
-	 */
-	abstract function onBreak(Item $item);
 
 	/**
 	 * Checks for collision against an AxisAlignedBB
@@ -944,41 +989,6 @@ abstract class Block extends Position implements Metadatable{
 
 		return MovingObjectPosition::fromBlock($this->x, $this->y, $this->z, $f, $vector->add($this->x, $this->y, $this->z));
 	}
-
-	/**
-	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
-	 *
-	 * @param Item   $item
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param int    $face
-	 * @param float  $fx
-	 * @param float  $fy
-	 * @param float  $fz
-	 * @param Player $player = null
-	 *
-	 * @return bool
-	 */
-	abstract function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null);
-
-	/**
-	 * Do actions when activated by Item. Returns if it has done anything
-	 *
-	 * @param Item   $item
-	 * @param Player $player
-	 *
-	 * @return bool
-	 */
-	abstract function onActivate(Item $item, Player $player = null);
-
-	/**
-	 * Fires a block update on the Block
-	 *
-	 * @param int $type
-	 *
-	 * @return void
-	 */
-	abstract function onUpdate($type);
 
 	public function setMetadata($metadataKey, MetadataValue $metadataValue){
 		if($this->getLevel() instanceof Level){

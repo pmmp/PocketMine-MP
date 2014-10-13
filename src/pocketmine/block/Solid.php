@@ -22,7 +22,7 @@
 namespace pocketmine\block;
 
 
-abstract class Solid extends Generic{
+abstract class Solid extends Block{
 
 	public function __construct($id, $meta = 0, $name = "Unknown"){
 		parent::__construct($id, $meta, $name);
