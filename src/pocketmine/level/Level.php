@@ -1264,9 +1264,9 @@ class Level implements ChunkManager, Metadatable{
 
 		if($entity === null or $entity->canCollide){
 			$minX = Math::floorFloat(($bb->minX - 2) / 16);
-			$maxX = Math::floorFloat(($bb->maxX - 2) / 16);
+			$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
 			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-			$maxZ = Math::floorFloat(($bb->maxZ - 2) / 16);
+			$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
