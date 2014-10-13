@@ -37,8 +37,8 @@ abstract class Liquid extends Transparent{
 	public $isFullBlock = true;
 
 	public $adjacentSources = 0;
-	public $isOptimalFlowDirection = [0, 0, 0];
-	public $flowCost = [0, 0, 0];
+	public $isOptimalFlowDirection = [0, 0, 0, 0];
+	public $flowCost = [0, 0, 0, 0];
 
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
@@ -316,7 +316,9 @@ abstract class Liquid extends Transparent{
 				}
 				$blockSide = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
-				if(!$blockSide->isFlowable or ($blockSide instanceof Liquid and $blockSide->getDamage() === 0)){
+				if(!$blockSide->isFlowable and !($blockSide instanceof Liquid)){
+					continue;
+				}elseif($blockSide instanceof Liquid and $blockSide->getDamage() === 0){
 					continue;
 				}elseif($blockSide->getSide(0)->isFlowable){
 					return $accumulatedCost;
@@ -356,7 +358,9 @@ abstract class Liquid extends Transparent{
 			}
 			$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
-			if(!$block->isFlowable or ($block instanceof Liquid and $block->getDamage() === 0)){
+			if(!$block->isFlowable and !($block instanceof Liquid)){
+				continue;
+			}elseif($block instanceof Liquid and $block->getDamage() === 0){
 				continue;
 			}elseif($block->getSide(0)->isFlowable){
 				$this->flowCost[$j] = 0;

@@ -97,7 +97,7 @@ class Vector3{
 	 */
 	public function add($x, $y = 0, $z = 0){
 		if($x instanceof Vector3){
-			return $this->add($x->x, $x->y, $x->z);
+			return new Vector3($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
 		}else{
 			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
 		}
@@ -131,7 +131,10 @@ class Vector3{
 	}
 
 	public function floor(){
-		return new Vector3(Math::floorFloat($this->x), Math::floorFloat($this->y), Math::floorFloat($this->z));
+		$x = (int) $this->x;
+		$y = (int) $this->y;
+		$z = (int) $this->z;
+		return new Vector3($this->x >= $x ? $x : $x - 1, $this->y >= $y ? $y : $y - 1, $this->z >= $z ? $z : $z - 1);
 	}
 
 	public function round(){

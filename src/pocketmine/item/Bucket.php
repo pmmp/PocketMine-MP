@@ -25,6 +25,7 @@ use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\Liquid;
 use pocketmine\block\Water;
+use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
@@ -36,35 +37,35 @@ class Bucket extends Item{
 	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($this->meta === Item::AIR){
-			if($target instanceof Liquid){
-				$level->setBlock($target, new Air(), true);
-				if(($player->gamemode & 0x01) === 0){
-					$this->meta = ($target instanceof Water) ? Item::WATER : Item::LAVA;
-				}
+		$targetBlock = Block::get($this->meta);
 
-				return true;
+		if($targetBlock instanceof Air){
+			if($target instanceof Liquid and $target->getDamage() === 0){
+				$result = clone $this;
+				$result->setDamage($target->getID());
+				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
+				if(!$ev->isCancelled()){
+					$player->getLevel()->setBlock($target, new Air(), true, true);
+					if($player->isSurvival()){
+						$player->getInventory()->setItemInHand($ev->getItem(), $player);
+					}
+					return true;
+				}else{
+					$player->getInventory()->sendContents($player);
+				}
 			}
-		}elseif($this->meta === Item::WATER){
-			//Support Make Non-Support Water to Support Water
-			if($block->getID() === self::AIR || ($block instanceof Water && ($block->getDamage() & 0x07) != 0x00)){
-				$water = Block::get(Item::WATER, 0, $block);
-				$water->place(clone $this, $block, $target, $face, $fx, $fy, $fz, $player);
-				if(($player->gamemode & 0x01) === 0){
-					$this->meta = 0;
+		}elseif($targetBlock instanceof Liquid){
+			$result = clone $this;
+			$result->setDamage(0);
+			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
+			if(!$ev->isCancelled()){
+				$player->getLevel()->setBlock($block, $targetBlock, true, true);
+				if($player->isSurvival()){
+					$player->getInventory()->setItemInHand($ev->getItem(), $player);
 				}
-
 				return true;
-			}
-		}elseif($this->meta === Item::LAVA){
-			$lava = Block::get(Item::LAVA, 0, $block);
-			$lava->place(clone $this, $block, $target, $face, $fx, $fy, $fz, $player);
-			if($block->getID() === self::AIR){
-				if(($player->gamemode & 0x01) === 0){
-					$this->meta = 0;
-				}
-
-				return true;
+			}else{
+				$player->getInventory()->sendContents($player);
 			}
 		}
 
