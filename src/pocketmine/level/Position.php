@@ -33,16 +33,15 @@ class Position extends Vector3{
 	 * @param int   $y
 	 * @param int   $z
 	 * @param Level $level
-	 * @param bool  $strong
 	 */
-	public function __construct($x = 0, $y = 0, $z = 0, Level $level = null, $strong = false){
+	public function __construct($x = 0, $y = 0, $z = 0, Level $level = null){
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
 		$this->level = $level;
 	}
 
-	public static function fromObject(Vector3 $pos, Level $level = null, $strong = false){
+	public static function fromObject(Vector3 $pos, Level $level = null){
 		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
 

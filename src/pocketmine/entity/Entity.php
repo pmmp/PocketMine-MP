@@ -37,6 +37,7 @@ use pocketmine\event\Timings;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
+use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
@@ -60,7 +61,7 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 
-abstract class Entity extends Position implements Metadatable{
+abstract class Entity extends Location implements Metadatable{
 
 	const NETWORK_ID = -1;
 
@@ -97,8 +98,6 @@ abstract class Entity extends Position implements Metadatable{
 	public $lastMotionY;
 	public $lastMotionZ;
 
-	public $yaw;
-	public $pitch;
 	public $lastYaw;
 	public $lastPitch;
 
@@ -738,6 +737,10 @@ abstract class Entity extends Position implements Metadatable{
 		return new Position($this->x, $this->y, $this->z, $this->getLevel());
 	}
 
+	public function getLocation(){
+		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->getLevel());
+	}
+
 	public function isInsideOfWater(){
 		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
 
@@ -880,7 +883,7 @@ abstract class Entity extends Position implements Metadatable{
 
 				$this->boundingBox->setBB($axisalignedbb);
 
-				$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ), false);
+				$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ), false);
 
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
@@ -950,10 +953,10 @@ abstract class Entity extends Position implements Metadatable{
 			}else{
 
 				if($this instanceof Player){
-					if(($this->onGround and $movY != 0) or (!$this->onGround and $movY <= 0)){
+					if(($this->onGround and $movY != 0) or (!$this->onGround and $movY < 0)){
 						$bb = clone $this->boundingBox;
 						$bb->maxY = $bb->minY + 0.5;
-						if(count($this->getLevel()->getCollisionBlocks($bb->expand(0.01, 0.01, 0.01))) > 0){
+						if(count($this->level->getCollisionBlocks($bb->expand(0.01, 0.01, 0.01))) > 0){
 							$isColliding = true;
 						}else{
 							$isColliding = false;
@@ -1020,8 +1023,8 @@ abstract class Entity extends Position implements Metadatable{
 		}
 	}
 
-	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch, $force = false){
-		if($this->setPosition($pos, $force) === true){
+	public function setPositionAndRotation(Vector3 $pos, $yaw, $pitch){
+		if($this->setPosition($pos) === true){
 			$this->setRotation($yaw, $pitch);
 
 			return true;
@@ -1036,18 +1039,9 @@ abstract class Entity extends Position implements Metadatable{
 		$this->scheduleUpdate();
 	}
 
-	public function setPosition(Vector3 $pos, $force = false){
+	public function setPosition(Vector3 $pos){
 		if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
 			if($this->switchLevel($pos->getLevel()) === false){
-				return false;
-			}
-		}
-
-		if(!$this->justCreated and $force !== true){
-			$ev = new EntityMoveEvent($this, $pos);
-
-			$this->server->getPluginManager()->callEvent($ev);
-			if($ev->isCancelled()){
 				return false;
 			}
 		}
@@ -1130,7 +1124,18 @@ abstract class Entity extends Position implements Metadatable{
 		$this->scheduleUpdate();
 	}
 
+	/**
+	 * @param Vector3|Position|Location $pos
+	 * @param float                     $yaw
+	 * @param float                     $pitch
+	 *
+	 * @return bool
+	 */
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+		if($pos instanceof Location){
+			$yaw = $pos->yaw;
+			$pitch = $pos->pitch;
+		}
 		$from = Position::fromObject($this, $this->getLevel());
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->getLevel());
 		$this->server->getPluginManager()->callEvent($ev = new EntityTeleportEvent($this, $from, $to));

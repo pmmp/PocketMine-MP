@@ -50,6 +50,7 @@ use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
@@ -69,6 +70,7 @@ use pocketmine\item\Item;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
+use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
@@ -1082,9 +1084,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 		$oldPos = new Vector3($this->x, $this->y, $this->z);
-		if(($distance = $oldPos->distance($this->newPosition)) == 0){
-			return;
-		}
+		$distance = $oldPos->distance($this->newPosition);
 
 		$revert = false;
 
@@ -1099,7 +1099,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		if(!$revert){
+		if(!$revert and $distance != 0){
 			$dx = $this->newPosition->x - $this->x;
 			$dy = $this->newPosition->y - $this->y;
 			$dz = $this->newPosition->z - $this->z;
@@ -1130,22 +1130,66 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
+		$from = new Location($this->lastX, $this->lastY, $this->lastZ, $this->lastYaw, $this->lastPitch, $this->level);
+		$to = $this->getLocation();
+
+		$delta = pow($this->lastX - $to->x, 2) + pow($this->lastY - $to->y, 2) + pow($this->lastZ - $to->z, 2);
+		$deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
+
+		if(!$revert and ($delta > (1 / 16) or $deltaAngle > 10)){
+			$this->lastX = $to->x;
+			$this->lastY = $to->y;
+			$this->lastZ = $to->z;
+
+			$this->lastYaw = $to->yaw;
+			$this->lastPitch = $to->pitch;
+
+			$ev = new PlayerMoveEvent($this, $from, $to);
+			if($revert){
+				$ev->setCancelled();
+			}
+
+			$this->server->getPluginManager()->callEvent($ev);
+
+			if(!($revert = $ev->isCancelled())){ //Yes, this is intended
+				if($to->distance($ev->getTo()) > 0.1){ //If plugins modify the destination
+					$this->teleport($ev->getTo());
+				}else{
+					$pk = new MovePlayerPacket;
+					$pk->eid = $this->id;
+					$pk->x = $this->x;
+					$pk->y = $this->y;
+					$pk->z = $this->z;
+					$pk->yaw = $this->yaw;
+					$pk->pitch = $this->pitch;
+					$pk->bodyYaw = $this->yaw;
+
+					foreach($this->hasSpawned as $player){
+						$player->dataPacket($pk);
+					}
+				}
+			}
+		}
+
 		if($revert){
-			$pk = new MovePlayerPacket();
+			$pk = new MovePlayerPacket;
 			$pk->eid = 0;
-			$pk->x = $this->x;
-			$pk->y = $this->y + $this->getEyeHeight();
-			$pk->z = $this->z;
-			$pk->bodyYaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->yaw = $this->yaw;
+			$pk->x = $from->x;
+			$pk->y = $from->y + $this->getEyeHeight();
+			$pk->z = $from->z;
+			$pk->bodyYaw = $from->yaw;
+			$pk->pitch = $from->pitch;
+			$pk->yaw = $from->yaw;
 			$pk->teleport = true;
 			$this->directDataPacket($pk);
-			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
 		}else{
-			$this->updateMovement();
 			$this->forceMovement = null;
 		}
+	}
+
+	public function updateMovement(){
+
 	}
 
 	public function onUpdate(){
