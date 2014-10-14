@@ -264,6 +264,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 80);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
+
 		$this->timings = new LevelTimings($this);
 	}
 
@@ -472,15 +473,13 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		//if(count($this->updateEntities) > 0){
-			Timings::$tickEntityTimer->startTiming();
-			foreach($this->entities as $id => $entity){
-				if(!$entity->closed){
-					$entity->onUpdate();
-				}
+		Timings::$tickEntityTimer->startTiming();
+		foreach($this->updateEntities as $id => $entity){
+			if(!$entity->closed or !$entity->onUpdate($currentTick)){
+				unset($this->updateEntities[$id]);
 			}
-			Timings::$tickEntityTimer->stopTiming();
-		//}
+		}
+		Timings::$tickEntityTimer->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->tileEntityTick->startTiming();
@@ -592,6 +591,10 @@ class Level implements ChunkManager, Metadatable{
 				continue;
 			}
 			$chunk = $this->getChunk($chunkX, $chunkZ, true);
+
+			foreach($chunk->getEntities() as $entity){
+				$entity->scheduleUpdate();
+			}
 
 
 			if($this->useSections){
@@ -965,6 +968,9 @@ class Level implements ChunkManager, Metadatable{
 			if($update === true){
 				$this->updateAround($pos, self::BLOCK_UPDATE_NORMAL);
 				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);
+				foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
+					$entity->scheduleUpdate();
+				}
 			}
 		}
 	}
@@ -1730,6 +1736,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		unset($this->entities[$entity->getID()]);
+		unset($this->updateEntities[$entity->getID()]);
 	}
 
 	/**
@@ -1770,6 +1777,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		unset($this->tiles[$tile->getID()]);
+		unset($this->updateTiles[$tile->getID()]);
 	}
 
 	/**

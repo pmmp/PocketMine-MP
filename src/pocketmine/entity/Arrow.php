@@ -67,14 +67,17 @@ class Arrow extends Projectile{
 
 	}
 
-	public function onUpdate(){
+	public function onUpdate($currentTick){
 		if($this->closed){
 			return false;
 		}
 
 		$this->timings->startTiming();
 
-		$this->entityBaseTick();
+		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$this->lastUpdate = $currentTick;
+
+		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		if(!$this->dead){
 
@@ -143,6 +146,7 @@ class Arrow extends Projectile{
 					}
 
 					$this->kill();
+					return true;
 				}
 			}
 
@@ -156,14 +160,16 @@ class Arrow extends Projectile{
 				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 			}
 
-			if($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){
+			if(!$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){
 				$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
 				$this->yaw = (atan2($this->motionX, $this->motionZ) * 180 / M_PI);
 				$this->pitch = (atan2($this->motionY, $f) * 180 / M_PI);
+				$hasUpdate = true;
 			}
 
 			if($this->age > 1200){
 				$this->kill();
+				$hasUpdate = true;
 			}
 			$this->updateMovement();
 
@@ -171,7 +177,7 @@ class Arrow extends Projectile{
 
 		$this->timings->stopTiming();
 
-		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate;
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){

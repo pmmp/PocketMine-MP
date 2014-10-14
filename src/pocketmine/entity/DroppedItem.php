@@ -73,19 +73,22 @@ class DroppedItem extends Entity{
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
 
-	public function onUpdate(){
+	public function onUpdate($currentTick){
 		if($this->closed !== false){
 			return false;
 		}
 
+		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$this->lastUpdate = $currentTick;
+
 		$this->timings->startTiming();
 
-		$this->entityBaseTick();
+		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		if(!$this->dead){
 
 			if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
-				--$this->pickupDelay;
+				$this->pickupDelay -= $tickDiff;
 			}
 
 			$this->motionY -= $this->gravity;
@@ -115,6 +118,7 @@ class DroppedItem extends Entity{
 					$this->age = 0;
 				}else{
 					$this->kill();
+					$hasUpdate = true;
 				}
 			}
 
@@ -122,7 +126,7 @@ class DroppedItem extends Entity{
 
 		$this->timings->stopTiming();
 
-		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate or !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){

@@ -142,8 +142,6 @@ abstract class Entity extends Location implements Metadatable{
 	protected $fireProof;
 	private $invulnerable;
 
-	protected $spawnTime;
-
 	protected $gravity;
 	protected $drag;
 
@@ -215,7 +213,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->chunk->addEntity($this);
 		$this->getLevel()->addEntity($this);
 		$this->initEntity();
-		$this->lastUpdate = $this->spawnTime = microtime(true);
+		$this->lastUpdate = $this->server->getTick();
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
 
 		$this->scheduleUpdate();
@@ -462,7 +460,7 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	public function entityBaseTick(){
+	public function entityBaseTick($tickDiff = 1){
 
 		Timings::$tickEntityTimer->startTiming();
 		//TODO: check vehicles
@@ -476,7 +474,7 @@ abstract class Entity extends Location implements Metadatable{
 				$this->close();
 			}
 			Timings::$tickEntityTimer->stopTiming();
-			return false;
+			return $isPlayer;
 		}
 
 		$hasUpdate = false;
@@ -488,36 +486,39 @@ abstract class Entity extends Location implements Metadatable{
 			if(!$ev->isCancelled()){
 				$this->attack($ev->getFinalDamage(), $ev);
 			}
+			$hasUpdate = true;
 		}
 
 		if($this->fireTicks > 0){
 			if($this->fireProof){
-				$this->fireTicks -= 4;
+				$this->fireTicks -= 4 * $tickDiff;
 				if($this->fireTicks < 0){
 					$this->fireTicks = 0;
 				}
 			}else{
-				if(($this->fireTicks % 20) === 0){
+				if(($this->fireTicks % 20) === 0 or $tickDiff > 20){
 					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
 					$this->server->getPluginManager()->callEvent($ev);
 					if(!$ev->isCancelled()){
 						$this->attack($ev->getFinalDamage(), $ev);
 					}
 				}
-				--$this->fireTicks;
+				$this->fireTicks -= $tickDiff;
 			}
 
 			if($this->fireTicks <= 0){
 				$this->extinguish();
+			}else{
+				$hasUpdate = true;
 			}
-
-			$hasUpdate = true;
 		}
 
-		++$this->age;
-		++$this->ticksLived;
+		$this->age += $tickDiff;
+		$this->ticksLived += $tickDiff;
 
 		Timings::$tickEntityTimer->stopTiming();
+
+		return $hasUpdate;
 	}
 
 	public function updateMovement(){
@@ -587,20 +588,24 @@ abstract class Entity extends Location implements Metadatable{
 		return new Vector3($x, $y, $z);
 	}
 
-	public function onUpdate(){
+	public function onUpdate($currentTick){
 		if($this->closed){
 			return false;
 		}
+
+		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$this->lastUpdate = $currentTick;
+
 		$this->timings->startTiming();
 
-		$hasUpdate = $this->entityBaseTick();
+		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		$this->updateMovement();
 
 		$this->timings->stopTiming();
 
 		//if($this->isStatic())
-		return true;
+		return $hasUpdate;
 		//return !($this instanceof Player);
 	}
 

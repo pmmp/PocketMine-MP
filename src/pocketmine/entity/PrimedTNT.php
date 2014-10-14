@@ -71,7 +71,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$this->namedtag->Fuse = new Byte("Fuse", $this->fuse);
 	}
 
-	public function onUpdate(){
+	public function onUpdate($currentTick){
 
 		if($this->closed){
 			return false;
@@ -79,7 +79,10 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$this->timings->startTiming();
 
-		$this->entityBaseTick();
+		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$this->lastUpdate = $currentTick;
+
+		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		if(!$this->dead){
 
@@ -101,7 +104,9 @@ class PrimedTNT extends Entity implements Explosive{
 				$this->motionZ *= 0.7;
 			}
 
-			if($this->fuse-- <= 0){
+			$this->fuse -= $tickDiff;
+
+			if($this->fuse <= 0){
 				$this->kill();
 				$this->explode();
 			}else{
@@ -111,7 +116,7 @@ class PrimedTNT extends Entity implements Explosive{
 		}
 
 
-		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate or $this->fuse > 0 or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){

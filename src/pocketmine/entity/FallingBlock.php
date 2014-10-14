@@ -66,7 +66,7 @@ class FallingBlock extends Entity{
 		return [];
 	}
 
-	public function onUpdate(){
+	public function onUpdate($currentTick){
 
 		if($this->closed){
 			return false;
@@ -74,7 +74,10 @@ class FallingBlock extends Entity{
 
 		$this->timings->startTiming();
 
-		$this->entityBaseTick();
+		$tickDiff = max(1, $currentTick - $this->lastUpdate);
+		$this->lastUpdate = $currentTick;
+
+		$hasUpdate = $this->entityBaseTick($tickDiff);
 
 		if(!$this->dead){
 			if($this->ticksLived === 1){
@@ -110,13 +113,13 @@ class FallingBlock extends Entity{
 						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
 					}
 				}
+				$hasUpdate = true;
 			}
 
 			$this->updateMovement();
 		}
 
-
-		return !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate or !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
 	}
 
 	public function getBlock(){
