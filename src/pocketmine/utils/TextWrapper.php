@@ -70,6 +70,8 @@ abstract class TextWrapper{
 
 				++$lineLength;
 				$lineWidth += $width;
+			}else{
+				return $text;
 			}
 
 			$result .= $char;
