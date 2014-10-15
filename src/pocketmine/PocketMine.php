@@ -327,9 +327,9 @@ namespace pocketmine {
 		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
 	}
 
-	function error_handler($errno, $errstr, $errfile, $errline, $trace = null){
+	function error_handler($errno, $errstr, $errfile, $errline, $context, $trace = null){
 		global $lastError;
-		if(error_reporting() === 0){ //@ error-control
+		if(error_reporting() === 0){ //@ error-con..trol
 			return false;
 		}
 		$errorConversion = [

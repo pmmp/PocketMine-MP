@@ -1932,7 +1932,7 @@ class Server{
 			return;
 		}
 
-		error_handler(E_ERROR, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTrace());
+		error_handler(E_ERROR, $e->getMessage(), $e->getFile(), $e->getLine(), [], $e->getTrace());
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 		$this->crashDump();
