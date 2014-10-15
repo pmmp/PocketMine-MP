@@ -641,14 +641,16 @@ class PluginManager{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		$handlers = $event->getHandlers();
-		$listeners = $handlers->getRegisteredListeners();
-
-		foreach($listeners as $registration){
+		foreach($event->getHandlers()->getRegisteredListeners() as $registration){
 			if(!$registration->getPlugin()->isEnabled()){
 				continue;
 			}
-			$registration->callEvent($event);
+
+			try{
+				$registration->callEvent($event);
+			}catch(\Exception $e){
+				$this->server->getLogger()->critical("Could not pass event ". $event->getEventName() ." to ". $registration->getPlugin()->getDescription()->getFullName() .": ".$e->getMessage()." on ".get_class($registration->getListener()));
+			}
 		}
 	}
 
