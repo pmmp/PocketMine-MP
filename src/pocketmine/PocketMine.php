@@ -349,7 +349,7 @@ namespace pocketmine {
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		];
-		$type = ($errno === E_ERROR or $errno === E_WARNING or $errno === E_USER_ERROR or $errno === E_USER_WARNING) ? LogLevel::ERROR : LogLevel::NOTICE;
+		$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
 		if(($pos = strpos($errstr, "\n")) !== false){
 			$errstr = substr($errstr, 0, $pos);
@@ -362,6 +362,7 @@ namespace pocketmine {
 		foreach(($trace = getTrace($trace === null ? 3 : 0, $trace)) as $i => $line){
 			$logger->debug($line);
 		}
+
 		$lastError = [
 			"type" => $type,
 			"message" => $errstr,

@@ -53,11 +53,12 @@ class RegionLoader{
 		$this->z = $regionZ;
 		$this->levelProvider = $level;
 		$this->filePath = $this->levelProvider->getPath() . "region/r.$regionX.$regionZ.mcr";
+		$exists = file_exists($this->filePath);
 		touch($this->filePath);
 		$this->filePointer = fopen($this->filePath, "r+b");
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
-		if(!file_exists($this->filePath)){
+		if(!$exists){
 			$this->createBlank();
 		}else{
 			$this->loadLocationTable();
