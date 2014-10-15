@@ -1412,7 +1412,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$nbt["lastPlayed"] = floor(microtime(true) * 1000);
 				$this->server->saveOfflinePlayerData($this->username, $nbt);
-				parent::__construct($this->getLevel()->getChunk($nbt["Pos"][0], $nbt["Pos"][2], true), $nbt);
+				parent::__construct($this->getLevel()->getChunk($nbt["Pos"][0] >> 4, $nbt["Pos"][2] >> 4, true), $nbt);
 				$this->loggedIn = true;
 
 				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
