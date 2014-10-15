@@ -53,7 +53,7 @@ abstract class AsyncTask extends \Collectable{
 	 * @return mixed
 	 */
 	public function getResult(){
-		return @unserialize($this->result);
+		return unserialize($this->result);
 	}
 
 	/**
@@ -67,7 +67,7 @@ abstract class AsyncTask extends \Collectable{
 	 * @param mixed $result
 	 */
 	public function setResult($result){
-		$this->result = @serialize($result);
+		$this->result = serialize($result);
 	}
 
 	public function setTaskId($taskId){

@@ -41,7 +41,7 @@ class Binary{
 	 * @return mixed
 	 */
 	public static function readTriad($str){
-		return @unpack("N", "\x00" . $str)[1];
+		return unpack("N", "\x00" . $str)[1];
 	}
 
 	/**
@@ -236,7 +236,7 @@ class Binary{
 	 * @return int
 	 */
 	public static function readShort($str, $signed = true){
-		$unpacked = @unpack("n", $str)[1];
+		$unpacked = unpack("n", $str)[1];
 
 		if($signed){
 			if(PHP_INT_SIZE === 8){
@@ -269,7 +269,7 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLShort($str, $signed = true){
-		$unpacked = @unpack("v", $str)[1];
+		$unpacked = unpack("v", $str)[1];
 
 		if($signed){
 			if(PHP_INT_SIZE === 8){
@@ -295,9 +295,9 @@ class Binary{
 
 	public static function readInt($str){
 		if(PHP_INT_SIZE === 8){
-			return @unpack("N", $str)[1] << 32 >> 32;
+			return unpack("N", $str)[1] << 32 >> 32;
 		}else{
-			return @unpack("N", $str)[1];
+			return unpack("N", $str)[1];
 		}
 	}
 
@@ -307,9 +307,9 @@ class Binary{
 
 	public static function readLInt($str){
 		if(PHP_INT_SIZE === 8){
-			return @unpack("V", $str)[1] << 32 >> 32;
+			return unpack("V", $str)[1] << 32 >> 32;
 		}else{
-			return @unpack("V", $str)[1];
+			return unpack("V", $str)[1];
 		}
 	}
 
@@ -318,7 +318,7 @@ class Binary{
 	}
 
 	public static function readFloat($str){
-		return ENDIANNESS === self::BIG_ENDIAN ? @unpack("f", $str)[1] : @unpack("f", strrev($str))[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1];
 	}
 
 	public static function writeFloat($value){
@@ -326,7 +326,7 @@ class Binary{
 	}
 
 	public static function readLFloat($str){
-		return ENDIANNESS === self::BIG_ENDIAN ? @unpack("f", strrev($str))[1] : @unpack("f", $str)[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1];
 	}
 
 	public static function writeLFloat($value){
@@ -338,7 +338,7 @@ class Binary{
 	}
 
 	public static function readDouble($str){
-		return ENDIANNESS === self::BIG_ENDIAN ? @unpack("d", $str)[1] : @unpack("d", strrev($str))[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", $str)[1] : unpack("d", strrev($str))[1];
 	}
 
 	public static function writeDouble($value){
@@ -346,7 +346,7 @@ class Binary{
 	}
 
 	public static function readLDouble($str){
-		return ENDIANNESS === self::BIG_ENDIAN ? @unpack("d", strrev($str))[1] : @unpack("d", $str)[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", strrev($str))[1] : unpack("d", $str)[1];
 	}
 
 	public static function writeLDouble($value){
@@ -355,7 +355,7 @@ class Binary{
 
 	public static function readLong($x){
 		if(PHP_INT_SIZE === 8){
-			list(, $int1, $int2) = @unpack("N*", $x);
+			list(, $int1, $int2) = unpack("N*", $x);
 			return ($int1 << 32) | $int2;
 		}else{
 			$value = "0";

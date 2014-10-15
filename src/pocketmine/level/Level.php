@@ -370,9 +370,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Player[]
 	 */
 	public function getUsingChunk($X, $Z){
-		$index = Level::chunkHash($X, $Z);
-
-		return isset($this->usedChunks[$index]) ? $this->usedChunks[$index] : [];
+		return isset($this->usedChunks[$index = "$X:$Z"]) ? $this->usedChunks[$index] : [];
 	}
 
 	/**
@@ -1839,7 +1837,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function cancelUnloadChunkRequest($x, $z){
-		unset($this->unloadQueue[static::chunkHash($x, $z)]);
+		unset($this->unloadQueue[Level::chunkHash($x, $z)]);
 	}
 
 	public function unloadChunk($x, $z, $safe = true){

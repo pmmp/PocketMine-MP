@@ -59,12 +59,12 @@ class RCON{
 
 			return;
 		}
-		@socket_set_block($this->socket);
+		socket_set_block($this->socket);
 
 		for($n = 0; $n < $this->threads; ++$n){
 			$this->workers[$n] = new RCONInstance($this->socket, $this->password, $this->clientsPerThread);
 		}
-		@socket_getsockname($this->socket, $addr, $port);
+		socket_getsockname($this->socket, $addr, $port);
 		$this->server->getLogger()->info("RCON running on $addr:$port");
 		$this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "check"]), 3);
 	}

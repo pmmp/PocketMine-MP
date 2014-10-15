@@ -211,7 +211,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$this->chunk->addEntity($this);
-		$this->getLevel()->addEntity($this);
+		$this->level->addEntity($this);
 		$this->initEntity();
 		$this->lastUpdate = $this->server->getTick();
 		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
@@ -384,17 +384,17 @@ abstract class Entity extends Location implements Metadatable{
 		$diffY = $y - $j;
 		$diffZ = $z - $k;
 
-		$list = $this->getLevel()->getCollisionBlocks($this->boundingBox);
+		$list = $this->level->getCollisionBlocks($this->boundingBox);
 
-		if(count($list) === 0 and !$this->getLevel()->isFullBlock(new Vector3($i, $j, $k))){
+		if(count($list) === 0 and !$this->level->isFullBlock(new Vector3($i, $j, $k))){
 			return false;
 		}else{
-			$flag = !$this->getLevel()->isFullBlock(new Vector3($i - 1, $j, $k));
-			$flag1 = !$this->getLevel()->isFullBlock(new Vector3($i + 1, $j, $k));
-			//$flag2 = !$this->getLevel()->isFullBlock(new Vector3($i, $j - 1, $k));
-			$flag3 = !$this->getLevel()->isFullBlock(new Vector3($i, $j + 1, $k));
-			$flag4 = !$this->getLevel()->isFullBlock(new Vector3($i, $j, $k - 1));
-			$flag5 = !$this->getLevel()->isFullBlock(new Vector3($i, $j, $k + 1));
+			$flag = !$this->level->isFullBlock(new Vector3($i - 1, $j, $k));
+			$flag1 = !$this->level->isFullBlock(new Vector3($i + 1, $j, $k));
+			//$flag2 = !$this->level->isFullBlock(new Vector3($i, $j - 1, $k));
+			$flag3 = !$this->level->isFullBlock(new Vector3($i, $j + 1, $k));
+			$flag4 = !$this->level->isFullBlock(new Vector3($i, $j, $k - 1));
+			$flag5 = !$this->level->isFullBlock(new Vector3($i, $j, $k + 1));
 
 			$direction = 3; //UP!
 			$limit = 9999;
@@ -703,12 +703,12 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected function switchLevel(Level $targetLevel){
 		if($this->isValid()){
-			$this->server->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->getLevel(), $targetLevel));
+			$this->server->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->level, $targetLevel));
 			if($ev->isCancelled()){
 				return false;
 			}
 
-			$this->getLevel()->removeEntity($this);
+			$this->level->removeEntity($this);
 			$this->chunk->removeEntity($this);
 			$this->despawnFromAll();
 			if($this instanceof Player){
@@ -716,21 +716,21 @@ abstract class Entity extends Location implements Metadatable{
 					$X = null;
 					$Z = null;
 					Level::getXZ($index, $X, $Z);
-					foreach($this->getLevel()->getChunkEntities($X, $Z) as $entity){
+					foreach($this->level->getChunkEntities($X, $Z) as $entity){
 						$entity->despawnFrom($this);
 					}
 
 				}
-				$this->getLevel()->freeAllChunks($this);
+				$this->level->freeAllChunks($this);
 			}
 		}
 		$this->setLevel($targetLevel, $this instanceof Player ? true : false); //Hard reference
-		$this->getLevel()->addEntity($this);
+		$this->level->addEntity($this);
 		if($this instanceof Player){
 			$this->usedChunks = [];
 			$pk = new SetTimePacket();
-			$pk->time = $this->getLevel()->getTime();
-			$pk->started = $this->getLevel()->stopTime == false;
+			$pk->time = $this->level->getTime();
+			$pk->started = $this->level->stopTime == false;
 			$this->dataPacket($pk);
 		}
 		$this->chunk = null;
@@ -739,15 +739,15 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function getPosition(){
-		return new Position($this->x, $this->y, $this->z, $this->getLevel());
+		return new Position($this->x, $this->y, $this->z, $this->level);
 	}
 
 	public function getLocation(){
-		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->getLevel());
+		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
 	}
 
 	public function isInsideOfWater(){
-		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
+		$block = $this->level->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
 
 		if($block instanceof Water){
 			$f = ($pos->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
@@ -758,7 +758,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfSolid(){
-		$block = $this->getLevel()->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
+		$block = $this->level->getBlock($pos = (new Vector3($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z))->floor());
 
 		$bb = $block->getBoundingBox();
 
@@ -811,7 +811,7 @@ abstract class Entity extends Location implements Metadatable{
 			/*$sneakFlag = $this->onGround and $this instanceof Player;
 
 			if($sneakFlag){
-				for($mov = 0.05; $dx != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){
+				for($mov = 0.05; $dx != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){
 					if($dx < $mov and $dx >= -$mov){
 						$dx = 0;
 					}elseif($dx > 0){
@@ -821,7 +821,7 @@ abstract class Entity extends Location implements Metadatable{
 					}
 				}
 
-				for(; $dz != 0.0 and count($this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz){
+				for(; $dz != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz){
 					if($dz < $mov and $dz >= -$mov){
 						$dz = 0;
 					}elseif($dz > 0){
@@ -834,7 +834,7 @@ abstract class Entity extends Location implements Metadatable{
 				//TODO: big messy loop
 			}*/
 
-			$list = $this->getLevel()->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz), false);
+			$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz), false);
 
 
 			foreach($list as $bb){
@@ -1063,11 +1063,11 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}
-			$this->getLevel()->loadChunk($this->x >> 4, $this->z >> 4);
-			$this->chunk = $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4);
+			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
+			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4);
 
 			if(!$this->justCreated){
-				$newChunk = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
+				$newChunk = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
 				foreach($this->hasSpawned as $player){
 					if(!isset($newChunk[$player->getID()])){
 						$this->despawnFrom($player);
@@ -1141,8 +1141,8 @@ abstract class Entity extends Location implements Metadatable{
 			$yaw = $pos->yaw;
 			$pitch = $pos->pitch;
 		}
-		$from = Position::fromObject($this, $this->getLevel());
-		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->getLevel());
+		$from = Position::fromObject($this, $this->level);
+		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
 		$this->server->getPluginManager()->callEvent($ev = new EntityTeleportEvent($this, $from, $to));
 		if($ev->isCancelled()){
 			return false;
@@ -1166,7 +1166,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function spawnToAll(){
-		foreach($this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4) as $player){
+		foreach($this->level->getUsingChunk($this->x >> 4, $this->z >> 4) as $player){
 			if(isset($player->id) and $player->spawned === true){
 				$this->spawnTo($player);
 			}
@@ -1187,7 +1187,7 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}
-			if(($level = $this->getLevel()) instanceof Level){
+			if(($level = $this->level) instanceof Level){
 				$level->removeEntity($this);
 			}
 			$this->despawnFromAll();

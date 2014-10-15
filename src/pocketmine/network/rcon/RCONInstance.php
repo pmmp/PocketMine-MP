@@ -57,7 +57,7 @@ class RCONInstance extends \Thread{
 	}
 
 	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
-		@socket_set_nonblock($client);
+		socket_set_nonblock($client);
 		$d = socket_read($client, 4);
 		if($this->stop === true){
 			return false;
@@ -66,7 +66,7 @@ class RCONInstance extends \Thread{
 		}elseif($d === "" or strlen($d) < 4){
 			return false;
 		}
-		@socket_set_block($client);
+		socket_set_block($client);
 		$size = Binary::readLInt($d);
 		if($size < 0 or $size > 65535){
 			return false;
@@ -131,7 +131,7 @@ class RCONInstance extends \Thread{
 									continue;
 								}
 								if($payload === $this->password){
-									@socket_getpeername($client, $addr, $port);
+									socket_getpeername($client, $addr, $port);
 									$this->response = "[INFO] Successful Rcon connection from: /$addr:$port";
 									$this->synchronized(function (){
 										$this->wait();

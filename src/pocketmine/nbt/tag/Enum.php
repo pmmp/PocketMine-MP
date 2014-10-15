@@ -168,6 +168,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 
 	public function write(NBT $nbt){
 		if(!isset($this->tagType)){
+			$id = null;
 			foreach($this as $tag){
 				if($tag instanceof Tag){
 					if(!isset($id)){
@@ -177,7 +178,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 					}
 				}
 			}
-			$this->tagType = @$id;
+			$this->tagType = $id;
 		}
 
 		$nbt->putByte($this->tagType);

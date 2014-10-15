@@ -1145,9 +1145,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->lastPitch = $to->pitch;
 
 			$ev = new PlayerMoveEvent($this, $from, $to);
-			if($revert){
-				$ev->setCancelled();
-			}
 
 			$this->server->getPluginManager()->callEvent($ev);
 

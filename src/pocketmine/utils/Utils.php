@@ -231,7 +231,6 @@ class Utils{
 			//some entropy, but works ^^
 			$weakEntropy = [
 				is_array($startEntropy) ? implode($startEntropy) : $startEntropy,
-				serialize(@stat(__FILE__)),
 				__DIR__,
 				PHP_OS,
 				microtime(),
@@ -253,8 +252,8 @@ class Utils{
 				(string) getmygid(),
 				(string) rand(),
 				function_exists("zend_thread_id") ? ((string) zend_thread_id()) : microtime(),
-				function_exists("getrusage") ? @implode(getrusage()) : microtime(),
-				function_exists("sys_getloadavg") ? @implode(sys_getloadavg()) : microtime(),
+				function_exists("getrusage") ? implode(getrusage()) : microtime(),
+				function_exists("sys_getloadavg") ? implode(sys_getloadavg()) : microtime(),
 				serialize(get_loaded_extensions()),
 				sys_get_temp_dir(),
 				(string) disk_free_space("."),

@@ -54,7 +54,7 @@ class DroppedItem extends Entity{
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "Item");
 		$this->setMaxHealth(5);
-		$this->setHealth(@$this->namedtag["Health"]);
+		$this->setHealth($this->namedtag["Health"]);
 		if(isset($this->namedtag->Age)){
 			$this->age = $this->namedtag["Age"];
 		}

@@ -58,7 +58,7 @@ class AutoUpdater{
 
 	protected function check(){
 		$response = Utils::getURL($this->endpoint . "?channel=" . $this->getChannel(), 4);
-		$response = @json_decode($response, true);
+		$response = json_decode($response, true);
 		if(!is_array($response)){
 			return;
 		}
