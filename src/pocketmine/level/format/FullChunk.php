@@ -271,6 +271,16 @@ interface FullChunk{
 	public function toBinary();
 
 	/**
+	 * @return boolean
+	 */
+	public function hasChanged();
+
+	/**
+	 * @param bool $changed
+	 */
+	public function setChanged($changed = true);
+
+	/**
 	 * @param string        $data
 	 * @param LevelProvider $provider
 	 *

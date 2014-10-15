@@ -103,6 +103,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 
 	public function setBlock($x, $y, $z, $blockId = null, $meta = null){
 		try{
+			$this->hasChanged = true;
 			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
 		}catch(\Exception $e){
 			$level = $this->getProvider();
@@ -118,6 +119,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function setBlockId($x, $y, $z, $id){
 		try{
 			$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
+			$this->hasChanged = true;
 		}catch(\Exception $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
@@ -132,6 +134,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function setBlockData($x, $y, $z, $data){
 		try{
 			$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
+			$this->hasChanged = true;
 		}catch(\Exception $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
@@ -146,6 +149,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function setBlockSkyLight($x, $y, $z, $data){
 		try{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
+			$this->hasChanged = true;
 		}catch(\Exception $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
@@ -160,6 +164,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	public function setBlockLight($x, $y, $z, $data){
 		try{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
+			$this->hasChanged = true;
 		}catch(\Exception $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
@@ -217,10 +222,12 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		}else{
 			$this->sections[(int) $fY] = $section;
 		}
+		$this->hasChanged = true;
 	}
 
 	private function setInternalSection($fY, ChunkSection $section){
 		$this->sections[(int) $fY] = $section;
+		$this->hasChanged = true;
 	}
 
 	public function load($generate = true){

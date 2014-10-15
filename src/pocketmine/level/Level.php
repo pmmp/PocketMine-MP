@@ -677,10 +677,12 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function saveChunks(){
-		//TODO: only save changed chunks
 		foreach($this->chunks as $chunk){
-			$this->provider->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
-			$this->provider->saveChunk($chunk->getX(), $chunk->getZ());
+			if($chunk->hasChanged()){
+				$this->provider->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
+				$this->provider->saveChunk($chunk->getX(), $chunk->getZ());
+				$chunk->setChanged(false);
+			}
 		}
 	}
 
@@ -1545,10 +1547,8 @@ class Level implements ChunkManager, Metadatable{
 	public function getChunk($x, $z, $create = false){
 		if(isset($this->chunks[$index = "$x:$z"])){
 			return $this->chunks[$index];
-		}elseif(($chunk = $this->provider->getChunk($x, $z, $create)) instanceof FullChunk){
-			$this->chunks[$index] = $chunk;
-			$chunk->initChunk();
-			return $chunk;
+		}elseif($this->loadChunk($x, $z, $create) and $this->chunks[$index] instanceof FullChunk){
+			return $this->chunks[$index];
 		}
 
 		return null;
@@ -1589,6 +1589,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->setChunk($x, $z, $chunk);
 			$this->chunks[$index] = $chunk;
 		}
+		$chunk->setChanged();
 	}
 
 	/**
@@ -1805,6 +1806,7 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->provider->getChunk($x, $z, $generate);
 		if($chunk instanceof FullChunk){
 			$this->chunks[$index] = $chunk;
+			$chunk->initChunk();
 		}else{
 			$this->timings->syncChunkLoadTimer->startTiming();
 			$this->provider->loadChunk($x, $z, $generate);
@@ -1812,6 +1814,7 @@ class Level implements ChunkManager, Metadatable{
 
 			if(($chunk = $this->provider->getChunk($x, $z)) instanceof FullChunk){
 				$this->chunks[$index] = $chunk;
+				$chunk->initChunk();
 			}else{
 				return false;
 			}
@@ -1845,6 +1848,8 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
+		$this->timings->doChunkUnload->startTiming();
+
 		$index = "$x:$z";
 
 		$chunk = $this->getChunk($x, $z);
@@ -1856,9 +1861,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$this->timings->doChunkUnload->startTiming();
-
-		if($chunk instanceof FullChunk and $this->getAutoSave()){
+		if($chunk instanceof FullChunk and $chunk->hasChanged() and $this->getAutoSave()){
 			$this->provider->setChunk($x, $z, $chunk);
 			$this->provider->saveChunk($x, $z);
 		}

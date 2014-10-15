@@ -67,6 +67,8 @@ abstract class BaseFullChunk implements FullChunk{
 	protected $x;
 	protected $z;
 
+	protected $hasChanged = false;
+
 	/**
 	 * @param LevelProvider $provider
 	 * @param int           $x
@@ -155,9 +157,12 @@ abstract class BaseFullChunk implements FullChunk{
 					}
 				}
 			}
+
 			$this->getProvider()->getLevel()->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+
 			$this->NBTentities = null;
 			$this->NBTtiles = null;
+			$this->hasChanged = false;
 		}
 	}
 
@@ -202,6 +207,7 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function setBiomeId($x, $z, $biomeId){
+		$this->hasChanged = true;
 		$this->biomeIds{($z << 4) + $x} = chr($biomeId);
 	}
 
@@ -212,6 +218,7 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function setBiomeColor($x, $z, $R, $G, $B){
+		$this->hasChanged = true;
 		$this->biomeColors[($z << 4) + $x] = 0 | (($R & 0xFF) << 16) | (($G & 0xFF) << 8) | ($B & 0xFF);
 	}
 
@@ -228,18 +235,22 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function addEntity(Entity $entity){
 		$this->entities[$entity->getID()] = $entity;
+		$this->hasChanged = true;
 	}
 
 	public function removeEntity(Entity $entity){
 		unset($this->entities[$entity->getID()]);
+		$this->hasChanged = true;
 	}
 
 	public function addTile(Tile $tile){
 		$this->tiles[$tile->getID()] = $tile;
+		$this->hasChanged = true;
 	}
 
 	public function removeTile(Tile $tile){
 		unset($this->tiles[$tile->getID()]);
+		$this->hasChanged = true;
 	}
 
 	public function getEntities(){
@@ -308,6 +319,14 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function getBiomeColorArray(){
 		return $this->biomeColors;
+	}
+
+	public function hasChanged(){
+		return $this->hasChanged;
+	}
+
+	public function setChanged($changed = true){
+		$this->hasChanged = (bool) $changed;
 	}
 
 }
