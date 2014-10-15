@@ -49,6 +49,7 @@ use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\level\ChunkLoadEvent;
 use pocketmine\event\level\ChunkPopulateEvent;
 use pocketmine\event\level\ChunkUnloadEvent;
@@ -689,21 +690,20 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * @param Vector3 $pos
-	 * @param int     $type
 	 */
-	public function updateAround(Vector3 $pos, $type = self::BLOCK_UPDATE_NORMAL){
+	public function updateAround(Vector3 $pos){
 		if($pos instanceof Block){
 			$block = $pos;
 		}else{
 			$block = $this->getBlock($pos);
 		}
 
-		$block->getSide(0)->onUpdate($type);
-		$block->getSide(1)->onUpdate($type);
-		$block->getSide(2)->onUpdate($type);
-		$block->getSide(3)->onUpdate($type);
-		$block->getSide(4)->onUpdate($type);
-		$block->getSide(5)->onUpdate($type);
+		for($side = 0; $side <= 5; ++$side){
+			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block->getSide($side)));
+			if(!$ev->isCancelled()){
+				$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+			}
+		}
 	}
 
 	/**
@@ -937,7 +937,7 @@ class Level implements ChunkManager, Metadatable{
 				Cache::remove("world:" . $this->getID() . ":" . $index);
 			}
 
-			if($direct === true){
+			//if($direct === true){
 				$pk = new UpdateBlockPacket;
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
@@ -949,7 +949,7 @@ class Level implements ChunkManager, Metadatable{
 					/** @var Player $player */
 					$player->dataPacket($pk);
 				}
-			}else{
+			/*}else{
 				if(!($pos instanceof Position)){
 					$pos = new Position($pos->x, $pos->y, $pos->z, $this);
 				}
@@ -964,13 +964,16 @@ class Level implements ChunkManager, Metadatable{
 					$this->changedCount[$index] |= 1 << $Y;
 				}
 				$this->changedBlocks[$index][$Y][] = clone $block;
-			}
+			}*/
 
 			if($update === true){
-				$this->updateAround($pos, self::BLOCK_UPDATE_NORMAL);
-				$block->onUpdate(self::BLOCK_UPDATE_NORMAL);
-				foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
-					$entity->scheduleUpdate();
+				$this->updateAround($pos);
+				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+				if(!$ev->isCancelled()){
+					$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
+						$entity->scheduleUpdate();
+					}
 				}
 			}
 		}

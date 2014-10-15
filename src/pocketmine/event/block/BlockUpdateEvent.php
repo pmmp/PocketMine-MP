@@ -19,29 +19,16 @@
  *
  */
 
-/**
- * Block related events
- */
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
-use pocketmine\event\Event;
+use pocketmine\event\Cancellable;
+use pocketmine\Player;
 
-abstract class BlockEvent extends Event{
-	/** @var \pocketmine\block\Block */
-	protected $block;
+/**
+ * Called when a block tries to be updated due to a neighbor change
+ */
+class BlockUpdateEvent extends BlockEvent implements Cancellable{
+	public static $handlerList = null;
 
-	/**
-	 * @param Block $block
-	 */
-	public function __construct(Block $block){
-		$this->block = $block;
-	}
-
-	/**
-	 * @return Block
-	 */
-	public function getBlock(){
-		return $this->block;
-	}
 }
