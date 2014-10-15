@@ -1213,7 +1213,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 1, 1), $this) as $entity){
+		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
 			if(($currentTick - $entity->lastUpdate) > 1){
 				$entity->scheduleUpdate();
 			}
