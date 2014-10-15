@@ -274,7 +274,7 @@ abstract class BaseFullChunk implements FullChunk{
 		if($level === null){
 			return true;
 		}
-		if($save === true){
+		if($save === true and $this->hasChanged){
 			$level->saveChunk($this->getX(), $this->getZ());
 		}
 		if($safe === true){

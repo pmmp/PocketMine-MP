@@ -284,7 +284,7 @@ class Chunk extends BaseFullChunk{
 		$entities = [];
 
 		foreach($this->getEntities() as $entity){
-			if(!($entity instanceof Player) and $entity->closed !== true){
+			if(!($entity instanceof Player) and !$entity->closed){
 				$entity->saveNBT();
 				$entities[] = $entity->namedtag;
 			}
@@ -300,8 +300,8 @@ class Chunk extends BaseFullChunk{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->Entities = new Enum("TileEntities", $tiles);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$nbt->TileEntities = new Enum("TileEntities", $tiles);
+		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
 		$writer->setData(new Compound("", ["Level" => $nbt]));
