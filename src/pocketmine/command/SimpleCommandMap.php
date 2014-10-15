@@ -178,7 +178,11 @@ class SimpleCommandMap implements CommandMap{
 		}
 
 		$target->timings->startTiming();
-		$target->execute($sender, $sentCommandLabel, $args);
+		try{
+			$target->execute($sender, $sentCommandLabel, $args);
+		}catch(\Exception $e){
+			$this->server->getLogger()->critical("Unhandled exception executing command '". $commandLine ,"' in ". $target);
+		}
 		$target->timings->stopTiming();
 
 		return true;
