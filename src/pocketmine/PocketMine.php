@@ -477,14 +477,14 @@ namespace pocketmine {
 			$logger->debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
 			if($thread instanceof Thread){
 				$thread->kill();
-
-				if($thread->isRunning() or !$thread->join()){
+				sleep(1);
+				if($thread->isRunning()){
 					$thread->detach();
 				}
 			}elseif($thread instanceof Worker){
 				$thread->kill();
 				sleep(1);
-				if($thread->isRunning() or !$thread->join()){
+				if($thread->isRunning()){
 					$thread->detach();
 				}
 			}
