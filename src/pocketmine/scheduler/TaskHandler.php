@@ -137,7 +137,6 @@ class TaskHandler{
 	public function remove(){
 		$this->cancelled = true;
 		$this->task->setHandler(null);
-		$this->timings->remove();
 	}
 
 	/**
