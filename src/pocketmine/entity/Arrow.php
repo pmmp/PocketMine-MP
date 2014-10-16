@@ -198,7 +198,9 @@ class Arrow extends Projectile{
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 
 		return [
-			0 => ["type" => 0, "value" => $flags]
+			0 => ["type" => 0, "value" => $flags],
+			1 => ["type" => 1, "value" => $this->airTicks],
+			16 => ["type" => 0, "value" => 0] //Is critical
 		];
 	}
 
