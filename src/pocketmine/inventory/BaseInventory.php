@@ -124,7 +124,7 @@ abstract class BaseInventory implements Inventory{
 		$item = clone $item;
 		if($index < 0 or $index >= $this->size){
 			return false;
-		}elseif($item->getID() === 0){
+		}elseif($item->getID() === 0 or $item->getCount() <= 0){
 			$this->clear($index, $source);
 		}
 
@@ -275,15 +275,10 @@ abstract class BaseInventory implements Inventory{
 				if($slot->equals($item, $slot->getDamage() === null ? false : true)){
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
-					$old = clone $item;
 					$item->setCount($item->getCount() - $amount);
+					$this->setItem($i, $item);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
-					}
-					if($item->getCount() <= 0){
-						$this->clear($i);
-					}else{
-						$this->onSlotChange($i, $old);
 					}
 				}
 			}
