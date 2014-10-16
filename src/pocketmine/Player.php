@@ -105,7 +105,6 @@ use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
-use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
 
@@ -168,8 +167,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public $usedChunks = [];
 	protected $loadQueue = [];
 	protected $chunkACK = [];
-	/** @var \pocketmine\scheduler\TaskHandler */
-	protected $chunkLoadTask;
+	protected $nextChunkOrderRun = 5;
 
 	/** @var Player[] */
 	protected $hiddenPlayers = [];
@@ -594,46 +592,36 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->chunkACK[$cnt] = Level::chunkHash($x, $z);
 	}
 
-	/**
-	 * Sends, if available, the next ordered chunk to the client
-	 *
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 */
-	public function sendNextChunk(){
-		if($this->connected === false or !isset($this->chunkLoadTask)){
-			return;
+	protected function sendNextChunk(){
+		if($this->connected === false){
+			return false;
 		}
 
-		if(count($this->loadQueue) === 0){
-			$this->chunkLoadTask->setNextRun($this->chunkLoadTask->getNextRun() + 30);
-		}else{
-			$count = 0;;
-			foreach($this->loadQueue as $index => $distance){
-				if($count >= $this->chunksPerTick){
+		$count = 0;
+		foreach($this->loadQueue as $index => $distance){
+			if($count >= $this->chunksPerTick){
+				break;
+			}
+			++$count;
+			$X = null;
+			$Z = null;
+			Level::getXZ($index, $X, $Z);
+			if(!$this->level->isChunkPopulated($X, $Z)){
+				$this->level->generateChunk($X, $Z);
+				if($this->spawned === true){
+					continue;
+				}else{
 					break;
 				}
-				++$count;
-				$X = null;
-				$Z = null;
-				Level::getXZ($index, $X, $Z);
-				if(!$this->level->isChunkPopulated($X, $Z)){
-					$this->level->generateChunk($X, $Z);
-					if($this->spawned === true){
-						continue;
-					}else{
-						break;
-					}
-				}
-
-				unset($this->loadQueue[$index]);
-				$this->usedChunks[$index] = [false, 0];
-
-				$this->level->useChunk($X, $Z, $this);
-				$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 			}
+
+			unset($this->loadQueue[$index]);
+			$this->usedChunks[$index] = [false, 0];
+
+			$this->level->useChunk($X, $Z, $this);
+			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
+
 
 		if(count($this->usedChunks) < 16 and $this->spawned === true){
 			$this->blocked = true;
@@ -650,7 +638,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			if($spawned < 56){
-				return;
+				return true;
 			}
 
 			$this->spawned = true;
@@ -686,17 +674,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	/**
-	 *
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
-	 * @return bool
-	 */
-	public function orderChunks(){
+	protected function orderChunks(){
 		if($this->connected === false){
 			return false;
 		}
+
+		$this->nextChunkOrderRun = 100;
 
 		$radiusSquared = $this->viewDistance;
 		$radius = ceil(sqrt($radiusSquared));
@@ -1068,10 +1051,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return -1;
 	}
 
-	public function processMovement(){
+	protected function processMovement($currentTick){
 		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
 			return;
 		}
+
 		$oldPos = new Vector3($this->x, $this->y, $this->z);
 		$distance = $oldPos->distance($this->newPosition);
 
@@ -1171,6 +1155,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
 		}else{
 			$this->forceMovement = null;
+			if($this->nextChunkOrderRun > 4){
+				$this->nextChunkOrderRun = 4;
+			}
 		}
 	}
 
@@ -1179,7 +1166,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function onUpdate($currentTick){
-		if($this->spawned === false or $this->dead === true){
+		if($this->dead === true){
 			return true;
 		}
 
@@ -1187,54 +1174,30 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->lastUpdate = $currentTick;
 
-		$this->processMovement();
+		if($this->spawned){
+			$this->processMovement($currentTick);
 
-		$this->entityBaseTick(1);
+			$this->entityBaseTick(1);
 
-		if($this->onGround){
-			$this->inAirTicks = 0;
-		}else{
-			if($this->inAirTicks > 100 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
-				$this->kick("Flying is not enabled on this server");
-				return false;
+			if($this->onGround){
+				$this->inAirTicks = 0;
 			}else{
-				++$this->inAirTicks;
-			}
-		}
-
-		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
-			if(($currentTick - $entity->lastUpdate) > 1){
-				$entity->scheduleUpdate();
-			}
-
-			if($entity instanceof Arrow and $entity->onGround){
-				if($entity->dead !== true){
-					$item = Item::get(Item::ARROW, 0, 1);
-					if($this->isSurvival() and !$this->inventory->canAddItem($item)){
-						continue;
-					}
-
-					$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
-					if($ev->isCancelled()){
-						continue;
-					}
-
-					$pk = new TakeItemEntityPacket;
-					$pk->eid = 0;
-					$pk->target = $entity->getID();
-					$this->dataPacket($pk);
-					$pk = new TakeItemEntityPacket;
-					$pk->eid = $this->getID();
-					$pk->target = $entity->getID();
-					Server::broadcastPacket($entity->getViewers(), $pk);
-					$this->inventory->addItem(clone $item);
-					$entity->kill();
+				if($this->inAirTicks > 100 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
+					$this->kick("Flying is not enabled on this server");
+					return false;
+				}else{
+					++$this->inAirTicks;
 				}
-			}elseif($entity instanceof DroppedItem){
-				if($entity->dead !== true and $entity->getPickupDelay() <= 0){
-					$item = $entity->getItem();
+			}
 
-					if($item instanceof Item){
+			foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
+				if(($currentTick - $entity->lastUpdate) > 1){
+					$entity->scheduleUpdate();
+				}
+
+				if($entity instanceof Arrow and $entity->onGround){
+					if($entity->dead !== true){
+						$item = Item::get(Item::ARROW, 0, 1);
 						if($this->isSurvival() and !$this->inventory->canAddItem($item)){
 							continue;
 						}
@@ -1242,15 +1205,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
 						if($ev->isCancelled()){
 							continue;
-						}
-
-						switch($item->getID()){
-							case Item::WOOD:
-								$this->awardAchievement("mineWood");
-								break;
-							case Item::DIAMOND:
-								$this->awardAchievement("diamond");
-								break;
 						}
 
 						$pk = new TakeItemEntityPacket;
@@ -1264,8 +1218,51 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->inventory->addItem(clone $item);
 						$entity->kill();
 					}
+				}elseif($entity instanceof DroppedItem){
+					if($entity->dead !== true and $entity->getPickupDelay() <= 0){
+						$item = $entity->getItem();
+
+						if($item instanceof Item){
+							if($this->isSurvival() and !$this->inventory->canAddItem($item)){
+								continue;
+							}
+
+							$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
+							if($ev->isCancelled()){
+								continue;
+							}
+
+							switch($item->getID()){
+								case Item::WOOD:
+									$this->awardAchievement("mineWood");
+									break;
+								case Item::DIAMOND:
+									$this->awardAchievement("diamond");
+									break;
+							}
+
+							$pk = new TakeItemEntityPacket;
+							$pk->eid = 0;
+							$pk->target = $entity->getID();
+							$this->dataPacket($pk);
+							$pk = new TakeItemEntityPacket;
+							$pk->eid = $this->getID();
+							$pk->target = $entity->getID();
+							Server::broadcastPacket($entity->getViewers(), $pk);
+							$this->inventory->addItem(clone $item);
+							$entity->kill();
+						}
+					}
 				}
 			}
+		}
+
+		if($this->nextChunkOrderRun-- <= 0){
+			$this->orderChunks();
+		}
+
+		if(count($this->loadQueue) > 0){
+			$this->sendNextChunk();
 		}
 
 		$this->timings->stopTiming();
@@ -1463,10 +1460,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 				$this->orderChunks();
-				$this->tasks[] = $this->server->getScheduler()->scheduleDelayedRepeatingTask(new CallbackTask([$this, "orderChunks"]), 10, 40);
 				$this->sendNextChunk();
-				$this->tasks[] = $this->chunkLoadTask = $this->server->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, "sendNextChunk"]), 1);
-
 				break;
 			case ProtocolInfo::ROTATE_HEAD_PACKET:
 				if($this->spawned === false or $this->dead === true){
@@ -2525,7 +2519,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->airTicks = 300;
 			$this->fallDistance = 0;
 			$this->orderChunks();
-			$this->chunkLoadTask->setNextRun(0);
 			$this->forceMovement = $pos;
 			$this->newPosition = $pos;
 
