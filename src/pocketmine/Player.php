@@ -1134,9 +1134,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->pitch = $this->pitch;
 					$pk->bodyYaw = $this->yaw;
 
-					foreach($this->hasSpawned as $player){
-						$player->dataPacket($pk);
-					}
+					Server::broadcastPacket($this->hasSpawned, $pk);
 				}
 			}
 		}

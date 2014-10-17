@@ -215,7 +215,9 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
 		if(isset($this->identifiers[$player])){
 			$identifier = $this->identifiers[$player];
-			$packet->encode();
+			if(!$packet->isEncoded){
+				$packet->encode();
+			}
 			$pk = new EncapsulatedPacket();
 			$pk->buffer = $packet->buffer;
 			$pk->reliability = 2;

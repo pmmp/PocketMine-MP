@@ -72,9 +72,7 @@ class PlayerInventory extends BaseInventory{
 			$pk->meta = $item->getDamage();
 			$pk->slot = $this->getHeldItemIndex();
 
-			foreach($this->getHolder()->getViewers() as $player){
-				$player->dataPacket(clone $pk);
-			}
+			Server::broadcastPacket($this->getHolder()->getViewers(), $pk);
 		}
 	}
 
@@ -133,6 +131,8 @@ class PlayerInventory extends BaseInventory{
 		$pk->item = $item->getID();
 		$pk->meta = $item->getDamage();
 		$pk->slot = 0;
+		$pk->isEncoded = true;
+		$pk->encode();
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
@@ -140,7 +140,7 @@ class PlayerInventory extends BaseInventory{
 				//$this->sendSlot($this->getHeldItemSlot());
 				$this->sendContents($player);
 			}else{
-				$player->dataPacket(clone $pk);
+				$player->dataPacket($pk);
 			}
 		}
 	}
@@ -289,6 +289,8 @@ class PlayerInventory extends BaseInventory{
 		$pk = new PlayerArmorEquipmentPacket;
 		$pk->eid = $this->getHolder()->getID();
 		$pk->slots = $slots;
+		$pk->encode();
+		$pk->isEncoded = true;
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
@@ -301,7 +303,7 @@ class PlayerInventory extends BaseInventory{
 				$pk2->slots = $armor;
 				$player->dataPacket($pk2);
 			}else{
-				$player->dataPacket(clone $pk);
+				$player->dataPacket($pk);
 			}
 		}
 	}

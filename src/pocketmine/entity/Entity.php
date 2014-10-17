@@ -273,6 +273,8 @@ abstract class Entity extends Location implements Metadatable{
 		$pk = new SetEntityDataPacket();
 		$pk->eid = $this->id;
 		$pk->metadata = $this->getData();
+		$pk->encode();
+		$pk->isEncoded = true;
 		foreach($player as $p){
 			if($p === $this){
 				/** @var Player $p */
@@ -546,9 +548,7 @@ abstract class Entity extends Location implements Metadatable{
 				];
 			}
 
-			foreach($this->hasSpawned as $player){
-				$player->dataPacket($pk);
-			}
+			Server::broadcastPacket($this->hasSpawned, $pk);
 		}
 
 		if(($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
@@ -560,9 +560,8 @@ abstract class Entity extends Location implements Metadatable{
 			$pk->entities = [
 				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 			];
-			foreach($this->hasSpawned as $player){
-				$player->dataPacket($pk);
-			}
+
+			Server::broadcastPacket($this->hasSpawned, $pk);
 
 			if($this instanceof Player){
 				$this->motionX = 0;

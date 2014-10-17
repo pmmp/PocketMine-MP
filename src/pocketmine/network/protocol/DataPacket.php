@@ -27,6 +27,7 @@ use pocketmine\utils\Binary;
 abstract class DataPacket extends \stdClass{
 	private $offset = 0;
 	public $buffer = "";
+	public $isEncoded = false;
 
 	abstract public function pid();
 

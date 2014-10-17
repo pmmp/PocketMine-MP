@@ -1692,8 +1692,10 @@ class Server{
 	 * @param DataPacket $packet
 	 */
 	public static function broadcastPacket(array $players, DataPacket $packet){
+		$packet->encode();
+		$packet->isEncoded = true;
 		foreach($players as $player){
-			$player->dataPacket(clone $packet);
+			$player->dataPacket($packet);
 		}
 	}
 

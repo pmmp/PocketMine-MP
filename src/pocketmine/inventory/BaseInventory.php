@@ -388,6 +388,8 @@ abstract class BaseInventory implements Inventory{
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$pk->slots[$i] = $this->getItem($i);
 		}
+		$pk->isEncoded = true;
+		$pk->encode();
 
 		foreach($target as $player){
 			if(($id = $player->getWindowId($this)) === -1 or $player->spawned !== true){
@@ -395,7 +397,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowid = $id;
-			$player->dataPacket(clone $pk);
+			$player->dataPacket($pk);
 		}
 	}
 
@@ -411,6 +413,8 @@ abstract class BaseInventory implements Inventory{
 		$pk = new ContainerSetSlotPacket;
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
+		$pk->encode();
+		$pk->isEncoded = true;
 
 		foreach($target as $player){
 			if(($id = $player->getWindowId($this)) === -1){
@@ -418,7 +422,7 @@ abstract class BaseInventory implements Inventory{
 				continue;
 			}
 			$pk->windowid = $id;
-			$player->dataPacket(clone $pk);
+			$player->dataPacket($pk);
 		}
 	}
 
