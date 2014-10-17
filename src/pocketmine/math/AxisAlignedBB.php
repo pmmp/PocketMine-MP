@@ -136,14 +136,13 @@ class AxisAlignedBB{
 	}
 
 	public function setBB(AxisAlignedBB $bb){
-		return new AxisAlignedBB(
-			min($this->minX, $bb->minX),
-			min($this->minY, $bb->minY),
-			min($this->minZ, $bb->minZ),
-			max($this->maxX, $bb->maxX),
-			max($this->maxY, $bb->maxY),
-			max($this->maxZ, $bb->maxZ)
-		);
+		$this->minX = $bb->minX;
+		$this->minY = $bb->minY;
+		$this->minZ = $bb->minZ;
+		$this->maxX = $bb->maxX;
+		$this->maxY = $bb->maxY;
+		$this->maxZ = $bb->maxZ;
+		return $this;
 	}
 
 	public function getOffsetBoundingBox($x, $y, $z){
