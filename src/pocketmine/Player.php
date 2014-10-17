@@ -695,8 +695,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				++$count;
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
-				$index = Level::chunkHash($chunkX, $chunkZ);
-				if(!isset($this->usedChunks[$index])){
+				if(!isset($this->usedChunks[$index = "$chunkX:$chunkZ"])){
 					$newOrder[$index] = abs($X) + abs($Z);
 				}
 				unset($lastChunk[$index]);
@@ -1057,11 +1056,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$oldPos = new Vector3($this->x, $this->y, $this->z);
-		$distance = $oldPos->distance($this->newPosition);
+		$distanceSquared = $oldPos->distanceSquared($this->newPosition);
 
 		$revert = false;
 
-		if($distance > 100){
+		if($distanceSquared > 10000){
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
@@ -1072,7 +1071,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		if(!$revert and $distance != 0){
+		if(!$revert and $distanceSquared != 0){
 			$dx = $this->newPosition->x - $this->x;
 			$dy = $this->newPosition->y - $this->y;
 			$dz = $this->newPosition->z - $this->z;
@@ -1153,8 +1152,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
 		}else{
 			$this->forceMovement = null;
-			if($this->nextChunkOrderRun > 4){
-				$this->nextChunkOrderRun = 4;
+			if($this->nextChunkOrderRun > 20){
+				$this->nextChunkOrderRun = 20;
 			}
 		}
 	}

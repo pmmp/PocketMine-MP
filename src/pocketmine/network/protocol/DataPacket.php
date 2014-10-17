@@ -36,7 +36,8 @@ abstract class DataPacket extends \stdClass{
 	abstract public function decode();
 
 	protected function reset(){
-		$this->setBuffer(chr($this->pid()));
+		$this->buffer = chr($this->pid());
+		$this->offset = 0;
 	}
 
 	public function setBuffer($buffer = ""){
