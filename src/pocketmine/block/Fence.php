@@ -21,12 +21,11 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\math\AxisAlignedBB;
 
 class Fence extends Transparent{
 	public function __construct(){
-		parent::__construct(self::FENCE, 0, "Fence");
+		parent::__construct(self::FENCE, 0, "Oak Fence");
 		$this->isFullBlock = false;
 		$this->hardness = 15;
 	}
@@ -57,7 +56,7 @@ class Fence extends Transparent{
 	}
 
 	public function canConnect(Block $block){
-		return ($block->getID() !== self::FENCE and $block->getID() !== self::FENCE_GATE) ? $block->isSolid : true;
+		return (!($block instanceof Fence) and !($block instanceof FenceGate)) ? $block->isSolid : true;
 	}
 
 }

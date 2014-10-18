@@ -144,6 +144,7 @@ class Block extends Position implements Metadatable{
 	const SUGARCANE_BLOCK = 83;
 
 	const FENCE = 85;
+	const FENCE_OAK = 85;
 	const PUMPKIN = 86;
 	const NETHERRACK = 87;
 	const SOUL_SAND = 88;
@@ -227,6 +228,12 @@ class Block extends Position implements Metadatable{
 	const CARPET = 171;
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
+
+	const FENCE_SPRUCE = 188;
+	const FENCE_BIRCH = 189;
+	const FENCE_JUNGLE = 190;
+	const FENCE_DARK_OAK = 191;
+	const FENCE_ACACIA = 192;
 
 	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
@@ -354,6 +361,10 @@ class Block extends Position implements Metadatable{
 		[Item::WOODEN_DOOR, 0],
 		[Item::TRAPDOOR, 0],
 		[Item::FENCE, 0],
+		[Item::FENCE_SPRUCE, 0],
+		[Item::FENCE_BIRCH, 0],
+		[Item::FENCE_DARK_OAK, 0],
+		[Item::FENCE_JUNGLE, 0],
 		[Item::FENCE_GATE, 0],
 		[Item::IRON_BARS, 0],
 		[Item::BED, 0],
@@ -662,6 +673,11 @@ class Block extends Position implements Metadatable{
 				self::CARPET => Carpet::class,
 				self::HARDENED_CLAY => HardenedClay::class,
 				self::COAL_BLOCK => Coal::class,
+
+				self::FENCE_SPRUCE => FenceSpruce::class,
+				self::FENCE_BIRCH => FenceBirch::class,
+				self::FENCE_DARK_OAK => FenceDarkOak::class,
+				self::FENCE_JUNGLE => FenceJungle::class,
 
 				self::PODZOL => Podzol::class,
 				self::BEETROOT_BLOCK => Beetroot::class,
