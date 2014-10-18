@@ -220,6 +220,11 @@ class Item{
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 
+	const FENCE_GATE_SPRUCE = 183;
+	const FENCE_GATE_BIRCH = 184;
+	const FENCE_GATE_JUNGLE = 185;
+	const FENCE_GATE_DARK_OAK = 186;
+	const FENCE_GATE_ACACIA = 187;
 	const FENCE_SPRUCE = 188;
 	const FENCE_BIRCH = 189;
 	const FENCE_JUNGLE = 190;

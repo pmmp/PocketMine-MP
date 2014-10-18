@@ -27,7 +27,7 @@ use pocketmine\Player;
 
 class FenceGate extends Transparent{
 	public function __construct($meta = 0){
-		parent::__construct(self::FENCE_GATE, $meta, "Fence Gate");
+		parent::__construct(self::FENCE_GATE, $meta, "Oak Fence Gate");
 		$this->isActivable = true;
 		if(($this->meta & 0x04) === 0x04){
 			$this->isFullBlock = true;

@@ -71,13 +71,18 @@ class CraftingManager{
 
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BED, 0, 1)))->addIngredient(Item::get(Item::WOOL, null, 3))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::CHEST, 0, 1)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 8)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, 0, 2)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_SPRUCE, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, 1, 2)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_BIRCH, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, 2, 2)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_JUNGLE, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, 3, 2)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_ACACIA, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, 4, 2)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_DARK_OAK, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, 5, 2)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::OAK, 2)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_SPRUCE, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::SPRUCE, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_BIRCH, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::BIRCH, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_JUNGLE, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::JUNGLE, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_ACACIA, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_DARK_OAK, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 2))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::OAK, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_SPRUCE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::SPRUCE, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_BIRCH, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::BIRCH, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_JUNGLE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::JUNGLE, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_DARK_OAK, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_ACACIA, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FURNACE, 0, 1)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 8)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::GLASS_PANE, 0, 16)))->addIngredient(Item::get(Item::GLASS, 0, 6)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::LADDER, 0, 2)))->addIngredient(Item::get(Item::STICK, 0, 7)));

@@ -229,6 +229,11 @@ class Block extends Position implements Metadatable{
 	const HARDENED_CLAY = 172;
 	const COAL_BLOCK = 173;
 
+	const FENCE_GATE_SPRUCE = 183;
+	const FENCE_GATE_BIRCH = 184;
+	const FENCE_GATE_JUNGLE = 185;
+	const FENCE_GATE_DARK_OAK = 186;
+	const FENCE_GATE_ACACIA = 187;
 	const FENCE_SPRUCE = 188;
 	const FENCE_BIRCH = 189;
 	const FENCE_JUNGLE = 190;
@@ -366,6 +371,11 @@ class Block extends Position implements Metadatable{
 		[Item::FENCE_DARK_OAK, 0],
 		[Item::FENCE_JUNGLE, 0],
 		[Item::FENCE_GATE, 0],
+		[Item::FENCE_GATE_BIRCH, 0],
+		[Item::FENCE_GATE_SPRUCE, 0],
+		[Item::FENCE_GATE_DARK_OAK, 0],
+		[Item::FENCE_GATE_JUNGLE, 0],
+		[Item::FENCE_GATE_ACACIA, 0],
 		[Item::IRON_BARS, 0],
 		[Item::BED, 0],
 		[Item::BOOKSHELF, 0],
@@ -674,10 +684,16 @@ class Block extends Position implements Metadatable{
 				self::HARDENED_CLAY => HardenedClay::class,
 				self::COAL_BLOCK => Coal::class,
 
+				self::FENCE_GATE_SPRUCE => FenceGateSpruce::class,
+				self::FENCE_GATE_BIRCH => FenceGateBirch::class,
+				self::FENCE_GATE_JUNGLE => FenceGateJungle::class,
+				self::FENCE_GATE_DARK_OAK => FenceGateDarkOak::class,
+				self::FENCE_GATE_ACACIA => FenceGateAcacia::class,
 				self::FENCE_SPRUCE => FenceSpruce::class,
 				self::FENCE_BIRCH => FenceBirch::class,
 				self::FENCE_DARK_OAK => FenceDarkOak::class,
 				self::FENCE_JUNGLE => FenceJungle::class,
+				self::FENCE_ACACIA => FenceAcacia::class,
 
 				self::PODZOL => Podzol::class,
 				self::BEETROOT_BLOCK => Beetroot::class,
