@@ -643,7 +643,7 @@ class Server{
 		$result = $this->getPlayerExact($name);
 
 		if($result === null){
-			$result = new OfflinePlayer($this, $name);
+			return new OfflinePlayer($this, $name);
 		}
 
 		return $result;
