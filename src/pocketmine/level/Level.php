@@ -307,8 +307,15 @@ class Level implements ChunkManager, Metadatable{
 		if($this->getAutoSave()){
 			$this->save();
 		}
-		$this->unloadChunks();
+
+		foreach($this->chunks as $chunk){
+			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+		}
+
+		$this->server->getGenerationManager()->closeLevel($this);
 		$this->provider->close();
+		$this->provider = null;
+		$this->blockMetadata = null;
 	}
 
 	/**
@@ -355,10 +362,12 @@ class Level implements ChunkManager, Metadatable{
 				$player->teleport($this->server->getDefaultLevel()->getSafeSpawn());
 			}
 		}
-		$this->close();
+
 		if($this === $defaultLevel){
 			$this->server->setDefaultLevel(null);
 		}
+
+		$this->close();
 
 		return true;
 	}
@@ -2071,18 +2080,18 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function setMetadata($metadataKey, MetadataValue $metadataValue){
-		$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $metadataValue);
+		$this->server->getLevelMetadata()->setMetadata($this, $metadataKey, $metadataValue);
 	}
 
 	public function getMetadata($metadataKey){
-		return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
+		return $this->server->getLevelMetadata()->getMetadata($this, $metadataKey);
 	}
 
 	public function hasMetadata($metadataKey){
-		return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
+		return $this->server->getLevelMetadata()->hasMetadata($this, $metadataKey);
 	}
 
 	public function removeMetadata($metadataKey, Plugin $plugin){
-		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
+		$this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $plugin);
 	}
 }
