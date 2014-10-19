@@ -1189,6 +1189,7 @@ abstract class Entity extends Location implements Metadatable{
 				$level->removeEntity($this);
 			}
 			$this->despawnFromAll();
+			$this->level = null;
 		}
 	}
 

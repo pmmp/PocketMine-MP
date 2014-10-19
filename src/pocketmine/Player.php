@@ -2291,6 +2291,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->windowIndex = [];
 			$this->usedChunks = [];
 			$this->loadQueue = [];
+			$this->spawnPosition = null;
 			unset($this->buffer);
 		}
 
