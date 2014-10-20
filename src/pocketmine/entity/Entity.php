@@ -955,16 +955,14 @@ abstract class Entity extends Location implements Metadatable{
 			}else{
 
 				if($this instanceof Player){
-					if(($this->onGround and $movY != 0) or (!$this->onGround and $movY < 0)){
+					if(!$this->onGround or $movY != 0){
 						$bb = clone $this->boundingBox;
-						$bb->maxY = $bb->minY + 0.5;
+						$bb->maxY = $bb->minY + 1;
 						if(count($this->level->getCollisionBlocks($bb->expand(0.01, 0.01, 0.01))) > 0){
-							$isColliding = true;
+							$this->onGround = true;
 						}else{
-							$isColliding = false;
+							$this->onGround = false;
 						}
-
-						$this->onGround = ($movY <= 0 and $isColliding);
 					}
 				}else{
 					$this->onGround = ($movY != $dy and $movY < 0);

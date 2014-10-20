@@ -1152,6 +1152,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->teleport = true;
 			$this->directDataPacket($pk);
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
+			$this->newPosition = null;
 		}else{
 			$this->forceMovement = null;
 			if($this->nextChunkOrderRun > 20){

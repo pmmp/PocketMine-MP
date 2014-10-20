@@ -1105,7 +1105,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		if(!($player instanceof Player) or $player->isSurvival() === 0){
+		if(!($player instanceof Player) or $player->isSurvival()){
 			foreach($drops as $drop){
 				if($drop[2] > 0){
 					$this->dropItem($vector->add(0.5, 0.5, 0.5), Item::get(...$drop));
