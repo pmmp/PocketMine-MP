@@ -205,7 +205,7 @@ class Explosion{
 				$tnt->spawnToAll();
 			}elseif(mt_rand(0, 100) < $yield){
 				foreach($block->getDrops($air) as $drop){
-					$this->level->dropItem($block, Item::get(...$drop));
+					$this->level->dropItem($block->add(0.5, 0.5, 0.5), Item::get(...$drop));
 				}
 			}
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
