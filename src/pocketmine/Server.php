@@ -643,7 +643,7 @@ class Server{
 		$result = $this->getPlayerExact($name);
 
 		if($result === null){
-			$result = new OfflinePlayer($this, $name);
+			return new OfflinePlayer($this, $name);
 		}
 
 		return $result;
@@ -1083,7 +1083,7 @@ class Server{
 			return false;
 		}
 
-		$seed = $seed === null ? Binary::readInt(Utils::getRandomBytes(4, false)) : (int) $seed;
+		$seed = $seed === null ? Binary::readInt(@Utils::getRandomBytes(4, false)) : (int) $seed;
 
 		if($generator !== null and class_exists($generator) and is_subclass_of($generator, Generator::class)){
 			$generator = new $generator($options);
@@ -1488,7 +1488,7 @@ class Server{
 			"level-type" => "DEFAULT",
 			"enable-query" => true,
 			"enable-rcon" => false,
-			"rcon.password" => substr(base64_encode(Utils::getRandomBytes(20, false)), 3, 10),
+			"rcon.password" => substr(base64_encode(@Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
 		]);
 
@@ -1534,7 +1534,7 @@ class Server{
 		}
 
 		$this->logger->info("Starting Minecraft PE server on " . ($this->getIp() === "" ? "*" : $this->getIp()) . ":" . $this->getPort());
-		define("BOOTUP_RANDOM", Utils::getRandomBytes(16));
+		define("BOOTUP_RANDOM", @Utils::getRandomBytes(16));
 		$this->serverID = Binary::readLong(substr(Utils::getUniqueID(true, $this->getIp() . $this->getPort()), 0, 8));
 
 		$this->addInterface($this->mainInterface = new RakLibInterface($this));

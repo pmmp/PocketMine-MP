@@ -794,10 +794,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @return boolean
 	 */
 	public function sleepOn(Vector3 $pos){
-		foreach($this->level->getPlayers() as $p){
-			if($p->sleeping instanceof Vector3){
-				if($pos->distance($p->sleeping) <= 0.1){
-					return false;
+		foreach($this->level->getNearbyEntities($this->boundingBox->grow(2, 1, 2), $this) as $p){
+			if($p instanceof Player){
+				if($p->sleeping instanceof Vector3){
+					if($pos->distance($p->sleeping) <= 0.1){
+						return false;
+					}
 				}
 			}
 		}
@@ -1150,6 +1152,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->teleport = true;
 			$this->directDataPacket($pk);
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
+			$this->newPosition = null;
 		}else{
 			$this->forceMovement = null;
 			if($this->nextChunkOrderRun > 20){
@@ -2273,9 +2276,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
+			foreach($this->windowIndex as $window){
+				$this->removeWindow($window);
+			}
+
 			$this->interface->close($this, $reason);
 			$this->level->freeAllChunks($this);
-
 
 			parent::close();
 
@@ -2284,6 +2290,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if(isset($ev) and $this->username != "" and $this->spawned !== false and $ev->getQuitMessage() != ""){
 				$this->server->broadcastMessage($ev->getQuitMessage());
 			}
+
 			$this->server->getPluginManager()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 			$this->spawned = false;
 			$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged out due to " . str_replace(["\n", "\r"], [" ", ""], $reason));
@@ -2291,6 +2298,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->windowIndex = [];
 			$this->usedChunks = [];
 			$this->loadQueue = [];
+			$this->spawnPosition = null;
 			unset($this->buffer);
 		}
 
@@ -2513,6 +2521,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		if(parent::teleport($pos, $yaw, $pitch)){
+
+			foreach($this->windowIndex as $window){
+				if($window === $this->inventory){
+					continue;
+				}
+				$this->removeWindow($window);
+			}
+
 			$this->airTicks = 300;
 			$this->fallDistance = 0;
 			$this->orderChunks();

@@ -198,6 +198,7 @@ class RegionLoader{
 	public function close(){
 		$this->writeLocationTable();
 		fclose($this->filePointer);
+		$this->levelProvider = null;
 	}
 
 	public function doSlowCleanUp(){
