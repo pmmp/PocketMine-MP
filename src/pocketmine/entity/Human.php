@@ -226,4 +226,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $d;
 	}
 
+	public function close(){
+		if(!$this->closed){
+			var_dump("CLOSED");
+			foreach($this->getInventory()->getViewers() as $player){
+				$this->getInventory()->close($player);
+			}
+			$this->inventory = null;
+			parent::close();
+		}
+	}
+
 }

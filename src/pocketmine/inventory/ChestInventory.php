@@ -21,6 +21,7 @@
 
 namespace pocketmine\inventory;
 
+use pocketmine\level\Level;
 use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -48,7 +49,9 @@ class ChestInventory extends ContainerInventory{
 			$pk->z = $this->getHolder()->getZ();
 			$pk->case1 = 1;
 			$pk->case2 = 2;
-			Server::broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
+			if(($level = $this->getHolder()->getLevel()) instanceof Level){
+				Server::broadcastPacket($level->getUsingChunk($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4), $pk);
+			}
 		}
 	}
 
@@ -60,7 +63,9 @@ class ChestInventory extends ContainerInventory{
 			$pk->z = $this->getHolder()->getZ();
 			$pk->case1 = 1;
 			$pk->case2 = 0;
-			Server::broadcastPacket($this->getHolder()->getLevel()->getPlayers(), $pk);
+			if(($level = $this->getHolder()->getLevel()) instanceof Level){
+				Server::broadcastPacket($level->getUsingChunk($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4), $pk);
+			}
 		}
 		parent::onClose($who);
 	}
