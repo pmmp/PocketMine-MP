@@ -122,7 +122,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected $ySize = 0;
 	protected $stepHeight = 0;
-	public $keepMovement = true;
+	public $keepMovement = false;
 
 	public $fallDistance;
 	public $ticksLived;
@@ -777,12 +777,11 @@ abstract class Entity extends Location implements Metadatable{
 			return true;
 		}
 
-		//if($this->inBlock){ //TODO: noclip
-		//	$this->boundingBox->offset($dx, $dy, $dz);
-		//	$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		//	$this->y = $this->boundingBox->minY/* + $this->height*/;
-		//	$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-		//}else{
+		if($this->keepMovement){
+			$this->boundingBox->offset($dx, $dy, $dz);
+			$pos = new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY - $this->ySize, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2);
+			$this->setPosition($pos);
+		}else{
 
 			Timings::$entityMoveTimer->startTiming();
 
@@ -841,7 +840,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			$this->boundingBox->offset(0, $dy, 0);
 
-			if(!$this->keepMovement and $movY != $dy){
+			if($movY != $dy){
 				$dx = 0;
 				$dy = 0;
 				$dz = 0;
@@ -855,7 +854,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			$this->boundingBox->offset($dx, 0, 0);
 
-			if(!$this->keepMovement and $movX != $dx){
+			if($movX != $dx){
 				$dx = 0;
 				$dy = 0;
 				$dz = 0;
@@ -867,7 +866,7 @@ abstract class Entity extends Location implements Metadatable{
 
 			$this->boundingBox->offset(0, 0, $dz);
 
-			if(!$this->keepMovement and $movZ != $dz){
+			if($movZ != $dz){
 				$dx = 0;
 				$dy = 0;
 				$dz = 0;
@@ -893,7 +892,7 @@ abstract class Entity extends Location implements Metadatable{
 				}
 
 				$this->boundingBox->offset(0, $dy, 0);
-				if(!$this->keepMovement and $movY != $dy){
+				if($movY != $dy){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
@@ -904,7 +903,7 @@ abstract class Entity extends Location implements Metadatable{
 				}
 
 				$this->boundingBox->offset($dx, 0, 0);
-				if(!$this->keepMovement and $movX != $dx){
+				if($movX != $dx){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
@@ -915,13 +914,13 @@ abstract class Entity extends Location implements Metadatable{
 				}
 
 				$this->boundingBox->offset(0, 0, $dz);
-				if(!$this->keepMovement and $movZ != $dz){
+				if($movZ != $dz){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
 				}
 
-				if(!$this->keepMovement and $movY != $dy){
+				if($movY != $dy){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
@@ -990,7 +989,7 @@ abstract class Entity extends Location implements Metadatable{
 			Timings::$entityMoveTimer->stopTiming();
 
 			return $result;
-		//}
+		}
 	}
 
 	protected function checkBlockCollision(){
