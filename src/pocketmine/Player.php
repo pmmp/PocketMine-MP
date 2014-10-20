@@ -2424,6 +2424,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
+				$message = $this->getName() . " blew up";
+				break;
+			
 			case EntityDamageEvent::CAUSE_MAGIC:
 			case EntityDamageEvent::CAUSE_CUSTOM:
 
