@@ -49,7 +49,7 @@ abstract class Tile extends Position{
 	public $z;
 	public $attach;
 	public $metadata;
-	public $closed;
+	public $closed = false;
 	public $namedtag;
 	protected $lastUpdate;
 	protected $server;
@@ -69,7 +69,6 @@ abstract class Tile extends Position{
 		$this->chunk = $chunk;
 		$this->setLevel($chunk->getProvider()->getLevel());
 		$this->namedtag = $nbt;
-		$this->closed = false;
 		$this->name = "";
 		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
@@ -112,7 +111,7 @@ abstract class Tile extends Position{
 	}
 
 	public function close(){
-		if($this->closed === false){
+		if(!$this->closed){
 			$this->closed = true;
 			unset($this->level->updateTiles[$this->id]);
 			if($this->chunk instanceof FullChunk){

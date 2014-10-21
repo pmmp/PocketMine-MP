@@ -170,7 +170,7 @@ class Chunk extends BaseChunk{
 		$entities = [];
 
 		foreach($this->getEntities() as $entity){
-			if(!($entity instanceof Player) and $entity->closed !== true){
+			if(!($entity instanceof Player) and !$entity->closed){
 				$entity->saveNBT();
 				$entities[] = $entity->namedtag;
 			}
