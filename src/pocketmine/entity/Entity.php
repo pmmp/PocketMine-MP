@@ -1175,7 +1175,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function close(){
-		if($this->closed === false){
+		if(!$this->closed){
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
 			unset($this->level->updateEntities[$this->id]);
