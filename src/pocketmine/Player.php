@@ -863,7 +863,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$time = $this->level->getTime() % Level::TIME_FULL;
 
-			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);{
+			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
 				foreach($this->level->getPlayers() as $p){
 					if($p->sleeping === false){
 						return;
@@ -2424,6 +2424,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			case EntityDamageEvent::CAUSE_BLOCK_EXPLOSION:
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
+				$message = $this->getName() . " blew up";
+				break;
+			
 			case EntityDamageEvent::CAUSE_MAGIC:
 			case EntityDamageEvent::CAUSE_CUSTOM:
 

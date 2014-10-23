@@ -1988,7 +1988,7 @@ class Server{
 	}
 
 	public function __debugInfo(){
-		return get_class($this);
+		return [];
 	}
 
 	private function tickProcessor(){
