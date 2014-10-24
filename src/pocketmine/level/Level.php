@@ -433,7 +433,7 @@ class Level implements ChunkManager, Metadatable{
 		if($this->stopTime == true){
 			return;
 		}else{
-			$this->time += 2.5;
+			$this->time += 1.25;
 		}
 	}
 
