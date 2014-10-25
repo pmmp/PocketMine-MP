@@ -56,7 +56,7 @@ class FallingBlock extends Entity{
 		}
 		elseif(isset($this->namedtag->Tile)){
 			$this->blockId = $this->namedtag["Tile"];
-			$this->namedtag["TileID"] = $this->blockId;
+			$this->namedtag["TileID"] = new Int("TileID", $this->blockId);
 		}
 
 		if($this->blockId === 0){
