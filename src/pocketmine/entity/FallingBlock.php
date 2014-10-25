@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
@@ -44,13 +45,18 @@ class FallingBlock extends Entity{
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 	protected $blockId = 0;
+	protected $damage;
 
 	public $canCollide = false;
 
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "FallingSand");
-		if(isset($this->namedtag->Tile)){
+		if(isset($this->namedtag->TileID)){
+			$this->blockId = $this->namedtag["TileID"];
+		}
+		elseif(isset($this->namedtag->Tile)){
 			$this->blockId = $this->namedtag["Tile"];
+			$this->namedtag["TileID"] = $this->blockId;
 		}
 
 		if($this->blockId === 0){
@@ -106,9 +112,9 @@ class FallingBlock extends Entity{
 				$this->kill();
 				$block = $this->level->getBlock($pos);
 				if(!$block->isFullBlock){
-					$this->getLevel()->dropItem($this, Item::get($this->getBlock(), 0, 1));
+					$this->getLevel()->dropItem($this, Item::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), 0)));
+					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
 					}
@@ -125,9 +131,13 @@ class FallingBlock extends Entity{
 	public function getBlock(){
 		return $this->blockId;
 	}
+	public function getDamage(){
+		return $this->damage;
+	}
 
 	public function saveNBT(){
-		$this->namedtag->Tile = new Byte("Tile", $this->blockId);
+		$this->namedtag->TileID = new Int("TileID", $this->blockId);
+		$this->namedtag->Data = new Byte("Data", $this->damage);
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
