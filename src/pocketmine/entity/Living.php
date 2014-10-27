@@ -65,7 +65,7 @@ abstract class Living extends Entity implements Damageable{
 	public function hasLineOfSight(Entity $entity){
 		//TODO: head height
 		return true;
-		//return $this->getLevel()->rayTraceBlocks(new Vector3($this->x, $this->y + $this->height, $this->z), new Vector3($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
@@ -99,7 +99,7 @@ abstract class Living extends Entity implements Damageable{
 		$f = sqrt($x ** 2 + $z ** 2);
 		$base = 0.4;
 
-		$motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
+		$motion = Vector3::createVector($this->motionX, $this->motionY, $this->motionZ);
 
 		$motion->x /= 2;
 		$motion->y /= 2;

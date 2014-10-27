@@ -38,13 +38,10 @@ class Cake extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
 
 		$f = (1 + $this->getDamage() * 2) / 16;
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + $f,
 			$this->y,
 			$this->z + 0.0625,

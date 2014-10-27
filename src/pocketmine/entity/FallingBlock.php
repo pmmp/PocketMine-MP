@@ -27,6 +27,7 @@ use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
@@ -81,12 +82,12 @@ class FallingBlock extends Entity{
 
 		if(!$this->dead){
 			if($this->ticksLived === 1){
-				$block = $this->level->getBlock($this->floor());
+				$block = $this->level->getBlock($pos = Vector3::createVector($this->x, $this->y, $this->z)->floor());
 				if($block->getID() != $this->blockId){
 					$this->kill();
 					return true;
 				}
-				$this->level->setBlock($this->floor(), Block::get(0), true);
+				$this->level->setBlock($pos, Block::get(0), true);
 
 			}
 
@@ -100,7 +101,7 @@ class FallingBlock extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
-			$pos = $this->floor();
+			$pos = Vector3::createVector($this->x, $this->y, $this->z)->floor();
 
 			if($this->onGround){
 				$this->kill();

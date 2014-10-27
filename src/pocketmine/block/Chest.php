@@ -43,11 +43,8 @@ class Chest extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + 0.0625,
 			$this->y,
 			$this->z + 0.0625,

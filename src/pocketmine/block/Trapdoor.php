@@ -38,9 +38,6 @@ class Trapdoor extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
 
 		$damage = $this->getDamage();
 
@@ -49,7 +46,7 @@ class Trapdoor extends Transparent{
 		$bb = null;
 
 		if(($damage & 0x08) > 0){
-			$bb = new AxisAlignedBB(
+			$bb = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y + 1 - $f,
 				$this->z,
@@ -58,7 +55,7 @@ class Trapdoor extends Transparent{
 				$this->z + 1
 			);
 		}else{
-			$bb = new AxisAlignedBB(
+			$bb = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z,
@@ -70,7 +67,7 @@ class Trapdoor extends Transparent{
 
 		if(($damage & 0x04) > 0){
 			if(($damage & 0x03) === 0){
-				$bb = new AxisAlignedBB(
+				$bb = AxisAlignedBB::getBoundingBoxFromPool(
 					$this->x,
 					$this->y,
 					$this->z + 1 - $f,
@@ -79,7 +76,7 @@ class Trapdoor extends Transparent{
 					$this->z + 1
 				);
 			}elseif(($damage & 0x03) === 1){
-				$bb = new AxisAlignedBB(
+				$bb = AxisAlignedBB::getBoundingBoxFromPool(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -88,7 +85,7 @@ class Trapdoor extends Transparent{
 					$this->z + $f
 				);
 			}if(($damage & 0x03) === 2){
-				$bb = new AxisAlignedBB(
+				$bb = AxisAlignedBB::getBoundingBoxFromPool(
 					$this->x + 1 - $f,
 					$this->y,
 					$this->z,
@@ -97,7 +94,7 @@ class Trapdoor extends Transparent{
 					$this->z + 1
 				);
 			}if(($damage & 0x03) === 3){
-				$bb = new AxisAlignedBB(
+				$bb = AxisAlignedBB::getBoundingBoxFromPool(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -108,7 +105,7 @@ class Trapdoor extends Transparent{
 			}
 		}
 
-		return $this->boundingBox = $bb;
+		return $bb;
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

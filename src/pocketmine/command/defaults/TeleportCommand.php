@@ -98,7 +98,7 @@ class TeleportCommand extends VanillaCommand{
 			$x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
 			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
 			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos]);
-			$target->teleport(new Vector3($x, $y, $z));
+			$target->teleport(Vector3::createVector($x, $y, $z));
 			Command::broadcastCommandMessage($sender, "Teleported " . $target->getDisplayName() . " to " . round($x, 2) . ", " . round($y, 2) . ", " . round($z, 2));
 
 			return true;

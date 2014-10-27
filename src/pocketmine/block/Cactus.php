@@ -43,11 +43,8 @@ class Cactus extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + 0.0625,
 			$this->y,
 			$this->z + 0.0625,
@@ -82,7 +79,7 @@ class Cactus extends Transparent{
 			if($this->getSide(0)->getID() !== self::CACTUS){
 				if($this->meta == 0x0F){
 					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+						$b = $this->getLevel()->getBlock(Vector3::createVector($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
 							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Cactus()));
 							if(!$ev->isCancelled()){

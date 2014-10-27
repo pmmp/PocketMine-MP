@@ -31,11 +31,8 @@ class SoulSand extends Solid{
 	}
 
 	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y,
 			$this->z,

@@ -1057,8 +1057,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
-		$oldPos = new Vector3($this->x, $this->y, $this->z);
-		$distanceSquared = $oldPos->distanceSquared($this->newPosition);
+		$distanceSquared = $this->newPosition->distanceSquared($this);
 
 		$revert = false;
 
@@ -1558,7 +1557,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
-				$blockVector = new Vector3($packet->x, $packet->y, $packet->z);
+				$blockVector = Vector3::createVector($packet->x, $packet->y, $packet->z);
 
 				$this->craftingType = 0;
 
@@ -1718,7 +1717,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$this->craftingType = 0;
 
-				$vector = new Vector3($packet->x, $packet->y, $packet->z);
+				$vector = Vector3::createVector($packet->x, $packet->y, $packet->z);
 
 
 				if($this->isCreative()){
@@ -2185,7 +2184,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$this->craftingType = 0;
 
-				$t = $this->level->getTile($v = new Vector3($packet->x, $packet->y, $packet->z));
+				$t = $this->level->getTile(Vector3::createVector($packet->x, $packet->y, $packet->z));
 				if($t instanceof Sign){
 					$nbt = new NBT(NBT::LITTLE_ENDIAN);
 					$nbt->read($packet->namedtag);
@@ -2193,7 +2192,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($nbt["id"] !== Tile::SIGN){
 						$t->spawnTo($this);
 					}else{
-						$ev = new SignChangeEvent($this->level->getBlock($v), $this, [
+						$ev = new SignChangeEvent($t->getBlock(), $this, [
 							$nbt["Text1"], $nbt["Text2"], $nbt["Text3"], $nbt["Text4"]
 						]);
 

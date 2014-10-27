@@ -50,6 +50,8 @@ use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -2110,6 +2112,15 @@ class Server{
 		}
 
 		$this->generationManager->process();
+
+
+		if(($this->tickCounter % 600) === 0){
+			Vector3::clearVectors();
+			AxisAlignedBB::clearBoundingBoxes();
+		}else{
+			Vector3::clearVectorList();
+			AxisAlignedBB::clearBoundingBoxPool();
+		}
 
 		Timings::$serverTickTimer->stopTiming();
 

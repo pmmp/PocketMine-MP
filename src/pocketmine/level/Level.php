@@ -742,10 +742,12 @@ class Level implements ChunkManager, Metadatable{
 
 		$collides = [];
 
-		for($z = $minZ; $z < $maxZ; ++$z){
-			for($x = $minX; $x < $maxX; ++$x){
-				for($y = $minY - 1; $y < $maxY; ++$y){
-					$block = $this->getBlock(new Vector3($x, $y, $z));
+		$v = Vector3::createVector(0, 0, 0);
+
+		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
+			for($v->x = $minX; $v->x < $maxX; ++$v->x){
+				for($v->y = $minY - 1; $v->y < $maxY; ++$v->y){
+					$block = $this->getBlock($v);
 					if(!($block instanceof Air)){
 						$block->collidesWithBB($bb, $collides);
 					}
@@ -787,11 +789,12 @@ class Level implements ChunkManager, Metadatable{
 		$maxZ = Math::floorFloat($bb->maxZ + 1);
 
 		$collides = [];
+		$v = Vector3::createVector(0, 0, 0);
 
-		for($z = $minZ; $z < $maxZ; ++$z){
-			for($x = $minX; $x < $maxX; ++$x){
-				for($y = $minY - 1; $y < $maxY; ++$y){
-					$block = $this->getBlock(new Vector3($x, $y, $z));
+		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
+			for($v->x = $minX; $v->x < $maxX; ++$v->x){
+				for($v->y = $minY - 1; $v->y < $maxY; ++$v->y){
+					$block = $this->getBlock($v);
 					if(!($block instanceof Air)){
 						$block->collidesWithBB($bb, $collides);
 					}
@@ -801,7 +804,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($entities){
 			foreach($this->getCollidingEntities($bb->grow(0.25, 0.25, 0.25), $entity) as $ent){
-				$collides[] = clone $ent->boundingBox;
+				$collides[] = AxisAlignedBB::cloneBoundingBoxFromPool($ent->boundingBox);
 			}
 		}
 
@@ -819,7 +822,7 @@ class Level implements ChunkManager, Metadatable{
 				$y2 = (int) $pos2->y;
 				$z2 = (int) $pos2->z;
 
-				$block = $this->getBlock(new Vector3($x1, $y1, $z1));
+				$block = $this->getBlock(Vector3::createVector($x1, $y1, $z1));
 
 				if(!$flag1 or $block->getBoundingBox() !== null){
 					$ob = $block->calculateIntercept($pos1, $pos2);
@@ -976,7 +979,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 				if(!$ev->isCancelled()){
 					$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
+					foreach($this->getNearbyEntities(AxisAlignedBB::getBoundingBoxFromPool($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
 						$entity->scheduleUpdate();
 					}
 				}
@@ -991,7 +994,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int     $delay
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, $delay = 10){
-		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
+		$motion = $motion === null ? Vector3::createVector(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
 		if($item->getID() > 0 and $item->getCount() > 0){
 			$itemEntity = new DroppedItem($this->getChunk($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
@@ -1074,7 +1077,7 @@ class Level implements ChunkManager, Metadatable{
 		$level = $target->getLevel();
 
 		if($level instanceof Level){
-			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
+			$above = $level->getBlock(Vector3::createVector($target->x, $target->y + 1, $target->z));
 			if($above instanceof Block){
 				if($above->getID() === Item::FIRE){
 					$level->setBlock($above, new Air(), true);
@@ -1258,7 +1261,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Gets the list of all the entitites in this level
+	 * Gets the list of all the entities in this level
 	 *
 	 * @return Entity[]
 	 */
@@ -1923,27 +1926,26 @@ class Level implements ChunkManager, Metadatable{
 			$x = Math::floorFloat($spawn->x);
 			$y = Math::floorFloat($spawn->y);
 			$z = Math::floorFloat($spawn->z);
-			for(; $y > 0; --$y){
-				$v = new Vector3($x, $y, $z);
+			$v = Vector3::createVector($x, $y, $z);
+			for(; $v->y > 0; --$v->y){
 				$b = $this->getBlock($v->getSide(0));
-				if($b === false){
+				if($b === null){
 					return $spawn;
 				}elseif(!($b instanceof Air)){
 					break;
 				}
 			}
-			for(; $y < 128; ++$y){
-				$v = new Vector3($x, $y, $z);
+			for(; $v->y < 128; ++$v->y){
 				if($this->getBlock($v->getSide(1)) instanceof Air){
 					if($this->getBlock($v) instanceof Air){
-						return new Position($spawn->x, $y === Math::floorFloat($spawn->y) ? $spawn->y : $y, $spawn->z, $this);
+						return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
 					}
 				}else{
-					++$y;
+					++$v->y;
 				}
 			}
 
-			return new Position($spawn->x, $y, $spawn->z, $this);
+			return new Position($spawn->x, $v->y, $spawn->z, $this);
 		}
 
 		return false;

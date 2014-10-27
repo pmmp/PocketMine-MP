@@ -27,6 +27,10 @@ namespace pocketmine\math;
  */
 class Vector3{
 
+	/** @var Vector3[] */
+	private static $vectorList = [];
+	private static $nextVector = 0;
+
 	const SIDE_DOWN = 0;
 	const SIDE_UP = 1;
 	const SIDE_NORTH = 2;
@@ -42,6 +46,38 @@ class Vector3{
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
+	}
+
+	public static function clearVectors(){
+		self::$nextVector = 0;
+		self::$vectorList = [];
+	}
+
+	public static function clearVectorList(){
+		self::$nextVector = 0;
+	}
+
+	/**
+	 * @param $x
+	 * @param $y
+	 * @param $z
+	 *
+	 * @return Vector3
+	 */
+	public static function createVector($x, $y, $z){
+		if(self::$nextVector >= count(self::$vectorList)){
+			self::$vectorList[] = new Vector3(0, 0, 0);
+		}
+
+		return self::$vectorList[self::$nextVector++]->setComponents($x, $y, $z);
+	}
+
+	public static function cloneVector(Vector3 $vector){
+		if(self::$nextVector >= count(self::$vectorList)){
+			self::$vectorList[] = new Vector3(0, 0, 0);
+		}
+
+		return self::$vectorList[self::$nextVector++]->setComponents($vector->x, $vector->y, $vector->z);
 	}
 
 	public function getX(){
@@ -97,9 +133,9 @@ class Vector3{
 	 */
 	public function add($x, $y = 0, $z = 0){
 		if($x instanceof Vector3){
-			return new Vector3($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
+			return self::createVector($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
 		}else{
-			return new Vector3($this->x + $x, $this->y + $y, $this->z + $z);
+			return self::createVector($this->x + $x, $this->y + $y, $this->z + $z);
 		}
 	}
 
@@ -119,15 +155,15 @@ class Vector3{
 	}
 
 	public function multiply($number){
-		return new Vector3($this->x * $number, $this->y * $number, $this->z * $number);
+		return self::createVector($this->x * $number, $this->y * $number, $this->z * $number);
 	}
 
 	public function divide($number){
-		return new Vector3($this->x / $number, $this->y / $number, $this->z / $number);
+		return self::createVector($this->x / $number, $this->y / $number, $this->z / $number);
 	}
 
 	public function ceil(){
-		return new Vector3((int) ($this->x + 1), (int) ($this->y + 1), (int) ($this->z + 1));
+		return self::createVector((int) ($this->x + 1), (int) ($this->y + 1), (int) ($this->z + 1));
 	}
 
 	public function floor(){
@@ -148,17 +184,17 @@ class Vector3{
 	public function getSide($side, $step = 1){
 		switch((int) $side){
 			case self::SIDE_DOWN:
-				return new Vector3($this->x, $this->y - $step, $this->z);
+				return self::createVector($this->x, $this->y - $step, $this->z);
 			case self::SIDE_UP:
-				return new Vector3($this->x, $this->y + $step, $this->z);
+				return self::createVector($this->x, $this->y + $step, $this->z);
 			case self::SIDE_NORTH:
-				return new Vector3($this->x, $this->y, $this->z - $step);
+				return self::createVector($this->x, $this->y, $this->z - $step);
 			case self::SIDE_SOUTH:
-				return new Vector3($this->x, $this->y, $this->z + $step);
+				return self::createVector($this->x, $this->y, $this->z + $step);
 			case self::SIDE_WEST:
-				return new Vector3($this->x - $step, $this->y, $this->z);
+				return self::createVector($this->x - $step, $this->y, $this->z);
 			case self::SIDE_EAST:
-				return new Vector3($this->x + $step, $this->y, $this->z);
+				return self::createVector($this->x + $step, $this->y, $this->z);
 			default:
 				return $this;
 		}
@@ -218,7 +254,7 @@ class Vector3{
 			return $this->divide($len);
 		}
 
-		return new Vector3(0, 0, 0);
+		return self::createVector(0, 0, 0);
 	}
 
 	public function dot(Vector3 $v){
@@ -226,7 +262,7 @@ class Vector3{
 	}
 
 	public function cross(Vector3 $v){
-		return new Vector3(
+		return self::createVector(
 			$this->y * $v->z - $this->z * $v->y,
 			$this->z * $v->x - $this->x * $v->z,
 			$this->x * $v->y - $this->y * $v->x
@@ -256,7 +292,7 @@ class Vector3{
 		if($f < 0 or $f > 1){
 			return null;
 		}else{
-			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
+			return self::createVector($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
 		}
 	}
 
@@ -283,7 +319,7 @@ class Vector3{
 		if($f < 0 or $f > 1){
 			return null;
 		}else{
-			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
+			return self::createVector($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
 		}
 	}
 
@@ -310,8 +346,22 @@ class Vector3{
 		if($f < 0 or $f > 1){
 			return null;
 		}else{
-			return new Vector3($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
+			return self::createVector($this->x + $xDiff * $f, $this->y + $yDiff * $f, $this->z + $zDiff * $f);
 		}
+	}
+
+	/**
+	 * @param $x
+	 * @param $y
+	 * @param $z
+	 *
+	 * @return Vector3
+	 */
+	public function setComponents($x, $y, $z){
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
+		return $this;
 	}
 
 	public function __toString(){

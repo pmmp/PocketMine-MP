@@ -22,11 +22,13 @@
 namespace pocketmine\math;
 use pocketmine\level\MovingObjectPosition;
 
-/**
- * WARNING: This class is available on the PocketMine-MP Zephir project.
- * If this class is modified, remember to modify the PHP C extension.
- */
 class AxisAlignedBB{
+
+
+	/** @var AxisAlignedBB[] */
+	private static $boundingBoxes = [];
+	private static $nextBoundingBox = 0;
+
 	public $minX;
 	public $minY;
 	public $minZ;
@@ -43,6 +45,46 @@ class AxisAlignedBB{
 		$this->maxZ = $maxZ;
 	}
 
+	public static function clearBoundingBoxes(){
+		self::$nextBoundingBox = 0;
+		self::$boundingBoxes = [];
+	}
+
+	public static function clearBoundingBoxPool(){
+		self::$nextBoundingBox = 0;
+	}
+
+	/**
+	 * @param $minX
+	 * @param $minY
+	 * @param $minZ
+	 * @param $maxX
+	 * @param $maxY
+	 * @param $maxZ
+	 *
+	 * @return AxisAlignedBB
+	 */
+	public static function getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
+		if(self::$nextBoundingBox >= count(self::$boundingBoxes)){
+			self::$boundingBoxes[] = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		}
+
+		return self::$boundingBoxes[self::$nextBoundingBox++]->setBounds($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+	}
+
+	/**
+	 * @param AxisAlignedBB $bb
+	 *
+	 * @return AxisAlignedBB
+	 */
+	public static function cloneBoundingBoxFromPool(AxisAlignedBB $bb){
+		if(self::$nextBoundingBox >= count(self::$boundingBoxes)){
+			self::$boundingBoxes[] = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		}
+
+		return self::$boundingBoxes[self::$nextBoundingBox++]->setBounds($bb->minX, $bb->minY, $bb->minZ, $bb->maxX, $bb->maxY, $bb->maxZ);
+	}
+
 	public function setBounds($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
 		$this->minX = $minX;
 		$this->minY = $minY;
@@ -55,7 +97,7 @@ class AxisAlignedBB{
 	}
 
 	public function addCoord($x, $y, $z){
-		$vec = clone $this;
+		$vec = self::cloneBoundingBoxFromPool($this);
 		
 		if($x < 0){
 			$vec->minX += $x;
@@ -79,7 +121,7 @@ class AxisAlignedBB{
 	}
 
 	public function grow($x, $y, $z){
-		$vec = clone $this;
+		$vec = self::cloneBoundingBoxFromPool($this);
 		$vec->minX -= $x;
 		$vec->minY -= $y;
 		$vec->minZ -= $z;
@@ -113,7 +155,7 @@ class AxisAlignedBB{
 	}
 
 	public function shrink($x, $y, $z){
-		$vec = clone $this;
+		$vec = self::cloneBoundingBoxFromPool($this);
 		$vec->minX += $x;
 		$vec->minY += $y;
 		$vec->minZ += $z;
@@ -146,7 +188,7 @@ class AxisAlignedBB{
 	}
 
 	public function getOffsetBoundingBox($x, $y, $z){
-		$vec = clone $this;
+		$vec = self::cloneBoundingBoxFromPool($this);
 		$vec->minX += $x;
 		$vec->minY += $y;
 		$vec->minZ += $z;

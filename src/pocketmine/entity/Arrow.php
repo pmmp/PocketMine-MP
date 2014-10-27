@@ -87,7 +87,7 @@ class Arrow extends Projectile{
 
 			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
-			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
+			$moveVector = Vector3::createVector($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
 
 			$list = $this->getLevel()->getCollidingEntities($this->boundingBox->addCoord($this->motionX, $this->motionY, $this->motionZ)->expand(1, 1, 1), $this);
 

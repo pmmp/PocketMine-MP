@@ -84,27 +84,31 @@ class Explosion{
 			return false;
 		}
 
+		$pointer = Vector3::createVector(0, 0, 0);
+		$vector = Vector3::createVector(0, 0, 0);
+		$vBlock = Vector3::createVector(0, 0, 0);
+
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				//break 2 gets here
 				for($k = 0; $k < $this->rays; ++$k){
 					if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
-						$vector = new Vector3($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1); //($i / $mRays) * 2 - 1
-						$vector = $vector->normalize()->multiply($this->stepLen);
-						$pointer = clone $this->source;
+						$vector->setComponents($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1);
+						$vector->setComponents(($vector->x / ($len = $vector->length())) * $this->stepLen, ($vector->y / $len) * $this->stepLen, ($vector->z / $len) * $this->stepLen);
+						$pointer->setComponents($this->source->x, $this->source->y, $this->source->z);
 
 						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
-							$vBlock = $pointer->floor();
+							$x = (int) $pointer->x;
+							$y = (int) $pointer->y;
+							$z = (int) $pointer->z;
+							$vBlock->setComponents($pointer->x >= $x ? $x : $x - 1, $pointer->y >= $y ? $y : $y - 1, $pointer->z >= $z ? $z : $z - 1);
 							if($vBlock->y < 0 or $vBlock->y > 127){
 								break;
 							}
 							$block = $this->level->getBlock($vBlock);
 
 							if(!($block instanceof Air)){
-								$block->x = $vBlock->x;
-								$block->y = $vBlock->y;
-								$block->z = $vBlock->z;
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									$index = ($block->x << 15) + ($block->z << 7) + $block->y;
@@ -113,7 +117,9 @@ class Explosion{
 									}
 								}
 							}
-							$pointer = $pointer->add($vector);
+							$pointer->x += $vector->x;
+							$pointer->y += $vector->y;
+							$pointer->z += $vector->z;
 						}
 					}
 				}
@@ -125,7 +131,7 @@ class Explosion{
 
 	public function explodeB(){
 		$send = [];
-		$source = $this->source->floor();
+		$source = Vector3::cloneVector($this->source)->floor();
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
@@ -146,7 +152,7 @@ class Explosion{
 		$minZ = Math::floorFloat($this->source->z - $explosionSize - 1);
 		$maxZ = Math::floorFloat($this->source->z + $explosionSize + 1);
 
-		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		$explosionBB = AxisAlignedBB::getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
 		$list = $this->level->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
 		foreach($list as $entity){
