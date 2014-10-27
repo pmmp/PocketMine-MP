@@ -126,7 +126,7 @@ class FallingBlock extends Entity{
 			$this->updateMovement();
 		}
 
-		return $hasUpdate or !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate or !$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
 	}
 
 	public function getBlock(){

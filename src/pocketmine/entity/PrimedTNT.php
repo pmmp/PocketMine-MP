@@ -116,7 +116,7 @@ class PrimedTNT extends Entity implements Explosive{
 		}
 
 
-		return $hasUpdate or $this->fuse > 0 or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate or $this->fuse >= 0 or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
