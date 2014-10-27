@@ -23,14 +23,22 @@ namespace pocketmine\network\protocol;
 
 
 class ExplodePacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $x;
 	public $y;
 	public $z;
 	public $radius;
-	public $records;
+	public $records = [];
 
 	public function pid(){
 		return Info::EXPLODE_PACKET;
+	}
+
+	public function clean(){
+		$this->records = [];
+		return parent::clean();
 	}
 
 	public function decode(){

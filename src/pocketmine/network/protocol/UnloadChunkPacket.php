@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class UnloadChunkPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $chunkX;
 	public $chunkZ;
 

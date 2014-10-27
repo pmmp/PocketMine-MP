@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class LevelEventPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $evid;
 	public $x;
 	public $y;

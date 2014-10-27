@@ -24,6 +24,9 @@ namespace pocketmine\network\protocol;
 use pocketmine\item\Item;
 
 class ContainerSetSlotPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $windowid;
 	public $slot;
 	/** @var Item */

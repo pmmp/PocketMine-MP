@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class LoginStatusPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $status;
 
 	public function pid(){

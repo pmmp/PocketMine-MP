@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class StartGamePacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $seed;
 	public $generator;
 	public $gamemode;

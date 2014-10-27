@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class ContainerClosePacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $windowid;
 
 	public function pid(){

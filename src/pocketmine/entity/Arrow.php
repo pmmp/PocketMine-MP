@@ -209,7 +209,7 @@ class Arrow extends Projectile{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
+		$pk = AddEntityPacket::getFromPool();
 		$pk->type = Arrow::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
@@ -218,7 +218,7 @@ class Arrow extends Projectile{
 		$pk->did = 0; //TODO: send motion here
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket();
+		$pk = SetEntityMotionPacket::getFromPool();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

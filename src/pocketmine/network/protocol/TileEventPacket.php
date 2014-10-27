@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class TileEventPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $x;
 	public $y;
 	public $z;

@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class PlayerEquipmentPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $eid;
 	public $item;
 	public $meta;

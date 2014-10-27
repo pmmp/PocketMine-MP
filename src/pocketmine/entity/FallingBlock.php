@@ -150,7 +150,7 @@ class FallingBlock extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket;
+		$pk = AddEntityPacket::getFromPool();
 		$pk->type = FallingBlock::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
@@ -159,7 +159,7 @@ class FallingBlock extends Entity{
 		$pk->did = -$this->getBlock();
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket;
+		$pk = SetEntityMotionPacket::getFromPool();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

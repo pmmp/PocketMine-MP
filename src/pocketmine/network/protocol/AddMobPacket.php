@@ -24,6 +24,9 @@ namespace pocketmine\network\protocol;
 use pocketmine\utils\Binary;
 
 class AddMobPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $eid;
 	public $type;
 	public $x;

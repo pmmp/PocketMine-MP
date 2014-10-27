@@ -25,6 +25,26 @@ use pocketmine\item\Item;
 use pocketmine\utils\Binary;
 
 abstract class DataPacket extends \stdClass{
+
+	/** @var DataPacket[] */
+	public static $pool = [];
+	public static $next = 0;
+
+	public static function getFromPool(){
+		if(static::$next >= count(static::$pool)){
+			$pk = static::class;
+			static::$pool[] = new $pk;
+		}
+		return static::$pool[static::$next++]->clean();
+	}
+
+	public static function cleanPool(){
+		if(static::$next > 4096){
+			static::$pool = [];
+		}
+		static::$next = 0;
+	}
+
 	private $offset = 0;
 	public $buffer = "";
 	public $isEncoded = false;
@@ -171,5 +191,12 @@ abstract class DataPacket extends \stdClass{
 
 	protected function feof(){
 		return !isset($this->buffer{$this->offset});
+	}
+
+	public function clean(){
+		$this->buffer = null;
+		$this->isEncoded = false;
+		$this->offset = 0;
+		return $this;
 	}
 }

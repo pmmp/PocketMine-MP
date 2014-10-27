@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class MovePlayerPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $eid;
 	public $x;
 	public $y;
@@ -34,6 +37,11 @@ class MovePlayerPacket extends DataPacket{
 
 	public function pid(){
 		return Info::MOVE_PLAYER_PACKET;
+	}
+
+	public function clean(){
+		$this->teleport = false;
+		return parent::clean();
 	}
 
 	public function decode(){

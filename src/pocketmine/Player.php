@@ -581,7 +581,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
-		$pk = new FullChunkDataPacket;
+		$pk = FullChunkDataPacket::getFromPool();
 		$pk->chunkX = $x;
 		$pk->chunkZ = $z;
 		$pk->data = $payload;
@@ -645,7 +645,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->blocked = false;
 
-			$pk = new SetTimePacket;
+			$pk = SetTimePacket::getFromPool();
 			$pk->time = $this->level->getTime();
 			$pk->started = $this->level->stopTime == false;
 			$this->dataPacket($pk);
@@ -834,7 +834,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$level = $pos->getLevel();
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
-		$pk = new SetSpawnPositionPacket;
+		$pk = SetSpawnPositionPacket::getFromPool();
 		$pk->x = (int) $this->spawnPosition->x;
 		$pk->y = (int) $this->spawnPosition->y;
 		$pk->z = (int) $this->spawnPosition->z;
@@ -947,7 +947,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$spawnPosition = $this->getSpawn();
 
-		$pk = new StartGamePacket;
+		$pk = StartGamePacket::getFromPool();
 		$pk->seed = $this->level->getSeed();
 		$pk->x = $this->x;
 		$pk->y = $this->y + $this->getEyeHeight();
@@ -1017,7 +1017,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$flags |= 0x20; //Show Nametags
 		}
 
-		$pk = new AdventureSettingsPacket;
+		$pk = AdventureSettingsPacket::getFromPool();
 		$pk->flags = $flags;
 		$this->dataPacket($pk);
 	}
@@ -1125,7 +1125,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($to->distance($ev->getTo()) > 0.1){ //If plugins modify the destination
 					$this->teleport($ev->getTo());
 				}else{
-					$pk = new MovePlayerPacket;
+					$pk = MovePlayerPacket::getFromPool();
 					$pk->eid = $this->id;
 					$pk->x = $this->x;
 					$pk->y = $this->y;
@@ -1140,7 +1140,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		if($revert){
-			$pk = new MovePlayerPacket;
+			$pk = MovePlayerPacket::getFromPool();
 			$pk->eid = 0;
 			$pk->x = $from->x;
 			$pk->y = $from->y + $this->getEyeHeight() + 0.01;
@@ -1206,11 +1206,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							continue;
 						}
 
-						$pk = new TakeItemEntityPacket;
+						$pk = TakeItemEntityPacket::getFromPool();
 						$pk->eid = 0;
 						$pk->target = $entity->getID();
 						$this->dataPacket($pk);
-						$pk = new TakeItemEntityPacket;
+						$pk = TakeItemEntityPacket::getFromPool();
 						$pk->eid = $this->getID();
 						$pk->target = $entity->getID();
 						Server::broadcastPacket($entity->getViewers(), $pk);
@@ -1240,11 +1240,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 									break;
 							}
 
-							$pk = new TakeItemEntityPacket;
+							$pk = TakeItemEntityPacket::getFromPool();
 							$pk->eid = 0;
 							$pk->target = $entity->getID();
 							$this->dataPacket($pk);
-							$pk = new TakeItemEntityPacket;
+							$pk = TakeItemEntityPacket::getFromPool();
 							$pk->eid = $this->getID();
 							$pk->target = $entity->getID();
 							Server::broadcastPacket($entity->getViewers(), $pk);
@@ -1307,11 +1307,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
-						$pk = new LoginStatusPacket;
+						$pk = LoginStatusPacket::getFromPool();
 						$pk->status = 1;
 						$this->dataPacket($pk);
 					}else{
-						$pk = new LoginStatusPacket;
+						$pk = LoginStatusPacket::getFromPool();
 						$pk->status = 2;
 						$this->dataPacket($pk);
 					}
@@ -1413,7 +1413,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->inventory->setHeldItemSlot(0);
 				}
 
-				$pk = new LoginStatusPacket;
+				$pk = LoginStatusPacket::getFromPool();
 				$pk->status = 0;
 				$this->dataPacket($pk);
 
@@ -1425,7 +1425,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->dead = false;
 
-				$pk = new StartGamePacket;
+				$pk = StartGamePacket::getFromPool();
 				$pk->seed = $this->level->getSeed();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -1438,17 +1438,18 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->eid = 0; //Always use EntityID as zero for the actual player
 				$this->dataPacket($pk);
 
-				$pk = new SetTimePacket();
+				$pk = SetTimePacket::getFromPool();
 				$pk->time = $this->level->getTime();
+				$pk->started = $this->level->stopTime == false;
 				$this->dataPacket($pk);
 
-				$pk = new SetSpawnPositionPacket;
+				$pk = SetSpawnPositionPacket::getFromPool();
 				$pk->x = (int) $spawnPosition->x;
 				$pk->y = (int) $spawnPosition->y;
 				$pk->z = (int) $spawnPosition->z;
 				$this->dataPacket($pk);
 
-				$pk = new SetHealthPacket();
+				$pk = SetHealthPacket::getFromPool();
 				$pk->health = $this->getHealth();
 				$this->dataPacket($pk);
 				if($this->getHealth() <= 0){
@@ -1474,7 +1475,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$revert = ($this->dead === true or $this->spawned !== true);
 
 				if($revert or ($this->forceMovement instanceof Vector3 and $newPos->distance($this->forceMovement) > 0.2)){
-					$pk = new MovePlayerPacket();
+					$pk = MovePlayerPacket::getFromPool();
 					$pk->eid = 0;
 					$pk->x = $this->x;
 					$pk->y = $this->y + $this->getEyeHeight() + 0.01;
@@ -1565,7 +1566,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
-					$pk = new UpdateBlockPacket;
+					$pk = UpdateBlockPacket::getFromPool();
 					$pk->x = $target->x;
 					$pk->y = $target->y;
 					$pk->z = $target->z;
@@ -1573,7 +1574,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->meta = $target->getDamage();
 					$this->dataPacket($pk);
 
-					$pk = new UpdateBlockPacket;
+					$pk = UpdateBlockPacket::getFromPool();
 					$pk->x = $block->x;
 					$pk->y = $block->y;
 					$pk->z = $block->z;
@@ -1612,7 +1613,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
-					$pk = new UpdateBlockPacket;
+					$pk = UpdateBlockPacket::getFromPool();
 					$pk->x = $target->x;
 					$pk->y = $target->y;
 					$pk->z = $target->z;
@@ -1620,7 +1621,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->meta = $target->getDamage();
 					$this->dataPacket($pk);
 
-					$pk = new UpdateBlockPacket;
+					$pk = UpdateBlockPacket::getFromPool();
 					$pk->x = $block->x;
 					$pk->y = $block->y;
 					$pk->z = $block->z;
@@ -1738,7 +1739,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$target = $this->level->getBlock($vector);
 				$tile = $this->level->getTile($vector);
 
-				$pk = new UpdateBlockPacket;
+				$pk = UpdateBlockPacket::getFromPool();
 				$pk->x = $target->x;
 				$pk->y = $target->y;
 				$pk->z = $target->z;
@@ -1887,7 +1888,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				$pk = new AnimatePacket();
+				$pk = AnimatePacket::getFromPool();
 				$pk->eid = $this->getID();
 				$pk->action = $ev->getAnimationType();
 				Server::broadcastPacket($this->getViewers(), $pk);
@@ -1961,7 +1962,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								break;
 							}
 
-							$pk = new EntityEventPacket();
+							$pk = EntityEventPacket::getFromPool();
 							$pk->eid = 0;
 							$pk->event = 9;
 							$this->dataPacket($pk);
@@ -2247,7 +2248,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if($m !== ""){
-				$pk = new MessagePacket;
+				$pk = MessagePacket::getFromPool();
 				$pk->source = ""; //Do not use this ;)
 				$pk->message = $m;
 				$this->dataPacket($pk);
@@ -2462,7 +2463,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function setHealth($amount){
 		parent::setHealth($amount);
 		if($this->spawned === true){
-			$pk = new SetHealthPacket();
+			$pk = SetHealthPacket::getFromPool();
 			$pk->health = $this->getHealth();
 			$this->dataPacket($pk);
 		}
@@ -2492,7 +2493,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		parent::attack($damage, $source);
 
 		if($this->getLastDamageCause() === $source){
-			$pk = new EntityEventPacket();
+			$pk = EntityEventPacket::getFromPool();
 			$pk->eid = 0;
 			$pk->event = 2;
 			$this->dataPacket($pk);
@@ -2537,7 +2538,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->forceMovement = $pos;
 			$this->newPosition = $pos;
 
-			$pk = new MovePlayerPacket;
+			$pk = MovePlayerPacket::getFromPool();
 			$pk->eid = 0;
 			$pk->x = $this->x;
 			$pk->y = $this->y + $this->getEyeHeight() + 0.01;

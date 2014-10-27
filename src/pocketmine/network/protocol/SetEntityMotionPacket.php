@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class SetEntityMotionPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 
 	// eid, motX, motY, motZ
 	/** @var array[] */
@@ -30,6 +33,11 @@ class SetEntityMotionPacket extends DataPacket{
 
 	public function pid(){
 		return Info::SET_ENTITY_MOTION_PACKET;
+	}
+
+	public function clean(){
+		$this->entities = [];
+		return parent::clean();
 	}
 
 	public function decode(){

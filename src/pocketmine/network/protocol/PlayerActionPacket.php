@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class PlayerActionPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $action;
 	public $x;
 	public $y;

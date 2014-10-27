@@ -442,7 +442,7 @@ class Level implements ChunkManager, Metadatable{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function sendTime(){
-		$pk = new SetTimePacket;
+		$pk = SetTimePacket::getFromPool();
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
 
@@ -539,7 +539,7 @@ class Level implements ChunkManager, Metadatable{
 						foreach($mini as $blocks){
 							/** @var Block $b */
 							foreach($blocks as $b){
-								$pk = new UpdateBlockPacket();
+								$pk = UpdateBlockPacket::getFromPool();
 								$pk->x = $b->x;
 								$pk->y = $b->y;
 								$pk->z = $b->z;
@@ -949,7 +949,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			//if($direct === true){
-				$pk = new UpdateBlockPacket;
+				$pk = UpdateBlockPacket::getFromPool();
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;

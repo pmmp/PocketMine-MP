@@ -25,6 +25,9 @@ namespace pocketmine\network\protocol;
 use pocketmine\level\Level;
 
 class SetTimePacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $time;
 	public $started = true;
 

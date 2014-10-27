@@ -270,7 +270,7 @@ abstract class Entity extends Location implements Metadatable{
 			$player = [$player];
 		}
 
-		$pk = new SetEntityDataPacket();
+		$pk = SetEntityDataPacket::getFromPool();
 		$pk->eid = $this->id;
 		$pk->metadata = $this->getData();
 		$pk->encode();
@@ -278,7 +278,7 @@ abstract class Entity extends Location implements Metadatable{
 		foreach($player as $p){
 			if($p === $this){
 				/** @var Player $p */
-				$pk2 = new SetEntityDataPacket();
+				$pk2 = SetEntityDataPacket::getFromPool();
 				$pk2->eid = 0;
 				$pk2->metadata = $this->getData();
 				$p->dataPacket($pk2);
@@ -293,7 +293,7 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
-			$pk = new RemoveEntityPacket;
+			$pk = RemoveEntityPacket::getFromPool();
 			$pk->eid = $this->id;
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getID()]);
@@ -532,7 +532,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastPitch = $this->pitch;
 
 			if($this instanceof Human){
-				$pk = new MovePlayerPacket;
+				$pk = MovePlayerPacket::getFromPool();
 				$pk->eid = $this->id;
 				$pk->x = $this->x;
 				$pk->y = $this->y;
@@ -542,7 +542,7 @@ abstract class Entity extends Location implements Metadatable{
 				$pk->bodyYaw = $this->yaw;
 			}else{
 				//TODO: add to move list
-				$pk = new MoveEntityPacket();
+				$pk = MoveEntityPacket::getFromPool();
 				$pk->entities = [
 					[$this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch]
 				];
@@ -556,7 +556,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastMotionY = $this->motionY;
 			$this->lastMotionZ = $this->motionZ;
 
-			$pk = new SetEntityMotionPacket;
+			$pk = SetEntityMotionPacket::getFromPool();
 			$pk->entities = [
 				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 			];
@@ -726,7 +726,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->level->addEntity($this);
 		if($this instanceof Player){
 			$this->usedChunks = [];
-			$pk = new SetTimePacket();
+			$pk = SetTimePacket::getFromPool();
 			$pk->time = $this->level->getTime();
 			$pk->started = $this->level->stopTime == false;
 			$this->dataPacket($pk);
@@ -1100,7 +1100,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(!$this->justCreated){
 			if($this instanceof Player){
-				$pk = new SetEntityMotionPacket;
+				$pk = SetEntityMotionPacket::getFromPool();
 				$pk->entities = [
 					[0, $this->motionX, $this->motionY, $this->motionZ]
 				];

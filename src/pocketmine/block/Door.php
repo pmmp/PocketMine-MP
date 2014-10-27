@@ -271,7 +271,7 @@ abstract class Door extends Transparent{
 				if($player instanceof Player){
 					unset($players[$player->getID()]);
 				}
-				$pk = new LevelEventPacket;
+				$pk = LevelEventPacket::getFromPool();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -290,7 +290,7 @@ abstract class Door extends Transparent{
 			if($player instanceof Player){
 				unset($players[$player->getID()]);
 			}
-			$pk = new LevelEventPacket;
+			$pk = LevelEventPacket::getFromPool();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;

@@ -23,12 +23,21 @@ namespace pocketmine\network\protocol;
 
 
 class ContainerSetContentPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $windowid;
 	public $slots = [];
 	public $hotbar = [];
 
 	public function pid(){
 		return Info::CONTAINER_SET_CONTENT_PACKET;
+	}
+
+	public function clean(){
+		$this->slots = [];
+		$this->hotbar = [];
+		return parent::clean();
 	}
 
 	public function decode(){

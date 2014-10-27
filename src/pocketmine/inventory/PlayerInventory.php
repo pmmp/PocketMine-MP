@@ -66,7 +66,7 @@ class PlayerInventory extends BaseInventory{
 			$this->itemInHandIndex = $index;
 			$item = $this->getItemInHand();
 
-			$pk = new PlayerEquipmentPacket;
+			$pk = PlayerEquipmentPacket::getFromPool();
 			$pk->eid = $this->getHolder()->getID();
 			$pk->item = $item->getID();
 			$pk->meta = $item->getDamage();
@@ -126,7 +126,7 @@ class PlayerInventory extends BaseInventory{
 
 		$item = $this->getItemInHand();
 
-		$pk = new PlayerEquipmentPacket;
+		$pk = PlayerEquipmentPacket::getFromPool();
 		$pk->eid = $this->getHolder()->getID();
 		$pk->item = $item->getID();
 		$pk->meta = $item->getDamage();
@@ -286,7 +286,7 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 
-		$pk = new PlayerArmorEquipmentPacket;
+		$pk = PlayerArmorEquipmentPacket::getFromPool();
 		$pk->eid = $this->getHolder()->getID();
 		$pk->slots = $slots;
 		$pk->encode();
@@ -298,7 +298,7 @@ class PlayerInventory extends BaseInventory{
 				//$pk2 = clone $pk;
 				//$pk2->eid = 0;
 
-				$pk2 = new ContainerSetContentPacket;
+				$pk2 = ContainerSetContentPacket::getFromPool();
 				$pk2->windowid = 0x78; //Armor window id constant
 				$pk2->slots = $armor;
 				$player->dataPacket($pk2);
@@ -333,7 +333,7 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetContentPacket();
+		$pk = ContainerSetContentPacket::getFromPool();
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
 			$pk->slots[$i] = $this->getItem($i);
@@ -365,7 +365,7 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetSlotPacket;
+		$pk = ContainerSetSlotPacket::getFromPool();
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

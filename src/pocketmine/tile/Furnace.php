@@ -252,13 +252,13 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		foreach($this->getInventory()->getViewers() as $player){
 			$windowId = $player->getWindowId($this->getInventory());
 			if($windowId > 0){
-				$pk = new ContainerSetDataPacket;
+				$pk = ContainerSetDataPacket::getFromPool();
 				$pk->windowid = $windowId;
 				$pk->property = 0; //Smelting
 				$pk->value = floor($this->namedtag["CookTime"]);
 				$player->dataPacket($pk);
 
-				$pk = new ContainerSetDataPacket;
+				$pk = ContainerSetDataPacket::getFromPool();
 				$pk->windowid = $windowId;
 				$pk->property = 1; //Fire icon
 				$pk->value = $this->namedtag["BurnTicks"];

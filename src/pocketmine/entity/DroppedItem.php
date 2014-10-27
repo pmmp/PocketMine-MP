@@ -219,7 +219,7 @@ class DroppedItem extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = new AddItemEntityPacket();
+		$pk = AddItemEntityPacket::getFromPool();
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
@@ -230,7 +230,7 @@ class DroppedItem extends Entity{
 		$pk->item = $this->getItem();
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket;
+		$pk = SetEntityMotionPacket::getFromPool();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

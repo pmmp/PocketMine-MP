@@ -53,7 +53,7 @@ class Bed extends Transparent{
 		$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
 
 		if($player instanceof Player and !$isNight){
-			$pk = new ChatPacket;
+			$pk = ChatPacket::getFromPool();
 			$pk->message = "You can only sleep at night";
 			$player->dataPacket($pk);
 
@@ -77,7 +77,7 @@ class Bed extends Transparent{
 				$b = $blockWest;
 			}else{
 				if($player instanceof Player){
-					$pk = new ChatPacket;
+					$pk = ChatPacket::getFromPool();
 					$pk->message = "This bed is incomplete";
 					$player->dataPacket($pk);
 				}
@@ -87,7 +87,7 @@ class Bed extends Transparent{
 		}
 
 		if($player instanceof Player and $player->sleepOn($b) === false){
-			$pk = new ChatPacket;
+			$pk = ChatPacket::getFromPool();
 			$pk->message = "This bed is occupied";
 			$player->dataPacket($pk);
 		}

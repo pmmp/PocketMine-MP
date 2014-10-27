@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class LoginPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $username;
 	public $protocol1;
 	public $protocol2;

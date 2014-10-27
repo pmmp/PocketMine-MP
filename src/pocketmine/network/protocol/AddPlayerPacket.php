@@ -24,6 +24,9 @@ namespace pocketmine\network\protocol;
 use pocketmine\utils\Binary;
 
 class AddPlayerPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $clientID;
 	public $username;
 	public $eid;

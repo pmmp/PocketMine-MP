@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class FullChunkDataPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $chunkX;
 	public $chunkZ;
 	public $data;

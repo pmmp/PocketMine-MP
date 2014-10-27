@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class UseItemPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $x;
 	public $y;
 	public $z;

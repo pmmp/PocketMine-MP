@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class MessagePacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $source;
 	public $message;
 

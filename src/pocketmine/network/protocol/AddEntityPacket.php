@@ -23,6 +23,9 @@ namespace pocketmine\network\protocol;
 
 
 class AddEntityPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $eid;
 	public $type;
 	public $x;

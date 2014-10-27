@@ -384,7 +384,7 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetContentPacket();
+		$pk = ContainerSetContentPacket::getFromPool();
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$pk->slots[$i] = $this->getItem($i);
@@ -409,7 +409,7 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetSlotPacket;
+		$pk = ContainerSetSlotPacket::getFromPool();
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

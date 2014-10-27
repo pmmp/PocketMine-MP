@@ -156,7 +156,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($player !== $this and !isset($this->hasSpawned[$player->getID()])){
 			$this->hasSpawned[$player->getID()] = $player;
 
-			$pk = new AddPlayerPacket;
+			$pk = AddPlayerPacket::getFromPool();
 			$pk->clientID = 0;
 			if($player->getRemoveFormat()){
 				$pk->username = TextFormat::clean($this->nameTag);
@@ -174,7 +174,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->metadata = $this->getData();
 			$player->dataPacket($pk);
 
-			$pk = new SetEntityMotionPacket;
+			$pk = SetEntityMotionPacket::getFromPool();
 			$pk->entities = [
 				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 			];
@@ -188,7 +188,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
-			$pk = new RemovePlayerPacket;
+			$pk = RemovePlayerPacket::getFromPool();
 			$pk->eid = $this->id;
 			$pk->clientID = 0;
 			$player->dataPacket($pk);

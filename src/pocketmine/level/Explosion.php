@@ -217,7 +217,7 @@ class Explosion{
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
-		$pk = new ExplodePacket;
+		$pk = ExplodePacket::getFromPool();
 		$pk->x = $this->source->x;
 		$pk->y = $this->source->y;
 		$pk->z = $this->source->z;

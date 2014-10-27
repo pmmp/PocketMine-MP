@@ -76,7 +76,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		$pk = new EntityEventPacket();
+		$pk = EntityEventPacket::getFromPool();
 		$pk->eid = $this->getID();
 		$pk->event = 2; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
