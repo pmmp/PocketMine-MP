@@ -146,10 +146,12 @@ abstract class BaseFullChunk implements FullChunk{
 			foreach($this->NBTtiles as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
+						$this->setChanged();
 						continue;
 					}
 
 					if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
+						$this->setChanged();
 						continue; //Fixes tiles allocated in wrong chunks.
 					}
 
