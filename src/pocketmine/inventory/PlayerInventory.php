@@ -166,35 +166,35 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function getHelmet(){
-		return $this->getItem($this->getSize() + 3);
-	}
-
-	public function getChestplate(){
-		return $this->getItem($this->getSize() + 2);
-	}
-
-	public function getLeggings(){
-		return $this->getItem($this->getSize() + 1);
-	}
-
-	public function getBoots(){
 		return $this->getItem($this->getSize());
 	}
 
+	public function getChestplate(){
+		return $this->getItem($this->getSize() + 1);
+	}
+
+	public function getLeggings(){
+		return $this->getItem($this->getSize() + 2);
+	}
+
+	public function getBoots(){
+		return $this->getItem($this->getSize() + 3);
+	}
+
 	public function setHelmet(Item $helmet){
-		return $this->setItem($this->getSize() + 3, $helmet);
+		return $this->setItem($this->getSize(), $helmet);
 	}
 
 	public function setChestplate(Item $chestplate){
-		return $this->setItem($this->getSize() + 2, $chestplate);
+		return $this->setItem($this->getSize() + 1, $chestplate);
 	}
 
 	public function setLeggings(Item $leggings){
-		return $this->setItem($this->getSize() + 1, $leggings);
+		return $this->setItem($this->getSize() + 2, $leggings);
 	}
 
 	public function setBoots(Item $boots){
-		return $this->setItem($this->getSize(), $boots);
+		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
 	public function setItem($index, Item $item, $source = null){

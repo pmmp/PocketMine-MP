@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Int;
 use pocketmine\Player;
 
 abstract class Fallable extends Solid{
@@ -60,7 +61,8 @@ abstract class Fallable extends Solid{
 						new Float("", 0),
 						new Float("", 0)
 					]),
-					"Tile" => new Byte("Tile", $this->getID())
+					"TileID" => new Int("TileID", $this->getID()),
+					"Data" => new Byte("Data", $this->getDamage()),
 				]));
 
 				$fall->spawnToAll();
