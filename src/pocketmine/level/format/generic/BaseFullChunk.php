@@ -119,6 +119,10 @@ abstract class BaseFullChunk implements FullChunk{
 						continue;
 					}
 
+					if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
+						continue; //Fixes entities allocated in wrong chunks.
+					}
+
 					//TODO: add all entities
 					switch($nbt["id"]){
 						case DroppedItem::NETWORK_ID:
@@ -144,6 +148,11 @@ abstract class BaseFullChunk implements FullChunk{
 					if(!isset($nbt->id)){
 						continue;
 					}
+
+					if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
+						continue; //Fixes tiles allocated in wrong chunks.
+					}
+
 					switch($nbt["id"]){
 						case Tile::CHEST:
 							new Chest($this, $nbt);
