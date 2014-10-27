@@ -36,6 +36,10 @@ class Water extends Liquid{
 		if($entity->fireTicks > 0){
 			$entity->extinguish();
 		}
+
+		if($entity instanceof Player){
+			$entity->onGround = true;
+		}
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
