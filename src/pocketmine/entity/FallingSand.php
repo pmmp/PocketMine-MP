@@ -58,6 +58,10 @@ class FallingSand extends Entity{
 			$this->namedtag["TileID"] = new Int("TileID", $this->blockId);
 		}
 
+		if(isset($this->namedtag->TileData)){
+			$this->damage = $this->namedtag["TileData"];
+		}
+
 		if($this->blockId === 0){
 			$this->close();
 		}
@@ -154,7 +158,7 @@ class FallingSand extends Entity{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = -$this->getBlock();
+		$pk->did = -($this->getBlock() | $this->getDamage() << 0x10);
 		$player->dataPacket($pk);
 
 		$pk = SetEntityMotionPacket::getFromPool();

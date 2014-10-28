@@ -73,6 +73,7 @@ use pocketmine\level\format\LevelProvider;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
