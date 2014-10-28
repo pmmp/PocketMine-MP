@@ -70,7 +70,7 @@ class DroppedItem extends Entity{
 		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
 
 
-		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
+		$this->server->getPluginManager()->callEvent(ItemSpawnEvent::createEvent($this));
 	}
 
 	public function onUpdate($currentTick){
@@ -113,7 +113,7 @@ class DroppedItem extends Entity{
 			}
 
 			if($this->age > 6000){
-				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
+				$this->server->getPluginManager()->callEvent($ev = ItemDespawnEvent::createEvent($this));
 				if($ev->isCancelled()){
 					$this->age = 0;
 				}else{

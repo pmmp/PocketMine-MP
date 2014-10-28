@@ -31,6 +31,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
+use pocketmine\event\Event;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
@@ -974,7 +975,7 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
 
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
@@ -1109,9 +1110,9 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
+		$this->getPluginManager()->callEvent(LevelInitEvent::createEvent($level));
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
@@ -1743,7 +1744,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
+			$this->pluginManager->callEvent($ev = ServerCommandEvent::createEvent($this->consoleSender, $line));
 			if(!$ev->isCancelled()){
 				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
 			}
@@ -2119,6 +2120,9 @@ class Server{
 		Vector3::clearVectorList();
 		Position::clearPositionList();
 		AxisAlignedBB::clearBoundingBoxPool();
+		if(($this->tickCounter % 4) === 0){
+			Event::clearAllPools();
+		}
 
 		Timings::$serverTickTimer->stopTiming();
 

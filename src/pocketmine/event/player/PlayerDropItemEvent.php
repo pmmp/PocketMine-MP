@@ -30,6 +30,8 @@ use pocketmine\Player;
  */
 class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	/** @var Item */
 	private $drop;

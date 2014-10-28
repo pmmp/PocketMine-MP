@@ -213,7 +213,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->level->addEntity($this);
 		$this->initEntity();
 		$this->lastUpdate = $this->server->getTick();
-		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
+		$this->server->getPluginManager()->callEvent(EntitySpawnEvent::createEvent($this));
 
 		$this->scheduleUpdate();
 
@@ -483,7 +483,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->checkBlockCollision();
 
 		if($this->y < 0 and $this->dead !== true){
-			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10));
+			$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_VOID, 10));
 			if(!$ev->isCancelled()){
 				$this->attack($ev->getFinalDamage(), $ev);
 			}
@@ -498,7 +498,7 @@ abstract class Entity extends Location implements Metadatable{
 				}
 			}else{
 				if(($this->fireTicks % 20) === 0 or $tickDiff > 20){
-					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
+					$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
 					$this->server->getPluginManager()->callEvent($ev);
 					if(!$ev->isCancelled()){
 						$this->attack($ev->getFinalDamage(), $ev);
@@ -675,7 +675,7 @@ abstract class Entity extends Location implements Metadatable{
 	public function fall($fallDistance){
 		$damage = floor($fallDistance - 3);
 		if($damage > 0){
-			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage));
+			$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_FALL, $damage));
 			if($ev->isCancelled()){
 				return;
 			}
@@ -701,7 +701,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected function switchLevel(Level $targetLevel){
 		if($this->isValid()){
-			$this->server->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->level, $targetLevel));
+			$this->server->getPluginManager()->callEvent($ev = EntityLevelChangeEvent::createEvent($this, $this->level, $targetLevel));
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1088,7 +1088,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function setMotion(Vector3 $motion){
 		if(!$this->justCreated){
-			$this->server->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
+			$this->server->getPluginManager()->callEvent($ev = EntityMotionEvent::createEvent($this, $motion));
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1139,7 +1139,7 @@ abstract class Entity extends Location implements Metadatable{
 		}
 		$from = Position::fromObject($this, $this->level);
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
-		$this->server->getPluginManager()->callEvent($ev = new EntityTeleportEvent($this, $from, $to));
+		$this->server->getPluginManager()->callEvent($ev = EntityTeleportEvent::createEvent($this, $from, $to));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1177,7 +1177,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function close(){
 		if(!$this->closed){
-			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
+			$this->server->getPluginManager()->callEvent(EntityDespawnEvent::createEvent($this));
 			$this->closed = true;
 			unset($this->level->updateEntities[$this->id]);
 			if($this->chunk instanceof FullChunk){

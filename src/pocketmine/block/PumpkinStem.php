@@ -42,7 +42,7 @@ class PumpkinStem extends Crops{
 				if($this->meta < 0x07){
 					$block = clone $this;
 					++$block->meta;
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+					Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($this, $block));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($this, $ev->getNewState(), true);
 					}
@@ -58,7 +58,7 @@ class PumpkinStem extends Crops{
 					$side = $this->getSide(mt_rand(2, 5));
 					$d = $side->getSide(0);
 					if($side->getID() === self::AIR and ($d->getID() === self::FARMLAND or $d->getID() === self::GRASS or $d->getID() === self::DIRT)){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, new Pumpkin()));
+						Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($side, new Pumpkin()));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($side, $ev->getNewState(), true);
 						}

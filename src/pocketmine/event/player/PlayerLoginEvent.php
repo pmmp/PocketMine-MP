@@ -29,6 +29,8 @@ use pocketmine\Player;
  */
 class PlayerLoginEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	/** @var string */
 	protected $kickMessage;

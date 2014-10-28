@@ -169,7 +169,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	}
 
 	protected function checkFuel(Item $fuel){
-		$this->server->getPluginManager()->callEvent($ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime()));
+		$this->server->getPluginManager()->callEvent($ev = FurnaceBurnEvent::createEvent($this, $fuel, $fuel->getFuelTime()));
 
 		if($ev->isCancelled()){
 			return;
@@ -219,7 +219,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				if($this->namedtag["CookTime"] >= 200){ //10 seconds
 					$product = Item::get($smelt->getResult()->getID(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
 
-					$this->server->getPluginManager()->callEvent($ev = new FurnaceSmeltEvent($this, $raw, $product));
+					$this->server->getPluginManager()->callEvent($ev = FurnaceSmeltEvent::createEvent($this, $raw, $product));
 
 					if(!$ev->isCancelled()){
 						$this->inventory->setResult($ev->getResult());

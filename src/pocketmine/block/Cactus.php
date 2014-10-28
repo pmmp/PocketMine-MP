@@ -55,7 +55,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onEntityCollide(Entity $entity){
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
+		$ev = EntityDamageByBlockEvent::createEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		Server::getInstance()->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
 			$entity->attack($ev->getFinalDamage(), $ev);
@@ -81,7 +81,7 @@ class Cactus extends Transparent{
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(Vector3::createVector($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
-							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Cactus()));
+							Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($b, new Cactus()));
 							if(!$ev->isCancelled()){
 								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 							}

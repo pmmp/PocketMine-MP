@@ -121,7 +121,7 @@ class PharPluginLoader implements PluginLoader{
 
 			$plugin->setEnabled(true);
 
-			$this->server->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
+			$this->server->getPluginManager()->callEvent(PluginEnableEvent::createEvent($plugin));
 		}
 	}
 
@@ -132,7 +132,7 @@ class PharPluginLoader implements PluginLoader{
 		if($plugin instanceof PluginBase and $plugin->isEnabled()){
 			$this->server->getLogger()->info("Disabling " . $plugin->getDescription()->getFullName());
 
-			$this->server->getPluginManager()->callEvent(new PluginDisableEvent($plugin));
+			$this->server->getPluginManager()->callEvent(PluginDisableEvent::createEvent($plugin));
 
 			$plugin->setEnabled(false);
 		}

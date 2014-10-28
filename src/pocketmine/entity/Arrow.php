@@ -123,13 +123,13 @@ class Arrow extends Projectile{
 			if($movingObjectPosition !== null){
 				if($movingObjectPosition->entityHit !== null){
 
-					$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
+					$this->server->getPluginManager()->callEvent(ProjectileHitEvent::createEvent($this));
 
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
 
-					$ev = new EntityDamageByEntityEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					$ev = EntityDamageByEntityEvent::createEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 
 					$this->server->getPluginManager()->callEvent($ev);
 
@@ -138,7 +138,7 @@ class Arrow extends Projectile{
 					}
 
 					if($this->fireTicks > 0){
-						$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
+						$ev = EntityCombustByEntityEvent::createEvent($this, $movingObjectPosition->entityHit, 5);
 						$this->server->getPluginManager()->callEvent($ev);
 						if(!$ev->isCancelled()){
 							$movingObjectPosition->entityHit->setOnFire($ev->getDuration());
@@ -157,7 +157,7 @@ class Arrow extends Projectile{
 				$this->motionY = 0;
 				$this->motionZ = 0;
 
-				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
+				$this->server->getPluginManager()->callEvent(ProjectileHitEvent::createEvent($this));
 			}
 
 			if(!$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){

@@ -32,8 +32,7 @@ abstract class DataPacket extends \stdClass{
 
 	public static function getFromPool(){
 		if(static::$next >= count(static::$pool)){
-			$pk = static::class;
-			static::$pool[] = new $pk;
+			static::$pool[] = new static;
 		}
 		return static::$pool[static::$next++]->clean();
 	}

@@ -652,7 +652,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$pos = $this->level->getSafeSpawn($this);
 
-			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
+			$this->server->getPluginManager()->callEvent($ev = PlayerRespawnEvent::createEvent($this, $pos));
 
 			$this->teleport($ev->getRespawnPosition());
 
@@ -660,7 +660,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->inventory->sendContents($this);
 			$this->inventory->sendArmorContents($this);
 
-			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
+			$this->server->getPluginManager()->callEvent($ev = PlayerJoinEvent::createEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
 			if(strlen(trim($ev->getJoinMessage())) > 0){
 				$this->server->broadcastMessage($ev->getJoinMessage());
 			}
@@ -745,7 +745,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === false){
 			return false;
 		}
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = DataPacketSendEvent::createEvent($this, $packet));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -771,7 +771,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === false){
 			return false;
 		}
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = DataPacketSendEvent::createEvent($this, $packet));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -803,7 +803,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerBedEnterEvent($this, $this->level->getBlock($pos)));
+		$this->server->getPluginManager()->callEvent($ev = PlayerBedEnterEvent::createEvent($this, $this->level->getBlock($pos)));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -842,7 +842,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function stopSleep(){
 		if($this->sleeping instanceof Vector3){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $this->level->getBlock($this->sleeping)));
+			$this->server->getPluginManager()->callEvent($ev = PlayerBedLeaveEvent::createEvent($this, $this->level->getBlock($this->sleeping)));
 
 			$this->sleeping = null;
 
@@ -892,7 +892,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					return false;
 				}
 			}
-			$this->server->getPluginManager()->callEvent($ev = new PlayerAchievementAwardedEvent($this, $achievementId));
+			$this->server->getPluginManager()->callEvent($ev = PlayerAchievementAwardedEvent::createEvent($this, $achievementId));
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
@@ -926,7 +926,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerGameModeChangeEvent($this, (int) $gm));
+		$this->server->getPluginManager()->callEvent($ev = PlayerGameModeChangeEvent::createEvent($this, (int) $gm));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1116,7 +1116,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->lastYaw = $to->yaw;
 			$this->lastPitch = $to->pitch;
 
-			$ev = new PlayerMoveEvent($this, $from, $to);
+			$ev = PlayerMoveEvent::createEvent($this, $from, $to);
 
 			$this->server->getPluginManager()->callEvent($ev);
 
@@ -1200,7 +1200,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							continue;
 						}
 
-						$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
+						$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $item));
 						if($ev->isCancelled()){
 							continue;
 						}
@@ -1225,7 +1225,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								continue;
 							}
 
-							$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $item));
+							$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $item));
 							if($ev->isCancelled()){
 								continue;
 							}
@@ -1282,7 +1282,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = DataPacketReceiveEvent::createEvent($this, $packet));
 		if($ev->isCancelled()){
 			return;
 		}
@@ -1324,7 +1324,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					return;
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+				$this->server->getPluginManager()->callEvent($ev = PlayerPreLoginEvent::createEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close("", $ev->getKickMessage());
 
@@ -1399,7 +1399,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				parent::__construct($this->level->getChunk($nbt["Pos"][0] >> 4, $nbt["Pos"][2] >> 4, true), $nbt);
 				$this->loggedIn = true;
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
+				$this->server->getPluginManager()->callEvent($ev = PlayerLoginEvent::createEvent($this, "Plugin reason"));
 				if($ev->isCancelled()){
 					$this->close(TextFormat::YELLOW . $this->username . " has left the game", $ev->getKickMessage());
 
@@ -1673,7 +1673,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							]);
 
 							$f = 1.5;
-							$ev = new EntityShootBowEvent($this, $bow, new Arrow($this->chunk, $nbt, $this), $f);
+							$ev = EntityShootBowEvent::createEvent($this, $bow, new Arrow($this->chunk, $nbt, $this), $f);
 
 							$this->server->getPluginManager()->callEvent($ev);
 
@@ -1690,7 +1690,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 									}
 								}
 								if($ev->getProjectile() instanceof Projectile){
-									$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($ev->getProjectile()));
+									$this->server->getPluginManager()->callEvent($projectileEv = ProjectileLaunchEvent::createEvent($ev->getProjectile()));
 									if($projectileEv->isCancelled()){
 										$ev->getProjectile()->kill();
 									}else{
@@ -1852,7 +1852,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -intval($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 					}
 
-					$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
+					$ev = EntityDamageByEntityEvent::createEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
 					if($cancelled){
 						$ev->setCancelled();
 					}
@@ -1882,7 +1882,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					break;
 				}
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $packet->action));
+				$this->server->getPluginManager()->callEvent($ev = PlayerAnimationEvent::createEvent($this, $packet->action));
 				if($ev->isCancelled()){
 					break;
 				}
@@ -1899,7 +1899,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->craftingType = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
+				$this->server->getPluginManager()->callEvent($ev = PlayerRespawnEvent::createEvent($this, $this->getSpawn()));
 
 				$this->teleport($ev->getRespawnPosition());
 				$this->fireTicks = 0;
@@ -1955,7 +1955,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						];
 						$slot = $this->inventory->getItemInHand();
 						if($this->getHealth() < 20 and isset($items[$slot->getID()])){
-							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
+							$this->server->getPluginManager()->callEvent($ev = PlayerItemConsumeEvent::createEvent($this, $slot));
 							if($ev->isCancelled()){
 								$this->inventory->sendContents($this);
 								break;
@@ -1969,7 +1969,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							Server::broadcastPacket($this->getViewers(), $pk);
 
 							$amount = $items[$slot->getID()];
-							$this->server->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING));
+							$this->server->getPluginManager()->callEvent($ev = EntityRegainHealthEvent::createEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING));
 							if(!$ev->isCancelled()){
 								$this->heal($ev->getAmount(), $ev);
 							}
@@ -1989,7 +1989,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$packet->eid = $this->id;
 				$item = $this->inventory->getItemInHand();
-				$ev = new PlayerDropItemEvent($this, $item);
+				$ev = PlayerDropItemEvent::createEvent($this, $item);
 				$this->server->getPluginManager()->callEvent($ev);
 				if($ev->isCancelled()){
 					$this->inventory->sendContents($this);
@@ -2014,7 +2014,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$packet->message = TextFormat::clean($packet->message);
 				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
 					$message = $packet->message;
-					$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
+					$this->server->getPluginManager()->callEvent($ev = PlayerCommandPreprocessEvent::createEvent($this, $message));
 					if($ev->isCancelled()){
 						break;
 					}
@@ -2023,7 +2023,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 						Timings::$playerCommandTimer->stopTiming();
 					}else{
-						$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
+						$this->server->getPluginManager()->callEvent($ev = PlayerChatEvent::createEvent($this, $ev->getMessage()));
 						if(!$ev->isCancelled()){
 							$this->server->broadcastMessage(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 						}
@@ -2037,7 +2037,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->craftingType = 0;
 				$this->currentTransaction = null;
 				if(isset($this->windowIndex[$packet->windowid])){
-					$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowid], $this));
+					$this->server->getPluginManager()->callEvent(InventoryCloseEvent::createEvent($this->windowIndex[$packet->windowid], $this));
 					$this->removeWindow($this->windowIndex[$packet->windowid]);
 				}else{
 					unset($this->windowIndex[$packet->windowid]);
@@ -2192,7 +2192,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($nbt["id"] !== Tile::SIGN){
 						$t->spawnTo($this);
 					}else{
-						$ev = new SignChangeEvent($t->getBlock(), $this, [
+						$ev = SignChangeEvent::createEvent($t->getBlock(), $this, [
 							$nbt["Text1"], $nbt["Text2"], $nbt["Text3"], $nbt["Text4"]
 						]);
 
@@ -2223,7 +2223,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @return bool
 	 */
 	public function kick($reason = ""){
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, TextFormat::YELLOW . $this->username . " has left the game"));
+		$this->server->getPluginManager()->callEvent($ev = PlayerKickEvent::createEvent($this, $reason, TextFormat::YELLOW . $this->username . " has left the game"));
 		if(!$ev->isCancelled()){
 			$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
 			$this->sendMessage($message);
@@ -2269,7 +2269,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected and !$this->closed){
 			$this->connected = false;
 			if($this->username != ""){
-				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
+				$this->server->getPluginManager()->callEvent($ev = PlayerQuitEvent::createEvent($this, $message));
 				if($this->server->getAutoSave() and $this->loggedIn === true){
 					$this->save();
 				}
@@ -2439,7 +2439,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		Entity::kill();
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops(), $message));
+		$this->server->getPluginManager()->callEvent($ev = PlayerDeathEvent::createEvent($this, $this->getDrops(), $message));
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){

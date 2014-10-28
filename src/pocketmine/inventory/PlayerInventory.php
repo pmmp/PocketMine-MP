@@ -103,7 +103,7 @@ class PlayerInventory extends BaseInventory{
 		if($slot >= -1 and $slot < $this->getSize()){
 			$item = $this->getItem($slot);
 			if($this->getHolder() instanceof Player){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $this->itemInHandIndex));
+				Server::getInstance()->getPluginManager()->callEvent($ev = PlayerItemHeldEvent::createEvent($this->getHolder(), $item, $slot, $this->itemInHandIndex));
 				if($ev->isCancelled()){
 					$this->sendHeldItem($this->getHolder());
 
@@ -203,7 +203,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		if($index >= $this->getSize()){ //Armor change
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+			Server::getInstance()->getPluginManager()->callEvent($ev = EntityArmorChangeEvent::createEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled() and $this->getHolder() instanceof Player){
 				$this->sendArmorContents($this->getViewers());
 				$this->sendContents($this->getViewers());
@@ -229,7 +229,7 @@ class PlayerInventory extends BaseInventory{
 			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
+				Server::getInstance()->getPluginManager()->callEvent($ev = EntityArmorChangeEvent::createEvent($this->getHolder(), $old, $item, $index));
 				if($ev->isCancelled()){
 					$this->sendArmorContents($this->getViewers());
 					$this->sendContents($this->getViewers());

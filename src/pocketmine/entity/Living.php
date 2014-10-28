@@ -124,7 +124,7 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 		parent::kill();
-		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
+		$this->server->getPluginManager()->callEvent($ev = EntityDeathEvent::createEvent($this, $this->getDrops()));
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
@@ -135,7 +135,7 @@ abstract class Living extends Entity implements Damageable{
 		parent::entityBaseTick();
 
 		if($this->dead !== true and $this->isInsideOfSolid()){
-			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1));
+			$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1));
 			if(!$ev->isCancelled()){
 				$this->attack($ev->getFinalDamage(), $ev);
 			}
@@ -146,7 +146,7 @@ abstract class Living extends Entity implements Damageable{
 			if($this->airTicks <= -20){
 				$this->airTicks = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2));
+				$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2));
 				if(!$ev->isCancelled()){
 					$this->attack($ev->getFinalDamage(), $ev);
 				}
