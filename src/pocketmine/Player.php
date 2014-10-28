@@ -426,6 +426,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
 		$this->newPosition = new Vector3(0, 0, 0);
+		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 	}
 
 	/**
@@ -1561,7 +1562,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->dead === true){
 					break;
 				}
-				
+
 				$blockVector = Vector3::createVector($packet->x, $packet->y, $packet->z);
 
 				$this->craftingType = 0;
