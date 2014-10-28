@@ -1483,12 +1483,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->forceMovement instanceof Vector3 and ($revert or $newPos->distance($this->forceMovement) > 0.2)){
 					$pk = MovePlayerPacket::getFromPool();
 					$pk->eid = 0;
-					$pk->x = $this->x;
-					$pk->y = $this->y + $this->getEyeHeight() + 0.01;
-					$pk->z = $this->z;
-					$pk->bodyYaw = $this->yaw;
-					$pk->pitch = $this->pitch;
-					$pk->yaw = $this->yaw;
+					$pk->x = $this->forceMovement->x;
+					$pk->y = $this->forceMovement->y + $this->getEyeHeight() + 0.01;
+					$pk->z = $this->forceMovement->z;
+					$pk->bodyYaw = $packet->bodyYaw;
+					$pk->pitch = $packet->pitch;
+					$pk->yaw = $packet->yaw;
 					$pk->teleport = true;
 					$this->directDataPacket($pk);
 				}else{
