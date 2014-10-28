@@ -50,6 +50,7 @@ use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
+use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\EntityMetadataStore;
@@ -917,6 +918,7 @@ class Server{
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level->unload($forceUnload) === true){
+			Position::clearPositions();
 			unset($this->levels[$level->getID()]);
 
 			return true;
@@ -2114,13 +2116,9 @@ class Server{
 		$this->generationManager->process();
 
 
-		if(($this->tickCounter % 600) === 0){
-			Vector3::clearVectors();
-			AxisAlignedBB::clearBoundingBoxes();
-		}else{
-			Vector3::clearVectorList();
-			AxisAlignedBB::clearBoundingBoxPool();
-		}
+		Vector3::clearVectorList();
+		Position::clearPositionList();
+		AxisAlignedBB::clearBoundingBoxPool();
 
 		Timings::$serverTickTimer->stopTiming();
 

@@ -88,7 +88,7 @@ class TeleportCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 3){
-			$pos = new Position($target->x, $target->y, $target->z, $target->getLevel());
+			$pos = Position::clonePosition($target);
 			$origin->teleport($pos);
 			Command::broadcastCommandMessage($sender, "Teleported " . $origin->getDisplayName() . " to " . $target->getDisplayName());
 

@@ -33,7 +33,7 @@ use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;

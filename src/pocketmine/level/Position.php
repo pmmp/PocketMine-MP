@@ -21,12 +21,53 @@
 
 namespace pocketmine\level;
 
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 
 class Position extends Vector3{
 
+	/** @var Position[] */
+	private static $positionList = [];
+	private static $nextPosition = 0;
+	
 	/** @var Level */
 	public $level = null;
+
+	public static function clearPositions(){
+		self::$nextPosition = 0;
+		self::$positionList = [];
+	}
+
+	public static function clearPositionList(){
+		if(self::$nextPosition > 65536){
+			self::clearVectors();
+		}else{
+			self::$nextPosition = 0;
+		}
+	}
+
+	/**
+	 * @param $x
+	 * @param $y
+	 * @param $z
+	 * @param Level $level
+	 *
+	 * @return Position
+	 */
+	public static function createPosition($x, $y, $z, Level $level){
+		if(self::$nextPosition >= count(self::$positionList)){
+			self::$positionList[] = new Position(0, 0, 0, null);
+		}
+
+		return self::$positionList[self::$nextPosition++]->setLevel($level)->setComponents($x, $y, $z);
+	}
+
+	public static function clonePosition(Position $pos){
+		if(self::$nextPosition >= count(self::$positionList)){
+			self::$positionList[] = new Position(0, 0, 0, null);
+		}
+
+		return self::$positionList[self::$nextPosition++]->setLevel($pos->level)->setComponents($pos->x, $pos->y, $pos->z);
+	}
 
 	/**
 	 * @param int   $x
@@ -42,7 +83,7 @@ class Position extends Vector3{
 	}
 
 	public static function fromObject(Vector3 $pos, Level $level = null){
-		return new Position($pos->x, $pos->y, $pos->z, $level);
+		return self::createPosition($pos->x, $pos->y, $pos->z, $level);
 	}
 
 	/**
@@ -52,8 +93,9 @@ class Position extends Vector3{
 		return $this->level;
 	}
 
-	public function setLevel(Level $level, $strong = false){
+	public function setLevel(Level $level){
 		$this->level = $level;
+		return $this;
 	}
 
 	/**

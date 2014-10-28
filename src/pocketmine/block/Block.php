@@ -686,7 +686,7 @@ class Block extends Position implements Metadatable{
 			$block = new Block($id, $meta);
 		}
 
-		if($pos instanceof Position){
+		if($pos !== null){
 			$block->x = $pos->x;
 			$block->y = $pos->y;
 			$block->z = $pos->z;

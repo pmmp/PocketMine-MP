@@ -51,7 +51,11 @@ class AxisAlignedBB{
 	}
 
 	public static function clearBoundingBoxPool(){
-		self::$nextBoundingBox = 0;
+		if(self::$nextBoundingBox > 65536){
+			self::clearBoundingBoxes();
+		}else{
+			self::$nextBoundingBox = 0;
+		}
 	}
 
 	/**

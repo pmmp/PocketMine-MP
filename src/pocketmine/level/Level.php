@@ -910,7 +910,7 @@ class Level implements ChunkManager, Metadatable{
 			return $this->blockCache[$index] = $air;
 		}
 
-		return $this->blockCache[$index] = Block::get($blockId, $meta, new Position($pos->x, $pos->y, $pos->z, $this));
+		return $this->blockCache[$index] = Block::get($blockId, $meta, $pos instanceof Position ? $pos : Position::createPosition($pos->x, $pos->y, $pos->z, $this));
 	}
 
 	/**
@@ -940,7 +940,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getID(), $block->getDamage())){
 			if(!($pos instanceof Position)){
-				$pos = new Position($pos->x, $pos->y, $pos->z, $this);
+				$pos = Position::createPosition($pos->x, $pos->y, $pos->z, $this);
 			}
 			$block->position($pos);
 			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
@@ -1938,14 +1938,14 @@ class Level implements ChunkManager, Metadatable{
 			for(; $v->y < 128; ++$v->y){
 				if($this->getBlock($v->getSide(1)) instanceof Air){
 					if($this->getBlock($v) instanceof Air){
-						return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
+						return Position::createPosition($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
 					}
 				}else{
 					++$v->y;
 				}
 			}
 
-			return new Position($spawn->x, $v->y, $spawn->z, $this);
+			return Position::createPosition($spawn->x, $v->y, $spawn->z, $this);
 		}
 
 		return false;

@@ -54,7 +54,11 @@ class Vector3{
 	}
 
 	public static function clearVectorList(){
-		self::$nextVector = 0;
+		if(self::$nextVector > 65536){
+			self::clearVectors();
+		}else{
+			self::$nextVector = 0;
+		}
 	}
 
 	/**

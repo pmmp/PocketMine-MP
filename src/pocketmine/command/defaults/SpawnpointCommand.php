@@ -70,14 +70,14 @@ class SpawnpointCommand extends VanillaCommand{
 				$x = (int) $this->getRelativeDouble($pos->x, $sender, $args[1]);
 				$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, 128);
 				$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
-				$target->setSpawn(new Position($x, $y, $z, $level));
+				$target->setSpawn(Position::createPosition($x, $y, $z, $level));
 				Command::broadcastCommandMessage($sender, "Set " . $target->getDisplayName() . "'s spawnpoint to " . $x . ", " . $y . ", " . $z);
 
 				return true;
 			}
 		}elseif(count($args) <= 1){
 			if($sender instanceof Player){
-				$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
+				$pos = Position::createPosition((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
 				$target->setSpawn($pos);
 				Command::broadcastCommandMessage($sender, "Set " . $target->getDisplayName() . "'s spawnpoint to " . $pos->x . ", " . $pos->y . ", " . $pos->z);
 

@@ -40,7 +40,7 @@ use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\Byte;
@@ -737,7 +737,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function getPosition(){
-		return new Position($this->x, $this->y, $this->z, $this->level);
+		return Position::createPosition($this->x, $this->y, $this->z, $this->level);
 	}
 
 	public function getLocation(){
