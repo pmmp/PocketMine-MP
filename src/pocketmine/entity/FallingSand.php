@@ -26,7 +26,7 @@ use pocketmine\block\Block;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Int;
@@ -58,8 +58,8 @@ class FallingSand extends Entity{
 			$this->namedtag["TileID"] = new Int("TileID", $this->blockId);
 		}
 
-		if(isset($this->namedtag->TileData)){
-			$this->damage = $this->namedtag["TileData"];
+		if(isset($this->namedtag->Data)){
+			$this->damage = $this->namedtag["Data"];
 		}
 
 		if($this->blockId === 0){
@@ -115,7 +115,7 @@ class FallingSand extends Entity{
 				$this->kill();
 				$block = $this->level->getBlock($pos);
 				if(!$block->isFullBlock){
-					$this->getLevel()->dropItem($this, Item::get($this->getBlock(), $this->getDamage(), 1));
+					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = EntityBlockChangeEvent::createEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
 					if(!$ev->isCancelled()){

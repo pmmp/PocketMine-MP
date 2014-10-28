@@ -23,7 +23,7 @@ namespace pocketmine\entity;
 
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -67,9 +67,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 				$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 			}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, Item::get($item["id"], $item["Damage"], $item["Count"]), $this);
+				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::get($item["id"], $item["Damage"], $item["Count"]), $this);
 			}else{
-				$this->inventory->setItem($item["Slot"] - 9, Item::get($item["id"], $item["Damage"], $item["Count"]), $this);
+				$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]), $this);
 			}
 		}
 
@@ -140,7 +140,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
-				if($item instanceof Item and $item->getID() !== Item::AIR){
+				if($item instanceof ItemItem and $item->getID() !== ItemItem::AIR){
 					$this->namedtag->Inventory[$slot] = new Compound(false, [
 						new Byte("Count", $item->getCount()),
 						new Short("Damage", $item->getDamage()),

@@ -1474,9 +1474,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
 
-				$revert = ($this->dead === true or $this->spawned !== true);
+				$revert = false;
+				if($this->dead === true or $this->spawned !== true){
+					$revert = true;
+					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+				}
 
-				if($revert or ($this->forceMovement instanceof Vector3 and $newPos->distance($this->forceMovement) > 0.2)){
+				if($this->forceMovement instanceof Vector3 and ($revert or $newPos->distance($this->forceMovement) > 0.2)){
 					$pk = MovePlayerPacket::getFromPool();
 					$pk->eid = 0;
 					$pk->x = $this->x;

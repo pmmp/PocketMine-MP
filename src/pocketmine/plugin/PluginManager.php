@@ -33,6 +33,7 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -546,12 +547,18 @@ class PluginManager{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if(!$plugin->isEnabled()){
-
-			foreach($plugin->getDescription()->getPermissions() as $perm){
-				$this->addPermission($perm);
+			try{
+				foreach($plugin->getDescription()->getPermissions() as $perm){
+					$this->addPermission($perm);
+				}
+				$plugin->getPluginLoader()->enablePlugin($plugin);
+			}catch(\Exception $e){
+				$logger = Server::getInstance()->getLogger();
+				if($logger instanceof MainLogger){
+					$logger->logException($e);
+				}
+				$this->disablePlugin($plugin);
 			}
-
-			$plugin->getPluginLoader()->enablePlugin($plugin);
 		}
 	}
 
@@ -617,7 +624,15 @@ class PluginManager{
 	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin->isEnabled()){
-			$plugin->getPluginLoader()->disablePlugin($plugin);
+			try{
+				$plugin->getPluginLoader()->disablePlugin($plugin);
+			}catch(\Exception $e){
+				$logger = Server::getInstance()->getLogger();
+				if($logger instanceof MainLogger){
+					$logger->logException($e);
+				}
+			}
+
 			$this->server->getScheduler()->cancelTasks($plugin);
 			HandlerList::unregisterAll($plugin);
 			foreach($plugin->getDescription()->getPermissions() as $perm){
