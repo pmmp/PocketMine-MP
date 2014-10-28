@@ -1558,6 +1558,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
+				if($this->spawned === false or $this->dead === true){
+					break;
+				}
+				
 				$blockVector = Vector3::createVector($packet->x, $packet->y, $packet->z);
 
 				$this->craftingType = 0;
