@@ -22,6 +22,7 @@
 namespace pocketmine\level\format\generic;
 
 use pocketmine\level\format\ChunkSection;
+use pocketmine\utils\ChunkException;
 
 /**
  * Stub used to detect empty chunks
@@ -64,7 +65,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlock($x, $y, $z, $id = null, $meta = null){
-		throw new \Exception("Tried to modify an empty Chunk");
+		throw new ChunkException("Tried to modify an empty Chunk");
 	}
 
 	public function getIdArray(){
@@ -84,7 +85,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockId($x, $y, $z, $id){
-		throw new \Exception("Tried to modify an empty Chunk");
+		throw new ChunkException("Tried to modify an empty Chunk");
 	}
 
 	final public function getBlockData($x, $y, $z){
@@ -92,7 +93,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockData($x, $y, $z, $data){
-		throw new \Exception("Tried to modify an empty Chunk");
+		throw new ChunkException("Tried to modify an empty Chunk");
 	}
 
 	final public function getBlockLight($x, $y, $z){
@@ -100,7 +101,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockLight($x, $y, $z, $level){
-		throw new \Exception("Tried to modify an empty Chunk");
+		throw new ChunkException("Tried to modify an empty Chunk");
 	}
 
 	final public function getBlockSkyLight($x, $y, $z){
@@ -108,6 +109,6 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockSkyLight($x, $y, $z, $level){
-		throw new \Exception("Tried to modify an empty Chunk");
+		throw new ChunkException("Tried to modify an empty Chunk");
 	}
 }

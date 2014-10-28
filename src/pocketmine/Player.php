@@ -2355,7 +2355,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 */
 	public function save(){
 		if($this->closed){
-			throw new \Exception("Tried to save closed player");
+			throw new \InvalidStateException("Tried to save closed player");
 		}
 
 		parent::saveNBT();

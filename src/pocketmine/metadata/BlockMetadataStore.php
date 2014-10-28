@@ -43,45 +43,45 @@ class BlockMetadataStore extends MetadataStore{
 
 	public function getMetadata($block, $metadataKey){
 		if($block instanceof Block){
-			throw new \Exception("Object must be a Block");
+			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
 			return parent::getMetadata($block, $metadataKey);
 		}else{
-			throw new \Exception("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
 		}
 	}
 
 	public function hasMetadata($block, $metadataKey){
 		if($block instanceof Block){
-			throw new \Exception("Object must be a Block");
+			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
 			return parent::hasMetadata($block, $metadataKey);
 		}else{
-			throw new \Exception("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
 		}
 	}
 
 	public function removeMetadata($block, $metadataKey, Plugin $owningPlugin){
 		if($block instanceof Block){
-			throw new \Exception("Object must be a Block");
+			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
 			parent::hasMetadata($block, $metadataKey, $owningPlugin);
 		}else{
-			throw new \Exception("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
 		}
 	}
 
 	public function setMetadata($block, $metadataKey, MetadataValue $newMetadatavalue){
 		if($block instanceof Block){
-			throw new \Exception("Object must be a Block");
+			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
 			parent::setMetadata($block, $metadataKey, $newMetadatavalue);
 		}else{
-			throw new \Exception("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
 		}
 	}
 }

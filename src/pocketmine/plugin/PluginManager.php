@@ -34,6 +34,7 @@ use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\PluginException;
 
 /**
  * Manages all the plugins, Permissions and Permissibles
@@ -675,11 +676,11 @@ class PluginManager{
 	 * @param Listener $listener
 	 * @param Plugin   $plugin
 	 *
-	 * @throws \Exception
+	 * @throws PluginException
 	 */
 	public function registerEvents(Listener $listener, Plugin $plugin){
 		if(!$plugin->isEnabled()){
-			throw new \Exception("Plugin attempted to register " . get_class($listener) . " while not enabled");
+			throw new PluginException("Plugin attempted to register " . get_class($listener) . " while not enabled");
 		}
 
 		$reflection = new \ReflectionClass(get_class($listener));
@@ -723,15 +724,15 @@ class PluginManager{
 	 * @param Plugin        $plugin
 	 * @param bool          $ignoreCancelled
 	 *
-	 * @throws \Exception
+	 * @throws PluginException
 	 */
 	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
 		if(!is_subclass_of($event, Event::class) or (new \ReflectionClass($event))->isAbstract()){
-			throw new \Exception($event . " is not a valid Event");
+			throw new PluginException($event . " is not a valid Event");
 		}
 
 		if(!$plugin->isEnabled()){
-			throw new \Exception("Plugin attempted to register " . $event . " while not enabled");
+			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");
 		}
 
 		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . get_class($listener) . "::" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "???") . "(" . (new \ReflectionClass($event))->getShortName() . ")", self::$pluginParentTimer);

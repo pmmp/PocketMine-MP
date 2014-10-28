@@ -32,6 +32,7 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
+use pocketmine\utils\ChunkException;
 
 abstract class Tile extends Position{
 	const SIGN = "Sign";
@@ -95,7 +96,7 @@ abstract class Tile extends Position{
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
-			throw new \Exception("Invalid garbage Chunk given to Tile");
+			throw new ChunkException("Invalid garbage Chunk given to Tile");
 		}
 
 		$this->timings = Timings::getTileEntityTimings($this);

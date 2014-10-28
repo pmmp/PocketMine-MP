@@ -78,8 +78,6 @@ abstract class BaseFullChunk implements FullChunk{
 	 * @param int[]         $biomeColors
 	 * @param Compound[]    $entities
 	 * @param Compound[]    $tiles
-	 *
-	 * @throws \Exception
 	 */
 	protected function __construct($provider, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
 		$this->provider = $provider;

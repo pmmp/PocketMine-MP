@@ -22,6 +22,7 @@
 namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
+use pocketmine\utils\PluginException;
 
 class PluginDescription{
 	private $name;
@@ -53,12 +54,12 @@ class PluginDescription{
 	/**
 	 * @param array $plugin
 	 *
-	 * @throws \Exception
+	 * @throws PluginException
 	 */
 	private function loadMap(array $plugin){
 		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
 		if($this->name === ""){
-			throw new \Exception("Invalid PluginDescription name");
+			throw new PluginException("Invalid PluginDescription name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = $plugin["version"];

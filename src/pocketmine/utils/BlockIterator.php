@@ -162,7 +162,7 @@ class BlockIterator implements \Iterator{
 		}
 
 		if(!$startBlockFound){
-			throw new \Exception("Start block missed in BlockIterator");
+			throw new \RuntimeException("Start block missed in BlockIterator");
 		}
 
 		$this->maxDistanceInt = round($maxDistance / (sqrt($mainDirection ** 2 + $secondDirection ** 2 + $thirdDirection ** 2) / $mainDirection));

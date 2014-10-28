@@ -25,6 +25,7 @@
 namespace pocketmine\metadata;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\utils\PluginException;
 
 abstract class MetadataStore{
 	/** @var \WeakMap[] */
@@ -42,7 +43,7 @@ abstract class MetadataStore{
 	public function setMetadata($subject, $metadataKey, MetadataValue $newMetadataValue){
 		$owningPlugin = $newMetadataValue->getOwningPlugin();
 		if($owningPlugin === null){
-			throw new \Exception("Plugin cannot be null");
+			throw new PluginException("Plugin cannot be null");
 		}
 
 		$key = $this->disambiguate($subject, $metadataKey);

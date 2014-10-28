@@ -33,6 +33,7 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\String;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\Binary;
+use pocketmine\utils\ChunkException;
 
 class McRegion extends BaseLevelProvider{
 
@@ -109,7 +110,7 @@ class McRegion extends BaseLevelProvider{
 	public function requestChunkTask($x, $z){
 		$chunk = $this->getChunk($x, $z, false);
 		if(!($chunk instanceof Chunk)){
-			throw new \Exception("Invalid Chunk sent");
+			throw new ChunkException("Invalid Chunk sent");
 		}
 
 		$tiles = "";
@@ -239,7 +240,7 @@ class McRegion extends BaseLevelProvider{
 
 	public function setChunk($chunkX, $chunkZ, FullChunk $chunk){
 		if(!($chunk instanceof Chunk)){
-			throw new \Exception("Invalid Chunk class");
+			throw new ChunkException("Invalid Chunk class");
 		}
 
 		$chunk->setProvider($this);

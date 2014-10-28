@@ -225,7 +225,7 @@ class Permission{
 			if($value !== null){
 				$default = $value;
 			}else{
-				throw new \Exception("'default' key contained unknown value");
+				throw new \InvalidStateException("'default' key contained unknown value");
 			}
 		}
 
@@ -240,7 +240,7 @@ class Permission{
 					$children[$k] = true;
 				}
 			}else{
-				throw new \Exception("'children' key is of wrong type");
+				throw new \InvalidStateException("'children' key is of wrong type");
 			}
 		}
 

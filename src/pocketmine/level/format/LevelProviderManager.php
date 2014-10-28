@@ -22,6 +22,7 @@
 namespace pocketmine\level\format;
 
 use pocketmine\Server;
+use pocketmine\utils\LevelException;
 
 abstract class LevelProviderManager{
 	protected static $providers = [];
@@ -30,11 +31,11 @@ abstract class LevelProviderManager{
 	 * @param Server $server
 	 * @param string $class
 	 *
-	 * @throws \Exception
+	 * @throws LevelException
 	 */
 	public static function addProvider(Server $server, $class){
 		if(!is_subclass_of($class, LevelProvider::class)){
-			throw new \Exception("Class is not a subclass of LevelProvider");
+			throw new LevelException("Class is not a subclass of LevelProvider");
 		}
 		self::$providers[strtolower($class::getProviderName())] = $class;
 	}

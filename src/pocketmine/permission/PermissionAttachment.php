@@ -22,6 +22,7 @@
 namespace pocketmine\permission;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\utils\PluginException;
 
 class PermissionAttachment{
 	/** @var PermissionRemovedExecutor */
@@ -42,11 +43,11 @@ class PermissionAttachment{
 	 * @param Plugin      $plugin
 	 * @param Permissible $permissible
 	 *
-	 * @throws \Exception
+	 * @throws PluginException
 	 */
 	public function __construct(Plugin $plugin, Permissible $permissible){
 		if(!$plugin->isEnabled()){
-			throw new \Exception("Plugin " . $plugin->getDescription()->getName() . " is disabled");
+			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
 		$this->permissible = $permissible;

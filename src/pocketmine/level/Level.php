@@ -92,6 +92,7 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
+use pocketmine\utils\LevelException;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 
@@ -250,7 +251,7 @@ class Level implements ChunkManager, Metadatable{
 		if(is_subclass_of($provider, LevelProvider::class, true)){
 			$this->provider = new $provider($this, $path);
 		}else{
-			throw new \Exception("Provider is not a subclass of LevelProvider");
+			throw new LevelException("Provider is not a subclass of LevelProvider");
 		}
 		$this->server->getLogger()->info("Preparing level \"" . $this->provider->getName() . "\"");
 		$this->generator = Generator::getGenerator($this->provider->getGenerator());
@@ -1736,11 +1737,11 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param Entity $entity
 	 *
-	 * @throws \RuntimeException
+	 * @throws LevelException
 	 */
 	public function removeEntity(Entity $entity){
 		if($entity->getLevel() !== $this){
-			throw new \RuntimeException("Invalid Entity level");
+			throw new LevelException("Invalid Entity level");
 		}
 
 		if($entity instanceof Player){
@@ -1757,11 +1758,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Entity $entity
 	 *
-	 * @throws \RuntimeException
+	 * @throws LevelException
 	 */
 	public function addEntity(Entity $entity){
 		if($entity->getLevel() !== $this){
-			throw new \RuntimeException("Invalid Entity level");
+			throw new LevelException("Invalid Entity level");
 		}
 		if($entity instanceof Player){
 			$this->players[$entity->getID()] = $entity;
@@ -1772,11 +1773,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Tile $tile
 	 *
-	 * @throws \RuntimeException
+	 * @throws LevelException
 	 */
 	public function addTile(Tile $tile){
 		if($tile->getLevel() !== $this){
-			throw new \RuntimeException("Invalid Tile level");
+			throw new LevelException("Invalid Tile level");
 		}
 		$this->tiles[$tile->getID()] = $tile;
 	}
@@ -1784,11 +1785,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Tile $tile
 	 *
-	 * @throws \RuntimeException
+	 * @throws LevelException
 	 */
 	public function removeTile(Tile $tile){
 		if($tile->getLevel() !== $this){
-			throw new \RuntimeException("Invalid Tile level");
+			throw new LevelException("Invalid Tile level");
 		}
 
 		unset($this->tiles[$tile->getID()]);

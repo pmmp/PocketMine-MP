@@ -99,7 +99,9 @@ use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Cache;
 use pocketmine\utils\Config;
+use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\ServerException;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
@@ -948,11 +950,11 @@ class Server{
 	 *
 	 * @return bool
 	 *
-	 * @throws \Exception
+	 * @throws LevelException
 	 */
 	public function loadLevel($name){
 		if(trim($name) === ""){
-			throw new \Exception("Invalid empty level name");
+			throw new LevelException("Invalid empty level name");
 		}
 		if($this->isLevelLoaded($name)){
 			return true;
@@ -1780,7 +1782,7 @@ class Server{
 	 */
 	public function dispatchCommand(CommandSender $sender, $commandLine){
 		if(!($sender instanceof CommandSender)){
-			throw new \Exception("CommandSender is not valid");
+			throw new ServerException("CommandSender is not valid");
 		}
 
 		if($this->commandMap->dispatch($sender, $commandLine)){

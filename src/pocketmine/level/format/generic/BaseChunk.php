@@ -28,6 +28,7 @@ use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
+use pocketmine\utils\ChunkException;
 
 abstract class BaseChunk extends BaseFullChunk implements Chunk{
 
@@ -62,7 +63,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 	 * @param Compound[]     $entities
 	 * @param Compound[]     $tiles
 	 *
-	 * @throws \Exception
+	 * @throws ChunkException
 	 */
 	protected function __construct($provider, $x, $z, array $sections, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
 		$this->provider = $provider;
@@ -72,12 +73,11 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 			if($section instanceof ChunkSection){
 				$this->sections[$Y] = $section;
 			}else{
-				trigger_error("Received invalid ChunkSection instance", E_USER_ERROR);
-				throw new \Exception("Received invalid ChunkSection instance");
+				throw new ChunkException("Received invalid ChunkSection instance");
 			}
 
 			if($Y >= self::SECTION_COUNT){
-				throw new \Exception("Invalid amount of chunks");
+				throw new ChunkException("Invalid amount of chunks");
 			}
 		}
 
@@ -105,7 +105,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->hasChanged = true;
 			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
-		}catch(\Exception $e){
+		}catch(ChunkException $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			return $this->sections[$y >> 4]->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f);
@@ -120,7 +120,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->setBlockId($x, $y & 0x0f, $z, $id);
 			$this->hasChanged = true;
-		}catch(\Exception $e){
+		}catch(ChunkException $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockId($x, $y, $z, $id);
@@ -135,7 +135,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->setBlockData($x, $y & 0x0f, $z, $data);
 			$this->hasChanged = true;
-		}catch(\Exception $e){
+		}catch(ChunkException $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockData($x, $y, $z, $data);
@@ -150,7 +150,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 			$this->hasChanged = true;
-		}catch(\Exception $e){
+		}catch(ChunkException $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockSkyLight($x, $y, $z, $data);
@@ -165,7 +165,7 @@ abstract class BaseChunk extends BaseFullChunk implements Chunk{
 		try{
 			$this->sections[$y >> 4]->getBlockSkyLight($x, $y & 0x0f, $z, $data);
 			$this->hasChanged = true;
-		}catch(\Exception $e){
+		}catch(ChunkException $e){
 			$level = $this->getProvider();
 			$this->setInternalSection($Y = $y >> 4, $level::createChunkSection($Y));
 			$this->setBlockLight($x, $y, $z, $data);

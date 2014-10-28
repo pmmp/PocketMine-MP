@@ -59,6 +59,7 @@ use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\ChunkException;
 
 abstract class Entity extends Location implements Metadatable{
 
@@ -158,7 +159,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
-			throw new \Exception("Invalid garbage Chunk given to Entity");
+			throw new ChunkException("Invalid garbage Chunk given to Entity");
 		}
 
 		$this->timings = Timings::getEntityTimings($this);

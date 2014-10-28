@@ -24,6 +24,7 @@ namespace pocketmine\level\generator;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
+use pocketmine\utils\ChunkException;
 use pocketmine\utils\Random;
 
 class GenerationChunkManager implements ChunkManager{
@@ -45,7 +46,7 @@ class GenerationChunkManager implements ChunkManager{
 
 	public function __construct(GenerationManager $manager, $levelID, $seed, $class, array $options){
 		if(!class_exists($class, true) or !is_subclass_of($class, Generator::class)){
-			throw new \Exception("Class $class does not exists or is not a subclass of Generator");
+			throw new \InvalidStateException("Class $class does not exists or is not a subclass of Generator");
 		}
 
 		$this->levelID = $levelID;
@@ -75,13 +76,13 @@ class GenerationChunkManager implements ChunkManager{
 	 *
 	 * @return FullChunk
 	 *
-	 * @throws \Exception
+	 * @throws ChunkException
 	 */
 	public function getChunk($chunkX, $chunkZ){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$chunk = !isset($this->chunks[$index]) ? $this->requestChunk($chunkX, $chunkZ) : $this->chunks[$index];
 		if($chunk === null){
-			throw new \Exception("null Chunk received");
+			throw new ChunkException("null Chunk received");
 		}
 
 		return $chunk;

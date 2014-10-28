@@ -76,7 +76,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		$this->originals = $this->modifiers;
 
 		if(!isset($this->modifiers[self::MODIFIER_BASE])){
-			throw new \Exception("BASE Damage modifier missing");
+			throw new \InvalidArgumentException("BASE Damage modifier missing");
 		}
 	}
 
