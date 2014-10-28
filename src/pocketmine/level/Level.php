@@ -1363,15 +1363,15 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns the Tile in a position, or false if not found
+	 * Returns the Tile in a position, or null if not found
 	 *
 	 * @param Vector3 $pos
 	 *
-	 * @return bool|Tile
+	 * @return Tile
 	 */
 	public function getTile(Vector3 $pos){
 		if($pos instanceof Position and $pos->getLevel() !== $this){
-			return false;
+			return null;
 		}
 		$tiles = $this->getChunkTiles($pos->x >> 4, $pos->z >> 4);
 		if(count($tiles) > 0){
@@ -1382,7 +1382,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**

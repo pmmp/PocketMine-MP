@@ -46,6 +46,11 @@ class Sign extends Spawnable{
 		parent::__construct($chunk, $nbt);
 	}
 
+	public function saveNBT(){
+		parent::saveNBT();
+		unset($this->namedtag->Creator);
+	}
+
 	public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
 		$this->namedtag->Text1 = new String("Text1", $line1);
 		$this->namedtag->Text2 = new String("Text2", $line2);
