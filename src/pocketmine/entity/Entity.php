@@ -62,9 +62,12 @@ use pocketmine\Server;
 
 abstract class Entity extends Location implements Metadatable{
 
+
 	const NETWORK_ID = -1;
 
 	public static $entityCount = 1;
+	/** @var Entity[] */
+	private static $knownEntities = [];
 
 	/**
 	 * @var Player[]
@@ -217,6 +220,39 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->scheduleUpdate();
 
+	}
+
+	/**
+	 * @param int|string $type
+	 * @param FullChunk  $chunk
+	 * @param Compound   $nbt
+	 * @param            $args
+	 *
+	 * @return Entity
+	 */
+	public static function createEntity($type, FullChunk $chunk, Compound $nbt, ...$args){
+		if(isset(self::$knownEntities[$type])){
+			$class = self::$knownEntities[$type];
+			return new $class($chunk, $nbt, ...$args);
+		}
+
+		return null;
+	}
+
+	public static function registerEntity($className, $force = false){
+		$class = new \ReflectionClass($className);
+		if(is_a($className, Entity::class, true) and !$class->isAbstract()){
+			if($className::NETWORK_ID !== -1){
+				self::$knownEntities[$className::NETWORK_ID] = $className;
+			}elseif(!$force){
+				return false;
+			}
+
+			self::$knownEntities[$class->getShortName()] = $className;
+			return true;
+		}
+
+		return false;
 	}
 
 	public function saveNBT(){

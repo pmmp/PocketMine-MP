@@ -31,12 +31,21 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
+use pocketmine\entity\Arrow;
+use pocketmine\entity\Entity;
+use pocketmine\entity\FallingSand;
+use pocketmine\entity\Human;
+use pocketmine\entity\PrimedTNT;
+use pocketmine\entity\Snowball;
+use pocketmine\entity\Villager;
+use pocketmine\entity\Zombie;
 use pocketmine\event\Event;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Timings;
+use pocketmine\entity\Item as DroppedItem;
 use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\InventoryType;
@@ -82,6 +91,10 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Furnace;
+use pocketmine\tile\Sign;
+use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Cache;
@@ -1553,6 +1566,9 @@ class Server{
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
 
+		$this->registerEntities();
+		$this->registerTiles();
+
 		InventoryType::init();
 		Block::init();
 		Item::init();
@@ -2140,6 +2156,24 @@ class Server{
 		$this->nextTick += 0.05;
 
 		return true;
+	}
+
+	private function registerEntities(){
+		Entity::registerEntity(Arrow::class);
+		Entity::registerEntity(DroppedItem::class);
+		Entity::registerEntity(FallingSand::class);
+		Entity::registerEntity(PrimedTNT::class);
+		Entity::registerEntity(Snowball::class);
+		Entity::registerEntity(Villager::class);
+		Entity::registerEntity(Zombie::class);
+
+		Entity::registerEntity(Human::class, true);
+	}
+
+	private function registerTiles(){
+		Tile::registerTile(Chest::class);
+		Tile::registerTile(Furnace::class);
+		Tile::registerTile(Sign::class);
 	}
 
 }

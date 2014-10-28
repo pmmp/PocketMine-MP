@@ -35,8 +35,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
-class FallingBlock extends Entity{
-
+class FallingSand extends Entity{
 	const NETWORK_ID = 66;
 
 	public $width = 0.98;
@@ -54,8 +53,7 @@ class FallingBlock extends Entity{
 		$this->namedtag->id = new String("id", "FallingSand");
 		if(isset($this->namedtag->TileID)){
 			$this->blockId = $this->namedtag["TileID"];
-		}
-		elseif(isset($this->namedtag->Tile)){
+		}elseif(isset($this->namedtag->Tile)){
 			$this->blockId = $this->namedtag["Tile"];
 			$this->namedtag["TileID"] = new Int("TileID", $this->blockId);
 		}
@@ -151,7 +149,7 @@ class FallingBlock extends Entity{
 
 	public function spawnTo(Player $player){
 		$pk = AddEntityPacket::getFromPool();
-		$pk->type = FallingBlock::NETWORK_ID;
+		$pk->type = FallingSand::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
 		$pk->y = $this->y;

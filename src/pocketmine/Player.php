@@ -24,7 +24,7 @@ namespace pocketmine;
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Arrow;
-use pocketmine\entity\DroppedItem;
+use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
@@ -1650,7 +1650,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						]);
 
 						$f = 1.5;
-						$snowball = new Snowball($this->chunk, $nbt, $this);
+						$snowball = Entity::createEntity("Snowball", $this->chunk, $nbt, $this);
 						$snowball->setMotion($snowball->getMotion()->multiply($f));
 						if($this->isSurvival()){
 							$this->inventory->removeItem(Item::get(Item::SNOWBALL, 0, 1));
@@ -1709,7 +1709,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							]);
 
 							$f = 1.5;
-							$ev = EntityShootBowEvent::createEvent($this, $bow, new Arrow($this->chunk, $nbt, $this), $f);
+							$ev = EntityShootBowEvent::createEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this), $f);
 
 							$this->server->getPluginManager()->callEvent($ev);
 

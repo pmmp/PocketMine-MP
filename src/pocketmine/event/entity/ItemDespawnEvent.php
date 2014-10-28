@@ -21,7 +21,7 @@
 
 namespace pocketmine\event\entity;
 
-use pocketmine\entity\DroppedItem;
+use pocketmine\entity\Item;
 use pocketmine\event\Cancellable;
 
 class ItemDespawnEvent extends EntityEvent implements Cancellable{
@@ -30,15 +30,15 @@ class ItemDespawnEvent extends EntityEvent implements Cancellable{
 	public static $nextEvent = 0;
 
 	/**
-	 * @param DroppedItem $item
+	 * @param Item $item
 	 */
-	public function __construct(DroppedItem $item){
+	public function __construct(Item $item){
 		$this->entity = $item;
 
 	}
 
 	/**
-	 * @return DroppedItem
+	 * @return Item
 	 */
 	public function getEntity(){
 		return $this->entity;

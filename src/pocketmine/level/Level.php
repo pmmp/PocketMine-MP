@@ -45,7 +45,7 @@ use pocketmine\block\SnowLayer;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\Wheat;
 use pocketmine\entity\Arrow;
-use pocketmine\entity\DroppedItem;
+use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
@@ -1000,7 +1000,7 @@ class Level implements ChunkManager, Metadatable{
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, $delay = 10){
 		$motion = $motion === null ? Vector3::createVector(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
 		if($item->getID() > 0 and $item->getCount() > 0){
-			$itemEntity = new DroppedItem($this->getChunk($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
+			$itemEntity = Entity::createEntity("Item", $this->getChunk($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
 						new Double("", $source->getX()),
 						new Double("", $source->getY()),
@@ -1233,7 +1233,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
-			$tile = new Sign($this->getChunk($block->x >> 4, $block->z >> 4), new Compound(false, [
+			$tile = Tile::createTile("Sign", $this->getChunk($block->x >> 4, $block->z >> 4), new Compound(false, [
 				"id" => new String("id", Tile::SIGN),
 				"x" => new Int("x", $block->x),
 				"y" => new Int("y", $block->y),

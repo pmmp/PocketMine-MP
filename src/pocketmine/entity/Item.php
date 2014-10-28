@@ -25,7 +25,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -35,12 +35,13 @@ use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
-class DroppedItem extends Entity{
+class Item extends Entity{
+	const NETWORK_ID = 64;
 
 	protected $owner = null;
 	protected $thrower = null;
 	protected $pickupDelay = 0;
-	/** @var Item */
+	/** @var ItemItem */
 	protected $item;
 
 	public $width = 0.25;
@@ -67,7 +68,7 @@ class DroppedItem extends Entity{
 		if(isset($this->namedtag->Thrower)){
 			$this->thrower = $this->namedtag["Thrower"];
 		}
-		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
+		$this->item = ItemItem::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
 
 
 		$this->server->getPluginManager()->callEvent(ItemSpawnEvent::createEvent($this));
@@ -166,7 +167,7 @@ class DroppedItem extends Entity{
 	}
 
 	/**
-	 * @return Item
+	 * @return ItemItem
 	 */
 	public function getItem(){
 		return $this->item;

@@ -191,7 +191,7 @@ class Explosion{
 
 			if($block instanceof TNT){
 				$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-				$tnt = new PrimedTNT($this->level->getChunk($block->x >> 4, $block->z >> 4), new Compound("", [
+				$tnt = Entity::createEntity("PrimedTNT", $this->level->getChunk($block->x >> 4, $block->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [
 						new Double("", $block->x + 0.5),
 						new Double("", $block->y),

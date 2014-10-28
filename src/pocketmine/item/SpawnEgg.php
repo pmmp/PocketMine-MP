@@ -66,37 +66,10 @@ class SpawnEgg extends Item{
 				]),
 		]);
 
-		switch($this->meta){
-			case Villager::NETWORK_ID:
-				$nbt->Health = new Short("Health", 20);
-				$entity = new Villager($chunk, $nbt);
-				break;
-			case Zombie::NETWORK_ID:
-				$nbt->Health = new Short("Health", 20);
-				$entity = new Zombie($chunk, $nbt);
-				break;
-			/*
-			//TODO: use entity constants
-			case 10:
-			case 11:
-			case 12:
-			case 13:
-				$data = array(
-					"x" => $block->x + 0.5,
-					"y" => $block->y,
-					"z" => $block->z + 0.5,
-				);
-				//$e = Server::getInstance()->api->entity->add($block->level, ENTITY_MOB, $this->meta, $data);
-				//Server::getInstance()->api->entity->spawnToAll($e);
-				if(($player->gamemode & 0x01) === 0){
-					--$this->count;
-				}
-
-				return true;*/
-		}
+		$entity = Entity::createEntity($this->meta, $chunk, $nbt);
 
 		if($entity instanceof Entity){
-			if(($player->gamemode & 0x01) === 0){
+			if($player->isSurvival()){
 				--$this->count;
 			}
 			$entity->spawnToAll();
