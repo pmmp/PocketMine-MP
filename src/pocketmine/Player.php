@@ -1203,7 +1203,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							continue;
 						}
 
-						$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $item));
+						$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $entity));
 						if($ev->isCancelled()){
 							continue;
 						}
@@ -1228,7 +1228,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								continue;
 							}
 
-							$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $item));
+							$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $entity));
 							if($ev->isCancelled()){
 								continue;
 							}
