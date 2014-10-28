@@ -29,6 +29,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Projectile;
+use pocketmine\entity\Snowball;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -1629,7 +1630,42 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->dataPacket($pk);
 					break;
 				}elseif($packet->face === 0xff){
-					//TODO: add event
+					$item = $this->inventory->getItemInHand();
+					if($item->getID() === Item::SNOWBALL){
+						$nbt = new Compound("", [
+							"Pos" => new Enum("Pos", [
+								new Double("", $this->x),
+								new Double("", $this->y + $this->getEyeHeight()),
+								new Double("", $this->z)
+							]),
+							"Motion" => new Enum("Motion", [
+								new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
+								new Double("", -sin($this->pitch / 180 * M_PI)),
+								new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
+							]),
+							"Rotation" => new Enum("Rotation", [
+								new Float("", $this->yaw),
+								new Float("", $this->pitch)
+							]),
+						]);
+
+						$f = 1.5;
+						$snowball = new Snowball($this->chunk, $nbt, $this);
+						$snowball->setMotion($snowball->getMotion()->multiply($f));
+						if($this->isSurvival()){
+							$this->inventory->removeItem(Item::get(Item::SNOWBALL, 0, 1));
+						}
+						if($snowball instanceof Projectile){
+							$this->server->getPluginManager()->callEvent($projectileEv = ProjectileLaunchEvent::createEvent($snowball));
+							if($projectileEv->isCancelled()){
+								$snowball->kill();
+							}else{
+								$snowball->spawnToAll();
+							}
+						}else{
+							$snowball->spawnToAll();
+						}
+					}
 					$this->inAction = true;
 					$this->startAction = microtime(true);
 					$this->sendMetadata($this->getViewers());
