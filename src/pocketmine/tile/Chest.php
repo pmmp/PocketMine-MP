@@ -230,14 +230,16 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		}
 
 		$tile = $this->getPair();
-		unset($this->namedtag->pairx, $this->namedtag->pairz, $tile->namedtag->pairx, $tile->namedtag->pairz);
+		unset($this->namedtag->pairx, $this->namedtag->pairz);
 
 		$this->spawnToAll();
-		$this->checkPairing();
 
 		if($tile instanceof Chest){
+			unset($tile->namedtag->pairx, $tile->namedtag->pairz);
+			$tile->checkPairing();
 			$tile->spawnToAll();
 		}
+		$this->checkPairing();
 
 		return true;
 	}
