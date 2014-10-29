@@ -29,7 +29,7 @@ abstract class Thin extends Transparent{
 	public $isFullBlock = false;
 	public $isSolid = false;
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$f = 0.4375;
 		$f1 = 0.5625;

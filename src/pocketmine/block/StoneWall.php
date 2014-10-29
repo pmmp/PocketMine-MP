@@ -36,7 +36,7 @@ class StoneWall extends Transparent{
 		$this->hardness = 30;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$flag = $this->canConnect($this->getSide(2));
 		$flag1 = $this->canConnect($this->getSide(3));

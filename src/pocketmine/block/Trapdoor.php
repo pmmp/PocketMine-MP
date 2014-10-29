@@ -37,7 +37,7 @@ class Trapdoor extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$damage = $this->getDamage();
 

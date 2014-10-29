@@ -38,7 +38,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	public static function cleanPool(){
-		if(static::$next > 4096){
+		if(static::$next > 16384){
 			static::$pool = [];
 		}
 		static::$next = 0;

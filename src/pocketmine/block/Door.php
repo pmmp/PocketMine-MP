@@ -52,7 +52,7 @@ abstract class Door extends Transparent{
 		return $first & 0x07 | ($flag ? 8 : 0) | ($flag1 ? 0x10 : 0);
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$f = 0.1875;
 		$damage = $this->getFullDamage();

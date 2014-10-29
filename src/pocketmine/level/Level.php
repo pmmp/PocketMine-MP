@@ -517,10 +517,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
 
-		if(($currentTick % 200) === 0){
-			$this->blockCache = [];
-		}
-
 		if(count($this->changedCount) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedCount as $index => $mini){
@@ -569,6 +565,10 @@ class Level implements ChunkManager, Metadatable{
 		$this->processChunkRequest();
 
 		$this->timings->doTick->stopTiming();
+	}
+
+	public function clearCache(){
+		$this->blockCache = [];
 	}
 
 	private function tickChunks(){

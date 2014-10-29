@@ -42,7 +42,7 @@ class Chest extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + 0.0625,

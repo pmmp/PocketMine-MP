@@ -42,7 +42,7 @@ class Cactus extends Transparent{
 		$this->hardness = 2;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + 0.0625,

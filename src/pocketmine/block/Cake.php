@@ -37,7 +37,7 @@ class Cake extends Transparent{
 		$this->hardness = 2.5;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$f = (1 + $this->getDamage() * 2) / 16;
 

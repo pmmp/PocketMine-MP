@@ -1040,9 +1040,9 @@ abstract class Entity extends Location implements Metadatable{
 		$vector = Vector3::createVector(0, 0, 0);
 		$v = Vector3::createVector(0, 0, 0);
 
-		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
-			for($v->x = $minX; $v->x < $maxX; ++$v->x){
-				for($v->y = $minY; $v->y < $maxY; ++$v->y){
+		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
+			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
+				for($v->y = $minY; $v->y <= $maxY; ++$v->y){
 					$block = $this->level->getBlock($v);
 					if($block !== null and $block->hasEntityCollision){
 						$block->onEntityCollide($this);

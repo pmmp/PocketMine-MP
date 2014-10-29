@@ -2163,9 +2163,12 @@ class Server{
 
 		Vector3::clearVectorList();
 		Position::clearPositionList();
-		AxisAlignedBB::clearBoundingBoxPool();
-		if(($this->tickCounter % 4) === 0){
+		if(($this->tickCounter % 20) === 0){
 			Event::clearAllPools();
+			foreach($this->levels as $level){
+				$level->clearCache();
+			}
+			AxisAlignedBB::clearBoundingBoxPool();
 		}
 
 		Timings::$serverTickTimer->stopTiming();

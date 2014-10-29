@@ -528,6 +528,9 @@ class Block extends Position implements Metadatable{
 	public $z = 0;
 	public $frictionFactor = 0.6;
 
+	/** @var AxisAlignedBB */
+	protected $boundingBox = null;
+
 	public static function init(){
 		if(count(self::$list) === 0){
 			self::$list = [
@@ -897,6 +900,17 @@ class Block extends Position implements Metadatable{
 	 * @return AxisAlignedBB
 	 */
 	public function getBoundingBox(){
+		if($this->boundingBox !== null){
+			return $this->boundingBox;
+		}else{
+			return $this->boundingBox = $this->recalculateBoundingBox();
+		}
+	}
+
+	/**
+	 * @return AxisAlignedBB
+	 */
+	protected function recalculateBoundingBox(){
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y,

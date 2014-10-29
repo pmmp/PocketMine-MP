@@ -113,7 +113,7 @@ abstract class Stair extends Transparent{
 	}
 	*/
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		if(($this->getDamage() & 0x04) > 0){
 			return AxisAlignedBB::getBoundingBoxFromPool(

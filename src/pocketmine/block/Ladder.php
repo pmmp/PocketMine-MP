@@ -43,7 +43,7 @@ class Ladder extends Transparent{
 		$entity->onGround = true;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$f = 0.125;
 

@@ -47,7 +47,7 @@ class Slab extends Transparent{
 		$this->hardness = 30;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		if(($this->meta & 0x08) > 0){
 			return AxisAlignedBB::getBoundingBoxFromPool(

@@ -29,7 +29,7 @@ class EndPortal extends Solid{
 		$this->hardness = 18000000;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,

@@ -30,7 +30,7 @@ class SoulSand extends Solid{
 		$this->hardness = 2.5;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,

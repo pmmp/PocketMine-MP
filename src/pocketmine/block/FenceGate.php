@@ -38,7 +38,7 @@ class FenceGate extends Transparent{
 	}
 
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		if(($this->getDamage() & 0x04) > 0){
 			return null;

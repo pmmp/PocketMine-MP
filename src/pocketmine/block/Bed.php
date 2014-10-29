@@ -35,7 +35,7 @@ class Bed extends Transparent{
 		$this->hardness = 1;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y,

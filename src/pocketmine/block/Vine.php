@@ -43,7 +43,7 @@ class Vine extends Transparent{
 		$entity->fallDistance = 0;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		$f1 = 1;
 		$f2 = 1;

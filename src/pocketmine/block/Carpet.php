@@ -53,7 +53,7 @@ class Carpet extends Flowable{
 		$this->isSolid = true;
 	}
 
-	public function getBoundingBox(){
+	protected function recalculateBoundingBox(){
 
 		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
