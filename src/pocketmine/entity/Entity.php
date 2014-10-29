@@ -384,7 +384,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int|EntityDamageEvent $type
 	 */
 	public function setLastDamageCause($type){
-		$this->lastDamageCause = $type;
+		$this->lastDamageCause = $type instanceof EntityDamageEvent ? clone $type : $type;
 	}
 
 	/**
@@ -522,10 +522,8 @@ abstract class Entity extends Location implements Metadatable{
 		$this->checkBlockCollision();
 
 		if($this->y < 0 and $this->dead !== true){
-			$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_VOID, 10));
-			if(!$ev->isCancelled()){
-				$this->attack($ev->getFinalDamage(), $ev);
-			}
+			$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
+			$this->attack($ev->getFinalDamage(), $ev);
 			$hasUpdate = true;
 		}
 
@@ -538,10 +536,7 @@ abstract class Entity extends Location implements Metadatable{
 			}else{
 				if(($this->fireTicks % 20) === 0 or $tickDiff > 20){
 					$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
-					$this->server->getPluginManager()->callEvent($ev);
-					if(!$ev->isCancelled()){
-						$this->attack($ev->getFinalDamage(), $ev);
-					}
+					$this->attack($ev->getFinalDamage(), $ev);
 				}
 				$this->fireTicks -= $tickDiff;
 			}
@@ -714,10 +709,7 @@ abstract class Entity extends Location implements Metadatable{
 	public function fall($fallDistance){
 		$damage = floor($fallDistance - 3);
 		if($damage > 0){
-			$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_FALL, $damage));
-			if($ev->isCancelled()){
-				return;
-			}
+			$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
 	}

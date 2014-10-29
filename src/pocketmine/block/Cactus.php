@@ -56,10 +56,7 @@ class Cactus extends Transparent{
 
 	public function onEntityCollide(Entity $entity){
 		$ev = EntityDamageByBlockEvent::createEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
-		Server::getInstance()->getPluginManager()->callEvent($ev);
-		if(!$ev->isCancelled()){
-			$entity->attack($ev->getFinalDamage(), $ev);
-		}
+		$entity->attack($ev->getFinalDamage(), $ev);
 	}
 
 	public function onUpdate($type){

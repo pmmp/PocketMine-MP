@@ -208,21 +208,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			17 => ["type" => 6, "value" => [0, 0, 0]],
 		];
 
-		/*if($this->class === ENTITY_MOB and $this->type === MOB_SHEEP){
-			if(!isset($this->data["Sheared"])){
-				$this->data["Sheared"] = 0;
-				$this->data["Color"] = mt_rand(0,15);
-			}
-			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 4) | ($this->data["Color"] & 0x0F);
-		}elseif($this->type === OBJECT_PRIMEDTNT){
-			$d[16]["value"] = (int) max(0, $this->data["fuse"] - (microtime(true) - $this->spawntime) * 20);
-		}elseif($this->class === ENTITY_PLAYER){
-			if($this->player->sleeping !== false){
-				$d[16]["value"] = 2;
-				$d[17]["value"] = array($this->player->sleeping->x, $this->player->sleeping->y, $this->player->sleeping->z);
-			}
-		}*/
-
 		return $d;
 	}
 

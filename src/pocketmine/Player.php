@@ -1901,15 +1901,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($cancelled){
 						$ev->setCancelled();
 					}
-					$this->server->getPluginManager()->callEvent($ev);
+
+					$target->attack($ev->getFinalDamage(), $ev);
+
 					if($ev->isCancelled()){
 						if($item->isTool() and $this->isSurvival()){
 							$this->inventory->sendContents($this);
 						}
 						break;
 					}
-
-					$target->attack($ev->getFinalDamage(), $ev);
 
 					if($item->isTool() and $this->isSurvival()){
 						if($item->useOn($target) and $item->getDamage() >= $item->getMaxDurability()){
@@ -2517,7 +2517,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->dead === true){
 			return;
 		}
-		if(($this->getGamemode() & 0x01) === 1){
+		if($this->isCreative() === 1){
 			if($source instanceof EntityDamageEvent){
 				$cause = $source->getCause();
 			}else{
@@ -2529,12 +2529,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				and $cause !== EntityDamageEvent::CAUSE_SUICIDE
 				and $cause !== EntityDamageEvent::CAUSE_VOID
 			){
+				if($source instanceof EntityDamageEvent){
+					$source->setCancelled();
+				}
 				return;
 			}
 		}
 
 
 		parent::attack($damage, $source);
+
+		if($source instanceof EntityDamageEvent and $source->isCancelled()){
+			return;
+		}
 
 		if($this->getLastDamageCause() === $source){
 			$pk = EntityEventPacket::getFromPool();

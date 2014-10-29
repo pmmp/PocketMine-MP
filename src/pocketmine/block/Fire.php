@@ -47,10 +47,7 @@ class Fire extends Flowable{
 
 	public function onEntityCollide(Entity $entity){
 		$ev = EntityDamageByBlockEvent::createEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
-		Server::getInstance()->getPluginManager()->callEvent($ev);
-		if(!$ev->isCancelled()){
-			$entity->attack($ev->getFinalDamage(), $ev);
-		}
+		$entity->attack($ev->getFinalDamage(), $ev);
 
 		$ev = EntityCombustByBlockEvent::createEvent($this, $entity, 8);
 		Server::getInstance()->getPluginManager()->callEvent($ev);

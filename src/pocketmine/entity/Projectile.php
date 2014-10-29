@@ -136,12 +136,8 @@ abstract class Projectile extends Entity{
 
 
 					$ev = EntityDamageByEntityEvent::createEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
-					$this->server->getPluginManager()->callEvent($ev);
-
-					if(!$ev->isCancelled()){
-						$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
-					}
 
 					if($this->fireTicks > 0){
 						$ev = EntityCombustByEntityEvent::createEvent($this, $movingObjectPosition->entityHit, 5);

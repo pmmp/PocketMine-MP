@@ -69,8 +69,6 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
-
 		if($this->attackTime > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause instanceof EntityDamageEvent and $lastCause->getDamage() >= $damage){
@@ -152,10 +150,8 @@ abstract class Living extends Entity implements Damageable{
 		parent::entityBaseTick();
 
 		if($this->dead !== true and $this->isInsideOfSolid()){
-			$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1));
-			if(!$ev->isCancelled()){
-				$this->attack($ev->getFinalDamage(), $ev);
-			}
+			$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
+			$this->attack($ev->getFinalDamage(), $ev);
 		}
 
 		if($this->dead !== true and $this->isInsideOfWater()){
@@ -163,10 +159,8 @@ abstract class Living extends Entity implements Damageable{
 			if($this->airTicks <= -20){
 				$this->airTicks = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2));
-				if(!$ev->isCancelled()){
-					$this->attack($ev->getFinalDamage(), $ev);
-				}
+				$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+				$this->attack($ev->getFinalDamage(), $ev);
 			}
 		}else{
 			$this->airTicks = 300;

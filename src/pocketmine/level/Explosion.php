@@ -172,13 +172,8 @@ class Explosion{
 					$ev = EntityDamageEvent::createEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}
 
-				$this->level->getServer()->getPluginManager()->callEvent($ev);
-
-				if(!$ev->isCancelled()){
-					$entity->attack($ev->getFinalDamage(), $ev);
-					$entity->setMotion($motion->multiply($impact));
-				}
-
+				$entity->attack($ev->getFinalDamage(), $ev);
+				$entity->setMotion($motion->multiply($impact));
 			}
 		}
 

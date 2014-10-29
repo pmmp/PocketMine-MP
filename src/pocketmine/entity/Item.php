@@ -131,6 +131,13 @@ class Item extends Entity{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+		if($source instanceof EntityDamageEvent){
+			$this->server->getPluginManager()->callEvent($source);
+			$damage = $source->getFinalDamage();
+			if($source->isCancelled()){
+				return;
+			}
+		}
 		$this->setLastDamageCause($source);
 		$this->setHealth($this->getHealth() - $damage);
 	}
