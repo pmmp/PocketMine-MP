@@ -36,6 +36,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
+use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
@@ -1202,7 +1203,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							continue;
 						}
 
-						$this->server->getPluginManager()->callEvent($ev = InventoryPickupItemEvent::createEvent($this->inventory, $entity));
+						$this->server->getPluginManager()->callEvent($ev = InventoryPickupArrowEvent::createEvent($this->inventory, $entity));
 						if($ev->isCancelled()){
 							continue;
 						}
