@@ -21,10 +21,6 @@
 
 namespace pocketmine\math;
 
-/**
- * WARNING: This class is available on the PocketMine-MP Zephir project.
- * If this class is modified, remember to modify the PHP C extension.
- */
 class Vector3{
 
 	/** @var Vector3[] */
@@ -76,6 +72,11 @@ class Vector3{
 		return self::$vectorList[self::$nextVector++]->setComponents($x, $y, $z);
 	}
 
+	/**
+	 * @param Vector3 $vector
+	 *
+	 * @return Vector3
+	 */
 	public static function cloneVector(Vector3 $vector){
 		if(self::$nextVector >= count(self::$vectorList)){
 			self::$vectorList[] = new Vector3(0, 0, 0);

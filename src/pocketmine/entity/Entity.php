@@ -424,15 +424,17 @@ abstract class Entity extends Location implements Metadatable{
 
 		$list = $this->level->getCollisionBlocks($this->boundingBox);
 
-		if(count($list) === 0 and !$this->level->isFullBlock(Vector3::createVector($i, $j, $k))){
+		$v = Vector3::createVector($i, $j, $k);
+
+		if(count($list) === 0 and !$this->level->isFullBlock($v->setComponents($i, $j, $k))){
 			return false;
 		}else{
-			$flag = !$this->level->isFullBlock(Vector3::createVector($i - 1, $j, $k));
-			$flag1 = !$this->level->isFullBlock(Vector3::createVector($i + 1, $j, $k));
-			//$flag2 = !$this->level->isFullBlock(Vector3::createVector($i, $j - 1, $k));
-			$flag3 = !$this->level->isFullBlock(Vector3::createVector($i, $j + 1, $k));
-			$flag4 = !$this->level->isFullBlock(Vector3::createVector($i, $j, $k - 1));
-			$flag5 = !$this->level->isFullBlock(Vector3::createVector($i, $j, $k + 1));
+			$flag = !$this->level->isFullBlock($v->setComponents($i - 1, $j, $k));
+			$flag1 = !$this->level->isFullBlock($v->setComponents($i + 1, $j, $k));
+			//$flag2 = !$this->level->isFullBlock($v->setComponents($i, $j - 1, $k));
+			$flag3 = !$this->level->isFullBlock($v->setComponents($i, $j + 1, $k));
+			$flag4 = !$this->level->isFullBlock($v->setComponents($i, $j, $k - 1));
+			$flag5 = !$this->level->isFullBlock($v->setComponents($i, $j, $k + 1));
 
 			$direction = 3; //UP!
 			$limit = 9999;
@@ -782,10 +784,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfWater(){
-		$block = $this->level->getBlock($pos = Vector3::createVector($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z)->floor());
+		$block = $this->level->getBlock(Vector3::createVector($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z)->floor());
 
 		if($block instanceof Water){
-			$f = ($pos->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
+			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
 			return $y < $f;
 		}
 
@@ -793,7 +795,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfSolid(){
-		$block = $this->level->getBlock($pos = Vector3::createVector($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z)->floor());
+		$block = $this->level->getBlock(Vector3::createVector($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z)->floor());
 
 		$bb = $block->getBoundingBox();
 
@@ -816,8 +818,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
-			$pos = Vector3::createVector(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY - $this->ySize, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2);
-			$this->setPosition($pos);
+			$this->setPosition(Vector3::createVector(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY - $this->ySize, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
 			$this->onGround = $this instanceof Player ? true : false;
 		}else{
 

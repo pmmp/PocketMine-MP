@@ -176,7 +176,10 @@ class Level implements ChunkManager, Metadatable{
 	private $useSections;
 	private $blockOrder;
 
+	/** @var Position */
 	private $temporalPosition;
+	/** @var Vector3 */
+	private $temporalVector;
 
 	protected $chunkTickRadius;
 	protected $chunkTickList = [];
@@ -270,6 +273,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
+		$this->temporalVector = new Vector3(0, 0, 0);
 	}
 
 	public function initLevel(){
@@ -746,7 +750,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$collides = [];
 
-		$v = Vector3::createVector(0, 0, 0);
+		$v = $this->temporalVector;
 
 		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
 			for($v->x = $minX; $v->x < $maxX; ++$v->x){
@@ -793,7 +797,7 @@ class Level implements ChunkManager, Metadatable{
 		$maxZ = Math::floorFloat($bb->maxZ + 1);
 
 		$collides = [];
-		$v = Vector3::createVector(0, 0, 0);
+		$v = $this->temporalVector;
 
 		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
 			for($v->x = $minX; $v->x < $maxX; ++$v->x){
