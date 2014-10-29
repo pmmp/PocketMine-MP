@@ -1606,6 +1606,9 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->setChunk($x, $z, $chunk);
 			$this->chunks[$index] = $chunk;
 		}
+		if(ADVANCED_CACHE == true){
+			Cache::remove("world:" . $this->getID() . ":$x:$z");
+		}
 		$chunk->setChanged();
 	}
 
