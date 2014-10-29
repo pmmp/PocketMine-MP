@@ -25,7 +25,6 @@ use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\TNT;
 use pocketmine\entity\Entity;
-use pocketmine\entity\PrimedTNT;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;

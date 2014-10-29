@@ -23,15 +23,12 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Villager;
-use pocketmine\entity\Zombie;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
-use pocketmine\nbt\tag\Short;
 use pocketmine\Player;
 
 class SpawnEgg extends Item{

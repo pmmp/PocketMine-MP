@@ -21,8 +21,8 @@
 
 namespace pocketmine\utils;
 
-use pocketmine\level\Level;
 use pocketmine\block\Block;
+use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 /**

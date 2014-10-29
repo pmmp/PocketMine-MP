@@ -22,7 +22,6 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\PrimedTNT;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;

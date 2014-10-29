@@ -22,7 +22,6 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\FallingSand;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\Byte;

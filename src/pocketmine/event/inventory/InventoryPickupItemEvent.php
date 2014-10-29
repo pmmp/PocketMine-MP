@@ -21,9 +21,9 @@
 
 namespace pocketmine\event\inventory;
 
+use pocketmine\entity\Item;
 use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
-use pocketmine\entity\Item;
 
 class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
 	public static $handlerList = null;

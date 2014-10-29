@@ -24,8 +24,6 @@
  */
 namespace pocketmine\event;
 
-use pocketmine\plugin\PluginManager;
-
 abstract class Event{
 
 	/**
