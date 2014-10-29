@@ -2518,7 +2518,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->dead === true){
 			return;
 		}
-		if($this->isCreative() === 1){
+		if($this->isCreative()){
 			if($source instanceof EntityDamageEvent){
 				$cause = $source->getCause();
 			}else{
