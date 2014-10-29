@@ -55,8 +55,6 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
-
-		$this->checkPairing();
 	}
 
 	public function close(){
@@ -158,6 +156,9 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	 * @return ChestInventory|DoubleChestInventory
 	 */
 	public function getInventory(){
+		if($this->isPaired() and $this->doubleInventory === null){
+			$this->checkPairing();
+		}
 		return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
 	}
 

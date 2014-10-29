@@ -33,10 +33,11 @@ abstract class ContainerInventory extends BaseInventory{
 		$pk->windowid = $who->getWindowId($this);
 		$pk->type = $this->getType()->getNetworkType();
 		$pk->slots = $this->getSize();
-		if($this->holder instanceof Vector3){
-			$pk->x = $this->holder->getX();
-			$pk->y = $this->holder->getY();
-			$pk->z = $this->holder->getZ();
+		$holder = $this->getHolder();
+		if($holder instanceof Vector3){
+			$pk->x = $holder->getX();
+			$pk->y = $holder->getY();
+			$pk->z = $holder->getZ();
 		}else{
 			$pk->x = $pk->y = $pk->z = 0;
 		}
