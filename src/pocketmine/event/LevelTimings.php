@@ -57,6 +57,11 @@ class LevelTimings{
 	public $tickEntities;
 
 	/** @var TimingsHandler */
+	public $syncChunkSendTimer;
+	/** @var TimingsHandler */
+	public $syncChunkSendPrepareTimer;
+
+	/** @var TimingsHandler */
 	public $syncChunkLoadTimer;
 	/** @var TimingsHandler */
 	public $syncChunkLoadDataTimer;
@@ -86,6 +91,9 @@ class LevelTimings{
 		$this->entityTick = new TimingsHandler("** " . $name . "entityTick");
 		$this->tileEntityTick = new TimingsHandler("** " . $name . "tileEntityTick");
 		$this->tileEntityPending = new TimingsHandler("** " . $name . "tileEntityPending");
+
+		$this->syncChunkSendTimer = new TimingsHandler("** " . $name . "syncChunkSend");
+		$this->syncChunkSendPrepareTimer = new TimingsHandler("** " . $name . "syncChunkSendPrepare");
 
 		$this->syncChunkLoadTimer = new TimingsHandler("** " . $name . "syncChunkLoad");
 		$this->syncChunkLoadDataTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Data");

@@ -1694,6 +1694,8 @@ class Level implements ChunkManager, Metadatable{
 
 	protected function processChunkRequest(){
 		if(count($this->chunkSendQueue) > 0){
+			$this->timings->syncChunkSendTimer->startTiming();
+
 			$x = null;
 			$z = null;
 			foreach($this->chunkSendQueue as $index => $players){
@@ -1711,12 +1713,16 @@ class Level implements ChunkManager, Metadatable{
 					unset($this->chunkSendQueue[$index]);
 				}else{
 					$this->chunkSendTasks[$index] = true;
+					$this->timings->syncChunkSendPrepareTimer->startTiming();
 					$task = $this->provider->requestChunkTask($x, $z);
 					if($task instanceof AsyncTask){
 						$this->server->getScheduler()->scheduleAsyncTask($task);
 					}
+					$this->timings->syncChunkSendPrepareTimer->stopTiming();
 				}
 			}
+			
+			$this->timings->syncChunkSendTimer->stopTiming();
 		}
 	}
 
