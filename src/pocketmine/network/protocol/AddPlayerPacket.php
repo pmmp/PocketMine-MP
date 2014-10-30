@@ -23,7 +23,9 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
+#ifndef COMPILE
 use pocketmine\utils\Binary;
+#endif
 
 class AddPlayerPacket extends DataPacket{
 	public static $pool = [];

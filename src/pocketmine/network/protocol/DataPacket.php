@@ -24,7 +24,9 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
+#ifndef COMPILE
 use pocketmine\utils\Binary;
+#endif
 
 abstract class DataPacket extends \stdClass{
 
