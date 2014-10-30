@@ -21,6 +21,8 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class ExplodePacket extends DataPacket{
 	public static $pool = [];

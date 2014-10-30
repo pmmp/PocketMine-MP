@@ -24,6 +24,8 @@ namespace pocketmine\nbt\tag;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Enum as TagEnum;
 
+#include <rules/NBT.h>
+
 class Enum extends NamedTag implements \ArrayAccess, \Countable{
 
 	private $tagType;

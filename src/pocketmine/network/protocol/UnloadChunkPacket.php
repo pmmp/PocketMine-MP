@@ -21,6 +21,8 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class UnloadChunkPacket extends DataPacket{
 	public static $pool = [];

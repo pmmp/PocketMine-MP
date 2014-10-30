@@ -21,6 +21,8 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 use pocketmine\item\Item;
 use pocketmine\utils\Binary;
 
@@ -106,7 +108,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getShort($signed = true){
-		return Binary::readShort($this->get(2), $signed);
+		return $signed ? Binary::readSignedShort($this->get(2)) : Binary::readShort($this->get(2));
 	}
 
 	protected function putShort($v){
@@ -180,7 +182,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getString(){
-		return $this->get($this->getShort(false));
+		return $this->get($this->getShort());
 	}
 
 	protected function putString($v){

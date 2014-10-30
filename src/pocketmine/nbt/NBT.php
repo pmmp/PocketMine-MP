@@ -41,6 +41,8 @@ use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 
+#include <rules/NBT.h>
+
 /**
  * Named Binary Tag encoder/decoder
  */
@@ -61,7 +63,7 @@ class NBT{
 	const TAG_Compound = 10;
 	const TAG_IntArray = 11;
 
-	private $buffer;
+	public $buffer;
 	private $offset;
 	public $endianness;
 	private $data;
@@ -191,8 +193,8 @@ class NBT{
 		$tag->write($this);
 	}
 
-	public function getByte($signed = false){
-		return Binary::readByte($this->get(1), $signed);
+	public function getByte(){
+		return Binary::readByte($this->get(1));
 	}
 
 	public function putByte($v){

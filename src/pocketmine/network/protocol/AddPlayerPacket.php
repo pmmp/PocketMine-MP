@@ -21,6 +21,8 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 use pocketmine\utils\Binary;
 
 class AddPlayerPacket extends DataPacket{

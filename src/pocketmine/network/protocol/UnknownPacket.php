@@ -22,6 +22,8 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class UnknownPacket extends DataPacket{
 	public static $pool = [];
