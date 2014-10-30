@@ -1070,6 +1070,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$chunk = $this->level->getChunk($this->newPosition->x >> 4, $this->newPosition->z >> 4);
 				if(!($chunk instanceof FullChunk) or !$chunk->isGenerated()){
 					$revert = true;
+					$this->nextChunkOrderRun = 0;
+				}else{
+					$this->chunk = $chunk;
 				}
 			}
 		}
@@ -2587,6 +2590,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->airTicks = 300;
 			$this->fallDistance = 0;
 			$this->orderChunks();
+			$this->nextChunkOrderRun = 0;
 			$this->forceMovement = $pos;
 			$this->newPosition = $pos;
 
