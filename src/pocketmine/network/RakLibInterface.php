@@ -230,6 +230,8 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			$pk->reliability = 2;
 			if($needACK === true){
 				$pk->identifierACK = $this->identifiersACK[$identifier]++;
+			}else{
+				$pk->identifierACK = null;
 			}
 			$this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 
