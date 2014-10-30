@@ -90,7 +90,8 @@ class FallingSand extends Entity{
 
 		if(!$this->dead){
 			if($this->ticksLived === 1){
-				$block = $this->level->getBlock($pos = Vector3::cloneVector($this)->floor());
+				$pos = Vector3::cloneVector($this);
+				$block = $this->level->getBlock($pos->floor());
 				if($block->getID() != $this->blockId){
 					$this->kill();
 					return true;
@@ -109,7 +110,8 @@ class FallingSand extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
-			$pos = Vector3::cloneVector($this)->floor();
+			$pos = Vector3::cloneVector($this);
+			$pos = $pos->floor();
 
 			if($this->onGround){
 				$this->kill();

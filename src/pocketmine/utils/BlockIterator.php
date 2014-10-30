@@ -71,7 +71,8 @@ class BlockIterator implements \Iterator{
 		$secondPosition = 0;
 		$thirdPosition = 0;
 
-		$startBlock = $this->level->getBlock(Vector3::createVector($startClone->x, $startClone->y, $startClone->z)->floor());
+		$pos = Vector3::createVector($startClone->x, $startClone->y, $startClone->z);
+		$startBlock = $this->level->getBlock($pos->floor());
 
 		if($this->getXLength($direction) > $mainDirection){
 			$this->mainFace = $this->getXFace($direction);

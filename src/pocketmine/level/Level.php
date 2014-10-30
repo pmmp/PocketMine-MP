@@ -95,6 +95,7 @@ use pocketmine\utils\LevelException;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 
+#include <rules/Level.h>
 
 class Level implements ChunkManager, Metadatable{
 
