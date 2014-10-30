@@ -115,20 +115,14 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function get($len){
-		if($len <= 0){
+		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
-
 			return "";
 		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
 
-		$buffer = "";
-		for(; $len > 0; --$len, ++$this->offset){
-			$buffer .= $this->buffer{$this->offset};
-		}
-
-		return $buffer;
+		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
 	protected function put($str){
