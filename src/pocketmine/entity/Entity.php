@@ -776,8 +776,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfWater(){
-		$pos = Vector3::createVector($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z);
-		$block = $this->level->getBlock($pos->floor());
+		$block = $this->level->getBlock(Vector3::createVector(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
 
 		if($block instanceof Water){
 			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
@@ -788,8 +787,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function isInsideOfSolid(){
-		$pos = Vector3::createVector($this->x, $y = ($this->y + $this->getEyeHeight()), $this->z);
-		$block = $this->level->getBlock($pos->floor());
+		$block = $this->level->getBlock(Vector3::createVector(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
 
 		$bb = $block->getBoundingBox();
 

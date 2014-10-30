@@ -26,8 +26,8 @@ class AxisAlignedBB{
 
 
 	/** @var AxisAlignedBB[] */
-	private static $boundingBoxes = [];
-	private static $nextBoundingBox = 0;
+	public static $boundingBoxes = [];
+	public static $nextBoundingBox = 0;
 
 	public $minX;
 	public $minY;
@@ -126,11 +126,11 @@ class AxisAlignedBB{
 			$maxZ += $z;
 		}
 
-		return self::getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		return AxisAlignedBB::getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 	}
 
 	public function grow($x, $y, $z){
-		return self::getBoundingBoxFromPool($this->minX - $x, $this->minY - $y, $this->minZ - $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
+		return AxisAlignedBB::getBoundingBoxFromPool($this->minX - $x, $this->minY - $y, $this->minZ - $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
 	public function expand($x, $y, $z){
@@ -156,7 +156,7 @@ class AxisAlignedBB{
 	}
 
 	public function shrink($x, $y, $z){
-		return self::getBoundingBoxFromPool($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX - $x, $this->maxY - $y, $this->maxZ - $z);
+		return AxisAlignedBB::getBoundingBoxFromPool($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX - $x, $this->maxY - $y, $this->maxZ - $z);
 	}
 
 	public function contract($x, $y, $z){
@@ -181,7 +181,7 @@ class AxisAlignedBB{
 	}
 
 	public function getOffsetBoundingBox($x, $y, $z){
-		return self::getBoundingBoxFromPool($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
+		return AxisAlignedBB::getBoundingBoxFromPool($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
 	public function calculateXOffset(AxisAlignedBB $bb, $x){

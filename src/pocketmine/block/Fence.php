@@ -48,7 +48,7 @@ class Fence extends Transparent{
 			$this->y,
 			$this->z + $f2,
 			$this->x + $f1,
-			$this->y + 1, //TODO: check this, add extra bounding box
+			$this->y + 1,
 			$this->z + $f3
 		);
 	}

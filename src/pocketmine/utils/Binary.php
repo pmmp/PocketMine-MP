@@ -74,7 +74,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLTriad($value){
-		return substr(pack("N", $value), 0, -1);
+		return substr(pack("V", $value), 0, -1);
 	}
 
 	/**

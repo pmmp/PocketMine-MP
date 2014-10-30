@@ -748,7 +748,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->connected === false){
 			return false;
 		}
-		$this->server->getPluginManager()->callEvent($ev = DataPacketSendEvent::createEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = $packet->getSendEvent($this));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1288,7 +1288,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = DataPacketReceiveEvent::createEvent($this, $packet));
+		$this->server->getPluginManager()->callEvent($ev = $packet->getReceiveEvent($this));
 		if($ev->isCancelled()){
 			return;
 		}
