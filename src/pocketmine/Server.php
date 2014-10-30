@@ -1720,6 +1720,9 @@ class Server{
 		foreach($players as $player){
 			$player->dataPacket($packet);
 		}
+		if(isset($packet->__encapsulatedPacket)){
+			unset($packet->__encapsulatedPacket);
+		}
 	}
 
 

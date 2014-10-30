@@ -222,17 +222,31 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
 		if(isset($this->identifiers[$player])){
 			$identifier = $this->identifiers[$player];
+			$pk = null;
 			if(!$packet->isEncoded){
 				$packet->encode();
+				unset($packet->__encapsulatedPacket);
+			}elseif(!$needACK){
+				if(!isset($packet->__encapsulatedPacket)){
+					$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
+					$packet->__encapsulatedPacket->identifierACK = null;
+					$packet->__encapsulatedPacket->buffer = $packet->buffer;
+					$packet->__encapsulatedPacket->reliability = 2;
+				}
+				$pk = $packet->__encapsulatedPacket;
 			}
-			$pk = EncapsulatedPacket::getPacketFromPool();
-			$pk->buffer = $packet->buffer;
-			$pk->reliability = 2;
-			if($needACK === true){
-				$pk->identifierACK = $this->identifiersACK[$identifier]++;
-			}else{
-				$pk->identifierACK = null;
+
+			if($pk === null){
+				$pk = EncapsulatedPacket::getPacketFromPool();
+				$pk->buffer = $packet->buffer;
+				$pk->reliability = 2;
+				if($needACK === true){
+					$pk->identifierACK = $this->identifiersACK[$identifier]++;
+				}else{
+					$pk->identifierACK = null;
+				}
 			}
+
 			$this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 
 			return $pk->identifierACK;
