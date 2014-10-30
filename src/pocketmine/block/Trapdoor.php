@@ -43,8 +43,6 @@ class Trapdoor extends Transparent{
 
 		$f = 0.1875;
 
-		$bb = null;
-
 		if(($damage & 0x08) > 0){
 			$bb = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
@@ -67,7 +65,7 @@ class Trapdoor extends Transparent{
 
 		if(($damage & 0x04) > 0){
 			if(($damage & 0x03) === 0){
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z + 1 - $f,
@@ -76,7 +74,7 @@ class Trapdoor extends Transparent{
 					$this->z + 1
 				);
 			}elseif(($damage & 0x03) === 1){
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -85,7 +83,7 @@ class Trapdoor extends Transparent{
 					$this->z + $f
 				);
 			}if(($damage & 0x03) === 2){
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x + 1 - $f,
 					$this->y,
 					$this->z,
@@ -94,7 +92,7 @@ class Trapdoor extends Transparent{
 					$this->z + 1
 				);
 			}if(($damage & 0x03) === 3){
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z,

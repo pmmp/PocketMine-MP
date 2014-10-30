@@ -73,7 +73,7 @@ abstract class Door extends Transparent{
 		if($j === 0){
 			if($flag){
 				if(!$flag1){
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -82,7 +82,7 @@ abstract class Door extends Transparent{
 						$this->z + $f
 					);
 				}else{
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z + 1 - $f,
@@ -92,7 +92,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -104,7 +104,7 @@ abstract class Door extends Transparent{
 		}elseif($j === 1){
 			if($flag){
 				if(!$flag1){
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x + 1 - $f,
 						$this->y,
 						$this->z,
@@ -113,7 +113,7 @@ abstract class Door extends Transparent{
 						$this->z + 1
 					);
 				}else{
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -123,7 +123,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -135,7 +135,7 @@ abstract class Door extends Transparent{
 		}elseif($j === 2){
 			if($flag){
 				if(!$flag1){
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z + 1 - $f,
@@ -144,7 +144,7 @@ abstract class Door extends Transparent{
 						$this->z + 1
 					);
 				}else{
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -154,7 +154,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x + 1 - $f,
 					$this->y,
 					$this->z,
@@ -166,7 +166,7 @@ abstract class Door extends Transparent{
 		}elseif($j === 3){
 			if($flag){
 				if(!$flag1){
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -175,7 +175,7 @@ abstract class Door extends Transparent{
 						$this->z + 1
 					);
 				}else{
-					$bb = AxisAlignedBB::getBoundingBoxFromPool(
+					$bb->setBounds(
 						$this->x + 1 - $f,
 						$this->y,
 						$this->z,
@@ -185,7 +185,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = AxisAlignedBB::getBoundingBoxFromPool(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z + 1 - $f,
