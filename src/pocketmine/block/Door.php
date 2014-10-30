@@ -52,15 +52,12 @@ abstract class Door extends Transparent{
 		return $first & 0x07 | ($flag ? 8 : 0) | ($flag1 ? 0x10 : 0);
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		$f = 0.1875;
 		$damage = $this->getFullDamage();
 
-		$bb = new AxisAlignedBB(
+		$bb = AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y,
 			$this->z,
@@ -76,7 +73,7 @@ abstract class Door extends Transparent{
 		if($j === 0){
 			if($flag){
 				if(!$flag1){
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -85,7 +82,7 @@ abstract class Door extends Transparent{
 						$this->z + $f
 					);
 				}else{
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z + 1 - $f,
@@ -95,7 +92,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = new AxisAlignedBB(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -107,7 +104,7 @@ abstract class Door extends Transparent{
 		}elseif($j === 1){
 			if($flag){
 				if(!$flag1){
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x + 1 - $f,
 						$this->y,
 						$this->z,
@@ -116,7 +113,7 @@ abstract class Door extends Transparent{
 						$this->z + 1
 					);
 				}else{
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -126,7 +123,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = new AxisAlignedBB(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z,
@@ -138,7 +135,7 @@ abstract class Door extends Transparent{
 		}elseif($j === 2){
 			if($flag){
 				if(!$flag1){
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z + 1 - $f,
@@ -147,7 +144,7 @@ abstract class Door extends Transparent{
 						$this->z + 1
 					);
 				}else{
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -157,7 +154,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = new AxisAlignedBB(
+				$bb->setBounds(
 					$this->x + 1 - $f,
 					$this->y,
 					$this->z,
@@ -169,7 +166,7 @@ abstract class Door extends Transparent{
 		}elseif($j === 3){
 			if($flag){
 				if(!$flag1){
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x,
 						$this->y,
 						$this->z,
@@ -178,7 +175,7 @@ abstract class Door extends Transparent{
 						$this->z + 1
 					);
 				}else{
-					$bb = new AxisAlignedBB(
+					$bb->setBounds(
 						$this->x + 1 - $f,
 						$this->y,
 						$this->z,
@@ -188,7 +185,7 @@ abstract class Door extends Transparent{
 					);
 				}
 			}else{
-				$bb = new AxisAlignedBB(
+				$bb->setBounds(
 					$this->x,
 					$this->y,
 					$this->z + 1 - $f,
@@ -199,7 +196,7 @@ abstract class Door extends Transparent{
 			}
 		}
 
-		return $this->boundingBox = $bb;
+		return $bb;
 	}
 
 	public function onUpdate($type){
@@ -274,7 +271,7 @@ abstract class Door extends Transparent{
 				if($player instanceof Player){
 					unset($players[$player->getID()]);
 				}
-				$pk = new LevelEventPacket;
+				$pk = LevelEventPacket::getFromPool();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -293,7 +290,7 @@ abstract class Door extends Transparent{
 			if($player instanceof Player){
 				unset($players[$player->getID()]);
 			}
-			$pk = new LevelEventPacket;
+			$pk = LevelEventPacket::getFromPool();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;

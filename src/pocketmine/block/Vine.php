@@ -43,10 +43,7 @@ class Vine extends Transparent{
 		$entity->fallDistance = 0;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		$f1 = 1;
 		$f2 = 1;
@@ -96,7 +93,7 @@ class Vine extends Transparent{
 			$f6 = 1;
 		}
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + $f1,
 			$this->y + $f2,
 			$this->z + $f3,

@@ -27,6 +27,8 @@ use pocketmine\utils\Binary;
 
 class QueryRegenerateEvent extends ServerEvent{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	const GAME_ID = "MINECRAFTPE";
 

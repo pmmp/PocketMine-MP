@@ -25,6 +25,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
+use pocketmine\utils\ChunkException;
 
 class GenerationRequestManager{
 
@@ -87,7 +88,7 @@ class GenerationRequestManager{
 			if($chunk instanceof FullChunk){
 				$this->sendChunk($levelID, $chunk);
 			}else{
-				throw new \Exception("Invalid Chunk given");
+				throw new ChunkException("Invalid Chunk given");
 			}
 		}else{
 			$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($levelID);

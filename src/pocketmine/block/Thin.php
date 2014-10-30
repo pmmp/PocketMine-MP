@@ -29,10 +29,7 @@ abstract class Thin extends Transparent{
 	public $isFullBlock = false;
 	public $isSolid = false;
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		$f = 0.4375;
 		$f1 = 0.5625;
@@ -66,7 +63,7 @@ abstract class Thin extends Transparent{
 			$f3 = 1;
 		}
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

@@ -26,6 +26,8 @@ use pocketmine\event\Cancellable;
 
 class ProjectileLaunchEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	/**
 	 * @param Projectile $entity

@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-use pocketmine\entity\PrimedTNT;
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -44,7 +44,7 @@ class TNT extends Solid{
 			$this->getLevel()->setBlock($this, new Air(), true);
 
 			$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-			$tnt = new PrimedTNT($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
+			$tnt = Entity::createEntity("PrimedTNT", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
 					new Double("", $this->x + 0.5),
 					new Double("", $this->y),

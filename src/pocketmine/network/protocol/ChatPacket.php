@@ -21,8 +21,13 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class ChatPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $message;
 
 	public function pid(){

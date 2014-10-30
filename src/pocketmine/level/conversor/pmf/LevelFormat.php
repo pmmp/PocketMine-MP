@@ -126,7 +126,7 @@ class LevelFormat extends PMF{
 
 			return false;
 		}
-		$this->levelData["name"] = $this->read(Binary::readShort($this->read(2), false));
+		$this->levelData["name"] = $this->read(Binary::readShort($this->read(2)));
 		$this->levelData["seed"] = Binary::readInt($this->read(4));
 		$this->levelData["time"] = Binary::readInt($this->read(4));
 		$this->levelData["spawnX"] = Binary::readFloat($this->read(4));
@@ -140,11 +140,11 @@ class LevelFormat extends PMF{
 			if($this->levelData["height"] !== 8){
 				return false;
 			}
-			$this->levelData["generator"] = $this->read(Binary::readShort($this->read(2), false));
-			$this->levelData["generatorSettings"] = unserialize($this->read(Binary::readShort($this->read(2), false)));
+			$this->levelData["generator"] = $this->read(Binary::readShort($this->read(2)));
+			$this->levelData["generatorSettings"] = unserialize($this->read(Binary::readShort($this->read(2))));
 
 		}
-		$this->levelData["extra"] = @zlib_decode($this->read(Binary::readShort($this->read(2), false)));
+		$this->levelData["extra"] = @zlib_decode($this->read(Binary::readShort($this->read(2))));
 
 		$upgrade = false;
 		if($this->levelData["version"] === 0){

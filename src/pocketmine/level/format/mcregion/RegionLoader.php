@@ -277,8 +277,8 @@ class RegionLoader{
 		$this->lastSector = 1;
 		$table = fread($this->filePointer, 4 * 1024 * 2);
 		for($i = 0; $i < 1024; ++$i){
-			$index = Binary::readInt(substr($table, $i << 2, 4));
-			$this->locationTable[$i] = [($index & ~0xff) >> 8, $index & 0xff, Binary::readInt(substr($table, 4096 + ($i << 2), 4))];
+			$index = unpack("N", substr($table, $i << 2, 4))[1];
+			$this->locationTable[$i] = [($index & ~0xff) >> 8, $index & 0xff, unpack("N", substr($table, 4096 + ($i << 2), 4))[1]];
 			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
 				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
 			}
@@ -286,16 +286,16 @@ class RegionLoader{
 	}
 
 	private function writeLocationTable(){
-		$table = "";
+		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
-			$table .= Binary::writeInt(($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]);
+			$write[] = ($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1];
 		}
 		for($i = 0; $i < 1024; ++$i){
-			$table .= Binary::writeInt($this->locationTable[$i][2]);
+			$write[] = $this->locationTable[$i][2];
 		}
 		fseek($this->filePointer, 0);
-		fwrite($this->filePointer, $table, 4096 * 2);
+		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
 	}
 
 	protected function writeLocationIndex($index){

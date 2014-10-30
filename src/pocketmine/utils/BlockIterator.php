@@ -21,8 +21,8 @@
 
 namespace pocketmine\utils;
 
-use pocketmine\level\Level;
 use pocketmine\block\Block;
+use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 /**
@@ -58,7 +58,7 @@ class BlockIterator implements \Iterator{
 		$this->level = $level;
 		$this->maxDistance = (int) $maxDistance;
 
-		$startClone = clone $start;
+		$startClone = Vector3::createVector($start->x, $start->y, $start->z);
 		$startClone->y += $yOffset;
 
 		$this->currentDistance = 0;
@@ -71,7 +71,8 @@ class BlockIterator implements \Iterator{
 		$secondPosition = 0;
 		$thirdPosition = 0;
 
-		$startBlock = $this->level->getBlock($startClone->floor());
+		$pos = Vector3::createVector($startClone->x, $startClone->y, $startClone->z);
+		$startBlock = $this->level->getBlock($pos->floor());
 
 		if($this->getXLength($direction) > $mainDirection){
 			$this->mainFace = $this->getXFace($direction);
@@ -162,7 +163,7 @@ class BlockIterator implements \Iterator{
 		}
 
 		if(!$startBlockFound){
-			throw new \Exception("Start block missed in BlockIterator");
+			throw new \RuntimeException("Start block missed in BlockIterator");
 		}
 
 		$this->maxDistanceInt = round($maxDistance / (sqrt($mainDirection ** 2 + $secondDirection ** 2 + $thirdDirection ** 2) / $mainDirection));

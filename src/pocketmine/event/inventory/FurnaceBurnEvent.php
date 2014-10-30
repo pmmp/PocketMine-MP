@@ -28,6 +28,8 @@ use pocketmine\tile\Furnace;
 
 class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	private $furnace;
 	private $fuel;

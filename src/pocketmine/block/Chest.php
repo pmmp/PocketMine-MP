@@ -42,12 +42,9 @@ class Chest extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + 0.0625,
 			$this->y,
 			$this->z + 0.0625,
@@ -65,7 +62,7 @@ class Chest extends Transparent{
 			3 => 3,
 		];
 
-		$chest = false;
+		$chest = null;
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 
 		for($side = 2; $side <= 5; ++$side){
@@ -93,9 +90,9 @@ class Chest extends Transparent{
 			new Int("z", $this->z)
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
-		$tile = new TileChest($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+		$tile = Tile::createTile("Chest", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 
-		if($chest instanceof TileChest){
+		if($chest instanceof TileChest and $tile instanceof TileChest){
 			$chest->pairWith($tile);
 			$tile->pairWith($chest);
 		}
@@ -133,11 +130,11 @@ class Chest extends Transparent{
 					new Int("z", $this->z)
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$chest = new TileChest($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+				$chest = Tile::createTile("Chest", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 			}
 
 
-			if(($player->gamemode & 0x01) === 0x01){
+			if($player->isCreative()){
 				return true;
 			}
 			$player->addWindow($chest->getInventory());

@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-use pocketmine\entity\FallingBlock;
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\Byte;
@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Int;
 use pocketmine\Player;
 
 abstract class Fallable extends Solid{
@@ -45,7 +46,7 @@ abstract class Fallable extends Solid{
 		if($this->hasPhysics === true and $type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
 			if($down->getID() === self::AIR or ($down instanceof Liquid)){
-				$fall = new FallingBlock($this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
+				$fall = Entity::createEntity("FallingSand", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [
 						new Double("", $this->x + 0.5),
 						new Double("", $this->y),
@@ -60,13 +61,12 @@ abstract class Fallable extends Solid{
 						new Float("", 0),
 						new Float("", 0)
 					]),
-					"Tile" => new Byte("Tile", $this->getID())
+					"TileID" => new Int("TileID", $this->getID()),
+					"Data" => new Byte("Data", $this->getDamage()),
 				]));
 
 				$fall->spawnToAll();
 			}
-
-			return false;
 		}
 	}
 }

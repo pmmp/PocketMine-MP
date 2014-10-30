@@ -45,13 +45,10 @@ class WoodSlab extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		if(($this->meta & 0x08) > 0){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y + 0.5,
 				$this->z,
@@ -60,7 +57,7 @@ class WoodSlab extends Transparent{
 				$this->z + 1
 			);
 		}else{
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z,

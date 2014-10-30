@@ -26,6 +26,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\PluginException;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
@@ -165,14 +166,14 @@ class ServerScheduler{
 	 *
 	 * @return null|TaskHandler
 	 *
-	 * @throws \Exception
+	 * @throws PluginException
 	 */
 	private function addTask(Task $task, $delay, $period){
 		if($task instanceof PluginTask){
 			if(!($task->getOwner() instanceof Plugin)){
-				throw new \Exception("Invalid owner of PluginTask " . get_class($task));
+				throw new PluginException("Invalid owner of PluginTask " . get_class($task));
 			}elseif(!$task->getOwner()->isEnabled()){
-				throw new \Exception("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
+				throw new PluginException("Plugin '" . $task->getOwner()->getName() . "' attempted to register a task while disabled");
 			}
 		}
 
@@ -231,7 +232,11 @@ class ServerScheduler{
 				continue;
 			}else{
 				$task->timings->startTiming();
-				$task->run($this->currentTick);
+				try{
+					$task->run($this->currentTick);
+				}catch (\Exception $e){
+					Server::getInstance()->getLogger()->critical("Could not execute task ". $task->getTaskName() .": ".$e->getMessage());
+				}
 				$task->timings->stopTiming();
 			}
 			if($task->isRepeating()){

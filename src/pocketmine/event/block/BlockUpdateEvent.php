@@ -21,14 +21,14 @@
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
-use pocketmine\Player;
 
 /**
  * Called when a block tries to be updated due to a neighbor change
  */
 class BlockUpdateEvent extends BlockEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 }

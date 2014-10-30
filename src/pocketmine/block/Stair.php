@@ -54,7 +54,7 @@ abstract class Stair extends Transparent{
 			$f3 = 0.5;
 		}
 
-		if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+		if($bb->intersectsWith($bb2 = AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y + $f,
 			$this->z,
@@ -66,7 +66,7 @@ abstract class Stair extends Transparent{
 		}
 
 		if($j === 0){
-			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+			if($bb->intersectsWith($bb2 = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x + 0.5,
 				$this->y + $f2,
 				$this->z,
@@ -77,7 +77,7 @@ abstract class Stair extends Transparent{
 				$list[] = $bb2;
 			}
 		}elseif($j === 1){
-			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+			if($bb->intersectsWith($bb2 = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y + $f2,
 				$this->z,
@@ -88,7 +88,7 @@ abstract class Stair extends Transparent{
 				$list[] = $bb2;
 			}
 		}elseif($j === 2){
-			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+			if($bb->intersectsWith($bb2 = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y + $f2,
 				$this->z + 0.5,
@@ -99,7 +99,7 @@ abstract class Stair extends Transparent{
 				$list[] = $bb2;
 			}
 		}elseif($j === 3){
-			if($bb->intersectsWith($bb2 = new AxisAlignedBB(
+			if($bb->intersectsWith($bb2 = AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y + $f2,
 				$this->z,
@@ -113,13 +113,10 @@ abstract class Stair extends Transparent{
 	}
 	*/
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		if(($this->getDamage() & 0x04) > 0){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y + 0.5,
 				$this->z,
@@ -128,7 +125,7 @@ abstract class Stair extends Transparent{
 				$this->z + 1
 			);
 		}else{
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z,

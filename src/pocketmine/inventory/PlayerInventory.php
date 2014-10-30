@@ -66,7 +66,7 @@ class PlayerInventory extends BaseInventory{
 			$this->itemInHandIndex = $index;
 			$item = $this->getItemInHand();
 
-			$pk = new PlayerEquipmentPacket;
+			$pk = PlayerEquipmentPacket::getFromPool();
 			$pk->eid = $this->getHolder()->getID();
 			$pk->item = $item->getID();
 			$pk->meta = $item->getDamage();
@@ -103,7 +103,7 @@ class PlayerInventory extends BaseInventory{
 		if($slot >= -1 and $slot < $this->getSize()){
 			$item = $this->getItem($slot);
 			if($this->getHolder() instanceof Player){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $this->itemInHandIndex));
+				Server::getInstance()->getPluginManager()->callEvent($ev = PlayerItemHeldEvent::createEvent($this->getHolder(), $item, $slot, $this->itemInHandIndex));
 				if($ev->isCancelled()){
 					$this->sendHeldItem($this->getHolder());
 
@@ -126,7 +126,7 @@ class PlayerInventory extends BaseInventory{
 
 		$item = $this->getItemInHand();
 
-		$pk = new PlayerEquipmentPacket;
+		$pk = PlayerEquipmentPacket::getFromPool();
 		$pk->eid = $this->getHolder()->getID();
 		$pk->item = $item->getID();
 		$pk->meta = $item->getDamage();
@@ -166,35 +166,35 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function getHelmet(){
-		return $this->getItem($this->getSize() + 3);
-	}
-
-	public function getChestplate(){
-		return $this->getItem($this->getSize() + 2);
-	}
-
-	public function getLeggings(){
-		return $this->getItem($this->getSize() + 1);
-	}
-
-	public function getBoots(){
 		return $this->getItem($this->getSize());
 	}
 
+	public function getChestplate(){
+		return $this->getItem($this->getSize() + 1);
+	}
+
+	public function getLeggings(){
+		return $this->getItem($this->getSize() + 2);
+	}
+
+	public function getBoots(){
+		return $this->getItem($this->getSize() + 3);
+	}
+
 	public function setHelmet(Item $helmet){
-		return $this->setItem($this->getSize() + 3, $helmet);
+		return $this->setItem($this->getSize(), $helmet);
 	}
 
 	public function setChestplate(Item $chestplate){
-		return $this->setItem($this->getSize() + 2, $chestplate);
+		return $this->setItem($this->getSize() + 1, $chestplate);
 	}
 
 	public function setLeggings(Item $leggings){
-		return $this->setItem($this->getSize() + 1, $leggings);
+		return $this->setItem($this->getSize() + 2, $leggings);
 	}
 
 	public function setBoots(Item $boots){
-		return $this->setItem($this->getSize(), $boots);
+		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
 	public function setItem($index, Item $item, $source = null){
@@ -203,7 +203,7 @@ class PlayerInventory extends BaseInventory{
 		}
 
 		if($index >= $this->getSize()){ //Armor change
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+			Server::getInstance()->getPluginManager()->callEvent($ev = EntityArmorChangeEvent::createEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled() and $this->getHolder() instanceof Player){
 				$this->sendArmorContents($this->getViewers());
 				$this->sendContents($this->getViewers());
@@ -229,7 +229,7 @@ class PlayerInventory extends BaseInventory{
 			$item = Item::get(Item::AIR, null, 0);
 			$old = $this->slots[$index];
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
+				Server::getInstance()->getPluginManager()->callEvent($ev = EntityArmorChangeEvent::createEvent($this->getHolder(), $old, $item, $index));
 				if($ev->isCancelled()){
 					$this->sendArmorContents($this->getViewers());
 					$this->sendContents($this->getViewers());
@@ -286,7 +286,7 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 
-		$pk = new PlayerArmorEquipmentPacket;
+		$pk = PlayerArmorEquipmentPacket::getFromPool();
 		$pk->eid = $this->getHolder()->getID();
 		$pk->slots = $slots;
 		$pk->encode();
@@ -298,7 +298,7 @@ class PlayerInventory extends BaseInventory{
 				//$pk2 = clone $pk;
 				//$pk2->eid = 0;
 
-				$pk2 = new ContainerSetContentPacket;
+				$pk2 = ContainerSetContentPacket::getFromPool();
 				$pk2->windowid = 0x78; //Armor window id constant
 				$pk2->slots = $armor;
 				$player->dataPacket($pk2);
@@ -333,7 +333,7 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetContentPacket();
+		$pk = ContainerSetContentPacket::getFromPool();
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){ //Do not send armor by error here
 			$pk->slots[$i] = $this->getItem($i);
@@ -365,7 +365,7 @@ class PlayerInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetSlotPacket;
+		$pk = ContainerSetSlotPacket::getFromPool();
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

@@ -22,8 +22,13 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class UnknownPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $packetID = -1;
 
 	public function pid(){

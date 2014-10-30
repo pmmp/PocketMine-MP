@@ -533,7 +533,6 @@ class Block extends Position implements Metadatable{
 	protected $name = "Unknown";
 	protected $breakTime = 0.20;
 	protected $hardness = 10;
-	protected $boundingBox = null;
 	public $hasEntityCollision = false;
 	public $isActivable = false;
 	public $breakable = true;
@@ -549,6 +548,9 @@ class Block extends Position implements Metadatable{
 	public $y = 0;
 	public $z = 0;
 	public $frictionFactor = 0.6;
+
+	/** @var AxisAlignedBB */
+	protected $boundingBox = null;
 
 	public static function init(){
 		if(count(self::$list) === 0){
@@ -719,7 +721,7 @@ class Block extends Position implements Metadatable{
 			$block = new Block($id, $meta);
 		}
 
-		if($pos instanceof Position){
+		if($pos !== null){
 			$block->x = $pos->x;
 			$block->y = $pos->y;
 			$block->z = $pos->z;
@@ -852,7 +854,6 @@ class Block extends Position implements Metadatable{
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
 		$this->level = $v->level;
-		$this->boundingBox = null;
 	}
 
 	/**
@@ -933,9 +934,16 @@ class Block extends Position implements Metadatable{
 	public function getBoundingBox(){
 		if($this->boundingBox !== null){
 			return $this->boundingBox;
+		}else{
+			return $this->boundingBox = $this->recalculateBoundingBox();
 		}
+	}
 
-		return $this->boundingBox = new AxisAlignedBB(
+	/**
+	 * @return AxisAlignedBB
+	 */
+	protected function recalculateBoundingBox(){
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y,
 			$this->z,

@@ -116,7 +116,7 @@ class Leaves2 extends Leaves{
 				$visited = [];
 				$check = 0;
 
-				Server::getInstance()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+				Server::getInstance()->getPluginManager()->callEvent($ev = LeavesDecayEvent::createEvent($this));
 
 				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
 					$this->getLevel()->setBlock($this, $this, false, false);

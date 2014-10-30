@@ -24,6 +24,8 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 
 class EntityDamageByEntityEvent extends EntityDamageEvent{
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	/** @var Entity */
 	private $damager;

@@ -21,8 +21,13 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class RotateHeadPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 
 	// eid, yaw
 	/** @var array[] */
@@ -30,6 +35,11 @@ class RotateHeadPacket extends DataPacket{
 
 	public function pid(){
 		return Info::ROTATE_HEAD_PACKET;
+	}
+
+	public function clean(){
+		$this->entities = [];
+		return parent::clean();
 	}
 
 	public function decode(){

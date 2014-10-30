@@ -43,15 +43,12 @@ class Ladder extends Transparent{
 		$entity->onGround = true;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		$f = 0.125;
 
 		if($this->meta === 2){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z + 1 - $f,
@@ -60,7 +57,7 @@ class Ladder extends Transparent{
 				$this->z + 1
 			);
 		}elseif($this->meta === 3){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z,
@@ -69,7 +66,7 @@ class Ladder extends Transparent{
 				$this->z + $f
 			);
 		}elseif($this->meta === 4){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x + 1 - $f,
 				$this->y,
 				$this->z,
@@ -78,7 +75,7 @@ class Ladder extends Transparent{
 				$this->z + 1
 			);
 		}elseif($this->meta === 5){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z,

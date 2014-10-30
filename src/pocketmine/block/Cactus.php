@@ -28,7 +28,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -42,12 +42,9 @@ class Cactus extends Transparent{
 		$this->hardness = 2;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + 0.0625,
 			$this->y,
 			$this->z + 0.0625,
@@ -58,11 +55,8 @@ class Cactus extends Transparent{
 	}
 
 	public function onEntityCollide(Entity $entity){
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
-		Server::getInstance()->getPluginManager()->callEvent($ev);
-		if(!$ev->isCancelled()){
-			$entity->attack($ev->getFinalDamage(), $ev);
-		}
+		$ev = EntityDamageByBlockEvent::createEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
+		$entity->attack($ev->getFinalDamage(), $ev);
 	}
 
 	public function onUpdate($type){
@@ -82,9 +76,9 @@ class Cactus extends Transparent{
 			if($this->getSide(0)->getID() !== self::CACTUS){
 				if($this->meta == 0x0F){
 					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+						$b = $this->getLevel()->getBlock(Vector3::createVector($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
-							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Cactus()));
+							Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($b, new Cactus()));
 							if(!$ev->isCancelled()){
 								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 							}

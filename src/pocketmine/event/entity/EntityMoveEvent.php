@@ -24,13 +24,15 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\Event;
 use pocketmine\event\Cancellable;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 
 /**
  * @deprecated
  */
 class EntityMoveEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	/** @var \pocketmine\math\Vector3 */
 	private $pos;

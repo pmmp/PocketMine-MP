@@ -27,6 +27,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\Binary;
+use pocketmine\utils\ChunkException;
 
 class ChunkRequestTask extends AsyncTask{
 
@@ -50,7 +51,7 @@ class ChunkRequestTask extends AsyncTask{
 		$this->chunkZ = $chunkZ;
 		$chunk = $level->getChunk($chunkX, $chunkZ, false);
 		if(!($chunk instanceof Chunk)){
-			throw new \Exception("Invalid Chunk sent");
+			throw new ChunkException("Invalid Chunk sent");
 		}
 		$this->biomeIds = $chunk->getBiomeIdArray();
 		$this->biomeColors = $chunk->getBiomeColorArray();

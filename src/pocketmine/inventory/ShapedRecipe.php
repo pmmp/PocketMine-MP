@@ -42,14 +42,14 @@ class ShapedRecipe implements Recipe{
 	 */
 	public function __construct(Item $result, array $shape = []){
 		if(count($shape) === 0){
-			throw new \Exception("Must provide a shape");
+			throw new \InvalidArgumentException("Must provide a shape");
 		}
 		if(count($shape) > 3){
-			throw new \Exception("Crafting recipes should  be 1, 2, 3 rows, not " . count($shape));
+			throw new \InvalidStateException("Crafting recipes should be 1, 2, 3 rows, not " . count($shape));
 		}
 		foreach($shape as $row){
 			if(strlen($row) === 0 or strlen($row) > 3){
-				throw new \Exception("Crafting rows should  be 1, 2, 3 characters, not " . count($row));
+				throw new \InvalidStateException("Crafting rows should be 1, 2, 3 characters, not " . count($row));
 			}
 			$this->rows[] = $row;
 			$len = strlen($row);

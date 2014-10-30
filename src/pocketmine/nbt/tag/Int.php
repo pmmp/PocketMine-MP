@@ -23,6 +23,8 @@ namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
 
+#include <rules/NBT.h>
+
 class Int extends NamedTag{
 
 	public function getType(){

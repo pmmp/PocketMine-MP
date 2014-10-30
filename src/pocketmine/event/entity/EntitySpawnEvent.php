@@ -22,9 +22,9 @@
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Creature;
-use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\entity\Item;
 use pocketmine\entity\Projectile;
 use pocketmine\entity\Vehicle;
 
@@ -33,6 +33,8 @@ use pocketmine\entity\Vehicle;
  */
 class EntitySpawnEvent extends EntityEvent{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	private $entityType;
 
@@ -90,7 +92,7 @@ class EntitySpawnEvent extends EntityEvent{
 	 * @return bool
 	 */
 	public function isItem(){
-		return $this->entity instanceof DroppedItem;
+		return $this->entity instanceof Item;
 	}
 
 }

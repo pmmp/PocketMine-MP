@@ -90,7 +90,7 @@ class HandlerList{
 			return;
 		}
 		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)])){
-			throw new \Exception("This listener is already registered to priority " . $listener->getPriority());
+			throw new \InvalidStateException("This listener is already registered to priority " . $listener->getPriority());
 		}
 		$this->handlers = null;
 		$this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)] = $listener;

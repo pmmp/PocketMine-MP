@@ -28,6 +28,8 @@ use pocketmine\level\format\FullChunk;
  */
 class ChunkLoadEvent extends ChunkEvent{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	private $newChunk;
 

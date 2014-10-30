@@ -36,10 +36,7 @@ class StoneWall extends Transparent{
 		$this->hardness = 30;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		$flag = $this->canConnect($this->getSide(2));
 		$flag1 = $this->canConnect($this->getSide(3));
@@ -62,7 +59,7 @@ class StoneWall extends Transparent{
 			$f3 = 0.6875;
 		}
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

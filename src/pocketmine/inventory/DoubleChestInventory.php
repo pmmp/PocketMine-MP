@@ -22,6 +22,10 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\network\protocol\TileEventPacket;
+use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\tile\Chest;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
@@ -81,6 +85,37 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 			$rightItems = array_slice($items, $this->left->getSize() - 1, $this->right->getSize(), true);
 			$this->right->setContents($rightItems);
 		}
+	}
+
+	public function onOpen(Player $who){
+		parent::onOpen($who);
+
+		if(count($this->getViewers()) === 1){
+			$pk = TileEventPacket::getFromPool();
+			$pk->x = $this->right->getHolder()->getX();
+			$pk->y = $this->right->getHolder()->getY();
+			$pk->z = $this->right->getHolder()->getZ();
+			$pk->case1 = 1;
+			$pk->case2 = 2;
+			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
+				Server::broadcastPacket($level->getUsingChunk($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4), $pk);
+			}
+		}
+	}
+
+	public function onClose(Player $who){
+		if(count($this->getViewers()) === 1){
+			$pk = TileEventPacket::getFromPool();
+			$pk->x = $this->right->getHolder()->getX();
+			$pk->y = $this->right->getHolder()->getY();
+			$pk->z = $this->right->getHolder()->getZ();
+			$pk->case1 = 1;
+			$pk->case2 = 0;
+			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
+				Server::broadcastPacket($level->getUsingChunk($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4), $pk);
+			}
+		}
+		parent::onClose($who);
 	}
 
 	/**

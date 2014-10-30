@@ -21,10 +21,75 @@
 
 namespace pocketmine\network\protocol;
 
-use pocketmine\item\Item;
+#include <rules/DataPacket.h>
+
+#ifndef COMPILE
 use pocketmine\utils\Binary;
+#endif
+
+use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\item\Item;
+use pocketmine\Player;
+
 
 abstract class DataPacket extends \stdClass{
+
+	/** @var DataPacket[] */
+	public static $pool = [];
+	public static $next = 0;
+
+	/** @var DataPacketSendEvent */
+	private $sendEvent = null;
+	/** @var DataPacketReceiveEvent */
+	private $receiveEvent = null;
+
+	public static function getFromPool(){
+		if(static::$next >= count(static::$pool)){
+			static::$pool[] = new static;
+		}
+		return static::$pool[static::$next++]->clean();
+	}
+
+	public static function cleanPool(){
+		if(static::$next > 16384){
+			static::$pool = [];
+		}
+		static::$next = 0;
+	}
+
+	/**
+	 * @param Player $player
+	 *
+	 * @return DataPacketReceiveEvent
+	 */
+	public function getReceiveEvent(Player $player){
+		if($this->receiveEvent === null){
+			$this->receiveEvent = new DataPacketReceiveEvent($player, $this);
+		}else{
+			$this->receiveEvent->setCancelled(false);
+			$this->receiveEvent->__construct($player, $this);
+		}
+
+		return $this->receiveEvent;
+	}
+
+	/**
+	 * @param Player $player
+	 *
+	 * @return DataPacketSendEvent
+	 */
+	public function getSendEvent(Player $player){
+		if($this->sendEvent === null){
+			$this->sendEvent = new DataPacketSendEvent($player, $this);
+		}else{
+			$this->sendEvent->setCancelled(false);
+			$this->sendEvent->__construct($player, $this);
+		}
+
+		return $this->sendEvent;
+	}
+
 	private $offset = 0;
 	public $buffer = "";
 	public $isEncoded = false;
@@ -87,7 +152,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getShort($signed = true){
-		return Binary::readShort($this->get(2), $signed);
+		return $signed ? Binary::readSignedShort($this->get(2)) : Binary::readShort($this->get(2));
 	}
 
 	protected function putShort($v){
@@ -161,7 +226,7 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function getString(){
-		return $this->get($this->getShort(false));
+		return $this->get($this->getShort());
 	}
 
 	protected function putString($v){
@@ -171,5 +236,12 @@ abstract class DataPacket extends \stdClass{
 
 	protected function feof(){
 		return !isset($this->buffer{$this->offset});
+	}
+
+	public function clean(){
+		$this->buffer = null;
+		$this->isEncoded = false;
+		$this->offset = 0;
+		return $this;
 	}
 }

@@ -38,16 +38,17 @@ class Lava extends Liquid{
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
-		Server::getInstance()->getPluginManager()->callEvent($ev);
-		if(!$ev->isCancelled()){
-			$entity->attack($ev->getFinalDamage(), $ev);
-		}
+		$ev = EntityDamageByBlockEvent::createEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
+		$entity->attack($ev->getFinalDamage(), $ev);
 
-		$ev = new EntityCombustByBlockEvent($this, $entity, 15);
+		$ev = EntityCombustByBlockEvent::createEvent($this, $entity, 15);
 		Server::getInstance()->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
 			$entity->setOnFire($ev->getDuration());
+		}
+
+		if($entity instanceof Player){
+			$entity->onGround = true;
 		}
 	}
 

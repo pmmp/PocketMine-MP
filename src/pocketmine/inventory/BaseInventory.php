@@ -126,11 +126,12 @@ abstract class BaseInventory implements Inventory{
 			return false;
 		}elseif($item->getID() === 0 or $item->getCount() <= 0){
 			$this->clear($index, $source);
+			return true;
 		}
 
 		$holder = $this->getHolder();
 		if($holder instanceof Entity){
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
+			Server::getInstance()->getPluginManager()->callEvent($ev = EntityInventoryChangeEvent::createEvent($holder, $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
 				$this->sendContents($this->getViewers());
 
@@ -297,7 +298,7 @@ abstract class BaseInventory implements Inventory{
 			$old = $this->slots[$index];
 			$holder = $this->getHolder();
 			if($holder instanceof Entity){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $old, $item, $index));
+				Server::getInstance()->getPluginManager()->callEvent($ev = EntityInventoryChangeEvent::createEvent($holder, $old, $item, $index));
 				if($ev->isCancelled()){
 					$this->sendContents($this->getViewers());
 
@@ -349,7 +350,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function open(Player $who){
-		$who->getServer()->getPluginManager()->callEvent($ev = new InventoryOpenEvent($this, $who));
+		$who->getServer()->getPluginManager()->callEvent($ev = InventoryOpenEvent::createEvent($this, $who));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -383,7 +384,7 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetContentPacket();
+		$pk = ContainerSetContentPacket::getFromPool();
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$pk->slots[$i] = $this->getItem($i);
@@ -408,7 +409,7 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new ContainerSetSlotPacket;
+		$pk = ContainerSetSlotPacket::getFromPool();
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

@@ -30,6 +30,8 @@ use pocketmine\event\Cancellable;
  */
 class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	private $from;
 	private $to;

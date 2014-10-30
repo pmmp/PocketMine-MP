@@ -30,10 +30,7 @@ class Fence extends Transparent{
 		$this->hardness = 15;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		$flag = $this->canConnect($this->getSide(2));
 		$flag1 = $this->canConnect($this->getSide(3));
@@ -45,12 +42,12 @@ class Fence extends Transparent{
 		$f2 = $flag ? 0 : 0.375;
 		$f3 = $flag1 ? 1 : 0.625;
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,
 			$this->x + $f1,
-			$this->y + 1, //TODO: check this, add extra bounding box
+			$this->y + 1,
 			$this->z + $f3
 		);
 	}

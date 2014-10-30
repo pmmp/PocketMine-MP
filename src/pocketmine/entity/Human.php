@@ -23,7 +23,7 @@ namespace pocketmine\entity;
 
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -67,9 +67,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 				$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 			}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, Item::get($item["id"], $item["Damage"], $item["Count"]), $this);
+				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::get($item["id"], $item["Damage"], $item["Count"]), $this);
 			}else{
-				$this->inventory->setItem($item["Slot"] - 9, Item::get($item["id"], $item["Damage"], $item["Count"]), $this);
+				$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]), $this);
 			}
 		}
 
@@ -140,7 +140,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
-				if($item instanceof Item and $item->getID() !== Item::AIR){
+				if($item instanceof ItemItem and $item->getID() !== ItemItem::AIR){
 					$this->namedtag->Inventory[$slot] = new Compound(false, [
 						new Byte("Count", $item->getCount()),
 						new Short("Damage", $item->getDamage()),
@@ -156,7 +156,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($player !== $this and !isset($this->hasSpawned[$player->getID()])){
 			$this->hasSpawned[$player->getID()] = $player;
 
-			$pk = new AddPlayerPacket;
+			$pk = AddPlayerPacket::getFromPool();
 			$pk->clientID = 0;
 			if($player->getRemoveFormat()){
 				$pk->username = TextFormat::clean($this->nameTag);
@@ -174,7 +174,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->metadata = $this->getData();
 			$player->dataPacket($pk);
 
-			$pk = new SetEntityMotionPacket;
+			$pk = SetEntityMotionPacket::getFromPool();
 			$pk->entities = [
 				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 			];
@@ -188,7 +188,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function despawnFrom(Player $player){
 		if(isset($this->hasSpawned[$player->getID()])){
-			$pk = new RemovePlayerPacket;
+			$pk = RemovePlayerPacket::getFromPool();
 			$pk->eid = $this->id;
 			$pk->clientID = 0;
 			$player->dataPacket($pk);
@@ -207,21 +207,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			16 => ["type" => 0, "value" => 0],
 			17 => ["type" => 6, "value" => [0, 0, 0]],
 		];
-
-		/*if($this->class === ENTITY_MOB and $this->type === MOB_SHEEP){
-			if(!isset($this->data["Sheared"])){
-				$this->data["Sheared"] = 0;
-				$this->data["Color"] = mt_rand(0,15);
-			}
-			$d[16]["value"] = (($this->data["Sheared"] == 1 ? 1:0) << 4) | ($this->data["Color"] & 0x0F);
-		}elseif($this->type === OBJECT_PRIMEDTNT){
-			$d[16]["value"] = (int) max(0, $this->data["fuse"] - (microtime(true) - $this->spawntime) * 20);
-		}elseif($this->class === ENTITY_PLAYER){
-			if($this->player->sleeping !== false){
-				$d[16]["value"] = 2;
-				$d[17]["value"] = array($this->player->sleeping->x, $this->player->sleeping->y, $this->player->sleeping->z);
-			}
-		}*/
 
 		return $d;
 	}

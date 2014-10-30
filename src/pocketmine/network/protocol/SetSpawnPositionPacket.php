@@ -21,8 +21,13 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 class SetSpawnPositionPacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $x;
 	public $z;
 	public $y;

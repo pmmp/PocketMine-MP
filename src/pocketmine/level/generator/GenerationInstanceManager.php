@@ -24,6 +24,7 @@ namespace pocketmine\level\generator;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\Level;
 use pocketmine\Server;
+use pocketmine\utils\ChunkException;
 
 class GenerationInstanceManager extends GenerationRequestManager{
 
@@ -78,7 +79,7 @@ class GenerationInstanceManager extends GenerationRequestManager{
 			if($chunk instanceof FullChunk){
 				return $chunk;
 			}else{
-				throw new \Exception("Invalid Chunk given");
+				throw new ChunkException("Invalid Chunk given");
 			}
 		}else{
 			$this->generationManager->closeLevel($levelID);

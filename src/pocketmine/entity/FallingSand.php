@@ -26,15 +26,16 @@ use pocketmine\block\Block;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
+use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
-class FallingBlock extends Entity{
-
+class FallingSand extends Entity{
 	const NETWORK_ID = 66;
 
 	public $width = 0.98;
@@ -44,13 +45,21 @@ class FallingBlock extends Entity{
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 	protected $blockId = 0;
+	protected $damage;
 
 	public $canCollide = false;
 
 	protected function initEntity(){
 		$this->namedtag->id = new String("id", "FallingSand");
-		if(isset($this->namedtag->Tile)){
+		if(isset($this->namedtag->TileID)){
+			$this->blockId = $this->namedtag["TileID"];
+		}elseif(isset($this->namedtag->Tile)){
 			$this->blockId = $this->namedtag["Tile"];
+			$this->namedtag["TileID"] = new Int("TileID", $this->blockId);
+		}
+
+		if(isset($this->namedtag->Data)){
+			$this->damage = $this->namedtag["Data"];
 		}
 
 		if($this->blockId === 0){
@@ -81,12 +90,13 @@ class FallingBlock extends Entity{
 
 		if(!$this->dead){
 			if($this->ticksLived === 1){
-				$block = $this->level->getBlock($this->floor());
+				$pos = Vector3::cloneVector($this);
+				$block = $this->level->getBlock($pos->floor());
 				if($block->getID() != $this->blockId){
 					$this->kill();
 					return true;
 				}
-				$this->level->setBlock($this->floor(), Block::get(0), true);
+				$this->level->setBlock($pos, Block::get(0), true);
 
 			}
 
@@ -100,15 +110,16 @@ class FallingBlock extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
-			$pos = $this->floor();
+			$pos = Vector3::cloneVector($this);
+			$pos = $pos->floor();
 
 			if($this->onGround){
 				$this->kill();
 				$block = $this->level->getBlock($pos);
 				if(!$block->isFullBlock){
-					$this->getLevel()->dropItem($this, Item::get($this->getBlock(), 0, 1));
+					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), 0)));
+					$this->server->getPluginManager()->callEvent($ev = EntityBlockChangeEvent::createEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
 					}
@@ -119,15 +130,19 @@ class FallingBlock extends Entity{
 			$this->updateMovement();
 		}
 
-		return $hasUpdate or !$this->onGround or ($this->motionX == 0 and $this->motionY == 0 and $this->motionZ == 0);
+		return $hasUpdate or !$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
 	}
 
 	public function getBlock(){
 		return $this->blockId;
 	}
+	public function getDamage(){
+		return $this->damage;
+	}
 
 	public function saveNBT(){
-		$this->namedtag->Tile = new Byte("Tile", $this->blockId);
+		$this->namedtag->TileID = new Int("TileID", $this->blockId);
+		$this->namedtag->Data = new Byte("Data", $this->damage);
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
@@ -139,16 +154,16 @@ class FallingBlock extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket;
-		$pk->type = FallingBlock::NETWORK_ID;
+		$pk = AddEntityPacket::getFromPool();
+		$pk->type = FallingSand::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->did = -$this->getBlock();
+		$pk->did = -($this->getBlock() | $this->getDamage() << 0x10);
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket;
+		$pk = SetEntityMotionPacket::getFromPool();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

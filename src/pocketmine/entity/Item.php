@@ -25,7 +25,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -35,12 +35,13 @@ use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
-class DroppedItem extends Entity{
+class Item extends Entity{
+	const NETWORK_ID = 64;
 
 	protected $owner = null;
 	protected $thrower = null;
 	protected $pickupDelay = 0;
-	/** @var Item */
+	/** @var ItemItem */
 	protected $item;
 
 	public $width = 0.25;
@@ -67,10 +68,10 @@ class DroppedItem extends Entity{
 		if(isset($this->namedtag->Thrower)){
 			$this->thrower = $this->namedtag["Thrower"];
 		}
-		$this->item = Item::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
+		$this->item = ItemItem::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
 
 
-		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
+		$this->server->getPluginManager()->callEvent(ItemSpawnEvent::createEvent($this));
 	}
 
 	public function onUpdate($currentTick){
@@ -99,7 +100,7 @@ class DroppedItem extends Entity{
 			$friction = 1 - $this->drag;
 
 			if($this->onGround and ($this->motionX != 0 or $this->motionZ != 0)){
-				$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
+				$friction = $this->getLevel()->getBlock(Vector3::createVector($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
 			}
 
 			$this->motionX *= $friction;
@@ -113,7 +114,7 @@ class DroppedItem extends Entity{
 			}
 
 			if($this->age > 6000){
-				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
+				$this->server->getPluginManager()->callEvent($ev = ItemDespawnEvent::createEvent($this));
 				if($ev->isCancelled()){
 					$this->age = 0;
 				}else{
@@ -130,6 +131,13 @@ class DroppedItem extends Entity{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+		if($source instanceof EntityDamageEvent){
+			$this->server->getPluginManager()->callEvent($source);
+			$damage = $source->getFinalDamage();
+			if($source->isCancelled()){
+				return;
+			}
+		}
 		$this->setLastDamageCause($source);
 		$this->setHealth($this->getHealth() - $damage);
 	}
@@ -166,7 +174,7 @@ class DroppedItem extends Entity{
 	}
 
 	/**
-	 * @return Item
+	 * @return ItemItem
 	 */
 	public function getItem(){
 		return $this->item;
@@ -219,7 +227,7 @@ class DroppedItem extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = new AddItemEntityPacket();
+		$pk = AddItemEntityPacket::getFromPool();
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
@@ -230,7 +238,7 @@ class DroppedItem extends Entity{
 		$pk->item = $this->getItem();
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket;
+		$pk = SetEntityMotionPacket::getFromPool();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

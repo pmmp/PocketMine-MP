@@ -23,6 +23,8 @@ namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
 
+#include <rules/NBT.h>
+
 class Compound extends NamedTag implements \ArrayAccess{
 
 	public function __construct($name = "", $value = []){

@@ -102,6 +102,47 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->logDebug = (bool) $logDebug;
 	}
 
+	public function logException(\Exception $e, $trace = null){
+		$errstr = $e->getMessage();
+		$errfile = $e->getFile();
+		$errno = $e->getCode();
+		$errline = $e->getLine();
+
+		$errorConversion = [
+			0 => "EXCEPTION",
+			E_ERROR => "E_ERROR",
+			E_WARNING => "E_WARNING",
+			E_PARSE => "E_PARSE",
+			E_NOTICE => "E_NOTICE",
+			E_CORE_ERROR => "E_CORE_ERROR",
+			E_CORE_WARNING => "E_CORE_WARNING",
+			E_COMPILE_ERROR => "E_COMPILE_ERROR",
+			E_COMPILE_WARNING => "E_COMPILE_WARNING",
+			E_USER_ERROR => "E_USER_ERROR",
+			E_USER_WARNING => "E_USER_WARNING",
+			E_USER_NOTICE => "E_USER_NOTICE",
+			E_STRICT => "E_STRICT",
+			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+			E_DEPRECATED => "E_DEPRECATED",
+			E_USER_DEPRECATED => "E_USER_DEPRECATED",
+		];
+		if($errno === 0){
+			$type = LogLevel::CRITICAL;
+		}else{
+			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
+		}
+		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+		if(($pos = strpos($errstr, "\n")) !== false){
+			$errstr = substr($errstr, 0, $pos);
+		}
+		$errfile = \pocketmine\cleanPath($errfile);
+		$this->log($type, get_class($e).": \"$errstr\" ($errno) in \"$errfile\" at line $errline");
+
+		foreach(($trace = \pocketmine\getTrace($trace === null ? 4 : 0, $trace)) as $i => $line){
+			$this->debug($line);
+		}
+	}
+
 	public function log($level, $message){
 		switch($level){
 			case LogLevel::EMERGENCY:

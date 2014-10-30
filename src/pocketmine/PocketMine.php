@@ -65,14 +65,13 @@ namespace {
 }
 
 namespace pocketmine {
-	use LogLevel;
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
 	const VERSION = "Alpha_1.4dev";
-	const API_VERSION = "1.6.0";
+	const API_VERSION = "1.7.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
 	const MINECRAFT_VERSION = "v0.10.0 alpha build2";
 
@@ -327,55 +326,7 @@ namespace pocketmine {
 		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
 	}
 
-	function error_handler($errno, $errstr, $errfile, $errline, $context, $trace = null){
-		global $lastError;
-		if(error_reporting() === 0){ //@ error-con..trol
-			return false;
-		}
-		$errorConversion = [
-			E_ERROR => "E_ERROR",
-			E_WARNING => "E_WARNING",
-			E_PARSE => "E_PARSE",
-			E_NOTICE => "E_NOTICE",
-			E_CORE_ERROR => "E_CORE_ERROR",
-			E_CORE_WARNING => "E_CORE_WARNING",
-			E_COMPILE_ERROR => "E_COMPILE_ERROR",
-			E_COMPILE_WARNING => "E_COMPILE_WARNING",
-			E_USER_ERROR => "E_USER_ERROR",
-			E_USER_WARNING => "E_USER_WARNING",
-			E_USER_NOTICE => "E_USER_NOTICE",
-			E_STRICT => "E_STRICT",
-			E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-			E_DEPRECATED => "E_DEPRECATED",
-			E_USER_DEPRECATED => "E_USER_DEPRECATED",
-		];
-		$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
-		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
-		if(($pos = strpos($errstr, "\n")) !== false){
-			$errstr = substr($errstr, 0, $pos);
-		}
-		$logger = MainLogger::getLogger();
-		$oldFile = $errfile;
-		$errfile = cleanPath($errfile);
-		$logger->log($type, "An $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
-
-		foreach(($trace = getTrace($trace === null ? 3 : 0, $trace)) as $i => $line){
-			$logger->debug($line);
-		}
-
-		$lastError = [
-			"type" => $type,
-			"message" => $errstr,
-			"fullFile" => $oldFile,
-			"file" => $errfile,
-			"line" => $errline,
-			"trace" => $trace
-		];
-
-		return true;
-	}
-
-	set_error_handler("\\pocketmine\\error_handler", E_ALL);
+	set_error_handler([\ExceptionHandler::class, "handler"], -1);
 
 	$errors = 0;
 

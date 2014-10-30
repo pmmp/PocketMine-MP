@@ -38,10 +38,7 @@ class FenceGate extends Transparent{
 	}
 
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
 		if(($this->getDamage() & 0x04) > 0){
 			return null;
@@ -49,7 +46,7 @@ class FenceGate extends Transparent{
 
 		$i = ($this->getDamage() & 0x03);
 		if($i === 2 and $i === 0){
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x,
 				$this->y,
 				$this->z + 0.375,
@@ -58,7 +55,7 @@ class FenceGate extends Transparent{
 				$this->z + 0.625
 			);
 		}else{
-			return $this->boundingBox = new AxisAlignedBB(
+			return AxisAlignedBB::getBoundingBoxFromPool(
 				$this->x + 0.375,
 				$this->y,
 				$this->z,

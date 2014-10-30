@@ -30,12 +30,9 @@ class Farmland extends Solid{
 		$this->hardness = 3;
 	}
 
-	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}
+	protected function recalculateBoundingBox(){
 
-		return $this->boundingBox = new AxisAlignedBB(
+		return AxisAlignedBB::getBoundingBoxFromPool(
 			$this->x,
 			$this->y,
 			$this->z,

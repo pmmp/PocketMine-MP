@@ -27,6 +27,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\ByteArray;
 use pocketmine\nbt\tag\Compound;
+use pocketmine\utils\ChunkException;
 
 class Anvil extends McRegion{
 
@@ -93,7 +94,7 @@ class Anvil extends McRegion{
 
 	public function setChunk($chunkX, $chunkZ, FullChunk $chunk){
 		if(!($chunk instanceof Chunk)){
-			throw new \Exception("Invalid Chunk class");
+			throw new ChunkException("Invalid Chunk class");
 		}
 
 		$chunk->setProvider($this);

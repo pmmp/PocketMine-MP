@@ -92,7 +92,7 @@ class CraftingTransactionGroup extends SimpleTransactionGroup{
 			return false;
 		}
 
-		Server::getInstance()->getPluginManager()->callEvent($ev = new CraftItemEvent($this, $this->getMatchingRecipe()));
+		Server::getInstance()->getPluginManager()->callEvent($ev = CraftItemEvent::createEvent($this, $this->getMatchingRecipe()));
 		if($ev->isCancelled()){
 			foreach($this->inventories as $inventory){
 				$inventory->sendContents($inventory->getViewers());

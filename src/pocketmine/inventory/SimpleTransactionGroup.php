@@ -129,9 +129,8 @@ class SimpleTransactionGroup implements TransactionGroup{
 	public function canExecute(){
 		$haveItems = [];
 		$needItems = [];
-		$this->matchItems($haveItems, $needItems);
 
-		return count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
+		return $this->matchItems($haveItems, $needItems) and count($haveItems) === 0 and count($needItems) === 0 and count($this->transactions) > 0;
 	}
 
 	public function execute(){
@@ -139,7 +138,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 			return false;
 		}
 
-		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+		Server::getInstance()->getPluginManager()->callEvent($ev = InventoryTransactionEvent::createEvent($this));
 		if($ev->isCancelled()){
 			foreach($this->inventories as $inventory){
 				$inventory->sendContents($inventory->getViewers());

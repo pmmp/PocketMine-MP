@@ -27,6 +27,8 @@ use pocketmine\Player;
 
 class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	/** @var Player */
 	private $who;

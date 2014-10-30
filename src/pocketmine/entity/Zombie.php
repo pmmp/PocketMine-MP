@@ -23,7 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
@@ -46,7 +46,7 @@ class Zombie extends Monster{
 
 	public function spawnTo(Player $player){
 
-		$pk = new AddMobPacket();
+		$pk = AddMobPacket::getFromPool();
 		$pk->eid = $this->getID();
 		$pk->type = Zombie::NETWORK_ID;
 		$pk->x = $this->x;
@@ -57,7 +57,7 @@ class Zombie extends Monster{
 		$pk->metadata = $this->getData();
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket();
+		$pk = SetEntityMotionPacket::getFromPool();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];
@@ -83,19 +83,19 @@ class Zombie extends Monster{
 
 	public function getDrops(){
 		$drops = [
-			Item::get(Item::FEATHER, 0, 1)
+			ItemItem::get(ItemItem::FEATHER, 0, 1)
 		];
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player){
 			if(mt_rand(0, 199) < 5){
 				switch(mt_rand(0, 2)){
 					case 0:
-						$drops[] = Item::get(Item::IRON_INGOT, 0, 1);
+						$drops[] = ItemItem::get(ItemItem::IRON_INGOT, 0, 1);
 						break;
 					case 1:
-						$drops[] = Item::get(Item::CARROT, 0, 1);
+						$drops[] = ItemItem::get(ItemItem::CARROT, 0, 1);
 						break;
 					case 2:
-						$drops[] = Item::get(Item::POTATO, 0, 1);
+						$drops[] = ItemItem::get(ItemItem::POTATO, 0, 1);
 						break;
 				}
 			}

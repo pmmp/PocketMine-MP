@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
+use pocketmine\utils\LevelException;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var Level */
@@ -46,7 +47,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 		if($levelData->Data instanceof Compound){
 			$this->levelData = $levelData->Data;
 		}else{
-			throw new \Exception("Invalid level.dat");
+			throw new LevelException("Invalid level.dat");
 		}
 	}
 

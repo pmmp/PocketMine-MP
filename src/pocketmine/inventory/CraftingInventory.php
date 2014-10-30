@@ -41,7 +41,7 @@ class CraftingInventory extends BaseInventory{
 	 */
 	public function __construct(InventoryHolder $holder, Inventory $resultInventory, InventoryType $inventoryType){
 		if($inventoryType->getDefaultTitle() !== "Crafting"){
-			throw new \Exception("Invalid Inventory type, expected CRAFTING or WORKBENCH");
+			throw new \InvalidStateException("Invalid Inventory type, expected CRAFTING or WORKBENCH");
 		}
 		$this->resultInventory = $resultInventory;
 		parent::__construct($holder, $inventoryType);

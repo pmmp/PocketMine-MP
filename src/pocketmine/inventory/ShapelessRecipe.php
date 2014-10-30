@@ -44,11 +44,11 @@ class ShapelessRecipe implements Recipe{
 	 *
 	 * @returns ShapelessRecipe
 	 *
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public function addIngredient(Item $item){
 		if(count($this->ingredients) >= 9){
-			throw new \Exception("Shapeless recipes cannot have more than 9 ingredients");
+			throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
 		}
 
 		$it = clone $item;

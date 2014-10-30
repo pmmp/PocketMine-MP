@@ -27,6 +27,8 @@ use pocketmine\Player;
 
 class PlayerMoveEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
+	public static $eventPool = [];
+	public static $nextEvent = 0;
 
 	private $from;
 	private $to;

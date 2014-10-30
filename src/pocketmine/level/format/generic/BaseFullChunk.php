@@ -21,17 +21,11 @@
 
 namespace pocketmine\level\format\generic;
 
-use pocketmine\entity\Arrow;
-use pocketmine\entity\DroppedItem;
 use pocketmine\entity\Entity;
-use pocketmine\entity\FallingBlock;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\Player;
-use pocketmine\tile\Chest;
-use pocketmine\tile\Furnace;
-use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 
@@ -81,8 +75,6 @@ abstract class BaseFullChunk implements FullChunk{
 	 * @param int[]         $biomeColors
 	 * @param Compound[]    $entities
 	 * @param Compound[]    $tiles
-	 *
-	 * @throws \Exception
 	 */
 	protected function __construct($provider, $x, $z, $blocks, $data, $skyLight, $blockLight, $biomeIds = null, array $biomeColors = [], array $entities = [], array $tiles = []){
 		$this->provider = $provider;
@@ -116,23 +108,20 @@ abstract class BaseFullChunk implements FullChunk{
 			foreach($this->NBTentities as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
+						$this->setChanged();
 						continue;
 					}
 
-					//TODO: add all entities
-					switch($nbt["id"]){
-						case DroppedItem::NETWORK_ID:
-						case "Item":
-							(new DroppedItem($this, $nbt))->spawnToAll();
-							break;
-						case Arrow::NETWORK_ID:
-						case "Arrow":
-							(new Arrow($this, $nbt))->spawnToAll();
-							break;
-						case FallingBlock::NETWORK_ID:
-						case "FallingSand":
-							(new FallingBlock($this, $nbt))->spawnToAll();
-							break;
+					if(($nbt["Pos"][0] >> 4) !== $this->x or ($nbt["Pos"][2] >> 4) !== $this->z){
+						$this->setChanged();
+						continue; //Fixes entities allocated in wrong chunks.
+					}
+
+					if(($entity = Entity::createEntity($nbt["id"], $this, $nbt)) instanceof Entity){
+						$entity->spawnToAll();
+					}else{
+						$this->setChanged();
+						continue;
 					}
 				}
 			}
@@ -142,18 +131,18 @@ abstract class BaseFullChunk implements FullChunk{
 			foreach($this->NBTtiles as $nbt){
 				if($nbt instanceof Compound){
 					if(!isset($nbt->id)){
+						$this->setChanged();
 						continue;
 					}
-					switch($nbt["id"]){
-						case Tile::CHEST:
-							new Chest($this, $nbt);
-							break;
-						case Tile::FURNACE:
-							new Furnace($this, $nbt);
-							break;
-						case Tile::SIGN:
-							new Sign($this, $nbt);
-							break;
+
+					if(($nbt["x"] >> 4) !== $this->x or ($nbt["z"] >> 4) !== $this->z){
+						$this->setChanged();
+						continue; //Fixes tiles allocated in wrong chunks.
+					}
+
+					if(Tile::createTile($nbt["id"], $this, $nbt) === null){
+						$this->setChanged();
+						continue;
 					}
 				}
 			}

@@ -49,9 +49,9 @@ class Sugarcane extends Flowable{
 		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+					$b = $this->getLevel()->getBlock(Vector3::createVector($this->x, $this->y + $y, $this->z));
 					if($b->getID() === self::AIR){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Sugarcane()));
+						Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($b, new Sugarcane()));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 						}
@@ -83,7 +83,7 @@ class Sugarcane extends Flowable{
 			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
-						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
+						$b = $this->getLevel()->getBlock(Vector3::createVector($this->x, $this->y + $y, $this->z));
 						if($b->getID() === self::AIR){
 							$this->getLevel()->setBlock($b, new Sugarcane(), true);
 							break;

@@ -24,6 +24,7 @@ namespace pocketmine\permission;
 use pocketmine\event\Timings;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\PluginException;
 
 class PermissibleBase implements Permissible{
 	/** @var ServerOperator */
@@ -72,7 +73,7 @@ class PermissibleBase implements Permissible{
 	 */
 	public function setOp($value){
 		if($this->opable === null){
-			throw new \Exception("Cannot change op value as no ServerOperator is set");
+			throw new \LogicException("Cannot change op value as no ServerOperator is set");
 		}else{
 			$this->opable->setOp($value);
 		}
@@ -120,13 +121,13 @@ class PermissibleBase implements Permissible{
 	 *
 	 * @return PermissionAttachment
 	 *
-	 * @throws \Exception
+	 * @throws PluginException
 	 */
 	public function addAttachment(Plugin $plugin, $name = null, $value = null){
 		if($plugin === null){
-			throw new \Exception("Plugin cannot be null");
+			throw new PluginException("Plugin cannot be null");
 		}elseif(!$plugin->isEnabled()){
-			throw new \Exception("Plugin " . $plugin->getDescription()->getName() . " is disabled");
+			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
 		$result = new PermissionAttachment($plugin, $this->parent);
@@ -147,7 +148,7 @@ class PermissibleBase implements Permissible{
 	 */
 	public function removeAttachment(PermissionAttachment $attachment){
 		if($attachment === null){
-			throw new \Exception("Attachment cannot be null");
+			throw new \InvalidStateException("Attachment cannot be null");
 		}
 
 		if(isset($this->attachments[spl_object_hash($attachment)])){

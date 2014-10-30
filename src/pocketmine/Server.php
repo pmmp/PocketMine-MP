@@ -31,6 +31,16 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
+use pocketmine\entity\Arrow;
+use pocketmine\entity\Entity;
+use pocketmine\entity\FallingSand;
+use pocketmine\entity\Human;
+use pocketmine\entity\Item as DroppedItem;
+use pocketmine\entity\PrimedTNT;
+use pocketmine\entity\Snowball;
+use pocketmine\entity\Villager;
+use pocketmine\entity\Zombie;
+use pocketmine\event\Event;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
@@ -50,6 +60,9 @@ use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
+use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -78,11 +91,17 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
+use pocketmine\tile\Chest;
+use pocketmine\tile\Furnace;
+use pocketmine\tile\Sign;
+use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Cache;
 use pocketmine\utils\Config;
+use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\ServerException;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
@@ -915,6 +934,7 @@ class Server{
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level->unload($forceUnload) === true){
+			Position::clearPositions();
 			unset($this->levels[$level->getID()]);
 
 			return true;
@@ -930,11 +950,11 @@ class Server{
 	 *
 	 * @return bool
 	 *
-	 * @throws \Exception
+	 * @throws LevelException
 	 */
 	public function loadLevel($name){
 		if(trim($name) === ""){
-			throw new \Exception("Invalid empty level name");
+			throw new LevelException("Invalid empty level name");
 		}
 		if($this->isLevelLoaded($name)){
 			return true;
@@ -970,7 +990,7 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
 
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
@@ -1105,9 +1125,9 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
+		$this->getPluginManager()->callEvent(LevelInitEvent::createEvent($level));
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
@@ -1548,6 +1568,9 @@ class Server{
 		$this->consoleSender = new ConsoleCommandSender();
 		$this->commandMap = new SimpleCommandMap($this);
 
+		$this->registerEntities();
+		$this->registerTiles();
+
 		InventoryType::init();
 		Block::init();
 		Item::init();
@@ -1697,6 +1720,9 @@ class Server{
 		foreach($players as $player){
 			$player->dataPacket($packet);
 		}
+		if(isset($packet->__encapsulatedPacket)){
+			unset($packet->__encapsulatedPacket);
+		}
 	}
 
 
@@ -1739,7 +1765,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
+			$this->pluginManager->callEvent($ev = ServerCommandEvent::createEvent($this->consoleSender, $line));
 			if(!$ev->isCancelled()){
 				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
 			}
@@ -1759,7 +1785,7 @@ class Server{
 	 */
 	public function dispatchCommand(CommandSender $sender, $commandLine){
 		if(!($sender instanceof CommandSender)){
-			throw new \Exception("CommandSender is not valid");
+			throw new ServerException("CommandSender is not valid");
 		}
 
 		if($this->commandMap->dispatch($sender, $commandLine)){
@@ -1929,12 +1955,38 @@ class Server{
 		}
 	}
 
-	public function exceptionHandler(\Exception $e){
+	public function exceptionHandler(\Exception $e, $trace = null){
 		if($e === null){
 			return;
 		}
 
-		error_handler(E_ERROR, $e->getMessage(), $e->getFile(), $e->getLine(), [], $e->getTrace());
+		global $lastError;
+
+		$errstr = $e->getMessage();
+		$errfile = $e->getFile();
+		$errno = $e->getCode();
+		$errline = $e->getLine();
+
+		$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? \LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? \LogLevel::WARNING : \LogLevel::NOTICE);
+		if(($pos = strpos($errstr, "\n")) !== false){
+			$errstr = substr($errstr, 0, $pos);
+		}
+
+		$errfile = cleanPath($errfile);
+
+		if($this->logger instanceof MainLogger){
+			$this->logger->logException($e, $trace);
+		}
+
+		$lastError = [
+			"type" => $type,
+			"message" => $errstr,
+			"fullFile" => $e->getFile(),
+			"file" => $errfile,
+			"line" => $errline,
+			"trace" => getTrace($trace === null ? 3 : 0, $trace)
+		];
+
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 		$this->crashDump();
@@ -2111,6 +2163,20 @@ class Server{
 
 		$this->generationManager->process();
 
+
+		Vector3::clearVectorList();
+		Position::clearPositionList();
+		if(($this->tickCounter % 4) === 0){
+			Event::clearAllPools();
+
+			if(($this->tickCounter % 80) === 0){
+				foreach($this->levels as $level){
+					$level->clearCache();
+				}
+				AxisAlignedBB::clearBoundingBoxPool();
+			}
+		}
+
 		Timings::$serverTickTimer->stopTiming();
 
 		TimingsHandler::tick();
@@ -2127,6 +2193,24 @@ class Server{
 		$this->nextTick += 0.05;
 
 		return true;
+	}
+
+	private function registerEntities(){
+		Entity::registerEntity(Arrow::class);
+		Entity::registerEntity(DroppedItem::class);
+		Entity::registerEntity(FallingSand::class);
+		Entity::registerEntity(PrimedTNT::class);
+		Entity::registerEntity(Snowball::class);
+		Entity::registerEntity(Villager::class);
+		Entity::registerEntity(Zombie::class);
+
+		Entity::registerEntity(Human::class, true);
+	}
+
+	private function registerTiles(){
+		Tile::registerTile(Chest::class);
+		Tile::registerTile(Furnace::class);
+		Tile::registerTile(Sign::class);
 	}
 
 }

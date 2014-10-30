@@ -38,7 +38,7 @@ class RCON{
 	private $socket;
 	private $password;
 	/** @var RCONInstance[] */
-	private $workers;
+	private $workers = [];
 	private $clientsPerThread;
 
 	public function __construct(Server $server, $password, $port = 19132, $interface = "0.0.0.0", $threads = 1, $clientsPerThread = 50){
@@ -56,7 +56,7 @@ class RCON{
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 		if($this->socket === false or !socket_bind($this->socket, $interface, (int) $port) or !socket_listen($this->socket)){
 			$this->server->getLogger()->critical("RCON can't be started: " . socket_strerror(socket_last_error()));
-
+			$this->threads = 0;
 			return;
 		}
 		socket_set_block($this->socket);
@@ -94,7 +94,7 @@ class RCON{
 					$response = new RemoteConsoleCommandSender();
 					$command = $this->workers[$n]->cmd;
 
-					$this->server->getPluginManager()->callEvent($ev = new RemoteServerCommandEvent($response, $command));
+					$this->server->getPluginManager()->callEvent($ev = RemoteServerCommandEvent::createEvent($response, $command));
 
 					if(!$ev->isCancelled()){
 						$this->server->dispatchCommand($ev->getSender(), $ev->getCommand());

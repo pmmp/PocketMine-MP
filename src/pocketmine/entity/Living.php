@@ -28,7 +28,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
-use pocketmine\item\Item;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
@@ -65,18 +65,33 @@ abstract class Living extends Entity implements Damageable{
 	public function hasLineOfSight(Entity $entity){
 		//TODO: head height
 		return true;
-		//return $this->getLevel()->rayTraceBlocks(new Vector3($this->x, $this->y + $this->height, $this->z), new Vector3($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
 		if($this->attackTime > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause instanceof EntityDamageEvent and $lastCause->getDamage() >= $damage){
+				if($source instanceof EntityDamageEvent){
+					$source->setCancelled();
+					$this->server->getPluginManager()->callEvent($source);
+					$damage = $source->getFinalDamage();
+					if($source->isCancelled()){
+						return;
+					}
+				}else{
+					return;
+				}
+			}
+		}elseif($source instanceof EntityDamageEvent){
+			$this->server->getPluginManager()->callEvent($source);
+			$damage = $source->getFinalDamage();
+			if($source->isCancelled()){
 				return;
 			}
 		}
 
-		$pk = new EntityEventPacket();
+		$pk = EntityEventPacket::getFromPool();
 		$pk->eid = $this->getID();
 		$pk->event = 2; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
@@ -99,7 +114,7 @@ abstract class Living extends Entity implements Damageable{
 		$f = sqrt($x ** 2 + $z ** 2);
 		$base = 0.4;
 
-		$motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
+		$motion = Vector3::createVector($this->motionX, $this->motionY, $this->motionZ);
 
 		$motion->x /= 2;
 		$motion->y /= 2;
@@ -124,7 +139,7 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 		parent::kill();
-		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
+		$this->server->getPluginManager()->callEvent($ev = EntityDeathEvent::createEvent($this, $this->getDrops()));
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
@@ -135,10 +150,8 @@ abstract class Living extends Entity implements Damageable{
 		parent::entityBaseTick();
 
 		if($this->dead !== true and $this->isInsideOfSolid()){
-			$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1));
-			if(!$ev->isCancelled()){
-				$this->attack($ev->getFinalDamage(), $ev);
-			}
+			$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
+			$this->attack($ev->getFinalDamage(), $ev);
 		}
 
 		if($this->dead !== true and $this->isInsideOfWater()){
@@ -146,10 +159,8 @@ abstract class Living extends Entity implements Damageable{
 			if($this->airTicks <= -20){
 				$this->airTicks = 0;
 
-				$this->server->getPluginManager()->callEvent($ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2));
-				if(!$ev->isCancelled()){
-					$this->attack($ev->getFinalDamage(), $ev);
-				}
+				$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+				$this->attack($ev->getFinalDamage(), $ev);
 			}
 		}else{
 			$this->airTicks = 300;
@@ -163,7 +174,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
-	 * @return Item[]
+	 * @return ItemItem[]
 	 */
 	public function getDrops(){
 		return [];

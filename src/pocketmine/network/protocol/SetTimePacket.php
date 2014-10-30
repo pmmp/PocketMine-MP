@@ -21,10 +21,15 @@
 
 namespace pocketmine\network\protocol;
 
+#include <rules/DataPacket.h>
+
 
 use pocketmine\level\Level;
 
 class SetTimePacket extends DataPacket{
+	public static $pool = [];
+	public static $next = 0;
+
 	public $time;
 	public $started = true;
 

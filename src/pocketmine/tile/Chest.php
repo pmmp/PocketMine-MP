@@ -26,7 +26,7 @@ use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\FullChunk;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -55,8 +55,6 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
-
-		$this->checkPairing();
 	}
 
 	public function close(){
@@ -158,6 +156,9 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	 * @return ChestInventory|DoubleChestInventory
 	 */
 	public function getInventory(){
+		if($this->isPaired() and $this->doubleInventory === null){
+			$this->checkPairing();
+		}
 		return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
 	}
 
@@ -196,7 +197,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	 */
 	public function getPair(){
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTile(new Vector3((int) $this->namedtag["pairx"], $this->y, (int) $this->namedtag["pairz"]));
+			$tile = $this->getLevel()->getTile(Vector3::createVector((int) $this->namedtag["pairx"], $this->y, (int) $this->namedtag["pairz"]));
 			if($tile instanceof Chest){
 				return $tile;
 			}
@@ -229,14 +230,16 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		}
 
 		$tile = $this->getPair();
-		unset($this->namedtag->pairx, $this->namedtag->pairz, $tile->namedtag->pairx, $tile->namedtag->pairz);
+		unset($this->namedtag->pairx, $this->namedtag->pairz);
 
 		$this->spawnToAll();
-		$this->checkPairing();
 
 		if($tile instanceof Chest){
+			unset($tile->namedtag->pairx, $tile->namedtag->pairz);
+			$tile->checkPairing();
 			$tile->spawnToAll();
 		}
+		$this->checkPairing();
 
 		return true;
 	}
