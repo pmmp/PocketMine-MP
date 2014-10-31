@@ -413,18 +413,6 @@ class Level implements ChunkManager, Metadatable{
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 *
-	 * @param Player $player
-	 */
-	public function freeAllChunks(Player $player){
-		foreach($this->usedChunks as $i => $c){
-			unset($this->usedChunks[$i][$player->getID()]);
-		}
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 *
 	 * @param int    $X
 	 * @param int    $Z
 	 * @param Player $player

@@ -2329,7 +2329,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			$this->interface->close($this, $reason);
-			$this->level->freeAllChunks($this);
+
+			$chunkX = $chunkZ = null;
+			foreach($this->usedChunks as $index => $d){
+				Level::getXZ($index, $chunkX, $chunkZ);
+				$this->level->freeChunk($chunkX, $chunkZ, $this);
+			}
 
 			parent::close();
 
@@ -2346,6 +2351,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->windowIndex = [];
 			$this->usedChunks = [];
 			$this->loadQueue = [];
+			$this->hasSpawned = [];
 			$this->spawnPosition = null;
 			unset($this->buffer);
 		}
