@@ -597,7 +597,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected function sendNextChunk(){
 		if($this->connected === false){
-			return false;
+			return;
 		}
 
 		$count = 0;
@@ -641,7 +641,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			if($spawned < 56){
-				return true;
+				return;
 			}
 
 			$this->spawned = true;
@@ -1265,7 +1265,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->orderChunks();
 		}
 
-		if(count($this->loadQueue) > 0){
+		if(count($this->loadQueue) > 0 or !$this->spawned){
 			$this->sendNextChunk();
 		}
 
