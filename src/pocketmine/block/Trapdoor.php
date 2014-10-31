@@ -44,7 +44,7 @@ class Trapdoor extends Transparent{
 		$f = 0.1875;
 
 		if(($damage & 0x08) > 0){
-			$bb = AxisAlignedBB::getBoundingBoxFromPool(
+			$bb = new AxisAlignedBB(
 				$this->x,
 				$this->y + 1 - $f,
 				$this->z,
@@ -53,7 +53,7 @@ class Trapdoor extends Transparent{
 				$this->z + 1
 			);
 		}else{
-			$bb = AxisAlignedBB::getBoundingBoxFromPool(
+			$bb = new AxisAlignedBB(
 				$this->x,
 				$this->y,
 				$this->z,

@@ -80,7 +80,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function getFlowVector(){
-		$vector = Vector3::createVector(0, 0, 0);
+		$vector = new Vector3(0, 0, 0);
 
 		$decay = $this->getEffectiveFlowDecay($this);
 
@@ -99,7 +99,7 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$sideBlock = $this->getLevel()->getBlock(Vector3::createVector($x, $y, $z));
+			$sideBlock = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -314,7 +314,7 @@ abstract class Liquid extends Transparent{
 				}elseif($j === 3){
 					++$z;
 				}
-				$blockSide = $this->getLevel()->getBlock(Vector3::createVector($x, $y, $z));
+				$blockSide = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
 				if(!$blockSide->isFlowable and !($blockSide instanceof Liquid)){
 					continue;
@@ -356,7 +356,7 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$block = $this->getLevel()->getBlock(Vector3::createVector($x, $y, $z));
+			$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
 			if(!$block->isFlowable and !($block instanceof Liquid)){
 				continue;

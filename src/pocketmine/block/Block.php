@@ -911,7 +911,7 @@ class Block extends Position implements Metadatable{
 	 * @return AxisAlignedBB
 	 */
 	protected function recalculateBoundingBox(){
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
 			$this->z,

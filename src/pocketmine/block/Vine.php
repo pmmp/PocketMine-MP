@@ -93,7 +93,7 @@ class Vine extends Transparent{
 			$f6 = 1;
 		}
 
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x + $f1,
 			$this->y + $f2,
 			$this->z + $f3,

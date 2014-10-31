@@ -59,7 +59,7 @@ class StoneWall extends Transparent{
 			$f3 = 0.6875;
 		}
 
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

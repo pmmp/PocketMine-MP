@@ -42,7 +42,7 @@ class Bucket extends Item{
 			if($target instanceof Liquid and $target->getDamage() === 0){
 				$result = clone $this;
 				$result->setDamage($target->getID());
-				$player->getServer()->getPluginManager()->callEvent($ev = PlayerBucketFillEvent::createEvent($player, $block, $face, $this, $result));
+				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 				if(!$ev->isCancelled()){
 					$player->getLevel()->setBlock($target, new Air(), true, true);
 					if($player->isSurvival()){
@@ -56,7 +56,7 @@ class Bucket extends Item{
 		}elseif($targetBlock instanceof Liquid){
 			$result = clone $this;
 			$result->setDamage(0);
-			$player->getServer()->getPluginManager()->callEvent($ev = PlayerBucketFillEvent::createEvent($player, $block, $face, $this, $result));
+			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 			if(!$ev->isCancelled()){
 				$player->getLevel()->setBlock($block, $targetBlock, true, true);
 				if($player->isSurvival()){

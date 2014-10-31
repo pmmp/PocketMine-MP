@@ -46,7 +46,7 @@ class FenceGate extends Transparent{
 
 		$i = ($this->getDamage() & 0x03);
 		if($i === 2 and $i === 0){
-			return AxisAlignedBB::getBoundingBoxFromPool(
+			return new AxisAlignedBB(
 				$this->x,
 				$this->y,
 				$this->z + 0.375,
@@ -55,7 +55,7 @@ class FenceGate extends Transparent{
 				$this->z + 0.625
 			);
 		}else{
-			return AxisAlignedBB::getBoundingBoxFromPool(
+			return new AxisAlignedBB(
 				$this->x + 0.375,
 				$this->y,
 				$this->z,

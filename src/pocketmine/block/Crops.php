@@ -57,7 +57,7 @@ abstract class Crops extends Flowable{
 				$block->meta = 7;
 			}
 
-			Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($this, $block));
+			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){
 				$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
@@ -82,7 +82,7 @@ abstract class Crops extends Flowable{
 				if($this->meta < 0x07){
 					$block = clone $this;
 					++$block->meta;
-					Server::getInstance()->getPluginManager()->callEvent($ev = BlockGrowEvent::createEvent($this, $block));
+					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);

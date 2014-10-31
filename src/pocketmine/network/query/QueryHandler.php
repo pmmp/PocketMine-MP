@@ -58,7 +58,7 @@ class QueryHandler{
 	}
 
 	public function regenerateInfo(){
-		$this->server->getPluginManager()->callEvent($ev = QueryRegenerateEvent::createEvent($this->server, 5));
+		$this->server->getPluginManager()->callEvent($ev = new QueryRegenerateEvent($this->server, 5));
 		$this->longData = $ev->getLongQuery();
 		$this->shortData = $ev->getShortQuery();
 		$this->timeout = microtime(true) + $ev->getTimeout();

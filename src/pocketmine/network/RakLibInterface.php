@@ -121,8 +121,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function doTick(){
-		$this->cleanPacketPool();
-		EncapsulatedPacket::cleanPacketPool();
 		$this->interface->sendTick();
 	}
 
@@ -236,7 +234,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			$pk = null;
 			if(!$packet->isEncoded){
 				$packet->encode();
-				unset($packet->__encapsulatedPacket);
 			}elseif(!$needACK){
 				if(!isset($packet->__encapsulatedPacket)){
 					$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
@@ -248,13 +245,11 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 			}
 
 			if($pk === null){
-				$pk = EncapsulatedPacket::getPacketFromPool();
+				$pk = new EncapsulatedPacket();
 				$pk->buffer = $packet->buffer;
 				$pk->reliability = 2;
 				if($needACK === true){
 					$pk->identifierACK = $this->identifiersACK[$identifier]++;
-				}else{
-					$pk->identifierACK = null;
 				}
 			}
 
@@ -279,17 +274,10 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		if(isset($this->packetPool[$id])){
 			/** @var DataPacket $class */
 			$class = $this->packetPool[$id];
-			return $class::getFromPool();
+			return new $class;
 		}
 
 		return null;
-	}
-
-	public function cleanPacketPool(){
-		foreach($this->packetPool as $class){
-			/** @var DataPacket $class */
-			$class::cleanPool();
-		}
 	}
 
 	private function registerPackets(){
@@ -344,7 +332,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$pid = ord($buffer{0});
 
 		if(($data = $this->getPacketFromPool($pid)) === null){
-			$data = UnknownPacket::getFromPool();
+			$data = new UnknownPacket();
 			$data->packetID = $pid;
 		}
 		$data->setBuffer(substr($buffer, 1));

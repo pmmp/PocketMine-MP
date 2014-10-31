@@ -934,7 +934,6 @@ class Server{
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level->unload($forceUnload) === true){
-			Position::clearPositions();
 			unset($this->levels[$level->getID()]);
 
 			return true;
@@ -990,7 +989,7 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
+		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
@@ -1125,9 +1124,9 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(LevelInitEvent::createEvent($level));
+		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
 
-		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
+		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
@@ -1765,7 +1764,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = ServerCommandEvent::createEvent($this->consoleSender, $line));
+			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
 			if(!$ev->isCancelled()){
 				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
 			}
@@ -2163,19 +2162,12 @@ class Server{
 
 		$this->generationManager->process();
 
-
-		Vector3::clearVectorList();
-		Position::clearPositionList();
-		if(($this->tickCounter % 4) === 0){
-			Event::clearAllPools();
-
-			if(($this->tickCounter % 80) === 0){
-				foreach($this->levels as $level){
-					$level->clearCache();
-				}
-				AxisAlignedBB::clearBoundingBoxPool();
+		if(($this->tickCounter % 100) === 0){
+			foreach($this->levels as $level){
+				$level->clearCache();
 			}
 		}
+
 
 		Timings::$serverTickTimer->stopTiming();
 

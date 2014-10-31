@@ -352,7 +352,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function unload($force = false){
 
-		$ev = LevelUnloadEvent::createEvent($this);
+		$ev = new LevelUnloadEvent($this);
 
 		if($this === $this->server->getDefaultLevel() and $force !== true){
 			$ev->setCancelled(true);
@@ -439,7 +439,7 @@ class Level implements ChunkManager, Metadatable{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function sendTime(){
-		$pk = SetTimePacket::getFromPool();
+		$pk = new SetTimePacket();
 		$pk->time = (int) $this->time;
 		$pk->started = $this->stopTime == false;
 
@@ -532,7 +532,7 @@ class Level implements ChunkManager, Metadatable{
 						foreach($mini as $blocks){
 							/** @var Block $b */
 							foreach($blocks as $b){
-								$pk = UpdateBlockPacket::getFromPool();
+								$pk = new UpdateBlockPacket();
 								$pk->x = $b->x;
 								$pk->y = $b->y;
 								$pk->z = $b->z;
@@ -672,7 +672,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent(LevelSaveEvent::createEvent($this));
+		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
 
 		$this->provider->setTime((int) $this->time);
 		$this->saveChunks();
@@ -704,7 +704,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		for($side = 0; $side <= 5; ++$side){
-			$this->server->getPluginManager()->callEvent($ev = BlockUpdateEvent::createEvent($block->getSide($side)));
+			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block->getSide($side)));
 			if(!$ev->isCancelled()){
 				$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 			}
@@ -801,7 +801,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($entities){
 			foreach($this->getCollidingEntities($bb->grow(0.25, 0.25, 0.25), $entity) as $ent){
-				$collides[] = AxisAlignedBB::cloneBoundingBoxFromPool($ent->boundingBox);
+				$collides[] = clone $ent->boundingBox;
 			}
 		}
 
@@ -946,7 +946,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			//if($direct === true){
-				$pk = UpdateBlockPacket::getFromPool();
+				$pk = new UpdateBlockPacket();
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;
@@ -973,10 +973,10 @@ class Level implements ChunkManager, Metadatable{
 
 			if($update === true){
 				$this->updateAround($pos);
-				$this->server->getPluginManager()->callEvent($ev = BlockUpdateEvent::createEvent($block));
+				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 				if(!$ev->isCancelled()){
 					$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-					foreach($this->getNearbyEntities(AxisAlignedBB::getBoundingBoxFromPool($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
+					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
 						$entity->scheduleUpdate();
 					}
 				}
@@ -991,7 +991,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int     $delay
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, $delay = 10){
-		$motion = $motion === null ? Vector3::createVector(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
+		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
 		if($item->getID() > 0 and $item->getCount() > 0){
 			$itemEntity = Entity::createEntity("Item", $this->getChunk($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
@@ -1041,7 +1041,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player instanceof Player){
-			$ev = BlockBreakEvent::createEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
+			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
 			$lastTime = $player->lastBreak - 0.1; //TODO: replace with true lag
 			if(($player->getGamemode() & 0x01) > 0){
@@ -1074,7 +1074,7 @@ class Level implements ChunkManager, Metadatable{
 		$level = $target->getLevel();
 
 		if($level instanceof Level){
-			$above = $level->getBlock(Vector3::createVector($target->x, $target->y + 1, $target->z));
+			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 			if($above instanceof Block){
 				if($above->getID() === Item::FIRE){
 					$level->setBlock($above, new Air(), true);
@@ -1142,7 +1142,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player instanceof Player){
-			$ev = PlayerInteractEvent::createEvent($player, $item, $target, $face);
+			$ev = new PlayerInteractEvent($player, $item, $target, $face);
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
@@ -1207,7 +1207,7 @@ class Level implements ChunkManager, Metadatable{
 
 
 		if($player instanceof Player){
-			$ev = BlockPlaceEvent::createEvent($player, $hand, $block, $target, $item);
+			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
@@ -1582,7 +1582,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->setChunk($x, $z, $chunk);
 		$chunk = $this->getChunk($x, $z);
 		if($chunk instanceof FullChunk and (!($oldChunk instanceof FullChunk) or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
-			$this->server->getPluginManager()->callEvent(ChunkPopulateEvent::createEvent($chunk));
+			$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
 		}
 	}
 
@@ -1669,7 +1669,7 @@ class Level implements ChunkManager, Metadatable{
 	public function setSpawnLocation(Vector3 $pos){
 		$previousSpawn = $this->getSpawnLocation();
 		$this->provider->setSpawn($pos);
-		$this->server->getPluginManager()->callEvent(SpawnChangeEvent::createEvent($this, $previousSpawn));
+		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
 	}
 
 	public function requestChunk($x, $z, Player $player, $order = LevelProvider::ORDER_ZXY){
@@ -1695,7 +1695,7 @@ class Level implements ChunkManager, Metadatable{
 				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:" . $this->getID() . ":" . $index)) !== false){
 					/** @var Player[] $players */
 					foreach($players as $player){
-						if(isset($player->usedChunks[$index])){
+						if($player->isConnected() and isset($player->usedChunks[$index])){
 							$player->sendChunk($x, $z, $cache);
 						}
 					}
@@ -1838,7 +1838,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$this->server->getPluginManager()->callEvent(ChunkLoadEvent::createEvent($chunk, !$chunk->isGenerated()));
+		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
 
 		return true;
 	}
@@ -1873,7 +1873,7 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($x, $z);
 
 		if($chunk instanceof FullChunk){
-			$this->server->getPluginManager()->callEvent($ev = ChunkUnloadEvent::createEvent($chunk));
+			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($chunk));
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1932,7 +1932,7 @@ class Level implements ChunkManager, Metadatable{
 			$x = Math::floorFloat($spawn->x);
 			$y = Math::floorFloat($spawn->y);
 			$z = Math::floorFloat($spawn->z);
-			$v = Vector3::createVector($x, $y, $z);
+			$v = new Vector3($x, $y, $z);
 			for(; $v->y > 0; --$v->y){
 				$b = $this->getBlock($v->getSide(0));
 				if($b === null){
@@ -1944,14 +1944,14 @@ class Level implements ChunkManager, Metadatable{
 			for(; $v->y < 128; ++$v->y){
 				if($this->getBlock($v->getSide(1)) instanceof Air){
 					if($this->getBlock($v) instanceof Air){
-						return Position::createPosition($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
+						return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
 					}
 				}else{
 					++$v->y;
 				}
 			}
 
-			return Position::createPosition($spawn->x, $v->y, $spawn->z, $this);
+			return new Position($spawn->x, $v->y, $spawn->z, $this);
 		}
 
 		return false;

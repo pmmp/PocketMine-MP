@@ -128,7 +128,7 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 	public function explode(){
-		$this->server->getPluginManager()->callEvent($ev = ExplosionPrimeEvent::createEvent($this, 4));
+		$this->server->getPluginManager()->callEvent($ev = new ExplosionPrimeEvent($this, 4));
 
 		if(!$ev->isCancelled()){
 			$explosion = new Explosion($this, $ev->getForce(), $this);
@@ -140,7 +140,7 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = AddEntityPacket::getFromPool();
+		$pk = new AddEntityPacket();
 		$pk->type = PrimedTNT::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
@@ -149,7 +149,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$pk->did = 0;
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

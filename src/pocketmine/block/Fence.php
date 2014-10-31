@@ -43,7 +43,7 @@ class Fence extends Transparent{
 		$f2 = $flag ? 0 : 0.375;
 		$f3 = $flag1 ? 1 : 0.625;
 
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

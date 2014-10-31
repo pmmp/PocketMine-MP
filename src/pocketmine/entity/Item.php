@@ -71,7 +71,7 @@ class Item extends Entity{
 		$this->item = ItemItem::get($this->namedtag->Item["id"], $this->namedtag->Item["Damage"], $this->namedtag->Item["Count"]);
 
 
-		$this->server->getPluginManager()->callEvent(ItemSpawnEvent::createEvent($this));
+		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
 
 	public function onUpdate($currentTick){
@@ -100,7 +100,7 @@ class Item extends Entity{
 			$friction = 1 - $this->drag;
 
 			if($this->onGround and ($this->motionX != 0 or $this->motionZ != 0)){
-				$friction = $this->getLevel()->getBlock(Vector3::createVector($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
+				$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
 			}
 
 			$this->motionX *= $friction;
@@ -114,7 +114,7 @@ class Item extends Entity{
 			}
 
 			if($this->age > 6000){
-				$this->server->getPluginManager()->callEvent($ev = ItemDespawnEvent::createEvent($this));
+				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
 				if($ev->isCancelled()){
 					$this->age = 0;
 				}else{
@@ -227,7 +227,7 @@ class Item extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = AddItemEntityPacket::getFromPool();
+		$pk = new AddItemEntityPacket();
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
@@ -238,7 +238,7 @@ class Item extends Entity{
 		$pk->item = $this->getItem();
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

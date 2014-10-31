@@ -36,13 +36,6 @@ abstract class Event{
 	 * Not doing so will deny the proper event initialization
 	 */
 
-	/** @var Event[] */
-	public static $eventPool = [];
-	public static $nextEvent = 0;
-
-	/** @var Event[] */
-	private static $knownEvents = [];
-
 	protected $eventName = null;
 	private $isCancelled = false;
 
@@ -92,42 +85,6 @@ abstract class Event{
 		}
 
 		return static::$handlerList;
-	}
-
-	public static function clearEventPool(){
-		static::$nextEvent = 0;
-	}
-
-	public static function clearAllPools(){
-		foreach(self::$knownEvents as $event){
-			$event::clearEventPool();
-		}
-	}
-
-	/**
-	 * @param $params
-	 *
-	 * @return static
-	 */
-	public static function createEvent(...$params){
-		if(static::$nextEvent >= count(static::$eventPool)){
-			static::$eventPool[] = new static(...$params);
-			return static::$eventPool[static::$nextEvent++];
-		}
-		$ev = static::$eventPool[static::$nextEvent++];
-		$ev->__construct(...$params);
-		if($ev instanceof Cancellable){
-			$ev->setCancelled(false);
-		}
-		return $ev;
-	}
-
-	public static function onClassLoaded(){
-		self::$knownEvents[static::class] = static::class;
-	}
-
-	public static function getKnownEvents(){
-		return self::$knownEvents;
 	}
 
 }

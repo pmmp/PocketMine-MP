@@ -138,7 +138,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 			return false;
 		}
 
-		Server::getInstance()->getPluginManager()->callEvent($ev = InventoryTransactionEvent::createEvent($this));
+		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
 		if($ev->isCancelled()){
 			foreach($this->inventories as $inventory){
 				$inventory->sendContents($inventory->getViewers());

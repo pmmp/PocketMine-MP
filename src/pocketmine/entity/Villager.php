@@ -55,7 +55,7 @@ class Villager extends Creature implements NPC, Ageable{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = AddMobPacket::getFromPool();
+		$pk = new AddMobPacket();
 		$pk->eid = $this->getID();
 		$pk->type = Villager::NETWORK_ID;
 		$pk->x = $this->x;
@@ -66,7 +66,7 @@ class Villager extends Creature implements NPC, Ageable{
 		$pk->metadata = $this->getData();
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

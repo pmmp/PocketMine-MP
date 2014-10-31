@@ -93,7 +93,7 @@ abstract class Projectile extends Entity{
 
 			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
-			$moveVector = Vector3::createVector($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
+			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
 
 			$list = $this->getLevel()->getCollidingEntities($this->boundingBox->addCoord($this->motionX, $this->motionY, $this->motionZ)->expand(1, 1, 1), $this);
 
@@ -129,18 +129,18 @@ abstract class Projectile extends Entity{
 			if($movingObjectPosition !== null){
 				if($movingObjectPosition->entityHit !== null){
 
-					$this->server->getPluginManager()->callEvent(ProjectileHitEvent::createEvent($this));
+					$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
 
-					$ev = EntityDamageByEntityEvent::createEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					$ev = new EntityDamageByEntityEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
 
 					if($this->fireTicks > 0){
-						$ev = EntityCombustByEntityEvent::createEvent($this, $movingObjectPosition->entityHit, 5);
+						$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
 						$this->server->getPluginManager()->callEvent($ev);
 						if(!$ev->isCancelled()){
 							$movingObjectPosition->entityHit->setOnFire($ev->getDuration());
@@ -159,7 +159,7 @@ abstract class Projectile extends Entity{
 				$this->motionY = 0;
 				$this->motionZ = 0;
 
-				$this->server->getPluginManager()->callEvent(ProjectileHitEvent::createEvent($this));
+				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 			}
 
 			if(!$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){

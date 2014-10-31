@@ -58,7 +58,7 @@ class BlockIterator implements \Iterator{
 		$this->level = $level;
 		$this->maxDistance = (int) $maxDistance;
 
-		$startClone = Vector3::createVector($start->x, $start->y, $start->z);
+		$startClone = new Vector3($start->x, $start->y, $start->z);
 		$startClone->y += $yOffset;
 
 		$this->currentDistance = 0;
@@ -71,7 +71,7 @@ class BlockIterator implements \Iterator{
 		$secondPosition = 0;
 		$thirdPosition = 0;
 
-		$pos = Vector3::createVector($startClone->x, $startClone->y, $startClone->z);
+		$pos = new Vector3($startClone->x, $startClone->y, $startClone->z);
 		$startBlock = $this->level->getBlock($pos->floor());
 
 		if($this->getXLength($direction) > $mainDirection){

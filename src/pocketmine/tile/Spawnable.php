@@ -36,7 +36,7 @@ abstract class Spawnable extends Tile{
 
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$nbt->setData($this->getSpawnCompound());
-		$pk = EntityDataPacket::getFromPool();
+		$pk = new EntityDataPacket();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
