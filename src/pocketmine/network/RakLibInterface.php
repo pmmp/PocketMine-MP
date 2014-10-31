@@ -74,6 +74,7 @@ use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\RakLib;
@@ -175,9 +176,19 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
-			$pk = $this->getPacket($packet->buffer);
-			$pk->decode();
-			$this->players[$identifier]->handleDataPacket($pk);
+			try{
+				$pk = $this->getPacket($packet->buffer);
+				$pk->decode();
+				$this->players[$identifier]->handleDataPacket($pk);
+			}catch (\Exception $e){
+				if(\pocketmine\DEBUG > 1){
+					$logger = $this->server->getLogger();
+					if($logger instanceof MainLogger){
+						$logger->logException($e);
+						$logger->debug("Packet ".get_class($pk)." 0x".bin2hex($packet->buffer));
+					}
+				}
+			}
 		}
 	}
 
