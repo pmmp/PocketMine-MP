@@ -144,7 +144,7 @@ class ServerScheduler{
 		}
 		$this->tasks = [];
 		$this->asyncTaskStorage = [];
-		$this->asyncPool->shutdown();
+		//$this->asyncPool->shutdown();
 		$this->asyncTasks = 0;
 		$this->queue = new ReversePriorityQueue();
 		$this->asyncPool = new \Pool(self::$WORKERS, AsyncWorker::class);

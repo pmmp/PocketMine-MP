@@ -132,6 +132,8 @@ class Server{
 	/** @var bool */
 	private $isRunning = true;
 
+	private $hasStopped = false;
+
 	/** @var PluginManager */
 	private $pluginManager = null;
 
@@ -1852,39 +1854,52 @@ class Server{
 	}
 
 	public function forceShutdown(){
-		$this->shutdown();
-		if($this->rcon instanceof RCON){
-			$this->rcon->stop();
+		if($this->hasStopped){
+			return;
 		}
 
-		if($this->getProperty("settings.upnp-forwarding", false) === true){
-			$this->logger->info("[UPnP] Removing port forward...");
-			UPnP::RemovePortForward($this->getPort());
-		}
+		try{
+			$this->hasStopped = true;
 
-		$this->pluginManager->disablePlugins();
+			$this->shutdown();
+			if($this->rcon instanceof RCON){
+				$this->rcon->stop();
+			}
 
-		foreach($this->players as $player){
-			$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $this->getProperty("settings.shutdown-message", "Server closed"));
-		}
+			if($this->getProperty("settings.upnp-forwarding", false) === true){
+				$this->logger->info("[UPnP] Removing port forward...");
+				UPnP::RemovePortForward($this->getPort());
+			}
 
-		foreach($this->getLevels() as $level){
-			$this->unloadLevel($level, true);
-		}
+			$this->pluginManager->disablePlugins();
 
-		if($this->generationManager instanceof GenerationRequestManager){
-			$this->generationManager->shutdown();
-		}
+			foreach($this->players as $player){
+				$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $this->getProperty("settings.shutdown-message", "Server closed"));
+			}
 
-		HandlerList::unregisterAll();
-		$this->scheduler->cancelAllTasks();
-		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
+			foreach($this->getLevels() as $level){
+				$this->unloadLevel($level, true);
+			}
 
-		$this->properties->save();
+			if($this->generationManager instanceof GenerationRequestManager){
+				$this->generationManager->shutdown();
+			}
 
-		$this->console->kill();
-		foreach($this->interfaces as $interface){
-			$interface->shutdown();
+			HandlerList::unregisterAll();
+
+			$this->scheduler->cancelAllTasks();
+			$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
+
+			$this->properties->save();
+
+			$this->console->kill();
+
+			foreach($this->interfaces as $interface){
+				$interface->shutdown();
+			}
+		}catch (\Exception $e){
+			$this->logger->emergency("Crashed while crashing, killing process");
+			@kill(getmypid());
 		}
 	}
 
