@@ -422,7 +422,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->port = $port;
 		$this->clientID = $clientID;
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
-		$this->spawnPosition = $this->server->getDefaultLevel()->getSafeSpawn();
+		$this->spawnPosition = null;
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel(), true);
 		$this->viewDistance = $this->server->getViewDistance();
@@ -1898,7 +1898,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							}
 						}
 
-						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -intval($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
+						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 					}
 
 					$ev = EntityDamageByEntityEvent::createEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
@@ -2597,7 +2597,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = MovePlayerPacket::getFromPool();
 			$pk->eid = 0;
 			$pk->x = $this->x;
-			$pk->y = $this->y + $this->getEyeHeight() + 0.01;
+			$pk->y = $this->y + $this->getEyeHeight();
 			$pk->z = $this->z;
 			$pk->bodyYaw = $this->yaw;
 			$pk->pitch = $this->pitch;
