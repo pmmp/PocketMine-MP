@@ -72,7 +72,7 @@ class NBT{
 	public $endianness;
 	private $data;
 
-	protected function get($len){
+	public function get($len){
 		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
 			return "";
