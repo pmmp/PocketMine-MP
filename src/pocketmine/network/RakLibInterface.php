@@ -84,7 +84,8 @@ use raklib\server\ServerInstance;
 
 class RakLibInterface implements ServerInstance, SourceInterface{
 
-	private $packetPool = [];
+	/** @var \SplFixedArray */
+	private $packetPool;
 
 	private $server;
 	/** @var Player[] */
@@ -271,16 +272,17 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	 * @return DataPacket
 	 */
 	public function getPacketFromPool($id){
-		if(isset($this->packetPool[$id])){
-			/** @var DataPacket $class */
-			$class = $this->packetPool[$id];
+		/** @var DataPacket $class */
+		$class = $this->packetPool[$id];
+		if($class !== null){
 			return new $class;
 		}
-
 		return null;
 	}
 
 	private function registerPackets(){
+		$this->packetPool = new \SplFixedArray(256);
+
 		$this->registerPacket(ProtocolInfo::LOGIN_PACKET, LoginPacket::class);
 		$this->registerPacket(ProtocolInfo::LOGIN_STATUS_PACKET, LoginStatusPacket::class);
 		$this->registerPacket(ProtocolInfo::MESSAGE_PACKET, MessagePacket::class);
