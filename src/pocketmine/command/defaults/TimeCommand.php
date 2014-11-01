@@ -113,6 +113,7 @@ class TimeCommand extends VanillaCommand{
 				$level->setTime($level->getTime() + $value);
 				$level->checkTime();
 			}
+			Command::broadcastCommandMessage($sender, "Added " . $value ." to time");
 		}else{
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
 		}
