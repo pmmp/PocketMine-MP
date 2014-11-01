@@ -571,7 +571,7 @@ class Level implements ChunkManager, Metadatable{
 
 		foreach($this->players as $player){
 			$x = $player->x >> 4;
-			$z = $player->x >> 4;
+			$z = $player->z >> 4;
 
 			$index = "$x:$z";
 			$existingPlayers = max(0, isset($this->chunkTickList[$index]) ? $this->chunkTickList[$index] : 0);
