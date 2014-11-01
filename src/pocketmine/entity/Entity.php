@@ -745,14 +745,11 @@ abstract class Entity extends Location implements Metadatable{
 					$X = null;
 					$Z = null;
 					Level::getXZ($index, $X, $Z);
-					foreach($this->level->getChunkEntities($X, $Z) as $entity){
-						$entity->despawnFrom($this);
-					}
-					$this->level->freeChunk($X, $Z, $this);
+					$this->unloadChunk($X, $Z);
 				}
 			}
 		}
-		$this->setLevel($targetLevel, $this instanceof Player ? true : false); //Hard reference
+		$this->setLevel($targetLevel);
 		$this->level->addEntity($this);
 		if($this instanceof Player){
 			$this->usedChunks = [];
