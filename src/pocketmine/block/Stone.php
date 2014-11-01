@@ -45,6 +45,7 @@ class Stone extends Solid{
 			self::POLISHED_DIORITE => "Polished Diorite",
 			self::ANDESITE => "Andesite",
 			self::POLISHED_ANDESITE => "Polished Andesite",
+			7 => "Unknown Stone",
 		];
 		$this->name = $names[$this->meta & 0x07];
 	}
