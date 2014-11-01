@@ -631,9 +631,16 @@ class Server{
 	 * @param string $payload
 	 */
 	public function handlePacket($address, $port, $payload){
-		if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
-			$this->queryHandler->handle($address, $port, $payload);
-		} //TODO: add raw packet events
+		try{
+			if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
+				$this->queryHandler->handle($address, $port, $payload);
+			}
+		}catch(\Exception $e){
+			if($this->logger instanceof MainLogger){
+				$this->logger->logException($e);
+			}
+		}
+		//TODO: add raw packet events
 	}
 
 	/**
@@ -2171,7 +2178,13 @@ class Server{
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();
 			if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
-				$this->queryHandler->regenerateInfo();
+				try{
+					$this->queryHandler->regenerateInfo();
+				}catch(\Exception $e){
+					if($this->logger instanceof MainLogger){
+						$this->logger->logException($e);
+					}
+				}
 			}
 		}
 
