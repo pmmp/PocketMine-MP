@@ -750,7 +750,6 @@ abstract class Entity extends Location implements Metadatable{
 					}
 					$this->level->freeChunk($X, $Z, $this);
 				}
-				$this->level->freeAllChunks($this);
 			}
 		}
 		$this->setLevel($targetLevel, $this instanceof Player ? true : false); //Hard reference
