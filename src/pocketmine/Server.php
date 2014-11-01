@@ -1459,8 +1459,8 @@ class Server{
 		@mkdir($dataPath . "players/", 0777);
 		@mkdir($pluginPath, 0777);
 
-		$this->dataPath = realpath($dataPath);
-		$this->pluginPath = realpath($pluginPath);
+		$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
+		$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		$this->entityMetadata = new EntityMetadataStore();
 		$this->playerMetadata = new PlayerMetadataStore();
