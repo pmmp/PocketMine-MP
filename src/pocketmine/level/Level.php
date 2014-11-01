@@ -1724,7 +1724,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
-				if(isset($player->usedChunks[$index])){
+				if($player->isConnected() and isset($player->usedChunks[$index])){
 					$player->sendChunk($x, $z, $payload);
 				}
 			}
@@ -1929,15 +1929,13 @@ class Level implements ChunkManager, Metadatable{
 			$spawn = $this->getSpawnLocation();
 		}
 		if($spawn instanceof Vector3){
-			$x = Math::floorFloat($spawn->x);
-			$y = Math::floorFloat($spawn->y);
-			$z = Math::floorFloat($spawn->z);
-			$v = new Vector3($x, $y, $z);
-			for(; $v->y > 0; --$v->y){
-				$b = $this->getBlock($v->getSide(0));
+			$v = $spawn->floor();
+			for(; $v->y > 0; $v->y -= 2){
+				$b = $this->getBlock($v);
 				if($b === null){
 					return $spawn;
 				}elseif(!($b instanceof Air)){
+					$v->y += 1;
 					break;
 				}
 			}

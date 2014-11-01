@@ -2004,9 +2004,6 @@ class Server{
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 		$this->crashDump();
-		$this->forceShutdown();
-		kill(getmypid());
-		exit(1);
 	}
 
 	public function crashDump(){
@@ -2051,6 +2048,9 @@ class Server{
 		//$this->checkMemory();
 		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
 
+		$this->forceShutdown();
+		kill(getmypid());
+		exit(1);
 	}
 
 	public function __debugInfo(){
