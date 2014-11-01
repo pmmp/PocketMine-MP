@@ -531,9 +531,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->level->freeChunk($x, $z, $this);
 			unset($this->usedChunks[$index]);
 		}
+		$this->level->freeChunk($x, $z, $this);
 		unset($this->loadQueue[$index]);
 	}
 
@@ -724,13 +724,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$X = null;
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
-			foreach($this->level->getChunkEntities($X, $Z) as $entity){
-				if($entity !== $this){
-					$entity->despawnFrom($this);
-				}
-			}
-
-			unset($this->usedChunks[$index]);
+			$this->unloadChunk($X, $Z);
 		}
 
 		return true;
