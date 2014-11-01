@@ -32,12 +32,47 @@ class TimeCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Changes the time on each world",
-			"/time set <value>\n/time add <value>"
+			"/time set <value>\n/time add <value>\n/time start|stop"
 		);
-		$this->setPermission("pocketmine.command.time.add;pocketmine.command.time.set");
+		$this->setPermission("pocketmine.command.time.add;pocketmine.command.time.set;pocketmine.command.time.start;pocketmine.command.time.stop");
 	}
 
 	public function execute(CommandSender $sender, $currentAlias, array $args){
+		if(count($args) < 1){
+			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
+
+			return false;
+		}
+
+		if($args[0] === "start"){
+			if(!$sender->hasPermission("pocketmine.command.time.start")){
+				$sender->sendMessage(TextFormat::RED . "You don't have permission to restart the time");
+
+				return true;
+			}
+			foreach($sender->getServer()->getLevels() as $level){
+				$level->checkTime();
+				$level->startTime();
+				$level->checkTime();
+			}
+			Command::broadcastCommandMessage($sender, "Restarted the time");
+			return true;
+		}elseif($args[0] === "stop"){
+			if(!$sender->hasPermission("pocketmine.command.time.stop")){
+				$sender->sendMessage(TextFormat::RED . "You don't have permission to stop the time");
+
+				return true;
+			}
+			foreach($sender->getServer()->getLevels() as $level){
+				$level->checkTime();
+				$level->stopTime();
+				$level->checkTime();
+			}
+			Command::broadcastCommandMessage($sender, "Stopped the time");
+			return true;
+		}
+
+
 		if(count($args) < 2){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
 
