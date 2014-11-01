@@ -93,40 +93,39 @@ class TimingsCommand extends VanillaCommand{
 			if($paste){
 				fseek($fileTimings, 0);
 				$data = [
-					"public" => false,
-					"description" => $sender->getServer()->getName() . " Timings",
-					"files" => [
-						"timings.txt" => [
-							"content" => stream_get_contents($fileTimings)
-						]
-					]
+					"syntax" => "text",
+					"poster" => $sender->getServer()->getName(),
+					"content" => stream_get_contents($fileTimings)
 				];
 
-				$ch = curl_init("https://api.github.com/gists");
+				$ch = curl_init("http://paste.ubuntu.com/");
 				curl_setopt($ch, CURLOPT_POST, 1);
 				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 				curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
 				curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_SLASHES));
-				curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-				curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json", "User-Agent: " . $this->getName() . " " . $sender->getServer()->getPocketMineVersion()]);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+				curl_setopt($ch, CURLOPT_AUTOREFERER, false);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+				curl_setopt($ch, CURLOPT_HEADER, true);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: " . $this->getName() . " " . $sender->getServer()->getPocketMineVersion()]);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-				$ret = curl_exec($ch);
-				$data = json_decode($ret);
+				$data = curl_exec($ch);
 				curl_close($ch);
-				if($data === false or $data === null or !isset($data->html_url)){
+				if(preg_match('#^Location: http://paste\\.ubuntu\\.com/([0-9]{1,})/#m', $data, $matches) == 0){
 					$sender->sendMessage("An error happened while pasting the report");
 
 					return true;
 				}
-				$timings = $data->html_url;
-			}
 
-			fclose($fileTimings);
-			$sender->sendMessage("Timings written to " . $timings);
-			$sender->sendMessage("Paste contents of file into form at http://aikar.co/timings.php to read results.");
+
+				$sender->sendMessage("Timings uploaded to http://paste.ubuntu.com/".$matches[1]."/");
+				$sender->sendMessage("You can read the results at http://timings.aikar.co/?url=".$matches[1]);
+				fclose($fileTimings);
+			}else{
+				fclose($fileTimings);
+				$sender->sendMessage("Timings written to " . $timings);
+			}
 		}
 
 		return true;
