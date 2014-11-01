@@ -1455,11 +1455,12 @@ class Server{
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 		$this->filePath = $filePath;
-		$this->dataPath = $dataPath;
-		$this->pluginPath = $pluginPath;
-		@mkdir($this->dataPath . "worlds/", 0777, true);
-		@mkdir($this->dataPath . "players/", 0777);
-		@mkdir($this->pluginPath, 0777);
+		@mkdir($dataPath . "worlds/", 0777, true);
+		@mkdir($dataPath . "players/", 0777);
+		@mkdir($pluginPath, 0777);
+
+		$this->dataPath = realpath($dataPath);
+		$this->pluginPath = realpath($pluginPath);
 
 		$this->entityMetadata = new EntityMetadataStore();
 		$this->playerMetadata = new PlayerMetadataStore();
