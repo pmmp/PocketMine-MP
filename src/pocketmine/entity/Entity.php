@@ -738,7 +738,9 @@ abstract class Entity extends Location implements Metadatable{
 			}
 
 			$this->level->removeEntity($this);
-			$this->chunk->removeEntity($this);
+			if($this->chunk !== null){
+				$this->chunk->removeEntity($this);
+			}
 			$this->despawnFromAll();
 			if($this instanceof Player){
 				foreach($this->usedChunks as $index => $d){

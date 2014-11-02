@@ -140,7 +140,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected $sendIndex = 0;
 
-	public $blocked = true;
+	public $blocked = false;
 	public $achievements = [];
 	public $lastCorrect;
 	/** @var SimpleTransactionGroup */
@@ -625,13 +625,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
-
-		if(count($this->usedChunks) < 16 and $this->spawned === true){
-			$this->blocked = true;
-		}elseif($this->spawned === true){
-			$this->blocked = false; //TODO: reason of block to revert
-		}
-
 		if(count($this->usedChunks) >= 56 and $this->spawned === false){
 			$spawned = 0;
 			foreach($this->usedChunks as $d){
@@ -645,8 +638,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			$this->spawned = true;
-
-			$this->blocked = false;
 
 			$pk = new SetTimePacket();
 			$pk->time = $this->level->getTime();
@@ -1255,7 +1246,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}
 
-		if($this->nextChunkOrderRun-- <= 0){
+		if($this->nextChunkOrderRun-- <= 0 or $this->chunk === null){
 			$this->orderChunks();
 		}
 
@@ -1561,7 +1552,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
-				if($this->spawned === false or $this->dead === true){
+				if($this->spawned === false or $this->dead === true or $this->blocked){
 					break;
 				}
 
@@ -1569,7 +1560,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->craftingType = 0;
 
-				if(($this->spawned === false or $this->blocked === true or $this->dead === true) and $packet->face >= 0 and $packet->face <= 5){
+				if($packet->face >= 0 and $packet->face <= 5){
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
@@ -1798,7 +1789,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				break;
 
 			case ProtocolInfo::INTERACT_PACKET:
-				if($this->spawned === false or $this->dead === true){
+				if($this->spawned === false or $this->dead === true or $this->blocked){
 					break;
 				}
 
@@ -1816,7 +1807,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$cancelled = true;
 				}
 
-				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->blocked === false and $this->dead !== true and $target->dead !== true){
+				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->dead !== true and $target->dead !== true){
 					if($target instanceof DroppedItem or $target instanceof Arrow){
 						$this->kick("Attempting to attack an invalid entity");
 						$this->server->getLogger()->warning("Player ". $this->getName() ." tried to attack an invalid entity");

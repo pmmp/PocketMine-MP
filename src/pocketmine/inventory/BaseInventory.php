@@ -235,7 +235,7 @@ abstract class BaseInventory implements Inventory{
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
 			foreach($slots as $index => $slot){
-				if($item->getID() === Item::AIR){
+				if($item->getID() === Item::AIR or $item->getCount() <= 0){
 					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
 					$slot->setCount($slot->getCount() - $amount);
 					$item = clone $slot;

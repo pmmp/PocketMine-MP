@@ -23,6 +23,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityArmorChangeEvent;
+use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
 use pocketmine\network\protocol\ContainerSetContentPacket;
@@ -200,6 +201,8 @@ class PlayerInventory extends BaseInventory{
 	public function setItem($index, Item $item, $source = null){
 		if($index < 0 or $index >= $this->size){
 			return false;
+		}elseif($item->getID() === 0){
+			$this->clear($index, $source);
 		}
 
 		if($index >= $this->getSize()){ //Armor change
@@ -211,15 +214,21 @@ class PlayerInventory extends BaseInventory{
 				return false;
 			}
 			$item = $ev->getNewItem();
+		}else{
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+			if($ev->isCancelled()){
+				$this->sendArmorContents($this->getViewers());
+				$this->sendContents($this->getViewers());
+
+				return false;
+			}
+			$item = $ev->getNewItem();
 		}
 
-		if($item->getID() === 0){
-			$this->clear($index, $source);
-		}else{
-			$old = $this->getItem($index);
-			$this->slots[$index] = clone $item;
-			$this->onSlotChange($index, $old, $source);
-		}
+
+		$old = $this->getItem($index);
+		$this->slots[$index] = clone $item;
+		$this->onSlotChange($index, $old, $source);
 
 		return true;
 	}
@@ -234,7 +243,16 @@ class PlayerInventory extends BaseInventory{
 					$this->sendArmorContents($this->getViewers());
 					$this->sendContents($this->getViewers());
 
-					return;
+					return false;
+				}
+				$item = $ev->getNewItem();
+			}else{
+				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $old, $item, $index));
+				if($ev->isCancelled()){
+					$this->sendArmorContents($this->getViewers());
+					$this->sendContents($this->getViewers());
+
+					return false;
 				}
 				$item = $ev->getNewItem();
 			}
@@ -246,6 +264,8 @@ class PlayerInventory extends BaseInventory{
 
 			$this->onSlotChange($index, $old, $source);
 		}
+
+		return true;
 	}
 
 	/**
