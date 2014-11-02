@@ -47,6 +47,7 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
@@ -1560,28 +1561,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->craftingType = 0;
 
-				if($packet->face >= 0 and $packet->face <= 5){
-					$target = $this->level->getBlock($blockVector);
-					$block = $target->getSide($packet->face);
-
-					$pk = new UpdateBlockPacket();
-					$pk->x = $target->x;
-					$pk->y = $target->y;
-					$pk->z = $target->z;
-					$pk->block = $target->getID();
-					$pk->meta = $target->getDamage();
-					$this->dataPacket($pk);
-
-					$pk = new UpdateBlockPacket();
-					$pk->x = $block->x;
-					$pk->y = $block->y;
-					$pk->z = $block->z;
-					$pk->block = $block->getID();
-					$pk->meta = $block->getDamage();
-					$this->dataPacket($pk);
-					break;
-				}
-
 				$packet->eid = $this->id;
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
@@ -1600,7 +1579,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
 						$this->inventory->sendHeldItem($this);
 					}else{
-						$item = clone $this->inventory->getItemInHand();
+						$item = $this->inventory->getItemInHand();
 						//TODO: Implement adventure mode checks
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							$this->inventory->setItemInHand($item, $this);
@@ -1628,7 +1607,25 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->dataPacket($pk);
 					break;
 				}elseif($packet->face === 0xff){
-					$item = $this->inventory->getItemInHand();
+					if($this->isCreative()){
+						$item = $this->inventory->getItemInHand();
+					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
+						$this->inventory->sendHeldItem($this);
+						break;
+					}else{
+						$item = $this->inventory->getItemInHand();
+					}
+					$target = $this->level->getBlock($blockVector);
+
+					$ev = new PlayerInteractEvent($this, $item, $target, $packet->face);
+
+					$this->server->getPluginManager()->callEvent($ev);
+
+					if($ev->isCancelled()){
+						$this->inventory->sendHeldItem($this);
+						break;
+					}
+
 					if($item->getID() === Item::SNOWBALL){
 						$nbt = new Compound("", [
 							"Pos" => new Enum("Pos", [
