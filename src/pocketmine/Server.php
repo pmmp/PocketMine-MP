@@ -1455,7 +1455,7 @@ class Server{
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 		$this->filePath = $filePath;
-		@mkdir($dataPath . "worlds/", 0777, true);
+		@mkdir($dataPath . "worlds/", 0777);
 		@mkdir($dataPath . "players/", 0777);
 		@mkdir($pluginPath, 0777);
 
