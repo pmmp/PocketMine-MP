@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\event\entity\EntityCombustByEntityEvent;
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
@@ -134,8 +135,12 @@ abstract class Projectile extends Entity{
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
+					if($this->shootingEntity === null){
+						$ev = new EntityDamageByEntityEvent($this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					}else{
+						$ev = new EntityDamageByChildEntityEvent($this->shootingEntity, $this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					}
 
-					$ev = new EntityDamageByEntityEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
 
