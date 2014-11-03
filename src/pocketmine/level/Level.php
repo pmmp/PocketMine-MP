@@ -1862,7 +1862,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
-		if($safe === true and $this->isChunkInUse($x, $z)){
+		if(($safe === true and $this->isChunkInUse($x, $z)) or $this->isChunkLoaded($x, $z)){
 			return false;
 		}
 
@@ -1872,7 +1872,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunk = $this->getChunk($x, $z);
 
-		if($chunk instanceof FullChunk){
+		if($chunk instanceof FullChunk and $chunk->getProvider() !== null){
 			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($chunk));
 			if($ev->isCancelled()){
 				return false;
