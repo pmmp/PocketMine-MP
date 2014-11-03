@@ -225,6 +225,14 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function addItem(...$slots){
+		if(isset($slots[$end = count($slots) - 1]) and $slots[$end] instanceof Player){
+			/** @var Player $source */
+			$source = $slots[$end];
+			unset($slots[$end]);
+		}else{
+			$source = null;
+		}
+
 		/** @var Item[] $slots */
 		foreach($slots as $i => $slot){
 			$slots[$i] = clone $slot;
@@ -238,7 +246,7 @@ abstract class BaseInventory implements Inventory{
 					$slot->setCount($slot->getCount() - $amount);
 					$item = clone $slot;
 					$item->setCount($amount);
-					$this->setItem($i, $item);
+					$this->setItem($i, $item, $source);
 					$item = $this->getItem($i);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
@@ -247,7 +255,7 @@ abstract class BaseInventory implements Inventory{
 					$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() + $amount);
-					$this->setItem($i, $item);
+					$this->setItem($i, $item, $source);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
 					}
@@ -263,6 +271,14 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function removeItem(...$slots){
+		if(isset($slots[$end = count($slots) - 1]) and $slots[$end] instanceof Player){
+			/** @var Player $source */
+			$source = $slots[$end];
+			unset($slots[$end]);
+		}else{
+			$source = null;
+		}
+
 		/** @var Item[] $slots */
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
@@ -275,7 +291,7 @@ abstract class BaseInventory implements Inventory{
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() - $amount);
-					$this->setItem($i, $item);
+					$this->setItem($i, $item, $source);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
 					}

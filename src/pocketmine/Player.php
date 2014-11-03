@@ -1205,7 +1205,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$pk->eid = $this->getID();
 						$pk->target = $entity->getID();
 						Server::broadcastPacket($entity->getViewers(), $pk);
-						$this->inventory->addItem(clone $item);
+						$this->inventory->addItem(clone $item, $this);
 						$entity->kill();
 					}
 				}elseif($entity instanceof DroppedItem){
@@ -1239,7 +1239,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$pk->eid = $this->getID();
 							$pk->target = $entity->getID();
 							Server::broadcastPacket($entity->getViewers(), $pk);
-							$this->inventory->addItem(clone $item);
+							$this->inventory->addItem(clone $item, $this);
 							$entity->kill();
 						}
 					}
@@ -1648,7 +1648,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$snowball = Entity::createEntity("Snowball", $this->chunk, $nbt, $this);
 						$snowball->setMotion($snowball->getMotion()->multiply($f));
 						if($this->isSurvival()){
-							$this->inventory->removeItem(Item::get(Item::SNOWBALL, 0, 1));
+							$this->inventory->removeItem(Item::get(Item::SNOWBALL, 0, 1), $this);
 						}
 						if($snowball instanceof Projectile){
 							$this->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($snowball));
@@ -1713,7 +1713,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							}else{
 								$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
 								if($this->isSurvival()){
-									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1));
+									$this->inventory->removeItem(Item::get(Item::ARROW, 0, 1), $this);
 									$bow->setDamage($bow->getDamage() + 1);
 									$this->inventory->setItemInHand($bow, $this);
 									if($bow->getDamage() >= 385){
@@ -2008,7 +2008,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							--$slot->count;
 							$this->inventory->setItemInHand($slot, $this);
 							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){
-								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
+								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1), $this);
 							}
 						}
 						break;
@@ -2178,7 +2178,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								case Item::CAKE:
 									//TODO: detect complex recipes like cake that leave remains
 									$this->awardAchievement("bakeCake");
-									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
+									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 3), $this);
 									break;
 								case Item::STONE_PICKAXE:
 								case Item::GOLD_PICKAXE:
