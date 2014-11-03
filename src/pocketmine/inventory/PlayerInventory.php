@@ -150,7 +150,8 @@ class PlayerInventory extends BaseInventory{
 		parent::onSlotChange($index, $before, $source);
 
 		if($index >= $this->getSize()){
-			$this->sendArmorContents($this->getHolder()->getViewers());
+			$this->sendArmorSlot($index, $this->getViewers($source));
+			$this->sendArmorSlot($index, $this->getHolder()->getViewers());
 		}
 	}
 
@@ -208,18 +209,22 @@ class PlayerInventory extends BaseInventory{
 		if($index >= $this->getSize()){ //Armor change
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled() and $this->getHolder() instanceof Player){
-				$this->sendArmorContents($this->getViewers());
-				$this->sendContents($this->getViewers());
-
+				if($index >= $this->size){
+					$this->sendArmorSlot($index, $this->getViewers());
+				}else{
+					$this->sendSlot($index, $this->getViewers());
+				}
 				return false;
 			}
 			$item = $ev->getNewItem();
 		}else{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
-				$this->sendArmorContents($this->getViewers());
-				$this->sendContents($this->getViewers());
-
+				if($index >= $this->size){
+					$this->sendArmorSlot($index, $this->getViewers());
+				}else{
+					$this->sendSlot($index, $this->getViewers());
+				}
 				return false;
 			}
 			$item = $ev->getNewItem();
@@ -240,18 +245,22 @@ class PlayerInventory extends BaseInventory{
 			if($index >= $this->getSize() and $index < $this->size){ //Armor change
 				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
 				if($ev->isCancelled()){
-					$this->sendArmorContents($this->getViewers());
-					$this->sendContents($this->getViewers());
-
+					if($index >= $this->size){
+						$this->sendArmorSlot($index, $this->getViewers());
+					}else{
+						$this->sendSlot($index, $this->getViewers());
+					}
 					return false;
 				}
 				$item = $ev->getNewItem();
 			}else{
 				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $old, $item, $index));
 				if($ev->isCancelled()){
-					$this->sendArmorContents($this->getViewers());
-					$this->sendContents($this->getViewers());
-
+					if($index >= $this->size){
+						$this->sendArmorSlot($index, $this->getViewers());
+					}else{
+						$this->sendSlot($index, $this->getViewers());
+					}
 					return false;
 				}
 				$item = $ev->getNewItem();
@@ -345,6 +354,51 @@ class PlayerInventory extends BaseInventory{
 		}
 	}
 
+
+
+	/**
+	 * @param int             $index
+	 * @param Player|Player[] $target
+	 */
+	public function sendArmorSlot($index, $target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$armor = $this->getArmorContents();
+		$slots = [];
+
+		foreach($armor as $i => $slot){
+			if($slot->getID() === Item::AIR){
+				$slots[$i] = 255;
+			}else{
+				$slots[$i] = $slot->getID();
+			}
+		}
+
+		$pk = new PlayerArmorEquipmentPacket();
+		$pk->eid = $this->getHolder()->getID();
+		$pk->slots = $slots;
+		$pk->encode();
+		$pk->isEncoded = true;
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				/** @var Player $player */
+				//$pk2 = clone $pk;
+				//$pk2->eid = 0;
+
+				$pk2 = new ContainerSetSlotPacket();
+				$pk2->windowid = 0x78; //Armor window id constant
+				$pk2->slot = $index;
+				$pk2->item = $this->getItem($index);
+				$player->dataPacket($pk2);
+			}else{
+				$player->dataPacket($pk);
+			}
+		}
+	}
+
 	/**
 	 * @param Player|Player[] $target
 	 */
@@ -392,8 +446,8 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				//TODO: Check if Mojang has implemented this (for the player inventory) on Minecraft: PE 0.9.0
-				$this->sendContents($player);
+				$pk->windowid = 0;
+				$player->dataPacket(clone $pk);
 			}else{
 				if(($id = $player->getWindowId($this)) === -1){
 					$this->close($player);
