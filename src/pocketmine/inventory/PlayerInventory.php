@@ -446,8 +446,7 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				$pk->windowid = 0;
-				$player->dataPacket(clone $pk);
+				$this->sendContents($player); //#blamemojang
 			}else{
 				if(($id = $player->getWindowId($this)) === -1){
 					$this->close($player);
