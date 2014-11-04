@@ -1862,7 +1862,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
-		if(($safe === true and $this->isChunkInUse($x, $z)) or $this->isChunkLoaded($x, $z)){
+		if(($safe === true and $this->isChunkInUse($x, $z)) or !$this->isChunkLoaded($x, $z)){
 			return false;
 		}
 
