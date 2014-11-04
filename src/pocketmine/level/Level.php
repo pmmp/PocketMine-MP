@@ -1848,7 +1848,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unloadChunkRequest($x, $z, $safe = true){
-		if($safe === true and $this->isChunkInUse($x, $z)){
+		if(($safe === true and $this->isChunkInUse($x, $z)) or $this->isSpawnChunk($x, $z)){
 			return false;
 		}
 
@@ -1862,17 +1862,17 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unloadChunk($x, $z, $safe = true){
-		if(($safe === true and $this->isChunkInUse($x, $z)) or !$this->isChunkLoaded($x, $z)){
+		if(($safe === true and $this->isChunkInUse($x, $z))){
 			return false;
 		}
 
 		$this->timings->doChunkUnload->startTiming();
 
-		$index = "$x:$z";
+		$index = Level::chunkHash($x, $z);
 
 		$chunk = $this->getChunk($x, $z);
 
-		if($chunk instanceof FullChunk and $chunk->getProvider() !== null){
+		if($chunk instanceof FullChunk){
 			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($chunk));
 			if($ev->isCancelled()){
 				return false;
@@ -1884,10 +1884,10 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->saveChunk($x, $z);
 		}
 
-		unset($this->chunks[$index]);
 		$this->provider->unloadChunk($x, $z, $safe);
+		unset($this->chunks[$index]);
 		unset($this->usedChunks[$index]);
-		Cache::remove("world:" . $this->getID() . ":$x:$z");
+		Cache::remove("world:" . $this->getID() . ":$index");
 
 		$this->timings->doChunkUnload->stopTiming();
 
