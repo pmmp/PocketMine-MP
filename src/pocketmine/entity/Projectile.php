@@ -37,6 +37,8 @@ abstract class Projectile extends Entity{
 	public $shootingEntity = null;
 	protected $damage = 0;
 
+	private $hadCollision = false;
+
 	protected function initEntity(){
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
@@ -90,7 +92,9 @@ abstract class Projectile extends Entity{
 
 			$movingObjectPosition = null;
 
-			$this->motionY -= $this->gravity;
+			if(!$this->isCollided){
+				$this->motionY -= $this->gravity;
+			}
 
 			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
@@ -159,12 +163,16 @@ abstract class Projectile extends Entity{
 
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-			if($this->onGround and ($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0)){
+			if($this->isCollided and !$this->hadCollision){
+				$this->hadCollision = true;
+
 				$this->motionX = 0;
 				$this->motionY = 0;
 				$this->motionZ = 0;
 
 				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
+			}elseif(!$this->isCollided and !$this->hadCollision){
+				$this->hadCollision = false;
 			}
 
 			if(!$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){

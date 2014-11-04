@@ -140,7 +140,10 @@ abstract class Entity extends Location implements Metadatable{
 	public $canCollide = true;
 
 	protected $isStatic = false;
-	protected $isColliding = false;
+
+	public $isCollided = false;
+	public $isCollidedHorizontally = false;
+	public $isCollidedVertically = false;
 
 	public $noDamageTicks;
 	private $justCreated;
@@ -811,11 +814,6 @@ abstract class Entity extends Location implements Metadatable{
 		return false;
 	}
 
-	public function collision(){
-		$this->isColliding = true;
-		$this->fallDistance = 0;
-	}
-
 	public function move($dx, $dy, $dz){
 
 		if($dx == 0 and $dz == 0 and $dy == 0){
@@ -1009,7 +1007,11 @@ abstract class Entity extends Location implements Metadatable{
 							$this->onGround = false;
 						}
 					}
+					$this->isCollided = $this->onGround;
 				}else{
+					$this->isCollidedVertically = $movY != $dy;
+					$this->isCollidedHorizontally = ($movX != $dx or $movZ != $dz);
+					$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
 					$this->onGround = ($movY != $dy and $movY < 0);
 				}
 				$this->updateFallState($dy, $this->onGround);
