@@ -1589,7 +1589,6 @@ class Server{
 
 		set_exception_handler([$this, "exceptionHandler"]);
 		register_shutdown_function([$this, "crashDump"]);
-		register_shutdown_function([$this, "forceShutdown"]);
 
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -1905,6 +1904,7 @@ class Server{
 			$this->logger->emergency("Crashed while crashing, killing process");
 			@kill(getmypid());
 		}
+
 	}
 
 	/**
@@ -2002,7 +2002,7 @@ class Server{
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
 			"line" => $errline,
-			"trace" => getTrace($trace === null ? 3 : 0, $trace)
+			"trace" => @getTrace($trace === null ? 3 : 0, $trace)
 		];
 
 		global $lastExceptionError, $lastError;
@@ -2014,7 +2014,11 @@ class Server{
 		if($this->isRunning === false){
 			return;
 		}
-		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
+		$this->isRunning = false;
+		$this->hasStopped = false;
+
+		ini_set("error_reporting", 0);
+		ini_set("memory_limit", -1); //Fix error dump not dumped on memory problems
 		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
 
@@ -2022,30 +2026,33 @@ class Server{
 
 
 		if($this->getProperty("auto-report.enabled", true) !== false){
+			$report = true;
 			$plugin = $dump->getData()["plugin"];
 			if(is_string($plugin)){
 				$p = $this->pluginManager->getPlugin($plugin);
 				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-					return;
+					$report = false;
 				}
 			}elseif(\Phar::running(true) == ""){
-				return;
+				$report = false;
 			}
 			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
-				return;
+				$report = false;
 			}
 
-			$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
-				"report" => "yes",
-				"name" => $this->getName() . " " . $this->getPocketMineVersion(),
-				"email" => "crash@pocketmine.net",
-				"reportPaste" => base64_encode($dump->getEncodedData())
-			]);
+			if($report){
+				$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
+					"report" => "yes",
+					"name" => $this->getName() . " " . $this->getPocketMineVersion(),
+					"email" => "crash@pocketmine.net",
+					"reportPaste" => base64_encode($dump->getEncodedData())
+				]);
 
-			if(($data = json_decode($reply)) !== false and isset($data->crashId)){
-				$reportId = $data->crashId;
-				$reportUrl = $data->crashUrl;
-				$this->logger->emergency("The crash dump has been automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
+				if(($data = json_decode($reply)) !== false and isset($data->crashId)){
+					$reportId = $data->crashId;
+					$reportUrl = $data->crashUrl;
+					$this->logger->emergency("The crash dump has been automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
+				}
 			}
 		}
 
@@ -2053,7 +2060,7 @@ class Server{
 		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
 
 		$this->forceShutdown();
-		kill(getmypid());
+		@kill(getmypid());
 		exit(1);
 	}
 

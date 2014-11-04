@@ -193,9 +193,10 @@ class McRegion extends BaseLevelProvider{
 		$chunk = $this->getChunk($x, $z, false);
 		if($chunk instanceof FullChunk and $chunk->unload(false, $safe)){
 			unset($this->chunks[Level::chunkHash($x, $z)]);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public function saveChunk($x, $z){
