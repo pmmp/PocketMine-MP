@@ -22,8 +22,6 @@
 namespace pocketmine\entity;
 
 
-use pocketmine\nbt\tag\String;
-
 class Chicken extends Animal{
 
 }

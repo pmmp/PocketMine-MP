@@ -24,7 +24,6 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;

@@ -34,7 +34,6 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
 class Furnace extends Tile implements InventoryHolder, Container{

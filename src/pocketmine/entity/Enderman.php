@@ -23,7 +23,6 @@ namespace pocketmine\entity;
 
 
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\nbt\tag\String;
 
 class Enderman extends Monster implements InventoryHolder{
 

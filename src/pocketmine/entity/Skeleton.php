@@ -21,8 +21,6 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\nbt\tag\String;
-
 class Skeleton extends Monster implements ProjectileSource{
 
 }

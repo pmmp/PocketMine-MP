@@ -23,7 +23,6 @@ namespace pocketmine\entity;
 
 
 use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
