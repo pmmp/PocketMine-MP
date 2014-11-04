@@ -50,7 +50,6 @@ class FallingSand extends Entity{
 	public $canCollide = false;
 
 	protected function initEntity(){
-		$this->namedtag->id = new String("id", "FallingSand");
 		if(isset($this->namedtag->TileID)){
 			$this->blockId = $this->namedtag["TileID"];
 		}elseif(isset($this->namedtag->Tile)){

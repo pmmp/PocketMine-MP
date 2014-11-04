@@ -307,7 +307,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return int
 	 */
-	final public function getID(){
+	final public function getId(){
 		return $this->levelId;
 	}
 

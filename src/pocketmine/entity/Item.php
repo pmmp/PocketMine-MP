@@ -53,7 +53,6 @@ class Item extends Entity{
 	public $canCollide = false;
 
 	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Item");
 		$this->setMaxHealth(5);
 		$this->setHealth($this->namedtag["Health"]);
 		if(isset($this->namedtag->Age)){

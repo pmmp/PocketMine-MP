@@ -45,12 +45,6 @@ class Arrow extends Projectile{
 		parent::__construct($chunk, $nbt);
 	}
 
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Arrow");
-		parent::initEntity();
-
-	}
-
 	public function onUpdate($currentTick){
 		if($this->closed){
 			return false;

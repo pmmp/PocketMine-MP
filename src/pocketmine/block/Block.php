@@ -794,7 +794,7 @@ class Block extends Position implements Metadatable{
 	/**
 	 * @return int
 	 */
-	final public function getID(){
+	final public function getId(){
 		return $this->id;
 	}
 

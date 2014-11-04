@@ -63,11 +63,6 @@ class Snowball extends Projectile{
 		return $hasUpdate;
 	}
 
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Snowball");
-		parent::initEntity();
-	}
-
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = Snowball::NETWORK_ID;

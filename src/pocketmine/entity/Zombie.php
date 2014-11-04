@@ -36,10 +36,6 @@ class Zombie extends Monster{
 	public $length = 0.6;
 	public $height = 1.8;
 
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Zombie");
-	}
-
 	public function getName(){
 		return "Zombie";
 	}

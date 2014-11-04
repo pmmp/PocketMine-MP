@@ -539,7 +539,7 @@ class Item{
 		}
 	}
 
-	final public function getID(){
+	final public function getId(){
 		return $this->id;
 	}
 

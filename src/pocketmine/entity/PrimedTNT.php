@@ -47,7 +47,6 @@ class PrimedTNT extends Entity implements Explosive{
 	public $canCollide = false;
 
 	protected function initEntity(){
-		$this->namedtag->id = new String("id", "PrimedTNT");
 		if(isset($this->namedtag->Fuse)){
 			$this->fuse = $this->namedtag["Fuse"];
 		}else{

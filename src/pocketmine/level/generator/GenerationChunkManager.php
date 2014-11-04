@@ -66,7 +66,7 @@ class GenerationChunkManager implements ChunkManager{
 	/**
 	 * @return int
 	 */
-	public function getID(){
+	public function getId(){
 		return $this->levelID;
 	}
 

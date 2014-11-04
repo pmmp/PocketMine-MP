@@ -49,6 +49,7 @@ use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
+use pocketmine\nbt\tag\String;
 use pocketmine\Network;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
@@ -69,6 +70,7 @@ abstract class Entity extends Location implements Metadatable{
 	public static $entityCount = 1;
 	/** @var Entity[] */
 	private static $knownEntities = [];
+	private static $shortNames = [];
 
 	/**
 	 * @var Player[]
@@ -250,13 +252,27 @@ abstract class Entity extends Location implements Metadatable{
 			}
 
 			self::$knownEntities[$class->getShortName()] = $className;
+			self::$shortNames[$className] = $class->getShortName();
 			return true;
 		}
 
 		return false;
 	}
 
+	/**
+	 * Returns the short save name
+	 *
+	 * @return string
+	 */
+	public function getSaveId(){
+		return self::$shortNames[static::class];
+	}
+
 	public function saveNBT(){
+		if(!($this instanceof Player)){
+			$this->namedtag->id = new String("id", $this->getSaveId());
+		}
+
 		$this->namedtag->Pos = new Enum("Pos", [
 			new Double(0, $this->x),
 			new Double(1, $this->y),

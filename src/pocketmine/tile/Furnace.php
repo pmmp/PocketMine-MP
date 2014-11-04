@@ -42,7 +42,6 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	protected $inventory;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		$nbt->id = new String("id", Tile::FURNACE);
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new FurnaceInventory($this);
 

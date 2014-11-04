@@ -43,7 +43,6 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	protected $doubleInventory = null;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		$nbt->id = new String("id", Tile::CHEST);
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new ChestInventory($this);
 

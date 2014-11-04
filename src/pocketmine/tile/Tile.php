@@ -32,6 +32,7 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\String;
 use pocketmine\utils\ChunkException;
 
 abstract class Tile extends Position{
@@ -41,8 +42,8 @@ abstract class Tile extends Position{
 
 	public static $tileCount = 1;
 
-	/** @var Tile[] */
 	private static $knownTiles = [];
+	private static $shortNames = [];
 
 	/** @var Chunk */
 	public $chunk;
@@ -88,10 +89,20 @@ abstract class Tile extends Position{
 		$class = new \ReflectionClass($className);
 		if(is_a($className, Tile::class, true) and !$class->isAbstract()){
 			self::$knownTiles[$class->getShortName()] = $className;
+			self::$shortNames[$className] = $class->getShortName();
 			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the short save name
+	 *
+	 * @return string
+	 */
+	public function getSaveId(){
+		return self::$shortNames[static::class];
 	}
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
@@ -117,11 +128,12 @@ abstract class Tile extends Position{
 		$this->tickTimer = Timings::getTileEntityTimings($this);
 	}
 
-	public function getID(){
+	public function getId(){
 		return $this->id;
 	}
 
 	public function saveNBT(){
+		$this->namedtag->id = new String("id", $this->getSaveId());
 		$this->namedtag->x = new Int("x", $this->x);
 		$this->namedtag->y = new Int("y", $this->y);
 		$this->namedtag->z = new Int("z", $this->z);
