@@ -75,7 +75,7 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 2)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FURNACE, 0, 1)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 8)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::GLASS_PANE, 0, 16)))->addIngredient(Item::get(Item::GLASS, 0, 6)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::LADDER, 0, 2)))->addIngredient(Item::get(Item::STICK, 0, 7)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::LADDER, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 7)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::NETHER_REACTOR, 0, 1)))->addIngredient(Item::get(Item::DIAMOND, 0, 3))->addIngredient(Item::get(Item::IRON_INGOT, 0, 6)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::TRAPDOOR, 0, 2)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 6)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::WOODEN_DOOR, 0, 1)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 6)));
