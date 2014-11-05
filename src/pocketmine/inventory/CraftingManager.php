@@ -95,7 +95,7 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BUCKET, 0, 1)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::CLOCK, 0, 1)))->addIngredient(Item::get(Item::GOLD_INGOT, 0, 4))->addIngredient(Item::get(Item::REDSTONE_DUST, 0, 1)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::COMPASS, 0, 1)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 4))->addIngredient(Item::get(Item::REDSTONE_DUST, 0, 1)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::TNT, 0, 1)))->addIngredient(Item::get(Item::GUNPOWDER, 0, 5))->addIngredient(Item::get(Item::SAND, null, 4))); //TODO: check if TNT can be crafted with red sand
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::TNT, 0, 1)))->addIngredient(Item::get(Item::GUNPOWDER, 0, 5))->addIngredient(Item::get(Item::SAND, null, 4)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BOWL, 0, 4)))->addIngredient(Item::get(Item::WOODEN_PLANKS, null, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::MINECART, 0, 1)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 5)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BOOK, 0, 1)))->addIngredient(Item::get(Item::PAPER, 0, 3)));
@@ -108,7 +108,7 @@ class CraftingManager{
 
 	protected function registerFurnace(){
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::STONE, 0, 1), Item::get(Item::COBBLESTONE, 0, 1)));
-		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GLASS, 0, 1), Item::get(Item::SAND, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GLASS, 0, 1), Item::get(Item::SAND, null, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COAL, 1, 1), Item::get(Item::TRUNK, null, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GOLD_INGOT, 0, 1), Item::get(Item::GOLD_ORE, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::IRON_INGOT, 0, 1), Item::get(Item::IRON_ORE, 0, 1)));
