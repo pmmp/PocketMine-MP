@@ -40,7 +40,6 @@ use pocketmine\entity\PrimedTNT;
 use pocketmine\entity\Snowball;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
-use pocketmine\event\Event;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
@@ -60,9 +59,6 @@ use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\Normal;
 use pocketmine\level\Level;
-use pocketmine\level\Position;
-use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector3;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -131,6 +127,8 @@ class Server{
 
 	/** @var bool */
 	private $isRunning = true;
+
+	private $hasStopped = false;
 
 	/** @var PluginManager */
 	private $pluginManager = null;
@@ -629,9 +627,16 @@ class Server{
 	 * @param string $payload
 	 */
 	public function handlePacket($address, $port, $payload){
-		if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
-			$this->queryHandler->handle($address, $port, $payload);
-		} //TODO: add raw packet events
+		try{
+			if(strlen($payload) > 2 and substr($payload, 0, 2) === "\xfe\xfd" and $this->queryHandler instanceof QueryHandler){
+				$this->queryHandler->handle($address, $port, $payload);
+			}
+		}catch(\Exception $e){
+			if($this->logger instanceof MainLogger){
+				$this->logger->logException($e);
+			}
+		}
+		//TODO: add raw packet events
 	}
 
 	/**
@@ -934,7 +939,6 @@ class Server{
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level->unload($forceUnload) === true){
-			Position::clearPositions();
 			unset($this->levels[$level->getID()]);
 
 			return true;
@@ -990,7 +994,7 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
+		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		/*foreach($entities->getAll() as $entity){
 			if(!isset($entity["id"])){
@@ -1125,9 +1129,9 @@ class Server{
 
 		$level->initLevel();
 
-		$this->getPluginManager()->callEvent(LevelInitEvent::createEvent($level));
+		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
 
-		$this->getPluginManager()->callEvent(LevelLoadEvent::createEvent($level));
+		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
@@ -1447,11 +1451,12 @@ class Server{
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 		$this->filePath = $filePath;
-		$this->dataPath = $dataPath;
-		$this->pluginPath = $pluginPath;
-		@mkdir($this->dataPath . "worlds/", 0777, true);
-		@mkdir($this->dataPath . "players/", 0777);
-		@mkdir($this->pluginPath, 0777);
+		@mkdir($dataPath . "worlds/", 0777);
+		@mkdir($dataPath . "players/", 0777);
+		@mkdir($pluginPath, 0777);
+
+		$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
+		$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		$this->entityMetadata = new EntityMetadataStore();
 		$this->playerMetadata = new PlayerMetadataStore();
@@ -1584,7 +1589,6 @@ class Server{
 
 		set_exception_handler([$this, "exceptionHandler"]);
 		register_shutdown_function([$this, "crashDump"]);
-		register_shutdown_function([$this, "forceShutdown"]);
 
 		$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -1765,7 +1769,7 @@ class Server{
 	public function checkConsole(){
 		Timings::$serverCommandTimer->startTiming();
 		if(($line = $this->console->getLine()) !== null){
-			$this->pluginManager->callEvent($ev = ServerCommandEvent::createEvent($this->consoleSender, $line));
+			$this->pluginManager->callEvent($ev = new ServerCommandEvent($this->consoleSender, $line));
 			if(!$ev->isCancelled()){
 				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
 			}
@@ -1853,40 +1857,54 @@ class Server{
 	}
 
 	public function forceShutdown(){
-		$this->shutdown();
-		if($this->rcon instanceof RCON){
-			$this->rcon->stop();
+		if($this->hasStopped){
+			return;
 		}
 
-		if($this->getProperty("settings.upnp-forwarding", false) === true){
-			$this->logger->info("[UPnP] Removing port forward...");
-			UPnP::RemovePortForward($this->getPort());
+		try{
+			$this->hasStopped = true;
+
+			$this->shutdown();
+			if($this->rcon instanceof RCON){
+				$this->rcon->stop();
+			}
+
+			if($this->getProperty("settings.upnp-forwarding", false) === true){
+				$this->logger->info("[UPnP] Removing port forward...");
+				UPnP::RemovePortForward($this->getPort());
+			}
+
+			$this->pluginManager->disablePlugins();
+
+			foreach($this->players as $player){
+				$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $this->getProperty("settings.shutdown-message", "Server closed"));
+			}
+
+			foreach($this->getLevels() as $level){
+				$this->unloadLevel($level, true);
+			}
+
+			if($this->generationManager instanceof GenerationRequestManager){
+				$this->generationManager->shutdown();
+			}
+
+			HandlerList::unregisterAll();
+
+			$this->scheduler->cancelAllTasks();
+			$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
+
+			$this->properties->save();
+
+			$this->console->kill();
+
+			foreach($this->interfaces as $interface){
+				$interface->shutdown();
+			}
+		}catch (\Exception $e){
+			$this->logger->emergency("Crashed while crashing, killing process");
+			@kill(getmypid());
 		}
 
-		$this->pluginManager->disablePlugins();
-
-		foreach($this->players as $player){
-			$player->close(TextFormat::YELLOW . $player->getName() . " has left the game", $this->getProperty("settings.shutdown-message", "Server closed"));
-		}
-
-		foreach($this->getLevels() as $level){
-			$this->unloadLevel($level, true);
-		}
-
-		if($this->generationManager instanceof GenerationRequestManager){
-			$this->generationManager->shutdown();
-		}
-
-		HandlerList::unregisterAll();
-		$this->scheduler->cancelAllTasks();
-		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
-
-		$this->properties->save();
-
-		$this->console->kill();
-		foreach($this->interfaces as $interface){
-			$interface->shutdown();
-		}
 	}
 
 	/**
@@ -1984,22 +2002,23 @@ class Server{
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
 			"line" => $errline,
-			"trace" => getTrace($trace === null ? 3 : 0, $trace)
+			"trace" => @getTrace($trace === null ? 3 : 0, $trace)
 		];
 
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 		$this->crashDump();
-		$this->forceShutdown();
-		kill(getmypid());
-		exit(1);
 	}
 
 	public function crashDump(){
 		if($this->isRunning === false){
 			return;
 		}
-		ini_set("memory_limit", "-1"); //Fix error dump not dumped on memory problems
+		$this->isRunning = false;
+		$this->hasStopped = false;
+
+		ini_set("error_reporting", 0);
+		ini_set("memory_limit", -1); //Fix error dump not dumped on memory problems
 		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
 		$dump = new CrashDump($this);
 
@@ -2007,36 +2026,42 @@ class Server{
 
 
 		if($this->getProperty("auto-report.enabled", true) !== false){
+			$report = true;
 			$plugin = $dump->getData()["plugin"];
 			if(is_string($plugin)){
 				$p = $this->pluginManager->getPlugin($plugin);
 				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-					return;
+					$report = false;
 				}
 			}elseif(\Phar::running(true) == ""){
-				return;
+				$report = false;
 			}
 			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
-				return;
+				$report = false;
 			}
 
-			$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
-				"report" => "yes",
-				"name" => $this->getName() . " " . $this->getPocketMineVersion(),
-				"email" => "crash@pocketmine.net",
-				"reportPaste" => base64_encode($dump->getEncodedData())
-			]);
+			if($report){
+				$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
+					"report" => "yes",
+					"name" => $this->getName() . " " . $this->getPocketMineVersion(),
+					"email" => "crash@pocketmine.net",
+					"reportPaste" => base64_encode($dump->getEncodedData())
+				]);
 
-			if(($data = json_decode($reply)) !== false and isset($data->crashId)){
-				$reportId = $data->crashId;
-				$reportUrl = $data->crashUrl;
-				$this->logger->emergency("The crash dump has been automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
+				if(($data = json_decode($reply)) !== false and isset($data->crashId)){
+					$reportId = $data->crashId;
+					$reportUrl = $data->crashUrl;
+					$this->logger->emergency("The crash dump has been automatically submitted to the Crash Archive. You can view it on $reportUrl or use the ID #$reportId.");
+				}
 			}
 		}
 
 		//$this->checkMemory();
 		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
 
+		$this->forceShutdown();
+		@kill(getmypid());
+		exit(1);
 	}
 
 	public function __debugInfo(){
@@ -2157,25 +2182,24 @@ class Server{
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();
 			if(isset($this->queryHandler) and ($this->tickCounter & 0b111111111) === 0){
-				$this->queryHandler->regenerateInfo();
+				try{
+					$this->queryHandler->regenerateInfo();
+				}catch(\Exception $e){
+					if($this->logger instanceof MainLogger){
+						$this->logger->logException($e);
+					}
+				}
 			}
 		}
 
 		$this->generationManager->process();
 
-
-		Vector3::clearVectorList();
-		Position::clearPositionList();
-		if(($this->tickCounter % 4) === 0){
-			Event::clearAllPools();
-
-			if(($this->tickCounter % 80) === 0){
-				foreach($this->levels as $level){
-					$level->clearCache();
-				}
-				AxisAlignedBB::clearBoundingBoxPool();
+		if(($this->tickCounter % 100) === 0){
+			foreach($this->levels as $level){
+				$level->clearCache();
 			}
 		}
+
 
 		Timings::$serverTickTimer->stopTiming();
 

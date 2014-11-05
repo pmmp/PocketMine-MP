@@ -55,7 +55,7 @@ class CraftingManager{
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WORKBENCH, 0, 1)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::GLOWSTONE_BLOCK, 0, 1)))->addIngredient(Item::get(Item::GLOWSTONE_DUST, 0, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::LIT_PUMPKIN, 0, 1)))->addIngredient(Item::get(Item::PUMPKIN, 0, 1))->addIngredient(Item::get(Item::TORCH, 0, 1)));
-		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::SNOW_BLOCK, 0, 1)))->addIngredient(Item::get(Item::SNOWBALL, 0, 1)));
+		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::SNOW_BLOCK, 0, 1)))->addIngredient(Item::get(Item::SNOWBALL, 0, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::STICK, 0, 4)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 2)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::STONECUTTER, 0, 1)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOODEN_PLANK, Planks::OAK, 4)))->addIngredient(Item::get(Item::WOOD, Wood::OAK, 1)));
@@ -64,7 +64,7 @@ class CraftingManager{
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOODEN_PLANK, Planks::JUNGLE, 4)))->addIngredient(Item::get(Item::WOOD, Wood::JUNGLE, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 4)))->addIngredient(Item::get(Item::WOOD2, Wood2::ACACIA, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOODEN_PLANK, Planks::DARK_OAK, 4)))->addIngredient(Item::get(Item::WOOD2, Wood2::DARK_OAK, 1)));
-		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOOL, 0, 1)))->addIngredient(Item::get(Item::STRING, 0, 1)));
+		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::WOOL, 0, 1)))->addIngredient(Item::get(Item::STRING, 0, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::TORCH, 0, 4)))->addIngredient(Item::get(Item::COAL, null, 1))->addIngredient(Item::get(Item::STICK, 0, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::SUGAR, 0, 1)))->addIngredient(Item::get(Item::SUGARCANE, 0, 1)));
 
@@ -85,7 +85,7 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FENCE_GATE_ACACIA, 0, 1)))->addIngredient(Item::get(Item::STICK, 0, 4))->addIngredient(Item::get(Item::WOODEN_PLANK, Planks::ACACIA, 2))->addIngredient(Item::get(Item::STICK, 0, 4)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::FURNACE, 0, 1)))->addIngredient(Item::get(Item::COBBLESTONE, 0, 8)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::GLASS_PANE, 0, 16)))->addIngredient(Item::get(Item::GLASS, 0, 6)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::LADDER, 0, 2)))->addIngredient(Item::get(Item::STICK, 0, 7)));
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::LADDER, 0, 3)))->addIngredient(Item::get(Item::STICK, 0, 7)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::NETHER_REACTOR, 0, 1)))->addIngredient(Item::get(Item::DIAMOND, 0, 3))->addIngredient(Item::get(Item::IRON_INGOT, 0, 6)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::TRAPDOOR, 0, 2)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 6)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::WOODEN_DOOR, 0, 1)))->addIngredient(Item::get(Item::WOODEN_PLANK, null, 6)));
@@ -105,7 +105,7 @@ class CraftingManager{
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BUCKET, 0, 1)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::CLOCK, 0, 1)))->addIngredient(Item::get(Item::GOLD_INGOT, 0, 4))->addIngredient(Item::get(Item::REDSTONE_DUST, 0, 1)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::COMPASS, 0, 1)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 4))->addIngredient(Item::get(Item::REDSTONE_DUST, 0, 1)));
-		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::TNT, 0, 1)))->addIngredient(Item::get(Item::GUNPOWDER, 0, 5))->addIngredient(Item::get(Item::SAND, null, 4))); //TODO: check if TNT can be crafted with red sand
+		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::TNT, 0, 1)))->addIngredient(Item::get(Item::GUNPOWDER, 0, 5))->addIngredient(Item::get(Item::SAND, null, 4)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BOWL, 0, 4)))->addIngredient(Item::get(Item::WOODEN_PLANKS, null, 3)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::MINECART, 0, 1)))->addIngredient(Item::get(Item::IRON_INGOT, 0, 5)));
 		$this->registerRecipe((new BigShapelessRecipe(Item::get(Item::BOOK, 0, 1)))->addIngredient(Item::get(Item::PAPER, 0, 3)));
@@ -118,7 +118,7 @@ class CraftingManager{
 
 	protected function registerFurnace(){
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::STONE, 0, 1), Item::get(Item::COBBLESTONE, 0, 1)));
-		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GLASS, 0, 1), Item::get(Item::SAND, 0, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GLASS, 0, 1), Item::get(Item::SAND, null, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::COAL, 1, 1), Item::get(Item::TRUNK, null, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::GOLD_INGOT, 0, 1), Item::get(Item::GOLD_ORE, 0, 1)));
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::IRON_INGOT, 0, 1), Item::get(Item::IRON_ORE, 0, 1)));
@@ -245,7 +245,7 @@ class CraftingManager{
 		}
 
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::DYE, 11, 2)))->addIngredient(Item::get(Item::DANDELION, 0, 1)));
-		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::DYE, 15, 1)))->addIngredient(Item::get(Item::BONE, 0, 1)));
+		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::DYE, 15, 3)))->addIngredient(Item::get(Item::BONE, 0, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::DYE, 3, 2)))->addIngredient(Item::get(Item::DYE, 14, 1))->addIngredient(Item::get(Item::DYE, 0, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::DYE, 3, 3)))->addIngredient(Item::get(Item::DYE, 1, 1))->addIngredient(Item::get(Item::DYE, 0, 1))->addIngredient(Item::get(Item::DYE, 11, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::DYE, 9, 2)))->addIngredient(Item::get(Item::DYE, 15, 1))->addIngredient(Item::get(Item::DYE, 1, 1)));

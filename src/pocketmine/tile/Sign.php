@@ -29,7 +29,6 @@ use pocketmine\nbt\tag\String;
 class Sign extends Spawnable{
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		$nbt->id = new String("id", Tile::SIGN);
 		if(!isset($nbt->Text1)){
 			$nbt->Text1 = new String("Text1", "");
 		}

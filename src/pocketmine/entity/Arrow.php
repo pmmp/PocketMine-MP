@@ -23,7 +23,6 @@ namespace pocketmine\entity;
 
 use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -43,12 +42,6 @@ class Arrow extends Projectile{
 	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
 		$this->shootingEntity = $shootingEntity;
 		parent::__construct($chunk, $nbt);
-	}
-
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Arrow");
-		parent::initEntity();
-
 	}
 
 	public function onUpdate($currentTick){
@@ -71,7 +64,7 @@ class Arrow extends Projectile{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = AddEntityPacket::getFromPool();
+		$pk = new AddEntityPacket();
 		$pk->type = Arrow::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
@@ -80,7 +73,7 @@ class Arrow extends Projectile{
 		$pk->did = 0; //TODO: send motion here
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

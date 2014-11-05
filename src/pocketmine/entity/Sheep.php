@@ -22,10 +22,6 @@
 namespace pocketmine\entity;
 
 
-use pocketmine\nbt\tag\String;
-
 class Sheep extends Animal implements Colorable{
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Sheep");
-	}
+
 }

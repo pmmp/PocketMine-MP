@@ -91,7 +91,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		$pk = EntityEventPacket::getFromPool();
+		$pk = new EntityEventPacket();
 		$pk->eid = $this->getID();
 		$pk->event = 2; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
@@ -114,7 +114,7 @@ abstract class Living extends Entity implements Damageable{
 		$f = sqrt($x ** 2 + $z ** 2);
 		$base = 0.4;
 
-		$motion = Vector3::createVector($this->motionX, $this->motionY, $this->motionZ);
+		$motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
 
 		$motion->x /= 2;
 		$motion->y /= 2;
@@ -139,7 +139,7 @@ abstract class Living extends Entity implements Damageable{
 			return;
 		}
 		parent::kill();
-		$this->server->getPluginManager()->callEvent($ev = EntityDeathEvent::createEvent($this, $this->getDrops()));
+		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
@@ -147,10 +147,10 @@ abstract class Living extends Entity implements Damageable{
 
 	public function entityBaseTick($tickDiff = 1){
 		Timings::$timerEntityBaseTick->startTiming();
-		parent::entityBaseTick();
+		parent::entityBaseTick($tickDiff);
 
 		if($this->dead !== true and $this->isInsideOfSolid()){
-			$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
+			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
 
@@ -159,7 +159,7 @@ abstract class Living extends Entity implements Damageable{
 			if($this->airTicks <= -20){
 				$this->airTicks = 0;
 
-				$ev = EntityDamageEvent::createEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
+				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
 				$this->attack($ev->getFinalDamage(), $ev);
 			}
 		}else{

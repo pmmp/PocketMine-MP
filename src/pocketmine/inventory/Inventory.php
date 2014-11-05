@@ -67,7 +67,7 @@ interface Inventory{
 	 * Stores the given Items in the inventory. This will try to fill
 	 * existing stacks and empty slots as well as it can.
 	 *
-	 * Returns the Items that did not fit
+	 * Returns the Items that did not fit. A Player source can be set at the end
 	 *
 	 * @param Item ...$item
 	 *
@@ -86,7 +86,7 @@ interface Inventory{
 
 	/**
 	 * Removes the given Item from the inventory.
-	 * It will return the Items that couldn't be removed.
+	 * It will return the Items that couldn't be removed. A Player source can be set at the end
 	 *
 	 * @param Item ...$item
 	 *

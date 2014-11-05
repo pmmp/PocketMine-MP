@@ -121,10 +121,13 @@ namespace pocketmine {
 
 	$opts = getopt("", ["enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard", "enable-profiler"]);
 
-	define("pocketmine\\DATA", isset($opts["data"]) ? realpath($opts["data"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
-	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? realpath($opts["plugins"]) . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
+	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
+	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
 	define("pocketmine\\ANSI", (Utils::getOS() !== "win" or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"]));
+
+
+	@mkdir(\pocketmine\DATA, 0777, true);
 
 	//Logger has a dependency on timezone, so we'll set it to UTC until we can get the actual timezone.
 	date_default_timezone_set("UTC");

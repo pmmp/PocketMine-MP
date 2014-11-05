@@ -43,7 +43,6 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	protected $doubleInventory = null;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		$nbt->id = new String("id", Tile::CHEST);
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new ChestInventory($this);
 
@@ -197,7 +196,7 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	 */
 	public function getPair(){
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTile(Vector3::createVector((int) $this->namedtag["pairx"], $this->y, (int) $this->namedtag["pairz"]));
+			$tile = $this->getLevel()->getTile(new Vector3((int) $this->namedtag["pairx"], $this->y, (int) $this->namedtag["pairz"]));
 			if($tile instanceof Chest){
 				return $tile;
 			}

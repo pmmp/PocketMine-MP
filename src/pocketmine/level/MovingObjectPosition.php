@@ -64,7 +64,7 @@ class MovingObjectPosition{
 		$ob->blockX = $x;
 		$ob->blockY = $y;
 		$ob->blockZ = $z;
-		$ob->hitVector = Vector3::createVector($hitVector->x, $hitVector->y, $hitVector->z);
+		$ob->hitVector = new Vector3($hitVector->x, $hitVector->y, $hitVector->z);
 		return $ob;
 	}
 
@@ -77,7 +77,7 @@ class MovingObjectPosition{
 		$ob = new MovingObjectPosition;
 		$ob->typeOfHit = 1;
 		$ob->entityHit = $entity;
-		$ob->hitVector = Vector3::createVector($entity->x, $entity->y, $entity->z);
+		$ob->hitVector = new Vector3($entity->x, $entity->y, $entity->z);
 		return $ob;
 	}
 }

@@ -25,7 +25,6 @@ use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -55,10 +54,10 @@ class Grass extends Solid{
 			$x = mt_rand($this->x - 1, $this->x + 1);
 			$y = mt_rand($this->y - 2, $this->y + 2);
 			$z = mt_rand($this->z - 1, $this->z + 1);
-			$block = $this->getLevel()->getBlock(Vector3::createVector($x, $y, $z));
+			$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 			if($block->getID() === Block::DIRT){
 				if($block->getSide(1) instanceof Transparent){
-					Server::getInstance()->getPluginManager()->callEvent($ev = BlockSpreadEvent::createEvent($block, $this, new Grass()));
+					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, new Grass()));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($block, $ev->getNewState());
 					}

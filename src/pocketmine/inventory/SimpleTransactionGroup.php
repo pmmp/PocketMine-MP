@@ -138,13 +138,13 @@ class SimpleTransactionGroup implements TransactionGroup{
 			return false;
 		}
 
-		Server::getInstance()->getPluginManager()->callEvent($ev = InventoryTransactionEvent::createEvent($this));
+		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
 		if($ev->isCancelled()){
 			foreach($this->inventories as $inventory){
-				$inventory->sendContents($inventory->getViewers());
 				if($inventory instanceof PlayerInventory){
-					$inventory->sendArmorContents($inventory->getViewers());
+					$inventory->sendArmorContents($this->getSource());
 				}
+				$inventory->sendContents($this->getSource());
 			}
 
 			return false;

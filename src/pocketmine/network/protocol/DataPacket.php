@@ -27,68 +27,10 @@ namespace pocketmine\network\protocol;
 use pocketmine\utils\Binary;
 #endif
 
-use pocketmine\event\server\DataPacketSendEvent;
-use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\item\Item;
-use pocketmine\Player;
 
 
 abstract class DataPacket extends \stdClass{
-
-	/** @var DataPacket[] */
-	public static $pool = [];
-	public static $next = 0;
-
-	/** @var DataPacketSendEvent */
-	private $sendEvent = null;
-	/** @var DataPacketReceiveEvent */
-	private $receiveEvent = null;
-
-	public static function getFromPool(){
-		if(static::$next >= count(static::$pool)){
-			static::$pool[] = new static;
-		}
-		return static::$pool[static::$next++]->clean();
-	}
-
-	public static function cleanPool(){
-		if(static::$next > 16384){
-			static::$pool = [];
-		}
-		static::$next = 0;
-	}
-
-	/**
-	 * @param Player $player
-	 *
-	 * @return DataPacketReceiveEvent
-	 */
-	public function getReceiveEvent(Player $player){
-		if($this->receiveEvent === null){
-			$this->receiveEvent = new DataPacketReceiveEvent($player, $this);
-		}else{
-			$this->receiveEvent->setCancelled(false);
-			$this->receiveEvent->__construct($player, $this);
-		}
-
-		return $this->receiveEvent;
-	}
-
-	/**
-	 * @param Player $player
-	 *
-	 * @return DataPacketSendEvent
-	 */
-	public function getSendEvent(Player $player){
-		if($this->sendEvent === null){
-			$this->sendEvent = new DataPacketSendEvent($player, $this);
-		}else{
-			$this->sendEvent->setCancelled(false);
-			$this->sendEvent->__construct($player, $this);
-		}
-
-		return $this->sendEvent;
-	}
 
 	private $offset = 0;
 	public $buffer = "";
@@ -115,20 +57,14 @@ abstract class DataPacket extends \stdClass{
 	}
 
 	protected function get($len){
-		if($len <= 0){
+		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
-
 			return "";
 		}elseif($len === true){
 			return substr($this->buffer, $this->offset);
 		}
 
-		$buffer = "";
-		for(; $len > 0; --$len, ++$this->offset){
-			$buffer .= $this->buffer{$this->offset};
-		}
-
-		return $buffer;
+		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
 	protected function put($str){
@@ -177,11 +113,11 @@ abstract class DataPacket extends \stdClass{
 
 
 	protected function getLTriad(){
-		return Binary::readTriad(strrev($this->get(3)));
+		return Binary::readLTriad($this->get(3));
 	}
 
 	protected function putLTriad($v){
-		$this->buffer .= strrev(Binary::writeTriad($v));
+		$this->buffer .= Binary::writeLTriad($v);
 	}
 
 	protected function getByte(){

@@ -390,8 +390,8 @@ class Item{
 	const BEETROOT_SOUP = 459;
 
 
-	/** @var Item[] */
-	public static $list = [];
+	/** @var \SplFixedArray */
+	public static $list = null;
 	protected $block;
 	protected $id;
 	protected $meta;
@@ -402,83 +402,84 @@ class Item{
 	public $isActivable = false;
 
 	public static function init(){
-		if(count(self::$list) === 0){
-			self::$list = [
-				self::SUGARCANE => Sugarcane::class,
-				self::WHEAT_SEEDS => WheatSeeds::class,
-				self::PUMPKIN_SEEDS => PumpkinSeeds::class,
-				self::MELON_SEEDS => MelonSeeds::class,
-				self::MUSHROOM_STEW => MushroomStew::class,
-				self::BEETROOT_SOUP => BeetrootSoup::class,
-				self::CARROT => Carrot::class,
-				self::POTATO => Potato::class,
-				self::BEETROOT_SEEDS => BeetrootSeeds::class,
-				self::SIGN => Sign::class,
-				self::WOODEN_DOOR => WoodenDoor::class,
-				self::BUCKET => Bucket::class,
-				self::IRON_DOOR => IronDoor::class,
-				self::CAKE => Cake::class,
-				self::BED => Bed::class,
-				self::PAINTING => Painting::class,
-				self::COAL => Coal::class,
-				self::APPLE => Apple::class,
-				self::SPAWN_EGG => SpawnEgg::class,
-				self::DIAMOND => Diamond::class,
-				self::STICK => Stick::class,
-				self::BOWL => Bowl::class,
-				self::FEATHER => Feather::class,
-				self::BRICK => Brick::class,
-				self::IRON_SWORD => IronSword::class,
-				self::IRON_INGOT => IronIngot::class,
-				self::GOLD_INGOT => GoldIngot::class,
-				self::IRON_SHOVEL => IronShovel::class,
-				self::IRON_PICKAXE => IronPickaxe::class,
-				self::IRON_AXE => IronAxe::class,
-				self::IRON_HOE => IronHoe::class,
-				self::DIAMOND_SWORD => DiamondSword::class,
-				self::DIAMOND_SHOVEL => DiamondShovel::class,
-				self::DIAMOND_PICKAXE => DiamondPickaxe::class,
-				self::DIAMOND_AXE => DiamondAxe::class,
-				self::DIAMOND_HOE => DiamondHoe::class,
-				self::GOLD_SWORD => GoldSword::class,
-				self::GOLD_SHOVEL => GoldShovel::class,
-				self::GOLD_PICKAXE => GoldPickaxe::class,
-				self::GOLD_AXE => GoldAxe::class,
-				self::GOLD_HOE => GoldHoe::class,
-				self::STONE_SWORD => StoneSword::class,
-				self::STONE_SHOVEL => StoneShovel::class,
-				self::STONE_PICKAXE => StonePickaxe::class,
-				self::STONE_AXE => StoneAxe::class,
-				self::STONE_HOE => StoneHoe::class,
-				self::WOODEN_SWORD => WoodenSword::class,
-				self::WOODEN_SHOVEL => WoodenShovel::class,
-				self::WOODEN_PICKAXE => WoodenPickaxe::class,
-				self::WOODEN_AXE => WoodenAxe::class,
-				self::WOODEN_HOE => WoodenHoe::class,
-				self::FLINT_STEEL => FlintSteel::class,
-				self::SHEARS => Shears::class,
-				self::BOW => Bow::class,
-			];
-			foreach(Block::$list as $id => $class){
-				self::$list[$id] = $class;
-			}
+		if(self::$list === null){
+			self::$list = new \SplFixedArray(65536);
+			self::$list[self::SUGARCANE] = Sugarcane::class;;
+			self::$list[self::WHEAT_SEEDS] = WheatSeeds::class;;
+			self::$list[self::PUMPKIN_SEEDS] = PumpkinSeeds::class;;
+			self::$list[self::MELON_SEEDS] = MelonSeeds::class;;
+			self::$list[self::MUSHROOM_STEW] = MushroomStew::class;;
+			self::$list[self::BEETROOT_SOUP] = BeetrootSoup::class;;
+			self::$list[self::CARROT] = Carrot::class;;
+			self::$list[self::POTATO] = Potato::class;;
+			self::$list[self::BEETROOT_SEEDS] = BeetrootSeeds::class;;
+			self::$list[self::SIGN] = Sign::class;;
+			self::$list[self::WOODEN_DOOR] = WoodenDoor::class;;
+			self::$list[self::BUCKET] = Bucket::class;;
+			self::$list[self::IRON_DOOR] = IronDoor::class;;
+			self::$list[self::CAKE] = Cake::class;;
+			self::$list[self::BED] = Bed::class;;
+			self::$list[self::PAINTING] = Painting::class;;
+			self::$list[self::COAL] = Coal::class;;
+			self::$list[self::APPLE] = Apple::class;;
+			self::$list[self::SPAWN_EGG] = SpawnEgg::class;;
+			self::$list[self::DIAMOND] = Diamond::class;;
+			self::$list[self::STICK] = Stick::class;;
+			self::$list[self::BOWL] = Bowl::class;;
+			self::$list[self::FEATHER] = Feather::class;;
+			self::$list[self::BRICK] = Brick::class;;
+			self::$list[self::IRON_SWORD] = IronSword::class;;
+			self::$list[self::IRON_INGOT] = IronIngot::class;;
+			self::$list[self::GOLD_INGOT] = GoldIngot::class;;
+			self::$list[self::IRON_SHOVEL] = IronShovel::class;;
+			self::$list[self::IRON_PICKAXE] = IronPickaxe::class;;
+			self::$list[self::IRON_AXE] = IronAxe::class;;
+			self::$list[self::IRON_HOE] = IronHoe::class;;
+			self::$list[self::DIAMOND_SWORD] = DiamondSword::class;;
+			self::$list[self::DIAMOND_SHOVEL] = DiamondShovel::class;;
+			self::$list[self::DIAMOND_PICKAXE] = DiamondPickaxe::class;;
+			self::$list[self::DIAMOND_AXE] = DiamondAxe::class;;
+			self::$list[self::DIAMOND_HOE] = DiamondHoe::class;;
+			self::$list[self::GOLD_SWORD] = GoldSword::class;;
+			self::$list[self::GOLD_SHOVEL] = GoldShovel::class;;
+			self::$list[self::GOLD_PICKAXE] = GoldPickaxe::class;;
+			self::$list[self::GOLD_AXE] = GoldAxe::class;;
+			self::$list[self::GOLD_HOE] = GoldHoe::class;;
+			self::$list[self::STONE_SWORD] = StoneSword::class;;
+			self::$list[self::STONE_SHOVEL] = StoneShovel::class;;
+			self::$list[self::STONE_PICKAXE] = StonePickaxe::class;;
+			self::$list[self::STONE_AXE] = StoneAxe::class;;
+			self::$list[self::STONE_HOE] = StoneHoe::class;;
+			self::$list[self::WOODEN_SWORD] = WoodenSword::class;;
+			self::$list[self::WOODEN_SHOVEL] = WoodenShovel::class;;
+			self::$list[self::WOODEN_PICKAXE] = WoodenPickaxe::class;;
+			self::$list[self::WOODEN_AXE] = WoodenAxe::class;;
+			self::$list[self::WOODEN_HOE] = WoodenHoe::class;;
+			self::$list[self::FLINT_STEEL] = FlintSteel::class;;
+			self::$list[self::SHEARS] = Shears::class;;
+			self::$list[self::BOW] = Bow::class;;
 
+			for($i = 0; $i < 256; ++$i){
+				if(Block::$list[$i] !== null){
+					self::$list[$i] = Block::$list[$i];
+				}
+			}
 		}
 	}
 
 	public static function get($id, $meta = 0, $count = 1){
-		if(isset(self::$list[$id])){
+		try{
 			$class = self::$list[$id];
-			if($id < 256){
-				$item = new ItemBlock(new $class($meta), $meta, $count);
+			if($class === null){
+				return new Item($id, $meta, $count);
+			}elseif($id < 256){
+				return new ItemBlock(new $class($meta), $meta, $count);
 			}else{
-				$item = new $class($meta, $count);
+				return new $class($meta, $count);
 			}
-		}else{
-			$item = new Item($id, $meta, $count);
+		}catch(\RuntimeException $e){
+			return new Item($id, $meta, $count);
 		}
-
-		return $item;
 	}
 
 	public static function fromString($str, $multiple = false){
@@ -549,7 +550,7 @@ class Item{
 		}
 	}
 
-	final public function getID(){
+	final public function getId(){
 		return $this->id;
 	}
 

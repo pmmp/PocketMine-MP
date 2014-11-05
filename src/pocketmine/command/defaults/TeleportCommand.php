@@ -23,7 +23,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -88,8 +87,7 @@ class TeleportCommand extends VanillaCommand{
 		}
 
 		if(count($args) < 3){
-			$pos = Position::clonePosition($target);
-			$origin->teleport($pos);
+			$origin->teleport($target);
 			Command::broadcastCommandMessage($sender, "Teleported " . $origin->getDisplayName() . " to " . $target->getDisplayName());
 
 			return true;
@@ -98,7 +96,7 @@ class TeleportCommand extends VanillaCommand{
 			$x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
 			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 128);
 			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos]);
-			$target->teleport(Vector3::createVector($x, $y, $z));
+			$target->teleport(new Vector3($x, $y, $z));
 			Command::broadcastCommandMessage($sender, "Teleported " . $target->getDisplayName() . " to " . round($x, 2) . ", " . round($y, 2) . ", " . round($z, 2));
 
 			return true;

@@ -83,9 +83,9 @@ class Explosion{
 			return false;
 		}
 
-		$pointer = Vector3::createVector(0, 0, 0);
-		$vector = Vector3::createVector(0, 0, 0);
-		$vBlock = Vector3::createVector(0, 0, 0);
+		$pointer = new Vector3(0, 0, 0);
+		$vector = new Vector3(0, 0, 0);
+		$vBlock = new Vector3(0, 0, 0);
 
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
@@ -130,12 +130,11 @@ class Explosion{
 
 	public function explodeB(){
 		$send = [];
-		$source = Vector3::cloneVector($this->source);
-		$source = $source->floor();
+		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
-			$this->level->getServer()->getPluginManager()->callEvent($ev = EntityExplodeEvent::createEvent($this->what, $this->source, $this->affectedBlocks, $yield));
+			$this->level->getServer()->getPluginManager()->callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield));
 			if($ev->isCancelled()){
 				return false;
 			}else{
@@ -152,7 +151,7 @@ class Explosion{
 		$minZ = Math::floorFloat($this->source->z - $explosionSize - 1);
 		$maxZ = Math::floorFloat($this->source->z + $explosionSize + 1);
 
-		$explosionBB = AxisAlignedBB::getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
 		$list = $this->level->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
 		foreach($list as $entity){
@@ -166,11 +165,11 @@ class Explosion{
 				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
 				if($this->what instanceof Entity){
-					$ev = EntityDamageByEntityEvent::createEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
+					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
 				}elseif($this->what instanceof Block){
-					$ev = EntityDamageByBlockEvent::createEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
+					$ev = new EntityDamageByBlockEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}else{
-					$ev = EntityDamageEvent::createEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
+					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}
 
 				$entity->attack($ev->getFinalDamage(), $ev);
@@ -212,7 +211,7 @@ class Explosion{
 			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
-		$pk = ExplodePacket::getFromPool();
+		$pk = new ExplodePacket();
 		$pk->x = $this->source->x;
 		$pk->y = $this->source->y;
 		$pk->z = $this->source->z;

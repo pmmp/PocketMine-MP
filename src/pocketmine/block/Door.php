@@ -57,7 +57,7 @@ abstract class Door extends Transparent{
 		$f = 0.1875;
 		$damage = $this->getFullDamage();
 
-		$bb = AxisAlignedBB::getBoundingBoxFromPool(
+		$bb = new AxisAlignedBB(
 			$this->x,
 			$this->y,
 			$this->z,
@@ -271,7 +271,7 @@ abstract class Door extends Transparent{
 				if($player instanceof Player){
 					unset($players[$player->getID()]);
 				}
-				$pk = LevelEventPacket::getFromPool();
+				$pk = new LevelEventPacket();
 				$pk->x = $this->x;
 				$pk->y = $this->y;
 				$pk->z = $this->z;
@@ -290,7 +290,7 @@ abstract class Door extends Transparent{
 			if($player instanceof Player){
 				unset($players[$player->getID()]);
 			}
-			$pk = LevelEventPacket::getFromPool();
+			$pk = new LevelEventPacket();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;

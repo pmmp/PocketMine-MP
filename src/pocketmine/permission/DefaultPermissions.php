@@ -88,6 +88,8 @@ abstract class DefaultPermissions{
 		$time = self::registerPermission(new Permission(self::ROOT . ".command.time", "Allows the user to alter the time", Permission::DEFAULT_OP), $commands);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.add", "Allows the user to fast-forward time"), $time);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.set", "Allows the user to change the time"), $time);
+		self::registerPermission(new Permission(self::ROOT . ".command.time.start", "Allows the user to restart the time"), $time);
+		self::registerPermission(new Permission(self::ROOT . ".command.time.stop", "Allows the user to stop the time"), $time);
 		$time->recalculatePermissibles();
 
 		self::registerPermission(new Permission(self::ROOT . ".command.kill", "Allows the user to commit suicide", Permission::DEFAULT_TRUE), $commands);

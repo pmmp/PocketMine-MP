@@ -23,7 +23,6 @@ namespace pocketmine\entity;
 
 
 use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -48,14 +47,13 @@ class Villager extends Creature implements NPC, Ageable{
 
 	protected function initEntity(){
 		parent::initEntity();
-		$this->namedtag->id = new String("id", "Villager");
 		if(!isset($this->namedtag->Profession)){
 			$this->setProfession(self::PROFESSION_GENERIC);
 		}
 	}
 
 	public function spawnTo(Player $player){
-		$pk = AddMobPacket::getFromPool();
+		$pk = new AddMobPacket();
 		$pk->eid = $this->getID();
 		$pk->type = Villager::NETWORK_ID;
 		$pk->x = $this->x;
@@ -66,7 +64,7 @@ class Villager extends Creature implements NPC, Ageable{
 		$pk->metadata = $this->getData();
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

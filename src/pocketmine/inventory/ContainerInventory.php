@@ -29,7 +29,7 @@ use pocketmine\Player;
 abstract class ContainerInventory extends BaseInventory{
 	public function onOpen(Player $who){
 		parent::onOpen($who);
-		$pk = ContainerOpenPacket::getFromPool();
+		$pk = new ContainerOpenPacket();
 		$pk->windowid = $who->getWindowId($this);
 		$pk->type = $this->getType()->getNetworkType();
 		$pk->slots = $this->getSize();
@@ -48,7 +48,7 @@ abstract class ContainerInventory extends BaseInventory{
 	}
 
 	public function onClose(Player $who){
-		$pk = ContainerClosePacket::getFromPool();
+		$pk = new ContainerClosePacket();
 		$pk->windowid = $who->getWindowId($this);
 		$who->dataPacket($pk);
 		parent::onClose($who);

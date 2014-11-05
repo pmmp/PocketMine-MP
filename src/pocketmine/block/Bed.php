@@ -36,7 +36,7 @@ class Bed extends Transparent{
 	}
 
 	protected function recalculateBoundingBox(){
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x,
 			$this->y,
 			$this->z,
@@ -53,7 +53,7 @@ class Bed extends Transparent{
 		$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
 
 		if($player instanceof Player and !$isNight){
-			$pk = ChatPacket::getFromPool();
+			$pk = new ChatPacket();
 			$pk->message = "You can only sleep at night";
 			$player->dataPacket($pk);
 
@@ -77,7 +77,7 @@ class Bed extends Transparent{
 				$b = $blockWest;
 			}else{
 				if($player instanceof Player){
-					$pk = ChatPacket::getFromPool();
+					$pk = new ChatPacket();
 					$pk->message = "This bed is incomplete";
 					$player->dataPacket($pk);
 				}
@@ -87,7 +87,7 @@ class Bed extends Transparent{
 		}
 
 		if($player instanceof Player and $player->sleepOn($b) === false){
-			$pk = ChatPacket::getFromPool();
+			$pk = new ChatPacket();
 			$pk->message = "This bed is occupied";
 			$player->dataPacket($pk);
 		}

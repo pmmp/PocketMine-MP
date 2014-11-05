@@ -24,7 +24,6 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -36,17 +35,13 @@ class Zombie extends Monster{
 	public $length = 0.6;
 	public $height = 1.8;
 
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Zombie");
-	}
-
 	public function getName(){
 		return "Zombie";
 	}
 
 	public function spawnTo(Player $player){
 
-		$pk = AddMobPacket::getFromPool();
+		$pk = new AddMobPacket();
 		$pk->eid = $this->getID();
 		$pk->type = Zombie::NETWORK_ID;
 		$pk->x = $this->x;
@@ -57,7 +52,7 @@ class Zombie extends Monster{
 		$pk->metadata = $this->getData();
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

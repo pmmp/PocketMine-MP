@@ -63,7 +63,7 @@ abstract class Thin extends Transparent{
 			$f3 = 1;
 		}
 
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x + $f,
 			$this->y,
 			$this->z + $f2,

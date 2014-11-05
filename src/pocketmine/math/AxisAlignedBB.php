@@ -24,11 +24,6 @@ use pocketmine\level\MovingObjectPosition;
 
 class AxisAlignedBB{
 
-
-	/** @var AxisAlignedBB[] */
-	public static $boundingBoxes = [];
-	public static $nextBoundingBox = 0;
-
 	public $minX;
 	public $minY;
 	public $minZ;
@@ -43,50 +38,6 @@ class AxisAlignedBB{
 		$this->maxX = $maxX;
 		$this->maxY = $maxY;
 		$this->maxZ = $maxZ;
-	}
-
-	public static function clearBoundingBoxes(){
-		self::$nextBoundingBox = 0;
-		self::$boundingBoxes = [];
-	}
-
-	public static function clearBoundingBoxPool(){
-		if(self::$nextBoundingBox > 65536){
-			self::clearBoundingBoxes();
-		}else{
-			self::$nextBoundingBox = 0;
-		}
-	}
-
-	/**
-	 * @param $minX
-	 * @param $minY
-	 * @param $minZ
-	 * @param $maxX
-	 * @param $maxY
-	 * @param $maxZ
-	 *
-	 * @return AxisAlignedBB
-	 */
-	public static function getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
-		if(self::$nextBoundingBox >= count(self::$boundingBoxes)){
-			self::$boundingBoxes[] = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		}
-
-		return self::$boundingBoxes[self::$nextBoundingBox++]->setBounds($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
-	}
-
-	/**
-	 * @param AxisAlignedBB $bb
-	 *
-	 * @return AxisAlignedBB
-	 */
-	public static function cloneBoundingBoxFromPool(AxisAlignedBB $bb){
-		if(self::$nextBoundingBox >= count(self::$boundingBoxes)){
-			self::$boundingBoxes[] = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		}
-
-		return self::$boundingBoxes[self::$nextBoundingBox++]->setBounds($bb->minX, $bb->minY, $bb->minZ, $bb->maxX, $bb->maxY, $bb->maxZ);
 	}
 
 	public function setBounds($minX, $minY, $minZ, $maxX, $maxY, $maxZ){
@@ -126,11 +77,11 @@ class AxisAlignedBB{
 			$maxZ += $z;
 		}
 
-		return AxisAlignedBB::getBoundingBoxFromPool($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 	}
 
 	public function grow($x, $y, $z){
-		return AxisAlignedBB::getBoundingBoxFromPool($this->minX - $x, $this->minY - $y, $this->minZ - $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
+		return new AxisAlignedBB($this->minX - $x, $this->minY - $y, $this->minZ - $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
 	public function expand($x, $y, $z){
@@ -156,7 +107,7 @@ class AxisAlignedBB{
 	}
 
 	public function shrink($x, $y, $z){
-		return AxisAlignedBB::getBoundingBoxFromPool($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX - $x, $this->maxY - $y, $this->maxZ - $z);
+		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX - $x, $this->maxY - $y, $this->maxZ - $z);
 	}
 
 	public function contract($x, $y, $z){
@@ -181,7 +132,7 @@ class AxisAlignedBB{
 	}
 
 	public function getOffsetBoundingBox($x, $y, $z){
-		return AxisAlignedBB::getBoundingBoxFromPool($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
+		return new AxisAlignedBB($this->minX + $x, $this->minY + $y, $this->minZ + $z, $this->maxX + $x, $this->maxY + $y, $this->maxZ + $z);
 	}
 
 	public function calculateXOffset(AxisAlignedBB $bb, $x){

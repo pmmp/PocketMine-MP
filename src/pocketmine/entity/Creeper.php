@@ -22,10 +22,6 @@
 namespace pocketmine\entity;
 
 
-use pocketmine\nbt\tag\String;
-
 class Creeper extends Monster implements Explosive{
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Creeper");
-	}
+
 }

@@ -34,7 +34,6 @@ use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Short;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 
 class Furnace extends Tile implements InventoryHolder, Container{
@@ -42,7 +41,6 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	protected $inventory;
 
 	public function __construct(FullChunk $chunk, Compound $nbt){
-		$nbt->id = new String("id", Tile::FURNACE);
 		parent::__construct($chunk, $nbt);
 		$this->inventory = new FurnaceInventory($this);
 
@@ -169,7 +167,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	}
 
 	protected function checkFuel(Item $fuel){
-		$this->server->getPluginManager()->callEvent($ev = FurnaceBurnEvent::createEvent($this, $fuel, $fuel->getFuelTime()));
+		$this->server->getPluginManager()->callEvent($ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime()));
 
 		if($ev->isCancelled()){
 			return;
@@ -219,7 +217,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				if($this->namedtag["CookTime"] >= 200){ //10 seconds
 					$product = Item::get($smelt->getResult()->getID(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
 
-					$this->server->getPluginManager()->callEvent($ev = FurnaceSmeltEvent::createEvent($this, $raw, $product));
+					$this->server->getPluginManager()->callEvent($ev = new FurnaceSmeltEvent($this, $raw, $product));
 
 					if(!$ev->isCancelled()){
 						$this->inventory->setResult($ev->getResult());
@@ -252,13 +250,13 @@ class Furnace extends Tile implements InventoryHolder, Container{
 		foreach($this->getInventory()->getViewers() as $player){
 			$windowId = $player->getWindowId($this->getInventory());
 			if($windowId > 0){
-				$pk = ContainerSetDataPacket::getFromPool();
+				$pk = new ContainerSetDataPacket();
 				$pk->windowid = $windowId;
 				$pk->property = 0; //Smelting
 				$pk->value = floor($this->namedtag["CookTime"]);
 				$player->dataPacket($pk);
 
-				$pk = ContainerSetDataPacket::getFromPool();
+				$pk = new ContainerSetDataPacket();
 				$pk->windowid = $windowId;
 				$pk->property = 1; //Fire icon
 				$pk->value = $this->namedtag["BurnTicks"];

@@ -41,7 +41,7 @@ class Cake extends Transparent{
 
 		$f = (1 + $this->getDamage() * 2) / 16;
 
-		return AxisAlignedBB::getBoundingBoxFromPool(
+		return new AxisAlignedBB(
 			$this->x + $f,
 			$this->y,
 			$this->z + 0.0625,
@@ -81,7 +81,7 @@ class Cake extends Transparent{
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player and $player->getHealth() < 20){
 			++$this->meta;
-			Server::getInstance()->getPluginManager()->callEvent($ev = EntityRegainHealthEvent::createEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING));
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($player, 3, EntityRegainHealthEvent::CAUSE_EATING));
 			if(!$ev->isCancelled()){
 				$player->heal($ev->getAmount(), $ev);
 			}

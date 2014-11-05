@@ -30,7 +30,6 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -50,7 +49,6 @@ class FallingSand extends Entity{
 	public $canCollide = false;
 
 	protected function initEntity(){
-		$this->namedtag->id = new String("id", "FallingSand");
 		if(isset($this->namedtag->TileID)){
 			$this->blockId = $this->namedtag["TileID"];
 		}elseif(isset($this->namedtag->Tile)){
@@ -90,8 +88,7 @@ class FallingSand extends Entity{
 
 		if(!$this->dead){
 			if($this->ticksLived === 1){
-				$pos = Vector3::cloneVector($this);
-				$block = $this->level->getBlock($pos->floor());
+				$block = $this->level->getBlock($pos = (new Vector3($this->x, $this->y, $this->z))->floor());
 				if($block->getID() != $this->blockId){
 					$this->kill();
 					return true;
@@ -110,8 +107,7 @@ class FallingSand extends Entity{
 			$this->motionY *= 1 - $this->drag;
 			$this->motionZ *= $friction;
 
-			$pos = Vector3::cloneVector($this);
-			$pos = $pos->floor();
+			$pos = (new Vector3($this->x, $this->y, $this->z))->floor();
 
 			if($this->onGround){
 				$this->kill();
@@ -119,7 +115,7 @@ class FallingSand extends Entity{
 				if(!$block->isFullBlock){
 					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = EntityBlockChangeEvent::createEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
+					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
 					}
@@ -154,7 +150,7 @@ class FallingSand extends Entity{
 	}
 
 	public function spawnTo(Player $player){
-		$pk = AddEntityPacket::getFromPool();
+		$pk = new AddEntityPacket();
 		$pk->type = FallingSand::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
@@ -163,7 +159,7 @@ class FallingSand extends Entity{
 		$pk->did = -($this->getBlock() | $this->getDamage() << 0x10);
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];

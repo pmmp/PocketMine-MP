@@ -125,16 +125,14 @@ abstract class BaseInventory implements Inventory{
 		if($index < 0 or $index >= $this->size){
 			return false;
 		}elseif($item->getID() === 0 or $item->getCount() <= 0){
-			$this->clear($index, $source);
-			return true;
+			return $this->clear($index, $source);
 		}
 
 		$holder = $this->getHolder();
 		if($holder instanceof Entity){
-			Server::getInstance()->getPluginManager()->callEvent($ev = EntityInventoryChangeEvent::createEvent($holder, $this->getItem($index), $item, $index));
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $this->getItem($index), $item, $index));
 			if($ev->isCancelled()){
-				$this->sendContents($this->getViewers());
-
+				$this->sendSlot($index, $this->getViewers());
 				return false;
 			}
 			$item = $ev->getNewItem();
@@ -227,6 +225,14 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function addItem(...$slots){
+		if(isset($slots[$end = count($slots) - 1]) and $slots[$end] instanceof Player){
+			/** @var Player $source */
+			$source = $slots[$end];
+			unset($slots[$end]);
+		}else{
+			$source = null;
+		}
+
 		/** @var Item[] $slots */
 		foreach($slots as $i => $slot){
 			$slots[$i] = clone $slot;
@@ -235,12 +241,12 @@ abstract class BaseInventory implements Inventory{
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
 			foreach($slots as $index => $slot){
-				if($item->getID() === Item::AIR){
+				if($item->getID() === Item::AIR or $item->getCount() <= 0){
 					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
 					$slot->setCount($slot->getCount() - $amount);
 					$item = clone $slot;
 					$item->setCount($amount);
-					$this->setItem($i, $item);
+					$this->setItem($i, $item, $source);
 					$item = $this->getItem($i);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
@@ -249,7 +255,7 @@ abstract class BaseInventory implements Inventory{
 					$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() + $amount);
-					$this->setItem($i, $item);
+					$this->setItem($i, $item, $source);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
 					}
@@ -265,6 +271,14 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function removeItem(...$slots){
+		if(isset($slots[$end = count($slots) - 1]) and $slots[$end] instanceof Player){
+			/** @var Player $source */
+			$source = $slots[$end];
+			unset($slots[$end]);
+		}else{
+			$source = null;
+		}
+
 		/** @var Item[] $slots */
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
@@ -277,7 +291,7 @@ abstract class BaseInventory implements Inventory{
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() - $amount);
-					$this->setItem($i, $item);
+					$this->setItem($i, $item, $source);
 					if($slot->getCount() <= 0){
 						unset($slots[$index]);
 					}
@@ -298,10 +312,9 @@ abstract class BaseInventory implements Inventory{
 			$old = $this->slots[$index];
 			$holder = $this->getHolder();
 			if($holder instanceof Entity){
-				Server::getInstance()->getPluginManager()->callEvent($ev = EntityInventoryChangeEvent::createEvent($holder, $old, $item, $index));
+				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($holder, $old, $item, $index));
 				if($ev->isCancelled()){
-					$this->sendContents($this->getViewers());
-
+					$this->sendSlot($index, $this->getViewers());
 					return false;
 				}
 				$item = $ev->getNewItem();
@@ -350,7 +363,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function open(Player $who){
-		$who->getServer()->getPluginManager()->callEvent($ev = InventoryOpenEvent::createEvent($this, $who));
+		$who->getServer()->getPluginManager()->callEvent($ev = new InventoryOpenEvent($this, $who));
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -384,7 +397,7 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = ContainerSetContentPacket::getFromPool();
+		$pk = new ContainerSetContentPacket();
 		$pk->slots = [];
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$pk->slots[$i] = $this->getItem($i);
@@ -409,7 +422,7 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = ContainerSetSlotPacket::getFromPool();
+		$pk = new ContainerSetSlotPacket();
 		$pk->slot = $index;
 		$pk->item = clone $this->getItem($index);
 

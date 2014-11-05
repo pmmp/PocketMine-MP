@@ -91,7 +91,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1){
-			$pk = TileEventPacket::getFromPool();
+			$pk = new TileEventPacket();
 			$pk->x = $this->right->getHolder()->getX();
 			$pk->y = $this->right->getHolder()->getY();
 			$pk->z = $this->right->getHolder()->getZ();
@@ -105,7 +105,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 
 	public function onClose(Player $who){
 		if(count($this->getViewers()) === 1){
-			$pk = TileEventPacket::getFromPool();
+			$pk = new TileEventPacket();
 			$pk->x = $this->right->getHolder()->getX();
 			$pk->y = $this->right->getHolder()->getY();
 			$pk->z = $this->right->getHolder()->getZ();

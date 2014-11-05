@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\event\entity\EntityCombustByEntityEvent;
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
@@ -35,6 +36,8 @@ abstract class Projectile extends Entity{
 	/** @var Entity */
 	public $shootingEntity = null;
 	protected $damage = 0;
+
+	private $hadCollision = false;
 
 	protected function initEntity(){
 		$this->setMaxHealth(1);
@@ -89,11 +92,13 @@ abstract class Projectile extends Entity{
 
 			$movingObjectPosition = null;
 
-			$this->motionY -= $this->gravity;
+			if(!$this->isCollided){
+				$this->motionY -= $this->gravity;
+			}
 
 			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
-			$moveVector = Vector3::createVector($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
+			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
 
 			$list = $this->getLevel()->getCollidingEntities($this->boundingBox->addCoord($this->motionX, $this->motionY, $this->motionZ)->expand(1, 1, 1), $this);
 
@@ -129,18 +134,22 @@ abstract class Projectile extends Entity{
 			if($movingObjectPosition !== null){
 				if($movingObjectPosition->entityHit !== null){
 
-					$this->server->getPluginManager()->callEvent(ProjectileHitEvent::createEvent($this));
+					$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
+					if($this->shootingEntity === null){
+						$ev = new EntityDamageByEntityEvent($this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					}else{
+						$ev = new EntityDamageByChildEntityEvent($this->shootingEntity, $this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+					}
 
-					$ev = EntityDamageByEntityEvent::createEvent($this->shootingEntity === null ? $this : $this->shootingEntity, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
 
 					if($this->fireTicks > 0){
-						$ev = EntityCombustByEntityEvent::createEvent($this, $movingObjectPosition->entityHit, 5);
+						$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
 						$this->server->getPluginManager()->callEvent($ev);
 						if(!$ev->isCancelled()){
 							$movingObjectPosition->entityHit->setOnFire($ev->getDuration());
@@ -154,12 +163,16 @@ abstract class Projectile extends Entity{
 
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
-			if($this->onGround and ($this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0)){
+			if($this->isCollided and !$this->hadCollision){
+				$this->hadCollision = true;
+
 				$this->motionX = 0;
 				$this->motionY = 0;
 				$this->motionZ = 0;
 
-				$this->server->getPluginManager()->callEvent(ProjectileHitEvent::createEvent($this));
+				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
+			}elseif(!$this->isCollided and !$this->hadCollision){
+				$this->hadCollision = false;
 			}
 
 			if(!$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0){

@@ -24,7 +24,6 @@ namespace pocketmine\entity;
 
 use pocketmine\level\format\FullChunk;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
@@ -53,7 +52,7 @@ class Snowball extends Projectile{
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if($this->age > 1200 or $this->onGround){
+		if($this->age > 1200 or $this->isCollided){
 			$this->kill();
 			$hasUpdate = true;
 		}
@@ -63,13 +62,8 @@ class Snowball extends Projectile{
 		return $hasUpdate;
 	}
 
-	protected function initEntity(){
-		$this->namedtag->id = new String("id", "Snowball");
-		parent::initEntity();
-	}
-
 	public function spawnTo(Player $player){
-		$pk = AddEntityPacket::getFromPool();
+		$pk = new AddEntityPacket();
 		$pk->type = Snowball::NETWORK_ID;
 		$pk->eid = $this->getID();
 		$pk->x = $this->x;
@@ -78,7 +72,7 @@ class Snowball extends Projectile{
 		$pk->did = 0; //TODO: send motion here
 		$player->dataPacket($pk);
 
-		$pk = SetEntityMotionPacket::getFromPool();
+		$pk = new SetEntityMotionPacket();
 		$pk->entities = [
 			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
 		];
