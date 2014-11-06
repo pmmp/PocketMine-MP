@@ -73,7 +73,7 @@ namespace pocketmine {
 	const VERSION = "Alpha_1.4dev";
 	const API_VERSION = "1.7.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
-	const MINECRAFT_VERSION = "v0.10.0 alpha build2";
+	const MINECRAFT_VERSION = "v0.10.0 alpha";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
