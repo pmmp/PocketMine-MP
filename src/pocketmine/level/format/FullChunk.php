@@ -227,6 +227,13 @@ interface FullChunk{
 	public function getTiles();
 
 	/**
+	 * @param int $x 0-15
+	 * @param int $y 0-127
+	 * @param int $z 0-15
+	 */
+	public function getTile($x, $y, $z);
+
+	/**
 	 * @return bool
 	 */
 	public function isLoaded();

@@ -37,6 +37,9 @@ abstract class BaseFullChunk implements FullChunk{
 	/** @var Tile[] */
 	protected $tiles = [];
 
+	/** @var Tile[] */
+	protected $tileList = [];
+
 	/** @var string */
 	protected $biomeIds;
 
@@ -234,11 +237,13 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function addTile(Tile $tile){
 		$this->tiles[$tile->getID()] = $tile;
+		$this->tiles[(($tile->z & 0x0f) << 8) | (($tile->x & 0x0f) << 4) | ($tile->y & 0x7f)] = $tile;
 		$this->hasChanged = true;
 	}
 
 	public function removeTile(Tile $tile){
 		unset($this->tiles[$tile->getID()]);
+		unset($this->tiles[(($tile->z & 0x0f) << 8) | (($tile->x & 0x0f) << 4) | ($tile->y & 0x7f)]);
 		$this->hasChanged = true;
 	}
 
@@ -248,6 +253,11 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function getTiles(){
 		return $this->tiles;
+	}
+
+	public function getTile($x, $y, $z){
+		$index = ($z << 8) | ($x << 4) | $y;
+		return isset($this->tileList[$index]) ? $this->tileList[$index] : null;
 	}
 
 	public function isLoaded(){

@@ -197,15 +197,18 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$blocks = [];
+		$nextIndex = 0;
+
 		$itr = new BlockIterator($this->level, $this->getPosition(), $this->getDirectionVector(), $this->getEyeHeight(), $maxDistance);
 
 		while($itr->valid()){
 			$itr->next();
 			$block = $itr->current();
-			$blocks[] = $block;
+			$blocks[$nextIndex++] = $block;
 
 			if($maxLength !== 0 and count($blocks) > $maxLength){
 				array_shift($blocks);
+				--$nextIndex;
 			}
 
 			$id = $block->getID();
