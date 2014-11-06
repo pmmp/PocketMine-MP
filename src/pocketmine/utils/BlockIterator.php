@@ -38,9 +38,11 @@ class BlockIterator implements \Iterator{
 
 	private $end = false;
 
-	/** @var Block[] */
-	private $blockQueue = [null, null, null];
+	/** @var \SplFixedArray<Block>[3] */
+	private $blockQueue;
 	private $currentBlock = 0;
+	/** @var Block */
+	private $currentBlockObject = null;
 	private $currentDistance = 0;
 	private $maxDistanceInt = 0;
 
@@ -57,6 +59,7 @@ class BlockIterator implements \Iterator{
 	public function __construct(Level $level, Vector3 $start, Vector3 $direction, $yOffset = 0, $maxDistance = 0){
 		$this->level = $level;
 		$this->maxDistance = (int) $maxDistance;
+		$this->blockQueue = new \SplFixedArray(3);
 
 		$startClone = new Vector3($start->x, $start->y, $start->z);
 		$startClone->y += $yOffset;
@@ -219,20 +222,28 @@ class BlockIterator implements \Iterator{
 		if($this->currentBlock <= -1){
 			throw new \OutOfBoundsException;
 		}else{
-			--$this->currentBlock;
+			$this->currentBlockObject = $this->blockQueue[$this->currentBlock--];
 		}
 	}
 
+	/**
+	 * @return Block
+	 *
+	 * @throws \OutOfBoundsException
+	 */
 	public function current(){
-		return $this->blockQueue[$this->currentBlock];
+		if($this->currentBlockObject === null){
+			throw new \OutOfBoundsException;
+		}
+		return $this->currentBlockObject;
 	}
 
 	public function rewind(){
-
+		throw new \InvalidStateException("BlockIterator doesn't support rewind()");
 	}
 
 	public function key(){
-		return $this->currentBlock;
+		return $this->currentBlock - 1;
 	}
 
 	public function valid(){
