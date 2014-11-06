@@ -88,5 +88,6 @@ interface Info{
 	//const PLAYER_INPUT_PACKET = 0xb9;
 	const FULL_CHUNK_DATA_PACKET = 0xba;
 	const UNLOAD_CHUNK_PACKET = 0xbb;
+	const SET_DIFFICULTY_PACKET = 0xbc;
 
 }

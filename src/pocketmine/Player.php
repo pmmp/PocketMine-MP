@@ -94,6 +94,7 @@ use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
 use pocketmine\network\protocol\MovePlayerPacket;
+use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\network\protocol\SetHealthPacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -1446,6 +1447,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->getHealth() <= 0){
 					$this->dead = true;
 				}
+
+				$pk = new SetDifficultyPacket();
+				$pk->difficulty = $this->server->getDifficulty();
+				$this->dataPacket($pk);
 
 				$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "[/" . $this->ip . ":" . $this->port . "] logged in with entity id " . $this->id . " at (" . $this->level->getName() . ", " . round($this->x, 4) . ", " . round($this->y, 4) . ", " . round($this->z, 4) . ")");
 

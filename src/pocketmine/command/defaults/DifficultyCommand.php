@@ -22,6 +22,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -55,6 +56,9 @@ class DifficultyCommand extends VanillaCommand{
 
 		if($difficulty !== -1){
 			$sender->getServer()->setConfigInt("difficulty", $difficulty);
+			$pk = new SetDifficultyPacket();
+			$pk->difficulty = $sender->getServer()->getDifficulty();
+			Server::broadcastPacket($sender->getServer()->getOnlinePlayers(), $pk);
 			$sender->sendMessage("Set difficulty to " . $difficulty);
 		}else{
 			$sender->sendMessage("Unknown difficulty");

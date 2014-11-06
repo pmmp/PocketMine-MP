@@ -60,6 +60,7 @@ use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\RespawnPacket;
 use pocketmine\network\protocol\RotateHeadPacket;
 use pocketmine\network\protocol\SendInventoryPacket;
+use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetHealthPacket;
@@ -328,6 +329,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->registerPacket(ProtocolInfo::ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket::class);
 		$this->registerPacket(ProtocolInfo::ENTITY_DATA_PACKET, EntityDataPacket::class);
 		$this->registerPacket(ProtocolInfo::UNLOAD_CHUNK_PACKET, UnloadChunkPacket::class);
+		$this->registerPacket(ProtocolInfo::SET_DIFFICULTY_PACKET, SetDifficultyPacket::class);
 	}
 
 	private function getPacket($buffer){
