@@ -202,8 +202,8 @@ class PlayerInventory extends BaseInventory{
 	public function setItem($index, Item $item, $source = null){
 		if($index < 0 or $index >= $this->size){
 			return false;
-		}elseif($item->getID() === 0){
-			$this->clear($index, $source);
+		}elseif($item->getID() === 0 or $item->getCount() <= 0){
+			return $this->clear($index, $source);
 		}
 
 		if($index >= $this->getSize()){ //Armor change
