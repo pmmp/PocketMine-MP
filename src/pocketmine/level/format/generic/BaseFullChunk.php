@@ -237,13 +237,13 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function addTile(Tile $tile){
 		$this->tiles[$tile->getID()] = $tile;
-		$this->tiles[(($tile->z & 0x0f) << 8) | (($tile->x & 0x0f) << 4) | ($tile->y & 0x7f)] = $tile;
+		$this->tiles[(($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)] = $tile;
 		$this->hasChanged = true;
 	}
 
 	public function removeTile(Tile $tile){
 		unset($this->tiles[$tile->getID()]);
-		unset($this->tiles[(($tile->z & 0x0f) << 8) | (($tile->x & 0x0f) << 4) | ($tile->y & 0x7f)]);
+		unset($this->tiles[(($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)]);
 		$this->hasChanged = true;
 	}
 
@@ -256,7 +256,7 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function getTile($x, $y, $z){
-		$index = ($z << 8) | ($x << 4) | $y;
+		$index = ($z << 12) | ($x << 8) | $y;
 		return isset($this->tileList[$index]) ? $this->tileList[$index] : null;
 	}
 

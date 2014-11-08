@@ -1369,7 +1369,7 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4);
 
 		if($chunk instanceof FullChunk){
-			return $chunk->getTile($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f);
+			return $chunk->getTile($pos->x & 0x0f, $pos->y & 0xff, $pos->z & 0x0f);
 		}
 
 		return null;
