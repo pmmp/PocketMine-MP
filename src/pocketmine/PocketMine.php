@@ -136,7 +136,7 @@ namespace pocketmine {
 	if(!ini_get("date.timezone")){
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
-			//This here is just for redundancy just in case some stupid program wants to read timezone data from the ini.
+			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
 		}else{
 			//If system timezone detection fails or timezone is an invalid value.
@@ -155,7 +155,8 @@ namespace pocketmine {
 		}
 	}else{
 		/*
-		 * This is here so that stupid idiots don't come to us complaining and fill up the issue tracker when they put an incorrect timezone abbreviation in php.ini apparently.
+		 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
+		 * an incorrect timezone abbreviation in php.ini apparently.
 		 */
 		$default_timezone = date_default_timezone_get();
 		if(strpos($default_timezone, "/") === false){
@@ -168,13 +169,27 @@ namespace pocketmine {
 	function detect_system_timezone(){
 		switch(Utils::getOS()){
 			case 'win':
-				$regex = '/(?:Time Zone:\s*\()(UTC)(\+*\-*\d*\d*\:*\d*\d*)(?:\))/';
+				$regex = '/(UTC)(\+*\-*\d*\d*\:*\d*\d*)/';
 
-				exec("systeminfo", $output);
+				/*
+				 * wmic timezone get Caption
+				 * Get the timezone offset
+				 *
+				 * Sample Output var_dump
+				 * array(3) {
+				 *	  [0] =>
+				 *	  string(7) "Caption"
+				 *	  [1] =>
+				 *	  string(20) "(UTC+09:30) Adelaide"
+				 *	  [2] =>
+				 *	  string(0) ""
+				 *	}
+				 */
+				exec("wmic timezone get Caption", $output);
 
 				$string = trim(implode("\n", $output));
 
-				//Detect the Time Zone string in systeminfo
+				//Detect the Time Zone string
 				preg_match($regex, $string, $matches);
 
 				if(!isset($matches[2]))
