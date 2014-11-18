@@ -567,7 +567,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$index = $this->chunkACK[$identifier];
 			unset($this->chunkACK[$identifier]);
 			if(isset($this->usedChunks[$index])){
-				$this->usedChunks[$index][0] = true;
+				$this->usedChunks[$index] = true;
 				$X = null;
 				$Z = null;
 				Level::getXZ($index, $X, $Z);
@@ -607,21 +607,23 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if($count >= $this->chunksPerTick){
 				break;
 			}
-			++$count;
+
 			$X = null;
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
 			if(!$this->level->isChunkPopulated($X, $Z)){
 				$this->level->generateChunk($X, $Z);
-				if($this->spawned === true){
+				if($this->spawned){
 					continue;
 				}else{
 					break;
 				}
 			}
 
+			++$count;
+
 			unset($this->loadQueue[$index]);
-			$this->usedChunks[$index] = [false, 0];
+			$this->usedChunks[$index] = false;
 
 			$this->level->useChunk($X, $Z, $this);
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
@@ -630,7 +632,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if(count($this->usedChunks) >= 56 and $this->spawned === false){
 			$spawned = 0;
 			foreach($this->usedChunks as $d){
-				if($d[0] === true){
+				if($d === true){
 					$spawned++;
 				}
 			}
@@ -674,7 +676,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return false;
 		}
 
-		$this->nextChunkOrderRun = 100;
+		$this->nextChunkOrderRun = 200;
 
 		$radiusSquared = $this->viewDistance;
 		$radius = ceil(sqrt($radiusSquared));
@@ -682,23 +684,41 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$newOrder = [];
 		$lastChunk = $this->usedChunks;
+		$currentQueue = [];
 		$centerX = $this->x >> 4;
 		$centerZ = $this->z >> 4;
-		$count = 0;
 		for($X = -$side; $X <= $side; ++$X){
 			for($Z = -$side; $Z <= $side; ++$Z){
-				++$count;
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
 				if(!isset($this->usedChunks[$index = "$chunkX:$chunkZ"])){
 					$newOrder[$index] = abs($X) + abs($Z);
+				}else{
+					$currentQueue[$index] = abs($X) + abs($Z);
 				}
-				unset($lastChunk[$index]);
 			}
 		}
-
-		$loadedChunks = max(0, count($this->usedChunks) - count($lastChunk));
 		asort($newOrder);
+		asort($currentQueue);
+
+
+		$limit = $this->viewDistance;
+		foreach($currentQueue as $index => $distance){
+			if($limit-- <= 0){
+				break;
+			}
+			unset($lastChunk[$index]);
+		}
+
+		foreach($lastChunk as $index => $Yndex){
+			$X = null;
+			$Z = null;
+			Level::getXZ($index, $X, $Z);
+			$this->unloadChunk($X, $Z);
+		}
+
+		$loadedChunks = count($this->usedChunks);
+
 		if((count($newOrder) + $loadedChunks) > $this->viewDistance){
 			$count = $loadedChunks;
 			$this->loadQueue = [];
@@ -710,14 +730,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 		}else{
 			$this->loadQueue = $newOrder;
-		}
-
-
-		foreach($lastChunk as $index => $Yndex){
-			$X = null;
-			$Z = null;
-			Level::getXZ($index, $X, $Z);
-			$this->unloadChunk($X, $Z);
 		}
 
 		return true;
@@ -1149,7 +1161,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->newPosition = null;
 		}else{
 			$this->forceMovement = null;
-			if($this->nextChunkOrderRun > 20){
+			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
 				$this->nextChunkOrderRun = 20;
 			}
 		}
@@ -2324,6 +2336,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			foreach($this->usedChunks as $index => $d){
 				Level::getXZ($index, $chunkX, $chunkZ);
 				$this->level->freeChunk($chunkX, $chunkZ, $this);
+				unset($this->usedChunks[$index]);
 			}
 
 			parent::close();
