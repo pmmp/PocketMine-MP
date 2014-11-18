@@ -181,7 +181,7 @@ class SimpleCommandMap implements CommandMap{
 		try{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(\Exception $e){
-			$this->server->getLogger()->critical("Unhandled exception executing command '". $commandLine ,"' in ". $target);
+			$this->server->getLogger()->critical("Unhandled exception executing command '". $commandLine ."' in ". $target.": ".$e->getMessage());
 		}
 		$target->timings->stopTiming();
 
