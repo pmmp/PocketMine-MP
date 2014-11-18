@@ -53,16 +53,18 @@ class InstallerLang{
 			$this->lang = $lang;
 			$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . ".ini";
 		}else{
-			$l = glob(\pocketmine\PATH . "src/pocketmine/lang/Installer/" . $lang . "_*.ini");
-			if(count($l) > 0){
-				$files = [];
-				foreach($l as $file){
-					$files[$file] = filesize($file);
+			$files = [];
+			foreach(new \DirectoryIterator(\pocketmine\PATH . "src/pocketmine/lang/Installer/") as $file){
+				if($file->getExtension() === "ini"){
+					$files[$file->getFilename()] = $file->getSize();
 				}
+			}
+			
+			if(count($files) > 0){
 				arsort($files);
 				reset($files);
 				$l = key($files);
-				$l = substr($l, strrpos($l, "/") + 1, -4);
+				$l = substr($l, 0, -4);
 				$this->lang = isset(self::$languages[$l]) ? $l : $lang;
 				$this->langfile = \pocketmine\PATH . "src/pocketmine/lang/Installer/" . $l . ".ini";
 			}else{
