@@ -2356,11 +2356,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->loadQueue = [];
 			$this->hasSpawned = [];
 			$this->spawnPosition = null;
-			$this->perm->clearPermissions();
-			$this->perm = null;
 			unset($this->buffer);
 		}
 
+		$this->perm->clearPermissions();
 		$this->server->removePlayer($this);
 	}
 
