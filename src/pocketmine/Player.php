@@ -1059,6 +1059,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$revert = true;
 					$this->nextChunkOrderRun = 0;
 				}else{
+					if($this->chunk instanceof FullChunk){
+						$this->chunk->removeEntity($this);
+					}
 					$this->chunk = $chunk;
 				}
 			}
@@ -2340,10 +2343,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->loadQueue = [];
 			$this->hasSpawned = [];
 			$this->spawnPosition = null;
+			$this->perm->clearPermissions();
+			$this->perm = null;
 			unset($this->buffer);
 		}
 
 		$this->server->removePlayer($this);
+	}
+
+	public function __debugInfo(){
+		return [];
 	}
 
 	/**

@@ -176,6 +176,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
 		$this->namedtag = $nbt;
+
 		$this->chunk = $chunk;
 		$this->setLevel($chunk->getProvider()->getLevel());
 		$this->server = $chunk->getProvider()->getLevel()->getServer();
