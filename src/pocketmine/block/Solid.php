@@ -21,12 +21,7 @@
 
 namespace pocketmine\block;
 
-
 abstract class Solid extends Block{
-
-	public function __construct($id, $meta = 0, $name = "Unknown"){
-		parent::__construct($id, $meta, $name);
-		$this->isSolid = true;
-		$this->isFullBlock = true;
-	}
+	public $isSolid = true;
+	public $isFullBlock = true;
 }

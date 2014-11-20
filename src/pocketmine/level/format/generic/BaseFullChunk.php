@@ -237,7 +237,10 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function addTile(Tile $tile){
 		$this->tiles[$tile->getID()] = $tile;
-		$this->tileList[(($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)] = $tile;
+		if(isset($this->tileList[$index = (($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tileList[$index] !== $tile){
+			$this->tileList[$index]->close();
+		}
+		$this->tileList[$index] = $tile;
 		$this->hasChanged = true;
 	}
 
