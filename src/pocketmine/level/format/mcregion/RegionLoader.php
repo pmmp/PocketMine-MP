@@ -212,11 +212,14 @@ class RegionLoader{
 			if($length <= 1){
 				$this->locationTable[$i] = [0, 0, 0]; //Non-generated chunk, remove it from index
 			}
-			$chunk = zlib_decode(substr($chunk, 5));
-			if(strlen($chunk) <= 1){
+
+			try{
+				$chunk = zlib_decode(substr($chunk, 5));
+			}catch (\Exception $e){
 				$this->locationTable[$i] = [0, 0, 0]; //Corrupted chunk, remove it
 				continue;
 			}
+
 			$chunk = chr(self::COMPRESSION_ZLIB) . zlib_encode($chunk, 15, 9);
 			$chunk = Binary::writeInt(strlen($chunk)) . $chunk;
 			$sectors = (int) ceil(strlen($chunk) / 4096);

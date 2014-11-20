@@ -255,14 +255,19 @@ class Chunk extends BaseFullChunk{
 	 */
 	public static function fromBinary($data, LevelProvider $provider = null){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
-		$chunk = $nbt->getData();
 
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
+		try{
+			$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
+			$chunk = $nbt->getData();
+
+			if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
+				return null;
+			}
+
+			return new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, $chunk->Level);
+		}catch (\Exception $e){
 			return null;
 		}
-
-		return new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, $chunk->Level);
 	}
 
 	public function toBinary(){
