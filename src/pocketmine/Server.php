@@ -1401,7 +1401,7 @@ class Server{
 	/**
 	 * @return Config
 	 */
-	public function getOPs(){
+	public function getOps(){
 		return $this->operators;
 	}
 
