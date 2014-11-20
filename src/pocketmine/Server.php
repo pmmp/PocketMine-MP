@@ -681,107 +681,112 @@ class Server{
 	public function getOfflinePlayerData($name){
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
-		if(!file_exists($path . "$name.dat")){
-			$spawn = $this->getDefaultLevel()->getSafeSpawn();
-			$nbt = new Compound(false, [
-				new Long("firstPlayed", floor(microtime(true) * 1000)),
-				new Long("lastPlayed", floor(microtime(true) * 1000)),
-				new Enum("Pos", [
-					new Double(0, $spawn->x),
-					new Double(1, $spawn->y),
-					new Double(2, $spawn->z)
-				]),
-				new String("Level", $this->getDefaultLevel()->getName()),
-				//new String("SpawnLevel", $this->getDefaultLevel()->getName()),
-				//new Int("SpawnX", (int) $spawn->x),
-				//new Int("SpawnY", (int) $spawn->y),
-				//new Int("SpawnZ", (int) $spawn->z),
-				//new Byte("SpawnForced", 1), //TODO
-				new Enum("Inventory", []),
-				new Compound("Achievements", []),
-				new Int("playerGameType", $this->getGamemode()),
-				new Enum("Motion", [
-					new Double(0, 0.0),
-					new Double(1, 0.0),
-					new Double(2, 0.0)
-				]),
-				new Enum("Rotation", [
-					new Float(0, 0.0),
-					new Float(1, 0.0)
-				]),
-				new Float("FallDistance", 0.0),
-				new Short("Fire", 0),
-				new Short("Air", 0),
-				new Byte("OnGround", 1),
-				new Byte("Invulnerable", 0),
-				new String("NameTag", $name),
-			]);
-			$nbt->Pos->setTagType(NBT::TAG_Double);
-			$nbt->Inventory->setTagType(NBT::TAG_Compound);
-			$nbt->Motion->setTagType(NBT::TAG_Double);
-			$nbt->Rotation->setTagType(NBT::TAG_Float);
+		if(file_exists($path . "$name.dat")){
+			try{
+				$nbt = new NBT(NBT::BIG_ENDIAN);
+				$nbt->readCompressed(file_get_contents($path . "$name.dat"));
 
-			if(file_exists($path . "$name.yml")){ //Importing old PocketMine-MP files
-				$data = new Config($path . "$name.yml", Config::YAML, []);
-				$nbt["playerGameType"] = (int) $data->get("gamemode");
-				$nbt["Level"] = $data->get("position")["level"];
-				$nbt["Pos"][0] = $data->get("position")["x"];
-				$nbt["Pos"][1] = $data->get("position")["y"];
-				$nbt["Pos"][2] = $data->get("position")["z"];
-				$nbt["SpawnLevel"] = $data->get("spawn")["level"];
-				$nbt["SpawnX"] = (int) $data->get("spawn")["x"];
-				$nbt["SpawnY"] = (int) $data->get("spawn")["y"];
-				$nbt["SpawnZ"] = (int) $data->get("spawn")["z"];
-				$this->logger->notice("Old Player data found for \"" . $name . "\", upgrading profile");
-				foreach($data->get("inventory") as $slot => $item){
-					if(count($item) === 3){
-						$nbt->Inventory[$slot + 9] = new Compound(false, [
-							new Short("id", $item[0]),
-							new Short("Damage", $item[1]),
-							new Byte("Count", $item[2]),
-							new Byte("Slot", $slot + 9),
-							new Byte("TrueSlot", $slot + 9)
-						]);
-					}
-				}
-				foreach($data->get("hotbar") as $slot => $itemSlot){
-					if(isset($nbt->Inventory[$itemSlot + 9])){
-						$item = $nbt->Inventory[$itemSlot + 9];
-						$nbt->Inventory[$slot] = new Compound(false, [
-							new Short("id", $item["id"]),
-							new Short("Damage", $item["Damage"]),
-							new Byte("Count", $item["Count"]),
-							new Byte("Slot", $slot),
-							new Byte("TrueSlot", $item["TrueSlot"])
-						]);
-					}
-				}
-				foreach($data->get("armor") as $slot => $item){
-					if(count($item) === 2){
-						$nbt->Inventory[$slot + 100] = new Compound(false, [
-							new Short("id", $item[0]),
-							new Short("Damage", $item[1]),
-							new Byte("Count", 1),
-							new Byte("Slot", $slot + 100)
-						]);
-					}
-				}
-				foreach($data->get("achievements") as $achievement => $status){
-					$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
-				}
-				unlink($path . "$name.yml");
-			}else{
-				$this->logger->notice("Player data not found for \"" . $name . "\", creating new profile");
+				return $nbt->getData();
+			}catch(\Exception $e){ //zlib decode error / corrupt data
+				rename($path . "$name.dat", $path . "$name.dat.bak");
+				$this->logger->warning("Corrupted data found for \"" . $name . "\", creating new profile");
 			}
-			$this->saveOfflinePlayerData($name, $nbt);
-
-			return $nbt;
 		}else{
-			$nbt = new NBT(NBT::BIG_ENDIAN);
-			$nbt->readCompressed(file_get_contents($path . "$name.dat"));
-
-			return $nbt->getData();
+			$this->logger->notice("Player data not found for \"" . $name . "\", creating new profile");
 		}
+		$spawn = $this->getDefaultLevel()->getSafeSpawn();
+		$nbt = new Compound(false, [
+			new Long("firstPlayed", floor(microtime(true) * 1000)),
+			new Long("lastPlayed", floor(microtime(true) * 1000)),
+			new Enum("Pos", [
+				new Double(0, $spawn->x),
+				new Double(1, $spawn->y),
+				new Double(2, $spawn->z)
+			]),
+			new String("Level", $this->getDefaultLevel()->getName()),
+			//new String("SpawnLevel", $this->getDefaultLevel()->getName()),
+			//new Int("SpawnX", (int) $spawn->x),
+			//new Int("SpawnY", (int) $spawn->y),
+			//new Int("SpawnZ", (int) $spawn->z),
+			//new Byte("SpawnForced", 1), //TODO
+			new Enum("Inventory", []),
+			new Compound("Achievements", []),
+			new Int("playerGameType", $this->getGamemode()),
+			new Enum("Motion", [
+				new Double(0, 0.0),
+				new Double(1, 0.0),
+				new Double(2, 0.0)
+			]),
+			new Enum("Rotation", [
+				new Float(0, 0.0),
+				new Float(1, 0.0)
+			]),
+			new Float("FallDistance", 0.0),
+			new Short("Fire", 0),
+			new Short("Air", 0),
+			new Byte("OnGround", 1),
+			new Byte("Invulnerable", 0),
+			new String("NameTag", $name),
+		]);
+		$nbt->Pos->setTagType(NBT::TAG_Double);
+		$nbt->Inventory->setTagType(NBT::TAG_Compound);
+		$nbt->Motion->setTagType(NBT::TAG_Double);
+		$nbt->Rotation->setTagType(NBT::TAG_Float);
+
+		if(file_exists($path . "$name.yml")){ //Importing old PocketMine-MP files
+			$data = new Config($path . "$name.yml", Config::YAML, []);
+			$nbt["playerGameType"] = (int) $data->get("gamemode");
+			$nbt["Level"] = $data->get("position")["level"];
+			$nbt["Pos"][0] = $data->get("position")["x"];
+			$nbt["Pos"][1] = $data->get("position")["y"];
+			$nbt["Pos"][2] = $data->get("position")["z"];
+			$nbt["SpawnLevel"] = $data->get("spawn")["level"];
+			$nbt["SpawnX"] = (int) $data->get("spawn")["x"];
+			$nbt["SpawnY"] = (int) $data->get("spawn")["y"];
+			$nbt["SpawnZ"] = (int) $data->get("spawn")["z"];
+			$this->logger->notice("Old Player data found for \"" . $name . "\", upgrading profile");
+			foreach($data->get("inventory") as $slot => $item){
+				if(count($item) === 3){
+					$nbt->Inventory[$slot + 9] = new Compound(false, [
+						new Short("id", $item[0]),
+						new Short("Damage", $item[1]),
+						new Byte("Count", $item[2]),
+						new Byte("Slot", $slot + 9),
+						new Byte("TrueSlot", $slot + 9)
+					]);
+				}
+			}
+			foreach($data->get("hotbar") as $slot => $itemSlot){
+				if(isset($nbt->Inventory[$itemSlot + 9])){
+					$item = $nbt->Inventory[$itemSlot + 9];
+					$nbt->Inventory[$slot] = new Compound(false, [
+						new Short("id", $item["id"]),
+						new Short("Damage", $item["Damage"]),
+						new Byte("Count", $item["Count"]),
+						new Byte("Slot", $slot),
+						new Byte("TrueSlot", $item["TrueSlot"])
+					]);
+				}
+			}
+			foreach($data->get("armor") as $slot => $item){
+				if(count($item) === 2){
+					$nbt->Inventory[$slot + 100] = new Compound(false, [
+						new Short("id", $item[0]),
+						new Short("Damage", $item[1]),
+						new Byte("Count", 1),
+						new Byte("Slot", $slot + 100)
+					]);
+				}
+			}
+			foreach($data->get("achievements") as $achievement => $status){
+				$nbt->Achievements[$achievement] = new Byte($achievement, $status == true ? 1 : 0);
+			}
+			unlink($path . "$name.yml");
+		}
+		$this->saveOfflinePlayerData($name, $nbt);
+
+		return $nbt;
+
 	}
 
 	/**
