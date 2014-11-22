@@ -51,7 +51,7 @@ class FenceGate extends Transparent{
 				$this->y,
 				$this->z + 0.375,
 				$this->x + 1,
-				$this->y + 1,
+				$this->y + 1.5,
 				$this->z + 0.625
 			);
 		}else{
@@ -60,7 +60,7 @@ class FenceGate extends Transparent{
 				$this->y,
 				$this->z,
 				$this->x + 0.625,
-				$this->y + 1,
+				$this->y + 1.5,
 				$this->z + 1
 			);
 		}

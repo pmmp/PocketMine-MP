@@ -47,14 +47,11 @@ class StoneWall extends Transparent{
 		$f1 = $flag3 ? 1 : 0.75;
 		$f2 = $flag ? 0 : 0.25;
 		$f3 = $flag1 ? 1 : 0.75;
-		$f4 = 1;
 
 		if($flag and $flag1 and !$flag2 and !$flag3){
-			$f4 = 0.8125;
 			$f = 0.3125;
 			$f1 = 0.6875;
 		}elseif(!$flag and !$flag1 and $flag2 and $flag3){
-			$f4 = 0.8125;
 			$f2 = 0.3125;
 			$f3 = 0.6875;
 		}
@@ -64,7 +61,7 @@ class StoneWall extends Transparent{
 			$this->y,
 			$this->z + $f2,
 			$this->x + $f1,
-			$this->y + $f4,
+			$this->y + 1.5,
 			$this->z + $f3
 		);
 	}
