@@ -251,6 +251,9 @@ class PluginManager{
 						}
 					}catch(\Exception $e){
 						$this->server->getLogger()->error("Could not load '" . $file . "' in folder '" . $directory . "': " . $e->getMessage());
+						if(($logger = $this->server->getLogger()) instanceof MainLogger){
+							$logger->logException($e);
+						}
 					}
 				}
 			}
@@ -666,6 +669,9 @@ class PluginManager{
 				$registration->callEvent($event);
 			}catch(\Exception $e){
 				$this->server->getLogger()->critical("Could not pass event ". $event->getEventName() ." to ". $registration->getPlugin()->getDescription()->getFullName() .": ".$e->getMessage()." on ".get_class($registration->getListener()));
+				if(($logger = $this->server->getLogger()) instanceof MainLogger){
+					$logger->logException($e);
+				}
 			}
 		}
 	}

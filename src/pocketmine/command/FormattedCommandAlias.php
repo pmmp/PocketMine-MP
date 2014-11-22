@@ -22,6 +22,7 @@
 namespace pocketmine\command;
 
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
 class FormattedCommandAlias extends Command{
@@ -49,6 +50,9 @@ class FormattedCommandAlias extends Command{
 					$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				}else{
 					$sender->sendMessage(TextFormat::RED . "An internal error occurred while attempting to perform this command");
+					if(($logger = $sender->getServer()->getLogger()) instanceof MainLogger){
+						$logger->logException($e);
+					}
 				}
 
 				return false;

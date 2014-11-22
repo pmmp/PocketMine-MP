@@ -26,6 +26,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\PluginException;
 use pocketmine\utils\ReversePriorityQueue;
 
@@ -236,6 +237,9 @@ class ServerScheduler{
 					$task->run($this->currentTick);
 				}catch (\Exception $e){
 					Server::getInstance()->getLogger()->critical("Could not execute task ". $task->getTaskName() .": ".$e->getMessage());
+					if(($logger = Server::getInstance()->getLogger()) instanceof MainLogger){
+						$logger->logException($e);
+					}
 				}
 				$task->timings->stopTiming();
 			}

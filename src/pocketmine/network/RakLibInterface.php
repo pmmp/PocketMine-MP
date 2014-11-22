@@ -184,8 +184,8 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 				if(\pocketmine\DEBUG > 1){
 					$logger = $this->server->getLogger();
 					if($logger instanceof MainLogger){
-						$logger->logException($e);
 						$logger->debug("Packet ".get_class($pk)." 0x".bin2hex($packet->buffer));
+						$logger->logException($e);
 					}
 				}
 			}

@@ -56,6 +56,7 @@ use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 class SimpleCommandMap implements CommandMap{
 
@@ -182,6 +183,9 @@ class SimpleCommandMap implements CommandMap{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(\Exception $e){
 			$this->server->getLogger()->critical("Unhandled exception executing command '". $commandLine ."' in ". $target.": ".$e->getMessage());
+			if(($logger = $sender->getServer()->getLogger()) instanceof MainLogger){
+				$logger->logException($e);
+			}
 		}
 		$target->timings->stopTiming();
 

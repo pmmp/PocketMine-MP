@@ -2088,7 +2088,14 @@ class Server{
 
 		//Do level ticks
 		foreach($this->getLevels() as $level){
-			$level->doTick($currentTick);
+			try{
+				$level->doTick($currentTick);
+			}catch (\Exception $e){
+				$this->logger->critical("Could not tick level ".$level->getName().": ".$e->getMessage());
+				if($this->logger instanceof MainLogger){
+					$this->logger->logException($e);
+				}
+			}
 		}
 	}
 
@@ -2197,7 +2204,13 @@ class Server{
 			}
 		}
 
-		$this->generationManager->process();
+		try{
+			$this->generationManager->process();
+		}catch (\Exception $e){
+			if($this->logger instanceof MainLogger){
+				$this->logger->logException($e);
+			}
+		}
 
 		if(($this->tickCounter % 100) === 0){
 			foreach($this->levels as $level){
