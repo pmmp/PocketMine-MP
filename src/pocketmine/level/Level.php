@@ -92,6 +92,7 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\LevelException;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 
@@ -1876,12 +1877,20 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		if($chunk instanceof FullChunk and $chunk->hasChanged() and $this->getAutoSave()){
-			$this->provider->setChunk($x, $z, $chunk);
-			$this->provider->saveChunk($x, $z);
+		try{
+			if($chunk instanceof FullChunk and $chunk->hasChanged() and $this->getAutoSave()){
+				$this->provider->setChunk($x, $z, $chunk);
+				$this->provider->saveChunk($x, $z);
+			}
+			$this->provider->unloadChunk($x, $z, $safe);
+		}catch (\Exception $e){
+			$logger = $this->server->getLogger();
+			$logger->error("Error when unloading a chunk: ".$e->getMessage());
+			if($logger instanceof MainLogger){
+				$logger->logException($e);
+			}
 		}
 
-		$this->provider->unloadChunk($x, $z, $safe);
 		unset($this->chunks[$index]);
 		unset($this->usedChunks[$index]);
 		Cache::remove("world:" . $this->getID() . ":$index");
