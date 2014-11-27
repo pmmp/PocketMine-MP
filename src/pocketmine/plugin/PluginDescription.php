@@ -66,7 +66,7 @@ class PluginDescription{
 		$this->main = $plugin["main"];
 		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
 		if(stripos($this->main, "pocketmine\\") === 0){
-			trigger_error("Invalid PluginDescription main, cannot start within the PocketMine namespace", E_USER_ERROR);
+			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
 
 			return;
 		}
@@ -97,9 +97,7 @@ class PluginDescription{
 		if(isset($plugin["load"])){
 			$order = strtoupper($plugin["load"]);
 			if(!defined(PluginLoadOrder::class . "::" . $order)){
-				trigger_error("Invalid PluginDescription load", E_USER_ERROR);
-
-				return;
+				throw new PluginException("Invalid PluginDescription load");
 			}else{
 				$this->order = constant(PluginLoadOrder::class . "::" . $order);
 			}

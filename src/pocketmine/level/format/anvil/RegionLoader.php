@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
 use pocketmine\utils\Binary;
+use pocketmine\utils\MainLogger;
 
 class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 	const VERSION = 1;
@@ -88,11 +89,11 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
-			trigger_error("Corrupted bigger chunk detected", E_USER_WARNING);
+			MainLogger::getLogger()->error("Corrupted chunk detected");
 			$this->locationTable[$index][1] = $length >> 12;
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
-			trigger_error("Invalid compression type", E_USER_WARNING);
+			MainLogger::getLogger()->error("Invalid compression type");
 
 			return false;
 		}
@@ -101,7 +102,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		if($chunk instanceof Chunk){
 			return $chunk;
 		}elseif($forward === false){
-			trigger_error("Corrupted chunk detected", E_USER_WARNING);
+			MainLogger::getLogger()->error("Corrupted chunk detected");
 			$this->generateChunk($x, $z);
 
 			return $this->readChunk($x, $z, $generate, true);
