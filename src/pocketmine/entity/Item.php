@@ -32,7 +32,6 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AddItemEntityPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
 class Item extends Entity{
@@ -237,11 +236,7 @@ class Item extends Entity{
 		$pk->item = $this->getItem();
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket();
-		$pk->entities = [
-			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-		];
-		$player->dataPacket($pk);
+		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

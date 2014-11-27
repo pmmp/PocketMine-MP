@@ -93,8 +93,10 @@ use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
+use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\SetDifficultyPacket;
+use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetHealthPacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -141,6 +143,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $windowIndex = [];
 
 	protected $sendIndex = 0;
+
+	protected $moveToSend = [];
+	protected $motionToSend = [];
 
 	public $blocked = false;
 	public $achievements = [];
@@ -1053,6 +1058,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return -1;
 	}
 
+	public function addEntityMotion($entityId, $x, $y, $z){
+		$this->motionToSend[$entityId] = [$entityId, $x, $y, $z];
+	}
+
+	public function addEntityMovement($entityId, $x, $y, $z, $yaw, $pitch){
+		$this->moveToSend[$entityId] = [$entityId, $x, $y, $z, $yaw, $pitch];
+	}
+
 	protected function processMovement($currentTick){
 		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
 			return;
@@ -1269,6 +1282,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if(count($this->loadQueue) > 0 or !$this->spawned){
 			$this->sendNextChunk();
+		}
+
+		if(count($this->moveToSend) > 0){
+			$pk = new MoveEntityPacket();
+			$pk->entities = $this->moveToSend;
+			$this->dataPacket($pk);
+			$this->moveToSend = [];
+		}
+
+
+		if(count($this->motionToSend) > 0){
+			$pk = new SetEntityMotionPacket();
+			$pk->entities = $this->motionToSend;
+			$this->dataPacket($pk);
+			$this->motionToSend = [];
 		}
 
 		$this->timings->stopTiming();

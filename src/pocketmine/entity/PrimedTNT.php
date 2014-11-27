@@ -28,7 +28,6 @@ use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
 class PrimedTNT extends Entity implements Explosive{
@@ -147,11 +146,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$pk->did = 0;
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket();
-		$pk->entities = [
-			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-		];
-		$player->dataPacket($pk);
+		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

@@ -24,7 +24,6 @@ namespace pocketmine\entity;
 
 use pocketmine\nbt\tag\Int;
 use pocketmine\network\protocol\AddMobPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
 class Villager extends Creature implements NPC, Ageable{
@@ -64,11 +63,7 @@ class Villager extends Creature implements NPC, Ageable{
 		$pk->metadata = $this->getData();
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket();
-		$pk->entities = [
-			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-		];
-		$player->dataPacket($pk);
+		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

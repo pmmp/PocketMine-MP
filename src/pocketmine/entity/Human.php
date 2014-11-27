@@ -32,7 +32,6 @@ use pocketmine\nbt\tag\Short;
 use pocketmine\Network;
 use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
@@ -175,11 +174,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->metadata = $this->getData();
 			$player->dataPacket($pk);
 
-			$pk = new SetEntityMotionPacket();
-			$pk->entities = [
-				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-			];
-			$player->dataPacket($pk);
+			$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 			$this->inventory->sendArmorContents($player);
 		}

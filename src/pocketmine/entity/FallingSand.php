@@ -31,7 +31,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Int;
 use pocketmine\network\protocol\AddEntityPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 
 class FallingSand extends Entity{
@@ -159,11 +158,7 @@ class FallingSand extends Entity{
 		$pk->did = -($this->getBlock() | $this->getDamage() << 0x10);
 		$player->dataPacket($pk);
 
-		$pk = new SetEntityMotionPacket();
-		$pk->entities = [
-			[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-		];
-		$player->dataPacket($pk);
+		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 
 		parent::spawnTo($player);
 	}

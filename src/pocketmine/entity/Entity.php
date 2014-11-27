@@ -51,11 +51,9 @@ use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\Network;
-use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
-use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -594,15 +592,13 @@ abstract class Entity extends Location implements Metadatable{
 				$pk->yaw = $this->yaw;
 				$pk->pitch = $this->pitch;
 				$pk->bodyYaw = $this->yaw;
+				Server::broadcastPacket($this->hasSpawned, $pk);
 			}else{
-				//TODO: add to move list
-				$pk = new MoveEntityPacket();
-				$pk->entities = [
-					[$this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch]
-				];
+				foreach($this->hasSpawned as $player){
+					$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch);
+				}
 			}
 
-			Server::broadcastPacket($this->hasSpawned, $pk);
 		}
 
 		if(($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
@@ -610,12 +606,9 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastMotionY = $this->motionY;
 			$this->lastMotionZ = $this->motionZ;
 
-			$pk = new SetEntityMotionPacket();
-			$pk->entities = [
-				[$this->getID(), $this->motionX, $this->motionY, $this->motionZ]
-			];
-
-			Server::broadcastPacket($this->hasSpawned, $pk);
+			foreach($this->hasSpawned as $player){
+				$player->addEntityMotion($this->id, $this->motionX, $this->motionY, $this->motionZ);
+			}
 
 			if($this instanceof Player){
 				$this->motionX = 0;
@@ -1152,11 +1145,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(!$this->justCreated){
 			if($this instanceof Player){
-				$pk = new SetEntityMotionPacket();
-				$pk->entities = [
-					[0, $this->motionX, $this->motionY, $this->motionZ]
-				];
-				$this->dataPacket($pk);
+				$this->addEntityMotion(0, $this->motionX, $this->motionY, $this->motionZ);
 			}
 			$this->updateMovement();
 		}
