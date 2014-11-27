@@ -85,10 +85,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			foreach($this->inventory->getContents() as $item){
 				$drops[] = $item;
 			}
-
-			foreach($this->inventory->getArmorContents() as $item){
-				$drops[] = $item;
-			}
 		}
 
 		return $drops;
