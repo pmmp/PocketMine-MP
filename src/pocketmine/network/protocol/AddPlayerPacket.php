@@ -39,8 +39,8 @@ class AddPlayerPacket extends DataPacket{
 	public $z;
 	public $pitch;
 	public $yaw;
-	public $unknown1;
-	public $unknown2;
+	public $item;
+	public $meta;
 	public $metadata;
 
 	public function pid(){
@@ -61,8 +61,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->putFloat($this->z);
 		$this->putByte((int) ($this->yaw * (256 / 360)));
 		$this->putByte((int) ($this->pitch * (256 / 360)));
-		$this->putShort($this->unknown1);
-		$this->putShort($this->unknown2);
+		$this->putShort($this->item);
+		$this->putShort($this->meta);
 		$this->put(Binary::writeMetadata($this->metadata));
 	}
 
