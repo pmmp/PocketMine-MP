@@ -71,7 +71,7 @@ class Furnace extends Tile implements InventoryHolder, Container{
 	public function close(){
 		if($this->closed === false){
 			foreach($this->getInventory()->getViewers() as $player){
-				$this->getInventory()->close($player);
+				$player->removeWindow($this->getInventory());
 			}
 			parent::close();
 		}

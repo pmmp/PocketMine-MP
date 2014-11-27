@@ -1150,7 +1150,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk = new MovePlayerPacket();
 			$pk->eid = 0;
 			$pk->x = $from->x;
-			$pk->y = $from->y + $this->getEyeHeight() + 0.01;
+			$pk->y = $from->y + $this->getEyeHeight();
 			$pk->z = $from->z;
 			$pk->bodyYaw = $from->yaw;
 			$pk->pitch = $from->pitch;

@@ -59,11 +59,11 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 	public function close(){
 		if($this->closed === false){
 			foreach($this->getInventory()->getViewers() as $player){
-				$this->getInventory()->close($player);
+				$player->removeWindow($this->getInventory());
 			}
 
-			foreach($this->getRealInventory()->getViewers() as $player){
-				$this->getRealInventory()->close($player);
+			foreach($this->getInventory()->getViewers() as $player){
+				$player->removeWindow($this->getRealInventory());
 			}
 			parent::close();
 		}
