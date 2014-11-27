@@ -233,41 +233,58 @@ abstract class BaseInventory implements Inventory{
 			$source = null;
 		}
 
+		/** @var Item[] $itemSlots */
 		/** @var Item[] $slots */
-		foreach($slots as $i => $slot){
-			$slots[$i] = clone $slot;
+		$itemSlots = [];
+		foreach($slots as $slot){
+			if($slot->getId() !== 0 and $slot->getCount() > 0){
+				$itemSlots[] = clone $slot;
+			}
 		}
+
+		$emptySlots = [];
 
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
-			foreach($slots as $index => $slot){
-				if($item->getID() === Item::AIR or $item->getCount() <= 0){
-					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
-					$slot->setCount($slot->getCount() - $amount);
-					$item = clone $slot;
-					$item->setCount($amount);
-					$this->setItem($i, $item, $source);
-					$item = $this->getItem($i);
-					if($slot->getCount() <= 0){
-						unset($slots[$index]);
-					}
-				}elseif($slot->equals($item, true) and $item->getCount() < $item->getMaxStackSize()){
+			if($item->getId() === Item::AIR or $item->getCount() <= 0){
+				$emptySlots[] = $i;
+			}
+
+			foreach($itemSlots as $index => $slot){
+				if($slot->equals($item, true) and $item->getCount() < $item->getMaxStackSize()){
 					$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
-					$slot->setCount($slot->getCount() - $amount);
-					$item->setCount($item->getCount() + $amount);
-					$this->setItem($i, $item, $source);
-					if($slot->getCount() <= 0){
-						unset($slots[$index]);
+					if($amount > 0){
+						$slot->setCount($slot->getCount() - $amount);
+						$item->setCount($item->getCount() + $amount);
+						$this->setItem($i, $item, $source);
+						if($slot->getCount() <= 0){
+							unset($itemSlots[$index]);
+						}
 					}
 				}
 			}
 
-			if(count($slots) === 0){
+			if(count($itemSlots) === 0){
 				break;
 			}
 		}
 
-		return $slots;
+		if(count($itemSlots) > 0 and count($emptySlots) > 0){
+			foreach($emptySlots as $slotIndex){
+				foreach($itemSlots as $index => $slot){
+					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
+					$slot->setCount($slot->getCount() - $amount);
+					$item = clone $slot;
+					$item->setCount($amount);
+					$this->setItem($slotIndex, $item, $source);
+					if($slot->getCount() <= 0){
+						unset($itemSlots[$index]);
+					}
+				}
+			}
+		}
+
+		return $itemSlots;
 	}
 
 	public function removeItem(...$slots){
@@ -279,31 +296,39 @@ abstract class BaseInventory implements Inventory{
 			$source = null;
 		}
 
+		/** @var Item[] $itemSlots */
 		/** @var Item[] $slots */
+		$itemSlots = [];
+		foreach($slots as $slot){
+			if($slot->getId() !== 0 and $slot->getCount() > 0){
+				$itemSlots[] = clone $slot;
+			}
+		}
+
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$item = $this->getItem($i);
-			if($item->getID() === Item::AIR){
+			if($item->getId() === Item::AIR or $item->getCount() <= 0){
 				continue;
 			}
 
-			foreach($slots as $index => $slot){
+			foreach($itemSlots as $index => $slot){
 				if($slot->equals($item, $slot->getDamage() === null ? false : true)){
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() - $amount);
 					$this->setItem($i, $item, $source);
 					if($slot->getCount() <= 0){
-						unset($slots[$index]);
+						unset($itemSlots[$index]);
 					}
 				}
 			}
 
-			if(count($slots) === 0){
+			if(count($itemSlots) === 0){
 				break;
 			}
 		}
 
-		return $slots;
+		return $itemSlots;
 	}
 
 	public function clear($index, $source = null){

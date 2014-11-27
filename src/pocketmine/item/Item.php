@@ -625,7 +625,7 @@ class Item{
 	}
 
 	final public function __toString(){
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")";
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x".$this->count;
 	}
 
 	public function getDestroySpeed(Block $block, Player $player){

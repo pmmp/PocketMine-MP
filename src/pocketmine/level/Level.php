@@ -1091,8 +1091,8 @@ class Level implements ChunkManager, Metadatable{
 					$tile->unpair();
 				}
 
-				foreach($tile->getInventory()->getContents() as $item){
-					$this->dropItem($target, $item);
+				foreach($tile->getInventory()->getContents() as $chestItem){
+					$this->dropItem($target, $chestItem);
 				}
 			}
 

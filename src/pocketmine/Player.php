@@ -1628,10 +1628,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = $this->inventory->getItemInHand();
+						$oldItem = clone $item;
 						//TODO: Implement adventure mode checks
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
-							$this->inventory->setItemInHand($item, $this);
-							$this->inventory->sendHeldItem($this->hasSpawned);
+							if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
+								$this->inventory->setItemInHand($item, $this);
+								$this->inventory->sendHeldItem($this->hasSpawned);
+							}
 							break;
 						}
 					}
@@ -1802,13 +1805,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->isCreative()){
 					$item = $this->inventory->getItemInHand();
 				}else{
-					$item = clone $this->inventory->getItemInHand();
+					$item = $this->inventory->getItemInHand();
 				}
+
+				$oldItem = clone $item;
 
 				if($this->level->useBreakOn($vector, $item, $this) === true){
 					if($this->isSurvival()){
-						$this->inventory->setItemInHand($item, $this);
-						$this->inventory->sendHeldItem($this->hasSpawned);
+						if(!$item->equals($oldItem, true) or $item->getCount() !== $oldItem->getCount()){
+							$this->inventory->setItemInHand($item, $this);
+							$this->inventory->sendHeldItem($this->hasSpawned);
+						}
 					}
 					break;
 				}
