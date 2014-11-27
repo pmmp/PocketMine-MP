@@ -1936,18 +1936,18 @@ class Level implements ChunkManager, Metadatable{
 		}
 		if($spawn instanceof Vector3){
 			$v = $spawn->floor();
-			for(; $v->y > 0; $v->y -= 2){
+			for(; $v->y > 0; --$v->y){
 				$b = $this->getBlock($v);
 				if($b === null){
 					return $spawn;
-				}elseif(!($b instanceof Air)){
-					$v->y += 1;
+				}elseif($b->isSolid){
+					$v->y++;
 					break;
 				}
 			}
 			for(; $v->y < 128; ++$v->y){
-				if($this->getBlock($v->getSide(1)) instanceof Air){
-					if($this->getBlock($v) instanceof Air){
+				if(!$this->getBlock($v->getSide(1))->isSolid){
+					if(!$this->getBlock($v)->isSolid){
 						return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
 					}
 				}else{
