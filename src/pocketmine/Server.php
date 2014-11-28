@@ -299,7 +299,7 @@ class Server{
 	 * @return int
 	 */
 	public function getViewDistance(){
-		return max(56, $this->getProperty("chunk-sending.max-chunks"));
+		return max(56, $this->getProperty("chunk-sending.max-chunks", 96));
 	}
 
 	/**
@@ -313,7 +313,7 @@ class Server{
 	 * @return string
 	 */
 	public function getServerName(){
-		return $this->getConfigString("motd", "Unknown server");
+		return $this->getConfigString("motd", "Minecraft: PE Server");
 	}
 
 	/**
@@ -1622,7 +1622,7 @@ class Server{
 			return;
 		}
 
-		foreach($this->getProperty("worlds", []) as $name => $worldSetting){
+		foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 			if($this->loadLevel($name) === false){
 				$seed = $this->getProperty("worlds.$name.seed", time());
 				$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
