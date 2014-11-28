@@ -1098,7 +1098,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$dz = $this->newPosition->z - $this->z;
 
 			//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
-			$revert = !$this->move($dx, $dy, $dz);
+			$this->move($dx, $dy, $dz);
 
 			$diffX = $this->x - $this->newPosition->x;
 			$diffZ = $this->z - $this->newPosition->z;
