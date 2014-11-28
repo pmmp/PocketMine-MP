@@ -926,64 +926,95 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function updateAllLight(Vector3 $pos){
-		$this->updateBlockSkyLight($pos);
-		$this->updateBlockLight($pos);
+		$start = microtime(true);
+		$this->updateBlockSkyLight($pos->x, $pos->y, $pos->z);
+		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
 	}
 
-	public function updateBlockSkyLight(Vector3 $pos){
-		$block = ($pos instanceof Block) ? $pos : $this->getBlock($pos);
+	public function updateBlockSkyLight($x, $y, $z){
+		//TODO
+	}
 
-		$current = $this->getBlockSkyLightAt($pos->x, $pos->y, $pos->z);
-		$decrease = ($block->isSolid and !$block->isTransparent) ? 15 : 0;
+	public function updateBlockLight($x, $y, $z){
+		$lightPropagationQueue = new \SplQueue();
+		$lightRemovalQueue = new \SplQueue();
+		$visited = [];
+		$removalVisited = [];
 
-		$calculatedLight = $this->computeBlockSkyLight($block, $current, $decrease);
+		$oldLevel = $this->getBlockLightAt($x, $y, $z);
+		$newLevel = (int) Block::$light[$this->getBlockIdAt($x, $y, $z)];
 
-		if($calculatedLight !== $current){
-			$this->setBlockSkyLightAt($block->x, $block->y, $block->z, $calculatedLight);
-			for($side = 0; $side <= 5; ++$side){
-				$this->updateBlockSkyLight($block->getSide($side));
+		if($oldLevel !== $newLevel){
+			$this->setBlockLightAt($x, $y, $z, $newLevel);
+			$visited["$x:$y:$z"] = true;
+			$lightPropagationQueue->enqueue(new Vector3($x, $y, $z));
+		}
+
+		if($newLevel < $oldLevel){
+			$removalVisited["$x:$y:$z"] = true;
+			$lightRemovalQueue->enqueue([new Vector3($x, $y, $z), $oldLevel]);
+		}
+
+		while(!$lightRemovalQueue->isEmpty()){
+			/** @var Vector3 $node */
+			$val = $lightRemovalQueue->dequeue();
+			$node = $val[0];
+			$lightLevel = $val[1];
+
+			$this->computeRemoveBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
+			$this->computeRemoveBlockLight($node->x + 1, $node->y, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
+			$this->computeRemoveBlockLight($node->x, $node->y - 1, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
+			$this->computeRemoveBlockLight($node->x, $node->y + 1, $node->z, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
+			$this->computeRemoveBlockLight($node->x, $node->y, $node->z - 1, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
+			$this->computeRemoveBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightRemovalQueue, $lightPropagationQueue, $removalVisited, $visited);
+		}
+
+		while(!$lightPropagationQueue->isEmpty()){
+			/** @var Vector3 $node */
+			$node = $lightPropagationQueue->dequeue();
+
+			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z);
+
+			$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+			$this->computeSpreadBlockLight($node->x + 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+			$this->computeSpreadBlockLight($node->x, $node->y - 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+			$this->computeSpreadBlockLight($node->x, $node->y + 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+			$this->computeSpreadBlockLight($node->x, $node->y, $node->z - 1, $lightLevel, $lightPropagationQueue, $visited);
+			$this->computeSpreadBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightPropagationQueue, $visited);
+		}
+	}
+
+	private function computeRemoveBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
+		$current = $this->getBlockLightAt($x, $y, $z);
+
+		if($current !== 0 and $current < $currentLight){
+			$this->setBlockLightAt($x, $y, $z, 0);
+
+			if(!isset($visited[$index = "$x:$y:$z"])){
+				$visited[$index] = true;
+				$queue->enqueue([new Vector3($x, $y, $z), $current]);
+			}
+		}elseif($current >= $currentLight){
+			if(!isset($spreadVisited[$index = "$x:$y:$z"])){
+				$spreadVisited[$index] = true;
+				$spreadQueue->enqueue(new Vector3($x, $y, $z));
 			}
 		}
 	}
 
-	public function updateBlockLight(Vector3 $pos){
-		$block = ($pos instanceof Block) ? $pos : $this->getBlock($pos);
+	private function computeSpreadBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, array &$visited){
+		$blockId = $this->getBlockIdAt($x, $y, $z);
+		$decrease = (Block::$solid[$blockId] and !Block::$transparent[$blockId]) ? 15 : 1;
+		$current = $this->getBlockLightAt($x, $y, $z);
 
-		$current = $this->getBlockLightAt($pos->x, $pos->y, $pos->z);
-		$decrease = ($block->isSolid and !$block->isTransparent) ? 15 : 1;
+		if($decrease < 15 and ($current + 2) <= $currentLight){
+			$this->setBlockLightAt($x, $y, $z, $currentLight - 1);
 
-		$calculatedLight = $this->computeBlockLight($block, $block->lightLevel, $decrease);
-
-		if($calculatedLight !== $current){
-			$this->setBlockLightAt($block->x, $block->y, $block->z, $calculatedLight);
-			for($side = 0; $side <= 5; ++$side){
-				$this->updateBlockLight($block->getSide($side));
+			if(!isset($visited[$index = "$x:$y:$z"])){
+				$visited[$index] = true;
+				$queue->enqueue(new Vector3($x, $y, $z));
 			}
 		}
-	}
-
-	protected function computeBlockLight(Vector3 $pos, $current, $decrease){
-		return max(
-			$current,
-			$this->getBlockLightAt($pos->x - 1, $pos->y, $pos->z) - $decrease,
-			$this->getBlockLightAt($pos->x + 1, $pos->y, $pos->z) - $decrease,
-			$this->getBlockLightAt($pos->x, $pos->y - 1, $pos->z) - $decrease,
-			$this->getBlockLightAt($pos->x, $pos->y + 1, $pos->z) - $decrease,
-			$this->getBlockLightAt($pos->x, $pos->y, $pos->z - 1) - $decrease,
-			$this->getBlockLightAt($pos->x, $pos->y, $pos->z + 1) - $decrease
-		);
-	}
-
-	protected function computeBlockSkyLight(Vector3 $pos, $current, $decrease){
-		return max(
-			$current,
-			$this->getBlockSkyLightAt($pos->x - 1, $pos->y, $pos->z) - $decrease,
-			$this->getBlockSkyLightAt($pos->x + 1, $pos->y, $pos->z) - $decrease,
-			$this->getBlockSkyLightAt($pos->x, $pos->y - 1, $pos->z) - $decrease,
-			$this->getBlockSkyLightAt($pos->x, $pos->y + 1, $pos->z) - $decrease,
-			$this->getBlockSkyLightAt($pos->x, $pos->y, $pos->z - 1) - $decrease,
-			$this->getBlockSkyLightAt($pos->x, $pos->y, $pos->z + 1) - $decrease
-		);
 	}
 
 	/**

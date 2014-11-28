@@ -528,6 +528,12 @@ class Block extends Position implements Metadatable{
 
 	/** @var \SplFixedArray */
 	public static $list = null;
+	/** @var \SplFixedArray */
+	public static $light = null;
+	/** @var \SplFixedArray */
+	public static $solid = null;
+	/** @var \SplFixedArray */
+	public static $transparent = null;
 	protected $id;
 	protected $meta;
 	protected $name = "Unknown";
@@ -555,6 +561,9 @@ class Block extends Position implements Metadatable{
 	public static function init(){
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(256);
+			self::$light = new \SplFixedArray(256);
+			self::$solid = new \SplFixedArray(256);
+			self::$transparent = new \SplFixedArray(256);
 			self::$list[self::AIR] = Air::class;;
 			self::$list[self::STONE] = Stone::class;;
 			self::$list[self::GRASS] = Grass::class;;
@@ -697,11 +706,21 @@ class Block extends Position implements Metadatable{
 			self::$list[self::FENCE_JUNGLE] = FenceJungle::class;
 			self::$list[self::FENCE_ACACIA] = FenceAcacia::class;
 
-			self::$list[self::PODZOL] = Podzol::class;;
-			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;;
-			self::$list[self::STONECUTTER] = Stonecutter::class;;
-			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;;
-			self::$list[self::NETHER_REACTOR] = NetherReactor::class;;
+			self::$list[self::PODZOL] = Podzol::class;
+			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
+			self::$list[self::STONECUTTER] = Stonecutter::class;
+			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;
+			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
+
+			foreach(self::$list as $class){
+				if($class !== null){
+					/** @var Block $block */
+					$block = new $class();
+					self::$solid[$block->getId()] = (bool) $block->isSolid;
+					self::$transparent[$block->getId()] = (bool) $block->isTransparent;
+					self::$light[$block->getId()] = (int) $block->lightLevel;
+				}
+			}
 		}
 	}
 
