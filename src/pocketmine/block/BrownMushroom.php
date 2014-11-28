@@ -26,6 +26,9 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 
 class BrownMushroom extends Flowable{
+
+	public $lightLevel = 1;
+
 	public function __construct(){
 		parent::__construct(self::BROWN_MUSHROOM, 0, "Brown Mushroom");
 		$this->hardness = 0;

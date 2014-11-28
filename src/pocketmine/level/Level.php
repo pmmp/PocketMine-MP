@@ -881,6 +881,20 @@ class Level implements ChunkManager, Metadatable{
 	}
 	*/
 
+	public function getFullLight(Vector3 $pos){
+		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, true);
+		$level = 0;
+		if($chunk instanceof FullChunk){
+			$level = $chunk->getBlockSkyLight($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f);
+			//TODO: decrease light level by time of day
+			if($level < 15){
+				$level = max($chunk->getBlockLight($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f));
+			}
+		}
+
+		return $level;
+	}
+
 	/**
 	 * Gets the Block object on the Vector3 location
 	 *
@@ -909,6 +923,67 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		return $this->blockCache[$index] = Block::get($blockId, $meta, $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z));
+	}
+
+	public function updateAllLight(Vector3 $pos){
+		$this->updateBlockSkyLight($pos);
+		$this->updateBlockLight($pos);
+	}
+
+	public function updateBlockSkyLight(Vector3 $pos){
+		$block = ($pos instanceof Block) ? $pos : $this->getBlock($pos);
+
+		$current = $this->getBlockSkyLightAt($pos->x, $pos->y, $pos->z);
+		$decrease = ($block->isSolid and !$block->isTransparent) ? 15 : 0;
+
+		$calculatedLight = $this->computeBlockSkyLight($block, $current, $decrease);
+
+		if($calculatedLight !== $current){
+			$this->setBlockSkyLightAt($block->x, $block->y, $block->z, $calculatedLight);
+			for($side = 0; $side <= 5; ++$side){
+				$this->updateBlockSkyLight($block->getSide($side));
+			}
+		}
+	}
+
+	public function updateBlockLight(Vector3 $pos){
+		$block = ($pos instanceof Block) ? $pos : $this->getBlock($pos);
+
+		$current = $this->getBlockLightAt($pos->x, $pos->y, $pos->z);
+		$decrease = ($block->isSolid and !$block->isTransparent) ? 15 : 1;
+
+		$calculatedLight = $this->computeBlockLight($block, $block->lightLevel, $decrease);
+
+		if($calculatedLight !== $current){
+			$this->setBlockLightAt($block->x, $block->y, $block->z, $calculatedLight);
+			for($side = 0; $side <= 5; ++$side){
+				$this->updateBlockLight($block->getSide($side));
+			}
+		}
+	}
+
+	protected function computeBlockLight(Vector3 $pos, $current, $decrease){
+		return max(
+			$current,
+			$this->getBlockLightAt($pos->x - 1, $pos->y, $pos->z) - $decrease,
+			$this->getBlockLightAt($pos->x + 1, $pos->y, $pos->z) - $decrease,
+			$this->getBlockLightAt($pos->x, $pos->y - 1, $pos->z) - $decrease,
+			$this->getBlockLightAt($pos->x, $pos->y + 1, $pos->z) - $decrease,
+			$this->getBlockLightAt($pos->x, $pos->y, $pos->z - 1) - $decrease,
+			$this->getBlockLightAt($pos->x, $pos->y, $pos->z + 1) - $decrease
+		);
+	}
+
+	protected function computeBlockSkyLight(Vector3 $pos, $current, $decrease){
+		return max(
+			$current,
+			$this->getBlockSkyLightAt($pos->x - 1, $pos->y, $pos->z) - $decrease,
+			$this->getBlockSkyLightAt($pos->x + 1, $pos->y, $pos->z) - $decrease,
+			$this->getBlockSkyLightAt($pos->x, $pos->y - 1, $pos->z) - $decrease,
+			$this->getBlockSkyLightAt($pos->x, $pos->y + 1, $pos->z) - $decrease,
+			$this->getBlockSkyLightAt($pos->x, $pos->y, $pos->z - 1) - $decrease,
+			$this->getBlockSkyLightAt($pos->x, $pos->y, $pos->z + 1) - $decrease
+		);
 	}
 
 	/**
@@ -973,6 +1048,8 @@ class Level implements ChunkManager, Metadatable{
 			}*/
 
 			if($update === true){
+				$this->updateAllLight($block);
+
 				$this->updateAround($pos);
 				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 				if(!$ev->isCancelled()){

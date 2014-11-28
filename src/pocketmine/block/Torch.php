@@ -26,6 +26,9 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 
 class Torch extends Flowable{
+
+	public $lightLevel = 15;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::TORCH, $meta, "Torch");
 		$this->hardness = 0;

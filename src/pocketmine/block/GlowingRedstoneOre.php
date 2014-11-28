@@ -25,6 +25,9 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 
 class GlowingRedstoneOre extends Solid{
+
+	public $lightLevel = 9;
+
 	public function __construct(){
 		parent::__construct(self::GLOWING_REDSTONE_ORE, 0, "Glowing Redstone Ore");
 		$this->hardness = 15;

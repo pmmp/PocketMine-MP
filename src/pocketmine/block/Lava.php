@@ -31,6 +31,8 @@ use pocketmine\Server;
 
 class Lava extends Liquid{
 
+	public $lightLevel = 15;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::LAVA, $meta, "Lava");
 		$this->hardness = 0;

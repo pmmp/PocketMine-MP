@@ -24,6 +24,9 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Glowstone extends Transparent{
+
+	public $lightLevel = 15;
+
 	public function __construct(){
 		parent::__construct(self::GLOWSTONE_BLOCK, 0, "Glowstone");
 		$this->hardness = 1.5;

@@ -24,6 +24,9 @@ namespace pocketmine\block;
 use pocketmine\math\AxisAlignedBB;
 
 class EndPortal extends Solid{
+
+	public $lightLevel = 1;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::END_PORTAL, $meta, "End Portal");
 		$this->hardness = 18000000;

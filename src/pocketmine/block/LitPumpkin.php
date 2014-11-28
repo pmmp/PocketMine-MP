@@ -25,6 +25,9 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class LitPumpkin extends Solid{
+
+	public $lightLevel = 15;
+
 	public function __construct(){
 		parent::__construct(self::LIT_PUMPKIN, "Jack o'Lantern");
 		$this->hardness = 5;

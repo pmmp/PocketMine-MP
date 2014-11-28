@@ -32,6 +32,9 @@ use pocketmine\tile\Furnace;
 use pocketmine\tile\Tile;
 
 class BurningFurnace extends Solid{
+
+	public $lightLevel = 13;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::BURNING_FURNACE, $meta, "Burning Furnace");
 		$this->isActivable = true;

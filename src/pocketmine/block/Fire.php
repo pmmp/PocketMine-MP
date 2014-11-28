@@ -32,6 +32,7 @@ use pocketmine\Server;
 class Fire extends Flowable{
 
 	public $hasEntityCollision = true;
+	public $lightLevel = 15;
 
 	public function __construct($meta = 0){
 		parent::__construct(self::FIRE, $meta, "Fire");

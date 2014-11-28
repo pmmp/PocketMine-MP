@@ -543,6 +543,7 @@ class Block extends Position implements Metadatable{
 	public $isPlaceable = true;
 	public $hasPhysics = false;
 	public $isFullBlock = true;
+	public $lightLevel = 0;
 	public $x = 0;
 	public $y = 0;
 	public $z = 0;

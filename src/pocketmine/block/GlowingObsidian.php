@@ -23,6 +23,9 @@ namespace pocketmine\block;
 
 
 class GlowingObsidian extends Solid{
+
+	public $lightLevel = 12;
+
 	public function __construct($meta = 0){
 		parent::__construct(self::GLOWING_OBSIDIAN, $meta, "Glowing Obsidian");
 	}
