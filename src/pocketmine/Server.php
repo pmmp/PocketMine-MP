@@ -1615,13 +1615,6 @@ class Server{
 		Generator::addGenerator(Normal::class, "normal");
 		Generator::addGenerator(Normal::class, "default");
 
-		//Temporal workaround, pthreads static property nullification test
-		if(PluginManager::$pluginParentTimer === null or Timings::$serverTickTimer === null){
-			$this->getLogger()->emergency("You are using an invalid pthreads version. Please update your binaries.");
-			kill(getmypid());
-			return;
-		}
-
 		foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 			if($this->loadLevel($name) === false){
 				$seed = $this->getProperty("worlds.$name.seed", time());
