@@ -514,7 +514,7 @@ class Level implements ChunkManager, Metadatable{
 						if(($mini & (1 << $Y)) === 0){
 							continue;
 						}
-						if(count($this->changedBlocks[$index][$Y]) < 582){ //Optimal value, calculated using the relation between minichunks and single packets
+						if(count($this->changedBlocks[$index][$Y]) < 256){
 							continue;
 						}else{
 							$X = null;
@@ -1056,7 +1056,7 @@ class Level implements ChunkManager, Metadatable{
 				Cache::remove("world:" . $this->getID() . ":" . $index);
 			}
 
-			//if($direct === true){
+			if($direct === true){
 				$pk = new UpdateBlockPacket();
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
@@ -1065,7 +1065,7 @@ class Level implements ChunkManager, Metadatable{
 				$pk->meta = $block->getDamage();
 
 				Server::broadcastPacket($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), $pk);
-			/*}else{
+			}else{
 				if(!($pos instanceof Position)){
 					$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 				}
@@ -1080,7 +1080,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->changedCount[$index] |= 1 << $Y;
 				}
 				$this->changedBlocks[$index][$Y][] = clone $block;
-			}*/
+			}
 
 			if($update === true){
 				$this->updateAllLight($block);

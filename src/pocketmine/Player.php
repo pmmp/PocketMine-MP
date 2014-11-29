@@ -1144,22 +1144,22 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$ev = new PlayerMoveEvent($this, $from, $to);
 
 				$this->server->getPluginManager()->callEvent($ev);
-			}
 
-			if(!($revert = $ev->isCancelled())){ //Yes, this is intended
-				if($to->distance($ev->getTo()) > 0.1){ //If plugins modify the destination
-					$this->teleport($ev->getTo());
-				}else{
-					$pk = new MovePlayerPacket();
-					$pk->eid = $this->id;
-					$pk->x = $this->x;
-					$pk->y = $this->y;
-					$pk->z = $this->z;
-					$pk->yaw = $this->yaw;
-					$pk->pitch = $this->pitch;
-					$pk->bodyYaw = $this->yaw;
+				if(!($revert = $ev->isCancelled())){ //Yes, this is intended
+					if($to->distance($ev->getTo()) > 0.1){ //If plugins modify the destination
+						$this->teleport($ev->getTo());
+					}else{
+						$pk = new MovePlayerPacket();
+						$pk->eid = $this->id;
+						$pk->x = $this->x;
+						$pk->y = $this->y;
+						$pk->z = $this->z;
+						$pk->yaw = $this->yaw;
+						$pk->pitch = $this->pitch;
+						$pk->bodyYaw = $this->yaw;
 
-					Server::broadcastPacket($this->hasSpawned, $pk);
+						Server::broadcastPacket($this->hasSpawned, $pk);
+					}
 				}
 			}
 		}
