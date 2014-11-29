@@ -1130,6 +1130,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
 
 		if(!$revert and ($delta > (1 / 16) or $deltaAngle > 10)){
+
+			$isFirst = ($this->lastX === null or $this->lastY === null or $this->lastZ === null);
+
 			$this->lastX = $to->x;
 			$this->lastY = $to->y;
 			$this->lastZ = $to->z;
@@ -1137,9 +1140,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->lastYaw = $to->yaw;
 			$this->lastPitch = $to->pitch;
 
-			$ev = new PlayerMoveEvent($this, $from, $to);
+			if(!$isFirst){
+				$ev = new PlayerMoveEvent($this, $from, $to);
 
-			$this->server->getPluginManager()->callEvent($ev);
+				$this->server->getPluginManager()->callEvent($ev);
+			}
 
 			if(!($revert = $ev->isCancelled())){ //Yes, this is intended
 				if($to->distance($ev->getTo()) > 0.1){ //If plugins modify the destination
@@ -1160,6 +1165,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		if($revert){
+
+			$this->lastX = $from->x;
+			$this->lastY = $from->y;
+			$this->lastZ = $from->z;
+
+			$this->lastYaw = $from->yaw;
+			$this->lastPitch = $from->pitch;
+
 			$pk = new MovePlayerPacket();
 			$pk->eid = 0;
 			$pk->x = $from->x;

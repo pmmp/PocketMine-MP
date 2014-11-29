@@ -90,9 +90,9 @@ abstract class Entity extends Location implements Metadatable{
 
 	protected $lastDamageCause = null;
 
-	public $lastX;
-	public $lastY;
-	public $lastZ;
+	public $lastX = null;
+	public $lastY = null;
+	public $lastZ = null;
 
 	public $motionX;
 	public $motionY;
