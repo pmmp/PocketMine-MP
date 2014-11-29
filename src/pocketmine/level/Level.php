@@ -926,7 +926,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function updateAllLight(Vector3 $pos){
-		$start = microtime(true);
 		$this->updateBlockSkyLight($pos->x, $pos->y, $pos->z);
 		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
 	}
@@ -946,13 +945,14 @@ class Level implements ChunkManager, Metadatable{
 
 		if($oldLevel !== $newLevel){
 			$this->setBlockLightAt($x, $y, $z, $newLevel);
-			$visited["$x:$y:$z"] = true;
-			$lightPropagationQueue->enqueue(new Vector3($x, $y, $z));
-		}
 
-		if($newLevel < $oldLevel){
-			$removalVisited["$x:$y:$z"] = true;
-			$lightRemovalQueue->enqueue([new Vector3($x, $y, $z), $oldLevel]);
+			if($newLevel < $oldLevel){
+				$removalVisited["$x:$y:$z"] = true;
+				$lightRemovalQueue->enqueue([new Vector3($x, $y, $z), $oldLevel]);
+			}else{
+				$visited["$x:$y:$z"] = true;
+				$lightPropagationQueue->enqueue(new Vector3($x, $y, $z));
+			}
 		}
 
 		while(!$lightRemovalQueue->isEmpty()){
@@ -973,14 +973,18 @@ class Level implements ChunkManager, Metadatable{
 			/** @var Vector3 $node */
 			$node = $lightPropagationQueue->dequeue();
 
-			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z);
+			$blockId = $this->getBlockIdAt($node->x, $node->y, $node->z);
+			$decrease = (Block::$solid[$blockId] and !Block::$transparent[$blockId]) ? 15 : 1;
+			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - $decrease;
 
-			$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-			$this->computeSpreadBlockLight($node->x + 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-			$this->computeSpreadBlockLight($node->x, $node->y - 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-			$this->computeSpreadBlockLight($node->x, $node->y + 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
-			$this->computeSpreadBlockLight($node->x, $node->y, $node->z - 1, $lightLevel, $lightPropagationQueue, $visited);
-			$this->computeSpreadBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightPropagationQueue, $visited);
+			if($lightLevel >= 1){
+				$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+				$this->computeSpreadBlockLight($node->x + 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+				$this->computeSpreadBlockLight($node->x, $node->y - 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+				$this->computeSpreadBlockLight($node->x, $node->y + 1, $node->z, $lightLevel, $lightPropagationQueue, $visited);
+				$this->computeSpreadBlockLight($node->x, $node->y, $node->z - 1, $lightLevel, $lightPropagationQueue, $visited);
+				$this->computeSpreadBlockLight($node->x, $node->y, $node->z + 1, $lightLevel, $lightPropagationQueue, $visited);
+			}
 		}
 	}
 
@@ -992,7 +996,9 @@ class Level implements ChunkManager, Metadatable{
 
 			if(!isset($visited[$index = "$x:$y:$z"])){
 				$visited[$index] = true;
-				$queue->enqueue([new Vector3($x, $y, $z), $current]);
+				if($current > 1){
+					$queue->enqueue([new Vector3($x, $y, $z), $current]);
+				}
 			}
 		}elseif($current >= $currentLight){
 			if(!isset($spreadVisited[$index = "$x:$y:$z"])){
@@ -1003,16 +1009,16 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	private function computeSpreadBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, array &$visited){
-		$blockId = $this->getBlockIdAt($x, $y, $z);
-		$decrease = (Block::$solid[$blockId] and !Block::$transparent[$blockId]) ? 15 : 1;
 		$current = $this->getBlockLightAt($x, $y, $z);
 
-		if($decrease < 15 and ($current + 2) <= $currentLight){
-			$this->setBlockLightAt($x, $y, $z, $currentLight - 1);
+		if($current < $currentLight){
+			$this->setBlockLightAt($x, $y, $z, $currentLight);
 
 			if(!isset($visited[$index = "$x:$y:$z"])){
 				$visited[$index] = true;
-				$queue->enqueue(new Vector3($x, $y, $z));
+				if($currentLight > 1){
+					$queue->enqueue(new Vector3($x, $y, $z));
+				}
 			}
 		}
 	}
