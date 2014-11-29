@@ -574,13 +574,13 @@ class Level implements ChunkManager, Metadatable{
 			$x = $player->x >> 4;
 			$z = $player->z >> 4;
 
-			$index = "$x:$z";
+			$index = Level::chunkHash($x, $z);
 			$existingPlayers = max(0, isset($this->chunkTickList[$index]) ? $this->chunkTickList[$index] : 0);
 			$this->chunkTickList[$index] = $existingPlayers + 1;
 			for($chunk = 0; $chunk < $chunksPerPlayer; ++$chunk){
 				$dx = mt_rand(-$randRange, $randRange);
 				$dz = mt_rand(-$randRange, $randRange);
-				$hash = ($dx + $x) .":". ($dz + $z);
+				$hash = Level::chunkHash($dx + $x, $dz + $z);
 				if(!isset($this->chunkTickList[$hash]) and $this->isChunkLoaded($dx + $x, $dz + $z)){
 					$this->chunkTickList[$hash] = -1;
 				}
@@ -973,9 +973,7 @@ class Level implements ChunkManager, Metadatable{
 			/** @var Vector3 $node */
 			$node = $lightPropagationQueue->dequeue();
 
-			$blockId = $this->getBlockIdAt($node->x, $node->y, $node->z);
-			$decrease = (Block::$solid[$blockId] and !Block::$transparent[$blockId]) ? 15 : 1;
-			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - $decrease;
+			$lightLevel = $this->getBlockLightAt($node->x, $node->y, $node->z) - (int) Block::$lightFilter[$this->getBlockIdAt($node->x, $node->y, $node->z)];
 
 			if($lightLevel >= 1){
 				$this->computeSpreadBlockLight($node->x - 1, $node->y, $node->z, $lightLevel, $lightPropagationQueue, $visited);
@@ -1666,7 +1664,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Chunk
 	 */
 	public function getChunk($x, $z, $create = false){
-		if(isset($this->chunks[$index = "$x:$z"])){
+		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
 			return $this->chunks[$index];
 		}elseif($this->loadChunk($x, $z, $create) and $this->chunks[$index] instanceof FullChunk){
 			return $this->chunks[$index];
@@ -1690,7 +1688,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
 		$oldChunk = $this->getChunk($x, $z);
-		unset($this->chunkGenerationQueue["$x:$z"]);
+		unset($this->chunkGenerationQueue[Level::chunkHash($x, $z)]);
 		$this->setChunk($x, $z, $chunk);
 		$chunk = $this->getChunk($x, $z);
 		if($chunk instanceof FullChunk and (!($oldChunk instanceof FullChunk) or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
@@ -1711,7 +1709,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunks[$index] = $chunk;
 		}
 		if(ADVANCED_CACHE == true){
-			Cache::remove("world:" . $this->getID() . ":$x:$z");
+			Cache::remove("world:" . $this->getID() . ":". Level::chunkHash($x, $z));
 		}
 		$chunk->setChanged();
 	}
@@ -1739,7 +1737,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isChunkLoaded($x, $z){
-		return isset($this->chunks["$x:$z"]) or $this->provider->isChunkLoaded($x, $z);
+		return isset($this->chunks[Level::chunkHash($x, $z)]) or $this->provider->isChunkLoaded($x, $z);
 	}
 
 	/**
@@ -2159,8 +2157,8 @@ class Level implements ChunkManager, Metadatable{
 
 
 	public function generateChunk($x, $z){
-		if(!isset($this->chunkGenerationQueue["$x:$z"])){
-			$this->chunkGenerationQueue["$x:$z"] = true;
+		if(!isset($this->chunkGenerationQueue[Level::chunkHash($x, $z)])){
+			$this->chunkGenerationQueue[Level::chunkHash($x, $z)] = true;
 			$this->server->getGenerationManager()->requestChunk($this, $x, $z);
 		}
 	}

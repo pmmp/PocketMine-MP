@@ -531,6 +531,8 @@ class Block extends Position implements Metadatable{
 	/** @var \SplFixedArray */
 	public static $light = null;
 	/** @var \SplFixedArray */
+	public static $lightFilter = null;
+	/** @var \SplFixedArray */
 	public static $solid = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
@@ -562,6 +564,7 @@ class Block extends Position implements Metadatable{
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(256);
 			self::$light = new \SplFixedArray(256);
+			self::$lightFilter = new \SplFixedArray(256);
 			self::$solid = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
 			self::$list[self::AIR] = Air::class;;
@@ -712,13 +715,29 @@ class Block extends Position implements Metadatable{
 			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;
 			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
 
-			foreach(self::$list as $class){
+			foreach(self::$list as $id => $class){
 				if($class !== null){
 					/** @var Block $block */
 					$block = new $class();
-					self::$solid[$block->getId()] = (bool) $block->isSolid;
-					self::$transparent[$block->getId()] = (bool) $block->isTransparent;
-					self::$light[$block->getId()] = (int) $block->lightLevel;
+					self::$solid[$id] = (bool) $block->isSolid;
+					self::$transparent[$id] = (bool) $block->isTransparent;
+					self::$light[$id] = (int) $block->lightLevel;
+
+					if($block->isSolid){
+						if($block->isTransparent){
+							if($block instanceof Liquid or $block instanceof Ice){
+								self::$lightFilter[$id] = 2;
+							}else{
+								self::$lightFilter[$id] = 1;
+							}
+						}else{
+							self::$lightFilter[$id] = 15;
+						}
+					}else{
+						self::$lightFilter[$id] = 1;
+					}
+				}else{
+					self::$lightFilter[$id] = 1;
 				}
 			}
 		}
