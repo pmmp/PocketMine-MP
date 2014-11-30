@@ -1175,8 +1175,8 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		if($pos instanceof Location){
-			$yaw = $pos->yaw;
-			$pitch = $pos->pitch;
+			$yaw = $yaw === null ? $pos->yaw : $yaw;
+			$pitch = $pitch === null ? $pos->pitch : $pitch;
 		}
 		$from = Position::fromObject($this, $this->level);
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
@@ -1191,6 +1191,17 @@ abstract class Entity extends Location implements Metadatable{
 		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch, true) !== false){
 			$this->fallDistance = 0;
 			$this->onGround = true;
+
+			$this->lastX = $this->x;
+			$this->lastY = $this->y;
+			$this->lastZ = $this->z;
+
+			$this->lastYaw = $this->yaw;
+			$this->lastPitch = $this->pitch;
+
+			foreach($this->hasSpawned as $player){
+				$player->addEntityMovement($this->getId(), $this->x, $this->y, $this->z, $this->yaw, $this->pitch);
+			}
 
 			return true;
 		}
