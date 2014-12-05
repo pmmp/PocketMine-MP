@@ -694,13 +694,13 @@ class PluginManager{
 			if(!$method->isStatic()){
 				$priority = EventPriority::NORMAL;
 				$ignoreCancelled = false;
-				if(preg_match("/^[\t ]*\\* @priority[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
+				if(preg_match("/^[\t ]*\\* @priority[\t ]{1,}([a-zA-Z]{1,})/m", (string) $method->getDocComment(), $matches) > 0){
 					$matches[1] = strtoupper($matches[1]);
 					if(defined(EventPriority::class . "::" . $matches[1])){
 						$priority = constant(EventPriority::class . "::" . $matches[1]);
 					}
 				}
-				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})$/m", (string) $method->getDocComment(), $matches) > 0){
+				if(preg_match("/^[\t ]*\\* @ignoreCancelled[\t ]{1,}([a-zA-Z]{1,})/m", (string) $method->getDocComment(), $matches) > 0){
 					$matches[1] = strtolower($matches[1]);
 					if($matches[1] === "false"){
 						$ignoreCancelled = false;
