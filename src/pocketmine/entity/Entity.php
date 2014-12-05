@@ -566,6 +566,13 @@ abstract class Entity extends Location implements Metadatable{
 			}
 		}
 
+		if($this->noDamageTicks > 0){
+			$this->noDamageTicks -= $tickDiff;
+			if($this->noDamageTicks < 0){
+				$this->noDamageTicks = 0;
+			}
+		}
+
 		$this->age += $tickDiff;
 		$this->ticksLived += $tickDiff;
 

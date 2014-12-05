@@ -69,7 +69,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		if($this->attackTime > 0){
+		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause instanceof EntityDamageEvent and $lastCause->getDamage() >= $damage){
 				if($source instanceof EntityDamageEvent){
@@ -82,6 +82,8 @@ abstract class Living extends Entity implements Damageable{
 				}else{
 					return;
 				}
+			}else{
+				return;
 			}
 		}elseif($source instanceof EntityDamageEvent){
 			$this->server->getPluginManager()->callEvent($source);
