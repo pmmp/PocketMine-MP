@@ -130,14 +130,14 @@ class Config{
 						$this->parseProperties($content);
 						break;
 					case Config::JSON:
-						$this->config = @json_decode($content, true);
+						$this->config = json_decode($content, true);
 						break;
 					case Config::YAML:
 						$content = self::fixYAMLIndexes($content);
 						$this->config = yaml_parse($content);
 						break;
 					case Config::SERIALIZED:
-						$this->config = @unserialize($content);
+						$this->config = unserialize($content);
 						break;
 					case Config::ENUM:
 						$this->parseList($content);
