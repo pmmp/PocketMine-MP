@@ -105,7 +105,7 @@ abstract class BaseFullChunk implements FullChunk{
 		}
 
 		if(count($heightMap) === 256){
-			$this->heightMap = 256;
+			$this->heightMap = $heightMap;
 		}else{
 			$this->heightMap = array_fill(0, 256, 127);
 		}

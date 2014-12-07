@@ -214,7 +214,7 @@ interface LevelProvider{
 	public function setSpawn(Vector3 $pos);
 
 	/**
-	 * @return Chunk
+	 * @return Chunk[]
 	 */
 	public function getLoadedChunks();
 

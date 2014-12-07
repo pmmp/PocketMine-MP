@@ -2206,6 +2206,12 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+		foreach($this->provider->getLoadedChunks() as $chunk){
+			if(!isset($this->chunks[Level::chunkHash($chunk->getX(), $chunk->getZ())])){
+				$this->provider->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+			}
+		}
+
 		$this->timings->doChunkGC->stopTiming();
 	}
 
