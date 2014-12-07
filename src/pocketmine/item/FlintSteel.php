@@ -30,8 +30,11 @@ use pocketmine\Player;
 class FlintSteel extends Tool{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::FLINT_STEEL, $meta, $count, "Flint and Steel");
-		$this->isActivable = true;
 	}
+
+    public function canBeActivated(){
+        return true;
+    }
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if(($player->gamemode & 0x01) === 0 and $this->useOn($block) and $this->getDamage() >= $this->getMaxDurability()){

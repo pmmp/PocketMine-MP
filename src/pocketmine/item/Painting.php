@@ -29,8 +29,11 @@ use pocketmine\Player;
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::PAINTING, 0, $count, "Painting");
-		$this->isActivable = true;
 	}
+
+    public function canBeActivated(){
+        return true;
+    }
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		if($target->isTransparent() === false and $face > 1 and $block->isSolid() === false){

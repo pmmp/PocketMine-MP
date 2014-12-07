@@ -1266,11 +1266,11 @@ class Level implements ChunkManager, Metadatable{
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
 				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
-				if($target->isActivable === true and $target->onActivate($item, $player) === true){
+				if($target->canBeActivated() === true and $target->onActivate($item, $player) === true){
 					return true;
 				}
 
-				if($item->isActivable and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
+				if($item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
 					if($item->getCount() <= 0){
 						$item = Item::get(Item::AIR, 0, 0);
 
@@ -1278,7 +1278,7 @@ class Level implements ChunkManager, Metadatable{
 					}
 				}
 			}
-		}elseif($target->isActivable === true and $target->onActivate($item, $player) === true){
+		}elseif($target->canBeActivated() === true and $target->onActivate($item, $player) === true){
 			return true;
 		}
 

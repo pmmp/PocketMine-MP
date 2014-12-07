@@ -34,8 +34,11 @@ abstract class Tool extends Item{
 
 	public function __construct($id, $meta = 0, $count = 1, $name = "Unknown"){
 		parent::__construct($id, $meta, $count, $name);
-		$this->maxStackSize = 1;
 	}
+
+    public function getMaxStackSize(){
+        return 1;
+    }
 
 	/**
 	 * TODO: Move this to each item

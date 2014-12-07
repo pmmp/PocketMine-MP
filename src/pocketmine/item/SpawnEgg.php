@@ -33,10 +33,12 @@ use pocketmine\Player;
 
 class SpawnEgg extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::SPAWN_EGG, 0, $count, "Spawn Egg");
-		$this->meta = $meta;
-		$this->isActivable = true;
+		parent::__construct(self::SPAWN_EGG, $meta, $count, "Spawn Egg");
 	}
+
+    public function canBeActivated(){
+        return true;
+    }
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$entity = null;

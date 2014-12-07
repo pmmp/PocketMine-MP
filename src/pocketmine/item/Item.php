@@ -373,7 +373,7 @@ class Item{
 	const CARROT = 391;
 	const CARROTS = 391;
 	const POTATO = 392;
-	const POTATOES = 392; //@shoghicp Why the heck do we need plural redundant Item ID here????
+	const POTATOES = 392;
 	const BAKED_POTATO = 393;
 	const BAKED_POTATOES = 393;
 
@@ -396,10 +396,12 @@ class Item{
 	protected $id;
 	protected $meta;
 	public $count;
-	protected $maxStackSize = 64;
 	protected $durability = 0;
 	protected $name;
-	public $isActivable = false;
+
+    public function canBeActivated(){
+        return false;
+    }
 
 	public static function init(){
 		if(self::$list === null){
@@ -425,6 +427,7 @@ class Item{
 			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
 			self::$list[self::DIAMOND] = Diamond::class;
 			self::$list[self::STICK] = Stick::class;
+            self::$list[self::SNOWBALL] = Snowball::class;
 			self::$list[self::BOWL] = Bowl::class;
 			self::$list[self::FEATHER] = Feather::class;
 			self::$list[self::BRICK] = Brick::class;
@@ -514,16 +517,16 @@ class Item{
 			if(!isset($b[1])){
 				$meta = 0;
 			}else{
-				$meta = ((int) $b[1]) & 0xFFFF;
+				$meta = $b[1] & 0xFFFF;
 			}
 
 			if(defined(Item::class . "::" . strtoupper($b[0]))){
 				$item = self::get(constant(Item::class . "::" . strtoupper($b[0])), $meta);
 				if($item->getId() === self::AIR and strtoupper($b[0]) !== "AIR"){
-					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
+					$item = self::get($b[0] & 0xFFFF, $meta);
 				}
 			}else{
-				$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
+				$item = self::get($b[0] & 0xFFFF, $meta);
 			}
 
 			return $item;
@@ -538,9 +541,6 @@ class Item{
 		if(!isset($this->block) and $this->id <= 0xff and isset(Block::$list[$this->id])){
 			$this->block = Block::get($this->id, $this->meta);
 			$this->name = $this->block->getName();
-		}
-		if($this->isTool() !== false){
-			$this->maxStackSize = 1;
 		}
 	}
 
@@ -581,8 +581,8 @@ class Item{
 		$this->meta = $meta !== null ? $meta & 0xFFFF : null;
 	}
 
-	final public function getMaxStackSize(){
-		return $this->maxStackSize;
+	public function getMaxStackSize(){
+		return 64;
 	}
 
 	final public function getFuelTime(){
