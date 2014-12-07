@@ -1224,24 +1224,9 @@ class Server{
 	 * @return mixed
 	 */
 	public function getProperty($variable, $defaultValue = null){
-		$vars = explode(".", $variable);
-		$base = array_shift($vars);
-		if($this->config->exists($base)){
-			$base = $this->config->get($base);
-		}else{
-			return $defaultValue;
-		}
+		$value = $this->config->getNested($variable);
 
-		while(count($vars) > 0){
-			$baseKey = array_shift($vars);
-			if(is_array($base) and isset($base[$baseKey])){
-				$base = $base[$baseKey];
-			}else{
-				return $defaultValue;
-			}
-		}
-
-		return $base;
+		return $value === null ? $defaultValue : $value;
 	}
 
 	/**
