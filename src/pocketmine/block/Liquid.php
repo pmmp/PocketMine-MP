@@ -210,7 +210,7 @@ abstract class Liquid extends Transparent{
 
 				if($this->adjacentSources >= 2 and $this instanceof Water){
 					$bottomBlock = $this->getSide(0);
-					if($bottomBlock->isSolid){
+					if($bottomBlock->isSolid()){
 						$k = 0;
 					}elseif($bottomBlock instanceof Water and $bottomBlock->getDamage() === 0){
 						$k = 0;

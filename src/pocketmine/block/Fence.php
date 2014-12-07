@@ -62,7 +62,7 @@ class Fence extends Transparent{
 	}
 
 	public function canConnect(Block $block){
-		return (!($block instanceof Fence) and !($block instanceof FenceGate)) ? $block->isSolid : true;
+		return (!($block instanceof Fence) and !($block instanceof FenceGate)) ? $block->isSolid() : true;
 	}
 
 }

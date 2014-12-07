@@ -57,7 +57,7 @@ class Carpet extends Flowable{
             14 => "Red Carpet",
             15 => "Black Carpet",
         ];
-        return $names[$this->meta];
+        return $names[$this->meta & 0x0f];
     }
 
 	protected function recalculateBoundingBox(){

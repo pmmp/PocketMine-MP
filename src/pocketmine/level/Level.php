@@ -1293,17 +1293,17 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if(!($block->isReplaceable === true or ($hand->getID() === Item::SLAB and $block->getID() === Item::SLAB))){
+		if(!($block->canBeReplaced() === true or ($hand->getID() === Item::SLAB and $block->getID() === Item::SLAB))){
 			return false;
 		}
 
-		if($target->isReplaceable === true){
+		if($target->canBeReplaced() === true){
 			$block = $target;
 			$hand->position($block);
 			//$face = -1;
 		}
 
-		if($hand->isSolid === true and $hand->getBoundingBox() !== null){
+		if($hand->isSolid() === true and $hand->getBoundingBox() !== null){
 			$entities = $this->getCollidingEntities($hand->getBoundingBox());
 			$realCount = 0;
 			foreach($entities as $e){
@@ -2052,14 +2052,14 @@ class Level implements ChunkManager, Metadatable{
 				$b = $this->getBlock($v);
 				if($b === null){
 					return $spawn;
-				}elseif($b->isSolid){
+				}elseif($b->isSolid()){
 					$v->y++;
 					break;
 				}
 			}
 			for(; $v->y < 128; ++$v->y){
-				if(!$this->getBlock($v->getSide(1))->isSolid){
-					if(!$this->getBlock($v)->isSolid){
+				if(!$this->getBlock($v->getSide(1))->isSolid()){
+					if(!$this->getBlock($v)->isSolid()){
 						return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
 					}
 				}else{

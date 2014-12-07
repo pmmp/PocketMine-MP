@@ -109,7 +109,7 @@ class Bed extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
-		if($down->isTransparent === false){
+		if($down->isTransparent() === false){
 			$faces = [
 				0 => 3,
 				1 => 4,
@@ -119,7 +119,7 @@ class Bed extends Transparent{
 			$d = $player instanceof Player ? $player->getDirection() : 0;
 			$next = $this->getSide($faces[(($d + 3) % 4)]);
 			$downNext = $this->getSide(0);
-			if($next->isReplaceable === true and $downNext->isTransparent === false){
+			if($next->canBeReplaced() === true and $downNext->isTransparent() === false){
 				$meta = (($d + 3) % 4) & 0x03;
 				$this->getLevel()->setBlock($block, Block::get($this->id, $meta), true, true);
 				$this->getLevel()->setBlock($next, Block::get($this->id, $meta | 0x08), true, true);

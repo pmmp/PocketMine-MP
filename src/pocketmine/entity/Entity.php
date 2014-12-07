@@ -809,7 +809,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$bb = $block->getBoundingBox();
 
-		if($bb !== null and $block->isSolid and !$block->isTransparent and $bb->intersectsWith($this->getBoundingBox())){
+		if($bb !== null and $block->isSolid() and !$block->isTransparent() and $bb->intersectsWith($this->getBoundingBox())){
 			return true;
 		}
 		return false;
@@ -1053,7 +1053,7 @@ abstract class Entity extends Location implements Metadatable{
 			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
 				for($v->y = $minY; $v->y <= $maxY; ++$v->y){
 					$block = $this->level->getBlock($v);
-					if($block !== null and $block->hasEntityCollision){
+					if($block !== null and $block->hasEntityCollision()){
 						$block->onEntityCollide($this);
 						if(!($this instanceof Player)){
 							$block->addVelocityToEntity($this, $vector);

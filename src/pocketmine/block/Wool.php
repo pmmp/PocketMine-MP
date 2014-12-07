@@ -53,7 +53,7 @@ class Wool extends Solid{
             14 => "Red Wool",
             15 => "Black Wool",
         ];
-        return $names[$this->meta];
+        return $names[$this->meta & 0x0f];
     }
 
 }

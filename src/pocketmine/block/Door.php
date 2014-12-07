@@ -222,7 +222,7 @@ abstract class Door extends Transparent{
 		if($face === 1){
 			$blockUp = $this->getSide(1);
 			$blockDown = $this->getSide(0);
-			if($blockUp->isReplaceable === false or $blockDown->isTransparent === true){
+			if($blockUp->canBeReplaced() === false or $blockDown->isTransparent() === true){
 				return false;
 			}
 			$direction = $player instanceof Player ? $player->getDirection() : 0;
@@ -235,7 +235,7 @@ abstract class Door extends Transparent{
 			$next = $this->getSide($face[(($direction + 2) % 4)]);
 			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;
-			if($next->getID() === $this->id or ($next2->isTransparent === false and $next->isTransparent === true)){ //Door hinge
+			if($next->getID() === $this->id or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
 

@@ -103,7 +103,7 @@ class Ladder extends Transparent{
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isTransparent === false){
+		if($target->isTransparent() === false){
 			$faces = [
 				2 => 2,
 				3 => 3,

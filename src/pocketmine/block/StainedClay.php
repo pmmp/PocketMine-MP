@@ -54,7 +54,7 @@ class StainedClay extends Solid{
             14 => "Red Stained Clay",
             15 => "Black Stained Clay",
         ];
-        return $names[$this->meta];
+        return $names[$this->meta & 0x0f];
     }
 
 	public function getBreakTime(Item $item){

@@ -98,7 +98,7 @@ class Item extends Entity{
 			$friction = 1 - $this->drag;
 
 			if($this->onGround and ($this->motionX != 0 or $this->motionZ != 0)){
-				$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->frictionFactor * $friction;
+				$friction = $this->getLevel()->getBlock(new Vector3($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()))->getFrictionFactor() * $friction;
 			}
 
 			$this->motionX *= $friction;

@@ -76,7 +76,7 @@ class Sugarcane extends Flowable{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->isTransparent === true and $down->getID() !== self::SUGARCANE_BLOCK){
+			if($down->isTransparent() === true and $down->getID() !== self::SUGARCANE_BLOCK){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;

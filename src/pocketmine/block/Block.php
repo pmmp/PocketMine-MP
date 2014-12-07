@@ -554,7 +554,6 @@ class Block extends Position implements Metadatable{
 	 */
 	public function __get($key){
 		static $map = [
-			"breakTime" => "getBreakTime",
 			"hardness" => "getHardness",
 			"lightLevel" => "getLightLevel",
 			"frictionFactor" => "getFrictionFactor",
@@ -885,7 +884,7 @@ class Block extends Position implements Metadatable{
 	}
 
 	/**
-	 * AKA: Block->isReplaceable
+	 * AKA: Block->canBeReplaced()
 	 *
 	 * @return bool
 	 */
@@ -955,7 +954,7 @@ class Block extends Position implements Metadatable{
 	 * @param int $meta
 	 */
 	final public function setDamage($meta){
-		$this->meta = $meta & 0x0F;
+		$this->meta = $meta & 0x0f;
 	}
 
 	/**
