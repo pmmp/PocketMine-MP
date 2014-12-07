@@ -103,17 +103,26 @@ class PlayerInventory extends BaseInventory{
 	public function setHeldItemSlot($slot){
 		if($slot >= -1 and $slot < $this->getSize()){
 			$item = $this->getItem($slot);
+
+            $itemIndex = $this->getHeldItemIndex();
+
+            for($i = 0; $i < $this->getHotbarSize(); ++$i){
+                if($this->getHotbarSlotIndex($i) === $slot){
+                    $itemIndex = $i;
+                    break;
+                }
+            }
+
 			if($this->getHolder() instanceof Player){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $this->itemInHandIndex));
+				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $itemIndex));
 				if($ev->isCancelled()){
 					$this->sendHeldItem($this->getHolder());
-
 					return;
 				}
 			}
 
-			$this->setHotbarSlotIndex($this->itemInHandIndex, $slot);
-			$this->sendHeldItem($this->getHolder()->getViewers());
+			$this->setHotbarSlotIndex($itemIndex, $slot);
+            $this->setHeldItemIndex($itemIndex);
 		}
 	}
 
