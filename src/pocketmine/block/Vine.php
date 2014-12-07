@@ -30,14 +30,27 @@ use pocketmine\Player;
 
 class Vine extends Transparent{
 
-	public $hasEntityCollision = true;
+	protected $id = self::VINE;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::VINE, $meta, "Vines");
-		$this->isSolid = false;
-		$this->isFullBlock = false;
-		$this->hardness = 1;
+		$this->meta = $meta;
 	}
+
+    public function isSolid(){
+        return false;
+    }
+
+    public function getName(){
+        return "Vines";
+    }
+
+    public function getHardness(){
+        return 1;
+    }
+
+    public function hasEntityCollision(){
+        return true;
+    }
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;

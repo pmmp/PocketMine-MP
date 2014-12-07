@@ -24,16 +24,26 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Sandstone extends Solid{
+
+    protected $id = self::SANDSTONE;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::SANDSTONE, $meta, "Sandstone");
-		$names = [
-			0 => "Sandstone",
-			1 => "Chiseled Sandstone",
-			2 => "Smooth Sandstone",
-		];
-		$this->name = $names[$this->meta & 0x03];
-		$this->hardness = 4;
+		$this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 4;
+    }
+
+    public function getName(){
+        static $names = [
+            0 => "Sandstone",
+            1 => "Chiseled Sandstone",
+            2 => "Smooth Sandstone",
+            3 => "",
+        ];
+        return $names[$this->meta & 0x03];
+    }
 
 	public function getBreakTime(Item $item){
 

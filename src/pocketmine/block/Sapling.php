@@ -32,26 +32,32 @@ class Sapling extends Flowable{
 	const SPRUCE = 1;
 	const BIRCH = 2;
 	const JUNGLE = 3;
-	const BURN_TIME = 5;
+    const ACACIA = 4;
+    const DARK_OAK = 5;
 
-	public function __construct($meta = Sapling::OAK){
-		parent::__construct(self::SAPLING, $meta, "Sapling");
-		$this->isActivable = true;
-		$names = [
-			0 => "Oak Sapling",
-			1 => "Spruce Sapling",
-			2 => "Birch Sapling",
-			3 => "Jungle Sapling",
-			4 => "Acacia Sapling",
-			5 => "Dark Oak Sapling",
-		];
-		$this->name = $names[$this->meta & 0x07];
-		$this->hardness = 0;
+    protected $id = self::SAPLING;
+
+	public function __construct($meta = 0){
+        $this->meta = 0;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
+    public function canBeActivated(){
+        return true;
+    }
+
+    public function getName(){
+        static $names = [
+            0 => "Oak Sapling",
+            1 => "Spruce Sapling",
+            2 => "Birch Sapling",
+            3 => "Jungle Sapling",
+            4 => "Acacia Sapling",
+            5 => "Dark Oak Sapling",
+            6 => "",
+            7 => "",
+        ];
+		return $names[$this->meta & 0x07];
+    }
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

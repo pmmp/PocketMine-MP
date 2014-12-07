@@ -23,8 +23,15 @@ namespace pocketmine\block;
 
 
 class SandstoneStairs extends Stair{
+
+    protected $id = self::SANDSTONE_STAIRS;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::SANDSTONE_STAIRS, $meta, "Sandstone Stairs");
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Sandstone Stairs";
+    }
 
 }

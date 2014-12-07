@@ -29,13 +29,24 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 class Cake extends Transparent{
+
+    protected $id = self::CAKE_BLOCK;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::CAKE_BLOCK, 0, "Cake Block");
-		$this->isFullBlock = false;
-		$this->isActivable = true;
-		$this->meta = $meta & 0x07;
-		$this->hardness = 2.5;
+        $this->meta = $meta & 0x07;
 	}
+
+    public function canBeActivated(){
+        return true;
+    }
+
+    public function getHardness(){
+        return 2.5;
+    }
+
+    public function getName(){
+        return "Cake Block";
+    }
 
 	protected function recalculateBoundingBox(){
 

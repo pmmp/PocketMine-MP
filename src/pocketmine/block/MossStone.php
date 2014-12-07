@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class MossStone extends Solid{
+
+    protected $id = self::MOSS_STONE;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::MOSS_STONE, $meta, "Moss Stone");
-		$this->hardness = 30;
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Moss Stone";
+    }
+
+    public function getHardness(){
+        return 30;
+    }
 
 	public function getBreakTime(Item $item){
 

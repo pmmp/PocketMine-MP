@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Cobblestone extends Solid{
+
+    protected $id = self::COBBLESTONE;
+
 	public function __construct(){
-		parent::__construct(self::COBBLESTONE, 0, "Cobblestone");
-		$this->hardness = 30;
+
 	}
+
+    public function getName(){
+        return "Cobblestone";
+    }
+
+    public function getHardness(){
+        return 30;
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

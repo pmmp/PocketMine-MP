@@ -27,15 +27,9 @@ use pocketmine\Player;
 
 abstract class Stair extends Transparent{
 
-	public function __construct($id, $meta = 0, $name = "Unknown"){
-		parent::__construct($id, $meta, $name);
-		if(($this->meta & 0x04) === 0x04){
-			$this->isFullBlock = true;
-		}else{
-			$this->isFullBlock = false;
-		}
-		$this->hardness = 30;
-	}
+    public function getHardness(){
+        return 30;
+    }
 
 	/*
 	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){

@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Glass extends Transparent{
-	public function __construct(){
-		parent::__construct(self::GLASS, 0, "Glass");
-		$this->hardness = 1.5;
+
+    protected $id = self::GLASS;
+
+    public function __construct(){
+
 	}
+
+    public function getName(){
+        return "Glass";
+    }
+
+    public function getHardness(){
+        return 1.5;
+    }
 
 	public function getDrops(Item $item){
 		return [];

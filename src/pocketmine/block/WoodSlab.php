@@ -26,24 +26,30 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class WoodSlab extends Transparent{
+
+    protected $id = self::WOOD_SLAB;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::WOOD_SLAB, $meta, "Wooden Slab");
-		$names = [
-			0 => "Oak",
-			1 => "Spruce",
-			2 => "Birch",
-			3 => "Jungle",
-			4 => "Acacia",
-			5 => "Dark Oak",
-		];
-		$this->name = (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
-		if(($this->meta & 0x08) === 0x08){
-			$this->isFullBlock = true;
-		}else{
-			$this->isFullBlock = false;
-		}
-		$this->hardness = 15;
+		$this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function getName(){
+        static $names = [
+            0 => "Oak",
+            1 => "Spruce",
+            2 => "Birch",
+            3 => "Jungle",
+            4 => "Acacia",
+            5 => "Dark Oak",
+            6 => "",
+            7 => ""
+        ];
+        return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
+    }
 
 	protected function recalculateBoundingBox(){
 

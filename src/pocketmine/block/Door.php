@@ -30,10 +30,14 @@ use pocketmine\Server;
 
 
 abstract class Door extends Transparent{
-	public function __construct($id, $meta = 0, $name = "Unknown"){
-		parent::__construct($id, $meta, $name);
-		$this->isSolid = false;
-	}
+
+    public function canBeActivated(){
+        return true;
+    }
+
+    public function isSolid(){
+        return false;
+    }
 
 	private function getFullDamage(){
 		$damage = $this->getDamage();

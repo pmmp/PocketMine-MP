@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Clay extends Solid{
+
+    protected $id = self::CLAY_BLOCK;
+
 	public function __construct(){
-		parent::__construct(self::CLAY_BLOCK, 0, "Clay Block");
-		$this->hardness = 3;
+
 	}
+
+    public function getHardness(){
+        return 3;
+    }
+
+    public function getName(){
+        return "Clay Block";
+    }
 
 	public function getDrops(Item $item){
 		return [

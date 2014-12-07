@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Ice extends Transparent{
+
+    protected $id = self::ICE;
+
 	public function __construct(){
-		parent::__construct(self::ICE, 0, "Ice");
-		$this->hardness = 2.5;
+
 	}
+
+    public function getName(){
+        return "Ice";
+    }
+
+    public function getHardness(){
+        return 2.5;
+    }
 
 	public function onBreak(Item $item){
 		$this->getLevel()->setBlock($this, new Water(), true);

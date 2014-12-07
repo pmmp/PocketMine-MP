@@ -29,14 +29,16 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 class Sugarcane extends Flowable{
+
+    protected $id = self::SUGARCANE_BLOCK;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::SUGARCANE_BLOCK, $meta, "Sugarcane");
-		$this->hardness = 0;
+		$this->meta = $meta;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
+    public function getName(){
+        return "Sugarcane";
+    }
 
 
 	public function getDrops(Item $item){

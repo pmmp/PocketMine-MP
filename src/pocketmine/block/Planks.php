@@ -30,18 +30,28 @@ class Planks extends Solid{
 	const ACACIA = 4;
 	const DARK_OAK = 5;
 
+    protected $id = self::WOODEN_PLANKS;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::PLANKS, $meta, "Wood Planks");
-		$names = [
-			self::OAK => "Oak Wood Planks",
-			self::SPRUCE => "Spruce Wood Planks",
-			self::BIRCH => "Birch Wood Planks",
-			self::JUNGLE => "Jungle Wood Planks",
-			self::ACACIA => "Acacia Wood Planks",
-			self::DARK_OAK => "Jungle Wood Planks",
-		];
-		$this->name = $names[$this->meta & 0x07];
-		$this->hardness = 15;
+		$this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function getName(){
+        static $names = [
+            self::OAK => "Oak Wood Planks",
+            self::SPRUCE => "Spruce Wood Planks",
+            self::BIRCH => "Birch Wood Planks",
+            self::JUNGLE => "Jungle Wood Planks",
+            self::ACACIA => "Acacia Wood Planks",
+            self::DARK_OAK => "Jungle Wood Planks",
+            "",
+            ""
+        ];
+        return $names[$this->meta & 0x07];
+    }
 
 }

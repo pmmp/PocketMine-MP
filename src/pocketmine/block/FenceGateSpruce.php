@@ -23,14 +23,10 @@ namespace pocketmine\block;
 
 
 class FenceGateSpruce extends FenceGate{
-	public function __construct($meta = 0){
-		Transparent::__construct(self::FENCE_GATE_SPRUCE, $meta, "Spruce Fence Gate");
-		$this->isActivable = true;
-		if(($this->meta & 0x04) === 0x04){
-			$this->isFullBlock = true;
-		}else{
-			$this->isFullBlock = false;
-		}
-		$this->hardness = 15;
-	}
+
+    protected $id = self::FENCE_GATE_SPRUCE;
+
+    public function getName(){
+        return "Spruce Fence Gate";
+    }
 }

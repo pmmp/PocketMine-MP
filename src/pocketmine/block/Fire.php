@@ -31,20 +31,31 @@ use pocketmine\Server;
 
 class Fire extends Flowable{
 
-	public $hasEntityCollision = true;
-	public $lightLevel = 15;
+    protected $id = self::FIRE;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::FIRE, $meta, "Fire");
-		$this->isReplaceable = true;
-		$this->breakable = false;
-		$this->isFullBlock = true;
-		$this->hardness = 0;
+        $this->meta = $meta;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
+    public function hasEntityCollision(){
+        return true;
+    }
+
+    public function getName(){
+        return "Fire Block";
+    }
+
+	public function getLightLevel(){
+        return 15;
+    }
+
+    public function isBreakable(Item $item){
+        return false;
+    }
+
+    public function canBeReplaced(){
+        return true;
+    }
 
 	public function onEntityCollide(Entity $entity){
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);

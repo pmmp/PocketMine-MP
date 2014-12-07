@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class LapisOre extends Solid{
+
+    protected $id = self::LAPIS_ORE;
+
 	public function __construct(){
-		parent::__construct(self::LAPIS_ORE, 0, "Lapis Ore");
-		$this->hardness = 15;
+
 	}
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function getName(){
+        return "Lapis Ore";
+    }
 
 	public function getBreakTime(Item $item){
 

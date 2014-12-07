@@ -27,31 +27,38 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Carpet extends Flowable{
+
+    protected $id = self::CARPET;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::CARPET, $meta, "Carpet");
-		$names = [
-			0 => "White Carpet",
-			1 => "Orange Carpet",
-			2 => "Magenta Carpet",
-			3 => "Light Blue Carpet",
-			4 => "Yellow Carpet",
-			5 => "Lime Carpet",
-			6 => "Pink Carpet",
-			7 => "Gray Carpet",
-			8 => "Light Gray Carpet",
-			9 => "Cyan Carpet",
-			10 => "Purple Carpet",
-			11 => "Blue Carpet",
-			12 => "Brown Carpet",
-			13 => "Green Carpet",
-			14 => "Red Carpet",
-			15 => "Black Carpet",
-		];
-		$this->name = $names[$this->meta];
-		$this->hardness = 0;
-		$this->isFullBlock = false;
-		$this->isSolid = true;
+		$this->meta = $meta;
 	}
+
+    public function isSolid(){
+        return true;
+    }
+
+    public function getName(){
+        static $names = [
+            0 => "White Carpet",
+            1 => "Orange Carpet",
+            2 => "Magenta Carpet",
+            3 => "Light Blue Carpet",
+            4 => "Yellow Carpet",
+            5 => "Lime Carpet",
+            6 => "Pink Carpet",
+            7 => "Gray Carpet",
+            8 => "Light Gray Carpet",
+            9 => "Cyan Carpet",
+            10 => "Purple Carpet",
+            11 => "Blue Carpet",
+            12 => "Brown Carpet",
+            13 => "Green Carpet",
+            14 => "Red Carpet",
+            15 => "Black Carpet",
+        ];
+        return $names[$this->meta];
+    }
 
 	protected function recalculateBoundingBox(){
 

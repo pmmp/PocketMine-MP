@@ -24,17 +24,26 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class StoneBricks extends Solid{
+
+    protected $id = self::STONE_BRICKS;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::STONE_BRICKS, $meta, "Stone Bricks");
-		$names = [
-			0 => "Stone Bricks",
-			1 => "Mossy Stone Bricks",
-			2 => "Cracked Stone Bricks",
-			3 => "Chiseled Stone Bricks",
-		];
-		$this->name = $names[$this->meta & 0x03];
-		$this->hardness = 30;
+        $this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 30;
+    }
+
+    public function getName(){
+        static $names = [
+            0 => "Stone Bricks",
+            1 => "Mossy Stone Bricks",
+            2 => "Cracked Stone Bricks",
+            3 => "Chiseled Stone Bricks",
+        ];
+        return $names[$this->meta & 0x03];
+    }
 
 	public function getBreakTime(Item $item){
 

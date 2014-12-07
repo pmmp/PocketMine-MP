@@ -23,9 +23,19 @@ namespace pocketmine\block;
 
 
 class Snow extends Solid{
+
+    protected $id = self::SNOW_BLOCK;
+
 	public function __construct(){
-		parent::__construct(self::SNOW_BLOCK, 0, "Snow Block");
-		$this->hardness = 1;
+
 	}
+
+    public function getHardness(){
+        return 1;
+    }
+
+    public function getName(){
+        return "Snow Block";
+    }
 
 }

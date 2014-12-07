@@ -25,13 +25,22 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 
 class Farmland extends Solid{
+
+    protected $id = self::FARMLAND;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::FARMLAND, $meta, "Farmland");
-		$this->hardness = 3;
+        $this->meta = $meta;
 	}
 
-	protected function recalculateBoundingBox(){
+    public function getName(){
+        return "Farmland";
+    }
 
+    public function getHardness(){
+        return 3;
+    }
+
+	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x,
 			$this->y,

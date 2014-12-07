@@ -26,16 +26,24 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class FenceGate extends Transparent{
+
+    protected $id = self::FENCE_GATE;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::FENCE_GATE, $meta, "Oak Fence Gate");
-		$this->isActivable = true;
-		if(($this->meta & 0x04) === 0x04){
-			$this->isFullBlock = true;
-		}else{
-			$this->isFullBlock = false;
-		}
-		$this->hardness = 15;
+        $this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Oak Fence Gate";
+    }
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function canBeActivated(){
+        return true;
+    }
 
 
 	protected function recalculateBoundingBox(){
@@ -93,11 +101,6 @@ class FenceGate extends Transparent{
 			3 => 2,
 		];
 		$this->meta = ($faces[$player instanceof Player ? $player->getDirection() : 0] & 0x03) | ((~$this->meta) & 0x04);
-		if(($this->meta & 0x04) === 0x04){
-			$this->isFullBlock = true;
-		}else{
-			$this->isFullBlock = false;
-		}
 		$this->getLevel()->setBlock($this, $this, true);
 
 		return true;

@@ -25,12 +25,23 @@ use pocketmine\item\Item;
 
 class Glowstone extends Transparent{
 
-	public $lightLevel = 15;
+    protected $id = self::GLOWSTONE_BLOCK;
 
 	public function __construct(){
-		parent::__construct(self::GLOWSTONE_BLOCK, 0, "Glowstone");
-		$this->hardness = 1.5;
+
 	}
+
+    public function getName(){
+        return "Glowstone";
+    }
+
+    public function getHardness(){
+        return 1.5;
+    }
+
+    public function getLightLevel(){
+        return 15;
+    }
 
 	public function getDrops(Item $item){
 		return [

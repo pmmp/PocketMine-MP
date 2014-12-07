@@ -26,12 +26,24 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 
 class SignPost extends Transparent{
+
+    protected $id = self::SIGN_POST;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::SIGN_POST, $meta, "Sign Post");
-		$this->isSolid = false;
-		$this->isFullBlock = false;
-		$this->hardness = 5;
+		$this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 5;
+    }
+
+    public function isSolid(){
+        return false;
+    }
+
+    public function getName(){
+        return "Sign Post";
+    }
 
 	public function getBoundingBox(){
 		return null;

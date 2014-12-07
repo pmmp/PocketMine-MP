@@ -29,14 +29,27 @@ use pocketmine\Player;
 
 class Ladder extends Transparent{
 
-	public $hasEntityCollision = true;
+	protected $id = self::LADDER;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::LADDER, $meta, "Ladder");
-		$this->isSolid = false;
-		$this->isFullBlock = false;
-		$this->hardness = 2;
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Ladder";
+    }
+
+    public function hasEntityCollision(){
+        return true;
+    }
+
+    public function isSolid(){
+        return false;
+    }
+
+    public function getHardness(){
+        return 2;
+    }
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;

@@ -24,9 +24,16 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class WoodStairs extends Stair{
+
+    protected $id = self::WOOD_STAIRS;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::WOOD_STAIRS, $meta, "Wood Stairs");
+        $this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Wood Stairs";
+    }
 
 	public function getBreakTime(Item $item){
 

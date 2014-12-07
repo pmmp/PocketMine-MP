@@ -25,10 +25,20 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 
 class RedstoneOre extends Solid{
+
+    protected $id = self::REDSTONE_ORE;
+
 	public function __construct(){
-		parent::__construct(self::REDSTONE_ORE, 0, "Redstone Ore");
-		$this->hardness = 15;
+
 	}
+
+    public function getName(){
+        return "Redstone Ore";
+    }
+
+    public function getHardness(){
+        return 15;
+    }
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL or $type === Level::BLOCK_UPDATE_TOUCH){

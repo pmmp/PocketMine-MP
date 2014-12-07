@@ -26,15 +26,23 @@ use pocketmine\Player;
 
 class Dirt extends Solid{
 
-	public $isActivable = true;
-	protected $hardness = 2.5;
 	protected $id = self::DIRT;
-	protected $meta = 0;
-	protected $name = "Dirt";
 
 	public function __construct(){
 
 	}
+
+    public function canBeActivated(){
+        return true;
+    }
+
+    public function getHardness(){
+        return 2.5;
+    }
+
+    public function getName(){
+        return "Dirt";
+    }
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->isHoe()){

@@ -26,14 +26,16 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 
 class RedMushroom extends Flowable{
+
+    protected $id = self::RED_MUSHROOM;
+
 	public function __construct(){
-		parent::__construct(self::RED_MUSHROOM, 0, "Red Mushroom");
-		$this->hardness = 0;
+
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
+	public function getName(){
+        return "Red Mushroom";
+    }
 
 
 	public function onUpdate($type){

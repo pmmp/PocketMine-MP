@@ -23,14 +23,10 @@ namespace pocketmine\block;
 
 
 class FenceGateAcacia extends FenceGate{
-	public function __construct($meta = 0){
-		Transparent::__construct(self::FENCE_GATE_ACACIA, $meta, "Acacia Fence Gate");
-		$this->isActivable = true;
-		if(($this->meta & 0x04) === 0x04){
-			$this->isFullBlock = true;
-		}else{
-			$this->isFullBlock = false;
-		}
-		$this->hardness = 15;
-	}
+
+    protected $id = self::FENCE_GATE_ACACIA;
+
+    public function getName(){
+        return "Acacia Fence Gate";
+    }
 }

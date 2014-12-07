@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Netherrack extends Solid{
+
+    protected $id = self::NETHERRACK;
+    
 	public function __construct(){
-		parent::__construct(self::NETHERRACK, 0, "Netherrack");
-		$this->hardness = 2;
+
 	}
+
+    public function getName(){
+        return "Netherrack";
+    }
+
+    public function getHardness(){
+        return 2;
+    }
 
 	public function getBreakTime(Item $item){
 

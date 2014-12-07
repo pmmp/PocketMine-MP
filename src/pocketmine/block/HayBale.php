@@ -25,10 +25,20 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class HayBale extends Solid{
+
+    protected $id = self::HAY_BALE;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::HAY_BALE, $meta, "Hay Bale");
-		$this->hardness = 10;
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Hay Bale";
+    }
+
+    public function getHardness(){
+        return 10;
+    }
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = [

@@ -28,12 +28,22 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 
 abstract class Liquid extends Transparent{
-	public $hasEntityCollision = true;
 
-	public $breakable = false;
-	public $isReplaceable = true;
-	public $isSolid = false;
-	public $isFullBlock = true;
+    public function hasEntityCollision(){
+        return true;
+    }
+
+    public function isBreakable(Item $item){
+        return false;
+    }
+
+    public function canBeReplaced(){
+        return true;
+    }
+
+    public function isSolid(){
+        return false;
+    }
 
 	public $adjacentSources = 0;
 	public $isOptimalFlowDirection = [0, 0, 0, 0];
@@ -102,7 +112,7 @@ abstract class Liquid extends Transparent{
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
-				if(!$sideBlock->isFlowable){
+				if(!$sideBlock->canBeFlowedInto()){
 					continue;
 				}
 
@@ -123,21 +133,21 @@ abstract class Liquid extends Transparent{
 		if($this->getDamage() >= 8){
 			$falling = false;
 
-			if(!$this->getLevel()->getBlock($this->add(0, 0, -1))->isFlowable){
+			if(!$this->getLevel()->getBlock($this->add(0, 0, -1))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(0, 0, 1))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(0, 0, 1))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(-1, 0, 0))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(-1, 0, 0))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(1, 0, 0))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(1, 0, 0))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(0, 1, -1))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(0, 1, -1))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(0, 1, 1))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(0, 1, 1))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(-1, 1, 0))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(-1, 1, 0))->canBeFlowedInto()){
 				$falling = true;
-			}elseif(!$this->getLevel()->getBlock($this->add(1, 1, 0))->isFlowable){
+			}elseif(!$this->getLevel()->getBlock($this->add(1, 1, 0))->canBeFlowedInto()){
 				$falling = true;
 			}
 
@@ -230,7 +240,7 @@ abstract class Liquid extends Transparent{
 
 			$bottomBlock = $this->getSide(0);
 
-			if($bottomBlock->isFlowable or $bottomBlock instanceof Liquid){
+			if($bottomBlock->canBeFlowedInto() or $bottomBlock instanceof Liquid){
 				if($this instanceof Lava and $bottomBlock instanceof Water){
 					$this->getLevel()->setBlock($bottomBlock, Block::get(Item::STONE), true);
 					return;
@@ -243,7 +253,7 @@ abstract class Liquid extends Transparent{
 					$this->getLevel()->setBlock($bottomBlock, Block::get($this->id, $decay + 8), true);
 					$this->getLevel()->scheduleUpdate($bottomBlock, $this->tickRate());
 				}
-			}elseif($decay >= 0 and ($decay === 0 or !$bottomBlock->isFlowable)){
+			}elseif($decay >= 0 and ($decay === 0 or !$bottomBlock->canBeFlowedInto())){
 				$flags = $this->getOptimalFlowDirections();
 
 				$l = $decay + $multiplier;
@@ -280,7 +290,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	private function flowIntoBlock(Block $block, $newFlowDecay){
-		if($block->isFlowable){
+		if($block->canBeFlowedInto()){
 			if($block->getID() > 0){
 				$this->getLevel()->useBreakOn($block);
 			}
@@ -315,11 +325,11 @@ abstract class Liquid extends Transparent{
 				}
 				$blockSide = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
-				if(!$blockSide->isFlowable and !($blockSide instanceof Liquid)){
+				if(!$blockSide->canBeFlowedInto() and !($blockSide instanceof Liquid)){
 					continue;
 				}elseif($blockSide instanceof Liquid and $blockSide->getDamage() === 0){
 					continue;
-				}elseif($blockSide->getSide(0)->isFlowable){
+				}elseif($blockSide->getSide(0)->canBeFlowedInto()){
 					return $accumulatedCost;
 				}
 
@@ -357,11 +367,11 @@ abstract class Liquid extends Transparent{
 			}
 			$block = $this->getLevel()->getBlock(new Vector3($x, $y, $z));
 
-			if(!$block->isFlowable and !($block instanceof Liquid)){
+			if(!$block->canBeFlowedInto() and !($block instanceof Liquid)){
 				continue;
 			}elseif($block instanceof Liquid and $block->getDamage() === 0){
 				continue;
-			}elseif($block->getSide(0)->isFlowable){
+			}elseif($block->getSide(0)->canBeFlowedInto()){
 				$this->flowCost[$j] = 0;
 			}else{
 				$this->flowCost[$j] = $this->calculateFlowCost($block, 1, $j);

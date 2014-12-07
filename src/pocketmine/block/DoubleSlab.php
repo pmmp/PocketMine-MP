@@ -24,21 +24,30 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class DoubleSlab extends Solid{
+
+    protected $id = self::DOUBLE_SLAB;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::DOUBLE_SLAB, $meta, "Double Slab");
-		$names = [
-			0 => "Stone",
-			1 => "Sandstone",
-			2 => "Wooden",
-			3 => "Cobblestone",
-			4 => "Brick",
-			5 => "Stone Brick",
-			6 => "Quartz",
-			7 => "",
-		];
-		$this->name = "Double " . $names[$this->meta & 0x07] . " Slab";
-		$this->hardness = 30;
+        $this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 30;
+    }
+
+    public function getName(){
+        static $names = [
+            0 => "Stone",
+            1 => "Sandstone",
+            2 => "Wooden",
+            3 => "Cobblestone",
+            4 => "Brick",
+            5 => "Stone Brick",
+            6 => "Quartz",
+            7 => "",
+        ];
+        return "Double " . $names[$this->meta & 0x07] . " Slab";
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

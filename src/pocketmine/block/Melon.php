@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Melon extends Transparent{
+
+    protected $id = self::MELON_BLOCK;
+
 	public function __construct(){
-		parent::__construct(self::MELON_BLOCK, 0, "Melon Block");
-		$this->hardness = 5;
+
 	}
+
+    public function getName(){
+        return "Melon Block";
+    }
+
+    public function getHardness(){
+        return 5;
+    }
 
 	public function getDrops(Item $item){
 		return [

@@ -24,8 +24,15 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class AcaciaWoodStairs extends Stair{
+
+	protected $id = self::ACACIA_WOOD_STAIRS;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::ACACIA_WOOD_STAIRS, $meta, "Acacia Wood Stairs");
+		$this->meta = $meta;
+	}
+
+	public function getName(){
+		return "Acacia Wood Stairs";
 	}
 
 	public function getDrops(Item $item){

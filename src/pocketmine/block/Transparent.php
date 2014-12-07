@@ -24,11 +24,8 @@ namespace pocketmine\block;
 
 
 abstract class Transparent extends Block{
-	public $isActivable = false;
-	public $breakable = true;
-	public $isFlowable = false;
-	public $isTransparent = true;
-	public $isReplaceable = false;
-	public $isPlaceable = true;
-	public $isSolid = true;
+
+    public function isTransparent(){
+        return true;
+    }
 }

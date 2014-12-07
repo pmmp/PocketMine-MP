@@ -25,16 +25,28 @@ namespace pocketmine\block;
 use pocketmine\math\AxisAlignedBB;
 
 class StoneWall extends Transparent{
+
+    protected $id = self::STONE_WALL;
+
 	public function __construct($meta = 0){
-		$meta &= 0x01;
-		parent::__construct(self::STONE_WALL, $meta, "Cobblestone Wall");
-		if($meta === 1){
-			$this->name = "Mossy Cobblestone Wall";
-		}
-		$this->isFullBlock = false;
-		$this->isSolid = false;
-		$this->hardness = 30;
+        $this->meta = $meta;
 	}
+
+    public function isSolid(){
+        return false;
+    }
+
+    public function getHardness(){
+        return 30;
+    }
+
+    public function getName(){
+        if($this->meta === 0x01){
+            return "Mossy Cobblestone Wall";
+        }
+
+        return "Cobblestone Wall";
+    }
 
 	protected function recalculateBoundingBox(){
 

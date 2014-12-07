@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Lapis extends Solid{
+
+    protected $id = self::LAPIS_BLOCK;
+
 	public function __construct(){
-		parent::__construct(self::LAPIS_BLOCK, 0, "Lapis Block");
-		$this->hardness = 15;
+
 	}
+
+    public function getName(){
+        return "Lapis Block";
+    }
+
+    public function getHardness(){
+        return 15;
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

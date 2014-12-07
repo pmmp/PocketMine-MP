@@ -26,12 +26,23 @@ use pocketmine\level\Level;
 
 class GlowingRedstoneOre extends Solid{
 
-	public $lightLevel = 9;
+	protected $id = self::GLOWING_REDSTONE_ORE;
 
 	public function __construct(){
-		parent::__construct(self::GLOWING_REDSTONE_ORE, 0, "Glowing Redstone Ore");
-		$this->hardness = 15;
+
 	}
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function getName(){
+        return "Glowing Redstone Ore";
+    }
+
+    public function getLightLevel(){
+        return 9;
+    }
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){

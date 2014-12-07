@@ -23,9 +23,19 @@ namespace pocketmine\block;
 
 
 class Bookshelf extends Solid{
+
+    protected $id = self::BOOKSHELF;
+
 	public function __construct(){
-		parent::__construct(self::BOOKSHELF, 0, "Bookshelf");
-		$this->hardness = 7.5;
+
 	}
+
+    public function getName(){
+        return "Bookshelf";
+    }
+
+    public function getHardness(){
+        return 7.5;
+    }
 
 }

@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Obsidian extends Solid{
+
+    protected $id = self::OBSIDIAN;
+
 	public function __construct(){
-		parent::__construct(self::OBSIDIAN, 0, "Obsidian");
-		$this->hardness = 6000;
+
 	}
+
+    public function getName(){
+        return "Obsidian";
+    }
+
+    public function getHardness(){
+        return 6000;
+    }
 
 	public function getBreakTime(Item $item){
 

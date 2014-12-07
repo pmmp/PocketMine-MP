@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class DiamondOre extends Solid{
+
+    protected $id = self::DIAMOND_ORE;
+
 	public function __construct(){
-		parent::__construct(self::DIAMOND_ORE, 0, "Diamond Ore");
-		$this->hardness = 15;
+
 	}
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function getName(){
+        return "Diamond Ore";
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

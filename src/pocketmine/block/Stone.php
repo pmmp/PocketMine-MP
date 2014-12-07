@@ -33,23 +33,30 @@ class Stone extends Solid{
 	const ANDESITE = 5;
 	const POLISHED_ANDESITE = 6;
 
-	protected $hardness = 30;
 	protected $id = self::STONE;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
-		$names = [
-			self::NORMAL => "Stone",
-			self::GRANITE => "Granite",
-			self::POLISHED_GRANITE => "Polished Granite",
-			self::DIORITE => "Diorite",
-			self::POLISHED_DIORITE => "Polished Diorite",
-			self::ANDESITE => "Andesite",
-			self::POLISHED_ANDESITE => "Polished Andesite",
-			7 => "Unknown Stone",
-		];
-		$this->name = $names[$this->meta & 0x07];
+
 	}
+
+    public function getHardness(){
+        return 30;
+    }
+
+    public function getName(){
+        static $names = [
+            self::NORMAL => "Stone",
+            self::GRANITE => "Granite",
+            self::POLISHED_GRANITE => "Polished Granite",
+            self::DIORITE => "Diorite",
+            self::POLISHED_DIORITE => "Polished Diorite",
+            self::ANDESITE => "Andesite",
+            self::POLISHED_ANDESITE => "Polished Andesite",
+            7 => "Unknown Stone",
+        ];
+        return $names[$this->meta & 0x07];
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

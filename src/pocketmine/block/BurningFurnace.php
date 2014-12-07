@@ -33,13 +33,27 @@ use pocketmine\tile\Tile;
 
 class BurningFurnace extends Solid{
 
-	public $lightLevel = 13;
+	protected $id = self::BURNING_FURNACE;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::BURNING_FURNACE, $meta, "Burning Furnace");
-		$this->isActivable = true;
-		$this->hardness = 17.5;
+        $this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Burning Furnace";
+    }
+
+    public function canBeActivated(){
+        return true;
+    }
+
+    public function getHardness(){
+        return 17.5;
+    }
+
+    public function getLightLevel(){
+        return 13;
+    }
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = [

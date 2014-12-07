@@ -28,12 +28,24 @@ use pocketmine\network\protocol\ChatPacket;
 use pocketmine\Player;
 
 class Bed extends Transparent{
-	public function __construct($type = 0){
-		parent::__construct(self::BED_BLOCK, $type, "Bed Block");
-		$this->isActivable = true;
-		$this->isFullBlock = false;
-		$this->hardness = 1;
+
+    protected $id = self::BED_BLOCK;
+
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
+
+    public function canBeActivated(){
+        return true;
+    }
+
+    public function getHardness(){
+        return 1;
+    }
+
+    public function getName(){
+        return "Bed Block";
+    }
 
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(

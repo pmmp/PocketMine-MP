@@ -29,15 +29,19 @@ use pocketmine\Server;
 
 class Leaves2 extends Leaves{
 
+    protected $id = self::LEAVES2;
+
 	public function __construct($meta = 0){
-		Transparent::__construct(self::LEAVES, $meta, "Leaves");
-		$names = [
-			self::ACACIA => "Acacia Leaves",
-			self::DARK_OAK => "Dark Oak Leaves",
-		];
-		$this->name = $names[$this->meta & 0x03];
-		$this->hardness = 1;
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        static $names = [
+            self::ACACIA => "Acacia Leaves",
+            self::DARK_OAK => "Dark Oak Leaves",
+        ];
+        return $names[$this->meta & 0x01];
+    }
 
 	private function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
 		++$check;

@@ -31,12 +31,23 @@ use pocketmine\Server;
 
 class Lava extends Liquid{
 
-	public $lightLevel = 15;
+	protected $id = self::LAVA;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::LAVA, $meta, "Lava");
-		$this->hardness = 0;
+		$this->meta = $meta;
 	}
+
+    public function getLightLevel(){
+        return 15;
+    }
+
+    public function getName(){
+        return "Lava";
+    }
+
+    public function getHardness(){
+        return 0;
+    }
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;

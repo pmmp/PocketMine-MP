@@ -22,9 +22,10 @@
 namespace pocketmine\block;
 
 class FenceAcacia extends Fence{
-	public function __construct(){
-		Transparent::__construct(self::FENCE_ACACIA, 0, "Acacia Fence");
-		$this->isFullBlock = false;
-		$this->hardness = 15;
-	}
+
+    protected $id = self::FENCE_ACACIA;
+
+	public function getName(){
+        return "Acacia Fence";
+    }
 }

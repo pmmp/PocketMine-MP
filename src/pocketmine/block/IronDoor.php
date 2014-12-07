@@ -24,11 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class IronDoor extends Door{
+
+    protected $id = self::IRON_DOOR_BLOCK;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::IRON_DOOR_BLOCK, $meta, "Iron Door Block");
-		//$this->isActivable = true;
-		$this->hardness = 25;
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Iron Door Block";
+    }
+
+    public function getHardness(){
+        return 25;
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

@@ -26,20 +26,30 @@ use pocketmine\item\Item;
 
 class Cobweb extends Flowable{
 
-	public $hasEntityCollision = true;
+	protected $id = self::COBWEB;
 
 	public function __construct(){
-		parent::__construct(self::COBWEB, 0, "Cobweb");
-		$this->isSolid = true;
-		$this->isFullBlock = false;
-		$this->hardness = 25;
+
 	}
+
+    public function hasEntityCollision(){
+        return true;
+    }
+
+    public function getName(){
+        return "Cobweb";
+    }
+
+    public function getHardness(){
+        return 25;
+    }
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;
 	}
 
 	public function getDrops(Item $item){
+        //TODO: correct drops
 		return [];
 	}
 }

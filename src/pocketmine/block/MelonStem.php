@@ -27,8 +27,15 @@ use pocketmine\level\Level;
 use pocketmine\Server;
 
 class MelonStem extends Crops{
+
+    protected $id = self::MELON_STEM;
+
+    public function getName(){
+        return "Melon Stem";
+    }
+
 	public function __construct($meta = 0){
-		parent::__construct(self::MELON_STEM, $meta, "Melon Stem");
+		$this->meta = $meta;
 	}
 
 	public function onUpdate($type){

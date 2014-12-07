@@ -35,17 +35,25 @@ class Leaves extends Transparent{
 	const ACACIA = 0;
 	const DARK_OAK = 1;
 
+    protected $id = self::LEAVES;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::LEAVES, $meta, "Leaves");
-		$names = [
-			self::OAK => "Oak Leaves",
-			self::SPRUCE => "Spruce Leaves",
-			self::BIRCH => "Birch Leaves",
-			self::JUNGLE => "Jungle Leaves",
-		];
-		$this->name = $names[$this->meta & 0x03];
-		$this->hardness = 1;
+		$this->meta = $meta;
 	}
+
+    public function getHardness(){
+        return 1;
+    }
+
+    public function getName(){
+        static $names = [
+            self::OAK => "Oak Leaves",
+            self::SPRUCE => "Spruce Leaves",
+            self::BIRCH => "Birch Leaves",
+            self::JUNGLE => "Jungle Leaves",
+        ];
+        return $names[$this->meta & 0x03];
+    }
 
 	private function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
 		++$check;

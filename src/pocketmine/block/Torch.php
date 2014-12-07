@@ -27,16 +27,19 @@ use pocketmine\Player;
 
 class Torch extends Flowable{
 
-	public $lightLevel = 15;
+    protected $id = self::TORCH;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::TORCH, $meta, "Torch");
-		$this->hardness = 0;
+		$this->meta = $meta;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
+    public function getLightLevel(){
+        return 15;
+    }
+
+    public function getName(){
+        return "Torch";
+    }
 
 
 	public function onUpdate($type){

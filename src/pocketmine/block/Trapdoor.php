@@ -26,16 +26,24 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Trapdoor extends Transparent{
+
+    protected $id = self::TRAPDOOR;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::TRAPDOOR, $meta, "Trapdoor");
-		$this->isActivable = true;
-		if(($this->meta & 0x04) === 0x04){
-			$this->isFullBlock = false;
-		}else{
-			$this->isFullBlock = true;
-		}
-		$this->hardness = 15;
+        $this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Trapdoor";
+    }
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function canBeActivated(){
+        return true;
+    }
 
 	protected function recalculateBoundingBox(){
 

@@ -24,11 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Bedrock extends Solid{
+
+    protected $id = self::BEDROCK;
+
 	public function __construct(){
-		parent::__construct(self::BEDROCK, 0, "Bedrock");
-		$this->breakable = false;
-		$this->hardness = 18000000;
+
 	}
+
+    public function getName(){
+        return "Bedrock";
+    }
+
+    public function getHardness(){
+        return 18000000;
+    }
 
 	public function isBreakable(Item $item){
 		return false;

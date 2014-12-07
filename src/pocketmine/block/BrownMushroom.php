@@ -27,12 +27,19 @@ use pocketmine\Player;
 
 class BrownMushroom extends Flowable{
 
-	public $lightLevel = 1;
+	protected $id = self::BROWN_MUSHROOM;
 
-	public function __construct(){
-		parent::__construct(self::BROWN_MUSHROOM, 0, "Brown Mushroom");
-		$this->hardness = 0;
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Brown Mushroom";
+    }
+
+    public function getLightLevel(){
+        return 1;
+    }
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){

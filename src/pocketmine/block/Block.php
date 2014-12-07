@@ -180,7 +180,7 @@ class Block extends Position implements Metadatable{
 
 	const NETHER_BRICKS_STAIRS = 114;
 
-	const END_PORTAL = 120;
+	const END_PORTAL_FRAME = 120;
 	const END_STONE = 121;
 
 	const SANDSTONE_STAIRS = 128;
@@ -536,29 +536,39 @@ class Block extends Position implements Metadatable{
 	public static $solid = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
+
 	protected $id;
-	protected $meta;
-	protected $name = "Unknown";
-	protected $breakTime = 0.20;
-	protected $hardness = 10;
-	public $hasEntityCollision = false;
-	public $isActivable = false;
-	public $breakable = true;
-	public $isFlowable = false;
-	public $isSolid = true;
-	public $isTransparent = false;
-	public $isReplaceable = false;
-	public $isPlaceable = true;
-	public $hasPhysics = false;
-	public $isFullBlock = true;
-	public $lightLevel = 0;
-	public $x = 0;
-	public $y = 0;
-	public $z = 0;
-	public $frictionFactor = 0.6;
+	protected $meta = 0;
 
 	/** @var AxisAlignedBB */
 	protected $boundingBox = null;
+
+	/**
+	 * Backwards-compatibility with old way to define block properties
+	 *
+	 * @deprecated
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
+	public function __get($key){
+		static $map = [
+			"breakTime" => "getBreakTime",
+			"hardness" => "getHardness",
+			"lightLevel" => "getLightLevel",
+			"frictionFactor" => "getFrictionFactor",
+			"name" => "getName",
+			"isPlaceable" => "canBePlaced",
+			"isReplaceable" => "canBeReplaced",
+			"isTransparent" => "isTransparent",
+			"isSolid" => "isSolid",
+			"isFlowable" => "canBeFlowedInto",
+			"isActivable" => "canBeActivated",
+			"hasEntityCollision" => "hasEntityCollision"
+		];
+		return isset($map[$key]) ? $this->{$map[$key]}() : null;
+	}
 
 	public static function init(){
 		if(self::$list === null){
@@ -567,136 +577,136 @@ class Block extends Position implements Metadatable{
 			self::$lightFilter = new \SplFixedArray(256);
 			self::$solid = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
-			self::$list[self::AIR] = Air::class;;
-			self::$list[self::STONE] = Stone::class;;
-			self::$list[self::GRASS] = Grass::class;;
-			self::$list[self::DIRT] = Dirt::class;;
-			self::$list[self::COBBLESTONE] = Cobblestone::class;;
-			self::$list[self::PLANKS] = Planks::class;;
-			self::$list[self::SAPLING] = Sapling::class;;
-			self::$list[self::BEDROCK] = Bedrock::class;;
-			self::$list[self::WATER] = Water::class;;
-			self::$list[self::STILL_WATER] = StillWater::class;;
-			self::$list[self::LAVA] = Lava::class;;
-			self::$list[self::STILL_LAVA] = StillLava::class;;
-			self::$list[self::SAND] = Sand::class;;
-			self::$list[self::GRAVEL] = Gravel::class;;
-			self::$list[self::GOLD_ORE] = GoldOre::class;;
-			self::$list[self::IRON_ORE] = IronOre::class;;
-			self::$list[self::COAL_ORE] = CoalOre::class;;
-			self::$list[self::WOOD] = Wood::class;;
-			self::$list[self::LEAVES] = Leaves::class;;
-			self::$list[self::SPONGE] = Sponge::class;;
-			self::$list[self::GLASS] = Glass::class;;
-			self::$list[self::LAPIS_ORE] = LapisOre::class;;
-			self::$list[self::LAPIS_BLOCK] = Lapis::class;;
-			self::$list[self::SANDSTONE] = Sandstone::class;;
-			self::$list[self::BED_BLOCK] = Bed::class;;
-			self::$list[self::COBWEB] = Cobweb::class;;
-			self::$list[self::TALL_GRASS] = TallGrass::class;;
-			self::$list[self::DEAD_BUSH] = DeadBush::class;;
-			self::$list[self::WOOL] = Wool::class;;
-			self::$list[self::DANDELION] = Dandelion::class;;
-			self::$list[self::POPPY] = CyanFlower::class;;
-			self::$list[self::BROWN_MUSHROOM] = BrownMushroom::class;;
-			self::$list[self::RED_MUSHROOM] = RedMushroom::class;;
-			self::$list[self::GOLD_BLOCK] = Gold::class;;
-			self::$list[self::IRON_BLOCK] = Iron::class;;
-			self::$list[self::DOUBLE_SLAB] = DoubleSlab::class;;
-			self::$list[self::SLAB] = Slab::class;;
-			self::$list[self::BRICKS_BLOCK] = Bricks::class;;
-			self::$list[self::TNT] = TNT::class;;
-			self::$list[self::BOOKSHELF] = Bookshelf::class;;
-			self::$list[self::MOSS_STONE] = MossStone::class;;
-			self::$list[self::OBSIDIAN] = Obsidian::class;;
-			self::$list[self::TORCH] = Torch::class;;
-			self::$list[self::FIRE] = Fire::class;;
-			self::$list[self::MONSTER_SPAWNER] = MonsterSpawner::class;;
-			self::$list[self::WOOD_STAIRS] = WoodStairs::class;;
-			self::$list[self::CHEST] = Chest::class;;
+			self::$list[self::AIR] = Air::class;
+			self::$list[self::STONE] = Stone::class;
+			self::$list[self::GRASS] = Grass::class;
+			self::$list[self::DIRT] = Dirt::class;
+			self::$list[self::COBBLESTONE] = Cobblestone::class;
+			self::$list[self::PLANKS] = Planks::class;
+			self::$list[self::SAPLING] = Sapling::class;
+			self::$list[self::BEDROCK] = Bedrock::class;
+			self::$list[self::WATER] = Water::class;
+			self::$list[self::STILL_WATER] = StillWater::class;
+			self::$list[self::LAVA] = Lava::class;
+			self::$list[self::STILL_LAVA] = StillLava::class;
+			self::$list[self::SAND] = Sand::class;
+			self::$list[self::GRAVEL] = Gravel::class;
+			self::$list[self::GOLD_ORE] = GoldOre::class;
+			self::$list[self::IRON_ORE] = IronOre::class;
+			self::$list[self::COAL_ORE] = CoalOre::class;
+			self::$list[self::WOOD] = Wood::class;
+			self::$list[self::LEAVES] = Leaves::class;
+			self::$list[self::SPONGE] = Sponge::class;
+			self::$list[self::GLASS] = Glass::class;
+			self::$list[self::LAPIS_ORE] = LapisOre::class;
+			self::$list[self::LAPIS_BLOCK] = Lapis::class;
+			self::$list[self::SANDSTONE] = Sandstone::class;
+			self::$list[self::BED_BLOCK] = Bed::class;
+			self::$list[self::COBWEB] = Cobweb::class;
+			self::$list[self::TALL_GRASS] = TallGrass::class;
+			self::$list[self::DEAD_BUSH] = DeadBush::class;
+			self::$list[self::WOOL] = Wool::class;
+			self::$list[self::DANDELION] = Dandelion::class;
+			self::$list[self::POPPY] = Poppy::class;
+			self::$list[self::BROWN_MUSHROOM] = BrownMushroom::class;
+			self::$list[self::RED_MUSHROOM] = RedMushroom::class;
+			self::$list[self::GOLD_BLOCK] = Gold::class;
+			self::$list[self::IRON_BLOCK] = Iron::class;
+			self::$list[self::DOUBLE_SLAB] = DoubleSlab::class;
+			self::$list[self::SLAB] = Slab::class;
+			self::$list[self::BRICKS_BLOCK] = Bricks::class;
+			self::$list[self::TNT] = TNT::class;
+			self::$list[self::BOOKSHELF] = Bookshelf::class;
+			self::$list[self::MOSS_STONE] = MossStone::class;
+			self::$list[self::OBSIDIAN] = Obsidian::class;
+			self::$list[self::TORCH] = Torch::class;
+			self::$list[self::FIRE] = Fire::class;
+			self::$list[self::MONSTER_SPAWNER] = MonsterSpawner::class;
+			self::$list[self::WOOD_STAIRS] = WoodStairs::class;
+			self::$list[self::CHEST] = Chest::class;
 
-			self::$list[self::DIAMOND_ORE] = DiamondOre::class;;
-			self::$list[self::DIAMOND_BLOCK] = Diamond::class;;
-			self::$list[self::WORKBENCH] = Workbench::class;;
-			self::$list[self::WHEAT_BLOCK] = Wheat::class;;
-			self::$list[self::FARMLAND] = Farmland::class;;
-			self::$list[self::FURNACE] = Furnace::class;;
-			self::$list[self::BURNING_FURNACE] = BurningFurnace::class;;
-			self::$list[self::SIGN_POST] = SignPost::class;;
-			self::$list[self::WOOD_DOOR_BLOCK] = WoodDoor::class;;
-			self::$list[self::LADDER] = Ladder::class;;
+			self::$list[self::DIAMOND_ORE] = DiamondOre::class;
+			self::$list[self::DIAMOND_BLOCK] = Diamond::class;
+			self::$list[self::WORKBENCH] = Workbench::class;
+			self::$list[self::WHEAT_BLOCK] = Wheat::class;
+			self::$list[self::FARMLAND] = Farmland::class;
+			self::$list[self::FURNACE] = Furnace::class;
+			self::$list[self::BURNING_FURNACE] = BurningFurnace::class;
+			self::$list[self::SIGN_POST] = SignPost::class;
+			self::$list[self::WOOD_DOOR_BLOCK] = WoodDoor::class;
+			self::$list[self::LADDER] = Ladder::class;
 
-			self::$list[self::COBBLESTONE_STAIRS] = CobblestoneStairs::class;;
-			self::$list[self::WALL_SIGN] = WallSign::class;;
+			self::$list[self::COBBLESTONE_STAIRS] = CobblestoneStairs::class;
+			self::$list[self::WALL_SIGN] = WallSign::class;
 
-			self::$list[self::IRON_DOOR_BLOCK] = IronDoor::class;;
-			self::$list[self::REDSTONE_ORE] = RedstoneOre::class;;
-			self::$list[self::GLOWING_REDSTONE_ORE] = GlowingRedstoneOre::class;;
+			self::$list[self::IRON_DOOR_BLOCK] = IronDoor::class;
+			self::$list[self::REDSTONE_ORE] = RedstoneOre::class;
+			self::$list[self::GLOWING_REDSTONE_ORE] = GlowingRedstoneOre::class;
 
-			self::$list[self::SNOW_LAYER] = SnowLayer::class;;
-			self::$list[self::ICE] = Ice::class;;
-			self::$list[self::SNOW_BLOCK] = Snow::class;;
-			self::$list[self::CACTUS] = Cactus::class;;
-			self::$list[self::CLAY_BLOCK] = Clay::class;;
-			self::$list[self::SUGARCANE_BLOCK] = Sugarcane::class;;
+			self::$list[self::SNOW_LAYER] = SnowLayer::class;
+			self::$list[self::ICE] = Ice::class;
+			self::$list[self::SNOW_BLOCK] = Snow::class;
+			self::$list[self::CACTUS] = Cactus::class;
+			self::$list[self::CLAY_BLOCK] = Clay::class;
+			self::$list[self::SUGARCANE_BLOCK] = Sugarcane::class;
 
-			self::$list[self::FENCE] = Fence::class;;
-			self::$list[self::PUMPKIN] = Pumpkin::class;;
-			self::$list[self::NETHERRACK] = Netherrack::class;;
-			self::$list[self::SOUL_SAND] = SoulSand::class;;
-			self::$list[self::GLOWSTONE_BLOCK] = Glowstone::class;;
+			self::$list[self::FENCE] = Fence::class;
+			self::$list[self::PUMPKIN] = Pumpkin::class;
+			self::$list[self::NETHERRACK] = Netherrack::class;
+			self::$list[self::SOUL_SAND] = SoulSand::class;
+			self::$list[self::GLOWSTONE_BLOCK] = Glowstone::class;
 
-			self::$list[self::LIT_PUMPKIN] = LitPumpkin::class;;
-			self::$list[self::CAKE_BLOCK] = Cake::class;;
+			self::$list[self::LIT_PUMPKIN] = LitPumpkin::class;
+			self::$list[self::CAKE_BLOCK] = Cake::class;
 
-			self::$list[self::TRAPDOOR] = Trapdoor::class;;
+			self::$list[self::TRAPDOOR] = Trapdoor::class;
 
-			self::$list[self::STONE_BRICKS] = StoneBricks::class;;
+			self::$list[self::STONE_BRICKS] = StoneBricks::class;
 
-			self::$list[self::IRON_BARS] = IronBars::class;;
-			self::$list[self::GLASS_PANE] = GlassPane::class;;
-			self::$list[self::MELON_BLOCK] = Melon::class;;
-			self::$list[self::PUMPKIN_STEM] = PumpkinStem::class;;
-			self::$list[self::MELON_STEM] = MelonStem::class;;
-			self::$list[self::VINE] = Vine::class;;
-			self::$list[self::FENCE_GATE] = FenceGate::class;;
-			self::$list[self::BRICK_STAIRS] = BrickStairs::class;;
-			self::$list[self::STONE_BRICK_STAIRS] = StoneBrickStairs::class;;
+			self::$list[self::IRON_BARS] = IronBars::class;
+			self::$list[self::GLASS_PANE] = GlassPane::class;
+			self::$list[self::MELON_BLOCK] = Melon::class;
+			self::$list[self::PUMPKIN_STEM] = PumpkinStem::class;
+			self::$list[self::MELON_STEM] = MelonStem::class;
+			self::$list[self::VINE] = Vine::class;
+			self::$list[self::FENCE_GATE] = FenceGate::class;
+			self::$list[self::BRICK_STAIRS] = BrickStairs::class;
+			self::$list[self::STONE_BRICK_STAIRS] = StoneBrickStairs::class;
 
-			self::$list[self::MYCELIUM] = Mycelium::class;;
-			self::$list[self::NETHER_BRICKS] = NetherBrick::class;;
+			self::$list[self::MYCELIUM] = Mycelium::class;
+			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
 
-			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;;
+			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;
 
-			self::$list[self::END_PORTAL] = EndPortal::class;;
-			self::$list[self::END_STONE] = EndStone::class;;
-			self::$list[self::SANDSTONE_STAIRS] = SandstoneStairs::class;;
-			self::$list[self::EMERALD_ORE] = EmeraldOre::class;;
+			self::$list[self::END_PORTAL_FRAME] = EndPortalFrame::class;
+			self::$list[self::END_STONE] = EndStone::class;
+			self::$list[self::SANDSTONE_STAIRS] = SandstoneStairs::class;
+			self::$list[self::EMERALD_ORE] = EmeraldOre::class;
 
-			self::$list[self::EMERALD_BLOCK] = Emerald::class;;
-			self::$list[self::SPRUCE_WOOD_STAIRS] = SpruceWoodStairs::class;;
-			self::$list[self::BIRCH_WOOD_STAIRS] = BirchWoodStairs::class;;
-			self::$list[self::JUNGLE_WOOD_STAIRS] = JungleWoodStairs::class;;
-			self::$list[self::STONE_WALL] = StoneWall::class;;
+			self::$list[self::EMERALD_BLOCK] = Emerald::class;
+			self::$list[self::SPRUCE_WOOD_STAIRS] = SpruceWoodStairs::class;
+			self::$list[self::BIRCH_WOOD_STAIRS] = BirchWoodStairs::class;
+			self::$list[self::JUNGLE_WOOD_STAIRS] = JungleWoodStairs::class;
+			self::$list[self::STONE_WALL] = StoneWall::class;
 
-			self::$list[self::CARROT_BLOCK] = Carrot::class;;
-			self::$list[self::POTATO_BLOCK] = Potato::class;;
+			self::$list[self::CARROT_BLOCK] = Carrot::class;
+			self::$list[self::POTATO_BLOCK] = Potato::class;
 
-			self::$list[self::QUARTZ_BLOCK] = Quartz::class;;
-			self::$list[self::QUARTZ_STAIRS] = QuartzStairs::class;;
-			self::$list[self::DOUBLE_WOOD_SLAB] = DoubleWoodSlab::class;;
-			self::$list[self::WOOD_SLAB] = WoodSlab::class;;
-			self::$list[self::STAINED_CLAY] = StainedClay::class;;
+			self::$list[self::QUARTZ_BLOCK] = Quartz::class;
+			self::$list[self::QUARTZ_STAIRS] = QuartzStairs::class;
+			self::$list[self::DOUBLE_WOOD_SLAB] = DoubleWoodSlab::class;
+			self::$list[self::WOOD_SLAB] = WoodSlab::class;
+			self::$list[self::STAINED_CLAY] = StainedClay::class;
 
-			self::$list[self::LEAVES2] = Leaves2::class;;
-			self::$list[self::WOOD2] = Wood2::class;;
-			self::$list[self::ACACIA_WOOD_STAIRS] = AcaciaWoodStairs::class;;
-			self::$list[self::DARK_OAK_WOOD_STAIRS] = DarkOakWoodStairs::class;;
+			self::$list[self::LEAVES2] = Leaves2::class;
+			self::$list[self::WOOD2] = Wood2::class;
+			self::$list[self::ACACIA_WOOD_STAIRS] = AcaciaWoodStairs::class;
+			self::$list[self::DARK_OAK_WOOD_STAIRS] = DarkOakWoodStairs::class;
 
-			self::$list[self::HAY_BALE] = HayBale::class;;
-			self::$list[self::CARPET] = Carpet::class;;
-			self::$list[self::HARDENED_CLAY] = HardenedClay::class;;
-			self::$list[self::COAL_BLOCK] = Coal::class;;
+			self::$list[self::HAY_BALE] = HayBale::class;
+			self::$list[self::CARPET] = Carpet::class;
+			self::$list[self::HARDENED_CLAY] = HardenedClay::class;
+			self::$list[self::COAL_BLOCK] = Coal::class;
 
 			self::$list[self::FENCE_GATE_SPRUCE] = FenceGateSpruce::class;
 			self::$list[self::FENCE_GATE_BIRCH] = FenceGateBirch::class;
@@ -719,12 +729,12 @@ class Block extends Position implements Metadatable{
 				if($class !== null){
 					/** @var Block $block */
 					$block = new $class();
-					self::$solid[$id] = (bool) $block->isSolid;
-					self::$transparent[$id] = (bool) $block->isTransparent;
-					self::$light[$id] = (int) $block->lightLevel;
+					self::$solid[$id] = $block->isSolid();
+					self::$transparent[$id] = $block->isTransparent();
+					self::$light[$id] = $block->getLightLevel();
 
-					if($block->isSolid){
-						if($block->isTransparent){
+					if($block->isSolid()){
+						if($block->isTransparent()){
 							if($block instanceof Liquid or $block instanceof Ice){
 								self::$lightFilter[$id] = 2;
 							}else{
@@ -775,12 +785,10 @@ class Block extends Position implements Metadatable{
 	/**
 	 * @param int    $id
 	 * @param int    $meta
-	 * @param string $name
 	 */
-	public function __construct($id, $meta = 0, $name = "Unknown"){
+	public function __construct($id, $meta = 0){
 		$this->id = (int) $id;
 		$this->meta = (int) $meta;
-		$this->name = $name;
 	}
 
 	/**
@@ -809,7 +817,7 @@ class Block extends Position implements Metadatable{
 	 * @return bool
 	 */
 	public function isBreakable(Item $item){
-		return $this->breakable;
+		return true;
 	}
 
 	/**
@@ -843,21 +851,86 @@ class Block extends Position implements Metadatable{
 	 * @return bool
 	 */
 	public function onActivate(Item $item, Player $player = null){
-		return $this->isActivable;
+		return false;
 	}
 
 	/**
 	 * @return int
 	 */
-	final public function getHardness(){
-		return $this->hardness;
+	public function getHardness(){
+		return 10;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getFrictionFactor(){
+		return 0.6;
+	}
+
+	/**
+	 * @return int 0-15
+	 */
+	public function getLightLevel(){
+		return 0;
+	}
+
+	/**
+	 * AKA: Block->isPlaceable
+	 *
+	 * @return bool
+	 */
+	public function canBePlaced(){
+		return true;
+	}
+
+	/**
+	 * AKA: Block->isReplaceable
+	 *
+	 * @return bool
+	 */
+	public function canBeReplaced(){
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isTransparent(){
+		return false;
+	}
+
+	public function isSolid(){
+		return true;
+	}
+
+	/**
+	 * AKA: Block->isFlowable
+	 *
+	 * @return bool
+	 */
+	public function canBeFlowedInto(){
+		return false;
+	}
+
+	/**
+	 * AKA: Block->isActivable
+	 *
+	 * @return bool
+	 */
+	public function canBeActivated(){
+		return false;
+	}
+
+	public function hasEntityCollision(){
+		return false;
 	}
 
 	/**
 	 * @return string
 	 */
-	final public function getName(){
-		return $this->name;
+	public function getName(){
+		return "Unknown";
 	}
 
 	/**
@@ -922,7 +995,7 @@ class Block extends Position implements Metadatable{
 	 * @return float
 	 */
 	public function getBreakTime(Item $item){
-		return $this->breakTime;
+		return 0.20;
 	}
 
 	/**
@@ -945,8 +1018,8 @@ class Block extends Position implements Metadatable{
 	/**
 	 * @return string
 	 */
-	final public function __toString(){
-		return "Block " . $this->name . " (" . $this->id . ":" . $this->meta . ")";
+	public function __toString(){
+		return "Block[" . $this->getName() . "] (" . $this->id . ":" . $this->meta . ")";
 	}
 
 	/**

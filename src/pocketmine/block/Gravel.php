@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Gravel extends Fallable{
+
+    protected $id = self::GRAVEL;
+
 	public function __construct(){
-		parent::__construct(self::GRAVEL, 0, "Gravel");
-		$this->hardness = 3;
+
 	}
+
+    public function getName(){
+        return "Gravel";
+    }
+
+    public function getHardness(){
+        return 3;
+    }
 
 	public function getDrops(Item $item){
 		if(mt_rand(1, 10) === 1){

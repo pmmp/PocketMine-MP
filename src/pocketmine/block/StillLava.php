@@ -22,9 +22,15 @@
 namespace pocketmine\block;
 
 class StillLava extends Lava{
-	public function __construct($meta = 0){
-		parent::__construct(self::STILL_LAVA, $meta, "Still Lava");
-		$this->hardness = 500;
-	}
+
+    protected $id = self::STILL_LAVA;
+
+    public function getName(){
+        return "Still Lava";
+    }
+
+    public function getHardness(){
+        return 500;
+    }
 
 }

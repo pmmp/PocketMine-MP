@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class NetherBrick extends Solid{
+
+    protected $id = self::NETHER_BRICKS;
+
 	public function __construct(){
-		parent::__construct(self::NETHER_BRICKS, 0, "Nether Bricks");
-		$this->hardness = 30;
+
 	}
+
+    public function getName(){
+        return "Nether Bricks";
+    }
+
+    public function getHardness(){
+        return 30;
+    }
 
 	public function getBreakTime(Item $item){
 

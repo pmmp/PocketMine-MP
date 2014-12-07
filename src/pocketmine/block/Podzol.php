@@ -22,8 +22,18 @@
 namespace pocketmine\block;
 
 class Podzol extends Solid{
+
+    protected $id = self::PODZOL;
+
 	public function __construct(){
-		parent::__construct(self::PODZOL, 0, "Podzol");	
-		$this->hardness = 2.5;
+
 	}
+
+    public function getName(){
+        return "Podzol";
+    }
+
+    public function getHardness(){
+        return 2.5;
+    }
 }

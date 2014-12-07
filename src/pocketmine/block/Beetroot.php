@@ -24,9 +24,16 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Beetroot extends Crops{
+
+    protected $id = self::BEETROOT_BLOCK;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::BEETROOT_BLOCK, $meta, "Beetroot Block");
+        $this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Beetroot Block";
+    }
 
 	public function getDrops(Item $item){
 		$drops = [];

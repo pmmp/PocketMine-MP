@@ -23,8 +23,19 @@ namespace pocketmine\block;
 
 
 class GlassPane extends Thin{
-	public function __construct(){
-		parent::__construct(self::GLASS_PANE, 0, "Glass Pane");
-	}
+
+    protected $id = self::GLASS_PANE;
+
+    public function __construct(){
+
+    }
+
+    public function getName(){
+        return "Glass Pane";
+    }
+
+    public function getHardness(){
+        return 1.5;
+    }
 
 }

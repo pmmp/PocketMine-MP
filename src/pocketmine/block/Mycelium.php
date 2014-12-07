@@ -28,10 +28,20 @@ use pocketmine\math\Vector3;
 use pocketmine\Server;
 
 class Mycelium extends Solid{
+
+    protected $id = self::MYCELIUM;
+
 	public function __construct(){
-		parent::__construct(self::MYCELIUM, 0, "Mycelium");
-		$this->hardness = 2.5;
+
 	}
+
+    public function getName(){
+        return "Mycelium";
+    }
+
+    public function getHardness() {
+        return 2.5;
+    }
 
 	public function getDrops(Item $item){
 		return [

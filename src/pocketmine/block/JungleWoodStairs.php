@@ -24,9 +24,16 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class JungleWoodStairs extends Stair{
+
+    protected $id = self::JUNGLE_WOOD_STAIRS;
+
 	public function __construct($meta = 0){
-		parent::__construct(self::JUNGLE_WOOD_STAIRS, $meta, "Jungle Wood Stairs");
+        $this->meta = $meta;
 	}
+
+    public function getName(){
+        return "Jungle Wood Stairs";
+    }
 
 	public function getDrops(Item $item){
 		return [

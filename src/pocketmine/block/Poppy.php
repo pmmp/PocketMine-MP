@@ -25,15 +25,17 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class CyanFlower extends Flowable{
-	public function __construct(){
-		parent::__construct(self::POPPY, 0, "Cyan Flower");
-		$this->hardness = 0;
+class Poppy extends Flowable{
+
+    protected $id = self::POPPY;
+
+	public function __construct($meta = 0){
+        $this->meta = $meta;
 	}
 
-	public function getBoundingBox(){
-		return null;
-	}
+    public function getName(){
+        return "Poppy";
+    }
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

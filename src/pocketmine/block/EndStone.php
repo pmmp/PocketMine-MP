@@ -24,10 +24,20 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class EndStone extends Solid{
+
+    protected $id = self::END_STONE;
+
 	public function __construct(){
-		parent::__construct(self::END_STONE, 0, "End Stone");	
-		$this->hardness = 45;
+
 	}
+
+    public function getName(){
+        return "End Stone";
+    }
+
+    public function getHardness(){
+        return 45;
+    }
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

@@ -22,9 +22,10 @@
 namespace pocketmine\block;
 
 class FenceDarkOak extends Fence{
-	public function __construct(){
-		Transparent::__construct(self::FENCE_DARK_OAK, 0, "Dark Oak Fence");
-		$this->isFullBlock = false;
-		$this->hardness = 15;
-	}
+
+    protected $id = self::FENCE_DARK_OAK;
+
+    public function getName(){
+        return "Dark Oak Fence";
+    }
 }

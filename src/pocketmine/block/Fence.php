@@ -24,11 +24,20 @@ namespace pocketmine\block;
 use pocketmine\math\AxisAlignedBB;
 
 class Fence extends Transparent{
+
+    protected $id = self::FENCE;
+
 	public function __construct(){
-		parent::__construct(self::FENCE, 0, "Oak Fence");
-		$this->isFullBlock = false;
-		$this->hardness = 15;
+
 	}
+
+    public function getHardness(){
+        return 15;
+    }
+
+    public function getName(){
+        return "Oak Fence";
+    }
 
 	protected function recalculateBoundingBox(){
 

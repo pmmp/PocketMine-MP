@@ -21,16 +21,32 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 
-class EndPortal extends Solid{
+class EndPortalFrame extends Solid{
 
-	public $lightLevel = 1;
+    protected $id = self::END_PORTAL_FRAME;
 
 	public function __construct($meta = 0){
-		parent::__construct(self::END_PORTAL, $meta, "End Portal");
-		$this->hardness = 18000000;
+        $this->meta = $meta;
 	}
+
+    public function getLightLevel(){
+        return 1;
+    }
+
+    public function getName(){
+        return "End Portal Frame";
+    }
+
+    public function getHardness(){
+        return 18000000;
+    }
+
+    public function isBreakable(Item $item){
+        return false;
+    }
 
 	protected function recalculateBoundingBox(){
 
