@@ -70,6 +70,10 @@ class Chunk extends BaseChunk{
 			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
 		}
 
+		if(!isset($this->nbt->HeightMap) or !($this->nbt->HeightMap instanceof IntArray)){
+			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
+		}
+
 		$sections = [];
 		foreach($this->nbt->Sections as $section){
 			if($section instanceof Compound){
@@ -85,7 +89,7 @@ class Chunk extends BaseChunk{
 			}
 		}
 
-		parent::__construct($level, (int) $this->nbt["xPos"], (int) $this->nbt["zPos"], $sections, $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		parent::__construct($level, (int) $this->nbt["xPos"], (int) $this->nbt["zPos"], $sections, $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
 
 		unset($this->nbt->Sections);
 	}
@@ -171,6 +175,8 @@ class Chunk extends BaseChunk{
 
 		$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
 		$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
+
+		$nbt->HeightMap = new IntArray("HeightMap", $this->getHeightMapArray());
 
 		$entities = [];
 

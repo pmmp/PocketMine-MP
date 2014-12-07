@@ -154,6 +154,21 @@ interface FullChunk{
 	 *
 	 * @return int 0-255
 	 */
+	public function getHeightMap($x, $z);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 * @param $value 0-255
+	 */
+	public function setHeightMap($x, $z, $value);
+
+	/**
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int 0-255
+	 */
 	public function getBiomeId($x, $z);
 
 	/**
@@ -266,6 +281,11 @@ interface FullChunk{
 	 * @return int[]
 	 */
 	public function getBiomeColorArray();
+
+	/**
+	 * @return int[]
+	 */
+	public function getHeightMapArray();
 
 	public function getBlockIdArray();
 

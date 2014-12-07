@@ -67,7 +67,11 @@ class Chunk extends BaseFullChunk{
 		}
 
 		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
-			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 156, Binary::readInt("\x00\x85\xb2\x4a")));
+			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
+		}
+
+		if(!isset($this->nbt->HeightMap) or !($this->nbt->HeightMap instanceof IntArray)){
+			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
 		}
 
 		if(!isset($this->nbt->Blocks)){
@@ -80,7 +84,7 @@ class Chunk extends BaseFullChunk{
 			$this->nbt->BlockLight = new ByteArray("BlockLight", $half);
 		}
 
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt["Blocks"], $this->nbt["Data"], $this->nbt["SkyLight"], $this->nbt["BlockLight"], $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
+		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt->Blocks->getValue(), $this->nbt->Data->getValue(), $this->nbt->SkyLight->getValue(), $this->nbt->BlockLight->getValue(), $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
 		unset($this->nbt->Blocks);
 		unset($this->nbt->Data);
 		unset($this->nbt->SkyLight);
@@ -284,6 +288,8 @@ class Chunk extends BaseFullChunk{
 
 			$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
 			$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
+
+			$nbt->HeightMap = new IntArray("HeightMap", $this->getHeightMapArray());
 		}
 
 		$entities = [];
