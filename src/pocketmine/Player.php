@@ -1146,7 +1146,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev);
 
 				if(!($revert = $ev->isCancelled())){ //Yes, this is intended
-					if($to->distance($ev->getTo()) > 0.1){ //If plugins modify the destination
+					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
 						$this->teleport($ev->getTo());
 					}else{
 						$pk = new MovePlayerPacket();
@@ -1530,7 +1530,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
 				}
 
-				if($this->forceMovement instanceof Vector3 and ($revert or $newPos->distance($this->forceMovement) > 0.2)){
+				if($this->forceMovement instanceof Vector3 and ($revert or $newPos->distanceSquared($this->forceMovement) > 0.04)){
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
 					$pk->x = $this->forceMovement->x;

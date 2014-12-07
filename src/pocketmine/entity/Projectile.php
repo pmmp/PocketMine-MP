@@ -119,7 +119,7 @@ abstract class Projectile extends Entity{
 					continue;
 				}
 
-				$distance = $this->distance($ob->hitVector);
+				$distance = $this->distanceSquared($ob->hitVector);
 
 				if($distance < $nearDistance){
 					$nearDistance = $distance;
