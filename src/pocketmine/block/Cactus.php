@@ -34,23 +34,23 @@ use pocketmine\Server;
 
 class Cactus extends Transparent{
 
-    protected $id = self::CACTUS;
+	protected $id = self::CACTUS;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getHardness(){
-        return 2;
-    }
+	public function getHardness(){
+		return 2;
+	}
 
-    public function hasEntityCollision(){
-        return true;
-    }
+	public function hasEntityCollision(){
+		return true;
+	}
 
-    public function getName(){
-        return "Cactus";
-    }
+	public function getName(){
+		return "Cactus";
+	}
 
 	protected function recalculateBoundingBox(){
 

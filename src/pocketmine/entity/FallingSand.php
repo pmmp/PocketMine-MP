@@ -131,6 +131,7 @@ class FallingSand extends Entity{
 	public function getBlock(){
 		return $this->blockId;
 	}
+
 	public function getDamage(){
 		return $this->damage;
 	}

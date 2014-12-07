@@ -42,6 +42,7 @@ use pocketmine\utils\Utils;
 
 #ifndef COMPILE
 use pocketmine\utils\Binary;
+
 #endif
 
 

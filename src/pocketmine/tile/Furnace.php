@@ -238,7 +238,8 @@ class Furnace extends Tile implements InventoryHolder, Container{
 				$this->namedtag->CookTime = new Short("CookTime", 0);
 			}
 			$ret = true;
-		}else{;
+		}else{
+			;
 			if($this->getBlock()->getId() === Item::BURNING_FURNACE){
 				$this->getLevel()->setBlock($this, Block::get(Item::FURNACE, $this->getBlock()->getDamage()), true);
 			}

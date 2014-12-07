@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\block;
+
 use pocketmine\item\Item;
 
 
@@ -39,25 +40,25 @@ class Air extends Transparent{
 		return "Air";
 	}
 
-    public function isBreakable(Item $item){
-        return false;
-    }
+	public function isBreakable(Item $item){
+		return false;
+	}
 
-    public function canBeFlowedInto(){
-        return true;
-    }
+	public function canBeFlowedInto(){
+		return true;
+	}
 
-    public function canBeReplaced(){
-        return true;
-    }
+	public function canBeReplaced(){
+		return true;
+	}
 
-    public function canBePlaced(){
-        return false;
-    }
+	public function canBePlaced(){
+		return false;
+	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
 	public function getBoundingBox(){
 		return null;

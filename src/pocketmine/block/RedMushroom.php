@@ -27,15 +27,15 @@ use pocketmine\Player;
 
 class RedMushroom extends Flowable{
 
-    protected $id = self::RED_MUSHROOM;
+	protected $id = self::RED_MUSHROOM;
 
 	public function __construct(){
 
 	}
 
 	public function getName(){
-        return "Red Mushroom";
-    }
+		return "Red Mushroom";
+	}
 
 
 	public function onUpdate($type){

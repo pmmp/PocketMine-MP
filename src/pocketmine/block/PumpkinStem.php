@@ -28,15 +28,15 @@ use pocketmine\Server;
 
 class PumpkinStem extends Crops{
 
-    protected $id = self::PUMPKIN_STEM;
+	protected $id = self::PUMPKIN_STEM;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Pumpkin Stem";
-    }
+	public function getName(){
+		return "Pumpkin Stem";
+	}
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){

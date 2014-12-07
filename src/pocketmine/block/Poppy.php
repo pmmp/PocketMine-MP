@@ -27,15 +27,15 @@ use pocketmine\Player;
 
 class Poppy extends Flowable{
 
-    protected $id = self::POPPY;
+	protected $id = self::POPPY;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Poppy";
-    }
+	public function getName(){
+		return "Poppy";
+	}
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

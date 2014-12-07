@@ -37,17 +37,17 @@ class Lava extends Liquid{
 		$this->meta = $meta;
 	}
 
-    public function getLightLevel(){
-        return 15;
-    }
+	public function getLightLevel(){
+		return 15;
+	}
 
-    public function getName(){
-        return "Lava";
-    }
+	public function getName(){
+		return "Lava";
+	}
 
-    public function getHardness(){
-        return 0;
-    }
+	public function getHardness(){
+		return 0;
+	}
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;

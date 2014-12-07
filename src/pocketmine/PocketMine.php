@@ -143,8 +143,8 @@ namespace pocketmine {
 			if($response = Utils::getURL("http://ip-api.com/json")
 				and $ip_geolocation_data = json_decode($response, true)
 				and $ip_geolocation_data['status'] != 'fail'
-				and date_default_timezone_set($ip_geolocation_data['timezone']))
-			{
+				and date_default_timezone_set($ip_geolocation_data['timezone'])
+			){
 				//Again, for redundancy.
 				ini_set("date.timezone", $ip_geolocation_data['timezone']);
 			}else{
@@ -192,8 +192,7 @@ namespace pocketmine {
 				//Detect the Time Zone string
 				preg_match($regex, $string, $matches);
 
-				if(!isset($matches[2]))
-				{
+				if(!isset($matches[2])){
 					return false;
 				}
 
@@ -251,6 +250,7 @@ namespace pocketmine {
 
 	/**
 	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
+	 *
 	 * @return string
 	 */
 	function parse_offset($offset){

@@ -27,29 +27,29 @@ use pocketmine\Player;
 
 class WoodSlab extends Transparent{
 
-    protected $id = self::WOOD_SLAB;
+	protected $id = self::WOOD_SLAB;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function getName(){
-        static $names = [
-            0 => "Oak",
-            1 => "Spruce",
-            2 => "Birch",
-            3 => "Jungle",
-            4 => "Acacia",
-            5 => "Dark Oak",
-            6 => "",
-            7 => ""
-        ];
-        return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
-    }
+	public function getName(){
+		static $names = [
+			0 => "Oak",
+			1 => "Spruce",
+			2 => "Birch",
+			3 => "Jungle",
+			4 => "Acacia",
+			5 => "Dark Oak",
+			6 => "",
+			7 => ""
+		];
+		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Wooden Slab";
+	}
 
 	protected function recalculateBoundingBox(){
 
@@ -113,7 +113,7 @@ class WoodSlab extends Transparent{
 				}
 			}
 		}
-		
+
 		if($block->getId() === self::WOOD_SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}

@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class HardenedClay extends Solid{
 
-    protected $id = self::HARDENED_CLAY;
+	protected $id = self::HARDENED_CLAY;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Hardened Clay";
-    }
+	public function getName(){
+		return "Hardened Clay";
+	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

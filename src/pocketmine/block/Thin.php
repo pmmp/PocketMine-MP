@@ -26,9 +26,9 @@ use pocketmine\math\AxisAlignedBB;
 
 abstract class Thin extends Transparent{
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
 	protected function recalculateBoundingBox(){
 

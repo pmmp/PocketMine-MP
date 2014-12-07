@@ -25,15 +25,15 @@ use pocketmine\item\Item;
 
 class WoodStairs extends Stair{
 
-    protected $id = self::WOOD_STAIRS;
+	protected $id = self::WOOD_STAIRS;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Wood Stairs";
-    }
+	public function getName(){
+		return "Wood Stairs";
+	}
 
 	public function getBreakTime(Item $item){
 

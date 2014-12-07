@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class Netherrack extends Solid{
 
-    protected $id = self::NETHERRACK;
-    
+	protected $id = self::NETHERRACK;
+
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Netherrack";
-    }
+	public function getName(){
+		return "Netherrack";
+	}
 
-    public function getHardness(){
-        return 2;
-    }
+	public function getHardness(){
+		return 2;
+	}
 
 	public function getBreakTime(Item $item){
 

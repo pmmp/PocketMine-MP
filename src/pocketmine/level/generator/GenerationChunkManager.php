@@ -122,7 +122,8 @@ class GenerationChunkManager implements ChunkManager{
 			$this->getChunk($chunkX, $chunkZ);
 			$this->generator->generateChunk($chunkX, $chunkZ);
 			$this->setChunkGenerated($chunkX, $chunkZ);
-		}catch(\Exception $e){}
+		}catch(\Exception $e){
+		}
 	}
 
 	public function populateChunk($chunkX, $chunkZ){
@@ -163,7 +164,8 @@ class GenerationChunkManager implements ChunkManager{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setGenerated(true);
 			$this->changes["$chunkX:$chunkZ"] = $chunk;
-		}catch(\Exception $e){}
+		}catch(\Exception $e){
+		}
 	}
 
 	public function setChunkPopulated($chunkX, $chunkZ){
@@ -171,7 +173,8 @@ class GenerationChunkManager implements ChunkManager{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setPopulated(true);
 			$this->changes["$chunkX:$chunkZ"] = $chunk;
-		}catch(\Exception $e){}
+		}catch(\Exception $e){
+		}
 	}
 
 	protected function requestChunk($chunkX, $chunkZ){
@@ -222,7 +225,8 @@ class GenerationChunkManager implements ChunkManager{
 	public function setBlockIdAt($x, $y, $z, $id){
 		try{
 			$this->getChunk($x >> 4, $z >> 4)->setBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f, $id & 0xff);
-		}catch(\Exception $e){}
+		}catch(\Exception $e){
+		}
 	}
 
 	/**
@@ -253,7 +257,8 @@ class GenerationChunkManager implements ChunkManager{
 	public function setBlockDataAt($x, $y, $z, $data){
 		try{
 			$this->getChunk($x >> 4, $z >> 4)->setBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f, $data & 0x0f);
-		}catch(\Exception $e){}
+		}catch(\Exception $e){
+		}
 	}
 
 	public function shutdown(){

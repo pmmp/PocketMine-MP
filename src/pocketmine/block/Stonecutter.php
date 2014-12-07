@@ -27,19 +27,19 @@ use pocketmine\Player;
 //TODO: check orientation
 class Stonecutter extends Solid{
 
-    protected $id = self::STONECUTTER;
+	protected $id = self::STONECUTTER;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Stonecutter";
-    }
+	public function getName(){
+		return "Stonecutter";
+	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){

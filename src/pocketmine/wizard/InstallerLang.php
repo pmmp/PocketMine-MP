@@ -59,7 +59,7 @@ class InstallerLang{
 					$files[$file->getFilename()] = $file->getSize();
 				}
 			}
-			
+
 			if(count($files) > 0){
 				arsort($files);
 				reset($files);

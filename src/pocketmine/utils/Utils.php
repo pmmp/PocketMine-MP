@@ -59,7 +59,7 @@ class Utils{
 	 */
 	public static function getUniqueID($raw = false, $extra = ""){
 		$machine = php_uname("a");
-		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/model name/", file("/proc/cpuinfo"))): "";
+		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/model name/", file("/proc/cpuinfo"))) : "";
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();

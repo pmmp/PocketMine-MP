@@ -27,23 +27,23 @@ use pocketmine\Player;
 
 class SnowLayer extends Flowable{
 
-    protected $id = self::SNOW_LAYER;
+	protected $id = self::SNOW_LAYER;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Snow Layer";
-    }
+	public function getName(){
+		return "Snow Layer";
+	}
 
-    public function canBeReplaced(){
-        return true;
-    }
+	public function canBeReplaced(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 0.5;
-    }
+	public function getHardness(){
+		return 0.5;
+	}
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

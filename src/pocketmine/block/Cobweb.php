@@ -32,24 +32,24 @@ class Cobweb extends Flowable{
 
 	}
 
-    public function hasEntityCollision(){
-        return true;
-    }
+	public function hasEntityCollision(){
+		return true;
+	}
 
-    public function getName(){
-        return "Cobweb";
-    }
+	public function getName(){
+		return "Cobweb";
+	}
 
-    public function getHardness(){
-        return 25;
-    }
+	public function getHardness(){
+		return 25;
+	}
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;
 	}
 
 	public function getDrops(Item $item){
-        //TODO: correct drops
+		//TODO: correct drops
 		return [];
 	}
 }

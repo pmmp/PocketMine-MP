@@ -33,7 +33,7 @@ class EntityDamageByBlockEvent extends EntityDamageEvent{
 
 
 	/**
-	 * @param Block    $damager
+	 * @param Block     $damager
 	 * @param Entity    $entity
 	 * @param int       $cause
 	 * @param int|int[] $damage

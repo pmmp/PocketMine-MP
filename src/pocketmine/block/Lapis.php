@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class Lapis extends Solid{
 
-    protected $id = self::LAPIS_BLOCK;
+	protected $id = self::LAPIS_BLOCK;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Lapis Block";
-    }
+	public function getName(){
+		return "Lapis Block";
+	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

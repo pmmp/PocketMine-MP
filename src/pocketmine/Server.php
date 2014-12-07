@@ -149,8 +149,8 @@ class Server{
 	 */
 	private $tickCounter;
 	private $nextTick = 0;
-	private $tickAverage = [20,20,20,20,20];
-	private $useAverage = [20,20,20,20,20];
+	private $tickAverage = [20, 20, 20, 20, 20];
+	private $useAverage = [20, 20, 20, 20, 20];
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
@@ -1444,7 +1444,7 @@ class Server{
 	}
 
 	/**
-	 * @param \ClassLoader $autoloader
+	 * @param \ClassLoader    $autoloader
 	 * @param \ThreadedLogger $logger
 	 * @param string          $filePath
 	 * @param string          $dataPath
@@ -1672,7 +1672,7 @@ class Server{
 	}
 
 	/**
-	 * @param $message
+	 * @param               $message
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
@@ -1898,7 +1898,7 @@ class Server{
 			foreach($this->interfaces as $interface){
 				$interface->shutdown();
 			}
-		}catch (\Exception $e){
+		}catch(\Exception $e){
 			$this->logger->emergency("Crashed while crashing, killing process");
 			@kill(getmypid());
 		}
@@ -2083,8 +2083,8 @@ class Server{
 		foreach($this->getLevels() as $level){
 			try{
 				$level->doTick($currentTick);
-			}catch (\Exception $e){
-				$this->logger->critical("Could not tick level ".$level->getName().": ".$e->getMessage());
+			}catch(\Exception $e){
+				$this->logger->critical("Could not tick level " . $level->getName() . ": " . $e->getMessage());
 				if($this->logger instanceof MainLogger){
 					$this->logger->logException($e);
 				}
@@ -2152,7 +2152,7 @@ class Server{
 
 	private function titleTick(){
 		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;". $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . " | Load ". $this->getTickUsage() . "%\x07";
+			echo "\x1b]0;" . $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . " | Load " . $this->getTickUsage() . "%\x07";
 		}
 	}
 
@@ -2199,7 +2199,7 @@ class Server{
 
 		try{
 			$this->generationManager->process();
-		}catch (\Exception $e){
+		}catch(\Exception $e){
 			if($this->logger instanceof MainLogger){
 				$this->logger->logException($e);
 			}

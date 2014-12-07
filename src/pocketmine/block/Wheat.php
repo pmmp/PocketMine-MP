@@ -25,15 +25,15 @@ use pocketmine\item\Item;
 
 class Wheat extends Crops{
 
-    protected $id = self::WHEAT_BLOCK;
+	protected $id = self::WHEAT_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Wheat Block";
-    }
+	public function getName(){
+		return "Wheat Block";
+	}
 
 	public function getDrops(Item $item){
 		$drops = [];

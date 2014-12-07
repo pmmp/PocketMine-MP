@@ -30,23 +30,23 @@ use pocketmine\Server;
 
 class Cake extends Transparent{
 
-    protected $id = self::CAKE_BLOCK;
+	protected $id = self::CAKE_BLOCK;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 2.5;
-    }
+	public function getHardness(){
+		return 2.5;
+	}
 
-    public function getName(){
-        return "Cake Block";
-    }
+	public function getName(){
+		return "Cake Block";
+	}
 
 	protected function recalculateBoundingBox(){
 

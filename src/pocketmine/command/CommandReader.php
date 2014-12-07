@@ -35,7 +35,7 @@ class CommandReader extends Thread{
 
 	/**
 	 * @param \Threaded $threaded
-	 * @param string $stream
+	 * @param string    $stream
 	 */
 	public function __construct(\Threaded $threaded, $stream = "php://stdin"){
 		$this->stream = $stream;
@@ -91,7 +91,7 @@ class CommandReader extends Thread{
 				usleep(40000);
 			}
 
-            $lastLine = microtime(true);
+			$lastLine = microtime(true);
 		}
 	}
 }

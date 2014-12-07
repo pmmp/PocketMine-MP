@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class Obsidian extends Solid{
 
-    protected $id = self::OBSIDIAN;
+	protected $id = self::OBSIDIAN;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Obsidian";
-    }
+	public function getName(){
+		return "Obsidian";
+	}
 
-    public function getHardness(){
-        return 6000;
-    }
+	public function getHardness(){
+		return 6000;
+	}
 
 	public function getBreakTime(Item $item){
 

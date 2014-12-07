@@ -28,11 +28,11 @@ use pocketmine\Server;
 
 class MelonStem extends Crops{
 
-    protected $id = self::MELON_STEM;
+	protected $id = self::MELON_STEM;
 
-    public function getName(){
-        return "Melon Stem";
-    }
+	public function getName(){
+		return "Melon Stem";
+	}
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;

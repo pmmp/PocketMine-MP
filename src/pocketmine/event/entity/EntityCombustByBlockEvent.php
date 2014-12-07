@@ -31,7 +31,7 @@ class EntityCombustByBlockEvent extends EntityCombustEvent{
 	protected $combuster;
 
 	/**
-	 * @param Block $combuster
+	 * @param Block  $combuster
 	 * @param Entity $combustee
 	 * @param int    $duration
 	 */

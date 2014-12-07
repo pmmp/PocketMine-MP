@@ -41,7 +41,7 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @param Living     $shooter
-	 * @param Item        $bow
+	 * @param Item       $bow
 	 * @param Projectile $projectile
 	 * @param float      $force
 	 */

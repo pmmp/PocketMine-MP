@@ -23,9 +23,9 @@ namespace pocketmine\block;
 
 class FenceBirch extends Fence{
 
-    protected $id = self::FENCE_BIRCH;
+	protected $id = self::FENCE_BIRCH;
 
-    public function getName(){
-        return "Birch Fence";
-    }
+	public function getName(){
+		return "Birch Fence";
+	}
 }

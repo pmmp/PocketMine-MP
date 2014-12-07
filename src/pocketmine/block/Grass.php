@@ -38,17 +38,17 @@ class Grass extends Solid{
 
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getName(){
-        return "Grass";
-    }
+	public function getName(){
+		return "Grass";
+	}
 
-    public function getHardness(){
-        return 3;
-    }
+	public function getHardness(){
+		return 3;
+	}
 
 	public function getDrops(Item $item){
 		return [

@@ -29,9 +29,9 @@ use pocketmine\Server;
 
 abstract class Crops extends Flowable{
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);

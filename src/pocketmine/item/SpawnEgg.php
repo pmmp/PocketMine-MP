@@ -36,9 +36,9 @@ class SpawnEgg extends Item{
 		parent::__construct(self::SPAWN_EGG, $meta, $count, "Spawn Egg");
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$entity = null;
@@ -50,19 +50,19 @@ class SpawnEgg extends Item{
 
 		$nbt = new Compound("", [
 			"Pos" => new Enum("Pos", [
-					new Double("", $block->getX() + 0.5),
-					new Double("", $block->getY()),
-					new Double("", $block->getZ() + 0.5)
-				]),
+				new Double("", $block->getX() + 0.5),
+				new Double("", $block->getY()),
+				new Double("", $block->getZ() + 0.5)
+			]),
 			"Motion" => new Enum("Motion", [
-					new Double("", 0),
-					new Double("", 0),
-					new Double("", 0)
-				]),
+				new Double("", 0),
+				new Double("", 0),
+				new Double("", 0)
+			]),
 			"Rotation" => new Enum("Rotation", [
-					new Float("", lcg_value() * 360),
-					new Float("", 0)
-				]),
+				new Float("", lcg_value() * 360),
+				new Float("", 0)
+			]),
 		]);
 
 		$entity = Entity::createEntity($this->meta, $chunk, $nbt);

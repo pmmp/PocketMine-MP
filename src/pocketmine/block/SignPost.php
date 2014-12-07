@@ -27,23 +27,23 @@ use pocketmine\Player;
 
 class SignPost extends Transparent{
 
-    protected $id = self::SIGN_POST;
+	protected $id = self::SIGN_POST;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getHardness(){
-        return 5;
-    }
+	public function getHardness(){
+		return 5;
+	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
-    public function getName(){
-        return "Sign Post";
-    }
+	public function getName(){
+		return "Sign Post";
+	}
 
 	public function getBoundingBox(){
 		return null;

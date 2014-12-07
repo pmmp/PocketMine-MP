@@ -25,15 +25,15 @@ use pocketmine\item\Item;
 
 class Beetroot extends Crops{
 
-    protected $id = self::BEETROOT_BLOCK;
+	protected $id = self::BEETROOT_BLOCK;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Beetroot Block";
-    }
+	public function getName(){
+		return "Beetroot Block";
+	}
 
 	public function getDrops(Item $item){
 		$drops = [];

@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class LapisOre extends Solid{
 
-    protected $id = self::LAPIS_ORE;
+	protected $id = self::LAPIS_ORE;
 
 	public function __construct(){
 
 	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function getName(){
-        return "Lapis Ore";
-    }
+	public function getName(){
+		return "Lapis Ore";
+	}
 
 	public function getBreakTime(Item $item){
 

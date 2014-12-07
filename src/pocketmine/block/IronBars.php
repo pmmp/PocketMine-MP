@@ -24,14 +24,14 @@ namespace pocketmine\block;
 
 class IronBars extends Thin{
 
-    protected $id = self::IRON_BARS;
+	protected $id = self::IRON_BARS;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Iron Bars";
-    }
+	public function getName(){
+		return "Iron Bars";
+	}
 
 }

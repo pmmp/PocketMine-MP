@@ -27,7 +27,7 @@ class BeetrootSoup extends Item{
 		parent::__construct(self::BEETROOT_SOUP, 0, $count, "Beetroot Soup");
 	}
 
-    public function getMaxStackSize(){
-        return 1;
-    }
+	public function getMaxStackSize(){
+		return 1;
+	}
 }

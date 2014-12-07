@@ -1752,19 +1752,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 							$nbt = new Compound("", [
 								"Pos" => new Enum("Pos", [
-										new Double("", $this->x),
-										new Double("", $this->y + $this->getEyeHeight()),
-										new Double("", $this->z)
-									]),
+									new Double("", $this->x),
+									new Double("", $this->y + $this->getEyeHeight()),
+									new Double("", $this->z)
+								]),
 								"Motion" => new Enum("Motion", [
-										new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
-										new Double("", -sin($this->pitch / 180 * M_PI)),
-										new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
-									]),
+									new Double("", -sin($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI)),
+									new Double("", -sin($this->pitch / 180 * M_PI)),
+									new Double("", cos($this->yaw / 180 * M_PI) * cos($this->pitch / 180 * M_PI))
+								]),
 								"Rotation" => new Enum("Rotation", [
-										new Float("", $this->yaw),
-										new Float("", $this->pitch)
-									]),
+									new Float("", $this->yaw),
+									new Float("", $this->pitch)
+								]),
 							]);
 
 							$f = 1.5;
@@ -1875,7 +1875,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($target instanceof Entity and $this->getGamemode() !== Player::VIEW and $this->dead !== true and $target->dead !== true){
 					if($target instanceof DroppedItem or $target instanceof Arrow){
 						$this->kick("Attempting to attack an invalid entity");
-						$this->server->getLogger()->warning("Player ". $this->getName() ." tried to attack an invalid entity");
+						$this->server->getLogger()->warning("Player " . $this->getName() . " tried to attack an invalid entity");
 						return;
 					}
 
@@ -2536,7 +2536,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 				$message = $this->getName() . " blew up";
 				break;
-			
+
 			case EntityDamageEvent::CAUSE_MAGIC:
 			case EntityDamageEvent::CAUSE_CUSTOM:
 
@@ -2621,7 +2621,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$flags = 0;
 		$flags |= $this->fireTicks > 0 ? 1 : 0;
 		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
-		$flags |= ($this->inAction === true ? 0b10000:0);
+		$flags |= ($this->inAction === true ? 0b10000 : 0);
 		$d = [
 			0 => ["type" => 0, "value" => $flags],
 			1 => ["type" => 1, "value" => $this->airTicks],

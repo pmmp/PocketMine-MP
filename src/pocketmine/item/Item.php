@@ -399,9 +399,9 @@ class Item{
 	protected $durability = 0;
 	protected $name;
 
-    public function canBeActivated(){
-        return false;
-    }
+	public function canBeActivated(){
+		return false;
+	}
 
 	public static function init(){
 		if(self::$list === null){
@@ -427,7 +427,7 @@ class Item{
 			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
 			self::$list[self::DIAMOND] = Diamond::class;
 			self::$list[self::STICK] = Stick::class;
-            self::$list[self::SNOWBALL] = Snowball::class;
+			self::$list[self::SNOWBALL] = Snowball::class;
 			self::$list[self::BOWL] = Bowl::class;
 			self::$list[self::FEATHER] = Feather::class;
 			self::$list[self::BRICK] = Brick::class;
@@ -644,7 +644,7 @@ class Item{
 	}
 
 	final public function __toString(){
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x".$this->count;
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count;
 	}
 
 	public function getDestroySpeed(Block $block, Player $player){

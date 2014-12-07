@@ -25,19 +25,19 @@ use pocketmine\math\AxisAlignedBB;
 
 class Fence extends Transparent{
 
-    protected $id = self::FENCE;
+	protected $id = self::FENCE;
 
 	public function __construct(){
 
 	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function getName(){
-        return "Oak Fence";
-    }
+	public function getName(){
+		return "Oak Fence";
+	}
 
 	protected function recalculateBoundingBox(){
 
@@ -46,7 +46,7 @@ class Fence extends Transparent{
 		$flag2 = $this->canConnect($this->getSide(4));
 		$flag3 = $this->canConnect($this->getSide(5));
 
-		$f =  $flag2 ? 0 : 0.375;
+		$f = $flag2 ? 0 : 0.375;
 		$f1 = $flag3 ? 1 : 0.625;
 		$f2 = $flag ? 0 : 0.375;
 		$f3 = $flag1 ? 1 : 0.625;

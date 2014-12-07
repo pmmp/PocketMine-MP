@@ -26,27 +26,27 @@ use pocketmine\math\AxisAlignedBB;
 
 class StoneWall extends Transparent{
 
-    protected $id = self::STONE_WALL;
+	protected $id = self::STONE_WALL;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
-    public function getName(){
-        if($this->meta === 0x01){
-            return "Mossy Cobblestone Wall";
-        }
+	public function getName(){
+		if($this->meta === 0x01){
+			return "Mossy Cobblestone Wall";
+		}
 
-        return "Cobblestone Wall";
-    }
+		return "Cobblestone Wall";
+	}
 
 	protected function recalculateBoundingBox(){
 
@@ -55,7 +55,7 @@ class StoneWall extends Transparent{
 		$flag2 = $this->canConnect($this->getSide(4));
 		$flag3 = $this->canConnect($this->getSide(5));
 
-		$f =  $flag2 ? 0 : 0.25;
+		$f = $flag2 ? 0 : 0.25;
 		$f1 = $flag3 ? 1 : 0.75;
 		$f2 = $flag ? 0 : 0.25;
 		$f3 = $flag1 ? 1 : 0.75;

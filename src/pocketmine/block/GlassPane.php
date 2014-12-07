@@ -24,18 +24,18 @@ namespace pocketmine\block;
 
 class GlassPane extends Thin{
 
-    protected $id = self::GLASS_PANE;
+	protected $id = self::GLASS_PANE;
 
-    public function __construct(){
+	public function __construct(){
 
-    }
+	}
 
-    public function getName(){
-        return "Glass Pane";
-    }
+	public function getName(){
+		return "Glass Pane";
+	}
 
-    public function getHardness(){
-        return 1.5;
-    }
+	public function getHardness(){
+		return 1.5;
+	}
 
 }

@@ -265,7 +265,7 @@ class Chunk extends BaseFullChunk{
 			}
 
 			return new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, $chunk->Level);
-		}catch (\Exception $e){
+		}catch(\Exception $e){
 			return null;
 		}
 	}

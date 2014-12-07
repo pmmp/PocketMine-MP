@@ -27,7 +27,7 @@ class MushroomStew extends Item{
 		parent::__construct(self::MUSHROOM_STEW, 0, $count, "Mushroom Stew");
 	}
 
-    public function getMaxStackSize(){
-        return 1;
-    }
+	public function getMaxStackSize(){
+		return 1;
+	}
 }

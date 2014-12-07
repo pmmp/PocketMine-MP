@@ -33,13 +33,13 @@ class BrownMushroom extends Flowable{
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Brown Mushroom";
-    }
+	public function getName(){
+		return "Brown Mushroom";
+	}
 
-    public function getLightLevel(){
-        return 1;
-    }
+	public function getLightLevel(){
+		return 1;
+	}
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){

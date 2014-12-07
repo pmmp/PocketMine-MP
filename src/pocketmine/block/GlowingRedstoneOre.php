@@ -32,17 +32,17 @@ class GlowingRedstoneOre extends Solid{
 
 	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function getName(){
-        return "Glowing Redstone Ore";
-    }
+	public function getName(){
+		return "Glowing Redstone Ore";
+	}
 
-    public function getLightLevel(){
-        return 9;
-    }
+	public function getLightLevel(){
+		return 9;
+	}
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){

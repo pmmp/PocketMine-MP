@@ -29,23 +29,23 @@ use pocketmine\Player;
 
 class Bed extends Transparent{
 
-    protected $id = self::BED_BLOCK;
+	protected $id = self::BED_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 1;
-    }
+	public function getHardness(){
+		return 1;
+	}
 
-    public function getName(){
-        return "Bed Block";
-    }
+	public function getName(){
+		return "Bed Block";
+	}
 
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(

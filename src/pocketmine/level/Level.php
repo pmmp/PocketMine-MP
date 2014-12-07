@@ -1108,26 +1108,26 @@ class Level implements ChunkManager, Metadatable{
 		if($item->getId() > 0 and $item->getCount() > 0){
 			$itemEntity = Entity::createEntity("Item", $this->getChunk($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
-						new Double("", $source->getX()),
-						new Double("", $source->getY()),
-						new Double("", $source->getZ())
-					]),
+					new Double("", $source->getX()),
+					new Double("", $source->getY()),
+					new Double("", $source->getZ())
+				]),
 
 				"Motion" => new Enum("Motion", [
-						new Double("", $motion->x),
-						new Double("", $motion->y),
-						new Double("", $motion->z)
-					]),
+					new Double("", $motion->x),
+					new Double("", $motion->y),
+					new Double("", $motion->z)
+				]),
 				"Rotation" => new Enum("Rotation", [
-						new Float("", lcg_value() * 360),
-						new Float("", 0)
-					]),
+					new Float("", lcg_value() * 360),
+					new Float("", 0)
+				]),
 				"Health" => new Short("Health", 5),
 				"Item" => new Compound("Item", [
-						"id" => new Short("id", $item->getId()),
-						"Damage" => new Short("Damage", $item->getDamage()),
-						"Count" => new Byte("Count", $item->getCount())
-					]),
+					"id" => new Short("id", $item->getId()),
+					"Damage" => new Short("Damage", $item->getDamage()),
+					"Count" => new Byte("Count", $item->getCount())
+				]),
 				"PickupDelay" => new Short("PickupDelay", $delay)
 			]));
 
@@ -1709,7 +1709,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunks[$index] = $chunk;
 		}
 		if(ADVANCED_CACHE == true){
-			Cache::remove("world:" . $this->getId() . ":". Level::chunkHash($x, $z));
+			Cache::remove("world:" . $this->getId() . ":" . Level::chunkHash($x, $z));
 		}
 		$chunk->setChanged();
 	}
@@ -1820,7 +1820,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->timings->syncChunkSendPrepareTimer->stopTiming();
 				}
 			}
-			
+
 			$this->timings->syncChunkSendTimer->stopTiming();
 		}
 	}
@@ -1995,9 +1995,9 @@ class Level implements ChunkManager, Metadatable{
 				$this->provider->saveChunk($x, $z);
 			}
 			$this->provider->unloadChunk($x, $z, $safe);
-		}catch (\Exception $e){
+		}catch(\Exception $e){
 			$logger = $this->server->getLogger();
-			$logger->error("Error when unloading a chunk: ".$e->getMessage());
+			$logger->error("Error when unloading a chunk: " . $e->getMessage());
 			if($logger instanceof MainLogger){
 				$logger->logException($e);
 			}

@@ -235,8 +235,8 @@ class ServerScheduler{
 				$task->timings->startTiming();
 				try{
 					$task->run($this->currentTick);
-				}catch (\Exception $e){
-					Server::getInstance()->getLogger()->critical("Could not execute task ". $task->getTaskName() .": ".$e->getMessage());
+				}catch(\Exception $e){
+					Server::getInstance()->getLogger()->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
 					if(($logger = Server::getInstance()->getLogger()) instanceof MainLogger){
 						$logger->logException($e);
 					}

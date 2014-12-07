@@ -135,7 +135,7 @@ class GenerationManager{
 					$this->readPacket();
 				}
 			}catch(\Exception $e){
-				$this->logger->warning("[Generator Thread] Exception: ".$e->getMessage() . " on file \"".$e->getFile()."\" line ".$e->getLine());
+				$this->logger->warning("[Generator Thread] Exception: " . $e->getMessage() . " on file \"" . $e->getFile() . "\" line " . $e->getLine());
 			}
 		}
 	}
@@ -271,7 +271,7 @@ class GenerationManager{
 				$this->shutdown = true;
 			}
 		}elseif(count($this->thread->getInternalQueue()) === 0){
-			$this->thread->synchronized(function(){
+			$this->thread->synchronized(function (){
 				$this->thread->wait(50000);
 			});
 

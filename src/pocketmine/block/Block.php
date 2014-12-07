@@ -782,8 +782,8 @@ class Block extends Position implements Metadatable{
 	}
 
 	/**
-	 * @param int    $id
-	 * @param int    $meta
+	 * @param int $id
+	 * @param int $meta
 	 */
 	public function __construct($id, $meta = 0){
 		$this->id = (int) $id;

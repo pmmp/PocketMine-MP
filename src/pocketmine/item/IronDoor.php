@@ -29,7 +29,7 @@ class IronDoor extends Item{
 		parent::__construct(self::IRON_DOOR, 0, $count, "Iron Door");
 	}
 
-    public function getMaxStackSize(){
-        return 1;
-    }
+	public function getMaxStackSize(){
+		return 1;
+	}
 }

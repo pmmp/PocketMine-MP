@@ -24,14 +24,14 @@ namespace pocketmine\block;
 
 class StoneBrickStairs extends Stair{
 
-    protected $id = self::STONE_BRICK_STAIRS;
+	protected $id = self::STONE_BRICK_STAIRS;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Stone Brick Stairs";
-    }
+	public function getName(){
+		return "Stone Brick Stairs";
+	}
 
 }

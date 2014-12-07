@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class IronDoor extends Door{
 
-    protected $id = self::IRON_DOOR_BLOCK;
+	protected $id = self::IRON_DOOR_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Iron Door Block";
-    }
+	public function getName(){
+		return "Iron Door Block";
+	}
 
-    public function getHardness(){
-        return 25;
-    }
+	public function getHardness(){
+		return 25;
+	}
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

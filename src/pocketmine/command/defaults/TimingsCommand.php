@@ -119,8 +119,8 @@ class TimingsCommand extends VanillaCommand{
 				}
 
 
-				$sender->sendMessage("Timings uploaded to http://paste.ubuntu.com/".$matches[1]."/");
-				$sender->sendMessage("You can read the results at http://timings.aikar.co/?url=".$matches[1]);
+				$sender->sendMessage("Timings uploaded to http://paste.ubuntu.com/" . $matches[1] . "/");
+				$sender->sendMessage("You can read the results at http://timings.aikar.co/?url=" . $matches[1]);
 				fclose($fileTimings);
 			}else{
 				fclose($fileTimings);

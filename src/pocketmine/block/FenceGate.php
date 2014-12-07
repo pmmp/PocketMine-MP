@@ -27,23 +27,23 @@ use pocketmine\Player;
 
 class FenceGate extends Transparent{
 
-    protected $id = self::FENCE_GATE;
+	protected $id = self::FENCE_GATE;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Oak Fence Gate";
-    }
+	public function getName(){
+		return "Oak Fence Gate";
+	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 
 	protected function recalculateBoundingBox(){

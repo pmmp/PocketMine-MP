@@ -88,7 +88,7 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * @param Item $item
-	 * @param $source
+	 * @param      $source
 	 *
 	 * @return bool
 	 */
@@ -104,14 +104,14 @@ class PlayerInventory extends BaseInventory{
 		if($slot >= -1 and $slot < $this->getSize()){
 			$item = $this->getItem($slot);
 
-            $itemIndex = $this->getHeldItemIndex();
+			$itemIndex = $this->getHeldItemIndex();
 
-            for($i = 0; $i < $this->getHotbarSize(); ++$i){
-                if($this->getHotbarSlotIndex($i) === $slot){
-                    $itemIndex = $i;
-                    break;
-                }
-            }
+			for($i = 0; $i < $this->getHotbarSize(); ++$i){
+				if($this->getHotbarSlotIndex($i) === $slot){
+					$itemIndex = $i;
+					break;
+				}
+			}
 
 			if($this->getHolder() instanceof Player){
 				Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slot, $itemIndex));
@@ -122,7 +122,7 @@ class PlayerInventory extends BaseInventory{
 			}
 
 			$this->setHotbarSlotIndex($itemIndex, $slot);
-            $this->setHeldItemIndex($itemIndex);
+			$this->setHeldItemIndex($itemIndex);
 		}
 	}
 
@@ -362,7 +362,6 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 	}
-
 
 
 	/**

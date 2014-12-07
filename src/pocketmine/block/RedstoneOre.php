@@ -26,19 +26,19 @@ use pocketmine\level\Level;
 
 class RedstoneOre extends Solid{
 
-    protected $id = self::REDSTONE_ORE;
+	protected $id = self::REDSTONE_ORE;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Redstone Ore";
-    }
+	public function getName(){
+		return "Redstone Ore";
+	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL or $type === Level::BLOCK_UPDATE_TOUCH){

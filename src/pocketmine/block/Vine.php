@@ -36,21 +36,21 @@ class Vine extends Transparent{
 		$this->meta = $meta;
 	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
-    public function getName(){
-        return "Vines";
-    }
+	public function getName(){
+		return "Vines";
+	}
 
-    public function getHardness(){
-        return 1;
-    }
+	public function getHardness(){
+		return 1;
+	}
 
-    public function hasEntityCollision(){
-        return true;
-    }
+	public function hasEntityCollision(){
+		return true;
+	}
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;

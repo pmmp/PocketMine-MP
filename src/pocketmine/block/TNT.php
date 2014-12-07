@@ -33,23 +33,23 @@ use pocketmine\utils\Random;
 
 class TNT extends Solid{
 
-    protected $id = self::TNT;
+	protected $id = self::TNT;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "TNT";
-    }
+	public function getName(){
+		return "TNT";
+	}
 
-    public function getHardness(){
-        return 0;
-    }
+	public function getHardness(){
+		return 0;
+	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getId() === Item::FLINT_STEEL){

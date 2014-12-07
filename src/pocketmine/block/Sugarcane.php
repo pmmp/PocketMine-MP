@@ -30,15 +30,15 @@ use pocketmine\Server;
 
 class Sugarcane extends Flowable{
 
-    protected $id = self::SUGARCANE_BLOCK;
+	protected $id = self::SUGARCANE_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Sugarcane";
-    }
+	public function getName(){
+		return "Sugarcane";
+	}
 
 
 	public function getDrops(Item $item){

@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\math;
+
 use pocketmine\level\MovingObjectPosition;
 
 class AxisAlignedBB{
@@ -58,7 +59,7 @@ class AxisAlignedBB{
 		$maxX = $this->maxX;
 		$maxY = $this->maxY;
 		$maxZ = $this->maxZ;
-		
+
 		if($x < 0){
 			$minX += $x;
 		}elseif($x > 0){

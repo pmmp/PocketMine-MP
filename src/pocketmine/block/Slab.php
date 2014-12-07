@@ -27,29 +27,29 @@ use pocketmine\Player;
 
 class Slab extends Transparent{
 
-    protected $id = self::SLAB;
+	protected $id = self::SLAB;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
-    public function getName(){
-        static $names = [
-            0 => "Stone",
-            1 => "Sandstone",
-            2 => "Wooden",
-            3 => "Cobblestone",
-            4 => "Brick",
-            5 => "Stone Brick",
-            6 => "Quartz",
-            7 => "",
-        ];
-        return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
-    }
+	public function getName(){
+		static $names = [
+			0 => "Stone",
+			1 => "Sandstone",
+			2 => "Wooden",
+			3 => "Cobblestone",
+			4 => "Brick",
+			5 => "Stone Brick",
+			6 => "Quartz",
+			7 => "",
+		];
+		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
+	}
 
 	protected function recalculateBoundingBox(){
 

@@ -29,21 +29,21 @@ use pocketmine\math\Vector3;
 
 abstract class Liquid extends Transparent{
 
-    public function hasEntityCollision(){
-        return true;
-    }
+	public function hasEntityCollision(){
+		return true;
+	}
 
-    public function isBreakable(Item $item){
-        return false;
-    }
+	public function isBreakable(Item $item){
+		return false;
+	}
 
-    public function canBeReplaced(){
-        return true;
-    }
+	public function canBeReplaced(){
+		return true;
+	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
 	public $adjacentSources = 0;
 	public $isOptimalFlowDirection = [0, 0, 0, 0];

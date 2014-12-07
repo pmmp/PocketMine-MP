@@ -26,25 +26,25 @@ use pocketmine\level\Level;
 
 class TallGrass extends Flowable{
 
-    protected $id = self::TALL_GRASS;
+	protected $id = self::TALL_GRASS;
 
 	public function __construct($meta = 1){
 		$this->meta = $meta;
 	}
 
-    public function canBeReplaced(){
-        return true;
-    }
+	public function canBeReplaced(){
+		return true;
+	}
 
 	public function getName(){
-        static $names = [
-            0 => "Dead Shrub",
-            1 => "Tall Grass",
-            2 => "Fern",
-            3 => ""
-        ];
-        return $names[$this->meta & 0x03];
-    }
+		static $names = [
+			0 => "Dead Shrub",
+			1 => "Tall Grass",
+			2 => "Fern",
+			3 => ""
+		];
+		return $names[$this->meta & 0x03];
+	}
 
 
 	public function onUpdate($type){

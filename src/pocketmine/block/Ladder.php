@@ -35,21 +35,21 @@ class Ladder extends Transparent{
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Ladder";
-    }
+	public function getName(){
+		return "Ladder";
+	}
 
-    public function hasEntityCollision(){
-        return true;
-    }
+	public function hasEntityCollision(){
+		return true;
+	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
-    public function getHardness(){
-        return 2;
-    }
+	public function getHardness(){
+		return 2;
+	}
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;

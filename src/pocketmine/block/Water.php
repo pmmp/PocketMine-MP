@@ -27,20 +27,20 @@ use pocketmine\Player;
 
 class Water extends Liquid{
 
-    protected $id = self::WATER;
+	protected $id = self::WATER;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Water";
-    }
+	public function getName(){
+		return "Water";
+	}
 
-    public function getHardness(){
-        return 500;
-    }
-	
+	public function getHardness(){
+		return 500;
+	}
+
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance = 0;
 		if($entity->fireTicks > 0){

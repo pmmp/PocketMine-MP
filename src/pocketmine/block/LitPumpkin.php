@@ -26,22 +26,22 @@ use pocketmine\Player;
 
 class LitPumpkin extends Solid{
 
-    protected $id = self::LIT_PUMPKIN;
+	protected $id = self::LIT_PUMPKIN;
 
-    public function getLightLevel(){
-        return 15;
-    }
+	public function getLightLevel(){
+		return 15;
+	}
 
-    public function getHardness(){
-        return 5;
-    }
+	public function getHardness(){
+		return 5;
+	}
 
-    public function getName(){
-        return "Jack o'Lantern";
-    }
+	public function getName(){
+		return "Jack o'Lantern";
+	}
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){

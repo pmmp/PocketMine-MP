@@ -33,13 +33,13 @@ class Bucket extends Item{
 		parent::__construct(self::BUCKET, $meta, $count, "Bucket");
 	}
 
-    public function getMaxStackSize(){
-        return 1;
-    }
+	public function getMaxStackSize(){
+		return 1;
+	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
 		$targetBlock = Block::get($this->meta);

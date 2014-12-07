@@ -27,23 +27,23 @@ use pocketmine\Player;
 
 class Trapdoor extends Transparent{
 
-    protected $id = self::TRAPDOOR;
+	protected $id = self::TRAPDOOR;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Trapdoor";
-    }
+	public function getName(){
+		return "Trapdoor";
+	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
 	protected function recalculateBoundingBox(){
 
@@ -90,7 +90,8 @@ class Trapdoor extends Transparent{
 					$this->y + 1,
 					$this->z + $f
 				);
-			}if(($damage & 0x03) === 2){
+			}
+			if(($damage & 0x03) === 2){
 				$bb->setBounds(
 					$this->x + 1 - $f,
 					$this->y,
@@ -99,7 +100,8 @@ class Trapdoor extends Transparent{
 					$this->y + 1,
 					$this->z + 1
 				);
-			}if(($damage & 0x03) === 3){
+			}
+			if(($damage & 0x03) === 3){
 				$bb->setBounds(
 					$this->x,
 					$this->y,

@@ -27,23 +27,23 @@ use pocketmine\Player;
 //TODO: check orientation
 class Workbench extends Solid{
 
-    protected $id = self::WORKBENCH;
+	protected $id = self::WORKBENCH;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function getName(){
-        return "Crafting Table";
-    }
+	public function getName(){
+		return "Crafting Table";
+	}
 
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){

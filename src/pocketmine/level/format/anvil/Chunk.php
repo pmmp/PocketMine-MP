@@ -133,7 +133,7 @@ class Chunk extends BaseChunk{
 	 */
 	public static function fromBinary($data, LevelProvider $provider = null){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
-		
+
 		try{
 			$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
 			$chunk = $nbt->getData();
@@ -143,7 +143,7 @@ class Chunk extends BaseChunk{
 			}
 
 			return new Chunk($provider instanceof LevelProvider ? $provider : Anvil::class, $chunk->Level);
-		}catch (\Exception $e){
+		}catch(\Exception $e){
 			return null;
 		}
 	}

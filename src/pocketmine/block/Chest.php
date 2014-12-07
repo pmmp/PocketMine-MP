@@ -34,23 +34,23 @@ use pocketmine\tile\Tile;
 
 class Chest extends Transparent{
 
-    protected $id = self::CHEST;
+	protected $id = self::CHEST;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 15;
-    }
+	public function getHardness(){
+		return 15;
+	}
 
-    public function getName(){
-        return "Chest";
-    }
+	public function getName(){
+		return "Chest";
+	}
 
 	protected function recalculateBoundingBox(){
 		return new AxisAlignedBB(

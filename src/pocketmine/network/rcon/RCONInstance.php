@@ -109,7 +109,7 @@ class RCONInstance extends \Thread{
 			}
 
 			for($n = 0; $n < $this->maxClients; ++$n){
-				$client = & $this->{"client" . $n};
+				$client = &$this->{"client" . $n};
 				if($client !== null){
 					if($this->{"status" . $n} !== -1 and $this->stop !== true){
 						if($this->{"status" . $n} === 0 and $this->{"timeout" . $n} < microtime(true)){ //Timeout

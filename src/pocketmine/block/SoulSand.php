@@ -26,19 +26,19 @@ use pocketmine\math\AxisAlignedBB;
 
 class SoulSand extends Solid{
 
-    protected $id = self::SOUL_SAND;
+	protected $id = self::SOUL_SAND;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Soul Sand";
-    }
+	public function getName(){
+		return "Soul Sand";
+	}
 
-    public function getHardness(){
-        return 2.5;
-    }
+	public function getHardness(){
+		return 2.5;
+	}
 
 	protected function recalculateBoundingBox(){
 

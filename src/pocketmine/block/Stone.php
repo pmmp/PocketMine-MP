@@ -40,23 +40,23 @@ class Stone extends Solid{
 
 	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
-    public function getName(){
-        static $names = [
-            self::NORMAL => "Stone",
-            self::GRANITE => "Granite",
-            self::POLISHED_GRANITE => "Polished Granite",
-            self::DIORITE => "Diorite",
-            self::POLISHED_DIORITE => "Polished Diorite",
-            self::ANDESITE => "Andesite",
-            self::POLISHED_ANDESITE => "Polished Andesite",
-            7 => "Unknown Stone",
-        ];
-        return $names[$this->meta & 0x07];
-    }
+	public function getName(){
+		static $names = [
+			self::NORMAL => "Stone",
+			self::GRANITE => "Granite",
+			self::POLISHED_GRANITE => "Polished Granite",
+			self::DIORITE => "Diorite",
+			self::POLISHED_DIORITE => "Polished Diorite",
+			self::ANDESITE => "Andesite",
+			self::POLISHED_ANDESITE => "Polished Andesite",
+			7 => "Unknown Stone",
+		];
+		return $names[$this->meta & 0x07];
+	}
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

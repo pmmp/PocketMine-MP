@@ -31,13 +31,13 @@ use pocketmine\Server;
 
 abstract class Door extends Transparent{
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function isSolid(){
-        return false;
-    }
+	public function isSolid(){
+		return false;
+	}
 
 	private function getFullDamage(){
 		$damage = $this->getDamage();

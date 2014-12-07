@@ -29,19 +29,19 @@ use pocketmine\Server;
 
 class Mycelium extends Solid{
 
-    protected $id = self::MYCELIUM;
+	protected $id = self::MYCELIUM;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Mycelium";
-    }
+	public function getName(){
+		return "Mycelium";
+	}
 
-    public function getHardness() {
-        return 2.5;
-    }
+	public function getHardness(){
+		return 2.5;
+	}
 
 	public function getDrops(Item $item){
 		return [

@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class Emerald extends Solid{
 
-    protected $id = self::EMERALD_BLOCK;
+	protected $id = self::EMERALD_BLOCK;
 
 	public function __construct(){
 
 	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
-    public function getName(){
-        return "Emerald Block";
-    }
+	public function getName(){
+		return "Emerald Block";
+	}
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

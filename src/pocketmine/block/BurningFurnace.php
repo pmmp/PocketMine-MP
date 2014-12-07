@@ -36,24 +36,24 @@ class BurningFurnace extends Solid{
 	protected $id = self::BURNING_FURNACE;
 
 	public function __construct($meta = 0){
-        $this->meta = $meta;
+		$this->meta = $meta;
 	}
 
-    public function getName(){
-        return "Burning Furnace";
-    }
+	public function getName(){
+		return "Burning Furnace";
+	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 17.5;
-    }
+	public function getHardness(){
+		return 17.5;
+	}
 
-    public function getLightLevel(){
-        return 13;
-    }
+	public function getLightLevel(){
+		return 13;
+	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = [

@@ -103,7 +103,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 	private $upload = 0;
 	private $download = 0;
-	
+
 	private $internalThreaded;
 	private $externalThreaded;
 
@@ -113,7 +113,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 
 		$this->server = $server;
 		$this->identifiers = new \SplObjectStorage();
-		
+
 		$this->internalThreaded = new \Threaded();
 		$this->externalThreaded = new \Threaded();
 
@@ -180,11 +180,11 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 				$pk = $this->getPacket($packet->buffer);
 				$pk->decode();
 				$this->players[$identifier]->handleDataPacket($pk);
-			}catch (\Exception $e){
+			}catch(\Exception $e){
 				if(\pocketmine\DEBUG > 1){
 					$logger = $this->server->getLogger();
 					if($logger instanceof MainLogger){
-						$logger->debug("Packet ".get_class($pk)." 0x".bin2hex($packet->buffer));
+						$logger->debug("Packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
 						$logger->logException($e);
 					}
 				}

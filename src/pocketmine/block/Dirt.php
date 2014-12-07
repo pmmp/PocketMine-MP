@@ -32,17 +32,17 @@ class Dirt extends Solid{
 
 	}
 
-    public function canBeActivated(){
-        return true;
-    }
+	public function canBeActivated(){
+		return true;
+	}
 
-    public function getHardness(){
-        return 2.5;
-    }
+	public function getHardness(){
+		return 2.5;
+	}
 
-    public function getName(){
-        return "Dirt";
-    }
+	public function getName(){
+		return "Dirt";
+	}
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->isHoe()){

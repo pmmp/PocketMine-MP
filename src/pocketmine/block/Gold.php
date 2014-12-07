@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class Gold extends Solid{
 
-    protected $id = self::GOLD_BLOCK;
+	protected $id = self::GOLD_BLOCK;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Gold Block";
-    }
+	public function getName(){
+		return "Gold Block";
+	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
 	public function getBreakTime(Item $item){
 		switch($item->isPickaxe()){

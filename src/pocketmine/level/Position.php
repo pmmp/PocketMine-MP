@@ -25,7 +25,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\LevelException;
 
 class Position extends Vector3{
-	
+
 	/** @var Level */
 	public $level = null;
 

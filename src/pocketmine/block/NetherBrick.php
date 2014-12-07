@@ -25,19 +25,19 @@ use pocketmine\item\Item;
 
 class NetherBrick extends Solid{
 
-    protected $id = self::NETHER_BRICKS;
+	protected $id = self::NETHER_BRICKS;
 
 	public function __construct(){
 
 	}
 
-    public function getName(){
-        return "Nether Bricks";
-    }
+	public function getName(){
+		return "Nether Bricks";
+	}
 
-    public function getHardness(){
-        return 30;
-    }
+	public function getHardness(){
+		return 30;
+	}
 
 	public function getBreakTime(Item $item){
 
