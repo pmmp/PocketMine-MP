@@ -46,7 +46,7 @@ abstract class Tool extends Item{
 	 */
 	public function useOn($object){
 		if($this->isHoe()){
-			if(($object instanceof Block) and ($object->getID() === self::GRASS or $object->getID() === self::DIRT)){
+			if(($object instanceof Block) and ($object->getId() === self::GRASS or $object->getId() === self::DIRT)){
 				$this->meta++;
 			}
 		}elseif(($object instanceof Entity) and !$this->isSword()){

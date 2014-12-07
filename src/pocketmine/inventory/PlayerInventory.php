@@ -68,8 +68,8 @@ class PlayerInventory extends BaseInventory{
 			$item = $this->getItemInHand();
 
 			$pk = new PlayerEquipmentPacket();
-			$pk->eid = $this->getHolder()->getID();
-			$pk->item = $item->getID();
+			$pk->eid = $this->getHolder()->getId();
+			$pk->item = $item->getId();
 			$pk->meta = $item->getDamage();
 			$pk->slot = $this->getHeldItemIndex();
 
@@ -128,8 +128,8 @@ class PlayerInventory extends BaseInventory{
 		$item = $this->getItemInHand();
 
 		$pk = new PlayerEquipmentPacket();
-		$pk->eid = $this->getHolder()->getID();
-		$pk->item = $item->getID();
+		$pk->eid = $this->getHolder()->getId();
+		$pk->item = $item->getId();
 		$pk->meta = $item->getDamage();
 		$pk->slot = 0;
 		$pk->isEncoded = true;
@@ -202,7 +202,7 @@ class PlayerInventory extends BaseInventory{
 	public function setItem($index, Item $item, $source = null){
 		if($index < 0 or $index >= $this->size){
 			return false;
-		}elseif($item->getID() === 0 or $item->getCount() <= 0){
+		}elseif($item->getId() === 0 or $item->getCount() <= 0){
 			return $this->clear($index, $source);
 		}
 
@@ -265,7 +265,7 @@ class PlayerInventory extends BaseInventory{
 				}
 				$item = $ev->getNewItem();
 			}
-			if($item->getID() !== Item::AIR){
+			if($item->getId() !== Item::AIR){
 				$this->slots[$index] = clone $item;
 			}else{
 				unset($this->slots[$index]);
@@ -308,15 +308,15 @@ class PlayerInventory extends BaseInventory{
 		$slots = [];
 
 		foreach($armor as $i => $slot){
-			if($slot->getID() === Item::AIR){
+			if($slot->getId() === Item::AIR){
 				$slots[$i] = 255;
 			}else{
-				$slots[$i] = $slot->getID();
+				$slots[$i] = $slot->getId();
 			}
 		}
 
 		$pk = new PlayerArmorEquipmentPacket();
-		$pk->eid = $this->getHolder()->getID();
+		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $slots;
 		$pk->encode();
 		$pk->isEncoded = true;
@@ -346,7 +346,7 @@ class PlayerInventory extends BaseInventory{
 				$items[$i] = Item::get(Item::AIR, null, 0);
 			}
 
-			if($items[$i]->getID() === Item::AIR){
+			if($items[$i]->getId() === Item::AIR){
 				$this->clear($this->getSize() + $i);
 			}else{
 				$this->setItem($this->getSize() + $i, $items[$i]);
@@ -369,15 +369,15 @@ class PlayerInventory extends BaseInventory{
 		$slots = [];
 
 		foreach($armor as $i => $slot){
-			if($slot->getID() === Item::AIR){
+			if($slot->getId() === Item::AIR){
 				$slots[$i] = 255;
 			}else{
-				$slots[$i] = $slot->getID();
+				$slots[$i] = $slot->getId();
 			}
 		}
 
 		$pk = new PlayerArmorEquipmentPacket();
-		$pk->eid = $this->getHolder()->getID();
+		$pk->eid = $this->getHolder()->getId();
 		$pk->slots = $slots;
 		$pk->encode();
 		$pk->isEncoded = true;

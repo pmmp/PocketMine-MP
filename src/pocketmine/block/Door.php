@@ -205,7 +205,7 @@ abstract class Door extends Transparent{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
+			if($this->getSide(0)->getId() === self::AIR){ //Replace with common break method
 				$this->getLevel()->setBlock($this, new Air(), false);
 				if($this->getSide(1) instanceof Door){
 					$this->getLevel()->setBlock($this->getSide(1), new Air(), false);
@@ -235,7 +235,7 @@ abstract class Door extends Transparent{
 			$next = $this->getSide($face[(($direction + 2) % 4)]);
 			$next2 = $this->getSide($face[$direction]);
 			$metaUp = 0x08;
-			if($next->getID() === $this->id or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
+			if($next->getId() === $this->id or ($next2->isTransparent() === false and $next->isTransparent() === true)){ //Door hinge
 				$metaUp |= 0x01;
 			}
 
@@ -251,12 +251,12 @@ abstract class Door extends Transparent{
 	public function onBreak(Item $item){
 		if(($this->meta & 0x08) === 0x08){
 			$down = $this->getSide(0);
-			if($down->getID() === $this->id){
+			if($down->getId() === $this->id){
 				$this->getLevel()->setBlock($down, new Air(), true);
 			}
 		}else{
 			$up = $this->getSide(1);
-			if($up->getID() === $this->id){
+			if($up->getId() === $this->id){
 				$this->getLevel()->setBlock($up, new Air(), true);
 			}
 		}
@@ -268,12 +268,12 @@ abstract class Door extends Transparent{
 	public function onActivate(Item $item, Player $player = null){
 		if(($this->meta & 0x08) === 0x08){ //Top
 			$down = $this->getSide(0);
-			if($down->getID() === $this->id){
+			if($down->getId() === $this->id){
 				$meta = $down->getDamage() ^ 0x04;
 				$this->getLevel()->setBlock($down, Block::get($this->id, $meta), true);
 				$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 				if($player instanceof Player){
-					unset($players[$player->getID()]);
+					unset($players[$player->getId()]);
 				}
 				$pk = new LevelEventPacket();
 				$pk->x = $this->x;
@@ -292,7 +292,7 @@ abstract class Door extends Transparent{
 			$this->getLevel()->setBlock($this, $this, true);
 			$players = $this->getLevel()->getUsingChunk($this->x >> 4, $this->z >> 4);
 			if($player instanceof Player){
-				unset($players[$player->getID()]);
+				unset($players[$player->getId()]);
 			}
 			$pk = new LevelEventPacket();
 			$pk->x = $this->x;

@@ -124,7 +124,7 @@ abstract class BaseInventory implements Inventory{
 		$item = clone $item;
 		if($index < 0 or $index >= $this->size){
 			return false;
-		}elseif($item->getID() === 0 or $item->getCount() <= 0){
+		}elseif($item->getId() === 0 or $item->getCount() <= 0){
 			return $this->clear($index, $source);
 		}
 
@@ -195,7 +195,7 @@ abstract class BaseInventory implements Inventory{
 
 	public function firstEmpty(){
 		for($i = 0; $i < $this->size; ++$i){
-			if($this->getItem($i)->getID() === Item::AIR){
+			if($this->getItem($i)->getId() === Item::AIR){
 				return $i;
 			}
 		}
@@ -212,7 +212,7 @@ abstract class BaseInventory implements Inventory{
 				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
 					$item->setCount($item->getCount() - $diff);
 				}
-			}elseif($slot->getID() === Item::AIR){
+			}elseif($slot->getId() === Item::AIR){
 				$item->setCount($item->getCount() - $this->getMaxStackSize());
 			}
 
@@ -345,7 +345,7 @@ abstract class BaseInventory implements Inventory{
 				}
 				$item = $ev->getNewItem();
 			}
-			if($item->getID() !== Item::AIR){
+			if($item->getId() !== Item::AIR){
 				$this->slots[$index] = clone $item;
 			}else{
 				unset($this->slots[$index]);

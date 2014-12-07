@@ -64,7 +64,7 @@ class Cake extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
-		if($down->getID() !== self::AIR){
+		if($down->getId() !== self::AIR){
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
@@ -75,7 +75,7 @@ class Cake extends Transparent{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->getID() === self::AIR){ //Replace with common break method
+			if($this->getSide(0)->getId() === self::AIR){ //Replace with common break method
 				$this->getLevel()->setBlock($this, new Air(), true);
 
 				return Level::BLOCK_UPDATE_NORMAL;

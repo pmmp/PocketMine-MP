@@ -95,7 +95,7 @@ class Flat extends Generator{
 			$b = Item::fromString($b);
 			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$this->structure[$cY] = [$b->getID(), $b->getDamage()];
+				$this->structure[$cY] = [$b->getId(), $b->getDamage()];
 			}
 		}
 

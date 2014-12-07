@@ -64,7 +64,7 @@ class Snowball extends Projectile{
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = Snowball::NETWORK_ID;
-		$pk->eid = $this->getID();
+		$pk->eid = $this->getId();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

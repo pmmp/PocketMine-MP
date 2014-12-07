@@ -79,13 +79,13 @@ class Bed extends Transparent{
 		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed
 			$b = $this;
 		}else{ //Bottom Part of Bed
-			if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
+			if($blockNorth->getId() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
 				$b = $blockNorth;
-			}elseif($blockSouth->getID() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
+			}elseif($blockSouth->getId() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
 				$b = $blockSouth;
-			}elseif($blockEast->getID() === $this->id and ($blockEast->meta & 0x08) === 0x08){
+			}elseif($blockEast->getId() === $this->id and ($blockEast->meta & 0x08) === 0x08){
 				$b = $blockEast;
-			}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
+			}elseif($blockWest->getId() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 				$b = $blockWest;
 			}else{
 				if($player instanceof Player){
@@ -138,23 +138,23 @@ class Bed extends Transparent{
 		$blockWest = $this->getSide(4);
 
 		if(($this->meta & 0x08) === 0x08){ //This is the Top part of bed
-			if($blockNorth->getID() === $this->id and $blockNorth->meta !== 0x08){ //Checks if the block ID and meta are right
+			if($blockNorth->getId() === $this->id and $blockNorth->meta !== 0x08){ //Checks if the block ID and meta are right
 				$this->getLevel()->setBlock($blockNorth, new Air(), true, true);
-			}elseif($blockSouth->getID() === $this->id and $blockSouth->meta !== 0x08){
+			}elseif($blockSouth->getId() === $this->id and $blockSouth->meta !== 0x08){
 				$this->getLevel()->setBlock($blockSouth, new Air(), true, true);
-			}elseif($blockEast->getID() === $this->id and $blockEast->meta !== 0x08){
+			}elseif($blockEast->getId() === $this->id and $blockEast->meta !== 0x08){
 				$this->getLevel()->setBlock($blockEast, new Air(), true, true);
-			}elseif($blockWest->getID() === $this->id and $blockWest->meta !== 0x08){
+			}elseif($blockWest->getId() === $this->id and $blockWest->meta !== 0x08){
 				$this->getLevel()->setBlock($blockWest, new Air(), true, true);
 			}
 		}else{ //Bottom Part of Bed
-			if($blockNorth->getID() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
+			if($blockNorth->getId() === $this->id and ($blockNorth->meta & 0x08) === 0x08){
 				$this->getLevel()->setBlock($blockNorth, new Air(), true, true);
-			}elseif($blockSouth->getID() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
+			}elseif($blockSouth->getId() === $this->id and ($blockSouth->meta & 0x08) === 0x08){
 				$this->getLevel()->setBlock($blockSouth, new Air(), true, true);
-			}elseif($blockEast->getID() === $this->id and ($blockEast->meta & 0x08) === 0x08){
+			}elseif($blockEast->getId() === $this->id and ($blockEast->meta & 0x08) === 0x08){
 				$this->getLevel()->setBlock($blockEast, new Air(), true, true);
-			}elseif($blockWest->getID() === $this->id and ($blockWest->meta & 0x08) === 0x08){
+			}elseif($blockWest->getId() === $this->id and ($blockWest->meta & 0x08) === 0x08){
 				$this->getLevel()->setBlock($blockWest, new Air(), true, true);
 			}
 		}

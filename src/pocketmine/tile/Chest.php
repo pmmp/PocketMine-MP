@@ -129,11 +129,11 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 		$d = new Compound(false, [
 			new Byte("Count", $item->getCount()),
 			new Byte("Slot", $index),
-			new Short("id", $item->getID()),
+			new Short("id", $item->getId()),
 			new Short("Damage", $item->getDamage()),
 		]);
 
-		if($item->getID() === Item::AIR or $item->getCount() <= 0){
+		if($item->getId() === Item::AIR or $item->getCount() <= 0){
 			if($i >= 0){
 				unset($this->namedtag->Items[$i]);
 			}

@@ -312,8 +312,8 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getID()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
-			$this->hasSpawned[$player->getID()] = $player;
+		if(!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
+			$this->hasSpawned[$player->getId()] = $player;
 		}
 	}
 
@@ -347,11 +347,11 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param Player $player
 	 */
 	public function despawnFrom(Player $player){
-		if(isset($this->hasSpawned[$player->getID()])){
+		if(isset($this->hasSpawned[$player->getId()])){
 			$pk = new RemoveEntityPacket();
 			$pk->eid = $this->id;
 			$player->dataPacket($pk);
-			unset($this->hasSpawned[$player->getID()]);
+			unset($this->hasSpawned[$player->getId()]);
 		}
 	}
 
@@ -1117,10 +1117,10 @@ abstract class Entity extends Location implements Metadatable{
 			if(!$this->justCreated){
 				$newChunk = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
 				foreach($this->hasSpawned as $player){
-					if(!isset($newChunk[$player->getID()])){
+					if(!isset($newChunk[$player->getId()])){
 						$this->despawnFrom($player);
 					}else{
-						unset($newChunk[$player->getID()]);
+						unset($newChunk[$player->getId()]);
 					}
 				}
 				foreach($newChunk as $player){
@@ -1273,7 +1273,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function __toString(){
-		return (new \ReflectionClass($this))->getShortName() . "(" . $this->getID() . ")";
+		return (new \ReflectionClass($this))->getShortName() . "(" . $this->getId() . ")";
 	}
 
 }

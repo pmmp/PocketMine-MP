@@ -1050,7 +1050,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected function getCreativeBlock(Item $item){
 		foreach(Block::$creative as $i => $d){
-			if($d[0] === $item->getID() and $d[1] === $item->getDamage()){
+			if($d[0] === $item->getId() and $d[1] === $item->getDamage()){
 				return $i;
 			}
 		}
@@ -1241,11 +1241,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 						$pk = new TakeItemEntityPacket();
 						$pk->eid = 0;
-						$pk->target = $entity->getID();
+						$pk->target = $entity->getId();
 						$this->dataPacket($pk);
 						$pk = new TakeItemEntityPacket();
-						$pk->eid = $this->getID();
-						$pk->target = $entity->getID();
+						$pk->eid = $this->getId();
+						$pk->target = $entity->getId();
 						Server::broadcastPacket($entity->getViewers(), $pk);
 						$this->inventory->addItem(clone $item, $this);
 						$entity->kill();
@@ -1264,7 +1264,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 								continue;
 							}
 
-							switch($item->getID()){
+							switch($item->getId()){
 								case Item::WOOD:
 									$this->awardAchievement("mineWood");
 									break;
@@ -1275,11 +1275,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 							$pk = new TakeItemEntityPacket();
 							$pk->eid = 0;
-							$pk->target = $entity->getID();
+							$pk->target = $entity->getId();
 							$this->dataPacket($pk);
 							$pk = new TakeItemEntityPacket();
-							$pk->eid = $this->getID();
-							$pk->target = $entity->getID();
+							$pk->eid = $this->getId();
+							$pk->target = $entity->getId();
 							Server::broadcastPacket($entity->getViewers(), $pk);
 							$this->inventory->addItem(clone $item, $this);
 							$entity->kill();
@@ -1592,7 +1592,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}else{
 						$this->inventory->setHeldItemSlot($packet->slot); //set Air
 					}
-				}elseif(!isset($item) or $slot === -1 or $item->getID() !== $packet->item or $item->getDamage() !== $packet->meta){ // packet error or not implemented
+				}elseif(!isset($item) or $slot === -1 or $item->getId() !== $packet->item or $item->getDamage() !== $packet->meta){ // packet error or not implemented
 					$this->inventory->sendContents($this);
 					break;
 				}elseif($this->isCreative()){
@@ -1637,7 +1637,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						if($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true){
 							break;
 						}
-					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
+					}elseif($this->inventory->getItemInHand()->getId() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = $this->inventory->getItemInHand();
@@ -1658,7 +1658,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->x = $target->x;
 					$pk->y = $target->y;
 					$pk->z = $target->z;
-					$pk->block = $target->getID();
+					$pk->block = $target->getId();
 					$pk->meta = $target->getDamage();
 					$this->dataPacket($pk);
 
@@ -1666,14 +1666,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$pk->x = $block->x;
 					$pk->y = $block->y;
 					$pk->z = $block->z;
-					$pk->block = $block->getID();
+					$pk->block = $block->getId();
 					$pk->meta = $block->getDamage();
 					$this->dataPacket($pk);
 					break;
 				}elseif($packet->face === 0xff){
 					if($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
-					}elseif($this->inventory->getItemInHand()->getID() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
+					}elseif($this->inventory->getItemInHand()->getId() !== $packet->item or (($damage = $this->inventory->getItemInHand()->getDamage()) !== $packet->meta and $damage !== null)){
 						$this->inventory->sendHeldItem($this);
 						break;
 					}else{
@@ -1690,7 +1690,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						break;
 					}
 
-					if($item->getID() === Item::SNOWBALL){
+					if($item->getId() === Item::SNOWBALL){
 						$nbt = new Compound("", [
 							"Pos" => new Enum("Pos", [
 								new Double("", $this->x),
@@ -1740,7 +1740,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				switch($packet->action){
 					case 5: //Shot arrow
-						if($this->inventory->getItemInHand()->getID() === Item::BOW){
+						if($this->inventory->getItemInHand()->getId() === Item::BOW){
 							$bow = $this->inventory->getItemInHand();
 							if($this->isSurvival()){
 								if(!$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
@@ -1841,7 +1841,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->x = $target->x;
 				$pk->y = $target->y;
 				$pk->z = $target->z;
-				$pk->block = $target->getID();
+				$pk->block = $target->getId();
 				$pk->meta = $target->getDamage();
 				$this->dataPacket($pk);
 
@@ -1907,7 +1907,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					];
 
 					$damage = [
-						EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getID()]) ? $damageTable[$item->getID()] : 1,
+						EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
 					];
 
 					if($this->distance($target) > 8){
@@ -1943,8 +1943,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						];
 						$points = 0;
 						foreach($target->getInventory()->getArmorContents() as $index => $i){
-							if(isset($armorValues[$i->getID()])){
-								$points += $armorValues[$i->getID()];
+							if(isset($armorValues[$i->getId()])){
+								$points += $armorValues[$i->getId()];
 							}
 						}
 
@@ -1987,7 +1987,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 				$pk = new AnimatePacket();
-				$pk->eid = $this->getID();
+				$pk->eid = $this->getId();
 				$pk->action = $ev->getAnimationType();
 				Server::broadcastPacket($this->getViewers(), $pk);
 				break;
@@ -2053,7 +2053,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							//Item::RAW_FISH => 2,
 						];
 						$slot = $this->inventory->getItemInHand();
-						if($this->getHealth() < 20 and isset($items[$slot->getID()])){
+						if($this->getHealth() < 20 and isset($items[$slot->getId()])){
 							$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
 							if($ev->isCancelled()){
 								$this->inventory->sendContents($this);
@@ -2064,10 +2064,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$pk->eid = 0;
 							$pk->event = 9;
 							$this->dataPacket($pk);
-							$pk->eid = $this->getID();
+							$pk->eid = $this->getId();
 							Server::broadcastPacket($this->getViewers(), $pk);
 
-							$amount = $items[$slot->getID()];
+							$amount = $items[$slot->getId()];
 							$this->server->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING));
 							if(!$ev->isCancelled()){
 								$this->heal($ev->getAmount(), $ev);
@@ -2075,7 +2075,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 							--$slot->count;
 							$this->inventory->setItemInHand($slot, $this);
-							if($slot->getID() === Item::MUSHROOM_STEW or $slot->getID() === Item::BEETROOT_SOUP){
+							if($slot->getId() === Item::MUSHROOM_STEW or $slot->getId() === Item::BEETROOT_SOUP){
 								$this->inventory->addItem(Item::get(Item::BOWL, 0, 1), $this);
 							}
 						}
@@ -2206,7 +2206,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$inv = $ts->getInventory();
 						if($inv instanceof FurnaceInventory){
 							if($ts->getSlot() === 2){
-								switch($inv->getResult()->getID()){
+								switch($inv->getResult()->getId()){
 									case Item::IRON_INGOT:
 										$this->awardAchievement("acquireIron");
 										break;
@@ -2227,7 +2227,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 
 						if($craftingGroup->execute()){
-							switch($craftingGroup->getResult()->getID()){
+							switch($craftingGroup->getResult()->getId()){
 								case Item::WORKBENCH:
 									$this->awardAchievement("buildWorkBench");
 									break;

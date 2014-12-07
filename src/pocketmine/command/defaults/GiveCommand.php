@@ -64,7 +64,7 @@ class GiveCommand extends VanillaCommand{
 
 				return true;
 			}
-			if($item->getID() == 0){
+			if($item->getId() == 0){
 				$sender->sendMessage(TextFormat::RED . "There is no item called " . $args[1] . ".");
 
 				return true;
@@ -78,7 +78,7 @@ class GiveCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, "Gave " . $player->getName() . " " . $item->getCount() . " of " . $item->getName() . " (" . $item->getID() . ":" . $item->getDamage() . ")");
+		Command::broadcastCommandMessage($sender, "Gave " . $player->getName() . " " . $item->getCount() . " of " . $item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")");
 
 		return true;
 	}

@@ -58,13 +58,13 @@ class PumpkinStem extends Crops{
 				}else{
 					for($side = 2; $side <= 5; ++$side){
 						$b = $this->getSide($side);
-						if($b->getID() === self::PUMPKIN){
+						if($b->getId() === self::PUMPKIN){
 							return Level::BLOCK_UPDATE_RANDOM;
 						}
 					}
 					$side = $this->getSide(mt_rand(2, 5));
 					$d = $side->getSide(0);
-					if($side->getID() === self::AIR and ($d->getID() === self::FARMLAND or $d->getID() === self::GRASS or $d->getID() === self::DIRT)){
+					if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, new Pumpkin()));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($side, $ev->getNewState(), true);

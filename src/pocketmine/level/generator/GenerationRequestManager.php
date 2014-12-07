@@ -53,7 +53,7 @@ class GenerationRequestManager{
 	 * @param array  $options
 	 */
 	public function openLevel(Level $level, $generator, array $options = []){
-		$buffer = chr(GenerationManager::PACKET_OPEN_LEVEL) . Binary::writeInt($level->getID()) . Binary::writeInt($level->getSeed()) .
+		$buffer = chr(GenerationManager::PACKET_OPEN_LEVEL) . Binary::writeInt($level->getId()) . Binary::writeInt($level->getSeed()) .
 			Binary::writeShort(strlen($generator)) . $generator . serialize($options);
 
 		$this->generationThread->pushMainToThreadPacket($buffer);
@@ -63,7 +63,7 @@ class GenerationRequestManager{
 	 * @param Level $level
 	 */
 	public function closeLevel(Level $level){
-		$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($level->getID());
+		$buffer = chr(GenerationManager::PACKET_CLOSE_LEVEL) . Binary::writeInt($level->getId());
 		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
@@ -78,7 +78,7 @@ class GenerationRequestManager{
 	}
 
 	public function requestChunk(Level $level, $chunkX, $chunkZ){
-		$buffer = chr(GenerationManager::PACKET_REQUEST_CHUNK) . Binary::writeInt($level->getID()) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
+		$buffer = chr(GenerationManager::PACKET_REQUEST_CHUNK) . Binary::writeInt($level->getId()) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
 		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 

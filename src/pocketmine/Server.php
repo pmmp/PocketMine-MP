@@ -944,7 +944,7 @@ class Server{
 	 */
 	public function unloadLevel(Level $level, $forceUnload = false){
 		if($level->unload($forceUnload) === true){
-			unset($this->levels[$level->getID()]);
+			unset($this->levels[$level->getId()]);
 
 			return true;
 		}
@@ -995,7 +995,7 @@ class Server{
 			return false;
 		}
 
-		$this->levels[$level->getID()] = $level;
+		$this->levels[$level->getId()] = $level;
 
 		$level->initLevel();
 
@@ -1130,7 +1130,7 @@ class Server{
 		$provider::generate($path, $name, $seed, $generator, $options);
 
 		$level = new Level($this, $name, $path, $provider);
-		$this->levels[$level->getID()] = $level;
+		$this->levels[$level->getId()] = $level;
 
 		$level->initLevel();
 

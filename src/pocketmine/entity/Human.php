@@ -99,13 +99,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$hotbarSlot = $this->inventory->getHotbarSlotIndex($slot);
 				if($hotbarSlot !== -1){
 					$item = $this->inventory->getItem($hotbarSlot);
-					if($item->getID() !== 0 and $item->getCount() > 0){
+					if($item->getId() !== 0 and $item->getCount() > 0){
 						$this->namedtag->Inventory[$slot] = new Compound(false, [
 							new Byte("Count", $item->getCount()),
 							new Short("Damage", $item->getDamage()),
 							new Byte("Slot", $slot),
 							new Byte("TrueSlot", $hotbarSlot),
-							new Short("id", $item->getID()),
+							new Short("id", $item->getId()),
 						]);
 						continue;
 					}
@@ -128,19 +128,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					new Byte("Count", $item->getCount()),
 					new Short("Damage", $item->getDamage()),
 					new Byte("Slot", $slot),
-					new Short("id", $item->getID()),
+					new Short("id", $item->getId()),
 				]);
 			}
 
 			//Armor
 			for($slot = 100; $slot < 104; ++$slot){
 				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
-				if($item instanceof ItemItem and $item->getID() !== ItemItem::AIR){
+				if($item instanceof ItemItem and $item->getId() !== ItemItem::AIR){
 					$this->namedtag->Inventory[$slot] = new Compound(false, [
 						new Byte("Count", $item->getCount()),
 						new Short("Damage", $item->getDamage()),
 						new Byte("Slot", $slot),
-						new Short("id", $item->getID()),
+						new Short("id", $item->getId()),
 					]);
 				}
 			}
@@ -148,8 +148,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function spawnTo(Player $player){
-		if($player !== $this and !isset($this->hasSpawned[$player->getID()])){
-			$this->hasSpawned[$player->getID()] = $player;
+		if($player !== $this and !isset($this->hasSpawned[$player->getId()])){
+			$this->hasSpawned[$player->getId()] = $player;
 
 			$pk = new AddPlayerPacket();
 			$pk->clientID = 0;
@@ -158,14 +158,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}else{
 				$pk->username = $this->nameTag;
 			}
-			$pk->eid = $this->getID();
+			$pk->eid = $this->getId();
 			$pk->x = $this->x;
 			$pk->y = $this->y;
 			$pk->z = $this->z;
 			$pk->yaw = $this->yaw;
 			$pk->pitch = $this->pitch;
 			$item = $this->getInventory()->getItemInHand();
-			$pk->item = $item->getID();
+			$pk->item = $item->getId();
 			$pk->meta = $item->getDamage();
 			$pk->metadata = $this->getData();
 			$player->dataPacket($pk);
@@ -177,12 +177,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function despawnFrom(Player $player){
-		if(isset($this->hasSpawned[$player->getID()])){
+		if(isset($this->hasSpawned[$player->getId()])){
 			$pk = new RemovePlayerPacket();
 			$pk->eid = $this->id;
 			$pk->clientID = 0;
 			$player->dataPacket($pk);
-			unset($this->hasSpawned[$player->getID()]);
+			unset($this->hasSpawned[$player->getId()]);
 		}
 	}
 

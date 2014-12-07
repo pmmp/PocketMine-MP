@@ -43,7 +43,7 @@ abstract class Fallable extends Solid{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() === self::AIR or ($down instanceof Liquid)){
+			if($down->getId() === self::AIR or ($down instanceof Liquid)){
 				$fall = Entity::createEntity("FallingSand", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [
 						new Double("", $this->x + 0.5),
@@ -59,7 +59,7 @@ abstract class Fallable extends Solid{
 						new Float("", 0),
 						new Float("", 0)
 					]),
-					"TileID" => new Int("TileID", $this->getID()),
+					"TileID" => new Int("TileID", $this->getId()),
 					"Data" => new Byte("Data", $this->getDamage()),
 				]));
 

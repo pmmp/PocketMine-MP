@@ -519,7 +519,7 @@ class Item{
 
 			if(defined(Item::class . "::" . strtoupper($b[0]))){
 				$item = self::get(constant(Item::class . "::" . strtoupper($b[0])), $meta);
-				if($item->getID() === self::AIR and strtoupper($b[0]) !== "AIR"){
+				if($item->getId() === self::AIR and strtoupper($b[0]) !== "AIR"){
 					$item = self::get(((int) $b[0]) & 0xFFFF, $meta);
 				}
 			}else{
@@ -656,7 +656,7 @@ class Item{
 	}
 
 	public final function equals(Item $item, $checkDamage = false){
-		return $this->id === $item->getID() and ($checkDamage === false or $this->getDamage() === $item->getDamage());
+		return $this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage());
 	}
 
 }

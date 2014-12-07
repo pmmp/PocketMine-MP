@@ -30,6 +30,6 @@ class EntityMetadataStore extends MetadataStore{
 			throw new \InvalidArgumentException("Argument must be an Entity instance");
 		}
 
-		return $entity->getID() . ":" . $metadataKey;
+		return $entity->getId() . ":" . $metadataKey;
 	}
 }

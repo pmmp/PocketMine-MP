@@ -49,11 +49,11 @@ class Leaves2 extends Leaves{
 		if(isset($visited[$index])){
 			return false;
 		}
-		if($pos->getID() === self::WOOD2){
+		if($pos->getId() === self::WOOD2){
 			return true;
-		}elseif($pos->getID() === self::LEAVES2 and $distance < 3){
+		}elseif($pos->getId() === self::LEAVES2 and $distance < 3){
 			$visited[$index] = true;
-			$down = $pos->getSide(0)->getID();
+			$down = $pos->getSide(0)->getId();
 			if($down === Item::WOOD2){
 				return true;
 			}

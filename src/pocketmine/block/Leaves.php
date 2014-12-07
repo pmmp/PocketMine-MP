@@ -61,11 +61,11 @@ class Leaves extends Transparent{
 		if(isset($visited[$index])){
 			return false;
 		}
-		if($pos->getID() === self::WOOD){
+		if($pos->getId() === self::WOOD){
 			return true;
-		}elseif($pos->getID() === self::LEAVES and $distance < 3){
+		}elseif($pos->getId() === self::LEAVES and $distance < 3){
 			$visited[$index] = true;
-			$down = $pos->getSide(0)->getID();
+			$down = $pos->getSide(0)->getId();
 			if($down === Item::WOOD){
 				return true;
 			}

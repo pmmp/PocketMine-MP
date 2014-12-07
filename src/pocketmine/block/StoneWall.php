@@ -79,7 +79,7 @@ class StoneWall extends Transparent{
 	}
 
 	public function canConnect(Block $block){
-		return ($block->getID() !== self::COBBLE_WALL and $block->getID() !== self::FENCE_GATE) ? $block->isSolid() : true;
+		return ($block->getId() !== self::COBBLE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() : true;
 	}
 
 }

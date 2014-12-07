@@ -226,17 +226,17 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function addEntity(Entity $entity){
-		$this->entities[$entity->getID()] = $entity;
+		$this->entities[$entity->getId()] = $entity;
 		$this->hasChanged = true;
 	}
 
 	public function removeEntity(Entity $entity){
-		unset($this->entities[$entity->getID()]);
+		unset($this->entities[$entity->getId()]);
 		$this->hasChanged = true;
 	}
 
 	public function addTile(Tile $tile){
-		$this->tiles[$tile->getID()] = $tile;
+		$this->tiles[$tile->getId()] = $tile;
 		if(isset($this->tileList[$index = (($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)]) and $this->tileList[$index] !== $tile){
 			$this->tileList[$index]->close();
 		}
@@ -245,7 +245,7 @@ abstract class BaseFullChunk implements FullChunk{
 	}
 
 	public function removeTile(Tile $tile){
-		unset($this->tiles[$tile->getID()]);
+		unset($this->tiles[$tile->getId()]);
 		unset($this->tileList[(($tile->z & 0x0f) << 12) | (($tile->x & 0x0f) << 8) | ($tile->y & 0xff)]);
 		$this->hasChanged = true;
 	}

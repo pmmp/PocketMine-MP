@@ -147,7 +147,7 @@ class Item extends Entity{
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Item = new Compound("Item", [
-			"id" => new Short("id", $this->item->getID()),
+			"id" => new Short("id", $this->item->getId()),
 			"Damage" => new Short("Damage", $this->item->getDamage()),
 			"Count" => new Byte("Count", $this->item->getCount())
 		]);
@@ -226,7 +226,7 @@ class Item extends Entity{
 
 	public function spawnTo(Player $player){
 		$pk = new AddItemEntityPacket();
-		$pk->eid = $this->getID();
+		$pk->eid = $this->getId();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

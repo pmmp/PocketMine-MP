@@ -407,7 +407,7 @@ class Level implements ChunkManager, Metadatable{
 	public function useChunk($X, $Z, Player $player){
 		$index = Level::chunkHash($X, $Z);
 		$this->loadChunk($X, $Z);
-		$this->usedChunks[$index][$player->getID()] = $player;
+		$this->usedChunks[$index][$player->getId()] = $player;
 	}
 
 	/**
@@ -419,7 +419,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Player $player
 	 */
 	public function freeChunk($X, $Z, Player $player){
-		unset($this->usedChunks[$index = Level::chunkHash($X, $Z)][$player->getID()]);
+		unset($this->usedChunks[$index = Level::chunkHash($X, $Z)][$player->getId()]);
 		$this->unloadChunkRequest($X, $Z, true);
 	}
 
@@ -537,7 +537,7 @@ class Level implements ChunkManager, Metadatable{
 								$pk->x = $b->x;
 								$pk->y = $b->y;
 								$pk->z = $b->z;
-								$pk->block = $b->getID();
+								$pk->block = $b->getId();
 								$pk->meta = $b->getDamage();
 								Server::broadcastPacket($this->getUsingChunk($b->x >> 4, $b->z >> 4), $pk);
 							}
@@ -1046,14 +1046,14 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->blockCache["{$pos->x}:{$pos->y}:{$pos->z}"]);
 
-		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getID(), $block->getDamage())){
+		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 			}
 			$block->position($pos);
 			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
 			if(ADVANCED_CACHE == true){
-				Cache::remove("world:" . $this->getID() . ":" . $index);
+				Cache::remove("world:" . $this->getId() . ":" . $index);
 			}
 
 			if($direct === true){
@@ -1061,7 +1061,7 @@ class Level implements ChunkManager, Metadatable{
 				$pk->x = $pos->x;
 				$pk->y = $pos->y;
 				$pk->z = $pos->z;
-				$pk->block = $block->getID();
+				$pk->block = $block->getId();
 				$pk->meta = $block->getDamage();
 
 				Server::broadcastPacket($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), $pk);
@@ -1105,7 +1105,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, $delay = 10){
 		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
-		if($item->getID() > 0 and $item->getCount() > 0){
+		if($item->getId() > 0 and $item->getCount() > 0){
 			$itemEntity = Entity::createEntity("Item", $this->getChunk($source->getX() >> 4, $source->getZ() >> 4), new Compound("", [
 				"Pos" => new Enum("Pos", [
 						new Double("", $source->getX()),
@@ -1124,7 +1124,7 @@ class Level implements ChunkManager, Metadatable{
 					]),
 				"Health" => new Short("Health", 5),
 				"Item" => new Compound("Item", [
-						"id" => new Short("id", $item->getID()),
+						"id" => new Short("id", $item->getId()),
 						"Damage" => new Short("Damage", $item->getDamage()),
 						"Count" => new Byte("Count", $item->getCount())
 					]),
@@ -1189,7 +1189,7 @@ class Level implements ChunkManager, Metadatable{
 		if($level instanceof Level){
 			$above = $level->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
 			if($above instanceof Block){
-				if($above->getID() === Item::FIRE){
+				if($above->getId() === Item::FIRE){
 					$level->setBlock($above, new Air(), true);
 				}
 			}
@@ -1250,7 +1250,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($target->getID() === Item::AIR){
+		if($target->getId() === Item::AIR){
 			return false;
 		}
 
@@ -1285,7 +1285,7 @@ class Level implements ChunkManager, Metadatable{
 		if($item->isPlaceable()){
 			$hand = $item->getBlock();
 			$hand->position($block);
-		}elseif($block->getID() === Item::FIRE){
+		}elseif($block->getId() === Item::FIRE){
 			$this->setBlock($block, new Air(), true);
 
 			return false;
@@ -1293,7 +1293,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if(!($block->canBeReplaced() === true or ($hand->getID() === Item::SLAB and $block->getID() === Item::SLAB))){
+		if(!($block->canBeReplaced() === true or ($hand->getId() === Item::SLAB and $block->getId() === Item::SLAB))){
 			return false;
 		}
 
@@ -1338,7 +1338,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($hand->getID() === Item::SIGN_POST or $hand->getID() === Item::WALL_SIGN){
+		if($hand->getId() === Item::SIGN_POST or $hand->getId() === Item::WALL_SIGN){
 			$tile = Tile::createTile("Sign", $this->getChunk($block->x >> 4, $block->z >> 4), new Compound(false, [
 				"id" => new String("id", Tile::SIGN),
 				"x" => new Int("x", $block->x),
@@ -1709,7 +1709,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunks[$index] = $chunk;
 		}
 		if(ADVANCED_CACHE == true){
-			Cache::remove("world:" . $this->getID() . ":". Level::chunkHash($x, $z));
+			Cache::remove("world:" . $this->getId() . ":". Level::chunkHash($x, $z));
 		}
 		$chunk->setChanged();
 	}
@@ -1802,7 +1802,7 @@ class Level implements ChunkManager, Metadatable{
 					continue;
 				}
 				Level::getXZ($index, $x, $z);
-				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:" . $this->getID() . ":" . $index)) !== false){
+				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:" . $this->getId() . ":" . $index)) !== false){
 					/** @var Player[] $players */
 					foreach($players as $player){
 						if($player->isConnected() and isset($player->usedChunks[$index])){
@@ -1830,7 +1830,7 @@ class Level implements ChunkManager, Metadatable{
 		if(isset($this->chunkSendTasks[$index])){
 
 			if(ADVANCED_CACHE == true){
-				Cache::add("world:" . $this->getID() . ":" . $index, $payload, 60);
+				Cache::add("world:" . $this->getId() . ":" . $index, $payload, 60);
 			}
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
@@ -1856,14 +1856,14 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($entity instanceof Player){
-			unset($this->players[$entity->getID()]);
+			unset($this->players[$entity->getId()]);
 			//$this->everyoneSleeping();
 		}else{
 			$entity->kill();
 		}
 
-		unset($this->entities[$entity->getID()]);
-		unset($this->updateEntities[$entity->getID()]);
+		unset($this->entities[$entity->getId()]);
+		unset($this->updateEntities[$entity->getId()]);
 	}
 
 	/**
@@ -1876,9 +1876,9 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Entity level");
 		}
 		if($entity instanceof Player){
-			$this->players[$entity->getID()] = $entity;
+			$this->players[$entity->getId()] = $entity;
 		}
-		$this->entities[$entity->getID()] = $entity;
+		$this->entities[$entity->getId()] = $entity;
 	}
 
 	/**
@@ -1890,7 +1890,7 @@ class Level implements ChunkManager, Metadatable{
 		if($tile->getLevel() !== $this){
 			throw new LevelException("Invalid Tile level");
 		}
-		$this->tiles[$tile->getID()] = $tile;
+		$this->tiles[$tile->getId()] = $tile;
 	}
 
 	/**
@@ -1903,8 +1903,8 @@ class Level implements ChunkManager, Metadatable{
 			throw new LevelException("Invalid Tile level");
 		}
 
-		unset($this->tiles[$tile->getID()]);
-		unset($this->updateTiles[$tile->getID()]);
+		unset($this->tiles[$tile->getId()]);
+		unset($this->updateTiles[$tile->getId()]);
 	}
 
 	/**
@@ -2005,7 +2005,7 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->chunks[$index]);
 		unset($this->usedChunks[$index]);
-		Cache::remove("world:" . $this->getID() . ":$index");
+		Cache::remove("world:" . $this->getId() . ":$index");
 
 		$this->timings->doChunkUnload->stopTiming();
 

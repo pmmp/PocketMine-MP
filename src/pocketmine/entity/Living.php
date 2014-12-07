@@ -94,7 +94,7 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$pk = new EntityEventPacket();
-		$pk->eid = $this->getID();
+		$pk->eid = $this->getId();
 		$pk->event = 2; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
 		$this->setLastDamageCause($source);
@@ -213,7 +213,7 @@ abstract class Living extends Entity implements Damageable{
 				--$nextIndex;
 			}
 
-			$id = $block->getID();
+			$id = $block->getId();
 
 			if($transparent === null){
 				if($id !== 0){

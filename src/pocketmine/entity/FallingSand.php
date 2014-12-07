@@ -88,7 +88,7 @@ class FallingSand extends Entity{
 		if(!$this->dead){
 			if($this->ticksLived === 1){
 				$block = $this->level->getBlock($pos = (new Vector3($this->x, $this->y, $this->z))->floor());
-				if($block->getID() != $this->blockId){
+				if($block->getId() != $this->blockId){
 					$this->kill();
 					return true;
 				}
@@ -151,7 +151,7 @@ class FallingSand extends Entity{
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = FallingSand::NETWORK_ID;
-		$pk->eid = $this->getID();
+		$pk->eid = $this->getId();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

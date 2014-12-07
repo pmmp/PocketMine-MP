@@ -291,9 +291,9 @@ class CraftingManager{
 	}
 
 	public function sort(Item $i1, Item $i2){
-		if($i1->getID() > $i2->getID()){
+		if($i1->getId() > $i2->getId()){
 			return 1;
-		}elseif($i1->getID() < $i2->getID()){
+		}elseif($i1->getId() < $i2->getId()){
 			return -1;
 		}elseif($i1->getDamage() > $i2->getDamage()){
 			return 1;
@@ -329,10 +329,10 @@ class CraftingManager{
 	 * @return FurnaceRecipe
 	 */
 	public function matchFurnaceRecipe(Item $input){
-		if(isset($this->furnaceRecipes[$input->getID() . ":" . $input->getDamage()])){
-			return $this->furnaceRecipes[$input->getID() . ":" . $input->getDamage()];
-		}elseif(isset($this->furnaceRecipes[$input->getID() . ":?"])){
-			return $this->furnaceRecipes[$input->getID() . ":?"];
+		if(isset($this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()])){
+			return $this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()];
+		}elseif(isset($this->furnaceRecipes[$input->getId() . ":?"])){
+			return $this->furnaceRecipes[$input->getId() . ":?"];
 		}
 
 		return null;
@@ -355,9 +355,9 @@ class CraftingManager{
 		$ingredients = $recipe->getIngredientList();
 		usort($ingredients, [$this, "sort"]);
 		foreach($ingredients as $item){
-			$hash .= $item->getID() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 		}
-		$this->recipeLookup[$result->getID() . ":" . $result->getDamage()][$hash] = $recipe;
+		$this->recipeLookup[$result->getId() . ":" . $result->getDamage()][$hash] = $recipe;
 	}
 
 	/**
@@ -365,7 +365,7 @@ class CraftingManager{
 	 */
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe){
 		$input = $recipe->getInput();
-		$this->furnaceRecipes[$input->getID() . ":" . ($input->getDamage() === null ? "?" : $input->getDamage())] = $recipe;
+		$this->furnaceRecipes[$input->getId() . ":" . ($input->getDamage() === null ? "?" : $input->getDamage())] = $recipe;
 	}
 
 	/**
@@ -379,7 +379,7 @@ class CraftingManager{
 		if(!($result instanceof Item)){
 			return false;
 		}
-		$k = $result->getID() . ":" . $result->getDamage();
+		$k = $result->getId() . ":" . $result->getDamage();
 
 		if(!isset($this->recipeLookup[$k])){
 			return false;
@@ -390,7 +390,7 @@ class CraftingManager{
 		$inputCount = 0;
 		foreach($input as $item){
 			$inputCount += $item->getCount();
-			$hash .= $item->getID() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+			$hash .= $item->getId() . ":" . ($item->getDamage() === null ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
 		}
 		if(!isset($this->recipeLookup[$k][$hash])){
 			$hasRecipe = null;

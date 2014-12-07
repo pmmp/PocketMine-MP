@@ -72,7 +72,7 @@ class Cactus extends Transparent{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->getID() !== self::SAND and $down->getID() !== self::CACTUS){
+			if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){
 				$this->getLevel()->useBreakOn($this);
 			}else{
 				for($side = 2; $side <= 5; ++$side){
@@ -83,11 +83,11 @@ class Cactus extends Transparent{
 				}
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getID() !== self::CACTUS){
+			if($this->getSide(0)->getId() !== self::CACTUS){
 				if($this->meta == 0x0F){
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-						if($b->getID() === self::AIR){
+						if($b->getId() === self::AIR){
 							Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Cactus()));
 							if(!$ev->isCancelled()){
 								$this->getLevel()->setBlock($b, $ev->getNewState(), true);
@@ -108,7 +108,7 @@ class Cactus extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
-		if($down->getID() === self::SAND or $down->getID() === self::CACTUS){
+		if($down->getId() === self::SAND or $down->getId() === self::CACTUS){
 			$block0 = $this->getSide(2);
 			$block1 = $this->getSide(3);
 			$block2 = $this->getSide(4);

@@ -48,11 +48,11 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($item->getID() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
+		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
+			if($this->getSide(0)->getId() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-					if($b->getID() === self::AIR){
+					if($b->getId() === self::AIR){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, new Sugarcane()));
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
@@ -76,17 +76,17 @@ class Sugarcane extends Flowable{
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$down = $this->getSide(0);
-			if($down->isTransparent() === true and $down->getID() !== self::SUGARCANE_BLOCK){
+			if($down->isTransparent() === true and $down->getId() !== self::SUGARCANE_BLOCK){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getID() !== self::SUGARCANE_BLOCK){
+			if($this->getSide(0)->getId() !== self::SUGARCANE_BLOCK){
 				if($this->meta === 0x0F){
 					for($y = 1; $y < 3; ++$y){
 						$b = $this->getLevel()->getBlock(new Vector3($this->x, $this->y + $y, $this->z));
-						if($b->getID() === self::AIR){
+						if($b->getId() === self::AIR){
 							$this->getLevel()->setBlock($b, new Sugarcane(), true);
 							break;
 						}
@@ -107,11 +107,11 @@ class Sugarcane extends Flowable{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
-		if($down->getID() === self::SUGARCANE_BLOCK){
+		if($down->getId() === self::SUGARCANE_BLOCK){
 			$this->getLevel()->setBlock($block, new Sugarcane(), true);
 
 			return true;
-		}elseif($down->getID() === self::GRASS or $down->getID() === self::DIRT or $down->getID() === self::SAND){
+		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
 			$block0 = $down->getSide(2);
 			$block1 = $down->getSide(3);
 			$block2 = $down->getSide(4);

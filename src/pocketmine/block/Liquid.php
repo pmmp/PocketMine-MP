@@ -63,7 +63,7 @@ abstract class Liquid extends Transparent{
 			$pos = $this->getLevel()->getBlock($pos);
 		}
 
-		if($pos->getID() !== $this->getID()){
+		if($pos->getId() !== $this->getId()){
 			return -1;
 		}else{
 			return $pos->getDamage();
@@ -75,7 +75,7 @@ abstract class Liquid extends Transparent{
 			$pos = $this->getLevel()->getBlock($pos);
 		}
 
-		if($pos->getID() !== $this->getID()){
+		if($pos->getId() !== $this->getId()){
 			return -1;
 		}
 
@@ -291,7 +291,7 @@ abstract class Liquid extends Transparent{
 
 	private function flowIntoBlock(Block $block, $newFlowDecay){
 		if($block->canBeFlowedInto()){
-			if($block->getID() > 0){
+			if($block->getId() > 0){
 				$this->getLevel()->useBreakOn($block);
 			}
 

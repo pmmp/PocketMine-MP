@@ -55,14 +55,14 @@ class GenerationInstanceManager extends GenerationRequestManager{
 	 * @param array  $options
 	 */
 	public function openLevel(Level $level, $generator, array $options = []){
-		$this->generationManager->openLevel($level->getID(), $level->getSeed(), $generator, $options);
+		$this->generationManager->openLevel($level->getId(), $level->getSeed(), $generator, $options);
 	}
 
 	/**
 	 * @param Level $level
 	 */
 	public function closeLevel(Level $level){
-		$this->generationManager->closeLevel($level->getID());
+		$this->generationManager->closeLevel($level->getId());
 	}
 
 	public function addNamespace($namespace, $path){
@@ -70,7 +70,7 @@ class GenerationInstanceManager extends GenerationRequestManager{
 	}
 
 	public function requestChunk(Level $level, $chunkX, $chunkZ){
-		$this->generationManager->enqueueChunk($level->getID(), $chunkX, $chunkZ);
+		$this->generationManager->enqueueChunk($level->getId(), $chunkX, $chunkZ);
 	}
 
 	public function getChunk($levelID, $chunkX, $chunkZ){

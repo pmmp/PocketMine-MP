@@ -93,7 +93,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems){
 		foreach($this->transactions as $key => $ts){
-			if($ts->getTargetItem()->getID() !== Item::AIR){
+			if($ts->getTargetItem()->getId() !== Item::AIR){
 				$needItems[] = $ts->getTargetItem();
 			}
 			$checkSourceItem = $ts->getInventory()->getItem($ts->getSlot());
@@ -101,7 +101,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 			if(!$checkSourceItem->equals($sourceItem, true) or $sourceItem->getCount() !== $checkSourceItem->getCount()){
 				return false;
 			}
-			if($sourceItem->getID() !== Item::AIR){
+			if($sourceItem->getId() !== Item::AIR){
 				$haveItems[] = $sourceItem;
 			}
 		}

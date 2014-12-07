@@ -41,7 +41,7 @@ class Bucket extends Item{
 		if($targetBlock instanceof Air){
 			if($target instanceof Liquid and $target->getDamage() === 0){
 				$result = clone $this;
-				$result->setDamage($target->getID());
+				$result->setDamage($target->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 				if(!$ev->isCancelled()){
 					$player->getLevel()->setBlock($target, new Air(), true, true);

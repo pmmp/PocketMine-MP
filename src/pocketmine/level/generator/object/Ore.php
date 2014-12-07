@@ -80,7 +80,7 @@ class Ore{
 								$sizeZ **= 2;
 
 								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockIdAt($x, $y, $z) === 1){
-									$level->setBlockIdAt($x, $y, $z, $this->type->material->getID());
+									$level->setBlockIdAt($x, $y, $z, $this->type->material->getId());
 									$level->setBlockDataAt($x, $y, $z, $this->type->material->getDamage());
 								}
 							}
