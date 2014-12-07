@@ -21,7 +21,7 @@
 
 namespace pocketmine\network\protocol;
 
-	#include <rules/DataPacket.h>
+#include <rules/DataPacket.h>
 
 #ifndef COMPILE
 use pocketmine\utils\Binary;
