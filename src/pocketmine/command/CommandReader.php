@@ -25,7 +25,7 @@ use pocketmine\Thread;
 
 class CommandReader extends Thread{
 
-	private $stream;
+	public $stream;
 	/** @var resource */
 	private $fp;
 	private $readline;
