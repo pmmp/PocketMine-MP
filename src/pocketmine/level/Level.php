@@ -923,7 +923,13 @@ class Level implements ChunkManager, Metadatable{
 			$fullState = $chunk->getFullBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
 		}
 
-		$block = clone Block::$fullList[$fullState];
+		$block = Block::$fullList[$fullState];
+		if($block !== null){
+			$block = new $block($fullState & 0x0f);
+		}else{
+			$block = new Block($fullState >> 4, $fullState & 0x0f);
+		}
+
 		$block->x = $pos->x;
 		$block->y = $pos->y;
 		$block->z = $pos->z;

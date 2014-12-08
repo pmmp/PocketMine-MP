@@ -758,12 +758,6 @@ class Block extends Position implements Metadatable{
 					self::$lightFilter[$id] = 1;
 				}
 			}
-
-			foreach(self::$fullList as $id => $block){
-				if($block === null){
-					self::$fullList[$id] = new Block($id >> 4, $id & 0x0f);
-				}
-			}
 		}
 	}
 
