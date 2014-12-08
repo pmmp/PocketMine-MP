@@ -54,6 +54,8 @@ interface FullChunk{
 	/**
 	 * Modifies $blockId and $meta
 	 *
+	 * @deprecated
+	 *
 	 * @param int $x 0-15
 	 * @param int $y 0-127
 	 * @param int $z 0-15
@@ -61,6 +63,17 @@ interface FullChunk{
 	 * @param int &$meta
 	 */
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null);
+
+	/**
+	 * Gets block and meta in one go
+	 *
+	 * @param int $x 0-15
+	 * @param int $y 0-15
+	 * @param int $z 0-15
+	 *
+	 * @return int bitmap, (id << 4) | data
+	 */
+	public function getFullBlock($x, $y, $z);
 
 	/**
 	 * @param int $x       0-15

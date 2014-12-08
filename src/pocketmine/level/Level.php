@@ -896,6 +896,17 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @param $x
+	 * @param $y
+	 * @param $z
+	 *
+	 * @return int bitmap, (id << 4) | data
+	 */
+	public function getFullBlock($x, $y, $z){
+		return $this->getChunk($x >> 4, $z >> 4, false)->getFullBlock($x & 0x0f, $y & 0x7f, $z & 0x0f);
+	}
+
+	/**
 	 * Gets the Block object on the Vector3 location
 	 *
 	 * @param Vector3 $pos
@@ -904,25 +915,21 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block
 	 */
 	public function getBlock(Vector3 $pos, $cached = true){
-		$blockId = 0;
-		$meta = 0;
-		$index = "{$pos->x}:{$pos->y}:{$pos->z}";
+		$fullState = 0;
+		$index = PHP_INT_SIZE === 8 ? (($pos->x & 0xFFFFFFF) << 35) | (($pos->y & 0x7f) << 28) | ($pos->z & 0xFFFFFFF) : "{$pos->x}:{$pos->y}:{$pos->z}";
 		if($cached and isset($this->blockCache[$index])){
 			return $this->blockCache[$index];
-		}elseif($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, true)) !== null){
-			$chunk->getBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $blockId, $meta);
+		}elseif($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false)) !== null){
+			$fullState = $chunk->getFullBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
 		}
 
-		if($blockId === 0){
-			$air = new Air();
-			$air->x = $pos->x;
-			$air->y = $pos->y;
-			$air->z = $pos->z;
-			$air->level = $this;
-			return $this->blockCache[$index] = $air;
-		}
+		$block = clone Block::$fullList[$fullState];
+		$block->x = $pos->x;
+		$block->y = $pos->y;
+		$block->z = $pos->z;
+		$block->level = $this;
 
-		return $this->blockCache[$index] = Block::get($blockId, $meta, $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z));
+		return $this->blockCache[$index] = $block;
 	}
 
 	public function updateAllLight(Vector3 $pos){

@@ -71,13 +71,17 @@ class ChunkSection implements \pocketmine\level\format\ChunkSection{
 	}
 
 	public function getBlock($x, $y, $z, &$blockId, &$meta = null){
+		$full = $this->getFullBlock($x, $y, $z);
+		$blockId = $full >> 4;
+		$meta = $full & 0x0f;
+	}
+
+	public function getFullBlock($x, $y, $z){
 		$i = ($y << 8) + ($z << 4) + $x;
-		$blockId = ord($this->blocks{$i});
-		$m = ord($this->data{$i >> 1});
 		if(($x & 1) === 0){
-			$meta = $m & 0x0F;
+			return (ord($this->blocks{$i}) << 4) | (ord($this->data{$i >> 1}) & 0x0F);
 		}else{
-			$meta = $m >> 4;
+			return (ord($this->blocks{$i}) << 4) | (ord($this->data{$i >> 1}) >> 4);
 		}
 	}
 

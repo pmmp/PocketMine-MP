@@ -529,6 +529,9 @@ class Block extends Position implements Metadatable{
 	/** @var \SplFixedArray */
 	public static $list = null;
 	/** @var \SplFixedArray */
+	public static $fullList = null;
+
+	/** @var \SplFixedArray */
 	public static $light = null;
 	/** @var \SplFixedArray */
 	public static $lightFilter = null;
@@ -572,6 +575,7 @@ class Block extends Position implements Metadatable{
 	public static function init(){
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(256);
+			self::$fullList = new \SplFixedArray(4096);
 			self::$light = new \SplFixedArray(256);
 			self::$lightFilter = new \SplFixedArray(256);
 			self::$solid = new \SplFixedArray(256);
@@ -728,6 +732,11 @@ class Block extends Position implements Metadatable{
 				if($class !== null){
 					/** @var Block $block */
 					$block = new $class();
+
+					for($data = 0; $data < 16; ++$data){
+						self::$fullList[($id << 4) | $data] = new $class($data);
+					}
+
 					self::$solid[$id] = $block->isSolid();
 					self::$transparent[$id] = $block->isTransparent();
 					self::$light[$id] = $block->getLightLevel();
@@ -747,6 +756,12 @@ class Block extends Position implements Metadatable{
 					}
 				}else{
 					self::$lightFilter[$id] = 1;
+				}
+			}
+
+			foreach(self::$fullList as $id => $block){
+				if($block === null){
+					self::$fullList[$id] = new Block($id >> 4, $id & 0x0f);
 				}
 			}
 		}

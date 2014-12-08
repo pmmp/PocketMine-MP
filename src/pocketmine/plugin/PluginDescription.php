@@ -67,8 +67,6 @@ class PluginDescription{
 		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
-
-			return;
 		}
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
