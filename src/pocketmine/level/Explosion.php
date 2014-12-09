@@ -107,7 +107,7 @@ class Explosion{
 							}
 							$block = $this->level->getBlock($vBlock);
 
-							if(!($block instanceof Air)){
+							if($block->getId() !== 0){
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									$index = ($block->x << 15) + ($block->z << 7) + $block->y;
@@ -181,9 +181,7 @@ class Explosion{
 		$air = Item::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){
-			$block->setDamage($this->level->getBlockDataAt($block->x, $block->y, $block->z));
-
-			if($block instanceof TNT){
+			if($block->getId() === Block::TNT){
 				$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 				$tnt = Entity::createEntity("PrimedTNT", $this->level->getChunk($block->x >> 4, $block->z >> 4), new Compound("", [
 					"Pos" => new Enum("Pos", [

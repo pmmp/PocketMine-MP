@@ -1058,7 +1058,7 @@ abstract class Entity extends Location implements Metadatable{
 			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
 				for($v->y = $minY; $v->y <= $maxY; ++$v->y){
 					$block = $this->level->getBlock($v);
-					if($block !== null and $block->hasEntityCollision()){
+					if($block->hasEntityCollision()){
 						$block->onEntityCollide($this);
 						if(!($this instanceof Player)){
 							$block->addVelocityToEntity($this, $vector);
@@ -1098,7 +1098,7 @@ abstract class Entity extends Location implements Metadatable{
 			return false;
 		}
 
-		if($pos instanceof Position and $pos->level instanceof Level and $pos->level !== $this->level){
+		if($pos instanceof Position and $pos->level !== null and $pos->level !== $this->level){
 			if($this->switchLevel($pos->getLevel()) === false){
 				return false;
 			}
@@ -1113,7 +1113,7 @@ abstract class Entity extends Location implements Metadatable{
 
 
 		if($this->chunk === null or ($this->chunkX !== ($this->x >> 4) and $this->chunkZ !== ($this->z >> 4))){
-			if($this->chunk instanceof FullChunk){
+			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
 			$this->level->loadChunk($this->x >> 4, $this->z >> 4);

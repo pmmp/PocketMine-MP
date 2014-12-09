@@ -167,8 +167,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $iusername;
 	protected $displayName;
 	protected $startAction = false;
-	/** @var Vector3|bool */
-	protected $sleeping = false;
+	/** @var Vector3 */
+	protected $sleeping = null;
 	protected $clientID = null;
 
 	protected $stepHeight = 0.6;
@@ -517,7 +517,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @return bool
 	 */
 	public function isSleeping(){
-		return $this->sleeping instanceof Vector3;
+		return $this->sleeping !== null;
 	}
 
 	public function unloadChunk($x, $z){
@@ -793,7 +793,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function sleepOn(Vector3 $pos){
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(2, 1, 2), $this) as $p){
 			if($p instanceof Player){
-				if($p->sleeping instanceof Vector3){
+				if($p->sleeping !== null){
 					if($pos->distance($p->sleeping) <= 0.1){
 						return false;
 					}
@@ -862,7 +862,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
 				foreach($this->level->getPlayers() as $p){
-					if($p->sleeping === false){
+					if($p->sleeping === null){
 						return;
 					}
 				}
@@ -2579,6 +2579,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($this->dead === true){
 			return;
 		}
+
 		if($this->isCreative()){
 			if($source instanceof EntityDamageEvent){
 				$cause = $source->getCause();

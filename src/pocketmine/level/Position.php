@@ -64,7 +64,7 @@ class Position extends Vector3{
 	 * @return bool
 	 */
 	public function isValid(){
-		return isset($this->level) and $this->level instanceof Level;
+		return $this->level !== null;
 	}
 
 	/**
@@ -107,21 +107,6 @@ class Position extends Vector3{
 		}
 
 		return Position::fromObject(parent::getSide($side, $step), $this->level);
-	}
-
-	/**
-	 * Returns the distance between two points or objects
-	 *
-	 * @param Vector3 $pos
-	 *
-	 * @return float
-	 */
-	public function distance(Vector3 $pos){
-		if(($pos instanceof Position) and $pos->getLevel() !== $this->getLevel()){
-			return PHP_INT_MAX;
-		}
-
-		return parent::distance($pos);
 	}
 
 	public function __toString(){
