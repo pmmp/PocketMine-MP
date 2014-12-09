@@ -528,16 +528,13 @@ abstract class Entity extends Location implements Metadatable{
 		$isPlayer = $this instanceof Player;
 
 		if($this->dead === true){
-			++$this->deadTicks;
-			if($this->deadTicks >= 10){
-				$this->despawnFromAll();
-				if(!$isPlayer){
-					$this->close();
-				}
+			$this->despawnFromAll();
+			if(!$isPlayer){
+				$this->close();
 			}
 
 			Timings::$tickEntityTimer->stopTiming();
-			return $this->deadTicks < 10;
+			return false;
 		}
 
 		$hasUpdate = false;

@@ -32,6 +32,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
 use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\BlockIterator;
 
@@ -150,6 +151,20 @@ abstract class Living extends Entity implements Damageable{
 
 	public function entityBaseTick($tickDiff = 1){
 		Timings::$timerEntityBaseTick->startTiming();
+
+		if($this->dead === true){
+			++$this->deadTicks;
+			if($this->deadTicks >= 10){
+				$this->despawnFromAll();
+				if(!($this instanceof Player)){
+					$this->close();
+				}
+			}
+
+			Timings::$timerEntityBaseTick->stopTiming();
+			return $this->deadTicks < 10;
+		}
+
 		parent::entityBaseTick($tickDiff);
 
 		if($this->dead !== true and $this->isInsideOfSolid()){
