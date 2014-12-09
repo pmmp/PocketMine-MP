@@ -110,7 +110,7 @@ class GenerationLevelManager extends GenerationManager{
 		if(!isset($this->requestQueue[$levelID])){
 			$this->requestQueue[$levelID] = [];
 		}
-		if(!isset($this->requestQueue[$levelID][$index = "$chunkX:$chunkZ"])){
+		if(!isset($this->requestQueue[$levelID][$index = Level::chunkHash($chunkX, $chunkZ)])){
 			$this->requestQueue[$levelID][$index] = 1;
 		}else{
 			$this->requestQueue[$levelID][$index]++;
