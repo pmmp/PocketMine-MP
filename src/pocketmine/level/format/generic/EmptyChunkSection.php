@@ -59,6 +59,10 @@ class EmptyChunkSection implements ChunkSection{
 		return "\x00\x00\x00\x00\x00\x00\x00\x00";
 	}
 
+	final public function getFullBlock($x, $y, $z){
+		return 0;
+	}
+
 	final public function getBlock($x, $y, $z, &$id = null, &$meta = null){
 		$id = 0;
 		$meta = 0;
