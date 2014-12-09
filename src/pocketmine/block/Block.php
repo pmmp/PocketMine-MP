@@ -538,6 +538,8 @@ class Block extends Position implements Metadatable{
 	/** @var \SplFixedArray */
 	public static $solid = null;
 	/** @var \SplFixedArray */
+	public static $hardness = null;
+	/** @var \SplFixedArray */
 	public static $transparent = null;
 
 	protected $id;
@@ -579,6 +581,7 @@ class Block extends Position implements Metadatable{
 			self::$light = new \SplFixedArray(256);
 			self::$lightFilter = new \SplFixedArray(256);
 			self::$solid = new \SplFixedArray(256);
+			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
 			self::$list[self::AIR] = Air::class;
 			self::$list[self::STONE] = Stone::class;
@@ -739,6 +742,7 @@ class Block extends Position implements Metadatable{
 
 					self::$solid[$id] = $block->isSolid();
 					self::$transparent[$id] = $block->isTransparent();
+					self::$hardness[$id] = $block->getHardness();
 					self::$light[$id] = $block->getLightLevel();
 
 					if($block->isSolid()){

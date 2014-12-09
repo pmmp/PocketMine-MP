@@ -83,25 +83,27 @@ class Explosion{
 			return false;
 		}
 
-		$pointer = new Vector3(0, 0, 0);
 		$vector = new Vector3(0, 0, 0);
 		$vBlock = new Vector3(0, 0, 0);
 
-		$mRays = $this->rays - 1;
+		$mRays = intval($this->rays - 1);
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
-				//break 2 gets here
 				for($k = 0; $k < $this->rays; ++$k){
-					if($i == 0 or $i == $mRays or $j == 0 or $j == $mRays or $k == 0 or $k == $mRays){
+					if($i === 0 or $i === $mRays or $j === 0 or $j === $mRays or $k === 0 or $k === $mRays){
 						$vector->setComponents($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1);
 						$vector->setComponents(($vector->x / ($len = $vector->length())) * $this->stepLen, ($vector->y / $len) * $this->stepLen, ($vector->z / $len) * $this->stepLen);
-						$pointer->setComponents($this->source->x, $this->source->y, $this->source->z);
+						$pointerX = $this->source->x;
+						$pointerY = $this->source->y;
+						$pointerZ = $this->source->z;
 
 						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
-							$x = (int) $pointer->x;
-							$y = (int) $pointer->y;
-							$z = (int) $pointer->z;
-							$vBlock->setComponents($pointer->x >= $x ? $x : $x - 1, $pointer->y >= $y ? $y : $y - 1, $pointer->z >= $z ? $z : $z - 1);
+							$x = (int) $pointerX;
+							$y = (int) $pointerY;
+							$z = (int) $pointerZ;
+							$vBlock->x = $pointerX >= $x ? $x : $x - 1;
+							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
+							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
 							if($vBlock->y < 0 or $vBlock->y > 127){
 								break;
 							}
@@ -110,15 +112,14 @@ class Explosion{
 							if($block->getId() !== 0){
 								$blastForce -= ($block->getHardness() / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									$index = ($block->x << 15) + ($block->z << 7) + $block->y;
-									if(!isset($this->affectedBlocks[$index])){
+									if(!isset($this->affectedBlocks[$index = Level::blockHash($block->x, $block->y, $block->z)])){
 										$this->affectedBlocks[$index] = $block;
 									}
 								}
 							}
-							$pointer->x += $vector->x;
-							$pointer->y += $vector->y;
-							$pointer->z += $vector->z;
+							$pointerX += $vector->x;
+							$pointerY += $vector->y;
+							$pointerZ += $vector->z;
 						}
 					}
 				}

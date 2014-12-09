@@ -607,6 +607,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$X = null;
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
+
 			if(!$this->level->isChunkPopulated($X, $Z)){
 				$this->level->generateChunk($X, $Z);
 				if($this->spawned){
@@ -687,7 +688,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			for($Z = -$side; $Z <= $side; ++$Z){
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
-				if(!isset($this->usedChunks[$index = "$chunkX:$chunkZ"])){
+				if(!isset($this->usedChunks[$index = Level::chunkHash($chunkX, $chunkZ)])){
 					$newOrder[$index] = abs($X) + abs($Z);
 				}else{
 					$currentQueue[$index] = abs($X) + abs($Z);

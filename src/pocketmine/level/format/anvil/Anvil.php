@@ -76,9 +76,7 @@ class Anvil extends McRegion{
 	 * @return RegionLoader
 	 */
 	protected function getRegion($x, $z){
-		$index = $x . ":" . $z;
-
-		return isset($this->regions[$index]) ? $this->regions[$index] : null;
+		return isset($this->regions[$index = Level::chunkHash($x, $z)]) ? $this->regions[$index] : null;
 	}
 
 	/**
@@ -126,8 +124,7 @@ class Anvil extends McRegion{
 	}
 
 	protected function loadRegion($x, $z){
-		$index = $x . ":" . $z;
-		if(isset($this->regions[$index])){
+		if(isset($this->regions[$index = Level::chunkHash($x, $z)])){
 			return true;
 		}
 
