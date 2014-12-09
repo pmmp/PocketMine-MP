@@ -251,17 +251,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if($this->spawned === true and $this->dead !== true and $this !== $player and $player->getLevel() === $this->level and $player->canSee($this)){
+		if($this->spawned === true and $this->dead !== true and $player->dead !== true and $player->getLevel() === $this->level and $player->canSee($this)){
 			parent::spawnTo($player);
-		}
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function despawnFrom(Player $player){
-		if($this->spawned === true and $this->dead !== true){
-			parent::despawnFrom($player);
 		}
 	}
 
@@ -1198,8 +1189,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function onUpdate($currentTick){
-		if($this->dead === true){
-			return true;
+		if($this->dead === true and $this->spawned){
+			++$this->deadTicks;
+			if($this->deadTicks >= 10){
+				$this->despawnFromAll();
+			}
+			return $this->deadTicks < 10;
 		}
 
 		$this->timings->startTiming();
@@ -2001,11 +1996,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
 				$this->teleport($ev->getRespawnPosition());
+
 				$this->fireTicks = 0;
 				$this->airTicks = 300;
+				$this->deadTicks = 0;
 
 				$this->setHealth(20);
 				$this->dead = false;
+
 				$this->sendMetadata($this->getViewers());
 				$this->sendMetadata($this);
 
@@ -2013,9 +2011,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->inventory->sendContents($this);
 				$this->inventory->sendArmorContents($this);
 
-				$this->spawnToAll();
-
 				$this->blocked = false;
+
+				$this->spawnToAll();
+				$this->scheduleUpdate();
 				break;
 			case ProtocolInfo::SET_HEALTH_PACKET: //Not used
 				break;
@@ -2565,9 +2564,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
-
-		$this->despawnFromAll();
-
 	}
 
 	public function setHealth($amount){

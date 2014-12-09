@@ -27,6 +27,10 @@ use pocketmine\nbt\NBT;
 
 class Compound extends NamedTag implements \ArrayAccess{
 
+	/**
+	 * @param string     $name
+	 * @param NamedTag[] $value
+	 */
 	public function __construct($name = "", $value = []){
 		$this->name = $name;
 		foreach($value as $tag){

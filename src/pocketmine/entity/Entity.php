@@ -111,6 +111,7 @@ abstract class Entity extends Location implements Metadatable{
 	public $positionChanged;
 	public $motionChanged;
 	public $dead;
+	public $deadTicks = 0;
 	protected $age = 0;
 
 	public $height;
@@ -527,12 +528,16 @@ abstract class Entity extends Location implements Metadatable{
 		$isPlayer = $this instanceof Player;
 
 		if($this->dead === true){
-			$this->despawnFromAll();
-			if(!$isPlayer){
-				$this->close();
+			++$this->deadTicks;
+			if($this->deadTicks >= 10){
+				$this->despawnFromAll();
+				if(!$isPlayer){
+					$this->close();
+				}
 			}
+
 			Timings::$tickEntityTimer->stopTiming();
-			return $isPlayer;
+			return $this->deadTicks < 10;
 		}
 
 		$hasUpdate = false;
@@ -1107,12 +1112,14 @@ abstract class Entity extends Location implements Metadatable{
 		$this->boundingBox->setBounds($pos->x - $radius, $pos->y + $this->ySize, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height + $this->ySize, $pos->z + $radius);
 
 
-		if($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) and $this->chunk->getZ() !== ($this->z >> 4))){
+		if($this->chunk === null or ($this->chunkX !== ($this->x >> 4) and $this->chunkZ !== ($this->z >> 4))){
 			if($this->chunk instanceof FullChunk){
 				$this->chunk->removeEntity($this);
 			}
 			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
 			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4);
+			$this->chunkX = $this->chunk->getX();
+			$this->chunkZ = $this->chunk->getZ();
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getUsingChunk($this->x >> 4, $this->z >> 4);
@@ -1221,8 +1228,8 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function spawnToAll(){
-		foreach($this->level->getUsingChunk($this->x >> 4, $this->z >> 4) as $player){
-			if(isset($player->id) and $player->spawned === true){
+		foreach($this->level->getUsingChunk($this->chunkX, $this->chunkZ) as $player){
+			if($player->loggedIn === true){
 				$this->spawnTo($player);
 			}
 		}
