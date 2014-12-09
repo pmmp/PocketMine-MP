@@ -760,6 +760,9 @@ class Block extends Position implements Metadatable{
 					}
 				}else{
 					self::$lightFilter[$id] = 1;
+					for($data = 0; $data < 16; ++$data){
+						self::$fullList[($id << 4) | $data] = new Block($id, $data);
+					}
 				}
 			}
 		}
@@ -1019,12 +1022,11 @@ class Block extends Position implements Metadatable{
 	 * @return Block
 	 */
 	public function getSide($side, $step = 1){
-		$v = parent::getSide($side, $step);
 		if($this->isValid()){
-			return $this->getLevel()->getBlock($v);
+			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
 		}
 
-		return Block::get(Item::AIR, 0, $v);
+		return Block::get(Item::AIR, 0, new Position($v->x, $v->y, $v->z, null));
 	}
 
 	/**

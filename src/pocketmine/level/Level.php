@@ -183,6 +183,9 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Vector3 */
 	private $temporalVector;
 
+	/** @var \SplFixedArray */
+	private $blockStates;
+
 	protected $chunkTickRadius;
 	protected $chunkTickList = [];
 	protected $chunksPerTick;
@@ -267,6 +270,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @throws \Exception
 	 */
 	public function __construct(Server $server, $name, $path, $provider){
+		$this->blockStates = Block::$fullList;
 		$this->levelId = static::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
@@ -720,11 +724,34 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $pos
 	 */
 	public function updateAround(Vector3 $pos){
-		for($side = 0; $side <= 5; ++$side){
-			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($pos->getSide($side))));
-			if(!$ev->isCancelled()){
-				$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
-			}
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x - 1, $pos->y, $pos->z))));
+		if(!$ev->isCancelled()){
+			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x + 1, $pos->y, $pos->z))));
+		if(!$ev->isCancelled()){
+			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y - 1, $pos->z))));
+		if(!$ev->isCancelled()){
+			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y + 1, $pos->z))));
+		if(!$ev->isCancelled()){
+			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y, $pos->z - 1))));
+		if(!$ev->isCancelled()){
+			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+		}
+
+		$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->getBlock($this->temporalVector->setComponents($pos->x, $pos->y, $pos->z + 1))));
+		if(!$ev->isCancelled()){
+			$ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
 		}
 	}
 
@@ -930,20 +957,16 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block
 	 */
 	public function getBlock(Vector3 $pos, $cached = true){
-		$fullState = 0;
 		$index = Level::blockHash($pos->x, $pos->y, $pos->z);
-		if($cached and isset($this->blockCache[$index])){
+		if($cached === true and isset($this->blockCache[$index])){
 			return $this->blockCache[$index];
-		}elseif($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false)) !== null){
-			$fullState = $chunk->getFullBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f);
+		}elseif($pos->y >= 0 and $pos->y < 128 and ($chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4)) !== null){
+			$fullState = $chunk->getFullBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f);
+		}else{
+			$fullState = 0;
 		}
 
-		$block = Block::$fullList[$fullState];
-		if($block !== null){
-			$block = new $block($fullState & 0x0f);
-		}else{
-			$block = new Block($fullState >> 4, $fullState & 0x0f);
-		}
+		$block = clone $this->blockStates[$fullState];
 
 		$block->x = $pos->x;
 		$block->y = $pos->y;
@@ -975,10 +998,10 @@ class Level implements ChunkManager, Metadatable{
 			$this->setBlockLightAt($x, $y, $z, $newLevel);
 
 			if($newLevel < $oldLevel){
-				$removalVisited["$x:$y:$z"] = true;
+				$removalVisited[Level::blockHash($x, $y, $z)] = true;
 				$lightRemovalQueue->enqueue([new Vector3($x, $y, $z), $oldLevel]);
 			}else{
-				$visited["$x:$y:$z"] = true;
+				$visited[Level::blockHash($x, $y, $z)] = true;
 				$lightPropagationQueue->enqueue(new Vector3($x, $y, $z));
 			}
 		}
@@ -1020,14 +1043,14 @@ class Level implements ChunkManager, Metadatable{
 		if($current !== 0 and $current < $currentLight){
 			$this->setBlockLightAt($x, $y, $z, 0);
 
-			if(!isset($visited[$index = "$x:$y:$z"])){
+			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
 				$visited[$index] = true;
 				if($current > 1){
 					$queue->enqueue([new Vector3($x, $y, $z), $current]);
 				}
 			}
 		}elseif($current >= $currentLight){
-			if(!isset($spreadVisited[$index = "$x:$y:$z"])){
+			if(!isset($spreadVisited[$index = Level::blockHash($x, $y, $z)])){
 				$spreadVisited[$index] = true;
 				$spreadQueue->enqueue(new Vector3($x, $y, $z));
 			}
@@ -1040,7 +1063,7 @@ class Level implements ChunkManager, Metadatable{
 		if($current < $currentLight){
 			$this->setBlockLightAt($x, $y, $z, $currentLight);
 
-			if(!isset($visited[$index = "$x:$y:$z"])){
+			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
 				$visited[$index] = true;
 				if($currentLight > 1){
 					$queue->enqueue(new Vector3($x, $y, $z));
@@ -1072,7 +1095,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		unset($this->blockCache[Level::blockHash($pos->x, $pos->y, $pos->z)]);
+		unset($this->blockCache[$index = Level::blockHash($pos->x, $pos->y, $pos->z)]);
 
 		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y & 0x7f, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
@@ -1558,7 +1581,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $id 0-255
 	 */
 	public function setBlockIdAt($x, $y, $z, $id){
-		unset($this->blockCache["$x:$y:$z"]);
+		unset($this->blockCache[Level::blockHash($x, $y, $z)]);
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f, $id & 0xff);
 	}
 
@@ -1584,7 +1607,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $data 0-15
 	 */
 	public function setBlockDataAt($x, $y, $z, $data){
-		unset($this->blockCache["$x:$y:$z"]);
+		unset($this->blockCache[Level::blockHash($x, $y, $z)]);
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f, $data & 0x0f);
 	}
 
