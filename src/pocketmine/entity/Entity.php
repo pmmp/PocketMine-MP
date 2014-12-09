@@ -403,7 +403,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param int|EntityDamageEvent $type
 	 */
 	public function setLastDamageCause($type){
-		$this->lastDamageCause = $type instanceof EntityDamageEvent ? clone $type : $type;
+		$this->lastDamageCause = $type instanceof EntityDamageEvent ? $type : $type;
 	}
 
 	/**
