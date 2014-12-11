@@ -825,7 +825,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
-			$this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY - $this->ySize, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
+			$this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
 			$this->onGround = $this instanceof Player ? true : false;
 		}else{
 
@@ -877,7 +877,7 @@ abstract class Entity extends Location implements Metadatable{
 				//TODO: big messy loop
 			}*/
 
-			$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz));
+			$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz));
 
 
 			foreach($list as $bb){
@@ -931,7 +931,7 @@ abstract class Entity extends Location implements Metadatable{
 
 				$this->boundingBox->setBB($axisalignedbb);
 
-				$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($movX, $dy, $movZ), false);
+				$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($movX, $dy, $movZ), false);
 
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
@@ -983,13 +983,19 @@ abstract class Entity extends Location implements Metadatable{
 					$dy = $cy;
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
+				}else{
+					$diff = $this->boundingBox->minY - (int) $this->boundingBox->minY;
+
+					if($diff > 0){
+						$this->ySize += $diff + 0.01;
+					}
 				}
 
 			}
 
 			$pos = new Vector3(
 				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-				$this->boundingBox->minY - $this->ySize,
+				$this->boundingBox->minY + $this->ySize,
 				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 			);
 
@@ -1106,7 +1112,7 @@ abstract class Entity extends Location implements Metadatable{
 		$this->z = $pos->z;
 
 		$radius = $this->width / 2;
-		$this->boundingBox->setBounds($pos->x - $radius, $pos->y + $this->ySize, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height + $this->ySize, $pos->z + $radius);
+		$this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
 
 
 		if($this->chunk === null or ($this->chunkX !== ($this->x >> 4) and $this->chunkZ !== ($this->z >> 4))){
