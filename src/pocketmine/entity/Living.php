@@ -252,9 +252,13 @@ abstract class Living extends Entity implements Damageable{
 	 * @return Block
 	 */
 	public function getTargetBlock($maxDistance, array $transparent = []){
-		$block = array_shift($this->getLineOfSight($maxDistance, 1, $transparent));
-		if($block instanceof Block){
-			return $block;
+		try{
+			$block = $this->getLineOfSight($maxDistance, 1, $transparent)[0];
+			if($block instanceof Block){
+				return $block;
+			}
+		}catch (\ArrayOutOfBoundsException $e){
+
 		}
 
 		return null;
