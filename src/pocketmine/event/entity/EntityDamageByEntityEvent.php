@@ -29,16 +29,19 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 
 	/** @var Entity */
 	private $damager;
-
+	/** @var float */
+	private $knockBack;
 
 	/**
 	 * @param Entity    $damager
 	 * @param Entity    $entity
 	 * @param int       $cause
 	 * @param int|int[] $damage
+	 * @param float     $knockBack
 	 */
-	public function __construct(Entity $damager, Entity $entity, $cause, $damage){
+	public function __construct(Entity $damager, Entity $entity, $cause, $damage, $knockBack = 0.4){
 		$this->damager = $damager;
+		$this->knockBack = $knockBack;
 		parent::__construct($entity, $cause, $damage);
 	}
 
@@ -48,6 +51,16 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	public function getDamager(){
 		return $this->damager;
 	}
-
-
+	/**
+	 * @return float
+	 */
+	public function getKnockBack(){
+		return $this->knockBack;
+	}
+	/**
+	 * @param float $knockBack
+	 */
+	public function setKnockBack($knockBack){
+		$this->knockBack = $knockBack;
+	}
 }
