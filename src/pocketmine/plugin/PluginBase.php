@@ -135,7 +135,7 @@ abstract class PluginBase implements Plugin{
 	/**
 	 * @param string $name
 	 *
-	 * @return PluginIdentifiableCommand
+	 * @return Command|PluginIdentifiableCommand
 	 */
 	public function getCommand($name){
 		$command = $this->getServer()->getPluginCommand($name);
