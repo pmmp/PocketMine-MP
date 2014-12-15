@@ -2182,6 +2182,7 @@ class Server{
 			}
 		}
 
+		Timings::$generationTimer->startTiming();
 		try{
 			$this->generationManager->process();
 		}catch(\Exception $e){
@@ -2189,6 +2190,7 @@ class Server{
 				$this->logger->logException($e);
 			}
 		}
+		Timings::$generationTimer->stopTiming();
 
 		if(($this->tickCounter % 100) === 0){
 			foreach($this->levels as $level){

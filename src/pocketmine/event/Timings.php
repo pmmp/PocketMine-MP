@@ -49,6 +49,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $worldSaveTimer;
 	/** @var TimingsHandler */
+	public static $generationTimer;
+	/** @var TimingsHandler */
 	public static $permissibleCalculationTimer;
 	/** @var TimingsHandler */
 	public static $permissionDefaultTimer;
@@ -102,6 +104,7 @@ abstract class Timings{
 		self::$timeUpdateTimer = new TimingsHandler("Time Update");
 		self::$serverCommandTimer = new TimingsHandler("Server Command");
 		self::$worldSaveTimer = new TimingsHandler("World Save");
+		self::$generationTimer = new TimingsHandler("World Generation");
 		self::$permissibleCalculationTimer = new TimingsHandler("Permissible Calculation");
 		self::$permissionDefaultTimer = new TimingsHandler("Default Permission Calculation");
 
