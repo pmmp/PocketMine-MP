@@ -205,7 +205,7 @@ class Config{
 	 *
 	 * @return boolean|mixed
 	 */
-	public function &__get($k){
+	public function __get($k){
 		return $this->get($k);
 	}
 
@@ -233,6 +233,10 @@ class Config{
 		$this->remove($k);
 	}
 
+	/**
+	 * @param $key
+	 * @param $value
+	 */
 	public function setNested($key, $value){
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
@@ -254,13 +258,19 @@ class Config{
 		$base = $value;
 	}
 
-	public function getNested($key){
+	/**
+	 * @param      $key
+	 * @param null $default
+	 *
+	 * @return mixed
+	 */
+	public function getNested($key, $default = null){
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
 		if(isset($this->config[$base])){
 			$base = $this->config[$base];
 		}else{
-			return null;
+			return $default;
 		}
 
 		while(count($vars) > 0){
@@ -268,7 +278,7 @@ class Config{
 			if(is_array($base) and isset($base[$baseKey])){
 				$base = $base[$baseKey];
 			}else{
-				return null;
+				return $default;
 			}
 		}
 
@@ -277,25 +287,22 @@ class Config{
 
 	/**
 	 * @param $k
+	 * @param $default
 	 *
 	 * @return boolean|mixed
 	 */
-	public function &get($k){
-		if(isset($this->correct) and ($this->correct === false or !isset($this->config[$k]))){
-			$false = false;
-
-			return $false;
-		}
-
-		return $this->config[$k];
+	public function get($k, $default = false){
+		return ($this->correct and isset($this->config[$k])) ? $this->config[$k] : $default;
 	}
 
 	/**
 	 * @param string $path
 	 *
+	 * @deprecated
+	 *
 	 * @return mixed
 	 */
-	public function &getPath($path){
+	public function getPath($path){
 		$currPath =& $this->config;
 		foreach(explode(".", $path) as $component){
 			if(isset($currPath[$component])){
@@ -309,10 +316,13 @@ class Config{
 	}
 
 	/**
+	 *
+	 * @deprecated
+	 *
 	 * @param string $path
 	 * @param mixed  $value
 	 */
-	public function &setPath($path, $value){
+	public function setPath($path, $value){
 		$currPath =& $this->config;
 		$components = explode(".", $path);
 		$final = array_pop($components);
