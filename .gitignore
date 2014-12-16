@@ -2,6 +2,7 @@ players/*
 worlds/*
 plugins/*
 bin/*
+timings/*
 *.log
 *.txt
 *.phar
