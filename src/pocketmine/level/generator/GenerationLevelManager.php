@@ -83,7 +83,8 @@ class GenerationLevelManager extends GenerationManager{
 				if(count($chunks) === 0){
 					unset($this->requestQueue[$levelID]);
 				}else{
-					Level::getXZ($key = key($chunks), $chunkX, $chunkZ);
+					$key = key($chunks);
+					Level::getXZ($key, $chunkX, $chunkZ);
 					unset($this->requestQueue[$levelID][$key]);
 					$this->generateChunk($levelID, $chunkX, $chunkZ);
 					++$count;

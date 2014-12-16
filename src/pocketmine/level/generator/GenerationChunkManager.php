@@ -179,7 +179,7 @@ class GenerationChunkManager implements ChunkManager{
 
 	protected function requestChunk($chunkX, $chunkZ){
 		$chunk = $this->manager->requestChunk($this->levelID, $chunkX, $chunkZ);
-		$this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] = $chunk;
+		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 
 		return $chunk;
 	}

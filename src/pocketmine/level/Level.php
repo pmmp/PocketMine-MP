@@ -2220,8 +2220,8 @@ class Level implements ChunkManager, Metadatable{
 
 
 	public function generateChunk($x, $z){
-		if(!isset($this->chunkGenerationQueue[Level::chunkHash($x, $z)])){
-			$this->chunkGenerationQueue[Level::chunkHash($x, $z)] = true;
+		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
+			$this->chunkGenerationQueue[$index] = true;
 			$this->server->getGenerationManager()->requestChunk($this, $x, $z);
 		}
 	}
