@@ -9,3 +9,6 @@
 [submodule "src/spl"]
 	path = src/spl
 	url = https://github.com/PocketMine/PocketMine-SPL.git
+[submodule "tests/TesterPlugin"]
+	path = tests/TesterPlugin
+	url = https://github.com/PocketMine/TesterPlugin.git
