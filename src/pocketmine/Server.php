@@ -51,6 +51,7 @@ use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
 use pocketmine\level\format\anvil\Anvil;
+use pocketmine\level\format\leveldb\LevelDB;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\generator\Flat;
@@ -991,7 +992,9 @@ class Server{
 			$level = new Level($this, $name, $path, $provider);
 		}catch(\Exception $e){
 			$this->logger->error("Could not load level \"" . $name . "\": " . $e->getMessage());
-
+			if($this->logger instanceof MainLogger){
+				$this->logger->logException($e);
+			}
 			return false;
 		}
 
@@ -1554,8 +1557,8 @@ class Server{
 
 		$this->addInterface($this->mainInterface = new RakLibInterface($this));
 
-		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(true) . TextFormat::WHITE . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")", true, true, 0);
-		$this->logger->info($this->getName() . " is distributed under the LGPL License", true, true, 0);
+		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(true) . TextFormat::WHITE . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")");
+		$this->logger->info($this->getName() . " is distributed under the LGPL License");
 
 		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
 		Timings::init();
@@ -1594,6 +1597,10 @@ class Server{
 
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
+		if(extension_loaded("leveldb")){
+			$this->logger->debug("Enabling LevelDB support");
+			LevelProviderManager::addProvider($this, LevelDB::class);
+		}
 
 
 		Generator::addGenerator(Flat::class, "flat");

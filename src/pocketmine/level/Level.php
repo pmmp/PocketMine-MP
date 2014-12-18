@@ -2114,7 +2114,7 @@ class Level implements ChunkManager, Metadatable{
 			$z = $v->z & 0x0f;
 			if($chunk !== null){
 				for(; $v->y > 0; --$v->y){
-					if(Block::$solid[$chunk->getBlockId($x, $v->y & 0x7f, $z)]){
+					if($v->y < 127 and Block::$solid[$chunk->getBlockId($x, $v->y & 0x7f, $z)]){
 						$v->y++;
 						break;
 					}

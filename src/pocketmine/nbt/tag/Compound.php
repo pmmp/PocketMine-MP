@@ -43,7 +43,7 @@ class Compound extends NamedTag implements \ArrayAccess{
 	}
 
 	public function offsetGet($offset){
-		if($this->{$offset} instanceof Tag){
+		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
 			if($this->{$offset} instanceof \ArrayAccess){
 				return $this->{$offset};
 			}else{

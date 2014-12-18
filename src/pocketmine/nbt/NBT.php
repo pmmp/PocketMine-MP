@@ -101,6 +101,12 @@ class NBT{
 		$this->offset = 0;
 		$this->buffer = $buffer;
 		$this->data = $this->readTag();
+		if($this->offset < strlen($this->buffer)){
+			$this->data = [$this->data];
+			do{
+				$this->data[] = $this->readTag();
+			}while($this->offset < strlen($this->buffer));
+		}
 		$this->buffer = "";
 	}
 

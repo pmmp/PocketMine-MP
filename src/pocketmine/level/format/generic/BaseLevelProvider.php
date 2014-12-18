@@ -22,11 +22,13 @@
 namespace pocketmine\level\format\generic;
 
 use pocketmine\level\format\LevelProvider;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Int;
+use pocketmine\nbt\tag\String;
 use pocketmine\utils\LevelException;
 
 abstract class BaseLevelProvider implements LevelProvider{
@@ -48,6 +50,14 @@ abstract class BaseLevelProvider implements LevelProvider{
 			$this->levelData = $levelData->Data;
 		}else{
 			throw new LevelException("Invalid level.dat");
+		}
+
+		if(!isset($this->levelData->generatorName)){
+			$this->levelData->generatorName = new String("generatorName", Generator::getGenerator("DEFAULT"));
+		}
+
+		if(!isset($this->levelData->generatorOptions)){
+			$this->levelData->generatorOptions = new String("generatorOptions", "");
 		}
 	}
 

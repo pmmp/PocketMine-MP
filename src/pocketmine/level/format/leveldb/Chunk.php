@@ -19,76 +19,42 @@
  *
 */
 
-namespace pocketmine\level\format\mcregion;
+namespace pocketmine\level\format\leveldb;
 
 use pocketmine\level\format\generic\BaseFullChunk;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\ByteArray;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\IntArray;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 
 class Chunk extends BaseFullChunk{
 
-	/** @var Compound */
-	protected $nbt;
+	protected $isPopulated = false;
+	protected $isGenerated = false;
 
-	public function __construct($level, Compound $nbt){
-		$this->nbt = $nbt;
+	public function __construct($level, $chunkX, $chunkZ, $terrain, array $entityData = null, array $tileData = null){
+		$heightMap = array_fill(0, 256, 127);
 
-		if(isset($this->nbt->Entities) and $this->nbt->Entities instanceof Enum){
-			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
-		}else{
-			$this->nbt->Entities = new Enum("Entities", []);
-			$this->nbt->Entities->setTagType(NBT::TAG_Compound);
+		$offset = 0;
+
+		$blocks = substr($terrain, $offset, 32768);
+		$offset += 32768;
+		$data = substr($terrain, $offset, 16384);
+		$offset += 16384;
+		$skyLight = substr($terrain, $offset, 16384);
+		$offset += 16384;
+		$blockLight = substr($terrain, $offset, 16384);
+		$offset += 16384;
+		$biomes = substr($terrain, $offset, 256);
+		$offset += 256;
+
+		$biomeColors = [];
+		foreach(unpack("N*", substr($terrain, $offset, 1024)) as $c){
+			$biomeColors[] = $c;
 		}
+		$offset += 1024;
 
-		if(isset($this->nbt->TileEntities) and $this->nbt->TileEntities instanceof Enum){
-			$this->nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		}else{
-			$this->nbt->TileEntities = new Enum("TileEntities", []);
-			$this->nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		}
-
-		if(isset($this->nbt->TileTicks) and $this->nbt->TileTicks instanceof Enum){
-			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
-		}else{
-			$this->nbt->TileTicks = new Enum("TileTicks", []);
-			$this->nbt->TileTicks->setTagType(NBT::TAG_Compound);
-		}
-
-		if(!isset($this->nbt->Biomes) or !($this->nbt->Biomes instanceof ByteArray)){
-			$this->nbt->Biomes = new ByteArray("Biomes", str_repeat("\x01", 256));
-		}
-
-		if(!isset($this->nbt->BiomeColors) or !($this->nbt->BiomeColors instanceof IntArray)){
-			$this->nbt->BiomeColors = new IntArray("BiomeColors", array_fill(0, 256, Binary::readInt("\x00\x85\xb2\x4a")));
-		}
-
-		if(!isset($this->nbt->HeightMap) or !($this->nbt->HeightMap instanceof IntArray)){
-			$this->nbt->HeightMap = new IntArray("HeightMap", array_fill(0, 256, 127));
-		}
-
-		if(!isset($this->nbt->Blocks)){
-			$this->nbt->Blocks = new ByteArray("Blocks", str_repeat("\x00", 32768));
-		}
-
-		if(!isset($this->nbt->Data)){
-			$this->nbt->Data = new ByteArray("Data", $half = str_repeat("\x00", 16384));
-			$this->nbt->SkyLight = new ByteArray("SkyLight", $half);
-			$this->nbt->BlockLight = new ByteArray("BlockLight", $half);
-		}
-
-		parent::__construct($level, $this->nbt["xPos"], $this->nbt["zPos"], $this->nbt->Blocks->getValue(), $this->nbt->Data->getValue(), $this->nbt->SkyLight->getValue(), $this->nbt->BlockLight->getValue(), $this->nbt->Biomes->getValue(), $this->nbt->BiomeColors->getValue(), $this->nbt->HeightMap->getValue(), $this->nbt->Entities->getValue(), $this->nbt->TileEntities->getValue());
-		unset($this->nbt->Blocks);
-		unset($this->nbt->Data);
-		unset($this->nbt->SkyLight);
-		unset($this->nbt->BlockLight);
+		parent::__construct($level, $chunkX, $chunkZ, $blocks, $data, $skyLight, $blockLight, $biomes, $biomeColors, $heightMap, $entityData === null ? [] : $entityData, $tileData === null ? [] : $tileData);
 	}
 
 	public function getBlockId($x, $y, $z){
@@ -231,28 +197,28 @@ class Chunk extends BaseFullChunk{
 	 * @return bool
 	 */
 	public function isPopulated(){
-		return $this->nbt["TerrainPopulated"] > 0;
+		return $this->isPopulated;
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setPopulated($value = 1){
-		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", $value);
+		$this->isPopulated = (bool) $value;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isGenerated(){
-		return $this->nbt["TerrainPopulated"] > 0 or (isset($this->nbt->TerrainGenerated) and $this->nbt["TerrainGenerated"] > 0);
+		return $this->isGenerated;
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setGenerated($value = 1){
-		$this->nbt->TerrainGenerated = new Byte("TerrainGenerated", $value);
+		$this->isGenerated = (bool) $value;
 	}
 
 	/**
@@ -262,72 +228,97 @@ class Chunk extends BaseFullChunk{
 	 * @return Chunk
 	 */
 	public static function fromBinary($data, LevelProvider $provider = null){
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-
 		try{
-			$nbt->readCompressed($data, ZLIB_ENCODING_DEFLATE);
-			$chunk = $nbt->getData();
+			$chunkX = Binary::readLInt(substr($data, 0, 4));
+			$chunkZ = Binary::readLInt(substr($data, 4, 4));
+			$chunkData = substr($data, 8, -1);
 
-			if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)){
-				return null;
+			$flags = ord(substr($data, -1));
+
+			$entities = null;
+			$tiles = null;
+
+			if($provider instanceof LevelDB){
+				$nbt = new NBT(NBT::LITTLE_ENDIAN);
+
+				$entityData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x32");
+				if($entityData !== false){
+					$nbt->read($entityData);
+					$entities = $nbt->getData();
+					if(!is_array($entities)){
+						$entities = [$entities];
+					}
+				}
+				$tileData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x31");
+				if($tileData !== false){
+					$nbt->read($tileData);
+					$tiles = $nbt->getData();
+					if(!is_array($tiles)){
+						$tiles = [$tiles];
+					}
+				}
 			}
 
-			return new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, $chunk->Level);
+			$chunk = new Chunk($provider instanceof LevelProvider ? $provider : LevelDB::class, $chunkX, $chunkZ, $chunkData, $entities, $tiles);
+			if($flags & 0x01){
+				$chunk->setGenerated();
+			}
+			if($flags & 0x02){
+				$chunk->setPopulated();
+			}
+			return $chunk;
 		}catch(\Exception $e){
 			return null;
 		}
 	}
 
-	public function toBinary(){
-		$nbt = clone $this->getNBT();
+	public function toBinary($saveExtra = false){
+		$chunkIndex = LevelDB::chunkIndex($this->getX(), $this->getZ());
 
-		$nbt->xPos = new Int("xPos", $this->x);
-		$nbt->zPos = new Int("zPos", $this->z);
+		$provider = $this->getProvider();
+		if($saveExtra and $provider instanceof LevelDB){
+			$nbt = new NBT(NBT::LITTLE_ENDIAN);
+			$entities = [];
 
-		if($this->isGenerated()){
-			$nbt->Blocks = new ByteArray("Blocks", $this->getBlockIdArray());
-			$nbt->Data = new ByteArray("Data", $this->getBlockDataArray());
-			$nbt->SkyLight = new ByteArray("SkyLight", $this->getBlockSkyLightArray());
-			$nbt->BlockLight = new ByteArray("BlockLight", $this->getBlockLightArray());
-
-			$nbt->Biomes = new ByteArray("Biomes", $this->getBiomeIdArray());
-			$nbt->BiomeColors = new IntArray("BiomeColors", $this->getBiomeColorArray());
-
-			$nbt->HeightMap = new IntArray("HeightMap", $this->getHeightMapArray());
-		}
-
-		$entities = [];
-
-		foreach($this->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->closed){
-				$entity->saveNBT();
-				$entities[] = $entity->namedtag;
+			foreach($this->getEntities() as $entity){
+				if(!($entity instanceof Player) and !$entity->closed){
+					$entity->saveNBT();
+					$entities[] = $nbt->write($entity->namedtag);
+				}
 			}
+
+			if(count($entities) > 0){
+				$provider->getDatabase()->put($chunkIndex . "\x32", implode($entities));
+			}else{
+				$provider->getDatabase()->delete($chunkIndex . "\x32");
+			}
+
+
+			$tiles = [];
+			foreach($this->getTiles() as $tile){
+				$tile->saveNBT();
+				$tiles[] = $nbt->write($tile->namedtag);
+			}
+
+			if(count($tiles) > 0){
+				$provider->getDatabase()->put($chunkIndex . "\x31", implode($tiles));
+			}else{
+				$provider->getDatabase()->delete($chunkIndex . "\x31");
+			}
+
+
 		}
 
-		$nbt->Entities = new Enum("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
 
-
-		$tiles = [];
-		foreach($this->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
-		}
-
-		$nbt->TileEntities = new Enum("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
-		$writer = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setName("Level");
-		$writer->setData(new Compound("", ["Level" => $nbt]));
-
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
-	}
-
-	/**
-	 * @return Compound
-	 */
-	public function getNBT(){
-		return $this->nbt;
+		return $chunkIndex .
+			$this->getBlockIdArray() .
+			$this->getBlockDataArray() .
+			$this->getBlockSkyLightArray() .
+			$this->getBlockLightArray() .
+			$this->getBiomeIdArray() .
+			$biomeColors . chr(
+				($this->isPopulated() ? 0x02 : 0) | ($this->isGenerated() ? 0x01 : 0)
+			);
 	}
 }

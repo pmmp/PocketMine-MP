@@ -53,7 +53,7 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 	}
 
 	public function offsetGet($offset){
-		if($this->{$offset} instanceof Tag){
+		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
 			if($this->{$offset} instanceof \ArrayAccess){
 				return $this->{$offset};
 			}else{

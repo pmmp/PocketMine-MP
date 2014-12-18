@@ -385,8 +385,8 @@ class Binary{
 
 	public static function readLong($x){
 		if(PHP_INT_SIZE === 8){
-			list(, $int1, $int2) = unpack("N*", $x);
-			return ($int1 << 32) | $int2;
+			$int = unpack("N*", $x);
+			return ($int[1] << 32) | $int[2];
 		}else{
 			$value = "0";
 			for($i = 0; $i < 8; $i += 2){
