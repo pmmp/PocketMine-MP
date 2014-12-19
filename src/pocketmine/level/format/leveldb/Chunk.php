@@ -242,7 +242,7 @@ class Chunk extends BaseFullChunk{
 				$nbt = new NBT(NBT::LITTLE_ENDIAN);
 
 				$entityData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x32");
-				if($entityData !== false){
+				if($entityData !== false and strlen($entityData) > 0){
 					$nbt->read($entityData);
 					$entities = $nbt->getData();
 					if(!is_array($entities)){
@@ -250,7 +250,7 @@ class Chunk extends BaseFullChunk{
 					}
 				}
 				$tileData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x31");
-				if($tileData !== false){
+				if($tileData !== false and strlen($tileData) > 0){
 					$nbt->read($tileData);
 					$tiles = $nbt->getData();
 					if(!is_array($tiles)){
@@ -268,6 +268,7 @@ class Chunk extends BaseFullChunk{
 			}
 			return $chunk;
 		}catch(\Exception $e){
+			echo $e;
 			return null;
 		}
 	}
@@ -283,7 +284,8 @@ class Chunk extends BaseFullChunk{
 			foreach($this->getEntities() as $entity){
 				if(!($entity instanceof Player) and !$entity->closed){
 					$entity->saveNBT();
-					$entities[] = $nbt->write($entity->namedtag);
+					$nbt->setData($entity->namedtag);
+					$entities[] = $nbt->write();
 				}
 			}
 
@@ -297,7 +299,8 @@ class Chunk extends BaseFullChunk{
 			$tiles = [];
 			foreach($this->getTiles() as $tile){
 				$tile->saveNBT();
-				$tiles[] = $nbt->write($tile->namedtag);
+				$nbt->setData($tile->namedtag);
+				$tiles[] = $nbt->write();
 			}
 
 			if(count($tiles) > 0){

@@ -235,7 +235,8 @@ class LevelDB extends BaseLevelProvider{
 
 	private function writeChunk(Chunk $chunk){
 		$binary = $chunk->toBinary(true);
-		$this->db->put($index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ()) . "\x30", substr($binary, 8, -1));
+		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
+		$this->db->put($index . "\x30", substr($binary, 8, -1));
 		$this->db->put($index . "f", substr($binary, -1));
 		$this->db->put($index . "v", "\x02");
 	}
@@ -311,7 +312,7 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	private function chunkExists($chunkX, $chunkZ){
-		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . "\x76") !== false;
+		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . "v") !== false;
 	}
 
 	public function isChunkGenerated($chunkX, $chunkZ){
