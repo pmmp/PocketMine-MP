@@ -101,7 +101,7 @@ abstract class Living extends Entity implements Damageable{
 			$deltaX = $this->x - $e->x;
 			$deltaZ = $this->z - $e->z;
 			$yaw = atan2($deltaX, $deltaZ);
-			$this->knockBack($e, $damage, sin($yaw), cos($yaw));
+			$this->knockBack($e, $damage, sin($yaw), cos($yaw), $source->getKnockBack());
 		}
 
 		$this->setHealth($this->getHealth() - $damage);
@@ -114,9 +114,8 @@ abstract class Living extends Entity implements Damageable{
 		$this->attackTime = 10; //0.5 seconds cooldown
 	}
 
-	public function knockBack(Entity $attacker, $damage, $x, $z){
+	public function knockBack(Entity $attacker, $damage, $x, $z, $base = 0.4){
 		$f = sqrt($x ** 2 + $z ** 2);
-		$base = 0.4;
 
 		$motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
 
