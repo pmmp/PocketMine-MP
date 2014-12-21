@@ -170,6 +170,10 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 
 	protected function checkPairing(){
 		if(($pair = $this->getPair()) instanceof Chest){
+			if(!$pair->isPaired()){
+				$pair->createPair($this);
+				$pair->checkPairing();
+			}
 			if($this->doubleInventory === null){
 				if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
 					$this->doubleInventory = new DoubleChestInventory($pair, $this);
@@ -210,17 +214,21 @@ class Chest extends Spawnable implements InventoryHolder, Container{
 			return false;
 		}
 
-		$this->namedtag->pairx = new Int("pairx", $tile->x);
-		$this->namedtag->pairz = new Int("pairz", $tile->z);
-
-		$tile->namedtag->pairx = new Int("pairx", $this->x);
-		$tile->namedtag->pairz = new Int("pairz", $this->z);
+		$this->createPair($tile);
 
 		$this->spawnToAll();
 		$tile->spawnToAll();
 		$this->checkPairing();
 
 		return true;
+	}
+
+	private function createPair(Chest $tile){
+		$this->namedtag->pairx = new Int("pairx", $tile->x);
+		$this->namedtag->pairz = new Int("pairz", $tile->z);
+
+		$tile->namedtag->pairx = new Int("pairx", $this->x);
+		$tile->namedtag->pairz = new Int("pairz", $this->z);
 	}
 
 	public function unpair(){
