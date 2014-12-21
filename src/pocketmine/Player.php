@@ -2374,6 +2374,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
+			foreach($this->server->getOnlinePlayers() as $player){
+				if(!$player->canSee($this)){
+					$player->showPlayer($this);
+				}
+			}
+			$this->hiddenPlayers = [];
+
 			foreach($this->windowIndex as $window){
 				$this->removeWindow($window);
 			}
