@@ -55,7 +55,7 @@ class InstallerLang{
 		}else{
 			$files = [];
 			foreach(new \DirectoryIterator(\pocketmine\PATH . "src/pocketmine/lang/Installer/") as $file){
-				if($file->getExtension() === "ini"){
+				if($file->getExtension() === "ini" and substr($file->getFilename(), 0, 2) === $lang){
 					$files[$file->getFilename()] = $file->getSize();
 				}
 			}
