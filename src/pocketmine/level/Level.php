@@ -1208,16 +1208,10 @@ class Level implements ChunkManager, Metadatable{
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
-			$lastTime = $player->lastBreak - 0.1; //TODO: replace with true lag
-			if(($player->getGamemode() & 0x01) > 0){
-				$ev->setInstaBreak(true);
-			}elseif(($lastTime + $target->getBreakTime($item)) >= microtime(true)){
+			if($item instanceof Item and !$target->isBreakable($item)){
 				$ev->setCancelled();
 			}
 
-			if($item instanceof Item and !$target->isBreakable($item) and $ev->getInstaBreak() === false){
-				$ev->setCancelled();
-			}
 			if(!$player->isOp() and ($distance = $this->server->getConfigInt("spawn-protection", 16)) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
@@ -1230,8 +1224,13 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$player->lastBreak = microtime(true);
+			$breakTime = $player->isCreative() ? 0.15 : $target->getBreakTime($item);
 
+			if(!$ev->getInstaBreak() and ($player->lastBreak + $breakTime) >= microtime(true)){
+				return false;
+			}
+
+			$player->lastBreak = microtime(true);
 		}elseif($item instanceof Item and !$target->isBreakable($item)){
 			return false;
 		}
