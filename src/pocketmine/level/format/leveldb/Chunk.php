@@ -243,7 +243,7 @@ class Chunk extends BaseFullChunk{
 
 				$entityData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x32");
 				if($entityData !== false and strlen($entityData) > 0){
-					$nbt->read($entityData);
+					$nbt->read($entityData, true);
 					$entities = $nbt->getData();
 					if(!is_array($entities)){
 						$entities = [$entities];
@@ -251,7 +251,7 @@ class Chunk extends BaseFullChunk{
 				}
 				$tileData = $provider->getDatabase()->get(substr($data, 0, 8) . "\x31");
 				if($tileData !== false and strlen($tileData) > 0){
-					$nbt->read($tileData);
+					$nbt->read($tileData, true);
 					$tiles = $nbt->getData();
 					if(!is_array($tiles)){
 						$tiles = [$tiles];

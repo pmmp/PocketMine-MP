@@ -97,11 +97,11 @@ class NBT{
 		$this->endianness = $endianness & 0x01;
 	}
 
-	public function read($buffer){
+	public function read($buffer, $doMultiple = false){
 		$this->offset = 0;
 		$this->buffer = $buffer;
 		$this->data = $this->readTag();
-		if($this->offset < strlen($this->buffer)){
+		if($doMultiple and $this->offset < strlen($this->buffer)){
 			$this->data = [$this->data];
 			do{
 				$this->data[] = $this->readTag();
@@ -120,9 +120,14 @@ class NBT{
 			$this->writeTag($this->data);
 
 			return $this->buffer;
-		}else{
-			return false;
+		}elseif(is_array($this->data)){
+			foreach($this->data as $tag){
+				$this->writeTag($tag);
+			}
+			return $this->buffer;
 		}
+
+		return false;
 	}
 
 	public function writeCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
