@@ -2182,7 +2182,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 
 
-				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 0.5)){
+				if($this->currentTransaction === null or $this->currentTransaction->getCreationTime() < (microtime(true) - 8)){
 					if($this->currentTransaction instanceof SimpleTransactionGroup){
 						foreach($this->currentTransaction->getInventories() as $inventory){
 							if($inventory instanceof PlayerInventory){
@@ -2197,19 +2197,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->currentTransaction->addTransaction($transaction);
 
 				if($this->currentTransaction->canExecute()){
-					if(!$this->currentTransaction->execute()){
-						$this->currentTransaction = null;
-						break;
-					}
-
-					foreach($this->currentTransaction->getTransactions() as $ts){
-						$inv = $ts->getInventory();
-						if($inv instanceof FurnaceInventory){
-							if($ts->getSlot() === 2){
-								switch($inv->getResult()->getId()){
-									case Item::IRON_INGOT:
-										$this->awardAchievement("acquireIron");
-										break;
+					if($this->currentTransaction->execute()){
+						foreach($this->currentTransaction->getTransactions() as $ts){
+							$inv = $ts->getInventory();
+							if($inv instanceof FurnaceInventory){
+								if($ts->getSlot() === 2){
+									switch($inv->getResult()->getId()){
+										case Item::IRON_INGOT:
+											$this->awardAchievement("acquireIron");
+											break;
+									}
 								}
 							}
 						}
