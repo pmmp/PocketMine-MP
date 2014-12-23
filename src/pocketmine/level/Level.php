@@ -966,7 +966,7 @@ class Level implements ChunkManager, Metadatable{
 			$fullState = 0;
 		}
 
-		$block = clone $this->blockStates[$fullState];
+		$block = clone $this->blockStates[$fullState & 0xfff];
 
 		$block->x = $pos->x;
 		$block->y = $pos->y;
