@@ -26,30 +26,18 @@ namespace pocketmine\utils;
  * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString{
-	public static $stageOrder = [
-		"alpha" => 0,
-		"a" => 0,
-		"beta" => 1,
-		"b" => 1,
-		"final" => 2,
-		"f" => 2,
-	];
-	private $stage;
 	private $major;
 	private $build;
 	private $minor;
 	private $development = false;
-	private $generation;
 
 	public function __construct($version = \pocketmine\VERSION){
 		if(is_int($version)){
 			$this->minor = $version & 0x1F;
 			$this->major = ($version >> 5) & 0x0F;
 			$this->generation = ($version >> 9) & 0x0F;
-			$this->stage = array_search(($version >> 13) & 0x0F, VersionString::$stageOrder, true);
 		}else{
-			$version = preg_split("/([A-Za-z]*)[ _\\-]([0-9]*)\\.([0-9]*)\\.{0,1}([0-9]*)(dev|)(-[\\0-9]{1,}|)/", $version, -1, PREG_SPLIT_DELIM_CAPTURE);
-			$this->stage = strtolower($version[1]); //0-15
+			$version = preg_split("/([A-Za-z]*)[ _\\-]?([0-9]*)\\.([0-9]*)\\.{0,1}([0-9]*)(dev|)(-[\\0-9]{1,}|)/", $version, -1, PREG_SPLIT_DELIM_CAPTURE);
 			$this->generation = (int) $version[2]; //0-15
 			$this->major = (int) $version[3]; //0-15
 			$this->minor = (int) $version[4]; //0-31
@@ -63,11 +51,14 @@ class VersionString{
 	}
 
 	public function getNumber(){
-		return (int) (VersionString::$stageOrder[$this->stage] << 13) + ($this->generation << 9) + ($this->major << 5) + $this->minor;
+		return (int) (($this->generation << 9) + ($this->major << 5) + $this->minor);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function getStage(){
-		return $this->stage;
+		return "final";
 	}
 
 	public function getGeneration(){
@@ -95,7 +86,7 @@ class VersionString{
 	}
 
 	public function get($build = false){
-		return ucfirst($this->stage) . "_" . $this->getRelease() . ($this->development === true ? "dev" : "") . (($this->build > 0 and $build === true) ? "-" . $this->build : "");
+		return $this->getRelease() . ($this->development === true ? "dev" : "") . (($this->build > 0 and $build === true) ? "-" . $this->build : "");
 	}
 
 	public function __toString(){
