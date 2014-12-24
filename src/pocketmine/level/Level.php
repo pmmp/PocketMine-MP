@@ -589,6 +589,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private function tickChunks(){
 		if($this->chunksPerTick <= 0 or count($this->players) === 0){
+			$this->chunkTickList = [];
 			return;
 		}
 
@@ -1208,7 +1209,7 @@ class Level implements ChunkManager, Metadatable{
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
-			if($item instanceof Item and !$target->isBreakable($item)){
+			if($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)){
 				$ev->setCancelled();
 			}
 
