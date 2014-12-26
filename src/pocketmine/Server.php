@@ -623,6 +623,16 @@ class Server{
 	}
 
 	/**
+	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
+	 *
+	 * @param string $address
+	 * @param int    $timeout
+	 */
+	public function blockAddress($address, $timeout = 300){
+		$this->mainInterface->blockAddress($address, $timeout);
+	}
+
+	/**
 	 * @param string $address
 	 * @param int    $port
 	 * @param string $payload
@@ -639,7 +649,7 @@ class Server{
 				}
 			}
 
-			$this->mainInterface->blockAddress($address, 600);
+			$this->blockAddress($address, 600);
 		}
 		//TODO: add raw packet events
 	}
@@ -1834,6 +1844,9 @@ class Server{
 		$this->reloadWhitelist();
 		$this->operators->reload();
 
+		foreach($this->getIPBans()->getEntries() as $entry){
+			$this->blockAddress($entry->getName(), -1);
+		}
 
 		$this->pluginManager->registerInterface(PharPluginLoader::class);
 		$this->pluginManager->loadPlugins($this->pluginPath);
@@ -1911,6 +1924,9 @@ class Server{
 
 		}
 
+		foreach($this->getIPBans()->getEntries() as $entry){
+			$this->blockAddress($entry->getName(), -1);
+		}
 
 		if($this->getProperty("settings.send-usage", true) !== false){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "sendUsage"]), 6000, 6000);
