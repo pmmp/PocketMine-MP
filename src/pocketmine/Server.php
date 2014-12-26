@@ -633,8 +633,10 @@ class Server{
 				$this->queryHandler->handle($address, $port, $payload);
 			}
 		}catch(\Exception $e){
-			if($this->logger instanceof MainLogger){
-				$this->logger->logException($e);
+			if(\pocketmine\DEBUG > 1){
+				if($this->logger instanceof MainLogger){
+					$this->logger->logException($e);
+				}
 			}
 
 			$this->mainInterface->blockAddress($address, 600);
