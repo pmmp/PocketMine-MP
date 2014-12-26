@@ -636,6 +636,8 @@ class Server{
 			if($this->logger instanceof MainLogger){
 				$this->logger->logException($e);
 			}
+
+			$this->mainInterface->blockAddress($address, 600);
 		}
 		//TODO: add raw packet events
 	}
