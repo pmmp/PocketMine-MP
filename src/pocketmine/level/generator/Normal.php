@@ -49,7 +49,9 @@ class Normal extends Generator{
 	private $random;
 	private $worldHeight = 65;
 	private $waterHeight = 63;
+	/** @var Simplex */
 	private $noiseHills;
+	/** @var Simplex */
 	private $noiseBase;
 
 	public function __construct(array $options = []){
