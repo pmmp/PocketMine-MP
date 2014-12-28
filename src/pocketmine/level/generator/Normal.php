@@ -50,8 +50,6 @@ class Normal extends Generator{
 	private $worldHeight = 65;
 	private $waterHeight = 63;
 	private $noiseHills;
-	private $noisePatches;
-	private $noisePatchesSmall;
 	private $noiseBase;
 
 	public function __construct(array $options = []){
@@ -70,10 +68,8 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseHills = new Simplex($this->random, 3, 0.11, 12);
-		$this->noisePatches = new Simplex($this->random, 2, 0.03, 16);
-		$this->noisePatchesSmall = new Simplex($this->random, 2, 0.5, 4);
-		$this->noiseBase = new Simplex($this->random, 16, 0.7, 16);
+		$this->noiseHills = new Simplex($this->random, 3, 0.1, 12);
+		$this->noiseBase = new Simplex($this->random, 16, 0.6, 16);
 
 
 		$ores = new Ore();
@@ -90,8 +86,8 @@ class Normal extends Generator{
 		$this->populators[] = $ores;
 
 		$trees = new Tree();
-		$trees->setBaseAmount(3);
-		$trees->setRandomAmount(0);
+		$trees->setBaseAmount(1);
+		$trees->setRandomAmount(1);
 		$this->populators[] = $trees;
 
 		$tallGrass = new TallGrass();
@@ -103,15 +99,11 @@ class Normal extends Generator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		$hills = [];
-		$patches = [];
-		$patchesSmall = [];
 		$base = [];
 		for($z = 0; $z < 16; ++$z){
 			for($x = 0; $x < 16; ++$x){
 				$i = ($z << 4) + $x;
 				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
-				$patches[$i] = $this->noisePatches->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
-				$patchesSmall[$i] = $this->noisePatchesSmall->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
 				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
 
 				if($base[$i] < 0){
@@ -138,35 +130,17 @@ class Normal extends Generator{
 						}elseif($diff > 2){
 							$chunk->setBlockId($x, $y, $z, Block::STONE);
 						}elseif($diff > 0){
-							if($patches[$i] > 0.7){
-								$chunk->setBlockId($x, $y, $z, Block::STONE);
-							}elseif($patches[$i] < -0.8){
-								$chunk->setBlockId($x, $y, $z, Block::GRAVEL);
-							}else{
-								$chunk->setBlockId($x, $y, $z, Block::DIRT);
-							}
+							$chunk->setBlockId($x, $y, $z, Block::DIRT);
 						}elseif($y <= $this->waterHeight){
 							if(($this->waterHeight - $y) <= 1 and $diff === 0){
 								$chunk->setBlockId($x, $y, $z, Block::SAND);
 							}elseif($diff === 0){
-								if($patchesSmall[$i] > 0.3){
-									$chunk->setBlockId($x, $y, $z, Block::GRAVEL);
-								}elseif($patchesSmall[$i] < -0.45){
-									$chunk->setBlockId($x, $y, $z, Block::SAND);
-								}else{
-									$chunk->setBlockId($x, $y, $z, Block::DIRT);
-								}
+								$chunk->setBlockId($x, $y, $z, Block::DIRT);
 							}else{
 								$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 							}
 						}elseif($diff === 0){
-							if($patches[$i] > 0.7){
-								$chunk->setBlockId($x, $y, $z, Block::STONE);
-							}elseif($patches[$i] < -0.8){
-								$chunk->setBlockId($x, $y, $z, Block::GRAVEL);
-							}else{
-								$chunk->setBlockId($x, $y, $z, Block::GRASS);
-							}
+							$chunk->setBlockId($x, $y, $z, Block::GRASS);
 						}
 					}
 
