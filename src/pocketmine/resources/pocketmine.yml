@@ -34,15 +34,14 @@ chunk-sending:
  per-tick: 4
  #Compression level used when sending chunks. Higher = more CPU, less bandwidth usage
  compression-level: 8
- #Amount of chunks loaded around a player by the server, min. 56 as MC: PE 0.9.5
- #Increasing this more than 96 (as of MC: PE 0.9.5) can cause issues with the client ignoring chunks
- max-chunks: 96
+ #Amount of chunks sent around each player
+ max-chunks: 256
 
 chunk-ticking:
  #Max amount of chunks processed each tick
- per-tick: 80
+ per-tick: 260
  #Radius of chunks around a player to tick
- tick-radius: 2
+ tick-radius: 4
  light-updates: false
  clear-tick-list: false
 

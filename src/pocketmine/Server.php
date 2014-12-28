@@ -300,7 +300,7 @@ class Server{
 	 * @return int
 	 */
 	public function getViewDistance(){
-		return max(56, $this->getProperty("chunk-sending.max-chunks", 96));
+		return max(56, $this->getProperty("chunk-sending.max-chunks", 256));
 	}
 
 	/**

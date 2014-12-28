@@ -114,37 +114,33 @@ class Normal extends Generator{
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		for($chunkY = 0; $chunkY < 8; ++$chunkY){
-			$startY = $chunkY << 4;
-			$endY = $startY + 16;
-			for($z = 0; $z < 16; ++$z){
-				for($x = 0; $x < 16; ++$x){
-					$i = ($z << 4) + $x;
-					$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 7;
-					$height = (int) $height;
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				$i = ($z << 4) + $x;
+				$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 7;
+				$height = (int) $height;
 
-					for($y = $startY; $y < $endY; ++$y){
-						$diff = $height - $y;
-						if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
-							$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
-						}elseif($diff > 2){
-							$chunk->setBlockId($x, $y, $z, Block::STONE);
-						}elseif($diff > 0){
-							$chunk->setBlockId($x, $y, $z, Block::DIRT);
-						}elseif($y <= $this->waterHeight){
-							if(($this->waterHeight - $y) <= 1 and $diff === 0){
-								$chunk->setBlockId($x, $y, $z, Block::SAND);
-							}elseif($diff === 0){
-								$chunk->setBlockId($x, $y, $z, Block::DIRT);
-							}else{
-								$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
-							}
+				for($y = 0; $y < 128; ++$y){
+					$diff = $height - $y;
+					if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
+						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
+					}elseif($diff > 2){
+						$chunk->setBlockId($x, $y, $z, Block::STONE);
+					}elseif($diff > 0){
+						$chunk->setBlockId($x, $y, $z, Block::DIRT);
+					}elseif($y <= $this->waterHeight){
+						if(($this->waterHeight - $y) <= 1 and $diff === 0){
+							$chunk->setBlockId($x, $y, $z, Block::SAND);
 						}elseif($diff === 0){
-							$chunk->setBlockId($x, $y, $z, Block::GRASS);
+							$chunk->setBlockId($x, $y, $z, Block::DIRT);
+						}else{
+							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 						}
+					}elseif($diff === 0){
+						$chunk->setBlockId($x, $y, $z, Block::GRASS);
 					}
-
 				}
+
 			}
 		}
 
