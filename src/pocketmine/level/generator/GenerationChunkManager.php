@@ -163,7 +163,7 @@ class GenerationChunkManager implements ChunkManager{
 		try{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setGenerated(true);
-			$this->changes["$chunkX:$chunkZ"] = $chunk;
+			$this->changes[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 		}catch(\Exception $e){
 		}
 	}
@@ -172,7 +172,7 @@ class GenerationChunkManager implements ChunkManager{
 		try{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setPopulated(true);
-			$this->changes["$chunkX:$chunkZ"] = $chunk;
+			$this->changes[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 		}catch(\Exception $e){
 		}
 	}
