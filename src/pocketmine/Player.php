@@ -660,6 +660,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->server->broadcastMessage($ev->getJoinMessage());
 			}
 
+			$this->noDamageTicks = 60;
+
 			$this->spawnToAll();
 
 			if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
@@ -2001,6 +2003,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->fireTicks = 0;
 				$this->airTicks = 300;
 				$this->deadTicks = 0;
+				$this->noDamageTicks = 60;
 
 				$this->setHealth(20);
 				$this->dead = false;

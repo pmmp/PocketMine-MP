@@ -271,34 +271,27 @@ class Simplex extends Perlin{
 		$gi1 = $this->perm[$ii + $i1 + $this->perm[$jj + $j1]] % 12;
 		$gi2 = $this->perm[$ii + 1 + $this->perm[$jj + 1]] % 12;
 
+		$n = 0;
+
 		// Calculate the contribution from the three corners
-		$t0 = 0.5 - $x0 ** 2 - $y0 ** 2;
-		if($t0 < 0){
-			$n0 = 0.0;
-		}else{
-			$t0 **= 2;
-			$n0 = $t0 ** 2 * self::dot2D(self::$grad3[$gi0], $x0, $y0); // (x,y) of grad3 used for 2D gradient
+		$t = 0.5 - $x0 ** 2 - $y0 ** 2;
+		if($t > 0){
+			$n += $t ** 4 * self::dot2D(self::$grad3[$gi0], $x0, $y0); // (x,y) of grad3 used for 2D gradient
 		}
 
-		$t1 = 0.5 - $x1 ** 2 - $y1 ** 2;
-		if($t1 < 0){
-			$n1 = 0.0;
-		}else{
-			$t1 **= 2;
-			$n1 = $t1 ** 2 * self::dot2D(self::$grad3[$gi1], $x1, $y1);
+		$t = 0.5 - $x1 ** 2 - $y1 ** 2;
+		if($t > 0){
+			$n += $t ** 4 * self::dot2D(self::$grad3[$gi1], $x1, $y1);
 		}
 
-		$t2 = 0.5 - $x2 ** 2 - $y2 ** 2;
-		if($t2 < 0){
-			$n2 = 0.0;
-		}else{
-			$t2 **= 2;
-			$n2 = $t2 ** 2 * self::dot2D(self::$grad3[$gi2], $x2, $y2);
+		$t = 0.5 - $x2 ** 2 - $y2 ** 2;
+		if($t > 0){
+			$n += $t ** 4 * self::dot2D(self::$grad3[$gi2], $x2, $y2);
 		}
 
 		// Add contributions from each corner to get the noise value.
 		// The result is scaled to return values in the interval [-1,1].
-		return 70.0 * ($n0 + $n1 + $n2);
+		return 70.0 * $n;
 	}
 
 	/**

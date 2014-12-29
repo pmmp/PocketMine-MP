@@ -188,8 +188,14 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 						$logger->logException($e);
 					}
 				}
+
+				$this->interface->blockAddress($this->players[$identifier]->getAddress(), 5);
 			}
 		}
+	}
+
+	public function blockAddress($address, $timeout = 300){
+		$this->interface->blockAddress($address, $timeout);
 	}
 
 	public function handleRaw($address, $port, $payload){

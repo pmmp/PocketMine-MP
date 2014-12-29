@@ -24,10 +24,6 @@ namespace pocketmine\command;
 use pocketmine\Thread;
 
 class CommandReader extends Thread{
-
-	public $stream;
-	/** @var resource */
-	private $fp;
 	private $readline;
 
 	/** @var \Threaded */
@@ -35,17 +31,15 @@ class CommandReader extends Thread{
 
 	/**
 	 * @param \Threaded $threaded
-	 * @param string    $stream
 	 */
-	public function __construct(\Threaded $threaded, $stream = "php://stdin"){
-		$this->stream = $stream;
+	public function __construct(\Threaded $threaded){
 		$this->buffer = $threaded;
 		$this->start();
 	}
 
 	private function readLine(){
 		if(!$this->readline){
-			$line = trim(fgets($this->fp));
+			$line = trim(fgets(fopen("php://stdin", "r")));
 		}else{
 			$line = trim(readline("> "));
 			if($line != ""){
@@ -73,12 +67,10 @@ class CommandReader extends Thread{
 
 	public function run(){
 		$opts = getopt("", ["disable-readline"]);
-		if(extension_loaded("readline") and $this->stream === "php://stdin" and !isset($opts["disable-readline"])){
+		if(extension_loaded("readline") and !isset($opts["disable-readline"])){
 			$this->readline = true;
 		}else{
 			$this->readline = false;
-			$this->fp = fopen($this->stream, "r");
-			stream_set_blocking($this->fp, 1); //Non-blocking STDIN won't work on Windows
 		}
 
 		$lastLine = microtime(true);

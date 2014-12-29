@@ -294,8 +294,8 @@ class Level implements ChunkManager, Metadatable{
 		$this->updateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 		$this->time = (int) $this->provider->getTime();
 
-		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 3)));
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 80);
+		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 260);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
 
@@ -589,6 +589,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private function tickChunks(){
 		if($this->chunksPerTick <= 0 or count($this->players) === 0){
+			$this->chunkTickList = [];
 			return;
 		}
 
@@ -1208,7 +1209,7 @@ class Level implements ChunkManager, Metadatable{
 		if($player instanceof Player){
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->getGamemode() & 0x01) === 1 ? true : false);
 
-			if($item instanceof Item and !$target->isBreakable($item)){
+			if($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item)){
 				$ev->setCancelled();
 			}
 
@@ -1754,6 +1755,7 @@ class Level implements ChunkManager, Metadatable{
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
 		$oldChunk = $this->getChunk($x, $z, false);
 		unset($this->chunkGenerationQueue[Level::chunkHash($x, $z)]);
+		$chunk->setProvider($this->provider);
 		$this->setChunk($x, $z, $chunk);
 		if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
 			$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
