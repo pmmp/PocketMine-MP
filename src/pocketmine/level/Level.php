@@ -1757,6 +1757,7 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkGenerationQueue[Level::chunkHash($x, $z)]);
 		$chunk->setProvider($this->provider);
 		$this->setChunk($x, $z, $chunk);
+		$chunk = $this->getChunk($x, $z, false);
 		if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
 			$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
 		}
