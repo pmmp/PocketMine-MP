@@ -38,6 +38,7 @@ class RegionLoader{
 	const VERSION = 1;
 	const COMPRESSION_GZIP = 1;
 	const COMPRESSION_ZLIB = 2;
+	const MAX_SECTOR_LENGTH = 32 << 12; //32 sectors
 	public static $COMPRESSION_LEVEL = 7;
 
 	protected $x;
@@ -107,6 +108,12 @@ class RegionLoader{
 			fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 			$length = Binary::readInt(fread($this->filePointer, 4));
 			$compression = ord(fgetc($this->filePointer));
+		}
+
+		if($length >= self::MAX_SECTOR_LENGTH){
+			MainLogger::getLogger()->error("Corrupted chunk header detected");
+
+			return false;
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors

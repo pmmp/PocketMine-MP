@@ -88,6 +88,12 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 			$compression = ord(fgetc($this->filePointer));
 		}
 
+		if($length >= self::MAX_SECTOR_LENGTH){
+			MainLogger::getLogger()->error("Corrupted chunk header detected");
+
+			return false;
+		}
+
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
 			MainLogger::getLogger()->error("Corrupted chunk detected");
 			$this->locationTable[$index][1] = $length >> 12;
