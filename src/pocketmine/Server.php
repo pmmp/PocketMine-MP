@@ -1990,6 +1990,10 @@ class Server{
 
 		global $lastError;
 
+		if($trace === null){
+			$trace = $e->getTrace();
+		}
+
 		$errstr = $e->getMessage();
 		$errfile = $e->getFile();
 		$errno = $e->getCode();
@@ -2012,7 +2016,7 @@ class Server{
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
 			"line" => $errline,
-			"trace" => @getTrace($trace === null ? 3 : 0, $trace)
+			"trace" => @getTrace(1, $trace)
 		];
 
 		global $lastExceptionError, $lastError;
@@ -2097,7 +2101,7 @@ class Server{
 				$level->doTick($currentTick);
 			}catch(\Exception $e){
 				$this->logger->critical("Could not tick level " . $level->getName() . ": " . $e->getMessage());
-				if($this->logger instanceof MainLogger){
+				if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
 					$this->logger->logException($e);
 				}
 			}
