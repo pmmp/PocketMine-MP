@@ -34,7 +34,7 @@ class CommandReader extends Thread{
 	 */
 	public function __construct(\Threaded $threaded){
 		$this->buffer = $threaded;
-		$this->start();
+		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
 	private function readLine(){

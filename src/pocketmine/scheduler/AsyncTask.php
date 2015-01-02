@@ -30,23 +30,25 @@ use pocketmine\Server;
  */
 abstract class AsyncTask extends \Collectable{
 
-	private $finished = null;
 	private $result = null;
+	/** @var int */
 	private $taskId = null;
 
 	public function run(){
-		$this->finished = false;
 		$this->result = null;
 
 		$this->onRun();
-		$this->finished = true;
+
+		$this->setGarbage();
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * @return bool
 	 */
 	public function isFinished(){
-		return $this->finished === true;
+		return $this->isGarbage();
 	}
 
 	/**

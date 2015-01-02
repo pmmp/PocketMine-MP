@@ -15,7 +15,8 @@ settings:
  #Sends anonymous statistics to create usage reports
  send-usage: true
  #Number of AsyncTask workers
- async-workers: 4
+ #WARNING: This will increase global memory usage, but it won't be listed in the total.
+ async-workers: 1
 
 debug:
  #If > 1, it will show debug messages in the console
@@ -27,6 +28,7 @@ level-settings:
  #The default format that levels will use when created
  default-format: mcregion
  #If true, converts from a format that is not the default to the default format on load
+ #NOTE: This is currently not implemented
  convert-format: false
 
 chunk-sending:
@@ -42,6 +44,7 @@ chunk-ticking:
  per-tick: 260
  #Radius of chunks around a player to tick
  tick-radius: 4
+ #NOTE: This is currently not implemented
  light-updates: false
  clear-tick-list: false
 

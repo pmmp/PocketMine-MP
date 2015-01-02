@@ -37,9 +37,4 @@ class SendUsageTask extends AsyncTask{
 	public function onRun(){
 		Utils::postURL($this->endpoint, unserialize($this->data));
 	}
-
-	public function onCompletion(Server $server){
-
-	}
-
 }

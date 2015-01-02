@@ -42,13 +42,8 @@ class ServerScheduler{
 	 */
 	protected $tasks = [];
 
-	/** @var \Pool */
+	/** @var AsyncPool */
 	protected $asyncPool;
-
-	/** @var AsyncTask[] */
-	protected $asyncTaskStorage = [];
-
-	protected $asyncTasks = 0;
 
 	/** @var int */
 	private $ids = 1;
@@ -58,7 +53,7 @@ class ServerScheduler{
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new \Pool(self::$WORKERS, AsyncWorker::class);
+		$this->asyncPool = new AsyncPool(Server::getInstance(), self::$WORKERS);
 	}
 
 	/**
@@ -80,9 +75,7 @@ class ServerScheduler{
 	public function scheduleAsyncTask(AsyncTask $task){
 		$id = $this->nextId();
 		$task->setTaskId($id);
-		$this->asyncPool->submit($task);
-		$this->asyncTaskStorage[$task->getTaskId()] = $task;
-		++$this->asyncTasks;
+		$this->asyncPool->submitTask($task);
 	}
 
 	/**
@@ -144,11 +137,9 @@ class ServerScheduler{
 			$task->cancel();
 		}
 		$this->tasks = [];
-		$this->asyncTaskStorage = [];
-		//$this->asyncPool->shutdown();
-		$this->asyncTasks = 0;
+		$this->asyncPool->removeTasks();
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new \Pool(self::$WORKERS, AsyncWorker::class);
+		$this->ids = 1;
 	}
 
 	/**
@@ -237,7 +228,8 @@ class ServerScheduler{
 					$task->run($this->currentTick);
 				}catch(\Exception $e){
 					Server::getInstance()->getLogger()->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
-					if(($logger = Server::getInstance()->getLogger()) instanceof MainLogger){
+					$logger = Server::getInstance()->getLogger();
+					if($logger instanceof MainLogger){
 						$logger->logException($e);
 					}
 				}
@@ -252,26 +244,7 @@ class ServerScheduler{
 			}
 		}
 
-		if($this->asyncTasks > 0){ //Garbage collector
-			$this->asyncPool->collect([$this, "collectAsyncTask"]);
-
-			if($this->asyncTasks > 0){
-				foreach($this->asyncTaskStorage as $asyncTask){
-					$this->collectAsyncTask($asyncTask);
-				}
-			}
-		}
-	}
-
-	public function collectAsyncTask(AsyncTask $task){
-		if($task->isFinished() and !$task->isGarbage()){
-			--$this->asyncTasks;
-			$task->onCompletion(Server::getInstance());
-			$task->setGarbage();
-			unset($this->asyncTaskStorage[$task->getTaskId()]);
-		}
-
-		return $task->isGarbage();
+		$this->asyncPool->collectTasks();
 	}
 
 	private function isReady($currentTicks){

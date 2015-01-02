@@ -34,6 +34,11 @@ class AsyncWorker extends Worker{
 		}
 		$autoloader = new \BaseClassLoader();
 		$autoloader->addPath(\pocketmine\PATH . "src");
+		$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 		$autoloader->register(true);
+	}
+
+	public function start($options = PTHREADS_INHERIT_NONE){
+		parent::start(PTHREADS_INHERIT_CONSTANTS | PTHREADS_INHERIT_FUNCTIONS);
 	}
 }
