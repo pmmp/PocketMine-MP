@@ -84,7 +84,7 @@ class Flat extends Generator{
 		$this->preset = $preset;
 		$preset = explode(";", $preset);
 		$version = (int) $preset[0];
-		$blocks = @$preset[1];
+		$blocks = isset($preset[1]) ? $preset[1] : "";
 		$biome = isset($preset[2]) ? $preset[2] : 1;
 		$options = isset($preset[3]) ? $preset[3] : "";
 		preg_match_all('#(([0-9]{0,})x?([0-9]{1,3}:?[0-9]{0,2})),?#', $blocks, $matches);

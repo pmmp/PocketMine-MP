@@ -137,7 +137,7 @@ class CrashDump{
 			$error = $lastExceptionError;
 		}else{
 			$error = (array) error_get_last();
-			$error["trace"] = @getTrace(4);
+			$error["trace"] = @getTrace(3);
 			$errorConversion = [
 				E_ERROR => "E_ERROR",
 				E_WARNING => "E_WARNING",
