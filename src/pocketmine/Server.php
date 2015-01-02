@@ -2050,7 +2050,12 @@ class Server{
 		ini_set("error_reporting", 0);
 		ini_set("memory_limit", -1); //Fix error dump not dumped on memory problems
 		$this->logger->emergency("An unrecoverable error has occurred and the server has crashed. Creating a crash dump");
-		$dump = new CrashDump($this);
+		try{
+			$dump = new CrashDump($this);
+		}catch(\Exception $e){
+			$this->logger->critical("Could create Crash Dump: " . $e->getMessage());
+			return;
+		}
 
 		$this->logger->emergency("Please submit the \"" . $dump->getPath() . "\" file to the Bug Reporting page. Give as much info as you can.");
 
