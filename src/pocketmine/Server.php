@@ -1142,14 +1142,22 @@ class Server{
 			$provider = LevelProviderManager::getProviderByName($providerName = "mcregion");
 		}
 
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		/** @var \pocketmine\level\format\LevelProvider $provider */
-		$provider::generate($path, $name, $seed, $generator, $options);
+		try{
+			$path = $this->getDataPath() . "worlds/" . $name . "/";
+			/** @var \pocketmine\level\format\LevelProvider $provider */
+			$provider::generate($path, $name, $seed, $generator, $options);
 
-		$level = new Level($this, $name, $path, $provider);
-		$this->levels[$level->getId()] = $level;
+			$level = new Level($this, $name, $path, $provider);
+			$this->levels[$level->getId()] = $level;
 
-		$level->initLevel();
+			$level->initLevel();
+		}catch(\Exception $e){
+			$this->logger->error("Could not generate level \"" . $name . "\": " . $e->getMessage());
+			if($this->logger instanceof MainLogger){
+				$this->logger->logException($e);
+			}
+			return false;
+		}
 
 		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
 
