@@ -72,8 +72,13 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public static function generate($path, $name, $seed, $generator, array $options = []){
-		@mkdir($path, 0777, true);
-		@mkdir($path . "/region", 0777);
+		if(!file_exists($path)){
+			mkdir($path, 0777, true);
+		}
+
+		if(!file_exists($path . "/region")){
+			mkdir($path . "/region", 0777);
+		}
 		//TODO, add extra details
 		$levelData = new Compound("Data", [
 			"hardcore" => new Byte("hardcore", 0),

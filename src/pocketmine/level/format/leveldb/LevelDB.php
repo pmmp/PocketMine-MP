@@ -47,7 +47,9 @@ class LevelDB extends BaseLevelProvider{
 	public function __construct(Level $level, $path){
 		$this->level = $level;
 		$this->path = $path;
-		@mkdir($this->path, 0777, true);
+		if(!file_exists($this->path)){
+			mkdir($this->path, 0777, true);
+		}
 		$nbt = new NBT(NBT::LITTLE_ENDIAN);
 		$nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
 		$levelData = $nbt->getData();
@@ -87,8 +89,12 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public static function generate($path, $name, $seed, $generator, array $options = []){
-		@mkdir($path, 0777, true);
-		@mkdir($path . "/db", 0777);
+		if(!file_exists($path)){
+			mkdir($path, 0777, true);
+		}
+		if(!file_exists($path . "/db")){
+			mkdir($path . "/db", 0777, true);
+		}
 		//TODO, add extra details
 		$levelData = new Compound(null, [
 			"hardcore" => new Byte("hardcore", 0),

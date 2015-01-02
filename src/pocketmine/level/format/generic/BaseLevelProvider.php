@@ -42,7 +42,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 	public function __construct(Level $level, $path){
 		$this->level = $level;
 		$this->path = $path;
-		@mkdir($this->path, 0777, true);
+		if(!file_exists($this->path)){
+			mkdir($this->path, 0777, true);
+		}
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
 		$levelData = $nbt->getData();

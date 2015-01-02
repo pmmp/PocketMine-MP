@@ -127,7 +127,9 @@ namespace pocketmine {
 	define("pocketmine\\ANSI", (Utils::getOS() !== "win" or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"]));
 
 
-	@mkdir(\pocketmine\DATA, 0777, true);
+	if(!file_exists(\pocketmine\DATA)){
+		mkdir(\pocketmine\DATA, 0777, true);
+	}
 
 	//Logger has a dependency on timezone, so we'll set it to UTC until we can get the actual timezone.
 	date_default_timezone_set("UTC");

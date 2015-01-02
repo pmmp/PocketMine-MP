@@ -78,7 +78,10 @@ class TimingsCommand extends VanillaCommand{
 			$sampleTime = microtime(true) - self::$timingStart;
 			$index = 0;
 			$timingFolder = $sender->getServer()->getDataPath() . "timings/";
-			@mkdir($timingFolder, 0777);
+
+			if(!file_exists($timingFolder)){
+				mkdir($timingFolder, 0777);
+			}
 			$timings = $timingFolder . "timings.txt";
 			while(file_exists($timings)){
 				$timings = $timingFolder . "timings" . (++$index) . ".txt";

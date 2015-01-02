@@ -1458,9 +1458,17 @@ class Server{
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 		$this->filePath = $filePath;
-		@mkdir($dataPath . "worlds/", 0777);
-		@mkdir($dataPath . "players/", 0777);
-		@mkdir($pluginPath, 0777);
+		if(!file_exists($dataPath . "worlds/")){
+			mkdir($dataPath . "worlds/", 0777);
+		}
+
+		if(!file_exists($dataPath . "players/")){
+			mkdir($dataPath . "players/", 0777);
+		}
+
+		if(!file_exists($pluginPath)){
+			mkdir($pluginPath, 0777);
+		}
 
 		$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 		$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
