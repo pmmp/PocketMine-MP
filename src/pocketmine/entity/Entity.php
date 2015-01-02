@@ -931,18 +931,13 @@ abstract class Entity extends Location implements Metadatable{
 
 				$this->boundingBox->setBB($axisalignedbb);
 
-				$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($movX, $dy, $movZ), false);
+				$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 				}
 
 				$this->boundingBox->offset(0, $dy, 0);
-				if($movY != $dy){
-					$dx = 0;
-					$dy = 0;
-					$dz = 0;
-				}
 
 				foreach($list as $bb){
 					$dx = $bb->calculateXOffset($this->boundingBox, $dx);
@@ -966,7 +961,7 @@ abstract class Entity extends Location implements Metadatable{
 					$dz = 0;
 				}
 
-				if($movY != $dy){
+				if($dy == 0){
 					$dx = 0;
 					$dy = 0;
 					$dz = 0;
@@ -1009,7 +1004,7 @@ abstract class Entity extends Location implements Metadatable{
 				if($this instanceof Player){
 					if(!$this->onGround or $movY != 0){
 						$bb = clone $this->boundingBox;
-						$bb->maxY = $bb->minY + 1;
+						$bb->minY -= 1;
 						if(count($this->level->getCollisionBlocks($bb->expand(0.01, 0.01, 0.01))) > 0){
 							$this->onGround = true;
 						}else{

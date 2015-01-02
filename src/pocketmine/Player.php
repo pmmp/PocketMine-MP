@@ -1103,17 +1103,25 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$diff = $diffX ** 2 + $diffY ** 2 + $diffZ ** 2;
 
-			if(!$revert and !$this->isSleeping() and $this->isSurvival()){
-				if($diff > 0.0625){
-					$revert = true;
-					//$this->server->getLogger()->warning($this->getName()." moved wrongly!");
-				}elseif($diff > 0){
-					$this->x = $this->newPosition->x;
-					$this->y = $this->newPosition->y;
-					$this->z = $this->newPosition->z;
-					$radius = $this->width / 2;
-					$this->boundingBox->setBounds($this->x - $radius, $this->y + $this->ySize, $this->z - $radius, $this->x + $radius, $this->y + $this->height + $this->ySize, $this->z + $radius);
+			if($this->isSurvival()){
+				if(!$revert and !$this->isSleeping()){
+					if($diff > 0.0625){
+						$revert = true;
+						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
+					}elseif($diff > 0){
+						$this->x = $this->newPosition->x;
+						$this->y = $this->newPosition->y;
+						$this->z = $this->newPosition->z;
+						$radius = $this->width / 2;
+						$this->boundingBox->setBounds($this->x - $radius, $this->y + $this->ySize, $this->z - $radius, $this->x + $radius, $this->y + $this->height + $this->ySize, $this->z + $radius);
+					}
 				}
+			}elseif($diff > 0){
+				$this->x = $this->newPosition->x;
+				$this->y = $this->newPosition->y;
+				$this->z = $this->newPosition->z;
+				$radius = $this->width / 2;
+				$this->boundingBox->setBounds($this->x - $radius, $this->y + $this->ySize, $this->z - $radius, $this->x + $radius, $this->y + $this->height + $this->ySize, $this->z + $radius);
 			}
 		}
 
