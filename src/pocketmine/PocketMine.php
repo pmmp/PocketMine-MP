@@ -71,7 +71,7 @@ namespace pocketmine {
 	use pocketmine\wizard\Installer;
 
 	const VERSION = "1.4.1dev";
-	const API_VERSION = "1.10.0";
+	const API_VERSION = "1.11.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
 	const MINECRAFT_VERSION = "v0.10.4 alpha";
 
@@ -434,7 +434,7 @@ namespace pocketmine {
 		new Installer();
 	}
 
-	if(substr(__FILE__, 0, 7) !== "phar://"){
+	if(\Phar::running(true) !== ""){
 		$logger->warning("Non-packaged PocketMine-MP installation detected, do not use on production.");
 	}
 
