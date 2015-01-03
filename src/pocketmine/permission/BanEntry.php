@@ -119,18 +119,12 @@ class BanEntry{
 						}
 						if(count($str) > 0){
 							$entry->setReason(trim(array_shift($str)));
-
-							return $entry;
-						}else{
-							return $entry;
 						}
 					}
-				}else{
-					return $entry;
 				}
-			}else{
-				return $entry;
 			}
+
+			return $entry;
 		}
 	}
 }
