@@ -61,13 +61,13 @@ class PlayerCreationEvent extends Event{
 		$this->address = $address;
 		$this->port = $port;
 
-		if(!is_subclass_of($baseClass, Player::class, true)){
+		if(!is_a($baseClass, Player::class, true)){
 			throw new \RuntimeException("Base class $baseClass must extend " . Player::class);
 		}
 
 		$this->baseClass = $baseClass;
 
-		if(!is_subclass_of($playerClass, Player::class, true)){
+		if(!is_a($playerClass, Player::class, true)){
 			throw new \RuntimeException("Class $playerClass must extend " . Player::class);
 		}
 
@@ -117,7 +117,7 @@ class PlayerCreationEvent extends Event{
 	}
 
 	public function setPlayerClass($class){
-		if(!is_subclass_of($class, $this->baseClass, true)){
+		if(!is_a($class, $this->baseClass, true)){
 			throw new \RuntimeException("Class $class must extend " . $this->baseClass);
 		}
 
