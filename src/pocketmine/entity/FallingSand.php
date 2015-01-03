@@ -111,7 +111,7 @@ class FallingSand extends Entity{
 			if($this->onGround){
 				$this->kill();
 				$block = $this->level->getBlock($pos);
-				if(!$block->isFullBlock){
+				if($block->getId() > 0 and !$block->isSolid()){
 					$this->getLevel()->dropItem($this, ItemItem::get($this->getBlock(), $this->getDamage(), 1));
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, Block::get($this->getBlock(), $this->getDamage())));
