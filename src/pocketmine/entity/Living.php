@@ -164,14 +164,16 @@ abstract class Living extends Entity implements Damageable{
 			return $this->deadTicks < 10;
 		}
 
-		parent::entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->dead !== true and $this->isInsideOfSolid()){
+			$hasUpdate = true;
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
 
 		if($this->dead !== true and $this->isInsideOfWater()){
+			$hasUpdate = true;
 			$this->airTicks -= $tickDiff;
 			if($this->airTicks <= -20){
 				$this->airTicks = 0;
@@ -188,6 +190,8 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		Timings::$timerEntityBaseTick->stopTiming();
+
+		return $hasUpdate;
 	}
 
 	/**

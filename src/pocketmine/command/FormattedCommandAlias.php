@@ -50,7 +50,8 @@ class FormattedCommandAlias extends Command{
 					$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				}else{
 					$sender->sendMessage(TextFormat::RED . "An internal error occurred while attempting to perform this command");
-					if(($logger = $sender->getServer()->getLogger()) instanceof MainLogger){
+					$logger = $sender->getServer()->getLogger();
+					if($logger instanceof MainLogger){
 						$logger->logException($e);
 					}
 				}

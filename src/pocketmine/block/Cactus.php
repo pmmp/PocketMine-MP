@@ -77,7 +77,7 @@ class Cactus extends Transparent{
 			}else{
 				for($side = 2; $side <= 5; ++$side){
 					$b = $this->getSide($side);
-					if(!$b->isFlowable){
+					if(!$b->canBeFlowedInto()){
 						$this->getLevel()->useBreakOn($this);
 					}
 				}

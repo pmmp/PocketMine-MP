@@ -22,9 +22,6 @@
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
-use pocketmine\entity\Entity;
-
 abstract class Armor extends Item{
 
 	public function getMaxStackSize(){

@@ -1089,7 +1089,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool    $direct
 	 * @param bool    $update
 	 *
-	 * @return bool
+	 * @return bool Whether the block has been updated or not
 	 */
 	public function setBlock(Vector3 $pos, Block $block, $direct = false, $update = true){
 		if($pos->y < 0 or $pos->y >= 128){
@@ -1147,7 +1147,11 @@ class Level implements ChunkManager, Metadatable{
 
 				$this->updateAround($pos);
 			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**

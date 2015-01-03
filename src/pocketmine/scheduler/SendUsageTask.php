@@ -21,7 +21,6 @@
 
 namespace pocketmine\scheduler;
 
-use pocketmine\Server;
 use pocketmine\utils\Utils;
 
 class SendUsageTask extends AsyncTask{

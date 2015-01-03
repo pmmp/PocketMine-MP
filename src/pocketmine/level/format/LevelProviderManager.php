@@ -37,6 +37,7 @@ abstract class LevelProviderManager{
 		if(!is_subclass_of($class, LevelProvider::class)){
 			throw new LevelException("Class is not a subclass of LevelProvider");
 		}
+		/** @var LevelProvider $class */
 		self::$providers[strtolower($class::getProviderName())] = $class;
 	}
 

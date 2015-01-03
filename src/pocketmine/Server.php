@@ -1695,7 +1695,7 @@ class Server{
 
 	/**
 	 * @param               $message
-	 * @param Player[]|null $recipients
+	 * @param Player[]      $recipients
 	 *
 	 * @return int
 	 */
@@ -1703,6 +1703,8 @@ class Server{
 		if(!is_array($recipients)){
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
+
+		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
@@ -1986,16 +1988,6 @@ class Server{
 	public function checkTicks(){
 		if($this->getTicksPerSecond() < 12){
 			$this->logger->warning("Can't keep up! Is the server overloaded?");
-		}
-	}
-
-	public function checkMemory(){
-		//TODO
-		$info = $this->debugInfo();
-		$data = $info["memory_usage"] . "," . $info["players"] . "," . $info["entities"];
-		$i = count($this->memoryStats) - 1;
-		if($i < 0 or $this->memoryStats[$i] !== $data){
-			$this->memoryStats[] = $data;
 		}
 	}
 

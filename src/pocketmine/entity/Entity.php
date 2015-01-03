@@ -827,6 +827,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->boundingBox->offset($dx, $dy, $dz);
 			$this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
 			$this->onGround = $this instanceof Player ? true : false;
+			return true;
 		}else{
 
 			Timings::$entityMoveTimer->startTiming();

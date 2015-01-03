@@ -21,12 +21,10 @@
 
 namespace pocketmine\level\format\generic;
 
-use pocketmine\entity\Entity;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\nbt\tag\Compound;
-use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\ChunkException;
 
