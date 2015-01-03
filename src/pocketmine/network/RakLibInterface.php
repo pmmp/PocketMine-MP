@@ -24,6 +24,7 @@
  */
 namespace pocketmine\network;
 
+use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\network\protocol\AddMobPacket;
@@ -167,7 +168,11 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	}
 
 	public function openSession($identifier, $address, $port, $clientID){
-		$player = new Player($this, null, $address, $port);
+		$ev = new PlayerCreationEvent($this, Player::class, Player::class, null, $address, $port);
+		$this->server->getPluginManager()->callEvent($ev);
+		$class = $ev->getPlayerClass();
+		
+		$player = new $class($this, $ev->getClientId(), $ev->getAddress(), $ev->getPort());
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
 		$this->identifiers->attach($player, $identifier);
