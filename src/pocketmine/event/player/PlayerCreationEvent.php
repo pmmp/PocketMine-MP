@@ -117,7 +117,7 @@ class PlayerCreationEvent extends Event{
 			throw new \RuntimeException("Base class $class must extend " . $this->baseClass);
 		}
 
-		$this->playerClass = $class;
+		$this->baseClass = $class;
 	}
 
 	/**
