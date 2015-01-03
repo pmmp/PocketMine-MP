@@ -2053,7 +2053,7 @@ class Server{
 		try{
 			$dump = new CrashDump($this);
 		}catch(\Exception $e){
-			$this->logger->critical("Could create Crash Dump: " . $e->getMessage());
+			$this->logger->critical("Could not create Crash Dump: " . $e->getMessage());
 			return;
 		}
 
