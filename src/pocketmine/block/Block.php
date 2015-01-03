@@ -987,6 +987,7 @@ class Block extends Position implements Metadatable{
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
 		$this->level = $v->level;
+		$this->boundingBox = null;
 	}
 
 	/**
@@ -1067,7 +1068,7 @@ class Block extends Position implements Metadatable{
 		if($this->boundingBox !== null){
 			return $this->boundingBox;
 		}else{
-			return $this->boundingBox = $this->recalculateBoundingBox();
+			return ($this->boundingBox = $this->recalculateBoundingBox());
 		}
 	}
 

@@ -565,7 +565,7 @@ class Item{
 
 	public function getBlock(){
 		if($this->block instanceof Block){
-			return $this->block;
+			return clone $this->block;
 		}else{
 			return Block::get(self::AIR);
 		}
