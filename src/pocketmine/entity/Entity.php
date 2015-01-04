@@ -766,8 +766,6 @@ abstract class Entity extends Location implements Metadatable{
 			$this->despawnFromAll();
 			if($this instanceof Player){
 				foreach($this->usedChunks as $index => $d){
-					$X = null;
-					$Z = null;
 					Level::getXZ($index, $X, $Z);
 					$this->unloadChunk($X, $Z);
 				}

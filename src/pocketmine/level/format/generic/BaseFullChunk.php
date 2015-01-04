@@ -244,12 +244,16 @@ abstract class BaseFullChunk implements FullChunk{
 
 	public function addEntity(Entity $entity){
 		$this->entities[$entity->getId()] = $entity;
-		$this->hasChanged = true;
+		if(!($entity instanceof Player)){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function removeEntity(Entity $entity){
 		unset($this->entities[$entity->getId()]);
-		$this->hasChanged = true;
+		if(!($entity instanceof Player)){
+			$this->hasChanged = true;
+		}
 	}
 
 	public function addTile(Tile $tile){
