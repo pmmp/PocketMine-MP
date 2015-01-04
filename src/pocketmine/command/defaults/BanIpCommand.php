@@ -32,7 +32,7 @@ class BanIpCommand extends VanillaCommand{
 		parent::__construct(
 			$name,
 			"Prevents the specified IP address from using this server",
-			"/ban <address|player> [reason...]"
+			"/ban-ip <address|player> [reason...]"
 		);
 		$this->setPermission("pocketmine.command.ban.ip");
 	}
