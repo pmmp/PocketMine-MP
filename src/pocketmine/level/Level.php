@@ -145,7 +145,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Player[][] */
 	protected $usedChunks = [];
 
-	/** @var Chunk[] */
+	/** @var FullChunk[]|Chunk[] */
 	protected $unloadQueue;
 
 	protected $time;
@@ -153,7 +153,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private $folderName;
 
-	/** @var Chunk[] */
+	/** @var FullChunk[]|Chunk[] */
 	private $chunks = [];
 
 	/** @var Block[][] */
@@ -1725,13 +1725,20 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * @return FullChunk[]|Chunk[]
+	 */
+	public function getChunks(){
+		return $this->chunks;
+	}
+
+	/**
 	 * Gets the Chunk object
 	 *
 	 * @param int  $x
 	 * @param int  $z
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return Chunk
+	 * @return FullChunk|Chunk
 	 */
 	public function getChunk($x, $z, $create = false){
 		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
@@ -1748,7 +1755,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int  $z
 	 * @param bool $create
 	 *
-	 * @return Chunk
+	 * @return FullChunk|Chunk
 	 *
 	 * @deprecated
 	 */

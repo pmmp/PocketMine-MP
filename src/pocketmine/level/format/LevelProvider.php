@@ -106,7 +106,7 @@ interface LevelProvider{
 	 * @param int  $Z      absolute Chunk Z value
 	 * @param bool $create Whether to generate the chunk if it does not exist
 	 *
-	 * @return Chunk
+	 * @return FullChunk|Chunk
 	 */
 	public function getChunk($X, $Z, $create = false);
 
@@ -214,7 +214,7 @@ interface LevelProvider{
 	public function setSpawn(Vector3 $pos);
 
 	/**
-	 * @return Chunk[]
+	 * @return FullChunk|Chunk[]
 	 */
 	public function getLoadedChunks();
 
