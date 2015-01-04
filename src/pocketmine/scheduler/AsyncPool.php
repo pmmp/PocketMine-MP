@@ -103,6 +103,11 @@ class AsyncPool{
 				$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
 				unset($this->tasks[$task->getTaskId()]);
 				unset($this->taskWorkers[$task->getTaskId()]);
+			}elseif($task->isTerminated()){
+				$info = $task->getTerminationInfo();
+				$this->removeTask($task);
+				$this->server->getLogger()->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $info["message"]);
+				$this->server->getLogger()->critical("On ".$info["scope"].", line ".$info["line"] .", ".$info["function"]."()");
 			}
 		}
 	}
