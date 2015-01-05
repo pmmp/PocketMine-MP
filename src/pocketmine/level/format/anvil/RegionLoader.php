@@ -34,10 +34,6 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
 
 class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
-	const VERSION = 1;
-	const COMPRESSION_GZIP = 1;
-	const COMPRESSION_ZLIB = 2;
-	public static $COMPRESSION_LEVEL = 7;
 
 	public function __construct(LevelProvider $level, $regionX, $regionZ){
 		$this->x = $regionX;
@@ -61,7 +57,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		if($index < 0 or $index >= 4096){
 			//Regenerate chunk due to corruption
 			$this->locationTable[$index][0] = 0;
-			$this->locationTable[$index][1] = 1;
+			$this->locationTable[$index][1] = 0;
 		}
 
 		if(!$this->isChunkGenerated($index)){
@@ -73,7 +69,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 				fwrite($this->filePointer, str_pad(Binary::writeInt(-1) . chr(self::COMPRESSION_ZLIB), 4096, "\x00", STR_PAD_RIGHT));
 				$this->writeLocationIndex($index);
 			}else{
-				return false;
+				return null;
 			}
 		}
 
@@ -81,27 +77,26 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		$length = Binary::readInt(fread($this->filePointer, 4));
 		$compression = ord(fgetc($this->filePointer));
 
-		if($length <= 0){ //Not yet generated
+		if($length <= 0 or $length >= self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
+			if($length >= self::MAX_SECTOR_LENGTH){
+				$this->locationTable[$index][0] = ++$this->lastSector;
+				$this->locationTable[$index][1] = 1;
+				MainLogger::getLogger()->error("Corrupted chunk header detected");
+			}
 			$this->generateChunk($x, $z);
 			fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 			$length = Binary::readInt(fread($this->filePointer, 4));
 			$compression = ord(fgetc($this->filePointer));
 		}
 
-		if($length >= self::MAX_SECTOR_LENGTH){
-			MainLogger::getLogger()->error("Corrupted chunk header detected");
-
-			return false;
-		}
-
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
-			MainLogger::getLogger()->error("Corrupted chunk detected");
+			MainLogger::getLogger()->error("Corrupted bigger chunk detected");
 			$this->locationTable[$index][1] = $length >> 12;
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			MainLogger::getLogger()->error("Invalid compression type");
 
-			return false;
+			return null;
 		}
 
 		$chunk = Chunk::fromBinary(fread($this->filePointer, $length - 1), $this->levelProvider);

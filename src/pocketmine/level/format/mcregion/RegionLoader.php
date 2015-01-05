@@ -38,7 +38,7 @@ class RegionLoader{
 	const VERSION = 1;
 	const COMPRESSION_GZIP = 1;
 	const COMPRESSION_ZLIB = 2;
-	const MAX_SECTOR_LENGTH = 32 << 12; //32 sectors
+	const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
 	public static $COMPRESSION_LEVEL = 7;
 
 	protected $x;
@@ -83,7 +83,7 @@ class RegionLoader{
 		if($index < 0 or $index >= 4096){
 			//Regenerate chunk due to corruption
 			$this->locationTable[$index][0] = 0;
-			$this->locationTable[$index][1] = 1;
+			$this->locationTable[$index][1] = 0;
 		}
 
 		if(!$this->isChunkGenerated($index)){
@@ -95,7 +95,7 @@ class RegionLoader{
 				fwrite($this->filePointer, str_pad(Binary::writeInt(-1) . chr(self::COMPRESSION_ZLIB), 4096, "\x00", STR_PAD_RIGHT));
 				$this->writeLocationIndex($index);
 			}else{
-				return false;
+				return null;
 			}
 		}
 
@@ -103,17 +103,16 @@ class RegionLoader{
 		$length = Binary::readInt(fread($this->filePointer, 4));
 		$compression = ord(fgetc($this->filePointer));
 
-		if($length <= 0){ //Not yet generated
+		if($length <= 0 or $length >= self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
+			if($length >= self::MAX_SECTOR_LENGTH){
+				$this->locationTable[$index][0] = ++$this->lastSector;
+				$this->locationTable[$index][1] = 1;
+				MainLogger::getLogger()->error("Corrupted chunk header detected");
+			}
 			$this->generateChunk($x, $z);
 			fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 			$length = Binary::readInt(fread($this->filePointer, 4));
 			$compression = ord(fgetc($this->filePointer));
-		}
-
-		if($length >= self::MAX_SECTOR_LENGTH){
-			MainLogger::getLogger()->error("Corrupted chunk header detected");
-
-			return false;
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
@@ -123,7 +122,7 @@ class RegionLoader{
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			MainLogger::getLogger()->error("Invalid compression type");
 
-			return false;
+			return null;
 		}
 
 		$chunk = Chunk::fromBinary(fread($this->filePointer, $length - 1), $this->levelProvider);
@@ -180,7 +179,7 @@ class RegionLoader{
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
 		if($this->locationTable[$index][1] < $sectors){
-			$this->locationTable[$index][0] = $this->lastSector += $sectors; //The GC will clean this shift later
+			$this->locationTable[$index][0] = $this->lastSector += $sectors; //The GC will clean this shift "later"
 		}
 		$this->locationTable[$index][1] = $sectors;
 
@@ -285,7 +284,7 @@ class RegionLoader{
 
 	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
-		$this->lastSector = 1;
+		$this->lastSector = 2;
 		$table = fread($this->filePointer, 4 * 1024 * 2);
 		for($i = 0; $i < 1024; ++$i){
 			$index = unpack("N", substr($table, $i << 2, 4))[1];
@@ -300,7 +299,7 @@ class RegionLoader{
 		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
-			$write[] = ($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1];
+			$write[] = (($this->locationTable[$i][0] << 8) | $this->locationTable[$i][1]);
 		}
 		for($i = 0; $i < 1024; ++$i){
 			$write[] = $this->locationTable[$i][2];
