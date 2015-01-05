@@ -49,7 +49,7 @@ class AutoUpdater{
 				$version = new VersionString();
 				if(!$version->isDev() and $this->getChannel() !== "stable"){
 					$this->showChannelSuggestionStable();
-				}elseif($this->getChannel() === "stable"){
+				}elseif($version->isDev() and $this->getChannel() === "stable"){
 					$this->showChannelSuggestionBeta();
 				}
 			}
