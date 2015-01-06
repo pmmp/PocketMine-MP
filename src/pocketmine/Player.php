@@ -1203,7 +1203,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		if(!$this->loggedIn){
 			return false;
 		}
-		
+
 		if($this->dead === true and $this->spawned){
 			++$this->deadTicks;
 			if($this->deadTicks >= 10){

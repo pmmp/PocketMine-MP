@@ -1114,7 +1114,7 @@ abstract class Entity extends Location implements Metadatable{
 				$this->chunk->removeEntity($this);
 			}
 			$this->level->loadChunk($this->x >> 4, $this->z >> 4);
-			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4);
+			$this->chunk = $this->level->getChunk($this->x >> 4, $this->z >> 4, true);
 			$this->chunkX = $this->chunk->getX();
 			$this->chunkZ = $this->chunk->getZ();
 
