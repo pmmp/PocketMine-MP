@@ -86,6 +86,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
+use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Chest;
@@ -1687,6 +1688,8 @@ class Server{
 		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doLevelGC"]), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
 		}
+
+		$this->scheduler->scheduleRepeatingTask(new GarbageCollectionTask(), 900);
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
