@@ -2269,6 +2269,8 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+		$this->provider->doGarbageCollection();
+
 		$this->timings->doChunkGC->stopTiming();
 	}
 

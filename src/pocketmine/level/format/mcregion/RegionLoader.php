@@ -50,6 +50,8 @@ class RegionLoader{
 	protected $levelProvider;
 	protected $locationTable = [];
 
+	public $lastUsed;
+
 	public function __construct(LevelProvider $level, $regionX, $regionZ){
 		$this->x = $regionX;
 		$this->z = $regionZ;
@@ -65,6 +67,8 @@ class RegionLoader{
 		}else{
 			$this->loadLocationTable();
 		}
+
+		$this->lastUsed = time();
 	}
 
 	public function __destruct(){
@@ -83,6 +87,8 @@ class RegionLoader{
 		if($index < 0 or $index >= 4096){
 			return null;
 		}
+
+		$this->lastUsed = time();
 
 		if(!$this->isChunkGenerated($index)){
 			if($generate === true){
@@ -197,6 +203,7 @@ class RegionLoader{
 	}
 
 	public function writeChunk(FullChunk $chunk){
+		$this->lastUsed = time();
 		$chunkData = $chunk->toBinary();
 		if($chunkData !== false){
 			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);

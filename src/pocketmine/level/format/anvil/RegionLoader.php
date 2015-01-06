@@ -50,6 +50,8 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		}else{
 			$this->loadLocationTable();
 		}
+
+		$this->lastUsed = time();
 	}
 
 	public function readChunk($x, $z, $generate = true, $forward = false){
@@ -57,6 +59,8 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 		if($index < 0 or $index >= 4096){
 			return null;
 		}
+
+		$this->lastUsed = time();
 
 		if(!$this->isChunkGenerated($index)){
 			if($generate === true){

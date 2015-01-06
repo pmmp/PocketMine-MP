@@ -105,6 +105,10 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->levelData->SpawnZ = new Int("SpawnZ", (int) $pos->z);
 	}
 
+	public function doGarbageCollection(){
+
+	}
+
 	/**
 	 * @return Compound
 	 */

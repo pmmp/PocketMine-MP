@@ -174,6 +174,16 @@ class McRegion extends BaseLevelProvider{
 		}
 	}
 
+	public function doGarbageCollection(){
+		$limit = time() - 300;
+		foreach($this->regions as $index => $region){
+			if($region->lastUsed <= $limit){
+				$region->close();
+				unset($this->regions[$index]);
+			}
+		}
+	}
+
 	public function loadChunk($chunkX, $chunkZ, $create = false){
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunks[$index])){

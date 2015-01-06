@@ -218,6 +218,8 @@ interface LevelProvider{
 	 */
 	public function getLoadedChunks();
 
+	public function doGarbageCollection();
+
 	/**
 	 * @return Level
 	 */
