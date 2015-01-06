@@ -272,9 +272,18 @@ class Utils{
 			unset($weakEntropy);
 
 			if($secure === true){
+
+				if(file_exists("/dev/urandom")){
+					$fp = fopen("/dev/urandom", "rb");
+					$systemRandom = fread($fp, 64);
+					fclose($fp);
+				}else{
+					$systemRandom = str_repeat("\x00", 64);
+				}
+
 				$strongEntropyValues = [
 					is_array($startEntropy) ? hash("sha512", $startEntropy[($rounds + $drop) % count($startEntropy)], true) : hash("sha512", $startEntropy, true), //Get a random index of the startEntropy, or just read it
-					file_exists("/dev/urandom") ? fread(fopen("/dev/urandom", "rb"), 64) : str_repeat("\x00", 64),
+					$systemRandom,
 					function_exists("openssl_random_pseudo_bytes") ? openssl_random_pseudo_bytes(64) : str_repeat("\x00", 64),
 					function_exists("mcrypt_create_iv") ? mcrypt_create_iv(64, MCRYPT_DEV_URANDOM) : str_repeat("\x00", 64),
 					$value,

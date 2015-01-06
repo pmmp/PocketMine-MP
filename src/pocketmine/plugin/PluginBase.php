@@ -202,16 +202,17 @@ abstract class PluginBase implements Plugin{
 
 		$out = $this->dataFolder . $filename;
 		if(!file_exists($this->dataFolder)){
-			if(!file_exists($this->dataFolder)){
-				mkdir($this->dataFolder, 0755, true);
-			}
+			mkdir($this->dataFolder, 0755, true);
 		}
 
 		if(file_exists($out) and $replace !== true){
 			return false;
 		}
 
-		return stream_copy_to_stream($resource, fopen($out, "wb")) > 0;
+		$ret = stream_copy_to_stream($resource, $fp = fopen($out, "wb")) > 0;
+		fclose($fp);
+		fclose($resource);
+		return $ret;
 	}
 
 	/**
@@ -257,6 +258,7 @@ abstract class PluginBase implements Plugin{
 		$this->config = new Config($this->configFile);
 		if(($configStream = $this->getResource("config.yml")) !== null){
 			$this->config->setDefaults(yaml_parse(config::fixYAMLIndexes(stream_get_contents($configStream))));
+			fclose($configStream);
 		}
 	}
 
