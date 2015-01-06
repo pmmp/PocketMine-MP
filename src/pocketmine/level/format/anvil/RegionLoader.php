@@ -55,9 +55,7 @@ class RegionLoader extends \pocketmine\level\format\mcregion\RegionLoader{
 	public function readChunk($x, $z, $generate = true, $forward = false){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
-			//Regenerate chunk due to corruption
-			$this->locationTable[$index][0] = 0;
-			$this->locationTable[$index][1] = 0;
+			return null;
 		}
 
 		if(!$this->isChunkGenerated($index)){

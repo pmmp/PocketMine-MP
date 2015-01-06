@@ -268,7 +268,6 @@ class Chunk extends BaseFullChunk{
 			}
 			return $chunk;
 		}catch(\Exception $e){
-			echo $e;
 			return null;
 		}
 	}

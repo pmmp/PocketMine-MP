@@ -81,9 +81,7 @@ class RegionLoader{
 	public function readChunk($x, $z, $generate = true, $forward = false){
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096){
-			//Regenerate chunk due to corruption
-			$this->locationTable[$index][0] = 0;
-			$this->locationTable[$index][1] = 0;
+			return null;
 		}
 
 		if(!$this->isChunkGenerated($index)){
@@ -92,7 +90,7 @@ class RegionLoader{
 				$this->locationTable[$index][0] = ++$this->lastSector;
 				$this->locationTable[$index][1] = 1;
 				fseek($this->filePointer, $this->locationTable[$index][0] << 12);
-				fwrite($this->filePointer, str_pad(Binary::writeInt(-1) . chr(self::COMPRESSION_ZLIB), 4096, "\x00", STR_PAD_RIGHT));
+				fwrite($this->filePointer, str_pad(Binary::writeInt(0) . chr(self::COMPRESSION_ZLIB), 4096, "\x00", STR_PAD_RIGHT));
 				$this->writeLocationIndex($index);
 			}else{
 				return null;
@@ -103,7 +101,7 @@ class RegionLoader{
 		$length = Binary::readInt(fread($this->filePointer, 4));
 		$compression = ord(fgetc($this->filePointer));
 
-		if($length <= 0 or $length >= self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
+		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
 			if($length >= self::MAX_SECTOR_LENGTH){
 				$this->locationTable[$index][0] = ++$this->lastSector;
 				$this->locationTable[$index][1] = 1;
@@ -171,7 +169,9 @@ class RegionLoader{
 		$writer->setData(new Compound("", ["Level" => $nbt]));
 		$chunkData = $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, self::$COMPRESSION_LEVEL);
 
-		$this->saveChunk($x, $z, $chunkData);
+		if($chunkData !== false){
+			$this->saveChunk($x, $z, $chunkData);
+		}
 	}
 
 	protected function saveChunk($x, $z, $chunkData){
@@ -179,9 +179,11 @@ class RegionLoader{
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
 		if($this->locationTable[$index][1] < $sectors){
-			$this->locationTable[$index][0] = $this->lastSector += $sectors; //The GC will clean this shift "later"
+			$this->lastSector += $sectors; //The GC will clean this shift "later"
+			$this->locationTable[$index][0] = $this->lastSector;
 		}
 		$this->locationTable[$index][1] = $sectors;
+		$this->locationTable[$index][2] = time();
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $sectors << 12, "\x00", STR_PAD_RIGHT));
@@ -195,7 +197,10 @@ class RegionLoader{
 	}
 
 	public function writeChunk(FullChunk $chunk){
-		$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunk->toBinary());
+		$chunkData = $chunk->toBinary();
+		if($chunkData !== false){
+			$this->saveChunk($chunk->getX() - ($this->getX() * 32), $chunk->getZ() - ($this->getZ() * 32), $chunkData);
+		}
 	}
 
 	protected static function getChunkOffset($x, $z){
@@ -227,7 +232,7 @@ class RegionLoader{
 				continue;
 			}
 
-			$chunk = chr(self::COMPRESSION_ZLIB) . zlib_encode($chunk, 15, 9);
+			$chunk = chr(self::COMPRESSION_ZLIB) . zlib_encode($chunk, ZLIB_ENCODING_DEFLATE, 9);
 			$chunk = Binary::writeInt(strlen($chunk)) . $chunk;
 			$sectors = (int) ceil(strlen($chunk) / 4096);
 			if($sectors > $this->locationTable[$i][1]){
@@ -284,11 +289,11 @@ class RegionLoader{
 
 	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
-		$this->lastSector = 2;
-		$table = fread($this->filePointer, 4 * 1024 * 2);
+		$this->lastSector = 1;
+		$table = fread($this->filePointer, 4 * 1024 * 2); //1024 records * 4 bytes * 2 times
 		for($i = 0; $i < 1024; ++$i){
 			$index = unpack("N", substr($table, $i << 2, 4))[1];
-			$this->locationTable[$i] = [($index & ~0xff) >> 8, $index & 0xff, unpack("N", substr($table, 4096 + ($i << 2), 4))[1]];
+			$this->locationTable[$i] = [$index >> 8, $index & 0xff, unpack("N", substr($table, 4096 + ($i << 2), 4))[1]];
 			if(($this->locationTable[$i][0] + $this->locationTable[$i][1] - 1) > $this->lastSector){
 				$this->lastSector = $this->locationTable[$i][0] + $this->locationTable[$i][1] - 1;
 			}

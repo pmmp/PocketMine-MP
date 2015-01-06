@@ -112,12 +112,7 @@ class Flat extends Generator{
 		for($Z = 0; $Z < 16; ++$Z){
 			for($X = 0; $X < 16; ++$X){
 				for($y = 0; $y < 128; ++$y){
-					if($this->structure[$y][0] !== 0){
-						$this->chunk->setBlockId($X, $y, $Z, $this->structure[$y][0]);
-					}
-					if($this->structure[$y][0] !== 0){
-						$this->chunk->setBlockData($X, $y, $Z, $this->structure[$y][1]);
-					}
+					$this->chunk->setBlock($X, $y, $Z, ...$this->structure[$y]);
 				}
 			}
 		}
