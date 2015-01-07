@@ -60,6 +60,7 @@ class TimingsCommand extends VanillaCommand{
 		}elseif($mode === "off"){
 			$sender->getServer()->getPluginManager()->setUseTimings(false);
 			$sender->sendMessage("Disabled Timings");
+			return true;
 		}
 
 		if(!$sender->getServer()->getPluginManager()->useTimings()){
