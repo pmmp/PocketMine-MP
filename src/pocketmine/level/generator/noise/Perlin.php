@@ -23,7 +23,7 @@ namespace pocketmine\level\generator\noise;
 
 use pocketmine\utils\Random;
 
-class Perlin extends Generator{
+class Perlin extends Noise{
 	public static $grad3 = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
@@ -31,9 +31,10 @@ class Perlin extends Generator{
 	];
 
 
-	public function __construct(Random $random, $octaves, $frequency, $amplitude){
+	public function __construct(Random $random, $octaves, $frequency, $amplitude, $lacunarity){
 		$this->octaves = $octaves;
 		$this->frequency = $frequency;
+		$this->lacunarity = $lacunarity;
 		$this->amplitude = $amplitude;
 		$this->offsetX = $random->nextFloat() * 256;
 		$this->offsetY = $random->nextFloat() * 256;

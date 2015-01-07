@@ -30,6 +30,7 @@ use pocketmine\block\Gravel;
 use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
+use pocketmine\level\generator\noise\Perlin;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
@@ -47,15 +48,31 @@ class Normal extends Generator{
 	private $level;
 	/** @var Random */
 	private $random;
-	private $worldHeight = 65;
-	private $waterHeight = 63;
-	/** @var Simplex */
-	private $noiseHills;
+	private $waterHeight = 62;
+	private $bedrockDepth = 5;
 	/** @var Simplex */
 	private $noiseBase;
 
-	public function __construct(array $options = []){
+	private static $GAUSSIAN_KERNEL = null;
+	private static $SMOOTH_SIZE = 2;
 
+	public function __construct(array $options = []){
+		if(self::$GAUSSIAN_KERNEL === null){
+			self::generateKernel();
+		}
+	}
+
+	private static function generateKernel(){
+		self::$GAUSSIAN_KERNEL = [];
+		$bellSize = 1 / self::$SMOOTH_SIZE;
+		$bellHeight = 2 * self::$SMOOTH_SIZE;
+		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx) {
+			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz) {
+				$bx = $bellSize * $sx;
+				$bz = $bellSize * $sz;
+				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
+			}
+		}
 	}
 
 	public function getName(){
@@ -70,8 +87,7 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseHills = new Simplex($this->random, 3, 0.1, 12);
-		$this->noiseBase = new Simplex($this->random, 16, 0.6, 16);
+		$this->noiseBase = new Simplex($this->random, 16, 0.012, 0.5, 2);
 
 
 		$ores = new Ore();
@@ -100,52 +116,48 @@ class Normal extends Generator{
 
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
-		$hills = [];
-		$base = [];
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
-				$i = ($z << 4) + $x;
-				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
-				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
+		//$hills = [];
+		//$base = [];
 
-				if($base[$i] < 0){
-					$base[$i] *= 0.5;
-				}
-			}
-		}
+		$start = microtime(true);
+
+		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 4, 16, 4, $chunkX * 16, 0, $chunkZ * 16);
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
-				$i = ($z << 4) + $x;
-				$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 7;
-				$height = (int) $height;
+		var_dump((microtime(true) - $start) * 1000);
+
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$minSum = 0;
+				$maxSum = 0;
+				$weightSum = 0;
+
+				//TODO: biome things
+				$minSum = 63;
+				$maxSum = 127;
+				$weightSum += 1;
+
+				$minElevation = $minSum / $weightSum;
+				$smoothHeight = ($maxSum / $weightSum - $minElevation) / 2;
 
 				for($y = 0; $y < 128; ++$y){
-					$diff = $height - $y;
-					if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
+					if($y === 0){
 						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
-					}elseif($diff > 2){
+						continue;
+					}
+					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minElevation);
+
+					if($noiseValue >= 0){
 						$chunk->setBlockId($x, $y, $z, Block::STONE);
-					}elseif($diff > 0){
-						$chunk->setBlockId($x, $y, $z, Block::DIRT);
-					}elseif($y <= $this->waterHeight){
-						if(($this->waterHeight - $y) <= 1 and $diff === 0){
-							$chunk->setBlockId($x, $y, $z, Block::SAND);
-						}elseif($diff === 0){
-							$chunk->setBlockId($x, $y, $z, Block::DIRT);
-						}else{
+					}else{
+						if($y <= $this->waterHeight){
 							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 						}
-					}elseif($diff === 0){
-						$chunk->setBlockId($x, $y, $z, Block::GRASS);
 					}
 				}
-
 			}
 		}
-
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

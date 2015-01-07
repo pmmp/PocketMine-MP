@@ -71,7 +71,7 @@ class GenerationManager{
 	 * byte[] payload:
 	 * int32 levelID
 	 * int32 seed
-	 * string class that extends pocketmine\level\generator\Generator
+	 * string class that extends pocketmine\level\generator\Noise
 	 * byte[] serialized options array
 	 */
 	const PACKET_OPEN_LEVEL = 0x03;
@@ -136,7 +136,7 @@ class GenerationManager{
 					$this->readPacket();
 				}
 			}catch(\Exception $e){
-				$this->logger->warning("[Generator Thread] Exception: " . $e->getMessage() . " on file \"" . $e->getFile() . "\" line " . $e->getLine());
+				$this->logger->warning("[Noise Thread] Exception: " . $e->getMessage() . " on file \"" . $e->getFile() . "\" line " . $e->getLine());
 			}
 		}
 	}

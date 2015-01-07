@@ -41,6 +41,10 @@ class GenerationLevelManager extends GenerationManager{
 
 	protected $maxCount;
 
+	protected $splitCount;
+
+	protected $count;
+
 	/**
 	 * @param Server                    $server
 	 * @param GenerationInstanceManager $manager
@@ -49,6 +53,15 @@ class GenerationLevelManager extends GenerationManager{
 		$this->server = $server;
 		$this->manager = $manager;
 		$this->maxCount = $this->server->getProperty("chunk-generation.per-tick", 1);
+
+		if($this->maxCount < 1){
+			$this->splitCount = $this->maxCount;
+			$this->maxCount = 1;
+		}else{
+			$this->splitCount = 1;
+		}
+
+		$this->count = 0;
 	}
 
 	public function openLevel($levelID, $seed, $class, array $options){
@@ -74,6 +87,15 @@ class GenerationLevelManager extends GenerationManager{
 
 	public function process(){
 		if(count($this->requestQueue) > 0){
+			if($this->splitCount < 1){
+				$this->count += $this->splitCount;
+				if($this->count < 1){
+					return;
+				}else{
+					$this->count = 0;
+				}
+			}
+
 			$count = 0;
 			foreach($this->requestQueue as $levelID => $chunks){
 				if($count >= $this->maxCount){

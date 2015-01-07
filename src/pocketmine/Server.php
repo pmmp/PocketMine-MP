@@ -1120,7 +1120,7 @@ class Server{
 	 *
 	 * @param string $name
 	 * @param int    $seed
-	 * @param string $generator Class name that extends pocketmine\level\generator\Generator
+	 * @param string $generator Class name that extends pocketmine\level\generator\Noise
 	 * @param array  $options
 	 *
 	 * @return bool

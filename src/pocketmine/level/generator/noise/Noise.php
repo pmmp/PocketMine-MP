@@ -28,13 +28,14 @@
 namespace pocketmine\level\generator\noise;
 
 
-abstract class Generator{
+abstract class Noise{
 	protected $perm = [];
 	protected $offsetX = 0;
 	protected $offsetY = 0;
 	protected $offsetZ = 0;
 	protected $octaves = 8;
 	protected $frequency;
+	protected $lacunarity;
 	protected $amplitude;
 
 	public static function floor($x){
@@ -47,6 +48,26 @@ abstract class Generator{
 
 	public static function lerp($x, $y, $z){
 		return $y + $x * ($z - $y);
+	}
+
+	public static function linearLerp($x, $x1, $x2, $q0, $q1){
+		return (($x2 - $x) / ($x2 - $x1)) * $q0 + (($x - $x1) / ($x2 - $x1)) * $q1;
+	}
+
+	public static function bilinearLerp($x, $y, $q00, $q01, $q10, $q11, $x1, $x2, $y1, $y2){
+		$q0 = self::linearLerp($x, $x1, $x2, $q00, $q10);
+		$q1 = self::linearLerp($x, $x1, $x2, $q01, $q11);
+		return self::linearLerp($y, $y1, $y2, $q0, $q1);
+	}
+
+	public static function trilinearLerp($x, $y, $z, $q000, $q001, $q010, $q011, $q100, $q101, $q110, $q111, $x1, $x2, $y1, $y2, $z1, $z2) {
+		$q00 = self::linearLerp($x, $x1, $x2, $q000, $q100);
+		$q01 = self::linearLerp($x, $x1, $x2, $q010, $q110);
+		$q10 = self::linearLerp($x, $x1, $x2, $q001, $q101);
+		$q11 = self::linearLerp($x, $x1, $x2, $q011, $q111);
+		$q0 = self::linearLerp($y, $y1, $y2, $q00, $q10);
+		$q1 = self::linearLerp($y, $y1, $y2, $q01, $q11);
+		return self::linearLerp($z, $z1, $z2, $q0, $q1);
 	}
 
 	public static function grad($hash, $x, $y, $z){
@@ -64,13 +85,16 @@ abstract class Generator{
 	public function noise2D($x, $z, $normalized = false){
 		$result = 0;
 		$amp = 1;
-		$freq = 1;
+		$laq = 1;
 		$max = 0;
 
+		$x *= $this->frequency;
+		$z *= $this->frequency;
+
 		for($i = 0; $i < $this->octaves; ++$i){
-			$result += $this->getNoise2D($x * $freq, $z * $freq) * $amp;
+			$result += $this->getNoise2D($x * $laq, $z * $laq) * $amp;
 			$max += $amp;
-			$freq *= $this->frequency;
+			$laq *= $this->lacunarity;
 			$amp *= $this->amplitude;
 		}
 		if($normalized === true){
@@ -83,13 +107,17 @@ abstract class Generator{
 	public function noise3D($x, $y, $z, $normalized = false){
 		$result = 0;
 		$amp = 1;
-		$freq = 1;
+		$laq = 1;
 		$max = 0;
 
+		$x *= $this->frequency;
+		$y *= $this->frequency;
+		$z *= $this->frequency;
+
 		for($i = 0; $i < $this->octaves; ++$i){
-			$result += $this->getNoise3D($x * $freq, $y * $freq, $z * $freq) * $amp;
+			$result += $this->getNoise3D($x * $laq, $y * $laq, $z * $laq) * $amp;
 			$max += $amp;
-			$freq *= $this->frequency;
+			$laq *= $this->lacunarity;
 			$amp *= $this->amplitude;
 		}
 		if($normalized === true){
