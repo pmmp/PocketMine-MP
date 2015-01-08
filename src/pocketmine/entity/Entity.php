@@ -1242,8 +1242,7 @@ abstract class Entity extends Location implements Metadatable{
 		if(!$this->closed){
 			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
 			$this->closed = true;
-			unset($this->level->updateEntities[$this->id]);
-			if($this->chunk instanceof FullChunk){
+			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
 			if($this->level instanceof Level){

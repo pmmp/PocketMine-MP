@@ -27,16 +27,27 @@ class Fence extends Transparent{
 
 	protected $id = self::FENCE;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getHardness(){
 		return 15;
 	}
 
+
 	public function getName(){
-		return "Oak Fence";
+		static $names = [
+			0 => "Oak Fence",
+			1 => "Spruce Fence",
+			2 => "Birch Fence",
+			3 => "Jungle Fence",
+			4 => "Acacia Fence",
+			5 => "Jungle Fence",
+			"",
+			""
+		];
+		return $names[$this->meta & 0x07];
 	}
 
 	protected function recalculateBoundingBox(){

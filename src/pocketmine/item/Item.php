@@ -227,11 +227,6 @@ class Item{
 	const FENCE_GATE_JUNGLE = 185;
 	const FENCE_GATE_DARK_OAK = 186;
 	const FENCE_GATE_ACACIA = 187;
-	const FENCE_SPRUCE = 188;
-	const FENCE_BIRCH = 189;
-	const FENCE_JUNGLE = 190;
-	const FENCE_DARK_OAK = 191;
-	const FENCE_ACACIA = 192;
 
 	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;

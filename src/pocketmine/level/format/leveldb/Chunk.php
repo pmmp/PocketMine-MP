@@ -297,9 +297,11 @@ class Chunk extends BaseFullChunk{
 
 			$tiles = [];
 			foreach($this->getTiles() as $tile){
-				$tile->saveNBT();
-				$nbt->setData($tile->namedtag);
-				$tiles[] = $nbt->write();
+				if(!$tile->closed){
+					$tile->saveNBT();
+					$nbt->setData($tile->namedtag);
+					$tiles[] = $nbt->write();
+				}
 			}
 
 			if(count($tiles) > 0){

@@ -144,7 +144,6 @@ class Block extends Position implements Metadatable{
 	const SUGARCANE_BLOCK = 83;
 
 	const FENCE = 85;
-	const FENCE_OAK = 85;
 	const PUMPKIN = 86;
 	const NETHERRACK = 87;
 	const SOUL_SAND = 88;
@@ -236,11 +235,6 @@ class Block extends Position implements Metadatable{
 	const FENCE_GATE_JUNGLE = 185;
 	const FENCE_GATE_DARK_OAK = 186;
 	const FENCE_GATE_ACACIA = 187;
-	const FENCE_SPRUCE = 188;
-	const FENCE_BIRCH = 189;
-	const FENCE_JUNGLE = 190;
-	const FENCE_DARK_OAK = 191;
-	const FENCE_ACACIA = 192;
 
 	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
@@ -368,10 +362,11 @@ class Block extends Position implements Metadatable{
 		[Item::WOODEN_DOOR, 0],
 		[Item::TRAPDOOR, 0],
 		[Item::FENCE, 0],
-		[Item::FENCE_SPRUCE, 0],
-		[Item::FENCE_BIRCH, 0],
-		[Item::FENCE_DARK_OAK, 0],
-		[Item::FENCE_JUNGLE, 0],
+		[Item::FENCE, 1],
+		[Item::FENCE, 2],
+		[Item::FENCE, 3],
+		[Item::FENCE, 4],
+		[Item::FENCE, 5],
 		[Item::FENCE_GATE, 0],
 		[Item::FENCE_GATE_BIRCH, 0],
 		[Item::FENCE_GATE_SPRUCE, 0],
@@ -723,11 +718,6 @@ class Block extends Position implements Metadatable{
 			self::$list[self::FENCE_GATE_JUNGLE] = FenceGateJungle::class;
 			self::$list[self::FENCE_GATE_DARK_OAK] = FenceGateDarkOak::class;
 			self::$list[self::FENCE_GATE_ACACIA] = FenceGateAcacia::class;
-			self::$list[self::FENCE_SPRUCE] = FenceSpruce::class;
-			self::$list[self::FENCE_BIRCH] = FenceBirch::class;
-			self::$list[self::FENCE_DARK_OAK] = FenceDarkOak::class;
-			self::$list[self::FENCE_JUNGLE] = FenceJungle::class;
-			self::$list[self::FENCE_ACACIA] = FenceAcacia::class;
 
 			self::$list[self::PODZOL] = Podzol::class;
 			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
