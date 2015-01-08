@@ -55,19 +55,35 @@ abstract class Noise{
 	}
 
 	public static function bilinearLerp($x, $y, $q00, $q01, $q10, $q11, $x1, $x2, $y1, $y2){
-		$q0 = self::linearLerp($x, $x1, $x2, $q00, $q10);
-		$q1 = self::linearLerp($x, $x1, $x2, $q01, $q11);
-		return self::linearLerp($y, $y1, $y2, $q0, $q1);
+		$dx1 = (($x2 - $x) / ($x2 - $x1));
+		$dx2 = (($x - $x1) / ($x2 - $x1));
+
+		return (($y2 - $y) / ($y2 - $y1)) * (
+			$dx1 * $q00 + $dx2 * $q10
+		) + (($y - $y1) / ($y2 - $y1)) * (
+			$dx1 * $q01 + $dx2 * $q11
+		);
 	}
 
 	public static function trilinearLerp($x, $y, $z, $q000, $q001, $q010, $q011, $q100, $q101, $q110, $q111, $x1, $x2, $y1, $y2, $z1, $z2) {
-		$q00 = self::linearLerp($x, $x1, $x2, $q000, $q100);
-		$q01 = self::linearLerp($x, $x1, $x2, $q010, $q110);
-		$q10 = self::linearLerp($x, $x1, $x2, $q001, $q101);
-		$q11 = self::linearLerp($x, $x1, $x2, $q011, $q111);
-		$q0 = self::linearLerp($y, $y1, $y2, $q00, $q10);
-		$q1 = self::linearLerp($y, $y1, $y2, $q01, $q11);
-		return self::linearLerp($z, $z1, $z2, $q0, $q1);
+		$dx1 = (($x2 - $x) / ($x2 - $x1));
+		$dx2 = (($x - $x1) / ($x2 - $x1));
+		$dy1 = (($y2 - $y) / ($y2 - $y1));
+		$dy2 = (($y - $y1) / ($y2 - $y1));
+
+		return (($z2 - $z) / ($z2 - $z1)) * (
+			$dy1 * (
+				$dx1 * $q000 + $dx2 * $q100
+			) + $dy2 * (
+				$dx1 * $q001 + $dx2 * $q101
+			)
+		) + (($z - $z1) / ($z2 - $z1)) * (
+			$dy1 * (
+				$dx1 * $q010 + $dx2 * $q110
+			) + $dy2 * (
+				$dx1 * $q011 + $dx2 * $q111
+			)
+		);
 	}
 
 	public static function grad($hash, $x, $y, $z){

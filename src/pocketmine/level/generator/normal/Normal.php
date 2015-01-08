@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\level\generator;
+namespace pocketmine\level\generator\normal;
 
 use pocketmine\block\Block;
 use pocketmine\block\CoalOre;
@@ -30,13 +30,19 @@ use pocketmine\block\Gravel;
 use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
+use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\biome\BiomeSelector;
+use pocketmine\level\generator\GenerationChunkManager;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\noise\Perlin;
 use pocketmine\level\generator\noise\Simplex;
+use pocketmine\level\generator\normal\biome\NormalBiome;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
+use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
@@ -53,6 +59,9 @@ class Normal extends Generator{
 	/** @var Simplex */
 	private $noiseBase;
 
+	/** @var BiomeSelector */
+	private $selector;
+
 	private static $GAUSSIAN_KERNEL = null;
 	private static $SMOOTH_SIZE = 2;
 
@@ -66,8 +75,8 @@ class Normal extends Generator{
 		self::$GAUSSIAN_KERNEL = [];
 		$bellSize = 1 / self::$SMOOTH_SIZE;
 		$bellHeight = 2 * self::$SMOOTH_SIZE;
-		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx) {
-			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz) {
+		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
+			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
 				$bx = $bellSize * $sx;
 				$bz = $bellSize * $sz;
 				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
@@ -88,6 +97,8 @@ class Normal extends Generator{
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
 		$this->noiseBase = new Simplex($this->random, 16, 0.012, 0.5, 2);
+		$this->random->setSeed($this->level->getSeed());
+		$this->selector = new BiomeSelector($this->random, Biome::getBiome(Biome::OCEAN));
 
 
 		$ores = new Ore();
@@ -121,11 +132,11 @@ class Normal extends Generator{
 
 		$start = microtime(true);
 
-		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 4, 16, 4, $chunkX * 16, 0, $chunkZ * 16);
+		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 8, 8, 8, $chunkX * 16, 0, $chunkZ * 16);
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		var_dump((microtime(true) - $start) * 1000);
+		$biomeCache = [];
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
@@ -133,10 +144,21 @@ class Normal extends Generator{
 				$maxSum = 0;
 				$weightSum = 0;
 
-				//TODO: biome things
-				$minSum = 63;
-				$maxSum = 127;
-				$weightSum += 1;
+				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
+					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
+						if(isset($biomeCache[$index = (($chunkX * 16 + $x + $sx * 16) >> 2) . ":" . (($chunkZ * 16 + $z + $sz * 16) >> 2)])){
+							$adjacent = $biomeCache[$index];
+						}else{
+							$adjacent = $this->selector->pickBiome($chunkX * 16 + $x + $sx * 16, $chunkZ * 16 + $z + $sz * 16);
+							$biomeCache[$index] = $adjacent;
+						}
+						/** @var NormalBiome $adjacent */
+						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
+						$minSum += $adjacent->getMinElevation() * $weight;
+						$maxSum += $adjacent->getMaxElevation() * $weight;
+						$weightSum += $weight;
+					}
+				}
 
 				$minElevation = $minSum / $weightSum;
 				$smoothHeight = ($maxSum / $weightSum - $minElevation) / 2;
@@ -154,10 +176,14 @@ class Normal extends Generator{
 						if($y <= $this->waterHeight){
 							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 						}
+						$chunk->setBlockSkyLight($x, $y, $z, 15);
 					}
 				}
 			}
 		}
+
+
+		var_dump((microtime(true) - $start) * 1000);
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

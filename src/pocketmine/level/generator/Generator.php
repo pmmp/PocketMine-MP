@@ -25,6 +25,7 @@
 namespace pocketmine\level\generator;
 
 use pocketmine\level\generator\noise\Noise;
+use pocketmine\level\generator\normal\Normal;
 use pocketmine\utils\Random;
 
 abstract class Generator{
@@ -196,12 +197,12 @@ abstract class Generator{
 						$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
 						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
 						$noiseArray[$xx][$zz][$yy] = Noise::trilinearLerp(
-							$xx, $yy, $zz, $noiseArray[$nx][$nz][$ny], $noiseArray[$nx][$nz][$ny + $ySamplingRate],
-							$noiseArray[$nx][$nz + $zSamplingRate][$ny], $noiseArray[$nx][$nz + $zSamplingRate][$ny + $ySamplingRate],
-							$noiseArray[$nx + $xSamplingRate][$nz][$ny], $noiseArray[$nx + $xSamplingRate][$nz][$ny + $ySamplingRate],
-							$noiseArray[$nx + $xSamplingRate][$nz + $zSamplingRate][$ny],
-							$noiseArray[$nx + $xSamplingRate][$nz + $zSamplingRate][$ny + $ySamplingRate],
-							$nx, $nx + $zSamplingRate, $ny, $ny + $ySamplingRate, $nz, $nz + $zSamplingRate
+							$xx, $yy, $zz, $noiseArray[$nx][$nz][$ny], $noiseArray[$nx][$nz][$nny = $ny + $ySamplingRate],
+							$noiseArray[$nx][$nnz = $nz + $zSamplingRate][$ny], $noiseArray[$nx][$nnz][$nny],
+							$noiseArray[$nnx = $nx + $xSamplingRate][$nz][$ny], $noiseArray[$nnx][$nz][$nny],
+							$noiseArray[$nnx][$nnz][$ny],
+							$noiseArray[$nnx][$nnz][$nny],
+							$nx, $nnx, $ny, $nny, $nz, $nnz
 						);
 					}
 				}
