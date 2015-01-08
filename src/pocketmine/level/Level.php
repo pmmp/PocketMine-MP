@@ -614,16 +614,20 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$chunkX = $chunkZ = null;
+		$blockTest = 0;
 
 		foreach($this->chunkTickList as $index => $players){
 			Level::getXZ($index, $chunkX, $chunkZ);
 
-			if(!$this->isChunkLoaded($chunkX, $chunkZ) or isset($this->unloadQueue[$index]) and $players > 0){
+			$chunk = $this->getChunk($chunkX, $chunkZ, false);
+
+			if($chunk === null){
 				unset($this->chunkTickList[$index]);
 				continue;
+			}elseif($players <= 0){
+				unset($this->chunkTickList[$index]);
 			}
-			$chunk = $this->getChunk($chunkX, $chunkZ, true);
+
 
 			foreach($chunk->getEntities() as $entity){
 				$entity->scheduleUpdate();
@@ -634,13 +638,12 @@ class Level implements ChunkManager, Metadatable{
 				foreach($chunk->getSections() as $section){
 					if(!($section instanceof EmptyChunkSection)){
 						$Y = $section->getY();
-						$k = mt_rand(0, PHP_INT_MAX);
-						for($i = 0; $i < 3; ++$i){
-							$j = $k >> 2;
-							$x = $j & 0x0f;
-							$y = ($j >> 8) & 0x0f;
-							$z = ($j >> 16) & 0x0f;
-							$k %= 1073741827;
+						$k = mt_rand(0, 0x7fffffff);
+						for($i = 0; $i < 3; ++$i, $k >>= 10){
+							$x = $k & 0x0f;
+							$y = ($k >> 8) & 0x0f;
+							$z = ($k >> 16) & 0x0f;
+
 							$blockId = $section->getBlockId($x, $y, $z);
 							if(isset($this->randomTickBlocks[$blockId])){
 								$class = $this->randomTickBlocks[$blockId];
@@ -656,15 +659,15 @@ class Level implements ChunkManager, Metadatable{
 					}
 				}
 			}else{
-				for($Y = 0; $Y < 8; ++$Y){
-					$k = mt_rand(0, PHP_INT_MAX);
-					for($i = 0; $i < 3; ++$i){
-						$j = $k >> 2;
-						$x = $j & 0x0f;
-						$y = ($j >> 8) & 0x0f;
-						$z = ($j >> 16) & 0x0f;
-						$k %= 1073741827;
-						$blockId = $chunk->getBlockId($x, $y + ($Y << 4), $z);
+				for($Y = 0; $Y < 8 and ($Y >= 4 and $blockTest !== 0); ++$Y){
+					$blockTest = 0;
+					$k = mt_rand(0, 0x7fffffff);
+					for($i = 0; $i < 3; ++$i, $k >>= 10){
+						$x = $k & 0x0f;
+						$y = ($k >> 8) & 0x0f;
+						$z = ($k >> 16) & 0x0f;
+
+						$blockTest |= $blockId = $chunk->getBlockId($x, $y + ($Y << 4), $z);
 						if(isset($this->randomTickBlocks[$blockId])){
 							$class = $this->randomTickBlocks[$blockId];
 							/** @var Block $block */
@@ -2028,7 +2031,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function queueUnloadChunk($x, $z){
-		$this->unloadQueue[Level::chunkHash($x, $z)] = microtime(true);
+		$this->unloadQueue[$index = Level::chunkHash($x, $z)] = microtime(true);
+		unset($this->chunkTickList[$index]);
 	}
 
 	public function unloadChunkRequest($x, $z, $safe = true){
@@ -2079,6 +2083,7 @@ class Level implements ChunkManager, Metadatable{
 
 		unset($this->chunks[$index]);
 		unset($this->usedChunks[$index]);
+		unset($this->chunkTickList[$index]);
 		Cache::remove("world:" . $this->getId() . ":$index");
 
 		$this->timings->doChunkUnload->stopTiming();
