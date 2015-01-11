@@ -619,14 +619,16 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->chunkTickList as $index => $players){
 			Level::getXZ($index, $chunkX, $chunkZ);
 
-			$chunk = $this->getChunk($chunkX, $chunkZ, false);
 
-			if($chunk === null){
+
+			if(!isset($this->chunks[$index]) or ($chunk = $this->getChunk($chunkX, $chunkZ, false)) === null){
 				unset($this->chunkTickList[$index]);
 				continue;
 			}elseif($players <= 0){
 				unset($this->chunkTickList[$index]);
 			}
+
+
 
 
 			foreach($chunk->getEntities() as $entity){

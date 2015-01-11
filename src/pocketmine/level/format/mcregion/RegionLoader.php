@@ -32,6 +32,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\IntArray;
 use pocketmine\nbt\tag\Long;
 use pocketmine\utils\Binary;
+use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
 class RegionLoader{
@@ -182,6 +183,9 @@ class RegionLoader{
 
 	protected function saveChunk($x, $z, $chunkData){
 		$length = strlen($chunkData) + 1;
+		if($length + 4 > self::MAX_SECTOR_LENGTH){
+			throw new ChunkException("Chunk is too big! ".($length + 4)." > ".self::MAX_SECTOR_LENGTH);
+		}
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
 		if($this->locationTable[$index][1] < $sectors){
