@@ -26,6 +26,4 @@ namespace pocketmine\event\level;
  */
 class LevelInitEvent extends LevelEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 }

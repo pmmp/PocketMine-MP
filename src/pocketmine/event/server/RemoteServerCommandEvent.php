@@ -28,8 +28,6 @@ use pocketmine\command\CommandSender;
  */
 class RemoteServerCommandEvent extends ServerCommandEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/**
 	 * @param CommandSender $sender

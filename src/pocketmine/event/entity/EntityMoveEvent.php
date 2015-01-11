@@ -31,8 +31,6 @@ use pocketmine\math\Vector3;
  */
 class EntityMoveEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var \pocketmine\math\Vector3 */
 	private $pos;

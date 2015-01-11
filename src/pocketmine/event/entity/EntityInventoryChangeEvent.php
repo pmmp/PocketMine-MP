@@ -28,8 +28,6 @@ use pocketmine\item\Item;
 
 class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	private $oldItem;
 	private $newItem;

@@ -29,8 +29,6 @@ use pocketmine\Player;
  */
 class PlayerGameModeChangeEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var int */
 	protected $gamemode;

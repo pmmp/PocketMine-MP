@@ -28,8 +28,6 @@ use pocketmine\Player;
  */
 class PlayerJoinEvent extends PlayerEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var string */
 	protected $joinMessage;

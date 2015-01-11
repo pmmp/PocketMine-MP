@@ -25,8 +25,6 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 
 class EntityDamageByBlockEvent extends EntityDamageEvent{
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var Block */
 	private $damager;

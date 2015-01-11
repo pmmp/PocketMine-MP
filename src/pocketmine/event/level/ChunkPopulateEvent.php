@@ -26,6 +26,4 @@ namespace pocketmine\event\level;
  */
 class ChunkPopulateEvent extends ChunkEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 }

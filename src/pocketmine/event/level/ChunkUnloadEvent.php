@@ -28,6 +28,4 @@ use pocketmine\event\Cancellable;
  */
 class ChunkUnloadEvent extends ChunkEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 }

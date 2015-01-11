@@ -25,8 +25,6 @@ use pocketmine\entity\Item;
 
 class ItemSpawnEvent extends EntityEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/**
 	 * @param Item $item

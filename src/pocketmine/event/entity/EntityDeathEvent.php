@@ -26,8 +26,6 @@ use pocketmine\item\Item;
 
 class EntityDeathEvent extends EntityEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var Item[] */
 	private $drops = [];

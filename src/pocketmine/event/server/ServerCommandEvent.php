@@ -34,8 +34,6 @@ use pocketmine\event\Cancellable;
  */
 class ServerCommandEvent extends ServerEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var string */
 	protected $command;

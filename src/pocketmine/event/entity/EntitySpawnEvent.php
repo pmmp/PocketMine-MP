@@ -33,8 +33,6 @@ use pocketmine\entity\Vehicle;
  */
 class EntitySpawnEvent extends EntityEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	private $entityType;
 

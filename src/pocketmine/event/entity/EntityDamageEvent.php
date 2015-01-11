@@ -26,8 +26,6 @@ use pocketmine\event\Cancellable;
 
 class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	const MODIFIER_BASE = 0;
 	const MODIFIER_ARMOR = 1;

@@ -28,8 +28,6 @@ use pocketmine\level\Level;
 
 class EntityLevelChangeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	private $originLevel;
 	private $targetLevel;

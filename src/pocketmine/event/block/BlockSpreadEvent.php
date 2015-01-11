@@ -26,8 +26,6 @@ use pocketmine\event\Cancellable;
 
 class BlockSpreadEvent extends BlockFormEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var Block */
 	private $source;

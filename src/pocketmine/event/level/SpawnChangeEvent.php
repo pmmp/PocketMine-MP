@@ -30,8 +30,6 @@ use pocketmine\level\Position;
  */
 class SpawnChangeEvent extends LevelEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var Position */
 	private $previousSpawn;

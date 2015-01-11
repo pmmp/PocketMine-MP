@@ -30,8 +30,6 @@ use pocketmine\Player;
  */
 class PlayerCreationEvent extends Event{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var SourceInterface */
 	private $interface;

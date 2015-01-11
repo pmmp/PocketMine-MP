@@ -27,8 +27,6 @@ use pocketmine\plugin\Plugin;
 
 class PluginDisableEvent extends PluginEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/**
 	 * @param Plugin $plugin

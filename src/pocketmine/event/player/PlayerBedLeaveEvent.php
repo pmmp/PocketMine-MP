@@ -26,8 +26,6 @@ use pocketmine\Player;
 
 class PlayerBedLeaveEvent extends PlayerEvent{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	private $bed;
 

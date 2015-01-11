@@ -31,8 +31,6 @@ use pocketmine\level\Position;
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var Position */
 	protected $position;

@@ -31,8 +31,6 @@ use pocketmine\inventory\TransactionGroup;
  */
 class InventoryTransactionEvent extends Event implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var TransactionGroup */
 	private $ts;

@@ -30,8 +30,6 @@ use pocketmine\Player;
  */
 class SignChangeEvent extends BlockEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	/** @var \pocketmine\Player */
 	private $player;

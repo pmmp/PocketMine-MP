@@ -28,8 +28,6 @@ use pocketmine\Player;
 
 class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
-	public static $eventPool = [];
-	public static $nextEvent = 0;
 
 	private $item;
 	private $slot;
