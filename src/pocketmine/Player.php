@@ -1069,7 +1069,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$revert = false;
 
-		if($distanceSquared > 10000){
+		if($distanceSquared > 100){
 			$revert = true;
 		}else{
 			if($this->chunk === null or !$this->chunk->isGenerated()){
