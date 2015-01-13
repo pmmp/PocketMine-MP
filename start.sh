@@ -23,6 +23,7 @@ done
 
 if [ "$PHP_BINARY" == "" ]; then
 	if [ -f ./bin/php5/bin/php ]; then
+		export PHPRC=""
 		PHP_BINARY="./bin/php5/bin/php"
 	elif [ type php 2>/dev/null ]; then
 		PHP_BINARY=$(type -p php)

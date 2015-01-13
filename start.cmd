@@ -1,7 +1,9 @@
 @echo off
 TITLE PocketMine-MP server software for Minecraft: Pocket Edition
 cd /d %~dp0
+
 if exist bin\php\php.exe (
+	set PHPRC=""
 	set PHP_BINARY=bin\php\php.exe
 ) else (
 	set PHP_BINARY=php
