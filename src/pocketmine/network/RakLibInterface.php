@@ -89,7 +89,12 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	/** @var \SplFixedArray */
 	private $packetPool;
 
+	/** @var Server */
 	private $server;
+
+	/** @var RakLibServer */
+	private $rakLib;
+
 	/** @var Player[] */
 	private $players = [];
 
@@ -118,13 +123,19 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->internalThreaded = new \Threaded();
 		$this->externalThreaded = new \Threaded();
 
-		$server = new RakLibServer($this->internalThreaded, $this->externalThreaded, $this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
-		$this->interface = new ServerHandler($server, $this);
+		$this->rakLib = new RakLibServer($this->internalThreaded, $this->externalThreaded, $this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
+		$this->interface = new ServerHandler($this->rakLib, $this);
 		$this->setName($this->server->getMotd());
 	}
 
 	public function doTick(){
-		$this->interface->sendTick();
+		if(!$this->rakLib->isTerminated()){
+			$this->interface->sendTick();
+		}else{
+			$info = $this->rakLib->getTerminationInfo();
+			$this->server->removeInterface($this);
+			\ExceptionHandler::handler(E_ERROR, "RakLib Thread crashed [".$info["scope"]."]" . (isset($info["message"]) ? $info["message"] : ""), $info["file"], $info["line"]);
+		}
 	}
 
 	public function process(){
