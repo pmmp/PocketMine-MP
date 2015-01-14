@@ -1039,7 +1039,7 @@ class Block extends Position implements Metadatable{
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb, &$list = []){
 		$bb2 = $this->getBoundingBox();
-		if($bb2 !== null and $bb2->intersectsWith($bb)){
+		if($bb2 !== null and $bb->intersectsWith($bb2)){
 			$list[] = $bb2;
 		}
 	}
@@ -1055,11 +1055,10 @@ class Block extends Position implements Metadatable{
 	 * @return AxisAlignedBB
 	 */
 	public function getBoundingBox(){
-		if($this->boundingBox !== null){
-			return $this->boundingBox;
-		}else{
-			return ($this->boundingBox = $this->recalculateBoundingBox());
+		if($this->boundingBox === null){
+			$this->boundingBox = $this->recalculateBoundingBox();
 		}
+		return $this->boundingBox;
 	}
 
 	/**

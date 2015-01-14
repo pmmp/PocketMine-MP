@@ -147,6 +147,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $moveToSend = [];
 	protected $motionToSend = [];
 
+	/** @var Vector3 */
+	public $speed = null;
+
 	public $blocked = false;
 	public $achievements = [];
 	public $lastCorrect;
@@ -1164,6 +1167,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 				}
 			}
+
+			$this->speed = $to->subtract($from);
+		}elseif($distanceSquared == 0){
+			$this->speed = new Vector3(0, 0, 0);
 		}
 
 		if($revert){
@@ -1186,13 +1193,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->teleport = true;
 			$this->directDataPacket($pk);
 			$this->forceMovement = new Vector3($from->x, $from->y, $from->z);
-			$this->newPosition = null;
 		}else{
 			$this->forceMovement = null;
 			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
 				$this->nextChunkOrderRun = 20;
 			}
 		}
+
+		$this->newPosition = null;
 	}
 
 	public function updateMovement(){
@@ -1224,8 +1232,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
-				if($this->inAirTicks > 100 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
-					$this->kick("Flying is not enabled on this server");
+				if($this->inAirTicks > 20 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
+					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 2));
+					$diff = ($this->speed->y - $expectedVelocity) ** 2;
+
+					if($diff > 0.6 and $expectedVelocity < $this->speed->y){
+						$this->kick("Flying is not enabled on this server");
+					}
 					return false;
 				}else{
 					++$this->inAirTicks;

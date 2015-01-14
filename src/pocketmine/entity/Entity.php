@@ -1004,7 +1004,7 @@ abstract class Entity extends Location implements Metadatable{
 					if(!$this->onGround or $movY != 0){
 						$bb = clone $this->boundingBox;
 						$bb->minY -= 1;
-						if(count($this->level->getCollisionBlocks($bb->expand(0.01, 0.01, 0.01))) > 0){
+						if(count($this->level->getCollisionBlocks($bb)) > 0){
 							$this->onGround = true;
 						}else{
 							$this->onGround = false;
