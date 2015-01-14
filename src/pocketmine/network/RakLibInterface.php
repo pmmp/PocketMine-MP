@@ -134,7 +134,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		}else{
 			$info = $this->rakLib->getTerminationInfo();
 			$this->server->removeInterface($this);
-			\ExceptionHandler::handler(E_ERROR, "RakLib Thread crashed [".$info["scope"]."]" . (isset($info["message"]) ? $info["message"] : ""), $info["file"], $info["line"]);
+			\ExceptionHandler::handler(E_ERROR, "RakLib Thread crashed [".$info["scope"]."]: " . (isset($info["message"]) ? $info["message"] : ""), $info["file"], $info["line"]);
 		}
 	}
 

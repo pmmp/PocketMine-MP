@@ -171,6 +171,7 @@ abstract class PluginBase implements Plugin{
 
 	/**
 	 * Gets an embedded resource on the plugin file.
+	 * WARNING: You must close the resource given using fclose()
 	 *
 	 * @param string $filename
 	 *

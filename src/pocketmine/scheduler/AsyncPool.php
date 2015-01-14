@@ -101,9 +101,7 @@ class AsyncPool{
 
 				$task->onCompletion($this->server);
 
-				$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
-				unset($this->tasks[$task->getTaskId()]);
-				unset($this->taskWorkers[$task->getTaskId()]);
+				$this->removeTask($task);
 			}elseif($task->isTerminated()){
 				$info = $task->getTerminationInfo();
 				$this->removeTask($task);

@@ -194,6 +194,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		$this->logStream .= date("Y-m-d", $now) . " " . $cleanMessage;
+		$this->synchronized(function(){
+			$this->notify();
+		});
 	}
 
 	public function run(){
@@ -204,17 +207,21 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		while($this->shutdown === false){
-			if(strlen($this->logStream) >= 4096){
-				$this->lock();
-				$chunks = strlen($this->logStream) >> 12;
-				$chunk = substr($this->logStream, 0, $chunks << 12);
-				$this->logStream = substr($this->logStream, $chunks << 12);
-				$this->unlock();
-				fwrite($this->logResource, $chunk);
+			if($this->logStream !== ""){
+				$this->synchronized(function(){
+					$this->lock();
+					$chunk = $this->logStream;
+					$this->logStream = "";
+					$this->unlock();
+					fwrite($this->logResource, $chunk);
+				});
 			}else{
-				usleep(250000); //sleep for 0.25 seconds
+				$this->synchronized(function(){
+					$this->wait(250000);
+				});
 			}
 		}
+
 		if(strlen($this->logStream) > 0){
 			fwrite($this->logResource, $this->logStream);
 		}
