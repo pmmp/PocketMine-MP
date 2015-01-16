@@ -243,7 +243,6 @@ class Utils{
 				(string) memory_get_usage() . "." . memory_get_peak_usage(),
 				php_uname(),
 				phpversion(),
-				extension_loaded("gmp") ? gmp_strval(gmp_random(4)) : microtime(),
 				zend_version(),
 				(string) getmypid(),
 				(string) getmyuid(),

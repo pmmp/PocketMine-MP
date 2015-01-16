@@ -1232,11 +1232,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
-				if($this->inAirTicks > 20 and $this->isSurvival() and !$this->isSleeping() and $this->spawned and !$this->server->getAllowFlight()){
+				if($this->inAirTicks > 20 and $this->isSurvival() and !$this->isSleeping() and $this->spawned){
 					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 2));
 					$diff = ($this->speed->y - $expectedVelocity) ** 2;
 
-					if($diff > 0.6 and $expectedVelocity < $this->speed->y){
+					if($diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
 						$this->kick("Flying is not enabled on this server");
 					}
 					return false;
@@ -1541,6 +1541,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				if($this->spawned === false or $this->dead === true){
 					break;
 				}
+				$packet->yaw %= 360;
+				$packet->pitch %= 360;
+
+				if($packet->yaw < 0){
+					$packet->yaw += 360;
+				}
+
 				$this->setRotation($packet->yaw, $this->pitch);
 				break;
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
