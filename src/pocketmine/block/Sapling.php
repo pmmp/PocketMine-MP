@@ -38,7 +38,7 @@ class Sapling extends Flowable{
 	protected $id = self::SAPLING;
 
 	public function __construct($meta = 0){
-		$this->meta = 0;
+		$this->meta = $meta;
 	}
 
 	public function canBeActivated(){
