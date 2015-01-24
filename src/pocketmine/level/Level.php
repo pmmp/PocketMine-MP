@@ -2070,7 +2070,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		try{
-			if($chunk !== null and $chunk->hasChanged() and $this->getAutoSave()){
+			if($chunk !== null and $this->getAutoSave()){
 				$this->provider->setChunk($x, $z, $chunk);
 				$this->provider->saveChunk($x, $z);
 			}
