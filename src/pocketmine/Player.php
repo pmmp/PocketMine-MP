@@ -1232,7 +1232,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
-				if($this->inAirTicks > 20 and $this->isSurvival() and !$this->isSleeping() and $this->spawned){
+				if($this->inAirTicks > 20 and $this->isSurvival() and !$this->isSleeping()){
 					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 2));
 					$diff = ($this->speed->y - $expectedVelocity) ** 2;
 
