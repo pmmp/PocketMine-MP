@@ -2139,7 +2139,7 @@ class Level implements ChunkManager, Metadatable{
 						break;
 					}
 				}
-				for(; $v->y < 128; ++$v->y){
+				for(; $v->y >= 0 and $v->y < 128; ++$v->y){
 					if(!Block::$solid[$chunk->getBlockId($x, $v->y + 1, $z)]){
 						if(!Block::$solid[$chunk->getBlockId($x, $v->y, $z)]){
 							return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
