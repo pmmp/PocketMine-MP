@@ -22,6 +22,8 @@
 namespace pocketmine\block;
 
 
+use pocketmine\item\Item;
+
 class GlassPane extends Thin{
 
 	protected $id = self::GLASS_PANE;
@@ -38,4 +40,7 @@ class GlassPane extends Thin{
 		return 1.5;
 	}
 
+	public function getDrops(Item $item){
+		return [];
+	}
 }
