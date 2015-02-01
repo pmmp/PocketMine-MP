@@ -47,6 +47,7 @@ use pocketmine\network\protocol\HurtArmorPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\InteractPacket;
 use pocketmine\network\protocol\LevelEventPacket;
+use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\LoginPacket;
 use pocketmine\network\protocol\LoginStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
@@ -71,7 +72,6 @@ use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
 use pocketmine\network\protocol\TileEventPacket;
 use pocketmine\network\protocol\UnknownPacket;
-use pocketmine\network\protocol\UnloadChunkPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
 use pocketmine\Player;
@@ -306,6 +306,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	private function registerPackets(){
 		$this->packetPool = new \SplFixedArray(256);
 
+		$this->registerPacket(ProtocolInfo::DISCONNECT_PACKET, DisconnectPacket::class);
 		$this->registerPacket(ProtocolInfo::LOGIN_PACKET, LoginPacket::class);
 		$this->registerPacket(ProtocolInfo::LOGIN_STATUS_PACKET, LoginStatusPacket::class);
 		$this->registerPacket(ProtocolInfo::MESSAGE_PACKET, MessagePacket::class);
@@ -350,7 +351,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->registerPacket(ProtocolInfo::CHAT_PACKET, ChatPacket::class);
 		$this->registerPacket(ProtocolInfo::ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket::class);
 		$this->registerPacket(ProtocolInfo::ENTITY_DATA_PACKET, EntityDataPacket::class);
-		$this->registerPacket(ProtocolInfo::UNLOAD_CHUNK_PACKET, UnloadChunkPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_DIFFICULTY_PACKET, SetDifficultyPacket::class);
 	}
 

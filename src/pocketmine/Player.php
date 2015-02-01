@@ -88,6 +88,7 @@ use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
 use pocketmine\network\protocol\DataPacket;
+use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
@@ -164,7 +165,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $forceMovement = null;
 	protected $connected = true;
 	protected $ip;
-	protected $removeFormat = true;
+	protected $removeFormat = false;
 	protected $port;
 	protected $username;
 	protected $iusername;
@@ -2399,7 +2400,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, TextFormat::YELLOW . $this->username . " has left the game"));
 		if(!$ev->isCancelled()){
 			$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
-			$this->sendMessage($message);
 			$this->close($ev->getQuitMessage(), $message);
 
 			return true;
@@ -2440,6 +2440,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->tasks = [];
 
 		if($this->connected and !$this->closed){
+			if($message != ""){
+				$pk = new DisconnectPacket;
+				$pk->message = $reason;
+				$this->directDataPacket($pk);
+			}
+			
 			$this->connected = false;
 			if($this->username != ""){
 				$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message));
@@ -2458,7 +2464,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			foreach($this->windowIndex as $window){
 				$this->removeWindow($window);
 			}
-
+			
 			$this->interface->close($this, $reason);
 
 			$chunkX = $chunkZ = null;

@@ -24,25 +24,23 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class UnloadChunkPacket extends DataPacket{
+class DisconnectPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
-	public $chunkX;
-	public $chunkZ;
+	public $message;
 
 	public function pid(){
-		return Info::UNLOAD_CHUNK_PACKET;
+		return Info::DISCONNECT_PACKET;
 	}
 
 	public function decode(){
-
+		$this->message = $this->getString();
 	}
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->chunkX);
-		$this->putInt($this->chunkZ);
+		$this->putString($this->message);
 	}
 
 }
