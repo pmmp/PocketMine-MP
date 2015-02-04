@@ -21,6 +21,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 
 class IronBars extends Thin{
 
@@ -32,6 +33,36 @@ class IronBars extends Thin{
 
 	public function getName(){
 		return "Iron Bars";
+	}
+	public function getHardness(){
+		return 25;
+	}
+
+	public function getBreakTime(Item $item){
+		switch($item->isPickaxe()){
+			case 5:
+				return 0.95;
+			case 4:
+				return 1.25;
+			case 3:
+				return 1.9;
+			case 2:
+				return 0.65;
+			case 1:
+				return 3.75;
+			default:
+				return 25;
+		}
+	}
+
+	public function getDrops(Item $item){
+		if($item->isPickaxe() >= 1){
+			return [
+				[Item::IRON_BARS, 0, 1],
+			];
+		}else{
+			return [];
+		}
 	}
 
 }
