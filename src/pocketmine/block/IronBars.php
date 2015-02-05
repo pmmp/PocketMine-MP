@@ -35,7 +35,7 @@ class IronBars extends Thin{
 		return "Iron Bars";
 	}
 	public function getHardness(){
-		return 25;
+		return 5;
 	}
 
 	public function getBreakTime(Item $item){
@@ -51,7 +51,7 @@ class IronBars extends Thin{
 			case 1:
 				return 3.75;
 			default:
-				return 25;
+				return 5;
 		}
 	}
 
