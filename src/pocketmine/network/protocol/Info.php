@@ -31,12 +31,11 @@ interface Info{
 	 * Actual Minecraft: PE protocol version
 	 */
 	const CURRENT_PROTOCOL = 21;
-
-
-	const DISCONNECT_PACKET = 0x82;
 	
-	const LOGIN_PACKET = 0x83;
-	const LOGIN_STATUS_PACKET = 0x84;
+	const LOGIN_PACKET = 0x82;
+	const LOGIN_STATUS_PACKET = 0x83;
+	
+	const DISCONNECT_PACKET = 0x84;
 	
 	const MESSAGE_PACKET = 0x85;
 	const SET_TIME_PACKET = 0x86;
