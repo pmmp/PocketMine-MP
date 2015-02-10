@@ -969,7 +969,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk->spawnZ = (int) $spawnPosition->z;
 		$pk->generator = 1; //0 old, 1 infinite, 2 flat
 		$pk->gamemode = $this->gamemode & 0x01;
-		$pk->eid = 0; //Always use EntityID as zero for the actual player
+		$pk->eid = $this->getId();
 		$this->dataPacket($pk);
 		$this->sendSettings();
 
@@ -1202,7 +1202,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->lastPitch = $from->pitch;
 
 			$pk = new MovePlayerPacket();
-			$pk->eid = 0;
+			$pk->eid = $this->getId();
 			$pk->x = $from->x;
 			$pk->y = $from->y + $this->getEyeHeight();
 			$pk->z = $from->z;
@@ -1306,7 +1306,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 
 						$pk = new TakeItemEntityPacket();
-						$pk->eid = 0;
+						$pk->eid = $this->getId();
 						$pk->target = $entity->getId();
 						$this->dataPacket($pk);
 						$pk = new TakeItemEntityPacket();
@@ -1340,7 +1340,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							}
 
 							$pk = new TakeItemEntityPacket();
-							$pk->eid = 0;
+							$pk->eid = $this->getId();
 							$pk->target = $entity->getId();
 							$this->dataPacket($pk);
 							$pk = new TakeItemEntityPacket();
@@ -1549,7 +1549,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$pk->spawnZ = (int) $spawnPosition->z;
 				$pk->generator = 1; //0 old, 1 infinite, 2 flat
 				$pk->gamemode = $this->gamemode & 0x01;
-				$pk->eid = 0; //Always use EntityID as zero for the actual player
+				$pk->eid = $this->getId(); //Always use EntityID as zero for the actual player
 				$this->dataPacket($pk);
 
 				$pk = new SetTimePacket();
@@ -1605,7 +1605,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				if($this->forceMovement instanceof Vector3 and (($dist = $newPos->distanceSquared($this->forceMovement)) > 0.04 or $revert)){
 					$pk = new MovePlayerPacket();
-					$pk->eid = 0;
+					$pk->eid = $this->getId();
 					$pk->x = $this->forceMovement->x;
 					$pk->y = $this->forceMovement->y + $this->getEyeHeight();
 					$pk->z = $this->forceMovement->z;
@@ -2139,7 +2139,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							}
 
 							$pk = new EntityEventPacket();
-							$pk->eid = 0;
+							$pk->eid = $this->getId();
 							$pk->event = 9;
 							$this->dataPacket($pk);
 							$pk->eid = $this->getId();
@@ -2696,7 +2696,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($this->getLastDamageCause() === $source){
 			$pk = new EntityEventPacket();
-			$pk->eid = 0;
+			$pk->eid = $this->getId();
 			$pk->event = 2;
 			$this->dataPacket($pk);
 		}
@@ -2742,7 +2742,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->newPosition = null;
 
 			$pk = new MovePlayerPacket();
-			$pk->eid = 0;
+			$pk->eid = $this->getId();
 			$pk->x = $this->x;
 			$pk->y = $this->y + $this->getEyeHeight();
 			$pk->z = $this->z;
