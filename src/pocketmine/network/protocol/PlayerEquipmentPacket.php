@@ -38,7 +38,7 @@ class PlayerEquipmentPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->eid = $this->getInt();
+		$this->eid = $this->getLong();
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
 		$this->slot = $this->getByte();
@@ -46,7 +46,7 @@ class PlayerEquipmentPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putShort($this->item);
 		$this->putShort($this->meta);
 		$this->putByte($this->slot);

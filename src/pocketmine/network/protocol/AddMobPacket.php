@@ -51,7 +51,7 @@ class AddMobPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putInt($this->type);
 		$this->putInt($this->x);
 		$this->putInt($this->y);

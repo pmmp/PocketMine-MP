@@ -50,7 +50,7 @@ class MoveEntityPacket extends DataPacket{
 		$this->reset();
 		$this->putInt(count($this->entities));
 		foreach($this->entities as $d){
-			$this->putInt($d[0]); //eid
+			$this->putLong($d[0]); //eid
 			$this->putFloat($d[1]); //x
 			$this->putFloat($d[2]); //y
 			$this->putFloat($d[3]); //z
