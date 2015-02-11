@@ -50,7 +50,7 @@ class RotateHeadPacket extends DataPacket{
 		$this->reset();
 		$this->putInt(count($this->entities));
 		foreach($this->entities as $d){
-			$this->putInt($d[0]); //eid
+			$this->putLong($d[0]); //eid
 			$this->putByte((int) ($d[1] / 360));
 		}
 	}

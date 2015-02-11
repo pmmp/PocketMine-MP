@@ -45,7 +45,7 @@ class PlayerActionPacket extends DataPacket{
 		$this->y = $this->getInt();
 		$this->z = $this->getInt();
 		$this->face = $this->getInt();
-		$this->eid = $this->getInt();
+		$this->eid = $this->getLong();
 	}
 
 	public function encode(){

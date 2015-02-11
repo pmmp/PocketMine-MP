@@ -37,13 +37,13 @@ class AnimatePacket extends DataPacket{
 
 	public function decode(){
 		$this->action = $this->getByte();
-		$this->eid = $this->getInt();
+		$this->eid = $this->getLong();
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->action);
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 	}
 
 }

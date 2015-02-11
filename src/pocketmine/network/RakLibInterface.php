@@ -61,7 +61,6 @@ use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\RemovePlayerPacket;
 use pocketmine\network\protocol\RespawnPacket;
 use pocketmine\network\protocol\RotateHeadPacket;
-use pocketmine\network\protocol\SendInventoryPacket;
 use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
@@ -306,9 +305,9 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	private function registerPackets(){
 		$this->packetPool = new \SplFixedArray(256);
 
-		$this->registerPacket(ProtocolInfo::DISCONNECT_PACKET, DisconnectPacket::class);
 		$this->registerPacket(ProtocolInfo::LOGIN_PACKET, LoginPacket::class);
 		$this->registerPacket(ProtocolInfo::LOGIN_STATUS_PACKET, LoginStatusPacket::class);
+		$this->registerPacket(ProtocolInfo::DISCONNECT_PACKET, DisconnectPacket::class);
 		$this->registerPacket(ProtocolInfo::MESSAGE_PACKET, MessagePacket::class);
 		$this->registerPacket(ProtocolInfo::SET_TIME_PACKET, SetTimePacket::class);
 		$this->registerPacket(ProtocolInfo::START_GAME_PACKET, StartGamePacket::class);
@@ -341,7 +340,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->registerPacket(ProtocolInfo::SET_SPAWN_POSITION_PACKET, SetSpawnPositionPacket::class);
 		$this->registerPacket(ProtocolInfo::ANIMATE_PACKET, AnimatePacket::class);
 		$this->registerPacket(ProtocolInfo::RESPAWN_PACKET, RespawnPacket::class);
-		$this->registerPacket(ProtocolInfo::SEND_INVENTORY_PACKET, SendInventoryPacket::class);
 		$this->registerPacket(ProtocolInfo::DROP_ITEM_PACKET, DropItemPacket::class);
 		$this->registerPacket(ProtocolInfo::CONTAINER_OPEN_PACKET, ContainerOpenPacket::class);
 		$this->registerPacket(ProtocolInfo::CONTAINER_CLOSE_PACKET, ContainerClosePacket::class);

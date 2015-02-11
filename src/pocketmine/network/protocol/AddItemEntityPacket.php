@@ -47,7 +47,7 @@ class AddItemEntityPacket extends DataPacket{
 
 	public function encode(){
 		$this->reset();
-		$this->putInt($this->eid);
+		$this->putLong($this->eid);
 		$this->putSlot($this->item);
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
