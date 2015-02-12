@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\Player;
 
 class TallGrass extends Flowable{
 
@@ -44,6 +45,17 @@ class TallGrass extends Flowable{
 			3 => ""
 		];
 		return $names[$this->meta & 0x03];
+	}
+	
+	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+		$down = $this->getSide(0);
+		if($down->getId() === self::GRASS){
+			$this->getLevel()->setBlock($block, $this, true);
+
+			return true;
+		}
+
+		return false;
 	}
 
 
