@@ -559,6 +559,9 @@ class Level implements ChunkManager, Metadatable{
 						foreach($mini as $blocks){
 							/** @var Block $b */
 							foreach($blocks as $b){
+								if(!($b instanceof Block)){
+									$b = $this->getBlock($b);
+								}
 								$pk = new UpdateBlockPacket();
 								$pk->x = $b->x;
 								$pk->y = $b->y;
@@ -1136,7 +1139,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->changedBlocks[$index][$Y] = [];
 					$this->changedCount[$index] |= 1 << $Y;
 				}
-				$this->changedBlocks[$index][$Y][] = clone $block;
+				$this->changedBlocks[$index][$Y][Level::blockHash($block->x, $block->y, $block->z)] = clone $block;
 			}
 
 			if($update === true){
@@ -1592,6 +1595,16 @@ class Level implements ChunkManager, Metadatable{
 	public function setBlockIdAt($x, $y, $z, $id){
 		unset($this->blockCache[Level::blockHash($x, $y, $z)]);
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockId($x & 0x0f, $y & 0x7f, $z & 0x0f, $id & 0xff);
+
+		if(!isset($this->changedBlocks[$index = Level::chunkHash($x >> 4, $z >> 4)])){
+			$this->changedBlocks[$index] = [];
+			$this->changedCount[$index] = 0;
+		}
+		if(!isset($this->changedBlocks[$index][$Y = $y >> 4])){
+			$this->changedBlocks[$index][$Y] = [];
+			$this->changedCount[$index] |= 1 << $Y;
+		}
+		$this->changedBlocks[$index][$Y][Level::blockHash($x, $y, $z)] = new Vector3($x, $y, $z);
 	}
 
 	/**
@@ -1618,6 +1631,16 @@ class Level implements ChunkManager, Metadatable{
 	public function setBlockDataAt($x, $y, $z, $data){
 		unset($this->blockCache[Level::blockHash($x, $y, $z)]);
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockData($x & 0x0f, $y & 0x7f, $z & 0x0f, $data & 0x0f);
+
+		if(!isset($this->changedBlocks[$index = Level::chunkHash($x >> 4, $z >> 4)])){
+			$this->changedBlocks[$index] = [];
+			$this->changedCount[$index] = 0;
+		}
+		if(!isset($this->changedBlocks[$index][$Y = $y >> 4])){
+			$this->changedBlocks[$index][$Y] = [];
+			$this->changedCount[$index] |= 1 << $Y;
+		}
+		$this->changedBlocks[$index][$Y][Level::blockHash($x, $y, $z)] = new Vector3($x, $y, $z);
 	}
 
 	/**
