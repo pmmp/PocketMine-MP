@@ -42,7 +42,7 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	public function getMetadata($block, $metadataKey){
-		if($block instanceof Block){
+		if(!($block instanceof Block)){
 			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
@@ -53,7 +53,7 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	public function hasMetadata($block, $metadataKey){
-		if($block instanceof Block){
+		if(!($block instanceof Block)){
 			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
@@ -64,7 +64,7 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	public function removeMetadata($block, $metadataKey, Plugin $owningPlugin){
-		if($block instanceof Block){
+		if(!($block instanceof Block)){
 			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
@@ -75,7 +75,7 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	public function setMetadata($block, $metadataKey, MetadataValue $newMetadatavalue){
-		if($block instanceof Block){
+		if(!($block instanceof Block)){
 			throw new \InvalidArgumentException("Object must be a Block");
 		}
 		if($block->getLevel() === $this->owningLevel){
