@@ -20,6 +20,7 @@
 */
 
 namespace pocketmine\utils;
+use pocketmine\Server;
 
 
 /**
@@ -123,7 +124,7 @@ class Config{
 				}
 			}
 			if($this->correct === true){
-				$content = @file_get_contents($this->file);
+				$content = file_get_contents($this->file);
 				switch($this->type){
 					case Config::PROPERTIES:
 					case Config::CNF:
@@ -173,26 +174,34 @@ class Config{
 	 */
 	public function save(){
 		if($this->correct === true){
-			$content = null;
-			switch($this->type){
-				case Config::PROPERTIES:
-				case Config::CNF:
-					$content = $this->writeProperties();
-					break;
-				case Config::JSON:
-					$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
-					break;
-				case Config::YAML:
-					$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
-					break;
-				case Config::SERIALIZED:
-					$content = @serialize($this->config);
-					break;
-				case Config::ENUM:
-					$content = implode("\r\n", array_keys($this->config));
-					break;
+			try{
+				$content = null;
+				switch($this->type){
+					case Config::PROPERTIES:
+					case Config::CNF:
+						$content = $this->writeProperties();
+						break;
+					case Config::JSON:
+						$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
+						break;
+					case Config::YAML:
+						$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
+						break;
+					case Config::SERIALIZED:
+						$content = serialize($this->config);
+						break;
+					case Config::ENUM:
+						$content = implode("\r\n", array_keys($this->config));
+						break;
+				}
+				file_put_contents($this->file, $content);
+			}catch(\Exception $e){
+				$logger = Server::getInstance()->getLogger();
+				$logger->critical("Could not save Config " . $this->file . ": " . $e->getMessage());
+				if(\pocketmine\DEBUG > 1 and $logger instanceof MainLogger){
+					$logger->logException($e);
+				}
 			}
-			@file_put_contents($this->file, $content, LOCK_EX);
 
 			return true;
 		}else{

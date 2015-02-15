@@ -811,8 +811,15 @@ class Server{
 	 */
 	public function saveOfflinePlayerData($name, Compound $nbtTag){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData($nbtTag);
-		file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
+		try{
+			$nbt->setData($nbtTag);
+			file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed());
+		}catch(\Exception $e){
+			$this->logger->critical("Could not save player " . $name . ": " . $e->getMessage());
+			if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
+				$this->logger->logException($e);
+			}
+		}
 	}
 
 	/**
