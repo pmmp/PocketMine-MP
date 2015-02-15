@@ -317,6 +317,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		return false;
 	}
 
+	public function resetFallDistance(){
+		parent::resetFallDistance();
+		$this->inAirTicks = 0;
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -1229,20 +1234,24 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->entityBaseTick(1);
 
-			if($this->onGround or $this->fallDistance === 0){
+			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
-				if($this->inAirTicks > 20 and $this->isSurvival() and !$this->isSleeping()){
+				if($this->inAirTicks > 10 and $this->isSurvival() and !$this->isSleeping()){
 					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 2));
-					$diff = ($this->speed->y - $expectedVelocity) ** 2;
+					$diff = sqrt(abs($this->speed->y - $expectedVelocity));
 
 					if($diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
-						$this->kick("Flying is not enabled on this server");
+						if($this->inAirTicks < 100){
+							$this->setMotion(new Vector3(0, 5, 0));
+						}else{
+							$this->kick("Flying is not enabled on this server");
+							return false;
+						}
 					}
-					return false;
-				}else{
-					++$this->inAirTicks;
 				}
+
+				++$this->inAirTicks;
 			}
 
 			foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
@@ -2687,7 +2696,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			$this->airTicks = 300;
-			$this->fallDistance = 0;
+			$this->resetFallDistance();
 			$this->orderChunks();
 			$this->nextChunkOrderRun = 0;
 			$this->forceMovement = new Vector3($this->x, $this->y, $this->z);

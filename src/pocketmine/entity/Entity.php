@@ -709,6 +709,10 @@ abstract class Entity extends Location implements Metadatable{
 		return true;
 	}
 
+	public function resetFallDistance(){
+		$this->fallDistance = 0;
+	}
+
 	protected function updateFallState($distanceThisTick, $onGround){
 		if($onGround === true){
 			if($this->fallDistance > 0){
@@ -717,7 +721,7 @@ abstract class Entity extends Location implements Metadatable{
 				}
 
 				$this->fall($this->fallDistance);
-				$this->fallDistance = 0;
+				$this->resetFallDistance();
 			}
 		}elseif($distanceThisTick < 0){
 			$this->fallDistance -= $distanceThisTick;
@@ -1200,7 +1204,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setMotion(new Vector3(0, 0, 0));
 		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch, true) !== false){
-			$this->fallDistance = 0;
+			$this->resetFallDistance();
 			$this->onGround = true;
 
 			$this->lastX = $this->x;
