@@ -1610,6 +1610,7 @@ class Server{
 		InventoryType::init();
 		Block::init();
 		Item::init();
+		/** TODO: @deprecated */
 		TextWrapper::init();
 		$this->craftingManager = new CraftingManager();
 
