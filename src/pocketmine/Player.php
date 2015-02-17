@@ -194,6 +194,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	private $inAction = false;
 
 	protected $inAirTicks = 0;
+	protected $lastSpeedTick = 0;
+	protected $speedTicks = 0;
+	protected $highSpeedTicks = 0;
 
 
 	private $needACK = [];
@@ -1070,6 +1073,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected function processMovement($currentTick){
 		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
+			if(++$this->speedTicks >= 10){
+				$this->speed = new Vector3(0, 0, 0);
+				$this->speedTicks = -PHP_INT_MAX;
+				$this->lastSpeedTick = $currentTick;
+			}
 			return;
 		}
 
@@ -1173,9 +1181,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->speed = $to->subtract($from);
+			$this->speed = $to->subtract($from)->divide($currentTick - $this->lastSpeedTick);
+			$this->speedTicks = 0;
+			$this->lastSpeedTick = $currentTick;
 		}elseif($distanceSquared == 0){
 			$this->speed = new Vector3(0, 0, 0);
+			$this->speedTicks = 0;
+			$this->lastSpeedTick = $currentTick;
 		}
 
 		if($revert){
@@ -1234,6 +1246,24 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->entityBaseTick(1);
 
+			if($this->speed and $this->isSurvival()){
+				$speed = sqrt($this->speed->x ** 2 + $this->speed->z ** 2);
+				if($speed > 0.30){
+					$this->highSpeedTicks += $speed > 1 ? 3 : 1;
+					if($this->highSpeedTicks > 40 and !$this->server->getAllowFlight()){
+						$this->kick("Flying is not enabled on this server");
+						return false;
+					}elseif($this->highSpeedTicks > 5){
+						$factor = min(1, ($speed - 0.22) / $speed);
+						$mot = new Vector3($this->speed->x * $factor, 0, $this->speed->z * $factor);
+						$this->setMotion($mot);
+						$this->speed = $mot;
+					}
+				}elseif($this->highSpeedTicks > 0){
+					$this->highSpeedTicks--;
+				}
+			}
+
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
@@ -1243,7 +1273,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 					if($diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
 						if($this->inAirTicks < 100){
-							$this->setMotion(new Vector3(0, 5, 0));
+							$this->setMotion(new Vector3(0, $expectedVelocity, 0));
 						}else{
 							$this->kick("Flying is not enabled on this server");
 							return false;
