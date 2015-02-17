@@ -1199,7 +1199,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		if(!$this->justCreated){
 			if($this instanceof Player){
-				$this->addEntityMotion(0, $this->motionX, $this->motionY, $this->motionZ);
+				$this->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
 			}
 			$this->updateMovement();
 		}
