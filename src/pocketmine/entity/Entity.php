@@ -819,6 +819,53 @@ abstract class Entity extends Location implements Metadatable{
 		return false;
 	}
 
+	public function fastMove($dx, $dy, $dz){
+		if($dx == 0 and $dz == 0 and $dy == 0){
+			return true;
+		}
+
+		Timings::$entityMoveTimer->startTiming();
+
+		$axisalignedbb = clone $this->boundingBox;
+
+		$newBB = $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz);
+
+		$list = $this->level->getCollisionCubes($this, $newBB->expand(-0.01, -0.01, -0.01));
+
+		if(count($list) === 0){
+			$this->boundingBox = $newBB;
+		}
+
+		$pos = new Vector3(
+			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+			$this->boundingBox->minY + $this->ySize,
+			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
+		);
+
+		$result = true;
+
+		if(!$this->setPosition($pos)){
+			$this->boundingBox->setBB($axisalignedbb);
+			$result = false;
+		}else{
+			if(!$this->onGround or $dy != 0){
+				$bb = clone $this->boundingBox;
+				$bb->minY -= 0.75;
+				$this->onGround = false;
+
+				if(count($this->level->getCollisionBlocks($bb)) > 0){
+					$this->onGround = true;
+				}
+			}
+			$this->isCollided = $this->onGround;
+			$this->updateFallState($dy, $this->onGround);
+		}
+
+		Timings::$entityMoveTimer->stopTiming();
+
+		return $result;
+	}
+
 	public function move($dx, $dy, $dz){
 
 		if($dx == 0 and $dz == 0 and $dy == 0){

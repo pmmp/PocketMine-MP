@@ -1073,11 +1073,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected function processMovement($currentTick){
 		if($this->dead or !$this->spawned or !($this->newPosition instanceof Vector3)){
-			if(++$this->speedTicks >= 10){
+			$diff = ($currentTick - $this->lastSpeedTick);
+			if($diff >= 10){
 				$this->speed = new Vector3(0, 0, 0);
-				$this->speedTicks = -PHP_INT_MAX;
-				$this->lastSpeedTick = $currentTick;
+			}elseif($diff > 5 and $this->speedTicks < 20){
+				++$this->speedTicks;
 			}
+
 			return;
 		}
 
@@ -1107,8 +1109,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$dy = $this->newPosition->y - $this->y;
 			$dz = $this->newPosition->z - $this->z;
 
-			//$this->inBlock = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
-			$this->move($dx, $dy, $dz);
+			$this->fastMove($dx, $dy, $dz);
 
 			$diffX = $this->x - $this->newPosition->x;
 			$diffZ = $this->z - $this->newPosition->z;
@@ -1124,12 +1125,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					if($diff > 0.0625){
 						$revert = true;
 						$this->server->getLogger()->warning($this->getName()." moved wrongly!");
-					}elseif($diff > 0){
-						$this->x = $this->newPosition->x;
-						$this->y = $this->newPosition->y;
-						$this->z = $this->newPosition->z;
-						$radius = $this->width / 2;
-						$this->boundingBox->setBounds($this->x - $radius, $this->y + $this->ySize, $this->z - $radius, $this->x + $radius, $this->y + $this->height + $this->ySize, $this->z + $radius);
 					}
 				}
 			}elseif($diff > 0){
@@ -1181,13 +1176,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			$this->speed = $to->subtract($from)->divide($currentTick - $this->lastSpeedTick);
-			$this->speedTicks = 0;
+			$ticks = min(20, $currentTick - $this->lastSpeedTick + 0.5);
+			if($this->speedTicks > 0){
+				$ticks += $this->speedTicks;
+			}
+			$this->speed = $from->subtract($to)->divide($ticks);
 			$this->lastSpeedTick = $currentTick;
 		}elseif($distanceSquared == 0){
 			$this->speed = new Vector3(0, 0, 0);
-			$this->speedTicks = 0;
 			$this->lastSpeedTick = $currentTick;
+		}
+
+		if($this->speedTicks > 0){
+			--$this->speedTicks;
 		}
 
 		if($revert){
@@ -1248,19 +1249,21 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			if($this->speed and $this->isSurvival()){
 				$speed = sqrt($this->speed->x ** 2 + $this->speed->z ** 2);
-				if($speed > 0.30){
-					$this->highSpeedTicks += $speed > 1 ? 3 : 1;
+				if($speed > 0.45){
+					$this->highSpeedTicks += $speed > 3 ? 2 : 1;
 					if($this->highSpeedTicks > 40 and !$this->server->getAllowFlight()){
 						$this->kick("Flying is not enabled on this server");
 						return false;
-					}elseif($this->highSpeedTicks > 5){
-						$factor = min(1, ($speed - 0.22) / $speed);
-						$mot = new Vector3($this->speed->x * $factor, 0, $this->speed->z * $factor);
-						$this->setMotion($mot);
-						$this->speed = $mot;
+					}elseif($this->highSpeedTicks >= 10 and $this->highSpeedTicks % 4 === 0){
+						$this->forceMovement = $this->getPosition();
+						$this->speed = null;
 					}
 				}elseif($this->highSpeedTicks > 0){
-					$this->highSpeedTicks--;
+					if($speed < 22){
+						$this->highSpeedTicks = 0;
+					}else{
+						$this->highSpeedTicks--;
+					}
 				}
 			}
 
@@ -1599,7 +1602,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
 				}
 
-				if($this->forceMovement instanceof Vector3 and ($revert or $newPos->distanceSquared($this->forceMovement) > 0.04)){
+				if($this->forceMovement instanceof Vector3 and (($dist = $newPos->distanceSquared($this->forceMovement)) > 0.04 or $revert)){
 					$pk = new MovePlayerPacket();
 					$pk->eid = 0;
 					$pk->x = $this->forceMovement->x;
