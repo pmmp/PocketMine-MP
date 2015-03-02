@@ -43,7 +43,7 @@ class Fence extends Transparent{
 			2 => "Birch Fence",
 			3 => "Jungle Fence",
 			4 => "Acacia Fence",
-			5 => "Jungle Fence",
+			5 => "Dark Oak Fence",
 			"",
 			""
 		];
