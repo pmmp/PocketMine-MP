@@ -24,14 +24,20 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class LoginStatusPacket extends DataPacket{
+class PlayStatusPacket extends DataPacket{
+	
+	const LOGIN_SUCCESS = 0;
+	const LOGIN_FAILED_CLIENT = 1;
+	const LOGIN_FAILED_SERVER = 2;
+	const PLAYER_SPAWN = 3;
+	
 	public static $pool = [];
 	public static $next = 0;
 
 	public $status;
 
 	public function pid(){
-		return Info::LOGIN_STATUS_PACKET;
+		return Info::PLAY_STATUS_PACKET;
 	}
 
 	public function decode(){

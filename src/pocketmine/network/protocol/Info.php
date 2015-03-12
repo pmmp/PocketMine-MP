@@ -33,7 +33,7 @@ interface Info{
 	const CURRENT_PROTOCOL = 21;
 	
 	const LOGIN_PACKET = 0x82;
-	const LOGIN_STATUS_PACKET = 0x83;
+	const PLAY_STATUS_PACKET = 0x83;
 	
 	const DISCONNECT_PACKET = 0x84;
 	
