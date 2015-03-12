@@ -329,11 +329,7 @@ abstract class Entity extends Location implements Metadatable{
 		$pk = new SetEntityDataPacket();
 		$pk->eid = $this->id;
 		$pk->metadata = $this->getData();
-		$pk->encode();
-		$pk->isEncoded = true;
-		foreach($player as $p){
-			$p->dataPacket($pk);
-		}
+		Server::broadcastPacket($player, $pk);
 	}
 
 	/**
