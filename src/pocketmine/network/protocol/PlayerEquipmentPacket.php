@@ -32,6 +32,7 @@ class PlayerEquipmentPacket extends DataPacket{
 	public $item;
 	public $meta;
 	public $slot;
+	public $selectedSlot;
 
 	public function pid(){
 		return Info::PLAYER_EQUIPMENT_PACKET;
@@ -42,6 +43,7 @@ class PlayerEquipmentPacket extends DataPacket{
 		$this->item = $this->getShort();
 		$this->meta = $this->getShort();
 		$this->slot = $this->getByte();
+		$this->selectedSlot = $this->getByte();
 	}
 
 	public function encode(){
@@ -50,6 +52,7 @@ class PlayerEquipmentPacket extends DataPacket{
 		$this->putShort($this->item);
 		$this->putShort($this->meta);
 		$this->putByte($this->slot);
+		$this->putByte($this->selectedSlot);
 	}
 
 }
