@@ -89,7 +89,7 @@ interface Info{
 	//const CONTAINER_ACK_PACKET = 0xad;
 	const CHAT_PACKET = 0xae;
 	const ADVENTURE_SETTINGS_PACKET = 0xaf;
-	const ENTITY_DATA_PACKET = 0xb0;
+	const TILE_ENTITY_DATA_PACKET = 0xb0;
 	//const PLAYER_INPUT_PACKET = 0xb1;
 	const FULL_CHUNK_DATA_PACKET = 0xb2;
 	const SET_DIFFICULTY_PACKET = 0xb3;
