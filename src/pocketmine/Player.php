@@ -645,7 +645,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			if($spawned < 16){
+			if($spawned < 8){
 				return;
 			}
 
@@ -1311,10 +1311,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						$pk = new TakeItemEntityPacket();
 						$pk->eid = $this->getId();
 						$pk->target = $entity->getId();
-						$this->dataPacket($pk);
-						$pk = new TakeItemEntityPacket();
-						$pk->eid = $this->getId();
-						$pk->target = $entity->getId();
 						Server::broadcastPacket($entity->getViewers(), $pk);
 						$this->inventory->addItem(clone $item, $this);
 						$entity->kill();
@@ -1342,10 +1338,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 									break;
 							}
 
-							$pk = new TakeItemEntityPacket();
-							$pk->eid = $this->getId();
-							$pk->target = $entity->getId();
-							$this->dataPacket($pk);
 							$pk = new TakeItemEntityPacket();
 							$pk->eid = $this->getId();
 							$pk->target = $entity->getId();
