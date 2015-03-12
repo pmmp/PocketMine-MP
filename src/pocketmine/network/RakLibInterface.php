@@ -40,7 +40,7 @@ use pocketmine\network\protocol\ContainerSetDataPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\DropItemPacket;
-use pocketmine\network\protocol\EntityDataPacket;
+use pocketmine\network\protocol\TileEntityDataPacket;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\ExplodePacket;
 use pocketmine\network\protocol\HurtArmorPacket;
@@ -348,7 +348,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->registerPacket(ProtocolInfo::CONTAINER_SET_CONTENT_PACKET, ContainerSetContentPacket::class);
 		$this->registerPacket(ProtocolInfo::CHAT_PACKET, ChatPacket::class);
 		$this->registerPacket(ProtocolInfo::ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket::class);
-		$this->registerPacket(ProtocolInfo::ENTITY_DATA_PACKET, EntityDataPacket::class);
+		$this->registerPacket(ProtocolInfo::TILE_ENTITY_DATA_PACKET, TileEntityDataPacket::class);
 		$this->registerPacket(ProtocolInfo::SET_DIFFICULTY_PACKET, SetDifficultyPacket::class);
 	}
 

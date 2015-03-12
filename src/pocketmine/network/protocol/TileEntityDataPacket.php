@@ -24,7 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class EntityDataPacket extends DataPacket{
+class TileEntityDataPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
@@ -34,7 +34,7 @@ class EntityDataPacket extends DataPacket{
 	public $namedtag;
 
 	public function pid(){
-		return Info::ENTITY_DATA_PACKET;
+		return Info::TILE_ENTITY_DATA_PACKET;
 	}
 
 	public function decode(){

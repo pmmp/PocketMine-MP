@@ -2342,12 +2342,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 
 				break;
-			case ProtocolInfo::SEND_INVENTORY_PACKET: //TODO, Mojang, enable this ´^_^`
-				if($this->spawned === false){
-					break;
-				}
-				break;
-			case ProtocolInfo::ENTITY_DATA_PACKET:
+			case ProtocolInfo::TILE_ENTITY_DATA_PACKET:
 				if($this->spawned === false or $this->blocked === true or $this->dead === true){
 					break;
 				}
