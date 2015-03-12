@@ -92,7 +92,7 @@ use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
-use pocketmine\network\protocol\LoginStatusPacket;
+use pocketmine\network\protocol\PlayStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
@@ -637,7 +637,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
-		if(count($this->usedChunks) >= 56 and $this->spawned === false){
+		if(count($this->usedChunks) >= 16 and $this->spawned === false){
 			$spawned = 0;
 			foreach($this->usedChunks as $d){
 				if($d === true){
@@ -645,11 +645,15 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			if($spawned < 56){
+			if($spawned < 16){
 				return;
 			}
 
 			$this->spawned = true;
+			
+			$pk = new PlayStatusPacket();
+			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
+			$this->dataPacket($pk);
 
 			$pk = new SetTimePacket();
 			$pk->time = $this->level->getTime();
@@ -1420,12 +1424,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){
-						$pk = new LoginStatusPacket();
-						$pk->status = 1;
+						$pk = new PlayStatusPacket();
+						$pk->status = PlayStatusPacket::LOGIN_FAILED_CLIENT;
 						$this->dataPacket($pk);
 					}else{
-						$pk = new LoginStatusPacket();
-						$pk->status = 2;
+						$pk = new PlayStatusPacket();
+						$pk->status = PlayStatusPacket::LOGIN_FAILED_SERVER;
 						$this->dataPacket($pk);
 					}
 					$this->close("", "Incorrect protocol #" . $packet->protocol1, false);
@@ -1526,8 +1530,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$this->inventory->setHeldItemSlot(0);
 				}
 
-				$pk = new LoginStatusPacket();
-				$pk->status = 0;
+				$pk = new PlayStatusPacket();
+				$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
 				$this->dataPacket($pk);
 
 				if($this->spawnPosition === null and isset($this->namedtag->SpawnLevel) and ($level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){

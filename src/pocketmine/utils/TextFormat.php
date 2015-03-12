@@ -390,6 +390,7 @@ abstract class TextFormat{
 		foreach($string as $token){
 			switch($token){
 				case TextFormat::BOLD:
+					$newString .= "\x1b[1m";
 					break;
 				case TextFormat::OBFUSCATED:
 					$newString .= "\x1b[8m";
@@ -409,52 +410,52 @@ abstract class TextFormat{
 
 				//Colors
 				case TextFormat::BLACK:
-					$newString .= "\x1b[0;30m";
+					$newString .= "\x1b[38;2;0;0;0m";
 					break;
 				case TextFormat::DARK_BLUE:
-					$newString .= "\x1b[0;34m";
+					$newString .= "\x1b[38;2;0;0;170m";
 					break;
 				case TextFormat::DARK_GREEN:
-					$newString .= "\x1b[0;32m";
+					$newString .= "\x1b[38;2;0;170;0m";
 					break;
 				case TextFormat::DARK_AQUA:
-					$newString .= "\x1b[0;36m";
+					$newString .= "\x1b[38;2;0;170;170m";
 					break;
 				case TextFormat::DARK_RED:
-					$newString .= "\x1b[0;31m";
+					$newString .= "\x1b[38;2;170;0;0m";
 					break;
 				case TextFormat::DARK_PURPLE:
-					$newString .= "\x1b[0;35m";
+					$newString .= "\x1b[38;2;170;0;170m";
 					break;
 				case TextFormat::GOLD:
-					$newString .= "\x1b[0;33m";
+					$newString .= "\x1b[38;2;255;170;0m";
 					break;
 				case TextFormat::GRAY:
-					$newString .= "\x1b[0;37m";
+					$newString .= "\x1b[38;2;170;170;170m";
 					break;
 				case TextFormat::DARK_GRAY:
-					$newString .= "\x1b[30;1m";
+					$newString .= "\x1b[38;2;85;85;85m";
 					break;
 				case TextFormat::BLUE:
-					$newString .= "\x1b[34;1m";
+					$newString .= "\x1b[38;2;85;85;255m";
 					break;
 				case TextFormat::GREEN:
-					$newString .= "\x1b[32;1m";
+					$newString .= "\x1b[38;2;85;255;85m";
 					break;
 				case TextFormat::AQUA:
-					$newString .= "\x1b[36;1m";
+					$newString .= "\x1b[38;2;85;255;255m";
 					break;
 				case TextFormat::RED:
-					$newString .= "\x1b[31;1m";
+					$newString .= "\x1b[38;2;255;85;85m";
 					break;
 				case TextFormat::LIGHT_PURPLE:
-					$newString .= "\x1b[35;1m";
+					$newString .= "\x1b[38;2;255;85;255m";
 					break;
 				case TextFormat::YELLOW:
-					$newString .= "\x1b[33;1m";
+					$newString .= "\x1b[38;2;255;255;85m";
 					break;
 				case TextFormat::WHITE:
-					$newString .= "\x1b[37;1m";
+					$newString .= "\x1b[38;2;255;255;255m";
 					break;
 				default:
 					$newString .= $token;

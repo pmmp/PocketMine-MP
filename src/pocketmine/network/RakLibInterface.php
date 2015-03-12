@@ -49,7 +49,7 @@ use pocketmine\network\protocol\InteractPacket;
 use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\LoginPacket;
-use pocketmine\network\protocol\LoginStatusPacket;
+use pocketmine\network\protocol\PlayStatusPacket;
 use pocketmine\network\protocol\MessagePacket;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
@@ -306,7 +306,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->packetPool = new \SplFixedArray(256);
 
 		$this->registerPacket(ProtocolInfo::LOGIN_PACKET, LoginPacket::class);
-		$this->registerPacket(ProtocolInfo::LOGIN_STATUS_PACKET, LoginStatusPacket::class);
+		$this->registerPacket(ProtocolInfo::PLAY_STATUS_PACKET, PlayStatusPacket::class);
 		$this->registerPacket(ProtocolInfo::DISCONNECT_PACKET, DisconnectPacket::class);
 		$this->registerPacket(ProtocolInfo::MESSAGE_PACKET, MessagePacket::class);
 		$this->registerPacket(ProtocolInfo::SET_TIME_PACKET, SetTimePacket::class);
