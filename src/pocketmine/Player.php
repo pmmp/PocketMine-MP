@@ -1246,7 +1246,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->lastUpdate = $currentTick;
 
-		if($this->spawned){			
+		if($this->spawned){	
 			$this->processMovement($currentTick);
 
 			$this->entityBaseTick(1);

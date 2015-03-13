@@ -41,7 +41,7 @@ class MobSpawnParticle extends Particle{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->data = 0;
+		$pk->data = ($this->width & 0xff) + (($this->height & 0xff) << 8);
 		
 		return $pk;
 	}
