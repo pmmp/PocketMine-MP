@@ -189,8 +189,8 @@ class RegionLoader{
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
 		if($this->locationTable[$index][1] < $sectors){
+			$this->locationTable[$index][0] = $this->lastSector+1;
 			$this->lastSector += $sectors; //The GC will clean this shift "later"
-			$this->locationTable[$index][0] = $this->lastSector;
 		}
 		$this->locationTable[$index][1] = $sectors;
 		$this->locationTable[$index][2] = time();
