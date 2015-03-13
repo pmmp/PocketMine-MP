@@ -95,6 +95,8 @@ use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
+use pocketmine\level\particle\Particle;
+use pocketmine\level\particle\DestroyBlockParticle;
 
 #include <rules/Level.h>
 
@@ -354,6 +356,13 @@ class Level implements ChunkManager, Metadatable{
 		$this->blockMetadata = null;
 		$this->blockCache = [];
 		$this->temporalPosition = null;
+	}
+	
+	public function addParticle(Particle $particle){
+		$pk = $particle->encode();
+		if($pk !== null){
+			Server::broadcastPacket($this->getUsingChunk($particle->x >> 4, $particle->z >> 4), $pk);
+		}
 	}
 
 	/**
@@ -1259,7 +1268,11 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
+
+		$this->addParticle(new DestroyBlockParticle($target, $target));	
+		
 		$target->onBreak($item);
+		
 		$tile = $this->getTile($target);
 		if($tile instanceof Tile){
 			if($tile instanceof InventoryHolder){

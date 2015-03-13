@@ -46,7 +46,7 @@ class LevelEventPacket extends DataPacket{
 		$this->reset();
 		$this->putShort($this->evid);
 		$this->putInt($this->x);
-		$this->putShort($this->y);
+		$this->putByte($this->y);
 		$this->putInt($this->z);
 		$this->putInt($this->data);
 	}
