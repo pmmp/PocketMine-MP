@@ -247,7 +247,8 @@ class RegionLoader{
 			$chunk = Binary::writeInt(strlen($chunk)) . $chunk;
 			$sectors = (int) ceil(strlen($chunk) / 4096);
 			if($sectors > $this->locationTable[$i][1]){
-				$this->locationTable[$i][0] = $this->lastSector += $sectors;
+				$this->locationTable[$i][0] = $this->lastSector + 1;
+				$this->lastSector += $sectors;
 			}
 			fseek($this->filePointer, $this->locationTable[$i][0] << 12);
 			fwrite($this->filePointer, str_pad($chunk, $sectors << 12, "\x00", STR_PAD_RIGHT));
