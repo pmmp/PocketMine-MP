@@ -1246,7 +1246,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		$this->lastUpdate = $currentTick;
 
-		if($this->spawned){
+		if($this->spawned){	
 			$this->processMovement($currentTick);
 
 			$this->entityBaseTick(1);
@@ -1749,7 +1749,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					}
 					$target = $this->level->getBlock($blockVector);
 
-					$ev = new PlayerInteractEvent($this, $item, $target, $packet->face);
+					$ev = new PlayerInteractEvent($this, $item, $target, $packet->face, PlayerInteractEvent::RIGHT_CLICK_AIR);
 
 					$this->server->getPluginManager()->callEvent($ev);
 
@@ -1807,6 +1807,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$packet->eid = $this->id;
 
 				switch($packet->action){
+					case 0: //Start break
+						$target = $this->level->getBlock(new Vector3($packet->x, $packet->y, $packet->z));
+						$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
+						$this->lastBreak = microtime(true);
+						break;
 					case 5: //Shot arrow
 						if($this->inventory->getItemInHand()->getId() === Item::BOW){
 							$bow = $this->inventory->getItemInHand();

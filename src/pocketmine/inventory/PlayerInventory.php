@@ -146,9 +146,7 @@ class PlayerInventory extends BaseInventory{
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
-				//TODO: Check if Mojang enabled sending a single slot this
-				//$this->sendSlot($this->getHeldItemSlot());
-				$this->sendContents($player);
+				$this->sendSlot($this->getHeldItemSlot());
 			}else{
 				$player->dataPacket($pk);
 			}
@@ -393,9 +391,6 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				//$pk2 = clone $pk;
-				//$pk2->eid = 0;
-
 				$pk2 = new ContainerSetSlotPacket();
 				$pk2->windowid = 0x78; //Armor window id constant
 				$pk2->slot = $index;
@@ -454,7 +449,8 @@ class PlayerInventory extends BaseInventory{
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				/** @var Player $player */
-				$this->sendContents($player); //#blamemojang
+				$pk->windowid = 0;
+				$player->dataPacket(clone $pk);
 			}else{
 				if(($id = $player->getWindowId($this)) === -1){
 					$this->close($player);

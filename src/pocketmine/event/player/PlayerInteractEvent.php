@@ -32,6 +32,12 @@ use pocketmine\Player;
 class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
+	const LEFT_CLICK_BLOCK = 0;
+	const RIGHT_CLICK_BLOCK = 1;
+	const LEFT_CLICK_AIR = 2;
+	const RIGHT_CLICK_AIR = 3;
+	const PHYSICAL = 4;
+
 	/**
 	 * @var \pocketmine\block\Block;
 	 */
@@ -42,12 +48,19 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 
 	/** @var \pocketmine\item\Item */
 	protected $item;
+	
+	protected $action;
 
-	public function __construct(Player $player, Item $item, Block $block, $face){
+	public function __construct(Player $player, Item $item, Block $block, $face, $action = PlayerInteractEvent::RIGHT_CLICK){
 		$this->blockTouched = $block;
 		$this->player = $player;
 		$this->item = $item;
 		$this->blockFace = (int) $face;
+		$this->action = (int) $action;
+	}
+	
+	public function getAction(){
+		return $this->action;
 	}
 
 	public function getItem(){

@@ -95,6 +95,8 @@ use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
+use pocketmine\level\particle\Particle;
+use pocketmine\level\particle\DestroyBlockParticle;
 
 #include <rules/Level.h>
 
@@ -354,6 +356,13 @@ class Level implements ChunkManager, Metadatable{
 		$this->blockMetadata = null;
 		$this->blockCache = [];
 		$this->temporalPosition = null;
+	}
+	
+	public function addParticle(Particle $particle){
+		$pk = $particle->encode();
+		if($pk !== null){
+			Server::broadcastPacket($this->getUsingChunk($particle->x >> 4, $particle->z >> 4), $pk);
+		}
 	}
 
 	/**
@@ -1243,7 +1252,7 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$player->lastBreak = microtime(true);
+			$player->lastBreak = PHP_INT_MAX;
 		}elseif($item instanceof Item and !$target->isBreakable($item)){
 			return false;
 		}
@@ -1259,7 +1268,11 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
+
+		$this->addParticle(new DestroyBlockParticle($target, $target));	
+		
 		$target->onBreak($item);
+		
 		$tile = $this->getTile($target);
 		if($tile instanceof Tile){
 			if($tile instanceof InventoryHolder){
@@ -1319,7 +1332,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player instanceof Player){
-			$ev = new PlayerInteractEvent($player, $item, $target, $face);
+			$ev = new PlayerInteractEvent($player, $item, $target, $face, $target->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
 			if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
 				$t = new Vector2($target->x, $target->z);
 				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
