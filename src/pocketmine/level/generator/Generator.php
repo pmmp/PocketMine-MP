@@ -194,15 +194,30 @@ abstract class Generator{
 				for($yy = 0; $yy < $ySize; ++$yy){
 					if($xx % $xSamplingRate !== 0 or $zz % $zSamplingRate !== 0 or $yy % $ySamplingRate !== 0){
 						$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
-						$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
 						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
-						$noiseArray[$xx][$zz][$yy] = Noise::trilinearLerp(
-							$xx, $yy, $zz, $noiseArray[$nx][$nz][$ny], $noiseArray[$nx][$nz][$nny = $ny + $ySamplingRate],
-							$noiseArray[$nx][$nnz = $nz + $zSamplingRate][$ny], $noiseArray[$nx][$nnz][$nny],
-							$noiseArray[$nnx = $nx + $xSamplingRate][$nz][$ny], $noiseArray[$nnx][$nz][$nny],
-							$noiseArray[$nnx][$nnz][$ny],
-							$noiseArray[$nnx][$nnz][$nny],
-							$nx, $nnx, $ny, $nny, $nz, $nnz
+						$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
+
+						$nnx = $nx + $xSamplingRate;
+						$nny = $ny + $ySamplingRate;
+						$nnz = $nz + $zSamplingRate;
+
+						$dx1 = (($nnx - $xx) / ($nnx - $nx));
+						$dx2 = (($xx - $nx) / ($nnx - $nx));
+						$dy1 = (($nny - $yy) / ($nny - $ny));
+						$dy2 = (($yy - $ny) / ($nny - $ny));
+
+						$noiseArray[$xx][$zz][$yy] = (($nnz - $zz) / ($nnz - $nz)) * (
+							$dy1 * (
+								$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
+							) + $dy2 * (
+								$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
+							)
+						) + (($zz - $nz) / ($nnz - $nz)) * (
+							$dy1 * (
+								$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
+							) + $dy2 * (
+								$dx1 * $noiseArray[$nx][$nnz][$nny] + $dx2 * $noiseArray[$nnx][$nnz][$nny]
+							)
 						);
 					}
 				}

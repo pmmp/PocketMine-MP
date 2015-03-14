@@ -127,10 +127,6 @@ class Normal extends Generator{
 
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
-		//$hills = [];
-		//$base = [];
-
-		$start = microtime(true);
 
 		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 8, 8, 8, $chunkX * 16, 0, $chunkZ * 16);
 
@@ -175,15 +171,17 @@ class Normal extends Generator{
 					}else{
 						if($y <= $this->waterHeight){
 							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+							$lightValue = 15 - ($this->waterHeight - $y) * 2;
+							if($lightValue > 0){
+								$chunk->setBlockSkyLight($x, $y, $z, $lightValue);
+							}
+						}else{
+							$chunk->setBlockSkyLight($x, $y, $z, 15);
 						}
-						$chunk->setBlockSkyLight($x, $y, $z, 15);
 					}
 				}
 			}
 		}
-
-
-		var_dump((microtime(true) - $start) * 1000);
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

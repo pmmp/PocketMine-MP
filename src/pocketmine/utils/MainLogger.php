@@ -27,7 +27,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected $logFile;
 	protected $logStream;
 	protected $shutdown;
-	protected $hasANSI;
 	protected $logDebug;
 	private $logResource;
 	/** @var MainLogger */
@@ -35,19 +34,17 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * @param string $logFile
-	 * @param bool   $hasANSI
 	 * @param bool   $logDebug
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function __construct($logFile, $hasANSI = false, $logDebug = false){
+	public function __construct($logFile, $logDebug = false){
 		if(static::$logger instanceof MainLogger){
 			throw new \RuntimeException("MainLogger has been already created");
 		}
 		static::$logger = $this;
 		touch($logFile);
 		$this->logFile = $logFile;
-		$this->hasANSI = (bool) $hasANSI;
 		$this->logDebug = (bool) $logDebug;
 		$this->logStream = "";
 		$this->start(PTHREADS_INHERIT_NONE);
@@ -181,12 +178,12 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected function send($message, $level = -1){
 		$now = time();
 		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET . PHP_EOL);
-		$cleanMessage = TextFormat::clean(preg_replace('/\x1b\[[0-9;]*m/', "", $message));
+		$cleanMessage = TextFormat::clean($message);
 
-		if(!$this->hasANSI){
+		if(!Terminal::hasFormattingCodes()){
 			echo $cleanMessage;
 		}else{
-			echo $message;
+			echo Terminal::$START_LINE . $message . Terminal::$END_LINE;
 		}
 
 		if($this->attachment instanceof \ThreadedLoggerAttachment){

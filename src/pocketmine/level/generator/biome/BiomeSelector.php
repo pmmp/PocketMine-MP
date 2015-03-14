@@ -57,6 +57,9 @@ class BiomeSelector{
 	 * @return Biome
 	 */
 	public function pickBiome($x, $z){
+
+		return Biome::getBiome(Biome::PLAINS);
+
 		//$temperature = $this->temperature->noise2D($x, $z);
 		$rainfall = $this->rainfall->noise2D($x, $z);
 

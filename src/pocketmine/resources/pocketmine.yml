@@ -35,13 +35,13 @@ chunk-sending:
  #Amount of chunks sent to players per tick
  per-tick: 4
  #Compression level used when sending chunks. Higher = more CPU, less bandwidth usage
- compression-level: 8
+ compression-level: 7
  #Amount of chunks sent around each player
  max-chunks: 256
 
 chunk-ticking:
  #Max amount of chunks processed each tick
- per-tick: 260
+ per-tick: 80
  #Radius of chunks around a player to tick
  tick-radius: 4
  #NOTE: This is currently not implemented

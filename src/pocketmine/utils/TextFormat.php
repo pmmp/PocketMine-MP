@@ -68,7 +68,7 @@ abstract class TextFormat{
 	 * @return mixed
 	 */
 	public static function clean($string){
-		return preg_replace(["/§[0123456789abcdefklmnor]/", "/\\x1b*/"], "", $string);
+		return preg_replace(["/§[0123456789abcdefklmnor]/", "/\x1b\\[[0-9;]+m/"], "", $string);
 	}
 
 	/**
@@ -386,26 +386,27 @@ abstract class TextFormat{
 		if(!is_array($string)){
 			$string = self::tokenize($string);
 		}
+
 		$newString = "";
 		foreach($string as $token){
 			switch($token){
 				case TextFormat::BOLD:
-					$newString .= "\x1b[1m";
+					$newString .= Terminal::$FORMAT_BOLD;
 					break;
 				case TextFormat::OBFUSCATED:
-					$newString .= "\x1b[8m";
+					$newString .= Terminal::$FORMAT_OBFUSCATED;
 					break;
 				case TextFormat::ITALIC:
-					$newString .= "\x1b[3m";
+					$newString .= Terminal::$FORMAT_ITALIC;
 					break;
 				case TextFormat::UNDERLINE:
-					$newString .= "\x1b[4m";
+					$newString .= Terminal::$FORMAT_UNDERLINE;
 					break;
 				case TextFormat::STRIKETHROUGH:
-					$newString .= "\x1b[9m";
+					$newString .= Terminal::$FORMAT_STRIKETHROUGH;
 					break;
 				case TextFormat::RESET:
-					$newString .= "\x1b[0m";
+					$newString .= Terminal::$FORMAT_RESET;
 					break;
 
 				//Colors

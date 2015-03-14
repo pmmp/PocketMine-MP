@@ -22,6 +22,7 @@
 namespace pocketmine\level\generator;
 
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\utils\Binary;
 
@@ -110,6 +111,7 @@ class GenerationManager{
 		$this->logger = $logger;
 		$this->loader = $loader;
 		$chunkX = $chunkZ = null;
+		Biome::init();
 
 		while($this->shutdown !== true){
 			try{

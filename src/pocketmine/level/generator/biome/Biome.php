@@ -52,7 +52,6 @@ abstract class Biome{
 
 	/** @var Biome[] */
 	private static $biomes = [];
-	private static $setup = false;
 
 	private $id;
 	private $registered = false;
@@ -65,20 +64,17 @@ abstract class Biome{
 	}
 
 	public static function init(){
-		if(self::$setup === false){
-			self::$setup = true;
-			self::register(self::OCEAN, new OceanBiome());
-			self::register(self::PLAINS, new PlainBiome());
-			self::register(self::DESERT, new DesertBiome());
-			self::register(self::MOUNTAINS, new MountainsBiome());
-			self::register(self::FOREST, new ForestBiome());
+		self::register(self::OCEAN, new OceanBiome());
+		self::register(self::PLAINS, new PlainBiome());
+		self::register(self::DESERT, new DesertBiome());
+		self::register(self::MOUNTAINS, new MountainsBiome());
+		self::register(self::FOREST, new ForestBiome());
 
-			self::register(self::RIVER, new RiverBiome());
+		self::register(self::RIVER, new RiverBiome());
 
-			self::register(self::BEACH, new BeachBiome());
+		self::register(self::BEACH, new BeachBiome());
 
-			self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
-		}
+		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 	}
 
 	/**

@@ -67,6 +67,7 @@ namespace {
 namespace pocketmine {
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
@@ -119,13 +120,14 @@ namespace pocketmine {
 	ini_set("memory_limit", -1);
 	define("pocketmine\\START_TIME", microtime(true));
 
-	$opts = getopt("", ["enable-ansi", "disable-ansi", "data:", "plugins:", "no-wizard", "enable-profiler"]);
+	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
 	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define("pocketmine\\PLUGIN_PATH", isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
-	define("pocketmine\\ANSI", (Utils::getOS() !== "win" or isset($opts["enable-ansi"])) and !isset($opts["disable-ansi"]));
+	Terminal::init();
 
+	define("pocketmine\\ANSI", Terminal::hasFormattingCodes());
 
 	if(!file_exists(\pocketmine\DATA)){
 		mkdir(\pocketmine\DATA, 0777, true);
@@ -467,6 +469,8 @@ namespace pocketmine {
 
 	$logger->shutdown();
 	$logger->join();
+
+	echo Terminal::$FORMAT_RESET . "\n";
 
 	exit(0);
 

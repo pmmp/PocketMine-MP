@@ -101,6 +101,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\ServerException;
+use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\TextWrapper;
 use pocketmine\utils\Utils;
@@ -1174,21 +1175,14 @@ class Server{
 
 		$this->getLogger()->notice("Spawn terrain for level \"$name\" is being generated in the background");
 
-
-		$radiusSquared = ($this->getViewDistance() + 1) / M_PI;
-		$radius = ceil(sqrt($radiusSquared));
-
 		$centerX = $level->getSpawnLocation()->getX() >> 4;
 		$centerZ = $level->getSpawnLocation()->getZ() >> 4;
 
 		$order = [];
 
-		for($X = -$radius; $X <= $radius; ++$X){
-			for($Z = -$radius; $Z <= $radius; ++$Z){
+		for($X = -4; $X <= 4; ++$X){
+			for($Z = -4; $Z <= 4; ++$Z){
 				$distance = $X ** 2 + $Z ** 2;
-				if($distance > $radiusSquared){
-					continue;
-				}
 				$chunkX = $X + $centerX;
 				$chunkZ = $Z + $centerZ;
 				$index = Level::chunkHash($chunkX, $chunkZ);
@@ -2192,9 +2186,19 @@ class Server{
 	}
 
 	private function titleTick(){
-		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0 and \pocketmine\ANSI === true){
-			echo "\x1b]0;" . $this->getName() . " " . $this->getPocketMineVersion() . " | Online " . count($this->players) . "/" . $this->getMaxPlayers() . " | RAM " . round((memory_get_usage() / 1024) / 1024, 2) . "/" . round((memory_get_usage(true) / 1024) / 1024, 2) . " MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) . " D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) . " kB/s | TPS " . $this->getTicksPerSecond() . " | Load " . $this->getTickUsage() . "%\x07";
+		if(!Terminal::hasFormattingCodes()){
+			return;
 		}
+
+		echo "\x1b]0;" . $this->getName() . " " .
+			$this->getPocketMineVersion() .
+			" | Online " . count($this->players) . "/" . $this->getMaxPlayers() .
+			" | RAM " . round((memory_get_usage() / 1024) / 1024, 2) .
+			"/" . round((memory_get_usage(true) / 1024) / 1024, 2) .
+			" MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) .
+			" D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) .
+			" kB/s | TPS " . $this->getTicksPerSecond() .
+			" | Load " . $this->getTickUsage() . "%\x07";
 	}
 
 
