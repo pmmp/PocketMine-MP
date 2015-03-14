@@ -52,8 +52,7 @@ chunk-generation:
  #Whether to run the generation on a different thread or on the main thread
  #Generation will be less glitchy on the main thread, but will lag more
  #Using this with fast generators is recommended
- #If enabled, the dedicated generation thread may leak memory
- use-async: false
+ use-async: true
  #Max. amount of chunks to generate per tick, only for use-async: false
  per-tick: 1
 

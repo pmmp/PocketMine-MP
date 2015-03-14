@@ -1508,7 +1508,7 @@ class Server{
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
-			"memory-limit" => "256M",
+			"memory-limit" => -1,
 			"white-list" => false,
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
@@ -1558,15 +1558,15 @@ class Server{
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
 
-		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
+		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", -1)))) !== false and $memory > 1){
 			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				$this->logger->warning($this->getName() . " may not work right with less than 128MB of RAM", true, true, 0);
+				$this->logger->warning($this->getName() . " may not work right with less than 128MB of RAM");
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
-			$this->setConfigString("memory-limit", "256M");
+			$this->setConfigString("memory-limit", -1);
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1852,7 +1852,7 @@ class Server{
 		$this->properties->reload();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
-		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
+		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", -1)))) !== false and $memory > 1){
 			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 256){
@@ -1860,7 +1860,7 @@ class Server{
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
-			$this->setConfigString("memory-limit", "256M");
+			$this->setConfigString("memory-limit", -1);
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
