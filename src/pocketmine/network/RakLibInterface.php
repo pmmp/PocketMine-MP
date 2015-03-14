@@ -110,9 +110,6 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 	private $upload = 0;
 	private $download = 0;
 
-	private $internalThreaded;
-	private $externalThreaded;
-
 	public function __construct(Server $server){
 
 		$this->registerPackets();
@@ -120,10 +117,7 @@ class RakLibInterface implements ServerInstance, SourceInterface{
 		$this->server = $server;
 		$this->identifiers = new \SplObjectStorage();
 
-		$this->internalThreaded = new \Threaded();
-		$this->externalThreaded = new \Threaded();
-
-		$this->rakLib = new RakLibServer($this->internalThreaded, $this->externalThreaded, $this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
+		$this->rakLib = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
 		$this->interface = new ServerHandler($this->rakLib, $this);
 		$this->setName($this->server->getMotd());
 	}

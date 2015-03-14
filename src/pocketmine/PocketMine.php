@@ -95,6 +95,7 @@ namespace pocketmine {
 	}
 
 	if(!class_exists("ClassLoader", false)){
+		require_once(\pocketmine\PATH . "src/spl/ThreadedFactory.php");
 		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
 		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
 		require_once(\pocketmine\PATH . "src/pocketmine/CompatibleClassLoader.php");
@@ -103,7 +104,6 @@ namespace pocketmine {
 	$autoloader = new CompatibleClassLoader();
 	$autoloader->addPath(\pocketmine\PATH . "src");
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
-	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "raklib");
 	$autoloader->register(true);
 
 

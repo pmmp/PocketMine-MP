@@ -34,17 +34,12 @@ class GenerationRequestManager{
 	/** @var GenerationThread */
 	protected $generationThread;
 
-	private $internalThreaded;
-	private $externalThreaded;
-
 	/**
 	 * @param Server $server
 	 */
 	public function __construct(Server $server){
 		$this->server = $server;
-		$this->internalThreaded = new \Threaded();
-		$this->externalThreaded = new \Threaded();
-		$this->generationThread = new GenerationThread($this->internalThreaded, $this->externalThreaded, $server->getLogger(), $server->getLoader());
+		$this->generationThread = new GenerationThread($server->getLogger(), $server->getLoader());
 	}
 
 	/**
@@ -67,9 +62,11 @@ class GenerationRequestManager{
 		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function addNamespace($namespace, $path){
-		$buffer = chr(GenerationManager::PACKET_ADD_NAMESPACE) . Binary::writeShort(strlen($namespace)) . $namespace . $path;
-		$this->generationThread->pushMainToThreadPacket($buffer);
+		
 	}
 
 	protected function sendChunk($levelID, FullChunk $chunk){
