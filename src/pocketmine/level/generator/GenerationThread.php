@@ -77,7 +77,7 @@ class GenerationThread extends Thread{
 		return $this->logger;
 	}
 
-	public function __construct(\Threaded $internalThreaded, \Threaded $externalThreaded, \ThreadedLogger $logger, \ClassLoader $loader){
+	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader){
 		$this->loader = $loader;
 		$this->logger = $logger;
 		$loadPaths = [];
