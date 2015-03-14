@@ -54,11 +54,12 @@ use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\leveldb\LevelDB;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\GenerationInstanceManager;
 use pocketmine\level\generator\GenerationRequestManager;
 use pocketmine\level\generator\Generator;
-use pocketmine\level\generator\Normal;
+use pocketmine\level\generator\normal\Normal;
 use pocketmine\level\Level;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
@@ -1127,7 +1128,7 @@ class Server{
 	 *
 	 * @param string $name
 	 * @param int    $seed
-	 * @param string $generator Class name that extends pocketmine\level\generator\Generator
+	 * @param string $generator Class name that extends pocketmine\level\generator\Noise
 	 * @param array  $options
 	 *
 	 * @return bool
@@ -1609,6 +1610,7 @@ class Server{
 		InventoryType::init();
 		Block::init();
 		Item::init();
+		Biome::init();
 		/** TODO: @deprecated */
 		TextWrapper::init();
 		$this->craftingManager = new CraftingManager();

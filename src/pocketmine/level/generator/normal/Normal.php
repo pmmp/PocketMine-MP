@@ -19,7 +19,7 @@
  *
 */
 
-namespace pocketmine\level\generator;
+namespace pocketmine\level\generator\normal;
 
 use pocketmine\block\Block;
 use pocketmine\block\CoalOre;
@@ -30,12 +30,19 @@ use pocketmine\block\Gravel;
 use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
+use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\generator\biome\BiomeSelector;
+use pocketmine\level\generator\GenerationChunkManager;
+use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\noise\Perlin;
 use pocketmine\level\generator\noise\Simplex;
+use pocketmine\level\generator\normal\biome\NormalBiome;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
+use pocketmine\level\Level;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
@@ -47,15 +54,34 @@ class Normal extends Generator{
 	private $level;
 	/** @var Random */
 	private $random;
-	private $worldHeight = 65;
-	private $waterHeight = 63;
-	/** @var Simplex */
-	private $noiseHills;
+	private $waterHeight = 62;
+	private $bedrockDepth = 5;
 	/** @var Simplex */
 	private $noiseBase;
 
-	public function __construct(array $options = []){
+	/** @var BiomeSelector */
+	private $selector;
 
+	private static $GAUSSIAN_KERNEL = null;
+	private static $SMOOTH_SIZE = 2;
+
+	public function __construct(array $options = []){
+		if(self::$GAUSSIAN_KERNEL === null){
+			self::generateKernel();
+		}
+	}
+
+	private static function generateKernel(){
+		self::$GAUSSIAN_KERNEL = [];
+		$bellSize = 1 / self::$SMOOTH_SIZE;
+		$bellHeight = 2 * self::$SMOOTH_SIZE;
+		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
+			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
+				$bx = $bellSize * $sx;
+				$bz = $bellSize * $sz;
+				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
+			}
+		}
 	}
 
 	public function getName(){
@@ -70,8 +96,9 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseHills = new Simplex($this->random, 3, 0.1, 12);
-		$this->noiseBase = new Simplex($this->random, 16, 0.6, 16);
+		$this->noiseBase = new Simplex($this->random, 16, 0.012, 0.5, 2);
+		$this->random->setSeed($this->level->getSeed());
+		$this->selector = new BiomeSelector($this->random, Biome::getBiome(Biome::OCEAN));
 
 
 		$ores = new Ore();
@@ -100,52 +127,63 @@ class Normal extends Generator{
 
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
-		$hills = [];
-		$base = [];
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
-				$i = ($z << 4) + $x;
-				$hills[$i] = $this->noiseHills->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
-				$base[$i] = $this->noiseBase->noise2D($x + ($chunkX << 4), $z + ($chunkZ << 4), true);
+		//$hills = [];
+		//$base = [];
 
-				if($base[$i] < 0){
-					$base[$i] *= 0.5;
-				}
-			}
-		}
+		$start = microtime(true);
+
+		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 8, 8, 8, $chunkX * 16, 0, $chunkZ * 16);
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
-				$i = ($z << 4) + $x;
-				$height = $this->worldHeight + $hills[$i] * 14 + $base[$i] * 7;
-				$height = (int) $height;
+		$biomeCache = [];
 
-				for($y = 0; $y < 128; ++$y){
-					$diff = $height - $y;
-					if($y <= 4 and ($y === 0 or $this->random->nextFloat() < 0.75)){
-						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
-					}elseif($diff > 2){
-						$chunk->setBlockId($x, $y, $z, Block::STONE);
-					}elseif($diff > 0){
-						$chunk->setBlockId($x, $y, $z, Block::DIRT);
-					}elseif($y <= $this->waterHeight){
-						if(($this->waterHeight - $y) <= 1 and $diff === 0){
-							$chunk->setBlockId($x, $y, $z, Block::SAND);
-						}elseif($diff === 0){
-							$chunk->setBlockId($x, $y, $z, Block::DIRT);
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$minSum = 0;
+				$maxSum = 0;
+				$weightSum = 0;
+
+				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
+					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
+						if(isset($biomeCache[$index = (($chunkX * 16 + $x + $sx * 16) >> 2) . ":" . (($chunkZ * 16 + $z + $sz * 16) >> 2)])){
+							$adjacent = $biomeCache[$index];
 						}else{
-							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+							$adjacent = $this->selector->pickBiome($chunkX * 16 + $x + $sx * 16, $chunkZ * 16 + $z + $sz * 16);
+							$biomeCache[$index] = $adjacent;
 						}
-					}elseif($diff === 0){
-						$chunk->setBlockId($x, $y, $z, Block::GRASS);
+						/** @var NormalBiome $adjacent */
+						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
+						$minSum += $adjacent->getMinElevation() * $weight;
+						$maxSum += $adjacent->getMaxElevation() * $weight;
+						$weightSum += $weight;
 					}
 				}
 
+				$minElevation = $minSum / $weightSum;
+				$smoothHeight = ($maxSum / $weightSum - $minElevation) / 2;
+
+				for($y = 0; $y < 128; ++$y){
+					if($y === 0){
+						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
+						continue;
+					}
+					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minElevation);
+
+					if($noiseValue >= 0){
+						$chunk->setBlockId($x, $y, $z, Block::STONE);
+					}else{
+						if($y <= $this->waterHeight){
+							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+						}
+						$chunk->setBlockSkyLight($x, $y, $z, 15);
+					}
+				}
 			}
 		}
 
+
+		var_dump((microtime(true) - $start) * 1000);
 	}
 
 	public function populateChunk($chunkX, $chunkZ){

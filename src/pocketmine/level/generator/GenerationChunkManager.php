@@ -46,7 +46,7 @@ class GenerationChunkManager implements ChunkManager{
 
 	public function __construct(GenerationManager $manager, $levelID, $seed, $class, array $options){
 		if(!class_exists($class, true) or !is_subclass_of($class, Generator::class)){
-			throw new \InvalidStateException("Class $class does not exists or is not a subclass of Generator");
+			throw new \InvalidStateException("Class $class does not exists or is not a subclass of Noise");
 		}
 
 		$this->levelID = $levelID;
