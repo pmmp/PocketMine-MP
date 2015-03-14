@@ -84,8 +84,8 @@ class GenerationThread extends Thread{
 		$this->addDependency($loadPaths, new \ReflectionClass($this->loader));
 		$this->loadPaths = array_reverse($loadPaths);
 
-		$this->externalQueue = $internalThreaded;
-		$this->internalQueue = $externalThreaded;
+		$this->externalQueue = \ThreadedFactory::create();
+		$this->internalQueue = \ThreadedFactory::create();
 
 		$this->start();
 	}

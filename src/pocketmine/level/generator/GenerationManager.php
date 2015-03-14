@@ -36,14 +36,6 @@ class GenerationManager{
 	 */
 
 	/*
-	 * Direction: Server->Thread
-	 * byte[] payload:
-	 * string root namespace
-	 * byte[] path
-	 */
-	const PACKET_ADD_NAMESPACE = 0x00;
-
-	/*
 	 * Direction: Both
 	 * If Server->Thread, request chunk generation
 	 * If Thread->Server, request chunk contents / loading
@@ -52,7 +44,7 @@ class GenerationManager{
 	 * int32 chunkX
 	 * int32 chunkZ
 	 */
-	const PACKET_REQUEST_CHUNK = 0x01;
+	const PACKET_REQUEST_CHUNK = 0x00;
 
 	/*
 	 * Direction: Both
@@ -64,7 +56,7 @@ class GenerationManager{
 	 * byte[] className
 	 * byte[] chunk (none if generated flag is not set)
 	 */
-	const PACKET_SEND_CHUNK = 0x02;
+	const PACKET_SEND_CHUNK = 0x01;
 
 	/*
 	 * Direction: Server->Thread
@@ -74,14 +66,14 @@ class GenerationManager{
 	 * string class that extends pocketmine\level\generator\Generator
 	 * byte[] serialized options array
 	 */
-	const PACKET_OPEN_LEVEL = 0x03;
+	const PACKET_OPEN_LEVEL = 0x02;
 
 	/*
 	 * Direction: Server->Thread
 	 * byte[] payload:
 	 * int32 levelID
 	 */
-	const PACKET_CLOSE_LEVEL = 0x04;
+	const PACKET_CLOSE_LEVEL = 0x03;
 
 	/*
 	 * Direction: Server->Thread
@@ -256,13 +248,6 @@ class GenerationManager{
 			}elseif($pid === self::PACKET_CLOSE_LEVEL){
 				$levelID = Binary::readInt(substr($packet, $offset, 4));
 				$this->closeLevel($levelID);
-			}elseif($pid === self::PACKET_ADD_NAMESPACE){
-				$len = Binary::readShort(substr($packet, $offset, 2));
-				$offset += 2;
-				$namespace = substr($packet, $offset, $len);
-				$offset += $len;
-				$path = substr($packet, $offset);
-				$this->loader->addPath($path);
 			}elseif($pid === self::PACKET_SHUTDOWN){
 				foreach($this->levels as $level){
 					$level->shutdown();

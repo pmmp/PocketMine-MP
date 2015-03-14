@@ -1489,8 +1489,7 @@ class Server{
 		$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 		$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
-		$this->consoleThreaded = new \Threaded();
-		$this->console = new CommandReader($this->consoleThreaded);
+		$this->console = new CommandReader();
 
 		$version = new VersionString($this->getPocketMineVersion());
 		$this->logger->info("Starting Minecraft: PE server version " . TextFormat::AQUA . $this->getVersion());
