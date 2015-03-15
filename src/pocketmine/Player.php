@@ -71,6 +71,7 @@ use pocketmine\inventory\StonecutterShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
@@ -619,14 +620,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
 
-			if(!$this->level->isChunkPopulated($X, $Z)){
-				$this->level->generateChunk($X, $Z);
+			if(!$this->level->populateChunk($X, $Z)){
 				if($this->spawned){
 					continue;
 				}else{
 					break;
 				}
 			}
+
 
 			++$count;
 
@@ -1250,6 +1251,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->processMovement($currentTick);
 
 			$this->entityBaseTick(1);
+
+			if($currentTick % 80 === 0) $this->sendMessage(TextFormat::ITALIC . TextFormat::GRAY . "Y: ".round($this->y)."; biome: ". Biome::getBiome($this->level->getBiomeId((int) $this->x, (int) $this->z))->getName());
 
 			if($this->speed and $this->isSurvival()){
 				$speed = sqrt($this->speed->x ** 2 + $this->speed->z ** 2);

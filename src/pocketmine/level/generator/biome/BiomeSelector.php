@@ -42,7 +42,7 @@ class BiomeSelector{
 	public function __construct(Random $random, Biome $fallback){
 		$this->fallback = $fallback;
 		$this->temperature = new Simplex($random, 1, 0.004, 0.5, 2);
-		$this->rainfall = new Simplex($random, 1, 0.004, 0.5, 2);
+		$this->rainfall = new Simplex($random, 2, 0.004, 0.5, 2);
 	}
 
 	public function addBiome(Biome $biome, $start, $end){
@@ -58,8 +58,6 @@ class BiomeSelector{
 	 */
 	public function pickBiome($x, $z){
 
-		return Biome::getBiome(Biome::PLAINS);
-
 		//$temperature = $this->temperature->noise2D($x, $z);
 		$rainfall = $this->rainfall->noise2D($x, $z);
 
@@ -70,11 +68,15 @@ class BiomeSelector{
 		}elseif($rainfall > 0.6){
 			return Biome::getBiome(Biome::BEACH);
 		}elseif($rainfall > 0.2){
-			return Biome::getBiome(Biome::PLAINS);
-		}elseif($rainfall > -0.3){
 			return Biome::getBiome(Biome::FOREST);
-		}else{
+		}elseif($rainfall > -0.3){
+			return Biome::getBiome(Biome::PLAINS);
+		}elseif($rainfall > -0.6){
 			return Biome::getBiome(Biome::DESERT);
+		}elseif($rainfall > -0.7){
+			return Biome::getBiome(Biome::BEACH);
+		}else{
+			return Biome::getBiome(Biome::OCEAN);
 		}
 
 	}

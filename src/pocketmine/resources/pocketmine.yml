@@ -55,6 +55,8 @@ chunk-generation:
  use-async: true
  #Max. amount of chunks to generate per tick, only for use-async: false
  per-tick: 1
+ #Max. amount of chunks to populate per tick
+ populations-per-tick: 1
 
 chunk-gc:
  period-in-ticks: 600

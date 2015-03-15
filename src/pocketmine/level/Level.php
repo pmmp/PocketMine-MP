@@ -93,6 +93,7 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\Cache;
 use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 use pocketmine\level\particle\Particle;
@@ -191,6 +192,8 @@ class Level implements ChunkManager, Metadatable{
 	protected $chunkTickRadius;
 	protected $chunkTickList = [];
 	protected $chunksPerTick;
+	protected $chunksPopulatedPerTick;
+	protected $chunksPopulated = 0;
 	protected $clearChunksOnTick;
 	protected $randomTickBlocks = [
 		Block::GRASS => Grass::class,
@@ -219,7 +222,10 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelTimings */
 	public $timings;
 
+	/** @var Generator */
 	protected $generator;
+	/** @var Generator */
+	protected $generatorInstance;
 
 	/**
 	 * Returns the chunk unique hash/key
@@ -298,6 +304,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 260);
+		$this->chunksPopulatedPerTick = (int) $this->server->getProperty("chunk-generation.populations-per-tick", 1);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
 
@@ -308,6 +315,9 @@ class Level implements ChunkManager, Metadatable{
 
 	public function initLevel(){
 		$this->server->getGenerationManager()->openLevel($this, $this->generator, $this->provider->getGeneratorOptions());
+		$generator = $this->generator;
+		$this->generatorInstance = new $generator($this->provider->getGeneratorOptions());
+		$this->generatorInstance->init($this, new Random($this->getSeed()));
 	}
 
 	/**
@@ -591,6 +601,8 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->processChunkRequest();
+
+		$this->chunksPopulated = 0;
 
 		$this->timings->doTick->stopTiming();
 	}
@@ -2274,6 +2286,32 @@ class Level implements ChunkManager, Metadatable{
 		$this->provider->setSeed($seed);
 	}
 
+
+	public function populateChunk($x, $z){
+		if(!$this->isChunkPopulated($x, $z)){
+			$populate = true;
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					if(!$this->isChunkGenerated($x + $xx, $z + $zz)){
+						$populate = false;
+						$this->generateChunk($x + $xx, $z + $zz);
+					}
+				}
+			}
+
+			if($this->chunksPopulated < $this->chunksPopulatedPerTick and $populate){
+				$this->generatorInstance->populateChunk($x, $z);
+				$chunk = $this->getChunk($x, $z);
+				$chunk->setPopulated(true);
+				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
+				++$this->chunksPopulated;
+				return true;
+			}
+
+			return false;
+		}
+		return true;
+	}
 
 	public function generateChunk($x, $z){
 		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){

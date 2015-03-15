@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\generator;
 
+use pocketmine\block\Block;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\Level;
@@ -111,6 +112,7 @@ class GenerationManager{
 		$this->logger = $logger;
 		$this->loader = $loader;
 		$chunkX = $chunkZ = null;
+		Block::init();
 		Biome::init();
 
 		while($this->shutdown !== true){
@@ -130,7 +132,7 @@ class GenerationManager{
 					$this->readPacket();
 				}
 			}catch(\Exception $e){
-				$this->logger->warning("[Noise Thread] Exception: " . $e->getMessage() . " on file \"" . $e->getFile() . "\" line " . $e->getLine());
+				$this->logger->warning("[Generation Thread] Exception: " . $e->getMessage() . " on file \"" . $e->getFile() . "\" line " . $e->getLine());
 			}
 		}
 	}
@@ -143,17 +145,10 @@ class GenerationManager{
 
 	protected function generateChunk($levelID, $chunkX, $chunkZ){
 		if(isset($this->levels[$levelID])){
-			$this->levels[$levelID]->populateChunk($chunkX, $chunkZ); //Request population directly
+			$this->levels[$levelID]->generateChunk($chunkX, $chunkZ);
 			if(isset($this->levels[$levelID])){
-				foreach($this->levels[$levelID]->getChangedChunks() as $index => $chunk){
-					if($chunk->isPopulated()){
-						$this->sendChunk($levelID, $chunk);
-						$this->levels[$levelID]->cleanChangedChunk($index);
-					}
-				}
-
-				$this->levels[$levelID]->doGarbageCollection();
-				$this->levels[$levelID]->cleanChangedChunks();
+				$this->sendChunk($levelID, $this->levels[$levelID]->getChunk($chunkX, $chunkZ));
+				$this->levels[$levelID]->cleanChangedChunk(Level::chunkHash($chunkX, $chunkZ));
 			}
 		}
 	}

@@ -25,29 +25,4 @@ use pocketmine\level\generator\biome\Biome;
 
 abstract class NormalBiome extends Biome{
 
-	private $minElevation;
-	private $maxElevation;
-
-	private $groundCover = [];
-
-	public function getMinElevation(){
-		return $this->minElevation;
-	}
-
-	public function getMaxElevation(){
-		return $this->maxElevation;
-	}
-
-	public function setElevation($min, $max){
-		$this->minElevation = $min;
-		$this->maxElevation = $max;
-	}
-
-	public function getGroundCover(){
-		return $this->groundCover;
-	}
-
-	public function setGroundCover(array $covers){
-		$this->groundCover = $covers;
-	}
 }

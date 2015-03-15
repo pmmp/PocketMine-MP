@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\generator\biome;
 
+use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\normal\biome\BeachBiome;
 use pocketmine\level\generator\normal\biome\DesertBiome;
@@ -57,6 +58,11 @@ abstract class Biome{
 	private $registered = false;
 	/** @var Populator[] */
 	private $populators = [];
+
+	private $minElevation;
+	private $maxElevation;
+
+	private $groundCover = [];
 
 	protected static function register($id, Biome $biome){
 		self::$biomes[(int) $id] = $biome;
@@ -116,4 +122,31 @@ abstract class Biome{
 	}
 
 	public abstract function getName();
+
+	public function getMinElevation(){
+		return $this->minElevation;
+	}
+
+	public function getMaxElevation(){
+		return $this->maxElevation;
+	}
+
+	public function setElevation($min, $max){
+		$this->minElevation = $min;
+		$this->maxElevation = $max;
+	}
+
+	/**
+	 * @return Block[]
+	 */
+	public function getGroundCover(){
+		return $this->groundCover;
+	}
+
+	/**
+	 * @param Block[] $covers
+	 */
+	public function setGroundCover(array $covers){
+		$this->groundCover = $covers;
+	}
 }

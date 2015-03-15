@@ -21,11 +21,12 @@
 
 namespace pocketmine\level\generator\normal\biome;
 
-class DesertBiome extends GrassyBiome{
+use pocketmine\block\Block;
+
+class DesertBiome extends SandyBiome{
 
 	public function __construct(){
 		parent::__construct();
-
 		$this->setElevation(63, 74);
 	}
 

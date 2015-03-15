@@ -30,6 +30,7 @@ use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
@@ -37,7 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Flat extends Generator{
-	/** @var  GenerationChunkManager */
+	/** @var ChunkManager */
 	private $level;
 	/** @var FullChunk */
 	private $chunk;
@@ -135,7 +136,7 @@ class Flat extends Generator{
 		}
 	}
 
-	public function init(GenerationChunkManager $level, Random $random){
+	public function init(ChunkManager $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 

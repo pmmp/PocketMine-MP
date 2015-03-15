@@ -295,13 +295,9 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	protected function loadRegion($x, $z){
-		if(isset($this->regions[$index = Level::chunkHash($x, $z)])){
-			return true;
+		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
+			$this->regions[$index] = new RegionLoader($this, $x, $z);
 		}
-
-		$this->regions[$index] = new RegionLoader($this, $x, $z);
-
-		return true;
 	}
 
 	public function close(){

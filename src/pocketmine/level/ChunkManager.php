@@ -21,6 +21,8 @@
 
 namespace pocketmine\level;
 
+use pocketmine\level\format\FullChunk;
+
 interface ChunkManager{
 	/**
 	 * Gets the raw block id.
@@ -63,4 +65,26 @@ interface ChunkManager{
 	 * @param int $data 0-15
 	 */
 	public function setBlockDataAt($x, $y, $z, $data);
+
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return FullChunk
+	 */
+	public function getChunk($chunkX, $chunkZ);
+
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 * @param FullChunk $chunk
+	 */
+	public function setChunk($chunkX, $chunkZ, FullChunk $chunk);
+
+	/**
+	 * Gets the level seed
+	 *
+	 * @return int
+	 */
+	public function getSeed();
 }

@@ -30,14 +30,17 @@ use pocketmine\block\Gravel;
 use pocketmine\block\IronOre;
 use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\biome\BiomeSelector;
 use pocketmine\level\generator\GenerationChunkManager;
+use pocketmine\level\generator\GenerationManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\noise\Perlin;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\normal\biome\NormalBiome;
 use pocketmine\level\generator\object\OreType;
+use pocketmine\level\generator\populator\GroundCover;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\level\generator\populator\TallGrass;
@@ -50,12 +53,15 @@ class Normal extends Generator{
 
 	/** @var Populator[] */
 	private $populators = [];
-	/** @var GenerationChunkManager */
+	/** @var ChunkManager */
 	private $level;
 	/** @var Random */
 	private $random;
 	private $waterHeight = 62;
 	private $bedrockDepth = 5;
+
+	/** @var Populator[] */
+	private $generationPopulators = [];
 	/** @var Simplex */
 	private $noiseBase;
 
@@ -92,13 +98,16 @@ class Normal extends Generator{
 		return [];
 	}
 
-	public function init(GenerationChunkManager $level, Random $random){
+	public function init(ChunkManager $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
 		$this->noiseBase = new Simplex($this->random, 16, 0.012, 0.5, 2);
 		$this->random->setSeed($this->level->getSeed());
 		$this->selector = new BiomeSelector($this->random, Biome::getBiome(Biome::OCEAN));
+
+		$cover = new GroundCover();
+		$this->generationPopulators[] = $cover;
 
 
 		$ores = new Ore();
@@ -113,16 +122,6 @@ class Normal extends Generator{
 			new OreType(new Gravel(), 10, 16, 0, 128),
 		]);
 		$this->populators[] = $ores;
-
-		$trees = new Tree();
-		$trees->setBaseAmount(1);
-		$trees->setRandomAmount(1);
-		$this->populators[] = $trees;
-
-		$tallGrass = new TallGrass();
-		$tallGrass->setBaseAmount(5);
-		$tallGrass->setRandomAmount(0);
-		$this->populators[] = $tallGrass;
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -132,21 +131,22 @@ class Normal extends Generator{
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		$biomeCache = [];
-
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$minSum = 0;
 				$maxSum = 0;
 				$weightSum = 0;
 
+				$biome = $this->selector->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
+				$chunk->setBiomeId($x, $z, $biome->getId());
+				$chunk->setBiomeColor($x, $z, 255 - (($biome->getId() * 1377) % 255), 255 - (($biome->getId() * 4096) % 255), 255 - (($biome->getId() * 31337) % 255));
+
 				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-						if(isset($biomeCache[$index = (($chunkX * 16 + $x + $sx * 16) >> 2) . ":" . (($chunkZ * 16 + $z + $sz * 16) >> 2)])){
-							$adjacent = $biomeCache[$index];
+						if($sx === 0 and $sz === 0){
+							$adjacent = $biome;
 						}else{
 							$adjacent = $this->selector->pickBiome($chunkX * 16 + $x + $sx * 16, $chunkZ * 16 + $z + $sz * 16);
-							$biomeCache[$index] = $adjacent;
 						}
 						/** @var NormalBiome $adjacent */
 						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
@@ -182,14 +182,21 @@ class Normal extends Generator{
 				}
 			}
 		}
+
+		foreach($this->generationPopulators as $populator){
+			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
+		}
 	}
 
 	public function populateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
-			$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
+
+		$chunk = $this->level->getChunk($chunkX, $chunkZ);
+		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
+		$biome->populateChunk($this->level, $chunkX, $chunkZ, $this->random);
 	}
 
 	public function getSpawn(){

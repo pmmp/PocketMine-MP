@@ -42,8 +42,6 @@ class GenerationChunkManager implements ChunkManager{
 
 	protected $seed;
 
-	protected $changes = [];
-
 	public function __construct(GenerationManager $manager, $levelID, $seed, $class, array $options){
 		if(!class_exists($class, true) or !is_subclass_of($class, Generator::class)){
 			throw new \InvalidStateException("Class $class does not exists or is not a subclass of Noise");
@@ -88,33 +86,8 @@ class GenerationChunkManager implements ChunkManager{
 		return $chunk;
 	}
 
-	/**
-	 * @return FullChunk[]
-	 */
-	public function getChangedChunks(){
-		return $this->changes;
-	}
-
-	public function cleanChangedChunks(){
-		$this->changes = [];
-	}
-
 	public function cleanChangedChunk($index){
-		unset($this->changes[$index]);
-	}
-
-	public function doGarbageCollection(){
-		$count = 0;
-
-		foreach($this->chunks as $index => $chunk){
-			if(!isset($this->changes[$index]) or $chunk->isPopulated()){
-				unset($this->chunks[$index]);
-				unset($this->changes[$index]);
-				++$count;
-			}
-		}
-
-		return $count;
+		unset($this->chunks[$index]);
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -163,7 +136,6 @@ class GenerationChunkManager implements ChunkManager{
 		try{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setGenerated(true);
-			$this->changes[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 		}catch(\Exception $e){
 		}
 	}
@@ -172,7 +144,6 @@ class GenerationChunkManager implements ChunkManager{
 		try{
 			$chunk = $this->getChunk($chunkX, $chunkZ);
 			$chunk->setPopulated(true);
-			$this->changes[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 		}catch(\Exception $e){
 		}
 	}
@@ -191,10 +162,6 @@ class GenerationChunkManager implements ChunkManager{
 	 */
 	public function setChunk($chunkX, $chunkZ, FullChunk $chunk){
 		$this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)] = $chunk;
-		$this->changes[$index] = $chunk;
-		if($chunk->isPopulated()){
-			//TODO: Queue to be sent
-		}
 	}
 
 	/**

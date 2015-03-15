@@ -24,6 +24,7 @@
  */
 namespace pocketmine\level\generator;
 
+use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\noise\Noise;
 use pocketmine\level\generator\normal\Normal;
 use pocketmine\utils\Random;
@@ -41,6 +42,11 @@ abstract class Generator{
 		return false;
 	}
 
+	/**
+	 * @param $name
+	 *
+	 * @return Generator
+	 */
 	public static function getGenerator($name){
 		if(isset(Generator::$list[$name = strtolower($name)])){
 			return Generator::$list[$name];
@@ -229,7 +235,7 @@ abstract class Generator{
 
 	public abstract function __construct(array $settings = []);
 
-	public abstract function init(GenerationChunkManager $level, Random $random);
+	public abstract function init(ChunkManager $level, Random $random);
 
 	public abstract function generateChunk($chunkX, $chunkZ);
 

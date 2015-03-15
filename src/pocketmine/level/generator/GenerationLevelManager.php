@@ -72,15 +72,10 @@ class GenerationLevelManager extends GenerationManager{
 
 	public function generateChunk($levelID, $chunkX, $chunkZ){
 		if(isset($this->levels[$levelID])){
-			$this->levels[$levelID]->populateChunk($chunkX, $chunkZ); //Request population directly
+			$this->levels[$levelID]->generateChunk($chunkX, $chunkZ); //Request population directly
 			if(isset($this->levels[$levelID])){
-				foreach($this->levels[$levelID]->getChangedChunks() as $index => $chunk){
-					$this->sendChunk($levelID, $chunk);
-					$this->levels[$levelID]->cleanChangedChunk($index);
-				}
-
-				$this->levels[$levelID]->doGarbageCollection();
-				$this->levels[$levelID]->cleanChangedChunks();
+				$this->sendChunk($levelID, $this->levels[$levelID]->getChunk($chunkX, $chunkZ));
+				$this->levels[$levelID]->cleanChangedChunk(Level::chunkHash($chunkX, $chunkZ));
 			}
 		}
 	}
