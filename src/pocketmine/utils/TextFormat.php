@@ -411,52 +411,52 @@ abstract class TextFormat{
 
 				//Colors
 				case TextFormat::BLACK:
-					$newString .= "\x1b[38;2;0;0;0m";
+					$newString .= Terminal::$COLOR_BLACK;
 					break;
 				case TextFormat::DARK_BLUE:
-					$newString .= "\x1b[38;2;0;0;170m";
+					$newString .= Terminal::$COLOR_DARK_BLUE;
 					break;
 				case TextFormat::DARK_GREEN:
-					$newString .= "\x1b[38;2;0;170;0m";
+					$newString .= Terminal::$COLOR_DARK_GREEN;
 					break;
 				case TextFormat::DARK_AQUA:
-					$newString .= "\x1b[38;2;0;170;170m";
+					$newString .= Terminal::$COLOR_DARK_AQUA;
 					break;
 				case TextFormat::DARK_RED:
-					$newString .= "\x1b[38;2;170;0;0m";
+					$newString .= Terminal::$COLOR_DARK_RED;
 					break;
 				case TextFormat::DARK_PURPLE:
-					$newString .= "\x1b[38;2;170;0;170m";
+					$newString .= Terminal::$COLOR_PURPLE;
 					break;
 				case TextFormat::GOLD:
-					$newString .= "\x1b[38;2;255;170;0m";
+					$newString .= Terminal::$COLOR_GOLD;
 					break;
 				case TextFormat::GRAY:
-					$newString .= "\x1b[38;2;170;170;170m";
+					$newString .= Terminal::$COLOR_GRAY;
 					break;
 				case TextFormat::DARK_GRAY:
-					$newString .= "\x1b[38;2;85;85;85m";
+					$newString .= Terminal::$COLOR_DARK_GRAY;
 					break;
 				case TextFormat::BLUE:
-					$newString .= "\x1b[38;2;85;85;255m";
+					$newString .= Terminal::$COLOR_BLUE;
 					break;
 				case TextFormat::GREEN:
-					$newString .= "\x1b[38;2;85;255;85m";
+					$newString .= Terminal::$COLOR_GREEN;
 					break;
 				case TextFormat::AQUA:
-					$newString .= "\x1b[38;2;85;255;255m";
+					$newString .= Terminal::$COLOR_AQUA;
 					break;
 				case TextFormat::RED:
-					$newString .= "\x1b[38;2;255;85;85m";
+					$newString .= Terminal::$COLOR_RED;
 					break;
 				case TextFormat::LIGHT_PURPLE:
-					$newString .= "\x1b[38;2;255;85;255m";
+					$newString .= Terminal::$COLOR_LIGHT_PURPLE;
 					break;
 				case TextFormat::YELLOW:
-					$newString .= "\x1b[38;2;255;255;85m";
+					$newString .= Terminal::$COLOR_YELLOW;
 					break;
 				case TextFormat::WHITE:
-					$newString .= "\x1b[38;2;255;255;255m";
+					$newString .= Terminal::$COLOR_WHITE;
 					break;
 				default:
 					$newString .= $token;

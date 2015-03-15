@@ -177,13 +177,13 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	protected function send($message, $level = -1){
 		$now = time();
-		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET . PHP_EOL);
+		$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . TextFormat::RESET . " " . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){
-			echo $cleanMessage;
+			echo $cleanMessage . PHP_EOL;
 		}else{
-			echo Terminal::$START_LINE . $message . Terminal::$END_LINE;
+			echo $message . PHP_EOL;
 		}
 
 		if($this->attachment instanceof \ThreadedLoggerAttachment){

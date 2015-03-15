@@ -22,10 +22,6 @@
 namespace pocketmine\utils;
 
 abstract class Terminal{
-
-	public static $START_LINE = "";
-	public static $END_LINE = "";
-
 	public static $FORMAT_BOLD = "";
 	public static $FORMAT_OBFUSCATED = "";
 	public static $FORMAT_ITALIC = "";
@@ -67,7 +63,7 @@ abstract class Terminal{
 
 	protected static function getEscapeCodes(){
 		self::$FORMAT_BOLD = `tput bold`;
-		self::$FORMAT_OBFUSCATED = `tput invis`;
+		self::$FORMAT_OBFUSCATED = `tput smacs`;
 		self::$FORMAT_ITALIC = `tput sitm`;
 		self::$FORMAT_UNDERLINE = `tput smul`;
 		self::$FORMAT_STRIKETHROUGH = "\x1b[9m"; //`tput `;
@@ -102,9 +98,6 @@ abstract class Terminal{
 			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = `tput setaf 6`;
 			self::$COLOR_GRAY = self::$COLOR_WHITE = `tput setaf 7`;
 		}
-
-		self::$START_LINE = `tput sc` . "\n" . `tput cuu1` . "\r";
-		self::$END_LINE = `tput rc`;
 	}
 
 	public static function init(){
