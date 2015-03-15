@@ -51,6 +51,7 @@ use pocketmine\nbt\tag\Float;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\Network;
+use pocketmine\network\protocol\MobEffectPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
@@ -74,6 +75,9 @@ abstract class Entity extends Location implements Metadatable{
 	 * @var Player[]
 	 */
 	protected $hasSpawned = [];
+
+	/** @var Effect[] */
+	protected $effects = [];
 
 	protected $id;
 
@@ -226,6 +230,53 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->scheduleUpdate();
 
+	}
+
+	/**
+	 * @return Effect[]
+	 */
+	public function getEffects(){
+		return $this->effects;
+	}
+
+	public function removeEffect($effectId){
+		if(isset($this->effects[$effectId])){
+			$pk = new MobEffectPacket();
+			$pk->eid = $this->getId();
+			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
+			$pk->effectId = $effectId;
+			Server::broadcastPacket($this->getViewers(), $pk);
+			if($this instanceof Player){
+				$this->dataPacket($pk);
+			}
+
+			unset($this->effects[$effectId]);
+		}
+	}
+
+	public function hasEffect($effectId){
+		return isset($this->effects[$effectId]);
+	}
+
+	public function addEffect(Effect $effect){
+		$pk = new MobEffectPacket();
+		$pk->eid = $this->getId();
+		$pk->effectId = $effect->getId();
+		$pk->amplifier = $effect->getAmplifier();
+		$pk->particles = $effect->isVisible();
+		$pk->duration = $effect->getDuration();
+		if(isset($this->effects[$effect->getId()])){
+			$pk->eventId = MobEffectPacket::EVENT_MODIFY;
+		}else{
+			$pk->eventId = MobEffectPacket::EVENT_ADD;
+		}
+
+		Server::broadcastPacket($this->getViewers(), $pk);
+		if($this instanceof Player){
+			$this->dataPacket($pk);
+		}
+
+		$this->effects[$effect->getId()] = $effect;
 	}
 
 	/**
@@ -516,6 +567,7 @@ abstract class Entity extends Location implements Metadatable{
 		$isPlayer = $this instanceof Player;
 
 		if($this->dead === true){
+			$this->effects = [];
 			$this->despawnFromAll();
 			if(!$isPlayer){
 				$this->close();
@@ -523,6 +575,18 @@ abstract class Entity extends Location implements Metadatable{
 
 			Timings::$tickEntityTimer->stopTiming();
 			return false;
+		}
+
+		if(count($this->effects) > 0){
+			foreach($this->effects as $effect){
+				if($effect->canTick()){
+					$effect->applyEffect($this);
+				}
+				$effect->setDuration($effect->getDuration() - $tickDiff);
+				if($effect->getDuration() <= 0){
+					$this->removeEffect($effect->getId());
+				}
+			}
 		}
 
 		$hasUpdate = false;
@@ -542,7 +606,7 @@ abstract class Entity extends Location implements Metadatable{
 					$this->fireTicks = 0;
 				}
 			}else{
-				if(($this->fireTicks % 20) === 0 or $tickDiff > 20){
+				if(!$this->hasEffect(Effect::FIRE_RESISTANCE) and ($this->fireTicks % 20) === 0 or $tickDiff > 20){
 					$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
 					$this->attack($ev->getFinalDamage(), $ev);
 				}

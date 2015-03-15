@@ -24,6 +24,7 @@ namespace pocketmine;
 use pocketmine\block\Block;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Arrow;
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
@@ -955,6 +956,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->gamemode = $gm;
 			$this->sendMessage("Your gamemode has been changed to " . Server::getGamemodeString($this->getGamemode()) . ".\n");
 			$this->inventory->clearAll();
+			$this->inventory->sendContents($this);
 			$this->inventory->sendContents($this->getViewers());
 			$this->inventory->sendHeldItem($this->hasSpawned);
 		}
@@ -1252,18 +1254,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 			$this->entityBaseTick(1);
 
-			if($currentTick % 80 === 0) $this->sendMessage(TextFormat::ITALIC . TextFormat::GRAY . "Y: ".round($this->y)."; biome: ". Biome::getBiome($this->level->getBiomeId((int) $this->x, (int) $this->z))->getName());
-
-			if($this->speed and $this->isSurvival()){
+			if(!$this->forceMovement and $this->speed and $this->isSurvival()){
 				$speed = sqrt($this->speed->x ** 2 + $this->speed->z ** 2);
 				if($speed > 0.45){
 					$this->highSpeedTicks += $speed > 3 ? 2 : 1;
-					if($this->highSpeedTicks > 40 and !$this->server->getAllowFlight()){
-						$this->kick("Flying is not enabled on this server");
-						return false;
+					if(!$this->hasEffect(Effect::SPEED) and $this->highSpeedTicks > 40 and !$this->server->getAllowFlight()){
+						if($this->kick("Flying is not enabled on this server")){
+							return false;
+						}
 					}elseif($this->highSpeedTicks >= 10 and $this->highSpeedTicks % 4 === 0){
 						$this->forceMovement = $this->getPosition();
-						$this->speed = null;
 					}
 				}elseif($this->highSpeedTicks > 0){
 					if($speed < 22){
@@ -1278,15 +1278,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->inAirTicks = 0;
 			}else{
 				if($this->inAirTicks > 10 and $this->isSurvival() and !$this->isSleeping()){
-					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 2));
+					$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - 5));
 					$diff = sqrt(abs($this->speed->y - $expectedVelocity));
 
-					if($diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
+					if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
 						if($this->inAirTicks < 100){
 							$this->setMotion(new Vector3(0, $expectedVelocity, 0));
 						}else{
-							$this->kick("Flying is not enabled on this server");
-							return false;
+							if($this->kick("Flying is not enabled on this server")){
+								return false;
+							}
 						}
 					}
 				}

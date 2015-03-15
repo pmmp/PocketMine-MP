@@ -46,7 +46,7 @@ class GiveCommand extends VanillaCommand{
 		if(count($args) < 2){
 			$sender->sendMessage(TextFormat::RED . "Usage: " . $this->usageMessage);
 
-			return false;
+			return true;
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);
