@@ -193,7 +193,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $chunksPerTick;
 	/** @var null|Position */
 	private $spawnPosition = null;
-	private $inAction = false;
 
 	protected $inAirTicks = 0;
 	protected $lastSpeedTick = 0;
@@ -249,10 +248,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public function hasPlayedBefore(){
 		return $this->namedtag instanceof Compound;
-	}
-
-	protected function initEntity(){
-		parent::initEntity();
 	}
 
 	/**
@@ -669,6 +664,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->teleport($ev->getRespawnPosition());
 
 			$this->sendSettings();
+			$this->sendData($this);
+			$this->sendPotionEffects($this);
 			$this->inventory->sendContents($this);
 			$this->inventory->sendArmorContents($this);
 
@@ -829,8 +826,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->sleeping = clone $pos;
 		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
 
-		$this->sendMetadata($this->getViewers());
-		$this->sendMetadata($this);
+		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [$pos->x, $pos->y, $pos->z]);
+		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, true);
 
 		$this->setSpawn($pos);
 		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask([$this, "checkSleep"]), 60);
@@ -863,9 +860,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $this->level->getBlock($this->sleeping)));
 
 			$this->sleeping = null;
-
-			$this->sendMetadata($this->getViewers());
-			$this->sendMetadata($this);
+			$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false);
+			$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 		}
 
 	}
@@ -1680,10 +1676,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->inventory->sendHeldItem($this->hasSpawned);
 
-				if($this->inAction === true){
-					$this->inAction = false;
-					$this->sendMetadata($this->getViewers());
-				}
+				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 				break;
 			case ProtocolInfo::USE_ITEM_PACKET:
 				if($this->spawned === false or $this->dead === true or $this->blocked){
@@ -1697,10 +1690,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$packet->eid = $this->id;
 
 				if($packet->face >= 0 and $packet->face <= 5){ //Use Block, place
-					if($this->inAction === true){
-						$this->inAction = false;
-						$this->sendMetadata($this->getViewers());
-					}
+					$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
 					if($blockVector->distance($this) > 10){
 
@@ -1797,9 +1787,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$snowball->spawnToAll();
 						}
 					}
-					$this->inAction = true;
+					$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, true);
 					$this->startAction = microtime(true);
-					$this->sendMetadata($this->getViewers());
 				}
 				break;
 			case ProtocolInfo::PLAYER_ACTION_PACKET:
@@ -1875,8 +1864,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 
 						$this->startAction = false;
-						$this->inAction = false;
-						$this->sendMetadata($this->getViewers());
+						$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 						break;
 					case 6: //get out of the bed
 						$this->stopSleep();
@@ -2080,15 +2068,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->teleport($ev->getRespawnPosition());
 
 				$this->fireTicks = 0;
-				$this->airTicks = 300;
+				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
 				$this->deadTicks = 0;
 				$this->noDamageTicks = 60;
 
 				$this->setHealth(20);
 				$this->dead = false;
 
-				$this->sendMetadata($this->getViewers());
-				$this->sendMetadata($this);
+				$this->sendData($this);
 
 				$this->sendSettings();
 				$this->inventory->sendContents($this);
@@ -2107,10 +2094,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 				$this->craftingType = 0;
 
-				if($this->inAction === true){
-					$this->inAction = false;
-					$this->sendMetadata($this->getViewers());
-				}
+				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false); //TODO: check if this should be true
+
 				switch($packet->event){
 					case 9: //Eating
 						$items = [
@@ -2182,10 +2167,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->level->dropItem($this->add(0, 1.3, 0), $item, $motion, 40);
 
-				if($this->inAction === true){
-					$this->inAction = false;
-					$this->sendMetadata($this->getViewers());
-				}
+				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 				break;
 			case ProtocolInfo::MESSAGE_PACKET:
 				if($this->spawned === false or $this->dead === true){
@@ -2701,30 +2683,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	public function getData(){ //TODO
-		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1 : 0;
-		$flags |= $this->hasEffect(Effect::INVISIBILITY) ? 1 << 5 : 0;
-		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
-		$flags |= ($this->inAction === true ? 0b10000 : 0);
-		$d = [
-			0 => ["type" => 0, "value" => $flags],
-			1 => ["type" => 1, "value" => $this->airTicks],
-			3 => ["type" => 0, "value" => $this->hasEffect(Effect::INVISIBILITY) ? 0 : 1],
-			16 => ["type" => 0, "value" => 0],
-			17 => ["type" => 6, "value" => [0, 0, 0]],
-		];
-
-
-		if($this->sleeping instanceof Vector3){
-			$d[16]["value"] = 2;
-			$d[17]["value"] = [$this->sleeping->x, $this->sleeping->y, $this->sleeping->z];
-		}
-
-
-		return $d;
-	}
-
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		if(parent::teleport($pos, $yaw, $pitch)){
 
@@ -2735,7 +2693,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->removeWindow($window);
 			}
 
-			$this->airTicks = 300;
+			$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
 			$this->resetFallDistance();
 			$this->orderChunks();
 			$this->nextChunkOrderRun = 0;

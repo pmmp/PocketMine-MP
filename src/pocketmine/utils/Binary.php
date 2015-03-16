@@ -23,6 +23,7 @@
  * Various Utilities used around the code
  */
 namespace pocketmine\utils;
+use pocketmine\entity\Entity;
 
 /**
  * WARNING: This class is available on the PocketMine-MP Zephir project.
@@ -88,32 +89,32 @@ class Binary{
 	public static function writeMetadata(array $data){
 		$m = "";
 		foreach($data as $bottom => $d){
-			$m .= chr(($d["type"] << 5) | ($bottom & 0x1F));
-			switch($d["type"]){
-				case 0:
-					$m .= self::writeByte($d["value"]);
+			$m .= chr(($d[0] << 5) | ($bottom & 0x1F));
+			switch($d[0]){
+				case Entity::DATA_TYPE_BYTE:
+					$m .= self::writeByte($d[1]);
 					break;
-				case 1:
-					$m .= self::writeLShort($d["value"]);
+				case Entity::DATA_TYPE_SHORT:
+					$m .= self::writeLShort($d[1]);
 					break;
-				case 2:
-					$m .= self::writeLInt($d["value"]);
+				case Entity::DATA_TYPE_INT:
+					$m .= self::writeLInt($d[1]);
 					break;
-				case 3:
-					$m .= self::writeLFloat($d["value"]);
+				case Entity::DATA_TYPE_FLOAT:
+					$m .= self::writeLFloat($d[1]);
 					break;
-				case 4:
-					$m .= self::writeLShort(strlen($d["value"])) . $d["value"];
+				case Entity::DATA_TYPE_STRING:
+					$m .= self::writeLShort(strlen($d[1])) . $d[1];
 					break;
-				case 5:
-					$m .= self::writeLShort($d["value"][0]);
-					$m .= self::writeByte($d["value"][1]);
-					$m .= self::writeLShort($d["value"][2]);
+				case Entity::DATA_TYPE_SLOT:
+					$m .= self::writeLShort($d[1][0]);
+					$m .= self::writeByte($d[1][1]);
+					$m .= self::writeLShort($d[1][2]);
 					break;
-				case 6:
-					$m .= self::writeLInt($d["value"][0]);
-					$m .= self::writeLInt($d["value"][1]);
-					$m .= self::writeLInt($d["value"][2]);
+				case Entity::DATA_TYPE_POS:
+					$m .= self::writeLInt($d[1][0]);
+					$m .= self::writeLInt($d[1][1]);
+					$m .= self::writeLInt($d[1][2]);
 					break;
 			}
 		}
@@ -140,29 +141,29 @@ class Binary{
 			$bottom = $b & 0x1F;
 			$type = $b >> 5;
 			switch($type){
-				case 0:
+				case Entity::DATA_TYPE_BYTE:
 					$r = self::readByte($value{$offset});
 					++$offset;
 					break;
-				case 1:
+				case Entity::DATA_TYPE_SHORT:
 					$r = self::readLShort(substr($value, $offset, 2));
 					$offset += 2;
 					break;
-				case 2:
+				case Entity::DATA_TYPE_INT:
 					$r = self::readLInt(substr($value, $offset, 4));
 					$offset += 4;
 					break;
-				case 3:
+				case Entity::DATA_TYPE_FLOAT:
 					$r = self::readLFloat(substr($value, $offset, 4));
 					$offset += 4;
 					break;
-				case 4:
+				case Entity::DATA_TYPE_STRING:
 					$len = self::readLShort(substr($value, $offset, 2));
 					$offset += 2;
 					$r = substr($value, $offset, $len);
 					$offset += $len;
 					break;
-				case 5:
+				case Entity::DATA_TYPE_SLOT:
 					$r = [];
 					$r[] = self::readLShort(substr($value, $offset, 2));
 					$offset += 2;
@@ -171,7 +172,7 @@ class Binary{
 					$r[] = self::readLShort(substr($value, $offset, 2));
 					$offset += 2;
 					break;
-				case 6:
+				case Entity::DATA_TYPE_POS:
 					$r = [];
 					for($i = 0; $i < 3; ++$i){
 						$r[] = self::readLInt(substr($value, $offset, 4));
@@ -183,7 +184,7 @@ class Binary{
 
 			}
 			if($types === true){
-				$m[$bottom] = ["value" => $r, "type" => $type];
+				$m[$bottom] = [$r, $type];
 			}else{
 				$m[$bottom] = $r;
 			}

@@ -40,6 +40,8 @@ abstract class Projectile extends Entity{
 	private $hadCollision = false;
 
 	protected function initEntity(){
+		parent::initEntity();
+
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
 		if(isset($this->namedtag->Age)){
@@ -50,17 +52,6 @@ abstract class Projectile extends Entity{
 
 	public function canCollideWith(Entity $entity){
 		return $entity instanceof Living and !$this->onGround;
-	}
-
-	public function getData(){
-		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1 : 0;
-
-		return [
-			0 => ["type" => 0, "value" => $flags],
-			1 => ["type" => 1, "value" => $this->airTicks],
-			16 => ["type" => 0, "value" => 0] //Is critical
-		];
 	}
 
 	public function saveNBT(){

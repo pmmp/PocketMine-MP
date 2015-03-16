@@ -48,6 +48,7 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\Double;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\Float;
+use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\Short;
 use pocketmine\nbt\tag\String;
 use pocketmine\Network;
@@ -66,6 +67,26 @@ abstract class Entity extends Location implements Metadatable{
 
 	const NETWORK_ID = -1;
 
+
+	const DATA_TYPE_BYTE = 0;
+	const DATA_TYPE_SHORT = 1;
+	const DATA_TYPE_INT = 2;
+	const DATA_TYPE_FLOAT = 3;
+	const DATA_TYPE_STRING = 4;
+	const DATA_TYPE_SLOT = 5;
+	const DATA_TYPE_POS = 6;
+	const DATA_TYPE_ROTATION = 7;
+
+	const DATA_FLAGS = 0;
+	const DATA_AIR = 1;
+	const DATA_SHOW_NAMETAG = 3;
+
+
+	const DATA_FLAG_ONFIRE = 0;
+	const DATA_FLAG_ACTION = 4;
+	const DATA_FLAG_INVISIBLE = 5;
+
+
 	public static $entityCount = 1;
 	/** @var Entity[] */
 	private static $knownEntities = [];
@@ -80,6 +101,13 @@ abstract class Entity extends Location implements Metadatable{
 	protected $effects = [];
 
 	protected $id;
+
+	protected $dataFlags = 0;
+	protected $dataProperties = [
+		self::DATA_FLAGS => [self::DATA_TYPE_BYTE, 0],
+		self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 1],
+		self::DATA_AIR => [self::DATA_TYPE_SHORT, 300]
+	];
 
 	public $passenger = null;
 	public $vehicle = null;
@@ -138,7 +166,6 @@ abstract class Entity extends Location implements Metadatable{
 	public $lastUpdate;
 	public $maxFireTicks;
 	public $fireTicks;
-	public $airTicks;
 	public $namedtag;
 	public $canCollide = true;
 
@@ -210,7 +237,7 @@ abstract class Entity extends Location implements Metadatable{
 		if(!isset($this->namedtag->Air)){
 			$this->namedtag->Air = new Short("Air", 300);
 		}
-		$this->airTicks = $this->namedtag["Air"];
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag["Air"]);
 
 		if(!isset($this->namedtag->OnGround)){
 			$this->namedtag->OnGround = new Byte("OnGround", 0);
@@ -239,23 +266,17 @@ abstract class Entity extends Location implements Metadatable{
 		return $this->effects;
 	}
 
+	public function removeAllEffects(){
+		foreach($this->effects as $effect){
+			$this->removeEffect($effect->getId());
+		}
+	}
+
 	public function removeEffect($effectId){
 		if(isset($this->effects[$effectId])){
-			$pk = new MobEffectPacket();
-			$pk->eid = $this->getId();
-			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
-			$pk->effectId = $effectId;
-			Server::broadcastPacket($this->getViewers(), $pk);
-			if($this instanceof Player){
-				$this->dataPacket($pk);
-			}
-
+			$effect = $this->effects[$effectId];
 			unset($this->effects[$effectId]);
-			
-			$this->sendMetadata($this->hasSpawned);
-			if($this instanceof Player){
-				$this->sendMetadata($this);
-			}
+			$effect->remove($this);
 		}
 	}
 
@@ -264,29 +285,21 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	public function addEffect(Effect $effect){
-		$pk = new MobEffectPacket();
-		$pk->eid = $this->getId();
-		$pk->effectId = $effect->getId();
-		$pk->amplifier = $effect->getAmplifier();
-		$pk->particles = $effect->isVisible();
-		$pk->duration = $effect->getDuration();
 		if(isset($this->effects[$effect->getId()])){
-			$pk->eventId = MobEffectPacket::EVENT_MODIFY;
+			$oldEffect = $this->effects[$effect->getId()];
+			if(
+				$effect->getAmplifier() <= $oldEffect->getAmplifier()
+				or ($effect->getAmplifier() === $oldEffect->getAmplifier()
+					and $effect->getDuration() < $oldEffect->getDuration())
+			){
+				return;
+			}
+			$effect->add($this, true);
 		}else{
-			$pk->eventId = MobEffectPacket::EVENT_ADD;
-		}
-
-		Server::broadcastPacket($this->getViewers(), $pk);
-		if($this instanceof Player){
-			$this->dataPacket($pk);
+			$effect->add($this, false);
 		}
 
 		$this->effects[$effect->getId()] = $effect;
-		
-		$this->sendMetadata($this->hasSpawned);
-		if($this instanceof Player){
-			$this->sendMetadata($this);
-		}
 	}
 
 	/**
@@ -356,12 +369,42 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->namedtag->FallDistance = new Float("FallDistance", $this->fallDistance);
 		$this->namedtag->Fire = new Short("Fire", $this->fireTicks);
-		$this->namedtag->Air = new Short("Air", $this->airTicks);
+		$this->namedtag->Air = new Short("Air", $this->getDataProperty(self::DATA_AIR));
 		$this->namedtag->OnGround = new Byte("OnGround", $this->onGround == true ? 1 : 0);
 		$this->namedtag->Invulnerable = new Byte("Invulnerable", $this->invulnerable == true ? 1 : 0);
+
+		if(count($this->effects) > 0){
+			$effects = [];
+			foreach($this->effects as $effect){
+				$effects[$effect->getId()] = new Compound($effect->getId(), [
+					"Id" => new Byte("Id", $effect->getId()),
+					"Amplifier" => new Byte("Amplifier", $effect->getAmplifier()),
+					"Duration" => new Int("Duration", $effect->getDuration()),
+					"Ambient" => new Byte("Ambient", 0),
+					"ShowParticles" => new Byte("ShowParticles", $effect->isVisible() ? 1 : 0)
+				]);
+			}
+
+			$this->namedtag->ActiveEffects = new Enum("ActiveEffects", $effects);
+		}else{
+			unset($this->namedtag->ActiveEffects);
+		}
 	}
 
-	protected abstract function initEntity();
+	protected function initEntity(){
+		if(isset($this->namedtag->ActiveEffects)){
+			foreach($this->namedtag->ActiveEffects->getValue() as $e){
+				$effect = Effect::getEffect($e["Id"]);
+				if($effect === null){
+					continue;
+				}
+
+				$effect->setAmplifier($e["Amplifier"])->setDuration($e["Duration"])->setVisible($e["ShowParticles"] > 0);
+
+				$this->addEffect($effect);
+			}
+		}
+	}
 
 	/**
 	 * @return Player[]
@@ -376,31 +419,42 @@ abstract class Entity extends Location implements Metadatable{
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getId()] = $player;
-			foreach($this->effects as $effect){
-				$pk = new MobEffectPacket();
-				$pk->eid = $this->getId();
-				$pk->effectId = $effect->getId();
-				$pk->amplifier = $effect->getAmplifier();
-				$pk->particles = $effect->isVisible();
-				$pk->duration = $effect->getDuration();
-				$pk->eventId = MobEffectPacket::EVENT_ADD;
-				
-				$player->dataPacket($pk);
-			}
+		}
+	}
+
+	public function sendPotionEffects(Player $player){
+		foreach($this->effects as $effect){
+			$pk = new MobEffectPacket();
+			$pk->eid = $this->getId();
+			$pk->effectId = $effect->getId();
+			$pk->amplifier = $effect->getAmplifier();
+			$pk->particles = $effect->isVisible();
+			$pk->duration = $effect->getDuration();
+			$pk->eventId = MobEffectPacket::EVENT_ADD;
+
+			$player->dataPacket($pk);
 		}
 	}
 
 	/**
-	 * @param Player[]|Player $player
+	 * @deprecated
 	 */
 	public function sendMetadata($player){
+		$this->sendData($player);
+	}
+
+	/**
+	 * @param Player[]|Player $player
+	 * @param array $data Properly formatted entity data, defaults to everything
+	 */
+	public function sendData($player, array $data = null){
 		if($player instanceof Player){
 			$player = [$player];
 		}
 
 		$pk = new SetEntityDataPacket();
 		$pk->eid = $this->id;
-		$pk->metadata = $this->getData();
+		$pk->metadata = $data === null ? $this->dataProperties : $data;
 		Server::broadcastPacket($player, $pk);
 	}
 
@@ -588,7 +642,7 @@ abstract class Entity extends Location implements Metadatable{
 		$isPlayer = $this instanceof Player;
 
 		if($this->dead === true){
-			$this->effects = [];
+			$this->removeAllEffects();
 			$this->despawnFromAll();
 			if(!$isPlayer){
 				$this->close();
@@ -1380,7 +1434,67 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	abstract public function getData();
+	/**
+	 * @param int   $id
+	 * @param int   $type
+	 * @param mixed $value
+	 */
+	public function setDataProperty($id, $type, $value){
+		$this->dataProperties[$id] = [$type, $value];
+
+		$targets = $this->hasSpawned;
+		if($this instanceof Player){
+			$targets[] = $this;
+		}
+
+		$this->sendData($targets, [$id => $this->dataProperties[$id]]);
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return mixed
+	 */
+	public function getDataProperty($id){
+		return isset($this->dataProperties[$id]) ? $this->dataProperties[$id][1] : null;
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return int
+	 */
+	public function getDataPropertyType($id){
+		return isset($this->dataProperties[$id]) ? $this->dataProperties[$id][0] : null;
+	}
+
+	/**
+	 * @param int  $propertyId;
+	 * @param int  $id
+	 * @param bool $value
+	 */
+	public function setDataFlag($propertyId, $id, $value = true, $type = self::DATA_TYPE_BYTE){
+		if($this->getDataFlag($propertyId, $id) !== $value){
+			$flags = (int) $this->getDataProperty($propertyId);
+			$flags ^= 1 << $id;
+			$this->setDataProperty($propertyId, $type, $flags);
+		}
+	}
+
+	/**
+	 * @param int $propertyId
+	 * @param int $id
+	 *
+	 * @return bool
+	 */
+	public function getDataFlag($propertyId, $id){
+		return (((int) $this->getDataProperty($propertyId)) & (1 << $id)) > 0;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function getData(){}
 
 	public function __destruct(){
 		$this->close();

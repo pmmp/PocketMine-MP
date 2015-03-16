@@ -23,6 +23,9 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use pocketmine\network\protocol\MobEffectPacket;
+use pocketmine\Player;
+use pocketmine\Server;
 
 class Effect{
 	const SPEED = 1;
@@ -136,12 +139,20 @@ class Effect{
 		return $this;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getAmplifier(){
 		return $this->amplifier;
 	}
 
+	/**
+	 * @param int $amplifier
+	 *
+	 * @return $this
+	 */
 	public function setAmplifier($amplifier){
-		$this->amplifier = $amplifier;
+		$this->amplifier = (int) $amplifier;
 		return $this;
 	}
 
@@ -186,6 +197,46 @@ class Effect{
 					$entity->heal($ev->getAmount(), $ev);
 				}
 				break;
+		}
+	}
+
+	public function add(Entity $entity, $modify = false){
+		$pk = new MobEffectPacket();
+		$pk->eid = $entity->getId();
+		$pk->effectId = $this->getId();
+		$pk->amplifier = $this->getAmplifier();
+		$pk->particles = $this->isVisible();
+		$pk->duration = $this->getDuration();
+		if($modify){
+			$pk->eventId = MobEffectPacket::EVENT_MODIFY;
+		}else{
+			$pk->eventId = MobEffectPacket::EVENT_ADD;
+		}
+
+		Server::broadcastPacket($entity->getViewers(), $pk);
+		if($entity instanceof Player){
+			$entity->dataPacket($pk);
+		}
+
+		if($this->id === Effect::INVISIBILITY){
+			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
+			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 0);
+		}
+	}
+
+	public function remove(Entity $entity){
+		$pk = new MobEffectPacket();
+		$pk->eid = $entity->getId();
+		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
+		$pk->effectId = $this->getId();
+		Server::broadcastPacket($entity->getViewers(), $pk);
+		if($entity instanceof Player){
+			$entity->dataPacket($pk);
+		}
+
+		if($this->id === Effect::INVISIBILITY){
+			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, false);
+			$entity->setDataProperty(Entity::DATA_SHOW_NAMETAG, Entity::DATA_TYPE_BYTE, 1);
 		}
 	}
 }

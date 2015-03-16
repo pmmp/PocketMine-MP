@@ -46,6 +46,8 @@ abstract class Living extends Entity implements Damageable{
 	protected $invisible = false;
 
 	protected function initEntity(){
+		parent::initEntity();
+
 		if(isset($this->namedtag->HealF)){
 			$this->namedtag->Health = new Short("Health", (int) $this->namedtag["HealF"]);
 			unset($this->namedtag->HealF);
@@ -180,15 +182,16 @@ abstract class Living extends Entity implements Damageable{
 
 		if($this->dead !== true and $this->isInsideOfWater()){
 			$hasUpdate = true;
-			$this->airTicks -= $tickDiff;
-			if($this->airTicks <= -20){
-				$this->airTicks = 0;
+			$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
+			if($airTicks <= -20){
+				$airTicks = 0;
 
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
 				$this->attack($ev->getFinalDamage(), $ev);
 			}
+			$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
 		}else{
-			$this->airTicks = 300;
+			$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
 		}
 
 		if($this->attackTime > 0){

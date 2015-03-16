@@ -24,6 +24,7 @@ namespace pocketmine\entity;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Byte;
 use pocketmine\nbt\tag\Compound;
@@ -36,6 +37,11 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
+
+	const DATA_PLAYER_FLAG_SLEEP = 1;
+
+	const DATA_PLAYER_FLAGS = 16;
+	const DATA_PLAYER_BED_POSITION = 17;
 
 	protected $nameTag = "TESTIFICATE";
 	/** @var PlayerInventory */
@@ -51,6 +57,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function initEntity(){
+
+		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false);
+		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 
 		$this->inventory = new PlayerInventory($this);
 		if($this instanceof Player){
@@ -184,23 +193,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$player->dataPacket($pk);
 			unset($this->hasSpawned[$player->getId()]);
 		}
-	}
-
-	public function getData(){ //TODO
-		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1 : 0;
-		$flags |= $this->hasEffect(Effect::INVISIBILITY) ? 1 << 5 : 0;
-		//$flags |= ($this->crouched === true ? 0b10:0) << 1;
-		//$flags |= ($this->inAction === true ? 0b10000:0);
-		$d = [
-			0 => ["type" => 0, "value" => $flags],
-			1 => ["type" => 1, "value" => $this->airTicks],
-			3 => ["type" => 0, "value" => $this->hasEffect(Effect::INVISIBILITY) ? 0 : 1],
-			16 => ["type" => 0, "value" => 0],
-			17 => ["type" => 6, "value" => [0, 0, 0]],
-		];
-
-		return $d;
 	}
 
 	public function close(){
