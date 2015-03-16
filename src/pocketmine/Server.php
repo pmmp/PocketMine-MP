@@ -2186,21 +2186,54 @@ class Server{
 
 		$this->scheduler->scheduleAsyncTask($this->lastSendUsage);
 	}
+	
+	public function getNetwork(){
+		return $this->mainInterface;
+	}
 
 	private function titleTick(){
 		if(!Terminal::hasFormattingCodes()){
 			return;
 		}
+		
+		$usage = $this->getMemoryUsage();
+		if($usage === null){
+			$usage = round((memory_get_usage() / 1024) / 1024, 2) .
+			"/" . round((memory_get_usage(true) / 1024) / 1024, 2) .
+			" MB @ " . $this->getThreadCount() . " threads";
+		}else{
+			$usage = round(($usage / 1024) / 1024, 2) . " MB @ " . $this->getThreadCount() . " threads";
+		}
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
 			" | Online " . count($this->players) . "/" . $this->getMaxPlayers() .
-			" | RAM " . round((memory_get_usage() / 1024) / 1024, 2) .
-			"/" . round((memory_get_usage(true) / 1024) / 1024, 2) .
-			" MB | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) .
+			" | RAM " . $usage .
+			" | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) .
 			" D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) .
 			" kB/s | TPS " . $this->getTicksPerSecond() .
 			" | Load " . $this->getTickUsage() . "%\x07";
+	}
+	
+	public function getMemoryUsage(){
+		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
+			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", file_get_contents("/proc/self/status"), $matches) > 0){
+				return $matches[1] * 1024;
+			}
+		}
+		
+		return memory_get_usage(true);
+	}
+	
+	public function getThreadCount(){
+		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
+			
+			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
+				return (int) $matches[1];
+			}
+		}
+		
+		return count(ThreadManager::getInstance()->getAll()) + 2;
 	}
 
 

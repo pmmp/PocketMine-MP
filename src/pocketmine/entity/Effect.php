@@ -77,7 +77,10 @@ class Effect{
 	 * @return $this
 	 */
 	public static function getEffect($id){
-		return clone self::$effects[(int) $id];
+		if(isset(self::$effects[$id])){
+			return clone self::$effects[(int) $id];
+		}
+		return null;
 	}
 
 	public static function getEffectByName($name){
