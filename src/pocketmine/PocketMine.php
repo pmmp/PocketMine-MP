@@ -71,8 +71,8 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
-	const VERSION = "1.4.1dev";
-	const API_VERSION = "1.11.0";
+	const VERSION = "1.5dev";
+	const API_VERSION = "1.12.0";
 	const CODENAME = "絶好(Zekkou)ケーキ(Cake)";
 	const MINECRAFT_VERSION = "v0.10.5 alpha";
 
