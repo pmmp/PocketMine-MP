@@ -1504,7 +1504,6 @@ class Server{
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
-			"memory-limit" => -1,
 			"white-list" => false,
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
@@ -1558,11 +1557,9 @@ class Server{
 			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 128){
-				$this->logger->warning($this->getName() . " may not work right with less than 128MB of RAM");
+				$this->logger->warning($this->getName() . " may not work right with less than 128MB of memory");
 			}
 			@ini_set("memory_limit", $memory);
-		}else{
-			$this->setConfigString("memory-limit", -1);
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1854,11 +1851,9 @@ class Server{
 			$value = ["M" => 1, "G" => 1024];
 			$real = ((int) substr($memory, 0, -1)) * $value[substr($memory, -1)];
 			if($real < 256){
-				$this->logger->warning($this->getName() . " may not work right with less than 256MB of RAM", true, true, 0);
+				$this->logger->warning($this->getName() . " may not work right with less than 256MB of memory", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
-		}else{
-			$this->setConfigString("memory-limit", -1);
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -2173,7 +2168,7 @@ class Server{
 			"os" => Utils::getOS(),
 			"name" => $this->getName(),
 			"memory_total" => $this->getConfigString("memory-limit"),
-			"memory_usage" => memory_get_usage(),
+			"memory_usage" => $this->getMemoryUsage(),
 			"php_version" => PHP_VERSION,
 			"version" => $version->get(true),
 			"build" => $version->getBuild(),
@@ -2208,7 +2203,7 @@ class Server{
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
 			" | Online " . count($this->players) . "/" . $this->getMaxPlayers() .
-			" | RAM " . $usage .
+			" | Memory " . $usage .
 			" | U " . round($this->mainInterface->getUploadUsage() / 1024, 2) .
 			" D " . round($this->mainInterface->getDownloadUsage() / 1024, 2) .
 			" kB/s | TPS " . $this->getTicksPerSecond() .
@@ -2233,7 +2228,7 @@ class Server{
 			}
 		}
 		
-		return count(ThreadManager::getInstance()->getAll()) + 2;
+		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
 
