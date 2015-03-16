@@ -55,9 +55,9 @@ class AddEntityPacket extends DataPacket{
 		$this->putFloat($this->z);
 		$this->putLong($this->did);
 		if($this->did > 0){
-			$this->putShort($this->speedX * 8000);
-			$this->putShort($this->speedY * 8000);
-			$this->putShort($this->speedZ * 8000);
+			$this->putFloat($this->speedX);
+			$this->putFloat($this->speedY);
+			$this->putFloat($this->speedZ);
 		}
 	}
 

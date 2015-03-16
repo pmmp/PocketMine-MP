@@ -60,8 +60,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->putFloat($this->x);
 		$this->putFloat($this->y);
 		$this->putFloat($this->z);
-		$this->putByte((int) ($this->yaw * (256 / 360)));
-		$this->putByte((int) ($this->pitch * (256 / 360)));
+		$this->putFloat($this->yaw);
+		$this->putFloat($this->pitch);
 		$this->putShort($this->item);
 		$this->putShort($this->meta);
 		$this->put(Binary::writeMetadata($this->metadata));
