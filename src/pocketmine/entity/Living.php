@@ -42,6 +42,8 @@ abstract class Living extends Entity implements Damageable{
 	protected $drag = 0.02;
 
 	protected $attackTime = 0;
+	
+	protected $invisible = false;
 
 	protected function initEntity(){
 		if(isset($this->namedtag->HealF)){

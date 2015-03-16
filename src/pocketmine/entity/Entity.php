@@ -251,6 +251,11 @@ abstract class Entity extends Location implements Metadatable{
 			}
 
 			unset($this->effects[$effectId]);
+			
+			$this->sendMetadata($this->hasSpawned);
+			if($this instanceof Player){
+				$this->sendMetadata($this);
+			}
 		}
 	}
 
@@ -277,6 +282,11 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		$this->effects[$effect->getId()] = $effect;
+		
+		$this->sendMetadata($this->hasSpawned);
+		if($this instanceof Player){
+			$this->sendMetadata($this);
+		}
 	}
 
 	/**
@@ -366,6 +376,17 @@ abstract class Entity extends Location implements Metadatable{
 	public function spawnTo(Player $player){
 		if(!isset($this->hasSpawned[$player->getId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getId()] = $player;
+			foreach($this->effects as $effect){
+				$pk = new MobEffectPacket();
+				$pk->eid = $this->getId();
+				$pk->effectId = $effect->getId();
+				$pk->amplifier = $effect->getAmplifier();
+				$pk->particles = $effect->isVisible();
+				$pk->duration = $effect->getDuration();
+				$pk->eventId = MobEffectPacket::EVENT_ADD;
+				
+				$player->dataPacket($pk);
+			}
 		}
 	}
 
@@ -585,6 +606,10 @@ abstract class Entity extends Location implements Metadatable{
 				$effect->setDuration($effect->getDuration() - $tickDiff);
 				if($effect->getDuration() <= 0){
 					$this->removeEffect($effect->getId());
+					$this->sendMetadata($this->hasSpawned);
+					if($this instanceof Player){
+						$this->sendMetadata($this);
+					}
 				}
 			}
 		}
