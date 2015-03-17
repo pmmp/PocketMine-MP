@@ -128,9 +128,8 @@ class Vector3{
 
 	public function floor(){
 		$x = (int) $this->x;
-		$y = (int) $this->y;
 		$z = (int) $this->z;
-		return new Vector3($this->x >= $x ? $x : $x - 1, $this->y >= $y ? $y : $y - 1, $this->z >= $z ? $z : $z - 1);
+		return new Vector3($this->x >= $x ? $x : $x - 1, round($this->y), $this->z >= $z ? $z : $z - 1);
 	}
 
 	public function round(){
