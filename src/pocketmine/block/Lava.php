@@ -21,6 +21,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -64,9 +65,7 @@ class Lava extends Liquid{
 			$entity->setOnFire($ev->getDuration());
 		}
 
-		if($entity instanceof Player){
-			$entity->onGround = true;
-		}
+		$entity->resetFallDistance();
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
