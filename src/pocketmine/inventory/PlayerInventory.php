@@ -25,6 +25,7 @@ use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\network\protocol\ContainerSetContentPacket;
 use pocketmine\network\protocol\ContainerSetSlotPacket;
@@ -297,6 +298,15 @@ class PlayerInventory extends BaseInventory{
 		return $armor;
 	}
 
+	public function getArmorPoints(){
+		$points = 0;
+		foreach($this->getArmorContents() as $i){
+			if($i instanceof Armor){
+				$points += $i->getArmorPoints();
+			}
+		}
+		return $points;
+	}
 	public function clearAll(){
 		$limit = $this->getSize() + 4;
 		for($index = 0; $index < $limit; ++$index){

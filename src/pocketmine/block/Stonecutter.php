@@ -50,8 +50,12 @@ class Stonecutter extends Solid{
 	}
 
 	public function getDrops(Item $item){
-		return [
-			[$this->id, 0, 1],
-		];
+		if($item->isPickaxe() >= 1){
+			return [
+				[Item::STONECUTTER, 0, 1],
+			];
+		}else{
+			return [];
+		}
 	}
 }
