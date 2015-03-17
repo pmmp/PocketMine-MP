@@ -1139,10 +1139,11 @@ class Server{
 
 		$seed = $seed === null ? Binary::readInt(@Utils::getRandomBytes(4, false)) : (int) $seed;
 
-		if($generator !== null and class_exists($generator) and is_subclass_of($generator, Generator::class)){
-			$generator = new $generator($options);
-		}else{
+		if(!isset($options["presey"])){
 			$options["preset"] = $this->getConfigString("generator-settings", "");
+		}
+
+		if(!($generator !== null and class_exists($generator, true) and is_subclass_of($generator, Generator::class))){
 			$generator = Generator::getGenerator($this->getLevelType());
 		}
 
