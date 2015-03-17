@@ -37,7 +37,8 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	public function __construct(Chest $left, Chest $right){
 		$this->left = $left->getRealInventory();
 		$this->right = $right->getRealInventory();
-		BaseInventory::__construct($this, InventoryType::get(InventoryType::DOUBLE_CHEST));
+		$items = array_merge($this->left->getContents(), $this->right->getContents());
+		BaseInventory::__construct($this, InventoryType::get(InventoryType::DOUBLE_CHEST), $items);
 	}
 
 	public function getInventory(){
@@ -77,13 +78,19 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 			$items = array_slice($items, 0, $this->size, true);
 		}
 
-		parent::setContents($items);
 
-		$leftItems = array_slice($items, 0, $this->left->getSize(), true);
-		$this->left->setContents($leftItems);
-		if(count($items) > $this->left->getSize()){
-			$rightItems = array_slice($items, $this->left->getSize() - 1, $this->right->getSize(), true);
-			$this->right->setContents($rightItems);
+		for($i = 0; $i < $this->size; ++$i){
+			if(!isset($items[$i])){
+				if ($i < $this->left->size){
+					if(isset($this->left->slots[$i])){
+						$this->clear($i);
+					}
+				}elseif(isset($this->right->slots[$i - $this->left->size])){
+					$this->clear($i);
+				}
+			}elseif(!$this->setItem($i, $items[$i])){
+				$this->clear($i);
+			}
 		}
 	}
 
