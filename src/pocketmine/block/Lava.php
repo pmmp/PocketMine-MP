@@ -53,15 +53,8 @@ class Lava extends Liquid{
 
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
-		$damage = [EntityDamageEvent::MODIFIER_BASE => 1];
-		if($entity instanceof InventoryHolder){
-			$inventory = $entity->getInventory();
-			if($inventory instanceof PlayerInventory){
-				$damage[EntityDamageEvent::MODIFIER_ARMOR] = $inventory->getArmorPoints();
-			}
-		}
 		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){
-			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, $damage);
+			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
 			$entity->attack($ev->getFinalDamage(), $ev);
 		}
 
