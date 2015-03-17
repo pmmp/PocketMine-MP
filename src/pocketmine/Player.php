@@ -217,6 +217,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function setBanned($value){
 		if($value === true){
 			$this->server->getNameBans()->addBan($this->getName(), null, null, null);
+			$this->kick("You have been banned");
 		}else{
 			$this->server->getNameBans()->remove($this->getName());
 		}
@@ -2619,6 +2620,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
+		}
+
+		if($this->server->isHardcore()){
+			$this->setBanned(true);
 		}
 	}
 
