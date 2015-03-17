@@ -2658,7 +2658,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		parent::attack($damage, $source);
 
-		if($source instanceof EntityDamageEvent and $source->isCancelled()){
+		if($source instanceof EntityDamageEvent){
 			if($source->isCancelled()){
 				return;
 			}
