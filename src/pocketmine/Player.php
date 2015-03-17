@@ -647,6 +647,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			}
 
 			$this->spawned = true;
+
+			$this->sendSettings();
+			$this->sendData($this);
+			$this->sendPotionEffects($this);
+			$this->inventory->sendContents($this);
+			$this->inventory->sendArmorContents($this);
 			
 			$pk = new PlayStatusPacket();
 			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
@@ -662,12 +668,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $pos));
 
 			$this->teleport($ev->getRespawnPosition());
-
-			$this->sendSettings();
-			$this->sendData($this);
-			$this->sendPotionEffects($this);
-			$this->inventory->sendContents($this);
-			$this->inventory->sendArmorContents($this);
 
 			$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this, TextFormat::YELLOW . $this->getName() . " joined the game"));
 			if(strlen(trim($ev->getJoinMessage())) > 0){

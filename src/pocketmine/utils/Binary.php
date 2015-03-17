@@ -116,6 +116,9 @@ class Binary{
 					$m .= self::writeLInt($d[1][1]);
 					$m .= self::writeLInt($d[1][2]);
 					break;
+				case Entity::DATA_TYPE_LONG:
+					$m .= self::writeLLong($d[1]);
+					break;
 			}
 		}
 		$m .= "\x7f";
@@ -178,6 +181,10 @@ class Binary{
 						$r[] = self::readLInt(substr($value, $offset, 4));
 						$offset += 4;
 					}
+					break;
+				case Entity::DATA_TYPE_LONG:
+					$r = self::readLLong(substr($value, $offset, 4));
+					$offset += 8;
 					break;
 				default:
 					return [];

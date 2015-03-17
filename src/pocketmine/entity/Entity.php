@@ -76,6 +76,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_TYPE_SLOT = 5;
 	const DATA_TYPE_POS = 6;
 	const DATA_TYPE_ROTATION = 7;
+	const DATA_TYPE_LONG = 8;
 
 	const DATA_FLAGS = 0;
 	const DATA_AIR = 1;
