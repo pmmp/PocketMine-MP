@@ -80,7 +80,6 @@ class Binary{
 
 	/**
 	 * Writes a coded metadata string
-	 * TODO: Replace and move this to entity
 	 *
 	 * @param array $data
 	 *
@@ -128,7 +127,6 @@ class Binary{
 
 	/**
 	 * Reads a metadata coded string
-	 * TODO: Change
 	 *
 	 * @param      $value
 	 * @param bool $types

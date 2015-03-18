@@ -27,7 +27,7 @@ use pocketmine\network\protocol\DataPacket;
 abstract class Particle extends Vector3{
 	
 	/**
-	 * @return DataPacket
+	 * @return DataPacket|DataPacket[]
 	 */
 	abstract public function encode();
 

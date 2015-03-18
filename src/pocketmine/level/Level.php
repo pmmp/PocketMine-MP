@@ -371,7 +371,14 @@ class Level implements ChunkManager, Metadatable{
 	public function addParticle(Particle $particle){
 		$pk = $particle->encode();
 		if($pk !== null){
-			Server::broadcastPacket($this->getUsingChunk($particle->x >> 4, $particle->z >> 4), $pk);
+			if(!is_array($pk)){
+				Server::broadcastPacket($this->getUsingChunk($particle->x >> 4, $particle->z >> 4), $pk);
+			}else{
+				$players = $this->getUsingChunk($particle->x >> 4, $particle->z >> 4);
+				foreach($pk as $p){
+					Server::broadcastPacket($players, $p);
+				}
+			}
 		}
 	}
 
@@ -1334,6 +1341,8 @@ class Level implements ChunkManager, Metadatable{
 	public function useItemOn(Vector3 $vector, Item &$item, $face, $fx = 0.0, $fy = 0.0, $fz = 0.0, Player $player = null){
 		$target = $this->getBlock($vector);
 		$block = $target->getSide($face);
+
+		$this->addParticle(new \pocketmine\level\particle\FloatingTextParticle($target->add(0.5, 1.5, 0.5), "TESTTTTT\nSssass"));
 
 		if($block->y > 127 or $block->y < 0){
 			return false;

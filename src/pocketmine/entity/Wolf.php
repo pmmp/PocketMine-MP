@@ -24,4 +24,9 @@ namespace pocketmine\entity;
 
 class Wolf extends Animal implements Tameable{
 
+	const NETWORK_ID = 14;
+
+	public function getName(){
+		return "Wolf";
+	}
 }
