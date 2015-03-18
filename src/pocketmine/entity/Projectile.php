@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- *
+ * 
  *
 */
 
@@ -24,11 +24,10 @@ namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\inventory\InventoryHolder;
-use pocketmine\inventory\PlayerInventory;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\Short;
@@ -137,22 +136,15 @@ abstract class Projectile extends Entity{
 					$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
-					$damage = [EntityDamageEvent::MODIFIER_BASE => ceil($motion * $this->damage)];
-					$hit = $movingObjectPosition->entityHit;
-					if($hit instanceof InventoryHolder){
-						$inventory = $hit->getInventory();
-						if($inventory instanceof PlayerInventory){
-							$damage[EntityDamageEvent::MODIFIER_ARMOR] = $inventory->getArmorPoints();
-						}
-					}
+					$damage = ceil($motion * $this->damage);
 
 					if($this->shootingEntity === null){
-						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+						$ev = new EntityDamageByEntityEvent($this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					}else{
-						$ev = new EntityDamageByChildEntityEvent($this->shootingEntity, $this, $hit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+						$ev = new EntityDamageByChildEntityEvent($this->shootingEntity, $this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					}
 
-					$hit->attack($ev->getFinalDamage(), $ev);
+					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
 
 					if($this->fireTicks > 0){
