@@ -25,6 +25,6 @@ use pocketmine\math\Vector3;
 
 class WaterParticle extends GenericParticle{
 	public function __construct(Vector3 $pos){
-		parent::__construct($pos->x, $pos->y, $pos->z, 19);
+		parent::__construct($pos, 19);
 	}
 }

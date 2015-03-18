@@ -26,6 +26,6 @@ use pocketmine\item\Item;
 
 class ItemBreakParticle extends GenericParticle{
 	public function __construct(Vector3 $pos, Item $item){
-		parent::__construct($pos->x, $pos->y, $pos->z, 9, ($item->getId() << 16) | $item->getDamage());
+		parent::__construct($pos, 9, ($item->getId() << 16) | $item->getDamage());
 	}
 }

@@ -34,7 +34,7 @@ class InkCloudParticle extends Particle{
 	protected $count = 1;
 
 	public function __construct(Vector3 $pos, $count = 1){
-		parent::__construct($pos->x, $pos->y, $pos->z);
+		parent::__construct($pos);
 		$this->count = (int) $count;
 	}
 	
