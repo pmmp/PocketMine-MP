@@ -23,8 +23,8 @@ namespace pocketmine\level\particle;
 
 use pocketmine\math\Vector3;
 
-class HeartParticle extends GenericParticle{
-	public function __construct(Vector3 $pos, $scale = 0){
-		parent::__construct($pos->x, $pos->y, $pos->z, 14, $scale);
+class DustParticle extends GenericParticle{
+	public function __construct(Vector3 $pos, $r, $g, $b, $a = 255){
+		parent::__construct($pos->x, $pos->y, $pos->z, 22, (($a & 0xff) << 24) | (($r & 0xff) << 16) | (($g & 0xff) << 8) | ($b & 0xff));
 	}
 }

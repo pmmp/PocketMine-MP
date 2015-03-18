@@ -22,9 +22,10 @@
 namespace pocketmine\level\particle;
 
 use pocketmine\math\Vector3;
+use pocketmine\item\Item;
 
-class HeartParticle extends GenericParticle{
-	public function __construct(Vector3 $pos, $scale = 0){
-		parent::__construct($pos->x, $pos->y, $pos->z, 14, $scale);
+class ItemBreakParticle extends GenericParticle{
+	public function __construct(Vector3 $pos, Item $item){
+		parent::__construct($pos->x, $pos->y, $pos->z, 9, ($item->getId() << 16) | $item->getDamage());
 	}
 }

@@ -1288,7 +1288,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 
-		$this->addParticle(new DestroyBlockParticle($target, $target));	
+		$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target));	
 		
 		$target->onBreak($item);
 		

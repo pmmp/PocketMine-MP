@@ -21,22 +21,10 @@
 
 namespace pocketmine\level\particle;
 
-use pocketmine\network\protocol\ExplodePacket;
 use pocketmine\math\Vector3;
 
-class ExplodeParticle extends Particle{
-	
+class ExplodeParticle extends GenericParticle{
 	public function __construct(Vector3 $pos){
-		parent::__construct($pos->x, $pos->y, $pos->z);
-	}
-	
-	public function encode(){
-		$pk = new ExplodePacket;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->radius = 0;
-		
-		return $pk;
+		parent::__construct($pos->x, $pos->y, $pos->z, 4);
 	}
 }
