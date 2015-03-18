@@ -176,7 +176,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$item = $this->getInventory()->getItemInHand();
 			$pk->item = $item->getId();
 			$pk->meta = $item->getDamage();
-			$pk->metadata = $this->getData();
+			$pk->metadata = $this->dataProperties;
 			$player->dataPacket($pk);
 
 			$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);

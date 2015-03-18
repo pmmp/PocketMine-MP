@@ -28,7 +28,7 @@ use pocketmine\network\protocol\AddMobPacket;
 use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 
-class HearthParticle extends Particle{
+class HeartParticle extends Particle{
 	//TODO: HACK!
 	//TODO: needs more testing!
 
@@ -42,7 +42,7 @@ class HearthParticle extends Particle{
 		$pk->eid = $entityId;
 		$pk->type = Wolf::NETWORK_ID;
 		$pk->x = $this->x;
-		$pk->y = $this->y;
+		$pk->y = $this->y - 1;
 		$pk->z = $this->z;
 		$pk->pitch = 0;
 		$pk->yaw = 0;

@@ -1342,8 +1342,6 @@ class Level implements ChunkManager, Metadatable{
 		$target = $this->getBlock($vector);
 		$block = $target->getSide($face);
 
-		$this->addParticle(new \pocketmine\level\particle\FloatingTextParticle($target->add(0.5, 1.5, 0.5), "TESTTTTT\nSssass"));
-
 		if($block->y > 127 or $block->y < 0){
 			return false;
 		}

@@ -48,7 +48,7 @@ class Zombie extends Monster{
 		$pk->z = $this->z;
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->getData();
+		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 
 		$player->addEntityMotion($this->getId(), $this->motionX, $this->motionY, $this->motionZ);
