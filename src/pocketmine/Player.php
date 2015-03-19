@@ -95,7 +95,7 @@ use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\PlayStatusPacket;
-use pocketmine\network\protocol\MessagePacket;
+use pocketmine\network\protocol\TextPacket;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\SetDifficultyPacket;
@@ -2400,12 +2400,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if($m !== ""){
-				$pk = new MessagePacket();
-				$pk->source = ""; //Do not use this ;)
+				$pk = new TextPacket();
+				$pk->type = TextPacket::TYPE_RAW;
 				$pk->message = $m;
 				$this->dataPacket($pk);
 			}
 		}
+	}
+
+	public function sendTranslation($message, array $parameters = []){
+		if($this->removeFormat !== false){
+			$message = TextFormat::clean($message);
+			foreach($parameters as $k => $v){
+				$parameters[$k] = TextFormat::clean($v);
+			}
+		}
+
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_TRANSLATION;
+		$pk->message = $message;
+		$pk->parameters = $parameters;
+		$this->dataPacket($pk);
 	}
 
 	/**

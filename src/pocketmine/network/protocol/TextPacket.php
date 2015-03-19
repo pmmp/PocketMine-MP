@@ -28,6 +28,10 @@ class TextPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
+	const TYPE_RAW = 0;
+	const TYPE_CHAT = 1;
+	const TYPE_TRANSLATION = 2;
+
 	public $type;
 	public $source;
 	public $message;
@@ -39,15 +43,39 @@ class TextPacket extends DataPacket{
 
 	public function decode(){
 		$this->type = $this->getByte();
-		$this->source = $this->getString();
-		$this->message = $this->getString();
+		switch($this->type){
+			case self::TYPE_CHAT:
+				$this->source = $this->getString();
+			case self::TYPE_RAW:
+				$this->message = $this->getString();
+				break;
+
+			case self::TYPE_TRANSLATION:
+				$this->message = $this->getString();
+				$count = $this->getByte();
+				for($i = 0; $i < $count; ++$count){
+					$this->parameters[] = $this->getString();
+				}
+		}
 	}
 
 	public function encode(){
 		$this->reset();
 		$this->putByte($this->type);
-		$this->putString($this->source);
-		$this->putString($this->message);
+		switch($this->type){
+			case self::TYPE_CHAT:
+				$this->putString($this->source);
+			case self::TYPE_RAW:
+				$this->putString($this->message);
+				break;
+
+			case self::TYPE_TRANSLATION:
+				$this->putString($this->message);
+				$this->putByte(count($this->parameters));
+				foreach($this->parameters as $p){
+					$this->putString($p);
+				}
+		}
 	}
 
 }

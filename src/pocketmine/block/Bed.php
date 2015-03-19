@@ -24,8 +24,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\network\protocol\ChatPacket;
 use pocketmine\Player;
+use pocketmine\utils\TextFormat;
 
 class Bed extends Transparent{
 
@@ -65,10 +65,7 @@ class Bed extends Transparent{
 		$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
 
 		if($player instanceof Player and !$isNight){
-			$pk = new ChatPacket();
-			$pk->message = "You can only sleep at night";
-			$player->dataPacket($pk);
-
+			$player->sendMessage(TextFormat::GRAY . "You can only sleep at night");
 			return true;
 		}
 
@@ -89,9 +86,7 @@ class Bed extends Transparent{
 				$b = $blockWest;
 			}else{
 				if($player instanceof Player){
-					$pk = new ChatPacket();
-					$pk->message = "This bed is incomplete";
-					$player->dataPacket($pk);
+					$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 				}
 
 				return true;
@@ -99,9 +94,7 @@ class Bed extends Transparent{
 		}
 
 		if($player instanceof Player and $player->sleepOn($b) === false){
-			$pk = new ChatPacket();
-			$pk->message = "This bed is occupied";
-			$player->dataPacket($pk);
+			$player->sendMessage(TextFormat::GRAY . "This bed is occupied");
 		}
 
 		return true;
