@@ -24,24 +24,28 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class MessagePacket extends DataPacket{
+class TextPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
+	public $type;
 	public $source;
 	public $message;
+	public $parameters = [];
 
 	public function pid(){
-		return Info::MESSAGE_PACKET;
+		return Info::TEXT_PACKET;
 	}
 
 	public function decode(){
+		$this->type = $this->getByte();
 		$this->source = $this->getString();
 		$this->message = $this->getString();
 	}
 
 	public function encode(){
 		$this->reset();
+		$this->putByte($this->type);
 		$this->putString($this->source);
 		$this->putString($this->message);
 	}

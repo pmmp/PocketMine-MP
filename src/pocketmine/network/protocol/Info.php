@@ -37,7 +37,7 @@ interface Info{
 	
 	const DISCONNECT_PACKET = 0x84;
 	
-	const MESSAGE_PACKET = 0x85;
+	const TEXT_PACKET = 0x85;
 	const SET_TIME_PACKET = 0x86;
 	
 	const START_GAME_PACKET = 0x87;
@@ -87,11 +87,10 @@ interface Info{
 	const CONTAINER_SET_DATA_PACKET = 0xab;
 	const CONTAINER_SET_CONTENT_PACKET = 0xac;
 	//const CONTAINER_ACK_PACKET = 0xad;
-	const CHAT_PACKET = 0xae;
-	const ADVENTURE_SETTINGS_PACKET = 0xaf;
-	const TILE_ENTITY_DATA_PACKET = 0xb0;
-	//const PLAYER_INPUT_PACKET = 0xb1;
-	const FULL_CHUNK_DATA_PACKET = 0xb2;
-	const SET_DIFFICULTY_PACKET = 0xb3;
+	const ADVENTURE_SETTINGS_PACKET = 0xae;
+	const TILE_ENTITY_DATA_PACKET = 0xaf;
+	//const PLAYER_INPUT_PACKET = 0xb0;
+	const FULL_CHUNK_DATA_PACKET = 0xb1;
+	const SET_DIFFICULTY_PACKET = 0xb2;
 
 }
