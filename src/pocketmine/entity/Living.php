@@ -180,7 +180,7 @@ abstract class Living extends Entity implements Damageable{
 			$this->attack($ev->getFinalDamage(), $ev);
 		}
 
-		if($this->dead !== true and $this->isInsideOfWater()){
+		if($this->dead !== true and !$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
 			$hasUpdate = true;
 			$airTicks = $this->getDataProperty(self::DATA_AIR) - $tickDiff;
 			if($airTicks <= -20){

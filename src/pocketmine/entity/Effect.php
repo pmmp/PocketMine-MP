@@ -40,7 +40,7 @@ class Effect{
 	const REGENERATION = 10;
 	//TODO: const DAMAGE_RESISTANCE = 11;
 	const FIRE_RESISTANCE = 12;
-	//TODO: const WATER_BREATHING = 13;
+	const WATER_BREATHING = 13;
 	const INVISIBILITY = 14;
 	//const BLINDNESS = 15;
 	//const NIGHT_VISION = 16;
@@ -69,7 +69,7 @@ class Effect{
 		self::$effects[Effect::REGENERATION] = new Effect(Effect::REGENERATION, "Regeneration");
 		//self::$effects[Effect::DAMAGE_RESISTANCE] = new Effect(Effect::DAMAGE_RESISTANCE, "Damage Resistance");
 		self::$effects[Effect::FIRE_RESISTANCE] = new Effect(Effect::FIRE_RESISTANCE, "Fire Resistance");
-		//self::$effects[Effect::WATER_BREATHING] = new Effect(Effect::WATER_BREATHING, "Water Breathing");
+		self::$effects[Effect::WATER_BREATHING] = new Effect(Effect::WATER_BREATHING, "Water Breathing");
 		self::$effects[Effect::INVISIBILITY] = new Effect(Effect::INVISIBILITY, "Invisibility");
 		//self::$effects[Effect::WEAKNESS] = new Effect(Effect::WEAKNESS, "Weakness", true);
 		self::$effects[Effect::POISON] = new Effect(Effect::POISON, "Poison", true);
