@@ -106,7 +106,7 @@ class Flat extends Generator{
 		}
 
 
-		$this->chunk = $this->level->getChunk(0, 0);
+		$this->chunk = clone $this->level->getChunk(0, 0);
 		$this->chunk->setGenerated();
 
 		for($Z = 0; $Z < 16; ++$Z){
