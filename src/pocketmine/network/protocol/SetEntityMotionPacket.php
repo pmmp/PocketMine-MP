@@ -51,9 +51,9 @@ class SetEntityMotionPacket extends DataPacket{
 		$this->putInt(count($this->entities));
 		foreach($this->entities as $d){
 			$this->putLong($d[0]); //eid
-			$this->putShort((int) ($d[1] * 8000)); //motX
-			$this->putShort((int) ($d[2] * 8000)); //motY
-			$this->putShort((int) ($d[3] * 8000)); //motZ
+			$this->putFloat($d[1]); //motX
+			$this->putFloat($d[2]); //motY
+			$this->putFloat($d[3]); //motZ
 		}
 	}
 
