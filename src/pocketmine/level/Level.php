@@ -368,13 +368,17 @@ class Level implements ChunkManager, Metadatable{
 		$this->temporalPosition = null;
 	}
 	
-	public function addParticle(Particle $particle){
+	public function addParticle(Particle $particle, array $players = null){
 		$pk = $particle->encode();
+
+		if($players === null){
+			$players = $this->getUsingChunk($particle->x >> 4, $particle->z >> 4);
+		}
+
 		if($pk !== null){
 			if(!is_array($pk)){
-				Server::broadcastPacket($this->getUsingChunk($particle->x >> 4, $particle->z >> 4), $pk);
+				Server::broadcastPacket($players, $pk);
 			}else{
-				$players = $this->getUsingChunk($particle->x >> 4, $particle->z >> 4);
 				foreach($pk as $p){
 					Server::broadcastPacket($players, $p);
 				}
@@ -1288,7 +1292,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
 
-		$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target));	
+		$players = $this->getUsingChunk($target->x >> 4, $target->z >> 4);
+		if($player !== null){
+			unset($players[$player->getId()]);
+		}
+		$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target), $players);
 		
 		$target->onBreak($item);
 		
