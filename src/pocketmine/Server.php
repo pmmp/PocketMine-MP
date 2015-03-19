@@ -1142,7 +1142,7 @@ class Server{
 
 		$seed = $seed === null ? Binary::readInt(@Utils::getRandomBytes(4, false)) : (int) $seed;
 
-		if(!isset($options["presey"])){
+		if(!isset($options["preset"])){
 			$options["preset"] = $this->getConfigString("generator-settings", "");
 		}
 

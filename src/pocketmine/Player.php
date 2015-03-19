@@ -69,7 +69,6 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\SimpleTransactionGroup;
 use pocketmine\inventory\StonecutterShapelessRecipe;
-use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\LevelProvider;
@@ -1975,7 +1974,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						EntityDamageEvent::MODIFIER_BASE => isset($damageTable[$item->getId()]) ? $damageTable[$item->getId()] : 1,
 					];
 
-					$points = 0;
 					if($this->distance($target) > 8){
 						$cancelled = true;
 					}elseif($target instanceof Player){
@@ -1985,7 +1983,34 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							$cancelled = true;
 						}
 
-						$points = $target->getInventory()->getArmorPoints();
+						$armorValues = [
+							Item::LEATHER_CAP => 1,
+							Item::LEATHER_TUNIC => 3,
+							Item::LEATHER_PANTS => 2,
+							Item::LEATHER_BOOTS => 1,
+							Item::CHAIN_HELMET => 1,
+							Item::CHAIN_CHESTPLATE => 5,
+							Item::CHAIN_LEGGINGS => 4,
+							Item::CHAIN_BOOTS => 1,
+							Item::GOLD_HELMET => 1,
+							Item::GOLD_CHESTPLATE => 5,
+							Item::GOLD_LEGGINGS => 3,
+							Item::GOLD_BOOTS => 1,
+							Item::IRON_HELMET => 2,
+							Item::IRON_CHESTPLATE => 6,
+							Item::IRON_LEGGINGS => 5,
+							Item::IRON_BOOTS => 2,
+							Item::DIAMOND_HELMET => 3,
+							Item::DIAMOND_CHESTPLATE => 8,
+							Item::DIAMOND_LEGGINGS => 6,
+							Item::DIAMOND_BOOTS => 3,
+						];
+						$points = 0;
+						foreach($target->getInventory()->getArmorContents() as $index => $i){
+							if(isset($armorValues[$i->getId()])){
+								$points += $armorValues[$i->getId()];
+							}
+						}
 
 						$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 					}
@@ -2012,6 +2037,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 						}
 					}
 				}
+
 
 				break;
 			case ProtocolInfo::ANIMATE_PACKET:
@@ -2648,24 +2674,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 		parent::attack($damage, $source);
 
-		if($source instanceof EntityDamageEvent){
-			if($source->isCancelled()){
-				return;
-			}
-			if($source->getDamage(EntityDamageEvent::MODIFIER_ARMOR) > 0){
-				for($i = 0; $i < 4; $i++){
-					$piece = $this->getInventory()->getArmorItem($i);
-					if($piece instanceof Armor){
-						$damage = $piece->getDamage();
-						if($damage >= $piece->getMaxDurability()){
-							$this->getInventory()->setArmorItem($i, Item::get(Item::AIR));
-						}else{
-							$piece->setDamage($damage + 1);
-							$this->getInventory()->setArmorItem($i, $piece);
-						}
-					}
-				}
-			}
+		if($source instanceof EntityDamageEvent and $source->isCancelled()){
+			return;
 		}
 
 		if($this->getLastDamageCause() === $source){
@@ -2674,8 +2684,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$pk->event = 2;
 			$this->dataPacket($pk);
 		}
-
-
 	}
 
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
