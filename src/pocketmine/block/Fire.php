@@ -21,6 +21,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -58,8 +59,10 @@ class Fire extends Flowable{
 	}
 
 	public function onEntityCollide(Entity $entity){
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
-		$entity->attack($ev->getFinalDamage(), $ev);
+		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){
+			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
+			$entity->attack($ev->getFinalDamage(), $ev);
+		}
 
 		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
 		Server::getInstance()->getPluginManager()->callEvent($ev);

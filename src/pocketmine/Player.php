@@ -2168,26 +2168,28 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 				break;
-			case ProtocolInfo::MESSAGE_PACKET:
+			case ProtocolInfo::TEXT_PACKET:
 				if($this->spawned === false or $this->dead === true){
 					break;
 				}
 				$this->craftingType = 0;
-				$packet->message = TextFormat::clean($packet->message);
-				if(trim($packet->message) != "" and strlen($packet->message) <= 255){
-					$message = $packet->message;
-					$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
-					if($ev->isCancelled()){
-						break;
-					}
-					if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
-						Timings::$playerCommandTimer->startTiming();
-						$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
-						Timings::$playerCommandTimer->stopTiming();
-					}else{
-						$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
-						if(!$ev->isCancelled()){
-							$this->server->broadcastMessage(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
+				if($packet->type === TextPacket::TYPE_CHAT){
+					$packet->message = TextFormat::clean($packet->message, $this->removeFormat);
+					if(trim($packet->message) != "" and strlen($packet->message) <= 255){
+						$message = $packet->message;
+						$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $message));
+						if($ev->isCancelled()){
+							break;
+						}
+						if(substr($ev->getMessage(), 0, 1) === "/"){ //Command
+							Timings::$playerCommandTimer->startTiming();
+							$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
+							Timings::$playerCommandTimer->stopTiming();
+						}else{
+							$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
+							if(!$ev->isCancelled()){
+								$this->server->broadcastMessage(sprintf($ev->getFormat(), $ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
+							}
 						}
 					}
 				}

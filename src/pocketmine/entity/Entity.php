@@ -81,6 +81,8 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAGS = 0;
 	const DATA_AIR = 1;
 	const DATA_SHOW_NAMETAG = 3;
+	const DATA_POTION_COLOR = 7;
+	const DATA_POTION_VISIBLE = 8;
 
 
 	const DATA_FLAG_ONFIRE = 0;
@@ -278,6 +280,8 @@ abstract class Entity extends Location implements Metadatable{
 			$effect = $this->effects[$effectId];
 			unset($this->effects[$effectId]);
 			$effect->remove($this);
+
+			$this->recalculateEffectColor();
 		}
 	}
 
@@ -301,6 +305,38 @@ abstract class Entity extends Location implements Metadatable{
 		}
 
 		$this->effects[$effect->getId()] = $effect;
+
+		$this->recalculateEffectColor();
+	}
+
+	protected function recalculateEffectColor(){
+		$color = [0, 0, 0]; //RGB
+		$count = 0;
+		$ambient = true;
+		foreach($this->effects as $effect){
+			if($effect->isVisible()){
+				$c = $effect->getColor();
+				$color[0] += $c[0];
+				$color[1] += $c[1];
+				$color[2] += $c[2];
+				++$count;
+				if(!$effect->isAmbient()){
+					$ambient = false;
+				}
+			}
+		}
+
+		if($count > 0){
+			$r = ($color[0] / $count) & 0xff;
+			$g = ($color[1] / $count) & 0xff;
+			$b = ($color[2] / $count) & 0xff;
+
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, ($r << 16) + ($g << 8) + $b);
+			$this->setDataProperty(Entity::DATA_POTION_VISIBLE, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
+		}else{
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
+			$this->setDataProperty(Entity::DATA_POTION_VISIBLE, Entity::DATA_TYPE_BYTE, 0);
+		}
 	}
 
 	/**

@@ -64,11 +64,15 @@ abstract class TextFormat{
 	 * Cleans the string from Minecraft codes and ANSI Escape Codes
 	 *
 	 * @param string $string
+	 * @param bool   $removeFormat
 	 *
 	 * @return mixed
 	 */
-	public static function clean($string){
-		return preg_replace(["/§[0123456789abcdefklmnor]/", "/\x1b\\[[0-9;]+m/"], "", $string);
+	public static function clean($string, $removeFormat = true){
+		if($removeFormat){
+			return preg_replace(["/§[0123456789abcdefklmnor]/", "/\x1b\\[[0-9;]+m/"], "", $string);
+		}
+		return preg_replace("/\x1b\\[[0-9;]+m/", "", $string);
 	}
 
 	/**

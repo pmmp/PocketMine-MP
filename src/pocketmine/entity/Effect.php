@@ -32,6 +32,7 @@ class Effect{
 	const SLOWNESS = 2;
 	//TODO: const SWIFTNESS = 3;
 	const FATIGUE = 4;
+	const MINING_FATIGUE = 4;
 	//TODO: const STRENGTH = 5;
 	//TODO: const HEALING = 6;
 	//TODO: const HARMING = 7;
@@ -58,22 +59,22 @@ class Effect{
 	public static function init(){
 		self::$effects = new \SplFixedArray(256);
 
-		self::$effects[Effect::SPEED] = new Effect(Effect::SPEED, "Speed");
-		self::$effects[Effect::SLOWNESS] = new Effect(Effect::SLOWNESS, "Slowness", true);
-		//self::$effects[Effect::SWIFTNESS] = new Effect(Effect::SWIFTNESS, "Swiftness");
-		self::$effects[Effect::FATIGUE] = new Effect(Effect::FATIGUE, "Mining Fatigue", true);
-		//self::$effects[Effect::STRENGTH] = new Effect(Effect::STRENGTH, "Strength");
-		//self::$effects[Effect::HEALING] = new InstantEffect(Effect::HEALING, "Healing");
-		//self::$effects[Effect::HARMING] = new InstantEffect(Effect::HARMING, "Harming", true);
-		self::$effects[Effect::JUMP] = new Effect(Effect::JUMP, "Jump");
-		self::$effects[Effect::REGENERATION] = new Effect(Effect::REGENERATION, "Regeneration");
-		//self::$effects[Effect::DAMAGE_RESISTANCE] = new Effect(Effect::DAMAGE_RESISTANCE, "Damage Resistance");
-		self::$effects[Effect::FIRE_RESISTANCE] = new Effect(Effect::FIRE_RESISTANCE, "Fire Resistance");
-		self::$effects[Effect::WATER_BREATHING] = new Effect(Effect::WATER_BREATHING, "Water Breathing");
-		self::$effects[Effect::INVISIBILITY] = new Effect(Effect::INVISIBILITY, "Invisibility");
-		//self::$effects[Effect::WEAKNESS] = new Effect(Effect::WEAKNESS, "Weakness", true);
-		self::$effects[Effect::POISON] = new Effect(Effect::POISON, "Poison", true);
-		self::$effects[Effect::WITHER] = new Effect(Effect::WITHER, "Wither", true);
+		self::$effects[Effect::SPEED] = new Effect(Effect::SPEED, "Speed", 124, 175, 198);
+		self::$effects[Effect::SLOWNESS] = new Effect(Effect::SLOWNESS, "Slowness", 90, 108, 129, true);
+		//self::$effects[Effect::SWIFTNESS] = new Effect(Effect::SWIFTNESS, "Swiftness", 217, 192, 67);
+		self::$effects[Effect::FATIGUE] = new Effect(Effect::FATIGUE, "Mining Fatigue", 74, 66, 23, true);
+		//self::$effects[Effect::STRENGTH] = new Effect(Effect::STRENGTH, "Strength", 147, 36, 35);
+		//self::$effects[Effect::HEALING] = new InstantEffect(Effect::HEALING, "Healing", 248, 36, 35);
+		//self::$effects[Effect::HARMING] = new InstantEffect(Effect::HARMING, "Harming", 67, 10, 9, true);
+		self::$effects[Effect::JUMP] = new Effect(Effect::JUMP, "Jump", 34, 255, 76);
+		self::$effects[Effect::REGENERATION] = new Effect(Effect::REGENERATION, "Regeneration", 205, 92, 171);
+		//self::$effects[Effect::DAMAGE_RESISTANCE] = new Effect(Effect::DAMAGE_RESISTANCE, "Damage Resistance", 153, 69, 58);
+		self::$effects[Effect::FIRE_RESISTANCE] = new Effect(Effect::FIRE_RESISTANCE, "Fire Resistance", 228, 154, 58);
+		self::$effects[Effect::WATER_BREATHING] = new Effect(Effect::WATER_BREATHING, "Water Breathing", 46, 82, 153);
+		self::$effects[Effect::INVISIBILITY] = new Effect(Effect::INVISIBILITY, "Invisibility", 127, 131, 146);
+		//self::$effects[Effect::WEAKNESS] = new Effect(Effect::WEAKNESS, "Weakness", 72, 77, 72 , true);
+		self::$effects[Effect::POISON] = new Effect(Effect::POISON, "Poison", 78, 147, 49, true);
+		self::$effects[Effect::WITHER] = new Effect(Effect::WITHER, "Wither", 53, 42, 39, true);
 	}
 
 	/**
@@ -103,14 +104,19 @@ class Effect{
 
 	protected $amplifier;
 
+	protected $color;
+
 	protected $show = true;
 
-	protected $isBad;
+	protected $ambient = false;
 
-	public function __construct($id, $name, $isBad = false){
+	protected $bad;
+
+	public function __construct($id, $name, $r, $g, $b, $isBad = false){
 		$this->id = $id;
 		$this->name = $name;
-		$this->isBad = (bool) $isBad;
+		$this->bad = (bool) $isBad;
+		$this->setColor($r, $g, $b);
 	}
 
 	public function getName(){
@@ -156,6 +162,19 @@ class Effect{
 		return $this;
 	}
 
+	public function isAmbient(){
+		return $this->ambient;
+	}
+
+	public function setAmbient($ambient = true){
+		$this->ambient = (bool) $ambient;
+		return $this;
+	}
+
+	public function isBad(){
+		return $this->bad;
+	}
+
 	public function canTick(){
 		switch($this->id){
 			case Effect::POISON:
@@ -198,6 +217,14 @@ class Effect{
 				}
 				break;
 		}
+	}
+
+	public function getColor(){
+		return [$this->color >> 16, ($this->color >> 8) & 0xff, $this->color & 0xff];
+	}
+
+	public function setColor($r, $g, $b){
+		$this->color = (($r & 0xff) << 16) + (($g & 0xff) << 8) + ($b & 0xff);
 	}
 
 	public function add(Entity $entity, $modify = false){
