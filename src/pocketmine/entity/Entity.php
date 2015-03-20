@@ -736,6 +736,7 @@ abstract class Entity extends Location implements Metadatable{
 			if($this->fireTicks <= 0){
 				$this->extinguish();
 			}else{
+				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, true);
 				$hasUpdate = true;
 			}
 		}
@@ -844,11 +845,6 @@ abstract class Entity extends Location implements Metadatable{
 		if($ticks > $this->fireTicks){
 			$this->fireTicks = $ticks;
 		}
-
-		$this->sendMetadata($this->hasSpawned);
-		if($this instanceof Player){
-			$this->sendMetadata($this);
-		}
 	}
 
 	public function getDirection(){
@@ -871,10 +867,7 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function extinguish(){
 		$this->fireTicks = 0;
-		$this->sendMetadata($this->hasSpawned);
-		if($this instanceof Player){
-			$this->sendMetadata($this);
-		}
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, false);
 	}
 
 	public function canTriggerWalking(){

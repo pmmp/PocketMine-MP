@@ -88,12 +88,12 @@ class Flat extends Generator{
 		$blocks = isset($preset[1]) ? $preset[1] : "";
 		$biome = isset($preset[2]) ? $preset[2] : 1;
 		$options = isset($preset[3]) ? $preset[3] : "";
-		preg_match_all('#(([0-9]{0,})x?([0-9]{1,3}:?[0-9]{0,2})),?#', $blocks, $matches);
+		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $blocks), $matches);
 		$y = 0;
 		$this->structure = [];
 		$this->chunks = [];
 		foreach($matches[3] as $i => $b){
-			$b = Item::fromString($b);
+			$b = Item::fromString($b . $matches[4][$i]);
 			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$this->structure[$cY] = [$b->getId(), $b->getDamage()];
@@ -107,11 +107,16 @@ class Flat extends Generator{
 		}
 
 
-		$this->chunk = $this->level->getChunk(0, 0);
+		$chunk = $this->level->getChunk(0, 0);
+		if($chunk === null){
+			return;
+		}
+		$this->chunk = clone $chunk;
 		$this->chunk->setGenerated();
 
 		for($Z = 0; $Z < 16; ++$Z){
 			for($X = 0; $X < 16; ++$X){
+				$this->chunk->setBiomeId($X, $Z, $biome);
 				for($y = 0; $y < 128; ++$y){
 					$this->chunk->setBlock($X, $y, $Z, ...$this->structure[$y]);
 				}

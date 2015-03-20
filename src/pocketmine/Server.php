@@ -315,7 +315,7 @@ class Server{
 	}
 
 	/**
-	 * @return string
+	 * @deprecated
 	 */
 	public function getServerName(){
 		return $this->getConfigString("motd", "Minecraft: PE Server");
@@ -2211,14 +2211,36 @@ class Server{
 			" | Load " . $this->getTickUsage() . "%\x07";
 	}
 	
-	public function getMemoryUsage(){
+	public function getMemoryUsage($advanced = false){
+		$VmSize = null;
+		$VmHWM = null;
 		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
-			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", file_get_contents("/proc/self/status"), $matches) > 0){
-				return $matches[1] * 1024;
+			$status = file_get_contents("/proc/self/status");
+			if(preg_match("/VmHWM:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmHWM = $matches[1] * 1024;
+			}
+
+			if(preg_match("/VmData:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmData = $matches[1] * 1024;
 			}
 		}
-		
-		return memory_get_usage(true);
+
+		if($VmHWM === null){
+			$VmHWM = memory_get_usage();
+		}
+
+		if(!$advanced){
+			return $VmHWM;
+		}
+
+		if($VmSize === null){
+			$VmSize = memory_get_usage(true);
+		}
+
+		return [
+			"hardware" => $VmHWM,
+			"virtual" => $VmSize,
+		];
 	}
 	
 	public function getThreadCount(){

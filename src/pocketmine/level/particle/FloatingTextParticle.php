@@ -79,10 +79,10 @@ class FloatingTextParticle extends Particle{
 			
 			$pk = new AddPlayerPacket();
 			$pk->eid = $this->entityId;
-			$pk->username = $this->title . "\n" . $this->text;
+			$pk->username = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 			$pk->clientID = $this->entityId;
 			$pk->x = $this->x;
-			$pk->y = $this->y - 2;
+			$pk->y = $this->y - 2.5;
 			$pk->z = $this->z;
 			$pk->yaw = 0;
 			$pk->pitch = 0;

@@ -146,7 +146,7 @@ class PlayerInventory extends BaseInventory{
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
-				$this->sendSlot($this->getHeldItemSlot());
+				$this->sendSlot($this->getHeldItemSlot(), $player);
 			}else{
 				$player->dataPacket($pk);
 			}

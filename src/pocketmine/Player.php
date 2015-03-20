@@ -1802,6 +1802,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					case 0: //Start break
 						$target = $this->level->getBlock(new Vector3($packet->x, $packet->y, $packet->z));
 						$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
+						$this->getServer()->getPluginManager()->callEvent($ev);
+						if($ev->isCancelled()){
+							$this->inventory->sendHeldItem($this);
+							break;
+						}
 						$this->lastBreak = microtime(true);
 						break;
 					case 5: //Shot arrow
@@ -2066,7 +2071,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 				$this->teleport($ev->getRespawnPosition());
 
-				$this->fireTicks = 0;
+				$this->extinguish();
 				$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, 300);
 				$this->deadTicks = 0;
 				$this->noDamageTicks = 60;

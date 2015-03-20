@@ -1404,6 +1404,8 @@ class Level implements ChunkManager, Metadatable{
 						return true;
 					}
 				}
+			}else{
+				return false;
 			}
 		}elseif($target->canBeActivated() === true and $target->onActivate($item, $player) === true){
 			return true;
