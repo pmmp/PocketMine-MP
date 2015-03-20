@@ -2415,6 +2415,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$pk->parameters = $parameters;
 		$this->dataPacket($pk);
 	}
+	
+	public function sendPopup($message){
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_POPUP;
+		$pk->message = $message;
+		$this->dataPacket($pk);
+	}
 
 	/**
 	 * @param string $message Message to be broadcasted
