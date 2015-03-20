@@ -166,7 +166,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $forceMovement = null;
 	protected $connected = true;
 	protected $ip;
-	protected $removeFormat = false;
+	protected $removeFormat = true;
 	protected $port;
 	protected $username;
 	protected $iusername;
@@ -2397,9 +2397,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	 * @param string $message
 	 */
 	public function sendMessage($message){
-		if($this->removeFormat !== false){
-			$message = TextFormat::clean($message);
-		}
 		$mes = explode("\n", $message);
 		foreach($mes as $m){
 			if($m !== ""){
@@ -2412,13 +2409,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	}
 
 	public function sendTranslation($message, array $parameters = []){
-		if($this->removeFormat !== false){
-			$message = TextFormat::clean($message);
-			foreach($parameters as $k => $v){
-				$parameters[$k] = TextFormat::clean($v);
-			}
-		}
-
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_TRANSLATION;
 		$pk->message = $message;

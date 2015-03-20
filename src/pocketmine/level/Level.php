@@ -97,6 +97,7 @@ use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 use pocketmine\level\particle\Particle;
+use pocketmine\level\sound\Sound;
 use pocketmine\level\particle\DestroyBlockParticle;
 
 #include <rules/Level.h>
@@ -366,6 +367,24 @@ class Level implements ChunkManager, Metadatable{
 		$this->blockMetadata = null;
 		$this->blockCache = [];
 		$this->temporalPosition = null;
+	}
+	
+	public function addSound(Sound $sound, array $players = null){
+		$pk = $sound->encode();
+
+		if($players === null){
+			$players = $this->getUsingChunk($sound->x >> 4, $sound->z >> 4);
+		}
+
+		if($pk !== null){
+			if(!is_array($pk)){
+				Server::broadcastPacket($players, $pk);
+			}else{
+				foreach($pk as $p){
+					Server::broadcastPacket($players, $p);
+				}
+			}
+		}
 	}
 	
 	public function addParticle(Particle $particle, array $players = null){
