@@ -59,6 +59,7 @@ class Flat extends Generator{
 		$this->preset = "2;7,2x3,2;1;";
 		//$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		$this->options = $options;
+		$this->chunk = null;
 
 		if(isset($this->options["decoration"])){
 			$ores = new Ore();
@@ -80,7 +81,7 @@ class Flat extends Generator{
 		}*/
 	}
 
-	protected function parsePreset($preset){
+	protected function parsePreset($preset, $chunkX, $chunkZ){
 		$this->preset = $preset;
 		$preset = explode(";", $preset);
 		$version = (int) $preset[0];
@@ -106,7 +107,7 @@ class Flat extends Generator{
 		}
 
 
-		$this->chunk = clone $this->level->getChunk(0, 0);
+		$this->chunk = $this->level->getChunk($chunkX, $chunkZ);
 		$this->chunk->setGenerated();
 
 		for($Z = 0; $Z < 16; ++$Z){
@@ -139,15 +140,24 @@ class Flat extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 
+		/*
+		  // Commented out : We want to delay this
 		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 			$this->parsePreset($this->options["preset"]);
 		}else{
 			$this->parsePreset($this->preset);
 		}
-
+		*/
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
+		if($this->chunk === null) {
+			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
+				$this->parsePreset($this->options["preset"], $chunkX, $chunkZ);
+			}else{
+				$this->parsePreset($this->preset, $chunkX, $chunkZ);
+			}
+		}
 		$chunk = clone $this->chunk;
 		$chunk->setX($chunkX);
 		$chunk->setZ($chunkZ);
