@@ -2074,6 +2074,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->setHealth(20);
 				$this->dead = false;
 
+				$this->removeAllEffects();
 				$this->sendData($this);
 
 				$this->sendSettings();
