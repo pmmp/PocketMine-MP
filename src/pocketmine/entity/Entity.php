@@ -285,6 +285,10 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
+	public function getEffect($effectId){
+		return isset($this->effects[$effectId]) ? $this->effects[$effectId] : null;
+	}
+
 	public function hasEffect($effectId){
 		return isset($this->effects[$effectId]);
 	}

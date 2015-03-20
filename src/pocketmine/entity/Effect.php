@@ -30,7 +30,7 @@ use pocketmine\Server;
 class Effect{
 	const SPEED = 1;
 	const SLOWNESS = 2;
-	//TODO: const SWIFTNESS = 3;
+	const SWIFTNESS = 3;
 	const FATIGUE = 4;
 	const MINING_FATIGUE = 4;
 	//TODO: const STRENGTH = 5;
@@ -61,7 +61,7 @@ class Effect{
 
 		self::$effects[Effect::SPEED] = new Effect(Effect::SPEED, "Speed", 124, 175, 198);
 		self::$effects[Effect::SLOWNESS] = new Effect(Effect::SLOWNESS, "Slowness", 90, 108, 129, true);
-		//self::$effects[Effect::SWIFTNESS] = new Effect(Effect::SWIFTNESS, "Swiftness", 217, 192, 67);
+		self::$effects[Effect::SWIFTNESS] = new Effect(Effect::SWIFTNESS, "Swiftness", 217, 192, 67);
 		self::$effects[Effect::FATIGUE] = new Effect(Effect::FATIGUE, "Mining Fatigue", 74, 66, 23, true);
 		//self::$effects[Effect::STRENGTH] = new Effect(Effect::STRENGTH, "Strength", 147, 36, 35);
 		//self::$effects[Effect::HEALING] = new InstantEffect(Effect::HEALING, "Healing", 248, 36, 35);

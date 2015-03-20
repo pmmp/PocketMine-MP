@@ -98,6 +98,7 @@ use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\utils\TextFormat;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
+use pocketmine\entity\Effect;
 use pocketmine\level\particle\DestroyBlockParticle;
 
 #include <rules/Level.h>
@@ -1289,6 +1290,9 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			$breakTime = $player->isCreative() ? 0.15 : $target->getBreakTime($item);
+			if($player->hasEffect(Effect::SWIFTNESS)){
+				$breakTime *= pow(0.80, $player->getEffect(Effect::SWIFTNESS)->getAmplifier() + 1);
+			}
 
 			if(!$ev->getInstaBreak() and ($player->lastBreak + $breakTime) >= microtime(true)){
 				return false;

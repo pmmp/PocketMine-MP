@@ -38,6 +38,7 @@ class FloatingTextParticle extends Particle{
 	protected $text;
 	protected $title;
 	protected $entityId;
+	protected $invisible = false;
 
 	public function __construct(Vector3 $pos, $text, $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
@@ -51,6 +52,14 @@ class FloatingTextParticle extends Particle{
 
 	public function setTitle($title){
 		$this->title = $title;
+	}
+	
+	public function isInvisible(){
+		return $this->invisible;
+	}
+	
+	public function setInvisible($value = true){
+		$this->invisible = (bool) $value;
 	}
 
 	public function encode(){
@@ -66,24 +75,27 @@ class FloatingTextParticle extends Particle{
 			$p[] = $pk0;
 		}
 
-		$pk = new AddPlayerPacket();
-		$pk->eid = $this->entityId;
-		$pk->username = $this->title . "\n" . $this->text;
-		$pk->clientID = $this->entityId;
-		$pk->x = $this->x;
-		$pk->y = $this->y - 2;
-		$pk->z = $this->z;
-		$pk->yaw = 0;
-		$pk->pitch = 0;
-		$pk->item = 0;
-		$pk->meta = 0;
-		$pk->metadata = [
-			Entity::DATA_FLAGS => [Entity::DATA_TYPE_BYTE, 1 << Entity::DATA_FLAG_INVISIBLE],
-			Entity::DATA_AIR => [Entity::DATA_TYPE_SHORT, 300],
-			Entity::DATA_SHOW_NAMETAG => [Entity::DATA_TYPE_BYTE, 1]
-		];
+		if(!$this->invisible){
+			
+			$pk = new AddPlayerPacket();
+			$pk->eid = $this->entityId;
+			$pk->username = $this->title . "\n" . $this->text;
+			$pk->clientID = $this->entityId;
+			$pk->x = $this->x;
+			$pk->y = $this->y - 2;
+			$pk->z = $this->z;
+			$pk->yaw = 0;
+			$pk->pitch = 0;
+			$pk->item = 0;
+			$pk->meta = 0;
+			$pk->metadata = [
+				Entity::DATA_FLAGS => [Entity::DATA_TYPE_BYTE, 1 << Entity::DATA_FLAG_INVISIBLE],
+				Entity::DATA_AIR => [Entity::DATA_TYPE_SHORT, 300],
+				Entity::DATA_SHOW_NAMETAG => [Entity::DATA_TYPE_BYTE, 1]
+			];
 
-		$p[] = $pk;
+			$p[] = $pk;
+		}
 		
 		return $pk;
 	}
