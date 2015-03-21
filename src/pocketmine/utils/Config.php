@@ -83,8 +83,7 @@ class Config{
 	public function reload(){
 		$this->config = [];
 		$this->correct = false;
-		unset($this->type);
-		$this->load($this->file);
+		$this->load($this->file, $this->type);
 	}
 
 	/**
