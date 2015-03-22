@@ -24,8 +24,6 @@ namespace pocketmine\utils;
 
 /**
  * Unsecure Random Number Noise, used for fast seeded values
- * WARNING: This class is available on the PocketMine-MP Zephir project.
- * If this class is modified, remember to modify the PHP C extension.
  */
 class Random{
 

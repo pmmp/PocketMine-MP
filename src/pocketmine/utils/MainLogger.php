@@ -47,7 +47,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->logFile = $logFile;
 		$this->logDebug = (bool) $logDebug;
 		$this->logStream = "";
-		$this->start(PTHREADS_INHERIT_NONE);
+		$this->start();
 	}
 
 	/**
@@ -190,7 +190,11 @@ class MainLogger extends \AttachableThreadedLogger{
 			$this->attachment->call($level, $message);
 		}
 
-		$this->logStream .= date("Y-m-d", $now) . " " . $cleanMessage;
+		$str = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
+		$this->synchronized(function($str){
+			$this->logStream .= $str;
+			$this->notify();
+		}, $str);
 	}
 
 	public function run(){
@@ -201,15 +205,15 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		while($this->shutdown === false){
-			if(strlen($this->logStream) > 0){
-				$this->lock();
-				$chunk = $this->logStream;
-				$this->logStream = "";
-				$this->unlock();
-				fwrite($this->logResource, $chunk);
-			}else{
-				usleep(250000);
-			}
+			$this->synchronized(function(){
+				if(strlen($this->logStream) > 0){
+					$chunk = $this->logStream;
+					$this->logStream = "";
+					fwrite($this->logResource, $chunk);
+				}else{
+					$this->wait(250000);
+				}
+			});
 		}
 
 		if(strlen($this->logStream) > 0){

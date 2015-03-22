@@ -1561,6 +1561,8 @@ class Server{
 				$this->logger->warning($this->getName() . " may not work right with less than 128MB of memory");
 			}
 			@ini_set("memory_limit", $memory);
+			$this->logger->notice("The memory limit will only affect the main thread, and it's unreliable.");
+			$this->logger->notice("To control the memory usage, reduce the amount of threads and chunks loaded");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -1855,6 +1857,8 @@ class Server{
 				$this->logger->warning($this->getName() . " may not work right with less than 256MB of memory", true, true, 0);
 			}
 			@ini_set("memory_limit", $memory);
+			$this->logger->notice("The memory limit will only affect the main thread, and it's unreliable.");
+			$this->logger->notice("To control the memory usage, reduce the amount of threads and chunks loaded");
 		}
 
 		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
@@ -2192,14 +2196,8 @@ class Server{
 			return;
 		}
 		
-		$usage = $this->getMemoryUsage();
-		if($usage === null){
-			$usage = round((memory_get_usage() / 1024) / 1024, 2) .
-			"/" . round((memory_get_usage(true) / 1024) / 1024, 2) .
-			" MB @ " . $this->getThreadCount() . " threads";
-		}else{
-			$usage = round(($usage / 1024) / 1024, 2) . " MB @ " . $this->getThreadCount() . " threads";
-		}
+		$u = $this->getMemoryUsage(true);
+		$usage = round(($u[0] / 1024) / 1024, 2) . "/".round(($u[1] / 1024) / 1024, 2)." MB @ " . $this->getThreadCount() . " threads";
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
@@ -2213,34 +2211,31 @@ class Server{
 	
 	public function getMemoryUsage($advanced = false){
 		$VmSize = null;
-		$VmHWM = null;
+		$VmRSS = null;
 		if(Utils::getOS() === "linux" or Utils::getOS() === "bsd"){
 			$status = file_get_contents("/proc/self/status");
-			if(preg_match("/VmHWM:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmHWM = $matches[1] * 1024;
+			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmRSS = $matches[1] * 1024;
 			}
 
-			if(preg_match("/VmData:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmData = $matches[1] * 1024;
+			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmSize = $matches[1] * 1024;
 			}
 		}
 
-		if($VmHWM === null){
-			$VmHWM = memory_get_usage();
+		if($VmRSS === null){
+			$VmRSS = memory_get_usage();
 		}
 
 		if(!$advanced){
-			return $VmHWM;
+			return $VmRSS;
 		}
 
 		if($VmSize === null){
 			$VmSize = memory_get_usage(true);
 		}
 
-		return [
-			"hardware" => $VmHWM,
-			"virtual" => $VmSize,
-		];
+		return [$VmRSS, $VmSize];
 	}
 	
 	public function getThreadCount(){
