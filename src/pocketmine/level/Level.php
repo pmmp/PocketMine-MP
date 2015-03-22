@@ -163,7 +163,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var Block[][] */
 	protected $changedBlocks = [];
-	protected $changedCount = [];
 
 	/** @var ReversePriorityQueue */
 	private $updateQueue;
@@ -583,51 +582,21 @@ class Level implements ChunkManager, Metadatable{
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
 
-		if(count($this->changedCount) > 0){
+		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
-				foreach($this->changedCount as $index => $mini){
-					for($Y = 0; $Y < 8; ++$Y){
-						if(($mini & (1 << $Y)) === 0){
-							continue;
+				foreach($this->changedBlocks as $index => $blocks){
+					if(count($blocks) > 512){
+						Level::getXZ($index, $X, $Z);
+						foreach($this->getUsingChunk($X, $Z) as $p){
+							$p->unloadChunk($X, $Z);
 						}
-						if(count($this->changedBlocks[$index][$Y]) < 256){
-							continue;
-						}else{
-							$X = null;
-							$Z = null;
-							Level::getXZ($index, $X, $Z);
-							foreach($this->getUsingChunk($X, $Z) as $p){
-								$p->unloadChunk($X, $Z);
-							}
-							unset($this->changedBlocks[$index][$Y]);
-						}
+					}else{
+						$this->sendBlocks($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), $blocks);
 					}
 				}
-				$this->changedCount = [];
-				if(count($this->changedBlocks) > 0){
-					foreach($this->changedBlocks as $index => $mini){
-						foreach($mini as $blocks){
-							/** @var Block $b */
-							foreach($blocks as $b){
-								if(!($b instanceof Block)){
-									$b = $this->getBlock($b);
-								}
-								$pk = new UpdateBlockPacket();
-								$pk->x = $b->x;
-								$pk->y = $b->y;
-								$pk->z = $b->z;
-								$pk->block = $b->getId();
-								$pk->meta = $b->getDamage();
-								Server::broadcastPacket($this->getUsingChunk($b->x >> 4, $b->z >> 4), $pk);
-							}
-						}
-					}
-					$this->changedBlocks = [];
-				}
-			}else{
-				$this->changedCount = [];
-				$this->changedBlocks = [];
 			}
+
+			$this->changedBlocks = [];
 
 		}
 
@@ -636,6 +605,23 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunksPopulated = 0;
 
 		$this->timings->doTick->stopTiming();
+	}
+
+	/**
+	 * @param Player[] $target
+	 * @param Block[]  $blocks
+	 * @param int      $flags
+	 */
+	public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE){
+		$pk = new UpdateBlockPacket();
+		foreach($blocks as $b){
+			if($b === null){
+				continue;
+			}
+
+			$pk->records[] = [$b->x, $b->z, $b->y, $b->getId(), $b->getDamage(), $flags];
+		}
+		Server::broadcastPacket($target, $pk);
 	}
 
 	public function clearCache(){
@@ -1146,7 +1132,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $block
-	 * @param bool    $direct
+	 * @param bool    $direct @deprecated
 	 * @param bool    $update
 	 *
 	 * @return bool Whether the block has been updated or not
@@ -1169,14 +1155,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($direct === true){
-				$pk = new UpdateBlockPacket();
-				$pk->x = $pos->x;
-				$pk->y = $pos->y;
-				$pk->z = $pos->z;
-				$pk->block = $block->getId();
-				$pk->meta = $block->getDamage();
-
-				Server::broadcastPacket($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), $pk);
+				$this->sendBlocks($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 			}else{
 				if(!($pos instanceof Position)){
 					$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
@@ -1184,14 +1163,9 @@ class Level implements ChunkManager, Metadatable{
 				$block->position($pos);
 				if(!isset($this->changedBlocks[$index])){
 					$this->changedBlocks[$index] = [];
-					$this->changedCount[$index] = 0;
 				}
-				$Y = $pos->y >> 4;
-				if(!isset($this->changedBlocks[$index][$Y])){
-					$this->changedBlocks[$index][$Y] = [];
-					$this->changedCount[$index] |= 1 << $Y;
-				}
-				$this->changedBlocks[$index][$Y][Level::blockHash($block->x, $block->y, $block->z)] = clone $block;
+
+				$this->changedBlocks[$index][Level::blockHash($block->x, $block->y, $block->z)] = clone $block;
 			}
 
 			if($update === true){
@@ -1663,13 +1637,8 @@ class Level implements ChunkManager, Metadatable{
 
 		if(!isset($this->changedBlocks[$index = Level::chunkHash($x >> 4, $z >> 4)])){
 			$this->changedBlocks[$index] = [];
-			$this->changedCount[$index] = 0;
 		}
-		if(!isset($this->changedBlocks[$index][$Y = $y >> 4])){
-			$this->changedBlocks[$index][$Y] = [];
-			$this->changedCount[$index] |= 1 << $Y;
-		}
-		$this->changedBlocks[$index][$Y][Level::blockHash($x, $y, $z)] = new Vector3($x, $y, $z);
+		$this->changedBlocks[$index][Level::blockHash($x, $y, $z)] = new Vector3($x, $y, $z);
 	}
 
 	/**
@@ -1699,13 +1668,8 @@ class Level implements ChunkManager, Metadatable{
 
 		if(!isset($this->changedBlocks[$index = Level::chunkHash($x >> 4, $z >> 4)])){
 			$this->changedBlocks[$index] = [];
-			$this->changedCount[$index] = 0;
 		}
-		if(!isset($this->changedBlocks[$index][$Y = $y >> 4])){
-			$this->changedBlocks[$index][$Y] = [];
-			$this->changedCount[$index] |= 1 << $Y;
-		}
-		$this->changedBlocks[$index][$Y][Level::blockHash($x, $y, $z)] = new Vector3($x, $y, $z);
+		$this->changedBlocks[$index][Level::blockHash($x, $y, $z)] = new Vector3($x, $y, $z);
 	}
 
 	/**

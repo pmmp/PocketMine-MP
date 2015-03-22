@@ -105,7 +105,6 @@ use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
-use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -1715,21 +1714,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
-					$pk = new UpdateBlockPacket();
-					$pk->x = $target->x;
-					$pk->y = $target->y;
-					$pk->z = $target->z;
-					$pk->block = $target->getId();
-					$pk->meta = $target->getDamage();
-					$this->dataPacket($pk);
-
-					$pk = new UpdateBlockPacket();
-					$pk->x = $block->x;
-					$pk->y = $block->y;
-					$pk->z = $block->z;
-					$pk->block = $block->getId();
-					$pk->meta = $block->getDamage();
-					$this->dataPacket($pk);
+					$this->level->sendBlocks([$this], [$target, $block]);
 					break;
 				}elseif($packet->face === 0xff){
 					if($this->isCreative()){
@@ -1906,13 +1891,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$target = $this->level->getBlock($vector);
 				$tile = $this->level->getTile($vector);
 
-				$pk = new UpdateBlockPacket();
-				$pk->x = $target->x;
-				$pk->y = $target->y;
-				$pk->z = $target->z;
-				$pk->block = $target->getId();
-				$pk->meta = $target->getDamage();
-				$this->dataPacket($pk);
+				$this->level->sendBlocks([$this], [$target]);
 
 				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
