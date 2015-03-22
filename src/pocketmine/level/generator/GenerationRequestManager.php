@@ -74,9 +74,12 @@ class GenerationRequestManager{
 		$this->generationThread->pushMainToThreadPacket($buffer);
 	}
 
-	public function requestChunk(Level $level, $chunkX, $chunkZ){
+	public function requestChunk(Level $level, $chunkX, $chunkZ, FullChunk $chunk = null){
 		$buffer = chr(GenerationManager::PACKET_REQUEST_CHUNK) . Binary::writeInt($level->getId()) . Binary::writeInt($chunkX) . Binary::writeInt($chunkZ);
 		$this->generationThread->pushMainToThreadPacket($buffer);
+		if($chunk !== null){
+			$this->sendChunk($level->getId(), $chunk);
+		}
 	}
 
 	protected function handleRequest($levelID, $chunkX, $chunkZ){

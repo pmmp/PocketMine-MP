@@ -583,15 +583,15 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickTiles->stopTiming();
 
 		if(count($this->changedBlocks) > 0){
-			if(count($this->players) > 0){
+			if(count($this->players) > 5){
 				foreach($this->changedBlocks as $index => $blocks){
+					Level::getXZ($index, $X, $Z);
 					if(count($blocks) > 512){
-						Level::getXZ($index, $X, $Z);
 						foreach($this->getUsingChunk($X, $Z) as $p){
 							$p->unloadChunk($X, $Z);
 						}
 					}else{
-						$this->sendBlocks($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), $blocks);
+						$this->sendBlocks($this->getUsingChunk($X, $Z), $blocks);
 					}
 				}
 			}
@@ -1821,14 +1821,18 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
-		$oldChunk = $this->getChunk($x, $z, false);
-		unset($this->chunkGenerationQueue[Level::chunkHash($x, $z)]);
-		$chunk->setProvider($this->provider);
-		$this->setChunk($x, $z, $chunk);
-		$chunk = $this->getChunk($x, $z, false);
-		if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated()){
-			$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
+		Timings::$generationTimer->startTiming();
+		if(isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
+			$oldChunk = $this->getChunk($x, $z, false);
+			unset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)]);
+			$chunk->setProvider($this->provider);
+			$this->setChunk($x, $z, $chunk);
+			$chunk = $this->getChunk($x, $z, false);
+			if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated() and $chunk->getProvider() !== null){
+				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
+			}
 		}
+		Timings::$generationTimer->stopTiming();
 	}
 
 	public function setChunk($x, $z, FullChunk $chunk, $unload = true){
@@ -2079,7 +2083,12 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
+		if($chunk->getProvider() !== null){
+			$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
+		}else{
+			$this->unloadChunk($x, $z, false);
+			return false;
+		}
 
 		return true;
 	}
@@ -2114,7 +2123,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunk = $this->getChunk($x, $z);
 
-		if($chunk !== null){
+		if($chunk !== null and $chunk->getProvider() !== null){
 			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($chunk));
 			if($ev->isCancelled()){
 				return false;
@@ -2291,24 +2300,30 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 
-	public function populateChunk($x, $z){
+	public function populateChunk($x, $z, $force = false){
 		if(!$this->isChunkPopulated($x, $z)){
 			$populate = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					if(!$this->isChunkGenerated($x + $xx, $z + $zz)){
 						$populate = false;
-						$this->generateChunk($x + $xx, $z + $zz);
+						$this->generateChunk($x + $xx, $z + $zz, $force);
 					}
 				}
 			}
 
 			if($this->chunksPopulated < $this->chunksPopulatedPerTick and $populate){
+				Timings::$generationTimer->startTiming();
 				$this->generatorInstance->populateChunk($x, $z);
 				$chunk = $this->getChunk($x, $z);
 				$chunk->setPopulated(true);
-				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
+				if($chunk->getProvider() !== null){
+					$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
+				}else{
+					$this->unloadChunk($x, $z, false);
+				}
 				++$this->chunksPopulated;
+				Timings::$generationTimer->stopTiming();
 				return true;
 			}
 
@@ -2317,10 +2332,15 @@ class Level implements ChunkManager, Metadatable{
 		return true;
 	}
 
-	public function generateChunk($x, $z){
+	public function generateChunk($x, $z, $force = false){
 		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
-			$this->chunkGenerationQueue[$index] = true;
-			$this->server->getGenerationManager()->requestChunk($this, $x, $z);
+			$this->chunkGenerationQueue[$index] = 0;
+			$this->server->getGenerationManager()->requestChunk($this, $x, $z, $this->getChunk($x, $z, true));
+		}elseif($force){
+			$value = ++$this->chunkGenerationQueue[$index];
+			if($value % 40 === 0){
+				$this->server->getGenerationManager()->requestChunk($this, $x, $z);
+			}
 		}
 	}
 

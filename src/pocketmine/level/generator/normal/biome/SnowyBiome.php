@@ -21,15 +21,17 @@
 
 namespace pocketmine\level\generator\normal\biome;
 
-class BeachBiome extends GrassyBiome{
+use pocketmine\block\Block;
+
+abstract class SnowyBiome extends NormalBiome{
 
 	public function __construct(){
-		parent::__construct();
-
-		$this->setElevation(62, 65);
-	}
-
-	public function getName(){
-		return "Beach";
+		$this->setGroundCover([
+			Block::get(Block::SNOW_LAYER, 0),
+			Block::get(Block::GRASS, 0),
+			Block::get(Block::DIRT, 0),
+			Block::get(Block::DIRT, 0),
+			Block::get(Block::DIRT, 0),
+		]);
 	}
 }

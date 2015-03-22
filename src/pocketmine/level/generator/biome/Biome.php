@@ -23,14 +23,16 @@ namespace pocketmine\level\generator\biome;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\normal\biome\BeachBiome;
+use pocketmine\level\generator\normal\biome\SwampBiome;
 use pocketmine\level\generator\normal\biome\DesertBiome;
 use pocketmine\level\generator\normal\biome\ForestBiome;
+use pocketmine\level\generator\normal\biome\IcePlainsBiome;
 use pocketmine\level\generator\normal\biome\MountainsBiome;
 use pocketmine\level\generator\normal\biome\OceanBiome;
 use pocketmine\level\generator\normal\biome\PlainBiome;
 use pocketmine\level\generator\normal\biome\RiverBiome;
 use pocketmine\level\generator\normal\biome\SmallMountainsBiome;
+use pocketmine\level\generator\normal\biome\TaigaBiome;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
 
@@ -41,12 +43,17 @@ abstract class Biome{
 	const DESERT = 2;
 	const MOUNTAINS = 3;
 	const FOREST = 4;
-
+	const TAIGA = 5;
+	const SWAMP = 6;
 	const RIVER = 7;
 
-	const BEACH = 16;
+	const ICE_PLAINS = 12;
+
 
 	const SMALL_MOUNTAINS = 20;
+
+
+	const BIRCH_FOREST = 27;
 
 
 	const MAX_BIOMES = 256;
@@ -64,6 +71,9 @@ abstract class Biome{
 
 	private $groundCover = [];
 
+	protected $rainfall = 0.5;
+	protected $temperature = 0.5;
+
 	protected static function register($id, Biome $biome){
 		self::$biomes[(int) $id] = $biome;
 		$biome->setId((int) $id);
@@ -75,12 +85,17 @@ abstract class Biome{
 		self::register(self::DESERT, new DesertBiome());
 		self::register(self::MOUNTAINS, new MountainsBiome());
 		self::register(self::FOREST, new ForestBiome());
+		self::register(self::TAIGA, new TaigaBiome());
 
 		self::register(self::RIVER, new RiverBiome());
 
-		self::register(self::BEACH, new BeachBiome());
+		self::register(self::ICE_PLAINS, new IcePlainsBiome());
+
+		self::register(self::SWAMP, new SwampBiome());
 
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
+
+		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
 	}
 
 	/**
@@ -89,7 +104,7 @@ abstract class Biome{
 	 * @return Biome
 	 */
 	public static function getBiome($id){
-		return isset(self::$biomes[$id]) ? self::$biomes[$id] : null;
+		return isset(self::$biomes[$id]) ? self::$biomes[$id] : self::$biomes[self::OCEAN];
 	}
 
 	public function clearPopulators(){
@@ -149,4 +164,18 @@ abstract class Biome{
 	public function setGroundCover(array $covers){
 		$this->groundCover = $covers;
 	}
+
+	public function getTemperature(){
+		return $this->temperature;
+	}
+
+	public function getRainfall(){
+		return $this->rainfall;
+	}
+
+
+	/**
+	 * @return int (randomness|Red|Green|Blue)
+	 */
+	abstract public function getColor();
 }

@@ -34,9 +34,16 @@ class RiverBiome extends GrassyBiome{
 		$this->addPopulator($tallGrass);
 
 		$this->setElevation(58, 62);
+
+		$this->temperature = 0.5;
+		$this->rainfall = 0.7;
 	}
 
 	public function getName(){
 		return "River";
+	}
+
+	public function getColor(){
+		return 0x8dc360;
 	}
 }

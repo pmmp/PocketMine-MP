@@ -37,17 +37,37 @@ class BiomeSelector{
 	/** @var Biome[] */
 	private $biomes = [];
 
-	private $select = [];
+	private $map = [];
 
-	public function __construct(Random $random, Biome $fallback){
+	private $lookup;
+
+	public function __construct(Random $random, callable $lookup, Biome $fallback){
 		$this->fallback = $fallback;
-		$this->temperature = new Simplex($random, 1, 0.004, 0.5, 2);
-		$this->rainfall = new Simplex($random, 2, 0.004, 0.5, 2);
+		$this->lookup = $lookup;
+		$this->temperature = new Simplex($random, 1, 0.001, 1, 1);
+		$this->rainfall = new Simplex($random, 1, 0.001, 1, 1);
 	}
 
-	public function addBiome(Biome $biome, $start, $end){
+	public function recalculate(){
+		$this->map = new \SplFixedArray(64 * 64);
+
+		for($i = 0; $i < 64; ++$i){
+			for($j = 0; $j < 64; ++$j){
+				$this->map[$i + ($j << 6)] = call_user_func($this->lookup, $i / 63, $j / 63);
+			}
+		}
+	}
+
+	public function addBiome(Biome $biome){
 		$this->biomes[$biome->getId()] = $biome;
-		$this->select[$biome->getId()] = [$biome->getId(), $start, $end];
+	}
+
+	public function getTemperature($x, $z){
+		return ($this->temperature->noise2D($x, $z, true) + 1) / 2;
+	}
+
+	public function getRainfall($x, $z){
+		return ($this->rainfall->noise2D($x, $z, true) + 1) / 2;
 	}
 
 	/**
@@ -57,27 +77,10 @@ class BiomeSelector{
 	 * @return Biome
 	 */
 	public function pickBiome($x, $z){
+		$temperature = (int) ($this->getTemperature($x, $z) * 63);
+		$rainfall = (int) ($this->getRainfall($x, $z) * 63);
 
-		//$temperature = $this->temperature->noise2D($x, $z);
-		$rainfall = $this->rainfall->noise2D($x, $z);
-
-		if($rainfall > 0.9){
-			return Biome::getBiome(Biome::OCEAN);
-		}elseif($rainfall > 0.7){
-			return Biome::getBiome(Biome::RIVER);
-		}elseif($rainfall > 0.6){
-			return Biome::getBiome(Biome::BEACH);
-		}elseif($rainfall > 0.2){
-			return Biome::getBiome(Biome::FOREST);
-		}elseif($rainfall > -0.3){
-			return Biome::getBiome(Biome::PLAINS);
-		}elseif($rainfall > -0.6){
-			return Biome::getBiome(Biome::DESERT);
-		}elseif($rainfall > -0.7){
-			return Biome::getBiome(Biome::BEACH);
-		}else{
-			return Biome::getBiome(Biome::OCEAN);
-		}
-
+		$biomeId = $this->map[$temperature + ($rainfall << 6)];
+		return isset($this->biomes[$biomeId]) ? $this->biomes[$biomeId] : $this->fallback;
 	}
 }

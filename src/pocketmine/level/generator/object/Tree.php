@@ -21,6 +21,7 @@
 
 namespace pocketmine\level\generator\object;
 
+use pocketmine\block\Block;
 use pocketmine\block\Sapling;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
@@ -33,6 +34,9 @@ class Tree{
 		6 => true,
 		17 => true,
 		18 => true,
+		Block::SNOW_LAYER => true,
+		Block::LOG2 => true,
+		Block::LEAVES2 => true
 	];
 
 	public static function growTree(ChunkManager $level, $x, $y, $z, Random $random, $type = 0){

@@ -34,9 +34,16 @@ class OceanBiome extends GrassyBiome{
 		$this->addPopulator($tallGrass);
 
 		$this->setElevation(46, 58);
+
+		$this->temperature = 0.5;
+		$this->rainfall = 0.5;
 	}
 
 	public function getName(){
 		return "Ocean";
+	}
+
+	public function getColor(){
+		return 0x8da360;
 	}
 }

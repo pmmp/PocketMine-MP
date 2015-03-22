@@ -177,8 +177,9 @@ class GenerationManager{
 			if($this->needsChunk[$levelID][0] === $chunk->getX() and $this->needsChunk[$levelID][1] === $chunk->getZ()){
 				$this->needsChunk[$levelID] = $chunk;
 			}
+		}elseif(isset($this->levels[$levelID])){
+			$this->levels[$levelID]->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
 		}
-		//TODO: set new received chunks
 	}
 
 	/**

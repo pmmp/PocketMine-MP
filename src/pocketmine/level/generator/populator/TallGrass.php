@@ -43,37 +43,30 @@ class TallGrass extends Populator{
 		$this->level = $level;
 		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
-			$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 15);
-			$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 15);
-			for($size = 30; $size > 0; --$size){
-				$xx = $x - 7 + $random->nextRange(0, 15);
-				$zz = $z - 7 + $random->nextRange(0, 15);
-				$yy = $this->getHighestWorkableBlock($xx, $zz);
+			$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
+			$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);
+			$y = $this->getHighestWorkableBlock($x, $z);
 
-				if($yy !== -1 and $this->canTallGrassStay($xx, $yy, $zz)){
-					$this->level->setBlockIdAt($xx, $yy, $zz, Block::TALL_GRASS);
-					$this->level->setBlockDataAt($xx, $yy, $zz, 1);
-				}
+			if($y !== -1 and $this->canTallGrassStay($x, $y, $z)){
+				$this->level->setBlockIdAt($x, $y, $z, Block::TALL_GRASS);
+				$this->level->setBlockDataAt($x, $y, $z, 1);
 			}
 		}
 	}
 
 	private function canTallGrassStay($x, $y, $z){
-		return $this->level->getBlockIdAt($x, $y, $z) === Block::AIR and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
+		$b = $this->level->getBlockIdAt($x, $y, $z);
+		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockIdAt($x, $y - 1, $z) === Block::GRASS;
 	}
 
 	private function getHighestWorkableBlock($x, $z){
-		for($y = 128; $y > 0; --$y){
+		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
-			if($b === Block::AIR or $b === Block::LEAVES){
-				if(--$y <= 0){
-					return -1;
-				}
-			}else{
+			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::SNOW_LAYER){
 				break;
 			}
 		}
 
-		return ++$y;
+		return $y === 0 ? -1 : ++$y;
 	}
 }

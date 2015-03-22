@@ -33,6 +33,12 @@ class Tree extends Populator{
 	private $randomAmount;
 	private $baseAmount;
 
+	private $type;
+
+	public function __construct($type = Sapling::OAK){
+		$this->type = $type;
+	}
+
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
 	}
@@ -51,24 +57,17 @@ class Tree extends Populator{
 			if($y === -1){
 				continue;
 			}
-			if($random->nextFloat() > 0.75){
-				$meta = Sapling::BIRCH;
-			}else{
-				$meta = Sapling::OAK;
-			}
-			ObjectTree::growTree($this->level, $x, $y, $z, $random, $meta);
+			ObjectTree::growTree($this->level, $x, $y, $z, $random, $this->type);
 		}
 	}
 
 	private function getHighestWorkableBlock($x, $z){
-		for($y = 128; $y > 0; --$y){
+		for($y = 127; $y > 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
-			if($b !== Block::DIRT and $b !== Block::GRASS){
-				if(--$y <= 0){
-					return -1;
-				}
-			}else{
+			if($b === Block::DIRT or $b === Block::GRASS){
 				break;
+			}elseif($b !== 0 and $b !== Block::SNOW_LAYER){
+				return -1;
 			}
 		}
 

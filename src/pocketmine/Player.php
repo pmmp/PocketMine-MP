@@ -616,7 +616,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$Z = null;
 			Level::getXZ($index, $X, $Z);
 
-			if(!$this->level->populateChunk($X, $Z)){
+			if(!$this->level->populateChunk($X, $Z, !$this->spawned or count($this->usedChunks) < ($this->viewDistance - 24))){
 				if($this->spawned){
 					continue;
 				}else{

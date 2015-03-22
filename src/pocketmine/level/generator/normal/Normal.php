@@ -83,9 +83,7 @@ class Normal extends Generator{
 		$bellHeight = 2 * self::$SMOOTH_SIZE;
 		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-				$bx = $bellSize * $sx;
-				$bz = $bellSize * $sz;
-				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
+				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = 10 / sqrt($sx ** 2 + $sz ** 2 + 0.2);
 			}
 		}
 	}
@@ -102,9 +100,54 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseBase = new Simplex($this->random, 16, 0.012, 0.5, 2);
+		$this->noiseBase = new Simplex($this->random, 16, 0.02, 0.5, 2);
 		$this->random->setSeed($this->level->getSeed());
-		$this->selector = new BiomeSelector($this->random, Biome::getBiome(Biome::OCEAN));
+		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
+			$rainfall *= $temperature;
+			if($temperature < 0.10){
+				return Biome::ICE_PLAINS;
+			}elseif($rainfall < 0.20){
+				if($temperature < 0.50){
+					return Biome::ICE_PLAINS;
+				}elseif($temperature < 0.95){
+					return Biome::SMALL_MOUNTAINS;
+				}else{
+					return Biome::DESERT;
+				}
+			}elseif($rainfall > 0.5 and $temperature < 0.7){
+				return Biome::SWAMP;
+			}elseif($temperature < 0.50){
+				return Biome::TAIGA;
+			}elseif($temperature < 0.97){
+				if($rainfall < 0.35){
+					return Biome::MOUNTAINS;
+				}else {
+					return Biome::RIVER;
+				}
+			}else{
+				if($rainfall < 0.45){
+					return Biome::PLAINS;
+				}elseif($rainfall < 0.90){
+					return Biome::FOREST;
+				}else{
+					return Biome::BIRCH_FOREST;
+				}
+			}
+		}, Biome::getBiome(Biome::OCEAN));
+
+		$this->selector->addBiome(Biome::getBiome(Biome::OCEAN));
+		$this->selector->addBiome(Biome::getBiome(Biome::PLAINS));
+		$this->selector->addBiome(Biome::getBiome(Biome::DESERT));
+		$this->selector->addBiome(Biome::getBiome(Biome::MOUNTAINS));
+		$this->selector->addBiome(Biome::getBiome(Biome::FOREST));
+		$this->selector->addBiome(Biome::getBiome(Biome::TAIGA));
+		$this->selector->addBiome(Biome::getBiome(Biome::SWAMP));
+		$this->selector->addBiome(Biome::getBiome(Biome::RIVER));
+		$this->selector->addBiome(Biome::getBiome(Biome::ICE_PLAINS));
+		$this->selector->addBiome(Biome::getBiome(Biome::SMALL_MOUNTAINS));
+		$this->selector->addBiome(Biome::getBiome(Biome::BIRCH_FOREST));
+
+		$this->selector->recalculate();
 
 		$cover = new GroundCover();
 		$this->generationPopulators[] = $cover;
@@ -127,7 +170,7 @@ class Normal extends Generator{
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
-		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 8, 8, 8, $chunkX * 16, 0, $chunkZ * 16);
+		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
@@ -139,16 +182,16 @@ class Normal extends Generator{
 
 				$biome = $this->selector->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
-				$chunk->setBiomeColor($x, $z, 255 - (($biome->getId() * 1377) % 255), 255 - (($biome->getId() * 4096) % 255), 255 - (($biome->getId() * 31337) % 255));
+				$color = $biome->getColor();
+				$chunk->setBiomeColor($x, $z, $color >> 16, ($color >> 8) & 0xff, $color & 0xff);
 
 				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
 						if($sx === 0 and $sz === 0){
-							$adjacent = $biome;
+							continue;
 						}else{
-							$adjacent = $this->selector->pickBiome($chunkX * 16 + $x + $sx * 16, $chunkZ * 16 + $z + $sz * 16);
+							$adjacent = $this->selector->pickBiome($chunkX * 16 + $x + $sx * 8, $chunkZ * 16 + $z + $sz * 8);
 						}
-						/** @var NormalBiome $adjacent */
 						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
 						$minSum += $adjacent->getMinElevation() * $weight;
 						$maxSum += $adjacent->getMaxElevation() * $weight;
