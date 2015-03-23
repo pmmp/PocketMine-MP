@@ -161,7 +161,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var FullChunk[]|Chunk[] */
 	private $chunks = [];
 
-	/** @var Block[][] */
+	/** @var Vector3[][] */
 	protected $changedBlocks = [];
 
 	/** @var ReversePriorityQueue */
@@ -591,7 +591,7 @@ class Level implements ChunkManager, Metadatable{
 							$p->unloadChunk($X, $Z);
 						}
 					}else{
-						$this->sendBlocks($this->getUsingChunk($X, $Z), $blocks);
+						$this->sendBlocks($this->getUsingChunk($X, $Z), $blocks, UpdateBlockPacket::FLAG_ALL);
 					}
 				}
 			}
@@ -618,8 +618,12 @@ class Level implements ChunkManager, Metadatable{
 			if($b === null){
 				continue;
 			}
-
-			$pk->records[] = [$b->x, $b->z, $b->y, $b->getId(), $b->getDamage(), $flags];
+            if($b instanceof Block){
+                $pk->records[] = [$b->x, $b->z, $b->y, $b->getId(), $b->getDamage(), $flags];
+            }else{
+                $fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
+                $pk->records[] = [$b->x, $b->z, $b->y, $fullBlock >> 4, $fullBlock & 0xf, $flags];
+            }
 		}
 		Server::broadcastPacket($target, $pk);
 	}

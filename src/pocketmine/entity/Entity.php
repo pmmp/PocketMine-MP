@@ -83,6 +83,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_SHOW_NAMETAG = 3;
 	const DATA_POTION_COLOR = 7;
 	const DATA_POTION_VISIBLE = 8;
+    const DATA_NO_AI = 15;
 
 
 	const DATA_FLAG_ONFIRE = 0;
@@ -1474,14 +1475,16 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param mixed $value
 	 */
 	public function setDataProperty($id, $type, $value){
-		$this->dataProperties[$id] = [$type, $value];
+        if($this->getDataProperty($id) !== $value){
+            $this->dataProperties[$id] = [$type, $value];
 
-		$targets = $this->hasSpawned;
-		if($this instanceof Player){
-			$targets[] = $this;
-		}
+            $targets = $this->hasSpawned;
+            if($this instanceof Player){
+                $targets[] = $this;
+            }
 
-		$this->sendData($targets, [$id => $this->dataProperties[$id]]);
+            $this->sendData($targets, [$id => $this->dataProperties[$id]]);
+        }
 	}
 
 	/**

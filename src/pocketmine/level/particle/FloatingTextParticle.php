@@ -91,8 +91,9 @@ class FloatingTextParticle extends Particle{
 			$pk->metadata = [
 				Entity::DATA_FLAGS => [Entity::DATA_TYPE_BYTE, 1 << Entity::DATA_FLAG_INVISIBLE],
 				Entity::DATA_AIR => [Entity::DATA_TYPE_SHORT, 300],
-				Entity::DATA_SHOW_NAMETAG => [Entity::DATA_TYPE_BYTE, 1]
-			];
+				Entity::DATA_SHOW_NAMETAG => [Entity::DATA_TYPE_BYTE, 1],
+				Entity::DATA_NO_AI => [Entity::DATA_TYPE_BYTE, 1]
+            ];
 
 			$p[] = $pk;
 		}

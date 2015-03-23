@@ -105,6 +105,7 @@ use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
 use pocketmine\network\protocol\TakeItemEntityPacket;
+use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -1714,7 +1715,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$target = $this->level->getBlock($blockVector);
 					$block = $target->getSide($packet->face);
 
-					$this->level->sendBlocks([$this], [$target, $block]);
+					$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 					break;
 				}elseif($packet->face === 0xff){
 					if($this->isCreative()){
@@ -1891,7 +1892,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$target = $this->level->getBlock($vector);
 				$tile = $this->level->getTile($vector);
 
-				$this->level->sendBlocks([$this], [$target]);
+				$this->level->sendBlocks([$this], [$target], UpdateBlockPacket::FLAG_ALL_PRIORITY);
 
 				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
