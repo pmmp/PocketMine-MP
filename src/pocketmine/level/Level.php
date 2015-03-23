@@ -583,7 +583,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickTiles->stopTiming();
 
 		if(count($this->changedBlocks) > 0){
-			if(count($this->players) > 5){
+			if(count($this->players) > 0){
 				foreach($this->changedBlocks as $index => $blocks){
 					Level::getXZ($index, $X, $Z);
 					if(count($blocks) > 512){
