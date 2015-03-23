@@ -79,8 +79,6 @@ class Normal extends Generator{
 
 	private static function generateKernel(){
 		self::$GAUSSIAN_KERNEL = [];
-		$bellSize = 1 / self::$SMOOTH_SIZE;
-		$bellHeight = 2 * self::$SMOOTH_SIZE;
 		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
 				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = 10 / sqrt($sx ** 2 + $sz ** 2 + 0.2);
@@ -100,7 +98,7 @@ class Normal extends Generator{
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseBase = new Simplex($this->random, 16, 0.02, 0.5, 2);
+		$this->noiseBase = new Simplex($this->random, 16, 0.015, 0.5, 2);
 		$this->random->setSeed($this->level->getSeed());
 		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
 			$rainfall *= $temperature;
@@ -110,19 +108,27 @@ class Normal extends Generator{
 				if($temperature < 0.50){
 					return Biome::ICE_PLAINS;
 				}elseif($temperature < 0.95){
-					return Biome::SMALL_MOUNTAINS;
+					return Biome::PLAINS;
 				}else{
 					return Biome::DESERT;
 				}
 			}elseif($rainfall > 0.5 and $temperature < 0.7){
-				return Biome::SWAMP;
+				if($rainfall < 0.7){
+					return Biome::OCEAN;
+				}elseif($rainfall < 0.85){
+					return Biome::RIVER;
+				}else{
+					return Biome::SWAMP;
+				}
 			}elseif($temperature < 0.50){
 				return Biome::TAIGA;
 			}elseif($temperature < 0.97){
-				if($rainfall < 0.35){
+				if($rainfall < 0.25){
 					return Biome::MOUNTAINS;
-				}else {
-					return Biome::RIVER;
+				}elseif($rainfall < 0.35){
+					return Biome::SMALL_MOUNTAINS;
+				}else{
+					return Biome::PLAINS;
 				}
 			}else{
 				if($rainfall < 0.45){
@@ -190,9 +196,12 @@ class Normal extends Generator{
 						if($sx === 0 and $sz === 0){
 							continue;
 						}else{
-							$adjacent = $this->selector->pickBiome($chunkX * 16 + $x + $sx * 8, $chunkZ * 16 + $z + $sz * 8);
+							$adjacent = $this->selector->pickBiome(($chunkX + $sx) * 16 + $x, ($chunkZ + $sz) * 16 + $z);
 						}
-						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
+						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] / ($biome->getMaxElevation() / 128 + 2);
+						if($adjacent->getMaxElevation() > $biome->getMaxElevation()){
+							$weight /= 2;
+						}
 						$minSum += $adjacent->getMinElevation() * $weight;
 						$maxSum += $adjacent->getMaxElevation() * $weight;
 						$weightSum += $weight;
