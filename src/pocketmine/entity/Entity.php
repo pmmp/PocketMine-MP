@@ -766,22 +766,9 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastYaw = $this->yaw;
 			$this->lastPitch = $this->pitch;
 
-			if($this instanceof Human){
-				$pk = new MovePlayerPacket();
-				$pk->eid = $this->id;
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$pk->yaw = $this->yaw;
-				$pk->pitch = $this->pitch;
-				$pk->bodyYaw = $this->yaw;
-				Server::broadcastPacket($this->hasSpawned, $pk);
-			}else{
-				foreach($this->hasSpawned as $player){
-					$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch);
-				}
+			foreach($this->hasSpawned as $player){
+				$player->addEntityMovement($this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
 			}
-
 		}
 
 		if(($this->lastMotionX != $this->motionX or $this->lastMotionY != $this->motionY or $this->lastMotionZ != $this->motionZ)){
@@ -1428,7 +1415,7 @@ abstract class Entity extends Location implements Metadatable{
 			$this->lastPitch = $this->pitch;
 
 			foreach($this->hasSpawned as $player){
-				$player->addEntityMovement($this->getId(), $this->x, $this->y, $this->z, $this->yaw, $this->pitch);
+				$player->addEntityMovement($this->getId(), $this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->yaw);
 			}
 
 			return true;

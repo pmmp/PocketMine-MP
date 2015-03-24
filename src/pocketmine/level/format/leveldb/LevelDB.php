@@ -149,7 +149,6 @@ class LevelDB extends BaseLevelProvider{
 		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
 
 		$ordered = zlib_encode(
-			Binary::writeLInt($x) . Binary::writeLInt($z) .
 			$chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .

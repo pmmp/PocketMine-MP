@@ -635,7 +635,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
-		if(count($this->usedChunks) >= 16 and $this->spawned === false){
+		if(count($this->usedChunks) >= 8 and $this->spawned === false){
 			$spawned = 0;
 			foreach($this->usedChunks as $d){
 				if($d === true){
@@ -643,7 +643,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 
-			if($spawned < 8){
+			if($spawned < 4){
 				return;
 			}
 
@@ -1071,8 +1071,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		$this->motionToSend[$entityId] = [$entityId, $x, $y, $z];
 	}
 
-	public function addEntityMovement($entityId, $x, $y, $z, $yaw, $pitch){
-		$this->moveToSend[$entityId] = [$entityId, $x, $y, $z, $yaw, $pitch];
+	public function addEntityMovement($entityId, $x, $y, $z, $yaw, $pitch, $headYaw = null){
+		$this->moveToSend[$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
 	}
 
 	protected function processMovement($currentTick){
@@ -1574,19 +1574,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->orderChunks();
 				$this->sendNextChunk();
 				break;
-			case ProtocolInfo::ROTATE_HEAD_PACKET:
-				if($this->spawned === false or $this->dead === true){
-					break;
-				}
-				$packet->yaw %= 360;
-				$packet->pitch %= 360;
-
-				if($packet->yaw < 0){
-					$packet->yaw += 360;
-				}
-
-				$this->setRotation($packet->yaw, $this->pitch);
-				break;
 			case ProtocolInfo::MOVE_PLAYER_PACKET:
 
 				$newPos = new Vector3($packet->x, $packet->y, $packet->z);
@@ -1657,7 +1644,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							break;
 						}
 					}else{
-						$this->inventory->setHeldItemSlot($packet->slot); //set Air
+                        if($packet->selectedSlot >= 0 and $packet->selectedSlot < 9){
+                            $this->inventory->setHeldItemIndex($packet->selectedSlot);
+                            $this->inventory->setHeldItemSlot($packet->slot);
+                        }else{
+                            $this->inventory->sendContents($this);
+                            break;
+                        }
 					}
 				}elseif(!isset($item) or $slot === -1 or $item->getId() !== $packet->item or $item->getDamage() !== $packet->meta){ // packet error or not implemented
 					$this->inventory->sendContents($this);
@@ -1670,7 +1663,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					);
 					$this->inventory->setHeldItemIndex($packet->slot);
 				}else{
-					$this->inventory->setHeldItemSlot($slot);
+                    if($packet->selectedSlot >= 0 and $packet->selectedSlot < 9){
+                        $this->inventory->setHeldItemIndex($packet->selectedSlot);
+                        $this->inventory->setHeldItemSlot($slot);
+                    }else{
+                        $this->inventory->sendContents($this);
+                        break;
+                    }
 				}
 
 				$this->inventory->sendHeldItem($this->hasSpawned);
@@ -1716,6 +1715,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$block = $target->getSide($packet->face);
 
 					$this->level->sendBlocks([$this], [$target, $block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
+
+                    $this->inventory->sendHeldItem($this);
 					break;
 				}elseif($packet->face === 0xff){
 					if($this->isCreative()){
@@ -1893,6 +1894,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$tile = $this->level->getTile($vector);
 
 				$this->level->sendBlocks([$this], [$target], UpdateBlockPacket::FLAG_ALL_PRIORITY);
+
+                $this->inventory->sendHeldItem($this);
 
 				if($tile instanceof Spawnable){
 					$tile->spawnTo($this);
