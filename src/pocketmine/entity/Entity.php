@@ -513,18 +513,42 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @param float                 $damage
-	 * @param int|EntityDamageEvent $source
+	 * @param float             $damage
+	 * @param EntityDamageEvent $source
 	 *
 	 */
-	abstract function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC);
+    public function attack($damage, EntityDamageEvent $source){
+        if($this->hasEffect(Effect::FIRE_RESISTANCE)
+            and $source->getCause() === EntityDamageEvent::CAUSE_FIRE
+            and $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
+            and $source->getCause() === EntityDamageEvent::CAUSE_LAVA){
+            $source->setCancelled();
+        }
+
+        $this->server->getPluginManager()->callEvent($source);
+        if($source->isCancelled()){
+            return;
+        }
+
+        $this->setLastDamageCause($source);
+
+
+        $this->setHealth($this->getHealth() - $source->getFinalDamage());
+    }
 
 	/**
-	 * @param float                       $amount
-	 * @param int|EntityRegainHealthEvent $source
+	 * @param float                   $amount
+	 * @param EntityRegainHealthEvent $source
 	 *
 	 */
-	abstract function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC);
+	public function heal($amount, EntityRegainHealthEvent $source){
+        $this->server->getPluginManager()->callEvent($source);
+        if($source->isCancelled()){
+            return;
+        }
+
+        $this->setHealth($this->getHealth() + $source->getAmount());
+    }
 
 	/**
 	 * @return int
@@ -556,10 +580,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @param int|EntityDamageEvent $type
+	 * @param EntityDamageEvent $type
 	 */
-	public function setLastDamageCause($type){
-		$this->lastDamageCause = $type instanceof EntityDamageEvent ? $type : $type;
+	public function setLastDamageCause(EntityDamageEvent $type){
+		$this->lastDamageCause = $type;
 	}
 
 	/**

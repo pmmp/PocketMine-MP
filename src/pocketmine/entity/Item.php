@@ -130,22 +130,6 @@ class Item extends Entity{
 		return $hasUpdate or !$this->onGround or $this->motionX != 0 or $this->motionY != 0 or $this->motionZ != 0;
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		if($source instanceof EntityDamageEvent){
-			$this->server->getPluginManager()->callEvent($source);
-			$damage = $source->getFinalDamage();
-			if($source->isCancelled()){
-				return;
-			}
-		}
-		$this->setLastDamageCause($source);
-		$this->setHealth($this->getHealth() - $damage);
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
-	}
-
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Item = new Compound("Item", [

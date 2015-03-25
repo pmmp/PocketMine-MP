@@ -73,36 +73,19 @@ abstract class Living extends Entity implements Damageable{
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-		if($this->hasEffect(Effect::FIRE_RESISTANCE) and $source){
-			return;
-		}
-
+	public function attack($damage, EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
-			if($lastCause instanceof EntityDamageEvent and $lastCause->getDamage() >= $damage){
-				if($source instanceof EntityDamageEvent){
-					$source->setCancelled();
-					$this->server->getPluginManager()->callEvent($source);
-					$damage = $source->getFinalDamage();
-					if($source->isCancelled()){
-						return;
-					}
-				}else{
-					return;
-				}
-			}else{
-				return;
-			}
-		}elseif($source instanceof EntityDamageEvent){
-			$this->server->getPluginManager()->callEvent($source);
-			$damage = $source->getFinalDamage();
-			if($source->isCancelled()){
-				return;
+			if($lastCause !== null and $lastCause->getDamage() >= $damage){
+                $source->setCancelled();
 			}
 		}
 
-		$this->setLastDamageCause($source);
+        parent::attack($damage, $source);
+
+        if($source->isCancelled()){
+            return;
+        }
 
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
@@ -111,8 +94,6 @@ abstract class Living extends Entity implements Damageable{
 			$yaw = atan2($deltaX, $deltaZ);
 			$this->knockBack($e, $damage, sin($yaw), cos($yaw), $source->getKnockBack());
 		}
-
-		$this->setHealth($this->getHealth() - $damage);
 
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getId();
@@ -139,10 +120,6 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->setMotion($motion);
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-		$this->setHealth($this->getHealth() + $amount);
 	}
 
 	public function kill(){

@@ -59,14 +59,6 @@ abstract class Projectile extends Entity{
 		$this->namedtag->Age = new Short("Age", $this->age);
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
-	}
-
 	public function onUpdate($currentTick){
 		if($this->closed){
 			return false;

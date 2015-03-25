@@ -144,14 +144,6 @@ class FallingSand extends Entity{
 		$this->namedtag->Data = new Byte("Data", $this->damage);
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
-
-	}
-
-	public function heal($amount, $source = EntityRegainHealthEvent::CAUSE_MAGIC){
-
-	}
-
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = FallingSand::NETWORK_ID;

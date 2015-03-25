@@ -2123,10 +2123,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							Server::broadcastPacket($this->getViewers(), $pk);
 
 							$amount = $items[$slot->getId()];
-							$this->server->getPluginManager()->callEvent($ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING));
-							if(!$ev->isCancelled()){
-								$this->heal($ev->getAmount(), $ev);
-							}
+                            $ev = new EntityRegainHealthEvent($this, $amount, EntityRegainHealthEvent::CAUSE_EATING);
+							$this->heal($ev->getAmount(), $ev);
 
 							--$slot->count;
 							$this->inventory->setItemInHand($slot, $this);
@@ -2650,38 +2648,24 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	public function attack($damage, $source = EntityDamageEvent::CAUSE_MAGIC){
+	public function attack($damage, EntityDamageEvent $source){
 		if($this->dead === true){
 			return;
 		}
 
-		if($this->isCreative()){
-			if($source instanceof EntityDamageEvent){
-				$cause = $source->getCause();
-			}else{
-				$cause = $source;
-			}
-
-			if(
-				$cause !== EntityDamageEvent::CAUSE_MAGIC
-				and $cause !== EntityDamageEvent::CAUSE_SUICIDE
-				and $cause !== EntityDamageEvent::CAUSE_VOID
-			){
-				if($source instanceof EntityDamageEvent){
-					$source->setCancelled();
-				}
-				return;
-			}
-		}
-
+        if($this->isCreative()
+            and $source->getCause() !== EntityDamageEvent::CAUSE_MAGIC
+            and $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE
+            and $source->getCause() !== EntityDamageEvent::CAUSE_VOID
+        ){
+            $source->setCancelled();
+        }
 
 		parent::attack($damage, $source);
 
-		if($source instanceof EntityDamageEvent and $source->isCancelled()){
+		if($source->isCancelled()){
 			return;
-		}
-
-		if($this->getLastDamageCause() === $source){
+		}elseif($this->getLastDamageCause() === $source){
 			$pk = new EntityEventPacket();
 			$pk->eid = $this->getId();
 			$pk->event = 2;
