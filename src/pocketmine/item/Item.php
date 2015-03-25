@@ -316,7 +316,7 @@ class Item{
 	const WOODEN_DOOR = 324;
 	const BUCKET = 325;
 
-	const MINECART = 329;
+	const MINECART = 328;
 
 	const IRON_DOOR = 330;
 	const REDSTONE = 331;
