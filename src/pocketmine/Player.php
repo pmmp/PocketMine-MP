@@ -89,6 +89,7 @@ use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
+use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\DisconnectPacket;
 use pocketmine\network\protocol\EntityEventPacket;
@@ -180,7 +181,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	public $usedChunks = [];
 	protected $loadQueue = [];
-	protected $chunkACK = [];
 	protected $nextChunkOrderRun = 5;
 
 	/** @var Player[] */
@@ -557,49 +557,24 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 	}
 
-	/**
-	 * @param int $identifier
-	 *
-	 * @return bool
-	 */
-	public function checkACK($identifier){
-		return !isset($this->needACK[$identifier]);
-	}
-
-	public function handleACK($identifier){
-		unset($this->needACK[$identifier]);
-		if(isset($this->chunkACK[$identifier])){
-			$index = $this->chunkACK[$identifier];
-			unset($this->chunkACK[$identifier]);
-			if(isset($this->usedChunks[$index])){
-				$this->usedChunks[$index] = true;
-				$X = null;
-				$Z = null;
-				Level::getXZ($index, $X, $Z);
-
-				foreach($this->level->getChunkEntities($X, $Z) as $entity){
-					if($entity !== $this and !$entity->closed and !$entity->dead){
-						$entity->spawnTo($this);
-					}
-				}
-			}
-		}
-	}
-
 	public function sendChunk($x, $z, $payload){
 		if($this->connected === false){
 			return;
 		}
 
+		$this->usedChunks[Level::chunkHash($x, $z)] = true;
+
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $x;
 		$pk->chunkZ = $z;
 		$pk->data = $payload;
-		$cnt = $this->dataPacket($pk, true);
-		if($cnt === false or $cnt === true){
-			return;
+		$this->dataPacket($pk);
+
+		foreach($this->level->getChunkEntities($x, $z) as $entity){
+			if($entity !== $this and !$entity->closed and !$entity->dead){
+				$entity->spawnTo($this);
+			}
 		}
-		$this->chunkACK[$cnt] = Level::chunkHash($x, $z);
 	}
 
 	protected function sendNextChunk(){
@@ -1391,6 +1366,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			return;
 		}
 
+		if($packet->pid() === ProtocolInfo::BATCH_PACKET){
+			/** @var BatchPacket $packet */
+			$this->server->getNetwork()->processBatch($packet, $this);
+			return;
+		}
+
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
 			return;
@@ -1408,10 +1389,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				$this->iusername = strtolower($this->username);
 				$this->loginData = ["clientId" => $packet->clientId, "loginData" => $packet->loginData];
 
-				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers()){
-					if($this->kick("server full") === true){
-						return;
-					}
+				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("server full")){
+					return;
 				}
 				if($packet->protocol1 !== ProtocolInfo::CURRENT_PROTOCOL){
 					if($packet->protocol1 < ProtocolInfo::CURRENT_PROTOCOL){

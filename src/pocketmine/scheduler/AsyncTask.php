@@ -31,6 +31,7 @@ use pocketmine\Server;
 abstract class AsyncTask extends \Collectable{
 
 	private $result = null;
+	private $serialized = false;
 	/** @var int */
 	private $taskId = null;
 
@@ -55,7 +56,7 @@ abstract class AsyncTask extends \Collectable{
 	 * @return mixed
 	 */
 	public function getResult(){
-		return unserialize($this->result);
+		return $this->serialized ? unserialize($this->result) : $this->result;
 	}
 
 	/**
@@ -67,9 +68,11 @@ abstract class AsyncTask extends \Collectable{
 
 	/**
 	 * @param mixed $result
+	 * @param bool  $serialize
 	 */
-	public function setResult($result){
-		$this->result = serialize($result);
+	public function setResult($result, $serialize = true){
+		$this->result = $serialize ? serialize($result) : $result;
+		$this->serialized = $serialize;
 	}
 
 	public function setTaskId($taskId){

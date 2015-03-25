@@ -380,9 +380,7 @@ class Level implements ChunkManager, Metadatable{
 			if(!is_array($pk)){
 				Server::broadcastPacket($players, $pk);
 			}else{
-				foreach($pk as $p){
-					Server::broadcastPacket($players, $p);
-				}
+				$this->server->batchPackets($players, $pk);
 			}
 		}
 	}
@@ -398,9 +396,7 @@ class Level implements ChunkManager, Metadatable{
 			if(!is_array($pk)){
 				Server::broadcastPacket($players, $pk);
 			}else{
-				foreach($pk as $p){
-					Server::broadcastPacket($players, $p);
-				}
+				$this->server->batchPackets($players, $pk);
 			}
 		}
 	}

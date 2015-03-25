@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\Player;
@@ -275,14 +276,8 @@ abstract class Door extends Transparent{
 				if($player instanceof Player){
 					unset($players[$player->getId()]);
 				}
-				$pk = new LevelEventPacket();
-				$pk->x = $this->x;
-				$pk->y = $this->y;
-				$pk->z = $this->z;
-				$pk->evid = 1003;
-				$pk->data = 0;
-				Server::broadcastPacket($players, $pk);
 
+				$this->level->addSound(new DoorSound($this));
 				return true;
 			}
 
@@ -294,13 +289,7 @@ abstract class Door extends Transparent{
 			if($player instanceof Player){
 				unset($players[$player->getId()]);
 			}
-			$pk = new LevelEventPacket();
-			$pk->x = $this->x;
-			$pk->y = $this->y;
-			$pk->z = $this->z;
-			$pk->evid = 1003;
-			$pk->data = 0;
-			Server::broadcastPacket($players, $pk);
+			$this->level->addSound(new DoorSound($this));
 		}
 
 		return true;

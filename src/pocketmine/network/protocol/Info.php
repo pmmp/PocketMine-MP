@@ -91,5 +91,6 @@ interface Info{
 	//const PLAYER_INPUT_PACKET = 0xaf;
 	const FULL_CHUNK_DATA_PACKET = 0xb0;
 	const SET_DIFFICULTY_PACKET = 0xb1;
+	const BATCH_PACKET = 0xb2;
 
 }

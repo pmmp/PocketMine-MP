@@ -34,7 +34,6 @@ class ChunkRequestTask extends AsyncTask{
 	protected $levelId;
 	protected $chunkX;
 	protected $chunkZ;
-	protected $compressionLevel;
 
 	/** @var \pocketmine\level\format\ChunkSection[] */
 	protected $sections;
@@ -69,8 +68,6 @@ class ChunkRequestTask extends AsyncTask{
 
 		$this->tiles = $tiles;
 
-		$this->compressionLevel = Level::$COMPRESSION_LEVEL;
-
 	}
 
 	public function onRun(){
@@ -102,9 +99,9 @@ class ChunkRequestTask extends AsyncTask{
 
 		$biomeColors = pack("N*", ...$this->biomeColors);
 
-		$ordered = zlib_encode($orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $this->biomeIds . $biomeColors . $this->tiles, ZLIB_ENCODING_DEFLATE, $this->compressionLevel);
+		$ordered = $orderedIds . $orderedData . $orderedSkyLight . $orderedLight . $this->biomeIds . $biomeColors . $this->tiles;
 
-		$this->setResult($ordered);
+		$this->setResult($ordered, false);
 	}
 
 	public function getColumn(&$data, $x, $z){

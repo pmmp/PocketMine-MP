@@ -148,15 +148,13 @@ class LevelDB extends BaseLevelProvider{
 
 		$biomeColors = pack("N*", ...$chunk->getBiomeColorArray());
 
-		$ordered = zlib_encode(
-			$chunk->getBlockIdArray() .
+		$ordered = $chunk->getBlockIdArray() .
 			$chunk->getBlockDataArray() .
 			$chunk->getBlockSkyLightArray() .
 			$chunk->getBlockLightArray() .
 			$chunk->getBiomeIdArray() .
 			$biomeColors .
-			$tiles
-			, ZLIB_ENCODING_DEFLATE, Level::$COMPRESSION_LEVEL);
+			$tiles;
 
 		$this->getLevel()->chunkRequestCallback($x, $z, $ordered);
 

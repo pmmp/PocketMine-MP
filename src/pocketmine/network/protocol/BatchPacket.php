@@ -24,28 +24,25 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class FullChunkDataPacket extends DataPacket{
+class BatchPacket extends DataPacket{
 	public static $pool = [];
 	public static $next = 0;
 
-	public $chunkX;
-	public $chunkZ;
-	public $data;
+	public $payload;
 
 	public function pid(){
-		return Info::FULL_CHUNK_DATA_PACKET;
+		return Info::BATCH_PACKET;
 	}
 
 	public function decode(){
-
+		$size = $this->getInt();
+		$this->payload = $this->get($size);
 	}
 
 	public function encode(){
 		$this->reset();
-        $this->putInt($this->chunkX);
-        $this->putInt($this->chunkZ);
-		$this->putInt(strlen($this->data));
-		$this->put($this->data);
+		$this->putInt(strlen($this->payload));
+		$this->put($this->payload);
 	}
 
 }
