@@ -46,6 +46,8 @@ chunk-sending:
  per-tick: 8
  #Amount of chunks sent around each player
  max-chunks: 256
+ #Amount of chunks that need to be sent before spawning the player
+ spawn-threshold: 56
 
 chunk-ticking:
  #Max amount of chunks processed each tick
