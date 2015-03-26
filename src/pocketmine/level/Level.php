@@ -1150,9 +1150,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 			$block->position($pos);
 			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
-			if(ADVANCED_CACHE == true){
-				Cache::remove("world:" . $this->getId() . ":" . $index);
-			}
 
 			if($direct === true){
 				$this->sendBlocks($this->getUsingChunk($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
@@ -1847,9 +1844,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->provider->setChunk($x, $z, $chunk);
 			$this->chunks[$index] = $chunk;
 		}
-		if(ADVANCED_CACHE == true){
-			Cache::remove("world:" . $this->getId() . ":" . Level::chunkHash($x, $z));
-		}
+
 		$chunk->setChanged();
 	}
 
@@ -1937,23 +1932,13 @@ class Level implements ChunkManager, Metadatable{
 					continue;
 				}
 				Level::getXZ($index, $x, $z);
-				if(ADVANCED_CACHE == true and ($cache = Cache::get("world:" . $this->getId() . ":" . $index)) !== false){
-					/** @var Player[] $players */
-					foreach($players as $player){
-						if($player->isConnected() and isset($player->usedChunks[$index])){
-							$player->sendChunk($x, $z, $cache);
-						}
-					}
-					unset($this->chunkSendQueue[$index]);
-				}else{
-					$this->chunkSendTasks[$index] = true;
-					$this->timings->syncChunkSendPrepareTimer->startTiming();
-					$task = $this->provider->requestChunkTask($x, $z);
-					if($task instanceof AsyncTask){
-						$this->server->getScheduler()->scheduleAsyncTask($task);
-					}
-					$this->timings->syncChunkSendPrepareTimer->stopTiming();
+				$this->chunkSendTasks[$index] = true;
+				$this->timings->syncChunkSendPrepareTimer->startTiming();
+				$task = $this->provider->requestChunkTask($x, $z);
+				if($task instanceof AsyncTask){
+					$this->server->getScheduler()->scheduleAsyncTask($task);
 				}
+				$this->timings->syncChunkSendPrepareTimer->stopTiming();
 			}
 
 			$this->timings->syncChunkSendTimer->stopTiming();
@@ -1963,10 +1948,6 @@ class Level implements ChunkManager, Metadatable{
 	public function chunkRequestCallback($x, $z, $payload){
 		$index = Level::chunkHash($x, $z);
 		if(isset($this->chunkSendTasks[$index])){
-
-			if(ADVANCED_CACHE == true){
-				Cache::add("world:" . $this->getId() . ":" . $index, $payload, 60);
-			}
 			foreach($this->chunkSendQueue[$index] as $player){
 				/** @var Player $player */
 				if($player->isConnected() and isset($player->usedChunks[$index])){
@@ -2147,7 +2128,6 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunks[$index]);
 		unset($this->usedChunks[$index]);
 		unset($this->chunkTickList[$index]);
-		Cache::remove("world:" . $this->getId() . ":$index");
 
 		$this->timings->doChunkUnload->stopTiming();
 

@@ -1575,14 +1575,8 @@ class Server{
 		if($this->logger instanceof MainLogger){
 			$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 		}
-		define("ADVANCED_CACHE", $this->getProperty("settings.advanced-cache", false));
-		if(ADVANCED_CACHE == true){
-			$this->logger->info("Advanced cache enabled");
-		}
 
-		Level::$COMPRESSION_LEVEL = $this->getProperty("chunk-sending.compression-level", 8);
-
-		if(defined("pocketmine\\DEBUG") and \pocketmine\DEBUG >= 0){
+		if(\pocketmine\DEBUG >= 0){
 			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 		}
 
@@ -1690,7 +1684,6 @@ class Server{
 			return;
 		}
 
-		$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([Cache::class, "cleanup"]), $this->getProperty("ticks-per.cache-cleanup", 900), $this->getProperty("ticks-per.cache-cleanup", 900));
 		if($this->getAutoSave() and $this->getProperty("ticks-per.autosave", 6000) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doAutoSave"]), $this->getProperty("ticks-per.autosave", 6000), $this->getProperty("ticks-per.autosave", 6000));
 		}
