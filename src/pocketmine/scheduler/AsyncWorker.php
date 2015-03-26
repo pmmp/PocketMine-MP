@@ -38,6 +38,9 @@ class AsyncWorker extends Worker{
 			require(\pocketmine\PATH . "src/pocketmine/CompatibleClassLoader.php");
 		}
 		$this->loader->register(true);
+
+		global $store;
+		$store = [];
 	}
 
 	public function start($options = PTHREADS_INHERIT_NONE){

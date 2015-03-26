@@ -168,7 +168,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function close(Player $player, $reason = "unknown reason"){
 		if(isset($this->identifiers[$player])){
 			unset($this->players[$this->identifiers[$player]]);
-			unset($this->batchedPackets[$identifier]);
+			unset($this->batchedPackets[$this->identifiers[$player]]);
 			unset($this->identifiersACK[$this->identifiers[$player]]);
 			$this->interface->closeSession($this->identifiers[$player], $reason);
 			$this->identifiers->detach($player);

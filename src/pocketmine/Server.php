@@ -91,7 +91,6 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Chest;
@@ -100,7 +99,6 @@ use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Cache;
 use pocketmine\utils\Config;
 use pocketmine\utils\LevelException;
 use pocketmine\utils\MainLogger;
@@ -146,9 +144,6 @@ class Server{
 
 	/** @var ServerScheduler */
 	private $scheduler = null;
-
-	/** @var GenerationRequestManager */
-	private $generationManager = null;
 
 	/**
 	 * Counts the ticks since the server start
@@ -567,13 +562,6 @@ class Server{
 	 */
 	public function getScheduler(){
 		return $this->scheduler;
-	}
-
-	/**
-	 * @return GenerationRequestManager
-	 */
-	public function getGenerationManager(){
-		return $this->generationManager;
 	}
 
 	/**
@@ -1192,7 +1180,7 @@ class Server{
 
 		foreach($order as $index => $distance){
 			Level::getXZ($index, $chunkX, $chunkZ);
-			$level->generateChunk($chunkX, $chunkZ);
+			$level->generateChunk($chunkX, $chunkZ, true);
 		}
 
 		return true;
@@ -1624,12 +1612,6 @@ class Server{
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-		if($this->getProperty("chunk-generation.use-async", true)){
-			$this->generationManager = new GenerationRequestManager($this);
-		}else{
-			$this->generationManager = new GenerationInstanceManager($this);
-		}
-
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
 		if(extension_loaded("leveldb")){
@@ -1691,8 +1673,6 @@ class Server{
 		if($this->getProperty("chunk-gc.period-in-ticks", 600) > 0){
 			$this->scheduler->scheduleDelayedRepeatingTask(new CallbackTask([$this, "doLevelGC"]), $this->getProperty("chunk-gc.period-in-ticks", 600), $this->getProperty("chunk-gc.period-in-ticks", 600));
 		}
-
-		$this->scheduler->scheduleRepeatingTask(new GarbageCollectionTask(), 900);
 
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
@@ -1965,10 +1945,6 @@ class Server{
 
 			foreach($this->getLevels() as $level){
 				$this->unloadLevel($level, true);
-			}
-
-			if($this->generationManager instanceof GenerationRequestManager){
-				$this->generationManager->shutdown();
 			}
 
 			HandlerList::unregisterAll();
@@ -2367,16 +2343,6 @@ class Server{
 				}
 			}
 		}
-
-		Timings::$generationTimer->startTiming();
-		try{
-			$this->generationManager->process();
-		}catch(\Exception $e){
-			if($this->logger instanceof MainLogger){
-				$this->logger->logException($e);
-			}
-		}
-		Timings::$generationTimer->stopTiming();
 
 		if(($this->tickCounter % 100) === 0){
 			foreach($this->levels as $level){
