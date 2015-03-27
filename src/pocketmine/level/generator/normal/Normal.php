@@ -80,6 +80,7 @@ class Normal extends Generator{
 	private static function generateKernel(){
 		self::$GAUSSIAN_KERNEL = [];
 		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
+			self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE] = [];
 			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
 				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = 10 / sqrt($sx ** 2 + $sz ** 2 + 0.2);
 			}
@@ -94,11 +95,26 @@ class Normal extends Generator{
 		return [];
 	}
 
+	public function pickBiome($x, $z){
+		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->level->getSeed();
+		$hash *= $hash + 223;
+		$xNoise = $hash >> 20 & 3;
+		$zNoise = $hash >> 22 & 3;
+		if ($xNoise == 3) {
+			$xNoise = 1;
+		}
+		if($zNoise == 3) {
+			$zNoise = 1;
+		}
+
+		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
+	}
+
 	public function init(ChunkManager $level, Random $random){
 		$this->level = $level;
 		$this->random = $random;
 		$this->random->setSeed($this->level->getSeed());
-		$this->noiseBase = new Simplex($this->random, 16, 0.015, 0.5, 2);
+		$this->noiseBase = new Simplex($this->random, 16, 0.01, 0.5, 2);
 		$this->random->setSeed($this->level->getSeed());
 		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
 			$rainfall *= $temperature;
@@ -185,19 +201,16 @@ class Normal extends Generator{
 				$maxSum = 0;
 				$weightSum = 0;
 
-				$biome = $this->selector->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
+				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 				$color = $biome->getColor();
 				$chunk->setBiomeColor($x, $z, $color >> 16, ($color >> 8) & 0xff, $color & 0xff);
 
 				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-						if($sx === 0 and $sz === 0){
-							continue;
-						}else{
-							$adjacent = $this->selector->pickBiome(($chunkX + $sx) * 16 + $x, ($chunkZ + $sz) * 16 + $z);
-						}
-						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] / ($biome->getMaxElevation() / 128 + 2);
+						$adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+
+						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] / (($biome->getMaxElevation() - $this->waterHeight) / $this->waterHeight + 2);
 						if($adjacent->getMaxElevation() > $biome->getMaxElevation()){
 							$weight /= 2;
 						}
@@ -207,15 +220,17 @@ class Normal extends Generator{
 					}
 				}
 
-				$minElevation = $minSum / $weightSum;
-				$smoothHeight = ($maxSum / $weightSum - $minElevation) / 2;
+				$minSum /= $weightSum;
+				$maxSum /= $weightSum;
+
+				$smoothHeight = ($maxSum - $minSum) / 2;
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0){
 						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
 						continue;
 					}
-					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minElevation);
+					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
 
 					if($noiseValue >= 0){
 						$chunk->setBlockId($x, $y, $z, Block::STONE);

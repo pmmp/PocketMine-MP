@@ -90,7 +90,7 @@ class SimpleChunkManager implements ChunkManager{
 	 */
 	public function setBlockDataAt($x, $y, $z, $data){
 		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			$chunk->getBlockData($x & 0xf, $y & 0x7f, $z & 0xf, $data);
+			$chunk->setBlockData($x & 0xf, $y & 0x7f, $z & 0xf, $data);
 		}
 	}
 

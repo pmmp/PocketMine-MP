@@ -2295,7 +2295,7 @@ class Level implements ChunkManager, Metadatable{
 
 
 	public function populateChunk($x, $z, $force = false){
-		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)])){
+		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
 			return false;
 		}
 
@@ -2314,11 +2314,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($populate){
-				if(count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force){
-					Timings::$generationTimer->stopTiming();
-					return false;
-				}
-
 				if(!isset($this->chunkPopulationQueue[$index])){
 					$this->chunkPopulationQueue[$index] = true;
 					for($xx = -1; $xx <= 1; ++$xx){
