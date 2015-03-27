@@ -68,6 +68,7 @@ use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
 use pocketmine\level\generator\GenerationTask;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\PopulationTask;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
 use pocketmine\math\Vector2;
@@ -173,8 +174,11 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkSendQueue = [];
 	private $chunkSendTasks = [];
 
+	private $chunkPopulationQueue = [];
+	private $chunkPopulationLock = [];
 	private $chunkGenerationQueue = [];
-	private $chunkGenerationQueueSize = 16;
+	private $chunkGenerationQueueSize = 8;
+	private $chunkPopulationQueueSize = 2;
 
 	private $autoSave = true;
 
@@ -195,8 +199,6 @@ class Level implements ChunkManager, Metadatable{
 	protected $chunkTickRadius;
 	protected $chunkTickList = [];
 	protected $chunksPerTick;
-	protected $chunksPopulatedPerTick;
-	protected $chunksPopulated = 0;
 	protected $clearChunksOnTick;
 	protected $randomTickBlocks = [
 		Block::GRASS => Grass::class,
@@ -306,9 +308,9 @@ class Level implements ChunkManager, Metadatable{
 		$this->time = (int) $this->provider->getTime();
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 260);
-		$this->chunksPopulatedPerTick = (int) $this->server->getProperty("chunk-generation.populations-per-tick", 1);
-		$this->chunkGenerationQueueSize = (int) $this->server->getProperty("chunk-generation.queue-size", 16);
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 40);
+		$this->chunkGenerationQueueSize = (int) $this->server->getProperty("chunk-generation.queue-size", 8);
+		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", false);
 
@@ -598,8 +600,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->processChunkRequest();
-
-		$this->chunksPopulated = 0;
 
 		$this->timings->doTick->stopTiming();
 	}
@@ -1820,15 +1820,25 @@ class Level implements ChunkManager, Metadatable{
 
 	public function generateChunkCallback($x, $z, FullChunk $chunk){
 		Timings::$generationTimer->startTiming();
-		if(isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
+		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)])){
 			$oldChunk = $this->getChunk($x, $z, false);
-			unset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)]);
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					unset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)]);
+				}
+			}
+			unset($this->chunkPopulationQueue[$index]);
 			$chunk->setProvider($this->provider);
 			$this->setChunk($x, $z, $chunk);
 			$chunk = $this->getChunk($x, $z, false);
 			if($chunk !== null and ($oldChunk === null or $oldChunk->isPopulated() === false) and $chunk->isPopulated() and $chunk->getProvider() !== null){
 				$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
 			}
+		}elseif(isset($this->chunkGenerationQueue[$index]) or isset($this->chunkPopulationLock[$index])){
+			unset($this->chunkGenerationQueue[$index]);
+			unset($this->chunkPopulationLock[$index]);
+			$chunk->setProvider($this->provider);
+			$this->setChunk($x, $z, $chunk);
 		}
 		Timings::$generationTimer->stopTiming();
 	}
@@ -2285,34 +2295,48 @@ class Level implements ChunkManager, Metadatable{
 
 
 	public function populateChunk($x, $z, $force = false){
+		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)])){
+			return false;
+		}
+
+		Timings::$generationTimer->startTiming();
 		if(!$this->isChunkPopulated($x, $z)){
 			$populate = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					if(!$this->isChunkGenerated($x + $xx, $z + $zz)){
+					if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
+						$populate = false;
+					}elseif(!$this->isChunkGenerated($x + $xx, $z + $zz)){
 						$populate = false;
 						$this->generateChunk($x + $xx, $z + $zz, $force);
 					}
 				}
 			}
 
-			if($this->chunksPopulated < $this->chunksPopulatedPerTick and $populate){
-				Timings::$generationTimer->startTiming();
-				$this->generatorInstance->populateChunk($x, $z);
-				$chunk = $this->getChunk($x, $z);
-				$chunk->setPopulated(true);
-				if($chunk->getProvider() !== null){
-					$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($chunk));
-				}else{
-					$this->unloadChunk($x, $z, false);
+			if($populate){
+				if(count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force){
+					Timings::$generationTimer->stopTiming();
+					return false;
 				}
-				++$this->chunksPopulated;
+
+				if(!isset($this->chunkPopulationQueue[$index])){
+					$this->chunkPopulationQueue[$index] = true;
+					for($xx = -1; $xx <= 1; ++$xx){
+						for($zz = -1; $zz <= 1; ++$zz){
+							$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
+						}
+					}
+					$task = new PopulationTask($this, $this->generatorInstance, $this->getChunk($x, $z, true));
+					$this->server->getScheduler()->scheduleAsyncTask($task);
+				}
 				Timings::$generationTimer->stopTiming();
-				return true;
+				return false;
 			}
 
+			Timings::$generationTimer->stopTiming();
 			return false;
 		}
+		Timings::$generationTimer->stopTiming();
 		return true;
 	}
 
@@ -2322,9 +2346,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
+			Timings::$generationTimer->startTiming();
 			$this->chunkGenerationQueue[$index] = true;
 			$task = new GenerationTask($this, $this->generatorInstance, $this->getChunk($x, $z, true));
 			$this->server->getScheduler()->scheduleAsyncTask($task);
+			Timings::$generationTimer->stopTiming();
 		}
 	}
 

@@ -44,7 +44,7 @@ class GenerationTask extends AsyncTask{
 		$this->settings = $generator->getSettings();
 		$this->seed = $level->getSeed();
 		$this->levelId = $level->getId();
-		$this->chunk = $chunk->toBinary();
+		$this->chunk = $chunk->toFastBinary();
 		$this->chunkClass = get_class($chunk);
 	}
 
@@ -67,7 +67,7 @@ class GenerationTask extends AsyncTask{
 
 		/** @var FullChunk $chunk */
 		$chunk = $this->chunkClass;
-		$chunk = $chunk::fromBinary($this->chunk);
+		$chunk = $chunk::fromFastBinary($this->chunk);
 		if($chunk === null){
 			//TODO error
 			return;
@@ -79,7 +79,7 @@ class GenerationTask extends AsyncTask{
 
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 		$chunk->setGenerated(true);
-		$this->chunk = $chunk->toBinary();
+		$this->chunk = $chunk->toFastBinary();
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);
 	}
@@ -89,7 +89,7 @@ class GenerationTask extends AsyncTask{
 		if($level !== null){
 			/** @var FullChunk $chunk */
 			$chunk = $this->chunkClass;
-			$chunk = $chunk::fromBinary($this->chunk);
+			$chunk = $chunk::fromFastBinary($this->chunk, $level->getProvider());
 			if($chunk === null){
 				//TODO error
 				return;

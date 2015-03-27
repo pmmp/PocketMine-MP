@@ -265,7 +265,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				$pk = $packet->__encapsulatedPacket;
 			}
 
-			if(!$needACK and $packet->pid() !== ProtocolInfo::BATCH_PACKET
+			if(!$immediate and !$needACK and $packet->pid() !== ProtocolInfo::BATCH_PACKET
 				and Network::$BATCH_THRESHOLD >= 0
 				and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
 				$this->batchedPackets[$this->identifiers[$player]] .= $packet->buffer;

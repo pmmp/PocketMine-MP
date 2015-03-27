@@ -51,7 +51,7 @@ chunk-sending:
 
 chunk-ticking:
  #Max amount of chunks processed each tick
- per-tick: 24
+ per-tick: 40
  #Radius of chunks around a player to tick
  tick-radius: 3
  #NOTE: This is currently not implemented
@@ -59,11 +59,11 @@ chunk-ticking:
  clear-tick-list: false
 
 chunk-generation:
- #Max. amount of chunks in the waiting queue ot be generated
- #It's recommended to set this to 8 * settings.async-workers
- queue-size: 16
- #Max. amount of chunks to populate per tick
- populations-per-tick: 1
+ #Max. amount of chunks in the waiting queue to be generated
+ #It's recommended to set this to 4 * settings.async-workers
+ queue-size: 8
+ #Max. amount of chunks in the waiting queue to be populated
+ population-queue-size: 2
 
 chunk-gc:
  period-in-ticks: 600

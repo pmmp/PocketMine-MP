@@ -310,6 +310,8 @@ interface FullChunk{
 
 	public function toBinary();
 
+	public function toFastBinary();
+
 	/**
 	 * @return boolean
 	 */
@@ -327,5 +329,13 @@ interface FullChunk{
 	 * @return FullChunk
 	 */
 	public static function fromBinary($data, LevelProvider $provider = null);
+
+	/**
+	 * @param string        $data
+	 * @param LevelProvider $provider
+	 *
+	 * @return FullChunk
+	 */
+	public static function fromFastBinary($data, LevelProvider $provider = null);
 
 }

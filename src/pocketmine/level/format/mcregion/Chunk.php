@@ -38,7 +38,12 @@ class Chunk extends BaseFullChunk{
 	/** @var Compound */
 	protected $nbt;
 
-	public function __construct($level, Compound $nbt){
+	public function __construct($level, Compound $nbt = null){
+		if($nbt === null){
+			$this->nbt = new Compound("Level", []);
+			return;
+		}
+		
 		$this->nbt = $nbt;
 
 		if(isset($this->nbt->Entities) and $this->nbt->Entities instanceof Enum){
@@ -89,6 +94,9 @@ class Chunk extends BaseFullChunk{
 		unset($this->nbt->Data);
 		unset($this->nbt->SkyLight);
 		unset($this->nbt->BlockLight);
+		unset($this->nbt->BiomeColors);
+		unset($this->nbt->HeightMap);
+		unset($this->nbt->Biomes);
 	}
 
 	public function getBlockId($x, $y, $z){
@@ -231,28 +239,35 @@ class Chunk extends BaseFullChunk{
 	 * @return bool
 	 */
 	public function isPopulated(){
-		return $this->nbt["TerrainPopulated"] > 0;
+		return isset($this->nbt->TerrainPopulated) and $this->nbt->TerrainPopulated->getValue() > 0;
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setPopulated($value = 1){
-		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", $value);
+		$this->nbt->TerrainPopulated = new Byte("TerrainPopulated", (int) $value);
+		$this->hasChanged = true;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isGenerated(){
-		return $this->nbt["TerrainPopulated"] > 0 or (isset($this->nbt->TerrainGenerated) and $this->nbt["TerrainGenerated"] > 0);
+		if(isset($this->nbt->TerrainGenerated)){
+			return $this->nbt->TerrainGenerated->getValue() > 0;
+		}elseif(isset($this->nbt->TerrainPopulated)){
+			return $this->nbt->TerrainPopulated->getValue() > 0;
+		}
+		return false;
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setGenerated($value = 1){
-		$this->nbt->TerrainGenerated = new Byte("TerrainGenerated", $value);
+		$this->nbt->TerrainGenerated = new Byte("TerrainGenerated", (int) $value);
+		$this->hasChanged = true;
 	}
 
 	/**
@@ -276,6 +291,70 @@ class Chunk extends BaseFullChunk{
 		}catch(\Exception $e){
 			return null;
 		}
+	}
+	
+	public static function fromFastBinary($data, LevelProvider $provider = null){
+
+		try{
+			$offset = 0;
+
+			$chunk = new Chunk($provider instanceof LevelProvider ? $provider : McRegion::class, null);
+			$chunk->provider = $provider;
+			$chunk->x = Binary::readInt(substr($data, $offset, 4));
+			$offset += 4;
+			$chunk->z = Binary::readInt(substr($data, $offset, 4));
+			$offset += 4;
+
+			$chunk->blocks = substr($data, $offset, 32768);
+			$offset += 32768;
+			$chunk->data = substr($data, $offset, 16384);
+			$offset += 16384;
+			$chunk->skyLight = substr($data, $offset, 16384);
+			$offset += 16384;
+			$chunk->blockLight = substr($data, $offset, 16384);
+			$offset += 16384;
+
+			$chunk->biomeIds = substr($data, $offset, 256);
+			$offset += 256;
+
+			$chunk->biomeColors = [];
+			$chunk->heightMap = [];
+			$bc = unpack("N*", substr($data, $offset, 1024));
+			$offset += 1024;
+			$hm = unpack("N*", substr($data, $offset, 1024));
+			$offset += 1024;
+
+			for($i = 0; $i < 256; ++$i){
+				$chunk->biomeColors[$i] = $bc[$i + 1];
+				$chunk->heightMap[$i] = $hm[$i + 1];
+			}
+
+			$flags = ord($data{$offset++});
+
+			$chunk->nbt->TerrainGenerated = new Byte("TerrainGenerated", $flags & 0b1);
+			$chunk->nbt->TerrainPopulated = new Byte("TerrainPopulated", $flags >> 1);
+
+			return $chunk;
+		}catch(\Exception $e){
+			return null;
+		}
+	}
+	
+	public function toFastBinary(){
+		$biomeColors = pack("N*", ...$this->getBiomeColorArray());
+		$heightMap = pack("N*", ...$this->getHeightMapArray());
+
+		return
+			Binary::writeInt($this->x) .
+			Binary::writeInt($this->z) .
+			$this->getBlockIdArray() .
+			$this->getBlockDataArray() .
+			$this->getBlockSkyLightArray() .
+			$this->getBlockLightArray() .
+			$this->getBiomeIdArray() .
+			$biomeColors .
+			$heightMap .
+			chr(($this->isPopulated() ? 1 << 1 : 0) + ($this->isGenerated() ? 1 : 0));
 	}
 
 	public function toBinary(){

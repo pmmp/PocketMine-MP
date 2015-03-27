@@ -158,7 +158,6 @@ class Normal extends Generator{
 		$cover = new GroundCover();
 		$this->generationPopulators[] = $cover;
 
-
 		$ores = new Ore();
 		$ores->setOreTypes([
 			new OreType(new CoalOre(), 20, 16, 0, 128),
@@ -168,7 +167,7 @@ class Normal extends Generator{
 			new OreType(new GoldOre(), 2, 8, 0, 32),
 			new OreType(new DiamondOre(), 1, 7, 0, 16),
 			new OreType(new Dirt(), 20, 32, 0, 128),
-			new OreType(new Gravel(), 10, 16, 0, 128),
+			new OreType(new Gravel(), 10, 16, 0, 128)
 		]);
 		$this->populators[] = $ores;
 	}
@@ -252,7 +251,7 @@ class Normal extends Generator{
 	}
 
 	public function getSpawn(){
-		return $this->level->getSafeSpawn(new Vector3(127.5, 128, 127.5));
+		return new Vector3(127.5, 128, 127.5);
 	}
 
 }

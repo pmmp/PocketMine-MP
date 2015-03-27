@@ -221,6 +221,10 @@ class Chunk extends BaseFullChunk{
 		$this->isGenerated = (bool) $value;
 	}
 
+	public static function fromFastBinary($data, LevelProvider $provider = null){
+		return self::fromBinary($data, $provider);
+	}
+
 	/**
 	 * @param string        $data
 	 * @param LevelProvider $provider
@@ -270,6 +274,10 @@ class Chunk extends BaseFullChunk{
 		}catch(\Exception $e){
 			return null;
 		}
+	}
+
+	public function toFastBinary(){
+		return $this->toBinary(false);
 	}
 
 	public function toBinary($saveExtra = false){
