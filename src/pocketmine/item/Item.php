@@ -431,6 +431,7 @@ class Item{
 			self::$list[self::LEATHER_CAP] = LeatherCap::class;
 			self::$list[self::LEATHER_TUNIC] = LeatherTunic::class;
 			self::$list[self::LEATHER_PANTS] = LeatherPants::class;
+			self::$list[self::LEATHER_BOOTS] = LeatherBoots::class;
 			self::$list[self::CHAIN_HELMET] = ChainHelmet::class;
 			self::$list[self::CHAIN_CHESTPLATE] = ChainChestplate::class;
 			self::$list[self::CHAIN_LEGGINGS] = ChainLeggings::class;
