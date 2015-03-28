@@ -1009,7 +1009,7 @@ abstract class Entity extends Location implements Metadatable{
 
 		$newBB = $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz);
 
-		$list = $this->level->getCollisionCubes($this, $newBB->expand(-0.01, -0.01, -0.01));
+		$list = $this->level->getCollisionCubes($this, $newBB->expand(-0.01, -0.01, -0.01), false);
 
 		if(count($list) === 0){
 			$this->boundingBox = $newBB;
@@ -1106,7 +1106,7 @@ abstract class Entity extends Location implements Metadatable{
 				//TODO: big messy loop
 			}*/
 
-			$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz));
+			$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz), false);
 
 
 			foreach($list as $bb){

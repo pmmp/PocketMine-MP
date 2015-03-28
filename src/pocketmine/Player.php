@@ -1260,7 +1260,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					$entity->scheduleUpdate();
 				}
 
-				if($entity instanceof Arrow and $entity->onGround){
+				if($entity instanceof Arrow and $entity->hadCollision){
 					if($entity->dead !== true){
 						$item = Item::get(Item::ARROW, 0, 1);
 						if($this->isSurvival() and !$this->inventory->canAddItem($item)){
@@ -1775,7 +1775,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							if($this->isSurvival()){
 								if(!$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
 									$this->inventory->sendContents($this);
-									return;
+									break;
 								}
 							}
 
@@ -1799,14 +1799,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 							$diff = ($this->server->getTick() - $this->startAction);
 							if($diff < 5){
+								$this->inventory->sendContents($this);
 								break;
 							}
 							$p = $diff / 20;
 							$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
 							if($f < 0.1){
+								$this->inventory->sendContents($this);
 								break;
 							}
-							$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this), $f);
+							$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this, $f == 2 ? true : false), $f);
 
 							$this->server->getPluginManager()->callEvent($ev);
 

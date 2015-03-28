@@ -37,7 +37,7 @@ abstract class Projectile extends Entity{
 	public $shootingEntity = null;
 	protected $damage = 0;
 
-	private $hadCollision = false;
+	public $hadCollision = false;
 
 	protected function initEntity(){
 		parent::initEntity();
@@ -77,8 +77,6 @@ abstract class Projectile extends Entity{
 			if(!$this->isCollided){
 				$this->motionY -= $this->gravity;
 			}
-
-			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 
 			$moveVector = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
 
@@ -121,6 +119,10 @@ abstract class Projectile extends Entity{
 					$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 					$damage = ceil($motion * $this->damage);
 
+					if($this instanceof Arrow and $this->isCritical){
+						$damage += mt_rand(0, (int) ($damage / 2) + 1);
+					}
+
 					if($this->shootingEntity === null){
 						$ev = new EntityDamageByEntityEvent($this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					}else{
@@ -129,6 +131,7 @@ abstract class Projectile extends Entity{
 
 					$movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev);
 
+					$this->hadCollision = true;
 
 					if($this->fireTicks > 0){
 						$ev = new EntityCombustByEntityEvent($this, $movingObjectPosition->entityHit, 5);
@@ -153,7 +156,7 @@ abstract class Projectile extends Entity{
 				$this->motionZ = 0;
 
 				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
-			}elseif(!$this->isCollided and !$this->hadCollision){
+			}elseif(!$this->isCollided and $this->hadCollision){
 				$this->hadCollision = false;
 			}
 

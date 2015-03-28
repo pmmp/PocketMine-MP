@@ -22,6 +22,7 @@
 namespace pocketmine\entity;
 
 use pocketmine\level\format\FullChunk;
+use pocketmine\level\particle\CriticalParticle;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -36,10 +37,13 @@ class Arrow extends Projectile{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
-	protected $damage = 6;
+	protected $damage = 2;
 
-	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null){
+	protected $isCritical;
+
+	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null, $critical = false){
 		$this->shootingEntity = $shootingEntity;
+		$this->isCritical = (bool) $critical;
 		parent::__construct($chunk, $nbt);
 	}
 
@@ -51,6 +55,15 @@ class Arrow extends Projectile{
 		$this->timings->startTiming();
 
 		$hasUpdate = parent::onUpdate($currentTick);
+
+		if(!$this->hadCollision and $this->isCritical){
+			$this->level->addParticle(new CriticalParticle($this->add(
+				$this->width / 2 + mt_rand(-100, 100) / 500,
+				$this->height / 2 + mt_rand(-100, 100) / 500,
+				$this->width / 2 + mt_rand(-100, 100) / 500)));
+		}elseif($this->onGround){
+			$this->isCritical = false;
+		}
 
 		if($this->age > 1200){
 			$this->kill();

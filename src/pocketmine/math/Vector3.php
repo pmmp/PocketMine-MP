@@ -246,7 +246,7 @@ class Vector3{
 		$yDiff = $v->y - $this->y;
 		$zDiff = $v->z - $this->z;
 
-		if(($xDiff ** 2) < 1){
+		if(($xDiff ** 2) < 0.0000001){
 			return null;
 		}
 
@@ -273,7 +273,7 @@ class Vector3{
 		$yDiff = $v->y - $this->y;
 		$zDiff = $v->z - $this->z;
 
-		if(($yDiff ** 2) < 1){
+		if(($yDiff ** 2) < 0.0000001){
 			return null;
 		}
 
@@ -300,7 +300,7 @@ class Vector3{
 		$yDiff = $v->y - $this->y;
 		$zDiff = $v->z - $this->z;
 
-		if(($zDiff ** 2) < 1){
+		if(($zDiff ** 2) < 0.0000001){
 			return null;
 		}
 

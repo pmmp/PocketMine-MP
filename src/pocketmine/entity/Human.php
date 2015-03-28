@@ -208,4 +208,3 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 }
-a
