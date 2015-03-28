@@ -45,11 +45,11 @@ class Perlin extends Noise{
 		}
 
 		for($i = 0; $i < 256; ++$i){
-			$this->perm[$i] = $random->nextRange(0, 255);
+			$this->perm[$i] = $random->nextBoundedInt(256);
 		}
 
 		for($i = 0; $i < 256; ++$i){
-			$pos = $random->nextRange(0, 255 - $i) + $i;
+			$pos = $random->nextBoundedInt(256 - $i) + $i;
 			$old = $this->perm[$i];
 
 			$this->perm[$i] = $this->perm[$pos];

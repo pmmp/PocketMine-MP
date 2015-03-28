@@ -39,6 +39,7 @@ use pocketmine\utils\TextFormat;
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	const DATA_PLAYER_FLAG_SLEEP = 1;
+	const DATA_PLAYER_FLAG_DEAD = 2;
 
 	const DATA_PLAYER_FLAGS = 16;
 	const DATA_PLAYER_BED_POSITION = 17;
@@ -75,9 +76,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($item["Slot"] >= 0 and $item["Slot"] < 9){ //Hotbar
 				$this->inventory->setHotbarSlotIndex($item["Slot"], isset($item["TrueSlot"]) ? $item["TrueSlot"] : -1);
 			}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::get($item["id"], $item["Damage"], $item["Count"]), $this);
+				$this->inventory->setItem($this->inventory->getSize() + $item["Slot"] - 100, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
 			}else{
-				$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]), $this);
+				$this->inventory->setItem($item["Slot"] - 9, ItemItem::get($item["id"], $item["Damage"], $item["Count"]));
 			}
 		}
 
@@ -207,3 +208,4 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 }
+a

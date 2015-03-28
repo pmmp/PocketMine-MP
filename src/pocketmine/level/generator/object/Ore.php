@@ -50,8 +50,8 @@ class Ore{
 		$x2 = $x + 8 - $offset->x;
 		$z1 = $z + 8 + $offset->y;
 		$z2 = $z + 8 - $offset->y;
-		$y1 = $y + $this->random->nextRange(0, 3) + 2;
-		$y2 = $y + $this->random->nextRange(0, 3) + 2;
+		$y1 = $y + $this->random->nextBoundedInt(3) + 2;
+		$y2 = $y + $this->random->nextBoundedInt(3) + 2;
 		for($count = 0; $count <= $clusterSize; ++$count){
 			$seedX = $x1 + ($x2 - $x1) * $count / $clusterSize;
 			$seedY = $y1 + ($y2 - $y1) * $count / $clusterSize;

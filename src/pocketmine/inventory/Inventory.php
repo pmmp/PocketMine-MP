@@ -57,17 +57,16 @@ interface Inventory{
 	 *
 	 * @param int    $index
 	 * @param Item   $item
-	 * @param Player $source
 	 *
 	 * @return bool
 	 */
-	public function setItem($index, Item $item, $source = null);
+	public function setItem($index, Item $item);
 
 	/**
 	 * Stores the given Items in the inventory. This will try to fill
 	 * existing stacks and empty slots as well as it can.
 	 *
-	 * Returns the Items that did not fit. A Player source can be set at the end
+	 * Returns the Items that did not fit.
 	 *
 	 * @param Item ...$item
 	 *
@@ -86,7 +85,7 @@ interface Inventory{
 
 	/**
 	 * Removes the given Item from the inventory.
-	 * It will return the Items that couldn't be removed. A Player source can be set at the end
+	 * It will return the Items that couldn't be removed.
 	 *
 	 * @param Item ...$item
 	 *
@@ -163,11 +162,10 @@ interface Inventory{
 	 * Will clear a specific slot
 	 *
 	 * @param int    $index
-	 * @param Player $source
 	 *
 	 * @return bool
 	 */
-	public function clear($index, $source = null);
+	public function clear($index);
 
 	/**
 	 * Clears all the slots
@@ -176,13 +174,11 @@ interface Inventory{
 
 	/**
 	 * Gets all the Players viewing the inventory
-	 * Players will be viewing their inventory at all times, even when not open.
-	 *
-	 * @param Player $source
+	 * Players will view their inventory at all times, even when not open.
 	 *
 	 * @return Player[]
 	 */
-	public function getViewers($source = null);
+	public function getViewers();
 
 	/**
 	 * @return InventoryType
@@ -218,7 +214,6 @@ interface Inventory{
 	/**
 	 * @param int    $index
 	 * @param Item   $before
-	 * @param Player $source
 	 */
-	public function onSlotChange($index, $before, $source = null);
+	public function onSlotChange($index, $before);
 }

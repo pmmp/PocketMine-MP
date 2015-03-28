@@ -151,7 +151,7 @@ class SimpleTransactionGroup implements TransactionGroup{
 		}
 
 		foreach($this->transactions as $transaction){
-			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem(), $this->getSource());
+			$transaction->getInventory()->setItem($transaction->getSlot(), $transaction->getTargetItem());
 		}
 
 		$this->hasExecuted = true;
