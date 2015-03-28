@@ -220,6 +220,8 @@ class Server{
 
 	/** @var Level[] */
 	private $levels = [];
+	private $offendingLevels = [];
+	private $offendingTicks = [];
 
 	/** @var Level */
 	private $levelDefault = null;
@@ -1971,14 +1973,12 @@ class Server{
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
 	public function start(){
-
 		if($this->getConfigBoolean("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
-
 		}
 
 		foreach($this->getIPBans()->getEntries() as $entry){
-			$this->blockAddress($entry->getName(), -1);
+			$this->network->blockAddress($entry->getName(), -1);
 		}
 
 		if($this->getProperty("settings.send-usage", true) !== false){
@@ -2144,10 +2144,28 @@ class Server{
 
 	private function checkTickUpdates($currentTick){
 
+		$tickLimit = 50 / count($this->levels);
+		$levelTimes = [];
+
+		$startTime = microtime(true);
 		//Do level ticks
 		foreach($this->getLevels() as $level){
+			if(isset($this->offendingLevels[$level->getId()]) and $this->offendingTicks[$level->getId()]-- > 0){
+				continue;
+			}
 			try{
+				$levelTime = microtime(true);
 				$level->doTick($currentTick);
+				$levelMs = (microtime(true) - $levelTime) * 1000;
+				$levelTimes[$level->getId()] = $levelMs;
+				if(isset($this->offendingLevels[$level->getId()])){
+					if($levelMs < $tickLimit and --$this->offendingLevels[$level->getId()] <= 0){
+						unset($this->offendingLevels[$level->getId()]);
+						unset($this->offendingTicks[$level->getId()]);
+					}else{
+						$this->offendingTicks[$level->getId()] = $this->offendingLevels[$level->getId()];
+					}
+				}
 			}catch(\Exception $e){
 				$this->logger->critical("Could not tick level " . $level->getName() . ": " . $e->getMessage());
 				if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
@@ -2155,6 +2173,26 @@ class Server{
 				}
 			}
 		}
+
+		$totalTime = (microtime(true) - $startTime) * 1000;
+
+		if($totalTime > 50){
+			arsort($levelTimes);
+			foreach($levelTimes as $levelId => $t){
+				$totalTime -= $t;
+				if(!isset($this->offendingLevels[$levelId])){
+					$this->offendingLevels[$levelId] = max(1, min(10, floor($t / 50)));
+				}elseif($this->offendingLevels[$levelId] < 10){ //Limit?
+					++$this->offendingLevels[$levelId];
+				}
+				$this->offendingTicks[$levelId] = $this->offendingLevels[$levelId];
+
+				if($totalTime <= 50){
+					break;
+				}
+			}
+		}
+
 	}
 
 	public function doAutoSave(){

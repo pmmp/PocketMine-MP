@@ -79,10 +79,17 @@ class Normal extends Generator{
 
 	private static function generateKernel(){
 		self::$GAUSSIAN_KERNEL = [];
+
+		$bellSize = 1 / self::$SMOOTH_SIZE;
+		$bellHeight = 2 * self::$SMOOTH_SIZE;
+
 		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 			self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE] = [];
+
 			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = 10 / sqrt($sx ** 2 + $sz ** 2 + 0.2);
+				$bx = $bellSize * $sx;
+				$bz = $bellSize * $sz;
+				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
 			}
 		}
 	}
@@ -195,6 +202,8 @@ class Normal extends Generator{
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
+		$biomeCache = [];
+
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$minSum = 0;
@@ -208,12 +217,20 @@ class Normal extends Generator{
 
 				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
 					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-						$adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
 
-						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] / (($biome->getMaxElevation() - $this->waterHeight) / $this->waterHeight + 2);
-						if($adjacent->getMaxElevation() > $biome->getMaxElevation()){
-							$weight /= 2;
+						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
+
+						if($sx === 0 and $sz === 0){
+							$adjacent = $biome;
+						}else{
+							$index = Level::chunkHash($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+							if(isset($biomeCache[$index])){
+								$adjacent = $biomeCache[$index];
+							}else{
+								$biomeCache[$index] = $adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+							}
 						}
+
 						$minSum += $adjacent->getMinElevation() * $weight;
 						$maxSum += $adjacent->getMaxElevation() * $weight;
 						$weightSum += $weight;

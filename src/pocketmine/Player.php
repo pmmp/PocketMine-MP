@@ -180,6 +180,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	protected $stepHeight = 0.6;
 
 	public $usedChunks = [];
+	protected $chunkLoadCount = 0;
 	protected $loadQueue = [];
 	protected $nextChunkOrderRun = 5;
 
@@ -565,6 +566,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
+		$this->chunkLoadCount++;
 
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $x;
@@ -608,7 +610,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 			$this->level->requestChunk($X, $Z, $this, LevelProvider::ORDER_ZXY);
 		}
 
-		if(count($this->usedChunks) >= $this->spawnThreshold and $this->spawned === false){
+		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false){
 			$this->spawned = true;
 
 			$this->sendSettings();
