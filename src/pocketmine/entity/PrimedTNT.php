@@ -44,6 +44,11 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public $canCollide = false;
 
+
+	public function attack($damage, EntityDamageEvent $source){
+
+	}
+
 	protected function initEntity(){
 		parent::initEntity();
 
@@ -102,8 +107,6 @@ class PrimedTNT extends Entity implements Explosive{
 			if($this->fuse <= 0){
 				$this->kill();
 				$this->explode();
-			}else{
-				$this->sendMetadata($this->getViewers());
 			}
 
 		}

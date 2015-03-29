@@ -39,6 +39,11 @@ abstract class Projectile extends Entity{
 
 	public $hadCollision = false;
 
+
+	public function attack($damage, EntityDamageEvent $source){
+
+	}
+
 	protected function initEntity(){
 		parent::initEntity();
 

@@ -71,6 +71,10 @@ class FallingSand extends Entity{
 		return false;
 	}
 
+	public function attack($damage, EntityDamageEvent $source){
+
+	}
+
 	public function onUpdate($currentTick){
 
 		if($this->closed){

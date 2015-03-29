@@ -74,6 +74,13 @@ class Item extends Entity{
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
 
+
+	public function attack($damage, EntityDamageEvent $source){
+		if($source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK){
+			parent::attack($damage, $source);
+		}
+	}
+
 	public function onUpdate($currentTick){
 		if($this->closed !== false){
 			return false;
@@ -94,7 +101,7 @@ class Item extends Entity{
 
 			$this->motionY -= $this->gravity;
 
-			$this->keepMovement = $this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
+			$this->checkObstruction($this->x, ($this->boundingBox->minY + $this->boundingBox->maxY) / 2, $this->z);
 			$this->move($this->motionX, $this->motionY, $this->motionZ);
 
 			$friction = 1 - $this->drag;

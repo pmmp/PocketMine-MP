@@ -776,10 +776,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 	public function sleepOn(Vector3 $pos){
 		foreach($this->level->getNearbyEntities($this->boundingBox->grow(2, 1, 2), $this) as $p){
 			if($p instanceof Player){
-				if($p->sleeping !== null){
-					if($pos->distance($p->sleeping) <= 0.1){
-						return false;
-					}
+				if($p->sleeping !== null and $pos->distance($p->sleeping) <= 0.1){
+					return false;
 				}
 			}
 		}
@@ -790,7 +788,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 		}
 
 		$this->sleeping = clone $pos;
-		$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
+		//$this->teleport(new Position($pos->x + 0.5, $pos->y + 1, $pos->z + 0.5, $this->level));
 
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [$pos->x, $pos->y, $pos->z]);
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, true);
@@ -856,8 +854,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 				}
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -1024,7 +1020,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 
 	protected function getCreativeBlock(Item $item){
 		foreach(Block::$creative as $i => $d){
-			if($d[0] === $item->getId() and $d[1] === $item->getDamage()){
+			if($d[0] === $item->getId() and ($item->isTool() or $d[1] === $item->getDamage())){
 				return $i;
 			}
 		}
@@ -1772,11 +1768,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 					case 5: //Shot arrow
 						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION) and $this->inventory->getItemInHand()->getId() === Item::BOW){
 							$bow = $this->inventory->getItemInHand();
-							if($this->isSurvival()){
-								if(!$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
-									$this->inventory->sendContents($this);
-									break;
-								}
+							if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, 0, 1))){
+								$this->inventory->sendContents($this);
+								break;
 							}
 
 
@@ -1798,22 +1792,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer{
 							]);
 
 							$diff = ($this->server->getTick() - $this->startAction);
-							if($diff < 5){
-								$this->inventory->sendContents($this);
-								break;
-							}
 							$p = $diff / 20;
 							$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
-							if($f < 0.1){
-								$this->inventory->sendContents($this);
-								break;
-							}
 							$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this, $f == 2 ? true : false), $f);
+
+							if($f < 0.1 or $diff < 5){
+								$ev->setCancelled();
+							}
 
 							$this->server->getPluginManager()->callEvent($ev);
 
 							if($ev->isCancelled()){
 								$ev->getProjectile()->kill();
+								$this->inventory->sendContents($this);
 							}else{
 								$ev->getProjectile()->setMotion($ev->getProjectile()->getMotion()->multiply($ev->getForce()));
 								if($this->isSurvival()){

@@ -824,17 +824,17 @@ class Level implements ChunkManager, Metadatable{
 		$minX = Math::floorFloat($bb->minX);
 		$minY = Math::floorFloat($bb->minY);
 		$minZ = Math::floorFloat($bb->minZ);
-		$maxX = Math::floorFloat($bb->maxX + 1);
-		$maxY = Math::floorFloat($bb->maxY + 1);
-		$maxZ = Math::floorFloat($bb->maxZ + 1);
+		$maxX = Math::ceilFloat($bb->maxX);
+		$maxY = Math::ceilFloat($bb->maxY);
+		$maxZ = Math::ceilFloat($bb->maxZ);
 
 		$collides = [];
 
 		$v = $this->temporalVector;
 
-		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
-			for($v->x = $minX; $v->x < $maxX; ++$v->x){
-				for($v->y = $minY - 1; $v->y < $maxY; ++$v->y){
+		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
+			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
+				for($v->y = $minY - 1; $v->y <= $maxY; ++$v->y){
 					$block = $this->getBlock($v);
 					if($block->getId() !== 0){
 						$block->collidesWithBB($bb, $collides);
@@ -872,15 +872,15 @@ class Level implements ChunkManager, Metadatable{
 		$minX = Math::floorFloat($bb->minX);
 		$minY = Math::floorFloat($bb->minY);
 		$minZ = Math::floorFloat($bb->minZ);
-		$maxX = Math::floorFloat($bb->maxX + 1);
-		$maxY = Math::floorFloat($bb->maxY + 1);
-		$maxZ = Math::floorFloat($bb->maxZ + 1);
+		$maxX = Math::ceilFloat($bb->maxX);
+		$maxY = Math::ceilFloat($bb->maxY);
+		$maxZ = Math::ceilFloat($bb->maxZ);
 
 		$collides = [];
 		$v = $this->temporalVector;
 
-		for($v->z = $minZ; $v->z < $maxZ; ++$v->z){
-			for($v->x = $minX; $v->x < $maxX; ++$v->x){
+		for($v->z = $minZ; $v->z <= $maxZ; ++$v->z){
+			for($v->x = $minX; $v->x <= $maxX; ++$v->x){
 				for($v->y = $minY - 1; $v->y < $maxY; ++$v->y){
 					$block = $this->getBlock($v);
 					if($block->getId() !== 0){
@@ -1492,9 +1492,9 @@ class Level implements ChunkManager, Metadatable{
 		$nearby = [];
 
 		if($entity === null or $entity->canCollide){
-			$minX = Math::ceilFloat(($bb->minX - 2) / 16);
+			$minX = Math::floorFloat(($bb->minX - 2) / 16);
 			$maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
-			$minZ = Math::ceilFloat(($bb->minZ - 2) / 16);
+			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
 			$maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
 
 			for($x = $minX; $x <= $maxX; ++$x){
@@ -1522,9 +1522,9 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null){
 		$nearby = [];
 
-		$minX = Math::ceilFloat(($bb->minX - 2) / 16);
+		$minX = Math::floorFloat(($bb->minX - 2) / 16);
 		$maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
-		$minZ = Math::ceilFloat(($bb->minZ - 2) / 16);
+		$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
 		$maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
 
 		for($x = $minX; $x <= $maxX; ++$x){

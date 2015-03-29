@@ -534,7 +534,6 @@ abstract class Entity extends Location implements Metadatable{
 
         $this->setLastDamageCause($source);
 
-
         $this->setHealth($this->getHealth() - $source->getFinalDamage());
     }
 
@@ -615,29 +614,25 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function checkObstruction($x, $y, $z){
-		$i = (int) $x;
-		$j = (int) $y;
-		$k = (int) $z;
+		$i = Math::floorFloat($x);
+		$j = Math::floorFloat($y);
+		$k = Math::floorFloat($z);
 
 		$diffX = $x - $i;
 		$diffY = $y - $j;
 		$diffZ = $z - $k;
 
-		$list = $this->level->getCollisionBlocks($this->boundingBox);
-
 		$v = new Vector3($i, $j, $k);
 
-		if(count($list) === 0 and !$this->level->isFullBlock($v->setComponents($i, $j, $k))){
-			return false;
-		}else{
+		if($this->level->isFullBlock($v)){
 			$flag = !$this->level->isFullBlock($v->setComponents($i - 1, $j, $k));
 			$flag1 = !$this->level->isFullBlock($v->setComponents($i + 1, $j, $k));
-			//$flag2 = !$this->level->isFullBlock($v->setComponents($i, $j - 1, $k));
+			$flag2 = !$this->level->isFullBlock($v->setComponents($i, $j - 1, $k));
 			$flag3 = !$this->level->isFullBlock($v->setComponents($i, $j + 1, $k));
 			$flag4 = !$this->level->isFullBlock($v->setComponents($i, $j, $k - 1));
 			$flag5 = !$this->level->isFullBlock($v->setComponents($i, $j, $k + 1));
 
-			$direction = 3; //UP!
+			$direction = -1;
 			$limit = 9999;
 
 			if($flag){
@@ -648,6 +643,11 @@ abstract class Entity extends Location implements Metadatable{
 			if($flag1 and 1 - $diffX < $limit){
 				$limit = 1 - $diffX;
 				$direction = 1;
+			}
+
+			if($flag2 and $diffY < $limit){
+				$limit = $diffY;
+				$direction = 2;
 			}
 
 			if($flag3 and 1 - $diffY < $limit){
@@ -678,7 +678,11 @@ abstract class Entity extends Location implements Metadatable{
 				return true;
 			}
 
-			//No direction 2
+			if($direction === 2){
+				$this->motionY = -$force;
+
+				return true;
+			}
 
 			if($direction === 3){
 				$this->motionY = $force;
@@ -699,6 +703,8 @@ abstract class Entity extends Location implements Metadatable{
 			return true;
 
 		}
+
+		return false;
 	}
 
 	public function entityBaseTick($tickDiff = 1){
@@ -728,10 +734,6 @@ abstract class Entity extends Location implements Metadatable{
 				$effect->setDuration($effect->getDuration() - $tickDiff);
 				if($effect->getDuration() <= 0){
 					$this->removeEffect($effect->getId());
-					$this->sendMetadata($this->hasSpawned);
-					if($this instanceof Player){
-						$this->sendMetadata($this);
-					}
 				}
 			}
 		}
@@ -1106,8 +1108,7 @@ abstract class Entity extends Location implements Metadatable{
 				//TODO: big messy loop
 			}*/
 
-			$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz), false);
-
+			$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
 			foreach($list as $bb){
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
@@ -1160,7 +1161,7 @@ abstract class Entity extends Location implements Metadatable{
 
 				$this->boundingBox->setBB($axisalignedbb);
 
-				$list = $this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz), false);
+				$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
