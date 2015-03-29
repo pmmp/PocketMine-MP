@@ -44,7 +44,7 @@ class ReloadCommand extends VanillaCommand{
 		Command::broadcastCommandMessage($sender, TextFormat::YELLOW . "Reloading server...");
 
 		$sender->getServer()->reload();
-		Command::broadcastCommandMessage($sender, TextFormat::GOLD . "Reload complete.");
+		Command::broadcastCommandMessage($sender, TextFormat::YELLOW . "Reload complete.");
 
 		return true;
 	}
