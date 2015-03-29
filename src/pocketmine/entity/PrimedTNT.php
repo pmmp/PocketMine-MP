@@ -59,12 +59,6 @@ class PrimedTNT extends Entity implements Explosive{
 		return false;
 	}
 
-	public function getData(){
-		return [
-			16 => ["type" => 0, "value" => $this->fuse],
-		];
-	}
-
 	public function saveNBT(){
 		parent::saveNBT();
 		$this->namedtag->Fuse = new Byte("Fuse", $this->fuse);

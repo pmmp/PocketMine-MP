@@ -21,6 +21,7 @@
 
 namespace pocketmine\event\entity;
 
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
@@ -29,6 +30,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 	const MODIFIER_BASE = 0;
 	const MODIFIER_ARMOR = 1;
+	const MODIFIER_STRENGTH = 2;
+	const MODIFIER_WEAKNESS = 3;
+	const MODIFIER_RESISTANCE = 4;
 
 	const CAUSE_CONTACT = 0;
 	const CAUSE_ENTITY_ATTACK = 1;
@@ -76,6 +80,10 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		if(!isset($this->modifiers[self::MODIFIER_BASE])){
 			throw new \InvalidArgumentException("BASE Damage modifier missing");
 		}
+
+		if($entity->hasEffect(Effect::DAMAGE_RESISTANCE)){
+			$this->setDamage(-($this->getDamage(self::MODIFIER_BASE) * 0.20 * ($entity->getEffect(Effect::DAMAGE_RESISTANCE)->getAmplifier() + 1)), self::MODIFIER_RESISTANCE);
+		}
 	}
 
 	/**
@@ -118,9 +126,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * @throws \UnexpectedValueException
 	 */
 	public function setDamage($damage, $type = self::MODIFIER_BASE){
-		if(!isset($this->modifiers[$type])){
-			throw new \UnexpectedValueException($type . " is not applicable to " . $this->getEntity());
-		}
 		$this->modifiers[$type] = $damage;
 	}
 

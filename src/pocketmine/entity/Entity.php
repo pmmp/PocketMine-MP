@@ -323,10 +323,10 @@ abstract class Entity extends Location implements Metadatable{
 		foreach($this->effects as $effect){
 			if($effect->isVisible()){
 				$c = $effect->getColor();
-				$color[0] += $c[0];
-				$color[1] += $c[1];
-				$color[2] += $c[2];
-				++$count;
+				$color[0] += $c[0] * ($effect->getAmplifier() + 1);
+				$color[1] += $c[1] * ($effect->getAmplifier() + 1);
+				$color[2] += $c[2] * ($effect->getAmplifier() + 1);
+				$count += $effect->getAmplifier() + 1;
 				if(!$effect->isAmbient()){
 					$ambient = false;
 				}
@@ -1540,11 +1540,6 @@ abstract class Entity extends Location implements Metadatable{
 	public function getDataFlag($propertyId, $id){
 		return (((int) $this->getDataProperty($propertyId)) & (1 << $id)) > 0;
 	}
-
-	/**
-	 * @deprecated
-	 */
-	public function getData(){}
 
 	public function __destruct(){
 		$this->close();

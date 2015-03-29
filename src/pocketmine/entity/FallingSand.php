@@ -71,10 +71,6 @@ class FallingSand extends Entity{
 		return false;
 	}
 
-	public function getData(){
-		return [];
-	}
-
 	public function onUpdate($currentTick){
 
 		if($this->closed){

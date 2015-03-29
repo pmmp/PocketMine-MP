@@ -1492,10 +1492,10 @@ class Level implements ChunkManager, Metadatable{
 		$nearby = [];
 
 		if($entity === null or $entity->canCollide){
-			$minX = Math::floorFloat(($bb->minX - 2) / 16);
-			$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
-			$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-			$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
+			$minX = Math::ceilFloat(($bb->minX - 2) / 16);
+			$maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
+			$minZ = Math::ceilFloat(($bb->minZ - 2) / 16);
+			$maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1522,10 +1522,10 @@ class Level implements ChunkManager, Metadatable{
 	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null){
 		$nearby = [];
 
-		$minX = Math::floorFloat(($bb->minX - 2) / 16);
-		$maxX = Math::floorFloat(($bb->maxX + 2) / 16);
-		$minZ = Math::floorFloat(($bb->minZ - 2) / 16);
-		$maxZ = Math::floorFloat(($bb->maxZ + 2) / 16);
+		$minX = Math::ceilFloat(($bb->minX - 2) / 16);
+		$maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
+		$minZ = Math::ceilFloat(($bb->minZ - 2) / 16);
+		$maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
@@ -2197,7 +2197,7 @@ class Level implements ChunkManager, Metadatable{
 				for(; $v->y >= 0 and $v->y < 128; ++$v->y){
 					if(!Block::$solid[$chunk->getBlockId($x, $v->y + 1, $z)]){
 						if(!Block::$solid[$chunk->getBlockId($x, $v->y, $z)]){
-							return new Position($spawn->x, $v->y === Math::floorFloat($spawn->y) ? $spawn->y : $v->y, $spawn->z, $this);
+							return new Position($spawn->x, $v->y === (int) $spawn->y ? $spawn->y : $v->y, $spawn->z, $this);
 						}
 					}else{
 						++$v->y;

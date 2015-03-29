@@ -148,15 +148,6 @@ class Item extends Entity{
 		}
 	}
 
-	public function getData(){
-		$flags = 0;
-		$flags |= $this->fireTicks > 0 ? 1 : 0;
-
-		return [
-			0 => ["type" => 0, "value" => $flags]
-		];
-	}
-
 	/**
 	 * @return ItemItem
 	 */
