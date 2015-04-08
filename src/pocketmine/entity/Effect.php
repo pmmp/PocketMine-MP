@@ -37,7 +37,8 @@ class Effect{
 	//TODO: const HEALING = 6;
 	//TODO: const HARMING = 7;
 	const JUMP = 8;
-	//const CONFUSION = 9;
+	const NAUSEA = 9;
+	const CONFUSION = 9;
 	const REGENERATION = 10;
 	const DAMAGE_RESISTANCE = 11;
 	const FIRE_RESISTANCE = 12;
@@ -66,6 +67,7 @@ class Effect{
 		self::$effects[Effect::STRENGTH] = new Effect(Effect::STRENGTH, "Strength", 147, 36, 35);
 		//self::$effects[Effect::HEALING] = new InstantEffect(Effect::HEALING, "Healing", 248, 36, 35);
 		//self::$effects[Effect::HARMING] = new InstantEffect(Effect::HARMING, "Harming", 67, 10, 9, true);
+		self::$effects[Effect::NAUSEA] = new Effect(Effect::NAUSEA, "Nausea", 85, 29, 74, true);
 		self::$effects[Effect::JUMP] = new Effect(Effect::JUMP, "Jump", 34, 255, 76);
 		self::$effects[Effect::REGENERATION] = new Effect(Effect::REGENERATION, "Regeneration", 205, 92, 171);
 		self::$effects[Effect::DAMAGE_RESISTANCE] = new Effect(Effect::DAMAGE_RESISTANCE, "Damage Resistance", 153, 69, 58);
