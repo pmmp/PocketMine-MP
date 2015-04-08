@@ -21,9 +21,7 @@
 
 namespace pocketmine\entity;
 
-
-abstract class Animal extends Creature implements Ageable{
-
+abstract class WaterAnimal extends Creature implements Ageable{
 	public function initEntity(){
 		parent::initEntity();
 		if($this->getDataProperty(self::DATA_AGEABLE_FLAGS) === null){

@@ -25,6 +25,7 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\item\Item;
@@ -494,7 +495,7 @@ class Block extends Position implements Metadatable{
 		//TODO: Slime
 		[Item::SPAWN_EGG, Zombie::NETWORK_ID],
 		//TODO: PigZombie
-		//TODO: Replace with Entity constants
+		[Item::SPAWN_EGG, Squid::NETWORK_ID],
 
 
 		//Seeds
